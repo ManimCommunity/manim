@@ -219,9 +219,9 @@ class Scene:
         self.mobjects: list[Mobject] = []
         # TODO, remove need for foreground mobjects
         self.foreground_mobjects: list[Mobject] = []
-        if self.random_seed is not None:
-            random.seed(self.random_seed)
-            np.random.default_rng(self.random_seed)
+
+        random.seed(self.random_seed)
+        np.random.seed(self.random_seed)  # noqa: NPY002 (only way to set seed globally)
 
     @property
     def camera(self) -> Camera | OpenGLCamera:

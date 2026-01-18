@@ -4,7 +4,7 @@ import datetime
 
 import pytest
 
-from manim import Circle, FadeIn, Group, Mobject, Scene, Square
+from manim import Circle, Dot, FadeIn, Group, Mobject, Scene, Square
 from manim.animation.animation import Wait
 
 
@@ -101,3 +101,24 @@ def test_replace(dry_run):
     scene.replace(second, beta)
     assert_names(scene.mobjects, ["alpha", "group", "fourth"])
     assert_names(scene.mobjects[1], ["beta", "third"])
+
+
+def test_reproducible_scene(dry_run):
+    import numpy as np
+
+    scene = Scene(random_seed=42)
+    dots1 = []
+    for _ in range(10):
+        dot = Dot(np.random.uniform(-3, 3, size=3))  # noqa: NPY002
+        dots1.append(dot)
+    scene.add(*dots1)
+
+    scene2 = Scene(random_seed=42)
+    dots2 = []
+    for _ in range(5):
+        dot = Dot(np.random.uniform(-3, 3, size=3))  # noqa: NPY002
+        dots2.append(dot)
+    scene2.add(*dots2)
+
+    for d1, d2 in zip(dots1, dots2, strict=False):
+        np.testing.assert_allclose(d1.get_center(), d2.get_center())
