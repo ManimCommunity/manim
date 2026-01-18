@@ -4,10 +4,8 @@ from __future__ import annotations
 
 __all__ = ["Rotating", "Rotate"]
 
-from collections.abc import Callable, Sequence
+from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
-
-import numpy as np
 
 from ..animation.animation import Animation
 from ..animation.transform import Transform
@@ -17,7 +15,7 @@ from ..utils.rate_functions import linear
 if TYPE_CHECKING:
     from ..mobject.mobject import Mobject
     from ..mobject.opengl.opengl_mobject import OpenGLMobject
-    from ..typing import Point3D
+    from ..typing import Point3DLike, Vector3DLike
 
 
 class Rotating(Animation):
@@ -91,9 +89,9 @@ class Rotating(Animation):
         self,
         mobject: Mobject,
         angle: float = TAU,
-        axis: np.ndarray = OUT,
-        about_point: np.ndarray | None = None,
-        about_edge: np.ndarray | None = None,
+        axis: Vector3DLike = OUT,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
         run_time: float = 5,
         rate_func: Callable[[float], float] = linear,
         **kwargs: Any,
@@ -158,9 +156,9 @@ class Rotate(Transform):
         self,
         mobject: Mobject,
         angle: float = PI,
-        axis: np.ndarray = OUT,
-        about_point: Point3D | None = None,
-        about_edge: Sequence[float] | None = None,
+        axis: Vector3DLike = OUT,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
         **kwargs: Any,
     ) -> None:
         if "path_arc" not in kwargs:

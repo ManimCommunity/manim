@@ -51,6 +51,7 @@ from ..utils.rate_functions import smooth, squish_rate_func
 
 if TYPE_CHECKING:
     from ..scene.scene import Scene
+    from ..typing import Point3DLike
 
 
 class Transform(Animation):
@@ -137,12 +138,12 @@ class Transform(Animation):
         path_func: Callable | None = None,
         path_arc: float = 0,
         path_arc_axis: np.ndarray = OUT,
-        path_arc_centers: np.ndarray = None,
+        path_arc_centers: Point3DLike = None,
         replace_mobject_with_target_in_scene: bool = False,
         **kwargs,
     ) -> None:
         self.path_arc_axis: np.ndarray = path_arc_axis
-        self.path_arc_centers: np.ndarray = path_arc_centers
+        self.path_arc_centers: Point3DLike = path_arc_centers
         self.path_arc: float = path_arc
 
         # path_func is a property a few lines below so it doesn't need to be set in any case
