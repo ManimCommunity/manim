@@ -29,9 +29,7 @@ import re
 from collections.abc import Iterable, Sequence
 from functools import reduce
 from textwrap import dedent
-from typing import Any
-
-from typing_extensions import Self
+from typing import Any, Self
 
 from manim import config, logger
 from manim.constants import *

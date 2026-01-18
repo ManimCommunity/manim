@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from typing import Any, cast
+from typing import Any, Self, cast
 
 import numpy as np
-from typing_extensions import Self
 
 from manim.constants import *
 from manim.mobject.mobject import Mobject
