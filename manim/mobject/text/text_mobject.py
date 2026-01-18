@@ -58,7 +58,7 @@ import copy
 import hashlib
 import re
 from collections.abc import Iterable, Iterator, Sequence
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 from itertools import chain
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -370,6 +370,18 @@ class Text(SVGMobject):
                              '[4:5]': '#269a43', '[5:]': '#e53125'}, font_size=58).scale(3)
                     self.add(text1)
 
+    .. manim:: TextNumericFeatures
+        :save_last_frame:
+
+        class TextNumericFeatures(Scene):
+            def construct(self):
+                t = Text(
+                    '123,456.78',
+                    font='Inter',
+                    font_features='tnum=1,lnum=1',
+                ).scale(2)
+                self.add(t)
+
     As :class:`Text` uses Pango to render text, rendering non-English
     characters is easily possible:
 
@@ -444,6 +456,8 @@ class Text(SVGMobject):
         should_center: bool = True,
         disable_ligatures: bool = False,
         use_svg_cache: bool = False,
+        font_features: str | None = None,
+        font_variant: str | None = None,
         **kwargs: Any,
     ):
         self.line_spacing = line_spacing
@@ -470,6 +484,8 @@ class Text(SVGMobject):
         self.weight = weight
         self.gradient = gradient
         self.tab_width = tab_width
+        self.font_features = font_features
+        self.font_variant = font_variant
         if t2c is None:
             t2c = {}
         if t2f is None:
@@ -657,6 +673,8 @@ class Text(SVGMobject):
         settings += str(self.line_spacing) + str(self._font_size)
         settings += str(self.disable_ligatures)
         settings += str(self.gradient)
+        settings += str(self.font_features)
+        settings += str(self.font_variant)
         id_str = self.text + settings
         hasher = hashlib.sha256()
         hasher.update(id_str.encode())
@@ -790,6 +808,16 @@ class Text(SVGMobject):
         for setting in settings:
             if setting.line_num == -1:
                 setting.line_num = line_num
+
+        # Attach OpenType font features (if provided) so manimpango can utilize them
+        if self.font_features:
+            for setting in settings:
+                with suppress(Exception):
+                    setting.font_features = self.font_features
+        if self.font_variant:
+            for setting in settings:
+                with suppress(Exception):
+                    setting.font_variant = self.font_variant
 
         return settings
 
@@ -966,6 +994,13 @@ class MarkupText(SVGMobject):
         Global weight setting, e.g. `NORMAL` or `BOLD`. Local overrides are possible.
     gradient
         Global gradient setting. Local overrides are possible.
+    font_features
+        OpenType feature string to request on the font (e.g., "tnum=1,lnum=1" for
+        tabular + lining figures, or "onum=1" for old-style figures). Applied when
+        supported by ManimPango; otherwise ignored.
+    font_variant
+        Optional font variant name provided by the typeface (e.g., "condensed").
+        Applied when supported by ManimPango; otherwise ignored.
     warn_missing_font
         If True (default), Manim will issue a warning if the font does not exist in the
         (case-sensitive) list of fonts returned from `manimpango.list_fonts()`.
