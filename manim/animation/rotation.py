@@ -16,6 +16,8 @@ from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
     from ..mobject.mobject import Mobject
+    from ..mobject.opengl.opengl_mobject import OpenGLMobject
+    from ..typing import Point3D
 
 
 class Rotating(Animation):
@@ -157,7 +159,7 @@ class Rotate(Transform):
         mobject: Mobject,
         angle: float = PI,
         axis: np.ndarray = OUT,
-        about_point: Sequence[float] | None = None,
+        about_point: Point3D | None = None,
         about_edge: Sequence[float] | None = None,
         **kwargs: Any,
     ) -> None:
@@ -173,7 +175,7 @@ class Rotate(Transform):
             self.about_point = mobject.get_center()
         super().__init__(mobject, path_arc_centers=self.about_point, **kwargs)
 
-    def create_target(self) -> Mobject:
+    def create_target(self) -> Mobject | OpenGLMobject:
         target = self.mobject.copy()
         target.rotate(
             self.angle,
