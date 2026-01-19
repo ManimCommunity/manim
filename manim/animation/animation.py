@@ -17,9 +17,7 @@ __all__ = ["Animation", "Wait", "Add", "override_animation"]
 from collections.abc import Callable, Iterable, Sequence
 from copy import deepcopy
 from functools import partialmethod
-from typing import TYPE_CHECKING, Any
-
-from typing_extensions import Self
+from typing import TYPE_CHECKING, Any, Self
 
 if TYPE_CHECKING:
     from manim.scene.scene import Scene
@@ -280,9 +278,12 @@ class Animation:
 
     def get_all_families_zipped(self) -> Iterable[tuple]:
         if config["renderer"] == RendererType.OPENGL:
-            return zip(*(mob.get_family() for mob in self.get_all_mobjects()))
+            return zip(
+                *(mob.get_family() for mob in self.get_all_mobjects()), strict=False
+            )
         return zip(
-            *(mob.family_members_with_points() for mob in self.get_all_mobjects())
+            *(mob.family_members_with_points() for mob in self.get_all_mobjects()),
+            strict=False,
         )
 
     def update_mobjects(self, dt: float) -> None:

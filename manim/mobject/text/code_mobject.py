@@ -207,7 +207,7 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
             *code_lines,
             **base_paragraph_config,
         )
-        for line, color_range in zip(self.code_lines, color_ranges):
+        for line, color_range in zip(self.code_lines, color_ranges, strict=False):
             for start, end, color in color_range:
                 line[start:end].set_color(color)
 
