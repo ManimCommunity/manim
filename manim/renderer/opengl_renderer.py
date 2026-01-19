@@ -442,7 +442,7 @@ class OpenGLCamera(OpenGLMobject):
         mobject2: OpenGLMobject,
         alpha: float,
         path_func: PathFuncType = straight_path(),
-    ):
+    ) -> Self:
         super().interpolate(mobject1, mobject2, alpha, path_func)
         self.refresh_rotation_matrix()
         return self
