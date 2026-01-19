@@ -177,7 +177,7 @@ class Scene:
     ) -> None:
         self.camera_class = camera_class
         self.always_update_mobjects = always_update_mobjects
-        self.random_seed = random_seed
+        self.random_seed = random_seed if random_seed is not None else config.seed
         self.skip_animations = skip_animations
 
         self.animations: list[Animation] | None = None

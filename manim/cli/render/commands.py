@@ -103,7 +103,7 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
             while keep_running:
                 for SceneClass in scene_classes_from_file(file):
                     with tempconfig({}):
-                        scene = SceneClass(renderer, random_seed=config.seed)
+                        scene = SceneClass(renderer)
                         rerun = scene.render()
                     if rerun or config["write_all"]:
                         renderer.num_plays = 0
