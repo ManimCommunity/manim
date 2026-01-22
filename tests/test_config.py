@@ -61,18 +61,16 @@ def test_transparent(config):
     config.verbosity = "ERROR"
     config.dry_run = True
 
-    manager = Manager(MyScene)
-    manager.render()
-    frame = manager.renderer.get_pixels()
-    manager.release()
+    with Manager(MyScene) as manager:
+        manager.render()
+        frame = manager.renderer.get_pixels()
     np.testing.assert_allclose(frame[0, 0], [0, 0, 0, 255])
 
     config.transparent = True
 
-    manager = Manager(MyScene)
-    manager.render()
-    frame = manager.renderer.get_pixels()
-    manager.release()
+    with Manager(MyScene) as manager:
+        manager.render()
+        frame = manager.renderer.get_pixels()
     np.testing.assert_allclose(frame[0, 0], [0, 0, 0, 0])
 
 
@@ -80,10 +78,9 @@ def test_transparent_by_background_opacity(config, dry_run):
     config.background_opacity = 0.5
     assert config.transparent is True
 
-    manager = Manager(MyScene)
-    manager.render()
-    frame = manager.renderer.get_pixels()
-    manager.release()
+    with Manager(MyScene) as manager:
+        manager.render()
+        frame = manager.renderer.get_pixels()
     np.testing.assert_allclose(frame[0, 0], [0, 0, 0, 127])
     assert config.movie_file_extension == ".mov"
     assert config.transparent is True
@@ -95,10 +92,9 @@ def test_background_color(config):
     config.verbosity = "ERROR"
     config.dry_run = True
 
-    manager = Manager(MyScene)
-    manager.render()
-    frame = manager.renderer.get_pixels()
-    manager.release()
+    with Manager(MyScene) as manager:
+        manager.render()
+        frame = manager.renderer.get_pixels()
     np.testing.assert_allclose(frame[0, 0], [255, 255, 255, 255])
 
 
@@ -138,9 +134,8 @@ def test_custom_dirs(tmp_path, config):
     config.tex_dir = "{media_dir}/test_tex"
     config.log_dir = "{media_dir}/test_log"
 
-    manager = Manager(MyScene)
-    manager.render()
-    manager.release()
+    with Manager(MyScene) as manager:
+        manager.render()
     tmp_path = Path(tmp_path)
     assert_dir_filled(tmp_path / "test_sections")
     assert_file_exists(tmp_path / "test_sections/MyScene.json")
@@ -220,9 +215,8 @@ def test_dry_run_with_png_format(config, dry_run):
     config.write_to_movie = False
     config.disable_caching = True
     assert config.dry_run is True
-    manager = Manager(MyScene)
-    manager.render()
-    manager.release()
+    with Manager(MyScene) as manager:
+        manager.render()
 
 
 def test_dry_run_with_png_format_skipped_animations(config, dry_run):
@@ -230,9 +224,8 @@ def test_dry_run_with_png_format_skipped_animations(config, dry_run):
     config.write_to_movie = False
     config.disable_caching = True
     assert config["dry_run"] is True
-    manager = Manager(MyScene)
-    manager.render()
-    manager.release()
+    with Manager(MyScene) as manager:
+        manager.render()
 
 
 def test_tex_template_file(tmp_path):

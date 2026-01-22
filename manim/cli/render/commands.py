@@ -89,10 +89,8 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
     file = Path(config.input_file)
     try:
         for SceneClass in scene_classes_from_file(file):
-            with tempconfig({}):
-                manager = Manager(SceneClass)
+            with tempconfig({}), Manager(SceneClass) as manager:
                 manager.render()
-                manager.release()
     except Exception:
         error_console.print_exception()
         sys.exit(1)

@@ -43,9 +43,9 @@ def set_test_scene(scene_object: type[Scene], module_name: str, config):
         temp_path = Path(tmpdir)
         config["text_dir"] = temp_path / "text"
         config["tex_dir"] = temp_path / "tex"
-        manager = Manager(scene_object)
-        manager.render()
-        data = manager.renderer.get_pixels()
+        with Manager(scene_object) as manager:
+            manager.render()
+            data = manager.renderer.get_pixels()
 
     assert not np.all(
         data == np.array([0, 0, 0, 255]),

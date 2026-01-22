@@ -13,8 +13,8 @@ scene.render()
 ```
 should be changed to:
 ```py
-manager = Manager(SceneClass)
-manager.render()
+with Manager(SceneClass) as manager:
+    manager.render()
 ```
 
 If you are a plugin author that subclasses `Scene` and changed `Scene.render`, you should migrate
