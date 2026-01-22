@@ -82,6 +82,15 @@ class Manager(Generic[Scene_co]):
         # internal state
         self._skipping = False
 
+    def __str__(self) -> str:
+        return f"{self.__class__.__name__}({self.scene!r}) at time {self.time:.2f}s"
+
+    def __enter__(self) -> Manager[Scene_co]:
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        self.release()
+
     # keep these as instance methods so subclasses
     # have access to everything
     def create_renderer(self) -> RendererProtocol:
