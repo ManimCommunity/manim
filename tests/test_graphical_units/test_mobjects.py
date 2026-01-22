@@ -59,7 +59,7 @@ def test_vmobject_joint_types(scene):
         ]
     )
     lines = VGroup(*[angled_line.copy() for _ in range(len(LineJointType))])
-    for line, joint_type in zip(lines, LineJointType):
+    for line, joint_type in zip(lines, LineJointType, strict=False):
         line.joint_type = joint_type
 
     lines.arrange(RIGHT, buff=1)

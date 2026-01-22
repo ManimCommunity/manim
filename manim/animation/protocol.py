@@ -6,7 +6,7 @@ from typing_extensions import TypeVar
 
 if TYPE_CHECKING:
     from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-    from manim.typing import RateFunc
+    from manim.utils.rate_functions import RateFunction
 
     from .scene_buffer import SceneBuffer
 
@@ -58,7 +58,7 @@ class AnimationProtocol(Protocol):
     def update_rate_info(
         self,
         run_time: float | None,
-        rate_func: RateFunc | None,
+        rate_func: RateFunction | None,
         lag_ratio: float | None,
     ) -> object:
         """Update the rate information for the animation.

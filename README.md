@@ -7,11 +7,9 @@
     <a href="https://mybinder.org/v2/gh/ManimCommunity/jupyter_examples/HEAD?filepath=basic_example_scenes.ipynb"><img src="https://mybinder.org/badge_logo.svg"></a>
     <a href="http://choosealicense.com/licenses/mit/"><img src="https://img.shields.io/badge/license-MIT-red.svg?style=flat" alt="MIT License"></a>
     <a href="https://www.reddit.com/r/manim/"><img src="https://img.shields.io/reddit/subreddit-subscribers/manim.svg?color=orange&label=reddit&logo=reddit" alt="Reddit" href=></a>
-    <a href="https://twitter.com/manim_community/"><img src="https://img.shields.io/twitter/url/https/twitter.com/cloudposse.svg?style=social&label=Follow%20%40manim_community" alt="Twitter">
-    <a href="https://www.manim.community/discord/"><img src="https://img.shields.io/discord/581738731934056449.svg?label=discord&color=yellow&logo=discord" alt="Discord"></a>
-    <a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black">
+    <a href="https://twitter.com/manimcommunity/"><img src="https://img.shields.io/twitter/url/https/twitter.com/cloudposse.svg?style=social&label=Follow%20%40manimcommunity" alt="Twitter">
+    <a href="https://manim.community/discord/"><img src="https://img.shields.io/discord/581738731934056449.svg?label=discord&color=yellow&logo=discord" alt="Discord"></a>
     <a href="https://docs.manim.community/"><img src="https://readthedocs.org/projects/manimce/badge/?version=latest" alt="Documentation Status"></a>
-    <a href="https://pepy.tech/project/manim"><img src="https://pepy.tech/badge/manim/month?" alt="Downloads"> </a>
     <img src="https://github.com/ManimCommunity/manim/workflows/CI/badge.svg" alt="CI">
     <br />
     <br />
@@ -22,17 +20,17 @@
 Manim is an animation engine for explanatory math videos. It's used to create precise animations programmatically, as demonstrated in the videos of [3Blue1Brown](https://www.3blue1brown.com/).
 
 > [!NOTE]
-> This repository is maintained by the Manim Community and is not associated with Grant Sanderson or 3Blue1Brown in any way (although we are definitely indebted to him for providing his work to the world). If you would like to study how Grant makes his videos, head over to his repository ([3b1b/manim](https://github.com/3b1b/manim)). This fork is updated more frequently than his, and it's recommended to use this fork if you'd like to use Manim for your own projects.
+> The community edition of Manim (ManimCE) is a version maintained and developed by the community. It was forked from 3b1b/manim, a tool originally created and open-sourced by Grant Sanderson, also creator of the 3Blue1Brown educational math videos. While Grant Sanderson continues to maintain his own repository, we recommend this version for its continued development, improved features, enhanced documentation, and more active community-driven maintenance. If you would like to study how Grant makes his videos, head over to his repository ([3b1b/manim](https://github.com/3b1b/manim)).
 
 ## Table of Contents:
 
--  [Installation](#installation)
--  [Usage](#usage)
--  [Documentation](#documentation)
--  [Docker](#docker)
--  [Help with Manim](#help-with-manim)
--  [Contributing](#contributing)
--  [License](#license)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Documentation](#documentation)
+- [Docker](#docker)
+- [Help with Manim](#help-with-manim)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Installation
 
@@ -91,10 +89,9 @@ The `-ql` flag is for a faster rendering at a lower quality.
 
 Some other useful flags include:
 
--  `-s` to skip to the end and just show the final frame.
--  `-n <number>` to skip ahead to the `n`'th animation of a scene.
--  `-f` show the file in the file browser.
--  `-w` to actually write the result into a video file.
+- `-s` to skip to the end and just show the final frame.
+- `-n <number>` to skip ahead to the `n`'th animation of a scene.
+- `-f` show the file in the file browser.
 
 For a thorough list of command line arguments, visit the [documentation](https://docs.manim.community/en/stable/guides/configuration.html).
 
@@ -122,8 +119,8 @@ The contribution guide may become outdated quickly; we highly recommend joining 
 [Discord server](https://www.manim.community/discord/) to discuss any potential
 contributions and keep up to date with the latest developments.
 
-Most developers on the project use `poetry` for management. You'll want to have poetry installed and available in your environment.
-Learn more about `poetry` at its [documentation](https://python-poetry.org/docs/) and find out how to install manim with poetry at the [manim dev-installation guide](https://docs.manim.community/en/stable/contributing/development.html) in the manim documentation.
+Most developers on the project use `uv` for management. You'll want to have uv installed and available in your environment.
+Learn more about `uv` at its [documentation](https://docs.astral.sh/uv/) and find out how to install manim with uv at the [manim dev-installation guide](https://docs.manim.community/en/latest/contributing/development.html) in the manim documentation.
 
 ## How to Cite Manim
 

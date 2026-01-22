@@ -4,9 +4,7 @@ from __future__ import annotations
 
 __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
-from typing import Any
-
-from typing_extensions import Self
+from typing import Any, Self
 
 from manim import logger
 from manim._config import config
@@ -53,7 +51,7 @@ class SurroundingRectangle(RoundedRectangle):
         self,
         *mobjects: Mobject | OpenGLMobject,
         color: ParsableManimColor = YELLOW,
-        buff: float = SMALL_BUFF,
+        buff: float | tuple[float, float] = SMALL_BUFF,
         corner_radius: float = 0.0,
         **kwargs: Any,
     ) -> None:
@@ -64,11 +62,17 @@ class SurroundingRectangle(RoundedRectangle):
                 "Expected all inputs for parameter mobjects to be of type Mobject or OpenGLMobject"
             )
 
+        if isinstance(buff, tuple):
+            buff_x = buff[0]
+            buff_y = buff[1]
+        else:
+            buff_x = buff_y = buff
+
         group = Group(*mobjects)
         super().__init__(
             color=color,
-            width=group.width + 2 * buff,
-            height=group.height + 2 * buff,
+            width=group.width + 2 * buff_x,
+            height=group.height + 2 * buff_y,
             corner_radius=corner_radius,
             **kwargs,
         )
@@ -108,7 +112,7 @@ class BackgroundRectangle(SurroundingRectangle):
         stroke_width: float = 0,
         stroke_opacity: float = 0,
         fill_opacity: float = 0.75,
-        buff: float = 0,
+        buff: float | tuple[float, float] = 0,
         **kwargs: Any,
     ) -> None:
         if color is None:

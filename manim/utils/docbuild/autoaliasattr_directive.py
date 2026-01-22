@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from docutils import nodes
 from docutils.parsers.rst import Directive
-from docutils.statemachine import ViewList
+from docutils.statemachine import StringList
 
 from manim.utils.docbuild.module_parsing import parse_module_attributes
 
@@ -143,7 +143,7 @@ class AliasAttrDocumenter(Directive):
                     # Using the `.. class::` directive is CRUCIAL, since
                     # function/method parameters are always annotated via
                     # classes - therefore Sphinx expects a class
-                    unparsed = ViewList(
+                    unparsed = StringList(
                         [
                             f".. class:: {alias_name}",
                             "",
@@ -169,7 +169,9 @@ class AliasAttrDocumenter(Directive):
                         # Add all the lines with 4 spaces behind, to consider all the
                         # documentation as a paragraph INSIDE the `.. class::` block
                         doc_lines = alias_doc.split("\n")
-                        unparsed.extend(ViewList([f"    {line}" for line in doc_lines]))
+                        unparsed.extend(
+                            StringList([f"    {line}" for line in doc_lines])
+                        )
 
                     # Parse the reST text into a fresh container
                     # https://www.sphinx-doc.org/en/master/extdev/markupapi.html#parsing-directive-content-as-rest
@@ -191,7 +193,7 @@ class AliasAttrDocumenter(Directive):
                 # Using the `.. class::` directive is CRUCIAL, since
                 # function/method parameters are always annotated via
                 # classes - therefore Sphinx expects a class
-                unparsed = ViewList(
+                unparsed = StringList(
                     [
                         f".. class:: {name}",
                         "",
@@ -218,7 +220,7 @@ class AliasAttrDocumenter(Directive):
             # Let Sphinx Autosummary do its thing as always
             # Add all the attribute names with 4 spaces behind, so that
             # they're considered as INSIDE the `.. autosummary::` block
-            unparsed = ViewList(
+            unparsed = StringList(
                 [
                     ".. autosummary::",
                     *(f"    {attr}" for attr in module_attrs_list),

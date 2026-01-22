@@ -76,13 +76,13 @@ __all__ = [
 
 
 import itertools as it
-from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, Callable
+from collections.abc import Callable, Iterable, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
     from manim.mobject.text.text_mobject import Text
     from manim.scene.scene import Scene
@@ -123,7 +123,7 @@ class ShowPartial(Animation):
     ):
         pointwise = getattr(mobject, "pointwise_become_partial", None)
         if not callable(pointwise):
-            raise NotImplementedError("This animation is not defined for this Mobject.")
+            raise TypeError(f"{self.__class__.__name__} only works for VMobjects.")
         super().__init__(mobject, **kwargs)
 
     def interpolate_submobject(
@@ -177,7 +177,7 @@ class Create(ShowPartial):
     ) -> None:
         super().__init__(mobject, lag_ratio=lag_ratio, introducer=introducer, **kwargs)
 
-    def _get_bounds(self, alpha: float) -> tuple[int, float]:
+    def _get_bounds(self, alpha: float) -> tuple[float, float]:
         return (0, alpha)
 
 
@@ -248,8 +248,6 @@ class DrawBorderThenFill(Animation):
         )
         self.stroke_width = stroke_width
         self.stroke_color = stroke_color
-        self.draw_border_animation_config = draw_border_animation_config
-        self.fill_animation_config = fill_animation_config
         self.outline = self.get_outline()
 
     def _typecheck_input(self, vmobject: OpenGLVMobject) -> None:
@@ -479,7 +477,7 @@ class SpiralIn(Animation):
 
     def interpolate(self, alpha: float) -> None:
         alpha = self.rate_func(alpha)
-        for original_shape, shape in zip(self.shapes, self.mobject):
+        for original_shape, shape in zip(self.shapes, self.mobject, strict=False):
             shape.restore()
             fill_opacity = original_shape.get_fill_opacity()
             stroke_opacity = original_shape.get_stroke_opacity()

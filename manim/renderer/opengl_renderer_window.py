@@ -11,9 +11,12 @@ from manim import __version__, config
 from manim.event_handler.window import WindowProtocol
 
 if TYPE_CHECKING:
-    from typing_extensions import TypeGuard
+    from typing import TypeGuard
 
 T = TypeVar("T")
+
+if TYPE_CHECKING:
+    pass
 
 __all__ = ["Window"]
 
@@ -26,7 +29,7 @@ class Window(PygletWindow, WindowProtocol):
     vsync: bool = True
     cursor: bool = True
 
-    def __init__(self, size=config.window_size) -> None:
+    def __init__(self, window_size: str = config.window_size) -> None:
         # TODO: remove size argument from window init,
         # move size computation below to config
 
@@ -34,10 +37,9 @@ class Window(PygletWindow, WindowProtocol):
         mon_index = config.window_monitor
         monitor = monitors[min(mon_index, len(monitors) - 1)]
 
-        if size == "default":
+        if window_size == "default":
             # make window_width half the width of the monitor
             # but make it full screen if --fullscreen
-
             window_width = monitor.width
             if not config.fullscreen:
                 window_width //= 2
@@ -47,8 +49,13 @@ class Window(PygletWindow, WindowProtocol):
                 window_width * config.frame_height // config.frame_width,
             )
             size = (window_width, window_height)
+        elif len(window_size.split(",")) == 2:
+            (window_width, window_height) = tuple(map(int, window_size.split(",")))
+            size = (window_width, window_height)
         else:
-            size = tuple(size)
+            raise ValueError(
+                "Window_size must be specified as 'width,height' or 'default'.",
+            )
 
         super().__init__(size=size)
         self.pressed_keys = set()
@@ -87,8 +94,9 @@ class Window(PygletWindow, WindowProtocol):
         # Alternatively, it might be specified with a string like
         # UR, OO, DL, etc. specifying what corner it should go to
         char_to_n = {"L": 0, "U": 0, "O": 1, "R": 2, "D": 2}
-        width_diff = monitor.width - window_width
-        height_diff = monitor.height - window_height
+        width_diff: int = monitor.width - window_width
+        height_diff: int = monitor.height - window_height
+
         return (
             monitor.x + char_to_n[custom_position[1]] * width_diff // 2,
             -monitor.y + char_to_n[custom_position[0]] * height_diff // 2,

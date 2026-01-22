@@ -5,24 +5,23 @@ from __future__ import annotations
 import copy
 import inspect
 import json
-import typing
 import zlib
-from collections.abc import Callable, Hashable
+from collections.abc import Callable, Hashable, Iterable, Sequence
 from time import perf_counter
 from types import FunctionType, MappingProxyType, MethodType, ModuleType
-from typing import Any
+from typing import TYPE_CHECKING, Any, TypeVar, overload
 
 import numpy as np
 
-from .. import config, logger
+from manim._config import config, logger
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from manim.animation.protocol import AnimationProtocol
     from manim.camera.camera import Camera
     from manim.mobject.opengl.opengl_mobject import OpenGLMobject
     from manim.scene.scene import Scene
 
-    T = typing.TypeVar("T")
+    T = TypeVar("T")
 
 __all__ = ["KEYS_TO_FILTER_OUT", "get_hash_from_play_call", "get_json"]
 
@@ -56,14 +55,16 @@ class _Memoizer:
     THRESHOLD_WARNING = 170_000
 
     @classmethod
-    def reset_already_processed(cls):
+    def reset_already_processed(cls: type[_Memoizer]) -> None:
         cls._already_processed.clear()
 
     @classmethod
-    def check_already_processed_decorator(cls, is_method: bool = False):
+    def check_already_processed_decorator(
+        cls: type[_Memoizer], is_method: bool = False
+    ) -> Callable:
         """Decorator to handle the arguments that goes through the decorated function.
-        Returns _ALREADY_PROCESSED_PLACEHOLDER if the obj has been processed, or lets
-        the decorated function call go ahead.
+        Returns the value of ALREADY_PROCESSED_PLACEHOLDER if the obj has been processed,
+        or lets the decorated function call go ahead.
 
         Parameters
         ----------
@@ -71,7 +72,7 @@ class _Memoizer:
             Whether the function passed is a method, by default False.
         """
 
-        def layer(func):
+        def layer(func: Callable[[Any], Any]) -> Callable:
             # NOTE : There is probably a better way to separate both case when func is
             # a method or a function.
             if is_method:
@@ -84,9 +85,9 @@ class _Memoizer:
         return layer
 
     @classmethod
-    def check_already_processed(cls, obj: Any) -> Any:
+    def check_already_processed(cls: type[_Memoizer], obj: Any) -> Any:
         """Checks if obj has been already processed. Returns itself if it has not been,
-        or the value of _ALREADY_PROCESSED_PLACEHOLDER if it has.
+        or the value of ALREADY_PROCESSED_PLACEHOLDER if it has.
         Marks the object as processed in the second case.
 
         Parameters
@@ -103,7 +104,7 @@ class _Memoizer:
         return cls._handle_already_processed(obj, lambda x: x)
 
     @classmethod
-    def mark_as_processed(cls, obj: Any) -> str:
+    def mark_as_processed(cls: type[_Memoizer], obj: Any) -> None:
         """Marks an object as processed.
 
         Parameters
@@ -116,10 +117,10 @@ class _Memoizer:
 
     @classmethod
     def _handle_already_processed(
-        cls,
-        obj,
-        default_function: typing.Callable[[Any], Any],
-    ):
+        cls: type[_Memoizer],
+        obj: Any,
+        default_function: Callable[[Any], Any],
+    ) -> str | Any:
         if isinstance(
             obj,
             (
@@ -144,12 +145,12 @@ class _Memoizer:
 
     @classmethod
     def _return(
-        cls,
-        obj: T,
-        obj_to_membership_sign: typing.Callable[[Any], int],
-        default_func: Callable[[T], str],
-        memoizing=True,
-    ) -> str:
+        cls: type[_Memoizer],
+        obj: Any,
+        obj_to_membership_sign: Callable[[Any], int],
+        default_func: Callable[[Any], Any],
+        memoizing: bool = True,
+    ) -> str | Any:
         obj_membership_sign = obj_to_membership_sign(obj)
         if obj_membership_sign in cls._already_processed:
             return cls.ALREADY_PROCESSED_PLACEHOLDER
@@ -174,7 +175,7 @@ class _Memoizer:
 
 
 class _CustomEncoder(json.JSONEncoder):
-    def default(self, o: Any):
+    def default(self, o: Any) -> Any:
         """
         This method is used to serialize objects to JSON format.
 
@@ -235,11 +236,17 @@ class _CustomEncoder(json.JSONEncoder):
         # Serialize it with only the type of the object. You can change this to whatever string when debugging the serialization process.
         return str(type(o))
 
-    def _cleaned_iterable(self, iterable: typing.Iterable[Any]):
+    @overload
+    def _cleaned_iterable(self, iterable: Sequence[Any]) -> list[Any]: ...
+
+    @overload
+    def _cleaned_iterable(self, iterable: dict[Any, Any]) -> dict[Any, Any]: ...
+
+    def _cleaned_iterable(self, iterable):
         """Check for circular reference at each iterable that will go through the JSONEncoder, as well as key of the wrong format.
 
-        If a key with a bad format is found (i.e not a int, string, or float), it gets replaced byt its hash using the same process implemented here.
-        If a circular reference is found within the iterable, it will be replaced by the string "already processed".
+        If a key with a bad format is found (i.e not a int, string, or float), it gets replaced by its hash using the same process implemented here.
+        If a circular reference is found within the iterable, it will be replaced by the value of ALREADY_PROCESSED_PLACEHOLDER.
 
         Parameters
         ----------
@@ -247,10 +254,10 @@ class _CustomEncoder(json.JSONEncoder):
             The iterable to check.
         """
 
-        def _key_to_hash(key):
+        def _key_to_hash(key: Any) -> int:
             return zlib.crc32(json.dumps(key, cls=_CustomEncoder).encode())
 
-        def _iter_check_list(lst):
+        def _iter_check_list(lst: Sequence[Any]) -> list[Any]:
             processed_list = [None] * len(lst)
             for i, el in enumerate(lst):
                 el = _Memoizer.check_already_processed(el)
@@ -263,13 +270,13 @@ class _CustomEncoder(json.JSONEncoder):
                 processed_list[i] = new_value
             return processed_list
 
-        def _iter_check_dict(dct):
+        def _iter_check_dict(dct: dict[Any, Any]) -> dict[Any, Any]:
             processed_dict = {}
             for k, v in dct.items():
                 v = _Memoizer.check_already_processed(v)
                 if k in KEYS_TO_FILTER_OUT:
                     continue
-                # We check if the k is of the right format (supporter by Json)
+                # We check if the k is of the right format (supported by JSON)
                 if not isinstance(k, (str, int, float, bool)) and k is not None:
                     k_new = _key_to_hash(k)
                 else:
@@ -287,8 +294,10 @@ class _CustomEncoder(json.JSONEncoder):
             return _iter_check_list(iterable)
         elif isinstance(iterable, dict):
             return _iter_check_dict(iterable)
+        else:
+            raise TypeError("'iterable' is neither an iterable nor a dictionary.")
 
-    def encode(self, obj: Any):
+    def encode(self, obj: Any) -> str:
         """Overriding of :meth:`JSONEncoder.encode`, to make our own process.
 
         Parameters
@@ -307,7 +316,7 @@ class _CustomEncoder(json.JSONEncoder):
         return super().encode(obj)
 
 
-def get_json(obj: dict):
+def get_json(obj: Any) -> str:
     """Recursively serialize `object` to JSON using the :class:`CustomEncoder` class.
 
     Parameters
@@ -326,8 +335,8 @@ def get_json(obj: dict):
 def get_hash_from_play_call(
     scene_object: Scene,
     camera_object: Camera,
-    animations_list: typing.Iterable[AnimationProtocol],
-    current_mobjects_list: typing.Iterable[OpenGLMobject],
+    animations_list: Iterable[AnimationProtocol],
+    current_mobjects_list: Iterable[OpenGLMobject],
 ) -> str:
     """Take the list of animations and a list of mobjects and output their hashes. This is meant to be used for `scene.play` function.
 

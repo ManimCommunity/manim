@@ -1,14 +1,19 @@
 from __future__ import annotations
 
-from typing import Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
 from .. import config, logger
 from ..utils.hashing import get_hash_from_play_call
 
 __all__ = ["handle_caching_play"]
 
+if TYPE_CHECKING:
+    from manim.renderer.opengl_renderer import OpenGLRenderer
+    from manim.scene.scene import Scene
 
-def handle_caching_play(func: Callable[..., None]):
+
+def handle_caching_play(func: Callable[..., None]) -> Callable[..., None]:
     """Decorator that returns a wrapped version of func that will compute
     the hash of the play invocation.
 
@@ -28,7 +33,7 @@ def handle_caching_play(func: Callable[..., None]):
     # the play logic of the latter has to be refactored in the same way the cairo renderer has been, and thus this
     # method has to be deleted.
 
-    def wrapper(self, scene, *args, **kwargs):
+    def wrapper(self: OpenGLRenderer, scene: Scene, *args: Any, **kwargs: Any) -> None:
         animations = scene.compile_animations(*args, **kwargs)
         scene.add_mobjects_from_animations(animations)
         if self.skip_animations:
@@ -42,7 +47,7 @@ def handle_caching_play(func: Callable[..., None]):
         if not config["disable_caching"]:
             mobjects_on_scene = scene.mobjects
             hash_play = get_hash_from_play_call(
-                self,
+                scene,
                 self.camera,
                 animations,
                 mobjects_on_scene,

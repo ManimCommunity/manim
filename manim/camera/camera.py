@@ -15,7 +15,7 @@ from manim.utils.paths import straight_path
 from manim.utils.space_ops import rotation_matrix
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
     from manim.typing import ManimFloat, MatrixMN, Point3D, Vector3D
 
@@ -35,7 +35,7 @@ class Camera(OpenGLMobject, InvisibleMobject):
         frame_shape: tuple[float, float] = (config.frame_width, config.frame_height),
         center_point: Point3D = ORIGIN,  # TODO: use Point3DLike
         focal_distance: float = 16.0,
-        **kwargs,
+        **kwargs: Any,
     ):
         self.initial_frame_shape = frame_shape
         self.center_point = center_point

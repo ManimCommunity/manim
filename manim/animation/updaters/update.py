@@ -6,11 +6,12 @@ __all__ = ["UpdateFromFunc", "UpdateFromAlphaFunc", "MaintainPositionRelativeTo"
 
 
 import operator as op
-import typing
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
 from manim.animation.animation import Animation
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 
@@ -24,9 +25,9 @@ class UpdateFromFunc(Animation):
     def __init__(
         self,
         mobject: OpenGLMobject,
-        update_function: typing.Callable[[OpenGLMobject], object],
+        update_function: Callable[[OpenGLMobject], object],
         suspend_mobject_updating: bool = False,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(
             mobject, suspend_mobject_updating=suspend_mobject_updating, **kwargs
@@ -34,17 +35,17 @@ class UpdateFromFunc(Animation):
         self.update_function = update_function
 
     def interpolate(self, alpha: float) -> None:
-        self.update_function(self.mobject)
+        self.update_function(self.mobject)  # type: ignore[arg-type]
 
 
 class UpdateFromAlphaFunc(UpdateFromFunc):
     def interpolate(self, alpha: float) -> None:
-        self.update_function(self.mobject, self.rate_func(alpha))
+        self.update_function(self.mobject, self.rate_func(alpha))  # type: ignore[call-arg, arg-type]
 
 
 class MaintainPositionRelativeTo(Animation):
     def __init__(
-        self, mobject: OpenGLMobject, tracked_mobject: OpenGLMobject, **kwargs
+        self, mobject: OpenGLMobject, tracked_mobject: OpenGLMobject, **kwargs: Any
     ) -> None:
         self.tracked_mobject = tracked_mobject
         self.diff = op.sub(

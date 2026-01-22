@@ -13,7 +13,8 @@ In particular, this class is what allows ``manim`` to act as ``manim render``.
 from __future__ import annotations
 
 import warnings
-from typing import TYPE_CHECKING, Any, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
 import cloup
 

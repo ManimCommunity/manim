@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable
+from collections.abc import Callable
 
 from manim.file_writer.protocols import FileWriterProtocol
 from manim.scene.scene import Scene
@@ -46,16 +46,16 @@ class DummySceneFileWriter(FileWriterProtocol):
     def add_partial_movie_file(self, hash_animation: str) -> None:
         pass
 
-    def write_frame(self, frame):
+    def write_frame(self, frame: PixelArray) -> None:
         self.frames += 1
 
-    def finish(self):
+    def finish(self) -> None:
         pass
 
 
 def _make_scene_file_writer_class(tester: _FramesTester) -> type[FileWriterProtocol]:
     class TestSceneFileWriter(DummySceneFileWriter):
-        def write_frame(self, frame):
+        def write_frame(self, frame: PixelArray) -> None:
             tester.check_frame(self.frames, frame)
             super().write_frame(frame)
 
