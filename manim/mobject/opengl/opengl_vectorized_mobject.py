@@ -41,9 +41,11 @@ from manim.utils.space_ops import (
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Sequence
+    from typing import Self
 
     import numpy.typing as npt
-    from typing_extensions import Self
+
+    from manim.typing import Point3D, Point3DLike, Point3DLike_Array
 
 __all__ = [
     "OpenGLVMobject",
@@ -269,7 +271,7 @@ class OpenGLVMobject(OpenGLMobject):
                 return self
             elif len(submobs2) == 0:
                 submobs2 = [vmobject]
-            for sm1, sm2 in zip(*make_even(submobs1, submobs2)):
+            for sm1, sm2 in zip(*make_even(submobs1, submobs2), strict=False):
                 sm1.match_style(sm2)
         return self
 
@@ -387,7 +389,13 @@ class OpenGLVMobject(OpenGLMobject):
         self.append_points([point])
         return self
 
-    def add_cubic_bezier_curve(self, anchor1, handle1, handle2, anchor2):
+    def add_cubic_bezier_curve(
+        self,
+        anchor1: Point3DLike,
+        handle1: Point3DLike,
+        handle2: Point3DLike,
+        anchor2: Point3DLike,
+    ):
         new_points = get_quadratic_approximation_of_cubic(
             anchor1,
             handle1,
@@ -490,7 +498,7 @@ class OpenGLVMobject(OpenGLMobject):
                     new_points.extend(
                         [
                             partial_bezier_points(tup, a1, a2)
-                            for a1, a2 in zip(alphas, alphas[1:])
+                            for a1, a2 in zip(alphas, alphas[1:], strict=False)
                         ],
                     )
                 else:
@@ -503,7 +511,7 @@ class OpenGLVMobject(OpenGLMobject):
             self.add_line_to(point)
         return self
 
-    def set_points_as_corners(self, points: Iterable[float]) -> Self:
+    def set_points_as_corners(self, points: Point3DLike_Array) -> OpenGLVMobject:
         """Given an array of points, set them as corner of the vmobject.
 
         To achieve that, this algorithm sets handles aligned with the anchors such that the resultant bezier curve will be the segment
@@ -526,7 +534,9 @@ class OpenGLVMobject(OpenGLMobject):
         )
         return self
 
-    def set_points_smoothly(self, points, true_smooth=False) -> Self:
+    def set_points_smoothly(
+        self, points: Point3DLike_Array, true_smooth: bool = False
+    ) -> Self:
         self.set_points_as_corners(points)
         if true_smooth:
             self.make_smooth()
@@ -678,7 +688,7 @@ class OpenGLVMobject(OpenGLMobject):
         split_indices = [0, *split_indices, len(points)]
         return [
             points[i1:i2]
-            for i1, i2 in zip(split_indices, split_indices[1:])
+            for i1, i2 in zip(split_indices, split_indices[1:], strict=False)
             if (i2 - i1) >= nppc
         ]
 
@@ -862,7 +872,7 @@ class OpenGLVMobject(OpenGLMobject):
         for n in range(num_curves):
             yield self.get_nth_curve_function_with_length(n, **kwargs)
 
-    def point_from_proportion(self, alpha: float) -> np.ndarray:
+    def point_from_proportion(self, alpha: float) -> Point3D:
         """Gets the point at a proportion along the path of the :class:`OpenGLVMobject`.
 
         Parameters
@@ -872,7 +882,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Returns
         -------
-        :class:`numpy.ndarray`
+        :class:`Point3D`
             The point on the :class:`OpenGLVMobject`.
 
         Raises
@@ -909,7 +919,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def proportion_from_point(
         self,
-        point: Iterable[float | int],
+        point: Point3DLike,
     ) -> float:
         """Returns the proportion along the path of the :class:`OpenGLVMobject`
         a particular given point is at.
@@ -1006,16 +1016,10 @@ class OpenGLVMobject(OpenGLMobject):
         points = self.points
         if len(points) == 1:
             return points
-        return np.array(
-            list(
-                it.chain(
-                    *zip(
-                        self.get_start_anchors(),
-                        self.get_end_anchors(),
-                    )
-                )
-            )
-        )
+
+        s = self.get_start_anchors()
+        e = self.get_end_anchors()
+        return list(it.chain.from_iterable(zip(s, e, strict=False)))
 
     def get_points_without_null_curves(self, atol=1e-9):
         nppc = self.n_points_per_curve
@@ -1425,7 +1429,7 @@ class OpenGLVGroup(OpenGLVMobject):
                 self.add(circles_group)
     """
 
-    def __init__(self, *vmobjects, **kwargs):
+    def __init__(self, *vmobjects: OpenGLVMobject, **kwargs: Any):
         super().__init__(**kwargs)
         self.add(*vmobjects)
 

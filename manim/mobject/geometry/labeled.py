@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["Label", "LabeledLine", "LabeledArrow", "LabeledPolygram"]
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -22,9 +22,7 @@ from manim.utils.color import WHITE
 from manim.utils.polylabel import polylabel
 
 if TYPE_CHECKING:
-    from typing import Any
-
-    from manim.typing import Point3D_Array
+    from manim.typing import Point3DLike_Array
 
 
 class Label(VGroup):
@@ -344,7 +342,7 @@ class LabeledPolygram(Polygram):
 
     def __init__(
         self,
-        *vertex_groups: Point3D_Array,
+        *vertex_groups: Point3DLike_Array,
         label: str | Tex | MathTex | Text,
         precision: float = 0.01,
         label_config: dict[str, Any] | None = None,

@@ -11,7 +11,7 @@ from typing import Any
 from manim import config, logger, tempconfig
 from manim.__main__ import main
 from manim.manager import Manager
-from manim.renderer.shader import shader_program_cache
+from manim.mobject.opengl.shader import shader_program_cache
 
 __all__ = ["ManimMagic"]
 
@@ -35,15 +35,15 @@ else:
     class ManimMagic(Magics):
         def __init__(self, shell: InteractiveShell) -> None:
             super().__init__(shell)
-            self.rendered_files = {}
+            self.rendered_files: dict[Path, Path] = {}
 
         @needs_local_scope
         @line_cell_magic
         def manim(
             self,
             line: str,
-            cell: str = None,
-            local_ns: dict[str, Any] = None,
+            cell: str | None = None,
+            local_ns: dict[str, Any] | None = None,
         ) -> None:
             r"""Render Manim scenes contained in IPython cells.
             Works as a line or cell magic.
@@ -128,6 +128,7 @@ else:
 
             modified_args = self.add_additional_args(args)
             args = main(modified_args, standalone_mode=False, prog_name="manim")
+            assert isinstance(local_ns, dict)
             with tempconfig(local_ns.get("config", {})):
                 config.digest_args(args)
                 manager: Manager | None = None
@@ -163,6 +164,7 @@ else:
                 shutil.copy(local_path, tmpfile)
 
                 file_type = mimetypes.guess_type(config["output_file"])[0]
+                assert isinstance(file_type, str)
                 embed = config["media_embed"]
                 if not embed:
                     # videos need to be embedded when running in google colab.
@@ -194,4 +196,7 @@ else:
 
 
 def _generate_file_name() -> str:
-    return config["scene_names"][0] + "@" + datetime.now().strftime("%Y-%m-%d@%H-%M-%S")
+    val: str = (
+        config["scene_names"][0] + "@" + datetime.now().strftime("%Y-%m-%d@%H-%M-%S")
+    )
+    return val

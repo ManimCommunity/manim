@@ -65,8 +65,7 @@ __all__ = [
 
 
 import itertools as it
-from collections.abc import Iterable, Sequence
-from typing import Callable
+from collections.abc import Callable, Iterable, Sequence
 
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Polygon
@@ -253,7 +252,7 @@ class Table(VGroup):
         self,
         table: Iterable[Iterable[float | str | VMobject]],
     ) -> list:
-        """Initilaizes the entries of ``table`` as :class:`~.VMobject`.
+        """Initializes the entries of ``table`` as :class:`~.VMobject`.
 
         Parameters
         ----------
@@ -526,7 +525,7 @@ class Table(VGroup):
                     self.add(table)
         """
         columns = self.get_columns()
-        for color, column in zip(colors, columns):
+        for color, column in zip(colors, columns, strict=False):
             column.set_color(color)
         return self
 
@@ -555,7 +554,7 @@ class Table(VGroup):
                     self.add(table)
         """
         rows = self.get_rows()
-        for color, row in zip(colors, rows):
+        for color, row in zip(colors, rows, strict=False):
             row.set_color(color)
         return self
 

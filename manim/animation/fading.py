@@ -19,7 +19,7 @@ __all__ = [
     "FadeIn",
 ]
 
-from typing import TYPE_CHECKING
+from typing import Any
 
 import numpy as np
 
@@ -28,9 +28,6 @@ from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from ..animation.transform import Transform
 from ..constants import ORIGIN
 from ..mobject.mobject import Group
-
-if TYPE_CHECKING:
-    pass
 
 
 class _Fade(Transform):
@@ -57,7 +54,7 @@ class _Fade(Transform):
         shift: np.ndarray | None = None,
         target_position: np.ndarray | OpenGLMobject | None = None,
         scale: float = 1,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         if not mobjects:
             raise ValueError("At least one mobject must be passed.")
@@ -89,7 +86,7 @@ class _Fade(Transform):
         OpenGLMobject
             The faded, shifted and scaled copy of the mobject.
         """
-        faded_mobject = self.mobject.copy()
+        faded_mobject: Mobject = self.mobject.copy()  # type: ignore[assignment]
         faded_mobject.fade(1)
         direction_modifier = -1 if fade_in and not self.point_target else 1
         faded_mobject.shift(self.shift_vector * direction_modifier)
@@ -135,13 +132,13 @@ class FadeIn(_Fade):
 
     """
 
-    def __init__(self, *mobjects: OpenGLMobject, **kwargs) -> None:
+    def __init__(self, *mobjects: OpenGLMobject, **kwargs: Any) -> None:
         super().__init__(*mobjects, introducer=True, **kwargs)
 
-    def create_target(self):
+    def create_target(self) -> OpenGLMobject:
         return self.mobject
 
-    def create_starting_mobject(self):
+    def create_starting_mobject(self) -> OpenGLMobject:
         return self._create_faded_mobject(fade_in=True)
 
 
@@ -183,10 +180,10 @@ class FadeOut(_Fade):
 
     """
 
-    def __init__(self, *mobjects: OpenGLMobject, **kwargs) -> None:
+    def __init__(self, *mobjects: OpenGLMobject, **kwargs: Any) -> None:
         super().__init__(*mobjects, remover=True, **kwargs)
 
-    def create_target(self):
+    def create_target(self) -> OpenGLMobject:
         return self._create_faded_mobject(fade_in=False)
 
     def begin(self) -> None:

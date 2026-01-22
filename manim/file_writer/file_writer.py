@@ -36,7 +36,10 @@ from manim.utils.file_ops import (
 from manim.utils.sounds import get_full_sound_file_path
 
 if TYPE_CHECKING:
-    from manim.typing import PixelArray, StrOrBytesPath
+    from av.container.output import OutputContainer
+    from av.stream import Stream
+
+    from manim.typing import PixelArray, StrOrBytesPath, StrPath
 
 
 def to_av_frame_rate(fps: float) -> Fraction:
@@ -76,8 +79,7 @@ def convert_audio(
 
 
 class FileWriter(FileWriterProtocol):
-    """
-    FileWriter is the object that actually writes the animations
+    """FileWriter is the object that actually writes the animations
     played, into video files, using FFMPEG.
     This is mostly for Manim's internal use. You will rarely, if ever,
     have to use the methods for this class, unless tinkering with the very
@@ -272,9 +274,11 @@ class FileWriter(FileWriterProtocol):
                 |--Tex
                 |--texts
                 |--videos
-                |--<name_of_file_containing_scene>
-                    |--<height_in_pixels_of_video>p<frame_rate>
-                        |--<scene_name>.mp4
+                    |--<name_of_file_containing_scene>
+                        |--<height_in_pixels_of_video>p<frame_rate>
+                            |--partial_movie_files
+                            |--<scene_name>.mp4
+                            |--<scene_name>.srt
 
         Returns
         -------
@@ -300,9 +304,8 @@ class FileWriter(FileWriterProtocol):
         time: float | None = None,
         gain_to_background: float | None = None,
     ) -> None:
-        """
-        This method adds an audio segment from an
-        AudioSegment type object and suitable parameters.
+        """This method adds an audio segment from an AudioSegment type object
+        and suitable parameters.
 
         Parameters
         ----------
@@ -310,8 +313,7 @@ class FileWriter(FileWriterProtocol):
             The audio segment to add
 
         time
-            the timestamp at which the
-            sound should be added.
+            the timestamp at which the sound should be added.
 
         gain_to_background
             The gain of the segment from the background.
@@ -341,13 +343,12 @@ class FileWriter(FileWriterProtocol):
 
     def add_sound(
         self,
-        sound_file: str,
+        sound_file: StrPath,
         time: float | None = None,
         gain: float | None = None,
         **kwargs: Any,
     ) -> None:
-        """
-        This method adds an audio segment from a sound file.
+        """This method adds an audio segment from a sound file.
 
         Parameters
         ----------
@@ -385,10 +386,9 @@ class FileWriter(FileWriterProtocol):
 
     # Writers
     def begin_animation(
-        self, allow_write: bool = False, file_path: str | None = None
+        self, allow_write: bool = False, file_path: StrPath | None = None
     ) -> None:
-        """
-        Used internally by manim to stream the animation to FFMPEG for
+        """Used internally by manim to stream the animation to FFMPEG for
         displaying or writing to a file.
 
         Parameters
@@ -400,9 +400,7 @@ class FileWriter(FileWriterProtocol):
             self.open_partial_movie_stream(file_path=file_path)
 
     def end_animation(self, allow_write: bool = False) -> None:
-        """
-        Internally used by Manim to stop streaming to
-        FFMPEG gracefully.
+        """Internally used by Manim to stop streaming to FFMPEG gracefully.
 
         Parameters
         ----------
@@ -423,9 +421,8 @@ class FileWriter(FileWriterProtocol):
             self.encode_and_write_frame(frame_data, num_frames)
 
     def encode_and_write_frame(self, frame: PixelArray, num_frames: int) -> None:
-        """
-        For internal use only: takes a given frame in ``np.ndarray`` format and
-        write it to the stream
+        """For internal use only: takes a given frame in ``np.ndarray`` format and
+        writes it to the stream
         """
         for _ in range(num_frames):
             # Notes: precomputing reusing packets does not work!
@@ -439,9 +436,7 @@ class FileWriter(FileWriterProtocol):
                 self.video_container.mux(packet)
 
     def write_frame(self, frame: PixelArray, num_frames: int = 1) -> None:
-        """
-        Used internally by Manim to write a frame to
-        the FFMPEG input buffer.
+        """Used internally by Manim to write a frame to the FFMPEG input buffer.
 
         Parameters
         ----------
@@ -466,7 +461,7 @@ class FileWriter(FileWriterProtocol):
             )
 
     def output_image(
-        self, image: Image.Image, target_dir: str | Path, ext: str, zero_pad: int
+        self, image: Image.Image, target_dir: StrPath, ext: str, zero_pad: int
     ) -> None:
         if zero_pad:
             image.save(f"{target_dir}{str(self.frame_count).zfill(zero_pad)}{ext}")
@@ -475,8 +470,7 @@ class FileWriter(FileWriterProtocol):
         self.frame_count += 1
 
     def save_image(self, image: PixelArray) -> None:
-        """
-        Saves an image in the default image directory.
+        """Saves an image in the default image directory.
 
         Parameters
         ----------
@@ -491,13 +485,9 @@ class FileWriter(FileWriterProtocol):
         self.print_file_ready_message(self.image_file_path)
 
     def finish(self) -> None:
-        """
-        Finishes writing to the FFMPEG buffer or writing images
-        to output directory.
-        Combines the partial movie files into the
-        whole scene.
-        If save_last_frame is True, saves the last
-        frame in the default image directory.
+        """Finishes writing to the FFMPEG buffer or writing images to output directory.
+        Combines the partial movie files into the whole scene.
+        If save_last_frame is True, saves the last frame in the default image directory.
         """
         if write_to_movie():
             self.combine_to_movie()
@@ -513,7 +503,7 @@ class FileWriter(FileWriterProtocol):
         if self.subcaptions:
             self.write_subcaption_file()
 
-    def open_partial_movie_stream(self, file_path: str | None = None) -> None:
+    def open_partial_movie_stream(self, file_path: StrPath | None = None) -> None:
         """Open a container holding a video stream.
 
         This is used internally by Manim initialize the container holding
@@ -542,22 +532,22 @@ class FileWriter(FileWriterProtocol):
             partial_movie_file_codec = "qtrle"
             partial_movie_file_pix_fmt = "argb"
 
-        with av.open(file_path, mode="w") as video_container:
-            stream = video_container.add_stream(
-                partial_movie_file_codec,
-                rate=fps,
-                options=av_options,
-            )
-            stream.pix_fmt = partial_movie_file_pix_fmt
-            stream.width = config.pixel_width
-            stream.height = config.pixel_height
+        video_container = av.open(file_path, mode="w")
+        stream = video_container.add_stream(
+            partial_movie_file_codec,
+            rate=fps,
+            options=av_options,
+        )
+        stream.pix_fmt = partial_movie_file_pix_fmt
+        stream.width = config.pixel_width
+        stream.height = config.pixel_height
 
-            self.video_container = video_container
-            self.video_stream = stream
+        self.video_container: OutputContainer = video_container
+        self.video_stream: Stream = stream
 
-            self.queue: Queue[tuple[int, PixelArray | None]] = Queue()
-            self.writer_thread = Thread(target=self.listen_and_write, args=())
-            self.writer_thread.start()
+        self.queue: Queue[tuple[int, PixelArray | None]] = Queue()
+        self.writer_thread = Thread(target=self.listen_and_write, args=())
+        self.writer_thread.start()
 
     def close_partial_movie_stream(self) -> None:
         """Close the currently opened video container.
@@ -633,19 +623,15 @@ class FileWriter(FileWriterProtocol):
         output_container.metadata["comment"] = (
             f"Rendered with Manim Community v{__version__}"
         )
-        output_stream = output_container.add_stream(
-            codec_name="gif" if create_gif else None,
-            template=partial_movies_stream if not create_gif else None,
-        )
-        if config.transparent and config.movie_file_extension == ".webm":
-            output_stream.pix_fmt = "yuva420p"
         if create_gif:
-            """
-            The following solution was largely inspired from this comment
+            """The following solution was largely inspired from this comment
             https://github.com/imageio/imageio/issues/995#issuecomment-1580533018,
             and the following code
             https://github.com/imageio/imageio/blob/65d79140018bb7c64c0692ea72cb4093e8d632a0/imageio/plugins/pyav.py#L927-L996.
             """
+            output_stream = output_container.add_stream(
+                codec_name="gif",
+            )
             output_stream.pix_fmt = "rgb8"
             if config.transparent:
                 output_stream.pix_fmt = "pal8"
@@ -690,6 +676,11 @@ class FileWriter(FileWriterProtocol):
                 output_container.mux(packet)
 
         else:
+            output_stream = output_container.add_stream_from_template(
+                template=partial_movies_stream,
+            )
+            if config.transparent and config.movie_file_extension == ".webm":
+                output_stream.pix_fmt = "yuva420p"
             for packet in partial_movies_input.demux(partial_movies_stream):
                 # We need to skip the "flushing" packets that `demux` generates.
                 if packet.dts is None:
@@ -777,8 +768,12 @@ class FileWriter(FileWriterProtocol):
                 output_container = av.open(
                     str(temp_file_path), mode="w", options=av_options
                 )
-                output_video_stream = output_container.add_stream(template=video_stream)
-                output_audio_stream = output_container.add_stream(template=audio_stream)
+                output_video_stream = output_container.add_stream_from_template(
+                    template=video_stream
+                )
+                output_audio_stream = output_container.add_stream_from_template(
+                    template=audio_stream
+                )
 
                 for packet in video_input.demux(video_stream):
                     # We need to skip the "flushing" packets that `demux` generates.
@@ -869,7 +864,7 @@ class FileWriter(FileWriterProtocol):
         subcaption_file.write_text(srt.compose(self.subcaptions), encoding="utf-8")
         logger.info(f"Subcaption file has been written as {subcaption_file}")
 
-    def print_file_ready_message(self, file_path: str | Path) -> None:
+    def print_file_ready_message(self, file_path: StrPath) -> None:
         """Prints the "File Ready" message to STDOUT."""
         config.output_file = str(file_path)
         logger.info(f"\nFile ready at {str(file_path)!r}\n")

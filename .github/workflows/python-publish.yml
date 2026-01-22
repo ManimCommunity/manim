@@ -6,31 +6,34 @@ on:
 
 jobs:
   release:
+    name: "Publish release"
     runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
+    environment: release
+    permissions:
+      id-token: write
 
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v5
-      with:
-        python-version: 3.11
+    steps:
+    - uses: actions/checkout@v6
 
     - name: Install dependencies
-      run: python -m pip install --upgrade poetry
+      run: apt-get update && apt-get install -y build-essential python3-dev libcairo2-dev libpango1.0-dev
 
-    # TODO: Set PYPI_API_TOKEN to api token from pip in secrets
-    - name: Configure pypi credentials
-      env:
-        PYPI_API_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-      run: poetry config http-basic.pypi __token__ "$PYPI_API_TOKEN"
+    - name: Set up Python 3.13
+      uses: actions/setup-python@v6
+      with:
+        python-version: 3.13
 
-    - name: Publish release to pypi
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
+
+    - name: Build and push release to PyPI
       run: |
-        poetry publish --build
-        poetry build
+        uv sync
+        uv build
+        uv publish
 
     - name: Store artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
           path: dist/*.tar.gz
           name: manim.tar.gz

@@ -3,11 +3,17 @@ from __future__ import annotations
 import copy
 import logging
 import re
+from collections.abc import Mapping, Sequence
 from functools import lru_cache
 from pathlib import Path
+from typing import TYPE_CHECKING, Self, TypeAlias
 
 import moderngl
 import numpy as np
+import numpy.typing as npt
+
+if TYPE_CHECKING:
+    from manim.typing import FloatRGBLike_Array
 
 from manim.utils.iterables import resize_array
 
@@ -40,25 +46,31 @@ def find_file(file_name: Path, directories: list[Path]) -> Path:
     raise OSError(f"{file_name} not Found")
 
 
+_ShaderDType: TypeAlias = np.void
+_ShaderData: TypeAlias = npt.NDArray[_ShaderDType]
+
+
 class ShaderWrapper:
     def __init__(
         self,
-        vert_data=None,
-        vert_indices=None,
-        shader_folder=None,
-        uniforms=None,  # A dictionary mapping names of uniform variables
-        texture_paths=None,  # A dictionary mapping names to filepaths for textures.
-        depth_test=False,
-        render_primitive=moderngl.TRIANGLE_STRIP,
+        vert_data: _ShaderData = None,
+        vert_indices: Sequence[int] | None = None,
+        shader_folder: Path | str | None = None,
+        # A dictionary mapping names of uniform variables
+        uniforms: dict[str, float | tuple[float, ...]] | None = None,
+        # A dictionary mapping names to filepaths for textures.
+        texture_paths: Mapping[str, Path | str] | None = None,
+        depth_test: bool = False,
+        render_primitive: int | str = moderngl.TRIANGLE_STRIP,
     ):
-        self.vert_data = vert_data
-        self.vert_indices = vert_indices
-        self.vert_attributes = vert_data.dtype.names
-        self.shader_folder = Path(shader_folder or "")
-        self.uniforms = uniforms or {}
-        self.texture_paths = texture_paths or {}
-        self.depth_test = depth_test
-        self.render_primitive = str(render_primitive)
+        self.vert_data: _ShaderData = vert_data
+        self.vert_indices: Sequence[int] | None = vert_indices
+        self.vert_attributes: tuple[str, ...] | None = vert_data.dtype.names
+        self.shader_folder: Path = Path(shader_folder or "")
+        self.uniforms: dict[str, float | tuple[float, ...]] = uniforms or {}
+        self.texture_paths: Mapping[str, str | Path] = texture_paths or {}
+        self.depth_test: bool = depth_test
+        self.render_primitive: str = str(render_primitive)
         self.init_program_code()
         self.refresh_id()
 
@@ -96,7 +108,7 @@ class ShaderWrapper:
             result.texture_paths = dict(self.texture_paths)
         return result
 
-    def is_valid(self):
+    def is_valid(self) -> bool:
         return all(
             [
                 self.vert_data is not None,
@@ -105,10 +117,10 @@ class ShaderWrapper:
             ],
         )
 
-    def get_id(self):
+    def get_id(self) -> str:
         return self.id
 
-    def get_program_id(self):
+    def get_program_id(self) -> int:
         return self.program_id
 
     def create_id(self):
@@ -126,9 +138,9 @@ class ShaderWrapper:
             ),
         )
 
-    def refresh_id(self):
-        self.program_id = self.create_program_id()
-        self.id = self.create_id()
+    def refresh_id(self) -> None:
+        self.program_id: int = self.create_program_id()
+        self.id: str = self.create_id()
 
     def create_program_id(self):
         return hash(
@@ -149,7 +161,7 @@ class ShaderWrapper:
                 )
             return code
 
-        self.program_code = {
+        self.program_code: dict[str, str | None] = {
             "vertex_shader": get_code("vert"),
             "geometry_shader": get_code("geom"),
             "fragment_shader": get_code("frag"),
@@ -158,19 +170,18 @@ class ShaderWrapper:
     def get_program_code(self):
         return self.program_code
 
-    def replace_code(self, old, new):
+    def replace_code(self, old: str, new: str) -> None:
         code_map = self.program_code
-        for name, _code in code_map.items():
-            if code_map[name] is None:
-                continue
-            code_map[name] = re.sub(old, new, code_map[name])
+        for name, code in code_map.items():
+            if code:
+                code_map[name] = re.sub(old, new, code)
         self.refresh_id()
 
-    def combine_with(self, *shader_wrappers: ShaderWrapper) -> ShaderWrapper:
+    def combine_with(self, *shader_wrappers: ShaderWrapper) -> Self:
         self.read_in(self.copy(), *shader_wrappers)
         return self
 
-    def read_in(self, *shader_wrappers: ShaderWrapper) -> ShaderWrapper:
+    def read_in(self, *shader_wrappers: ShaderWrapper) -> Self:
         # Assume all are of the same type
         total_len = sum(len(sw.vert_data) for sw in shader_wrappers)
         self.vert_data = resize_array(self.vert_data, total_len)
@@ -238,6 +249,6 @@ def get_shader_code_from_file(filename: Path) -> str | None:
     return result
 
 
-def get_colormap_code(rgb_list):
+def get_colormap_code(rgb_list: FloatRGBLike_Array) -> str:
     data = ",".join("vec3({}, {}, {})".format(*rgb) for rgb in rgb_list)
     return f"vec3[{len(rgb_list)}]({data})"

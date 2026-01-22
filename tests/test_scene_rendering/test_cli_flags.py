@@ -219,14 +219,16 @@ def test_a_flag(tmp_path, manim_cfg_file, infallible_scenes_path, write_to_movie
     two_is_not_empty = (
         tmp_path / "images" / "infallible_scenes" / f"Wait2_ManimCE_v{__version__}.png"
     ).is_file()
-    assert two_is_not_empty, "running manim with -a flag did not render an image, possible leak of the config dictionary."
+    assert two_is_not_empty, (
+        "running manim with -a flag did not render an image, possible leak of the config dictionary."
+    )
 
     three_is_not_empty = (
         tmp_path / "videos" / "infallible_scenes" / "480p15" / "Wait3.mp4"
     ).is_file()
-    assert (
-        three_is_not_empty
-    ), "running manim with -a flag did not render the second scene"
+    assert three_is_not_empty, (
+        "running manim with -a flag did not render the second scene"
+    )
 
 
 @pytest.mark.slow
@@ -739,3 +741,33 @@ input_file = {simple_scenes_path}
     ]
     out, err, exit_code = capture(command, cwd=tmp_path)
     assert exit_code == 0, err
+
+
+@pytest.mark.slow
+def test_dry_run_via_config_file_no_output(tmp_path, simple_scenes_path):
+    """Test that no file is created when dry_run is set to true in a config file."""
+    scene_name = "SquareToCircle"
+    config_file = tmp_path / "test_config.cfg"
+    config_file.write_text(
+        """
+[CLI]
+dry_run = true
+"""
+    )
+
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "--config_file",
+        str(config_file),
+        "--media_dir",
+        str(tmp_path),
+        str(simple_scenes_path),
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    assert not (tmp_path / "videos").exists(), "videos folder was created in dry_run"
+    assert not (tmp_path / "images").exists(), "images folder was created in dry_run"
