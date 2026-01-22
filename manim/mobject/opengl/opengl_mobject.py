@@ -37,6 +37,7 @@ from typing_extensions import (
 
 from manim import config
 from manim.constants import *
+from manim.data_structures import MethodWithArgs
 from manim.event_handler import EVENT_DISPATCHER
 from manim.event_handler.event_listener import EventListener
 from manim.event_handler.event_type import EventType
