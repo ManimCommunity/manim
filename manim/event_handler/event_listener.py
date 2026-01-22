@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import contextlib
-from typing import TYPE_CHECKING, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing_extensions import Any
+    from typing import Any
 
     from manim.event_handler.event_type import EventType
     from manim.mobject.opengl.opengl_mobject import OpenGLMobject
