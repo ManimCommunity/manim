@@ -12,7 +12,8 @@ __all__ = [
 
 
 import inspect
-from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 import numpy as np
 
@@ -20,8 +21,9 @@ from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 if TYPE_CHECKING:
     import types
+    from typing import Concatenate
 
-    from typing_extensions import Concatenate, ParamSpec, TypeIs
+    from typing_extensions import ParamSpec, TypeIs
 
     from manim.animation.protocol import MobjectAnimation
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import functools
 import inspect
+from collections.abc import Callable
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -20,8 +21,9 @@ from ._test_class_makers import (
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from typing import Concatenate
 
-    from typing_extensions import Concatenate, ParamSpec
+    from typing_extensions import ParamSpec
 
     P = ParamSpec("P")
 
@@ -60,7 +62,7 @@ def frames_comparison(
         If the scene has a moving animation, then the test must set last_frame to False.
     """
 
-    def decorator_maker(tested_scene_construct):
+    def decorator_maker(tested_scene_construct: Callable) -> Callable:
         if (
             SCENE_PARAMETER_NAME
             not in inspect.getfullargspec(tested_scene_construct).args
@@ -89,7 +91,7 @@ def frames_comparison(
             tmp_path: Path,
             *args: P.args,
             **kwargs: P.kwargs,
-        ):
+        ) -> None:
             # Wraps the test_function to a construct method, to "freeze" the eventual additional arguments (parametrizations fixtures).
             construct = functools.partial(tested_scene_construct, *args, **kwargs)
 
@@ -143,13 +145,13 @@ def frames_comparison(
                 inspect.Parameter("tmp_path", inspect.Parameter.KEYWORD_ONLY),
             ]
         new_sig = old_sig.replace(parameters=parameters)
-        wrapper.__signature__ = new_sig  # type: ignore
+        wrapper.__signature__ = new_sig  # type: ignore[attr-defined]
 
         # Reach a bit into pytest internals to hoist the marks from our wrapped
         # function.
-        wrapper.pytestmark = []  # type: ignore
+        wrapper.pytestmark = []  # type: ignore[attr-defined]
         new_marks = getattr(tested_scene_construct, "pytestmark", [])
-        wrapper.pytestmark = new_marks  # type: ignore
+        wrapper.pytestmark = new_marks  # type: ignore[attr-defined]
         return wrapper
 
     # Case where the decorator is called with and without parentheses.
@@ -189,7 +191,9 @@ def _make_test_comparing_frames(
         The pytest test.
     """
     if is_set_test_data_test:
-        frames_tester = _ControlDataWriter(file_path, size_frame=size_frame)
+        frames_tester: _FramesTester = _ControlDataWriter(
+            file_path, size_frame=size_frame
+        )
     else:
         frames_tester = _FramesTester(file_path, show_diff=show_diff)
 
@@ -199,7 +203,7 @@ def _make_test_comparing_frames(
         else DummySceneFileWriter
     )
 
-    def real_test():
+    def real_test() -> None:
         with frames_tester.testing():
             scene_tested: type[Scene] = _make_test_scene_class(
                 base_scene=base_scene,

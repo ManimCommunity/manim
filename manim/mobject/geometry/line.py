@@ -14,7 +14,7 @@ __all__ = [
     "RightAngle",
 ]
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 
@@ -31,23 +31,74 @@ from manim.utils.color import WHITE
 from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Self, TypeAlias
 
-    from typing_extensions import Self
-
-    from manim.typing import InternalPoint3D, Point2D, Point3D, Vector3D
+    from manim.typing import Point3D, Point3DLike, Vector2DLike, Vector3D, Vector3DLike
     from manim.utils.color import ParsableManimColor
 
     from ..matrix import Matrix  # Avoid circular import
 
+    AngleQuadrant: TypeAlias = tuple[Literal[-1, 1], Literal[-1, 1]]
+    r"""A tuple of 2 integers which can be either +1 or -1, allowing to select
+    one of the 4 quadrants of the Cartesian plane.
+
+    Let :math:`L_1,\ L_2` be two lines defined by start points
+    :math:`S_1,\ S_2` and end points :math:`E_1,\ E_2`. We define the "positive
+    direction" of :math:`L_1` as the direction from :math:`S_1` to :math:`E_1`,
+    and its "negative direction" as the opposite one. We do the same with
+    :math:`L_2`.
+
+    If :math:`L_1` and :math:`L_2` intersect, they divide the plane into 4
+    quadrants. To pick one quadrant, choose the integers in this tuple in the
+    following way:
+
+    -   If the 1st integer is +1, select one of the 2 quadrants towards the
+        positive direction of :math:`L_1`, i.e. closest to `E_1`. Otherwise, if
+        the 1st integer is -1, select one of the 2 quadrants towards the
+        negative direction of :math:`L_1`, i.e. closest to `S_1`.
+
+    -   Similarly, the sign of the 2nd integer picks the positive or negative
+        direction of :math:`L_2` and, thus, selects one of the 2 quadrants
+        which  are closest to :math:`E_2` or :math:`S_2` respectively.
+    """
+
 
 class Line(TipableVMobject):
+    """A straight or curved line segment between two points or mobjects.
+
+    Parameters
+    ----------
+    start
+        The starting point or Mobject of the line.
+    end
+        The ending point or Mobject of the line.
+    buff
+        The distance to shorten the line from both ends.
+    path_arc
+        If nonzero, the line will be curved into an arc with this angle (in radians).
+    kwargs
+        Additional arguments to be passed to :class:`TipableVMobject`
+
+    Examples
+    --------
+    .. manim:: LineExample
+        :save_last_frame:
+
+        class LineExample(Scene):
+            def construct(self):
+                line1 = Line(LEFT*2, RIGHT*2)
+                line2 = Line(LEFT*2, RIGHT*2, buff=0.5)
+                line3 = Line(LEFT*2, RIGHT*2, path_arc=PI/2)
+                grp = VGroup(line1,line2,line3).arrange(DOWN, buff=2)
+                self.add(grp)
+    """
+
     def __init__(
         self,
-        start: Point3D | Mobject = LEFT,
-        end: Point3D | Mobject = RIGHT,
+        start: Point3DLike | Mobject = LEFT,
+        end: Point3DLike | Mobject = RIGHT,
         buff: float = 0,
-        path_arc: float | None = None,
+        path_arc: float = 0,
         **kwargs: Any,
     ) -> None:
         self.dim = 3
@@ -55,20 +106,19 @@ class Line(TipableVMobject):
         self.path_arc = path_arc
         self._set_start_and_end_attrs(start, end)
         super().__init__(**kwargs)
-        # TODO: Deal with the situation where path_arc is None
 
     def generate_points(self) -> None:
         self.set_points_by_ends(
             start=self.start,
             end=self.end,
             buff=self.buff,
-            path_arc=self.path_arc,  # type: ignore[arg-type]
+            path_arc=self.path_arc,
         )
 
     def set_points_by_ends(
         self,
-        start: Point3D | Mobject,
-        end: Point3D | Mobject,
+        start: Point3DLike | Mobject,
+        end: Point3DLike | Mobject,
         buff: float = 0,
         path_arc: float = 0,
     ) -> None:
@@ -89,9 +139,6 @@ class Line(TipableVMobject):
         """
         self._set_start_and_end_attrs(start, end)
         if path_arc:
-            # self.path_arc could potentially be None, which is not accepted
-            # as parameter.
-            assert self.path_arc is not None
             arc = ArcBetweenPoints(self.start, self.end, angle=self.path_arc)
             self.set_points(arc.points)
         else:
@@ -99,22 +146,20 @@ class Line(TipableVMobject):
 
         self._account_for_buff(buff)
 
-    init_points = generate_points
+    def init_points(self) -> None:
+        self.generate_points()
 
     def _account_for_buff(self, buff: float) -> None:
-        if buff == 0:
+        if buff <= 0:
             return
-        #
         length = self.get_length() if self.path_arc == 0 else self.get_arc_length()
-        #
         if length < 2 * buff:
             return
         buff_proportion = buff / length
         self.pointwise_become_partial(self, buff_proportion, 1 - buff_proportion)
-        return
 
     def _set_start_and_end_attrs(
-        self, start: Point3D | Mobject, end: Point3D | Mobject
+        self, start: Point3DLike | Mobject, end: Point3DLike | Mobject
     ) -> None:
         # If either start or end are Mobjects, this
         # gives their centers
@@ -129,9 +174,9 @@ class Line(TipableVMobject):
 
     def _pointify(
         self,
-        mob_or_point: Mobject | Point3D,
-        direction: Vector3D | None = None,
-    ) -> InternalPoint3D:
+        mob_or_point: Mobject | Point3DLike,
+        direction: Vector3DLike | None = None,
+    ) -> Point3D:
         """Transforms a mobject into its corresponding point. Does nothing if a point is passed.
 
         ``direction`` determines the location of the point along its bounding box in that direction.
@@ -157,8 +202,8 @@ class Line(TipableVMobject):
 
     def put_start_and_end_on(
         self,
-        start: InternalPoint3D,
-        end: InternalPoint3D,
+        start: Point3DLike,
+        end: Point3DLike,
     ) -> Self:
         """Sets starts and end coordinates of a line.
 
@@ -185,8 +230,8 @@ class Line(TipableVMobject):
         if np.all(curr_start == curr_end):
             # TODO, any problems with resetting
             # these attrs?
-            self.start = start
-            self.end = end
+            self.start = np.asarray(start)
+            self.end = np.asarray(end)
             self.generate_points()
         return super().put_start_and_end_on(start, end)
 
@@ -199,7 +244,7 @@ class Line(TipableVMobject):
     def get_angle(self) -> float:
         return angle_of_vector(self.get_vector())
 
-    def get_projection(self, point: InternalPoint3D) -> Vector3D:
+    def get_projection(self, point: Point3DLike) -> Point3D:
         """Returns the projection of a point onto a line.
 
         Parameters
@@ -215,7 +260,7 @@ class Line(TipableVMobject):
     def get_slope(self) -> float:
         return float(np.tan(self.get_angle()))
 
-    def set_angle(self, angle: float, about_point: Point3D | None = None) -> Self:
+    def set_angle(self, angle: float, about_point: Point3DLike | None = None) -> Self:
         if about_point is None:
             about_point = self.get_start()
 
@@ -299,7 +344,7 @@ class DashedLine(Line):
             int(np.ceil((self.get_length() / self.dash_length) * self.dashed_ratio)),
         )
 
-    def get_start(self) -> InternalPoint3D:
+    def get_start(self) -> Point3D:
         """Returns the start point of the line.
 
         Examples
@@ -314,7 +359,7 @@ class DashedLine(Line):
         else:
             return super().get_start()
 
-    def get_end(self) -> InternalPoint3D:
+    def get_end(self) -> Point3D:
         """Returns the end point of the line.
 
         Examples
@@ -329,7 +374,7 @@ class DashedLine(Line):
         else:
             return super().get_end()
 
-    def get_first_handle(self) -> InternalPoint3D:
+    def get_first_handle(self) -> Point3D:
         """Returns the point of the first handle.
 
         Examples
@@ -342,9 +387,10 @@ class DashedLine(Line):
         # Type inference of extracting an element from a list, is not
         # supported by numpy, see this numpy issue
         # https://github.com/numpy/numpy/issues/16544
-        return self.submobjects[0].points[1]
+        first_handle: Point3D = self.submobjects[0].points[1]
+        return first_handle
 
-    def get_last_handle(self) -> InternalPoint3D:
+    def get_last_handle(self) -> Point3D:
         """Returns the point of the last handle.
 
         Examples
@@ -357,7 +403,8 @@ class DashedLine(Line):
         # Type inference of extracting an element from a list, is not
         # supported by numpy, see this numpy issue
         # https://github.com/numpy/numpy/issues/16544
-        return self.submobjects[-1].points[-2]
+        last_handle: Point3D = self.submobjects[-1].points[2]
+        return last_handle
 
 
 class TangentLine(Line):
@@ -681,7 +728,7 @@ class Vector(Arrow):
 
     def __init__(
         self,
-        direction: Point2D | Point3D = RIGHT,
+        direction: Vector2DLike | Vector3DLike = RIGHT,
         buff: float = 0,
         **kwargs: Any,
     ) -> None:
@@ -921,7 +968,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         line1: Line,
         line2: Line,
         radius: float | None = None,
-        quadrant: Point2D = (1, 1),
+        quadrant: AngleQuadrant = (1, 1),
         other_angle: bool = False,
         dot: bool = False,
         dot_radius: float | None = None,
@@ -1067,7 +1114,9 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         return self.angle_value / DEGREES if degrees else self.angle_value
 
     @staticmethod
-    def from_three_points(A: Point3D, B: Point3D, C: Point3D, **kwargs: Any) -> Angle:
+    def from_three_points(
+        A: Point3DLike, B: Point3DLike, C: Point3DLike, **kwargs: Any
+    ) -> Angle:
         r"""The angle between the lines AB and BC.
 
         This constructs the angle :math:`\\angle ABC`.

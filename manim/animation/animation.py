@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from copy import deepcopy
 from functools import partialmethod
-from typing import TYPE_CHECKING, Any, Callable, cast, overload
+from typing import TYPE_CHECKING, Any, Self, assert_never, cast, overload
 
 import numpy as np
-from typing_extensions import Self, TypeVar, assert_never
+from typing_extensions import TypeVar
 
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
@@ -21,7 +21,7 @@ from .protocol import AnimationProtocol, MobjectAnimation
 from .scene_buffer import SceneBuffer, SceneOperation
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
     from manim.scene.scene import Scene
 
@@ -59,7 +59,6 @@ class Animation(AnimationProtocol):
 
         For example ``rate_func(0.5)`` is the proportion of the animation that is done
         after half of the animations run time.
-
 
     reverse_rate_function
         Reverses the rate function of the animation. Setting ``reverse_rate_function``
@@ -127,7 +126,7 @@ class Animation(AnimationProtocol):
             if func is not None:
                 anim = func(mobject, *args, **kwargs)
                 logger.debug(
-                    f"The {cls.__name__} animation has been is overridden for "
+                    f"The {cls.__name__} animation has been overridden for "
                     f"{type(mobject).__name__} mobjects. use_override = False can "
                     f" be used as keyword argument to prevent animation overriding.",
                 )
@@ -147,7 +146,7 @@ class Animation(AnimationProtocol):
         introducer: bool = False,
         *,
         _on_finish: Callable[[SceneBuffer], object] = lambda _: None,
-        **kwargs,
+        use_override: bool = True,  # included here to avoid TypeError if passed from a subclass' constructor
     ) -> None:
         self._typecheck_input(mobject)
         self.run_time: float = run_time
@@ -167,8 +166,6 @@ class Animation(AnimationProtocol):
         self.mobject: OpenGLMobject = (
             mobject if mobject is not None else OpenGLMobject()
         )
-        if kwargs:
-            logger.debug("Animation received extra kwargs: %s", kwargs)
 
         if hasattr(self, "CONFIG"):
             logger.error(
@@ -272,7 +269,7 @@ class Animation(AnimationProtocol):
         return self.mobject, self.starting_mobject
 
     def get_all_families_zipped(self) -> Iterable[tuple]:
-        return zip(*(mob.get_family() for mob in self.get_all_mobjects()))
+        return zip(*(mob.get_family() for mob in self.get_all_mobjects()), strict=False)
 
     def update_mobjects(self, dt: float) -> None:
         """
@@ -468,6 +465,8 @@ class Animation(AnimationProtocol):
         super().__init_subclass__(**kwargs)
 
         cls._original__init__ = cls.__init__
+
+    _original__init__ = __init__  # needed if set_default() is called with no kwargs directly from Animation
 
     @classmethod
     def set_default(cls, **kwargs) -> None:
