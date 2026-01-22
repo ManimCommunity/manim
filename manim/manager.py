@@ -27,8 +27,9 @@ from manim.utils.progressbar import (
 )
 
 if TYPE_CHECKING:
+    from typing import Any
+
     import numpy.typing as npt
-    from typing_extensions import Any
 
     from manim.animation.protocol import AnimationProtocol
     from manim.file_writer.protocols import FileWriterProtocol
