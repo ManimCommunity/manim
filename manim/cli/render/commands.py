@@ -92,6 +92,7 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
             with tempconfig({}):
                 manager = Manager(SceneClass)
                 manager.render()
+                manager.release()
     except Exception:
         error_console.print_exception()
         sys.exit(1)

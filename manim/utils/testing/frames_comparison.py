@@ -216,6 +216,10 @@ def _make_test_comparing_frames(
             manager.render()
             if last_frame:
                 frames_tester.check_frame(-1, manager.renderer.get_pixels())
+            # Manually release the manager elements.
+            # This was earlier performed in manager.render()
+            # but then manager.renderer.get_pixels() fails.
+            manager.release()
 
     return real_test
 

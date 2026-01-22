@@ -86,6 +86,7 @@ def checkhealth() -> None:
             with mn.tempconfig({"preview": True, "disable_caching": True}):
                 manager = mn.Manager(CheckHealthDemo)
                 manager.render()
+                manager.release()
 
                 click.echo(
                     f"Scene rendered in {manager.scene.execution_time:.2f} seconds."
