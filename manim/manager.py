@@ -151,18 +151,9 @@ class Manager(Generic[Scene_co]):
             with tempconfig({"preview": True}):
                 Manager(MyScene).render()
         """
-        print("<render>")
         config._warn_about_config_options()
         self._render_first_pass()
         self._render_second_pass()
-        # mgl.Framebuffer
-        print("self.renderer.output_fbo.mglo: ", self.renderer.output_fbo.mglo)
-        # Commenting out the next line removes the error
-        # AttributeError: 'InvalidObject' object has no attribute 'read_into'
-        # self.release()
-        # InvalidObject
-        print("self.renderer.output_fbo.mglo: ", self.renderer.output_fbo.mglo)
-        print("</render>")
 
     def _render_first_pass(self) -> None:
         """
