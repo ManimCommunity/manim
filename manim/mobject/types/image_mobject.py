@@ -24,8 +24,9 @@ from ...utils.images import change_to_rgba_array, get_full_raster_image_path
 __all__ = ["ImageMobject", "ImageMobjectFromCamera"]
 
 if TYPE_CHECKING:
+    from typing import Self
+
     import numpy.typing as npt
-    from typing_extensions import Self
 
     from manim.typing import PixelArray, StrPath
 
