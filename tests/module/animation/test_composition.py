@@ -189,7 +189,8 @@ def test_animationgroup_calls_finish():
         def finish(self):
             self.finished = True
 
-    scene = Scene()
+    manager = Manager(Scene)
+    scene = manager.scene
     sqr_animation = MyAnimation(Square())
     circ_animation = MyAnimation(Circle())
     animation_group = AnimationGroup(sqr_animation, circ_animation)

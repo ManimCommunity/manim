@@ -407,6 +407,7 @@ class Manager(Generic[Scene_co]):
                         break
                 else:
                     self.time += dt
+                    self.scene.time = self.time
                     self.renderer.render(state)
                     if self.window is not None and self.window.is_closing:
                         raise EndSceneEarlyException()
