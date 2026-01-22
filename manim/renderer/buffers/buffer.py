@@ -7,7 +7,7 @@ import numpy as np
 
 
 class STD140BufferFormat:
-    _GL_DTYPES: dict[str, tuple[str, type[np.float_], tuple[int, ...]]] = {
+    _GL_DTYPES: dict[str, tuple[str, type[np.float64], tuple[int, ...]]] = {
         "int": ("i", np.float32, (1,)),
         "ivec2": ("i", np.float32, (2,)),
         "ivec3": ("i", np.float32, (3,)),

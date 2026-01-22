@@ -2,9 +2,7 @@ from __future__ import annotations
 
 import types
 from collections.abc import Callable
-from typing import TYPE_CHECKING, ClassVar, Generic, ParamSpec, TypeVar, final
-
-from typing_extensions import Self
+from typing import TYPE_CHECKING, ClassVar, Generic, ParamSpec, Self, TypeVar, final
 
 if TYPE_CHECKING:
     from .scene import Scene

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from typing import Any, Self
+
 import numpy as np
-from typing_extensions import Any, Self
 
 from manim.event_handler.event_listener import EventListener
 from manim.event_handler.event_type import EventType
