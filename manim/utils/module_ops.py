@@ -9,6 +9,7 @@ import warnings
 from typing import TYPE_CHECKING, Any, Literal, overload
 
 from manim import config, console, constants, logger
+from manim.constants import CHOOSE_NUMBER_MESSAGE, INVALID_NUMBER_MESSAGE
 from manim.file_writer import FileWriter
 
 if TYPE_CHECKING:
