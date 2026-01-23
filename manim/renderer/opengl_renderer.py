@@ -452,7 +452,9 @@ class OpenGLRenderer(Renderer, RendererProtocol):
 
     def release(self) -> None:
         self.ctx.release()
+        # print("self.output_fbo.mglo: ", self.output_fbo.mglo)
         self.output_fbo.release()
+        # print("self.output_fbo.mglo: ", self.output_fbo.mglo)
 
 
 class GLVMobjectManager:

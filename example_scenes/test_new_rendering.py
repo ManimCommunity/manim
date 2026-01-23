@@ -41,13 +41,16 @@ class Test(Scene):
 
 
 if __name__ == "__main__":
-    with tempconfig(
-        {
-            "preview": True,
-            "write_to_movie": False,
-            "disable_caching": True,
-            "frame_rate": 60,
-            "disable_caching_warning": True,
-        }
+    with (
+        tempconfig(
+            {
+                "preview": True,
+                "write_to_movie": False,
+                "disable_caching": True,
+                "frame_rate": 60,
+                "disable_caching_warning": True,
+            }
+        ),
+        Manager(Test) as manager,
     ):
-        Manager(Test).render()
+        manager.render()
