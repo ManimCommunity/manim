@@ -11,6 +11,7 @@ from typing_extensions import assert_never
 
 from manim import config, logger
 from manim.animation.animation import prepare_animation
+from manim.animation.animation import Wait
 from manim.animation.scene_buffer import SceneBuffer, SceneOperation
 from manim.camera.camera import Camera
 from manim.constants import DEFAULT_WAIT_TIME
@@ -174,6 +175,13 @@ class Scene:
         return self.always_update_mobjects or any(
             mob.has_updaters for mob in self.mobjects
         )
+
+    def is_current_animation_frozen_frame(self) -> bool:
+        if not self.animations:
+            return False
+        
+        current = self.animations[0]
+        return getattr(current, 'is_static_wait', False)
 
     def has_time_based_updaters(self) -> bool:
         return any(
@@ -410,7 +418,7 @@ class Scene:
         if new_total_run_time != total_run_time:
             for anim in animations:
                 anim.update_rate_info(new_total_run_time)
-
+        self.animations = animations
         # NOTE: Should be changed at some point with the 2 pass rendering system 21.06.2024
         self.manager._play(*animations)
 
@@ -418,11 +426,14 @@ class Scene:
         self,
         duration: float = DEFAULT_WAIT_TIME,
         stop_condition: Callable[[], bool] | None = None,
+        frozen_frame: bool | None = None,
         note: str | None = None,
         ignore_presenter_mode: bool = False,
     ):
         duration = self.validate_run_time(duration, self.wait, "duration")
-        self.manager._wait(duration, stop_condition=stop_condition)
+        if frozen_frame is None:
+            frozen_frame = not self.should_update_mobjects()
+        self.play(Wait(duration, stop_condition=stop_condition, frozen_frame=frozen_frame))
         # if (
         #     self.presenter_mode
         #     and not self.skip_animations

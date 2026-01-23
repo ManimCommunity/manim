@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 import numpy as np
 
 from manim import config, logger
+from manim.animation.animation import Wait
 from manim.event_handler.window import WindowProtocol
 from manim.file_writer import FileWriter
 from manim.renderer.opengl_renderer import OpenGLRenderer
@@ -425,10 +426,14 @@ class Manager(Generic[Scene_co]):
             progression.shape[0],
             f"Animation %(num)d: {animations[0]}{', etc.' if len(animations) > 1 else ''}",
         ) as progress:
-            for t in progression:
+            for t in progression:                            
                 dt, last_t = t - last_t, t
                 self.scene._update_animations(animations, t, dt)
                 self._update_frame(dt)
+                for anim in animations:
+                    if isinstance(anim, Wait) and anim.stop_condition:
+                        if anim.stop_condition():
+                            return
                 progress.update(1)
 
     # -------------------------#

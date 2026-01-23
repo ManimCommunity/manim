@@ -2298,7 +2298,24 @@ class Mobject:
         sub_families = [x.get_family() for x in self.submobjects]
         all_mobjects = [self] + list(it.chain(*sub_families))
         return remove_list_redundancies(all_mobjects)
-
+    def get_ancestors(self, extended: bool = False) -> list[Self]:
+        """Returns parents, grandparents, etc.
+        
+        Base Mobject implementation returns empty list as it doesn't 
+        track parent relationships. OpenGLMobject overrides this.
+        
+        Parameters
+        ----------
+        extended
+            If True, includes ancestors of all family members.
+        
+        Returns
+        -------
+        list[Self]
+            List of ancestor mobjects. Empty for base Mobject.
+        """
+        return []
+    
     def family_members_with_points(self) -> list[Self]:
         return [m for m in self.get_family() if m.get_num_points() > 0]
 

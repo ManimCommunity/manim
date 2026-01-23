@@ -65,12 +65,14 @@ def test_static_wait_detection(using_temp_config, disabling_caching):
 
 
 def test_non_static_wait_detection(using_temp_config, disabling_caching):
-    scene = SceneWithNonStaticWait()
-    scene.render()
+    manager = Manager(SceneWithNonStaticWait)
+    manager.render()
+    scene = manager.scene
     assert not scene.animations[0].is_static_wait
     assert not scene.is_current_animation_frozen_frame()
-    scene = SceneWithSceneUpdater()
-    scene.render()
+    manager = Manager(SceneWithSceneUpdater)
+    manager.render()
+    scene = manager.scene
     assert not scene.animations[0].is_static_wait
     assert not scene.is_current_animation_frozen_frame()
 
