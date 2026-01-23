@@ -160,7 +160,7 @@ class Manager(Generic[Scene_co]):
                     self.play(Create(Circle()))
 
 
-            with (tempconfig({"preview": True}), Manager(MyScene) as manager):
+            with tempconfig({"preview": True}), Manager(MyScene) as manager:
                 manager.render()
         """
         config._warn_about_config_options()
