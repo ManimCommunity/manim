@@ -58,7 +58,10 @@ class Manager(Generic[Scene_co]):
                     self.play(FadeIn(Circle()))
 
 
-            Manager(Manimation).render()
+            # make sure to use it as a context manager
+            # to ensure proper resource cleanup
+            with Manager(Manimation) as manager:
+                manager.render()
     """
 
     def __init__(self, scene_cls: type[Scene_co]) -> None:
@@ -157,8 +160,8 @@ class Manager(Generic[Scene_co]):
                     self.play(Create(Circle()))
 
 
-            with tempconfig({"preview": True}):
-                Manager(MyScene).render()
+            with (tempconfig({"preview": True}), Manager(MyScene) as manager):
+                manager.render()
         """
         config._warn_about_config_options()
         self._render_first_pass()
