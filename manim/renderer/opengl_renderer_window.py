@@ -58,7 +58,7 @@ class Window(PygletWindow, WindowProtocol):
             )
 
         super().__init__(size=size)
-        self.pressed_keys = set()
+        self.pressed_keys: set = set()
         self.title = f"Manim Community {__version__}"
         self.size = size
 

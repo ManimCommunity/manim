@@ -27,6 +27,7 @@ from manim.utils.progressbar import (
 )
 
 if TYPE_CHECKING:
+    from types import TracebackType
     from typing import Any
 
     import numpy.typing as npt
@@ -91,7 +92,12 @@ class Manager(Generic[Scene_co]):
     def __enter__(self) -> Manager[Scene_co]:
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback) -> None:
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
         self.release()
 
     # keep these as instance methods so subclasses
