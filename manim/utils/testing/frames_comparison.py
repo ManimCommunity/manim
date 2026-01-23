@@ -209,13 +209,13 @@ def _make_test_comparing_frames(
                 base_scene=base_scene,
                 construct_test=construct,
             )
-            manager = Manager(scene_tested)
-            manager.file_writer = file_writer_class(
-                manager.scene.get_default_scene_name()
-            )
-            manager.render()
-            if last_frame:
-                frames_tester.check_frame(-1, manager.renderer.get_pixels())
+            with Manager(scene_tested) as manager:
+                manager.file_writer = file_writer_class(
+                    manager.scene.get_default_scene_name()
+                )
+                manager.render()
+                if last_frame:
+                    frames_tester.check_frame(-1, manager.renderer.get_pixels())
 
     return real_test
 
