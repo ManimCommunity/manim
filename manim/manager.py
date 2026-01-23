@@ -176,7 +176,7 @@ class Manager(Generic[Scene_co]):
 
         with contextlib.suppress(EndSceneEarlyException):
             self.construct()
-            self.post_contruct()
+            self.post_construct()
             self._interact()
 
         self.tear_down()
@@ -203,7 +203,7 @@ class Manager(Generic[Scene_co]):
     def release(self) -> None:
         self.renderer.release()
 
-    def post_contruct(self) -> None:
+    def post_construct(self) -> None:
         """Run post-construct hooks, and clean up the file writer."""
         if self.file_writer.num_plays:
             self.file_writer.finish()
