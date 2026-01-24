@@ -807,10 +807,13 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
             used[j] = True
             v += rings[j]
             ring_ends.append(len(v))
-        res += [v[i] for i in earcut(
-            np.ascontiguousarray(verts[v, :2], dtype=np.float32),
-            np.array(ring_ends, dtype=np.uint32)
-        )]
+        res += [
+            v[i]
+            for i in earcut(
+                np.ascontiguousarray(verts[v, :2], dtype=np.float32),
+                np.array(ring_ends, dtype=np.uint32),
+            )
+        ]
 
     return res
 

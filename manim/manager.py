@@ -6,7 +6,7 @@ import contextlib
 import platform
 import time
 import warnings
-from collections.abc import Callable, Iterable, Iterator, Sequence
+from collections.abc import Iterable, Iterator, Sequence
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 import numpy as np
@@ -161,7 +161,7 @@ class Manager(Generic[Scene_co]):
                     self.play(Create(Circle()))
 
 
-            with (tempconfig({"preview": True}), Manager(MyScene) as manager):
+            with tempconfig({"preview": True}), Manager(MyScene) as manager:
                 manager.render()
         """
         config._warn_about_config_options()
@@ -384,7 +384,7 @@ class Manager(Generic[Scene_co]):
                 disable=config.progress_bar == "none",
                 **kwargs,
             )
-    
+
     def _progress_through_animations(
         self, animations: Sequence[AnimationProtocol]
     ) -> None:
@@ -395,7 +395,7 @@ class Manager(Generic[Scene_co]):
             progression.shape[0],
             f"Animation %(num)d: {animations[0]}{', etc.' if len(animations) > 1 else ''}",
         ) as progress:
-            for t in progression:                            
+            for t in progression:
                 dt, last_t = t - last_t, t
                 self.scene._update_animations(animations, t, dt)
                 self._update_frame(dt)

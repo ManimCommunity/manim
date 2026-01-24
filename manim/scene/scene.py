@@ -10,8 +10,7 @@ import numpy as np
 from pyglet.window import key
 
 from manim import config, logger
-from manim.animation.animation import prepare_animation
-from manim.animation.animation import Wait
+from manim.animation.animation import Wait, prepare_animation
 from manim.animation.scene_buffer import SceneBuffer, SceneOperation
 from manim.camera.camera import Camera
 from manim.constants import DEFAULT_WAIT_TIME
@@ -179,9 +178,9 @@ class Scene:
     def is_current_animation_frozen_frame(self) -> bool:
         if not self.animations:
             return False
-        
+
         current = self.animations[0]
-        return getattr(current, 'is_static_wait', False)
+        return getattr(current, "is_static_wait", False)
 
     def has_time_based_updaters(self) -> bool:
         return any(
@@ -433,7 +432,9 @@ class Scene:
         duration = self.validate_run_time(duration, self.wait, "duration")
         if frozen_frame is None:
             frozen_frame = not self.should_update_mobjects()
-        self.play(Wait(duration, stop_condition=stop_condition, frozen_frame=frozen_frame))
+        self.play(
+            Wait(duration, stop_condition=stop_condition, frozen_frame=frozen_frame)
+        )
         # if (
         #     self.presenter_mode
         #     and not self.skip_animations
