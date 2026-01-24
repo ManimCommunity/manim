@@ -1565,6 +1565,9 @@ class Graph(GenericGraph):
     def __repr__(self: Graph) -> str:
         return f"Undirected graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
 
+    def __str__(self: Graph) -> str:
+        return self.__repr__()
+
 
 class DiGraph(GenericGraph):
     """A directed graph.
@@ -1782,3 +1785,6 @@ class DiGraph(GenericGraph):
 
     def __repr__(self: DiGraph) -> str:
         return f"Directed graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
+
+    def __str__(self: DiGraph) -> str:
+        return self.__repr__()
