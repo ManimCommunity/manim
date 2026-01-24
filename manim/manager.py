@@ -28,8 +28,9 @@ from manim.utils.progressbar import (
 )
 
 if TYPE_CHECKING:
+    from typing import Any
+
     import numpy.typing as npt
-    from typing_extensions import Any
 
     from manim.animation.protocol import AnimationProtocol
     from manim.file_writer.protocols import FileWriterProtocol
@@ -58,7 +59,10 @@ class Manager(Generic[Scene_co]):
                     self.play(FadeIn(Circle()))
 
 
-            Manager(Manimation).render()
+            # make sure to use it as a context manager
+            # to ensure proper resource cleanup
+            with Manager(Manimation) as manager:
+                manager.render()
     """
 
     def __init__(self, scene_cls: type[Scene_co]) -> None:
@@ -81,6 +85,15 @@ class Manager(Generic[Scene_co]):
 
         # internal state
         self._skipping = False
+
+    def __str__(self) -> str:
+        return f"{self.__class__.__name__}({self.scene!r}) at time {self.time:.2f}s"
+
+    def __enter__(self) -> Manager[Scene_co]:
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        self.release()
 
     # keep these as instance methods so subclasses
     # have access to everything
@@ -148,13 +161,12 @@ class Manager(Generic[Scene_co]):
                     self.play(Create(Circle()))
 
 
-            with tempconfig({"preview": True}):
-                Manager(MyScene).render()
+            with (tempconfig({"preview": True}), Manager(MyScene) as manager):
+                manager.render()
         """
         config._warn_about_config_options()
         self._render_first_pass()
         self._render_second_pass()
-        self.release()
 
     def _render_first_pass(self) -> None:
         """

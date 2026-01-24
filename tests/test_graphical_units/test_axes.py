@@ -32,7 +32,7 @@ def test_custom_coordinates(scene: Scene) -> None:
     ax = Axes(x_range=[0, 10])
 
     ax.add_coordinates(
-        dict(zip(list(range(1, 10)), [Tex("str") for _ in range(1, 10)])),
+        dict(zip(list(range(1, 10)), [Tex("str") for _ in range(1, 10)], strict=False)),
     )
     scene.add(ax)
 

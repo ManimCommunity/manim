@@ -21,25 +21,29 @@ __all__ = [
 ]
 
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from functools import reduce
-from typing import TYPE_CHECKING, Any, Callable, overload
+from typing import TYPE_CHECKING, overload
 
 import numpy as np
 
 from manim.utils.simple_functions import choose
 
 if TYPE_CHECKING:
-    import numpy.typing as npt
-
     from manim.typing import (
         BezierPoints,
         BezierPoints_Array,
+        BezierPointsLike,
+        BezierPointsLike_Array,
         ColVector,
         MatrixMN,
         Point3D,
         Point3D_Array,
-        QuadraticBezierPoints_Array,
+        Point3DLike,
+        Point3DLike_Array,
+        QuadraticBezierPath,
+        QuadraticSpline,
+        Spline,
     )
 
 # l is a commonly used name in linear algebra
@@ -48,17 +52,19 @@ if TYPE_CHECKING:
 
 @overload
 def bezier(
-    points: BezierPoints,
+    points: BezierPointsLike,
 ) -> Callable[[float | ColVector], Point3D | Point3D_Array]: ...
 
 
 @overload
 def bezier(
-    points: Sequence[Point3D_Array],
+    points: Sequence[Point3DLike_Array],
 ) -> Callable[[float | ColVector], Point3D_Array]: ...
 
 
-def bezier(points):
+def bezier(
+    points: Point3D_Array | Sequence[Point3D_Array],
+) -> Callable[[float | ColVector], Point3D_Array]:
     """Classic implementation of a Bézier curve.
 
     Parameters
@@ -112,21 +118,21 @@ def bezier(points):
 
     if degree == 0:
 
-        def zero_bezier(t):
+        def zero_bezier(t: float | ColVector) -> Point3D | Point3D_Array:
             return np.ones_like(t) * P[0]
 
         return zero_bezier
 
     if degree == 1:
 
-        def linear_bezier(t):
+        def linear_bezier(t: float | ColVector) -> Point3D | Point3D_Array:
             return P[0] + t * (P[1] - P[0])
 
         return linear_bezier
 
     if degree == 2:
 
-        def quadratic_bezier(t):
+        def quadratic_bezier(t: float | ColVector) -> Point3D | Point3D_Array:
             t2 = t * t
             mt = 1 - t
             mt2 = mt * mt
@@ -136,7 +142,7 @@ def bezier(points):
 
     if degree == 3:
 
-        def cubic_bezier(t):
+        def cubic_bezier(t: float | ColVector) -> Point3D | Point3D_Array:
             t2 = t * t
             t3 = t2 * t
             mt = 1 - t
@@ -146,11 +152,12 @@ def bezier(points):
 
         return cubic_bezier
 
-    def nth_grade_bezier(t):
+    def nth_grade_bezier(t: float | ColVector) -> Point3D | Point3D_Array:
         is_scalar = not isinstance(t, np.ndarray)
         if is_scalar:
             B = np.empty((1, *P.shape))
         else:
+            assert isinstance(t, np.ndarray)
             t = t.reshape(-1, *[1 for dim in P.shape])
             B = np.empty((t.shape[0], *P.shape))
         B[:] = P
@@ -163,13 +170,14 @@ def bezier(points):
         # In the end, there shall be the evaluation at t of a single Bezier curve of
         # grade d, stored in the first slot of B
         if is_scalar:
-            return B[0, 0]
+            val: Point3D = B[0, 0]
+            return val
         return B[:, 0]
 
     return nth_grade_bezier
 
 
-def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoints:
+def partial_bezier_points(points: BezierPointsLike, a: float, b: float) -> BezierPoints:
     r"""Given an array of ``points`` which define a Bézier curve, and two numbers :math:`a, b`
     such that :math:`0 \le a < b \le 1`, return an array of the same size, which describes the
     portion of the original Bézier curve on the interval :math:`[a, b]`.
@@ -386,7 +394,7 @@ def partial_bezier_points(points: BezierPoints, a: float, b: float) -> BezierPoi
     return arr
 
 
-def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
+def split_bezier(points: BezierPointsLike, t: float) -> Spline:
     r"""Split a Bézier curve at argument ``t`` into two curves.
 
     .. note::
@@ -701,7 +709,7 @@ def split_bezier(points: BezierPoints, t: float) -> Point3D_Array:
 
 
 # Memos explained in subdivide_bezier docstring
-SUBDIVISION_MATRICES = [{} for i in range(4)]
+SUBDIVISION_MATRICES: list[dict[int, MatrixMN]] = [{} for i in range(4)]
 
 
 def _get_subdivision_matrix(n_points: int, n_divisions: int) -> MatrixMN:
@@ -813,7 +821,7 @@ def _get_subdivision_matrix(n_points: int, n_divisions: int) -> MatrixMN:
     return subdivision_matrix
 
 
-def subdivide_bezier(points: BezierPoints, n_divisions: int) -> Point3D_Array:
+def subdivide_bezier(points: BezierPointsLike, n_divisions: int) -> Spline:
     r"""Subdivide a Bézier curve into :math:`n` subcurves which have the same shape.
 
     The points at which the curve is split are located at the
@@ -905,13 +913,13 @@ def subdivide_bezier(points: BezierPoints, n_divisions: int) -> Point3D_Array:
 
     Returns
     -------
-    :class:`~.Point3D_Array`
+    :class:`~.Spline`
         An array containing the points defining the new :math:`n` subcurves.
     """
+    points = np.asarray(points)
     if n_divisions == 1:
         return points
 
-    points = np.asarray(points)
     N, dim = points.shape
 
     if N <= 4:
@@ -943,7 +951,7 @@ def subdivide_bezier(points: BezierPoints, n_divisions: int) -> Point3D_Array:
 
 
 def bezier_remap(
-    bezier_tuples: BezierPoints_Array,
+    bezier_tuples: BezierPointsLike_Array,
     new_number_of_curves: int,
 ) -> BezierPoints_Array:
     """Subdivides each curve in ``bezier_tuples`` into as many parts as necessary, until the final number of
@@ -992,7 +1000,7 @@ def bezier_remap(
 
     new_tuples = np.empty((new_number_of_curves, nppc, dim))
     index = 0
-    for curve, sf in zip(bezier_tuples, split_factors):
+    for curve, sf in zip(bezier_tuples, split_factors, strict=False):
         new_tuples[index : index + sf] = subdivide_bezier(curve, sf).reshape(
             sf, nppc, dim
         )
@@ -1020,7 +1028,11 @@ def interpolate(start: Point3D, end: Point3D, alpha: float) -> Point3D: ...
 def interpolate(start: Point3D, end: Point3D, alpha: ColVector) -> Point3D_Array: ...
 
 
-def interpolate(start, end, alpha):
+def interpolate(
+    start: float | Point3D,
+    end: float | Point3D,
+    alpha: float | ColVector,
+) -> float | ColVector | Point3D | Point3D_Array:
     """Linearly interpolates between two values ``start`` and ``end``.
 
     Parameters
@@ -1048,7 +1060,7 @@ def interpolate(start, end, alpha):
             * ``alpha`` is a :class:`float`, the return is another :class:`~.Point3D`.
             * ``alpha`` is a :class:`~.ColVector`, the return is a :class:`~.Point3D_Array`.
     """
-    return start + alpha * (end - start)
+    return (1 - alpha) * start + alpha * end
 
 
 def integer_interpolate(
@@ -1133,7 +1145,9 @@ def inverse_interpolate(start: Point3D, end: Point3D, value: Point3D) -> Point3D
 
 
 def inverse_interpolate(
-    start: float | Point3D, end: float | Point3D, value: float | Point3D
+    start: float | Point3D,
+    end: float | Point3D,
+    value: float | Point3D,
 ) -> float | Point3D:
     """Perform inverse interpolation to determine the alpha
     values that would produce the specified ``value``
@@ -1221,6 +1235,7 @@ def match_interpolate(
 
     Examples
     --------
+    >>> from manim import match_interpolate
     >>> match_interpolate(0, 100, 10, 20, 15)
     np.float64(50.0)
     """
@@ -1228,7 +1243,7 @@ def match_interpolate(
     return interpolate(
         new_start,
         new_end,
-        old_alpha,  # type: ignore[arg-type]
+        old_alpha,
     )
 
 
@@ -1263,7 +1278,7 @@ def get_smooth_quadratic_bezier_handle_points(points: Point3D_Array) -> Point3D_
 
 # Figuring out which Bézier curves most smoothly connect a sequence of points
 def get_smooth_cubic_bezier_handle_points(
-    anchors: Point3D_Array,
+    anchors: Point3DLike_Array,
 ) -> tuple[Point3D_Array, Point3D_Array]:
     """Given an array of anchors for a cubic spline (array of connected cubic
     Bézier curves), compute the 1st and 2nd handle for every curve, so that
@@ -1293,7 +1308,8 @@ def get_smooth_cubic_bezier_handle_points(
     # they can only be an interpolation of these two anchors with alphas
     # 1/3 and 2/3, which will draw a straight line between the anchors.
     if n_anchors == 2:
-        return interpolate(anchors[0], anchors[1], np.array([[1 / 3], [2 / 3]]))
+        val = interpolate(anchors[0], anchors[1], np.array([[1 / 3], [2 / 3]]))
+        return (val[0], val[1])
 
     # Handle different cases depending on whether the points form a closed
     # curve or not
@@ -1309,7 +1325,7 @@ UP_CLOSED_MEMO = np.array([1 / 3])
 
 
 def get_smooth_closed_cubic_bezier_handle_points(
-    anchors: Point3D_Array,
+    anchors: Point3DLike_Array,
 ) -> tuple[Point3D_Array, Point3D_Array]:
     r"""Special case of :func:`get_smooth_cubic_bezier_handle_points`,
     when the ``anchors`` form a closed loop.
@@ -1601,7 +1617,7 @@ CP_OPEN_MEMO = np.array([0.5])
 
 
 def get_smooth_open_cubic_bezier_handle_points(
-    anchors: Point3D_Array,
+    anchors: Point3DLike_Array,
 ) -> tuple[Point3D_Array, Point3D_Array]:
     r"""Special case of :func:`get_smooth_cubic_bezier_handle_points`,
     when the ``anchors`` do not form a closed loop.
@@ -1755,20 +1771,25 @@ def get_smooth_open_cubic_bezier_handle_points(
 
 @overload
 def get_quadratic_approximation_of_cubic(
-    a0: Point3D, h0: Point3D, h1: Point3D, a1: Point3D
-) -> QuadraticBezierPoints_Array: ...
+    a0: Point3DLike, h0: Point3DLike, h1: Point3DLike, a1: Point3DLike
+) -> QuadraticSpline: ...
 
 
 @overload
 def get_quadratic_approximation_of_cubic(
-    a0: Point3D_Array,
-    h0: Point3D_Array,
-    h1: Point3D_Array,
-    a1: Point3D_Array,
-) -> QuadraticBezierPoints_Array: ...
+    a0: Point3DLike_Array,
+    h0: Point3DLike_Array,
+    h1: Point3DLike_Array,
+    a1: Point3DLike_Array,
+) -> QuadraticBezierPath: ...
 
 
-def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):
+def get_quadratic_approximation_of_cubic(
+    a0: Point3D | Point3D_Array,
+    h0: Point3D | Point3D_Array,
+    h1: Point3D | Point3D_Array,
+    a1: Point3D | Point3D_Array,
+) -> QuadraticSpline | QuadraticBezierPath:
     r"""If ``a0``, ``h0``, ``h1`` and ``a1`` are the control points of a cubic
     Bézier curve, approximate the curve with two quadratic Bézier curves and
     return an array of 6 points, where the first 3 points represent the first
@@ -1872,29 +1893,29 @@ def get_quadratic_approximation_of_cubic(a0, h0, h1, a1):
         If ``a0``, ``h0``, ``h1`` and ``a1`` have different dimensions, or
         if their number of dimensions is not 1 or 2.
     """
-    a0 = np.asarray(a0)
-    h0 = np.asarray(h0)
-    h1 = np.asarray(h1)
-    a1 = np.asarray(a1)
+    a0c = np.asarray(a0)
+    h0c = np.asarray(h0)
+    h1c = np.asarray(h1)
+    a1c = np.asarray(a1)
 
-    if all(arr.ndim == 1 for arr in (a0, h0, h1, a1)):
-        num_curves, dim = 1, a0.shape[0]
-    elif all(arr.ndim == 2 for arr in (a0, h0, h1, a1)):
-        num_curves, dim = a0.shape
+    if all(arr.ndim == 1 for arr in (a0c, h0c, h1c, a1c)):
+        num_curves, dim = 1, a0c.shape[0]
+    elif all(arr.ndim == 2 for arr in (a0c, h0c, h1c, a1c)):
+        num_curves, dim = a0c.shape
     else:
         raise ValueError("All arguments must be Point3D or Point3D_Array.")
 
-    m0 = 0.25 * (3 * h0 + a0)
-    m1 = 0.25 * (3 * h1 + a1)
+    m0 = 0.25 * (3 * h0c + a0c)
+    m1 = 0.25 * (3 * h1c + a1c)
     k = 0.5 * (m0 + m1)
 
     result = np.empty((6 * num_curves, dim))
-    result[0::6] = a0
+    result[0::6] = a0c
     result[1::6] = m0
     result[2::6] = k
     result[3::6] = k
     result[4::6] = m1
-    result[5::6] = a1
+    result[5::6] = a1c
     return result
 
 
@@ -1972,10 +1993,10 @@ def is_closed(points: Point3D_Array) -> bool:
 
 
 def proportions_along_bezier_curve_for_point(
-    point: Point3D,
-    control_points: BezierPoints,
+    point: Point3DLike,
+    control_points: BezierPointsLike,
     round_to: float = 1e-6,
-) -> npt.NDArray[Any]:
+) -> MatrixMN:
     """Obtains the proportion along the bezier curve corresponding to a given point
     given the bezier curve's control points.
 
@@ -2058,8 +2079,8 @@ def proportions_along_bezier_curve_for_point(
 
 
 def point_lies_on_bezier(
-    point: Point3D,
-    control_points: BezierPoints,
+    point: Point3DLike,
+    control_points: BezierPointsLike,
     round_to: float = 1e-6,
 ) -> bool:
     """Checks if a given point lies on the bezier curves with the given control points.

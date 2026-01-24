@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import itertools as it
 
+from manim.mobject.mobject import Mobject
+
 __all__ = [
     "extract_mobject_family_members",
     "restructure_list_to_exclude_certain_family_members",
@@ -36,10 +38,12 @@ def restructure_list_to_exclude_certain_family_members(
     but one of its submobjects is removed, e.g. scene.remove(m1), it's useful
     for the list of mobject_list to be edited to contain other submobjects, but not m1.
     """
-    new_list = []
+    new_list: list[Mobject] = []
     to_remove = extract_mobject_family_members(to_remove)
 
-    def add_safe_mobjects_from_list(list_to_examine, set_to_remove):
+    def add_safe_mobjects_from_list(
+        list_to_examine: list[Mobject], set_to_remove: set[Mobject]
+    ) -> None:
         for mob in list_to_examine:
             if mob in set_to_remove:
                 continue

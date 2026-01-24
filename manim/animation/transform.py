@@ -30,11 +30,12 @@ __all__ = [
 
 import inspect
 import types
-from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, Callable
+from collections.abc import Callable, Sequence
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
+from manim.data_structures import MethodWithArgs
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 from ..animation.animation import Animation
@@ -49,7 +50,7 @@ from ..utils.paths import path_along_arc, path_along_circles
 from ..utils.rate_functions import smooth, squish_rate_func
 
 if TYPE_CHECKING:
-    pass
+    from manim.typing import Point3DLike, Point3DLike_Array
 
 
 class Transform(Animation):
@@ -123,6 +124,10 @@ class Transform(Animation):
 
                 self.play(*anims, run_time=2)
                 self.wait()
+
+    See also
+    --------
+    :class:`~.ReplacementTransform`, :meth:`~.Mobject.interpolate`, :meth:`~.Mobject.align_data`
     """
 
     def __init__(
@@ -132,12 +137,12 @@ class Transform(Animation):
         path_func: Callable | None = None,
         path_arc: float = 0,
         path_arc_axis: np.ndarray = OUT,
-        path_arc_centers: np.ndarray | None = None,
+        path_arc_centers: Point3DLike | Point3DLike_Array | None = None,
         replace_mobject_with_target_in_scene: bool = False,
         **kwargs,
     ) -> None:
         self.path_arc_axis: np.ndarray = path_arc_axis
-        self.path_arc_centers: np.ndarray = path_arc_centers
+        self.path_arc_centers: Point3DLike | Point3DLike_Array | None = path_arc_centers
         self.path_arc: float = path_arc
 
         # path_func is a property a few lines below so it doesn't need to be set in any case
@@ -427,18 +432,18 @@ class MoveToTarget(Transform):
     def check_validity_of_input(self, mobject: OpenGLMobject) -> None:
         if not hasattr(mobject, "target"):
             raise ValueError(
-                "MoveToTarget called on mobject" "without attribute 'target'",
+                "MoveToTarget called on mobjectwithout attribute 'target'",
             )
 
 
 class _MethodAnimation(MoveToTarget):
-    def __init__(self, mobject, methods):
+    def __init__(self, mobject: Mobject, methods: list[MethodWithArgs]) -> None:
         self.methods = methods
         super().__init__(mobject)
 
     def finish(self) -> None:
-        for method, method_args, method_kwargs in self.methods:
-            method.__func__(self.mobject, *method_args, **method_kwargs)
+        for item in self.methods:
+            item.method.__func__(self.mobject, *item.args, **item.kwargs)
         super().finish()
 
 
@@ -738,7 +743,7 @@ class CyclicReplace(Transform):
     def create_target(self) -> Group:
         target = self.group.copy()
         cycled_targets = [target[-1], *target[:-1]]
-        for m1, m2 in zip(cycled_targets, self.group):
+        for m1, m2 in zip(cycled_targets, self.group, strict=False):
             m1.move_to(m2)
         return target
 
@@ -923,5 +928,5 @@ class FadeTransformPieces(FadeTransform):
         """Replaces the source submobjects by the target submobjects and sets
         the opacity to 0.
         """
-        for sm0, sm1 in zip(source.get_family(), target.get_family()):
+        for sm0, sm1 in zip(source.get_family(), target.get_family(), strict=False):
             super().ghost_to(sm0, sm1)

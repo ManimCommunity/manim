@@ -28,10 +28,10 @@ from .simple_scenes import (
 def test_t_values(config, using_temp_config, disabling_caching, frame_rate):
     """Test that the framerate corresponds to the number of times animations are updated"""
     config.frame_rate = frame_rate
-    manager = Manager(SquareToCircle)
-    scene = manager.scene
-    scene._update_animations = Mock()
-    manager.render()
+    with Manager(SquareToCircle) as manager:
+        scene = manager.scene
+        scene._update_animations = Mock()
+        manager.render()
     assert scene._update_animations.call_count == config["frame_rate"]
     np.testing.assert_allclose(
         ([call.args[1] for call in scene._update_animations.call_args_list]),

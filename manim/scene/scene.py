@@ -3,11 +3,11 @@ from __future__ import annotations
 import inspect
 import random
 from collections import OrderedDict, deque
-from typing import TYPE_CHECKING
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, Self, assert_never
 
 import numpy as np
 from pyglet.window import key
-from typing_extensions import assert_never
 
 from manim import config, logger
 from manim.animation.animation import prepare_animation
@@ -25,10 +25,10 @@ from manim.utils.iterables import list_difference_update
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Reversible, Sequence
-    from typing import Any, Callable, Self
 
     from manim.animation.protocol import AnimationProtocol
     from manim.manager import Manager
+    from manim.typing import Point3D, Vector3D
 
 # TODO: these keybindings should be made configurable
 
@@ -98,7 +98,7 @@ class Scene:
         # Much nicer to work with deterministic scenes
         if self.random_seed is not None:
             random.seed(self.random_seed)
-            np.random.seed(self.random_seed)
+            np.random.default_rng(self.random_seed)
 
     def __str__(self) -> str:
         return self.__class__.__name__
@@ -192,7 +192,7 @@ class Scene:
 
     # Related to internal mobject organization
 
-    def add(self, *new_mobjects: OpenGLMobject):
+    def add(self, *new_mobjects: OpenGLMobject) -> Self:
         """
         Mobjects will be displayed, from background to
         foreground in the order with which they are added.
@@ -201,7 +201,7 @@ class Scene:
         self.mobjects += new_mobjects
         return self
 
-    def remove(self, *mobjects_to_remove: OpenGLMobject):
+    def remove(self, *mobjects_to_remove: OpenGLMobject) -> Self:
         """
         Removes anything in mobjects from scenes mobject list, but in the event that one
         of the items to be removed is a member of the family of an item in mobject_list,
@@ -289,16 +289,16 @@ class Scene:
         """
         self.updaters = [f for f in self.updaters if f is not func]
 
-    def bring_to_front(self, *mobjects: OpenGLMobject):
+    def bring_to_front(self, *mobjects: OpenGLMobject) -> Self:
         self.add(*mobjects)
         return self
 
-    def bring_to_back(self, *mobjects: OpenGLMobject):
+    def bring_to_back(self, *mobjects: OpenGLMobject) -> Self:
         self.remove(*mobjects)
         self.mobjects = [*mobjects, *self.mobjects]
         return self
 
-    def clear(self):
+    def clear(self) -> Self:
         self.mobjects.clear()
         return self
 
@@ -310,9 +310,9 @@ class Scene:
 
     def point_to_mobject(
         self,
-        point: np.ndarray,
+        point: Point3D,
         search_set: Reversible[OpenGLMobject] | None = None,
-        buff: float = 0,
+        buff: float = 0.0,
     ) -> OpenGLMobject | None:
         """
         E.g. if clicking on the scene, this returns the top layer mobject
@@ -347,7 +347,7 @@ class Scene:
 
     def _update_animations(
         self, animations: Iterable[AnimationProtocol], t: float, dt: float
-    ):
+    ) -> None:
         for animation in animations:
             animation.update_mobjects(dt)
             alpha = t / animation.get_run_time()
@@ -365,7 +365,7 @@ class Scene:
     def validate_run_time(
         cls,
         run_time: float,
-        method: Callable[[Any, ...], Any],
+        method: Callable[[Any], Any],
         parameter_name: str = "run_time",
     ) -> float:
         method_name = f"{cls.__name__}.{method.__name__}()"
@@ -429,7 +429,7 @@ class Scene:
         frozen_frame: bool | None = None,
         note: str | None = None,
         ignore_presenter_mode: bool = False,
-    ):
+    ) -> None:
         duration = self.validate_run_time(duration, self.wait, "duration")
         if frozen_frame is None:
             frozen_frame = not self.should_update_mobjects()
@@ -488,7 +488,7 @@ class Scene:
     # TODO: reimplement checkpoint feature with CE's section API
     # Event handling
 
-    def on_mouse_motion(self, point: np.ndarray, d_point: np.ndarray) -> None:
+    def on_mouse_motion(self, point: Point3D, d_point: Vector3D) -> None:
         self.mouse_point.move_to(point)
 
         event_data = {"point": point, "d_point": d_point}
@@ -515,7 +515,7 @@ class Scene:
             frame.shift(shift)
 
     def on_mouse_drag(
-        self, point: np.ndarray, d_point: np.ndarray, buttons: int, modifiers: int
+        self, point: Point3D, d_point: Vector3D, buttons: int, modifiers: int
     ) -> None:
         self.mouse_drag_point.move_to(point)
 
@@ -531,7 +531,7 @@ class Scene:
         if propagate_event is not None and propagate_event is False:
             return
 
-    def on_mouse_press(self, point: np.ndarray, button: int, mods: int) -> None:
+    def on_mouse_press(self, point: Point3D, button: int, mods: int) -> None:
         self.mouse_drag_point.move_to(point)
         event_data = {"point": point, "button": button, "mods": mods}
         propagate_event = EVENT_DISPATCHER.dispatch(
@@ -540,7 +540,7 @@ class Scene:
         if propagate_event is not None and propagate_event is False:
             return
 
-    def on_mouse_release(self, point: np.ndarray, button: int, mods: int) -> None:
+    def on_mouse_release(self, point: Point3D, button: int, mods: int) -> None:
         event_data = {"point": point, "button": button, "mods": mods}
         propagate_event = EVENT_DISPATCHER.dispatch(
             EventType.MouseReleaseEvent, **event_data
@@ -548,7 +548,7 @@ class Scene:
         if propagate_event is not None and propagate_event is False:
             return
 
-    def on_mouse_scroll(self, point: np.ndarray, offset: np.ndarray) -> None:
+    def on_mouse_scroll(self, point: Point3D, offset: Vector3D) -> None:
         event_data = {"point": point, "offset": offset}
         propagate_event = EVENT_DISPATCHER.dispatch(
             EventType.MouseScrollEvent, **event_data

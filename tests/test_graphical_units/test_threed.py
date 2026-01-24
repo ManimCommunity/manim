@@ -37,12 +37,12 @@ def test_Cone_get_start_and_get_end() -> None:
     cone = Cone().shift(RIGHT).rotate(PI / 4, about_point=ORIGIN, about_edge=OUT)
     start = [0.70710678, 0.70710678, -1.0]
     end = [0.70710678, 0.70710678, 0.0]
-    assert np.allclose(
-        cone.get_start(), start, atol=0.01
-    ), "start points of Cone do not match"
-    assert np.allclose(
-        cone.get_end(), end, atol=0.01
-    ), "end points of Cone do not match"
+    assert np.allclose(cone.get_start(), start, atol=0.01), (
+        "start points of Cone do not match"
+    )
+    assert np.allclose(cone.get_end(), end, atol=0.01), (
+        "end points of Cone do not match"
+    )
 
 
 @frames_comparison
@@ -172,11 +172,34 @@ def test_Y_Direction(scene: Scene) -> None:
 
 
 def test_get_start_and_end_Arrow3d() -> None:
-    start, end = ORIGIN, np.array([2, 1, 0])
+    start, end = ORIGIN, np.array([2, 1, 0], dtype=np.float64)
     arrow = Arrow3D(start, end)
-    assert np.allclose(
-        arrow.get_start(), start, atol=0.01
-    ), "start points of Arrow3D do not match"
-    assert np.allclose(
-        arrow.get_end(), end, atol=0.01
-    ), "end points of Arrow3D do not match"
+    assert np.allclose(arrow.get_start(), start, atol=0.01), (
+        "start points of Arrow3D do not match"
+    )
+    assert np.allclose(arrow.get_end(), end, atol=0.01), (
+        "end points of Arrow3D do not match"
+    )
+
+
+def test_type_conversion_in_Line3D():
+    start, end = [0, 0, 0], [1, 1, 1]
+    line = Line3D(start, end)
+    type_table = [type(item) for item in [*line.get_start(), *line.get_end()]]
+    bool_table = [t == np.float64 for t in type_table]
+    assert all(bool_table), "Types of start and end points are not np.float64"
+
+
+def test_type_conversion_in_Arrow3D():
+    start, end = [0, 0, 0], [1, 1, 1]
+    arrow = Arrow3D(start, end)
+    type_table = [type(item) for item in [*arrow.get_start(), *arrow.get_end()]]
+    bool_table = [t == np.float64 for t in type_table]
+    assert all(bool_table), "Types of start and end points are not np.float64"
+
+    assert np.allclose(arrow.get_start(), start, atol=0.01), (
+        "start points of Arrow3D do not match"
+    )
+    assert np.allclose(arrow.get_end(), end, atol=0.01), (
+        "end points of Arrow3D do not match"
+    )
