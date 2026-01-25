@@ -539,6 +539,8 @@ class OpenGLRenderer:
 
         self.background_color = config["background_color"]
         if self.should_create_window():
+            from .opengl_renderer_window import Window
+
             self.window = Window(self)
             self.context = self.window.ctx
             self.frame_buffer_object = self.context.detect_framebuffer()
