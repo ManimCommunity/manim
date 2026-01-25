@@ -19,6 +19,7 @@ from manim.mobject.opengl.opengl_mobject import (
     OpenGLPoint,
 )
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.typing import MatrixMN, Point3D
 from manim.utils.caching import handle_caching_play
 from manim.utils.color import color_to_rgba
 from manim.utils.exceptions import EndSceneEarlyException
@@ -50,9 +51,7 @@ if TYPE_CHECKING:
     from manim.scene.scene import Scene
     from manim.typing import (
         FloatRGBA,
-        MatrixMN,
         PathFuncType,
-        Point3D,
         Point3DLike,
         RGBAPixelArray,
         Vector3DLike,
@@ -550,13 +549,13 @@ class OpenGLRenderer:
             except Exception:
                 self.context = moderngl.create_context(
                     standalone=True,
-                    backend="egl",  # type: ignore[arg-type]
+                    backend="egl",
                 )
             self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
             self.frame_buffer_object.use()
         self.context.enable(moderngl.BLEND)
         self.context.wireframe = config["enable_wireframe"]
-        self.context.blend_func = (  # type: ignore[assignment]
+        self.context.blend_func = (
             moderngl.SRC_ALPHA,
             moderngl.ONE_MINUS_SRC_ALPHA,
             moderngl.ONE,
