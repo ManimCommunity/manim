@@ -21,8 +21,8 @@ def test_highlighted_cell_color_access():
 
 def test_background_rectangle_color():
     """Test that BackgroundRectangle color access works correctly."""
-    from manim.mobject.geometry.shape_matchers import BackgroundRectangle
     from manim import Square
+    from manim.mobject.geometry.shape_matchers import BackgroundRectangle
 
     square = Square()
     bg_rect = BackgroundRectangle(square, color=GREEN)
