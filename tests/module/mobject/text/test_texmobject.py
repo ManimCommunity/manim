@@ -108,6 +108,7 @@ def test_multi_part_tex_with_empty_parts():
     for one_part_glyph, multi_part_glyph in zip(
         one_part_fomula.family_members_with_points(),
         multi_part_formula.family_members_with_points(),
+        strict=False,
     ):
         np.testing.assert_allclose(one_part_glyph.points, multi_part_glyph.points)
 

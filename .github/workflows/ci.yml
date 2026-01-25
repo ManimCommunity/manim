@@ -22,12 +22,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, macos-13, windows-latest]
-        python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        os: [ubuntu-22.04, macos-latest, windows-latest]
+        python: ["3.11", "3.12", "3.13", "3.14"]
+        include:
+          - os: macos-15-intel
+            python: "3.13"
 
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Python ${{ matrix.python }}
         uses: actions/setup-python@v6
@@ -35,7 +38,7 @@ jobs:
           python-version: ${{ matrix.python }}
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7
         with:
           enable-cache: true
 
@@ -69,12 +72,12 @@ jobs:
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
 
       - name: Setup Cairo Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-cairo
         if: runner.os == 'Linux' || runner.os == 'macOS'
         with:
           path: ${{ github.workspace }}/third_party
-          key: ${{ runner.os }}-dependencies-cairo-${{ hashFiles('.github/scripts/ci_build_cairo.py') }}
+          key: ${{ runner.os }}-${{ runner.arch }}-dependencies-cairo-${{ hashFiles('.github/scripts/ci_build_cairo.py') }}
 
       - name: Build and install Cairo (Linux and macOS)
         if: (runner.os == 'Linux' || runner.os == 'macOS') && steps.cache-cairo.outputs.cache-hit != 'true'
@@ -85,7 +88,7 @@ jobs:
         run: python .github/scripts/ci_build_cairo.py --set-env-vars
 
       - name: Setup macOS cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-macos
         if: runner.os == 'macOS'
         with:
@@ -121,7 +124,7 @@ jobs:
       - name: Setup Windows cache
         id: cache-windows
         if: runner.os == 'Windows'
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ github.workspace }}\ManimCache
           key: ${{ runner.os }}-dependencies-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}-1
