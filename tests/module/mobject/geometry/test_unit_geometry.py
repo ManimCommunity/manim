@@ -89,7 +89,7 @@ def test_Polygram_get_vertex_groups():
     for vertex_groups in vertex_groups_arr:
         polygram = Polygram(*vertex_groups)
         poly_vertex_groups = polygram.get_vertex_groups()
-        for poly_group, group in zip(poly_vertex_groups, vertex_groups, strict=False):
+        for poly_group, group in zip(poly_vertex_groups, vertex_groups, strict=True):
             np.testing.assert_array_equal(poly_group, group)
 
     # If polygram is a Polygram of a vertex group containing the start vertex N times,
