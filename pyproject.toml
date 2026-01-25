@@ -1,6 +1,6 @@
 [project]
 name = "manim"
-version = "0.19.1"
+version = "0.19.2"
 description = "Animation engine for explanatory math videos."
 authors = [
   {name = "The Manim Community Developers", email = "contact@manim.community"},
@@ -23,31 +23,30 @@ classifiers = [
 requires-python = ">=3.11"
 dependencies = [
     "audioop-lts>=0.2.1 ; python_full_version >= '3.13'",
-    "av>=14.0.1",
+    "av>=15.0",
     "beautifulsoup4>=4.12",
     "click>=8.0",
     "cloup>=2.0.0",
     "decorator>=4.3.2",
-    "isosurfaces>=0.1.0",
-    "manimpango>=0.5.0,<1.0.0",
+    "isosurfaces>=0.1.1",
+    "manimpango>=0.6.1,<1.0.0",
     "mapbox-earcut>=1.0.0",
     "moderngl-window>=2.0.0",
-    "moderngl>=5.0.0,<6.0.0",
+    "moderngl>=5.7.0,<6.0.0",
     "networkx>=2.6",
-    "numpy>=2.0",
-    "numpy>=2.1 ; python_full_version >= '3.10'",
-    "pillow>=9.1",
-    "pycairo>=1.13,<2.0.0",
-    "pydub>=0.20.0",
-    "pygments>=2.0.0",
+    "numpy>=2.1",
+    "pillow>=11.0",
+    "pycairo>=1.14,<2.0.0",
+    "pydub>=0.22.0",
+    "pygments>=2.17",
     "rich>=12.0.0",
     "scipy>=1.13.0",
-    "scipy>=1.14.0 ; python_full_version >= '3.13'",
-    "screeninfo>=0.7",
-    "skia-pathops>=0.7.0",
+    "scipy>=1.15.0 ; python_full_version >= '3.13'",
+    "screeninfo>=0.7.0",
+    "skia-pathops>=0.9.0",
     "srt>=3.0.0",
-    "svgelements>=1.8.0",
-    "tqdm>=4.0.0",
+    "svgelements>=1.9.0",
+    "tqdm>=4.21.0",
     "typing-extensions>=4.12.0",
     "watchdog>=2.0.0",
 ]

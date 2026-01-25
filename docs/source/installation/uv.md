@@ -153,10 +153,8 @@ The following commands will
 The name for the Python project is *manimations*, which you can change
 to anything you like.
 
-Manim does not yet support Python 3.14 and the Python version is therefore set to 3.13.
-
 ```bash
-uv init --python 3.13 manimations
+uv init manimations
 cd manimations
 uv add manim
 ```
@@ -202,10 +200,8 @@ Manim itself! The following commands will
 The name for the Python project is *manimations*, which you can change
 to anything you like.
 
-Manim does not yet support Python 3.14 and the Python version is therefore set to 3.13.
-
 ```bash
-uv init --python 3.13 manimations
+uv init manimations
 cd manimations
 uv add manim
 ```
@@ -257,12 +253,10 @@ As soon as the required dependencies are installed, you can create
 a Python project (feel free to change the name *manimations* used below
 to some other name) with a local environment containing Manim by running
 ```bash
-uv init --python 3.13 manimations
+uv init manimations
 cd manimations
 uv add manim
 ```
-
-Manim does not yet support Python 3.14 and the Python version is therefore set to 3.13.
 
 :::::
 
