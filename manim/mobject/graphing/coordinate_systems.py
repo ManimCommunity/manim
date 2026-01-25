@@ -448,7 +448,7 @@ class CoordinateSystem:
                         zip(
                             tick_range,
                             axis.scaling.get_custom_labels(tick_range),
-                            strict=False,
+                            strict=True,
                         )
                     )
                 )
@@ -1300,7 +1300,7 @@ class CoordinateSystem:
 
         colors = color_gradient(color, len(x_range_array))
 
-        for x, color in zip(x_range_array, colors, strict=False):
+        for x, color in zip(x_range_array, colors, strict=True):
             if input_sample_type == "left":
                 sample_input = x
             elif input_sample_type == "right":
@@ -2362,7 +2362,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
         vertices = [
             self.coords_to_point(x, y, z)
-            for x, y, z in zip(x_values, y_values, z_values, strict=False)
+            for x, y, z in zip(x_values, y_values, z_values, strict=True)
         ]
         graph.set_points_as_corners(vertices)
         line_graph["line_graph"] = graph

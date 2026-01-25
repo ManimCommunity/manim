@@ -58,7 +58,7 @@ def adjacent_n_tuples(objects: Sequence[T], n: int) -> zip[tuple[T, ...]]:
         >>> list(adjacent_n_tuples([1, 2, 3, 4], 3))
         [(1, 2, 3), (2, 3, 4), (3, 4, 1), (4, 1, 2)]
     """
-    return zip(*([*objects[k:], *objects[:k]] for k in range(n)), strict=False)
+    return zip(*([*objects[k:], *objects[:k]] for k in range(n)), strict=True)
 
 
 def adjacent_pairs(objects: Sequence[T]) -> zip[tuple[T, ...]]:
