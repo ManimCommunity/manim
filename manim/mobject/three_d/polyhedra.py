@@ -132,7 +132,7 @@ class Polyhedron(VGroup):
         """Creates list of cyclic pairwise tuples."""
         edges: list[tuple[int, int]] = []
         for face in faces_list:
-            edges += zip(face, face[1:] + face[:1])
+            edges += zip(face, face[1:] + face[:1], strict=False)
         return edges
 
     def create_faces(
@@ -154,9 +154,7 @@ class Polyhedron(VGroup):
         """Extracts the coordinates of the vertices in the graph.
         Used for updating faces.
         """
-        new_vertex_coords = []
-        for v in self.graph.vertices:
-            new_vertex_coords.append(self.graph[v].get_center())
+        new_vertex_coords = [self.graph[v].get_center() for v in self.graph.vertices]
         layout = dict(enumerate(new_vertex_coords))
         return [[layout[j] for j in i] for i in self.faces_list]
 

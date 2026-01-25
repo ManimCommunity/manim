@@ -1,0 +1,67 @@
+# https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes
+
+changelog:
+  exclude:
+    labels:
+      - duplicate/wontfix
+      - invalid
+      - question
+      - release
+    authors:
+      - dependabot[bot]
+      - pre-commit-ci[bot]
+
+  categories:
+    # High Impact
+    - title: "Breaking Changes 🚨"
+      labels:
+        - breaking changes
+
+    # Highlights
+    - title: "Highlights 🌟"
+      labels:
+        - highlight
+
+    # User-facing
+    - title: "New Features ✨"
+      labels:
+        - new feature
+
+    - title: "Enhancements 🚀"
+      labels:
+        - enhancement
+
+    - title: "Bug Fixes 🐛"
+      labels:
+        - pr:bugfix
+
+    - title: "Deprecations & Removals ⚠️"
+      labels:
+        - pr:deprecation
+
+    # Developer-facing
+    - title: "Documentation 📚"
+      labels:
+        - documentation
+
+    - title: "Testing 🧪"
+      labels:
+        - testing
+
+    - title: "Infrastructure & Build 🔨"
+      labels:
+        - infrastructure
+
+    - title: "Code Quality & Refactoring 🧹"
+      labels:
+        - maintenance
+        - refactor
+
+    - title: "Type Hints 📝"
+      labels:
+        - typehints
+
+    # Catch-all (must be last)
+    - title: "Other Changes"
+      labels:
+        - "*"

@@ -30,8 +30,9 @@ from ...utils.iterables import stretch_array_to_length
 __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
 
 if TYPE_CHECKING:
+    from typing import Self
+
     import numpy.typing as npt
-    from typing_extensions import Self
 
     from manim.typing import (
         FloatRGBA_Array,
@@ -198,7 +199,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
     def ingest_submobjects(self) -> Self:
         attrs = self.get_array_attrs()
         arrays = list(map(self.get_merged_array, attrs))
-        for attr, array in zip(attrs, arrays):
+        for attr, array in zip(attrs, arrays, strict=False):
             setattr(self, attr, array)
         self.submobjects = []
         return self
