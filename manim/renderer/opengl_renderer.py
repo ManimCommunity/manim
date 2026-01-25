@@ -207,7 +207,7 @@ class OpenGLCamera(OpenGLMobject):
 
     @cached_property
     def unformatted_view_matrix(self) -> MatrixMN:
-        return np.linalg.inv(self.model_matrix)
+        return typing.cast(MatrixMN, np.linalg.inv(self.model_matrix))
 
     def init_points(self) -> None:
         """Initialize the camera's points based on frame shape and center point."""
@@ -236,7 +236,9 @@ class OpenGLCamera(OpenGLMobject):
             quaternion_from_angle_axis(phi, RIGHT, axis_normalized=True),
             quaternion_from_angle_axis(gamma, OUT, axis_normalized=True),
         )
-        self.inverse_rotation_matrix = rotation_matrix_transpose_from_quaternion(quat)
+        self.inverse_rotation_matrix = rotation_matrix_transpose_from_quaternion(
+            np.asarray(quat, dtype=float)
+        )
 
     @override
     def rotate(
@@ -417,7 +419,7 @@ class OpenGLCamera(OpenGLMobject):
         The center point is assumed to be the first point in the camera's points array.
         """
         # Assumes first point is at the center
-        return self.points[0]
+        return typing.cast(Point3D, self.points[0])
 
     def get_width(self) -> float:
         """Retrieve the width of the camera frame."""
@@ -548,13 +550,13 @@ class OpenGLRenderer:
             except Exception:
                 self.context = moderngl.create_context(
                     standalone=True,
-                    backend="egl",
+                    backend="egl",  # type: ignore[arg-type]
                 )
             self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
             self.frame_buffer_object.use()
         self.context.enable(moderngl.BLEND)
         self.context.wireframe = config["enable_wireframe"]
-        self.context.blend_func = (
+        self.context.blend_func = (  # type: ignore[assignment]
             moderngl.SRC_ALPHA,
             moderngl.ONE_MINUS_SRC_ALPHA,
             moderngl.ONE,
@@ -1174,7 +1176,7 @@ class OpenGLRenderer:
         """
         pixel_shape = self.get_pixel_shape()
         if pixel_shape is None:
-            return np.array([0, 0, 0])
+            return typing.cast(Point3D, np.array([0.0, 0.0, 0.0]))
         pixel_width, pixel_height = pixel_shape
         frame_height = config["frame_height"]
         frame_center = self.camera.get_center()
@@ -1185,12 +1187,9 @@ class OpenGLRenderer:
         scale = frame_height / pixel_height
         y_direction = -1 if top_left else 1
 
-        return frame_center + scale * np.array(
-            [
-                (px - pixel_width / 2),
-                y_direction * (py - pixel_height / 2),
-                0,
-            ]
+        return typing.cast(
+            Point3D,
+            frame_center + scale * np.array([(px - pixel_width / 2), y_direction * (py - pixel_height / 2), 0.0]),
         )
 
     @property
