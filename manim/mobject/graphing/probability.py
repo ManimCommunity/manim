@@ -107,7 +107,7 @@ class SampleSpace(Rectangle):
 
         last_point = self.get_edge_center(-vect)
         parts = VGroup()
-        for factor, color in zip(p_list_complete, colors_in_gradient, strict=True):
+        for factor, color in zip(p_list_complete, colors_in_gradient, strict=False):
             part = SampleSpace()
             part.set_fill(color, 1)
             part.replace(self, stretch=True)
@@ -279,7 +279,7 @@ class BarChart(Axes):
             "#003f5c",
             "#58508d",
             "#bc5090",
-            "#c2c2c2",
+            "#ff6361",
             "#ffa600",
         ],
         bar_width: float = 0.6,
