@@ -1190,7 +1190,11 @@ class OpenGLRenderer:
 
         return typing.cast(
             Point3D,
-            frame_center + scale * np.array([(px - pixel_width / 2), y_direction * (py - pixel_height / 2), 0.0]),
+            frame_center
+            + scale
+            * np.array(
+                [(px - pixel_width / 2), y_direction * (py - pixel_height / 2), 0.0]
+            ),
         )
 
     @property
