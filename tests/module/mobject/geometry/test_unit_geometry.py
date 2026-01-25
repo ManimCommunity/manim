@@ -7,6 +7,7 @@ import numpy as np
 from manim import (
     DEGREES,
     DOWN,
+    GREEN,
     LEFT,
     ORIGIN,
     RIGHT,
