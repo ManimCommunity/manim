@@ -17,15 +17,3 @@ def test_highlighted_cell_color_access():
     # Should not raise RecursionError
     color = rect.color
     assert color == GREEN
-
-
-def test_background_rectangle_color():
-    """Test that BackgroundRectangle color access works correctly."""
-    from manim.mobject.geometry.shape_matchers import BackgroundRectangle
-    from manim import Square
-
-    square = Square()
-    bg_rect = BackgroundRectangle(square, color=GREEN)
-
-    # Should not cause infinite recursion
-    assert bg_rect.color == GREEN

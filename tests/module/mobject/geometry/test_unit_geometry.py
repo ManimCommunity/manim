@@ -152,6 +152,18 @@ def test_BackgroundRectangle(manim_caplog):
     )
 
 
+def test_BackgroundRectangle_color_access():
+    """Test that BackgroundRectangle color access works correctly.
+
+    Regression test for https://github.com/ManimCommunity/manim/issues/4419
+    """
+    square = Square()
+    bg_rect = BackgroundRectangle(square, color=GREEN)
+
+    # Should not cause infinite recursion
+    assert bg_rect.color == GREEN
+
+
 def test_Square_side_length_reflets_correct_width_and_height():
     sq = Square(side_length=1).scale(3)
     assert sq.side_length == 3
