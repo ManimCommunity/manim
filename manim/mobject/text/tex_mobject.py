@@ -12,7 +12,7 @@ r"""Mobjects representing text rendered using LaTeX.
 
 from __future__ import annotations
 
-from manim.utils.color import BLACK, ManimColor, ParsableManimColor
+from manim.utils.color import BLACK, ParsableManimColor
 
 __all__ = [
     "SingleStringMathTex",
@@ -23,10 +23,9 @@ __all__ = [
 ]
 
 
-import itertools as it
 import operator as op
 import re
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable
 from functools import reduce
 from textwrap import dedent
 from typing import Any, Self
@@ -38,6 +37,10 @@ from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.tex import TexTemplate
 from manim.utils.tex_file_writing import tex_to_svg_file
+
+from ..opengl.opengl_compatibility import ConvertToOpenGL
+
+MATHTEX_SUBSTRING = "substring"
 
 
 class SingleStringMathTex(SVGMobject):
@@ -264,22 +267,30 @@ class MathTex(SingleStringMathTex):
         self.tex_template = kwargs.pop("tex_template", config["tex_template"])
         self.arg_separator = arg_separator
         self.substrings_to_isolate = (
-            [] if substrings_to_isolate is None else substrings_to_isolate
+            [] if substrings_to_isolate is None else list(substrings_to_isolate)
         )
         if tex_to_color_map is None:
             self.tex_to_color_map: dict[str, ParsableManimColor] = {}
         else:
             self.tex_to_color_map = tex_to_color_map
+        self.substrings_to_isolate.extend(self.tex_to_color_map.keys())
         self.tex_environment = tex_environment
         self.brace_notation_split_occurred = False
-        self.tex_strings = self._break_up_tex_strings(tex_strings)
+        self.tex_strings = self._prepare_tex_strings(tex_strings)
+        self.matched_strings_and_ids: list[tuple[str, str]] = []
+
         try:
+            joined_string = self._join_tex_strings_with_unique_deliminters(
+                self.tex_strings, self.substrings_to_isolate
+            )
             super().__init__(
-                self.arg_separator.join(self.tex_strings),
+                joined_string,
                 tex_environment=self.tex_environment,
                 tex_template=self.tex_template,
                 **kwargs,
             )
+            # Save the original tex_string
+            self.tex_string = self.arg_separator.join(self.tex_strings)
             self._break_up_by_substrings()
         except ValueError as compilation_error:
             if self.brace_notation_split_occurred:
@@ -301,36 +312,109 @@ class MathTex(SingleStringMathTex):
         if self.organize_left_to_right:
             self._organize_submobjects_left_to_right()
 
-    def _break_up_tex_strings(self, tex_strings: Sequence[str]) -> list[str]:
-        # Separate out anything surrounded in double braces
-        pre_split_length = len(tex_strings)
-        tex_strings_brace_splitted = [
-            re.split("{{(.*?)}}", str(t)) for t in tex_strings
+    def _prepare_tex_strings(self, tex_strings: Iterable[str]) -> list[str]:
+        # Deal with the case where tex_strings contains integers instead
+        # of strings.
+        tex_strings_validated = [
+            string if isinstance(string, str) else str(string) for string in tex_strings
         ]
-        tex_strings_combined = sum(tex_strings_brace_splitted, [])
-        if len(tex_strings_combined) > pre_split_length:
+        # Locate double curly bracers
+        tex_strings_validated_two = []
+        for tex_string in tex_strings_validated:
+            split = re.split(r"{{|}}", tex_string)
+            tex_strings_validated_two.extend(split)
+        if len(tex_strings_validated_two) > len(tex_strings_validated):
             self.brace_notation_split_occurred = True
+        return [string for string in tex_strings_validated_two if len(string) > 0]
 
-        # Separate out any strings specified in the isolate
-        # or tex_to_color_map lists.
-        patterns = []
-        patterns.extend(
-            [
-                f"({re.escape(ss)})"
-                for ss in it.chain(
-                    self.substrings_to_isolate,
-                    self.tex_to_color_map.keys(),
+    def _join_tex_strings_with_unique_deliminters(
+        self, tex_strings: list[str], substrings_to_isolate: Iterable[str]
+    ) -> str:
+        joined_string = ""
+        ssIdx = 0
+        for idx, tex_string in enumerate(tex_strings):
+            string_part = rf"\special{{dvisvgm:raw <g id='unique{idx:03d}'>}}"
+            self.matched_strings_and_ids.append((tex_string, f"unique{idx:03d}"))
+
+            # Try to match with all substrings_to_isolate and apply the first match
+            # then match again (on the rest of the string) and continue until no
+            # characters are left in the string
+            unprocessed_string = str(tex_string)
+            processed_string = ""
+            while len(unprocessed_string) > 0:
+                first_match = self._locate_first_match(
+                    substrings_to_isolate, unprocessed_string
                 )
-            ],
+
+                if first_match:
+                    processed, unprocessed_string = self._handle_match(
+                        ssIdx, first_match
+                    )
+                    processed_string = processed_string + processed
+                    ssIdx += 1
+                else:
+                    processed_string = processed_string + unprocessed_string
+                    unprocessed_string = ""
+
+            string_part += processed_string
+            if idx < len(tex_strings) - 1:
+                string_part += self.arg_separator
+            string_part += r"\special{dvisvgm:raw </g>}"
+            joined_string = joined_string + string_part
+        return joined_string
+
+    def _locate_first_match(
+        self, substrings_to_isolate: Iterable[str], unprocessed_string: str
+    ) -> re.Match | None:
+        first_match_start = len(unprocessed_string)
+        first_match_length = 0
+        first_match = None
+        for substring in substrings_to_isolate:
+            match = re.match(f"(.*?)({re.escape(substring)})(.*)", unprocessed_string)
+            if match and len(match.group(1)) < first_match_start:
+                first_match = match
+                first_match_start = len(match.group(1))
+                first_match_length = len(match.group(2))
+            elif match and len(match.group(1)) == first_match_start:
+                # Break ties by looking at length of matches.
+                if first_match_length < len(match.group(2)):
+                    first_match = match
+                    first_match_start = len(match.group(1))
+                    first_match_length = len(match.group(2))
+        return first_match
+
+    def _handle_match(self, ssIdx: int, first_match: re.Match) -> tuple[str, str]:
+        pre_match = first_match.group(1)
+        matched_string = first_match.group(2)
+        post_match = first_match.group(3)
+        pre_string = (
+            rf"\special{{dvisvgm:raw <g id='unique{ssIdx:03d}{MATHTEX_SUBSTRING}'>}}"
         )
-        pattern = "|".join(patterns)
-        if pattern:
-            pieces = []
-            for s in tex_strings_combined:
-                pieces.extend(re.split(pattern, s))
-        else:
-            pieces = tex_strings_combined
-        return [p for p in pieces if p]
+        post_string = r"\special{dvisvgm:raw </g>}"
+        self.matched_strings_and_ids.append(
+            (matched_string, f"unique{ssIdx:03d}{MATHTEX_SUBSTRING}")
+        )
+        processed_string = pre_match + pre_string + matched_string + post_string
+        unprocessed_string = post_match
+        return processed_string, unprocessed_string
+
+    @property
+    def _substring_matches(self) -> list[tuple[str, str]]:
+        """Return only the 'ss' (substring_to_isolate) matches."""
+        return [
+            (tex, id_)
+            for tex, id_ in self.matched_strings_and_ids
+            if id_.endswith(MATHTEX_SUBSTRING)
+        ]
+
+    @property
+    def _main_matches(self) -> list[tuple[str, str]]:
+        """Return only the main tex_string matches."""
+        return [
+            (tex, id_)
+            for tex, id_ in self.matched_strings_and_ids
+            if not id_.endswith(MATHTEX_SUBSTRING)
+        ]
 
     def _break_up_by_substrings(self) -> Self:
         """
@@ -339,51 +423,32 @@ class MathTex(SingleStringMathTex):
         of tex_strings)
         """
         new_submobjects: list[VMobject] = []
-        curr_index = 0
-        for tex_string in self.tex_strings:
-            sub_tex_mob = SingleStringMathTex(
-                tex_string,
-                tex_environment=self.tex_environment,
-                tex_template=self.tex_template,
+        try:
+            for tex_string, tex_string_id in self._main_matches:
+                mtp = MathTexPart()
+                mtp.tex_string = tex_string
+                mtp.add(*self.id_to_vgroup_dict[tex_string_id].submobjects)
+                new_submobjects.append(mtp)
+        except KeyError:
+            logger.error(
+                f"MathTex: Could not find SVG group for tex part '{tex_string}' (id: {tex_string_id}). Using fallback to root group."
             )
-            num_submobs = len(sub_tex_mob.submobjects)
-            new_index = (
-                curr_index + num_submobs + len("".join(self.arg_separator.split()))
-            )
-            if num_submobs == 0:
-                last_submob_index = min(curr_index, len(self.submobjects) - 1)
-                sub_tex_mob.move_to(self.submobjects[last_submob_index], RIGHT)
-            else:
-                sub_tex_mob.submobjects = self.submobjects[curr_index:new_index]
-            new_submobjects.append(sub_tex_mob)
-            curr_index = new_index
+            new_submobjects.append(self.id_to_vgroup_dict["root"])
         self.submobjects = new_submobjects
         return self
 
-    def get_parts_by_tex(
-        self, tex: str, substring: bool = True, case_sensitive: bool = True
-    ) -> VGroup:
-        def test(tex1: str, tex2: str) -> bool:
-            if not case_sensitive:
-                tex1 = tex1.lower()
-                tex2 = tex2.lower()
-            if substring:
-                return tex1 in tex2
-            else:
-                return tex1 == tex2
-
-        return VGroup(*(m for m in self.submobjects if test(tex, m.get_tex_string())))
-
-    def get_part_by_tex(self, tex: str, **kwargs: Any) -> MathTex | None:
-        all_parts = self.get_parts_by_tex(tex, **kwargs)
-        return all_parts[0] if all_parts else None
+    def get_part_by_tex(self, tex: str, **kwargs: Any) -> VGroup | None:
+        for tex_str, match_id in self.matched_strings_and_ids:
+            if tex_str == tex:
+                return self.id_to_vgroup_dict[match_id]
+        return None
 
     def set_color_by_tex(
         self, tex: str, color: ParsableManimColor, **kwargs: Any
     ) -> Self:
-        parts_to_color = self.get_parts_by_tex(tex, **kwargs)
-        for part in parts_to_color:
-            part.set_color(color)
+        for tex_str, match_id in self.matched_strings_and_ids:
+            if tex_str == tex:
+                self.id_to_vgroup_dict[match_id].set_color(color)
         return self
 
     def set_opacity_by_tex(
@@ -409,22 +474,18 @@ class MathTex(SingleStringMathTex):
         """
         if remaining_opacity is not None:
             self.set_opacity(opacity=remaining_opacity)
-        for part in self.get_parts_by_tex(tex):
-            part.set_opacity(opacity)
+        for tex_str, match_id in self.matched_strings_and_ids:
+            if tex_str == tex:
+                self.id_to_vgroup_dict[match_id].set_opacity(opacity)
         return self
 
     def set_color_by_tex_to_color_map(
         self, texs_to_color_map: dict[str, ParsableManimColor], **kwargs: Any
     ) -> Self:
         for texs, color in list(texs_to_color_map.items()):
-            try:
-                # If the given key behaves like tex_strings
-                texs + ""
-                self.set_color_by_tex(texs, ManimColor(color), **kwargs)
-            except TypeError:
-                # If the given key is a tuple
-                for tex in texs:
-                    self.set_color_by_tex(tex, ManimColor(color), **kwargs)
+            for match in self.matched_strings_and_ids:
+                if match[0] == texs:
+                    self.id_to_vgroup_dict[match[1]].set_color(color)
         return self
 
     def index_of_part(self, part: MathTex) -> int:
@@ -433,14 +494,15 @@ class MathTex(SingleStringMathTex):
             raise ValueError("Trying to get index of part not in MathTex")
         return split_self.index(part)
 
-    def index_of_part_by_tex(self, tex: str, **kwargs: Any) -> int:
-        part = self.get_part_by_tex(tex, **kwargs)
-        if part is None:
-            return -1
-        return self.index_of_part(part)
-
     def sort_alphabetically(self) -> None:
         self.submobjects.sort(key=lambda m: m.get_tex_string())
+
+
+class MathTexPart(VMobject, metaclass=ConvertToOpenGL):
+    tex_string: str
+
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}({repr(self.tex_string)})"
 
 
 class Tex(MathTex):
