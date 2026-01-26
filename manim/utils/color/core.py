@@ -1490,7 +1490,6 @@ def random_color() -> ManimColor:
 
 
 class RandomColorGenerator:
-    _singleton: RandomColorGenerator | None = None
     """A generator for producing random colors from a given list of Manim colors,
     optionally in a reproducible sequence using a seed value.
 
@@ -1553,15 +1552,16 @@ class RandomColorGenerator:
         ManimColor('#FC6255')
     """
 
+    _singleton: RandomColorGenerator | None = None
+
     def __init__(
         self,
         seed: int | None = None,
         sample_colors: list[ManimColor] | None = None,
     ) -> None:
-        self.choice = random.choice if seed is None else random.Random(seed).choice
-
         from manim.utils.color.manim_colors import _all_manim_colors
 
+        self.choice = random.choice if seed is None else random.Random(seed).choice
         self.colors = _all_manim_colors if sample_colors is None else sample_colors
 
     def next(self) -> ManimColor:
