@@ -407,8 +407,10 @@ class MathTex(SingleStringMathTex):
                 mtp.tex_string = tex_string
                 mtp.add(*self.id_to_vgroup_dict[tex_string_id].submobjects)
                 new_submobjects.append(mtp)
-        except KeyError as e:
-            print(f"KeyError: {e}")
+        except KeyError:
+            logger.error(
+                f"MathTex: Could not find SVG group for tex part '{tex_string}' (id: {tex_string_id}). Using fallback to root group."
+            )
             new_submobjects.append(self.id_to_vgroup_dict["root"])
         self.submobjects = new_submobjects
         return self

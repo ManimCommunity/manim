@@ -315,7 +315,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                         for parent_name in vgroup_stack[:-1]:
                             vgroups[parent_name].add(mob)
             except Exception as e:
-                print(e)
+                logger.error(f"Exception occurred in 'get_mobjects_from'. Details: {e}")
 
         return result, vgroups
 
