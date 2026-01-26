@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from manim import Circle, ReplacementTransform, Scene, Square, VGroup
+from manim import Circle, Manager, ReplacementTransform, Scene, Square, VGroup
 
 
 def test_no_duplicate_references():
-    scene = Scene()
+    manager = Manager(Scene)
+    scene = manager.scene
     c = Circle()
     sq = Square()
     scene.add(c, sq)
@@ -15,7 +16,8 @@ def test_no_duplicate_references():
 
 
 def test_duplicate_references_in_group():
-    scene = Scene()
+    manager = Manager(Scene)
+    scene = manager.scene
     c = Circle()
     sq = Square()
     vg = VGroup(c, sq)
