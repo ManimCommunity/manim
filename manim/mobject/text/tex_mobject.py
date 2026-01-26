@@ -40,6 +40,8 @@ from manim.utils.tex_file_writing import tex_to_svg_file
 
 from ..opengl.opengl_compatibility import ConvertToOpenGL
 
+MATHTEX_SUBSTRING = "substring"
+
 
 class SingleStringMathTex(SVGMobject):
     """Elementary building block for rendering text with LaTeX.
@@ -385,12 +387,34 @@ class MathTex(SingleStringMathTex):
         pre_match = first_match.group(1)
         matched_string = first_match.group(2)
         post_match = first_match.group(3)
-        pre_string = rf"\special{{dvisvgm:raw <g id='unique{ssIdx:03d}ss'>}}"
+        pre_string = (
+            rf"\special{{dvisvgm:raw <g id='unique{ssIdx:03d}{MATHTEX_SUBSTRING}'>}}"
+        )
         post_string = r"\special{dvisvgm:raw </g>}"
-        self.matched_strings_and_ids.append((matched_string, f"unique{ssIdx:03d}ss"))
+        self.matched_strings_and_ids.append(
+            (matched_string, f"unique{ssIdx:03d}{MATHTEX_SUBSTRING}")
+        )
         processed_string = pre_match + pre_string + matched_string + post_string
         unprocessed_string = post_match
         return processed_string, unprocessed_string
+
+    @property
+    def _substring_matches(self) -> list[tuple[str, str]]:
+        """Return only the 'ss' (substring_to_isolate) matches."""
+        return [
+            (tex, id_)
+            for tex, id_ in self.matched_strings_and_ids
+            if id_.endswith(MATHTEX_SUBSTRING)
+        ]
+
+    @property
+    def _main_matches(self) -> list[tuple[str, str]]:
+        """Return only the main tex_string matches."""
+        return [
+            (tex, id_)
+            for tex, id_ in self.matched_strings_and_ids
+            if not id_.endswith(MATHTEX_SUBSTRING)
+        ]
 
     def _break_up_by_substrings(self) -> Self:
         """
@@ -400,9 +424,7 @@ class MathTex(SingleStringMathTex):
         """
         new_submobjects: list[VMobject] = []
         try:
-            for tex_string, tex_string_id in self.matched_strings_and_ids:
-                if tex_string_id[-2:] == "ss":
-                    continue
+            for tex_string, tex_string_id in self._main_matches:
                 mtp = MathTexPart()
                 mtp.tex_string = tex_string
                 mtp.add(*self.id_to_vgroup_dict[tex_string_id].submobjects)
