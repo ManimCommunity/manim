@@ -241,11 +241,13 @@ class Manager(Generic[Scene_co]):
             "you can interact with the scene. "
             "Press `command + q` or `esc` to quit"
         )
-        # TODO: Replace with actual dt instead
-        # of hardcoded dt
-        dt = 1 / config.frame_rate
+        
+        last_time = time.perf_counter()
         while not self.window.is_closing:
+            current_time = time.perf_counter()
+            dt = current_time - last_time
             self._update_frame(dt)
+            last_time = current_time
 
     @contextlib.contextmanager
     def no_render(self) -> Iterator[None]:

@@ -600,7 +600,7 @@ class Arrow(Line):
         super().__init__(*args, buff=buff, stroke_width=stroke_width, **kwargs)  # type: ignore[misc]
         # TODO, should this be affected when
         # Arrow.set_stroke is called?
-        self.initial_stroke_width = self.stroke_width
+        self.initial_stroke_width = self.stroke_width[0]
         self.add_tip(tip_shape=tip_shape)
         self._set_stroke_width_from_length()
 
