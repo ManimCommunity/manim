@@ -27,6 +27,7 @@ from manim.utils.progressbar import (
 )
 
 if TYPE_CHECKING:
+    from types import TracebackType
     from typing import Any
 
     import numpy.typing as npt
@@ -91,7 +92,12 @@ class Manager(Generic[Scene_co]):
     def __enter__(self) -> Manager[Scene_co]:
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback) -> None:
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
         self.release()
 
     # keep these as instance methods so subclasses
@@ -160,7 +166,7 @@ class Manager(Generic[Scene_co]):
                     self.play(Create(Circle()))
 
 
-            with (tempconfig({"preview": True}), Manager(MyScene) as manager):
+            with tempconfig({"preview": True}), Manager(MyScene) as manager:
                 manager.render()
         """
         config._warn_about_config_options()
@@ -176,7 +182,7 @@ class Manager(Generic[Scene_co]):
 
         with contextlib.suppress(EndSceneEarlyException):
             self.construct()
-            self.post_contruct()
+            self.post_construct()
             self._interact()
 
         self.tear_down()
@@ -203,7 +209,7 @@ class Manager(Generic[Scene_co]):
     def release(self) -> None:
         self.renderer.release()
 
-    def post_contruct(self) -> None:
+    def post_construct(self) -> None:
         """Run post-construct hooks, and clean up the file writer."""
         if self.file_writer.num_plays:
             self.file_writer.finish()
