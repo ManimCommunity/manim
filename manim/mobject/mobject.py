@@ -1126,8 +1126,10 @@ class Mobject:
             self.add_updater(updater)
         return self
 
-    def suspend_updating(self, recursive: bool = True) -> Self:
+    def suspend_updating(self, recursive: bool = True):
         """Disable updating from updaters and animations.
+
+        This can also be used as a context manager. If so, :meth:`resume_updating` is called when leaving the context.
 
 
         Parameters
@@ -1135,10 +1137,28 @@ class Mobject:
         recursive
             Whether to recursively suspend updating on all submobjects.
 
-        Returns
-        -------
-        :class:`Mobject`
-            ``self``
+
+        Examples
+        --------
+
+        .. manim:: SuspendContext
+
+            class SuspendContext(Scene):
+                def construct(self):
+                    s = Square().shift(DL)
+                    c = Circle().add_updater(lambda m: m.next_to(s, UP, buff=1.0))
+                    self.add(c)
+
+                    self.play(s.animate.shift(2*RIGHT))
+                    c.suspend_updating() # used a function call
+                    self.play(Indicate(s))
+                    c.resume_updating() # updating must be resumed manually
+                    self.play(s.animate.shift(2*LEFT))
+
+                    with c.suspend_updating(): # used as a context manager, updating is resumed automatically
+                        self.play(Indicate(s))
+                    self.play(Indicate(s))
+
 
         See also
         --------
@@ -1150,9 +1170,10 @@ class Mobject:
         if recursive:
             for submob in self.submobjects:
                 submob.suspend_updating(recursive)
-        return self
 
-    def resume_updating(self, recursive: bool = True) -> Self:
+        return _UpdateManager(self)
+
+    def resume_updating(self, recursive: bool = True):
         """Enable updating from updaters and animations.
 
         Parameters
@@ -1160,10 +1181,6 @@ class Mobject:
         recursive
             Whether to recursively enable updating on all submobjects.
 
-        Returns
-        -------
-        :class:`Mobject`
-            ``self``
 
         See also
         --------
@@ -1176,7 +1193,6 @@ class Mobject:
             for submob in self.submobjects:
                 submob.resume_updating(recursive)
         self.update(dt=0, recursive=recursive)
-        return self
 
     # Transforming operations
 
@@ -3337,6 +3353,17 @@ class _AnimationBuilder:
             setattr(anim, attr, value)
 
         return anim
+
+
+class _UpdateManager:
+    def __init__(self, parent: Mobject):
+        self.parent: Mobject = parent
+
+    def __enter__(self) -> Mobject:
+        return self.parent
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.parent.resume_updating()
 
 
 def override_animate(method) -> types.FunctionType:
