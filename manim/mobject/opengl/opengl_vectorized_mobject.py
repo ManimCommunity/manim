@@ -221,12 +221,12 @@ class OpenGLVMobject(OpenGLMobject):
 
     def set_stroke(
         self,
-        color=None,
-        width=None,
-        opacity=None,
-        background=None,
-        recurse=True,
-    ):
+        color: ParsableManimColor | Sequence[ParsableManimColor] | None = None,
+        width: float | None = None,
+        opacity: float | None = None,
+        background: bool | None = None,
+        recurse: bool = True,
+    ) -> Self:
         for mob in self.get_family(recurse):
             if color is not None:
                 mob.stroke_color = listify(ManimColor.parse(color))
@@ -1178,12 +1178,12 @@ class OpenGLVMobject(OpenGLMobject):
             path = path_list[n]
             # # Check for useless points at the end of the path and remove them
             # # https://github.com/ManimCommunity/manim/issues/1959
-            # while len(path) > nppc:
-            #     # If the last nppc points are all equal to the preceding point
-            #     if self.consider_points_equals(path[-nppc:], path[-nppc - 1]):
-            #         path = path[:-nppc]
-            #     else:
-            #         break
+            while len(path) > nppc:
+                # If the last nppc points are all equal to the preceding point
+                if self.consider_points_equals(path[-nppc:], path[-nppc - 1]):
+                    path = path[:-nppc]
+                else:
+                    break
             return path
 
         for n in range(n_subpaths):

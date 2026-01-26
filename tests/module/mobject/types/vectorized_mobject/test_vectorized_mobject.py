@@ -14,6 +14,7 @@ from manim import (
     Square,
     VDict,
     VGroup,
+    VMobject,
 )
 from manim.constants import PI
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
