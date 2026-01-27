@@ -26,7 +26,7 @@ class Renderer(ABC):
     to :meth:`render_image`, etc.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.capabilities = [
             (OpenGLVMobject, self.render_vmobject),
             (ImageMobject, self.render_image),
@@ -42,7 +42,7 @@ class Renderer(ABC):
     def render_mobject(self, mob: OpenGLMobject) -> None:
         for mob_cls, render_func in self.capabilities:
             if isinstance(mob, mob_cls):
-                render_func(mob)
+                render_func(mob)  # type: ignore[operator]
                 break
         else:
             if not isinstance(mob, InvisibleMobject):

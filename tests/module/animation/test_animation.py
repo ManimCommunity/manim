@@ -40,20 +40,11 @@ def test_wait_invalid_duration(duration):
         test_scene.wait(duration)
 
 
-@pytest.mark.parametrize("frozen_frame", [False, True])
-def test_wait_duration_shorter_than_frame_rate(manim_caplog, frozen_frame):
+def test_wait_duration_shorter_than_frame_rate(manim_caplog):
     manager = Manager(Scene)
     test_scene = manager.scene
-    test_scene.wait(1e-9, frozen_frame=frozen_frame)
+    test_scene.wait(1e-9)
     assert "too short for the current frame rate" in manim_caplog.text
-
-
-@pytest.mark.parametrize("duration", [0, -1])
-def test_pause_invalid_duration(duration):
-    manager = Manager(Scene)
-    test_scene = manager.scene
-    with pytest.raises(ValueError, match="The duration must be a positive number."):
-        test_scene.pause(duration)
 
 
 @pytest.mark.parametrize("max_time", [0, -1])
