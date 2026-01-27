@@ -4,7 +4,7 @@ import datetime
 
 import pytest
 
-from manim import Circle, FadeIn, Group, Manager, Mobject, Scene, Square
+from manim import Circle, FadeIn, Group, Manager, OpenGLMobject, Scene, Square
 from manim.animation.animation import Wait
 
 
@@ -12,27 +12,26 @@ def test_scene_add_remove(dry_run):
     manager = Manager(Scene)
     scene = manager.scene
     assert len(scene.mobjects) == 0
-    scene.add(Mobject())
+    scene.add(OpenGLMobject())
     assert len(scene.mobjects) == 1
-    scene.add(*(Mobject() for _ in range(10)))
+    scene.add(*(OpenGLMobject() for _ in range(10)))
     assert len(scene.mobjects) == 11
 
     # Check that adding a mobject twice does not actually add it twice
-    repeated = Mobject()
+    repeated = OpenGLMobject()
     scene.add(repeated)
     assert len(scene.mobjects) == 12
     scene.add(repeated)
     assert len(scene.mobjects) == 12
 
     # Check that Scene.add() returns the Scene (for chained calls)
-    assert scene.add(Mobject()) is scene
+    assert scene.add(OpenGLMobject()) is scene
 
     manager = Manager(Scene)
     scene = manager.scene
-    to_remove = Mobject()
-    scene = Scene()
+    to_remove = OpenGLMobject()
     scene.add(to_remove)
-    scene.add(*(Mobject() for _ in range(10)))
+    scene.add(*(OpenGLMobject() for _ in range(10)))
     assert len(scene.mobjects) == 11
     scene.remove(to_remove)
     assert len(scene.mobjects) == 10
@@ -40,7 +39,7 @@ def test_scene_add_remove(dry_run):
     assert len(scene.mobjects) == 10
 
     # Check that Scene.remove() returns the instance (for chained calls)
-    assert scene.add(Mobject()) is scene
+    assert scene.add(OpenGLMobject()) is scene
 
 
 def test_scene_time(dry_run):
@@ -87,10 +86,10 @@ def test_replace(dry_run):
     manager = Manager(Scene)
     scene = manager.scene
 
-    first = Mobject(name="first")
-    second = Mobject(name="second")
-    third = Mobject(name="third")
-    fourth = Mobject(name="fourth")
+    first = OpenGLMobject(name="first")
+    second = OpenGLMobject(name="second")
+    third = OpenGLMobject(name="third")
+    fourth = OpenGLMobject(name="fourth")
 
     scene.add(first)
     scene.add(Group(second, third, name="group"))
@@ -98,8 +97,8 @@ def test_replace(dry_run):
     assert_names(scene.mobjects, ["first", "group", "fourth"])
     assert_names(scene.mobjects[1], ["second", "third"])
 
-    alpha = Mobject(name="alpha")
-    beta = Mobject(name="beta")
+    alpha = OpenGLMobject(name="alpha")
+    beta = OpenGLMobject(name="beta")
 
     scene.replace(first, alpha)
     assert_names(scene.mobjects, ["alpha", "group", "fourth"])
