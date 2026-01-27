@@ -1306,7 +1306,7 @@ class OpenGLMobject:
         self,
         rows: int | None = None,
         cols: int | None = None,
-        buff: float | None = None,
+        buff: float | tuple[float, float] = MED_SMALL_BUFF,
         h_buff: float | None = None,
         v_buff: float | None = None,
         buff_ratio: float | None = None,
@@ -1324,8 +1324,12 @@ class OpenGLMobject:
             cols = len(submobs) // rows
 
         if buff is not None:
-            h_buff = buff
-            v_buff = buff
+            if isinstance(buff, tuple):
+                h_buff = buff[0]
+                v_buff = buff[1]
+            else:
+                h_buff = buff
+                v_buff = buff
         else:
             if buff_ratio is not None:
                 v_buff_ratio = buff_ratio
