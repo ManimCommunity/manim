@@ -1304,9 +1304,9 @@ class OpenGLMobject:
 
     def arrange_in_grid(
         self,
-        n_rows: int | None = None,
-        n_cols: int | None = None,
-        buff: float | None = None,
+        rows: int | None = None,
+        cols: int | None = None,
+        buff: float | tuple[float, float] = MED_SMALL_BUFF,
         h_buff: float | None = None,
         v_buff: float | None = None,
         buff_ratio: float | None = None,
@@ -1316,16 +1316,20 @@ class OpenGLMobject:
         fill_rows_first: bool = True,
     ) -> Self:
         submobs = self.submobjects
-        if n_rows is None and n_cols is None:
-            n_rows = int(np.sqrt(len(submobs)))
-        if n_rows is None and n_cols is not None:
-            n_rows = len(submobs) // n_cols
-        if n_cols is None and n_rows is not None:
-            n_cols = len(submobs) // n_rows
+        if rows is None and cols is None:
+            rows = int(np.sqrt(len(submobs)))
+        if rows is None and cols is not None:
+            rows = len(submobs) // cols
+        if cols is None and rows is not None:
+            cols = len(submobs) // rows
 
         if buff is not None:
-            h_buff = buff
-            v_buff = buff
+            if isinstance(buff, tuple):
+                h_buff = buff[0]
+                v_buff = buff[1]
+            else:
+                h_buff = buff
+                v_buff = buff
         else:
             if buff_ratio is not None:
                 v_buff_ratio = buff_ratio
@@ -1340,9 +1344,9 @@ class OpenGLMobject:
 
         for index, sm in enumerate(submobs):
             if fill_rows_first:
-                x, y = index % n_cols, index // n_cols  # type: ignore
+                x, y = index % cols, index // cols  # type: ignore
             else:
-                x, y = index // n_rows, index % n_rows  # type: ignore
+                x, y = index // rows, index % rows  # type: ignore
             sm.move_to(ORIGIN, aligned_edge)
             sm.shift(x * x_unit * RIGHT + y * y_unit * DOWN)
         self.center()
