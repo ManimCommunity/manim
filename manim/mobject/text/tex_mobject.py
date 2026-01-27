@@ -304,10 +304,8 @@ class MathTex(SingleStringMathTex):
     def _break_up_tex_strings(self, tex_strings: Sequence[str]) -> list[str]:
         # Separate out anything surrounded in double braces
         pre_split_length = len(tex_strings)
-        tex_strings_brace_splitted = [
-            re.split("{{(.*?)}}", str(t)) for t in tex_strings
-        ]
-        tex_strings_combined = sum(tex_strings_brace_splitted, [])
+        tex_strings_brace_split = [re.split("{{(.*?)}}", str(t)) for t in tex_strings]
+        tex_strings_combined = sum(tex_strings_brace_split, [])
         if len(tex_strings_combined) > pre_split_length:
             self.brace_notation_split_occurred = True
 

@@ -76,7 +76,7 @@ class OpenGLSurface(OpenGLMobject):
         opacity=1.0,
         gloss=0.3,
         shadow=0.4,
-        prefered_creation_axis=1,
+        preferred_creation_axis=1,
         # For du and dv steps.  Much smaller and numerical error
         # can crop up in the shaders.
         epsilon=1e-5,
@@ -95,7 +95,7 @@ class OpenGLSurface(OpenGLMobject):
         self.axes = axes
         self.colorscale = colorscale
         self.colorscale_axis = colorscale_axis
-        self.prefered_creation_axis = prefered_creation_axis
+        self.preferred_creation_axis = preferred_creation_axis
         # For du and dv steps.  Much smaller and numerical error
         # can crop up in the shaders.
         self.epsilon = epsilon
@@ -179,7 +179,7 @@ class OpenGLSurface(OpenGLMobject):
     def pointwise_become_partial(self, smobject, a, b, axis=None):
         assert isinstance(smobject, OpenGLSurface)
         if axis is None:
-            axis = self.prefered_creation_axis
+            axis = self.preferred_creation_axis
         if a <= 0 and b >= 1:
             self.match_points(smobject)
             return self
