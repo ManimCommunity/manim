@@ -58,7 +58,7 @@ def test_static_wait_detection(using_temp_config, disabling_caching):
     """Test if a static wait (wait that freeze the frame) is correctly detected"""
     manager = Manager(SceneWithStaticWait)
     scene = manager.scene
-    scene._update_animations = Mock() 
+    scene._update_animations = Mock()
     manager.render()
     anims = scene._update_animations.call_args[0][0]
     # Test is is_static_wait of the Wait animation has been set to True by compile_animation_ata
@@ -69,14 +69,14 @@ def test_static_wait_detection(using_temp_config, disabling_caching):
 def test_non_static_wait_detection(using_temp_config, disabling_caching):
     manager = Manager(SceneWithNonStaticWait)
     scene = manager.scene
-    scene._update_animations = Mock() 
+    scene._update_animations = Mock()
     manager.render()
     anims = scene._update_animations.call_args[0][0]
     assert not anims[0].is_static_wait
     assert not scene.is_current_animation_frozen_frame(anims)
     manager = Manager(SceneWithSceneUpdater)
     scene = manager.scene
-    scene._update_animations = Mock() 
+    scene._update_animations = Mock()
     manager.render()
     anims = scene._update_animations.call_args[0][0]
     assert not anims[0].is_static_wait
