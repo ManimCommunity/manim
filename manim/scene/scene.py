@@ -88,7 +88,7 @@ class Scene:
         self.undo_stack: deque[SceneState] = deque()
         self.redo_stack: list[SceneState] = []
         self.updaters: list[Callable[[float], None]] = []
-        
+
         # Items associated with interaction
         self.mouse_point = Point()
         self.mouse_drag_point = Point()
@@ -176,9 +176,11 @@ class Scene:
             mob.has_updaters for mob in self.mobjects
         )
 
-    def is_current_animation_frozen_frame(self, animations:Sequence[AnimationProtocol]) -> bool:
+    def is_current_animation_frozen_frame(
+        self, animations: Sequence[AnimationProtocol]
+    ) -> bool:
         if len(animations) == 0:
-            return False        
+            return False
         return all(getattr(anim, "is_static_wait", False) for anim in animations)
 
     def has_time_based_updaters(self) -> bool:
@@ -416,7 +418,7 @@ class Scene:
         if new_total_run_time != total_run_time:
             for anim in animations:
                 anim.update_rate_info(new_total_run_time)
-                
+
         # NOTE: Should be changed at some point with the 2 pass rendering system 21.06.2024
         self.manager._play(*animations)
 
