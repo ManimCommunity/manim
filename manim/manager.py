@@ -6,12 +6,13 @@ import contextlib
 import platform
 import time
 import warnings
-from collections.abc import Callable, Iterable, Iterator, Sequence
+from collections.abc import Iterable, Iterator, Sequence
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 import numpy as np
 
 from manim import config, logger
+from manim.animation.animation import Wait
 from manim.event_handler.window import WindowProtocol
 from manim.file_writer import FileWriter
 from manim.renderer.opengl_renderer import OpenGLRenderer
@@ -390,50 +391,6 @@ class Manager(Generic[Scene_co]):
                 **kwargs,
             )
 
-    # TODO: change to a single wait animation
-    def _wait(
-        self,
-        duration: float,
-        *,
-        stop_condition: Callable[[], bool] | None = None,
-    ) -> None:
-        self.scene.pre_play()
-
-        self._write_hashed_movie_file(animations=[])
-
-        if self.window is not None:
-            self.real_animation_start_time = time.perf_counter()
-            self.virtual_animation_start_time = self.time
-
-        update_mobjects = self.scene.should_update_mobjects()
-        condition = stop_condition or (lambda: False)
-
-        progression = _calc_time_progression(duration)
-
-        state = self.scene.get_state()
-
-        with self._create_progressbar(
-            progression.shape[0], "Waiting %(num)d: "
-        ) as progress:
-            last_t = 0
-            for t in progression:
-                dt, last_t = t - last_t, t
-                if update_mobjects or stop_condition is not None:
-                    self._update_frame(dt)
-                    if condition():
-                        break
-                else:
-                    self.time += dt
-                    self.scene.time = self.time
-                    self.renderer.render(state)
-                    if self.window is not None and self.window.is_closing:
-                        raise EndSceneEarlyException()
-                    self._wait_for_animation_time()
-                progress.update(1)
-        self.scene.post_play()
-
-        self.file_writer.end_animation(allow_write=self._write_files)
-
     def _progress_through_animations(
         self, animations: Sequence[AnimationProtocol]
     ) -> None:
@@ -448,6 +405,10 @@ class Manager(Generic[Scene_co]):
                 dt, last_t = t - last_t, t
                 self.scene._update_animations(animations, t, dt)
                 self._update_frame(dt)
+                for anim in animations:
+                    if isinstance(anim, Wait) and anim.stop_condition:
+                        if anim.stop_condition():
+                            return
                 progress.update(1)
 
     # -------------------------#
