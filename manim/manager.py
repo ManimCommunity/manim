@@ -391,7 +391,6 @@ class Manager(Generic[Scene_co]):
                 **kwargs,
             )
 
-
     def _progress_through_animations(
         self, animations: Sequence[AnimationProtocol]
     ) -> None:
