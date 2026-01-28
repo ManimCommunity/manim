@@ -85,7 +85,7 @@ if TYPE_CHECKING:
     from manim.mobject.text.text_mobject import Text
     from manim.scene.scene import Scene
 
-from manim.constants import RIGHT, TAU
+from manim.constants import DEFAULT_FONT_SIZE, DEFAULT_STROKE_WIDTH, RIGHT, TAU
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.utils.color import ManimColor
@@ -94,6 +94,7 @@ from .. import config
 from ..animation.animation import Animation
 from ..animation.composition import Succession
 from ..mobject.mobject import Group, Mobject
+from ..mobject.svg.svg_mobject import SVGMobject
 from ..mobject.types.vectorized_mobject import VMobject
 from ..utils.bezier import integer_interpolate
 from ..utils.rate_functions import double_smooth, linear
@@ -289,7 +290,23 @@ class DrawBorderThenFill(Animation):
 
 
 class Write(DrawBorderThenFill):
-    """Simulate hand-writing a :class:`~.Text` or hand-drawing a :class:`~.VMobject`.
+    """Simulate hand-writing a text-based mobject, such as :class:`~.Text`
+    and :class:`~.Tex`, or simulate hand-drawing a :class:`~.VMobject`.
+
+    Parameters
+    ----------
+    vmobject
+        The VMobject to animate.
+    stroke_width
+        Stroke width for drawing. If not provided, it is scaled based on font size
+        for text-based mobjects when the font is very small or very large;
+        otherwise defaults to 2.0.
+    rate_func
+        The function defining the animation progress.
+    reverse
+        If ``True``, plays the animation in reverse.
+    **kwargs
+        Additional arguments passed to the parent class :class:`~.DrawBorderThenFill`.
 
     Examples
     --------
@@ -318,6 +335,7 @@ class Write(DrawBorderThenFill):
     def __init__(
         self,
         vmobject: VMobject | OpenGLVMobject,
+        stroke_width: float | None = None,
         rate_func: Callable[[float], float] = linear,
         reverse: bool = False,
         **kwargs,
@@ -329,11 +347,13 @@ class Write(DrawBorderThenFill):
             run_time,
             lag_ratio,
         )
+        stroke_width = self._adjust_stroke_width_for_text(vmobject, stroke_width)
         self.reverse = reverse
         if "remover" not in kwargs:
             kwargs["remover"] = reverse
         super().__init__(
             vmobject,
+            stroke_width=stroke_width,
             rate_func=rate_func,
             run_time=run_time,
             lag_ratio=lag_ratio,
@@ -353,6 +373,23 @@ class Write(DrawBorderThenFill):
         if lag_ratio is None:
             lag_ratio = min(4.0 / max(1.0, length), 0.2)
         return run_time, lag_ratio
+
+    def _adjust_stroke_width_for_text(
+        self,
+        vmobject: VMobject | OpenGLVMobject,
+        stroke_width: float | None,
+        scale_factor: float = 0.25,
+    ) -> float:
+        if stroke_width is not None:
+            return stroke_width
+        if not isinstance(vmobject, SVGMobject) or vmobject.height == 0:
+            return 2
+        font_size = getattr(vmobject, "font_size", DEFAULT_FONT_SIZE)
+        if font_size < 20 or font_size > 6 * DEFAULT_FONT_SIZE:
+            # adjust stroke_width if font_size is too small or too big
+            return (font_size / DEFAULT_FONT_SIZE) * DEFAULT_STROKE_WIDTH * scale_factor
+        else:
+            return 2
 
     def reverse_submobjects(self) -> None:
         self.mobject.invert(recursive=True)
