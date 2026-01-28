@@ -132,7 +132,6 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         )
 
         self._set_submobjects_from_number(number)
-        self.init_colors()
 
     @property
     def font_size(self) -> float:
@@ -307,7 +306,6 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
                 # not needed with opengl renderer
                 mob.points[:] = 0
 
-        self.init_colors()
         return self
 
     def get_value(self) -> float:

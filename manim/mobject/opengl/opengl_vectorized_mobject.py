@@ -26,7 +26,7 @@ from manim.utils.bezier import (
     proportions_along_bezier_curve_for_point,
 )
 from manim.utils.color import *
-from manim.utils.color.core import ParsableManimColor
+from manim.utils.color.core import ManimColorArray, ParsableManimColor
 from manim.utils.deprecation import deprecated
 from manim.utils.iterables import (
     listify,
@@ -69,12 +69,14 @@ class VMobjectKwargs(MobjectKwargs, total=False):
     stroke_opacity: float | None
     stroke_width: float
     draw_stroke_behind_fill: bool
+    reflectiveness: float
+    shadow: float
+    gloss: float
     background_image_file: str | None
     long_lines: bool
     joint_type: LineJointType
     flat_stroke: bool
     shade_in_3d: bool
-    checkerboard_colors: bool  # TODO: remove
 
 
 class OpenGLVMobject(OpenGLMobject):
@@ -89,23 +91,28 @@ class OpenGLVMobject(OpenGLMobject):
     # so users can get autocomplete
     def __init__(
         self,
-        fill_color: ParsableManimColor | Sequence[ParsableManimColor] | None = None,
-        fill_opacity: float | None = None,
-        stroke_color: ParsableManimColor | Sequence[ParsableManimColor] | None = None,
-        stroke_opacity: float | None = None,
+        fill_color: ParsableManimColor | Sequence[ParsableManimColor] = BLACK,
+        fill_opacity: float | Sequence[float] = 0.0,
+        stroke_color: ParsableManimColor | Sequence[ParsableManimColor] = WHITE,
+        stroke_opacity: float | Sequence[float] = 1.0,
         stroke_width: float = DEFAULT_STROKE_WIDTH,
         draw_stroke_behind_fill: bool = False,
+        reflectiveness: float = 0.0,
+        shadow: float = 0.0,
+        gloss: float = 0.0,
         background_image_file: str | None = None,
         long_lines: bool = False,
         joint_type: LineJointType = LineJointType.AUTO,
         flat_stroke: bool = False,
         shade_in_3d: bool = False,  # TODO: Can be ignored for now but we should think about using some sort of shader to introduce lighting after deferred rendering has completed
-        checkerboard_colors: bool = False,  # ignore,
         **kwargs: Unpack[MobjectKwargs],
     ):
         self.stroke_width = listify(stroke_width)
         self.draw_stroke_behind_fill = draw_stroke_behind_fill
         self.background_image_file = background_image_file
+        self.reflectiveness = reflectiveness
+        self.shadow = shadow
+        self.gloss = gloss
         self.long_lines = long_lines
         self.joint_type = joint_type
         self.flat_stroke = flat_stroke
@@ -114,12 +121,9 @@ class OpenGLVMobject(OpenGLMobject):
         self.triangulation = np.zeros(0, dtype="i4")
 
         super().__init__(**kwargs)
-        if fill_color is None:
-            fill_color = self.color
-        if stroke_color is None:
-            stroke_color = self.color
-        self.set_fill(color=fill_color, opacity=fill_opacity)
-        self.set_stroke(color=stroke_color, width=stroke_width, opacity=stroke_opacity)
+
+        self.fills = ManimColorArray(fill_color, fill_opacity)
+        self.strokes = ManimColorArray(stroke_color, stroke_opacity)
 
         # self.refresh_unit_normal()
 
@@ -153,26 +157,10 @@ class OpenGLVMobject(OpenGLMobject):
         return super().add(*vmobjects)
 
     # Colors
-    def init_colors(self) -> Self:
-        # self.set_fill(
-        #     color=self.fill_color or self.color,
-        #     opacity=self.fill_opacity,
-        # )
-        # self.set_stroke(
-        #     color=self.stroke_color or self.color,
-        #     width=self.stroke_width,
-        #     opacity=self.stroke_opacity,
-        #     background=self.draw_stroke_behind_fill,
-        # )
-        # self.set_gloss(self.gloss)
-        # self.set_flat_stroke(self.flat_stroke)
-        # self.color = self.get_color()
-        return self
-
     def set_fill(
         self,
         color: ParsableManimColor | Sequence[ParsableManimColor] | None = None,
-        opacity: float | None = None,
+        opacity: float | Sequence[float] | None = None,
         recurse: bool = True,
     ) -> Self:
         """Set the fill color and fill opacity of a :class:`OpenGLVMobject`.
@@ -213,40 +201,32 @@ class OpenGLVMobject(OpenGLMobject):
         if recurse:
             for submob in self.submobjects:
                 submob.set_fill(color, opacity, recurse=True)
-        if color is not None:
-            self.fill_color: list[ManimColor] = listify(ManimColor.parse(color))
-        if opacity is not None:
-            self.fill_color = [c.opacity(opacity) for c in self.fill_color]
+        self.fills.update(color, opacity)
         return self
 
     def set_stroke(
         self,
-        color=None,
-        width=None,
-        opacity=None,
-        background=None,
-        recurse=True,
+        color: ParsableManimColor | Sequence[ParsableManimColor] | None = None,
+        width: float | None = None,
+        opacity: float | Sequence[float] | None = None,
+        background: bool = False,
+        recurse: bool = True,
     ):
         for mob in self.get_family(recurse):
-            if color is not None:
-                mob.stroke_color = listify(ManimColor.parse(color))
-            if opacity is not None:
-                mob.stroke_color = [c.opacity(opacity) for c in mob.stroke_color]
+            self.strokes.update(color, opacity)
 
             if width is not None:
                 mob.stroke_width = listify(width)
 
-            if background is not None:
-                mob.draw_stroke_behind_fill = background
+            mob.draw_stroke_behind_fill = background
         return self
 
     def set_backstroke(
         self,
         color: ManimColor | Iterable[ManimColor] | None = None,
         width: float | Iterable[float] = 3,
-        background: bool = True,
     ) -> Self:
-        self.set_stroke(color, width, background=background)
+        self.set_stroke(color, width, background=True)
         return self
 
     def set_style(
@@ -321,13 +301,13 @@ class OpenGLVMobject(OpenGLMobject):
 
     # Todo im not quite sure why we are doing this
     def get_fill_colors(self):
-        return self.fill_color
+        return self.fills.rgbas
 
     def get_fill_opacities(self) -> np.ndarray:
         return [c.to_rgba()[3] for c in self.fill_color]
 
     def get_stroke_colors(self):
-        return self.stroke_color
+        return self.strokes.rgbas
 
     def get_stroke_opacities(self) -> np.ndarray:
         return [c.to_rgba()[3] for c in self.stroke_color]
