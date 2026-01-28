@@ -5,13 +5,13 @@ class IntegralExample(Scene):
         # 1. Create Axes
         ax = Axes(x_range=[0, 3], y_range=[0, 9], axis_config={"include_tip": True})
         labels = ax.get_axis_labels(x_label="x", y_label="f(x)")
-        
+
         # 2. Define the Function (x squared)
         curve = ax.plot(lambda x: x**2, x_range=[0, 3], color=BLUE)
-        
+
         # 3. Create the Integral Area
         area = ax.get_area(curve, x_range=[0, 2], color=GREY, opacity=0.5)
-        
+
         # 4. Add LaTeX Label
         integral_text = MathTex(r"\int_{0}^{2} x^2 \,dx", color=WHITE).to_corner(UL)
 
