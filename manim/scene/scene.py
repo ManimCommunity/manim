@@ -10,7 +10,7 @@ import numpy as np
 from pyglet.window import key
 
 from manim import config, logger
-from manim.animation.animation import prepare_animation
+from manim.animation.animation import Wait, prepare_animation
 from manim.animation.scene_buffer import SceneBuffer, SceneOperation
 from manim.camera.camera import Camera
 from manim.constants import DEFAULT_WAIT_TIME
@@ -87,6 +87,7 @@ class Scene:
         self.time: float = 0
         self.undo_stack: deque[SceneState] = deque()
         self.redo_stack: list[SceneState] = []
+        self.updaters: list[Callable[[float], None]] = []
 
         # Items associated with interaction
         self.mouse_point = Point()
@@ -174,6 +175,13 @@ class Scene:
         return self.always_update_mobjects or any(
             mob.has_updaters for mob in self.mobjects
         )
+
+    def is_current_animation_frozen_frame(
+        self, animations: Sequence[AnimationProtocol]
+    ) -> bool:
+        if len(animations) == 0:
+            return False
+        return all(getattr(anim, "is_static_wait", False) for anim in animations)
 
     def has_time_based_updaters(self) -> bool:
         return any(
@@ -422,11 +430,16 @@ class Scene:
         self,
         duration: float = DEFAULT_WAIT_TIME,
         stop_condition: Callable[[], bool] | None = None,
+        frozen_frame: bool | None = None,
         note: str | None = None,
         ignore_presenter_mode: bool = False,
     ) -> None:
         duration = self.validate_run_time(duration, self.wait, "duration")
-        self.manager._wait(duration, stop_condition=stop_condition)
+        if frozen_frame is None and stop_condition is None:
+            frozen_frame = not self.should_update_mobjects()
+        self.play(
+            Wait(duration, stop_condition=stop_condition, frozen_frame=frozen_frame)
+        )
         # if (
         #     self.presenter_mode
         #     and not self.skip_animations
