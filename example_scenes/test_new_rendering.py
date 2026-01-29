@@ -8,32 +8,34 @@ class Test(Scene):
     def first_section(self) -> None:
         line = Line()
         line.add_updater(lambda m, dt: m.rotate(PI * dt))
-        t = Tex(r"Math! $\sum e^{i\theta}$").add_updater(lambda m: m.next_to(line, UP))
+        tex = Tex(r"Math! $\sum e^{i\theta}$").add_updater(
+            lambda m: m.next_to(line, UP)
+        )
         line.to_edge(LEFT)
-        self.add(line, t)
-        s = Square()
-        t = Tex(
+        self.add(line, tex)
+        square = Square()
+        tex = Tex(
             "Hello, world!", stroke_color=RED, fill_color=BLUE, stroke_width=2
         ).to_edge(RIGHT)
-        self.add(t)
-        self.play(Create(t), Rotate(s, PI / 2))
+        self.add(tex)
+        self.play(Create(tex), Rotate(square, PI / 2))
         self.wait(1)
-        self.play(FadeOut(s))
+        self.play(FadeOut(square))
 
     @group
     def three_mobjects(self) -> None:
-        sq = RegularPolygon(6)
-        c = Circle()
-        st = Star()
-        VGroup(sq, c, st).arrange()
+        hexagon = RegularPolygon(6)
+        circle = Circle()
+        star = Star()
+        VGroup(hexagon, circle, star).arrange()
         self.play(
             Succession(
-                Create(sq),
-                DrawBorderThenFill(c),
-                Create(st),
+                Create(hexagon),
+                DrawBorderThenFill(circle),
+                SpinInFromNothing(star),
             )
         )
-        self.play(FadeOut(VGroup(sq, c, st)))
+        self.play(FadeOut(VGroup(hexagon, circle, star)))
 
     @group
     def never_run(self) -> None:
