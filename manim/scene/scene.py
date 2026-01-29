@@ -230,7 +230,11 @@ class Scene:
             index = self.mobjects.index(mobject)
             self.mobjects = [
                 *self.mobjects[:index],
-                *replacements,
+                *[
+                    replacement
+                    for replacement in replacements
+                    if replacement not in self.mobjects
+                ],
                 *self.mobjects[index + 1 :],
             ]
         return self
