@@ -43,7 +43,7 @@ void main()
         discard;
 
     float previous_index =
-        texture(stencil_texture, vec2(gl_FragCoord.x / pixel_shape.x, gl_FragCoord.y / pixel_shape.y)).r;
+        texture2D(stencil_texture, vec2(gl_FragCoord.x / pixel_shape.x, gl_FragCoord.y / pixel_shape.y)).r;
 
     // Check if we are behind another fill and if yes discard the current fragment
     if (previous_index > index)
