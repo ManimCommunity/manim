@@ -690,7 +690,10 @@ class Arrow(Line):
         """Sets stroke width based on length."""
         max_ratio = self.max_stroke_width_to_length_ratio
         self.set_stroke(
-            width=min(self.initial_stroke_width, max_ratio * self.get_length()),
+            width=min(
+                self.initial_stroke_width,
+                [max_ratio * self.get_length()] * len(self.initial_stroke_width),
+            ),
             recurse=False,
         )
         return self
