@@ -34,16 +34,43 @@ def show_diff_helper(
 
     ax = fig.add_subplot(gs[1, :])
     diff_im = expected_frame_data.copy()
-    diff_im = np.where(
-        frame_data != np.array([0, 0, 0, 255]),
-        np.array([0, 255, 0, 255], dtype="uint8"),
-        np.array([0, 0, 0, 255], dtype="uint8"),
+    np.putmask(
+        diff_im,
+        frame_data
+        != np.array([0, 0, 0, 255]),  # When generated differs from pure black
+        np.array([0, 255, 0, 255], dtype="uint8"),  # set pixel to green
     )  # Set any non-black pixels to green
+    # Henrik: I think that only differences in the red color channel is recognized.
     np.putmask(
         diff_im,
         expected_frame_data != frame_data,
         np.array([255, 0, 0, 255], dtype="uint8"),
     )  # Set any different pixels to red
+    # Add the green color channel to all color channels
+    expected_frame_data = expected_frame_data + expected_frame_data[:, :, 1].repeat(
+        4, axis=1
+    ).reshape((480, 854, 4))
+    frame_data = frame_data + frame_data[:, :, 1].repeat(4, axis=1).reshape(
+        (480, 854, 4)
+    )
+    np.putmask(
+        diff_im,
+        expected_frame_data != frame_data,
+        np.array([255, 0, 0, 255], dtype="uint8"),
+    )  # Set any different pixels to red
+    # Add the blue color channel to all color channels
+    expected_frame_data = expected_frame_data + expected_frame_data[:, :, 2].repeat(
+        4, axis=1
+    ).reshape((480, 854, 4))
+    frame_data = frame_data + frame_data[:, :, 2].repeat(4, axis=1).reshape(
+        (480, 854, 4)
+    )
+    np.putmask(
+        diff_im,
+        expected_frame_data != frame_data,
+        np.array([255, 0, 0, 255], dtype="uint8"),
+    )  # Set any different pixels to red
+
     ax.imshow(diff_im, interpolation="nearest")
     ax.set_title("Difference summary: (green = same, red = different)")
 
