@@ -19,8 +19,8 @@ def test_dashed_arrow_tip_not_duplicated_in_group_opacity():
 
     dashed_group = (
         VGroup(DashedVMobject(faded_arrow))
-        .set_fill(opacity=0.4, family=True)
-        .set_stroke(opacity=0.4, family=True)
+        .set_fill(opacity=0.4, recurse=True)
+        .set_stroke(opacity=0.4, recurse=True)
     )
 
     tips = _collect_tips(dashed_group)
