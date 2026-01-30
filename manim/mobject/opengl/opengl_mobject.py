@@ -4,6 +4,7 @@ import copy
 import inspect
 import itertools as it
 import logging
+import math
 import numbers
 import os
 import pickle
@@ -12,7 +13,6 @@ import sys
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from functools import partialmethod, wraps
-from math import ceil
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -23,7 +23,6 @@ from typing import (
     TypeAlias,
     TypeVar,
     cast,
-    overload,
     override,
 )
 
@@ -32,7 +31,6 @@ import numpy.typing as npt
 from typing_extensions import (
     ParamSpec,
     TypedDict,
-    TypeVar,
 )
 
 from manim import config
@@ -62,6 +60,7 @@ from manim.utils.space_ops import (
 
 __all__ = ["InvisibleMobject", "OpenGLMobject", "MobjectKwargs"]
 
+
 if TYPE_CHECKING:
     from manim.animation.animation import Animation
     from manim.renderer.renderer import RendererData
@@ -75,7 +74,6 @@ if TYPE_CHECKING:
         Point3D_Array,
         Point3DLike,
         Point3DLike_Array,
-        Vector3D,
         Vector3DLike,
     )
 
@@ -1047,7 +1045,7 @@ class OpenGLMobject:
         return self
 
     # !TODO this differs a lot from 3b1b/manim
-    def arrange_in_grid_legacy(
+    def arrange_in_grid(
         self,
         rows: int | None = None,
         cols: int | None = None,
@@ -1092,19 +1090,8 @@ class OpenGLMobject:
 
         Returns
         -------
-        OpenGLMobject
-            The mobject.
-
-        NOTES
-        -----
-
-        If only one of ``cols`` and ``rows`` is set implicitly, the other one will be chosen big
-        enough to fit all submobjects. If neither is set, they will be chosen to be about the same,
-        tending towards ``cols`` > ``rows`` (simply because videos are wider than they are high).
-
-        If both ``cell_alignment`` and ``row_alignments`` / ``col_alignments`` are
-        defined, the latter has higher priority.
-
+        :class:`OpenGLMobject`
+            ``self``
 
         Raises
         ------
@@ -1113,6 +1100,15 @@ class OpenGLMobject:
         ValueError
             If :code:`cols`, :code:`col_alignments` and :code:`col_widths` or :code:`rows`,
             :code:`row_alignments` and :code:`row_heights` have mismatching sizes.
+
+        Notes
+        -----
+        If only one of ``cols`` and ``rows`` is set implicitly, the other one will be chosen big
+        enough to fit all submobjects. If neither is set, they will be chosen to be about the same,
+        tending towards ``cols`` > ``rows`` (simply because videos are wider than they are high).
+
+        If both ``cell_alignment`` and ``row_alignments`` / ``col_alignments`` are
+        defined, the latter has higher priority.
 
         Examples
         --------
@@ -1131,11 +1127,9 @@ class OpenGLMobject:
 
             class ArrangeInGrid(Scene):
                 def construct(self):
-                    #Add some numbered boxes:
-                    np.random.seed(3)
                     boxes = VGroup(*[
-                        Rectangle(WHITE, np.random.random()+.5, np.random.random()+.5).add(Text(str(i+1)).scale(0.5))
-                        for i in range(22)
+                        Rectangle(WHITE, 0.5, 0.5).add(Text(str(i+1)).scale(0.5))
+                        for i in range(24)
                     ])
                     self.add(boxes)
 
@@ -1143,7 +1137,8 @@ class OpenGLMobject:
                         buff=(0.25,0.5),
                         col_alignments="lccccr",
                         row_alignments="uccd",
-                        col_widths=[2, *[None]*4, 2],
+                        col_widths=[1, *[None]*4, 1],
+                        row_heights=[1, None, None, 1],
                         flow_order="dr"
                     )
 
@@ -1168,15 +1163,15 @@ class OpenGLMobject:
 
         # calculate rows cols
         if rows is None and cols is None:
-            cols = ceil(np.sqrt(len(mobs)))
+            cols = math.ceil(math.sqrt(len(mobs)))
             # make the grid as close to quadratic as possible.
             # choosing cols first can results in cols>rows.
             # This is favored over rows>cols since in general
             # the sceene is wider than high.
         if rows is None:
-            rows = ceil(len(mobs) / cols)  # type: ignore
+            rows = math.ceil(len(mobs) / cols)
         if cols is None:
-            cols = ceil(len(mobs) / rows)
+            cols = math.ceil(len(mobs) / rows)
         if rows * cols < len(mobs):
             raise ValueError("Too few rows and columns to fit all submobjetcs.")
         # rows and cols are now finally valid.
@@ -1191,31 +1186,31 @@ class OpenGLMobject:
         def init_alignments(alignments, num, mapping, name, dir_):
             if alignments is None:
                 # Use cell_alignment as fallback
-                return [cast(Vector3D, cell_alignment * direction)] * num
-            if len(str_alignments) != num:
+                return [cell_alignment * dir_] * num
+            if len(alignments) != num:
                 raise ValueError(f"{name}_alignments has a mismatching size.")
             alignments = list(alignments)
             for i in range(num):
                 alignments[i] = mapping[alignments[i]]
             return alignments
 
-        row_alignments_seq: Sequence[Vector3D] = init_alignments(
+        row_alignments = init_alignments(
             row_alignments,
             rows,
             {"u": UP, "c": ORIGIN, "d": DOWN},
             "row",
             RIGHT,
         )
-        col_alignments_seq: Sequence[Vector3D] = init_alignments(
+        col_alignments = init_alignments(
             col_alignments,
             cols,
             {"l": LEFT, "c": ORIGIN, "r": RIGHT},
             "col",
             UP,
         )
-        # Now row_alignments_seq[r] + col_alignment_seq[c] is the alignment in cell [r][c]
+        # Now row_alignment[r] + col_alignment[c] is the alignment in cell [r][c]
 
-        mapper: dict[str, Callable[[int, int], int]] = {
+        mapper = {
             "dr": lambda r, c: (rows - r - 1) + c * rows,
             "dl": lambda r, c: (rows - r - 1) + (cols - c - 1) * rows,
             "ur": lambda r, c: r + c * rows,
@@ -1226,30 +1221,20 @@ class OpenGLMobject:
             "lu": lambda r, c: r * cols + (cols - c - 1),
         }
         if flow_order not in mapper:
-            valid_flow_orders = ",".join([f'"{key}"' for key in mapper])
             raise ValueError(
-                f"flow_order must be one of the following values: {valid_flow_orders}.",
+                'flow_order must be one of the following values: "dr", "rd", "ld" "dl", "ru", "ur", "lu", "ul".',
             )
-        flow_order_func = mapper[flow_order]
+        flow_order = mapper[flow_order]
 
         # Reverse row_alignments and row_heights. Necessary since the
         # grid filling is handled bottom up for simplicity reasons.
-        if TYPE_CHECKING:
-
-            @overload
-            def reverse(maybe_list: None) -> None: ...
-            @overload
-            def reverse(maybe_list: Sequence[_T]) -> list[_T]: ...
-            @overload
-            def reverse(maybe_list: Sequence[_T] | None) -> list[_T] | None: ...
-
-        def reverse(maybe_list: Sequence[_T] | None) -> list[_T] | None:
+        def reverse(maybe_list):
             if maybe_list is not None:
                 maybe_list = list(maybe_list)
                 maybe_list.reverse()
                 return maybe_list
 
-        row_alignments_seq = reverse(row_alignments_seq)
+        row_alignments = reverse(row_alignments)
         row_heights = reverse(row_heights)
 
         placeholder = OpenGLMobject()
@@ -1258,7 +1243,7 @@ class OpenGLMobject:
         # properties of 0.
 
         mobs.extend([placeholder] * (rows * cols - len(mobs)))
-        grid = [[mobs[flow_order_func(r, c)] for c in range(cols)] for r in range(rows)]
+        grid = [[mobs[flow_order(r, c)] for c in range(cols)] for r in range(rows)]
 
         measured_heigths = [
             max(grid[r][c].height for c in range(cols)) for r in range(rows)
@@ -1274,19 +1259,18 @@ class OpenGLMobject:
             if len(sizes) != num:
                 raise ValueError(f"{name} has a mismatching size.")
             return [
-                size if (size := sizes[i]) is not None else measures[i]
-                for i in range(num)
+                sizes[i] if sizes[i] is not None else measures[i] for i in range(num)
             ]
 
         heights = init_sizes(row_heights, rows, measured_heigths, "row_heights")
         widths = init_sizes(col_widths, cols, measured_widths, "col_widths")
 
-        x, y = 0.0, 0.0
+        x, y = 0, 0
         for r in range(rows):
-            x = 0.0
+            x = 0
             for c in range(cols):
                 if grid[r][c] is not placeholder:
-                    alignment = row_alignments_seq[r] + col_alignments_seq[c]
+                    alignment = row_alignments[r] + col_alignments[c]
                     line = Line(
                         x * RIGHT + y * UP,
                         (x + widths[c]) * RIGHT + (y + heights[r]) * UP,
@@ -1300,56 +1284,6 @@ class OpenGLMobject:
             y += heights[r] + buff_y
 
         self.move_to(start_pos)
-        return self
-
-    def arrange_in_grid(
-        self,
-        rows: int | None = None,
-        cols: int | None = None,
-        buff: float | tuple[float, float] = MED_SMALL_BUFF,
-        h_buff: float | None = None,
-        v_buff: float | None = None,
-        buff_ratio: float | None = None,
-        h_buff_ratio: float = 0.5,
-        v_buff_ratio: float = 0.5,
-        aligned_edge: Vector3DLike = ORIGIN,
-        fill_rows_first: bool = True,
-    ) -> Self:
-        submobs = self.submobjects
-        if rows is None and cols is None:
-            rows = int(np.sqrt(len(submobs)))
-        if rows is None and cols is not None:
-            rows = len(submobs) // cols
-        if cols is None and rows is not None:
-            cols = len(submobs) // rows
-
-        if buff is not None:
-            if isinstance(buff, tuple):
-                h_buff = buff[0]
-                v_buff = buff[1]
-            else:
-                h_buff = buff
-                v_buff = buff
-        else:
-            if buff_ratio is not None:
-                v_buff_ratio = buff_ratio
-                h_buff_ratio = buff_ratio
-            if h_buff is None:
-                h_buff = h_buff_ratio * self[0].get_width()
-            if v_buff is None:
-                v_buff = v_buff_ratio * self[0].get_height()
-
-        x_unit = h_buff + max(sm.get_width() for sm in submobs)
-        y_unit = v_buff + max(sm.get_height() for sm in submobs)
-
-        for index, sm in enumerate(submobs):
-            if fill_rows_first:
-                x, y = index % cols, index // cols  # type: ignore
-            else:
-                x, y = index // rows, index % rows  # type: ignore
-            sm.move_to(ORIGIN, aligned_edge)
-            sm.shift(x * x_unit * RIGHT + y * y_unit * DOWN)
-        self.center()
         return self
 
     def arrange_to_fit_dim(
@@ -1653,9 +1587,9 @@ class OpenGLMobject:
     ) -> Self:
         updater_list: list[_TimeBasedUpdater] | list[_NonTimeBasedUpdater]
         if "dt" in inspect.signature(update_function).parameters:
-            updater_list: list[Updater] = self.time_based_updaters  # type: ignore
+            updater_list: list[Updater] = self.time_based_updaters
         else:
-            updater_list: list[Updater] = self.non_time_updaters  # type: ignore
+            updater_list: list[Updater] = self.non_time_updaters
 
         if index is None:
             cast("list[_Updater]", updater_list).append(update_function)
@@ -1669,8 +1603,8 @@ class OpenGLMobject:
 
     def remove_updater(self, update_function: Updater) -> Self:
         updater_lists: list[list[Updater]] = [
-            self.time_based_updaters,  # type: ignore
-            self.non_time_updaters,  # type: ignore
+            self.time_based_updaters,
+            self.non_time_updaters,
         ]
         for updater_list in updater_lists:
             while update_function in updater_list:
@@ -1796,7 +1730,7 @@ class OpenGLMobject:
         if isinstance(scale_factor, numbers.Number):
             scale_factor = max(scale_factor, min_scale_factor)
         else:
-            scale_factor = np.array(scale_factor).clip(min=min_scale_factor)  # type: ignore
+            scale_factor = np.array(scale_factor).clip(min=min_scale_factor)
         self.apply_points_function(
             lambda points: scale_factor * points,
             about_point=about_point,
@@ -2694,7 +2628,7 @@ class OpenGLMobject:
     def is_aligned_with(self, mobject: OpenGLMobject) -> bool:
         return len(self.submobjects) == len(mobject.submobjects) and all(
             sm1.is_aligned_with(sm2)
-            for sm1, sm2 in zip(self.submobjects, mobject.submobjects)
+            for sm1, sm2 in zip(self.submobjects, mobject.submobjects, strict=False)
         )
 
     def align_data_and_family(self, mobject):
@@ -2874,7 +2808,7 @@ class OpenGLMobject:
         self.align_family(mobject)
         family1 = self.get_family()
         family2 = mobject.get_family()
-        for sm1, sm2 in zip(family1, family2):
+        for sm1, sm2 in zip(family1, family2, strict=False):
             sm1.depth_test = sm2.depth_test
             sm1.points = (
                 sm2.points
