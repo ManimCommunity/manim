@@ -1398,10 +1398,13 @@ class OpenGLMobject:
         submob_func: Callable[[OpenGLMobject], Any] | None = None,
     ) -> Self:
         """Sorts the list of :attr:`submobjects` by a function defined by ``submob_func``."""
-        if submob_func is not None:
-            self.submobjects.sort(key=submob_func)
-        else:
-            self.submobjects.sort(key=lambda m: point_to_num_func(m.get_center()))
+        if submob_func is None:
+            submob_func = lambda m: (
+                point_to_num_func(m.get_center())
+                if m.has_bounding_box()
+                else float("inf")  # Empty submobjects go last
+            )
+        self.submobjects.sort(key=submob_func)
         self.note_changed_family()
         return self
 
@@ -1977,9 +1980,7 @@ class OpenGLMobject:
 
     def center(self) -> Self:
         """Moves the mobject to the center of the Scene."""
-        if self.has_bounding_box():
-            self.shift(-self.get_center())
-        return self
+        return self.move_to(ORIGIN)
 
     def align_on_border(
         self,
