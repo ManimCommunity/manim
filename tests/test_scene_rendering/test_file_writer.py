@@ -1,4 +1,3 @@
-import manim
 import sys
 from fractions import Fraction
 from pathlib import Path
@@ -7,6 +6,7 @@ import av
 import numpy as np
 import pytest
 
+import manim
 from manim import DR, Circle, Create, Manager, Scene, Star
 from manim.file_writer.file_writer import to_av_frame_rate
 from manim.utils.commands import capture, get_video_metadata

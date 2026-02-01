@@ -941,7 +941,7 @@ class Mobject:
         return any(
             "dt" in inspect.signature(updater).parameters for updater in self.updaters
         )
-    
+
     @property
     def has_updaters(self) -> bool:
         """Test if ``self`` has an updater.

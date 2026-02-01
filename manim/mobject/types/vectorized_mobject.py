@@ -323,6 +323,7 @@ class VMobject(Mobject):
         array_name = "fill_rgbas"
         self.update_rgbas_array(array_name, color, opacity)
         return self
+
     def set_stroke(
         self,
         color: ParsableManimColor = None,

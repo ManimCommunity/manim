@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
     from manim.animation.protocol import AnimationProtocol
     from manim.manager import Manager
-    from manim.typing import Point3D, Vector3D, StrPath
+    from manim.typing import Point3D, StrPath, Vector3D
 
 # TODO: these keybindings should be made configurable
 
@@ -172,8 +172,10 @@ class Scene:
         """
         # always rerender by returning True
         # TODO: Apply caching here
-        return self.always_update_mobjects or (len(self.updaters) > 0) or any(
-            mob.has_updaters for mob in self.mobjects
+        return (
+            self.always_update_mobjects
+            or (len(self.updaters) > 0)
+            or any(mob.has_updaters for mob in self.mobjects)
         )
 
     def is_current_animation_frozen_frame(
@@ -181,13 +183,17 @@ class Scene:
     ) -> bool:
         if len(animations) == 0:
             return False
-        
+
         # Check if all animations are frozen frames
-        any_frozen_frame = any(getattr(anim, "is_static_wait", False) for anim in animations)
-        all_frozen_frame = all(getattr(anim, "is_static_wait", False) for anim in animations)
+        any_frozen_frame = any(
+            getattr(anim, "is_static_wait", False) for anim in animations
+        )
+        all_frozen_frame = all(
+            getattr(anim, "is_static_wait", False) for anim in animations
+        )
         if any_frozen_frame and not all_frozen_frame:
             raise ValueError("All animations must be frozen frames to be frozen frames")
-        
+
         return all_frozen_frame
 
     def has_time_based_updaters(self) -> bool:
@@ -470,7 +476,9 @@ class Scene:
         if self.manager.file_writer is None:
             return
         time = self.time + time_offset
-        self.manager.file_writer.add_sound(sound_file, time, gain, gain_to_background=gain_to_background)
+        self.manager.file_writer.add_sound(
+            sound_file, time, gain, gain_to_background=gain_to_background
+        )
 
     def get_state(self) -> SceneState:
         return SceneState(self)

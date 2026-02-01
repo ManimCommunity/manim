@@ -113,7 +113,10 @@ class Manager(Generic[Scene_co]):
         -------
             An instance of a renderer
         """
-        renderer = OpenGLRenderer(background_color=config.background_color, background_opacity=config.background_opacity)
+        renderer = OpenGLRenderer(
+            background_color=config.background_color,
+            background_opacity=config.background_opacity,
+        )
         if config.preview:
             renderer.use_window()
         return renderer
@@ -212,7 +215,9 @@ class Manager(Generic[Scene_co]):
 
     def post_construct(self) -> None:
         """Run post-construct hooks, and clean up the file writer."""
-        should_write_image = config.save_last_frame or (config.write_to_movie and not self.file_writer.num_plays)
+        should_write_image = config.save_last_frame or (
+            config.write_to_movie and not self.file_writer.num_plays
+        )
         if self.file_writer.num_plays:
             self.file_writer.finish()
         # otherwise no animations were played
@@ -249,7 +254,6 @@ class Manager(Generic[Scene_co]):
             last_time = current_time
             self._update_frame(dt)
 
-
     @contextlib.contextmanager
     def no_render(self) -> Iterator[None]:
         """Context manager to temporarily disable rendering.
@@ -270,7 +274,9 @@ class Manager(Generic[Scene_co]):
     #         Animation Pipeline        #
     # ----------------------------------#
 
-    def _update_frame(self, dt: float, *, write_frame: bool | None = None, run_updaters: bool = True) -> None:
+    def _update_frame(
+        self, dt: float, *, write_frame: bool | None = None, run_updaters: bool = True
+    ) -> None:
         """Update the current frame by ``dt``
 
         Parameters
@@ -279,7 +285,6 @@ class Manager(Generic[Scene_co]):
             write_frame : Whether to write the result to the output stream (videos ONLY).
                 Default value checks :attr:`_write_files` to see if it should be written.
         """
-        
         self.time += dt
         if run_updaters:
             self.scene._update_mobjects(dt)
@@ -413,7 +418,9 @@ class Manager(Generic[Scene_co]):
             for t in progression:
                 dt, last_t = t - last_t, t
                 self.scene._update_animations(animations, t, dt)
-                run_updaters = not self.scene.is_current_animation_frozen_frame(animations)
+                run_updaters = not self.scene.is_current_animation_frozen_frame(
+                    animations
+                )
                 self._update_frame(dt, run_updaters=run_updaters)
                 for anim in animations:
                     if isinstance(anim, Wait) and anim.stop_condition:

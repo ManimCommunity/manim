@@ -107,7 +107,9 @@ def test_frozen_frame(using_temp_config, disabling_caching):
 
 
 def test_t_values_with_cached_data(using_temp_config):
-    pytest.fail("TODO: Implement `_write_hashed_movie_file` and partial movie file logic in `Manager.py` to support caching. Currently, caching logic is stubbed out or incomplete.")
+    pytest.fail(
+        "TODO: Implement `_write_hashed_movie_file` and partial movie file logic in `Manager.py` to support caching. Currently, caching logic is stubbed out or incomplete."
+    )
     """Test the proper generation and use of the t values when an animation is cached."""
     scene = SceneWithMultipleCalls()
     # Mocking the file_writer will skip all the writing process.
@@ -128,6 +130,7 @@ def test_t_values_save_last_frame(config, using_temp_config):
     scene = manager.scene
     manager.render()
     assert scene.time == 1
+
 
 def test_animate_with_changed_custom_attribute(using_temp_config):
     """Test that animating the change of a custom attribute
