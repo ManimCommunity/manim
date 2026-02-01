@@ -1,3 +1,4 @@
+import manim
 import sys
 from fractions import Fraction
 from pathlib import Path
@@ -37,11 +38,12 @@ class StarScene(Scene):
 def test_gif_writing(tmp_path, config, write_to_movie, transparent):
     output_filename = f"gif_{'transparent' if transparent else 'opaque'}"
     config.media_dir = tmp_path
-    config.quality = "low_quality"
-    config.format = "gif"
-    config.transparent = transparent
-    config.output_file = output_filename
-    Manager(StarScene).render()
+    with manim.tempconfig({"renderer": "opengl"}):
+        config.quality = "low_quality"
+        config.format = "gif"
+        config.transparent = transparent
+        config.output_file = output_filename
+        Manager(StarScene).render()
 
     video_path = tmp_path / "videos" / "480p15" / f"{output_filename}.gif"
     assert video_path.exists()
@@ -97,13 +99,14 @@ def test_codecs(
     codec,
     pixel_format,
 ):
-    output_filename = f"codec_{format}_{'transparent' if transparent else 'opaque'}"
-    config.media_dir = tmp_path
-    config.quality = "low_quality"
-    config.format = format
-    config.transparent = transparent
-    config.output_file = output_filename
-    Manager(StarScene).render()
+    with manim.tempconfig({"renderer": "opengl"}):
+        output_filename = f"codec_{format}_{'transparent' if transparent else 'opaque'}"
+        config.media_dir = tmp_path
+        config.quality = "low_quality"
+        config.format = format
+        config.transparent = transparent
+        config.output_file = output_filename
+        Manager(StarScene).render()
 
     video_path = tmp_path / "videos" / "480p15" / f"{output_filename}.{format}"
     assert video_path.exists()

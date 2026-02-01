@@ -941,6 +941,22 @@ class Mobject:
         return any(
             "dt" in inspect.signature(updater).parameters for updater in self.updaters
         )
+    
+    @property
+    def has_updaters(self) -> bool:
+        """Test if ``self`` has an updater.
+
+        Returns
+        -------
+        :class:`bool`
+            ``True`` if at least one updater is added, ``False`` otherwise.
+
+        See Also
+        --------
+        :meth:`get_updaters`
+
+        """
+        return len(self.updaters) > 0
 
     def get_updaters(self) -> list[Updater]:
         """Return all updaters.

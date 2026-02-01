@@ -167,7 +167,7 @@ class OpenGLRenderer(Renderer, RendererProtocol):
             pixel_height if pixel_height is not None else config.pixel_height
         )
         self.samples = samples
-        if background_opacity:
+        if background_opacity is not None:
             background_color = background_color.opacity(background_opacity)
         self.background_color = background_color.to_rgba()
         self.background_image = background_image

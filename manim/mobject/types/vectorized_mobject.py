@@ -160,9 +160,9 @@ class VMobject(Mobject):
         self.submobjects: list[VMobject]
 
         # TODO: Find where color overwrites are happening and remove the color doubling
-        # if "color" in kwargs:
-        #     fill_color = kwargs["color"]
-        #     stroke_color = kwargs["color"]
+        if "color" in kwargs:
+            fill_color = kwargs["color"]
+            stroke_color = kwargs["color"]
         if fill_color is not None:
             self.fill_color = ManimColor.parse(fill_color)
         if stroke_color is not None:
