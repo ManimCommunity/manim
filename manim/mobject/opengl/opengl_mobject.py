@@ -2299,8 +2299,7 @@ class OpenGLMobject:
         return self.color
 
     def get_opacity(self) -> float:
-        rv: float = self.rgbas[0, 3]
-        return rv
+        return self.color.opacity()
 
     def set_color_by_gradient(self, *colors: ParsableManimColor):
         self.set_submobject_colors_by_gradient(*colors)
