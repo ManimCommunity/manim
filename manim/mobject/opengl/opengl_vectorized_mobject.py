@@ -126,7 +126,7 @@ class OpenGLVMobject(OpenGLMobject):
     def _assert_valid_submobjects(self, submobjects: Iterable[OpenGLVMobject]) -> Self:
         return self._assert_valid_submobjects_internal(submobjects, OpenGLVMobject)
 
-    def get_group_class(self) -> type[OpenGLVGroup]:  # type: ignore
+    def get_group_class(self) -> type[OpenGLVGroup]:
         return OpenGLVGroup
 
     @staticmethod
@@ -135,21 +135,21 @@ class OpenGLVMobject(OpenGLMobject):
 
     # These are here just to make type checkers happy
     def get_family(self, recurse: bool = True) -> Sequence[OpenGLVMobject]:
-        return super().get_family(recurse)  # type: ignore
+        return super().get_family(recurse)
 
-    def family_members_with_points(self) -> Sequence[OpenGLVMobject]:  # type: ignore
-        return super().family_members_with_points()  # type: ignore
+    def family_members_with_points(self) -> Sequence[OpenGLVMobject]:
+        return super().family_members_with_points()
 
-    def replicate(self, n: int) -> OpenGLVGroup:  # type: ignore
-        return super().replicate(n)  # type: ignore
+    def replicate(self, n: int) -> OpenGLVGroup:
+        return super().replicate(n)
 
-    def get_grid(self, *args, **kwargs) -> OpenGLVGroup:  # type: ignore
-        return super().get_grid(*args, **kwargs)  # type: ignore
+    def get_grid(self, *args, **kwargs) -> OpenGLVGroup:
+        return super().get_grid(*args, **kwargs)
 
-    def __getitem__(self, value: int | slice) -> Self:  # type: ignore
-        return super().__getitem__(value)  # type: ignore
+    def __getitem__(self, value: int | slice) -> Self:
+        return super().__getitem__(value)
 
-    def add(self, *vmobjects: OpenGLVMobject) -> Self:  # type: ignore
+    def add(self, *vmobjects: OpenGLVMobject) -> Self:
         return super().add(*vmobjects)
 
     # Colors
@@ -868,7 +868,7 @@ class OpenGLVMobject(OpenGLMobject):
         curve = self.get_nth_curve_function(n)
         points = np.array([curve(a) for a in np.linspace(0, 1, sample_points)])
         diffs = points[1:] - points[:-1]
-        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)  # type: ignore
+        norms = np.apply_along_axis(np.linalg.norm, 1, diffs)
 
         return norms
 
@@ -1279,7 +1279,8 @@ class OpenGLVMobject(OpenGLMobject):
             attr2 = getattr(mobject2, attr)
             if isinstance(attr1, list) or isinstance(attr2, list):
                 result = [
-                    interp(elem1, elem2, alpha) for elem1, elem2 in zip(attr1, attr2)
+                    interp(elem1, elem2, alpha)
+                    for elem1, elem2 in zip(attr1, attr2, strict=False)
                 ]
             else:
                 result = interp(attr1, attr2, alpha)
@@ -1573,7 +1574,7 @@ class OpenGLVGroup(OpenGLVMobject):
             >>> config.renderer = original_renderer
         """
         self._assert_valid_submobjects(tuplify(value))
-        self.submobjects[key] = value  # type: ignore
+        self.submobjects[key] = value
         self.note_changed_family()
 
 
@@ -1704,7 +1705,9 @@ class VHighlight(OpenGLVGroup):
         outline.set_fill(opacity=0)
         added_widths = np.linspace(0, max_stroke_addition, n_layers + 1)[1:]
         colors = color_gradient(color_bounds, n_layers)
-        for part, added_width, color in zip(reversed(outline), added_widths, colors):
+        for part, added_width, color in zip(
+            reversed(outline), added_widths, colors, strict=False
+        ):
             for sm in part.family_members_with_points():
                 sm.set_stroke(
                     width=sm.get_stroke_width() + added_width,
