@@ -327,11 +327,13 @@ class ManimBanner(VGroup):
                 slide_and_uncover,
                 run_time=run_time * 2 / 3,
                 rate_func=ease_in_out_cubic,
+                introducer=True,
             ),
             UpdateFromAlphaFunc(
                 self,
                 slide_back,
                 run_time=run_time * 1 / 3,
                 rate_func=smooth,
+                introducer=True,
             ),
         )
