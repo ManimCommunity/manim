@@ -33,6 +33,7 @@ def show_diff_helper(
     ax.set_title("Expected")
 
     ax = fig.add_subplot(gs[1, :])
+    FRAME_DATA_SHAPE = (480, 854, 4)
     diff_im = expected_frame_data.copy()
     np.putmask(
         diff_im,
@@ -48,9 +49,9 @@ def show_diff_helper(
     # Add the green color channel to all color channels
     expected_frame_data = expected_frame_data + expected_frame_data[:, :, 1].repeat(
         4, axis=1
-    ).reshape((480, 854, 4))
+    ).reshape(FRAME_DATA_SHAPE)
     frame_data = frame_data + frame_data[:, :, 1].repeat(4, axis=1).reshape(
-        (480, 854, 4)
+        FRAME_DATA_SHAPE
     )
     np.putmask(
         diff_im,
@@ -60,9 +61,9 @@ def show_diff_helper(
     # Add the blue color channel to all color channels
     expected_frame_data = expected_frame_data + expected_frame_data[:, :, 2].repeat(
         4, axis=1
-    ).reshape((480, 854, 4))
+    ).reshape(FRAME_DATA_SHAPE)
     frame_data = frame_data + frame_data[:, :, 2].repeat(4, axis=1).reshape(
-        (480, 854, 4)
+        FRAME_DATA_SHAPE
     )
     np.putmask(
         diff_im,
