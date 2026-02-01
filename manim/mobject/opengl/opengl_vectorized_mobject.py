@@ -90,9 +90,9 @@ class OpenGLVMobject(OpenGLMobject):
     def __init__(
         self,
         fill_color: ParsableManimColor | Sequence[ParsableManimColor] | None = None,
-        fill_opacity: float = 0.0,
+        fill_opacity: float | None = None,
         stroke_color: ParsableManimColor | Sequence[ParsableManimColor] | None = None,
-        stroke_opacity: float = 1.0,
+        stroke_opacity: float | None = None,
         stroke_width: float = DEFAULT_STROKE_WIDTH,
         draw_stroke_behind_fill: bool = False,
         background_image_file: str | None = None,
