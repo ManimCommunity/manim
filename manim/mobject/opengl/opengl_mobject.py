@@ -2471,7 +2471,7 @@ class OpenGLMobject:
 
     def get_center(self) -> np.ndarray:
         """Get center coordinates."""
-        return self.get_bounding_box()[1]
+        return self.get_bounding_box()[1].copy()
 
     def get_center_of_mass(self):
         return self.get_all_points().mean(0)
@@ -2850,7 +2850,12 @@ class OpenGLMobject:
                     circ.become(square)
                     self.wait(0.5)
         """
-        # Manim CE Weird stretching thing which also modifies the original mobject
+        # TODO: ideally, only copy the Mobject when it has to be modified
+        # (if stretch, match_height, match_width, match_depth, or match_center are True).
+        # Currently, it's necessary to always copy it because the final code ported
+        # from 3b1b/manim seems to modify the mobject, which is an issue especially when
+        # applying Mobject.restore() which makes a Mobject become its saved state.
+        mobject = mobject.copy()
         if stretch:
             mobject.stretch_to_fit_height(self.height)
             mobject.stretch_to_fit_width(self.width)
