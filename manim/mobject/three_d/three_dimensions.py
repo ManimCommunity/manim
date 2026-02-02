@@ -26,8 +26,11 @@ from manim.constants import *
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVectorizedPoint as VectorizedPoint,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup as VGroup
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
-from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from manim.utils.color import (
     BLUE,
     BLUE_D,
