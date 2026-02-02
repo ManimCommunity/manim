@@ -169,7 +169,7 @@ class GrowFromEdge(GrowFromPoint):
         point_color: ParsableManimColor | None = None,
         **kwargs: Any,
     ):
-        point = mobject.get_critical_point(edge)
+        point = mobject.get_bounding_box_point(edge)
         super().__init__(mobject, point, point_color=point_color, **kwargs)
 
 
