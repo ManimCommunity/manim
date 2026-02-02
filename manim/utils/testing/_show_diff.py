@@ -6,6 +6,7 @@ import warnings
 import numpy as np
 
 from manim.typing import PixelArray
+from manim.utils.color import BLACK, PURE_GREEN, PURE_RED
 
 __all__ = ["show_diff_helper"]
 
@@ -37,14 +38,13 @@ def show_diff_helper(
     diff_im = expected_frame_data.copy()
     np.putmask(
         diff_im,
-        frame_data
-        != np.array([0, 0, 0, 255]),  # When generated differs from pure black
-        np.array([0, 255, 0, 255], dtype="uint8"),  # set pixel to green
+        frame_data != BLACK.to_int_rgba(),  # When generated differs from pure black
+        PURE_GREEN.to_int_rgba().astype(np.uint8),  # set pixel to green
     )  # Set any non-black pixels to green
     np.putmask(
         diff_im,
         expected_frame_data != frame_data,
-        np.array([255, 0, 0, 255], dtype="uint8"),
+        PURE_RED.to_int_rgba().astype(np.uint8),
     )  # Set any different pixels to red
     # Add the green color channel to all color channels
     expected_frame_data = expected_frame_data + expected_frame_data[:, :, 1].repeat(
@@ -56,7 +56,7 @@ def show_diff_helper(
     np.putmask(
         diff_im,
         expected_frame_data != frame_data,
-        np.array([255, 0, 0, 255], dtype="uint8"),
+        PURE_RED.to_int_rgba().astype(np.uint8),
     )  # Set any different pixels to red
     # Add the blue color channel to all color channels
     expected_frame_data = expected_frame_data + expected_frame_data[:, :, 2].repeat(
@@ -68,7 +68,7 @@ def show_diff_helper(
     np.putmask(
         diff_im,
         expected_frame_data != frame_data,
-        np.array([255, 0, 0, 255], dtype="uint8"),
+        PURE_RED.to_int_rgba().astype(np.uint8),
     )  # Set any different pixels to red
 
     ax.imshow(diff_im, interpolation="nearest")
