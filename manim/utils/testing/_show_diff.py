@@ -34,7 +34,7 @@ def show_diff_helper(
     ax.set_title("Expected")
 
     ax = fig.add_subplot(gs[1, :])
-    FRAME_DATA_SHAPE = (480, 854, 4)
+    FRAME_DATA_SHAPE = frame_data.shape
     diff_im = expected_frame_data.copy()
     np.putmask(
         diff_im,
