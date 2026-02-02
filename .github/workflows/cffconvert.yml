@@ -1,19 +1,16 @@
-name: cffconvert
+ملف مضغوط جاهز للشعار المتحرك YASSINE & ASMAHAN:
 
-on:
-  push:
-    paths:
-      - CITATION.cff
+المحتويات:
 
-jobs:
-  validate:
-    name: "validate"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out a copy of the repository
-        uses: actions/checkout@v6
+1. YassineAsmahanLogo.py  - سكربت التحريك الكامل.
+2. heart.svg               - ملف القلب الأحمر.
+3. README.txt             - تعليمات التشغيل خطوة بخطوة.
 
-      - name: Check whether the citation metadata from CITATION.cff is valid
-        uses: citation-file-format/cffconvert-github-action@2.0.0
-        with:
-          args: "--validate"
+التشغيل:
+
+1. تأكد من تثبيت Manim: pip install manim
+2. ضع جميع الملفات في نفس المجلد.
+3. افتح الطرفية (Terminal) وشغّل:
+   manim -pql YassineAsmahanLogo.py YassineAsmahanLogo
+
+النتيجة: فيديو MP4 للشعار المتحرك جاهز للاستخدام في الفيديوهات والسوشيال ميديا.
