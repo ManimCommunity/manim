@@ -1,19 +1,31 @@
-name: cffconvert
+from manim import *
 
-on:
-  push:
-    paths:
-      - CITATION.cff
+class YassineAsmahanLogo(Scene):
+    def construct(self):
+        # خلفية سوداء
+        self.camera.background_color = BLACK
 
-jobs:
-  validate:
-    name: "validate"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out a copy of the repository
-        uses: actions/checkout@v6
+        # النصوص العلوية والسفلية
+        yassine_text = Text("YASSINE", font_size=50, color=GOLD).to_edge(UP)
+        asmahan_text = Text("ASMAHAN", font_size=50, color=GOLD).to_edge(DOWN)
 
-      - name: Check whether the citation metadata from CITATION.cff is valid
-        uses: citation-file-format/cffconvert-github-action@2.0.0
-        with:
-          args: "--validate"
+        # الحروف الوسطية
+        letter_a = Text("A", font_size=100, color=GOLD)
+        letter_y = Text("Y", font_size=100, color=GOLD).next_to(letter_a, RIGHT, buff=1.5)
+
+        # القلب وخط النبض
+        heart = SVGMobject("heart.svg").scale(0.5).set_color(RED).next_to(letter_a, RIGHT, buff=0.75)
+        ecg_line = Line(start=letter_a.get_right(), end=letter_y.get_left(), color=RED)
+
+        # ظهور النصوص تدريجيًا
+        self.play(FadeIn(yassine_text), FadeIn(asmahan_text), run_time=1.5)
+        self.play(ScaleInPlace(letter_a, scale=1.5), ScaleInPlace(letter_y, scale=1.5), run_time=1.5)
+        self.play(GrowFromEdge(ecg_line, edge=LEFT), FadeIn(heart), run_time=2)
+
+        # نبض القلب (Beat Animation)
+        for _ in range(3):
+            self.play(heart.animate.scale(1.2), run_time=0.3)
+            self.play(heart.animate.scale(0.833), run_time=0.3)
+
+        # لمسة نهائية على الحروف الذهبية
+        self.play(letter_a.animate.set_fill(opacity=1), letter_y.animate.set_fill(opacity=1), run_time=1)
