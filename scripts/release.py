@@ -82,9 +82,12 @@ def run_gh(
         capture_output=True,
         text=True,
     )
-    if result.returncode != 0 and not suppress_errors:
-        if "not found" not in result.stderr.lower():
-            click.echo(f"gh error: {result.stderr}", err=True)
+    if (
+        result.returncode != 0
+        and not suppress_errors
+        and "not found" not in result.stderr.lower()
+    ):
+        click.echo(f"gh error: {result.stderr}", err=True)
     if check and result.returncode != 0:
         raise click.ClickException(f"gh command failed: gh {' '.join(args)}")
     return result
