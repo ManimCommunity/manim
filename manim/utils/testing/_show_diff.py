@@ -6,6 +6,8 @@ import warnings
 from manim.typing import PixelArray
 from manim.utils.color import BLACK, PURE_GREEN, PURE_RED
 
+from manim.typing import PixelArray
+
 __all__ = ["show_diff_helper"]
 
 
