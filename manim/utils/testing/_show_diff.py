@@ -3,8 +3,6 @@ from __future__ import annotations
 import logging
 import warnings
 
-import numpy as np
-
 from manim.typing import PixelArray
 from manim.utils.color import BLACK, PURE_GREEN, PURE_RED
 
@@ -34,43 +32,11 @@ def show_diff_helper(
     ax.set_title("Expected")
 
     ax = fig.add_subplot(gs[1, :])
-    FRAME_DATA_SHAPE = frame_data.shape
+    generated_is_expected = (frame_data == expected_frame_data).all(2)
+    expected_is_black = (expected_frame_data == BLACK.to_int_rgba()).all(2)
     diff_im = expected_frame_data.copy()
-    np.putmask(
-        diff_im,
-        frame_data != BLACK.to_int_rgba(),  # When generated differs from pure black
-        PURE_GREEN.to_int_rgba().astype(np.uint8),  # set pixel to green
-    )  # Set any non-black pixels to green
-    np.putmask(
-        diff_im,
-        expected_frame_data != frame_data,
-        PURE_RED.to_int_rgba().astype(np.uint8),
-    )  # Set any different pixels to red
-    # Add the green color channel to all color channels
-    expected_frame_data = expected_frame_data + expected_frame_data[:, :, 1].repeat(
-        4, axis=1
-    ).reshape(FRAME_DATA_SHAPE)
-    frame_data = frame_data + frame_data[:, :, 1].repeat(4, axis=1).reshape(
-        FRAME_DATA_SHAPE
-    )
-    np.putmask(
-        diff_im,
-        expected_frame_data != frame_data,
-        PURE_RED.to_int_rgba().astype(np.uint8),
-    )  # Set any different pixels to red
-    # Add the blue color channel to all color channels
-    expected_frame_data = expected_frame_data + expected_frame_data[:, :, 2].repeat(
-        4, axis=1
-    ).reshape(FRAME_DATA_SHAPE)
-    frame_data = frame_data + frame_data[:, :, 2].repeat(4, axis=1).reshape(
-        FRAME_DATA_SHAPE
-    )
-    np.putmask(
-        diff_im,
-        expected_frame_data != frame_data,
-        PURE_RED.to_int_rgba().astype(np.uint8),
-    )  # Set any different pixels to red
-
+    diff_im[generated_is_expected & ~expected_is_black] = PURE_GREEN.to_int_rgba()
+    diff_im[~generated_is_expected & ~expected_is_black] = PURE_RED.to_int_rgba()
     ax.imshow(diff_im, interpolation="nearest")
     ax.set_title("Difference summary: (green = same, red = different)")
 
