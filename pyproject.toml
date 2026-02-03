@@ -1,6 +1,6 @@
 [project]
 name = "manim"
-version = "0.19.2"
+version = "0.19.3"
 description = "Animation engine for explanatory math videos."
 authors = [
   {name = "The Manim Community Developers", email = "contact@manim.community"},
