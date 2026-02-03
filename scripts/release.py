@@ -123,7 +123,17 @@ def get_release_body(tag: str) -> str | None:
 def get_release_date(tag: str) -> str | None:
     """Get the release date formatted as 'Month DD, YYYY'."""
     result = run_gh(
-        ["release", "view", tag, "--repo", REPO, "--json", "createdAt", "--jq", ".createdAt"],
+        [
+            "release",
+            "view",
+            tag,
+            "--repo",
+            REPO,
+            "--json",
+            "createdAt",
+            "--jq",
+            ".createdAt",
+        ],
         check=False,
     )
     if result.returncode != 0:
@@ -143,13 +153,18 @@ def generate_release_notes(head_tag: str, base_tag: str) -> str:
 
     This respects .github/release.yml for PR categorization.
     """
-    result = run_gh([
-        "api",
-        f"repos/{REPO}/releases/generate-notes",
-        "--field", f"tag_name={head_tag}",
-        "--field", f"previous_tag_name={base_tag}",
-        "--jq", ".body",
-    ])
+    result = run_gh(
+        [
+            "api",
+            f"repos/{REPO}/releases/generate-notes",
+            "--field",
+            f"tag_name={head_tag}",
+            "--field",
+            f"previous_tag_name={base_tag}",
+            "--jq",
+            ".body",
+        ]
+    )
     body = result.stdout.strip()
     if not body:
         raise click.ClickException("GitHub API returned empty release notes")
@@ -277,7 +292,9 @@ def get_existing_versions() -> set[str]:
     """Get versions that already have changelog files."""
     if not CHANGELOG_DIR.exists():
         return set()
-    return {f.stem.replace("-changelog", "") for f in CHANGELOG_DIR.glob("*-changelog.*")}
+    return {
+        f.stem.replace("-changelog", "") for f in CHANGELOG_DIR.glob("*-changelog.*")
+    }
 
 
 def save_changelog(version: str, content: str) -> Path:
@@ -309,7 +326,9 @@ def update_citation(version: str, date: str | None = None) -> Path:
 
 
 @click.group()
-@click.option("--dry-run", is_flag=True, help="Show what would be done without making changes")
+@click.option(
+    "--dry-run", is_flag=True, help="Show what would be done without making changes"
+)
 @click.pass_context
 def cli(ctx: click.Context, dry_run: bool) -> None:
     """Release management tools for Manim."""
@@ -319,7 +338,9 @@ def cli(ctx: click.Context, dry_run: bool) -> None:
 
 @cli.command()
 @click.option("--base", required=True, help="Base tag for comparison (e.g., v0.19.0)")
-@click.option("--version", "version", required=True, help="New version number (e.g., 0.20.0)")
+@click.option(
+    "--version", "version", required=True, help="New version number (e.g., 0.20.0)"
+)
 @click.option("--head", default="main", help="Head ref for comparison (default: main)")
 @click.option("--title", help="Custom changelog title (default: vX.Y.Z)")
 @click.option("--update-citation", is_flag=True, help="Also update CITATION.cff")
@@ -372,7 +393,9 @@ def changelog(
 
 
 @cli.command()
-@click.option("--version", "version", required=True, help="Version number (e.g., 0.20.0)")
+@click.option(
+    "--version", "version", required=True, help="Version number (e.g., 0.20.0)"
+)
 @click.option("--date", help="Release date as YYYY-MM-DD (default: today)")
 @click.pass_context
 def citation(ctx: click.Context, version: str, date: str | None) -> None:
@@ -395,7 +418,11 @@ def citation(ctx: click.Context, version: str, date: str | None) -> None:
 
 @cli.command("fetch-releases")
 @click.option("--tag", help="Fetch a specific release tag")
-@click.option("--min-version", default=DEFAULT_MIN_VERSION, help=f"Minimum version to fetch (default: {DEFAULT_MIN_VERSION})")
+@click.option(
+    "--min-version",
+    default=DEFAULT_MIN_VERSION,
+    help=f"Minimum version to fetch (default: {DEFAULT_MIN_VERSION})",
+)
 @click.option("--force", is_flag=True, help="Overwrite existing changelog files")
 @click.pass_context
 def fetch_releases(
@@ -417,7 +444,9 @@ def fetch_releases(
         version = version_from_tag(tag)
 
         if version in existing and not force:
-            click.echo(f"Changelog for {version} already exists. Use --force to overwrite.")
+            click.echo(
+                f"Changelog for {version} already exists. Use --force to overwrite."
+            )
             return
 
         if dry_run:
