@@ -139,20 +139,16 @@ class Surface(VGroup):
             fill_opacity=fill_opacity,
             stroke_color=stroke_color,
             stroke_width=stroke_width,
+            stroke_opacity=stroke_opacity,
             **kwargs,
         )
         self.resolution = resolution
         self.surface_piece_config = surface_piece_config
-        self.fill_color: ManimColor = ManimColor(fill_color)
-        self.fill_opacity = fill_opacity  # TODO: remove
         self.checkerboard_colors: list[ManimColor] | Literal[False]
         if checkerboard_colors:
             self.checkerboard_colors = [ManimColor(x) for x in checkerboard_colors]
         else:
             self.checkerboard_colors = checkerboard_colors
-        self.stroke_color: ManimColor = ManimColor(stroke_color)
-        self.stroke_width = stroke_width
-        self.stroke_opacity = stroke_opacity  # TODO: remove
         self.should_make_jagged = should_make_jagged
         self.pre_function_handle_to_anchor_scale_factor = (
             pre_function_handle_to_anchor_scale_factor
@@ -201,12 +197,8 @@ class Surface(VGroup):
                 face.u2 = u2
                 face.v1 = v1
                 face.v2 = v2
-        faces.set_fill(color=self.fill_color, opacity=self.fill_opacity)
-        faces.set_stroke(
-            color=self.stroke_color,
-            width=self.stroke_width,
-            opacity=self.stroke_opacity,
-        )
+        faces.set_fill(color=self.fill_color)
+        faces.set_stroke(color=self.stroke_color, width=self.stroke_width)
         self.add(*faces)
         if self.checkerboard_colors:
             self.set_fill_by_checkerboard(*self.checkerboard_colors)
