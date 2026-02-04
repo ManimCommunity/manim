@@ -7,6 +7,7 @@ __all__ = [
     "DiGraph",
 ]
 
+import contextlib
 import itertools as it
 from collections.abc import Hashable, Iterable, Sequence
 from copy import copy
@@ -18,7 +19,7 @@ import numpy as np
 if TYPE_CHECKING:
     from typing import TypeAlias
 
-    from manim.scene.scene import Scene
+    from manim.scene.scene import SceneBuffer
     from manim.typing import Point3D, Point3DLike
 
     NxGraph: TypeAlias = nx.classes.graph.Graph | nx.classes.digraph.DiGraph
@@ -908,10 +909,12 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
         vertex_mobjects = self._create_vertices(*args, **kwargs)
 
-        def on_finish(scene: Scene):
+        def on_finish(buf: SceneBuffer | None):
             for v in vertex_mobjects:
-                scene.remove(v[-1])
                 self._add_created_vertex(*v)
+                if buf is not None and hasattr(buf, "replace"):
+                    with contextlib.suppress(Exception):
+                        buf.replace(v[-1])
 
         return AnimationGroup(
             *(animation(v[-1], **anim_args) for v in vertex_mobjects),
