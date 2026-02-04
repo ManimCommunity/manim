@@ -34,9 +34,11 @@ def show_diff_helper(
     ax3 = fig.add_subplot(gs[1, 0], sharex=ax1, sharey=ax1)
     generated_is_expected = (frame_data == expected_frame_data).all(2)
     expected_is_black = (expected_frame_data == BLACK.to_int_rgba()).all(2)
+    frame_is_black = (frame_data == BLACK.to_int_rgba()).all(2)
     diff_im = expected_frame_data.copy()
     diff_im[generated_is_expected & ~expected_is_black] = PURE_GREEN.to_int_rgba()
     diff_im[~generated_is_expected & ~expected_is_black] = PURE_RED.to_int_rgba()
+    diff_im[~generated_is_expected & ~frame_is_black] = PURE_RED.to_int_rgba()
     ax3.imshow(diff_im, interpolation="nearest")
     ax3.set_title("Difference")
 
