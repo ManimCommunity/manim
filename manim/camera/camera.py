@@ -485,9 +485,10 @@ class Camera(OpenGLMobject, InvisibleMobject):
     def get_frame_shape(self) -> tuple[float, float]:
         return (self.get_width(), self.get_height())
 
-    def get_center(self) -> Point3D:
+    def get_center(self, copy: bool = True) -> Point3D:
         # Assumes first point is at the center
-        return self.points[0]
+        center = self.points[0]
+        return center.copy() if copy else center
 
     def get_width(self) -> float:
         points = self.points

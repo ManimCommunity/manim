@@ -462,7 +462,8 @@ class OpenGLMobject:
             if mob.has_points():
                 arrs.append(mob.points)
             if works_on_bounding_box:
-                arrs.append(mob.get_bounding_box())
+                # copy=False is necessary in order to modify the mob box by reference
+                arrs.append(mob.get_bounding_box(copy=False))
 
             for arr in arrs:
                 if about_point is None:
@@ -645,10 +646,41 @@ class OpenGLMobject:
     def has_points(self):
         return self.get_num_points() > 0
 
-    def get_bounding_box(self) -> Point3D_Array:
+    def get_bounding_box(self, copy: bool = True) -> Point3D_Array:
+        """Get the bounding box of the Mobject, i.e. the smallest box in space containing
+        all the Mobject points. Specifically, it's an AABB (Axis-Aligned minimum
+        Bounding Box): a bounding box such that its edges are aligned to the X, Y and Z
+        axes. This box is calculated by taking the minimum and the maximum of the X, Y
+        and Z coordinates of all the Mobject points.
+
+        The bounding box is represented by a NumPy array of 3 points:
+
+        - The 1st point is the inner lower left corner of the box, i.e. the point where
+        the X, Y and Z coordinates are at their lowest value.
+        - The 2nd point is the center of the box, or the midpoint between the 1st and the
+        3rd points. It is included for convenience.
+        - The 3rd point is the outer upper right corner of the box, i.e. the point where
+        the X, Y and Z coordinates are at their highest value.
+
+        Parameters
+        ----------
+        copy
+            Whether to return a copy of the bounding box or not. Using `False` returns a
+            reference to the bounding box: this is more efficient and allows directly
+            modifying the Mobject box if necessary, but one must be cautious of not
+            modifying the box by accident, which can cause unexpected behavior. Using
+            `True` returns a copy of the box: this is safer to work with, but might be an
+            expensive computation if done too intensively. Default is `True`.
+
+        Returns
+        -------
+            A copy or a reference to this Mobject bounding box.
+        """
         if self.needs_new_bounding_box:
             self.bounding_box = self.compute_bounding_box()
             self.needs_new_bounding_box = False
+        if copy:
+            return self.bounding_box.copy()
         return self.bounding_box
 
     def compute_bounding_box(self) -> Point3D_Array:
@@ -656,7 +688,7 @@ class OpenGLMobject:
             [
                 self.points,
                 *(
-                    mob.get_bounding_box()
+                    mob.get_bounding_box(copy=False)
                     for mob in self.get_family()[1:]
                     if mob.has_points()
                 ),
@@ -682,7 +714,7 @@ class OpenGLMobject:
     def are_points_touching(
         self, points: Point3DLike_Array, buff: float = 0
     ) -> npt.NDArray[bool]:
-        bb = self.get_bounding_box()
+        bb = self.get_bounding_box(copy=False)
         mins = bb[0] - buff
         maxs = bb[2] + buff
         return ((points >= mins) * (points <= maxs)).all(1)
@@ -693,8 +725,8 @@ class OpenGLMobject:
         return self.are_points_touching(np.array(point, ndmin=2), buff)[0]
 
     def is_touching(self, mobject: OpenGLMobject, buff: float = 1e-2) -> bool:
-        bb1 = self.get_bounding_box()
-        bb2 = mobject.get_bounding_box()
+        bb1 = self.get_bounding_box(copy=False)
+        bb2 = mobject.get_bounding_box(copy=False)
         return not any(
             (
                 (
@@ -2385,7 +2417,7 @@ class OpenGLMobject:
     # Getters
 
     def get_bounding_box_point(self, direction: Vector3DLike) -> Point3D:
-        bb = self.get_bounding_box()
+        bb = self.get_bounding_box(copy=False)
         indices = (np.sign(direction) + 1).astype(int)
         return np.array([bb[indices[i]][i] for i in range(3)])
 
@@ -2398,7 +2430,7 @@ class OpenGLMobject:
         return self.get_bounding_box_point(direction)
 
     def get_all_corners(self):
-        bb = self.get_bounding_box()
+        bb = self.get_bounding_box(copy=False)
         return np.array(
             [
                 [bb[indices[-i + 1]][i] for i in range(3)]
@@ -2406,23 +2438,39 @@ class OpenGLMobject:
             ]
         )
 
-    def get_center(self) -> np.ndarray:
-        """Get center coordinates."""
-        return self.get_bounding_box()[1].copy()
+    def get_center(self, copy: bool = True) -> Point3D:
+        """Get the center coordinates of this Mobject.
+
+        Parameters
+        ----------
+        copy
+            Whether to return a copy of the center or not. Using `False` returns a
+            reference to the underlying bounding box of the Mobject: this is more
+            efficient, but one must be cautious not to perform indexed assignments into
+            the center such as ``center[0] = 1`` or ``center[:] = [1, 2, 3]``, which will
+            modify the bounding box and might cause unexpected behavior. Using `True`
+            returns a copy of the center: this is safer to work with, but might be an
+            expensive computation if done too intensively. Default is `True`.
+
+        Returns
+        -------
+            The center point of this Mobject.
+        """
+        return self.get_bounding_box(copy=copy)[1]
 
     def get_center_of_mass(self):
         return self.get_all_points().mean(0)
 
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
         all_points = self.get_all_points()
-        boundary_directions = all_points - self.get_center()
+        boundary_directions = all_points - self.get_center(copy=False)
         norms = np.linalg.norm(boundary_directions, axis=1)
         boundary_directions /= np.repeat(norms, 3).reshape((len(norms), 3))
         index = np.argmax(np.dot(boundary_directions, direction))
         return all_points[index]
 
     def get_continuous_bounding_box_point(self, direction: Vector3DLike) -> Point3D:
-        _dl, center, ur = self.get_bounding_box()
+        _dl, center, ur = self.get_bounding_box(copy=False)
         corner_vect = ur - center
         np_direction = np.asarray(direction)
         return center + np_direction / np.max(
@@ -2461,7 +2509,7 @@ class OpenGLMobject:
         return self.get_edge_center(IN)
 
     def length_over_dim(self, dim):
-        bb = self.get_bounding_box()
+        bb = self.get_bounding_box(copy=False)
         rv: float = abs((bb[2] - bb[0])[dim])
         return rv
 
@@ -2806,7 +2854,7 @@ class OpenGLMobject:
                 mobject.match_depth(self)
 
         if match_center:
-            mobject.move_to(self.get_center())
+            mobject.move_to(self.get_center(copy=False))
 
         # Original 3b1b/manim behaviour
         self.align_family(mobject)
@@ -2835,7 +2883,7 @@ class OpenGLMobject:
     def has_same_shape_as(self, mobject: OpenGLMobject) -> bool:
         # Normalize both point sets by centering and making height 1
         points1, points2 = (
-            (m.get_all_points() - m.get_center()) / m.get_height()
+            (m.get_all_points() - m.get_center(copy=False)) / m.get_height()
             for m in (self, mobject)
         )
         if len(points1) != len(points2):
@@ -2850,7 +2898,7 @@ class OpenGLMobject:
     def fix_orientation(self) -> Self:
         for mob in self.get_family():
             mob.is_fixed_orientation = 1.0
-            mob.fixed_orientation_center = tuple(self.get_center())
+            mob.fixed_orientation_center = tuple(self.get_center(copy=False))
         return self
 
     def unfix_from_frame(self) -> Self:
