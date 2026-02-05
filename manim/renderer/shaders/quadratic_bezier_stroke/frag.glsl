@@ -99,7 +99,7 @@ void main()
     gl_FragDepth = gl_FragCoord.z;
     // Get the previous index that was written to this fragment
     float previous_index =
-        texture2D(stencil_texture, vec2(gl_FragCoord.x / pixel_shape.x, gl_FragCoord.y / pixel_shape.y)).r;
+        texture(stencil_texture, vec2(gl_FragCoord.x / pixel_shape.x, gl_FragCoord.y / pixel_shape.y)).r;
     // If the index is the same that means we are overlapping with the fill and
     // crossing through so we push the stroke forward a tiny bit
     if (previous_index < index && previous_index != 0)
