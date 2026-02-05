@@ -711,7 +711,20 @@ class OpenGLMobject:
             return np.array([mins, mids, maxes])
 
     def has_bounding_box(self) -> bool:
-        return self.get_bounding_box() is not None
+        """Return whether this Mobject has a bounding box or not. A Mobject may not have
+        one if it's not possible to calculate because none of its family members have
+        points.
+
+        Some methods like :meth:`~.get_center` raise a :class:`RuntimeError` if the
+        Mobject does not have a bounding box. If you require using those methods for such
+        a Mobject, consider calling :meth:`~.has_bounding_box` before calling them and
+        performing a different action if the result is `False`.
+
+        Returns
+        -------
+            Whether this Mobject has a bounding box or not.
+        """
+        return self.get_bounding_box(copy=False) is not None
 
     def refresh_bounding_box(
         self, recurse_down: bool = False, recurse_up: bool = True
@@ -2909,7 +2922,7 @@ class OpenGLMobject:
                 mobject.match_depth(self)
 
         if match_center:
-            mobject.move_to(self.get_center(copy=False))
+            mobject.move_to(self.get_center())
 
         # Original 3b1b/manim behaviour
         self.align_family(mobject)
