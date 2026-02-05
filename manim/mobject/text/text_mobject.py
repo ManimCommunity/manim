@@ -165,7 +165,10 @@ class Paragraph(VGroup):
         self.chars = self._gen_chars(lines_str_list)
 
         self.lines = [list(self.chars), [self.alignment] * len(self.chars)]
-        self.lines_initial_positions = [line.get_center() for line in self.lines[0]]
+        self.lines_initial_positions = [
+            line.get_center() if line.has_bounding_box() else ORIGIN
+            for line in self.lines[0]
+        ]
         self.add(*self.lines[0])
         self.move_to(np.array([0, 0, 0]))
         if self.alignment:

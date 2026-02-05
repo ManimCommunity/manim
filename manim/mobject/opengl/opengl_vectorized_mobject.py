@@ -1147,19 +1147,27 @@ class OpenGLVMobject(OpenGLMobject):
 
     # Alignment
     def align_points(self, vmobject: OpenGLVMobject) -> Self:
+        if not self.has_bounding_box() and not vmobject.has_bounding_box():
+            return self
+
         # TODO: This shortcut can be a bit over eager. What if they have the same length, but different subpath lengths?
         if self.get_num_points() == vmobject.get_num_points():
-            return
+            return self
 
-        for mob in (self, vmobject):
+        def init_points(curr: OpenGLVMobject, other: OpenGLVMobject) -> None:
             # If there are no points, add one to
             # where the "center" is
-            if not mob.has_points():
-                mob.start_new_path(mob.get_center())
+            if not curr.has_points():
+                curr.start_new_path(
+                    curr.get_center() if curr.has_bounding_box() else other.get_center()
+                )
             # If there's only one point, turn it into
             # a null curve
-            if mob.has_new_path_started():
-                mob.add_line_to(mob.points[0])
+            if curr.has_new_path_started():
+                curr.add_line_to(curr.points[0])
+
+        init_points(self, vmobject)
+        init_points(vmobject, self)
 
         # Figure out what the subpaths are, and align
         subpaths1 = self.get_subpaths()
