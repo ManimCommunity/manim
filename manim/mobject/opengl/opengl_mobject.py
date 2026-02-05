@@ -2854,7 +2854,7 @@ class OpenGLMobject:
                 mobject.match_depth(self)
 
         if match_center:
-            mobject.move_to(self.get_center(copy=False))
+            mobject.move_to(self.get_center())
 
         # Original 3b1b/manim behaviour
         self.align_family(mobject)
