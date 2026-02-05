@@ -38,6 +38,14 @@ class Test(Scene):
         self.play(FadeOut(VGroup(hexagon, circle, star)))
 
     @group
+    def manim_banner(self) -> None:
+        banner = ManimBanner().scale(0.5)
+        self.play(banner.create())
+        self.play(banner.expand())
+        self.wait(1)
+        self.play(Unwrite(banner))
+
+    @group
     def never_run(self) -> None:
         self.play(Write(Text("This should never be run")))
 

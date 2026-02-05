@@ -4,6 +4,7 @@ import copy
 import inspect
 import itertools as it
 import logging
+import math
 import numbers
 import os
 import pickle
@@ -12,7 +13,6 @@ import sys
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from functools import partialmethod, wraps
-from math import ceil
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -23,7 +23,6 @@ from typing import (
     TypeAlias,
     TypeVar,
     cast,
-    overload,
     override,
 )
 
@@ -32,7 +31,6 @@ import numpy.typing as npt
 from typing_extensions import (
     ParamSpec,
     TypedDict,
-    TypeVar,
 )
 
 from manim import config
@@ -62,6 +60,7 @@ from manim.utils.space_ops import (
 
 __all__ = ["InvisibleMobject", "OpenGLMobject", "MobjectKwargs"]
 
+
 if TYPE_CHECKING:
     from manim.animation.animation import Animation
     from manim.renderer.renderer import RendererData
@@ -75,7 +74,6 @@ if TYPE_CHECKING:
         Point3D_Array,
         Point3DLike,
         Point3DLike_Array,
-        Vector3D,
         Vector3DLike,
     )
 
@@ -466,7 +464,8 @@ class OpenGLMobject:
             if mob.has_points():
                 arrs.append(mob.points)
             if works_on_bounding_box and mob.has_bounding_box():
-                arrs.append(mob.get_bounding_box())
+                # copy=False is necessary in order to modify the mob box by reference
+                arrs.append(mob.get_bounding_box(copy=False))
 
             for arr in arrs:
                 if about_point is None:
@@ -649,10 +648,46 @@ class OpenGLMobject:
     def has_points(self):
         return self.get_num_points() > 0
 
-    def get_bounding_box(self) -> Point3D_Array | None:
+    def get_bounding_box(self, copy: bool = True) -> Point3D_Array | None:
+        """Get the bounding box of the Mobject, i.e. the smallest box in space containing
+        all the Mobject points. Specifically, it's an AABB (Axis-Aligned minimum
+        Bounding Box): a bounding box such that its edges are aligned to the X, Y and Z
+        axes. This box is calculated by taking the minimum and the maximum of the X, Y
+        and Z coordinates of all the Mobject points.
+
+        The bounding box is represented by a NumPy array of 3 points:
+
+        - The 1st point is the inner lower left corner of the box, i.e. the point where
+        the X, Y and Z coordinates are at their lowest value.
+        - The 2nd point is the center of the box, or the midpoint between the 1st and the
+        3rd points. It is included for convenience.
+        - The 3rd point is the outer upper right corner of the box, i.e. the point where
+        the X, Y and Z coordinates are at their highest value.
+
+        It might be possible that this Mobject does not have a bounding box because
+        neither the Mobject nor the rest of its family have points. In this case, the
+        bounding box is `None`.
+
+        Parameters
+        ----------
+        copy
+            Whether to return a copy of the bounding box or not. Using `False` returns a
+            reference to the bounding box: this is more efficient and allows directly
+            modifying the Mobject box if necessary, but one must be cautious of not
+            modifying the box by accident, which can cause unexpected behavior. Using
+            `True` returns a copy of the box: this is safer to work with, but might be an
+            expensive computation if done too intensively. Default is `True`.
+
+        Returns
+        -------
+            A copy or a reference to this Mobject bounding box, or `None` if the Mobject
+            and the rest of its family have no points.
+        """
         if self.needs_new_bounding_box:
             self.bounding_box = self._compute_bounding_box()
             self.needs_new_bounding_box = False
+        if copy and self.bounding_box is not None:
+            return self.bounding_box.copy()
         return self.bounding_box
 
     def _compute_bounding_box(self) -> Point3D_Array:
@@ -660,7 +695,7 @@ class OpenGLMobject:
             [
                 self.points,
                 *(
-                    submob.get_bounding_box()
+                    submob.get_bounding_box(copy=False)
                     for submob in self.submobjects
                     if submob.has_bounding_box()
                 ),
@@ -691,7 +726,7 @@ class OpenGLMobject:
     def are_points_touching(
         self, points: Point3DLike_Array, buff: float = 0
     ) -> npt.NDArray[bool]:
-        bb = self.get_bounding_box()
+        bb = self.get_bounding_box(copy=False)
         if bb is None:
             return np.zeros(len(points), dtype=bool)
         mins = bb[0] - buff
@@ -704,8 +739,8 @@ class OpenGLMobject:
         return self.are_points_touching(np.array(point, ndmin=2), buff)[0]
 
     def is_touching(self, mobject: OpenGLMobject, buff: float = 1e-2) -> bool:
-        bb1 = self.get_bounding_box()
-        bb2 = mobject.get_bounding_box()
+        bb1 = self.get_bounding_box(copy=False)
+        bb2 = mobject.get_bounding_box(copy=False)
         if bb1 is None or bb2 is None:
             return False
         return not any(
@@ -1058,7 +1093,7 @@ class OpenGLMobject:
         return self
 
     # !TODO this differs a lot from 3b1b/manim
-    def arrange_in_grid_legacy(
+    def arrange_in_grid(
         self,
         rows: int | None = None,
         cols: int | None = None,
@@ -1103,19 +1138,8 @@ class OpenGLMobject:
 
         Returns
         -------
-        OpenGLMobject
-            The mobject.
-
-        NOTES
-        -----
-
-        If only one of ``cols`` and ``rows`` is set implicitly, the other one will be chosen big
-        enough to fit all submobjects. If neither is set, they will be chosen to be about the same,
-        tending towards ``cols`` > ``rows`` (simply because videos are wider than they are high).
-
-        If both ``cell_alignment`` and ``row_alignments`` / ``col_alignments`` are
-        defined, the latter has higher priority.
-
+        :class:`OpenGLMobject`
+            ``self``
 
         Raises
         ------
@@ -1124,6 +1148,15 @@ class OpenGLMobject:
         ValueError
             If :code:`cols`, :code:`col_alignments` and :code:`col_widths` or :code:`rows`,
             :code:`row_alignments` and :code:`row_heights` have mismatching sizes.
+
+        Notes
+        -----
+        If only one of ``cols`` and ``rows`` is set implicitly, the other one will be chosen big
+        enough to fit all submobjects. If neither is set, they will be chosen to be about the same,
+        tending towards ``cols`` > ``rows`` (simply because videos are wider than they are high).
+
+        If both ``cell_alignment`` and ``row_alignments`` / ``col_alignments`` are
+        defined, the latter has higher priority.
 
         Examples
         --------
@@ -1142,11 +1175,9 @@ class OpenGLMobject:
 
             class ArrangeInGrid(Scene):
                 def construct(self):
-                    #Add some numbered boxes:
-                    np.random.seed(3)
                     boxes = VGroup(*[
-                        Rectangle(WHITE, np.random.random()+.5, np.random.random()+.5).add(Text(str(i+1)).scale(0.5))
-                        for i in range(22)
+                        Rectangle(WHITE, 0.5, 0.5).add(Text(str(i+1)).scale(0.5))
+                        for i in range(24)
                     ])
                     self.add(boxes)
 
@@ -1154,7 +1185,8 @@ class OpenGLMobject:
                         buff=(0.25,0.5),
                         col_alignments="lccccr",
                         row_alignments="uccd",
-                        col_widths=[2, *[None]*4, 2],
+                        col_widths=[1, *[None]*4, 1],
+                        row_heights=[1, None, None, 1],
                         flow_order="dr"
                     )
 
@@ -1179,15 +1211,15 @@ class OpenGLMobject:
 
         # calculate rows cols
         if rows is None and cols is None:
-            cols = ceil(np.sqrt(len(mobs)))
+            cols = math.ceil(math.sqrt(len(mobs)))
             # make the grid as close to quadratic as possible.
             # choosing cols first can results in cols>rows.
             # This is favored over rows>cols since in general
             # the sceene is wider than high.
         if rows is None:
-            rows = ceil(len(mobs) / cols)  # type: ignore
+            rows = math.ceil(len(mobs) / cols)
         if cols is None:
-            cols = ceil(len(mobs) / rows)
+            cols = math.ceil(len(mobs) / rows)
         if rows * cols < len(mobs):
             raise ValueError("Too few rows and columns to fit all submobjetcs.")
         # rows and cols are now finally valid.
@@ -1202,31 +1234,31 @@ class OpenGLMobject:
         def init_alignments(alignments, num, mapping, name, dir_):
             if alignments is None:
                 # Use cell_alignment as fallback
-                return [cast(Vector3D, cell_alignment * direction)] * num
-            if len(str_alignments) != num:
+                return [cell_alignment * dir_] * num
+            if len(alignments) != num:
                 raise ValueError(f"{name}_alignments has a mismatching size.")
             alignments = list(alignments)
             for i in range(num):
                 alignments[i] = mapping[alignments[i]]
             return alignments
 
-        row_alignments_seq: Sequence[Vector3D] = init_alignments(
+        row_alignments = init_alignments(
             row_alignments,
             rows,
             {"u": UP, "c": ORIGIN, "d": DOWN},
             "row",
             RIGHT,
         )
-        col_alignments_seq: Sequence[Vector3D] = init_alignments(
+        col_alignments = init_alignments(
             col_alignments,
             cols,
             {"l": LEFT, "c": ORIGIN, "r": RIGHT},
             "col",
             UP,
         )
-        # Now row_alignments_seq[r] + col_alignment_seq[c] is the alignment in cell [r][c]
+        # Now row_alignment[r] + col_alignment[c] is the alignment in cell [r][c]
 
-        mapper: dict[str, Callable[[int, int], int]] = {
+        mapper = {
             "dr": lambda r, c: (rows - r - 1) + c * rows,
             "dl": lambda r, c: (rows - r - 1) + (cols - c - 1) * rows,
             "ur": lambda r, c: r + c * rows,
@@ -1237,30 +1269,20 @@ class OpenGLMobject:
             "lu": lambda r, c: r * cols + (cols - c - 1),
         }
         if flow_order not in mapper:
-            valid_flow_orders = ",".join([f'"{key}"' for key in mapper])
             raise ValueError(
-                f"flow_order must be one of the following values: {valid_flow_orders}.",
+                'flow_order must be one of the following values: "dr", "rd", "ld" "dl", "ru", "ur", "lu", "ul".',
             )
-        flow_order_func = mapper[flow_order]
+        flow_order = mapper[flow_order]
 
         # Reverse row_alignments and row_heights. Necessary since the
         # grid filling is handled bottom up for simplicity reasons.
-        if TYPE_CHECKING:
-
-            @overload
-            def reverse(maybe_list: None) -> None: ...
-            @overload
-            def reverse(maybe_list: Sequence[_T]) -> list[_T]: ...
-            @overload
-            def reverse(maybe_list: Sequence[_T] | None) -> list[_T] | None: ...
-
-        def reverse(maybe_list: Sequence[_T] | None) -> list[_T] | None:
+        def reverse(maybe_list):
             if maybe_list is not None:
                 maybe_list = list(maybe_list)
                 maybe_list.reverse()
                 return maybe_list
 
-        row_alignments_seq = reverse(row_alignments_seq)
+        row_alignments = reverse(row_alignments)
         row_heights = reverse(row_heights)
 
         placeholder = OpenGLMobject()
@@ -1269,7 +1291,7 @@ class OpenGLMobject:
         # properties of 0.
 
         mobs.extend([placeholder] * (rows * cols - len(mobs)))
-        grid = [[mobs[flow_order_func(r, c)] for c in range(cols)] for r in range(rows)]
+        grid = [[mobs[flow_order(r, c)] for c in range(cols)] for r in range(rows)]
 
         measured_heigths = [
             max(grid[r][c].height for c in range(cols)) for r in range(rows)
@@ -1285,19 +1307,18 @@ class OpenGLMobject:
             if len(sizes) != num:
                 raise ValueError(f"{name} has a mismatching size.")
             return [
-                size if (size := sizes[i]) is not None else measures[i]
-                for i in range(num)
+                sizes[i] if sizes[i] is not None else measures[i] for i in range(num)
             ]
 
         heights = init_sizes(row_heights, rows, measured_heigths, "row_heights")
         widths = init_sizes(col_widths, cols, measured_widths, "col_widths")
 
-        x, y = 0.0, 0.0
+        x, y = 0, 0
         for r in range(rows):
-            x = 0.0
+            x = 0
             for c in range(cols):
                 if grid[r][c] is not placeholder:
-                    alignment = row_alignments_seq[r] + col_alignments_seq[c]
+                    alignment = row_alignments[r] + col_alignments[c]
                     line = Line(
                         x * RIGHT + y * UP,
                         (x + widths[c]) * RIGHT + (y + heights[r]) * UP,
@@ -1311,52 +1332,6 @@ class OpenGLMobject:
             y += heights[r] + buff_y
 
         self.move_to(start_pos)
-        return self
-
-    def arrange_in_grid(
-        self,
-        n_rows: int | None = None,
-        n_cols: int | None = None,
-        buff: float | None = None,
-        h_buff: float | None = None,
-        v_buff: float | None = None,
-        buff_ratio: float | None = None,
-        h_buff_ratio: float = 0.5,
-        v_buff_ratio: float = 0.5,
-        aligned_edge: Vector3DLike = ORIGIN,
-        fill_rows_first: bool = True,
-    ) -> Self:
-        submobs = self.submobjects
-        if n_rows is None and n_cols is None:
-            n_rows = int(np.sqrt(len(submobs)))
-        if n_rows is None and n_cols is not None:
-            n_rows = len(submobs) // n_cols
-        if n_cols is None and n_rows is not None:
-            n_cols = len(submobs) // n_rows
-
-        if buff is not None:
-            h_buff = buff
-            v_buff = buff
-        else:
-            if buff_ratio is not None:
-                v_buff_ratio = buff_ratio
-                h_buff_ratio = buff_ratio
-            if h_buff is None:
-                h_buff = h_buff_ratio * self[0].get_width()
-            if v_buff is None:
-                v_buff = v_buff_ratio * self[0].get_height()
-
-        x_unit = h_buff + max(sm.get_width() for sm in submobs)
-        y_unit = v_buff + max(sm.get_height() for sm in submobs)
-
-        for index, sm in enumerate(submobs):
-            if fill_rows_first:
-                x, y = index % n_cols, index // n_cols  # type: ignore
-            else:
-                x, y = index // n_rows, index % n_rows  # type: ignore
-            sm.move_to(ORIGIN, aligned_edge)
-            sm.shift(x * x_unit * RIGHT + y * y_unit * DOWN)
-        self.center()
         return self
 
     def arrange_to_fit_dim(
@@ -1399,11 +1374,14 @@ class OpenGLMobject:
     ) -> Self:
         """Sorts the list of :attr:`submobjects` by a function defined by ``submob_func``."""
         if submob_func is None:
-            submob_func = lambda m: (
-                point_to_num_func(m.get_center())
-                if m.has_bounding_box()
-                else float("inf")  # Empty submobjects go last
-            )
+
+            def submob_center_to_num_func(submob: OpenGLMobject) -> float:
+                if not submob.has_bounding_box():
+                    return float("inf")  # Empty submobjects go last
+                return point_to_num_func(submob.get_center())
+
+            submob_func = submob_center_to_num_func
+
         self.submobjects.sort(key=submob_func)
         self.note_changed_family()
         return self
@@ -1663,9 +1641,9 @@ class OpenGLMobject:
     ) -> Self:
         updater_list: list[_TimeBasedUpdater] | list[_NonTimeBasedUpdater]
         if "dt" in inspect.signature(update_function).parameters:
-            updater_list: list[Updater] = self.time_based_updaters  # type: ignore
+            updater_list: list[Updater] = self.time_based_updaters
         else:
-            updater_list: list[Updater] = self.non_time_updaters  # type: ignore
+            updater_list: list[Updater] = self.non_time_updaters
 
         if index is None:
             cast("list[_Updater]", updater_list).append(update_function)
@@ -1679,8 +1657,8 @@ class OpenGLMobject:
 
     def remove_updater(self, update_function: Updater) -> Self:
         updater_lists: list[list[Updater]] = [
-            self.time_based_updaters,  # type: ignore
-            self.non_time_updaters,  # type: ignore
+            self.time_based_updaters,
+            self.non_time_updaters,
         ]
         for updater_list in updater_lists:
             while update_function in updater_list:
@@ -1806,7 +1784,7 @@ class OpenGLMobject:
         if isinstance(scale_factor, numbers.Number):
             scale_factor = max(scale_factor, min_scale_factor)
         else:
-            scale_factor = np.array(scale_factor).clip(min=min_scale_factor)  # type: ignore
+            scale_factor = np.array(scale_factor).clip(min=min_scale_factor)
         self.apply_points_function(
             lambda points: scale_factor * points,
             about_point=about_point,
@@ -2386,8 +2364,7 @@ class OpenGLMobject:
         return self.color
 
     def get_opacity(self) -> float:
-        rv: float = self.rgbas[0, 3]
-        return rv
+        return self.color.opacity()
 
     def set_color_by_gradient(self, *colors: ParsableManimColor):
         self.set_submobject_colors_by_gradient(*colors)
@@ -2474,7 +2451,7 @@ class OpenGLMobject:
 
     def get_bounding_box_point(self, direction: Vector3DLike) -> Point3D:
         self.throw_error_if_no_bounding_box()
-        bb = self.get_bounding_box()
+        bb = self.get_bounding_box(copy=False)
         indices = (np.sign(direction) + 1).astype(int)
         return np.array([bb[indices[i]][i] for i in range(3)])
 
@@ -2490,7 +2467,7 @@ class OpenGLMobject:
 
     def get_all_corners(self) -> Point3D_Array:
         self.throw_error_if_no_bounding_box()
-        bb = self.get_bounding_box()
+        bb = self.get_bounding_box(copy=False)
         return np.array(
             [
                 [bb[indices[-i + 1]][i] for i in range(3)]
@@ -2498,10 +2475,26 @@ class OpenGLMobject:
             ]
         )
 
-    def get_center(self) -> Point3D:
-        """Get center coordinates."""
+    def get_center(self, copy: bool = True) -> Point3D:
+        """Get the center coordinates of this Mobject.
+
+        Parameters
+        ----------
+        copy
+            Whether to return a copy of the center or not. Using `False` returns a
+            reference to the underlying bounding box of the Mobject: this is more
+            efficient, but one must be cautious not to perform indexed assignments into
+            the center such as ``center[0] = 1`` or ``center[:] = [1, 2, 3]``, which will
+            modify the bounding box and might cause unexpected behavior. Using `True`
+            returns a copy of the center: this is safer to work with, but might be an
+            expensive computation if done too intensively. Default is `True`.
+
+        Returns
+        -------
+            The center point of this Mobject.
+        """
         self.throw_error_if_no_bounding_box()
-        return self.get_bounding_box()[1]
+        return self.get_bounding_box(copy=copy)[1]
 
     def get_center_of_mass(self):
         return self.get_all_points().mean(0)
@@ -2509,7 +2502,7 @@ class OpenGLMobject:
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
         self.throw_error_if_no_bounding_box()
         all_points = self.get_all_points()
-        boundary_directions = all_points - self.get_center()
+        boundary_directions = all_points - self.get_center(copy=False)
         norms = np.linalg.norm(boundary_directions, axis=1)
         boundary_directions /= np.repeat(norms, 3).reshape((len(norms), 3))
         index = np.argmax(np.dot(boundary_directions, direction))
@@ -2517,7 +2510,7 @@ class OpenGLMobject:
 
     def get_continuous_bounding_box_point(self, direction: Vector3DLike) -> Point3D:
         self.throw_error_if_no_bounding_box()
-        _dl, center, ur = self.get_bounding_box()
+        _dl, center, ur = self.get_bounding_box(copy=False)
         corner_vect = ur - center
         np_direction = np.asarray(direction)
         return center + np_direction / np.max(
@@ -2562,7 +2555,7 @@ class OpenGLMobject:
         return self.get_edge_center(IN)
 
     def length_over_dim(self, dim: int) -> float:
-        bb = self.get_bounding_box()
+        bb = self.get_bounding_box(copy=False)
         if bb is None:
             return 0.0
         rv: float = abs((bb[2] - bb[0])[dim])
@@ -2736,7 +2729,7 @@ class OpenGLMobject:
     def is_aligned_with(self, mobject: OpenGLMobject) -> bool:
         return len(self.submobjects) == len(mobject.submobjects) and all(
             sm1.is_aligned_with(sm2)
-            for sm1, sm2 in zip(self.submobjects, mobject.submobjects)
+            for sm1, sm2 in zip(self.submobjects, mobject.submobjects, strict=False)
         )
 
     def align_data_and_family(self, mobject):
@@ -2897,7 +2890,12 @@ class OpenGLMobject:
                     circ.become(square)
                     self.wait(0.5)
         """
-        # Manim CE Weird stretching thing which also modifies the original mobject
+        # TODO: ideally, only copy the Mobject when it has to be modified
+        # (if stretch, match_height, match_width, match_depth, or match_center are True).
+        # Currently, it's necessary to always copy it because the final code ported
+        # from 3b1b/manim seems to modify the mobject, which is an issue especially when
+        # applying Mobject.restore() which makes a Mobject become its saved state.
+        mobject = mobject.copy()
         if stretch:
             mobject.stretch_to_fit_height(self.height)
             mobject.stretch_to_fit_width(self.width)
@@ -2911,13 +2909,13 @@ class OpenGLMobject:
                 mobject.match_depth(self)
 
         if match_center:
-            mobject.move_to(self.get_center())
+            mobject.move_to(self.get_center(copy=False))
 
         # Original 3b1b/manim behaviour
         self.align_family(mobject)
         family1 = self.get_family()
         family2 = mobject.get_family()
-        for sm1, sm2 in zip(family1, family2):
+        for sm1, sm2 in zip(family1, family2, strict=False):
             sm1.depth_test = sm2.depth_test
             sm1.points = (
                 sm2.points
@@ -2945,7 +2943,7 @@ class OpenGLMobject:
 
         # Normalize both point sets by centering and making height 1
         points1, points2 = (
-            (m.get_all_points() - m.get_center()) / m.get_height()
+            (m.get_all_points() - m.get_center(copy=False)) / m.get_height()
             for m in (self, mobject)
         )
         if len(points1) != len(points2):
@@ -2958,7 +2956,7 @@ class OpenGLMobject:
         return self
 
     def fix_orientation(self) -> Self:
-        center = self.get_center() if self.has_bounding_box() else ORIGIN
+        center = self.get_center(copy=False) if self.has_bounding_box() else ORIGIN
         for mob in self.get_family():
             mob.is_fixed_orientation = 1.0
             mob.fixed_orientation_center = tuple(center)

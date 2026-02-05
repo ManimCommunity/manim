@@ -82,7 +82,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 if TYPE_CHECKING:
-    from typing import Self
+    from typing import Any, Self
 
     from manim.mobject.text.text_mobject import Text
     from manim.scene.scene import Scene
@@ -92,6 +92,7 @@ from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject as VMobject
 from manim.utils.color import ManimColor
+from manim.utils.space_ops import rotate_vector
 
 from .. import config
 from ..animation.animation import Animation
@@ -457,28 +458,33 @@ class SpiralIn(Animation):
         self,
         shapes: OpenGLMobject,
         scale_factor: float = 8,
-        fade_in_fraction=0.3,
-        **kwargs,
+        fade_in_fraction: float = 0.3,
+        **kwargs: Any,
     ) -> None:
         self.shapes = shapes.copy()
         self.scale_factor = scale_factor
         self.shape_center = shapes.get_center()
         self.fade_in_fraction = fade_in_fraction
-        for shape in shapes:
-            shape.final_position = shape.get_center()
-            shape.initial_position = (
-                shape.final_position
-                + (shape.final_position - self.shape_center) * self.scale_factor
-            )
-            shape.move_to(shape.initial_position)
-            shape.save_state()
+        self.final_positions = [shape.get_center() for shape in shapes]
+        self.initial_positions = [
+            final_pos + (final_pos - self.shape_center) * self.scale_factor
+            for final_pos in self.final_positions
+        ]
 
         super().__init__(shapes, introducer=True, **kwargs)
 
     def interpolate(self, alpha: float) -> None:
         alpha = self.rate_func(alpha)
-        for original_shape, shape in zip(self.shapes, self.mobject, strict=False):
-            shape.restore()
+        for i, shape in enumerate(self.mobject):
+            initial_pos = self.initial_positions[i]
+            final_pos = self.final_positions[i]
+            # Avoid shape.rotate() in order to preserve the bounding box of the shape.
+            # Instead, rotate the vector itself to calculate the current shape position.
+            vector = initial_pos - self.shape_center + (final_pos - initial_pos) * alpha
+            vector = rotate_vector(vector, TAU * alpha)
+            shape.move_to(self.shape_center + vector)
+
+            original_shape = self.shapes[i]
             fill_opacity = original_shape.get_fill_opacity()
             stroke_opacity = original_shape.get_stroke_opacity()
             new_fill_opacity = min(
@@ -487,9 +493,6 @@ class SpiralIn(Animation):
             new_stroke_opacity = min(
                 stroke_opacity, alpha * stroke_opacity / self.fade_in_fraction
             )
-            shape.shift((shape.final_position - shape.initial_position) * alpha)
-            shape.rotate(TAU * alpha, about_point=self.shape_center)
-            shape.rotate(-TAU * alpha, about_point=shape.get_center_of_mass())
             shape.set_fill(opacity=new_fill_opacity)
             shape.set_stroke(opacity=new_stroke_opacity)
 
