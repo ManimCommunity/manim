@@ -912,7 +912,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         def on_finish(buf: SceneBuffer | None):
             for v in vertex_mobjects:
                 self._add_created_vertex(*v)
-                if buf is not None and hasattr(buf, "replace"):
+                if buf is not None:
                     with contextlib.suppress(Exception):
                         buf.replace(v[-1])
 
