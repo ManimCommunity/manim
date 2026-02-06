@@ -492,7 +492,7 @@ class BarChart(Axes):
             The values that will be used to update the height of the bars.
             Does not have to match the number of bars.
         update_colors
-            Whether to re-initalize the colors of the bars based on ``self.bar_colors``.
+            Whether to re-initialize the colors of the bars based on ``self.bar_colors``.
 
         Examples
         --------
