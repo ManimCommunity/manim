@@ -19,7 +19,7 @@ import numpy as np
 if TYPE_CHECKING:
     from typing import TypeAlias
 
-    from manim.scene.scene import SceneBuffer
+    from manim.animation.scene_buffer import SceneBuffer
     from manim.typing import Point3D, Point3DLike
 
     NxGraph: TypeAlias = nx.classes.graph.Graph | nx.classes.digraph.DiGraph
