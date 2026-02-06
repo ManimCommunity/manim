@@ -7,6 +7,7 @@ __all__ = [
     "DiGraph",
 ]
 
+import contextlib
 import itertools as it
 from collections.abc import Hashable, Iterable, Sequence
 from copy import copy
@@ -18,7 +19,7 @@ import numpy as np
 if TYPE_CHECKING:
     from typing import TypeAlias
 
-    from manim.scene.scene import Scene
+    from manim.animation.scene_buffer import SceneBuffer
     from manim.typing import Point3D, Point3DLike
 
     NxGraph: TypeAlias = nx.classes.graph.Graph | nx.classes.digraph.DiGraph
@@ -908,10 +909,12 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
         vertex_mobjects = self._create_vertices(*args, **kwargs)
 
-        def on_finish(scene: Scene):
+        def on_finish(buf: SceneBuffer | None):
             for v in vertex_mobjects:
-                scene.remove(v[-1])
                 self._add_created_vertex(*v)
+                if buf is not None:
+                    with contextlib.suppress(Exception):
+                        buf.replace(v[-1])
 
         return AnimationGroup(
             *(animation(v[-1], **anim_args) for v in vertex_mobjects),
@@ -1565,6 +1568,9 @@ class Graph(GenericGraph):
     def __repr__(self: Graph) -> str:
         return f"Undirected graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
 
+    def __str__(self: Graph) -> str:
+        return self.__repr__()
+
 
 class DiGraph(GenericGraph):
     """A directed graph.
@@ -1782,3 +1788,6 @@ class DiGraph(GenericGraph):
 
     def __repr__(self: DiGraph) -> str:
         return f"Directed graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
+
+    def __str__(self: DiGraph) -> str:
+        return self.__repr__()
