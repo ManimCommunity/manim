@@ -265,17 +265,13 @@ class Scene:
             One or more Mobjects which must not already be in the scene.
 
         """
-        if mobject in self.mobjects:
-            index = self.mobjects.index(mobject)
-            self.mobjects = [
-                *self.mobjects[:index],
-                *[
-                    replacement
-                    for replacement in replacements
-                    if replacement not in self.mobjects
-                ],
-                *self.mobjects[index + 1 :],
-            ]
+        for ancestor in mobject.get_ancestors():
+            ancestor.submobjects = self._replace(
+                ancestor.submobjects, mobject, *replacements
+            )
+
+        self.mobjects = self._replace(self.mobjects, mobject, *replacements)
+
         return self
 
     def add_updater(self, func: Callable[[float], None]) -> None:
