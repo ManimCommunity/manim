@@ -20,6 +20,11 @@ FRAME_MISMATCH_RATIO_TOLERANCE = 1e-5
 logger = logging.getLogger("manim")
 
 
+class GraphicalDeviationError(Exception):
+    __module__ = "builtins"
+    pass
+
+
 class _FramesTester:
     def __init__(self, file_path: Path, show_diff: bool = False) -> None:
         self._file_path = file_path
@@ -57,7 +62,7 @@ class _FramesTester:
                 verbose=False,
             )
             self._frames_compared += 1
-        except AssertionError:
+        except AssertionError as err:
             number_of_matches = np.isclose(
                 frame, self._frames[frame_number], atol=FRAME_ABSOLUTE_TOLERANCE
             ).sum()
@@ -81,7 +86,9 @@ class _FramesTester:
                     self._frames[frame_number],
                     self._file_path.name,
                 )
-            raise
+            raise GraphicalDeviationError(
+                f"The graphical test with control data '{self._file_path.name}' had {number_of_mismatches} pixel errors."
+            ) from err
 
 
 class _ControlDataWriter(_FramesTester):
