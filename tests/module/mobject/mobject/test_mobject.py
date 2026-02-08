@@ -105,6 +105,7 @@ def is_close(x, y):
     return abs(x - y) < 0.00001
 
 
+@pytest.mark.slow
 def test_mobject_dimensions_nested_mobjects():
     vg = VGroup()
 

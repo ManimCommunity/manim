@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from manim import *
 from manim.utils.testing.frames_comparison import frames_comparison
 
@@ -37,6 +39,7 @@ def test_line_graph(scene):
     scene.add(plane, first_line, second_line)
 
 
+@pytest.mark.slow
 @frames_comparison
 def test_plot_surface(scene):
     axes = ThreeDAxes(x_range=(-5, 5, 1), y_range=(-5, 5, 1), z_range=(-5, 5, 1))
@@ -57,6 +60,7 @@ def test_plot_surface(scene):
     scene.add(axes, trig_plane)
 
 
+@pytest.mark.slow
 @frames_comparison
 def test_plot_surface_colorscale(scene):
     axes = ThreeDAxes(x_range=(-3, 3, 1), y_range=(-3, 3, 1), z_range=(-5, 5, 1))
@@ -143,6 +147,7 @@ def test_number_plane_log(scene):
     scene.add(VGroup(plane1, plane2).arrange())
 
 
+@pytest.mark.slow
 @frames_comparison
 def test_gradient_line_graph_x_axis(scene):
     """Test that using `colorscale` generates a line whose gradient matches the y-axis"""
@@ -158,6 +163,7 @@ def test_gradient_line_graph_x_axis(scene):
     scene.add(axes, curve)
 
 
+@pytest.mark.slow
 @frames_comparison
 def test_gradient_line_graph_y_axis(scene):
     """Test that using `colorscale` generates a line whose gradient matches the y-axis"""
