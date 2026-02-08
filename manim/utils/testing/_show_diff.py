@@ -3,10 +3,13 @@ from __future__ import annotations
 import logging
 import warnings
 
+import numpy as np
+
 from manim.typing import PixelArray
 from manim.utils.color import BLACK, PURE_GREEN, PURE_RED
 
 __all__ = ["show_diff_helper"]
+FRAME_ABSOLUTE_TOLERANCE = 1.01
 
 
 def show_diff_helper(
@@ -51,9 +54,21 @@ def show_diff_helper(
         fontsize=14,
         verticalalignment="top",
     )
+    number_of_matches = np.isclose(
+        frame_data, expected_frame_data, atol=FRAME_ABSOLUTE_TOLERANCE
+    ).sum()
+    number_of_mismatches = frame_data.size - number_of_matches
     fig.text(
         x=0.55,
         y=0.30,
+        s=f"Difference count:\n {number_of_mismatches}",
+        transform=fig.transFigure,
+        fontsize=14,
+        verticalalignment="top",
+    )
+    fig.text(
+        x=0.55,
+        y=0.15,
         s="Difference summary: \n  green = same\n  red = different",
         transform=fig.transFigure,
         fontsize=14,
