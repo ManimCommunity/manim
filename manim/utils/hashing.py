@@ -18,7 +18,7 @@ from manim._config import config, logger
 if TYPE_CHECKING:
     from manim.animation.protocol import AnimationProtocol
     from manim.camera.camera import Camera
-    from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+    from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
     from manim.scene.scene import Scene
 
     T = TypeVar("T")
@@ -336,7 +336,7 @@ def get_hash_from_play_call(
     scene_object: Scene,
     camera_object: Camera,
     animations_list: Iterable[AnimationProtocol],
-    current_mobjects_list: Iterable[OpenGLMobject],
+    current_mobjects_list: Iterable[Mobject],
 ) -> str:
     """Take the list of animations and a list of mobjects and output their hashes. This is meant to be used for `scene.play` function.
 

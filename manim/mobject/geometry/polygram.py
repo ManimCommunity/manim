@@ -24,8 +24,12 @@ import numpy as np
 
 from manim.constants import *
 from manim.mobject.geometry.arc import ArcBetweenPoints
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
-from manim.mobject.types.vectorized_mobject import VGroup
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVGroup as VGroup,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVMobject as VMobject,
+)
 from manim.utils.color import BLUE, WHITE, ParsableManimColor
 from manim.utils.iterables import adjacent_n_tuples, adjacent_pairs
 from manim.utils.qhull import QuickHull
@@ -45,7 +49,7 @@ if TYPE_CHECKING:
     from manim.utils.color import ParsableManimColor
 
 
-class Polygram(OpenGLVMobject):
+class Polygram(VMobject):
     """A generalized :class:`Polygon`, allowing for disconnected sets of edges.
 
     Parameters
@@ -743,7 +747,7 @@ class RoundedRectangle(Rectangle):
         self.round_corners(self.corner_radius)
 
 
-class Cutout(OpenGLVMobject):
+class Cutout(VMobject):
     """A shape with smaller cutouts.
 
     Parameters

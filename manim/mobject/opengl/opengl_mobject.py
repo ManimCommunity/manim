@@ -154,7 +154,7 @@ _ShaderDType: TypeAlias = np.void
 _ShaderData: TypeAlias = npt.NDArray[_ShaderDType]
 
 
-class OpenGLMobject:
+class Mobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
 
     Attributes
@@ -171,6 +171,18 @@ class OpenGLMobject:
     """
 
     dim: int = 3
+    animation_overrides = {}
+
+    @classmethod
+    def __init_subclass__(cls, **kwargs) -> None:
+        super().__init_subclass__(**kwargs)
+
+        cls.animation_overrides: dict[
+            type[Animation],
+            FunctionOverride,
+        ] = {}
+        cls._add_intrinsic_animation_overrides()
+        cls._original__init__ = cls.__init__
 
     # WARNING: when changing a parameter here, be sure to update the
     # TypedDict above so that autocomplete works for users
@@ -327,6 +339,127 @@ class OpenGLMobject:
         for key in uniforms:
             self.uniforms[key] = uniforms[key]  # Copy?
         return self
+
+    @classmethod
+    def animation_override_for(
+        cls,
+        animation_class: type[Animation],
+    ) -> FunctionOverride | None:
+        """Returns the function defining a specific animation override for this class.
+
+        Parameters
+        ----------
+        animation_class
+            The animation class for which the override function should be returned.
+
+        Returns
+        -------
+        Optional[Callable[[Mobject, ...], Animation]]
+            The function returning the override animation or ``None`` if no such animation
+            override is defined.
+        """
+        if animation_class in cls.animation_overrides:
+            return cls.animation_overrides[animation_class]
+
+        return None
+
+    @classmethod
+    def _add_intrinsic_animation_overrides(cls) -> None:
+        """Initializes animation overrides marked with the :func:`~.override_animation`
+        decorator.
+        """
+        for method_name in dir(cls):
+            # Ignore dunder methods
+            if method_name.startswith("__"):
+                continue
+
+            method = getattr(cls, method_name)
+            if hasattr(method, "_override_animation"):
+                animation_class = method._override_animation
+                cls.add_animation_override(animation_class, method)
+
+    @classmethod
+    def add_animation_override(
+        cls,
+        animation_class: type[Animation],
+        override_func: FunctionOverride,
+    ) -> None:
+        """Add an animation override.
+
+        This does not apply to subclasses.
+
+        Parameters
+        ----------
+        animation_class
+            The animation type to be overridden
+        override_func
+            The function returning an animation replacing the default animation. It gets
+            passed the parameters given to the animation constructor.
+
+        Raises
+        ------
+        MultiAnimationOverrideException
+            If the overridden animation was already overridden.
+        """
+        if animation_class not in cls.animation_overrides:
+            cls.animation_overrides[animation_class] = override_func
+        else:
+            raise MultiAnimationOverrideException(
+                f"The animation {animation_class.__name__} for "
+                f"{cls.__name__} is overridden by more than one method: "
+                f"{cls.animation_overrides[animation_class].__qualname__} and "
+                f"{override_func.__qualname__}.",
+            )
+
+    @classmethod
+    def set_default(cls, **kwargs) -> None:
+        """Sets the default values of keyword arguments.
+
+        If this method is called without any additional keyword
+        arguments, the original default values of the initialization
+        method of this class are restored.
+
+        Parameters
+        ----------
+
+        kwargs
+            Passing any keyword argument will update the default
+            values of the keyword arguments of the initialization
+            function of this class.
+
+        Examples
+        --------
+
+        ::
+
+            >>> from manim import Square, GREEN
+            >>> Square.set_default(color=GREEN, fill_opacity=0.25)
+            >>> s = Square()
+            >>> s.color, s.fill_opacity
+            (ManimColor('#83C167'), 0.25)
+            >>> Square.set_default()
+            >>> s = Square()
+            >>> s.color, s.fill_opacity
+            (ManimColor('#FFFFFF'), 0.0)
+
+        .. manim:: ChangedDefaultTextcolor
+            :save_last_frame:
+
+            config.background_color = WHITE
+
+            class ChangedDefaultTextcolor(Scene):
+                def construct(self):
+                    Text.set_default(color=BLACK)
+                    self.add(Text("Changing default values is easy!"))
+
+                    # we revert the colour back to the default to prevent a bug in the docs.
+                    Text.set_default(color=WHITE)
+
+        """
+        if kwargs:
+            cls.__init__ = partialmethod(cls.__init__, **kwargs)
+        else:
+            cls.__init__ = cls._original__init__
 
     # https://github.com/python/typing/issues/802
     # so we hack around it by doing | Self

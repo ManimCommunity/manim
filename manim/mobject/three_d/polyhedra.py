@@ -9,12 +9,13 @@ import numpy as np
 
 from manim.mobject.geometry.polygram import Polygon
 from manim.mobject.graph import Graph
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup as VGroup
 from manim.mobject.three_d.three_dimensions import Dot3D
-from manim.mobject.types.vectorized_mobject import VGroup
 from manim.utils.qhull import QuickHull
 
 if TYPE_CHECKING:
-    from manim.mobject.mobject import Mobject
+    # from manim.mobject.mobject import Mobject
+    from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
     from manim.typing import Point3D, Point3DLike_Array
 
 __all__ = [

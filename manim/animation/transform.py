@@ -36,7 +36,12 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 
 from manim.data_structures import MethodWithArgs
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLGroup as Group,
+)
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLMobject as Mobject,
+)
 
 from ..animation.animation import Animation
 from ..constants import (
@@ -45,7 +50,8 @@ from ..constants import (
     ORIGIN,
     OUT,
 )
-from ..mobject.mobject import Group, Mobject
+
+# from ..mobject.mobject import Group, Mobject
 from ..utils.paths import path_along_arc, path_along_circles
 from ..utils.rate_functions import smooth, squish_rate_func
 
@@ -132,8 +138,8 @@ class Transform(Animation):
 
     def __init__(
         self,
-        mobject: OpenGLMobject | None,
-        target_mobject: OpenGLMobject | None = None,
+        mobject: Mobject | None,
+        target_mobject: Mobject | None = None,
         path_func: Callable | None = None,
         path_arc: float = 0,
         path_arc_axis: np.ndarray = OUT,
@@ -158,8 +164,8 @@ class Transform(Animation):
         self.replace_mobject_with_target_in_scene: bool = (
             replace_mobject_with_target_in_scene
         )
-        self.target_mobject: OpenGLMobject = (
-            target_mobject if target_mobject is not None else OpenGLMobject()
+        self.target_mobject: Mobject = (
+            target_mobject if target_mobject is not None else Mobject()
         )
         super().__init__(mobject, **kwargs)
 
@@ -196,7 +202,7 @@ class Transform(Animation):
 
         super().begin()
 
-    def create_target(self) -> OpenGLMobject:
+    def create_target(self) -> Mobject:
         # Has no meaningful effect here, but may be useful
         # in subclasses
         return self.target_mobject
@@ -206,7 +212,7 @@ class Transform(Animation):
         if self.replace_mobject_with_target_in_scene:
             self.buffer.replace(self.mobject, self.target_mobject)
 
-    def get_all_mobjects(self) -> Sequence[OpenGLMobject]:
+    def get_all_mobjects(self) -> Sequence[Mobject]:
         return [
             self.mobject,
             self.starting_mobject,
@@ -214,9 +220,7 @@ class Transform(Animation):
             self.target_copy,
         ]
 
-    def get_all_families_zipped(
-        self,
-    ) -> zip[tuple[OpenGLMobject, OpenGLMobject, OpenGLMobject]]:
+    def get_all_families_zipped(self) -> zip[tuple[Mobject, Mobject, Mobject]]:
         mobs = [
             self.mobject,
             self.starting_mobject,
@@ -226,9 +230,9 @@ class Transform(Animation):
 
     def interpolate_submobject(
         self,
-        submobject: OpenGLMobject,
-        starting_submobject: OpenGLMobject,
-        target_copy: OpenGLMobject,
+        submobject: Mobject,
+        starting_submobject: Mobject,
+        target_copy: Mobject,
         alpha: float,
     ) -> Transform:
         submobject.interpolate(starting_submobject, target_copy, alpha, self.path_func)
@@ -283,9 +287,7 @@ class ReplacementTransform(Transform):
 
     """
 
-    def __init__(
-        self, mobject: OpenGLMobject, target_mobject: OpenGLMobject, **kwargs
-    ) -> None:
+    def __init__(self, mobject: Mobject, target_mobject: Mobject, **kwargs) -> None:
         super().__init__(
             mobject, target_mobject, replace_mobject_with_target_in_scene=True, **kwargs
         )
@@ -294,9 +296,7 @@ class ReplacementTransform(Transform):
 class TransformFromCopy(Transform):
     """Performs a reversed Transform"""
 
-    def __init__(
-        self, mobject: OpenGLMobject, target_mobject: OpenGLMobject, **kwargs
-    ) -> None:
+    def __init__(self, mobject: Mobject, target_mobject: Mobject, **kwargs) -> None:
         super().__init__(target_mobject, mobject, **kwargs)
 
     def interpolate(self, alpha: float) -> None:
@@ -335,8 +335,8 @@ class ClockwiseTransform(Transform):
 
     def __init__(
         self,
-        mobject: OpenGLMobject,
-        target_mobject: OpenGLMobject,
+        mobject: Mobject,
+        target_mobject: Mobject,
         path_arc: float = -np.pi,
         **kwargs,
     ) -> None:
@@ -384,8 +384,8 @@ class CounterclockwiseTransform(Transform):
 
     def __init__(
         self,
-        mobject: OpenGLMobject,
-        target_mobject: OpenGLMobject,
+        mobject: Mobject,
+        target_mobject: Mobject,
         path_arc: float = np.pi,
         **kwargs,
     ) -> None:
@@ -418,11 +418,11 @@ class MoveToTarget(Transform):
 
     """
 
-    def __init__(self, mobject: OpenGLMobject, **kwargs) -> None:
+    def __init__(self, mobject: Mobject, **kwargs) -> None:
         self.check_validity_of_input(mobject)
         super().__init__(mobject, mobject.target, **kwargs)
 
-    def check_validity_of_input(self, mobject: OpenGLMobject) -> None:
+    def check_validity_of_input(self, mobject: Mobject) -> None:
         if not hasattr(mobject, "target"):
             raise ValueError(
                 "MoveToTarget called on mobjectwithout attribute 'target'",
@@ -473,9 +473,9 @@ class ApplyMethod(Transform):
                 "Whoops, looks like you accidentally invoked "
                 "the method you want to animate",
             )
-        assert isinstance(method.__self__, (Mobject, OpenGLMobject))
+        assert isinstance(method.__self__, Mobject)
 
-    def create_target(self) -> OpenGLMobject:
+    def create_target(self) -> Mobject:
         method = self.method
         # Make sure it's a list so that args.pop() works
         args = list(self.method_args)
@@ -521,9 +521,7 @@ class ApplyPointwiseFunction(ApplyMethod):
 
 
 class ApplyPointwiseFunctionToCenter(ApplyPointwiseFunction):
-    def __init__(
-        self, function: types.MethodType, mobject: OpenGLMobject, **kwargs
-    ) -> None:
+    def __init__(self, function: types.MethodType, mobject: Mobject, **kwargs) -> None:
         self.function = function
         super().__init__(mobject.move_to, **kwargs)
 
@@ -613,15 +611,13 @@ class Restore(ApplyMethod):
 
 
 class ApplyFunction(Transform):
-    def __init__(
-        self, function: types.MethodType, mobject: OpenGLMobject, **kwargs
-    ) -> None:
+    def __init__(self, function: types.MethodType, mobject: Mobject, **kwargs) -> None:
         self.function = function
         super().__init__(mobject, **kwargs)
 
     def create_target(self) -> Any:
         target = self.function(self.mobject.copy())
-        if not isinstance(target, (Mobject, OpenGLMobject)):
+        if not isinstance(target, Mobject):
             raise TypeError(
                 "Functions passed to ApplyFunction must return object of type Mobject",
             )

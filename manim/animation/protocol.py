@@ -5,12 +5,12 @@ from typing import TYPE_CHECKING, Protocol
 from typing_extensions import TypeVar
 
 if TYPE_CHECKING:
-    from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+    from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
     from manim.utils.rate_functions import RateFunction
 
     from .scene_buffer import SceneBuffer
 
-M = TypeVar("M", bound="OpenGLMobject", default="OpenGLMobject")
+M = TypeVar("M", bound="Mobject", default="Mobject")
 
 
 __all__ = ("AnimationProtocol",)

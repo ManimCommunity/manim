@@ -17,9 +17,8 @@ from manim.constants import (
 )
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RoundedRectangle
-from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.types.vectorized_mobject import VGroup
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup as VGroup
 from manim.utils.color import BLACK, RED, YELLOW, ManimColor, ParsableManimColor
 
 
@@ -49,18 +48,16 @@ class SurroundingRectangle(RoundedRectangle):
 
     def __init__(
         self,
-        *mobjects: Mobject | OpenGLMobject,
+        *mobjects: Mobject,
         color: ParsableManimColor = YELLOW,
         buff: float | tuple[float, float] = SMALL_BUFF,
         corner_radius: float = 0.0,
         **kwargs: Any,
     ) -> None:
-        from manim.mobject.mobject import Group
+        from manim.mobject.opengl.opengl_mobject import OpenGLGroup as Group
 
-        if not all(isinstance(mob, (Mobject, OpenGLMobject)) for mob in mobjects):
-            raise TypeError(
-                "Expected all inputs for parameter mobjects to be of type Mobject or OpenGLMobject"
-            )
+        if not all(isinstance(mob, Mobject) for mob in mobjects):
+            raise TypeError("Expected all inputs for parameter mobjects to be Mobjects")
 
         if isinstance(buff, tuple):
             buff_x = buff[0]

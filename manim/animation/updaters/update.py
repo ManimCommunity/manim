@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Any
 from manim.animation.animation import Animation
 
 if TYPE_CHECKING:
-    from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+    from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 
 
 class UpdateFromFunc(Animation):
@@ -24,8 +24,8 @@ class UpdateFromFunc(Animation):
 
     def __init__(
         self,
-        mobject: OpenGLMobject,
-        update_function: Callable[[OpenGLMobject], object],
+        mobject: Mobject,
+        update_function: Callable[[Mobject], object],
         suspend_mobject_updating: bool = False,
         **kwargs: Any,
     ) -> None:
@@ -45,7 +45,7 @@ class UpdateFromAlphaFunc(UpdateFromFunc):
 
 class MaintainPositionRelativeTo(Animation):
     def __init__(
-        self, mobject: OpenGLMobject, tracked_mobject: OpenGLMobject, **kwargs: Any
+        self, mobject: Mobject, tracked_mobject: Mobject, **kwargs: Any
     ) -> None:
         self.tracked_mobject = tracked_mobject
         self.diff = op.sub(

@@ -26,17 +26,22 @@ from manim.mobject.geometry.polygram import Polygon, Rectangle, RegularPolygon
 from manim.mobject.graphing.functions import ImplicitFunction, ParametricFunction
 from manim.mobject.graphing.number_line import NumberLine
 from manim.mobject.graphing.scale import LinearBase
-from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVDict as VDict,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVectorizedPoint as VectorizedPoint,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVGroup as VGroup,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVMobject as VMobject,
+)
 from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.three_d.three_dimensions import Surface
-from manim.mobject.types.vectorized_mobject import (
-    VDict,
-    VectorizedPoint,
-    VGroup,
-    VMobject,
-)
 from manim.utils.color import (
     BLACK,
     BLUE,
@@ -55,7 +60,6 @@ from manim.utils.simple_functions import binary_search
 from manim.utils.space_ops import angle_of_vector
 
 if TYPE_CHECKING:
-    from manim.mobject.mobject import Mobject
     from manim.typing import (
         ManimFloat,
         Point2D,
@@ -1863,7 +1867,7 @@ class CoordinateSystem:
     def _origin_shift(axis_range: Sequence[float]) -> float: ...
 
 
-class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
+class Axes(VGroup, CoordinateSystem):
     """Creates a set of axes.
 
     Parameters
