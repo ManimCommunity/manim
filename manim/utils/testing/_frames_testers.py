@@ -62,7 +62,7 @@ class _FramesTester:
                 verbose=False,
             )
             self._frames_compared += 1
-        except AssertionError as err:
+        except AssertionError:
             number_of_matches = np.isclose(
                 frame, self._frames[frame_number], atol=FRAME_ABSOLUTE_TOLERANCE
             ).sum()
@@ -87,8 +87,8 @@ class _FramesTester:
                     self._file_path.name,
                 )
             raise GraphicalDeviationError(
-                f"The graphical test with control data '{self._file_path.name}' had {number_of_mismatches} pixel errors."
-            ) from err
+                f"{number_of_mismatches} pixels differ when comparing with '{self._file_path.name}'"
+            ) from None
 
 
 class _ControlDataWriter(_FramesTester):
