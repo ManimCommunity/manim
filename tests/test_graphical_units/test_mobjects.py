@@ -6,7 +6,7 @@ from manim.utils.testing.frames_comparison import frames_comparison
 __module_test__ = "mobjects"
 
 
-@frames_comparison(base_scene=ThreeDScene)
+@frames_comparison
 def test_PointCloudDot(scene):
     p = PointCloudDot()
     scene.add(p)

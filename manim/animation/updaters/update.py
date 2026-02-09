@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Any
 from manim.animation.animation import Animation
 
 if TYPE_CHECKING:
-    from manim.mobject.mobject import Mobject
+    from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 
 class UpdateFromFunc(Animation):
@@ -24,28 +24,28 @@ class UpdateFromFunc(Animation):
 
     def __init__(
         self,
-        mobject: Mobject,
-        update_function: Callable[[Mobject], Any],
+        mobject: OpenGLMobject,
+        update_function: Callable[[OpenGLMobject], object],
         suspend_mobject_updating: bool = False,
         **kwargs: Any,
     ) -> None:
-        self.update_function = update_function
         super().__init__(
             mobject, suspend_mobject_updating=suspend_mobject_updating, **kwargs
         )
+        self.update_function = update_function
 
-    def interpolate_mobject(self, alpha: float) -> None:
+    def interpolate(self, alpha: float) -> None:
         self.update_function(self.mobject)  # type: ignore[arg-type]
 
 
 class UpdateFromAlphaFunc(UpdateFromFunc):
-    def interpolate_mobject(self, alpha: float) -> None:
+    def interpolate(self, alpha: float) -> None:
         self.update_function(self.mobject, self.rate_func(alpha))  # type: ignore[call-arg, arg-type]
 
 
 class MaintainPositionRelativeTo(Animation):
     def __init__(
-        self, mobject: Mobject, tracked_mobject: Mobject, **kwargs: Any
+        self, mobject: OpenGLMobject, tracked_mobject: OpenGLMobject, **kwargs: Any
     ) -> None:
         self.tracked_mobject = tracked_mobject
         self.diff = op.sub(
@@ -54,7 +54,7 @@ class MaintainPositionRelativeTo(Animation):
         )
         super().__init__(mobject, **kwargs)
 
-    def interpolate_mobject(self, alpha: float) -> None:
+    def interpolate(self, alpha: float) -> None:
         target = self.tracked_mobject.get_center()
         location = self.mobject.get_center()
         self.mobject.shift(target - location + self.diff)

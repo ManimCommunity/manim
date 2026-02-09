@@ -20,6 +20,7 @@ from manim.utils.space_ops import normalize_along_axis
 __all__ = ["OpenGLSurface", "OpenGLTexturedSurface"]
 
 
+# TODO: Those will not work in the current state we will have to think about a different method to render these with shaders in our current pipeline
 class OpenGLSurface(OpenGLMobject):
     r"""Creates a Surface.
 
@@ -58,7 +59,6 @@ class OpenGLSurface(OpenGLMobject):
         ("dv_point", np.float32, (3,)),
         ("color", np.float32, (4,)),
     ]
-    shader_folder = "surface"
 
     def __init__(
         self,
@@ -82,7 +82,6 @@ class OpenGLSurface(OpenGLMobject):
         epsilon=1e-5,
         render_primitive=moderngl.TRIANGLES,
         depth_test=True,
-        shader_folder=None,
         **kwargs,
     ):
         self.passed_uv_func = uv_func
@@ -106,8 +105,6 @@ class OpenGLSurface(OpenGLMobject):
             opacity=opacity,
             gloss=gloss,
             shadow=shadow,
-            shader_folder=shader_folder if shader_folder is not None else "surface",
-            render_primitive=render_primitive,
             depth_test=depth_test,
             **kwargs,
         )
@@ -391,7 +388,8 @@ class OpenGLTexturedSurface(OpenGLSurface):
         if isinstance(image_mode, (str, Path)):
             image_mode = [image_mode] * 2
         image_mode_light, image_mode_dark = image_mode
-        texture_paths = {
+        # TODO: move to renderer
+        _texture_paths = {
             "LightTexture": self.get_image_from_file(
                 image_file,
                 image_mode_light,
@@ -410,7 +408,7 @@ class OpenGLTexturedSurface(OpenGLSurface):
         self.v_range = uv_surface.v_range
         self.resolution = uv_surface.resolution
         self.gloss = self.uv_surface.gloss
-        super().__init__(texture_paths=texture_paths, **kwargs)
+        super().__init__(**kwargs)
 
     def get_image_from_file(
         self,

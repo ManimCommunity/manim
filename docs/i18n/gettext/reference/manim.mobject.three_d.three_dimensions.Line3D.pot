@@ -19,7 +19,7 @@ msgid "Bases: :py:class:`manim.mobject.three_d.three_dimensions.Cylinder`"
 msgstr ""
 
 #: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Line3D:1
-msgid "A cylindrical line, for use in ThreeDScene."
+msgid "A cylindrical line."
 msgstr ""
 
 #: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Line3D:4

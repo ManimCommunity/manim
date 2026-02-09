@@ -975,10 +975,10 @@ class CoordinateSystem:
         .. manim:: PlotSurfaceExample
             :save_last_frame:
 
-            class PlotSurfaceExample(ThreeDScene):
+            class PlotSurfaceExample(Scene):
                 def construct(self):
                     resolution_fa = 16
-                    self.set_camera_orientation(phi=75 * DEGREES, theta=-60 * DEGREES)
+                    self.camera.set_orientation(theta=-60 * DEGREES, phi=75 * DEGREES)
                     axes = ThreeDAxes(x_range=(-3, 3, 1), y_range=(-3, 3, 1), z_range=(-5, 5, 1))
                     def param_trig(u, v):
                         x = u
@@ -994,21 +994,8 @@ class CoordinateSystem:
                         )
                     self.add(axes, trig_plane)
         """
-        if config.renderer == RendererType.CAIRO:
+        if config.renderer == RendererType.OPENGL:
             surface = Surface(
-                lambda u, v: self.c2p(u, v, function(u, v)),
-                u_range=u_range,
-                v_range=v_range,
-                **kwargs,
-            )
-            if colorscale:
-                surface.set_fill_by_value(
-                    axes=self.copy(),
-                    colorscale=colorscale,
-                    axis=colorscale_axis,
-                )
-        elif config.renderer == RendererType.OPENGL:
-            surface = OpenGLSurface(
                 lambda u, v: self.c2p(u, v, function(u, v)),
                 u_range=u_range,
                 v_range=v_range,
@@ -1017,6 +1004,9 @@ class CoordinateSystem:
                 colorscale_axis=colorscale_axis,
                 **kwargs,
             )
+        elif config.renderer == RendererType.CAIRO:
+            # TODO: CairoSurface?
+            raise NotImplementedError
 
         return surface
 
@@ -2500,6 +2490,7 @@ class ThreeDAxes(Axes):
         self.z_axis = z_axis
 
         if config.renderer == RendererType.CAIRO:
+            # TODO: check in how far these methods are supported by new VMobject class
             self._add_3d_pieces()
             self._set_axis_shading()
 
@@ -2561,11 +2552,11 @@ class ThreeDAxes(Axes):
         .. manim:: GetYAxisLabelExample
             :save_last_frame:
 
-            class GetYAxisLabelExample(ThreeDScene):
+            class GetYAxisLabelExample(Scene):
                 def construct(self):
                     ax = ThreeDAxes()
                     lab = ax.get_y_axis_label(Tex("$y$-label"))
-                    self.set_camera_orientation(phi=2*PI/5, theta=PI/5)
+                    self.camera.set_orientation(theta=PI/5, phi=2*PI/5)
                     self.add(ax, lab)
         """
         positioned_label = self._get_axis_label(
@@ -2611,11 +2602,11 @@ class ThreeDAxes(Axes):
         .. manim:: GetZAxisLabelExample
             :save_last_frame:
 
-            class GetZAxisLabelExample(ThreeDScene):
+            class GetZAxisLabelExample(Scene):
                 def construct(self):
                     ax = ThreeDAxes()
                     lab = ax.get_z_axis_label(Tex("$z$-label"))
-                    self.set_camera_orientation(phi=2*PI/5, theta=PI/5)
+                    self.camera.set_orientation(theta=PI/5, phi=2*PI/5)
                     self.add(ax, lab)
         """
         positioned_label = self._get_axis_label(
@@ -2662,9 +2653,9 @@ class ThreeDAxes(Axes):
         .. manim:: GetAxisLabelsExample
             :save_last_frame:
 
-            class GetAxisLabelsExample(ThreeDScene):
+            class GetAxisLabelsExample(Scene):
                 def construct(self):
-                    self.set_camera_orientation(phi=2*PI/5, theta=PI/5)
+                    self.camera.set_orientation(theta=PI/5, phi=2*PI/5)
                     axes = ThreeDAxes()
                     labels = axes.get_axis_labels(
                         Text("x-axis").scale(0.7), Text("y-axis").scale(0.45), Text("z-axis").scale(0.45)

@@ -12,7 +12,6 @@ from manim.animation.animation import Animation, prepare_animation
 from manim.constants import RendererType
 from manim.mobject.mobject import Group, Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
-from manim.scene.scene import Scene
 from manim.utils.iterables import remove_list_redundancies
 from manim.utils.parameter_parsing import flatten_iterable_parameters
 from manim.utils.rate_functions import linear
@@ -61,11 +60,12 @@ class AnimationGroup(Animation):
         **kwargs: Any,
     ):
         arg_anim = flatten_iterable_parameters(animations)
+
         self.animations = [prepare_animation(anim) for anim in arg_anim]
         self.rate_func = rate_func
         if group is None:
             mobjects = remove_list_redundancies(
-                [anim.mobject for anim in self.animations if not anim.is_introducer()],
+                [anim.mobject for anim in self.animations if not anim.introducer],
             )
             if config["renderer"] == RendererType.OPENGL:
                 self.group: Group | VGroup | OpenGLGroup | OpenGLVGroup = OpenGLGroup(
@@ -89,30 +89,31 @@ class AnimationGroup(Animation):
                 f"Trying to play {self} without animations, this is not supported. "
                 "Please add at least one subanimation."
             )
+
+        for anim in self.animations:
+            if self.introducer:
+                anim.introducer = True
+            anim.begin()
+            self.process_subanimation_buffer(anim.buffer)
+
         self.anim_group_time = 0.0
         if self.suspend_mobject_updating:
             self.group.suspend_updating()
-        for anim in self.animations:
-            anim.begin()
-
-    def _setup_scene(self, scene: Scene) -> None:
-        for anim in self.animations:
-            anim._setup_scene(scene)
 
     def finish(self) -> None:
         for anim in self.animations:
             anim.finish()
         self.anims_begun[:] = True
         self.anims_finished[:] = True
-        if self.suspend_mobject_updating:
-            self.group.resume_updating()
-
-    def clean_up_from_scene(self, scene: Scene) -> None:
-        self._on_finish(scene)
         for anim in self.animations:
             if self.remover:
-                anim.remover = self.remover
-            anim.clean_up_from_scene(scene)
+                anim.remover = True
+            anim.finish()
+            self.process_subanimation_buffer(anim.buffer)
+
+        if self.suspend_mobject_updating:
+            self.group.resume_updating()
+        self._on_finish(self.buffer)
 
     def update_mobjects(self, dt: float) -> None:
         for anim in self.anims_with_timings["anim"][
@@ -251,16 +252,6 @@ class Succession(AnimationGroup):
         if self.active_animation:
             self.active_animation.update_mobjects(dt)
 
-    def _setup_scene(self, scene: Scene | None) -> None:
-        if scene is None:
-            return
-        if self.is_introducer():
-            for anim in self.animations:
-                if not anim.is_introducer() and anim.mobject is not None:
-                    scene.add(anim.mobject)
-
-        self.scene = scene
-
     def update_active_animation(self, index: int) -> None:
         self.active_index = index
         if index >= len(self.animations):
@@ -269,8 +260,9 @@ class Succession(AnimationGroup):
             self.active_end_time: float | None = None
         else:
             self.active_animation = self.animations[index]
-            self.active_animation._setup_scene(self.scene)
             self.active_animation.begin()
+            self.process_subanimation_buffer(self.active_animation.buffer)
+            self.apply_buffer = True
             self.active_start_time = self.anims_with_timings[index]["start"]
             self.active_end_time = self.anims_with_timings[index]["end"]
 
@@ -281,6 +273,7 @@ class Succession(AnimationGroup):
         """
         if self.active_animation is not None:
             self.active_animation.finish()
+            self.process_subanimation_buffer(self.active_animation.buffer)
         self.update_active_animation(self.active_index + 1)
 
     def interpolate(self, alpha: float) -> None:

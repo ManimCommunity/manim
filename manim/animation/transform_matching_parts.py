@@ -4,7 +4,6 @@ from __future__ import annotations
 
 __all__ = ["TransformMatchingShapes", "TransformMatchingTex"]
 
-from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -18,9 +17,6 @@ from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from .composition import AnimationGroup
 from .fading import FadeIn, FadeOut
 from .transform import FadeTransformPieces, Transform
-
-if TYPE_CHECKING:
-    from ..scene.scene import Scene
 
 
 class TransformMatchingAbstractBase(AnimationGroup):
@@ -146,19 +142,20 @@ class TransformMatchingAbstractBase(AnimationGroup):
             key = self.get_mobject_key(sm)
             if key not in shape_map:
                 if config["renderer"] == RendererType.OPENGL:
-                    shape_map[key] = OpenGLVGroup()
+                    shape_map[key] = VGroup()
                 else:
                     shape_map[key] = VGroup()
             shape_map[key].add(sm)
         return shape_map
 
-    def clean_up_from_scene(self, scene: Scene) -> None:
+    def finish(self) -> None:
+        super().finish()
         # Interpolate all animations back to 0 to ensure source mobjects remain unchanged.
         for anim in self.animations:
             anim.interpolate(0)
-        scene.remove(self.mobject)
-        scene.remove(*self.to_remove)
-        scene.add(self.to_add)
+        self.buffer.remove(self.mobject)
+        self.buffer.remove(*self.to_remove)
+        self.buffer.add(self.to_add)
 
     @staticmethod
     def get_mobject_parts(mobject: Mobject):

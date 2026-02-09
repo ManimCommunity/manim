@@ -82,19 +82,23 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 if TYPE_CHECKING:
+    from typing import Any, Self
+
     from manim.mobject.text.text_mobject import Text
     from manim.scene.scene import Scene
 
 from manim.constants import RIGHT, TAU
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject as VMobject
 from manim.utils.color import ManimColor
+from manim.utils.space_ops import rotate_vector
 
 from .. import config
 from ..animation.animation import Animation
 from ..animation.composition import Succession
-from ..mobject.mobject import Group, Mobject
-from ..mobject.types.vectorized_mobject import VMobject
+from ..mobject.mobject import Group
+from ..mobject.opengl.opengl_mobject import OpenGLMobject
 from ..utils.bezier import integer_interpolate
 from ..utils.rate_functions import double_smooth, linear
 
@@ -125,13 +129,14 @@ class ShowPartial(Animation):
 
     def interpolate_submobject(
         self,
-        submobject: Mobject,
-        starting_submobject: Mobject,
+        submobject: OpenGLMobject,
+        starting_submobject: OpenGLMobject,
         alpha: float,
-    ) -> None:
+    ) -> Self:
         submobject.pointwise_become_partial(
             starting_submobject, *self._get_bounds(alpha)
         )
+        return self
 
     def _get_bounds(self, alpha: float) -> tuple[float, float]:
         raise NotImplementedError("Please use Create or ShowPassingFlash")
@@ -228,7 +233,9 @@ class DrawBorderThenFill(Animation):
         run_time: float = 2,
         rate_func: Callable[[float], float] = double_smooth,
         stroke_width: float = 2,
-        stroke_color: str = None,
+        stroke_color: ManimColor | None = None,
+        draw_border_animation_config: dict = {},  # what does this dict accept?
+        fill_animation_config: dict = {},
         introducer: bool = True,
         **kwargs,
     ) -> None:
@@ -244,17 +251,19 @@ class DrawBorderThenFill(Animation):
         self.stroke_color = stroke_color
         self.outline = self.get_outline()
 
-    def _typecheck_input(self, vmobject: VMobject | OpenGLVMobject) -> None:
-        if not isinstance(vmobject, (VMobject, OpenGLVMobject)):
+    def _typecheck_input(self, vmobject: OpenGLVMobject) -> None:
+        if not isinstance(vmobject, OpenGLVMobject):
             raise TypeError(
                 f"{self.__class__.__name__} only works for vectorized Mobjects"
             )
 
     def begin(self) -> None:
+        # this self.get_outline() has to be called
+        # before super().begin(), for whatever reason
         self.outline = self.get_outline()
         super().begin()
 
-    def get_outline(self) -> Mobject:
+    def get_outline(self) -> OpenGLMobject:
         outline = self.mobject.copy()
         outline.set_fill(opacity=0)
         for sm in outline.family_members_with_points():
@@ -268,16 +277,16 @@ class DrawBorderThenFill(Animation):
             return vmobject.get_stroke_color()
         return vmobject.get_color()
 
-    def get_all_mobjects(self) -> Sequence[Mobject]:
+    def get_all_mobjects(self) -> Sequence[OpenGLMobject]:
         return [*super().get_all_mobjects(), self.outline]
 
     def interpolate_submobject(
         self,
-        submobject: Mobject,
-        starting_submobject: Mobject,
-        outline,
+        submobject: OpenGLMobject,
+        starting_submobject: OpenGLMobject,
+        outline: OpenGLMobject,
         alpha: float,
-    ) -> None:  # Fixme: not matching the parent class? What is outline doing here?
+    ) -> None:
         index: int
         subalpha: float
         index, subalpha = integer_interpolate(0, 2, alpha)
@@ -320,10 +329,10 @@ class Write(DrawBorderThenFill):
         vmobject: VMobject | OpenGLVMobject,
         rate_func: Callable[[float], float] = linear,
         reverse: bool = False,
+        run_time: float | None = None,
+        lag_ratio: float | None = None,
         **kwargs,
     ) -> None:
-        run_time: float | None = kwargs.pop("run_time", None)
-        lag_ratio: float | None = kwargs.pop("lag_ratio", None)
         run_time, lag_ratio = self._set_default_config_from_length(
             vmobject,
             run_time,
@@ -354,18 +363,15 @@ class Write(DrawBorderThenFill):
             lag_ratio = min(4.0 / max(1.0, length), 0.2)
         return run_time, lag_ratio
 
-    def reverse_submobjects(self) -> None:
-        self.mobject.invert(recursive=True)
-
     def begin(self) -> None:
         if self.reverse:
-            self.reverse_submobjects()
+            self.mobject.reverse_submobjects(recursive=True)
         super().begin()
 
     def finish(self) -> None:
         super().finish()
         if self.reverse:
-            self.reverse_submobjects()
+            self.mobject.reverse_submobjects(recursive=True)
 
 
 class Unwrite(Write):
@@ -450,30 +456,35 @@ class SpiralIn(Animation):
 
     def __init__(
         self,
-        shapes: Mobject,
+        shapes: OpenGLMobject,
         scale_factor: float = 8,
-        fade_in_fraction=0.3,
-        **kwargs,
+        fade_in_fraction: float = 0.3,
+        **kwargs: Any,
     ) -> None:
         self.shapes = shapes.copy()
         self.scale_factor = scale_factor
         self.shape_center = shapes.get_center()
         self.fade_in_fraction = fade_in_fraction
-        for shape in shapes:
-            shape.final_position = shape.get_center()
-            shape.initial_position = (
-                shape.final_position
-                + (shape.final_position - self.shape_center) * self.scale_factor
-            )
-            shape.move_to(shape.initial_position)
-            shape.save_state()
+        self.final_positions = [shape.get_center() for shape in shapes]
+        self.initial_positions = [
+            final_pos + (final_pos - self.shape_center) * self.scale_factor
+            for final_pos in self.final_positions
+        ]
 
         super().__init__(shapes, introducer=True, **kwargs)
 
-    def interpolate_mobject(self, alpha: float) -> None:
+    def interpolate(self, alpha: float) -> None:
         alpha = self.rate_func(alpha)
-        for original_shape, shape in zip(self.shapes, self.mobject, strict=False):
-            shape.restore()
+        for i, shape in enumerate(self.mobject):
+            initial_pos = self.initial_positions[i]
+            final_pos = self.final_positions[i]
+            # Avoid shape.rotate() in order to preserve the bounding box of the shape.
+            # Instead, rotate the vector itself to calculate the current shape position.
+            vector = initial_pos - self.shape_center + (final_pos - initial_pos) * alpha
+            vector = rotate_vector(vector, TAU * alpha)
+            shape.move_to(self.shape_center + vector)
+
+            original_shape = self.shapes[i]
             fill_opacity = original_shape.get_fill_opacity()
             stroke_opacity = original_shape.get_stroke_opacity()
             new_fill_opacity = min(
@@ -482,9 +493,6 @@ class SpiralIn(Animation):
             new_stroke_opacity = min(
                 stroke_opacity, alpha * stroke_opacity / self.fade_in_fraction
             )
-            shape.shift((shape.final_position - shape.initial_position) * alpha)
-            shape.rotate(TAU * alpha, about_point=self.shape_center)
-            shape.rotate(-TAU * alpha, about_point=shape.get_center_of_mass())
             shape.set_fill(opacity=new_fill_opacity)
             shape.set_stroke(opacity=new_stroke_opacity)
 
@@ -507,7 +515,7 @@ class ShowIncreasingSubsets(Animation):
 
     def __init__(
         self,
-        group: Mobject,
+        group: OpenGLMobject,
         suspend_mobject_updating: bool = False,
         int_func: Callable[[np.ndarray], np.ndarray] = np.floor,
         reverse_rate_function=False,
@@ -524,7 +532,7 @@ class ShowIncreasingSubsets(Animation):
             **kwargs,
         )
 
-    def interpolate_mobject(self, alpha: float) -> None:
+    def interpolate(self, alpha: float) -> None:
         n_submobs = len(self.all_submobs)
         value = (
             1 - self.rate_func(alpha)
@@ -635,7 +643,7 @@ class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
 
     def __init__(
         self,
-        group: Iterable[Mobject],
+        group: Iterable[OpenGLMobject],
         int_func: Callable[[np.ndarray], np.ndarray] = np.ceil,
         **kwargs,
     ) -> None:
@@ -720,7 +728,7 @@ class TypeWithCursor(AddTextLetterByLetter):
     def __init__(
         self,
         text: Text,
-        cursor: Mobject,
+        cursor: OpenGLMobject,
         buff: float = 0.1,
         keep_cursor_y: bool = True,
         leave_cursor_on: bool = True,

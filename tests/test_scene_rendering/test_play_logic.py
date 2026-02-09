@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import sys
 from unittest.mock import Mock
 
 import pytest
 
 from manim import (
     Dot,
+    Manager,
     Mobject,
     Scene,
     ValueTracker,
@@ -26,53 +26,61 @@ from .simple_scenes import (
 
 @pytest.mark.parametrize("frame_rate", argvalues=[15, 30, 60])
 def test_t_values(config, using_temp_config, disabling_caching, frame_rate):
-    """Test that the framerate corresponds to the number of t values generated"""
+    """Test that the framerate corresponds to the number of times animations are updated"""
     config.frame_rate = frame_rate
-    scene = SquareToCircle()
-    scene.update_to_time = Mock()
-    scene.render()
-    assert scene.update_to_time.call_count == config["frame_rate"]
+    with Manager(SquareToCircle) as manager:
+        scene = manager.scene
+        scene._update_animations = Mock()
+        manager.render()
+    assert scene._update_animations.call_count == config["frame_rate"]
     np.testing.assert_allclose(
-        ([call.args[0] for call in scene.update_to_time.call_args_list]),
+        ([call.args[1] for call in scene._update_animations.call_args_list]),
         np.arange(0, 1, 1 / config["frame_rate"]),
     )
 
 
-@pytest.mark.skipif(
-    sys.version_info < (3, 8),
-    reason="Mock object has a different implementation in python 3.7, which makes it broken with this logic.",
-)
 def test_t_values_with_skip_animations(using_temp_config, disabling_caching):
     """Test the behaviour of scene.skip_animations"""
-    scene = SquareToCircle()
-    scene.update_to_time = Mock()
-    scene.renderer._original_skipping_status = True
-    scene.render()
-    assert scene.update_to_time.call_count == 1
+    manager = Manager(SquareToCircle)
+    manager._skip_animations = True
+    scene = manager.scene
+    scene._update_animations = Mock()
+    manager.render()
+    assert scene._update_animations.call_count == 1
     np.testing.assert_almost_equal(
-        scene.update_to_time.call_args.args[0],
+        scene._update_animations.call_args.args[1],
         1.0,
     )
 
 
+# TODO: Rework Wait animation
 def test_static_wait_detection(using_temp_config, disabling_caching):
     """Test if a static wait (wait that freeze the frame) is correctly detected"""
-    scene = SceneWithStaticWait()
-    scene.render()
+    manager = Manager(SceneWithStaticWait)
+    scene = manager.scene
+    scene._update_animations = Mock()
+    manager.render()
+    anims = scene._update_animations.call_args[0][0]
     # Test is is_static_wait of the Wait animation has been set to True by compile_animation_ata
-    assert scene.animations[0].is_static_wait
-    assert scene.is_current_animation_frozen_frame()
+    assert anims[0].is_static_wait
+    assert scene.is_current_animation_frozen_frame(anims)
 
 
 def test_non_static_wait_detection(using_temp_config, disabling_caching):
-    scene = SceneWithNonStaticWait()
-    scene.render()
-    assert not scene.animations[0].is_static_wait
-    assert not scene.is_current_animation_frozen_frame()
-    scene = SceneWithSceneUpdater()
-    scene.render()
-    assert not scene.animations[0].is_static_wait
-    assert not scene.is_current_animation_frozen_frame()
+    manager = Manager(SceneWithNonStaticWait)
+    scene = manager.scene
+    scene._update_animations = Mock()
+    manager.render()
+    anims = scene._update_animations.call_args[0][0]
+    assert not anims[0].is_static_wait
+    assert not scene.is_current_animation_frozen_frame(anims)
+    manager = Manager(SceneWithSceneUpdater)
+    scene = manager.scene
+    scene._update_animations = Mock()
+    manager.render()
+    anims = scene._update_animations.call_args[0][0]
+    assert not anims[0].is_static_wait
+    assert not scene.is_current_animation_frozen_frame(anims)
 
 
 def test_wait_with_stop_condition(using_temp_config, disabling_caching):
@@ -87,12 +95,12 @@ def test_wait_with_stop_condition(using_temp_config, disabling_caching):
             assert len(self.mobjects) > 5
             assert self.time < 2
 
-    scene = TestScene()
-    scene.render()
+    manager = Manager(TestScene)
+    manager.render()
 
 
 def test_frozen_frame(using_temp_config, disabling_caching):
-    scene = SceneForFrozenFrameTests()
+    scene = Manager(SceneForFrozenFrameTests)
     scene.render()
     assert scene.mobject_update_count == 0
     assert scene.scene_update_count == 0
@@ -134,4 +142,4 @@ def test_animate_with_changed_custom_attribute(using_temp_config):
             assert vt.get_value() == 42
             assert vt.custom_attribute == "world"
 
-    CustomAnimateScene().render()
+    Manager(CustomAnimateScene).render()
