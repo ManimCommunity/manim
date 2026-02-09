@@ -12,8 +12,6 @@ from PIL import Image
 from PIL.Image import Resampling
 
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
-
-# from ...mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 
 from ... import config

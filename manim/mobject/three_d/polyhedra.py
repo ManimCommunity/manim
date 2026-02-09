@@ -14,7 +14,6 @@ from manim.mobject.three_d.three_dimensions import Dot3D
 from manim.utils.qhull import QuickHull
 
 if TYPE_CHECKING:
-    # from manim.mobject.mobject import Mobject
     from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
     from manim.typing import Point3D, Point3DLike_Array
 
