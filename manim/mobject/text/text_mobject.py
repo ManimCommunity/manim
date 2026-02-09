@@ -77,8 +77,6 @@ from manim.typing import Point3D
 from manim.utils.color import ManimColor, ParsableManimColor, color_gradient
 
 if TYPE_CHECKING:
-    from typing import Self
-
     from manim.typing import Point3D
 
 TEXT_MOB_SCALE_FACTOR = 0.05

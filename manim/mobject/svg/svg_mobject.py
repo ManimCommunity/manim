@@ -11,7 +11,6 @@ import numpy as np
 import svgelements as se
 
 from manim import config, logger
-from manim.utils.color import ManimColor, ParsableManimColor
 
 from ...constants import RIGHT
 from ...utils.bezier import get_quadratic_approximation_of_cubic

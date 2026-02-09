@@ -65,8 +65,6 @@ if TYPE_CHECKING:
     from manim.animation.animation import Animation
     from manim.renderer.renderer import RendererData
     from manim.typing import (
-        FloatRGB_Array,
-        FloatRGBA_Array,
         ManimFloat,
         MappingFunction,
         MatrixMN,
