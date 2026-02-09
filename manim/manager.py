@@ -29,7 +29,7 @@ from manim.utils.progressbar import (
 
 if TYPE_CHECKING:
     from types import TracebackType
-    from typing import Any
+    from typing import Any, Self
 
     import numpy.typing as npt
 
@@ -37,10 +37,10 @@ if TYPE_CHECKING:
     from manim.file_writer.protocols import FileWriterProtocol
     from manim.renderer.renderer import RendererProtocol
 
-Scene_co = TypeVar("Scene_co", covariant=True, bound=Scene)
+SceneT = TypeVar("SceneT", bound=Scene)
 
 
-class Manager(Generic[Scene_co]):
+class Manager(Generic[SceneT]):
     """
     The Brain of Manim
 
@@ -66,9 +66,9 @@ class Manager(Generic[Scene_co]):
                 manager.render()
     """
 
-    def __init__(self, scene_cls: type[Scene_co]) -> None:
-        # scene
-        self.scene: Scene_co = scene_cls(manager=self)
+    def __init__(self, scene_cls: type[SceneT]) -> None:
+        config._warn_about_config_options()
+        self.scene: SceneT = scene_cls(manager=self)
 
         if not isinstance(self.scene, Scene):
             raise ValueError(f"{self.scene!r} is not an instance of Scene")
@@ -90,7 +90,7 @@ class Manager(Generic[Scene_co]):
     def __str__(self) -> str:
         return f"{self.__class__.__name__}({self.scene!r}) at time {self.time:.2f}s"
 
-    def __enter__(self) -> Manager[Scene_co]:
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(
@@ -170,7 +170,6 @@ class Manager(Generic[Scene_co]):
             with tempconfig({"preview": True}), Manager(MyScene) as manager:
                 manager.render()
         """
-        config._warn_about_config_options()
         self._render_first_pass()
         self._render_second_pass()
 

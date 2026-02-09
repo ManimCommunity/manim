@@ -72,7 +72,8 @@ from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.svg.svg_mobject import SVGMobject
-from manim.mobject.types.vectorized_mobject import VGroup
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.typing import Point3D
 from manim.utils.color import ManimColor, ParsableManimColor, color_gradient
 
 if TYPE_CHECKING:

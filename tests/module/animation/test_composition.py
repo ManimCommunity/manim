@@ -186,6 +186,9 @@ def test_animationgroup_calls_finish():
             super().__init__(mobject)
             self.finished = False
 
+        def interpolate_mobject(self, alpha):
+            pass
+
         def finish(self):
             self.finished = True
 

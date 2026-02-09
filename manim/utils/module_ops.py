@@ -6,16 +6,19 @@ import re
 import sys
 import types
 import warnings
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, overload
 
-from manim import config, console, constants, logger
-from manim.constants import CHOOSE_NUMBER_MESSAGE, INVALID_NUMBER_MESSAGE
+from manim._config import config, console, logger
+from manim.constants import (
+    CHOOSE_NUMBER_MESSAGE,
+    INVALID_NUMBER_MESSAGE,
+    NO_SCENE_MESSAGE,
+    SCENE_NOT_FOUND_MESSAGE,
+)
 from manim.file_writer import FileWriter
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
-    from pathlib import Path
-
     from manim.scene.scene import Scene
 
 __all__ = ["scene_classes_from_file"]
@@ -83,9 +86,9 @@ def get_scene_classes_from_module(module: types.ModuleType) -> list[type[Scene]]
     ]
 
 
-def get_scenes_to_render(scene_classes: Sequence[type[Scene]]) -> Sequence[type[Scene]]:
+def get_scenes_to_render(scene_classes: list[type[Scene]]) -> list[type[Scene]]:
     if not scene_classes:
-        logger.error(constants.NO_SCENE_MESSAGE)
+        logger.error(NO_SCENE_MESSAGE)
         return []
     if config.write_all:
         return scene_classes
@@ -98,7 +101,7 @@ def get_scenes_to_render(scene_classes: Sequence[type[Scene]]) -> Sequence[type[
                 result.append(scene_class)
                 break
         else:
-            logger.error(constants.SCENE_NOT_FOUND_MESSAGE.format(scene_name))
+            logger.error(SCENE_NOT_FOUND_MESSAGE.format(scene_name))
     if result:
         return result
     if len(scene_classes) == 1:
@@ -107,9 +110,7 @@ def get_scenes_to_render(scene_classes: Sequence[type[Scene]]) -> Sequence[type[
     return prompt_user_for_choice(scene_classes)
 
 
-def prompt_user_for_choice(
-    scene_classes: Iterable[type[Scene]],
-) -> Sequence[type[Scene]]:
+def prompt_user_for_choice(scene_classes: list[type[Scene]]) -> list[type[Scene]]:
     num_to_class = {}
     FileWriter.use_output_as_scene_name()
     for count, scene_class in enumerate(scene_classes, 1):
@@ -122,7 +123,7 @@ def prompt_user_for_choice(
         )
 
         if user_input == "*":
-            selected_scenes_classes = list(scene_classes)
+            selected_scenes_classes = scene_classes
         else:
             selected_scenes_classes = [
                 num_to_class[int(num_str)]
