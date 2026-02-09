@@ -50,7 +50,6 @@ from ..constants import (
     ORIGIN,
     OUT,
 )
-
 from ..utils.paths import path_along_arc, path_along_circles
 from ..utils.rate_functions import smooth, squish_rate_func
 
