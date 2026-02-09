@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Self
+from typing import Any, Self
 from unittest.mock import MagicMock
 
 import pytest
@@ -23,6 +23,7 @@ from manim import (
     Wait,
     Write,
 )
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 
 
 def test_succession_timing():
@@ -183,17 +184,17 @@ def test_animationgroup_is_passing_remover_to_nested_animationgroups():
 
 def test_animationgroup_calls_finish():
     class MyAnimation(Animation):
-        def __init__(self, mobject):
+        def __init__(self, mobject: Mobject):
             super().__init__(mobject)
             self.finished = False
 
-        def interpolate_mobject(self, alpha):
+        def interpolate_mobject(self, alpha: float) -> None:
             pass
 
-        def finish(self):
+        def finish(self) -> None:
             self.finished = True
 
-        def interpolate_submobject(self, *args) -> Self:
+        def interpolate_submobject(self, *args: Any, **kwargs: Any) -> Self:
             return self
 
     manager = Manager(Scene)
