@@ -149,10 +149,10 @@ class Surface(VGroup):
         self.resolution = resolution
         self.surface_piece_config = surface_piece_config
         self.checkerboard_colors: list[ManimColor] | Literal[False]
-        if checkerboard_colors:
-            self.checkerboard_colors = [ManimColor(x) for x in checkerboard_colors]
-        else:
+        if checkerboard_colors is False:
             self.checkerboard_colors = checkerboard_colors
+        else:
+            self.checkerboard_colors = [ManimColor(i) for i in checkerboard_colors]
         self.should_make_jagged = should_make_jagged
         self.pre_function_handle_to_anchor_scale_factor = (
             pre_function_handle_to_anchor_scale_factor

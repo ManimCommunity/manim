@@ -373,9 +373,9 @@ def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> float:
 
 
 def normalize(
-    vect: npt.NDArray[float], fall_back: npt.NDArray[float] | None = None
-) -> npt.NDArray[float]:
-    norm = get_norm(vect)
+    vect: np.ndarray | tuple[float], fall_back: np.ndarray | None = None
+) -> np.ndarray:
+    norm = np.linalg.norm(vect)
     if norm > 0:
         return np.array(vect) / norm
     elif fall_back is not None:

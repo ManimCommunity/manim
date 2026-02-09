@@ -3240,6 +3240,7 @@ class PolarPlane(Axes):
             }
             for i in a_values
         ]
+        a_tex = []
         if self.azimuth_units == "PI radians" or self.azimuth_units == "TAU radians":
             a_tex = [
                 self.get_radian_label(

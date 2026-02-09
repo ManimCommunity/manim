@@ -157,7 +157,17 @@ def turn_animation_into_updater(
         nonlocal total_time
         if total_time >= 0:
             run_time = animation.get_run_time()
-            time_ratio = total_time / run_time
+
+            # handle zero/negative runtime safely
+            if run_time <= 0:
+                # instantly snap to final state once, then remove updater
+                animation.interpolate(1)
+                animation.update_mobjects(dt)
+                animation.finish()
+                m.remove_updater(update)
+                return
+
+            time_ratio = animation.total_time / run_time
             if cycle:
                 alpha = time_ratio % 1
             else:
