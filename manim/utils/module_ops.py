@@ -16,7 +16,7 @@ from manim.constants import (
     NO_SCENE_MESSAGE,
     SCENE_NOT_FOUND_MESSAGE,
 )
-from manim.scene.file_writer import FileWriter
+from manim.file_writer import FileWriter
 
 if TYPE_CHECKING:
     from manim.scene.scene import Scene
@@ -100,7 +100,7 @@ def get_scenes_to_render(scene_classes: list[type[Scene]]) -> list[type[Scene]]:
             if scene_class.__name__ == scene_name:
                 result.append(scene_class)
                 break
-        if not found and (scene_name != ""):
+        else:
             logger.error(SCENE_NOT_FOUND_MESSAGE.format(scene_name))
     if result:
         return result
