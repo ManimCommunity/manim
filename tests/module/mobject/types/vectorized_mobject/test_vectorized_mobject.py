@@ -3,16 +3,14 @@ from math import cos, sin
 import numpy as np
 import pytest
 
-from manim import (
-    Circle,
-    CurvesAsSubmobjects,
-    Line,
-    Polygon,
-    RegularPolygon,
-    Square,
-)
 from manim.constants import PI
+from manim.mobject.geometry.arc import Circle
+from manim.mobject.geometry.line import Line
+from manim.mobject.geometry.polygram import Polygon, RegularPolygon, Square
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLCurvesAsSubmobjects as CurvesAsSubmobjects,
+)
 from manim.mobject.opengl.opengl_vectorized_mobject import (
     OpenGLVDict as VDict,
 )
