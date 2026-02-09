@@ -2,15 +2,17 @@
 Changelog
 #########
 
-This page contains a list of changes made between releases. Changes
-from versions that are not listed below (in particular patch-level
-releases since v0.18.0) are documented on our
-`GitHub release page <https://github.com/ManimCommunity/manim/releases/>`__.
+This page contains a list of changes made between releases.
 
 .. toctree::
+    :maxdepth: 1
 
     changelog/experimental
+    changelog/0.19.2-changelog
+    changelog/0.19.1-changelog
     changelog/0.19.0-changelog
+    changelog/0.18.1-changelog
+    changelog/0.18.0.post0-changelog
     changelog/0.18.0-changelog
     changelog/0.17.3-changelog
     changelog/0.17.2-changelog

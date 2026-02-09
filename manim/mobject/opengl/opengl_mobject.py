@@ -65,6 +65,8 @@ if TYPE_CHECKING:
     from manim.animation.animation import Animation
     from manim.renderer.renderer import RendererData
     from manim.typing import (
+        FloatRGB_Array,
+        FloatRGBA_Array,
         ManimFloat,
         MappingFunction,
         MatrixMN,
@@ -1226,23 +1228,23 @@ class OpenGLMobject:
                 alignments[i] = mapping[alignments[i]]
             return alignments
 
-        row_alignments = init_alignments(
+        row_alignments_seq: Sequence[Vector3D] = init_alignments(
             row_alignments,
             rows,
             {"u": UP, "c": ORIGIN, "d": DOWN},
             "row",
             RIGHT,
         )
-        col_alignments = init_alignments(
+        col_alignments_seq: Sequence[Vector3D] = init_alignments(
             col_alignments,
             cols,
             {"l": LEFT, "c": ORIGIN, "r": RIGHT},
             "col",
             UP,
         )
-        # Now row_alignment[r] + col_alignment[c] is the alignment in cell [r][c]
+        # Now row_alignments_seq[r] + col_alignment_seq[c] is the alignment in cell [r][c]
 
-        mapper = {
+        mapper: dict[str, Callable[[int, int], int]] = {
             "dr": lambda r, c: (rows - r - 1) + c * rows,
             "dl": lambda r, c: (rows - r - 1) + (cols - c - 1) * rows,
             "ur": lambda r, c: r + c * rows,
@@ -1253,10 +1255,11 @@ class OpenGLMobject:
             "lu": lambda r, c: r * cols + (cols - c - 1),
         }
         if flow_order not in mapper:
+            valid_flow_orders = ",".join([f'"{key}"' for key in mapper])
             raise ValueError(
-                'flow_order must be one of the following values: "dr", "rd", "ld" "dl", "ru", "ur", "lu", "ul".',
+                f"flow_order must be one of the following values: {valid_flow_orders}.",
             )
-        flow_order = mapper[flow_order]
+        flow_order_func = mapper[flow_order]
 
         # Reverse row_alignments and row_heights. Necessary since the
         # grid filling is handled bottom up for simplicity reasons.
@@ -1266,7 +1269,7 @@ class OpenGLMobject:
                 maybe_list.reverse()
                 return maybe_list
 
-        row_alignments = reverse(row_alignments)
+        row_alignments_seq = reverse(row_alignments_seq)
         row_heights = reverse(row_heights)
 
         placeholder = OpenGLMobject()
@@ -1275,7 +1278,7 @@ class OpenGLMobject:
         # properties of 0.
 
         mobs.extend([placeholder] * (rows * cols - len(mobs)))
-        grid = [[mobs[flow_order(r, c)] for c in range(cols)] for r in range(rows)]
+        grid = [[mobs[flow_order_func(r, c)] for c in range(cols)] for r in range(rows)]
 
         measured_heigths = [
             max(grid[r][c].height for c in range(cols)) for r in range(rows)
@@ -1291,18 +1294,19 @@ class OpenGLMobject:
             if len(sizes) != num:
                 raise ValueError(f"{name} has a mismatching size.")
             return [
-                sizes[i] if sizes[i] is not None else measures[i] for i in range(num)
+                size if (size := sizes[i]) is not None else measures[i]
+                for i in range(num)
             ]
 
         heights = init_sizes(row_heights, rows, measured_heigths, "row_heights")
         widths = init_sizes(col_widths, cols, measured_widths, "col_widths")
 
-        x, y = 0, 0
+        x, y = 0.0, 0.0
         for r in range(rows):
-            x = 0
+            x = 0.0
             for c in range(cols):
                 if grid[r][c] is not placeholder:
-                    alignment = row_alignments[r] + col_alignments[c]
+                    alignment = row_alignments_seq[r] + col_alignments_seq[c]
                     line = Line(
                         x * RIGHT + y * UP,
                         (x + widths[c]) * RIGHT + (y + heights[r]) * UP,

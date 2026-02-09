@@ -96,9 +96,10 @@ class Scene:
         self.quit_interaction = False
 
         # Much nicer to work with deterministic scenes
-        if self.random_seed is not None:
-            random.seed(self.random_seed)
-            np.random.default_rng(self.random_seed)
+        if self.random_seed is None:
+            self.random_seed = config.seed
+        random.seed(self.random_seed)
+        np.random.seed(self.random_seed)  # noqa: NPY002 (only way to set seed globally)
 
     def __str__(self) -> str:
         return self.__class__.__name__

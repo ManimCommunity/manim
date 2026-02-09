@@ -42,7 +42,7 @@ def restructure_list_to_exclude_certain_family_members(
     to_remove = extract_mobject_family_members(to_remove)
 
     def add_safe_mobjects_from_list(
-        list_to_examine: list[Mobject], set_to_remove: set[Mobject]
+        list_to_examine: Iterable[Mobject], set_to_remove: set[Mobject]
     ) -> None:
         for mob in list_to_examine:
             if mob in set_to_remove:
