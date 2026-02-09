@@ -20,6 +20,16 @@ FRAME_MISMATCH_RATIO_TOLERANCE = 1e-5
 logger = logging.getLogger("manim")
 
 
+class GraphicalDeviationError(Exception):
+    # The __module__ parameter is set to "builtins" to avoid the full
+    # specifier for the exception to be included in the output from pytest.
+    # That is go from
+    # manim.utils.testing._frames_testers.GraphicalDeviationError
+    # to
+    # GraphicalDeviationError
+    __module__ = "builtins"
+
+
 class _FramesTester:
     def __init__(self, file_path: Path, show_diff: bool = False) -> None:
         self._file_path = file_path
@@ -81,7 +91,9 @@ class _FramesTester:
                     self._frames[frame_number],
                     self._file_path.name,
                 )
-            raise
+            raise GraphicalDeviationError(
+                f"{number_of_mismatches} pixels differ when comparing with '{self._file_path.name}'"
+            ) from None
 
 
 class _ControlDataWriter(_FramesTester):
