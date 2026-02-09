@@ -21,8 +21,13 @@ logger = logging.getLogger("manim")
 
 
 class GraphicalDeviationError(Exception):
+    # The __module__ parameter is set to "builtins" to avoid the full
+    # specifier for the exception to be included in the output from pytest.
+    # That is go from
+    # manim.utils.testing._frames_testers.GraphicalDeviationError
+    # to
+    # GraphicalDeviationError
     __module__ = "builtins"
-    pass
 
 
 class _FramesTester:
