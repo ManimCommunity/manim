@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from typing import Self
 from unittest.mock import MagicMock
 
 import pytest
@@ -191,6 +192,9 @@ def test_animationgroup_calls_finish():
 
         def finish(self):
             self.finished = True
+
+        def interpolate_submobject(self, *args) -> Self:
+            return self
 
     manager = Manager(Scene)
     scene = manager.scene
