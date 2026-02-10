@@ -219,6 +219,37 @@ class Scene:
             self.mobjects = list_difference_update(self.mobjects, mob.get_family())
         return self
 
+    def _replace(
+        self,
+        parent_mobjects: list[OpenGLMobject],
+        mobject: OpenGLMobject,
+        *replacements: OpenGLMobject,
+    ) -> list[OpenGLMobject]:
+        """Replace one Mobject in a parent Mobject with one or more other Mobjects,
+        preserving draw order.
+
+        Parameters
+        ----------
+        pareparent_mobjectsnt
+            The parent mobjects list where the mobject is going to be replaced
+        mobject
+            The mobject to be replaced. Must be present in the scene.
+        replacements
+            One or more Mobjects which must not already be in the scene.
+        """
+        if mobject in parent_mobjects:
+            index = parent_mobjects.index(mobject)
+            parent_mobjects = [
+                *parent_mobjects[:index],
+                *[
+                    replacement
+                    for replacement in replacements
+                    if replacement not in parent_mobjects
+                ],
+                *parent_mobjects[index + 1 :],
+            ]
+        return parent_mobjects
+
     def replace(self, mobject: OpenGLMobject, *replacements: OpenGLMobject):
         """Replace one Mobject in the scene with one or more other Mobjects,
         preserving draw order.
@@ -235,17 +266,13 @@ class Scene:
             One or more Mobjects which must not already be in the scene.
 
         """
-        if mobject in self.mobjects:
-            index = self.mobjects.index(mobject)
-            self.mobjects = [
-                *self.mobjects[:index],
-                *[
-                    replacement
-                    for replacement in replacements
-                    if replacement not in self.mobjects
-                ],
-                *self.mobjects[index + 1 :],
-            ]
+        for ancestor in mobject.get_ancestors():
+            ancestor.submobjects = self._replace(
+                ancestor.submobjects, mobject, *replacements
+            )
+
+        self.mobjects = self._replace(self.mobjects, mobject, *replacements)
+
         return self
 
     def add_updater(self, func: Callable[[float], None]) -> None:
