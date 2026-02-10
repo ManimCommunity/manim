@@ -35,12 +35,12 @@ class UpdateFromFunc(Animation):
         self.update_function = update_function
 
     def interpolate(self, alpha: float) -> None:
-        self.update_function(self.mobject)  # type: ignore[arg-type]
+        self.update_function(self.mobject)
 
 
 class UpdateFromAlphaFunc(UpdateFromFunc):
     def interpolate(self, alpha: float) -> None:
-        self.update_function(self.mobject, self.rate_func(alpha))  # type: ignore[call-arg, arg-type]
+        self.update_function(self.mobject, self.rate_func(alpha))  # type: ignore[call-arg]
 
 
 class MaintainPositionRelativeTo(Animation):
