@@ -204,7 +204,7 @@ class OpenGLMobject:
         self.parents: list[OpenGLMobject] = []
         self.family: list[OpenGLMobject] = [self]
         self.needs_new_bounding_box: bool = True
-        self._bounding_box: npt.NDArray[ManimFloat] = np.zeros((3, 3))
+        self._bounding_box: Point3D_Array | None = None
         self._is_animating: bool = False
         self.saved_state: OpenGLMobject | None = None
         self.target: OpenGLMobject | None = None
@@ -243,12 +243,12 @@ class OpenGLMobject:
         return self.replicate(other)
 
     @property
-    def bounding_box(self) -> Point3D_Array:
+    def bounding_box(self) -> Point3D_Array | None:
         return self._bounding_box
 
     @bounding_box.setter
-    def bounding_box(self, box: Point3D_Array) -> None:
-        self._bounding_box = box
+    def bounding_box(self, box: Point3DLike_Array | None) -> None:
+        self._bounding_box = np.array(box) if box is not None else None
 
     @classmethod
     def set_default(cls, **kwargs: Any) -> None:
@@ -450,10 +450,12 @@ class OpenGLMobject:
     def apply_points_function(
         self,
         func: MultiMappingFunction,
-        about_point=None,
-        about_edge=ORIGIN,
-        works_on_bounding_box=False,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
+        works_on_bounding_box: bool = False,
     ) -> Self:
+        if not self.has_bounding_box():
+            return self
         if about_point is None and about_edge is not None:
             about_point = self.get_bounding_box_point(about_edge)
 
@@ -461,7 +463,7 @@ class OpenGLMobject:
             arrs = []
             if mob.has_points():
                 arrs.append(mob.points)
-            if works_on_bounding_box:
+            if works_on_bounding_box and mob.has_bounding_box():
                 # copy=False is necessary in order to modify the mob box by reference
                 arrs.append(mob.get_bounding_box(copy=False))
 
@@ -646,7 +648,7 @@ class OpenGLMobject:
     def has_points(self):
         return self.get_num_points() > 0
 
-    def get_bounding_box(self, copy: bool = True) -> Point3D_Array:
+    def get_bounding_box(self, copy: bool = True) -> Point3D_Array | None:
         """Get the bounding box of the Mobject, i.e. the smallest box in space containing
         all the Mobject points. Specifically, it's an AABB (Axis-Aligned minimum
         Bounding Box): a bounding box such that its edges are aligned to the X, Y and Z
@@ -662,6 +664,10 @@ class OpenGLMobject:
         - The 3rd point is the outer upper right corner of the box, i.e. the point where
         the X, Y and Z coordinates are at their highest value.
 
+        It might be possible that this Mobject does not have a bounding box because
+        neither the Mobject nor the rest of its family have points. In this case, the
+        bounding box is `None`.
+
         Parameters
         ----------
         copy
@@ -674,36 +680,55 @@ class OpenGLMobject:
 
         Returns
         -------
-            A copy or a reference to this Mobject bounding box.
+            A copy or a reference to this Mobject bounding box, or `None` if the Mobject
+            and the rest of its family have no points.
         """
         if self.needs_new_bounding_box:
-            self.bounding_box = self.compute_bounding_box()
+            self.bounding_box = self._compute_bounding_box()
             self.needs_new_bounding_box = False
-        if copy:
+        if copy and self.bounding_box is not None:
             return self.bounding_box.copy()
         return self.bounding_box
 
-    def compute_bounding_box(self) -> Point3D_Array:
+    def _compute_bounding_box(self) -> Point3D_Array:
         all_points = np.vstack(
             [
                 self.points,
                 *(
-                    mob.get_bounding_box(copy=False)
-                    for mob in self.get_family()[1:]
-                    if mob.has_points()
+                    submob.get_bounding_box(copy=False)
+                    for submob in self.submobjects
+                    if submob.has_bounding_box()
                 ),
             ],
         )
         if len(all_points) == 0:
-            return np.zeros((3, self.dim))
+            return None
         else:
             # Lower left and upper right corners
             mins = all_points.min(0)
-            maxs = all_points.max(0)
-            mids = (mins + maxs) / 2
-            return np.array([mins, mids, maxs])
+            maxes = all_points.max(0)
+            mids = (mins + maxes) / 2
+            return np.array([mins, mids, maxes])
 
-    def refresh_bounding_box(self, recurse_down=False, recurse_up=True):
+    def has_bounding_box(self) -> bool:
+        """Return whether this Mobject has a bounding box or not. A Mobject may not have
+        one if it's not possible to calculate because none of its family members have
+        points.
+
+        Some methods like :meth:`~.get_center` raise a :class:`RuntimeError` if the
+        Mobject does not have a bounding box. If you require using those methods for such
+        a Mobject, consider calling :meth:`~.has_bounding_box` before calling them and
+        performing a different action if the result is `False`.
+
+        Returns
+        -------
+            Whether this Mobject has a bounding box or not.
+        """
+        return self.get_bounding_box(copy=False) is not None
+
+    def refresh_bounding_box(
+        self, recurse_down: bool = False, recurse_up: bool = True
+    ) -> Self:
         for mob in self.get_family(recurse_down):
             mob.needs_new_bounding_box = True
         if recurse_up:
@@ -715,6 +740,8 @@ class OpenGLMobject:
         self, points: Point3DLike_Array, buff: float = 0
     ) -> npt.NDArray[bool]:
         bb = self.get_bounding_box(copy=False)
+        if bb is None:
+            return np.zeros(len(points), dtype=bool)
         mins = bb[0] - buff
         maxs = bb[2] + buff
         return ((points >= mins) * (points <= maxs)).all(1)
@@ -727,6 +754,8 @@ class OpenGLMobject:
     def is_touching(self, mobject: OpenGLMobject, buff: float = 1e-2) -> bool:
         bb1 = self.get_bounding_box(copy=False)
         bb2 = mobject.get_bounding_box(copy=False)
+        if bb1 is None or bb2 is None:
+            return False
         return not any(
             (
                 (
@@ -1323,10 +1352,10 @@ class OpenGLMobject:
     def arrange_to_fit_dim(
         self, length: float, dim: int, about_edge: Vector3DLike = ORIGIN
     ) -> Self:
-        ref_point = self.get_bounding_box_point(about_edge)
         n_submobs = len(self.submobjects)
-        if n_submobs <= 1:
-            return
+        if n_submobs <= 1 or not self.has_bounding_box():
+            return self
+        ref_point = self.get_bounding_box_point(about_edge)
         total_length = sum(sm.length_over_dim(dim) for sm in self.submobjects)
         buff = (length - total_length) / (n_submobs - 1)
         vect = np.zeros(self.dim)
@@ -1359,10 +1388,16 @@ class OpenGLMobject:
         submob_func: Callable[[OpenGLMobject], Any] | None = None,
     ) -> Self:
         """Sorts the list of :attr:`submobjects` by a function defined by ``submob_func``."""
-        if submob_func is not None:
-            self.submobjects.sort(key=submob_func)
-        else:
-            self.submobjects.sort(key=lambda m: point_to_num_func(m.get_center()))
+        if submob_func is None:
+
+            def submob_center_to_num_func(submob: OpenGLMobject) -> float:
+                if not submob.has_bounding_box():
+                    return float("inf")  # Empty submobjects go last
+                return point_to_num_func(submob.get_center())
+
+            submob_func = submob_center_to_num_func
+
+        self.submobjects.sort(key=submob_func)
         self.note_changed_family()
         return self
 
@@ -1846,7 +1881,8 @@ class OpenGLMobject:
         return self
 
     def apply_function_to_position(self, function: MappingFunction) -> Self:
-        self.move_to(function(self.get_center()))
+        if self.has_bounding_box():
+            self.move_to(function(self.get_center()))
         return self
 
     def apply_function_to_submobject_positions(self, function: MappingFunction) -> Self:
@@ -1937,8 +1973,7 @@ class OpenGLMobject:
 
     def center(self) -> Self:
         """Moves the mobject to the center of the Scene."""
-        self.shift(-self.get_center())
-        return self
+        return self.move_to(ORIGIN)
 
     def align_on_border(
         self,
@@ -1949,15 +1984,16 @@ class OpenGLMobject:
         Direction just needs to be a vector pointing towards side or
         corner in the 2d plane.
         """
-        target_point = np.sign(direction) * (
-            config.frame_x_radius,
-            config.frame_y_radius,
-            0,
-        )
-        point_to_align = self.get_bounding_box_point(direction)
-        shift_val = target_point - point_to_align - buff * np.asarray(direction)
-        shift_val = shift_val * abs(np.sign(direction))
-        self.shift(shift_val)
+        if self.has_bounding_box():
+            target_point = np.sign(direction) * (
+                config.frame_x_radius,
+                config.frame_y_radius,
+                0,
+            )
+            point_to_align = self.get_bounding_box_point(direction)
+            shift_val = target_point - point_to_align - buff * np.asarray(direction)
+            shift_val = shift_val * abs(np.sign(direction))
+            self.shift(shift_val)
         return self
 
     def to_corner(
@@ -2014,6 +2050,8 @@ class OpenGLMobject:
                 target_aligner = mob[index_of_submobject_to_align]
             else:
                 target_aligner = mob
+            if not target_aligner.has_bounding_box():
+                return self
             target_point = target_aligner.get_bounding_box_point(
                 np_aligned_edge + np_direction,
             )
@@ -2025,6 +2063,8 @@ class OpenGLMobject:
             aligner = self[index_of_submobject_to_align]
         else:
             aligner = self
+        if not aligner.has_bounding_box():
+            return self
         point_to_align = aligner.get_bounding_box_point(np_aligned_edge - np_direction)
         self.shift((target_point - point_to_align + buff * np_direction) * coor_mask)
         return self
@@ -2190,10 +2230,11 @@ class OpenGLMobject:
     def set_coord(
         self, value: float, dim: int, direction: Vector3DLike = ORIGIN
     ) -> Self:
-        curr = self.get_coord(dim, direction)
-        shift_vect = np.zeros(self.dim)
-        shift_vect[dim] = value - curr
-        self.shift(shift_vect)
+        if self.has_bounding_box():
+            curr = self.get_coord(dim, direction)
+            shift_vect = np.zeros(self.dim)
+            shift_vect[dim] = value - curr
+            self.shift(shift_vect)
         return self
 
     def set_x(self, x: float, direction: Vector3DLike = ORIGIN) -> Self:
@@ -2221,8 +2262,13 @@ class OpenGLMobject:
         coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
         """Move center of the :class:`~.OpenGLMobject` to certain coordinate."""
+        if not self.has_bounding_box():
+            return self
+
         target: Point3DLike
         if isinstance(point_or_mobject, OpenGLMobject):
+            if not point_or_mobject.has_bounding_box():
+                return self
             target = point_or_mobject.get_bounding_box_point(aligned_edge)
         else:
             target = point_or_mobject
@@ -2231,7 +2277,7 @@ class OpenGLMobject:
         return self
 
     def replace(self, mobject, dim_to_match=0, stretch=False):
-        if not mobject.get_num_points() and not mobject.submobjects:
+        if not mobject.has_bounding_box():
             self.scale(0)
             return self
         if stretch:
@@ -2243,7 +2289,7 @@ class OpenGLMobject:
                 dim_to_match,
                 stretch=False,
             )
-        self.shift(mobject.get_center() - self.get_center())
+        self.move_to(mobject.get_center())
         return self
 
     def surround(
@@ -2419,19 +2465,23 @@ class OpenGLMobject:
     # Getters
 
     def get_bounding_box_point(self, direction: Vector3DLike) -> Point3D:
+        self.throw_error_if_no_bounding_box()
         bb = self.get_bounding_box(copy=False)
         indices = (np.sign(direction) + 1).astype(int)
         return np.array([bb[indices[i]][i] for i in range(3)])
 
     def get_edge_center(self, direction: Vector3DLike) -> Point3D:
         """Get edge coordinates for certain direction."""
+        self.throw_error_if_no_bounding_box()
         return self.get_bounding_box_point(direction)
 
     def get_corner(self, direction: Vector3DLike) -> Point3D:
         """Get corner coordinates for certain direction."""
+        self.throw_error_if_no_bounding_box()
         return self.get_bounding_box_point(direction)
 
-    def get_all_corners(self):
+    def get_all_corners(self) -> Point3D_Array:
+        self.throw_error_if_no_bounding_box()
         bb = self.get_bounding_box(copy=False)
         return np.array(
             [
@@ -2458,12 +2508,14 @@ class OpenGLMobject:
         -------
             The center point of this Mobject.
         """
+        self.throw_error_if_no_bounding_box()
         return self.get_bounding_box(copy=copy)[1]
 
     def get_center_of_mass(self):
         return self.get_all_points().mean(0)
 
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
+        self.throw_error_if_no_bounding_box()
         all_points = self.get_all_points()
         boundary_directions = all_points - self.get_center(copy=False)
         norms = np.linalg.norm(boundary_directions, axis=1)
@@ -2472,6 +2524,7 @@ class OpenGLMobject:
         return all_points[index]
 
     def get_continuous_bounding_box_point(self, direction: Vector3DLike) -> Point3D:
+        self.throw_error_if_no_bounding_box()
         _dl, center, ur = self.get_bounding_box(copy=False)
         corner_vect = ur - center
         np_direction = np.asarray(direction)
@@ -2486,78 +2539,90 @@ class OpenGLMobject:
             ),
         )
 
-    def get_top(self) -> np.ndarray:
+    def get_top(self) -> Point3D:
         """Get top coordinates of a box bounding the :class:`~.OpenGLMobject`"""
+        self.throw_error_if_no_bounding_box()
         return self.get_edge_center(UP)
 
-    def get_bottom(self) -> np.ndarray:
+    def get_bottom(self) -> Point3D:
         """Get bottom coordinates of a box bounding the :class:`~.OpenGLMobject`"""
+        self.throw_error_if_no_bounding_box()
         return self.get_edge_center(DOWN)
 
-    def get_right(self) -> np.ndarray:
+    def get_right(self) -> Point3D:
         """Get right coordinates of a box bounding the :class:`~.OpenGLMobject`"""
+        self.throw_error_if_no_bounding_box()
         return self.get_edge_center(RIGHT)
 
-    def get_left(self) -> np.ndarray:
+    def get_left(self) -> Point3D:
         """Get left coordinates of a box bounding the :class:`~.OpenGLMobject`"""
+        self.throw_error_if_no_bounding_box()
         return self.get_edge_center(LEFT)
 
-    def get_zenith(self) -> np.ndarray:
+    def get_zenith(self) -> Point3D:
         """Get zenith coordinates of a box bounding a 3D :class:`~.OpenGLMobject`."""
+        self.throw_error_if_no_bounding_box()
         return self.get_edge_center(OUT)
 
-    def get_nadir(self) -> np.ndarray:
+    def get_nadir(self) -> Point3D:
         """Get nadir (opposite the zenith) coordinates of a box bounding a 3D :class:`~.OpenGLMobject`."""
+        self.throw_error_if_no_bounding_box()
         return self.get_edge_center(IN)
 
-    def length_over_dim(self, dim):
+    def length_over_dim(self, dim: int) -> float:
         bb = self.get_bounding_box(copy=False)
+        if bb is None:
+            return 0.0
         rv: float = abs((bb[2] - bb[0])[dim])
         return rv
 
-    def get_width(self):
+    def get_width(self) -> float:
         """Returns the width of the mobject."""
         return self.length_over_dim(0)
 
-    def get_height(self):
+    def get_height(self) -> float:
         """Returns the height of the mobject."""
         return self.length_over_dim(1)
 
-    def get_depth(self):
+    def get_depth(self) -> float:
         """Returns the depth of the mobject."""
         return self.length_over_dim(2)
 
     def get_coord(self, dim: int, direction: Vector3DLike = ORIGIN) -> ManimFloat:
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
+        self.throw_error_if_no_bounding_box()
         return self.get_bounding_box_point(direction)[dim]
 
     def get_x(self, direction: Vector3DLike = ORIGIN) -> ManimFloat:
+        self.throw_error_if_no_bounding_box()
         """Returns x coordinate of the center of the :class:`~.OpenGLMobject` as ``float``"""
         return self.get_coord(0, direction)
 
     def get_y(self, direction: Vector3DLike = ORIGIN) -> ManimFloat:
         """Returns y coordinate of the center of the :class:`~.OpenGLMobject` as ``float``"""
+        self.throw_error_if_no_bounding_box()
         return self.get_coord(1, direction)
 
     def get_z(self, direction: Vector3DLike = ORIGIN) -> ManimFloat:
         """Returns z coordinate of the center of the :class:`~.OpenGLMobject` as ``float``"""
+        self.throw_error_if_no_bounding_box()
         return self.get_coord(2, direction)
 
-    def get_start(self):
+    def get_start(self) -> Point3D:
         """Returns the point, where the stroke that surrounds the :class:`~.OpenGLMobject` starts."""
         self.throw_error_if_no_points()
         return np.array(self.points[0])
 
-    def get_end(self):
+    def get_end(self) -> Point3D:
         """Returns the point, where the stroke that surrounds the :class:`~.OpenGLMobject` ends."""
         self.throw_error_if_no_points()
         return np.array(self.points[-1])
 
-    def get_start_and_end(self):
+    def get_start_and_end(self) -> tuple[Point3D, Point3D]:
         """Returns starting and ending point of a stroke as a ``tuple``."""
         return self.get_start(), self.get_end()
 
-    def point_from_proportion(self, alpha):
+    def point_from_proportion(self, alpha: float) -> Point3D:
         points = self.points
         i, subalpha = integer_interpolate(0, len(points) - 1, alpha)
         return interpolate(points[i], points[i + 1], subalpha)
@@ -2655,6 +2720,8 @@ class OpenGLMobject:
         """
         point: Point3DLike
         if isinstance(mobject_or_point, OpenGLMobject):
+            if not mobject_or_point.has_bounding_box():
+                return self
             point = mobject_or_point.get_bounding_box_point(direction)
         else:
             point = mobject_or_point
@@ -2727,7 +2794,8 @@ class OpenGLMobject:
         if curr == 0:
             # If empty, simply add n point mobjects
             null_mob = self.copy()
-            null_mob.set_points([self.get_center()])
+            self_center = self.get_center() if self.has_bounding_box() else ORIGIN
+            null_mob.set_points([self_center])
             self.submobjects = [null_mob.copy() for k in range(n)]
             self.note_changed_family()
             return self
@@ -2883,6 +2951,11 @@ class OpenGLMobject:
         return len(fam1) == len(fam2)
 
     def has_same_shape_as(self, mobject: OpenGLMobject) -> bool:
+        if not self.has_bounding_box():
+            return not mobject.has_bounding_box()
+        elif not mobject.has_bounding_box():
+            return False
+
         # Normalize both point sets by centering and making height 1
         points1, points2 = (
             (m.get_all_points() - m.get_center(copy=False)) / m.get_height()
@@ -2898,9 +2971,10 @@ class OpenGLMobject:
         return self
 
     def fix_orientation(self) -> Self:
+        center = self.get_center(copy=False) if self.has_bounding_box() else ORIGIN
         for mob in self.get_family():
             mob.is_fixed_orientation = 1.0
-            mob.fixed_orientation_center = tuple(self.get_center(copy=False))
+            mob.fixed_orientation_center = tuple(center)
         return self
 
     def unfix_from_frame(self) -> Self:
@@ -3019,13 +3093,24 @@ class OpenGLMobject:
 
     # Errors
 
-    def throw_error_if_no_points(self):
+    def throw_error_if_no_points(self) -> None:
         if not self.has_points():
-            message = (
-                "Cannot call OpenGLMobject.{} " + "for a OpenGLMobject with no points"
-            )
+            mob_name = type(self).__name__
             caller_name = sys._getframe(1).f_code.co_name
-            raise Exception(message.format(caller_name))
+            raise RuntimeError(
+                f"Cannot call {mob_name}.{caller_name}() because the {mob_name} has no "
+                "points"
+            )
+
+    def throw_error_if_no_bounding_box(self) -> None:
+        if not self.has_bounding_box():
+            mob_name = type(self).__name__
+            caller_name = sys._getframe(1).f_code.co_name
+            raise RuntimeError(
+                f"Cannot call {mob_name}.{caller_name}() because the {mob_name} has no "
+                f"bounding box, i.e. neither the {mob_name} nor its descendants have "
+                "points"
+            )
 
     def set(self, **kwargs) -> Self:
         """Sets attributes.
