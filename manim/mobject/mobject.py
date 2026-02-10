@@ -406,9 +406,10 @@ class Mobject:
     def __repr__(self) -> str:
         return str(self.name)
 
-    def reset_points(self) -> None:
+    def reset_points(self) -> Self:
         """Sets :attr:`points` to be an empty array."""
         self.points = np.zeros((0, self.dim))
+        return self
 
     def init_colors(self) -> object:
         """Initializes the colors.
