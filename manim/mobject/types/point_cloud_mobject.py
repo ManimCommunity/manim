@@ -199,7 +199,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
     def ingest_submobjects(self) -> Self:
         attrs = self.get_array_attrs()
         arrays = list(map(self.get_merged_array, attrs))
-        for attr, array in zip(attrs, arrays, strict=False):
+        for attr, array in zip(attrs, arrays, strict=True):
             setattr(self, attr, array)
         self.submobjects = []
         return self
