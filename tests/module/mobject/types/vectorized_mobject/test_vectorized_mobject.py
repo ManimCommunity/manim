@@ -369,7 +369,7 @@ def test_vdict_init():
     # Test VDict made from a python dict
     VDict({"a": VMobject(), "b": VMobject(), "c": VMobject()})
     # Test VDict made using zip
-    VDict(zip(["a", "b", "c"], [VMobject(), VMobject(), VMobject()], strict=False))
+    VDict(zip(["a", "b", "c"], [VMobject(), VMobject(), VMobject()], strict=True))
     # If the value is of type Mobject, must raise a TypeError
     with pytest.raises(TypeError):
         VDict({"a": Mobject()})
