@@ -171,7 +171,7 @@ class OpenGLMobject:
     """
 
     dim: int = 3
-    animation_overrides = {}
+    animation_overrides: dict[type[Animation], FunctionOverride] = {}
 
     # WARNING: when changing a parameter here, be sure to update the
     # TypedDict above so that autocomplete works for users
@@ -226,11 +226,8 @@ class OpenGLMobject:
     def __init_subclass__(cls, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
 
-        # cls.animation_overrides: dict[
-        #     type[Animation],
-        #     FunctionOverride,
-        # ] = {}
-        # cls._add_intrinsic_animation_overrides()
+        cls.animation_overrides = {}
+        cls._add_intrinsic_animation_overrides()
         cls._original__init__ = cls.__init__
 
     def __str__(self) -> str:
@@ -368,8 +365,9 @@ class OpenGLMobject:
             if method_name.startswith("__"):
                 continue
 
-            print(cls, method_name)
-            method = getattr(cls, method_name)
+            # TODO: remove broken references to the _Uniforms() and _Data() descriptors.
+            # Otherwise, getattr crashes unless we pass None as the default value.
+            method = getattr(cls, method_name, None)
             if hasattr(method, "_override_animation"):
                 animation_class = method._override_animation
                 cls.add_animation_override(animation_class, method)
