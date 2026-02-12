@@ -19,7 +19,7 @@ from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RoundedRectangle
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup as VGroup
-from manim.utils.color import BLACK, RED, YELLOW, ManimColor, ParsableManimColor
+from manim.utils.color import BLACK, RED, YELLOW, ParsableManimColor
 
 
 class SurroundingRectangle(RoundedRectangle):
