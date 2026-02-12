@@ -22,7 +22,9 @@ class ConvertToOpenGL(ABCMeta):
 
     _converted_classes: list[type] = []
 
-    def __new__(mcls, name: str, bases: tuple[type, ...], namespace: Any) -> type:
+    def __new__(
+        mcls, name: str, bases: tuple[type, ...], namespace: dict[str, Any]
+    ) -> type:
         if config.renderer == RendererType.OPENGL:
             # Must check class names to prevent
             # cyclic importing.
@@ -41,6 +43,6 @@ class ConvertToOpenGL(ABCMeta):
 
         return super().__new__(mcls, name, bases, namespace)
 
-    def __init__(cls, name: str, bases: tuple[type, ...], namespace: Any):
+    def __init__(cls, name: str, bases: tuple[type, ...], namespace: dict[str, Any]):
         super().__init__(name, bases, namespace)
         cls._converted_classes.append(cls)
