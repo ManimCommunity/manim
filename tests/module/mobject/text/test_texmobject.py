@@ -38,7 +38,7 @@ def test_tex_temp_directory(tmpdir, monkeypatch):
     # tempconfig to change media directory to temporary directory by default
     # we partially, revert that change here.
     monkeypatch.chdir(tmpdir)
-    Path(tmpdir, "media").mkdir()
+    Path(tmpdir, "media").mkdir(exist_ok=True)
     with tempconfig({"media_dir": "media"}):
         Tex("The horse does not eat cucumber salad.")
         assert Path("media", "Tex").exists()
@@ -108,7 +108,7 @@ def test_multi_part_tex_with_empty_parts():
     for one_part_glyph, multi_part_glyph in zip(
         one_part_fomula.family_members_with_points(),
         multi_part_formula.family_members_with_points(),
-        strict=False,
+        strict=True,
     ):
         np.testing.assert_allclose(one_part_glyph.points, multi_part_glyph.points)
 
@@ -215,7 +215,7 @@ def test_tempconfig_resetting_tex_template(config):
 
 def test_tex_garbage_collection(tmpdir, monkeypatch, config):
     monkeypatch.chdir(tmpdir)
-    Path(tmpdir, "media").mkdir()
+    Path(tmpdir, "media").mkdir(exist_ok=True)
     config.media_dir = "media"
 
     tex_without_log = Tex("Hello World!")  # d771330b76d29ffb.tex
