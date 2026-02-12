@@ -9,14 +9,24 @@ from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 
-from manim.animation.creation import DrawBorderThenFill, Group
+from manim.animation.creation import DrawBorderThenFill
 from manim.camera.camera import Camera
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.line import Arrow, Line, Vector
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.graphing.coordinate_systems import Axes, NumberPlane
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLGroup as Group,
+)
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLMobject as Mobject,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVGroup as VGroup,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVMobject as VMobject,
+)
 from manim.mobject.text.tex_mobject import MathTex, Tex
 from manim.utils.config_ops import update_dict_recursively
 
@@ -28,8 +38,6 @@ from ..animation.growing import GrowArrow
 from ..animation.transform import ApplyFunction, ApplyPointwiseFunction, Transform
 from ..constants import *
 from ..mobject.matrix import Matrix
-from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..scene.scene import Scene
 from ..utils.color import (
     BLACK,
@@ -1006,7 +1014,7 @@ class LinearTransformationScene(VectorScene):
         LinearTransformationScene
             The scene with the title added to it.
         """
-        if not isinstance(title, (Mobject, OpenGLMobject)):
+        if not isinstance(title, Mobject):
             title = Tex(title).scale(scale_factor)
         title.to_edge(UP)
         title.add_background_rectangle()
@@ -1069,7 +1077,7 @@ class LinearTransformationScene(VectorScene):
         Animation
             The animation of the movement.
         """
-        v_pieces = [piece for piece in pieces if isinstance(piece, OpenGLVMobject)]
+        v_pieces = [piece for piece in pieces if isinstance(piece, VMobject)]
         start = VGroup(*v_pieces)
         target = VGroup(*(mob.target for mob in v_pieces))
 

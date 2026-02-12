@@ -45,13 +45,17 @@ from typing import Any, Self
 
 import numpy as np
 
-from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVGroup as VGroup,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVMobject as VMobject,
+)
 from manim.mobject.text.numbers import DecimalNumber, Integer
 from manim.mobject.text.tex_mobject import MathTex, Tex
 
 from ..constants import *
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
 
 # TO DO : The following two functions are not used in this file.
 #         Not sure if we should keep it or not.
@@ -72,7 +76,7 @@ def matrix_to_mobject(matrix: np.ndarray) -> MathTex:
     return MathTex(matrix_to_tex_string(matrix))
 
 
-class Matrix(VMobject, metaclass=ConvertToOpenGL):
+class Matrix(VMobject):
     r"""A mobject that displays a matrix on the screen.
 
     Parameters

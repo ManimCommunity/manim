@@ -8,15 +8,15 @@ if TYPE_CHECKING:
     from typing import Any
 
     from manim.event_handler.event_type import EventType
-    from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+    from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 
 
 class EventListener:
     def __init__(
         self,
-        mobject: OpenGLMobject,
+        mobject: Mobject,
         event_type: EventType,
-        event_callback: Callable[[OpenGLMobject, dict[str, str]], None],
+        event_callback: Callable[[Mobject, dict[str, str]], None],
     ) -> None:
         self.mobject = mobject
         self.event_type = event_type

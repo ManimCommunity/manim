@@ -27,11 +27,14 @@ from manim.animation.composition import AnimationGroup
 from manim.animation.creation import Create, Uncreate
 from manim.mobject.geometry.arc import Dot, LabeledDot
 from manim.mobject.geometry.line import Line
-from manim.mobject.mobject import Mobject, override_animate
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLMobject as Mobject,
+)
+from manim.mobject.opengl.opengl_mobject import (
+    override_animate,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject as VMobject
 from manim.mobject.text.tex_mobject import MathTex
-from manim.mobject.types.vectorized_mobject import VMobject
 from manim.utils.color import BLACK
 
 
@@ -476,7 +479,7 @@ def _determine_graph_layout(
             ) from e
 
 
-class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
+class GenericGraph(VMobject):
     """Abstract base class for graphs (that is, a collection of vertices
     connected with edges).
 
@@ -698,7 +701,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             label = MathTex(vertex, color=label_fill_color)
         elif vertex in self._labels:
             label = self._labels[vertex]
-        elif not isinstance(label, (Mobject, OpenGLMobject)):
+        elif not isinstance(label, Mobject):
             label = None
 
         base_vertex_config = copy(self.default_vertex_config)

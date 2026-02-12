@@ -11,7 +11,7 @@ from manim.constants import ORIGIN, OUT, PI, TAU
 from manim.utils.rate_functions import RateFunction, linear
 
 if TYPE_CHECKING:
-    from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+    from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
     from manim.typing import Point3DLike, Vector3DLike
     from manim.utils.rate_functions import RateFunction
 
@@ -85,7 +85,7 @@ class Rotating(Animation):
 
     def __init__(
         self,
-        mobject: OpenGLMobject,
+        mobject: Mobject,
         angle: float = TAU,
         axis: Vector3DLike = OUT,
         about_point: Point3DLike | None = None,
@@ -163,7 +163,7 @@ class Rotate(Rotating):
 
     def __init__(
         self,
-        mobject: OpenGLMobject,
+        mobject: Mobject,
         angle: float = PI,
         axis: Vector3DLike = OUT,
         run_time: float = 1,

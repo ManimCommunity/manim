@@ -21,12 +21,12 @@ import numpy as np
 from manim.constants import *
 from manim.mobject.geometry.arc import Arc, ArcBetweenPoints, Dot, TipableVMobject
 from manim.mobject.geometry.tips import ArrowTriangleFilledTip
-from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLDashedVMobject as DashedVMobject,
+)
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup as VGroup
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject as VMobject
-from manim.mobject.types.vectorized_mobject import DashedVMobject
 from manim.utils.color import WHITE
 from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 
@@ -188,7 +188,7 @@ class Line(TipableVMobject):
         direction
             The direction.
         """
-        if isinstance(mob_or_point, (Mobject, OpenGLMobject)):
+        if isinstance(mob_or_point, Mobject):
             mob = mob_or_point
             if direction is None:
                 return mob.get_center()
@@ -459,7 +459,7 @@ class TangentLine(Line):
         self.scale(self.length / self.get_length())
 
 
-class Elbow(VMobject, metaclass=ConvertToOpenGL):
+class Elbow(VMobject):
     """Two lines that create a right angle about each other: L-shape.
 
     Parameters
@@ -857,7 +857,7 @@ class DoubleArrow(Arrow):
         self.add_tip(at_start=True, tip_shape=tip_shape_start)
 
 
-class Angle(VMobject, metaclass=ConvertToOpenGL):
+class Angle(VMobject):
     """A circular arc or elbow-type mobject representing an angle of two lines.
 
     Parameters

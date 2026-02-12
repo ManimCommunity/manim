@@ -7,13 +7,21 @@ __all__ = ["TransformMatchingShapes", "TransformMatchingTex"]
 
 import numpy as np
 
-from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLGroup as Group,
+)
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLMobject as Mobject,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVGroup as VGroup,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVMobject as VMobject,
+)
 
 from .._config import config
 from ..constants import RendererType
-from ..mobject.mobject import Group, Mobject
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from .composition import AnimationGroup
 from .fading import FadeIn, FadeOut
 from .transform import FadeTransformPieces, Transform
@@ -72,11 +80,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
         key_map: dict | None = None,
         **kwargs,
     ):
-        if isinstance(mobject, OpenGLVMobject):
-            group_type = OpenGLVGroup
-        elif isinstance(mobject, OpenGLMobject):
-            group_type = OpenGLGroup
-        elif isinstance(mobject, VMobject):
+        if isinstance(mobject, VMobject):
             group_type = VGroup
         else:
             group_type = Group
@@ -279,7 +283,7 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
 
     @staticmethod
     def get_mobject_parts(mobject: Mobject) -> list[Mobject]:
-        if isinstance(mobject, (Group, VGroup, OpenGLGroup, OpenGLVGroup)):
+        if isinstance(mobject, (Group, VGroup)):
             return [
                 p
                 for s in mobject.submobjects

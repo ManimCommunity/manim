@@ -48,7 +48,7 @@ from manim.mobject.geometry.arc import Circle, Dot
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 
 from .. import config
 from ..animation.animation import Animation
@@ -59,8 +59,12 @@ from ..animation.movement import Homotopy
 from ..animation.transform import Transform
 from ..animation.updaters.update import UpdateFromFunc
 from ..constants import *
-from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
+from ..mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVGroup as VGroup,
+)
+from ..mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVMobject as VMobject,
+)
 from ..typing import Point3D, Point3DLike, Vector3DLike
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import GREY, YELLOW, ParsableManimColor
@@ -150,7 +154,7 @@ class Indicate(Transform):
 
     def __init__(
         self,
-        mobject: OpenGLMobject,
+        mobject: Mobject,
         scale_factor: float = 1.2,
         color: ParsableManimColor = YELLOW,
         rate_func: RateFunction = there_and_back,
@@ -160,7 +164,7 @@ class Indicate(Transform):
         self.scale_factor = scale_factor
         super().__init__(mobject, rate_func=rate_func, **kwargs)
 
-    def create_target(self) -> OpenGLMobject:
+    def create_target(self) -> Mobject:
         target = self.mobject.copy()
         target.scale(self.scale_factor)
         target.set_color(self.color)

@@ -11,6 +11,7 @@ import numpy as np
 import svgelements as se
 
 from manim import config, logger
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject as VMobject
 
 from ...constants import RIGHT
 from ...utils.bezier import get_quadratic_approximation_of_cubic
@@ -19,8 +20,6 @@ from ...utils.iterables import hash_obj
 from ..geometry.arc import Circle
 from ..geometry.line import Line
 from ..geometry.polygram import Polygon, Rectangle, RoundedRectangle
-from ..opengl.opengl_compatibility import ConvertToOpenGL
-from ..types.vectorized_mobject import VMobject
 
 __all__ = ["SVGMobject", "VMobjectFromSVGPath"]
 
@@ -32,7 +31,7 @@ def _convert_point_to_3d(x: float, y: float) -> np.ndarray:
     return np.array([x, y, 0.0])
 
 
-class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
+class SVGMobject(VMobject):
     """A vectorized mobject created from importing an SVG file.
 
     Parameters
@@ -431,7 +430,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             self.set(width=self.svg_width)
 
 
-class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
+class VMobjectFromSVGPath(VMobject):
     """A vectorized mobject representing an SVG path.
 
     .. note::
