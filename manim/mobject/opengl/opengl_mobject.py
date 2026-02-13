@@ -41,6 +41,7 @@ from manim.event_handler.event_listener import EventListener
 from manim.event_handler.event_type import EventType
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
+from manim.utils.exceptions import MultiAnimationOverrideException
 
 # from ..utils.iterables import batch_by_property
 from manim.utils.iterables import (
