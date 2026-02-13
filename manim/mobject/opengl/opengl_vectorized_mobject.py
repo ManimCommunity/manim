@@ -1464,11 +1464,11 @@ class OpenGLVMobject(OpenGLMobject):
                 0,
                 upper_residue,
             )
-            # Remap if necessary
-            if remap:
-                new_tuples = self.get_bezier_tuples_from_points(new_points)
-                remapped_tuples = bezier_remap(new_tuples, num_quadratics)
-                new_points = remapped_tuples.reshape(-1, self.dim)
+        # Remap if necessary
+        if remap:
+            new_tuples = self.get_bezier_tuples_from_points(new_points)
+            remapped_tuples = bezier_remap(new_tuples, num_quadratics)
+            new_points = remapped_tuples.reshape(-1, self.dim)
         self.set_points(new_points)
         return self
 
