@@ -398,19 +398,19 @@ class OpenGLVMobject(OpenGLMobject):
 
     def set_flat_stroke(self, flat_stroke: bool = True, recurse: bool = True):
         for mob in self.get_family(recurse):
-            mob.uniforms["flat_stroke"] = float(flat_stroke)
+            mob.flat_stroke = flat_stroke
         return self
 
     def get_flat_stroke(self) -> bool:
-        return self.uniforms["flat_stroke"] == 1.0
+        return self.flat_stroke
 
     def set_joint_type(self, joint_type: LineJointType, recurse: bool = True):
         for mob in self.get_family(recurse):
-            mob.uniforms["joint_type"] = float(joint_type.value)
+            mob.joint_type = joint_type
         return self
 
     def get_joint_type(self) -> LineJointType:
-        return LineJointType(int(self.uniforms["joint_type"]))
+        return self.joint_type
 
     # Points
     def set_anchors_and_handles(

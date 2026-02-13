@@ -3,7 +3,6 @@ from __future__ import annotations
 from collections.abc import Iterable
 from pathlib import Path
 
-import moderngl
 import numpy as np
 from PIL import Image
 
@@ -12,7 +11,6 @@ from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.typing import Point3D_Array, Vector3D_Array
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
-from manim.utils.config_ops import _Data, _Uniforms
 from manim.utils.images import change_to_rgba_array, get_full_raster_image_path
 from manim.utils.iterables import listify
 from manim.utils.space_ops import normalize_along_axis
@@ -53,13 +51,6 @@ class OpenGLSurface(OpenGLMobject):
         to 1 being fully opaque. Defaults to 1.
     """
 
-    shader_dtype = [
-        ("point", np.float32, (3,)),
-        ("du_point", np.float32, (3,)),
-        ("dv_point", np.float32, (3,)),
-        ("color", np.float32, (4,)),
-    ]
-
     def __init__(
         self,
         uv_func=None,
@@ -80,7 +71,6 @@ class OpenGLSurface(OpenGLMobject):
         # For du and dv steps.  Much smaller and numerical error
         # can crop up in the shaders.
         epsilon=1e-5,
-        render_primitive=moderngl.TRIANGLES,
         depth_test=True,
         **kwargs,
     ):
@@ -244,106 +234,6 @@ class OpenGLSurface(OpenGLMobject):
             tri_is[k::3] = tri_is[k::3][indices]
         return self
 
-    # For shaders
-    def get_shader_data(self):
-        """Called by parent Mobject to calculate and return
-        the shader data.
-
-        Returns
-        -------
-        shader_dtype
-            An array containing the shader data (vertices and
-            color of each vertex)
-        """
-        s_points, du_points, dv_points = self.get_surface_points_and_nudged_points()
-        shader_data = np.zeros(len(s_points), dtype=self.shader_dtype)
-        if "points" not in self.locked_data_keys:
-            shader_data["point"] = s_points
-            shader_data["du_point"] = du_points
-            shader_data["dv_point"] = dv_points
-            if self.colorscale:
-                if not hasattr(self, "color_by_val"):
-                    self.color_by_val = self._get_color_by_value(s_points)
-                shader_data["color"] = self.color_by_val
-            else:
-                self.fill_in_shader_color_info(shader_data)
-        return shader_data
-
-    def fill_in_shader_color_info(self, shader_data):
-        """Fills in the shader color data when the surface
-        is all one color.
-
-        Parameters
-        ----------
-        shader_data
-            The vertices of the surface.
-
-        Returns
-        -------
-        shader_dtype
-            An array containing the shader data (vertices and
-            color of each vertex)
-        """
-        self.read_data_to_shader(shader_data, "color", "rgbas")
-        return shader_data
-
-    def _get_color_by_value(self, s_points):
-        """Matches each vertex to a color associated to it's z-value.
-
-        Parameters
-        ----------
-        s_points
-           The vertices of the surface.
-
-        Returns
-        -------
-        List
-            A list of colors matching the vertex inputs.
-        """
-        if type(self.colorscale[0]) in (list, tuple):
-            new_colors, pivots = [
-                [i for i, j in self.colorscale],
-                [j for i, j in self.colorscale],
-            ]
-        else:
-            new_colors = self.colorscale
-
-            pivot_min = self.axes.z_range[0]
-            pivot_max = self.axes.z_range[1]
-            pivot_frequency = (pivot_max - pivot_min) / (len(new_colors) - 1)
-            pivots = np.arange(
-                start=pivot_min,
-                stop=pivot_max + pivot_frequency,
-                step=pivot_frequency,
-            )
-
-        return_colors = []
-        for point in s_points:
-            axis_value = self.axes.point_to_coords(point)[self.colorscale_axis]
-            if axis_value <= pivots[0]:
-                return_colors.append(color_to_rgba(new_colors[0], self.opacity))
-            elif axis_value >= pivots[-1]:
-                return_colors.append(color_to_rgba(new_colors[-1], self.opacity))
-            else:
-                for i, pivot in enumerate(pivots):
-                    if pivot > axis_value:
-                        color_index = (axis_value - pivots[i - 1]) / (
-                            pivots[i] - pivots[i - 1]
-                        )
-                        color_index = max(min(color_index, 1), 0)
-                        temp_color = interpolate_color(
-                            new_colors[i - 1],
-                            new_colors[i],
-                            color_index,
-                        )
-                        break
-                return_colors.append(color_to_rgba(temp_color, self.opacity))
-
-        return return_colors
-
-    def get_shader_vert_indices(self):
-        return self.get_triangle_indices()
-
 
 class OpenGLSurfaceGroup(OpenGLSurface):
     def __init__(self, *parametric_surfaces, resolution=None, **kwargs):
@@ -356,29 +246,14 @@ class OpenGLSurfaceGroup(OpenGLSurface):
 
 
 class OpenGLTexturedSurface(OpenGLSurface):
-    shader_dtype = [
-        ("point", np.float32, (3,)),
-        ("du_point", np.float32, (3,)),
-        ("dv_point", np.float32, (3,)),
-        ("im_coords", np.float32, (2,)),
-        ("opacity", np.float32, (1,)),
-    ]
-    shader_folder = "textured_surface"
-    im_coords = _Data()
-    opacity = _Data()
-    num_textures = _Uniforms()
-
     def __init__(
         self,
         uv_surface: OpenGLSurface,
         image_file: str | Path,
         dark_image_file: str | Path = None,
         image_mode: str | Iterable[str] = "RGBA",
-        shader_folder: str | Path = None,
         **kwargs,
     ):
-        self.uniforms = {}
-
         if not isinstance(uv_surface, OpenGLSurface):
             raise Exception("uv_surface must be of type OpenGLSurface")
         if isinstance(image_file, np.ndarray):

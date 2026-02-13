@@ -322,16 +322,6 @@ class OpenGLMobject:
         # Typically implemented in subclass, unless purposefully left blank
         pass
 
-    def set_data(self, data: dict[str, Any]) -> Self:
-        for key in data:
-            self.data[key] = data[key].copy()
-        return self
-
-    def set_uniforms(self, uniforms: dict[str, Any]) -> Self:
-        for key in uniforms:
-            self.uniforms[key] = uniforms[key]  # Copy?
-        return self
-
     @classmethod
     def animation_override_for(
         cls,
@@ -365,9 +355,7 @@ class OpenGLMobject:
             if method_name.startswith("__"):
                 continue
 
-            # TODO: remove broken references to the _Uniforms() and _Data() descriptors.
-            # Otherwise, getattr crashes unless we pass None as the default value.
-            method = getattr(cls, method_name, None)
+            method = getattr(cls, method_name)
             if hasattr(method, "_override_animation"):
                 animation_class = method._override_animation
                 cls.add_animation_override(animation_class, method)
