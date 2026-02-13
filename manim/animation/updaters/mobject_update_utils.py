@@ -167,20 +167,20 @@ def turn_animation_into_updater(
                 m.remove_updater(update)
                 return
 
-            time_ratio = animation.total_time / run_time
+            time_ratio = total_time / run_time
             if cycle:
                 alpha = time_ratio % 1
             else:
                 alpha = np.clip(time_ratio, 0, 1)
                 if alpha >= 1:
                     animation.finish()
-                    m.remove_updater(update)  # type: ignore
+                    m.remove_updater(update)
                     return
             animation.interpolate(alpha)
             animation.update_mobjects(dt)
         total_time += dt
 
-    mobject.add_updater(update)  # type: ignore
+    mobject.add_updater(update)
     return mobject
 
 
