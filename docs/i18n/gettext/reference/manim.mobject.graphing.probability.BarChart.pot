@@ -112,7 +112,7 @@ msgid "The values that will be used to update the height of the bars. Does not h
 msgstr ""
 
 #: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart.change_bar_values:5
-msgid "Whether to re-initalize the colors of the bars based on ``self.bar_colors``."
+msgid "Whether to re-initialize the colors of the bars based on ``self.bar_colors``."
 msgstr ""
 
 #: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart.get_bar_labels:1

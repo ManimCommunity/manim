@@ -1,0 +1,8 @@
+[default]
+extend-ignore-identifiers-re = [
+    # *sigh* this just isn't worth the cost of fixing
+    "PointND",
+    "VectorND",
+    "Nam",
+    "OT",
+]
