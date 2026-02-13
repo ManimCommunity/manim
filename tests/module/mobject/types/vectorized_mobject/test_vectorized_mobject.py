@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 
 
 def get_add_type_error_message(
-    parent_mob: OpenGLVMobject,
+    parent_mob: VMobject,
     invalid_obj: Any,
     index: int,
     subindex: int | None = None,
@@ -595,7 +595,7 @@ def test_pointwise_become_partial_where_vmobject_is_self():
     )
     np.testing.assert_allclose(square_1.points, expected_points_1)
 
-    # remap=False allow the square to end up with less Bézier curves after becoming
+    # remap=False allows the square to end up with less Bézier curves after becoming
     # partial. In this case, it ends up with 3 curves, so 3 * 3 = 9 points.
     square_2 = Square()
     square_2.pointwise_become_partial(vmobject=square_2, a=0.2, b=0.7, remap=False)
