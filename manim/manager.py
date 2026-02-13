@@ -85,7 +85,7 @@ class Manager(Generic[SceneT]):
         self._write_files = config.write_to_movie
 
         # internal state
-        self._skipping = False
+        self._skipping = config.save_last_frame
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}({self.scene!r}) at time {self.time:.2f}s"
@@ -113,7 +113,10 @@ class Manager(Generic[SceneT]):
         -------
             An instance of a renderer
         """
-        renderer = OpenGLRenderer()
+        renderer = OpenGLRenderer(
+            background_color=config.background_color,
+            background_opacity=config.background_opacity,
+        )
         if config.preview:
             renderer.use_window()
         return renderer
@@ -211,10 +214,13 @@ class Manager(Generic[SceneT]):
 
     def post_construct(self) -> None:
         """Run post-construct hooks, and clean up the file writer."""
+        should_write_image = config.save_last_frame or (
+            config.write_to_movie and not self.file_writer.num_plays
+        )
         if self.file_writer.num_plays:
             self.file_writer.finish()
         # otherwise no animations were played
-        elif config.write_to_movie or config.save_last_frame:
+        if should_write_image:
             self.render_state(write_frame=False)
             # FIXME: for some reason the OpenGLRenderer does not give out the
             # correct frame values here
@@ -240,10 +246,11 @@ class Manager(Generic[SceneT]):
             "you can interact with the scene. "
             "Press `command + q` or `esc` to quit"
         )
-        # TODO: Replace with actual dt instead
-        # of hardcoded dt
-        dt = 1 / config.frame_rate
+        last_time = time.perf_counter()
         while not self.window.is_closing:
+            current_time = time.perf_counter()
+            dt = current_time - last_time
+            last_time = current_time
             self._update_frame(dt)
 
     @contextlib.contextmanager
@@ -266,7 +273,9 @@ class Manager(Generic[SceneT]):
     #         Animation Pipeline        #
     # ----------------------------------#
 
-    def _update_frame(self, dt: float, *, write_frame: bool | None = None) -> None:
+    def _update_frame(
+        self, dt: float, *, write_frame: bool | None = None, run_updaters: bool = True
+    ) -> None:
         """Update the current frame by ``dt``
 
         Parameters
@@ -276,7 +285,8 @@ class Manager(Generic[SceneT]):
                 Default value checks :attr:`_write_files` to see if it should be written.
         """
         self.time += dt
-        self.scene._update_mobjects(dt)
+        if run_updaters:
+            self.scene._update_mobjects(dt)
         self.scene.time = self.time
 
         if self.window is not None:
@@ -400,10 +410,17 @@ class Manager(Generic[SceneT]):
             progression.shape[0],
             f"Animation %(num)d: {animations[0]}{', etc.' if len(animations) > 1 else ''}",
         ) as progress:
+            if self._skipping:
+                self.scene._update_animations(animations, run_time, run_time)
+                self._update_frame(run_time, run_updaters=False)
+                return
             for t in progression:
                 dt, last_t = t - last_t, t
                 self.scene._update_animations(animations, t, dt)
-                self._update_frame(dt)
+                run_updaters = not self.scene.is_current_animation_frozen_frame(
+                    animations
+                )
+                self._update_frame(dt, run_updaters=run_updaters)
                 for anim in animations:
                     if isinstance(anim, Wait) and anim.stop_condition:
                         if anim.stop_condition():
