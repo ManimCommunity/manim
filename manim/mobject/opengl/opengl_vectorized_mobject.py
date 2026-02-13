@@ -1864,13 +1864,16 @@ class OpenGLVDict(OpenGLVMobject):
         mapping_or_iterable: (
             Mapping[Hashable, OpenGLVMobject]
             | Iterable[tuple[Hashable, OpenGLVMobject]]
-        ) = {},
+            | None
+        ) = None,
         show_keys: bool = False,
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
         self.show_keys = show_keys
         self.submob_dict: Mapping[Hashable, OpenGLVMobject] = {}
+        if mapping_or_iterable is None:
+            mapping_or_iterable = {}
         self.add(mapping_or_iterable)
 
     def __repr__(self) -> str:
