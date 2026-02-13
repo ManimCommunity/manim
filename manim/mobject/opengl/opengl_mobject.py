@@ -912,7 +912,7 @@ class OpenGLMobject:
                 error_message = (
                     f"Only values of type {mob_class.__name__} can be added "
                     f"as submobjects of {type(self).__name__}, but the value "
-                    f"{submob} (at index {i}) is of type "
+                    f"{repr(submob)} (at index {i}) is of type "
                     f"{type(submob).__name__}."
                 )
                 # Intended for subclasses such as VMobject, which
