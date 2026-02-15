@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import numpy as np
 import pytest
 
 from manim import DiGraph, Graph, LabeledLine, Manager, Scene, Text, tempconfig
@@ -134,9 +135,9 @@ def test_custom_graph_layout_dict():
         [1, 2, 3], [(1, 2), (2, 3)], layout={1: [0, 0, 0], 2: [1, 1, 0], 3: [1, -1, 0]}
     )
     assert str(G) == "Undirected graph on 3 vertices and 2 edges"
-    assert all(G.vertices[1].get_center() == [0, 0, 0])
-    assert all(G.vertices[2].get_center() == [1, 1, 0])
-    assert all(G.vertices[3].get_center() == [1, -1, 0])
+    np.testing.assert_allclose(G.vertices[1].get_center(), [0, 0, 0])
+    np.testing.assert_allclose(G.vertices[2].get_center(), [1, 1, 0])
+    np.testing.assert_allclose(G.vertices[3].get_center(), [1, -1, 0])
 
 
 def test_graph_layouts():
@@ -165,9 +166,9 @@ def test_custom_graph_layout_function():
         return {vertex: [vertex, vertex, 0] for vertex in graph}
 
     G = Graph([1, 2, 3], [(1, 2), (2, 3)], layout=layout_func)
-    assert all(G.vertices[1].get_center() == [1, 1, 0])
-    assert all(G.vertices[2].get_center() == [2, 2, 0])
-    assert all(G.vertices[3].get_center() == [3, 3, 0])
+    np.testing.assert_allclose(G.vertices[1].get_center(), [1, 1, 0])
+    np.testing.assert_allclose(G.vertices[2].get_center(), [2, 2, 0])
+    np.testing.assert_allclose(G.vertices[3].get_center(), [3, 3, 0])
 
 
 def test_custom_graph_layout_function_with_kwargs():
