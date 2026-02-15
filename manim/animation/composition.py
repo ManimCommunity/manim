@@ -186,7 +186,7 @@ class AnimationGroup(Animation):
             sub_alphas[(sub_alphas > 1) | with_zero_run_time] = 1
 
         for anim_to_update, sub_alpha in zip(
-            to_update["anim"], sub_alphas, strict=False
+            to_update["anim"], sub_alphas, strict=True
         ):
             anim_to_update.interpolate(sub_alpha)
 
