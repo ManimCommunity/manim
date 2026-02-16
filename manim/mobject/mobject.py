@@ -28,8 +28,8 @@ from .. import config, logger
 from ..constants import *
 from ..utils.color import (
     BLACK,
+    PURE_YELLOW,
     WHITE,
-    YELLOW_C,
     ManimColor,
     ParsableManimColor,
     color_gradient,
@@ -1965,7 +1965,7 @@ class Mobject:
     # Color functions
 
     def set_color(
-        self, color: ParsableManimColor = YELLOW_C, family: bool = True
+        self, color: ParsableManimColor = PURE_YELLOW, family: bool = True
     ) -> Self:
         """Condition is function which takes in one arguments, (x, y, z).
         Here it just recurses to submobjects, but in subclasses this

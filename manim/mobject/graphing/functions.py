@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from manim.typing import Point3D, Point3DLike
     from manim.utils.color import ParsableManimColor
 
-from manim.utils.color import YELLOW
+from manim.utils.color import PURE_YELLOW
 
 
 class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
@@ -217,7 +217,7 @@ class FunctionGraph(ParametricFunction):
         self,
         function: Callable[[float], Any],
         x_range: tuple[float, float] | tuple[float, float, float] | None = None,
-        color: ParsableManimColor = YELLOW,
+        color: ParsableManimColor = PURE_YELLOW,
         **kwargs: Any,
     ) -> None:
         if x_range is None:
