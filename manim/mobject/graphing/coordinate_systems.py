@@ -43,7 +43,7 @@ from manim.utils.color import (
     BLUE_D,
     GREEN,
     WHITE,
-    YELLOW,
+    PURE_YELLOW,
     ManimColor,
     ParsableManimColor,
     color_gradient,
@@ -1614,7 +1614,7 @@ class CoordinateSystem:
         x: float,
         graph: ParametricFunction,
         dx: float | None = None,
-        dx_line_color: ParsableManimColor = YELLOW,
+        dx_line_color: ParsableManimColor = PURE_YELLOW,
         dy_line_color: ParsableManimColor | None = None,
         dx_label: float | str | None = None,
         dy_label: float | str | None = None,
@@ -1796,7 +1796,7 @@ class CoordinateSystem:
         triangle_size: float = MED_SMALL_BUFF,
         triangle_color: ParsableManimColor | None = WHITE,
         line_func: type[Line] = Line,
-        line_color: ParsableManimColor = YELLOW,
+        line_color: ParsableManimColor = PURE_YELLOW,
     ) -> VGroup:
         """Creates a labelled triangle marker with a vertical line from the x-axis
         to a curve at a given x-value.
@@ -2293,7 +2293,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         x_values: Iterable[float],
         y_values: Iterable[float],
         z_values: Iterable[float] | None = None,
-        line_color: ParsableManimColor = YELLOW,
+        line_color: ParsableManimColor = PURE_YELLOW,
         add_vertex_dots: bool = True,
         vertex_dot_radius: float = DEFAULT_DOT_RADIUS,
         vertex_dot_style: dict[str, Any] | None = None,

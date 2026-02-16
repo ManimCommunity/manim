@@ -64,7 +64,7 @@ from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..typing import Point3D, Point3DLike, Vector3DLike
 from ..utils.bezier import interpolate, inverse_interpolate
-from ..utils.color import GREY, YELLOW, ParsableManimColor
+from ..utils.color import GREY, PURE_YELLOW, ParsableManimColor
 from ..utils.rate_functions import RateFunction, smooth, there_and_back, wiggle
 from ..utils.space_ops import normalize
 
@@ -89,7 +89,7 @@ class FocusOn(Transform):
 
         class UsingFocusOn(Scene):
             def construct(self):
-                dot = Dot(color=YELLOW).shift(DOWN)
+                dot = Dot(color=PURE_YELLOW).shift(DOWN)
                 self.add(Tex("Focusing on the dot below:"), dot)
                 self.play(FocusOn(dot))
                 self.wait()
@@ -153,7 +153,7 @@ class Indicate(Transform):
         self,
         mobject: Mobject,
         scale_factor: float = 1.2,
-        color: ParsableManimColor = YELLOW,
+        color: ParsableManimColor = PURE_YELLOW,
         rate_func: RateFunction = there_and_back,
         **kwargs: Any,
     ):
@@ -198,7 +198,7 @@ class Flash(AnimationGroup):
 
         class UsingFlash(Scene):
             def construct(self):
-                dot = Dot(color=YELLOW).shift(DOWN)
+                dot = Dot(color=PURE_YELLOW).shift(DOWN)
                 self.add(Tex("Flash the dot below:"), dot)
                 self.play(Flash(dot))
                 self.wait()
@@ -226,7 +226,7 @@ class Flash(AnimationGroup):
         num_lines: int = 12,
         flash_radius: float = 0.1,
         line_stroke_width: int = 3,
-        color: ParsableManimColor = YELLOW,
+        color: ParsableManimColor = PURE_YELLOW,
         time_width: float = 1,
         run_time: float = 1.0,
         **kwargs: Any,
@@ -618,7 +618,7 @@ class Circumscribe(Succession):
         fade_out: bool = False,
         time_width: float = 0.3,
         buff: float = SMALL_BUFF,
-        color: ParsableManimColor = YELLOW,
+        color: ParsableManimColor = PURE_YELLOW,
         run_time: float = 1,
         stroke_width: float = DEFAULT_STROKE_WIDTH,
         **kwargs: Any,

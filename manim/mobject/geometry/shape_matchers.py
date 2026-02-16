@@ -20,7 +20,7 @@ from manim.mobject.geometry.polygram import RoundedRectangle
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import VGroup
-from manim.utils.color import BLACK, RED, YELLOW, ManimColor, ParsableManimColor
+from manim.utils.color import BLACK, RED, PURE_YELLOW, ManimColor, ParsableManimColor
 
 
 class SurroundingRectangle(RoundedRectangle):
@@ -50,7 +50,7 @@ class SurroundingRectangle(RoundedRectangle):
     def __init__(
         self,
         *mobjects: Mobject,
-        color: ParsableManimColor = YELLOW,
+        color: ParsableManimColor = PURE_YELLOW,
         buff: float | tuple[float, float] = SMALL_BUFF,
         corner_radius: float = 0.0,
         **kwargs: Any,

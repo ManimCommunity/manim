@@ -13,7 +13,7 @@ from manim.utils.bezier import interpolate
 from manim.utils.color import (
     BLACK,
     WHITE,
-    YELLOW,
+    PURE_YELLOW,
     ParsableManimColor,
     color_gradient,
     color_to_rgba,
@@ -48,7 +48,7 @@ class OpenGLPMobject(OpenGLMobject):
     def __init__(
         self,
         stroke_width: float = 2.0,
-        color: ParsableManimColor = YELLOW,
+        color: ParsableManimColor = PURE_YELLOW,
         render_primitive: int = moderngl.POINTS,
         **kwargs,
     ):
@@ -79,7 +79,7 @@ class OpenGLPMobject(OpenGLMobject):
         Rgbas must be a Nx4 numpy array if it is not None.
         """
         if rgbas is None and color is None:
-            color = YELLOW
+            color = PURE_YELLOW
         self.append_points(points)
         # rgbas array will have been resized with points
         if color is not None:
