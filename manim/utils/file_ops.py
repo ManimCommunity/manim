@@ -153,15 +153,14 @@ def add_version_before_extension(file_name: Path) -> Path:
 
 
 def guarantee_existence(path: Path) -> Path:
-    if not path.exists():
-        path.mkdir(parents=True)
+    path.mkdir(parents=True, exist_ok=True)
     return path.resolve(strict=True)
 
 
 def guarantee_empty_existence(path: Path) -> Path:
     if path.exists():
         shutil.rmtree(str(path))
-    path.mkdir(parents=True)
+    path.mkdir(parents=True, exist_ok=True)
     return path.resolve(strict=True)
 
 

@@ -312,7 +312,7 @@ def test_vdict_init(using_opengl_renderer):
         zip(
             ["a", "b", "c"],
             [OpenGLVMobject(), OpenGLVMobject(), OpenGLVMobject()],
-            strict=False,
+            strict=True,
         )
     )
     # If the value is of type OpenGLMobject, must raise a TypeError

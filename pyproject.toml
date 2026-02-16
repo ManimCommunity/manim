@@ -78,11 +78,9 @@ jupyterlab = [
 [dependency-groups]
 dev = [
     "furo>=2024.8.6",
-    "gitpython>=3.1.44",
     "matplotlib>=3.9.4",
     "myst-parser>=3.0.1",
     "pre-commit>=4.1.0",
-    "pygithub>=2.5.0",
     "pytest>=8.3.4",
     "pytest-cov>=6.0.0",
     "pytest-xdist>=2.2,<3.0",
@@ -211,9 +209,6 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
   "F401",
   "F403",
 ]
-
-[tool.ruff.lint.isort]
-required-imports = ["from __future__ import annotations"]
 
 [tool.ruff.lint.flake8-pytest-style]
 fixture-parentheses = false
