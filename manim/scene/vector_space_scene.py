@@ -35,9 +35,9 @@ from ..utils.color import (
     BLUE_D,
     GREEN_C,
     GREY,
+    PURE_YELLOW,
     RED_C,
     WHITE,
-    PURE_YELLOW,
     ManimColor,
     ParsableManimColor,
 )

@@ -20,7 +20,7 @@ from manim import (
     tempconfig,
 )
 from manim import CoordinateSystem as CS
-from manim.utils.color import BLUE, GREEN, ORANGE, RED, PURE_YELLOW
+from manim.utils.color import BLUE, GREEN, ORANGE, PURE_YELLOW, RED
 from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "coordinate_system_opengl"

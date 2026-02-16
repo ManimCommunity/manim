@@ -811,7 +811,10 @@ class Table(VGroup):
         return rec
 
     def get_highlighted_cell(
-        self, pos: Sequence[int] = (1, 1), color: ParsableManimColor = PURE_YELLOW, **kwargs
+        self,
+        pos: Sequence[int] = (1, 1),
+        color: ParsableManimColor = PURE_YELLOW,
+        **kwargs,
     ) -> BackgroundRectangle:
         """Returns a :class:`~.BackgroundRectangle` of the cell at the given position.
 
@@ -847,7 +850,10 @@ class Table(VGroup):
         return bg_cell
 
     def add_highlighted_cell(
-        self, pos: Sequence[int] = (1, 1), color: ParsableManimColor = PURE_YELLOW, **kwargs
+        self,
+        pos: Sequence[int] = (1, 1),
+        color: ParsableManimColor = PURE_YELLOW,
+        **kwargs,
     ) -> Table:
         """Highlights one cell at a specific position on the table by adding a :class:`~.BackgroundRectangle`.
 

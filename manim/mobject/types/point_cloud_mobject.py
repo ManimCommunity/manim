@@ -17,8 +17,8 @@ from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
 from ...utils.color import (
     BLACK,
-    WHITE,
     PURE_YELLOW,
+    WHITE,
     ManimColor,
     ParsableManimColor,
     color_gradient,

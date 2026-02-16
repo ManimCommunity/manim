@@ -28,8 +28,8 @@ from .. import config, logger
 from ..constants import *
 from ..utils.color import (
     BLACK,
-    WHITE,
     PURE_YELLOW,
+    WHITE,
     ManimColor,
     ParsableManimColor,
     color_gradient,

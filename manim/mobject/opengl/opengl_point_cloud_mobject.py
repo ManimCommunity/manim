@@ -12,8 +12,8 @@ from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.utils.bezier import interpolate
 from manim.utils.color import (
     BLACK,
-    WHITE,
     PURE_YELLOW,
+    WHITE,
     ParsableManimColor,
     color_gradient,
     color_to_rgba,
