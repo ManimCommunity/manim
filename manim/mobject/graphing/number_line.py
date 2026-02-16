@@ -262,7 +262,7 @@ class NumberLine(Line):
                         zip(
                             tick_range,
                             custom_labels,
-                            strict=False,
+                            strict=True,
                         )
                     ),
                 )
