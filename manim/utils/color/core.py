@@ -1520,7 +1520,7 @@ class RandomColorGenerator:
 
         >>> rnd = RandomColorGenerator(42)
         >>> rnd.next()
-        ManimColor('#ECE7E2')
+        ManimColor('#8B4513')
         >>> rnd.next()
         ManimColor('#BBBBBB')
         >>> rnd.next()
@@ -1530,7 +1530,7 @@ class RandomColorGenerator:
 
         >>> rnd2 = RandomColorGenerator(42)
         >>> rnd2.next()
-        ManimColor('#ECE7E2')
+        ManimColor('#8B4513')
         >>> rnd2.next()
         ManimColor('#BBBBBB')
         >>> rnd2.next()
