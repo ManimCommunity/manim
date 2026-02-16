@@ -344,8 +344,8 @@ class ImageMobjectFromCamera(AbstractImageMobject):
     def interpolate_color(
         self, mobject1: Mobject, mobject2: Mobject, alpha: float
     ) -> None:
-        assert isinstance(mobject1, ImageMobject)
-        assert isinstance(mobject2, ImageMobject)
+        assert isinstance(mobject1, ImageMobjectFromCamera)
+        assert isinstance(mobject2, ImageMobjectFromCamera)
         assert mobject1.pixel_array.shape == mobject2.pixel_array.shape, (
             f"Mobject pixel array shapes incompatible for interpolation.\n"
             f"Mobject 1 ({mobject1}) : {mobject1.pixel_array.shape}\n"
