@@ -98,15 +98,15 @@ class AbstractImageMobject(Mobject):
             * 'hamming'
             * 'lanczos' or 'antialias'
         """
-        if isinstance(resampling_algorithm, int):
-            self.resampling_algorithm = resampling_algorithm
-        else:
+        if resampling_algorithm not in RESAMPLING_ALGORITHMS.values():
             raise ValueError(
                 "resampling_algorithm has to be an int, one of the values defined in "
                 "RESAMPLING_ALGORITHMS or a Pillow resampling filter constant. "
-                "Available algorithms: 'bicubic', 'nearest', 'box', 'bilinear', "
-                "'hamming', 'lanczos'.",
+                "Available algorithms: 'bicubic' (or 'cubic'), 'nearest' (or 'none'), "
+                "'bilinear' (or 'linear').",
             )
+
+        self.resampling_algorithm = resampling_algorithm
         return self
 
     def reset_points(self) -> None:
@@ -168,27 +168,18 @@ class ImageMobject(AbstractImageMobject):
                                                 [0, 0, 0, 255]
                                                 ]))
 
-                img.height = 2
-                img1 = img.copy()
-                img2 = img.copy()
-                img3 = img.copy()
-                img4 = img.copy()
-                img5 = img.copy()
+                img.height = 3
 
-                img1.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
-                img2.set_resampling_algorithm(RESAMPLING_ALGORITHMS["lanczos"])
-                img3.set_resampling_algorithm(RESAMPLING_ALGORITHMS["linear"])
-                img4.set_resampling_algorithm(RESAMPLING_ALGORITHMS["cubic"])
-                img5.set_resampling_algorithm(RESAMPLING_ALGORITHMS["box"])
-                img1.add(Text("nearest").scale(0.5).next_to(img1,UP))
-                img2.add(Text("lanczos").scale(0.5).next_to(img2,UP))
-                img3.add(Text("linear").scale(0.5).next_to(img3,UP))
-                img4.add(Text("cubic").scale(0.5).next_to(img4,UP))
-                img5.add(Text("box").scale(0.5).next_to(img5,UP))
+                group = Group()
+                algorithm_texts = ["nearest", "linear", "cubic"]
+                for algorithm_text in algorithm_texts:
+                    algorithm = RESAMPLING_ALGORITHMS[algorithm_text]
+                    img_copy = img.copy().set_resampling_algorithm(algorithm)
+                    img_copy.add(Text(algorithm_text).scale(0.5).next_to(img_copy, UP))
+                    group.add(img_copy)
 
-                x= Group(img1,img2,img3,img4,img5)
-                x.arrange()
-                self.add(x)
+                group.arrange()
+                self.add(group)
     """
 
     def __init__(
@@ -353,8 +344,8 @@ class ImageMobjectFromCamera(AbstractImageMobject):
     def interpolate_color(
         self, mobject1: Mobject, mobject2: Mobject, alpha: float
     ) -> None:
-        assert isinstance(mobject1, ImageMobject)
-        assert isinstance(mobject2, ImageMobject)
+        assert isinstance(mobject1, ImageMobjectFromCamera)
+        assert isinstance(mobject2, ImageMobjectFromCamera)
         assert mobject1.pixel_array.shape == mobject2.pixel_array.shape, (
             f"Mobject pixel array shapes incompatible for interpolation.\n"
             f"Mobject 1 ({mobject1}) : {mobject1.pixel_array.shape}\n"
