@@ -17,8 +17,8 @@ from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
 from ...utils.color import (
     BLACK,
+    PURE_YELLOW,
     WHITE,
-    YELLOW,
     ManimColor,
     ParsableManimColor,
     color_gradient,
@@ -110,7 +110,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         return self
 
     def set_color(
-        self, color: ParsableManimColor = YELLOW, family: bool = True
+        self, color: ParsableManimColor = PURE_YELLOW, family: bool = True
     ) -> Self:
         rgba = color_to_rgba(color)
         mobs = self.family_members_with_points() if family else [self]
@@ -359,7 +359,7 @@ class PointCloudDot(Mobject1D):
         radius: float = 2.0,
         stroke_width: int = 2,
         density: int = DEFAULT_POINT_DENSITY_1D,
-        color: ManimColor = YELLOW,
+        color: ManimColor = PURE_YELLOW,
         **kwargs: Any,
     ) -> None:
         self.radius = radius
