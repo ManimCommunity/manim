@@ -20,7 +20,7 @@ from manim.mobject.geometry.polygram import RoundedRectangle
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import VGroup
-from manim.utils.color import BLACK, PURE_YELLOW, RED, ManimColor, ParsableManimColor
+from manim.utils.color import BLACK, PURE_YELLOW, RED, ParsableManimColor
 
 
 class SurroundingRectangle(RoundedRectangle):
@@ -148,12 +148,6 @@ class BackgroundRectangle(SurroundingRectangle):
                 kwargs,
             )
         return self
-
-    def get_fill_color(self) -> ManimColor:
-        # The type of the color property is set to Any using the property decorator
-        # vectorized_mobject.py#L571
-        temp_color: ManimColor = self.color
-        return temp_color
 
 
 class Cross(VGroup):

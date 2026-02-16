@@ -350,7 +350,7 @@ class OpenGLVMobject(OpenGLMobject):
                 return self
             elif len(submobs2) == 0:
                 submobs2 = [vmobject]
-            for sm1, sm2 in zip(*make_even(submobs1, submobs2), strict=False):
+            for sm1, sm2 in zip(*make_even(submobs1, submobs2), strict=True):
                 sm1.match_style(sm2)
         return self
 
@@ -580,7 +580,7 @@ class OpenGLVMobject(OpenGLMobject):
                     new_points.extend(
                         [
                             partial_bezier_points(tup, a1, a2)
-                            for a1, a2 in zip(alphas, alphas[1:], strict=False)
+                            for a1, a2 in zip(alphas[:-1], alphas[1:], strict=True)
                         ],
                     )
                 else:
@@ -769,7 +769,7 @@ class OpenGLVMobject(OpenGLMobject):
         split_indices = [0, *split_indices, len(points)]
         return [
             points[i1:i2]
-            for i1, i2 in zip(split_indices, split_indices[1:], strict=False)
+            for i1, i2 in zip(split_indices[:-1], split_indices[1:], strict=True)
             if (i2 - i1) >= nppc
         ]
 
@@ -1093,7 +1093,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         s = self.get_start_anchors()
         e = self.get_end_anchors()
-        return list(it.chain.from_iterable(zip(s, e, strict=False)))
+        return list(it.chain.from_iterable(zip(s, e, strict=True)))
 
     def get_points_without_null_curves(self, atol=1e-9):
         nppc = self.n_points_per_curve

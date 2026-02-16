@@ -609,7 +609,7 @@ def find_intersection(
     # algorithm from https://en.wikipedia.org/wiki/Skew_lines#Nearest_points
     result = []
 
-    for p0, v0, p1, v1 in zip(p0s, v0s, p1s, v1s, strict=False):
+    for p0, v0, p1, v1 in zip(p0s, v0s, p1s, v1s, strict=True):
         normal = cross(v1, cross(v0, v1))
         denom = max(np.dot(v0, normal), threshold)
         result += [p0 + np.dot(p1 - p0, normal) / denom * v0]

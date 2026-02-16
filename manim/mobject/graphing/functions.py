@@ -157,7 +157,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         else:
             boundary_times = [self.t_min, self.t_max]
 
-        for t1, t2 in zip(boundary_times[0::2], boundary_times[1::2], strict=False):
+        for t1, t2 in zip(boundary_times[0::2], boundary_times[1::2], strict=True):
             t_range = np.array(
                 [
                     *self.scaling.function(np.arange(t1, t2, self.t_step)),

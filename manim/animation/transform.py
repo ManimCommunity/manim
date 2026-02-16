@@ -235,8 +235,8 @@ class Transform(Animation):
             self.target_copy,
         ]
         if config.renderer == RendererType.OPENGL:
-            return zip(*(mob.get_family() for mob in mobs), strict=False)
-        return zip(*(mob.family_members_with_points() for mob in mobs), strict=False)
+            return zip(*(mob.get_family() for mob in mobs), strict=True)
+        return zip(*(mob.family_members_with_points() for mob in mobs), strict=True)
 
     def interpolate_submobject(
         self,
@@ -741,7 +741,7 @@ class CyclicReplace(Transform):
     def create_target(self) -> Group:
         target = self.group.copy()
         cycled_targets = [target[-1], *target[:-1]]
-        for m1, m2 in zip(cycled_targets, self.group, strict=False):
+        for m1, m2 in zip(cycled_targets, self.group, strict=True):
             m1.move_to(m2)
         return target
 
@@ -929,5 +929,5 @@ class FadeTransformPieces(FadeTransform):
         """Replaces the source submobjects by the target submobjects and sets
         the opacity to 0.
         """
-        for sm0, sm1 in zip(source.get_family(), target.get_family(), strict=False):
+        for sm0, sm1 in zip(source.get_family(), target.get_family(), strict=True):
             super().ghost_to(sm0, sm1)
