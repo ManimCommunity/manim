@@ -7,6 +7,7 @@ import numpy as np
 from manim import (
     DEGREES,
     DOWN,
+    GREEN,
     LEFT,
     ORIGIN,
     RIGHT,
@@ -89,7 +90,7 @@ def test_Polygram_get_vertex_groups():
     for vertex_groups in vertex_groups_arr:
         polygram = Polygram(*vertex_groups)
         poly_vertex_groups = polygram.get_vertex_groups()
-        for poly_group, group in zip(poly_vertex_groups, vertex_groups, strict=False):
+        for poly_group, group in zip(poly_vertex_groups, vertex_groups, strict=True):
             np.testing.assert_array_equal(poly_group, group)
 
     # If polygram is a Polygram of a vertex group containing the start vertex N times,
@@ -150,6 +151,18 @@ def test_BackgroundRectangle(manim_caplog):
         "Argument {'hello': 'world'} is ignored in BackgroundRectangle.set_style."
         in manim_caplog.text
     )
+
+
+def test_BackgroundRectangle_color_access():
+    """Test that BackgroundRectangle color access works correctly.
+
+    Regression test for https://github.com/ManimCommunity/manim/issues/4419
+    """
+    square = Square()
+    bg_rect = BackgroundRectangle(square, color=GREEN)
+
+    # Should not cause infinite recursion
+    assert bg_rect.color == GREEN
 
 
 def test_Square_side_length_reflets_correct_width_and_height():
