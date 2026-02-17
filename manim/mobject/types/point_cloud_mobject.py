@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -82,7 +82,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         self.points: Point3D_Array = np.zeros((0, 3))
         return self
 
-    def get_array_attrs(self) -> list[Literal["points", "rgbas"]]:
+    def get_array_attrs(self) -> list[str]:
         return super().get_array_attrs() + ["rgbas"]
 
     def add_points(
