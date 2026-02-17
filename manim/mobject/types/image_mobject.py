@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["AbstractImageMobject", "ImageMobject", "ImageMobjectFromCamera"]
 
 import pathlib
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from PIL import Image
@@ -14,21 +14,29 @@ from PIL.Image import Resampling
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 
 from ... import config
+from ...camera.moving_camera import MovingCamera
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
-from ...utils.color import WHITE, ManimColor, color_to_int_rgb
+from ...utils.color import (
+    WHITE,
+    YELLOW_C,
+    ManimColor,
+    ParsableManimColor,
+    color_to_int_rgb,
+)
 from ...utils.images import change_to_rgba_array, get_full_raster_image_path
 
 __all__ = ["ImageMobject", "ImageMobjectFromCamera"]
 
 if TYPE_CHECKING:
-    from typing import Any
+    from typing import Self
 
     import numpy.typing as npt
-    from typing_extensions import Self
 
-    from manim.typing import StrPath
+    from manim.typing import PixelArray, StrPath
+
+    from ...camera.moving_camera import MovingCamera
 
 
 class AbstractImageMobject(Mobject):
@@ -57,12 +65,17 @@ class AbstractImageMobject(Mobject):
         self.set_resampling_algorithm(resampling_algorithm)
         super().__init__(**kwargs)
 
-    def get_pixel_array(self) -> None:
+    def get_pixel_array(self) -> PixelArray:
         raise NotImplementedError()
 
-    def set_color(self, color, alpha=None, family=True):
+    def set_color(  # type: ignore[override]
+        self,
+        color: ParsableManimColor = YELLOW_C,
+        alpha: Any = None,
+        family: bool = True,
+    ) -> AbstractImageMobject:
         # Likely to be implemented in subclasses, but no obligation
-        pass
+        raise NotImplementedError()
 
     def set_resampling_algorithm(self, resampling_algorithm: int) -> Self:
         """
@@ -85,15 +98,15 @@ class AbstractImageMobject(Mobject):
             * 'hamming'
             * 'lanczos' or 'antialias'
         """
-        if isinstance(resampling_algorithm, int):
-            self.resampling_algorithm = resampling_algorithm
-        else:
+        if resampling_algorithm not in RESAMPLING_ALGORITHMS.values():
             raise ValueError(
                 "resampling_algorithm has to be an int, one of the values defined in "
                 "RESAMPLING_ALGORITHMS or a Pillow resampling filter constant. "
-                "Available algorithms: 'bicubic', 'nearest', 'box', 'bilinear', "
-                "'hamming', 'lanczos'.",
+                "Available algorithms: 'bicubic' (or 'cubic'), 'nearest' (or 'none'), "
+                "'bilinear' (or 'linear').",
             )
+
+        self.resampling_algorithm = resampling_algorithm
         return self
 
     def reset_points(self) -> None:
@@ -155,27 +168,18 @@ class ImageMobject(AbstractImageMobject):
                                                 [0, 0, 0, 255]
                                                 ]))
 
-                img.height = 2
-                img1 = img.copy()
-                img2 = img.copy()
-                img3 = img.copy()
-                img4 = img.copy()
-                img5 = img.copy()
+                img.height = 3
 
-                img1.set_resampling_algorithm(RESAMPLING_ALGORITHMS["nearest"])
-                img2.set_resampling_algorithm(RESAMPLING_ALGORITHMS["lanczos"])
-                img3.set_resampling_algorithm(RESAMPLING_ALGORITHMS["linear"])
-                img4.set_resampling_algorithm(RESAMPLING_ALGORITHMS["cubic"])
-                img5.set_resampling_algorithm(RESAMPLING_ALGORITHMS["box"])
-                img1.add(Text("nearest").scale(0.5).next_to(img1,UP))
-                img2.add(Text("lanczos").scale(0.5).next_to(img2,UP))
-                img3.add(Text("linear").scale(0.5).next_to(img3,UP))
-                img4.add(Text("cubic").scale(0.5).next_to(img4,UP))
-                img5.add(Text("box").scale(0.5).next_to(img5,UP))
+                group = Group()
+                algorithm_texts = ["nearest", "linear", "cubic"]
+                for algorithm_text in algorithm_texts:
+                    algorithm = RESAMPLING_ALGORITHMS[algorithm_text]
+                    img_copy = img.copy().set_resampling_algorithm(algorithm)
+                    img_copy.add(Text(algorithm_text).scale(0.5).next_to(img_copy, UP))
+                    group.add(img_copy)
 
-                x= Group(img1,img2,img3,img4,img5)
-                x.arrange()
-                self.add(x)
+                group.arrange()
+                self.add(group)
     """
 
     def __init__(
@@ -205,20 +209,26 @@ class ImageMobject(AbstractImageMobject):
             self.pixel_array[:, :, :3] = (
                 np.iinfo(self.pixel_array_dtype).max - self.pixel_array[:, :, :3]
             )
+        self.orig_alpha_pixel_array = self.pixel_array[:, :, 3].copy()
         super().__init__(scale_to_resolution, **kwargs)
 
-    def get_pixel_array(self):
+    def get_pixel_array(self) -> PixelArray:
         """A simple getter method."""
         return self.pixel_array
 
-    def set_color(self, color, alpha=None, family=True):
+    def set_color(  # type: ignore[override]
+        self,
+        color: ParsableManimColor = YELLOW_C,
+        alpha: Any = None,
+        family: bool = True,
+    ) -> Self:
         rgb = color_to_int_rgb(color)
         self.pixel_array[:, :, :3] = rgb
         if alpha is not None:
             self.pixel_array[:, :, 3] = int(255 * alpha)
         for submob in self.submobjects:
             submob.set_color(color, alpha, family)
-        self.color = color
+        self.color = ManimColor(color)
         return self
 
     def set_opacity(self, alpha: float) -> Self:
@@ -230,8 +240,7 @@ class ImageMobject(AbstractImageMobject):
             The alpha value of the object, 1 being opaque and 0 being
             transparent.
         """
-        self.pixel_array[:, :, 3] = int(255 * alpha)
-        self.fill_opacity = alpha
+        self.pixel_array[:, :, 3] = self.orig_alpha_pixel_array * alpha
         self.stroke_opacity = alpha
         return self
 
@@ -251,7 +260,7 @@ class ImageMobject(AbstractImageMobject):
         return self
 
     def interpolate_color(
-        self, mobject1: ImageMobject, mobject2: ImageMobject, alpha: float
+        self, mobject1: Mobject, mobject2: Mobject, alpha: float
     ) -> None:
         """Interpolates the array of pixel color values from one ImageMobject
         into an array of equal size in the target ImageMobject.
@@ -267,6 +276,8 @@ class ImageMobject(AbstractImageMobject):
         alpha
             Used to track the lerp relationship. Not opacity related.
         """
+        assert isinstance(mobject1, ImageMobject)
+        assert isinstance(mobject2, ImageMobject)
         assert mobject1.pixel_array.shape == mobject2.pixel_array.shape, (
             f"Mobject pixel array shapes incompatible for interpolation.\n"
             f"Mobject 1 ({mobject1}) : {mobject1.pixel_array.shape}\n"
@@ -290,7 +301,7 @@ class ImageMobject(AbstractImageMobject):
 
     def get_style(self) -> dict[str, Any]:
         return {
-            "fill_color": ManimColor(self.color.get_rgb()).to_hex(),
+            "fill_color": ManimColor(self.color.to_rgb()).to_hex(),
             "fill_opacity": self.fill_opacity,
         }
 
@@ -303,7 +314,7 @@ class ImageMobject(AbstractImageMobject):
 class ImageMobjectFromCamera(AbstractImageMobject):
     def __init__(
         self,
-        camera,
+        camera: MovingCamera,
         default_display_frame_config: dict[str, Any] | None = None,
         **kwargs: Any,
     ) -> None:
@@ -319,7 +330,7 @@ class ImageMobjectFromCamera(AbstractImageMobject):
         super().__init__(scale_to_resolution=False, **kwargs)
 
     # TODO: Get rid of this.
-    def get_pixel_array(self):
+    def get_pixel_array(self) -> PixelArray:
         self.pixel_array = self.camera.pixel_array
         return self.pixel_array
 
@@ -330,7 +341,11 @@ class ImageMobjectFromCamera(AbstractImageMobject):
         self.add(self.display_frame)
         return self
 
-    def interpolate_color(self, mobject1, mobject2, alpha) -> None:
+    def interpolate_color(
+        self, mobject1: Mobject, mobject2: Mobject, alpha: float
+    ) -> None:
+        assert isinstance(mobject1, ImageMobjectFromCamera)
+        assert isinstance(mobject2, ImageMobjectFromCamera)
         assert mobject1.pixel_array.shape == mobject2.pixel_array.shape, (
             f"Mobject pixel array shapes incompatible for interpolation.\n"
             f"Mobject 1 ({mobject1}) : {mobject1.pixel_array.shape}\n"

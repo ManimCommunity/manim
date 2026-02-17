@@ -10,7 +10,7 @@ from manim import MathTex, SingleStringMathTex, Tex, TexTemplate, tempconfig
 
 def test_MathTex(config):
     MathTex("a^2 + b^2 = c^2")
-    assert Path(config.media_dir, "Tex", "e4be163a00cf424f.svg").exists()
+    assert Path(config.media_dir, "Tex", "05bb0a41ed575f00.svg").exists()
 
 
 def test_SingleStringMathTex(config):
@@ -29,7 +29,7 @@ def test_double_braces_testing(text_input, length_sub):
 
 def test_tex(config):
     Tex("The horse does not eat cucumber salad.")
-    assert Path(config.media_dir, "Tex", "c3945e23e546c95a.svg").exists()
+    assert Path(config.media_dir, "Tex", "5384b41741a246bd.svg").exists()
 
 
 def test_tex_temp_directory(tmpdir, monkeypatch):
@@ -38,16 +38,16 @@ def test_tex_temp_directory(tmpdir, monkeypatch):
     # tempconfig to change media directory to temporary directory by default
     # we partially, revert that change here.
     monkeypatch.chdir(tmpdir)
-    Path(tmpdir, "media").mkdir()
+    Path(tmpdir, "media").mkdir(exist_ok=True)
     with tempconfig({"media_dir": "media"}):
         Tex("The horse does not eat cucumber salad.")
         assert Path("media", "Tex").exists()
-        assert Path("media", "Tex", "c3945e23e546c95a.svg").exists()
+        assert Path("media", "Tex", "5384b41741a246bd.svg").exists()
 
 
 def test_percent_char_rendering(config):
     Tex(r"\%")
-    assert Path(config.media_dir, "Tex", "4a583af4d19a3adf.tex").exists()
+    assert Path(config.media_dir, "Tex", "32509dd0ea993961.tex").exists()
 
 
 def test_tex_whitespace_arg():
@@ -108,6 +108,7 @@ def test_multi_part_tex_with_empty_parts():
     for one_part_glyph, multi_part_glyph in zip(
         one_part_fomula.family_members_with_points(),
         multi_part_formula.family_members_with_points(),
+        strict=True,
     ):
         np.testing.assert_allclose(one_part_glyph.points, multi_part_glyph.points)
 
@@ -214,14 +215,14 @@ def test_tempconfig_resetting_tex_template(config):
 
 def test_tex_garbage_collection(tmpdir, monkeypatch, config):
     monkeypatch.chdir(tmpdir)
-    Path(tmpdir, "media").mkdir()
+    Path(tmpdir, "media").mkdir(exist_ok=True)
     config.media_dir = "media"
 
-    tex_without_log = Tex("Hello World!")  # d771330b76d29ffb.tex
-    assert Path("media", "Tex", "d771330b76d29ffb.tex").exists()
-    assert not Path("media", "Tex", "d771330b76d29ffb.log").exists()
+    tex_without_log = Tex("Hello World!")  # 058a4e242c57db6d.tex
+    assert Path("media", "Tex", "058a4e242c57db6d.tex").exists()
+    assert not Path("media", "Tex", "058a4e242c57db6d.log").exists()
 
     config.no_latex_cleanup = True
 
-    tex_with_log = Tex("Hello World, again!")  # da27670a37b08799.tex
-    assert Path("media", "Tex", "da27670a37b08799.log").exists()
+    tex_with_log = Tex("Hello World, again!")  # 45b4e7819cc20cb1.tex
+    assert Path("media", "Tex", "45b4e7819cc20cb1.log").exists()

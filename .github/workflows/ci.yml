@@ -22,28 +22,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-22.04, macos-13, windows-latest]
-        python: ["3.9", "3.10", "3.11", "3.12"]
+        os: [ubuntu-22.04, macos-latest, windows-latest]
+        python: ["3.11", "3.12", "3.13", "3.14"]
+        include:
+          - os: macos-15-intel
+            python: "3.13"
 
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v4
-
-      - name: Install Poetry
-        run: |
-          pipx install "poetry==1.7.*"
-          poetry config virtualenvs.prefer-active-python true
+        uses: actions/checkout@v6
 
       - name: Setup Python ${{ matrix.python }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python }}
-          cache: "poetry"
 
-      - name: Setup macOS PATH
-        if: runner.os == 'macOS'
-        run: |
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
 
       - name: Setup cache variables
         shell: bash
@@ -60,10 +57,13 @@ jobs:
 
       - name: Install Texlive (Linux)
         if: runner.os == 'Linux'
-        uses: teatimeguest/setup-texlive-action@v3
+        uses: zauguin/install-texlive@v4
         with:
-          cache: true
-          packages: scheme-basic fontspec inputenc fontenc tipa mathrsfs calligra xcolor standalone preview doublestroke ms everysel setspace rsfs relsize ragged2e fundus-calligra microtype wasysym physics dvisvgm jknapltx wasy cm-super babel-english gnu-freefont mathastext cbfonts-fd xetex
+          packages: >
+            scheme-basic latex fontspec tipa calligra xcolor
+            standalone preview doublestroke setspace rsfs relsize
+            ragged2e fundus-calligra microtype wasysym physics dvisvgm jknapltx
+            wasy cm-super babel-english gnu-freefont mathastext cbfonts-fd xetex
 
       - name: Start virtual display (Linux)
         if: runner.os == 'Linux'
@@ -72,12 +72,12 @@ jobs:
           sudo /usr/bin/Xvfb $DISPLAY -screen 0 1280x1024x24 &
 
       - name: Setup Cairo Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-cairo
         if: runner.os == 'Linux' || runner.os == 'macOS'
         with:
           path: ${{ github.workspace }}/third_party
-          key: ${{ runner.os }}-dependencies-cairo-${{ hashFiles('.github/scripts/ci_build_cairo.py') }}
+          key: ${{ runner.os }}-${{ runner.arch }}-dependencies-cairo-${{ hashFiles('.github/scripts/ci_build_cairo.py') }}
 
       - name: Build and install Cairo (Linux and macOS)
         if: (runner.os == 'Linux' || runner.os == 'macOS') && steps.cache-cairo.outputs.cache-hit != 'true'
@@ -88,7 +88,7 @@ jobs:
         run: python .github/scripts/ci_build_cairo.py --set-env-vars
 
       - name: Setup macOS cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-macos
         if: runner.os == 'macOS'
         with:
@@ -119,13 +119,12 @@ jobs:
         shell: bash
         run: |
           echo "/Library/TeX/texbin" >> $GITHUB_PATH
-          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
           echo "$PWD/macos-cache/TinyTeX/bin/universal-darwin" >> $GITHUB_PATH
 
       - name: Setup Windows cache
         id: cache-windows
         if: runner.os == 'Windows'
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ${{ github.workspace }}\ManimCache
           key: ${{ runner.os }}-dependencies-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}-1
@@ -142,10 +141,7 @@ jobs:
           Expand-Archive -LiteralPath "$($env:TMP)\TinyTex.zip" -DestinationPath "$($PWD)\ManimCache\LatexWindows"
           $env:Path = "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\windows;$($env:PATH)"
           tlmgr update --self
-          foreach ($c in $tinyTexPackages){
-            $c=$c.Trim()
-            tlmgr install $c
-          }
+          tlmgr install $tinyTexPackages
           $env:PATH=$OriPath
           echo "Completed Latex"
 
@@ -153,22 +149,20 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           $env:Path += ";" + "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\windows"
-          $env:Path = "$env:USERPROFILE\.poetry\bin;$($env:PATH)"
           echo "$env:Path" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
-      - name: Install manim
+      - name: Install dependencies and manim
         run: |
-          poetry config installer.modern-installation false
-          poetry install
+          uv sync --all-extras --locked
 
       - name: Run tests
         run: |
-          poetry run python -m pytest
+          uv run python -m pytest
 
       - name: Run module doctests
         run: |
-          poetry run python -m pytest -v --cov-append --ignore-glob="*opengl*" --doctest-modules manim
+          uv run python -m pytest -v --cov-append --ignore-glob="*opengl*" --doctest-modules manim
 
       - name: Run doctests in rst files
         run: |
-          cd docs && poetry run make doctest O=-tskip-manim
+          cd docs && uv run make doctest O=-tskip-manim

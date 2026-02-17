@@ -24,7 +24,7 @@ def test_become(scene):
         .set_opacity(0.25)
         .set_color(GREEN)
     )
-    s3 = s.copy().become(d, stretch=True).set_opacity(0.25).set_color(YELLOW)
+    s3 = s.copy().become(d, stretch=True).set_opacity(0.25).set_color(PURE_YELLOW)
 
     scene.add(s, d, s1, s2, s3)
 
@@ -37,7 +37,7 @@ def test_become_no_color_linking(scene):
     scene.add(b)
     b.become(a)
     b.shift(1 * RIGHT)
-    b.set_stroke(YELLOW, opacity=1)
+    b.set_stroke(PURE_YELLOW, opacity=1)
 
 
 @frames_comparison
@@ -59,7 +59,7 @@ def test_vmobject_joint_types(scene):
         ]
     )
     lines = VGroup(*[angled_line.copy() for _ in range(len(LineJointType))])
-    for line, joint_type in zip(lines, LineJointType):
+    for line, joint_type in zip(lines, LineJointType, strict=True):
         line.joint_type = joint_type
 
     lines.arrange(RIGHT, buff=1)

@@ -65,8 +65,7 @@ __all__ = [
 
 
 import itertools as it
-from collections.abc import Iterable, Sequence
-from typing import Callable
+from collections.abc import Callable, Iterable, Sequence
 
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Polygon
@@ -80,7 +79,7 @@ from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Write
 from ..animation.fading import FadeIn
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..utils.color import BLACK, YELLOW, ManimColor, ParsableManimColor
+from ..utils.color import BLACK, PURE_YELLOW, ManimColor, ParsableManimColor
 from .utils import get_vectorized_mobject_class
 
 
@@ -254,7 +253,7 @@ class Table(VGroup):
         self,
         table: Iterable[Iterable[float | str | VMobject]],
     ) -> list:
-        """Initilaizes the entries of ``table`` as :class:`~.VMobject`.
+        """Initializes the entries of ``table`` as :class:`~.VMobject`.
 
         Parameters
         ----------
@@ -527,7 +526,7 @@ class Table(VGroup):
                     self.add(table)
         """
         columns = self.get_columns()
-        for color, column in zip(colors, columns):
+        for color, column in zip(colors, columns, strict=False):
             column.set_color(color)
         return self
 
@@ -556,7 +555,7 @@ class Table(VGroup):
                     self.add(table)
         """
         rows = self.get_rows()
-        for color, row in zip(colors, rows):
+        for color, row in zip(colors, rows, strict=False):
             row.set_color(color)
         return self
 
@@ -812,7 +811,10 @@ class Table(VGroup):
         return rec
 
     def get_highlighted_cell(
-        self, pos: Sequence[int] = (1, 1), color: ParsableManimColor = YELLOW, **kwargs
+        self,
+        pos: Sequence[int] = (1, 1),
+        color: ParsableManimColor = PURE_YELLOW,
+        **kwargs,
     ) -> BackgroundRectangle:
         """Returns a :class:`~.BackgroundRectangle` of the cell at the given position.
 
@@ -848,7 +850,10 @@ class Table(VGroup):
         return bg_cell
 
     def add_highlighted_cell(
-        self, pos: Sequence[int] = (1, 1), color: ParsableManimColor = YELLOW, **kwargs
+        self,
+        pos: Sequence[int] = (1, 1),
+        color: ParsableManimColor = PURE_YELLOW,
+        **kwargs,
     ) -> Table:
         """Highlights one cell at a specific position on the table by adding a :class:`~.BackgroundRectangle`.
 
@@ -1079,11 +1084,11 @@ class IntegerTable(Table):
                     [[0,30,45,60,90],
                     [90,60,45,30,0]],
                     col_labels=[
-                        MathTex(r"\frac{\sqrt{0}}{2}"),
-                        MathTex(r"\frac{\sqrt{1}}{2}"),
-                        MathTex(r"\frac{\sqrt{2}}{2}"),
-                        MathTex(r"\frac{\sqrt{3}}{2}"),
-                        MathTex(r"\frac{\sqrt{4}}{2}")],
+                        MathTex(r"\frac{ \sqrt{0} }{2}"),
+                        MathTex(r"\frac{ \sqrt{1} }{2}"),
+                        MathTex(r"\frac{ \sqrt{2} }{2}"),
+                        MathTex(r"\frac{ \sqrt{3} }{2}"),
+                        MathTex(r"\frac{ \sqrt{4} }{2}")],
                     row_labels=[MathTex(r"\sin"), MathTex(r"\cos")],
                     h_buff=1,
                     element_to_mobject_config={"unit": r"^{\circ}"})

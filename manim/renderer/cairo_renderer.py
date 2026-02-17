@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-import typing
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -8,18 +9,16 @@ from manim.utils.hashing import get_hash_from_play_call
 
 from .. import config, logger
 from ..camera.camera import Camera
-from ..mobject.mobject import Mobject
+from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.iterables import list_update
 
-if typing.TYPE_CHECKING:
-    import types
-    from collections.abc import Iterable
-    from typing import Any
-
+if TYPE_CHECKING:
     from manim.animation.animation import Animation
     from manim.scene.scene import Scene
+
+    from ..typing import PixelArray
 
 __all__ = ["CairoRenderer"]
 
@@ -27,16 +26,21 @@ __all__ = ["CairoRenderer"]
 class CairoRenderer:
     """A renderer using Cairo.
 
-    num_plays : Number of play() functions in the scene.
-    time: time elapsed since initialisation of scene.
+    Attributes
+    ----------
+    num_plays : int
+        Number of play() functions in the scene.
+
+    time : float
+        Time elapsed since initialisation of scene.
     """
 
     def __init__(
         self,
-        file_writer_class=SceneFileWriter,
-        camera_class=None,
-        skip_animations=False,
-        **kwargs,
+        file_writer_class: type[SceneFileWriter] = SceneFileWriter,
+        camera_class: type[Camera] | None = None,
+        skip_animations: bool = False,
+        **kwargs: Any,
     ):
         # All of the following are set to EITHER the value passed via kwargs,
         # OR the value stored in the global config dict at the time of
@@ -46,12 +50,12 @@ class CairoRenderer:
         self.camera = camera_cls()
         self._original_skipping_status = skip_animations
         self.skip_animations = skip_animations
-        self.animations_hashes = []
+        self.animations_hashes: list[str | None] = []
         self.num_plays = 0
-        self.time = 0
-        self.static_image = None
+        self.time = 0.0
+        self.static_image: PixelArray | None = None
 
-    def init_scene(self, scene):
+    def init_scene(self, scene: Scene) -> None:
         self.file_writer: Any = self._file_writer_class(
             self,
             scene.__class__.__name__,
@@ -60,9 +64,9 @@ class CairoRenderer:
     def play(
         self,
         scene: Scene,
-        *args: Animation | Iterable[Animation] | types.GeneratorType[Animation],
-        **kwargs,
-    ):
+        *args: Animation | Mobject | _AnimationBuilder,
+        **kwargs: Any,
+    ) -> None:
         # Reset skip_animations to the original state.
         # Needed when rendering only some animations, and skipping others.
         self.skip_animations = self._original_skipping_status
@@ -79,6 +83,7 @@ class CairoRenderer:
                 logger.info("Caching disabled.")
                 hash_current_animation = f"uncached_{self.num_plays:05}"
             else:
+                assert scene.animations is not None
                 hash_current_animation = get_hash_from_play_call(
                     scene,
                     self.camera,
@@ -119,12 +124,12 @@ class CairoRenderer:
 
     def update_frame(  # TODO Description in Docstring
         self,
-        scene,
-        mobjects: typing.Iterable[Mobject] | None = None,
+        scene: Scene,
+        mobjects: Iterable[Mobject] | None = None,
         include_submobjects: bool = True,
         ignore_skipping: bool = True,
-        **kwargs,
-    ):
+        **kwargs: Any,
+    ) -> None:
         """Update the frame.
 
         Parameters
@@ -139,7 +144,6 @@ class CairoRenderer:
         ignore_skipping
 
         **kwargs
-
         """
         if self.skip_animations and not ignore_skipping:
             return
@@ -156,25 +160,28 @@ class CairoRenderer:
         kwargs["include_submobjects"] = include_submobjects
         self.camera.capture_mobjects(mobjects, **kwargs)
 
-    def render(self, scene, time, moving_mobjects):
+    def render(
+        self,
+        scene: Scene,
+        time: float,
+        moving_mobjects: Iterable[Mobject] | None = None,
+    ) -> None:
         self.update_frame(scene, moving_mobjects)
         self.add_frame(self.get_frame())
 
-    def get_frame(self):
-        """
-        Gets the current frame as NumPy array.
+    def get_frame(self) -> PixelArray:
+        """Gets the current frame as NumPy array.
 
         Returns
         -------
-        np.array
+        PixelArray
             NumPy array of pixel values of each pixel in screen.
-            The shape of the array is height x width x 3
+            The shape of the array is height x width x 3.
         """
         return np.array(self.camera.pixel_array)
 
-    def add_frame(self, frame: np.ndarray, num_frames: int = 1):
-        """
-        Adds a frame to the video_file_stream
+    def add_frame(self, frame: PixelArray, num_frames: int = 1) -> None:
+        """Adds a frame to the video_file_stream
 
         Parameters
         ----------
@@ -189,7 +196,7 @@ class CairoRenderer:
         self.time += num_frames * dt
         self.file_writer.write_frame(frame, num_frames=num_frames)
 
-    def freeze_current_frame(self, duration: float):
+    def freeze_current_frame(self, duration: float) -> None:
         """Adds a static frame to the movie for a given duration. The static frame is the current frame.
 
         Parameters
@@ -203,19 +210,18 @@ class CairoRenderer:
             num_frames=int(duration / dt),
         )
 
-    def show_frame(self):
-        """
-        Opens the current frame in the Default Image Viewer
+    def show_frame(self, scene: Scene) -> None:
+        """Opens the current frame in the Default Image Viewer
         of your system.
         """
-        self.update_frame(ignore_skipping=True)
+        self.update_frame(scene, ignore_skipping=True)
         self.camera.get_image().show()
 
     def save_static_frame_data(
         self,
         scene: Scene,
-        static_mobjects: typing.Iterable[Mobject],
-    ) -> typing.Iterable[Mobject] | None:
+        static_mobjects: Iterable[Mobject],
+    ) -> PixelArray | None:
         """Compute and save the static frame, that will be reused at each frame
         to avoid unnecessarily computing static mobjects.
 
@@ -224,12 +230,12 @@ class CairoRenderer:
         scene
             The scene played.
         static_mobjects
-            Static mobjects of the scene. If None, self.static_image is set to None
+            Static mobjects of the scene. If None, self.static_image is set to None.
 
         Returns
         -------
-        typing.Iterable[Mobject]
-            The static image computed.
+        PixelArray | None
+            The static image computed. The return value is None if there are no static mobjects in the scene.
         """
         self.static_image = None
         if not static_mobjects:
@@ -238,9 +244,8 @@ class CairoRenderer:
         self.static_image = self.get_frame()
         return self.static_image
 
-    def update_skipping_status(self):
-        """
-        This method is used internally to check if the current
+    def update_skipping_status(self) -> None:
+        """This method is used internally to check if the current
         animation needs to be skipped or not. It also checks if
         the number of animations that were played correspond to
         the number of animations that need to be played, and
@@ -263,7 +268,7 @@ class CairoRenderer:
             self.skip_animations = True
             raise EndSceneEarlyException()
 
-    def scene_finished(self, scene):
+    def scene_finished(self, scene: Scene) -> None:
         # If no animations in scene, render an image instead
         if self.num_plays:
             self.file_writer.finish()
@@ -277,4 +282,4 @@ class CairoRenderer:
         if config["save_last_frame"]:
             self.static_image = None
             self.update_frame(scene)
-            self.file_writer.save_final_image(self.camera.get_image())
+            self.file_writer.save_image(self.camera.get_image())

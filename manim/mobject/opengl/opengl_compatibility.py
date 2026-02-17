@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABCMeta
+from typing import Any
 
 from manim import config
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -19,13 +20,15 @@ class ConvertToOpenGL(ABCMeta):
     on the lowest order inheritance classes such as Mobject and VMobject.
     """
 
-    _converted_classes = []
+    _converted_classes: list[type] = []
 
-    def __new__(mcls, name, bases, namespace):  # noqa: B902
+    def __new__(
+        mcls, name: str, bases: tuple[type, ...], namespace: dict[str, Any]
+    ) -> type:
         if config.renderer == RendererType.OPENGL:
             # Must check class names to prevent
             # cyclic importing.
-            base_names_to_opengl = {
+            base_names_to_opengl: dict[str, type] = {
                 "Mobject": OpenGLMobject,
                 "VMobject": OpenGLVMobject,
                 "PMobject": OpenGLPMobject,
@@ -40,6 +43,6 @@ class ConvertToOpenGL(ABCMeta):
 
         return super().__new__(mcls, name, bases, namespace)
 
-    def __init__(cls, name, bases, namespace):  # noqa: B902
+    def __init__(cls, name: str, bases: tuple[type, ...], namespace: dict[str, Any]):
         super().__init__(name, bases, namespace)
         cls._converted_classes.append(cls)

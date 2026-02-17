@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Generic, TypeVar
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, Generic, Self, TypeVar
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
-
     from manim.animation.animation import Animation
     from manim.mobject.mobject import Mobject
     from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -25,11 +24,11 @@ class _AnimationBuilder(Generic[T]):
 
         self.overridden_animation = None
         self.is_chaining = False
-        self.methods = []
+        self.methods: list[tuple[Callable, tuple, dict]] = []
 
         # Whether animation args can be passed
         self.cannot_pass_args = False
-        self.anim_args = {}
+        self.anim_args: dict[str, Any] = {}
 
     def __call__(self, **kwargs) -> Self:
         if self.cannot_pass_args:
@@ -48,8 +47,7 @@ class _AnimationBuilder(Generic[T]):
 
         if (self.is_chaining and has_overridden_animation) or self.overridden_animation:
             raise NotImplementedError(
-                "Method chaining is currently not supported for "
-                "overridden animations",
+                "Method chaining is currently not supported for overridden animations",
             )
 
         def update_target(*method_args, **method_kwargs):
@@ -73,10 +71,11 @@ class _AnimationBuilder(Generic[T]):
     def build(self) -> Animation:
         from manim.animation.transform import _MethodAnimation
 
-        if self.overridden_animation:
-            anim = self.overridden_animation
-        else:
-            anim = _MethodAnimation(self.mobject, self.methods)
+        anim = (
+            self.overridden_animation
+            if self.overridden_animation
+            else _MethodAnimation(self.mobject, self.methods)
+        )
 
         for attr, value in self.anim_args.items():
             setattr(anim, attr, value)
@@ -90,9 +89,9 @@ class _UpdaterBuilder(Generic[T]):
     def __init__(self, mobject: T):
         self._mobject = mobject
 
-    def __getattr__(self, name: str, /):
+    def __getattr__(self, name: str, /) -> Callable[..., Self]:
         # just return a function that will add the updater
-        def add_updater(*method_args, **method_kwargs):
+        def add_updater(*method_args, **method_kwargs) -> Self:
             self._mobject.add_updater(
                 lambda m: getattr(m, name)(*method_args, **method_kwargs),
                 call_updater=True,

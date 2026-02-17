@@ -29,7 +29,7 @@ CFG_DEFAULTS = {
     "background_color": "BLACK",
     "background_opacity": 1,
     "scene_names": "Default",
-    "resolution": (854, 480),
+    "resolution": (1920, 1080),
 }
 
 __all__ = ["select_resolution", "update_cfg", "project", "scene"]
@@ -43,11 +43,10 @@ def select_resolution() -> tuple[int, int]:
     tuple[int, int]
         Tuple containing height and width.
     """
-    resolution_options: list[tuple[int, int]] = []
-    for quality in QUALITIES.items():
-        resolution_options.append(
-            (quality[1]["pixel_height"], quality[1]["pixel_width"]),
-        )
+    resolution_options: list[tuple[int, int]] = [
+        (quality[1]["pixel_height"], quality[1]["pixel_width"])
+        for quality in QUALITIES.items()
+    ]
     resolution_options.pop()
     choice = click.prompt(
         "\nSelect resolution:\n",

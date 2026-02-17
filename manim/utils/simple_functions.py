@@ -10,20 +10,21 @@ __all__ = [
 ]
 
 
+from collections.abc import Callable
 from functools import lru_cache
-from typing import Callable
+from typing import Any, Protocol, TypeVar
 
 import numpy as np
 from scipy import special
 
 
 def binary_search(
-    function: Callable[[int | float], int | float],
-    target: int | float,
-    lower_bound: int | float,
-    upper_bound: int | float,
-    tolerance: int | float = 1e-4,
-) -> int | float | None:
+    function: Callable[[float], float],
+    target: float,
+    lower_bound: float,
+    upper_bound: float,
+    tolerance: float = 1e-4,
+) -> float | None:
     """Searches for a value in a range by repeatedly dividing the range in half.
 
     To be more precise, performs numerical binary search to determine the
@@ -40,10 +41,10 @@ def binary_search(
     ::
 
         >>> solution = binary_search(lambda x: x**2 + 3*x + 1, 11, 0, 5)
-        >>> abs(solution - 2) < 1e-4
+        >>> bool(abs(solution - 2) < 1e-4)
         True
         >>> solution = binary_search(lambda x: x**2 + 3*x + 1, 11, 0, 5, tolerance=0.01)
-        >>> abs(solution - 2) < 0.01
+        >>> bool(abs(solution - 2) < 0.01)
         True
 
     Searching in the interval :math:`[0, 5]` for a target value of :math:`71`
@@ -54,7 +55,7 @@ def binary_search(
     """
     lh = lower_bound
     rh = upper_bound
-    mh = np.mean(np.array([lh, rh]))
+    mh: float = np.mean(np.array([lh, rh]))
     while abs(rh - lh) > tolerance:
         mh = np.mean(np.array([lh, rh]))
         lx, mx, rx = (function(h) for h in (lh, mh, rh))
@@ -88,10 +89,20 @@ def choose(n: int, k: int) -> int:
     - https://en.wikipedia.org/wiki/Combination
     - https://docs.scipy.org/doc/scipy/reference/generated/scipy.special.comb.html
     """
-    return special.comb(n, k, exact=True)
+    value: int = special.comb(n, k, exact=True)
+    return value
 
 
-def clip(a, min_a, max_a):
+class Comparable(Protocol):
+    def __lt__(self, other: Any) -> bool: ...
+
+    def __gt__(self, other: Any) -> bool: ...
+
+
+ComparableT = TypeVar("ComparableT", bound=Comparable)
+
+
+def clip(a: ComparableT, min_a: ComparableT, max_a: ComparableT) -> ComparableT:
     """Clips ``a`` to the interval [``min_a``, ``max_a``].
 
     Accepts any comparable objects (i.e. those that support <, >).
@@ -125,4 +136,5 @@ def sigmoid(x: float) -> float:
     - https://en.wikipedia.org/wiki/Sigmoid_function
     - https://en.wikipedia.org/wiki/Logistic_function
     """
-    return 1.0 / (1 + np.exp(-x))
+    value: float = 1.0 / (1 + np.exp(-x))
+    return value
