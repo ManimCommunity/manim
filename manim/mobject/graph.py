@@ -18,7 +18,6 @@ import numpy as np
 if TYPE_CHECKING:
     from typing import TypeAlias
 
-    from manim.scene.scene import Scene
     from manim.typing import Point3D, Point3DLike
 
     NxGraph: TypeAlias = nx.classes.graph.Graph | nx.classes.digraph.DiGraph
@@ -900,6 +899,26 @@ class GenericGraph(VMobject):
             )
         ]
 
+    class _AddVerticesAnimation(AnimationGroup):
+        def __init__(
+            self,
+            *args,
+            graph: GenericGraph,
+            vertex_mobjects: Iterable,
+            **kwargs,
+        ):
+            super().__init__(*args, introducer=True, **kwargs)
+            self._vertex_mobjects = vertex_mobjects
+            self._graph = graph
+
+        def finish(self):
+            super().finish()
+            for v in self._vertex_mobjects:
+                self.buffer.remove(v[-1])
+                vertex = self._graph._add_created_vertex(*v)
+                self.buffer.add(vertex)
+            self.apply_buffer = True
+
     @override_animate(add_vertices)
     def _add_vertices_animation(self, *args, anim_args=None, **kwargs):
         if anim_args is None:
@@ -909,15 +928,11 @@ class GenericGraph(VMobject):
 
         vertex_mobjects = self._create_vertices(*args, **kwargs)
 
-        def on_finish(scene: Scene):
-            for v in vertex_mobjects:
-                scene.remove(v[-1])
-                self._add_created_vertex(*v)
-
-        return AnimationGroup(
+        return self._AddVerticesAnimation(
             *(animation(v[-1], **anim_args) for v in vertex_mobjects),
             group=self,
-            _on_finish=on_finish,
+            graph=self,
+            vertex_mobjects=vertex_mobjects,
         )
 
     def _remove_vertex(self, vertex):
