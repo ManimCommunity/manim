@@ -17,7 +17,7 @@ import warnings
 from collections.abc import Callable, Iterable
 from functools import partialmethod, reduce
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -442,9 +442,10 @@ class Mobject:
     def __repr__(self) -> str:
         return str(self.name)
 
-    def reset_points(self) -> None:
+    def reset_points(self) -> Self:
         """Sets :attr:`points` to be an empty array."""
         self.points = np.zeros((0, self.dim))
+        return self
 
     def init_colors(self) -> object:
         """Initializes the colors.
@@ -851,7 +852,7 @@ class Mobject:
         self.scale_to_fit_depth(value)
 
     # Can't be staticmethod because of point_cloud_mobject.py
-    def get_array_attrs(self) -> list[Literal["points"]]:
+    def get_array_attrs(self) -> list[str]:
         return ["points"]
 
     def apply_over_attr_arrays(self, func: MultiMappingFunction) -> Self:

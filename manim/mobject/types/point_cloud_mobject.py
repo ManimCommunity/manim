@@ -130,7 +130,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
 
     def set_color_by_gradient(self, *colors: ParsableManimColor) -> Self:
         self.rgbas = np.array(
-            list(map(color_to_rgba, color_gradient(*colors, len(self.points)))),
+            list(map(color_to_rgba, color_gradient(colors, len(self.points)))),
         )
         return self
 
@@ -172,7 +172,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         for mob in self.family_members_with_points():
             num_points = self.get_num_points()
             mob.apply_over_attr_arrays(
-                lambda arr, n=num_points: arr[np.arange(0, n, factor)],
+                lambda arr, n=num_points: arr[np.arange(0, n, factor)],  # type: ignore[misc]
             )
         return self
 
@@ -182,7 +182,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         """Function is any map from R^3 to R"""
         for mob in self.family_members_with_points():
             indices = np.argsort(np.apply_along_axis(function, 1, mob.points))
-            mob.apply_over_attr_arrays(lambda arr, idx=indices: arr[idx])
+            mob.apply_over_attr_arrays(lambda arr, idx=indices: arr[idx])  # type: ignore[misc]
         return self
 
     def fade_to(
