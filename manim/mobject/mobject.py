@@ -17,7 +17,7 @@ import warnings
 from collections.abc import Callable, Iterable, Iterator, Sequence
 from functools import partialmethod, reduce
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 
