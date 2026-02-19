@@ -109,7 +109,6 @@ class AnimationGroup(Animation):
 
         if self.suspend_mobject_updating:
             self.group.resume_updating()
-        self._on_finish(self.buffer)
 
     def update_mobjects(self, dt: float) -> None:
         for anim in self.anims_with_timings["anim"][

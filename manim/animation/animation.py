@@ -150,7 +150,6 @@ class Animation(AnimationProtocol):
         suspend_mobject_updating: bool = True,
         introducer: bool = False,
         *,
-        _on_finish: Callable[[SceneBuffer], object] = lambda _: None,
         use_override: bool = True,  # included here to avoid TypeError if passed from a subclass' constructor
     ) -> None:
         self._typecheck_input(mobject)
@@ -162,7 +161,6 @@ class Animation(AnimationProtocol):
         self.introducer: bool = introducer
         self.suspend_mobject_updating: bool = suspend_mobject_updating
         self.lag_ratio: float = lag_ratio
-        self._on_finish = _on_finish
 
         self.buffer = SceneBuffer()
         self.apply_buffer = False  # ask scene to apply buffer
@@ -250,8 +248,6 @@ class Animation(AnimationProtocol):
         if self.suspend_mobject_updating and self.mobject is not None:
             self.mobject.resume_updating()
 
-        # TODO: remove on_finish
-        self._on_finish(self.buffer)
         if self.remover:
             self.buffer.remove(self.mobject)
 

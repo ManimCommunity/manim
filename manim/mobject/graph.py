@@ -18,7 +18,6 @@ import numpy as np
 if TYPE_CHECKING:
     from typing import TypeAlias
 
-    from manim.scene.scene import Scene
     from manim.typing import Point3D, Point3DLike
 
     NxGraph: TypeAlias = nx.classes.graph.Graph | nx.classes.digraph.DiGraph
@@ -858,7 +857,7 @@ class GenericGraph(VMobject):
         vertex_type: type[Mobject] = Dot,
         vertex_config: dict | None = None,
         vertex_mobjects: dict | None = None,
-    ):
+    ) -> list[Mobject]:
         """Add a list of vertices to the graph.
 
         Parameters
@@ -901,23 +900,22 @@ class GenericGraph(VMobject):
         ]
 
     @override_animate(add_vertices)
-    def _add_vertices_animation(self, *args, anim_args=None, **kwargs):
-        if anim_args is None:
-            anim_args = {}
+    def _add_vertices_animation(
+        self,
+        *vertices: Hashable,
+        anim_args: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> AnimationGroup:
+        vertex_mobjects = self.add_vertices(*vertices, **kwargs)
 
-        animation = anim_args.pop("animation", Create)
-
-        vertex_mobjects = self._create_vertices(*args, **kwargs)
-
-        def on_finish(scene: Scene):
-            for v in vertex_mobjects:
-                scene.remove(v[-1])
-                self._add_created_vertex(*v)
+        base_anim_args = {"animation": Create, "introducer": False}
+        if anim_args is not None:
+            base_anim_args.update(anim_args)
+        animation = base_anim_args.pop("animation")
 
         return AnimationGroup(
-            *(animation(v[-1], **anim_args) for v in vertex_mobjects),
-            group=self,
-            _on_finish=on_finish,
+            animation(vertex_mobject, **base_anim_args)
+            for vertex_mobject in vertex_mobjects
         )
 
     def _remove_vertex(self, vertex):
