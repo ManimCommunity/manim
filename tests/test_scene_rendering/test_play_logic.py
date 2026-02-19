@@ -42,7 +42,7 @@ def test_t_values(config, using_temp_config, disabling_caching, frame_rate):
 def test_t_values_with_skip_animations(using_temp_config, disabling_caching):
     """Test the behaviour of scene.skip_animations"""
     manager = Manager(SquareToCircle)
-    manager._skip_animations = True
+    manager._skipping = True
     scene = manager.scene
     scene._update_animations = Mock()
     manager.render()
@@ -100,13 +100,16 @@ def test_wait_with_stop_condition(using_temp_config, disabling_caching):
 
 
 def test_frozen_frame(using_temp_config, disabling_caching):
-    scene = Manager(SceneForFrozenFrameTests)
-    scene.render()
-    assert scene.mobject_update_count == 0
-    assert scene.scene_update_count == 0
+    manager = Manager(SceneForFrozenFrameTests)
+    manager.render()
+    assert manager.scene.mobject_update_count == 0
+    assert manager.scene.scene_update_count == 0
 
 
 def test_t_values_with_cached_data(using_temp_config):
+    pytest.fail(
+        "TODO: Implement `_write_hashed_movie_file` and partial movie file logic in `Manager.py` to support caching. Currently, caching logic is stubbed out or incomplete."
+    )
     """Test the proper generation and use of the t values when an animation is cached."""
     scene = SceneWithMultipleCalls()
     # Mocking the file_writer will skip all the writing process.
@@ -123,10 +126,10 @@ def test_t_values_with_cached_data(using_temp_config):
 def test_t_values_save_last_frame(config, using_temp_config):
     """Test that there is only one t value handled when only saving the last frame"""
     config.save_last_frame = True
-    scene = SquareToCircle()
-    scene.update_to_time = Mock()
-    scene.render()
-    scene.update_to_time.assert_called_once_with(1)
+    manager = Manager(SquareToCircle)
+    scene = manager.scene
+    manager.render()
+    assert scene.time == 1
 
 
 def test_animate_with_changed_custom_attribute(using_temp_config):

@@ -25,12 +25,16 @@ from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 from manim.mobject.opengl.opengl_vectorized_mobject import (
     OpenGLVectorizedPoint as VectorizedPoint,
 )
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup as VGroup
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVGroup as VGroup,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVMobject as VMobject,
+)
 from manim.utils.color import (
     BLUE,
     BLUE_D,
@@ -48,7 +52,7 @@ if TYPE_CHECKING:
     from manim.typing import Point3D, Point3DLike, Vector3D, Vector3DLike
 
 
-class ThreeDVMobject(OpenGLVMobject):
+class ThreeDVMobject(VMobject):
     u_index: int
     v_index: int
     u1: float
@@ -145,10 +149,10 @@ class Surface(VGroup):
         self.resolution = resolution
         self.surface_piece_config = surface_piece_config
         self.checkerboard_colors: list[ManimColor] | Literal[False]
-        if checkerboard_colors:
-            self.checkerboard_colors = [ManimColor(x) for x in checkerboard_colors]
-        else:
+        if checkerboard_colors is False:
             self.checkerboard_colors = checkerboard_colors
+        else:
+            self.checkerboard_colors = [ManimColor(i) for i in checkerboard_colors]
         self.should_make_jagged = should_make_jagged
         self.pre_function_handle_to_anchor_scale_factor = (
             pre_function_handle_to_anchor_scale_factor
@@ -997,7 +1001,7 @@ class Line3D(Cylinder):
 
     def pointify(
         self,
-        mob_or_point: OpenGLMobject | Point3DLike,
+        mob_or_point: Mobject | Point3DLike,
         direction: Vector3DLike | None = None,
     ) -> Point3D:
         """Gets a point representing the center of the :class:`Mobjects <.Mobject>`.
@@ -1014,7 +1018,7 @@ class Line3D(Cylinder):
         :class:`numpy.array`
             Center of the :class:`Mobjects <.Mobject>` or point, or edge if direction is given.
         """
-        if isinstance(mob_or_point, OpenGLMobject):
+        if isinstance(mob_or_point, Mobject):
             mob = mob_or_point
             if direction is None:
                 return mob.get_center()

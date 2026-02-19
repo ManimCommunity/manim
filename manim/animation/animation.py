@@ -10,12 +10,17 @@ from typing import TYPE_CHECKING, Any, Self, assert_never, cast, overload
 import numpy as np
 from typing_extensions import TypeVar
 
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLGroup as Group,
+)
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLMobject as Mobject,
+)
+from manim.mobject.opengl.opengl_mobject import (
+    _AnimationBuilder,
+)
 
 from .. import logger
-from ..mobject import mobject
-from ..mobject.mobject import Group, Mobject
-from ..mobject.opengl import opengl_mobject
 from ..utils.rate_functions import linear, smooth
 from .protocol import AnimationProtocol, MobjectAnimation
 from .scene_buffer import SceneBuffer, SceneOperation
@@ -25,7 +30,7 @@ if TYPE_CHECKING:
 
     from manim.scene.scene import Scene
 
-M = TypeVar("M", bound=OpenGLMobject)
+M = TypeVar("M", bound=Mobject)
 
 
 __all__ = ["Animation", "Wait", "override_animation"]
@@ -135,7 +140,7 @@ class Animation(AnimationProtocol):
 
     def __init__(
         self,
-        mobject: OpenGLMobject | None,
+        mobject: Mobject | None,
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
         run_time: float = DEFAULT_ANIMATION_RUN_TIME,
         rate_func: Callable[[float], float] = smooth,
@@ -145,7 +150,6 @@ class Animation(AnimationProtocol):
         suspend_mobject_updating: bool = True,
         introducer: bool = False,
         *,
-        _on_finish: Callable[[SceneBuffer], object] = lambda _: None,
         use_override: bool = True,  # included here to avoid TypeError if passed from a subclass' constructor
     ) -> None:
         self._typecheck_input(mobject)
@@ -157,15 +161,12 @@ class Animation(AnimationProtocol):
         self.introducer: bool = introducer
         self.suspend_mobject_updating: bool = suspend_mobject_updating
         self.lag_ratio: float = lag_ratio
-        self._on_finish = _on_finish
 
         self.buffer = SceneBuffer()
         self.apply_buffer = False  # ask scene to apply buffer
 
-        self.starting_mobject: OpenGLMobject = OpenGLMobject()
-        self.mobject: OpenGLMobject = (
-            mobject if mobject is not None else OpenGLMobject()
-        )
+        self.starting_mobject: Mobject = Mobject()
+        self.mobject: Mobject = mobject if mobject is not None else Mobject()
 
         if hasattr(self, "CONFIG"):
             logger.error(
@@ -191,7 +192,7 @@ class Animation(AnimationProtocol):
     def _typecheck_input(self, mobject: Mobject | None) -> None:
         if mobject is None:
             logger.debug("Animation with empty mobject")
-        elif not isinstance(mobject, (Mobject, OpenGLMobject)):
+        elif not isinstance(mobject, Mobject):
             raise TypeError("Animation only works on Mobjects")
 
     def __str__(self) -> str:
@@ -247,16 +248,14 @@ class Animation(AnimationProtocol):
         if self.suspend_mobject_updating and self.mobject is not None:
             self.mobject.resume_updating()
 
-        # TODO: remove on_finish
-        self._on_finish(self.buffer)
         if self.remover:
             self.buffer.remove(self.mobject)
 
-    def create_starting_mobject(self) -> OpenGLMobject:
+    def create_starting_mobject(self) -> Mobject:
         # Keep track of where the mobject starts
         return self.mobject.copy()
 
-    def get_all_mobjects(self) -> Sequence[OpenGLMobject]:
+    def get_all_mobjects(self) -> Sequence[Mobject]:
         """Get all mobjects involved in the animation.
 
         Ordering must match the ordering of arguments to interpolate_submobject
@@ -299,7 +298,7 @@ class Animation(AnimationProtocol):
                     assert_never(op)
         buffer.clear()
 
-    def get_all_mobjects_to_update(self) -> Sequence[OpenGLMobject]:
+    def get_all_mobjects_to_update(self) -> Sequence[Mobject]:
         """Get all mobjects to be updated during the animation.
 
         Returns
@@ -342,8 +341,8 @@ class Animation(AnimationProtocol):
 
     def interpolate_submobject(
         self,
-        submobject: OpenGLMobject,
-        starting_submobject: OpenGLMobject,
+        submobject: Mobject,
+        starting_submobject: Mobject,
         # target_copy: Mobject, #Todo: fix - signature of interpolate_submobject differs in Transform().
         alpha: float,
     ) -> Animation:
@@ -515,16 +514,12 @@ def prepare_animation(anim: MobjectAnimation[M]) -> MobjectAnimation[M]: ...
 
 @overload
 def prepare_animation(
-    anim: AnimationProtocol
-    | opengl_mobject._AnimationBuilder
-    | opengl_mobject.OpenGLMobject,
+    anim: AnimationProtocol | _AnimationBuilder | Mobject,
 ) -> AnimationProtocol: ...
 
 
 def prepare_animation(
-    anim: AnimationProtocol
-    | opengl_mobject._AnimationBuilder
-    | opengl_mobject.OpenGLMobject,
+    anim: AnimationProtocol | _AnimationBuilder | Mobject,
 ) -> AnimationProtocol:
     r"""Returns either an unchanged animation, or the animation built
     from a passed animation factory.
@@ -552,7 +547,7 @@ def prepare_animation(
         TypeError: Object 42 cannot be converted to an animation
 
     """
-    if isinstance(anim, (mobject._AnimationBuilder, opengl_mobject._AnimationBuilder)):
+    if isinstance(anim, _AnimationBuilder):
         return anim.build()
 
     # if it has these three methods it probably is an AnimationProtocol

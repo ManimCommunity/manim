@@ -167,7 +167,7 @@ class OpenGLRenderer(Renderer, RendererProtocol):
             pixel_height if pixel_height is not None else config.pixel_height
         )
         self.samples = samples
-        if background_opacity:
+        if background_opacity is not None:
             background_color = background_color.opacity(background_opacity)
         self.background_color = background_color.to_rgba()
         self.background_image = background_image
@@ -294,7 +294,7 @@ class OpenGLRenderer(Renderer, RendererProtocol):
         format_ = gl.detect_format(self.render_texture_program, frame_data.dtype.names)
         vao = self.ctx.vertex_array(
             program=self.render_texture_program,
-            content=[(vbo, format_, *frame_data.dtype.names)],  # type: ignore
+            content=[(vbo, format_, *frame_data.dtype.names)],
         )
         self.ctx.copy_framebuffer(self.render_target_texture_fbo, self.color_buffer_fbo)
         self.render_target_texture.use(0)
@@ -343,9 +343,9 @@ class OpenGLRenderer(Renderer, RendererProtocol):
         self.render_target_fbo.use()
         # Setting camera uniforms
 
-        self.ctx.enable(gl.BLEND)  # type: ignore
+        self.ctx.enable(gl.BLEND)
         # TODO: Because the Triangulation is messing up the normals this won't work
-        self.ctx.blend_func = (  # type: ignore
+        self.ctx.blend_func = (
             gl.SRC_ALPHA,
             gl.ONE_MINUS_SRC_ALPHA,
             gl.ONE,
@@ -354,9 +354,9 @@ class OpenGLRenderer(Renderer, RendererProtocol):
 
         def enable_depth(sub):
             if sub.depth_test:
-                self.ctx.enable(gl.DEPTH_TEST)  # type: ignore
+                self.ctx.enable(gl.DEPTH_TEST)
             else:
-                self.ctx.disable(gl.DEPTH_TEST)  # type: ignore
+                self.ctx.disable(gl.DEPTH_TEST)
 
         for sub in mob.family_members_with_points():
             # TODO: review this renderer data optimization attempt
@@ -448,7 +448,7 @@ class OpenGLRenderer(Renderer, RendererProtocol):
         buf = np.frombuffer(raw, dtype=np.uint8).reshape((x, y, 4))
         # this actually has the right type (uint8) but due to
         # numpy typing being bad, we have to type: ignore it
-        return buf[::-1]  # type: ignore
+        return buf[::-1]
 
     def release(self) -> None:
         self.ctx.release()
@@ -509,7 +509,7 @@ class GLVMobjectManager:
         inner_verts = points[inner_vert_indices]
         inner_tri_indices = inner_vert_indices[
             earclip_triangulation(inner_verts, rings)
-        ]  # type: ignore
+        ]
 
         tri_indices = np.hstack([indices, inner_tri_indices])
         smob.triangulation = tri_indices

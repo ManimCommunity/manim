@@ -34,8 +34,8 @@ from typing import Any, Self
 from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.line import Line
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup as VGroup
 from manim.mobject.svg.svg_mobject import SVGMobject
-from manim.mobject.types.vectorized_mobject import VGroup
 from manim.utils.tex import TexTemplate
 from manim.utils.tex_file_writing import tex_to_svg_file
 

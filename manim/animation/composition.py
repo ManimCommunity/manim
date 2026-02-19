@@ -7,18 +7,19 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
-from manim._config import config
 from manim.animation.animation import Animation, prepare_animation
-from manim.constants import RendererType
-from manim.mobject.mobject import Group, Mobject
-from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLGroup as Group,
+)
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLMobject as Mobject,
+)
 from manim.utils.iterables import remove_list_redundancies
 from manim.utils.parameter_parsing import flatten_iterable_parameters
 from manim.utils.rate_functions import linear
 
 if TYPE_CHECKING:
-    from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup
-    from manim.mobject.types.vectorized_mobject import VGroup
+    from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup as VGroup
 
 __all__ = ["AnimationGroup", "Succession", "LaggedStart", "LaggedStartMap"]
 
@@ -53,7 +54,7 @@ class AnimationGroup(Animation):
     def __init__(
         self,
         *animations: Animation | Iterable[Animation],
-        group: Group | VGroup | OpenGLGroup | OpenGLVGroup | None = None,
+        group: Group | VGroup | None = None,
         run_time: float | None = None,
         rate_func: Callable[[float], float] = linear,
         lag_ratio: float = 0,
@@ -67,12 +68,7 @@ class AnimationGroup(Animation):
             mobjects = remove_list_redundancies(
                 [anim.mobject for anim in self.animations if not anim.introducer],
             )
-            if config["renderer"] == RendererType.OPENGL:
-                self.group: Group | VGroup | OpenGLGroup | OpenGLVGroup = OpenGLGroup(
-                    *mobjects
-                )
-            else:
-                self.group = Group(*mobjects)
+            self.group = Group(*mobjects)
         else:
             self.group = group
         super().__init__(
@@ -80,7 +76,7 @@ class AnimationGroup(Animation):
         )
         self.run_time: float = self.init_run_time(run_time)
 
-    def get_all_mobjects(self) -> Sequence[Mobject | OpenGLMobject]:
+    def get_all_mobjects(self) -> Sequence[Mobject]:
         return list(self.group)
 
     def begin(self) -> None:
@@ -113,7 +109,6 @@ class AnimationGroup(Animation):
 
         if self.suspend_mobject_updating:
             self.group.resume_updating()
-        self._on_finish(self.buffer)
 
     def update_mobjects(self, dt: float) -> None:
         for anim in self.anims_with_timings["anim"][

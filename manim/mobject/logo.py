@@ -11,7 +11,12 @@ import svgelements as se
 from manim.animation.updaters.update import UpdateFromAlphaFunc
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square, Triangle
-from manim.mobject.mobject import Mobject
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVGroup as VGroup,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVMobject as VMobject,
+)
 from manim.typing import Vector3D
 
 from .. import constants as cst
@@ -20,7 +25,6 @@ from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create, SpiralIn
 from ..animation.fading import FadeIn
 from ..mobject.svg.svg_mobject import VMobjectFromSVGPath
-from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.rate_functions import ease_in_out_cubic, smooth
 
 MANIM_SVG_PATHS: list[se.Path] = [
@@ -292,7 +296,7 @@ class ManimBanner(VGroup):
             elif direction == "left":
                 left_group.shift(-vector)
 
-        def slide_and_uncover(mob: Mobject, alpha: float) -> None:
+        def slide_and_uncover(mob: VMobject, alpha: float) -> None:
             shift(alpha * (m_shape_offset + shape_sliding_overshoot) * cst.RIGHT)
 
             # Add letters when they are covered
@@ -309,7 +313,7 @@ class ManimBanner(VGroup):
                 mob.shapes.save_state()
                 mob.M.save_state()
 
-        def slide_back(mob: Mobject, alpha: float) -> None:
+        def slide_back(mob: VMobject, alpha: float) -> None:
             if alpha == 0:
                 m_clone.set_opacity(1)
                 m_clone.move_to(mob.anim[-1])

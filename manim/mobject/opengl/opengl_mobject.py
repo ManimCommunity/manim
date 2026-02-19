@@ -41,6 +41,7 @@ from manim.event_handler.event_listener import EventListener
 from manim.event_handler.event_type import EventType
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
+from manim.utils.exceptions import MultiAnimationOverrideException
 
 # from ..utils.iterables import batch_by_property
 from manim.utils.iterables import (
@@ -171,6 +172,7 @@ class OpenGLMobject:
     """
 
     dim: int = 3
+    animation_overrides: dict[type[Animation], FunctionOverride] = {}
 
     # WARNING: when changing a parameter here, be sure to update the
     # TypedDict above so that autocomplete works for users
@@ -224,6 +226,9 @@ class OpenGLMobject:
     @classmethod
     def __init_subclass__(cls, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
+
+        cls.animation_overrides = {}
+        cls._add_intrinsic_animation_overrides()
         cls._original__init__ = cls.__init__
 
     def __str__(self) -> str:
@@ -318,15 +323,76 @@ class OpenGLMobject:
         # Typically implemented in subclass, unless purposefully left blank
         pass
 
-    def set_data(self, data: dict[str, Any]) -> Self:
-        for key in data:
-            self.data[key] = data[key].copy()
-        return self
+    @classmethod
+    def animation_override_for(
+        cls,
+        animation_class: type[Animation],
+    ) -> FunctionOverride | None:
+        """Returns the function defining a specific animation override for this class.
 
-    def set_uniforms(self, uniforms: dict[str, Any]) -> Self:
-        for key in uniforms:
-            self.uniforms[key] = uniforms[key]  # Copy?
-        return self
+        Parameters
+        ----------
+        animation_class
+            The animation class for which the override function should be returned.
+
+        Returns
+        -------
+        Optional[Callable[[Mobject, ...], Animation]]
+            The function returning the override animation or ``None`` if no such animation
+            override is defined.
+        """
+        if animation_class in cls.animation_overrides:
+            return cls.animation_overrides[animation_class]
+
+        return None
+
+    @classmethod
+    def _add_intrinsic_animation_overrides(cls) -> None:
+        """Initializes animation overrides marked with the :func:`~.override_animation`
+        decorator.
+        """
+        for method_name in dir(cls):
+            # Ignore dunder methods
+            if method_name.startswith("__"):
+                continue
+
+            method = getattr(cls, method_name)
+            if hasattr(method, "_override_animation"):
+                animation_class = method._override_animation
+                cls.add_animation_override(animation_class, method)
+
+    @classmethod
+    def add_animation_override(
+        cls,
+        animation_class: type[Animation],
+        override_func: FunctionOverride,
+    ) -> None:
+        """Add an animation override.
+
+        This does not apply to subclasses.
+
+        Parameters
+        ----------
+        animation_class
+            The animation type to be overridden
+        override_func
+            The function returning an animation replacing the default animation. It gets
+            passed the parameters given to the animation constructor.
+
+        Raises
+        ------
+        MultiAnimationOverrideException
+            If the overridden animation was already overridden.
+        """
+        if animation_class not in cls.animation_overrides:
+            cls.animation_overrides[animation_class] = override_func
+        else:
+            raise MultiAnimationOverrideException(
+                f"The animation {animation_class.__name__} for "
+                f"{cls.__name__} is overridden by more than one method: "
+                f"{cls.animation_overrides[animation_class].__qualname__} and "
+                f"{override_func.__qualname__}.",
+            )
 
     # https://github.com/python/typing/issues/802
     # so we hack around it by doing | Self
@@ -462,7 +528,8 @@ class OpenGLMobject:
             if mob.has_points():
                 arrs.append(mob.points)
             if works_on_bounding_box:
-                arrs.append(mob.get_bounding_box())
+                # copy=False is necessary in order to modify the mob box by reference
+                arrs.append(mob.get_bounding_box(copy=False))
 
             for arr in arrs:
                 if about_point is None:
@@ -645,10 +712,41 @@ class OpenGLMobject:
     def has_points(self):
         return self.get_num_points() > 0
 
-    def get_bounding_box(self) -> Point3D_Array:
+    def get_bounding_box(self, copy: bool = True) -> Point3D_Array:
+        """Get the bounding box of the Mobject, i.e. the smallest box in space containing
+        all the Mobject points. Specifically, it's an AABB (Axis-Aligned minimum
+        Bounding Box): a bounding box such that its edges are aligned to the X, Y and Z
+        axes. This box is calculated by taking the minimum and the maximum of the X, Y
+        and Z coordinates of all the Mobject points.
+
+        The bounding box is represented by a NumPy array of 3 points:
+
+        - The 1st point is the inner lower left corner of the box, i.e. the point where
+        the X, Y and Z coordinates are at their lowest value.
+        - The 2nd point is the center of the box, or the midpoint between the 1st and the
+        3rd points. It is included for convenience.
+        - The 3rd point is the outer upper right corner of the box, i.e. the point where
+        the X, Y and Z coordinates are at their highest value.
+
+        Parameters
+        ----------
+        copy
+            Whether to return a copy of the bounding box or not. Using `False` returns a
+            reference to the bounding box: this is more efficient and allows directly
+            modifying the Mobject box if necessary, but one must be cautious of not
+            modifying the box by accident, which can cause unexpected behavior. Using
+            `True` returns a copy of the box: this is safer to work with, but might be an
+            expensive computation if done too intensively. Default is `True`.
+
+        Returns
+        -------
+            A copy or a reference to this Mobject bounding box.
+        """
         if self.needs_new_bounding_box:
             self.bounding_box = self.compute_bounding_box()
             self.needs_new_bounding_box = False
+        if copy:
+            return self.bounding_box.copy()
         return self.bounding_box
 
     def compute_bounding_box(self) -> Point3D_Array:
@@ -656,7 +754,7 @@ class OpenGLMobject:
             [
                 self.points,
                 *(
-                    mob.get_bounding_box()
+                    mob.get_bounding_box(copy=False)
                     for mob in self.get_family()[1:]
                     if mob.has_points()
                 ),
@@ -682,7 +780,7 @@ class OpenGLMobject:
     def are_points_touching(
         self, points: Point3DLike_Array, buff: float = 0
     ) -> npt.NDArray[bool]:
-        bb = self.get_bounding_box()
+        bb = self.get_bounding_box(copy=False)
         mins = bb[0] - buff
         maxs = bb[2] + buff
         return ((points >= mins) * (points <= maxs)).all(1)
@@ -693,8 +791,8 @@ class OpenGLMobject:
         return self.are_points_touching(np.array(point, ndmin=2), buff)[0]
 
     def is_touching(self, mobject: OpenGLMobject, buff: float = 1e-2) -> bool:
-        bb1 = self.get_bounding_box()
-        bb2 = mobject.get_bounding_box()
+        bb1 = self.get_bounding_box(copy=False)
+        bb2 = mobject.get_bounding_box(copy=False)
         return not any(
             (
                 (
@@ -803,7 +901,7 @@ class OpenGLMobject:
                 error_message = (
                     f"Only values of type {mob_class.__name__} can be added "
                     f"as submobjects of {type(self).__name__}, but the value "
-                    f"{submob} (at index {i}) is of type "
+                    f"{repr(submob)} (at index {i}) is of type "
                     f"{type(submob).__name__}."
                 )
                 # Intended for subclasses such as VMobject, which
@@ -1194,23 +1292,23 @@ class OpenGLMobject:
                 alignments[i] = mapping[alignments[i]]
             return alignments
 
-        row_alignments = init_alignments(
+        row_alignments_seq: Sequence[Vector3D] = init_alignments(
             row_alignments,
             rows,
             {"u": UP, "c": ORIGIN, "d": DOWN},
             "row",
             RIGHT,
         )
-        col_alignments = init_alignments(
+        col_alignments_seq: Sequence[Vector3D] = init_alignments(
             col_alignments,
             cols,
             {"l": LEFT, "c": ORIGIN, "r": RIGHT},
             "col",
             UP,
         )
-        # Now row_alignment[r] + col_alignment[c] is the alignment in cell [r][c]
+        # Now row_alignments_seq[r] + col_alignment_seq[c] is the alignment in cell [r][c]
 
-        mapper = {
+        mapper: dict[str, Callable[[int, int], int]] = {
             "dr": lambda r, c: (rows - r - 1) + c * rows,
             "dl": lambda r, c: (rows - r - 1) + (cols - c - 1) * rows,
             "ur": lambda r, c: r + c * rows,
@@ -1221,10 +1319,11 @@ class OpenGLMobject:
             "lu": lambda r, c: r * cols + (cols - c - 1),
         }
         if flow_order not in mapper:
+            valid_flow_orders = ",".join([f'"{key}"' for key in mapper])
             raise ValueError(
-                'flow_order must be one of the following values: "dr", "rd", "ld" "dl", "ru", "ur", "lu", "ul".',
+                f"flow_order must be one of the following values: {valid_flow_orders}.",
             )
-        flow_order = mapper[flow_order]
+        flow_order_func = mapper[flow_order]
 
         # Reverse row_alignments and row_heights. Necessary since the
         # grid filling is handled bottom up for simplicity reasons.
@@ -1234,7 +1333,7 @@ class OpenGLMobject:
                 maybe_list.reverse()
                 return maybe_list
 
-        row_alignments = reverse(row_alignments)
+        row_alignments_seq = reverse(row_alignments_seq)
         row_heights = reverse(row_heights)
 
         placeholder = OpenGLMobject()
@@ -1243,7 +1342,7 @@ class OpenGLMobject:
         # properties of 0.
 
         mobs.extend([placeholder] * (rows * cols - len(mobs)))
-        grid = [[mobs[flow_order(r, c)] for c in range(cols)] for r in range(rows)]
+        grid = [[mobs[flow_order_func(r, c)] for c in range(cols)] for r in range(rows)]
 
         measured_heigths = [
             max(grid[r][c].height for c in range(cols)) for r in range(rows)
@@ -1259,18 +1358,19 @@ class OpenGLMobject:
             if len(sizes) != num:
                 raise ValueError(f"{name} has a mismatching size.")
             return [
-                sizes[i] if sizes[i] is not None else measures[i] for i in range(num)
+                size if (size := sizes[i]) is not None else measures[i]
+                for i in range(num)
             ]
 
         heights = init_sizes(row_heights, rows, measured_heigths, "row_heights")
         widths = init_sizes(col_widths, cols, measured_widths, "col_widths")
 
-        x, y = 0, 0
+        x, y = 0.0, 0.0
         for r in range(rows):
-            x = 0
+            x = 0.0
             for c in range(cols):
                 if grid[r][c] is not placeholder:
-                    alignment = row_alignments[r] + col_alignments[c]
+                    alignment = row_alignments_seq[r] + col_alignments_seq[c]
                     line = Line(
                         x * RIGHT + y * UP,
                         (x + widths[c]) * RIGHT + (y + heights[r]) * UP,
@@ -2385,7 +2485,7 @@ class OpenGLMobject:
     # Getters
 
     def get_bounding_box_point(self, direction: Vector3DLike) -> Point3D:
-        bb = self.get_bounding_box()
+        bb = self.get_bounding_box(copy=False)
         indices = (np.sign(direction) + 1).astype(int)
         return np.array([bb[indices[i]][i] for i in range(3)])
 
@@ -2398,7 +2498,7 @@ class OpenGLMobject:
         return self.get_bounding_box_point(direction)
 
     def get_all_corners(self):
-        bb = self.get_bounding_box()
+        bb = self.get_bounding_box(copy=False)
         return np.array(
             [
                 [bb[indices[-i + 1]][i] for i in range(3)]
@@ -2406,23 +2506,39 @@ class OpenGLMobject:
             ]
         )
 
-    def get_center(self) -> np.ndarray:
-        """Get center coordinates."""
-        return self.get_bounding_box()[1].copy()
+    def get_center(self, copy: bool = True) -> Point3D:
+        """Get the center coordinates of this Mobject.
+
+        Parameters
+        ----------
+        copy
+            Whether to return a copy of the center or not. Using `False` returns a
+            reference to the underlying bounding box of the Mobject: this is more
+            efficient, but one must be cautious not to perform indexed assignments into
+            the center such as ``center[0] = 1`` or ``center[:] = [1, 2, 3]``, which will
+            modify the bounding box and might cause unexpected behavior. Using `True`
+            returns a copy of the center: this is safer to work with, but might be an
+            expensive computation if done too intensively. Default is `True`.
+
+        Returns
+        -------
+            The center point of this Mobject.
+        """
+        return self.get_bounding_box(copy=copy)[1]
 
     def get_center_of_mass(self):
         return self.get_all_points().mean(0)
 
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
         all_points = self.get_all_points()
-        boundary_directions = all_points - self.get_center()
+        boundary_directions = all_points - self.get_center(copy=False)
         norms = np.linalg.norm(boundary_directions, axis=1)
         boundary_directions /= np.repeat(norms, 3).reshape((len(norms), 3))
         index = np.argmax(np.dot(boundary_directions, direction))
         return all_points[index]
 
     def get_continuous_bounding_box_point(self, direction: Vector3DLike) -> Point3D:
-        _dl, center, ur = self.get_bounding_box()
+        _dl, center, ur = self.get_bounding_box(copy=False)
         corner_vect = ur - center
         np_direction = np.asarray(direction)
         return center + np_direction / np.max(
@@ -2461,7 +2577,7 @@ class OpenGLMobject:
         return self.get_edge_center(IN)
 
     def length_over_dim(self, dim):
-        bb = self.get_bounding_box()
+        bb = self.get_bounding_box(copy=False)
         rv: float = abs((bb[2] - bb[0])[dim])
         return rv
 
@@ -2835,7 +2951,7 @@ class OpenGLMobject:
     def has_same_shape_as(self, mobject: OpenGLMobject) -> bool:
         # Normalize both point sets by centering and making height 1
         points1, points2 = (
-            (m.get_all_points() - m.get_center()) / m.get_height()
+            (m.get_all_points() - m.get_center(copy=False)) / m.get_height()
             for m in (self, mobject)
         )
         if len(points1) != len(points2):
@@ -2850,7 +2966,7 @@ class OpenGLMobject:
     def fix_orientation(self) -> Self:
         for mob in self.get_family():
             mob.is_fixed_orientation = 1.0
-            mob.fixed_orientation_center = tuple(self.get_center())
+            mob.fixed_orientation_center = tuple(self.get_center(copy=False))
         return self
 
     def unfix_from_frame(self) -> Self:

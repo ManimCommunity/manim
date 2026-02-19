@@ -89,7 +89,6 @@ if TYPE_CHECKING:
 
 from manim.constants import RIGHT, TAU
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject as VMobject
 from manim.utils.color import ManimColor
 from manim.utils.space_ops import rotate_vector
@@ -97,8 +96,12 @@ from manim.utils.space_ops import rotate_vector
 from .. import config
 from ..animation.animation import Animation
 from ..animation.composition import Succession
-from ..mobject.mobject import Group
-from ..mobject.opengl.opengl_mobject import OpenGLMobject
+from ..mobject.opengl.opengl_mobject import (
+    OpenGLGroup as Group,
+)
+from ..mobject.opengl.opengl_mobject import (
+    OpenGLMobject as Mobject,
+)
 from ..utils.bezier import integer_interpolate
 from ..utils.rate_functions import double_smooth, linear
 
@@ -117,11 +120,7 @@ class ShowPartial(Animation):
 
     """
 
-    def __init__(
-        self,
-        mobject: VMobject | OpenGLVMobject | OpenGLSurface | None,
-        **kwargs,
-    ):
+    def __init__(self, mobject: VMobject | OpenGLSurface | None, **kwargs: Any):
         pointwise = getattr(mobject, "pointwise_become_partial", None)
         if not callable(pointwise):
             raise TypeError(f"{self.__class__.__name__} only works for VMobjects.")
@@ -129,8 +128,8 @@ class ShowPartial(Animation):
 
     def interpolate_submobject(
         self,
-        submobject: OpenGLMobject,
-        starting_submobject: OpenGLMobject,
+        submobject: Mobject,
+        starting_submobject: Mobject,
         alpha: float,
     ) -> Self:
         submobject.pointwise_become_partial(
@@ -171,7 +170,7 @@ class Create(ShowPartial):
 
     def __init__(
         self,
-        mobject: VMobject | OpenGLVMobject | OpenGLSurface,
+        mobject: VMobject | OpenGLSurface,
         lag_ratio: float = 1.0,
         introducer: bool = True,
         **kwargs,
@@ -201,7 +200,7 @@ class Uncreate(Create):
 
     def __init__(
         self,
-        mobject: VMobject | OpenGLVMobject,
+        mobject: VMobject,
         reverse_rate_function: bool = True,
         remover: bool = True,
         **kwargs,
@@ -229,7 +228,7 @@ class DrawBorderThenFill(Animation):
 
     def __init__(
         self,
-        vmobject: VMobject | OpenGLVMobject,
+        vmobject: VMobject,
         run_time: float = 2,
         rate_func: Callable[[float], float] = double_smooth,
         stroke_width: float = 2,
@@ -251,8 +250,8 @@ class DrawBorderThenFill(Animation):
         self.stroke_color = stroke_color
         self.outline = self.get_outline()
 
-    def _typecheck_input(self, vmobject: OpenGLVMobject) -> None:
-        if not isinstance(vmobject, OpenGLVMobject):
+    def _typecheck_input(self, vmobject: VMobject) -> None:
+        if not isinstance(vmobject, VMobject):
             raise TypeError(
                 f"{self.__class__.__name__} only works for vectorized Mobjects"
             )
@@ -263,28 +262,28 @@ class DrawBorderThenFill(Animation):
         self.outline = self.get_outline()
         super().begin()
 
-    def get_outline(self) -> OpenGLMobject:
+    def get_outline(self) -> Mobject:
         outline = self.mobject.copy()
         outline.set_fill(opacity=0)
         for sm in outline.family_members_with_points():
             sm.set_stroke(color=self.get_stroke_color(sm), width=self.stroke_width)
         return outline
 
-    def get_stroke_color(self, vmobject: VMobject | OpenGLVMobject) -> ManimColor:
+    def get_stroke_color(self, vmobject: VMobject) -> ManimColor:
         if self.stroke_color:
             return self.stroke_color
         elif vmobject.get_stroke_width() > 0:
             return vmobject.get_stroke_color()
         return vmobject.get_color()
 
-    def get_all_mobjects(self) -> Sequence[OpenGLMobject]:
+    def get_all_mobjects(self) -> Sequence[Mobject]:
         return [*super().get_all_mobjects(), self.outline]
 
     def interpolate_submobject(
         self,
-        submobject: OpenGLMobject,
-        starting_submobject: OpenGLMobject,
-        outline: OpenGLMobject,
+        submobject: Mobject,
+        starting_submobject: Mobject,
+        outline: Mobject,
         alpha: float,
     ) -> None:
         index: int
@@ -326,7 +325,7 @@ class Write(DrawBorderThenFill):
 
     def __init__(
         self,
-        vmobject: VMobject | OpenGLVMobject,
+        vmobject: VMobject,
         rate_func: Callable[[float], float] = linear,
         reverse: bool = False,
         run_time: float | None = None,
@@ -352,7 +351,7 @@ class Write(DrawBorderThenFill):
 
     def _set_default_config_from_length(
         self,
-        vmobject: VMobject | OpenGLVMobject,
+        vmobject: VMobject,
         run_time: float | None,
         lag_ratio: float | None,
     ) -> tuple[float, float]:
@@ -456,7 +455,7 @@ class SpiralIn(Animation):
 
     def __init__(
         self,
-        shapes: OpenGLMobject,
+        shapes: Mobject,
         scale_factor: float = 8,
         fade_in_fraction: float = 0.3,
         **kwargs: Any,
@@ -515,7 +514,7 @@ class ShowIncreasingSubsets(Animation):
 
     def __init__(
         self,
-        group: OpenGLMobject,
+        group: Mobject,
         suspend_mobject_updating: bool = False,
         int_func: Callable[[np.ndarray], np.ndarray] = np.floor,
         reverse_rate_function=False,
@@ -643,7 +642,7 @@ class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
 
     def __init__(
         self,
-        group: Iterable[OpenGLMobject],
+        group: Iterable[Mobject],
         int_func: Callable[[np.ndarray], np.ndarray] = np.ceil,
         **kwargs,
     ) -> None:
@@ -728,7 +727,7 @@ class TypeWithCursor(AddTextLetterByLetter):
     def __init__(
         self,
         text: Text,
-        cursor: OpenGLMobject,
+        cursor: Mobject,
         buff: float = 0.1,
         keep_cursor_y: bool = True,
         leave_cursor_on: bool = True,

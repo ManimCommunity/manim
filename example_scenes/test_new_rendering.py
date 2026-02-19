@@ -46,8 +46,21 @@ class Test(Scene):
         self.play(Unwrite(banner))
 
     @group
-    def never_run(self) -> None:
-        self.play(Write(Text("This should never be run")))
+    def graph(self):
+        vertices = [1, 2, 3]
+        edges = [(1, 2), (2, 3), (3, 1)]
+        graph = Graph(vertices, edges, layout="circular")
+        self.play(Create(graph))
+        self.play(
+            graph.animate.add_vertices(
+                4,
+                5,
+                vertex_config={4: {"fill_color": RED}, 5: {"fill_color": RED}},
+                positions={4: [2, 1, 0], 5: [2, -1, 0]},
+            )
+        )
+        self.wait(1)
+        self.play(Uncreate(graph))
 
 
 if __name__ == "__main__":

@@ -2,8 +2,10 @@ from __future__ import annotations
 
 import itertools as it
 import operator as op
+import sys
+from collections.abc import Callable, Hashable, Iterable, Sequence
 from functools import reduce
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 from typing_extensions import Unpack
@@ -31,6 +33,7 @@ from manim.utils.deprecation import deprecated
 from manim.utils.iterables import (
     listify,
     make_even,
+    tuplify,
 )
 from manim.utils.space_ops import (
     angle_between_vectors,
@@ -40,16 +43,28 @@ from manim.utils.space_ops import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterable, Sequence
     from typing import Self
 
     import numpy.typing as npt
 
-    from manim.typing import Point3D, Point3DLike, Point3DLike_Array
+    from manim.typing import (
+        MappingFunction,
+        Point3D,
+        Point3D_Array,
+        Point3DLike,
+        Point3DLike_Array,
+        QuadraticBezierPath,
+        QuadraticBezierPathLike,
+        QuadraticBezierPoints,
+        QuadraticBezierPoints_Array,
+        QuadraticSpline,
+        Vector3D,
+    )
 
 __all__ = [
     "OpenGLVMobject",
     "OpenGLVGroup",
+    "OpenGLVDict",
     "OpenGLVectorizedPoint",
     "OpenGLCurvesAsSubmobjects",
     "OpenGLDashedVMobject",
@@ -112,6 +127,10 @@ class OpenGLVMobject(OpenGLMobject):
 
         self.needs_new_triangulation = True
         self.triangulation = np.zeros(0, dtype="i4")
+
+        self._bezier_t_values: npt.NDArray[float] = np.linspace(
+            0, 1, self.n_points_per_curve
+        )
 
         super().__init__(**kwargs)
         if fill_color is None:
@@ -379,22 +398,27 @@ class OpenGLVMobject(OpenGLMobject):
 
     def set_flat_stroke(self, flat_stroke: bool = True, recurse: bool = True):
         for mob in self.get_family(recurse):
-            mob.uniforms["flat_stroke"] = float(flat_stroke)
+            mob.flat_stroke = flat_stroke
         return self
 
     def get_flat_stroke(self) -> bool:
-        return self.uniforms["flat_stroke"] == 1.0
+        return self.flat_stroke
 
     def set_joint_type(self, joint_type: LineJointType, recurse: bool = True):
         for mob in self.get_family(recurse):
-            mob.uniforms["joint_type"] = float(joint_type.value)
+            mob.joint_type = joint_type
         return self
 
     def get_joint_type(self) -> LineJointType:
-        return LineJointType(int(self.uniforms["joint_type"]))
+        return self.joint_type
 
     # Points
-    def set_anchors_and_handles(self, anchors1, handles, anchors2):
+    def set_anchors_and_handles(
+        self,
+        anchors1: Point3DLike_Array,
+        handles: Point3DLike_Array,
+        anchors2: Point3DLike_Array,
+    ) -> Self:
         assert len(anchors1) == len(handles) == len(anchors2)
         nppc = self.n_points_per_curve
         new_points = np.zeros((nppc * len(anchors1), self.dim))
@@ -404,7 +428,7 @@ class OpenGLVMobject(OpenGLMobject):
         self.set_points(new_points)
         return self
 
-    def start_new_path(self, point):
+    def start_new_path(self, point: Point3DLike) -> Self:
         assert self.get_num_points() % self.n_points_per_curve == 0
         self.append_points([point])
         return self
@@ -415,7 +439,7 @@ class OpenGLVMobject(OpenGLMobject):
         handle1: Point3DLike,
         handle2: Point3DLike,
         anchor2: Point3DLike,
-    ):
+    ) -> Self:
         new_points = get_quadratic_approximation_of_cubic(
             anchor1,
             handle1,
@@ -423,8 +447,14 @@ class OpenGLVMobject(OpenGLMobject):
             anchor2,
         )
         self.append_points(new_points)
+        return self
 
-    def add_cubic_bezier_curve_to(self, handle1, handle2, anchor):
+    def add_cubic_bezier_curve_to(
+        self,
+        handle1: Point3DLike,
+        handle2: Point3DLike,
+        anchor: Point3DLike,
+    ) -> Self:
         """Add cubic bezier curve to the path."""
         self.throw_error_if_no_points()
         quadratic_approx = get_quadratic_approximation_of_cubic(
@@ -437,15 +467,19 @@ class OpenGLVMobject(OpenGLMobject):
             self.append_points(quadratic_approx[1:])
         else:
             self.append_points(quadratic_approx)
+        return self
 
-    def add_quadratic_bezier_curve_to(self, handle, anchor):
+    def add_quadratic_bezier_curve_to(
+        self, handle: Point3DLike, anchor: Point3DLike
+    ) -> Self:
         self.throw_error_if_no_points()
         if self.has_new_path_started():
             self.append_points([handle, anchor])
         else:
             self.append_points([self.get_last_point(), handle, anchor])
+        return self
 
-    def add_line_to(self, point: Sequence[float] | npt.NDArray[float]) -> Self:
+    def add_line_to(self, point: Point3DLike) -> Self:
         """Add a straight line from the last point of OpenGLVMobject to the given point.
 
         Parameters
@@ -456,23 +490,23 @@ class OpenGLVMobject(OpenGLMobject):
         """
         point = np.asarray(point)
         if not self.has_points():
-            self.points = np.array([point])
+            self.set_points([point])
             return self
         end = self.points[-1]
         alphas = np.linspace(0, 1, self.n_points_per_curve)
         if self.long_lines:
             halfway = interpolate(end, point, 0.5)
-            points = [interpolate(end, halfway, a) for a in alphas] + [
-                interpolate(halfway, point, a) for a in alphas
+            points = [interpolate(end, halfway, t) for t in self._bezier_t_values] + [
+                interpolate(halfway, point, t) for t in self._bezier_t_values
             ]
         else:
-            points = [interpolate(end, point, a) for a in alphas]
+            points = [interpolate(end, point, t) for t in self._bezier_t_values]
         if self.has_new_path_started():
             points = points[1:]
         self.append_points(points)
         return self
 
-    def add_smooth_curve_to(self, point):
+    def add_smooth_curve_to(self, point: Point3DLike) -> Self:
         if self.has_new_path_started():
             self.add_line_to(point)
         else:
@@ -481,7 +515,9 @@ class OpenGLVMobject(OpenGLMobject):
             self.add_quadratic_bezier_curve_to(new_handle, point)
         return self
 
-    def add_smooth_cubic_curve_to(self, handle: np.ndarray, point: np.ndarray):
+    def add_smooth_cubic_curve_to(
+        self, handle: Point3DLike, point: Point3DLike
+    ) -> Self:
         self.throw_error_if_no_points()
         if self.get_num_points() == 1:
             new_handle = self.points[-1]
@@ -489,49 +525,101 @@ class OpenGLVMobject(OpenGLMobject):
             new_handle = self.get_reflection_of_last_handle()
         self.add_cubic_bezier_curve_to(new_handle, handle, point)
 
-    def has_new_path_started(self):
+    def has_new_path_started(self) -> bool:
         return self.get_num_points() % self.n_points_per_curve == 1
 
-    def get_last_point(self):
+    def get_last_point(self) -> Point3D:
         return self.points[-1]
 
-    def get_reflection_of_last_handle(self):
+    def get_reflection_of_last_handle(self) -> Point3D:
         points = self.points
         return 2 * points[-1] - points[-2]
 
-    def close_path(self):
+    def close_path(self) -> Self:
         if not self.is_closed():
             self.add_line_to(self.get_subpaths()[-1][0])
+        return self
 
-    def is_closed(self):
+    def is_closed(self) -> bool:
         return self.consider_points_equals(self.points[0], self.points[-1])
 
-    def subdivide_sharp_curves(self, angle_threshold=30 * DEGREES, recurse=True):
+    def subdivide_sharp_curves(
+        self, angle_threshold: float = 30 * DEGREES, recurse: bool = True
+    ) -> Self:
+        nppc = self.n_points_per_curve
         vmobs = [vm for vm in self.get_family(recurse=recurse) if vm.has_points()]
         for vmob in vmobs:
-            new_points = []
-            for tup in vmob.get_bezier_tuples():
+            bezier_tuples = vmob.get_bezier_tuples()
+            num_curves_per_tuple = [1] * len(bezier_tuples)
+            for i, tup in enumerate(bezier_tuples):
                 angle = angle_between_vectors(tup[1] - tup[0], tup[2] - tup[1])
                 if angle > angle_threshold:
-                    n = int(np.ceil(angle / angle_threshold))
-                    alphas = np.linspace(0, 1, n + 1)
-                    new_points.extend(
-                        [
-                            partial_bezier_points(tup, a1, a2)
-                            for a1, a2 in zip(alphas, alphas[1:], strict=False)
-                        ],
-                    )
+                    num_curves_per_tuple[i] = int(np.ceil(angle / angle_threshold))
+            total_curves = sum(num_curves_per_tuple)
+
+            new_points = np.empty((total_curves * nppc, self.dim))
+            start = 0
+            for i, tup in enumerate(bezier_tuples):
+                n = num_curves_per_tuple[i]
+                if n == 1:
+                    new_points[start * nppc : (start + 1) * nppc] = tup
                 else:
-                    new_points.append(tup)
-            vmob.set_points(np.vstack(new_points))
+                    alphas = np.linspace(0, 1, n + 1)
+                    for j in range(n):
+                        partial = partial_bezier_points(tup, alphas[j], alphas[j + 1])
+                        new_points[(start + j) * nppc : (start + j + 1) * nppc] = (
+                            partial
+                        )
+                start += n
+
+            vmob.set_points(new_points)
         return self
 
-    def add_points_as_corners(self, points):
-        for point in points:
-            self.add_line_to(point)
+    def add_points_as_corners(self, points: Point3DLike_Array) -> Self:
+        """Append multiple straight lines at the end of
+        :attr:`VMobject.points`, which connect the given ``points`` in order
+        starting from the end of the current path. These ``points`` would be
+        therefore the corners of the new polyline appended to the path.
+
+        Parameters
+        ----------
+        points
+            An array of 3D points representing the corners of the polyline to
+            append to :attr:`VMobject.points`.
+
+        Returns
+        -------
+        :class:`VMobject`
+            The VMobject itself, after appending the straight lines to its
+            path.
+        """
+        self.throw_error_if_no_points()
+
+        points = np.asarray(points).reshape(-1, self.dim)
+        num_points = points.shape[0]
+        if num_points == 0:
+            return self
+
+        start_corners = np.empty((num_points, self.dim))
+        start_corners[0] = self.points[-1]
+        start_corners[1:] = points[:-1]
+        end_corners = points
+
+        if self.has_new_path_started():
+            # Remove the last point from the new path
+            self.points = self.points[:-1]
+
+        nppc = self.n_points_per_curve
+        new_points = np.empty((nppc * start_corners.shape[0], self.dim))
+        new_points[::nppc] = start_corners
+        new_points[nppc - 1 :: nppc] = end_corners
+        for i, t in enumerate(self._bezier_t_values):
+            new_points[i::nppc] = interpolate(start_corners, end_corners, t)
+
+        self.append_points(new_points)
         return self
 
-    def set_points_as_corners(self, points: Point3DLike_Array) -> OpenGLVMobject:
+    def set_points_as_corners(self, points: Point3DLike_Array) -> Self:
         """Given an array of points, set them as corner of the vmobject.
 
         To achieve that, this algorithm sets handles aligned with the anchors such that the resultant bezier curve will be the segment
@@ -547,10 +635,9 @@ class OpenGLVMobject(OpenGLMobject):
         OpenGLVMobject
             self. For chaining purposes.
         """
-        nppc = self.n_points_per_curve
-        points = np.array(points)
+        points = np.asarray(points)
         self.set_anchors_and_handles(
-            *(interpolate(points[:-1], points[1:], a) for a in np.linspace(0, 1, nppc))
+            *(interpolate(points[:-1], points[1:], t) for t in self._bezier_t_values)
         )
         return self
 
@@ -576,7 +663,10 @@ class OpenGLVMobject(OpenGLMobject):
         OpenGLVMobject
             For chaining purposes.
         """
-        assert mode in ("jagged", "approx_smooth", "true_smooth")
+        assert (
+            mode in ("jagged", "approx_smooth", "true_smooth"),
+            'mode must be either "jagged", "approx_smooth" or "smooth"',
+        )
         nppc = self.n_points_per_curve
         for submob in self.family_members_with_points():
             subpaths = submob.get_subpaths()
@@ -600,7 +690,7 @@ class OpenGLVMobject(OpenGLMobject):
             # submob.refresh_triangulation()
         return self
 
-    def make_smooth(self):
+    def make_smooth(self) -> Self:
         """
         This will double the number of points in the mobject,
         so should not be called repeatedly.  It also means
@@ -610,7 +700,7 @@ class OpenGLVMobject(OpenGLMobject):
         self.change_anchor_mode("true_smooth")
         return self
 
-    def make_approximately_smooth(self):
+    def make_approximately_smooth(self) -> Self:
         """
         Unlike make_smooth, this will not change the number of
         points, but it also does not result in a perfectly smooth
@@ -621,30 +711,28 @@ class OpenGLVMobject(OpenGLMobject):
         self.change_anchor_mode("approx_smooth")
         return self
 
-    def make_jagged(self):
+    def make_jagged(self) -> Self:
         self.change_anchor_mode("jagged")
         return self
 
-    def add_subpath(self, points):
+    def add_subpath(self, points: QuadraticBezierPathLike) -> Self:
         assert len(points) % self.n_points_per_curve == 0
         self.append_points(points)
         return self
 
-    def append_vectorized_mobject(self, vectorized_mobject):
-        new_points = list(vectorized_mobject.points)
-
+    def append_vectorized_mobject(self, vectorized_mobject: OpenGLVMobject) -> Self:
         if self.has_new_path_started():
             # Remove last point, which is starting
             # a new path
             self.points = self.points[:-1]
-        self.append_points(new_points)
+        self.append_points(vectorized_mobject.points)
         return self
 
-    def consider_points_equals(self, p0, p1):
+    def consider_points_equals(self, p0: Point3DLike, p1: Point3DLike) -> bool:
         return np.linalg.norm(p1 - p0) < self.tolerance_for_point_equality
 
     # Information about the curve
-    def force_direction(self, target_direction: str):
+    def force_direction(self, target_direction: str) -> Self:
         """Makes sure that points are either directed clockwise or
         counterclockwise.
 
@@ -661,7 +749,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         return self
 
-    def reverse_direction(self):
+    def reverse_direction(self) -> Self:
         """Reverts the point direction by inverting the point order.
 
         Returns
@@ -686,16 +774,20 @@ class OpenGLVMobject(OpenGLMobject):
         self.set_points(self.points[::-1])
         return self
 
-    def get_bezier_tuples_from_points(self, points):
+    def get_bezier_tuples_from_points(
+        self, points: Point3DLike_Array
+    ) -> QuadraticBezierPoints_Array:
         nppc = self.n_points_per_curve
         remainder = len(points) % nppc
         points = points[: len(points) - remainder]
         return points.reshape((-1, nppc, 3))
 
-    def get_bezier_tuples(self):
+    def get_bezier_tuples(self) -> QuadraticBezierPoints_Array:
         return self.get_bezier_tuples_from_points(self.points)
 
-    def get_subpaths_from_points(self, points):
+    def get_subpaths_from_points(
+        self, points: Point3DLike_Array
+    ) -> list[QuadraticSpline]:
         nppc = self.n_points_per_curve
         diffs = points[nppc - 1 : -1 : nppc] - points[nppc::nppc]
         splits = (diffs * diffs).sum(1) > self.tolerance_for_point_equality
@@ -708,11 +800,11 @@ class OpenGLVMobject(OpenGLMobject):
         split_indices = [0, *split_indices, len(points)]
         return [
             points[i1:i2]
-            for i1, i2 in zip(split_indices, split_indices[1:], strict=False)
+            for i1, i2 in zip(split_indices[:-1], split_indices[1:], strict=True)
             if (i2 - i1) >= nppc
         ]
 
-    def get_subpaths(self):
+    def get_subpaths(self) -> list[QuadraticSpline]:
         """Returns subpaths formed by the curves of the OpenGLVMobject.
 
         Subpaths are ranges of curves with each pair of consecutive
@@ -725,7 +817,7 @@ class OpenGLVMobject(OpenGLMobject):
         """
         return self.get_subpaths_from_points(self.points)
 
-    def get_nth_curve_points(self, n: int) -> np.ndarray:
+    def get_nth_curve_points(self, n: int) -> QuadraticBezierPoints:
         """Returns the points defining the nth curve of the vmobject.
 
         Parameters
@@ -742,7 +834,7 @@ class OpenGLVMobject(OpenGLMobject):
         nppc = self.n_points_per_curve
         return self.points[nppc * n : nppc * (n + 1)]
 
-    def get_nth_curve_function(self, n: int) -> Callable[[float], np.ndarray]:
+    def get_nth_curve_function(self, n: int) -> Callable[[float], Point3D]:
         """Returns the expression of the nth curve.
 
         Parameters
@@ -752,7 +844,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Returns
         -------
-        typing.Callable[float]
+        Callable[float]
             expression of the nth bezier curve.
         """
         return bezier(self.get_nth_curve_points(n))
@@ -761,7 +853,7 @@ class OpenGLVMobject(OpenGLMobject):
         self,
         n: int,
         sample_points: int | None = None,
-    ) -> tuple[Callable[[float], np.ndarray], float]:
+    ) -> tuple[Callable[[float], Point3D], float]:
         """Returns the expression of the nth curve along with its (approximate) length.
 
         Parameters
@@ -773,7 +865,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Returns
         -------
-        curve : Callable[[float], np.ndarray]
+        curve : Callable[[float], Point3D]
             The function for the nth curve.
         length : :class:`float`
             The length of the nth curve.
@@ -798,7 +890,7 @@ class OpenGLVMobject(OpenGLMobject):
         """
         return self.get_num_points() // self.n_points_per_curve
 
-    def quick_point_from_proportion(self, alpha: float) -> np.ndarray:
+    def quick_point_from_proportion(self, alpha: float) -> Point3D:
         # Assumes all curves have the same length, so is inaccurate
         num_curves = self.get_num_curves()
         n, residue = integer_interpolate(0, num_curves, alpha)
@@ -830,12 +922,12 @@ class OpenGLVMobject(OpenGLMobject):
 
     def get_curve_functions(
         self,
-    ) -> Iterable[Callable[[float], np.ndarray]]:
+    ) -> Iterable[Callable[[float], Point3D]]:
         """Gets the functions for the curves of the mobject.
 
         Returns
         -------
-        Iterable[Callable[[float], np.ndarray]]
+        Iterable[Callable[[float], Point3D]]
             The functions for the curves.
         """
         num_curves = self.get_num_curves()
@@ -873,8 +965,8 @@ class OpenGLVMobject(OpenGLMobject):
         return norms
 
     def get_curve_functions_with_lengths(
-        self, **kwargs
-    ) -> Iterable[tuple[Callable[[float], np.ndarray], float]]:
+        self, **kwargs: Any
+    ) -> Iterable[tuple[Callable[[float], Point3D], float]]:
         """Gets the functions and lengths of the curves for the mobject.
 
         Parameters
@@ -993,7 +1085,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         return alpha
 
-    def get_anchors_and_handles(self) -> Iterable[np.ndarray]:
+    def get_anchors_and_handles(self) -> list[Point3D_Array]:
         """
         Returns anchors1, handles, anchors2,
         where (anchors1[i], handles[i], anchors2[i])
@@ -1004,7 +1096,7 @@ class OpenGLVMobject(OpenGLMobject):
         points = self.points
         return [points[i::nppc] for i in range(nppc)]
 
-    def get_start_anchors(self) -> np.ndarray:
+    def get_start_anchors(self) -> Point3D_Array:
         """Returns the start anchors of the bezier curves.
 
         Returns
@@ -1014,7 +1106,7 @@ class OpenGLVMobject(OpenGLMobject):
         """
         return self.points[0 :: self.n_points_per_curve]
 
-    def get_end_anchors(self) -> np.ndarray:
+    def get_end_anchors(self) -> Point3D_Array:
         """Return the starting anchors of the bezier curves.
 
         Returns
@@ -1025,12 +1117,12 @@ class OpenGLVMobject(OpenGLMobject):
         nppc = self.n_points_per_curve
         return self.points[nppc - 1 :: nppc]
 
-    def get_anchors(self) -> Iterable[np.ndarray]:
+    def get_anchors(self) -> list[Point3D]:
         """Returns the anchors of the curves forming the OpenGLVMobject.
 
         Returns
         -------
-        Iterable[np.ndarray]
+        list[Point3D]
             The anchors.
         """
         points = self.points
@@ -1041,7 +1133,7 @@ class OpenGLVMobject(OpenGLMobject):
         e = self.get_end_anchors()
         return list(it.chain.from_iterable(zip(s, e, strict=False)))
 
-    def get_points_without_null_curves(self, atol=1e-9):
+    def get_points_without_null_curves(self, atol: float = 1e-9) -> Point3D_Array:
         nppc = self.n_points_per_curve
         points = self.points
         distinct_curves = reduce(
@@ -1076,7 +1168,7 @@ class OpenGLVMobject(OpenGLMobject):
         norms = np.array([get_norm(d) for d in diffs])
         return norms.sum()
 
-    def get_area_vector(self):
+    def get_area_vector(self) -> Vector3D:
         # Returns a vector whose length is the area bound by
         # the polygon formed by the anchor points, pointing
         # in a direction perpendicular to the polygon according
@@ -1109,7 +1201,7 @@ class OpenGLVMobject(OpenGLMobject):
             ],
         )
 
-    def get_direction(self):
+    def get_direction(self) -> Literal["CW", "CCW"]:
         """Uses :func:`~.space_ops.shoelace_direction` to calculate the direction.
         The direction of points determines in which direction the
         object is drawn, clockwise or counterclockwise.
@@ -1129,7 +1221,7 @@ class OpenGLVMobject(OpenGLMobject):
         """
         return shoelace_direction(self.get_start_anchors())
 
-    def get_unit_normal(self) -> np.ndarray:
+    def get_unit_normal(self) -> Vector3D:
         if self.get_num_points() < 3:
             return OUT
 
@@ -1159,7 +1251,7 @@ class OpenGLVMobject(OpenGLMobject):
             # If there's only one point, turn it into
             # a null curve
             if mob.has_new_path_started():
-                mob.add_line_to(mob.points[0])
+                mob.add_line_to(mob.get_last_point())
 
         # Figure out what the subpaths are, and align
         subpaths1 = self.get_subpaths()
@@ -1171,10 +1263,12 @@ class OpenGLVMobject(OpenGLMobject):
 
         nppc = self.n_points_per_curve
 
-        def get_nth_subpath(path_list, n):
+        def get_nth_subpath(
+            path_list: list[QuadraticSpline], n: int
+        ) -> QuadraticSpline:
             if n >= len(path_list):
                 # Create a null path at the very end
-                return [path_list[-1][-1]] * nppc
+                return np.array([path_list[-1][-1]] * nppc)
             path = path_list[n]
             # # Check for useless points at the end of the path and remove them
             # # https://github.com/ManimCommunity/manim/issues/1959
@@ -1199,7 +1293,7 @@ class OpenGLVMobject(OpenGLMobject):
         vmobject.set_points(np.vstack(new_subpaths2))
         return self
 
-    def insert_n_curves(self, n: int, recurse=True) -> Self:
+    def insert_n_curves(self, n: int, recurse: bool = True) -> Self:
         """Inserts n curves to the bezier curves of the vmobject.
 
         Parameters
@@ -1221,7 +1315,9 @@ class OpenGLVMobject(OpenGLMobject):
                 mob.set_points(new_points)
         return self
 
-    def insert_n_curves_to_point_list(self, n: int, points: np.ndarray) -> np.ndarray:
+    def insert_n_curves_to_point_list(
+        self, n: int, points: QuadraticBezierPathLike
+    ) -> QuadraticBezierPath:
         """Given an array of 3k points defining a Bézier curve (anchors and
         handles), return 3(k+n) points defining exactly k + n Bézier curves.
 
@@ -1247,7 +1343,9 @@ class OpenGLVMobject(OpenGLMobject):
         new_points = new_bezier_tuples.reshape(-1, 3)
         return new_points
 
-    def interpolate_color(self, mobject1, mobject2, alpha):
+    def interpolate_color(
+        self, mobject1: OpenGLVMobject, mobject2: OpenGLVMobject, alpha: float
+    ) -> Self:
         attrs = [
             "fill_color",
             "stroke_color",
@@ -1262,7 +1360,7 @@ class OpenGLVMobject(OpenGLMobject):
             # "sheen_factor",
         ]
 
-        def interp(obj1, obj2, alpha):
+        def interp(obj1: Any, obj2: Any, alpha: float) -> Any:
             result = None
             if isinstance(obj1, ManimColor) or isinstance(obj2, ManimColor):
                 result = obj1.interpolate(obj2, alpha)
@@ -1305,7 +1403,11 @@ class OpenGLVMobject(OpenGLMobject):
             if the point amount should be kept the same (True)
             This option should be manually set to False if keeping the number of points is not needed
         """
-        assert isinstance(vmobject, OpenGLVMobject)
+        if not isinstance(vmobject, OpenGLVMobject):
+            raise TypeError(
+                f"Expected a VMobject, got value {vmobject} of type "
+                f"{type(vmobject).__name__}."
+            )
         # Partial curve includes three portions:
         # - A middle section, which matches the curve exactly
         # - A start, which is some ending portion of an inner cubic
@@ -1315,38 +1417,59 @@ class OpenGLVMobject(OpenGLMobject):
             return self
         bezier_triplets = vmobject.get_bezier_tuples()
         num_quadratics = len(bezier_triplets)
-
-        # The following two lines will compute which bezier curves of the given mobject need to be processed.
-        # The residue basically indicates the proportion of the selected Bèzier curve.
-        # Ex: if lower_index is 3, and lower_residue is 0.4, then the algorithm will append to the points 0.4 of the third bezier curve
-        lower_index, lower_residue = integer_interpolate(0, num_quadratics, a)
-        upper_index, upper_residue = integer_interpolate(0, num_quadratics, b)
-        self.clear_points()
         if num_quadratics == 0:
             return self
+
+        # The following two lines will compute which Bézier curves of the given Mobject must be processed.
+        # The residue indicates the proportion of the selected Bézier curve which must be selected.
+        #
+        # Example: if num_curves is 10, a is 0.34 and b is 0.78, then:
+        # - lower_index is 3 and lower_residue is 0.4, which means the algorithm will look at the 3rd Bézier
+        #   and select its part which ranges from t=0.4 to t=1.
+        # - upper_index is 7 and upper_residue is 0.8, which means the algorithm will look at the 7th Bézier
+        #   and select its part which ranges from t=0 to t=0.8.
+        lower_index, lower_residue = integer_interpolate(0, num_quadratics, a)
+        upper_index, upper_residue = integer_interpolate(0, num_quadratics, b)
+
+        nppc = self.n_points_per_curve
+
+        # If both indices coincide, get a part of a single Bézier curve.
         if lower_index == upper_index:
-            self.append_points(
-                partial_bezier_points(
-                    bezier_triplets[lower_index],
-                    lower_residue,
-                    upper_residue,
-                ),
+            # Look at the "lower_index"-th Bézier curve and select its part from
+            # t=lower_residue to t=upper_residue.
+            new_points = partial_bezier_points(
+                vmobject.points[nppc * lower_index : nppc * (lower_index + 1)],
+                lower_residue,
+                upper_residue,
             )
         else:
-            self.append_points(
-                partial_bezier_points(bezier_triplets[lower_index], lower_residue, 1),
+            # Allocate space for (upper_index-lower_index+1) Bézier curves.
+            new_points = np.empty((nppc * (upper_index - lower_index + 1), self.dim))
+            # Look at the "lower_index"-th Bezier curve and select its part from
+            # t=lower_residue to t=1. This is the first curve in self.points.
+            new_points[:nppc] = partial_bezier_points(
+                vmobject.points[nppc * lower_index : nppc * (lower_index + 1)],
+                lower_residue,
+                1,
             )
-            inner_points = bezier_triplets[lower_index + 1 : upper_index]
-            if len(inner_points) > 0:
-                if remap:
-                    new_triplets = bezier_remap(inner_points, num_quadratics - 2)
-                else:
-                    new_triplets = bezier_triplets
-
-                self.append_points(np.asarray(new_triplets).reshape(-1, 3))
-            self.append_points(
-                partial_bezier_points(bezier_triplets[upper_index], 0, upper_residue),
+            # If there are more curves between the "lower_index"-th and the
+            # "upper_index"-th Béziers, add them all to self.points.
+            new_points[nppc:-nppc] = vmobject.points[
+                nppc * (lower_index + 1) : nppc * upper_index
+            ]
+            # Look at the "upper_index"-th Bézier curve and select its part from
+            # t=0 to t=upper_residue. This is the last curve in self.points.
+            new_points[-nppc:] = partial_bezier_points(
+                vmobject.points[nppc * upper_index : nppc * (upper_index + 1)],
+                0,
+                upper_residue,
             )
+        # Remap if necessary
+        if remap:
+            new_tuples = self.get_bezier_tuples_from_points(new_points)
+            remapped_tuples = bezier_remap(new_tuples, num_quadratics)
+            new_points = remapped_tuples.reshape(-1, self.dim)
+        self.set_points(new_points)
         return self
 
     def get_subcurve(self, a: float, b: float) -> Self:
@@ -1372,18 +1495,12 @@ class OpenGLVMobject(OpenGLMobject):
 
     # Related to triangulation
 
-    def apply_function(self, function, make_smooth=False, **kwargs):
+    def apply_function(
+        self, function: MappingFunction, make_smooth: bool = False, **kwargs: Any
+    ) -> Self:
         super().apply_function(function, **kwargs)
         if self.make_smooth_after_applying_functions or make_smooth:
             self.make_approximately_smooth()
-        return self
-
-    def apply_points_function(self, *args, **kwargs):
-        super().apply_points_function(*args, **kwargs)
-        return self
-
-    def flip(self, *args, **kwargs):
-        super().flip(*args, **kwargs)
         return self
 
 
@@ -1454,7 +1571,7 @@ class OpenGLVGroup(OpenGLVMobject):
         super().__init__(**kwargs)
         self.add(*vmobjects)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             self.__class__.__name__
             + "("
@@ -1462,7 +1579,7 @@ class OpenGLVGroup(OpenGLVMobject):
             + ")"
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             f"{self.__class__.__name__} of {len(self.submobjects)} "
             f"submobject{'s' if len(self.submobjects) > 0 else ''}"
@@ -1480,13 +1597,13 @@ class OpenGLVGroup(OpenGLVMobject):
     def set_z_index(self, z: float) -> Self:
         return self.set_z(z)
 
-    def add(self, *vmobjects: OpenGLVMobject):
+    def add(self, *vmobjects: OpenGLVMobject | Iterable[OpenGLVMobject]) -> Self:
         """Checks if all passed elements are an instance of OpenGLVMobject and then add them to submobjects
 
         Parameters
         ----------
         vmobjects
-            List of OpenGLVMobject to add
+            List containing `OpenGLVMobject` or other sublists of `OpenGLVMobject` to add.
 
         Returns
         -------
@@ -1527,24 +1644,90 @@ class OpenGLVGroup(OpenGLVMobject):
                     self.play( # Animate group without component
                         (gr-circle_red).animate.shift(RIGHT)
                     )
-        """
-        return super().add(*vmobjects)
 
-    def __add__(self, vmobject):
+        A `VGroup` can be created using iterables as well. Keep in mind that all generated values from an
+        iterable must be an instance of `VMobject`. This is demonstrated below:
+
+        .. manim:: AddIterableToVGroupExample
+            :save_last_frame:
+
+            class AddIterableToVGroupExample(Scene):
+                def construct(self):
+                    v = VGroup(
+                        Square(),               # Singular VMobject instance
+                        [Circle(), Triangle()], # List of VMobject instances
+                        Dot(),
+                        (Dot() for _ in range(2)), # Iterable that generates VMobjects
+                    )
+                    v.arrange()
+                    self.add(v)
+
+        To facilitate this, the iterable is unpacked before its individual instances are added to the `VGroup`.
+        As a result, when you index a `VGroup`, you will never get back an iterable.
+        Instead, you will always receive `VMobject` instances, including those
+        that were part of the iterable/s that you originally added to the `VGroup`.
+        """
+
+        def get_type_error_message(
+            invalid_obj: Any,
+            index: int,
+            subindex: int | None = None,
+            suggest_using_group: bool = False,
+        ) -> str:
+            if subindex is None:
+                clarification = f"at index {index}"
+            else:
+                clarification = f"at subindex {subindex} of iterable at index {index}"
+            message = (
+                f"Only values of type OpenGLVMobject can be added as submobjects of "
+                f"{type(self).__name__}, but the value {repr(invalid_obj)} "
+                f"({clarification}) is of type {type(invalid_obj).__name__}."
+            )
+            if suggest_using_group:
+                message += " You can try adding this value into a Group instead."
+            return message
+
+        valid_vmobjects = []
+
+        for i, item in enumerate(vmobjects):
+            if isinstance(item, OpenGLVMobject):
+                valid_vmobjects.append(item)
+            elif isinstance(item, OpenGLMobject):
+                raise TypeError(
+                    get_type_error_message(item, index=i, suggest_using_group=True)
+                )
+            elif isinstance(item, Iterable):
+                for j, subitem in enumerate(item):
+                    if not isinstance(subitem, OpenGLVMobject):
+                        raise TypeError(
+                            get_type_error_message(
+                                subitem,
+                                index=i,
+                                subindex=j,
+                                suggest_using_group=isinstance(subitem, OpenGLMobject),
+                            )
+                        )
+                    valid_vmobjects.append(subitem)
+            else:
+                raise TypeError(get_type_error_message(item, index=i))
+
+        return super().add(*valid_vmobjects)
+
+    def __add__(self, vmobject: OpenGLVMobject) -> OpenGLVGroup:
         return OpenGLVGroup(*self.submobjects, vmobject)
 
-    def __iadd__(self, vmobject):
+    def __iadd__(self, vmobject: OpenGLVMobject) -> Self:
         return self.add(vmobject)
 
-    def __sub__(self, vmobject):
+    def __sub__(self, vmobject: OpenGLVMobject) -> OpenGLVGroup:
         copy = OpenGLVGroup(*self.submobjects)
         copy.remove(vmobject)
         return copy
 
-    def __isub__(self, vmobject):
+    def __isub__(self, vmobject: OpenGLVMobject) -> Self:
         return self.remove(vmobject)
 
-    def __setitem__(self, key: int, value: OpenGLVMobject | Sequence[OpenGLVMobject]):
+    def __setitem__(self, key: int, value: OpenGLVMobject | Iterable[OpenGLVMobject]):
         """Override the [] operator for item assignment.
 
         Parameters
@@ -1578,14 +1761,355 @@ class OpenGLVGroup(OpenGLVMobject):
         self.note_changed_family()
 
 
+class OpenGLVDict(OpenGLVMobject):
+    """A VGroup-like class, also offering submobject access by
+    key, like a python dict
+
+    Parameters
+    ----------
+    mapping_or_iterable
+            The parameter specifying the key-value mapping of keys and mobjects.
+    show_keys
+            Whether to also display the key associated with
+            the mobject. This might be useful when debugging,
+            especially when there are a lot of mobjects in the
+            :class:`VDict`. Defaults to False.
+    kwargs
+            Other arguments to be passed to `Mobject`.
+
+    Attributes
+    ----------
+    show_keys : :class:`bool`
+            Whether to also display the key associated with
+            the mobject. This might be useful when debugging,
+            especially when there are a lot of mobjects in the
+            :class:`VDict`. When displayed, the key is towards
+            the left of the mobject.
+            Defaults to False.
+    submob_dict : :class:`dict`
+            Is the actual python dictionary that is used to bind
+            the keys to the mobjects.
+
+    Examples
+    --------
+
+    .. manim:: ShapesWithVDict
+
+        class ShapesWithVDict(Scene):
+            def construct(self):
+                square = Square().set_color(RED)
+                circle = Circle().set_color(YELLOW).next_to(square, UP)
+
+                # create dict from list of tuples each having key-mobject pair
+                pairs = [("s", square), ("c", circle)]
+                my_dict = VDict(pairs, show_keys=True)
+
+                # display it just like a VGroup
+                self.play(Create(my_dict))
+                self.wait()
+
+                text = Tex("Some text").set_color(GREEN).next_to(square, DOWN)
+
+                # add a key-value pair by wrapping it in a single-element list of tuple
+                # after attrs branch is merged, it will be easier like `.add(t=text)`
+                my_dict.add([("t", text)])
+                self.wait()
+
+                rect = Rectangle().next_to(text, DOWN)
+                # can also do key assignment like a python dict
+                my_dict["r"] = rect
+
+                # access submobjects like a python dict
+                my_dict["t"].set_color(PURPLE)
+                self.play(my_dict["t"].animate.scale(3))
+                self.wait()
+
+                # also supports python dict styled reassignment
+                my_dict["t"] = Tex("Some other text").set_color(BLUE)
+                self.wait()
+
+                # remove submobject by key
+                my_dict.remove("t")
+                self.wait()
+
+                self.play(Uncreate(my_dict["s"]))
+                self.wait()
+
+                self.play(FadeOut(my_dict["c"]))
+                self.wait()
+
+                self.play(FadeOut(my_dict["r"], shift=DOWN))
+                self.wait()
+
+                # you can also make a VDict from an existing dict of mobjects
+                plain_dict = {
+                    1: Integer(1).shift(DOWN),
+                    2: Integer(2).shift(2 * DOWN),
+                    3: Integer(3).shift(3 * DOWN),
+                }
+
+                vdict_from_plain_dict = VDict(plain_dict)
+                vdict_from_plain_dict.shift(1.5 * (UP + LEFT))
+                self.play(Create(vdict_from_plain_dict))
+
+                # you can even use zip
+                vdict_using_zip = VDict(zip(["s", "c", "r"], [Square(), Circle(), Rectangle()]))
+                vdict_using_zip.shift(1.5 * RIGHT)
+                self.play(Create(vdict_using_zip))
+                self.wait()
+    """
+
+    def __init__(
+        self,
+        mapping_or_iterable: (
+            Mapping[Hashable, OpenGLVMobject]
+            | Iterable[tuple[Hashable, OpenGLVMobject]]
+            | None
+        ) = None,
+        show_keys: bool = False,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(**kwargs)
+        self.show_keys = show_keys
+        self.submob_dict: Mapping[Hashable, OpenGLVMobject] = {}
+        if mapping_or_iterable is None:
+            mapping_or_iterable = {}
+        self.add(mapping_or_iterable)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({repr(self.submob_dict)})"
+
+    def add(
+        self,
+        mapping_or_iterable: (
+            Mapping[Hashable, VMobject] | Iterable[tuple[Hashable, VMobject]]
+        ),
+    ) -> Self:
+        """Adds the key-value pairs to the :class:`VDict` object.
+
+        Also, it internally adds the value to the `submobjects` :class:`list`
+        of :class:`~.Mobject`, which is responsible for actual on-screen display.
+
+        Parameters
+        ---------
+        mapping_or_iterable
+            The parameter specifying the key-value mapping of keys and mobjects.
+
+        Returns
+        -------
+        :class:`VDict`
+            Returns the :class:`VDict` object on which this method was called.
+
+        Examples
+        --------
+        Normal usage::
+
+            square_obj = Square()
+            my_dict.add([("s", square_obj)])
+        """
+        for key, value in dict(mapping_or_iterable).items():
+            self.add_key_value_pair(key, value)
+
+        return self
+
+    def remove(self, key: Hashable) -> Self:
+        """Removes the mobject from the :class:`VDict` object having the key `key`
+
+        Also, it internally removes the mobject from the `submobjects` :class:`list`
+        of :class:`~.Mobject`, (which is responsible for removing it from the screen)
+
+        Parameters
+        ----------
+        key
+            The key of the submoject to be removed.
+
+        Returns
+        -------
+        :class:`VDict`
+            Returns the :class:`VDict` object on which this method was called.
+
+        Examples
+        --------
+        Normal usage::
+
+            my_dict.remove("square")
+        """
+        if key not in self.submob_dict:
+            raise KeyError(f"The given key {key!r} is not present in the VDict")
+        super().remove(self.submob_dict[key])
+        del self.submob_dict[key]
+        return self
+
+    def __getitem__(self, key: Hashable) -> OpenGLVMobject:
+        """Override the [] operator for item retrieval.
+
+        Parameters
+        ----------
+        key
+           The key of the submoject to be accessed
+
+        Returns
+        -------
+        :class:`VMobject`
+           The submobject corresponding to the key `key`
+
+        Examples
+        --------
+        Normal usage::
+
+           self.play(Create(my_dict["s"]))
+        """
+        submob = self.submob_dict[key]
+        return submob
+
+    def __setitem__(self, key: Hashable, value: OpenGLVMobject) -> None:
+        """Override the [] operator for item assignment.
+
+        Parameters
+        ----------
+        key
+            The key of the submoject to be assigned
+        value
+            The submobject to bind the key to
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        Normal usage::
+
+            square_obj = Square()
+            my_dict["sq"] = square_obj
+        """
+        if key in self.submob_dict:
+            self.remove(key)
+        self.add([(key, value)])
+
+    def __delitem__(self, key: Hashable) -> None:
+        """Override the del operator for deleting an item.
+
+        Parameters
+        ----------
+        key
+            The key of the submoject to be deleted
+
+        Returns
+        -------
+        None
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> my_dict = VDict({'sq': Square()})
+            >>> 'sq' in my_dict
+            True
+            >>> del my_dict['sq']
+            >>> 'sq' in my_dict
+            False
+
+        Notes
+        -----
+        Removing an item from a VDict does not remove that item from any Scene
+        that the VDict is part of.
+
+        """
+        del self.submob_dict[key]
+
+    def __contains__(self, key: Hashable) -> bool:
+        """Override the in operator.
+
+        Parameters
+        ----------
+        key
+            The key to check membership of.
+
+        Returns
+        -------
+        :class:`bool`
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> my_dict = VDict({'sq': Square()})
+            >>> 'sq' in my_dict
+            True
+
+        """
+        return key in self.submob_dict
+
+    def get_all_submobjects(self) -> list[OpenGLVMobject]:
+        """To get all the submobjects associated with a particular :class:`VDict` object
+
+        Returns
+        -------
+        :class:`dict_values`
+            All the submobjects associated with the :class:`VDict` object
+
+        Examples
+        --------
+        Normal usage::
+
+            for submob in my_dict.get_all_submobjects():
+                self.play(Create(submob))
+        """
+        submobjects = self.submob_dict.values()
+        return submobjects
+
+    def add_key_value_pair(self, key: Hashable, value: OpenGLVMobject) -> None:
+        """A utility function used by :meth:`add` to add the key-value pair
+        to :attr:`submob_dict`. Not really meant to be used externally.
+
+        Parameters
+        ----------
+        key
+            The key of the submobject to be added.
+        value
+            The mobject associated with the key
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        TypeError
+            If the value is not an instance of VMobject
+
+        Examples
+        --------
+        Normal usage::
+
+            square_obj = Square()
+            self.add_key_value_pair("s", square_obj)
+
+        """
+        self._assert_valid_submobjects([value])
+        mob = value
+        if self.show_keys:
+            # This import is here and not at the top to avoid circular import
+            from manim.mobject.text.tex_mobject import Tex
+
+            key_text = Tex(str(key)).next_to(value, LEFT)
+            mob.add(key_text)
+
+        self.submob_dict[key] = mob
+        super().add(value)
+
+
 class OpenGLVectorizedPoint(OpenGLPoint, OpenGLVMobject):
     def __init__(
         self,
-        location=ORIGIN,
-        color=BLACK,
-        fill_opacity=0,
-        stroke_width=0,
-        **kwargs,
+        location: Point3DLike = ORIGIN,
+        color: ParsableManimColor | None = BLACK,
+        fill_opacity: float = 0.0,
+        stroke_width: float = 0.0,
+        **kwargs: Any,
     ):
         OpenGLPoint.__init__(self, location, **kwargs)
         OpenGLVMobject.__init__(
@@ -1615,13 +2139,76 @@ class OpenGLCurvesAsSubmobjects(OpenGLVGroup):
 
     """
 
-    def __init__(self, vmobject, **kwargs):
+    def __init__(self, vmobject: OpenGLVMobject, **kwargs: Any):
         super().__init__(**kwargs)
         for tup in vmobject.get_bezier_tuples():
             part = OpenGLVMobject()
             part.set_points(tup)
             part.match_style(vmobject)
             self.add(part)
+
+    def point_from_proportion(self, alpha: float) -> Point3D:
+        """Gets the point at a proportion along the path of the :class:`CurvesAsSubmobjects`.
+
+        Parameters
+        ----------
+        alpha
+            The proportion along the the path of the :class:`CurvesAsSubmobjects`.
+
+        Returns
+        -------
+        :class:`numpy.ndarray`
+            The point on the :class:`CurvesAsSubmobjects`.
+
+        Raises
+        ------
+        :exc:`ValueError`
+            If ``alpha`` is not between 0 and 1.
+        :exc:`Exception`
+            If the :class:`CurvesAsSubmobjects` has no submobjects, or no submobject has points.
+        """
+        if alpha < 0 or alpha > 1:
+            raise ValueError(f"Alpha {alpha} not between 0 and 1.")
+
+        self._throw_error_if_no_submobjects()
+        submobjs_with_pts = self._get_submobjects_with_points()
+
+        if alpha == 1:
+            return submobjs_with_pts[-1].points[-1]
+
+        submobjs_arc_lengths = tuple(
+            part.get_arc_length() for part in submobjs_with_pts
+        )
+
+        total_length = sum(submobjs_arc_lengths)
+        target_length = alpha * total_length
+        current_length = 0
+
+        for i, part in enumerate(submobjs_with_pts):
+            part_length = submobjs_arc_lengths[i]
+            if current_length + part_length >= target_length:
+                residue = (target_length - current_length) / part_length
+                return part.point_from_proportion(residue)
+
+            current_length += part_length
+
+    def _throw_error_if_no_submobjects(self) -> None:
+        if len(self.submobjects) == 0:
+            caller_name = sys._getframe(1).f_code.co_name
+            raise Exception(
+                f"Cannot call CurvesAsSubmobjects. {caller_name} for a CurvesAsSubmobject with no submobjects"
+            )
+
+    def _get_submobjects_with_points(self) -> tuple[OpenGLVMobject, ...]:
+        submobjs_with_pts = tuple(
+            part for part in self.submobjects if len(part.points) > 0
+        )
+        if len(submobjs_with_pts) == 0:
+            caller_name = sys._getframe(1).f_code.co_name
+            raise Exception(
+                f"Cannot call CurvesAsSubmobjects. {caller_name} for a CurvesAsSubmobject whose submobjects have no points"
+            )
+        return submobjs_with_pts
 
 
 class OpenGLDashedVMobject(OpenGLVMobject):
@@ -1664,8 +2251,8 @@ class OpenGLDashedVMobject(OpenGLVMobject):
         vmobject: OpenGLVMobject,
         num_dashes: int = 15,
         dashed_ratio: float = 0.5,
-        color: ParsableManimColor = WHITE,
-        **kwargs,
+        color: ParsableManimColor | None = WHITE,
+        **kwargs: Any,
     ):
         super().__init__(**kwargs)
         self.dashed_ratio = dashed_ratio
@@ -1698,7 +2285,7 @@ class VHighlight(OpenGLVGroup):
         self,
         vmobject: OpenGLVMobject,
         n_layers: int = 5,
-        color_bounds: tuple[ManimColor, ManimColor] = (GREY_C, GREY_E),
+        color_bounds: tuple[ParsableManimColor, ParsableManimColor] = (GREY_C, GREY_E),
         max_stroke_addition: float = 5.0,
     ):
         outline = vmobject.replicate(n_layers)

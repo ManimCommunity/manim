@@ -34,7 +34,7 @@ def test_mobject_add():
     with pytest.raises(ValueError) as add_self_info:
         obj.add(Mobject(), obj, Mobject())
     assert str(add_self_info.value) == (
-        "Cannot add Mobject as a submobject of itself (at index 1)."
+        "Cannot add OpenGLMobject as a submobject of itself (at index 1)."
     )
     assert len(obj.submobjects) == 0
 
@@ -42,8 +42,8 @@ def test_mobject_add():
     with pytest.raises(TypeError) as add_str_info:
         obj.add(Mobject(), Mobject(), "foo")
     assert str(add_str_info.value) == (
-        "Only values of type Mobject can be added as submobjects of Mobject, "
-        "but the value foo (at index 2) is of type str."
+        "Only values of type OpenGLMobject can be added as submobjects of "
+        "OpenGLMobject, but the value 'foo' (at index 2) is of type str."
     )
     assert len(obj.submobjects) == 0
 
@@ -105,6 +105,7 @@ def is_close(x, y):
     return abs(x - y) < 0.00001
 
 
+@pytest.mark.slow
 def test_mobject_dimensions_nested_mobjects():
     vg = VGroup()
 

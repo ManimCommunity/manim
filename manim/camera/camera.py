@@ -10,7 +10,8 @@ import numpy.typing as npt
 
 from manim._config import config, logger
 from manim.constants import *
-from manim.mobject.opengl.opengl_mobject import InvisibleMobject, OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import InvisibleMobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 from manim.utils.paths import straight_path
 from manim.utils.space_ops import rotation_matrix
 
@@ -26,10 +27,10 @@ class CameraOrientationConfig(TypedDict, total=False):
     gamma: float | None
     zoom: float | None
     focal_distance: float | None
-    frame_center: OpenGLMobject | Sequence[float] | None
+    frame_center: Mobject | Sequence[float] | None
 
 
-class Camera(OpenGLMobject, InvisibleMobject):
+class Camera(Mobject, InvisibleMobject):
     def __init__(
         self,
         frame_shape: tuple[float, float] = (config.frame_width, config.frame_height),
@@ -57,8 +58,8 @@ class Camera(OpenGLMobject, InvisibleMobject):
 
     def interpolate(
         self,
-        mobject1: OpenGLMobject,
-        mobject2: OpenGLMobject,
+        mobject1: Mobject,
+        mobject2: Mobject,
         alpha: float,
         path_func: PathFuncType = straight_path(),
     ) -> Self:
@@ -91,7 +92,7 @@ class Camera(OpenGLMobject, InvisibleMobject):
         gamma: float | None = None,
         zoom: float | None = None,
         focal_distance: float | None = None,
-        frame_center: OpenGLMobject | Point3D | None = None,  # TODO: use Point3DLike
+        frame_center: Mobject | Point3D | None = None,  # TODO: use Point3DLike
     ) -> Self:
         """This method sets the orientation of the camera in the scene.
 
@@ -408,7 +409,7 @@ class Camera(OpenGLMobject, InvisibleMobject):
 
             This method is still unreliable. The Euler angles are automatically
             standardized to (-TAU/2, TAU/2), leading to potentially unwanted behavior
-            when using :attr:`OpenGLMobject.animate`. Plus, if the camera is on
+            when using :attr:`Mobject.animate`. Plus, if the camera is on
             the Z axis, which occurs when phi is a multiple of TAU/2, the current
             implementation can only determine theta +- gamma, but not exactly
             theta or gamma yet.
@@ -421,7 +422,7 @@ class Camera(OpenGLMobject, InvisibleMobject):
             Axis of rotation.
         **kwargs
             Additional parameters which are required by
-            :meth:`OpenGLMobject.rotate`.
+            :meth:`Mobject.rotate`.
 
         Returns
         -------
@@ -485,9 +486,10 @@ class Camera(OpenGLMobject, InvisibleMobject):
     def get_frame_shape(self) -> tuple[float, float]:
         return (self.get_width(), self.get_height())
 
-    def get_center(self) -> Point3D:
+    def get_center(self, copy: bool = True) -> Point3D:
         # Assumes first point is at the center
-        return self.points[0]
+        center = self.points[0]
+        return center.copy() if copy else center
 
     def get_width(self) -> float:
         points = self.points

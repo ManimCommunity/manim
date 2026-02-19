@@ -19,7 +19,6 @@ import numpy as np
 if TYPE_CHECKING:
     from typing import TypeAlias
 
-    from manim.animation.scene_buffer import SceneBuffer
     from manim.typing import Point3D, Point3DLike
 
     NxGraph: TypeAlias = nx.classes.graph.Graph | nx.classes.digraph.DiGraph
@@ -28,11 +27,14 @@ from manim.animation.composition import AnimationGroup
 from manim.animation.creation import Create, Uncreate
 from manim.mobject.geometry.arc import Dot, LabeledDot
 from manim.mobject.geometry.line import Line
-from manim.mobject.mobject import Mobject, override_animate
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLMobject as Mobject,
+)
+from manim.mobject.opengl.opengl_mobject import (
+    override_animate,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject as VMobject
 from manim.mobject.text.tex_mobject import MathTex
-from manim.mobject.types.vectorized_mobject import VMobject
 from manim.utils.color import BLACK
 
 
@@ -477,7 +479,7 @@ def _determine_graph_layout(
             ) from e
 
 
-class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
+class GenericGraph(VMobject):
     """Abstract base class for graphs (that is, a collection of vertices
     connected with edges).
 
@@ -589,9 +591,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             self._labels = labels
         elif isinstance(labels, bool):
             if labels:
-                self._labels = {
-                    v: MathTex(v, fill_color=label_fill_color) for v in vertices
-                }
+                self._labels = {v: MathTex(v, color=label_fill_color) for v in vertices}
             else:
                 self._labels = {}
 
@@ -698,10 +698,10 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             )
 
         if label is True:
-            label = MathTex(vertex, fill_color=label_fill_color)
+            label = MathTex(vertex, color=label_fill_color)
         elif vertex in self._labels:
             label = self._labels[vertex]
-        elif not isinstance(label, (Mobject, OpenGLMobject)):
+        elif not isinstance(label, Mobject):
             label = None
 
         base_vertex_config = copy(self.default_vertex_config)
@@ -858,7 +858,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         vertex_type: type[Mobject] = Dot,
         vertex_config: dict | None = None,
         vertex_mobjects: dict | None = None,
-    ):
+    ) -> list[Mobject]:
         """Add a list of vertices to the graph.
 
         Parameters
@@ -901,25 +901,22 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         ]
 
     @override_animate(add_vertices)
-    def _add_vertices_animation(self, *args, anim_args=None, **kwargs):
-        if anim_args is None:
-            anim_args = {}
+    def _add_vertices_animation(
+        self,
+        *vertices: Hashable,
+        anim_args: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> AnimationGroup:
+        vertex_mobjects = self.add_vertices(*vertices, **kwargs)
 
-        animation = anim_args.pop("animation", Create)
-
-        vertex_mobjects = self._create_vertices(*args, **kwargs)
-
-        def on_finish(buf: SceneBuffer | None):
-            for v in vertex_mobjects:
-                self._add_created_vertex(*v)
-                if buf is not None:
-                    with contextlib.suppress(Exception):
-                        buf.replace(v[-1])
+        base_anim_args = {"animation": Create, "introducer": False}
+        if anim_args is not None:
+            base_anim_args.update(anim_args)
+        animation = base_anim_args.pop("animation")
 
         return AnimationGroup(
-            *(animation(v[-1], **anim_args) for v in vertex_mobjects),
-            group=self,
-            _on_finish=on_finish,
+            animation(vertex_mobject, **base_anim_args)
+            for vertex_mobject in vertex_mobjects
         )
 
     def _remove_vertex(self, vertex):

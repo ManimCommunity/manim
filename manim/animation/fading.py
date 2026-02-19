@@ -23,15 +23,19 @@ from typing import Any
 
 import numpy as np
 
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLGroup as Group,
+)
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLMobject as Mobject,
+)
 
 from ..animation.transform import Transform
 from ..constants import ORIGIN
-from ..mobject.mobject import Group
 
 
 class _Fade(Transform):
-    """Fade :class:`~.OpenGLMobject` s in or out.
+    """Fade :class:`~.Mobject` s in or out.
 
     Parameters
     ----------
@@ -50,9 +54,9 @@ class _Fade(Transform):
 
     def __init__(
         self,
-        *mobjects: OpenGLMobject,
+        *mobjects: Mobject,
         shift: np.ndarray | None = None,
-        target_position: np.ndarray | OpenGLMobject | None = None,
+        target_position: np.ndarray | Mobject | None = None,
         scale: float = 1,
         **kwargs: Any,
     ) -> None:
@@ -63,7 +67,7 @@ class _Fade(Transform):
         self.point_target = False
         if shift is None:
             if target_position is not None:
-                if isinstance(target_position, OpenGLMobject):
+                if isinstance(target_position, Mobject):
                     target_position = target_position.get_center()
                 shift = target_position - mobject.get_center()
                 self.point_target = True
@@ -73,7 +77,7 @@ class _Fade(Transform):
         self.scale_factor = scale
         super().__init__(mobject, **kwargs)
 
-    def _create_faded_mobject(self, fade_in: bool) -> OpenGLMobject:
+    def _create_faded_mobject(self, fade_in: bool) -> Mobject:
         """Create a faded, shifted and scaled copy of the mobject.
 
         Parameters
@@ -83,7 +87,7 @@ class _Fade(Transform):
 
         Returns
         -------
-        OpenGLMobject
+        Mobject
             The faded, shifted and scaled copy of the mobject.
         """
         faded_mobject: Mobject = self.mobject.copy()  # type: ignore[assignment]
@@ -95,7 +99,7 @@ class _Fade(Transform):
 
 
 class FadeIn(_Fade):
-    r"""Fade in :class:`~.OpenGLMobject` s.
+    r"""Fade in :class:`~.Mobject` s.
 
     Parameters
     ----------
@@ -132,18 +136,18 @@ class FadeIn(_Fade):
 
     """
 
-    def __init__(self, *mobjects: OpenGLMobject, **kwargs: Any) -> None:
+    def __init__(self, *mobjects: Mobject, **kwargs: Any) -> None:
         super().__init__(*mobjects, introducer=True, **kwargs)
 
-    def create_target(self) -> OpenGLMobject:
+    def create_target(self) -> Mobject:
         return self.mobject
 
-    def create_starting_mobject(self) -> OpenGLMobject:
+    def create_starting_mobject(self) -> Mobject:
         return self._create_faded_mobject(fade_in=True)
 
 
 class FadeOut(_Fade):
-    r"""Fade out :class:`~.OpenGLMobject` s.
+    r"""Fade out :class:`~.Mobject` s.
 
     Parameters
     ----------
@@ -180,10 +184,10 @@ class FadeOut(_Fade):
 
     """
 
-    def __init__(self, *mobjects: OpenGLMobject, **kwargs: Any) -> None:
+    def __init__(self, *mobjects: Mobject, **kwargs: Any) -> None:
         super().__init__(*mobjects, remover=True, **kwargs)
 
-    def create_target(self) -> OpenGLMobject:
+    def create_target(self) -> Mobject:
         return self._create_faded_mobject(fade_in=False)
 
     def begin(self) -> None:

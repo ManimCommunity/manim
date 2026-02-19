@@ -17,7 +17,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 import numpy as np
 
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 
 if TYPE_CHECKING:
     import types
@@ -30,13 +30,13 @@ if TYPE_CHECKING:
     P = ParamSpec("P")
 
 
-M = TypeVar("M", bound=OpenGLMobject)
+M = TypeVar("M", bound=Mobject)
 
 
-# TODO: figure out how to typehint as MethodType[OpenGLMobject] to avoid the cast
+# TODO: figure out how to typehint as MethodType[Mobject] to avoid the cast
 # madness in always/f_always
 def is_mobject_method(method: Callable[..., Any]) -> TypeIs[types.MethodType]:
-    return inspect.ismethod(method) and isinstance(method.__self__, OpenGLMobject)
+    return inspect.ismethod(method) and isinstance(method.__self__, Mobject)
 
 
 def always(
@@ -157,6 +157,16 @@ def turn_animation_into_updater(
         nonlocal total_time
         if total_time >= 0:
             run_time = animation.get_run_time()
+
+            # handle zero/negative runtime safely
+            if run_time <= 0:
+                # instantly snap to final state once, then remove updater
+                animation.interpolate(1)
+                animation.update_mobjects(dt)
+                animation.finish()
+                m.remove_updater(update)
+                return
+
             time_ratio = total_time / run_time
             if cycle:
                 alpha = time_ratio % 1
@@ -164,13 +174,13 @@ def turn_animation_into_updater(
                 alpha = np.clip(time_ratio, 0, 1)
                 if alpha >= 1:
                     animation.finish()
-                    m.remove_updater(update)  # type: ignore
+                    m.remove_updater(update)
                     return
             animation.interpolate(alpha)
             animation.update_mobjects(dt)
         total_time += dt
 
-    mobject.add_updater(update)  # type: ignore
+    mobject.add_updater(update)
     return mobject
 
 

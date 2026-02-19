@@ -9,11 +9,10 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_point_cloud_mobject import OpenGLPMobject
 
 from ...constants import *
-from ...mobject.mobject import Mobject
+from ...mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 from ...utils.bezier import interpolate
 from ...utils.color import (
     BLACK,
@@ -44,7 +43,7 @@ if TYPE_CHECKING:
     )
 
 
-class PMobject(Mobject, metaclass=ConvertToOpenGL):
+class PMobject(Mobject):
     """A disc made of a cloud of Dots
 
     Examples
@@ -250,7 +249,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
 
 
 # TODO, Make the two implementations below non-redundant
-class Mobject1D(PMobject, metaclass=ConvertToOpenGL):
+class Mobject1D(PMobject):
     def __init__(self, density: int = DEFAULT_POINT_DENSITY_1D, **kwargs: Any) -> None:
         self.density = density
         self.epsilon = 1.0 / self.density
@@ -274,7 +273,7 @@ class Mobject1D(PMobject, metaclass=ConvertToOpenGL):
         self.add_points(points, color=color)
 
 
-class Mobject2D(PMobject, metaclass=ConvertToOpenGL):
+class Mobject2D(PMobject):
     def __init__(self, density: int = DEFAULT_POINT_DENSITY_2D, **kwargs: Any) -> None:
         self.density = density
         self.epsilon = 1.0 / self.density

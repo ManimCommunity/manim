@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from manim import *
 from manim.utils.testing.frames_comparison import frames_comparison
 
@@ -18,6 +20,7 @@ def test_Cube(scene: Scene) -> None:
     scene.add(Cube())
 
 
+@pytest.mark.slow
 @frames_comparison
 def test_Sphere(scene: Scene) -> None:
     scene.add(Sphere())
@@ -64,6 +67,7 @@ def test_Arrow3D(scene: Scene) -> None:
     scene.add(Arrow3D(resolution=16))
 
 
+@pytest.mark.slow
 @frames_comparison
 def test_Torus(scene: Scene) -> None:
     scene.add(Torus())

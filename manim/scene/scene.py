@@ -16,9 +16,24 @@ from manim.camera.camera import Camera
 from manim.constants import DEFAULT_WAIT_TIME
 from manim.event_handler import EVENT_DISPATCHER
 from manim.event_handler.event_type import EventType
-from manim.mobject.mobject import Group, Point
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject, _AnimationBuilder
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLGroup as Group,
+)
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLMobject as Mobject,
+)
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLPoint as Point,
+)
+from manim.mobject.opengl.opengl_mobject import (
+    _AnimationBuilder,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVGroup as VGroup,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVMobject as VMobject,
+)
 from manim.scene.sections import group as SceneGroup
 from manim.utils.iterables import list_difference_update
 
@@ -27,7 +42,7 @@ if TYPE_CHECKING:
 
     from manim.animation.protocol import AnimationProtocol
     from manim.manager import Manager
-    from manim.typing import Point3D, Vector3D
+    from manim.typing import Point3D, StrPath, Vector3D
 
 # TODO: these keybindings should be made configurable
 
@@ -81,7 +96,7 @@ class Scene:
         # Core state of the scene
         self.camera: Camera = Camera()
         self.manager = manager
-        self.mobjects: list[OpenGLMobject] = []
+        self.mobjects: list[Mobject] = []
         self.num_plays: int = 0
         # the time is updated by the manager
         self.time: float = 0
@@ -96,9 +111,10 @@ class Scene:
         self.quit_interaction = False
 
         # Much nicer to work with deterministic scenes
-        if self.random_seed is not None:
-            random.seed(self.random_seed)
-            np.random.default_rng(self.random_seed)
+        if self.random_seed is None:
+            self.random_seed = config.seed
+        random.seed(self.random_seed)
+        np.random.seed(self.random_seed)  # noqa: NPY002 (only way to set seed globally)
 
     def __str__(self) -> str:
         return self.__class__.__name__
@@ -172,8 +188,10 @@ class Scene:
         """
         # always rerender by returning True
         # TODO: Apply caching here
-        return self.always_update_mobjects or any(
-            mob.has_updaters for mob in self.mobjects
+        return (
+            self.always_update_mobjects
+            or (len(self.updaters) > 0)
+            or any(mob.has_updaters for mob in self.mobjects)
         )
 
     def is_current_animation_frozen_frame(
@@ -181,7 +199,18 @@ class Scene:
     ) -> bool:
         if len(animations) == 0:
             return False
-        return all(getattr(anim, "is_static_wait", False) for anim in animations)
+
+        # Check if all animations are frozen frames
+        any_frozen_frame = any(
+            getattr(anim, "is_static_wait", False) for anim in animations
+        )
+        all_frozen_frame = all(
+            getattr(anim, "is_static_wait", False) for anim in animations
+        )
+        if any_frozen_frame and not all_frozen_frame:
+            raise ValueError("All animations must be frozen frames to be frozen frames")
+
+        return all_frozen_frame
 
     def has_time_based_updaters(self) -> bool:
         return any(
@@ -192,7 +221,7 @@ class Scene:
 
     # Related to internal mobject organization
 
-    def add(self, *new_mobjects: OpenGLMobject) -> Self:
+    def add(self, *new_mobjects: Mobject) -> Self:
         """
         Mobjects will be displayed, from background to
         foreground in the order with which they are added.
@@ -201,7 +230,7 @@ class Scene:
         self.mobjects += new_mobjects
         return self
 
-    def remove(self, *mobjects_to_remove: OpenGLMobject) -> Self:
+    def remove(self, *mobjects_to_remove: Mobject) -> Self:
         """
         Removes anything in mobjects from scenes mobject list, but in the event that one
         of the items to be removed is a member of the family of an item in mobject_list,
@@ -218,11 +247,11 @@ class Scene:
             self.mobjects = list_difference_update(self.mobjects, mob.get_family())
         return self
 
-    def replace(self, mobject: OpenGLMobject, *replacements: OpenGLMobject):
+    def replace(self, mobject: Mobject, *replacements: Mobject):
         """Replace one Mobject in the scene with one or more other Mobjects,
         preserving draw order.
 
-        If ``mobject`` is a submobject of some other :class:`OpenGLMobject`
+        If ``mobject`` is a submobject of some other :class:`Mobject`
         (e.g. a :class:`.Group`), the ``replacements`` will replace it inside
         the group, without otherwise changing the parent mobject.
 
@@ -293,11 +322,11 @@ class Scene:
         """
         self.updaters = [f for f in self.updaters if f is not func]
 
-    def bring_to_front(self, *mobjects: OpenGLMobject) -> Self:
+    def bring_to_front(self, *mobjects: Mobject) -> Self:
         self.add(*mobjects)
         return self
 
-    def bring_to_back(self, *mobjects: OpenGLMobject) -> Self:
+    def bring_to_back(self, *mobjects: Mobject) -> Self:
         self.remove(*mobjects)
         self.mobjects = [*mobjects, *self.mobjects]
         return self
@@ -306,18 +335,18 @@ class Scene:
         self.mobjects.clear()
         return self
 
-    def get_mobjects(self) -> Sequence[OpenGLMobject]:
+    def get_mobjects(self) -> Sequence[Mobject]:
         return list(self.mobjects)
 
-    def get_mobject_copies(self) -> Sequence[OpenGLMobject]:
+    def get_mobject_copies(self) -> Sequence[Mobject]:
         return [m.copy() for m in self.mobjects]
 
     def point_to_mobject(
         self,
         point: Point3D,
-        search_set: Reversible[OpenGLMobject] | None = None,
+        search_set: Reversible[Mobject] | None = None,
         buff: float = 0.0,
-    ) -> OpenGLMobject | None:
+    ) -> Mobject | None:
         """
         E.g. if clicking on the scene, this returns the top layer mobject
         under a given point
@@ -396,11 +425,9 @@ class Scene:
 
     def play(
         self,
-        # the OpenGLMobject is a side-effect of the return type of animate, it will
+        # the Mobject is a side-effect of the return type of animate, it will
         # raise a ValueError
-        *proto_animations: AnimationProtocol
-        | _AnimationBuilder[OpenGLMobject]
-        | OpenGLMobject,
+        *proto_animations: AnimationProtocol | _AnimationBuilder[Mobject] | Mobject,
         run_time: float | None = None,
         rate_func: Callable[[float], float] | None = None,
         lag_ratio: float | None = None,
@@ -455,14 +482,17 @@ class Scene:
 
     def add_sound(
         self,
-        sound_file: str,
+        sound_file: StrPath,
         time_offset: float = 0,
         gain: float | None = None,
         gain_to_background: float | None = None,
     ):
-        raise NotImplementedError("TODO")
+        if self.manager.file_writer is None:
+            return
         time = self.time + time_offset
-        self.file_writer.add_sound(sound_file, time, gain, gain_to_background)
+        self.manager.file_writer.add_sound(
+            sound_file, time, gain, gain_to_background=gain_to_background
+        )
 
     def get_state(self) -> SceneState:
         return SceneState(self)
@@ -620,9 +650,7 @@ class Scene:
 
 
 class SceneState:
-    def __init__(
-        self, scene: Scene, ignore: Iterable[OpenGLMobject] | None = None
-    ) -> None:
+    def __init__(self, scene: Scene, ignore: Iterable[Mobject] | None = None) -> None:
         self.time = scene.time
         self.num_plays = scene.num_plays
         self.camera = scene.camera.copy()
@@ -641,7 +669,7 @@ class SceneState:
                 self.mobjects_to_copies[mob] = mob.copy()
 
     @property
-    def mobjects(self) -> Sequence[OpenGLMobject]:
+    def mobjects(self) -> Sequence[Mobject]:
         return tuple(self.mobjects_to_copies.keys())
 
     def __eq__(self, state: Any) -> bool:

@@ -20,14 +20,19 @@ from PIL import Image
 from manim.animation.updaters.update import UpdateFromAlphaFunc
 from manim.mobject.geometry.line import Vector
 from manim.mobject.graphing.coordinate_systems import CoordinateSystem
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVGroup as VGroup,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVMobject as VMobject,
+)
 
 from .. import config
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
 from ..constants import OUT, RIGHT, UP, RendererType
-from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import (
     BLUE_E,

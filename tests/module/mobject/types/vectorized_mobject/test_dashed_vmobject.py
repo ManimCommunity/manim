@@ -1,5 +1,12 @@
-from manim import ORIGIN, UR, Arrow, DashedVMobject, VGroup
+from manim.constants import ORIGIN, UR
+from manim.mobject.geometry.line import Arrow
 from manim.mobject.geometry.tips import ArrowTip, StealthTip
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLDashedVMobject as DashedVMobject,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVGroup as VGroup,
+)
 
 
 def _collect_tips(mobject):
