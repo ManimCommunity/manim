@@ -7,7 +7,6 @@ __all__ = [
     "DiGraph",
 ]
 
-import contextlib
 import itertools as it
 from collections.abc import Hashable, Iterable, Sequence
 from copy import copy
