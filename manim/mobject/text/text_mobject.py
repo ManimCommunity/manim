@@ -804,8 +804,7 @@ class Text(SVGMobject):
         line_spacing /= TEXT2SVG_ADJUSTMENT_FACTOR
 
         dir_name = config.get_dir("text_dir")
-        if not dir_name.is_dir():
-            dir_name.mkdir(parents=True)
+        dir_name.mkdir(parents=True, exist_ok=True)
         hash_name = self._text2hash(color)
         file_name = dir_name / (hash_name + ".svg")
 
@@ -1352,8 +1351,7 @@ class MarkupText(SVGMobject):
         line_spacing /= TEXT2SVG_ADJUSTMENT_FACTOR
 
         dir_name = config.get_dir("text_dir")
-        if not dir_name.is_dir():
-            dir_name.mkdir(parents=True)
+        dir_name.mkdir(parents=True, exist_ok=True)
         hash_name = self._text2hash(color)
         file_name = dir_name / (hash_name + ".svg")
 

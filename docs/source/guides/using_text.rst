@@ -424,7 +424,7 @@ may be expected. To color only ``x`` yellow, we have to do the following:
     class CorrectLaTeXSubstringColoring(Scene):
         def construct(self):
             equation = MathTex(
-                r"e^x = x^0 + x^1 + \frac{1}{2} x^2 + \frac{1}{6} x^3 + \cdots + \frac{1}{n!} x^n + \cdots",
+                r"e^{x} = x^0 + x^1 + \frac{1}{2} x^2 + \frac{1}{6} x^3 + \cdots + \frac{1}{n!} x^n + \cdots",
                 substrings_to_isolate="x"
             )
             equation.set_color_by_tex("x", YELLOW)
@@ -434,6 +434,8 @@ By setting ``substrings_to_isolate`` to ``x``, we split up the
 :class:`~.MathTex` into substrings automatically and isolate the ``x`` components
 into individual substrings. Only then can :meth:`~.set_color_by_tex` be used
 to achieve the desired result.
+If one of the ``substrings_to_isolate`` is in a sub or superscript, it needs
+to be enclosed by curly brackets.
 
 Note that Manim also supports a custom syntax that allows splitting
 a TeX string into substrings easily: simply enclose parts of your formula

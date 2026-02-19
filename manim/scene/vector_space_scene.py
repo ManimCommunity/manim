@@ -35,9 +35,9 @@ from ..utils.color import (
     BLUE_D,
     GREEN_C,
     GREY,
+    PURE_YELLOW,
     RED_C,
     WHITE,
-    YELLOW,
     ManimColor,
     ParsableManimColor,
 )
@@ -172,7 +172,7 @@ class VectorScene(Scene):
     def add_vector(
         self,
         vector: Arrow | Vector3DLike,
-        color: ParsableManimColor | Iterable[ParsableManimColor] = YELLOW,
+        color: ParsableManimColor | Iterable[ParsableManimColor] = PURE_YELLOW,
         animate: bool = True,
         **kwargs: Any,
     ) -> Arrow:
@@ -814,7 +814,7 @@ class LinearTransformationScene(VectorScene):
 
     def get_unit_square(
         self,
-        color: ParsableManimColor | Iterable[ParsableManimColor] = YELLOW,
+        color: ParsableManimColor | Iterable[ParsableManimColor] = PURE_YELLOW,
         opacity: float = 0.3,
         stroke_width: float = 3,
     ) -> Rectangle:
@@ -881,7 +881,7 @@ class LinearTransformationScene(VectorScene):
     def add_vector(
         self,
         vector: Arrow | list | tuple | np.ndarray,
-        color: ParsableManimColor = YELLOW,
+        color: ParsableManimColor = PURE_YELLOW,
         animate: bool = False,
         **kwargs: Any,
     ) -> Arrow:

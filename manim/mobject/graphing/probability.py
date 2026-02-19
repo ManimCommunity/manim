@@ -107,7 +107,7 @@ class SampleSpace(Rectangle):
 
         last_point = self.get_edge_center(-vect)
         parts = VGroup()
-        for factor, color in zip(p_list_complete, colors_in_gradient, strict=False):
+        for factor, color in zip(p_list_complete, colors_in_gradient, strict=True):
             part = SampleSpace()
             part.set_fill(color, 1)
             part.replace(self, stretch=True)
@@ -366,7 +366,7 @@ class BarChart(Axes):
         labels = VGroup()
 
         for i, (value, bar_name) in enumerate(
-            zip(val_range, self.bar_names, strict=False)
+            zip(val_range, self.bar_names, strict=True)
         ):
             # to accommodate negative bars, the label may need to be
             # below or above the x_axis depending on the value of the bar
