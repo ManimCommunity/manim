@@ -857,7 +857,7 @@ class GenericGraph(VMobject):
         vertex_type: type[Mobject] = Dot,
         vertex_config: dict | None = None,
         vertex_mobjects: dict | None = None,
-    ):
+    ) -> list[Mobject]:
         """Add a list of vertices to the graph.
 
         Parameters
@@ -899,40 +899,23 @@ class GenericGraph(VMobject):
             )
         ]
 
-    class _AddVerticesAnimation(AnimationGroup):
-        def __init__(
-            self,
-            *args,
-            graph: GenericGraph,
-            vertex_mobjects: Iterable,
-            **kwargs,
-        ):
-            super().__init__(*args, introducer=True, **kwargs)
-            self._vertex_mobjects = vertex_mobjects
-            self._graph = graph
-
-        def finish(self):
-            super().finish()
-            for v in self._vertex_mobjects:
-                self.buffer.remove(v[-1])
-                vertex = self._graph._add_created_vertex(*v)
-                self.buffer.add(vertex)
-            self.apply_buffer = True
-
     @override_animate(add_vertices)
-    def _add_vertices_animation(self, *args, anim_args=None, **kwargs):
-        if anim_args is None:
-            anim_args = {}
+    def _add_vertices_animation(
+        self,
+        *vertices: Hashable,
+        anim_args: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> AnimationGroup:
+        vertex_mobjects = self.add_vertices(*vertices, **kwargs)
 
-        animation = anim_args.pop("animation", Create)
+        base_anim_args = {"animation": Create, "introducer": False}
+        if anim_args is not None:
+            base_anim_args.update(anim_args)
+        animation = base_anim_args.pop("animation")
 
-        vertex_mobjects = self._create_vertices(*args, **kwargs)
-
-        return self._AddVerticesAnimation(
-            *(animation(v[-1], **anim_args) for v in vertex_mobjects),
-            group=self,
-            graph=self,
-            vertex_mobjects=vertex_mobjects,
+        return AnimationGroup(
+            animation(vertex_mobject, **base_anim_args)
+            for vertex_mobject in vertex_mobjects
         )
 
     def _remove_vertex(self, vertex):
