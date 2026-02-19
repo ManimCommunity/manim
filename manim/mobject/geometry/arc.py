@@ -232,7 +232,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
 
     # Getters
 
-    def pop_tips(self) -> VGroup:
+    def pop_tips(self, keep_len_same=False) -> VGroup:
         start, end = self.get_start_and_end()
         result = self.get_group_class()()
         if self.has_tip():
@@ -241,7 +241,9 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         if self.has_start_tip():
             result.add(self.start_tip)
             self.remove(self.start_tip)
-        self.put_start_and_end_on(start, end)
+        # Add check to recalculate start and end points if length of arrow changes
+        if not keep_len_same:
+            self.put_start_and_end_on(start, end)
         return result
 
     def get_tips(self) -> VGroup:
