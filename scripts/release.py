@@ -346,7 +346,7 @@ def cli(ctx: click.Context, dry_run: bool) -> None:
 )
 @click.option("--head", default="main", help="Head ref for comparison (default: main)")
 @click.option("--title", help="Custom changelog title (default: vX.Y.Z)")
-@click.option("--update-citation", is_flag=True, help="Also update CITATION.cff")
+@click.option("--update-citation", "also_update_citation", is_flag=True, help="Also update CITATION.cff")
 @click.pass_context
 def changelog(
     ctx: click.Context,
@@ -354,7 +354,7 @@ def changelog(
     version: str,
     head: str,
     title: str | None,
-    update_citation: bool,
+    also_update_citation: bool,
 ) -> None:
     """Generate changelog for an upcoming release.
 
@@ -375,7 +375,7 @@ def changelog(
         click.echo()
         click.secho("[DRY RUN]", fg="yellow", bold=True)
         click.echo(f"  Would save: {CHANGELOG_DIR / f'{version}-changelog.md'}")
-        if update_citation:
+        if also_update_citation:
             click.echo(f"  Would update: {CITATION_FILE}")
         click.echo()
         click.echo("--- Generated changelog ---")
@@ -385,7 +385,7 @@ def changelog(
     filepath = save_changelog(version, content)
     click.secho(f"  ✓ Saved: {filepath}", fg="green")
 
-    if update_citation:
+    if also_update_citation:
         citation_path = update_citation(version)
         click.secho(f"  ✓ Updated: {citation_path}", fg="green")
 
