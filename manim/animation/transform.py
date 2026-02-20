@@ -304,7 +304,7 @@ class ReplacementTransform(Transform):
 
 
 class TransformFromCopy(Transform):
-    """Performs a reversed Transform"""
+    """Preserves a copy of the original VMobject and transforms only it's copy to the target VMobject"""
 
     def __init__(self, mobject: Mobject, target_mobject: Mobject, **kwargs) -> None:
         super().__init__(target_mobject, mobject, **kwargs)
