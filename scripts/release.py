@@ -346,7 +346,12 @@ def cli(ctx: click.Context, dry_run: bool) -> None:
 )
 @click.option("--head", default="main", help="Head ref for comparison (default: main)")
 @click.option("--title", help="Custom changelog title (default: vX.Y.Z)")
-@click.option("--update-citation", "also_update_citation", is_flag=True, help="Also update CITATION.cff")
+@click.option(
+    "--update-citation",
+    "also_update_citation",
+    is_flag=True,
+    help="Also update CITATION.cff",
+)
 @click.pass_context
 def changelog(
     ctx: click.Context,
