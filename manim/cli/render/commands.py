@@ -31,7 +31,8 @@ from manim.cli.render.ease_of_access_options import ease_of_access_options
 from manim.cli.render.global_options import global_options
 from manim.cli.render.output_options import output_options
 from manim.cli.render.render_options import render_options
-from manim.constants import EPILOG, RendererType
+from manim.constants import EPILOG
+from manim.manager import Manager
 from manim.utils.module_ops import scene_classes_from_file
 
 __all__ = ["render"]
@@ -75,14 +76,6 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
 
     SCENES is an optional list of scenes in the file.
     """
-    if kwargs["save_as_gif"]:
-        logger.warning("--save_as_gif is deprecated, please use --format=gif instead!")
-        kwargs["format"] = "gif"
-
-    if kwargs["save_pngs"]:
-        logger.warning("--save_pngs is deprecated, please use --format=png instead!")
-        kwargs["format"] = "png"
-
     if kwargs["show_in_file_browser"]:
         logger.warning(
             "The short form of show_in_file_browser is deprecated and will be moved to support --format.",
@@ -94,38 +87,13 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
 
     config.digest_args(click_args)
     file = Path(config.input_file)
-    if config.renderer == RendererType.OPENGL:
-        from manim.renderer.opengl_renderer import OpenGLRenderer
-
-        try:
-            renderer = OpenGLRenderer()
-            keep_running = True
-            while keep_running:
-                for SceneClass in scene_classes_from_file(file):
-                    with tempconfig({}):
-                        scene = SceneClass(renderer)
-                        rerun = scene.render()
-                    if rerun or config["write_all"]:
-                        renderer.num_plays = 0
-                        continue
-                    else:
-                        keep_running = False
-                        break
-                if config["write_all"]:
-                    keep_running = False
-
-        except Exception:
-            error_console.print_exception()
-            sys.exit(1)
-    else:
+    try:
         for SceneClass in scene_classes_from_file(file):
-            try:
-                with tempconfig({}):
-                    scene = SceneClass()
-                    scene.render()
-            except Exception:
-                error_console.print_exception()
-                sys.exit(1)
+            with tempconfig({}), Manager(SceneClass) as manager:
+                manager.render()
+    except Exception:
+        error_console.print_exception()
+        sys.exit(1)
 
     if config.notify_outdated_version:
         manim_info_url = "https://pypi.org/pypi/manim/json"

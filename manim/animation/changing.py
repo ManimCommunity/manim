@@ -4,12 +4,13 @@ from __future__ import annotations
 
 __all__ = ["AnimatedBoundary", "TracedPath"]
 
-from collections.abc import Callable, Sequence
-from typing import Any, Self
+from typing import TYPE_CHECKING, Any, Self
+
+import numpy as np
 
 from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup as VGroup
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject as VMobject
 from manim.utils.color import (
     BLUE_B,
     BLUE_D,
@@ -19,6 +20,11 @@ from manim.utils.color import (
     ParsableManimColor,
 )
 from manim.utils.rate_functions import RateFunction, smooth
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
+
+    import numpy.typing as npt
 
 
 class AnimatedBoundary(VGroup):
@@ -62,7 +68,7 @@ class AnimatedBoundary(VGroup):
         ]
         self.add(*self.boundary_copies)
         self.total_time = 0.0
-        self.add_updater(lambda m, dt: self.update_boundary_copies(dt))
+        self.add_updater(lambda _, dt: self.update_boundary_copies(dt))
 
     def update_boundary_copies(self, dt: float) -> None:
         # Not actual time, but something which passes at
@@ -102,7 +108,7 @@ class AnimatedBoundary(VGroup):
         return self
 
 
-class TracedPath(VMobject, metaclass=ConvertToOpenGL):
+class TracedPath(VMobject):
     """Traces the path of a point returned by a function call.
 
     Parameters
@@ -146,23 +152,32 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        traced_point_func: Callable,
+        traced_point_func: Callable[
+            [], npt.NDArray[npt.float]
+        ],  # TODO: Replace with Callable[[], Point3D]
         stroke_width: float = 2,
         stroke_color: ParsableManimColor | None = WHITE,
         dissipating_time: float | None = None,
+        fill_opacity: float = 0.0,
         **kwargs: Any,
-    ) -> None:
-        super().__init__(stroke_color=stroke_color, stroke_width=stroke_width, **kwargs)
+    ):
+        super().__init__(
+            stroke_color=stroke_color,
+            stroke_width=stroke_width,
+            fill_opacity=fill_opacity,
+            **kwargs,
+        )
         self.traced_point_func = traced_point_func
         self.dissipating_time = dissipating_time
         self.time = 1.0 if self.dissipating_time else None
         self.add_updater(self.update_path)
 
-    def update_path(self, mob: Mobject, dt: float) -> None:
+    def update_path(self, _mob: Mobject, dt: float) -> None:
         new_point = self.traced_point_func()
         if not self.has_points():
             self.start_new_path(new_point)
-        self.add_line_to(new_point)
+        if not np.allclose(self.get_end(), new_point):
+            self.add_line_to(new_point)
         if self.dissipating_time:
             assert self.time is not None
             self.time += dt

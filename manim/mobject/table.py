@@ -70,6 +70,12 @@ from collections.abc import Callable, Iterable, Sequence
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Polygon
 from manim.mobject.geometry.shape_matchers import BackgroundRectangle
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVGroup as VGroup,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVMobject as VMobject,
+)
 from manim.mobject.text.numbers import DecimalNumber, Integer
 from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.text.text_mobject import Paragraph
@@ -78,9 +84,7 @@ from ..animation.animation import Animation
 from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Write
 from ..animation.fading import FadeIn
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.color import BLACK, PURE_YELLOW, ManimColor, ParsableManimColor
-from .utils import get_vectorized_mobject_class
 
 
 class Table(VGroup):
@@ -323,8 +327,7 @@ class Table(VGroup):
                     mob_table.insert(0, col_labels)
                 else:
                     # Placeholder to use arrange_in_grid if top_left_entry is not set.
-                    # Import OpenGLVMobject to work with --renderer=opengl
-                    dummy_mobject = get_vectorized_mobject_class()()
+                    dummy_mobject = VMobject()
                     col_labels = [dummy_mobject] + self.col_labels
                     mob_table.insert(0, col_labels)
             else:

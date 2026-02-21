@@ -13,7 +13,9 @@ from manim.mobject.text.numbers import Integer
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from manim.mobject.types.vectorized_mobject import VMobject
+    from manim.mobject.opengl.opengl_vectorized_mobject import (
+        OpenGLVMobject as VMobject,
+    )
 
 
 class _ScaleBase:

@@ -39,7 +39,7 @@ from ..utils.paths import spiral_path
 
 if TYPE_CHECKING:
     from manim.mobject.geometry.line import Arrow
-    from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+    from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
     from manim.typing import Point3DLike, Vector3DLike
     from manim.utils.color import ParsableManimColor
 
@@ -87,10 +87,10 @@ class GrowFromPoint(Transform):
         self.point_color = point_color
         super().__init__(mobject, introducer=True, **kwargs)
 
-    def create_target(self) -> Mobject | OpenGLMobject:
+    def create_target(self) -> Mobject:
         return self.mobject
 
-    def create_starting_mobject(self) -> Mobject | OpenGLMobject:
+    def create_starting_mobject(self) -> Mobject:
         start = super().create_starting_mobject()
         start.scale(0)
         start.move_to(self.point)
@@ -169,7 +169,7 @@ class GrowFromEdge(GrowFromPoint):
         point_color: ParsableManimColor | None = None,
         **kwargs: Any,
     ):
-        point = mobject.get_critical_point(edge)
+        point = mobject.get_bounding_box_point(edge)
         super().__init__(mobject, point, point_color=point_color, **kwargs)
 
 
@@ -203,7 +203,7 @@ class GrowArrow(GrowFromPoint):
         point = arrow.get_start()
         super().__init__(arrow, point, point_color=point_color, **kwargs)
 
-    def create_starting_mobject(self) -> Mobject | OpenGLMobject:
+    def create_starting_mobject(self) -> Mobject:
         start_arrow = self.mobject.copy()
         start_arrow.scale(0, scale_tips=True, about_point=self.point)
         if self.point_color:

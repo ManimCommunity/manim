@@ -33,24 +33,30 @@ def test_preserve_tex_color():
 
     txt = Tex(r"\textcolor{red}{Hello} World")
     assert len(txt[0].submobjects) == 10
-    assert all(char.fill_color.to_hex() == "#FF0000" for char in txt[0][:5])  # "Hello"
     assert all(
-        char.fill_color.to_hex() == WHITE.to_hex() for char in txt[0][-5:]
+        char.get_fill_color().to_hex() == "#FF0000" for char in txt[0][:5]
+    )  # "Hello"
+    assert all(
+        char.get_fill_color().to_hex() == WHITE.to_hex() for char in txt[0][-5:]
     )  # "World"
 
     txt = Tex(r"\textcolor{red}{Hello} World", color=BLUE)
     assert len(txt[0].submobjects) == 10
-    assert all(char.fill_color.to_hex() == "#FF0000" for char in txt[0][:5])  # "Hello"
     assert all(
-        char.fill_color.to_hex() == BLUE.to_hex() for char in txt[0][-5:]
+        char.get_fill_color().to_hex() == "#FF0000" for char in txt[0][:5]
+    )  # "Hello"
+    assert all(
+        char.get_fill_color().to_hex() == BLUE.to_hex() for char in txt[0][-5:]
     )  # "World"
 
     Tex.set_default(color=GREEN)
     txt = Tex(r"\textcolor{red}{Hello} World")
     assert len(txt[0].submobjects) == 10
-    assert all(char.fill_color.to_hex() == "#FF0000" for char in txt[0][:5])  # "Hello"
     assert all(
-        char.fill_color.to_hex() == GREEN.to_hex() for char in txt[0][-5:]
+        char.get_fill_color().to_hex() == "#FF0000" for char in txt[0][:5]
+    )  # "Hello"
+    assert all(
+        char.get_fill_color().to_hex() == GREEN.to_hex() for char in txt[0][-5:]
     )  # "World"
 
     Tex.set_default()

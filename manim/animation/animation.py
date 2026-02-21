@@ -2,32 +2,45 @@
 
 from __future__ import annotations
 
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-
-from .. import config, logger
-from ..constants import RendererType
-from ..mobject import mobject
-from ..mobject.mobject import Group, Mobject
-from ..mobject.opengl import opengl_mobject
-from ..utils.rate_functions import linear, smooth
-
-__all__ = ["Animation", "Wait", "Add", "override_animation"]
-
-
 from collections.abc import Callable, Iterable, Sequence
 from copy import deepcopy
 from functools import partialmethod
-from typing import TYPE_CHECKING, Any, Self
+from typing import TYPE_CHECKING, Any, Self, assert_never, cast, overload
+
+import numpy as np
+from typing_extensions import TypeVar
+
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLGroup as Group,
+)
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLMobject as Mobject,
+)
+from manim.mobject.opengl.opengl_mobject import (
+    _AnimationBuilder,
+)
+
+from .. import logger
+from ..utils.rate_functions import linear, smooth
+from .protocol import AnimationProtocol, MobjectAnimation
+from .scene_buffer import SceneBuffer, SceneOperation
 
 if TYPE_CHECKING:
+    from typing import Self
+
     from manim.scene.scene import Scene
+
+M = TypeVar("M", bound=Mobject)
+
+
+__all__ = ["Animation", "Wait", "override_animation"]
 
 
 DEFAULT_ANIMATION_RUN_TIME: float = 1.0
 DEFAULT_ANIMATION_LAG_RATIO: float = 0.0
 
 
-class Animation:
+class Animation(AnimationProtocol):
     """An animation.
 
     Animations have a fixed time span.
@@ -69,9 +82,9 @@ class Animation:
     .. NOTE::
 
         In the current implementation of this class, the specified rate function is applied
-        within :meth:`.Animation.interpolate_mobject` call as part of the call to
+        within :meth:`.Animation.interpolate` call as part of the call to
         :meth:`.Animation.interpolate_submobject`. For subclasses of :class:`.Animation`
-        that are implemented by overriding :meth:`interpolate_mobject`, the rate function
+        that are implemented by overriding :meth:`interpolate`, the rate function
         has to be applied manually (e.g., by passing ``self.rate_func(alpha)`` instead
         of just ``alpha``).
 
@@ -127,37 +140,33 @@ class Animation:
 
     def __init__(
         self,
-        mobject: Mobject | OpenGLMobject | None,
+        mobject: Mobject | None,
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
         run_time: float = DEFAULT_ANIMATION_RUN_TIME,
         rate_func: Callable[[float], float] = smooth,
         reverse_rate_function: bool = False,
-        name: str = None,
-        remover: bool = False,  # remove a mobject from the screen?
+        name: str = "",
+        remover: bool = False,  # remove a mobject from the screen at end of animation
         suspend_mobject_updating: bool = True,
         introducer: bool = False,
         *,
-        _on_finish: Callable[[], None] = lambda _: None,
         use_override: bool = True,  # included here to avoid TypeError if passed from a subclass' constructor
     ) -> None:
         self._typecheck_input(mobject)
         self.run_time: float = run_time
         self.rate_func: Callable[[float], float] = rate_func
         self.reverse_rate_function: bool = reverse_rate_function
-        self.name: str | None = name
+        self.name: str = name
         self.remover: bool = remover
         self.introducer: bool = introducer
         self.suspend_mobject_updating: bool = suspend_mobject_updating
         self.lag_ratio: float = lag_ratio
-        self._on_finish: Callable[[Scene], None] = _on_finish
-        if config["renderer"] == RendererType.OPENGL:
-            self.starting_mobject: OpenGLMobject = OpenGLMobject()
-            self.mobject: OpenGLMobject = (
-                mobject if mobject is not None else OpenGLMobject()
-            )
-        else:
-            self.starting_mobject: Mobject = Mobject()
-            self.mobject: Mobject = mobject if mobject is not None else Mobject()
+
+        self.buffer = SceneBuffer()
+        self.apply_buffer = False  # ask scene to apply buffer
+
+        self.starting_mobject: Mobject = Mobject()
+        self.mobject: Mobject = mobject if mobject is not None else Mobject()
 
         if hasattr(self, "CONFIG"):
             logger.error(
@@ -183,7 +192,7 @@ class Animation:
     def _typecheck_input(self, mobject: Mobject | None) -> None:
         if mobject is None:
             logger.debug("Animation with empty mobject")
-        elif not isinstance(mobject, (Mobject, OpenGLMobject)):
+        elif not isinstance(mobject, Mobject):
             raise TypeError("Animation only works on Mobjects")
 
     def __str__(self) -> str:
@@ -193,6 +202,17 @@ class Animation:
 
     def __repr__(self) -> str:
         return str(self)
+
+    def update_rate_info(
+        self,
+        run_time: float | None = None,
+        rate_func: Callable[[float], float] | None = None,
+        lag_ratio: float | None = None,
+    ):
+        self.run_time = run_time or self.run_time
+        self.rate_func = rate_func or self.rate_func
+        self.lag_ratio = lag_ratio or self.lag_ratio
+        return self
 
     def begin(self) -> None:
         """Begin the animation.
@@ -213,10 +233,12 @@ class Animation:
             self.mobject.suspend_updating()
         self.interpolate(0)
 
+        # TODO: Figure out a way to check
+        # if self.mobject in scene.get_mobject_family
+        if self.introducer:
+            self.buffer.add(self.mobject)
+
     def finish(self) -> None:
-        # TODO: begin and finish should require a scene as parameter.
-        # That way Animation.clean_up_from_screen and Scene.add_mobjects_from_animations
-        # could be removed as they fulfill basically the same purpose.
         """Finish the animation.
 
         This method gets called when the animation is over.
@@ -226,45 +248,14 @@ class Animation:
         if self.suspend_mobject_updating and self.mobject is not None:
             self.mobject.resume_updating()
 
-    def clean_up_from_scene(self, scene: Scene) -> None:
-        """Clean up the :class:`~.Scene` after finishing the animation.
+        if self.remover:
+            self.buffer.remove(self.mobject)
 
-        This includes to :meth:`~.Scene.remove` the Animation's
-        :class:`~.Mobject` if the animation is a remover.
-
-        Parameters
-        ----------
-        scene
-            The scene the animation should be cleaned up from.
-        """
-        self._on_finish(scene)
-        if self.is_remover():
-            scene.remove(self.mobject)
-
-    def _setup_scene(self, scene: Scene) -> None:
-        """Setup up the :class:`~.Scene` before starting the animation.
-
-        This includes to :meth:`~.Scene.add` the Animation's
-        :class:`~.Mobject` if the animation is an introducer.
-
-        Parameters
-        ----------
-        scene
-            The scene the animation should be cleaned up from.
-        """
-        if scene is None:
-            return
-        if (
-            self.is_introducer()
-            and self.mobject not in scene.get_mobject_family_members()
-        ):
-            scene.add(self.mobject)
-
-    def create_starting_mobject(self) -> Mobject | OpenGLMobject:
+    def create_starting_mobject(self) -> Mobject:
         # Keep track of where the mobject starts
         return self.mobject.copy()
 
-    def get_all_mobjects(self) -> Sequence[Mobject | OpenGLMobject]:
+    def get_all_mobjects(self) -> Sequence[Mobject]:
         """Get all mobjects involved in the animation.
 
         Ordering must match the ordering of arguments to interpolate_submobject
@@ -277,14 +268,7 @@ class Animation:
         return self.mobject, self.starting_mobject
 
     def get_all_families_zipped(self) -> Iterable[tuple]:
-        if config["renderer"] == RendererType.OPENGL:
-            return zip(
-                *(mob.get_family() for mob in self.get_all_mobjects()), strict=False
-            )
-        return zip(
-            *(mob.family_members_with_points() for mob in self.get_all_mobjects()),
-            strict=False,
-        )
+        return zip(*(mob.get_family() for mob in self.get_all_mobjects()), strict=False)
 
     def update_mobjects(self, dt: float) -> None:
         """
@@ -297,7 +281,24 @@ class Animation:
         for mob in self.get_all_mobjects_to_update():
             mob.update(dt)
 
-    def get_all_mobjects_to_update(self) -> list[Mobject]:
+    def process_subanimation_buffer(self, buffer: SceneBuffer):
+        """
+        This is used in animations that are proxies around
+        other animations, like :class:`.AnimationGroup`
+        """
+        for op, args, kwargs in buffer:
+            match op:
+                case SceneOperation.ADD:
+                    self.buffer.add(*args, **kwargs)
+                case SceneOperation.REMOVE:
+                    self.buffer.remove(*args, **kwargs)
+                case SceneOperation.REPLACE:
+                    self.buffer.replace(*args, **kwargs)
+                case _:
+                    assert_never(op)
+        buffer.clear()
+
+    def get_all_mobjects_to_update(self) -> Sequence[Mobject]:
         """Get all mobjects to be updated during the animation.
 
         Returns
@@ -308,9 +309,9 @@ class Animation:
         # The surrounding scene typically handles
         # updating of self.mobject.  Besides, in
         # most cases its updating is suspended anyway
-        return list(filter(lambda m: m is not self.mobject, self.get_all_mobjects()))
+        return [m for m in self.get_all_mobjects() if m is not self.mobject]
 
-    def copy(self) -> Animation:
+    def copy(self) -> Self:
         """Create a copy of the animation.
 
         Returns
@@ -324,19 +325,6 @@ class Animation:
 
     # TODO: stop using alpha as parameter name in different meanings.
     def interpolate(self, alpha: float) -> None:
-        """Set the animation progress.
-
-        This method gets called for every frame during an animation.
-
-        Parameters
-        ----------
-        alpha
-            The relative time to set the animation to, 0 meaning the start, 1 meaning
-            the end.
-        """
-        self.interpolate_mobject(alpha)
-
-    def interpolate_mobject(self, alpha: float) -> None:
         """Interpolates the mobject of the :class:`Animation` based on alpha value.
 
         Parameters
@@ -346,10 +334,10 @@ class Animation:
             is completed. For example, alpha-values of 0, 0.5, and 1 correspond
             to the animation being completed 0%, 50%, and 100%, respectively.
         """
-        families = list(self.get_all_families_zipped())
+        families = tuple(self.get_all_families_zipped())
         for i, mobs in enumerate(families):
             sub_alpha = self.get_sub_alpha(alpha, i, len(families))
-            self.interpolate_submobject(*mobs, sub_alpha)
+            self.interpolate_submobject(*mobs, sub_alpha)  # type: ignore
 
     def interpolate_submobject(
         self,
@@ -358,8 +346,7 @@ class Animation:
         # target_copy: Mobject, #Todo: fix - signature of interpolate_submobject differs in Transform().
         alpha: float,
     ) -> Animation:
-        # Typically implemented by subclass
-        pass
+        raise NotImplementedError("Implement in subclass")
 
     def get_sub_alpha(self, alpha: float, index: int, num_submobjects: int) -> float:
         """Get the animation progress of any submobjects subanimation.
@@ -385,13 +372,14 @@ class Animation:
         full_length = (num_submobjects - 1) * lag_ratio + 1
         value = alpha * full_length
         lower = index * lag_ratio
+        raw_sub_alpha = np.clip((value - lower), 0, 1)
         if self.reverse_rate_function:
-            return self.rate_func(1 - (value - lower))
+            return self.rate_func(1 - raw_sub_alpha)
         else:
-            return self.rate_func(value - lower)
+            return self.rate_func(raw_sub_alpha)
 
     # Getters and setters
-    def set_run_time(self, run_time: float) -> Animation:
+    def set_run_time(self, run_time: float) -> Self:
         """Set the run time of the animation.
 
         Parameters
@@ -426,7 +414,7 @@ class Animation:
     def set_rate_func(
         self,
         rate_func: Callable[[float], float],
-    ) -> Animation:
+    ) -> Self:
         """Set the rate function of the animation.
 
         Parameters
@@ -455,7 +443,7 @@ class Animation:
         """
         return self.rate_func
 
-    def set_name(self, name: str) -> Animation:
+    def set_name(self, name: str) -> Self:
         """Set the name of the animation.
 
         Parameters
@@ -470,26 +458,6 @@ class Animation:
         """
         self.name = name
         return self
-
-    def is_remover(self) -> bool:
-        """Test if the animation is a remover.
-
-        Returns
-        -------
-        bool
-            ``True`` if the animation is a remover, ``False`` otherwise.
-        """
-        return self.remover
-
-    def is_introducer(self) -> bool:
-        """Test if the animation is an introducer.
-
-        Returns
-        -------
-        bool
-            ``True`` if the animation is an introducer, ``False`` otherwise.
-        """
-        return self.introducer
 
     @classmethod
     def __init_subclass__(cls, **kwargs) -> None:
@@ -540,9 +508,19 @@ class Animation:
             cls.__init__ = cls._original__init__
 
 
+@overload
+def prepare_animation(anim: MobjectAnimation[M]) -> MobjectAnimation[M]: ...
+
+
+@overload
 def prepare_animation(
-    anim: Animation | mobject._AnimationBuilder | opengl_mobject._AnimationBuilder,
-) -> Animation:
+    anim: AnimationProtocol | _AnimationBuilder | Mobject,
+) -> AnimationProtocol: ...
+
+
+def prepare_animation(
+    anim: AnimationProtocol | _AnimationBuilder | Mobject,
+) -> AnimationProtocol:
     r"""Returns either an unchanged animation, or the animation built
     from a passed animation factory.
 
@@ -569,16 +547,17 @@ def prepare_animation(
         TypeError: Object 42 cannot be converted to an animation
 
     """
-    if isinstance(anim, mobject._AnimationBuilder):
+    if isinstance(anim, _AnimationBuilder):
         return anim.build()
 
-    if isinstance(anim, opengl_mobject._AnimationBuilder):
-        return anim.build()
-
-    if isinstance(anim, Animation):
-        return anim
-
-    raise TypeError(f"Object {anim} cannot be converted to an animation")
+    # if it has these three methods it probably is an AnimationProtocol
+    # but we don't use isinstance because it's slow
+    try:
+        for method in ("begin", "finish", "update_mobjects"):
+            getattr(anim, method)
+        return cast(AnimationProtocol, anim)
+    except AttributeError:
+        raise TypeError(f"Object {anim} cannot be converted to an animation") from None
 
 
 class Wait(Animation):
@@ -615,20 +594,14 @@ class Wait(Animation):
         if stop_condition and frozen_frame:
             raise ValueError("A static Wait animation cannot have a stop condition.")
 
-        self.duration: float = run_time
         self.stop_condition = stop_condition
-        self.is_static_wait: bool = frozen_frame
+        self.is_static_wait: bool = bool(frozen_frame)
         super().__init__(None, run_time=run_time, rate_func=rate_func, **kwargs)
-        # quick fix to work in opengl setting:
-        self.mobject.shader_wrapper_list = []
 
     def begin(self) -> None:
         pass
 
     def finish(self) -> None:
-        pass
-
-    def clean_up_from_scene(self, scene: Scene) -> None:
         pass
 
     def update_mobjects(self, dt: float) -> None:
@@ -760,9 +733,10 @@ def override_animation(
                 self.play(FadeIn(MySquare()))
 
     """
+    _F = TypeVar("_F", bound=Callable)
 
-    def decorator(func):
-        func._override_animation = animation_class
+    def decorator(func: _F) -> _F:
+        func._override_animation = animation_class  # type: ignore
         return func
 
     return decorator
