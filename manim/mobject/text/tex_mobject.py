@@ -237,6 +237,26 @@ class MathTex(SingleStringMathTex):
                 t = MathTex(r"\int_a^b f'(x) dx = f(b)- f(a)")
                 self.add(t)
 
+    Notes
+    -----
+    Double-brace notation ``{{ ... }}`` can be used to split a single
+    string argument into multiple submobjects without having to pass
+    separate strings::
+
+        MathTex(r"{{ a^2 }} + {{ b^2 }} = {{ c^2 }}")
+
+    Each ``{{ ... }}`` group and every piece of text between groups
+    becomes its own submobject, which is useful for
+    :class:`~.TransformMatchingTex` animations.
+
+    For ``{{`` to be recognised as a group opener it must appear either
+    at the very start of the string or be immediately preceded by a
+    whitespace character.  ``{{`` that follows non-whitespace — such as
+    in ``\frac{{{n}}}{k}`` or ``a^{{2}}`` — is left untouched, so
+    ordinary nested-brace LaTeX is not accidentally split.  To prevent
+    an unintentional split, insert a space between the two braces:
+    ``{{ ... }}`` → ``{ { ... } }``.
+
     Tests
     -----
     Check that creating a :class:`~.MathTex` works::
