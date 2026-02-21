@@ -16,7 +16,7 @@ jobs:
     - uses: actions/checkout@v6
 
     - name: Install dependencies
-      run: apt-get update && apt-get install -y build-essential python3-dev libcairo2-dev libpango1.0-dev
+      run: sudo apt-get update && sudo apt-get install -y build-essential python3-dev libcairo2-dev libpango1.0-dev
 
     - name: Set up Python 3.13
       uses: actions/setup-python@v6

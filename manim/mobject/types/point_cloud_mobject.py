@@ -16,8 +16,8 @@ from ...mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 from ...utils.bezier import interpolate
 from ...utils.color import (
     BLACK,
+    PURE_YELLOW,
     WHITE,
-    YELLOW,
     ManimColor,
     ParsableManimColor,
     color_gradient,
@@ -109,7 +109,7 @@ class PMobject(Mobject):
         return self
 
     def set_color(
-        self, color: ParsableManimColor = YELLOW, family: bool = True
+        self, color: ParsableManimColor = PURE_YELLOW, family: bool = True
     ) -> Self:
         rgba = color_to_rgba(color)
         mobs = self.family_members_with_points() if family else [self]
@@ -129,7 +129,7 @@ class PMobject(Mobject):
 
     def set_color_by_gradient(self, *colors: ParsableManimColor) -> Self:
         self.rgbas = np.array(
-            list(map(color_to_rgba, color_gradient(*colors, len(self.points)))),
+            list(map(color_to_rgba, color_gradient(colors, len(self.points)))),
         )
         return self
 
@@ -171,7 +171,7 @@ class PMobject(Mobject):
         for mob in self.family_members_with_points():
             num_points = self.get_num_points()
             mob.apply_over_attr_arrays(
-                lambda arr, n=num_points: arr[np.arange(0, n, factor)],
+                lambda arr, n=num_points: arr[np.arange(0, n, factor)],  # type: ignore[misc]
             )
         return self
 
@@ -181,7 +181,7 @@ class PMobject(Mobject):
         """Function is any map from R^3 to R"""
         for mob in self.family_members_with_points():
             indices = np.argsort(np.apply_along_axis(function, 1, mob.points))
-            mob.apply_over_attr_arrays(lambda arr, idx=indices: arr[idx])
+            mob.apply_over_attr_arrays(lambda arr, idx=indices: arr[idx])  # type: ignore[misc]
         return self
 
     def fade_to(
@@ -198,7 +198,7 @@ class PMobject(Mobject):
     def ingest_submobjects(self) -> Self:
         attrs = self.get_array_attrs()
         arrays = list(map(self.get_merged_array, attrs))
-        for attr, array in zip(attrs, arrays, strict=False):
+        for attr, array in zip(attrs, arrays, strict=True):
             setattr(self, attr, array)
         self.submobjects = []
         self.note_changed_family()
@@ -359,7 +359,7 @@ class PointCloudDot(Mobject1D):
         radius: float = 2.0,
         stroke_width: int = 2,
         density: int = DEFAULT_POINT_DENSITY_1D,
-        color: ManimColor = YELLOW,
+        color: ManimColor = PURE_YELLOW,
         **kwargs: Any,
     ) -> None:
         self.radius = radius

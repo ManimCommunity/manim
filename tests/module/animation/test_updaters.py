@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from manim import Circle, FadeIn
+from manim import UP, Circle, Dot, FadeIn
 from manim.animation.updaters.mobject_update_utils import turn_animation_into_updater
 
 
@@ -56,3 +56,14 @@ def test_turn_animation_into_updater_positive_run_time_persists():
     current_updaters = mobject.get_updaters()
     assert len(current_updaters) == len(original_updaters) + 1
     assert updater in current_updaters
+
+
+def test_always():
+    d = Dot()
+    circ = Circle()
+    d.always.next_to(circ, UP)
+    assert len(d.updaters) == 1
+    # we should be able to chain updaters
+    d2 = Dot()
+    d.always.next_to(d2, UP).next_to(circ, UP)
+    assert len(d.updaters) == 3

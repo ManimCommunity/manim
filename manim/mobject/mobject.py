@@ -17,7 +17,7 @@ import warnings
 from collections.abc import Callable, Iterable
 from functools import partialmethod, reduce
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -28,8 +28,8 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import InvisibleMobject
 from manim.utils.color import (
     BLACK,
+    PURE_YELLOW,
     WHITE,
-    YELLOW_C,
     ManimColor,
     ParsableManimColor,
     color_gradient,
@@ -395,6 +395,42 @@ class Mobject:
         """
         return _AnimationBuilder(self)
 
+    @property
+    def always(self) -> Self:
+        """Call a method on a mobject every frame.
+
+        This is syntactic sugar for ``mob.add_updater(lambda m: m.method(*args, **kwargs), call_updater=True)``.
+        Note that this will call the method immediately. If this behavior is not
+        desired, you should use :meth:`add_updater` directly.
+
+        .. warning::
+
+            Chaining of methods is allowed, but each method will be added
+            as its own updater. If you are chaining methods, make sure they
+            do not interfere with each other or you may get unexpected results.
+
+        .. warning::
+
+            :attr:`always` is not compatible with :meth:`.ValueTracker.get_value`, because
+            the value will be computed once and then never updated again. Use :meth:`add_updater`
+            if you would like to use a :class:`~.ValueTracker` to update the value.
+
+        Example
+        -------
+
+            .. manim:: AlwaysExample
+
+                class AlwaysExample(Scene):
+                    def construct(self):
+                        sq = Square().to_edge(LEFT)
+                        t = Text("Hello World!")
+                        t.always.next_to(sq, UP)
+                        self.add(sq, t)
+                        self.play(sq.animate.to_edge(RIGHT))
+        """
+        # can't use typing.cast because Self is under TYPE_CHECKING
+        return _UpdaterBuilder(self)  # type: ignore[return-value]
+
     def __deepcopy__(self, clone_from_id) -> Self:
         cls = self.__class__
         result = cls.__new__(cls)
@@ -407,9 +443,10 @@ class Mobject:
     def __repr__(self) -> str:
         return str(self.name)
 
-    def reset_points(self) -> None:
+    def reset_points(self) -> Self:
         """Sets :attr:`points` to be an empty array."""
         self.points = np.zeros((0, self.dim))
+        return self
 
     def init_colors(self) -> object:
         """Initializes the colors.
@@ -813,7 +850,7 @@ class Mobject:
         self.scale_to_fit_depth(value)
 
     # Can't be staticmethod because of point_cloud_mobject.py
-    def get_array_attrs(self) -> list[Literal["points"]]:
+    def get_array_attrs(self) -> list[str]:
         return ["points"]
 
     def apply_over_attr_arrays(self, func: MultiMappingFunction) -> Self:
@@ -1980,7 +2017,7 @@ class Mobject:
     # Color functions
 
     def set_color(
-        self, color: ParsableManimColor = YELLOW_C, family: bool = True
+        self, color: ParsableManimColor = PURE_YELLOW, family: bool = True
     ) -> Self:
         """Condition is function which takes in one arguments, (x, y, z).
         Here it just recurses to submobjects, but in subclasses this
@@ -2031,7 +2068,7 @@ class Mobject:
         mobs = self.family_members_with_points()
         new_colors = color_gradient(colors, len(mobs))
 
-        for mob, color in zip(mobs, new_colors, strict=False):
+        for mob, color in zip(mobs, new_colors, strict=True):
             mob.set_color(color, family=False)
         return self
 
@@ -2324,7 +2361,7 @@ class Mobject:
         return Group(
             *(
                 template.copy().pointwise_become_partial(self, a1, a2)
-                for a1, a2 in zip(alphas[:-1], alphas[1:], strict=False)
+                for a1, a2 in zip(alphas[:-1], alphas[1:], strict=True)
             )
         )
 
@@ -2535,7 +2572,7 @@ class Mobject:
                     x = VGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
                     self.add(x)
         """
-        for m1, m2 in zip(self.submobjects, self.submobjects[1:], strict=False):
+        for m1, m2 in zip(self.submobjects[:-1], self.submobjects[1:], strict=True):
             m2.next_to(m1, direction, buff, **kwargs)
         if center:
             self.center()
@@ -2920,7 +2957,7 @@ class Mobject:
         if not skip_point_alignment:
             self.align_points(mobject)
         # Recurse
-        for m1, m2 in zip(self.submobjects, mobject.submobjects, strict=False):
+        for m1, m2 in zip(self.submobjects, mobject.submobjects, strict=True):
             m1.align_data(m2)
 
     def get_point_mobject(self, center=None):
@@ -2990,7 +3027,7 @@ class Mobject:
         repeat_indices = (np.arange(target) * curr) // target
         split_factors = [sum(repeat_indices == i) for i in range(curr)]
         new_submobs = []
-        for submob, sf in zip(self.submobjects, split_factors, strict=False):
+        for submob, sf in zip(self.submobjects, split_factors, strict=True):
             new_submobs.append(submob)
             new_submobs.extend(submob.copy().fade(1) for _ in range(1, sf))
         self.submobjects = new_submobs
@@ -3202,7 +3239,7 @@ class Mobject:
                 mobject.move_to(self.get_center())
 
         self.align_data(mobject, skip_point_alignment=True)
-        for sm1, sm2 in zip(self.get_family(), mobject.get_family(), strict=False):
+        for sm1, sm2 in zip(self.get_family(), mobject.get_family(), strict=True):
             sm1.points = np.array(sm2.points)
             sm1.interpolate_color(sm1, sm2, 1)
         return self
@@ -3409,6 +3446,24 @@ class _AnimationBuilder:
             setattr(anim, attr, value)
 
         return anim
+
+
+class _UpdaterBuilder:
+    """Syntactic sugar for adding updaters to mobjects."""
+
+    def __init__(self, mobject: Mobject):
+        self._mobject = mobject
+
+    def __getattr__(self, name: str, /) -> Callable[..., Self]:
+        # just return a function that will add the updater
+        def add_updater(*method_args, **method_kwargs) -> Self:
+            self._mobject.add_updater(
+                lambda m: getattr(m, name)(*method_args, **method_kwargs),
+                call_updater=True,
+            )
+            return self
+
+        return add_updater
 
 
 def override_animate(method) -> types.FunctionType:

@@ -3,7 +3,7 @@ import pytest
 from manim.constants import LEFT
 from manim.mobject.graphing.probability import BarChart
 from manim.mobject.text.tex_mobject import MathTex
-from manim.utils.color import BLUE, GREEN, RED, WHITE, YELLOW
+from manim.utils.color import BLUE, GREEN, PURE_YELLOW, RED, WHITE
 from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "probability"
@@ -72,13 +72,13 @@ def test_advanced_customization(scene):
     chart = BarChart(values=[10, 40, 10, 20], bar_names=["one", "two", "three", "four"])
 
     c_x_lbls = chart.x_axis.labels
-    c_x_lbls.set_color_by_gradient(GREEN, RED, YELLOW)
+    c_x_lbls.set_color_by_gradient(GREEN, RED, PURE_YELLOW)
 
     c_y_nums = chart.y_axis.numbers
     c_y_nums.set_color_by_gradient(BLUE, WHITE).shift(LEFT)
 
     c_y_axis = chart.y_axis
-    c_y_axis.ticks.set_color(YELLOW)
+    c_y_axis.ticks.set_color(PURE_YELLOW)
 
     c_bar_lbls = chart.get_bar_labels()
 

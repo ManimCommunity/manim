@@ -11,6 +11,7 @@ import numpy as np
 import svgelements as se
 
 from manim import config, logger
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup as VGroup
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject as VMobject
 
 from ...constants import RIGHT
@@ -24,7 +25,7 @@ from ..geometry.polygram import Polygon, Rectangle, RoundedRectangle
 __all__ = ["SVGMobject", "VMobjectFromSVGPath"]
 
 
-SVG_HASH_TO_MOB_MAP: dict[int, VMobject] = {}
+SVG_HASH_TO_MOB_MAP: dict[int, SVGMobject] = {}
 
 
 def _convert_point_to_3d(x: float, y: float) -> np.ndarray:
@@ -112,6 +113,7 @@ class SVGMobject(VMobject):
         self.svg_height = height
         self.svg_width = width
         self.opacity = opacity
+        self.id_to_vgroup_dict: dict[str, VGroup] = {}
 
         if svg_default is None:
             svg_default = {
@@ -149,6 +151,7 @@ class SVGMobject(VMobject):
             if hash_val in SVG_HASH_TO_MOB_MAP:
                 mob = SVG_HASH_TO_MOB_MAP[hash_val].copy()
                 self.add(*mob)
+                self.id_to_vgroup_dict = mob.id_to_vgroup_dict
                 return
 
         self.generate_mobject()
@@ -182,8 +185,9 @@ class SVGMobject(VMobject):
         svg = se.SVG.parse(modified_file_path)
         modified_file_path.unlink()
 
-        mobjects = self.get_mobjects_from(svg)
+        mobjects, mobject_dict = self.get_mobjects_from(svg)
         self.add(*mobjects)
+        self.id_to_vgroup_dict = mobject_dict
         self.flip(RIGHT)  # Flip y
 
     def get_file_path(self) -> Path:
@@ -237,7 +241,9 @@ class SVGMobject(VMobject):
                 result[svg_key] = str(svg_default_dict[style_key])
         return result
 
-    def get_mobjects_from(self, svg: se.SVG) -> list[VMobject]:
+    def get_mobjects_from(
+        self, svg: se.SVG
+    ) -> tuple[list[VMobject], dict[str, VGroup]]:
         """Convert the elements of the SVG to a list of mobjects.
 
         Parameters
@@ -246,36 +252,77 @@ class SVGMobject(VMobject):
             The parsed SVG file.
         """
         result: list[VMobject] = []
-        for shape in svg.elements():
-            # can we combine the two continue cases into one?
-            if isinstance(shape, se.Group):  # noqa: SIM114
-                continue
-            elif isinstance(shape, se.Path):
-                mob: VMobject = self.path_to_mobject(shape)
-            elif isinstance(shape, se.SimpleLine):
-                mob = self.line_to_mobject(shape)
-            elif isinstance(shape, se.Rect):
-                mob = self.rect_to_mobject(shape)
-            elif isinstance(shape, (se.Circle, se.Ellipse)):
-                mob = self.ellipse_to_mobject(shape)
-            elif isinstance(shape, se.Polygon):
-                mob = self.polygon_to_mobject(shape)
-            elif isinstance(shape, se.Polyline):
-                mob = self.polyline_to_mobject(shape)
-            elif isinstance(shape, se.Text):
-                mob = self.text_to_mobject(shape)
-            elif isinstance(shape, se.Use) or type(shape) is se.SVGElement:
-                continue
-            else:
-                logger.warning(f"Unsupported element type: {type(shape)}")
-                continue
-            if mob is None or not mob.has_points():
-                continue
-            self.apply_style_to_mobject(mob, shape)
-            if isinstance(shape, se.Transformable) and shape.apply:
-                self.handle_transform(mob, shape.transform)
-            result.append(mob)
-        return result
+        stack: list[tuple[se.SVGElement, int]] = []
+        stack.append((svg, 1))
+        group_id_number = 0
+        vgroup_stack: list[str] = ["root"]
+        vgroup_names: list[str] = ["root"]
+        vgroups: dict[str, VGroup] = {"root": VGroup()}
+        while len(stack) > 0:
+            element, depth = stack.pop()
+            # Reduce stack heights
+            vgroup_stack = vgroup_stack[0:(depth)]
+            try:
+                group_name = str(element.values["id"])
+            except Exception:
+                group_name = f"numbered_group_{group_id_number}"
+                group_id_number += 1
+            vg = VGroup()
+            vgroup_names.append(group_name)
+            vgroup_stack.append(group_name)
+            vgroups[group_name] = vg
+
+            if isinstance(element, (se.Group, se.Use)):
+                stack.extend((subelement, depth + 1) for subelement in element[::-1])
+            # Add element to the parent vgroup
+            try:
+                if isinstance(
+                    element,
+                    (
+                        se.Path,
+                        se.SimpleLine,
+                        se.Rect,
+                        se.Circle,
+                        se.Ellipse,
+                        se.Polygon,
+                        se.Polyline,
+                        se.Text,
+                    ),
+                ):
+                    mob = self.get_mob_from_shape_element(element)
+                    if mob is not None:
+                        result.append(mob)
+                        for parent_name in vgroup_stack[:-1]:
+                            vgroups[parent_name].add(mob)
+            except Exception as e:
+                logger.error(f"Exception occurred in 'get_mobjects_from'. Details: {e}")
+
+        return result, vgroups
+
+    def get_mob_from_shape_element(self, shape: se.SVGElement) -> VMobject | None:
+        if isinstance(shape, se.Path):
+            mob: VMobject | None = self.path_to_mobject(shape)
+        elif isinstance(shape, se.SimpleLine):
+            mob = self.line_to_mobject(shape)
+        elif isinstance(shape, se.Rect):
+            mob = self.rect_to_mobject(shape)
+        elif isinstance(shape, (se.Circle, se.Ellipse)):
+            mob = self.ellipse_to_mobject(shape)
+        elif isinstance(shape, se.Polygon):
+            mob = self.polygon_to_mobject(shape)
+        elif isinstance(shape, se.Polyline):
+            mob = self.polyline_to_mobject(shape)
+        elif isinstance(shape, se.Text):
+            mob = self.text_to_mobject(shape)
+        else:
+            logger.warning(f"Unsupported element type: {type(shape)}")
+            mob = None
+        if mob is None or not mob.has_points():
+            return mob
+        self.apply_style_to_mobject(mob, shape)
+        if isinstance(shape, se.Transformable) and shape.apply:
+            self.handle_transform(mob, shape.transform)
+        return mob
 
     @staticmethod
     def handle_transform(mob: VMobject, matrix: se.Matrix) -> VMobject:

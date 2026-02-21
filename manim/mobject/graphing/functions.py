@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from manim.typing import Point3D, Point3DLike
     from manim.utils.color import ParsableManimColor
 
-from manim.utils.color import YELLOW
+from manim.utils.color import PURE_YELLOW
 
 
 class ParametricFunction(VMobject):
@@ -156,7 +156,7 @@ class ParametricFunction(VMobject):
         else:
             boundary_times = [self.t_min, self.t_max]
 
-        for t1, t2 in zip(boundary_times[0::2], boundary_times[1::2], strict=False):
+        for t1, t2 in zip(boundary_times[0::2], boundary_times[1::2], strict=True):
             t_range = np.array(
                 [
                     *self.scaling.function(np.arange(t1, t2, self.t_step)),
@@ -216,7 +216,7 @@ class FunctionGraph(ParametricFunction):
         self,
         function: Callable[[float], Any],
         x_range: tuple[float, float] | tuple[float, float, float] | None = None,
-        color: ParsableManimColor = YELLOW,
+        color: ParsableManimColor = PURE_YELLOW,
         **kwargs: Any,
     ) -> None:
         if x_range is None:

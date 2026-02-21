@@ -110,14 +110,10 @@ ULTRAHEAVY = "ULTRAHEAVY"
 RESAMPLING_ALGORITHMS = {
     "nearest": Resampling.NEAREST,
     "none": Resampling.NEAREST,
-    "lanczos": Resampling.LANCZOS,
-    "antialias": Resampling.LANCZOS,
     "bilinear": Resampling.BILINEAR,
     "linear": Resampling.BILINEAR,
     "bicubic": Resampling.BICUBIC,
     "cubic": Resampling.BICUBIC,
-    "box": Resampling.BOX,
-    "hamming": Resampling.HAMMING,
 }
 
 # Geometry: directions

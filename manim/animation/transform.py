@@ -224,7 +224,7 @@ class Transform(Animation):
             self.starting_mobject,
             self.target_copy,
         ]
-        return zip(*(mob.get_family() for mob in mobs))
+        return zip(*(mob.get_family() for mob in mobs), strict=True)
 
     def interpolate_submobject(
         self,
@@ -292,7 +292,7 @@ class ReplacementTransform(Transform):
 
 
 class TransformFromCopy(Transform):
-    """Performs a reversed Transform"""
+    """Preserves a copy of the original VMobject and transforms only it's copy to the target VMobject"""
 
     def __init__(self, mobject: Mobject, target_mobject: Mobject, **kwargs) -> None:
         super().__init__(target_mobject, mobject, **kwargs)
@@ -730,7 +730,7 @@ class CyclicReplace(Transform):
     def create_target(self) -> Group:
         target = self.group.copy()
         cycled_targets = [target[-1], *target[:-1]]
-        for m1, m2 in zip(cycled_targets, self.group, strict=False):
+        for m1, m2 in zip(cycled_targets, self.group, strict=True):
             m1.move_to(m2)
         return target
 
@@ -915,5 +915,5 @@ class FadeTransformPieces(FadeTransform):
         """Replaces the source submobjects by the target submobjects and sets
         the opacity to 0.
         """
-        for sm0, sm1 in zip(source.get_family(), target.get_family(), strict=False):
+        for sm0, sm1 in zip(source.get_family(), target.get_family(), strict=True):
             super().ghost_to(sm0, sm1)

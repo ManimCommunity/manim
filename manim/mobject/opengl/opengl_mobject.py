@@ -1136,7 +1136,7 @@ class OpenGLMobject:
                     x = OpenGLVGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
                     self.add(x)
         """
-        for m1, m2 in zip(self.submobjects, self.submobjects[1:], strict=False):
+        for m1, m2 in zip(self.submobjects[:-1], self.submobjects[1:], strict=True):
             m2.next_to(m1, direction, **kwargs)
         if center:
             self.center()
@@ -2415,7 +2415,7 @@ class OpenGLMobject:
         mobs = self.submobjects
         new_colors = color_gradient(colors, len(mobs))
 
-        for mob, color in zip(mobs, new_colors, strict=False):
+        for mob, color in zip(mobs, new_colors, strict=True):
             mob.set_color(color)
         return self
 
@@ -2638,7 +2638,7 @@ class OpenGLMobject:
         return OpenGLGroup(
             *(
                 template.copy().pointwise_become_partial(self, a1, a2)
-                for a1, a2 in zip(alphas[:-1], alphas[1:], strict=False)
+                for a1, a2 in zip(alphas[:-1], alphas[1:], strict=True)
             )
         )
 
@@ -2774,7 +2774,7 @@ class OpenGLMobject:
             mob1.add_n_more_submobjects(max(0, n2 - n1))
             mob2.add_n_more_submobjects(max(0, n1 - n2))
         # Recurse
-        for sm1, sm2 in zip(mob1.submobjects, mob2.submobjects, strict=False):
+        for sm1, sm2 in zip(mob1.submobjects, mob2.submobjects, strict=True):
             sm1.align_family(sm2)
         return self
 
@@ -2801,7 +2801,7 @@ class OpenGLMobject:
         repeat_indices = (np.arange(target) * curr) // target
         split_factors = [(repeat_indices == i).sum() for i in range(curr)]
         new_submobs = []
-        for submob, sf in zip(self.submobjects, split_factors, strict=False):
+        for submob, sf in zip(self.submobjects, split_factors, strict=True):
             new_submobs.append(submob)
             for _ in range(1, sf):
                 new_submob = submob.copy()
