@@ -1,4 +1,4 @@
-from manim import ORIGIN, UR, Arrow, DashedVMobject, VGroup
+from manim import ORIGIN, UR, Arrow, DashedVMobject, VGroup, DashedLine
 from manim.mobject.geometry.tips import ArrowTip, StealthTip
 
 
@@ -41,3 +41,19 @@ def test_dashed_arrow_with_start_tip_has_two_tips():
     tips = _collect_tips(dashed)
 
     assert len(tips) == 2
+
+
+def test_zero_length_dashed_line_submobjects_have_2d_points():
+    """Submobjects of a zero-length DashedLine must have 2-D point arrays."""
+    line = DashedLine(ORIGIN, ORIGIN)
+    for sub in line.submobjects:
+        assert sub.points.ndim == 2, (
+            f"Expected 2-D points array, got shape {sub.points.shape}"
+        )
+
+
+def test_become_nonzero_to_zero_dashed_line_does_not_crash():
+    """become() from a normal DashedLine to a zero-length one should not crash."""
+    normal = DashedLine(ORIGIN, 2 * UR)
+    zero = DashedLine(ORIGIN, ORIGIN)
+    normal.become(zero)
