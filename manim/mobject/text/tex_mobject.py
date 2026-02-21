@@ -349,14 +349,14 @@ class MathTex(SingleStringMathTex):
 
     @staticmethod
     def _split_double_braces(tex_string: str) -> list[str]:
-        """Split *tex_string* on Manim's ``{{ ... }}`` double-brace notation.
+        r"""Split *tex_string* on Manim's ``{{ ... }}`` double-brace notation.
 
         Rules that avoid false positives on ordinary LaTeX source:
 
         * ``{{`` is only treated as a group opener when it appears at the very
           start of the string or is immediately preceded by a whitespace
           character.  Naturally-occurring ``{{`` in LaTeX is usually preceded
-          by non-whitespace (e.g. ``\\frac{{{n}}}{k}`` or ``a^{{2}}``), so
+          by non-whitespace (e.g. ``\frac{{{n}}}{k}`` or ``a^{{2}}``), so
           the whitespace guard eliminates the most common false positives
           without any brace-depth bookkeeping on the outer string.
 
@@ -365,10 +365,10 @@ class MathTex(SingleStringMathTex):
           so ``{{ a^{b^{c}} }}`` is handled correctly.
 
         * Escape sequences are consumed as two-character units in priority
-          order: ``\\\\`` first (escaped backslash), then ``\\{`` / ``\\}``
-          (escaped braces).  This ensures e.g. ``\\\\}}`` is read as an
+          order: ``\\`` first (escaped backslash), then ``\{`` / ``\}``
+          (escaped braces).  This ensures e.g. ``\\}}`` is read as an
           escaped backslash followed by a real ``}}`` rather than as
-          ``\\`` + ``\\}`` + lone ``}``.
+          ``\`` + ``\}`` + lone ``}``.
         """
         segments: list[str] = []
         current = ""
@@ -389,9 +389,8 @@ class MathTex(SingleStringMathTex):
 
             if not inside_manim:
                 # {{ opens a Manim group only at start-of-string or after whitespace.
-                if (
-                    tex_string[i : i + 2] == "{{"
-                    and (i == 0 or tex_string[i - 1].isspace())
+                if tex_string[i : i + 2] == "{{" and (
+                    i == 0 or tex_string[i - 1].isspace()
                 ):
                     segments.append(current)
                     current = ""
@@ -406,7 +405,11 @@ class MathTex(SingleStringMathTex):
                     inner_depth += 1
                     current += tex_string[i]
                     i += 1
-                elif tex_string[i] == "}" and inner_depth == 0 and tex_string[i : i + 2] == "}}":
+                elif (
+                    tex_string[i] == "}"
+                    and inner_depth == 0
+                    and tex_string[i : i + 2] == "}}"
+                ):
                     # }} at inner depth 0 closes the Manim group.
                     segments.append(current)
                     current = ""
