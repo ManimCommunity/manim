@@ -14,12 +14,10 @@ from ..utils.rate_functions import linear, smooth
 __all__ = ["Animation", "Wait", "Add", "override_animation"]
 
 
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from copy import deepcopy
 from functools import partialmethod
-from typing import TYPE_CHECKING, Any, Callable
-
-from typing_extensions import Self
+from typing import TYPE_CHECKING, Any, Self
 
 if TYPE_CHECKING:
     from manim.scene.scene import Scene
@@ -53,7 +51,6 @@ class Animation:
 
         For example ``rate_func(0.5)`` is the proportion of the animation that is done
         after half of the animations run time.
-
 
     reverse_rate_function
         Reverses the rate function of the animation. Setting ``reverse_rate_function``
@@ -121,7 +118,7 @@ class Animation:
             if func is not None:
                 anim = func(mobject, *args, **kwargs)
                 logger.debug(
-                    f"The {cls.__name__} animation has been is overridden for "
+                    f"The {cls.__name__} animation has been overridden for "
                     f"{type(mobject).__name__} mobjects. use_override = False can "
                     f" be used as keyword argument to prevent animation overriding.",
                 )
@@ -130,7 +127,7 @@ class Animation:
 
     def __init__(
         self,
-        mobject: Mobject | None,
+        mobject: Mobject | OpenGLMobject | None,
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
         run_time: float = DEFAULT_ANIMATION_RUN_TIME,
         rate_func: Callable[[float], float] = smooth,
@@ -141,7 +138,7 @@ class Animation:
         introducer: bool = False,
         *,
         _on_finish: Callable[[], None] = lambda _: None,
-        **kwargs,
+        use_override: bool = True,  # included here to avoid TypeError if passed from a subclass' constructor
     ) -> None:
         self._typecheck_input(mobject)
         self.run_time: float = run_time
@@ -161,8 +158,6 @@ class Animation:
         else:
             self.starting_mobject: Mobject = Mobject()
             self.mobject: Mobject = mobject if mobject is not None else Mobject()
-        if kwargs:
-            logger.debug("Animation received extra kwargs: %s", kwargs)
 
         if hasattr(self, "CONFIG"):
             logger.error(
@@ -265,11 +260,11 @@ class Animation:
         ):
             scene.add(self.mobject)
 
-    def create_starting_mobject(self) -> Mobject:
+    def create_starting_mobject(self) -> Mobject | OpenGLMobject:
         # Keep track of where the mobject starts
         return self.mobject.copy()
 
-    def get_all_mobjects(self) -> Sequence[Mobject]:
+    def get_all_mobjects(self) -> Sequence[Mobject | OpenGLMobject]:
         """Get all mobjects involved in the animation.
 
         Ordering must match the ordering of arguments to interpolate_submobject
@@ -283,9 +278,12 @@ class Animation:
 
     def get_all_families_zipped(self) -> Iterable[tuple]:
         if config["renderer"] == RendererType.OPENGL:
-            return zip(*(mob.get_family() for mob in self.get_all_mobjects()))
+            return zip(
+                *(mob.get_family() for mob in self.get_all_mobjects()), strict=False
+            )
         return zip(
-            *(mob.family_members_with_points() for mob in self.get_all_mobjects())
+            *(mob.family_members_with_points() for mob in self.get_all_mobjects()),
+            strict=False,
         )
 
     def update_mobjects(self, dt: float) -> None:
@@ -499,6 +497,8 @@ class Animation:
 
         cls._original__init__ = cls.__init__
 
+    _original__init__ = __init__  # needed if set_default() is called with no kwargs directly from Animation
+
     @classmethod
     def set_default(cls, **kwargs) -> None:
         """Sets the default values of keyword arguments.
@@ -541,7 +541,7 @@ class Animation:
 
 
 def prepare_animation(
-    anim: Animation | mobject._AnimationBuilder,
+    anim: Animation | mobject._AnimationBuilder | opengl_mobject._AnimationBuilder,
 ) -> Animation:
     r"""Returns either an unchanged animation, or the animation built
     from a passed animation factory.

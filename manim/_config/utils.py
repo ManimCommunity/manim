@@ -33,8 +33,7 @@ from manim.utils.tex import TexTemplate
 
 if TYPE_CHECKING:
     from enum import EnumMeta
-
-    from typing_extensions import Self
+    from typing import Self
 
     from manim.typing import StrPath, Vector3D
 
@@ -122,10 +121,14 @@ def make_config_parser(
     # read_file() before calling read() for any optional files."
     # https://docs.python.org/3/library/configparser.html#configparser.ConfigParser.read
     parser = configparser.ConfigParser()
+    logger.info(f"Reading config file: {library_wide}")
     with library_wide.open() as file:
         parser.read_file(file)  # necessary file
 
     other_files = [user_wide, Path(custom_file) if custom_file else folder_wide]
+    for path in other_files:
+        if path.exists():
+            logger.info(f"Reading config file: {path}")
     parser.read(other_files)  # optional files
 
     return parser
@@ -296,6 +299,7 @@ class ManimConfig(MutableMapping):
         "save_last_frame",
         "save_pngs",
         "scene_names",
+        "seed",
         "show_in_file_browser",
         "tex_dir",
         "tex_template",
@@ -591,6 +595,7 @@ class ManimConfig(MutableMapping):
             "enable_wireframe",
             "force_window",
             "no_latex_cleanup",
+            "dry_run",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
 
@@ -602,6 +607,7 @@ class ManimConfig(MutableMapping):
             # the next two must be set BEFORE digesting frame_width and frame_height
             "pixel_height",
             "pixel_width",
+            "seed",
             "window_monitor",
             "zero_pad",
         ]:
@@ -625,6 +631,7 @@ class ManimConfig(MutableMapping):
             "background_color",
             "renderer",
             "window_position",
+            "preview_command",
         ]:
             setattr(self, key, parser["CLI"].get(key, fallback="", raw=True))
 
@@ -767,6 +774,7 @@ class ManimConfig(MutableMapping):
             "dry_run",
             "no_latex_cleanup",
             "preview_command",
+            "seed",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -1414,7 +1422,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def window_size(self) -> str:
-        """The size of the opengl window. 'default' to automatically scale the window based on the display monitor."""
+        """The size of the opengl window as 'width,height' or 'default' to automatically scale the window based on the display monitor."""
         return self._d["window_size"]
 
     @window_size.setter
@@ -1448,7 +1456,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def gui_location(self) -> tuple[Any]:
-        """Enable GUI interaction."""
+        """Location parameters for the GUI window (e.g., screen coordinates or layout settings)."""
         return self._d["gui_location"]
 
     @gui_location.setter
@@ -1797,6 +1805,17 @@ class ManimConfig(MutableMapping):
     @plugins.setter
     def plugins(self, value: list[str]):
         self._d["plugins"] = value
+
+    @property
+    def seed(self) -> int | None:
+        """Random seed for reproducibility. None means no seed is set."""
+        return self._d["seed"]
+
+    @seed.setter
+    def seed(self, value: int | None) -> None:
+        if value is None:
+            return
+        self._set_pos_number("seed", value, False)
 
 
 # TODO: to be used in the future - see PR #620

@@ -20,9 +20,9 @@ __all__ = [
 ]
 
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from functools import reduce
-from typing import TYPE_CHECKING, Callable, overload
+from typing import TYPE_CHECKING, overload
 
 import numpy as np
 
@@ -915,10 +915,10 @@ def subdivide_bezier(points: BezierPointsLike, n_divisions: int) -> Spline:
     :class:`~.Spline`
         An array containing the points defining the new :math:`n` subcurves.
     """
+    points = np.asarray(points)
     if n_divisions == 1:
         return points
 
-    points = np.asarray(points)
     N, dim = points.shape
 
     if N <= 4:
@@ -999,7 +999,7 @@ def bezier_remap(
 
     new_tuples = np.empty((new_number_of_curves, nppc, dim))
     index = 0
-    for curve, sf in zip(bezier_tuples, split_factors):
+    for curve, sf in zip(bezier_tuples, split_factors, strict=True):
         new_tuples[index : index + sf] = subdivide_bezier(curve, sf).reshape(
             sf, nppc, dim
         )
@@ -1059,7 +1059,7 @@ def interpolate(
             * ``alpha`` is a :class:`float`, the return is another :class:`~.Point3D`.
             * ``alpha`` is a :class:`~.ColVector`, the return is a :class:`~.Point3D_Array`.
     """
-    return start + alpha * (end - start)
+    return (1 - alpha) * start + alpha * end
 
 
 def integer_interpolate(
@@ -1234,6 +1234,7 @@ def match_interpolate(
 
     Examples
     --------
+    >>> from manim import match_interpolate
     >>> match_interpolate(0, 100, 10, 20, 15)
     np.float64(50.0)
     """

@@ -9,12 +9,12 @@ __all__ = [
     "sigmoid",
 ]
 
-
+import math
+from collections.abc import Callable
 from functools import lru_cache
-from typing import Any, Callable, Protocol, TypeVar
+from typing import Any, Protocol, TypeVar
 
 import numpy as np
-from scipy import special
 
 
 def binary_search(
@@ -86,9 +86,9 @@ def choose(n: int, k: int) -> int:
     References
     ----------
     - https://en.wikipedia.org/wiki/Combination
-    - https://docs.scipy.org/doc/scipy/reference/generated/scipy.special.comb.html
+    - https://docs.python.org/3/library/math.html#math.comb
     """
-    value: int = special.comb(n, k, exact=True)
+    value: int = math.comb(n, k)
     return value
 
 
@@ -98,7 +98,7 @@ class Comparable(Protocol):
     def __gt__(self, other: Any) -> bool: ...
 
 
-ComparableT = TypeVar("ComparableT", bound=Comparable)  # noqa: Y001
+ComparableT = TypeVar("ComparableT", bound=Comparable)
 
 
 def clip(a: ComparableT, min_a: ComparableT, max_a: ComparableT) -> ComparableT:

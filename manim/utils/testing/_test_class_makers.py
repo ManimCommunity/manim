@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from manim.renderer.cairo_renderer import CairoRenderer
 from manim.renderer.opengl_renderer import OpenGLRenderer
@@ -46,16 +47,16 @@ class DummySceneFileWriter(SceneFileWriter):
     def __init__(
         self,
         renderer: CairoRenderer | OpenGLRenderer,
-        scene_name: StrPath,
+        scene_name: str,
         **kwargs: Any,
     ) -> None:
         super().__init__(renderer, scene_name, **kwargs)
         self.i = 0
 
-    def init_output_directories(self, scene_name: StrPath) -> None:
+    def init_output_directories(self, scene_name: str) -> None:
         pass
 
-    def add_partial_movie_file(self, hash_animation: str) -> None:
+    def add_partial_movie_file(self, hash_animation: str | None) -> None:
         pass
 
     def begin_animation(

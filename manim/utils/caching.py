@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
 from .. import config, logger
 from ..utils.hashing import get_hash_from_play_call
@@ -8,8 +9,6 @@ from ..utils.hashing import get_hash_from_play_call
 __all__ = ["handle_caching_play"]
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from manim.renderer.opengl_renderer import OpenGLRenderer
     from manim.scene.scene import Scene
 
@@ -49,9 +48,8 @@ def handle_caching_play(func: Callable[..., None]) -> Callable[..., None]:
             return
         if not config["disable_caching"]:
             mobjects_on_scene = scene.mobjects
-            # TODO: the first argument seems wrong. Shouldn't it be scene instead?
             hash_play = get_hash_from_play_call(
-                self,  # type: ignore[arg-type]
+                scene,
                 self.camera,
                 animations,
                 mobjects_on_scene,
