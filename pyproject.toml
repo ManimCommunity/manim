@@ -1,6 +1,6 @@
 [project]
 name = "manim"
-version = "0.19.0"
+version = "0.20.0"
 description = "Animation engine for explanatory math videos."
 authors = [
   {name = "The Manim Community Developers", email = "contact@manim.community"},
@@ -14,42 +14,39 @@ classifiers = [
     "Topic :: Scientific/Engineering",
     "Topic :: Multimedia :: Video",
     "Topic :: Multimedia :: Graphics",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Natural Language :: English",
     ]
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 dependencies = [
     "audioop-lts>=0.2.1 ; python_full_version >= '3.13'",
-    "av>=9.0.0,<14.0.0",
+    "av>=15.0",
     "beautifulsoup4>=4.12",
     "click>=8.0",
     "cloup>=2.0.0",
     "decorator>=4.3.2",
-    "importlib-metadata>=8.6.1 ; python_full_version < '3.10'",
-    "isosurfaces>=0.1.0",
-    "manimpango>=0.5.0,<1.0.0",
+    "isosurfaces>=0.1.1",
+    "manimpango>=0.6.1,<1.0.0",
     "mapbox-earcut>=1.0.0",
     "moderngl-window>=2.0.0",
-    "moderngl>=5.0.0,<6.0.0",
+    "moderngl>=5.7.0,<6.0.0",
     "networkx>=2.6",
-    "numpy>=2.0",
-    "numpy>=2.1 ; python_full_version >= '3.10'",
-    "pillow>=9.1",
-    "pycairo>=1.13,<2.0.0",
-    "pydub>=0.20.0",
-    "pygments>=2.0.0",
+    "numpy>=2.1",
+    "pillow>=11.0",
+    "pycairo>=1.14,<2.0.0",
+    "pydub>=0.22.0",
+    "pygments>=2.17",
     "rich>=12.0.0",
     "scipy>=1.13.0",
-    "scipy>=1.14.0 ; python_full_version >= '3.13'",
-    "screeninfo>=0.7",
-    "skia-pathops>=0.7.0",
+    "scipy>=1.15.0 ; python_full_version >= '3.13'",
+    "screeninfo>=0.7.0",
+    "skia-pathops>=0.9.0",
     "srt>=3.0.0",
-    "svgelements>=1.8.0",
-    "tqdm>=4.0.0",
+    "svgelements>=1.9.0",
+    "tqdm>=4.21.0",
     "typing-extensions>=4.12.0",
     "watchdog>=2.0.0",
 ]
@@ -81,15 +78,13 @@ jupyterlab = [
 [dependency-groups]
 dev = [
     "furo>=2024.8.6",
-    "gitpython>=3.1.44",
     "matplotlib>=3.9.4",
     "myst-parser>=3.0.1",
     "pre-commit>=4.1.0",
-    "pygithub>=2.5.0",
     "pytest>=8.3.4",
     "pytest-cov>=6.0.0",
     "pytest-xdist>=2.2,<3.0",
-    "ruff>=0.9.3",
+    "ruff>=0.14.7",
     "sphinx>=7.4.7",
     "sphinx-copybutton>=0.5.2",
     "sphinx-design>=0.6.1",
@@ -132,7 +127,7 @@ exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:"]
 
 [tool.ruff]
 line-length = 88
-target-version = "py39"
+target-version = "py311"
 extend-exclude = [
   ".github",
   ".hg",
@@ -151,13 +146,15 @@ select = [
   "C4",
   "D",
   "E",
-  "W",
   "F",
   "I",
+  "NPY",
+  "PERF",
   "PGH",
   "PT",
   "SIM",
   "UP",
+  "W",
 ]
 
 ignore = [
@@ -174,18 +171,19 @@ ignore = [
   "D205",
   "D212",
   "D4",
+  "E111",
+  "E114",
+  "E117",
+  "E501",
   # due to the import * used in manim
   "F403",
   "F405",
+  "PERF203",  # try-except-in-loop
   # Exception too broad (this would require lots of changes + re.escape) for little benefit
   "PT011",
   # as recommended by https://docs.astral.sh/ruff/formatter/#conflicting-lint-rules
   "D206",
   "D300",
-  "E111",
-  "E114",
-  "E117",
-  "E501",
 ]
 
 # Allow unused variables when underscore-prefixed.
@@ -211,9 +209,6 @@ dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
   "F401",
   "F403",
 ]
-
-[tool.ruff.lint.isort]
-required-imports = ["from __future__ import annotations"]
 
 [tool.ruff.lint.flake8-pytest-style]
 fixture-parentheses = false

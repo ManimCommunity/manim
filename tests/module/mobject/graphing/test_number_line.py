@@ -62,7 +62,7 @@ def test_add_labels():
     expected_label_length = 6
     num_line = NumberLine(x_range=[-4, 4])
     num_line.add_labels(
-        dict(zip(list(range(-3, 3)), [Integer(m) for m in range(-1, 5)])),
+        dict(zip(list(range(-3, 3)), [Integer(m) for m in range(-1, 5)], strict=True)),
     )
     actual_label_length = len(num_line.labels)
     assert actual_label_length == expected_label_length, (

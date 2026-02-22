@@ -29,7 +29,7 @@ CFG_DEFAULTS = {
     "background_color": "BLACK",
     "background_opacity": 1,
     "scene_names": "Default",
-    "resolution": (854, 480),
+    "resolution": (1920, 1080),
 }
 
 __all__ = ["select_resolution", "update_cfg", "project", "scene"]
@@ -43,11 +43,10 @@ def select_resolution() -> tuple[int, int]:
     tuple[int, int]
         Tuple containing height and width.
     """
-    resolution_options: list[tuple[int, int]] = []
-    for quality in QUALITIES.items():
-        resolution_options.append(
-            (quality[1]["pixel_height"], quality[1]["pixel_width"]),
-        )
+    resolution_options: list[tuple[int, int]] = [
+        (quality[1]["pixel_height"], quality[1]["pixel_width"])
+        for quality in QUALITIES.items()
+    ]
     resolution_options.pop()
     choice = click.prompt(
         "\nSelect resolution:\n",
@@ -76,8 +75,8 @@ def update_cfg(cfg_dict: dict[str, Any], project_cfg_path: Path) -> None:
     cli_config = config["CLI"]
     for key, value in cfg_dict.items():
         if key == "resolution":
-            cli_config["pixel_width"] = str(value[0])
-            cli_config["pixel_height"] = str(value[1])
+            cli_config["pixel_height"] = str(value[0])
+            cli_config["pixel_width"] = str(value[1])
         else:
             cli_config[key] = str(value)
 

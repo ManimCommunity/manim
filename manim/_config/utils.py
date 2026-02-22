@@ -33,8 +33,7 @@ from manim.utils.tex import TexTemplate
 
 if TYPE_CHECKING:
     from enum import EnumMeta
-
-    from typing_extensions import Self
+    from typing import Self
 
     from manim.typing import StrPath, Vector3D
 
@@ -300,6 +299,7 @@ class ManimConfig(MutableMapping):
         "save_last_frame",
         "save_pngs",
         "scene_names",
+        "seed",
         "show_in_file_browser",
         "tex_dir",
         "tex_template",
@@ -595,6 +595,7 @@ class ManimConfig(MutableMapping):
             "enable_wireframe",
             "force_window",
             "no_latex_cleanup",
+            "dry_run",
         ]:
             setattr(self, key, parser["CLI"].getboolean(key, fallback=False))
 
@@ -606,6 +607,7 @@ class ManimConfig(MutableMapping):
             # the next two must be set BEFORE digesting frame_width and frame_height
             "pixel_height",
             "pixel_width",
+            "seed",
             "window_monitor",
             "zero_pad",
         ]:
@@ -629,6 +631,7 @@ class ManimConfig(MutableMapping):
             "background_color",
             "renderer",
             "window_position",
+            "preview_command",
         ]:
             setattr(self, key, parser["CLI"].get(key, fallback="", raw=True))
 
@@ -771,6 +774,7 @@ class ManimConfig(MutableMapping):
             "dry_run",
             "no_latex_cleanup",
             "preview_command",
+            "seed",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -1801,6 +1805,17 @@ class ManimConfig(MutableMapping):
     @plugins.setter
     def plugins(self, value: list[str]):
         self._d["plugins"] = value
+
+    @property
+    def seed(self) -> int | None:
+        """Random seed for reproducibility. None means no seed is set."""
+        return self._d["seed"]
+
+    @seed.setter
+    def seed(self, value: int | None) -> None:
+        if value is None:
+            return
+        self._set_pos_number("seed", value, False)
 
 
 # TODO: to be used in the future - see PR #620

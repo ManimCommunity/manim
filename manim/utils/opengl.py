@@ -9,8 +9,9 @@ from manim._config import config
 from manim.typing import ManimFloat
 
 if TYPE_CHECKING:
+    from typing import TypeAlias
+
     import numpy.typing as npt
-    from typing_extensions import TypeAlias
 
     from manim.typing import MatrixMN, Point3D
 

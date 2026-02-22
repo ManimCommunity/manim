@@ -47,13 +47,16 @@ from manim.utils.iterables import (
 from manim.utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
+    from typing import Self
+
     import numpy.typing as npt
-    from typing_extensions import Self
 
     from manim.typing import (
         CubicBezierPath,
         CubicBezierPointsLike,
         CubicSpline,
+        FloatRGBA,
+        FloatRGBA_Array,
         ManimFloat,
         MappingFunction,
         Point2DLike,
@@ -61,10 +64,8 @@ if TYPE_CHECKING:
         Point3D_Array,
         Point3DLike,
         Point3DLike_Array,
-        RGBA_Array_Float,
         Vector3D,
         Vector3DLike,
-        Zeros,
     )
 
 # TODO
@@ -215,8 +216,10 @@ class VMobject(Mobject):
         return self
 
     def generate_rgbas_array(
-        self, color: ManimColor | list[ManimColor], opacity: float | Iterable[float]
-    ) -> RGBA_Array_Float:
+        self,
+        color: ParsableManimColor | Iterable[ManimColor] | None,
+        opacity: float | Iterable[float],
+    ) -> FloatRGBA:
         """
         First arg can be either a color, or a tuple/list of colors.
         Likewise, opacity can either be a float, or a tuple of floats.
@@ -230,8 +233,11 @@ class VMobject(Mobject):
         opacities: list[float] = [
             o if (o is not None) else 0.0 for o in tuplify(opacity)
         ]
-        rgbas: npt.NDArray[RGBA_Array_Float] = np.array(
-            [c.to_rgba_with_alpha(o) for c, o in zip(*make_even(colors, opacities))],
+        rgbas: FloatRGBA_Array = np.array(
+            [
+                c.to_rgba_with_alpha(o)
+                for c, o in zip(*make_even(colors, opacities), strict=True)
+            ],
         )
 
         sheen_factor = self.get_sheen_factor()
@@ -245,7 +251,7 @@ class VMobject(Mobject):
     def update_rgbas_array(
         self,
         array_name: str,
-        color: ManimColor | None = None,
+        color: ParsableManimColor | Iterable[ManimColor] | None = None,
         opacity: float | None = None,
     ) -> Self:
         rgbas = self.generate_rgbas_array(color, opacity)
@@ -313,7 +319,7 @@ class VMobject(Mobject):
             for submobject in self.submobjects:
                 submobject.set_fill(color, opacity, family)
         self.update_rgbas_array("fill_rgbas", color, opacity)
-        self.fill_rgbas: RGBA_Array_Float
+        self.fill_rgbas: FloatRGBA_Array
         if opacity is not None:
             self.fill_opacity = opacity
         return self
@@ -455,7 +461,7 @@ class VMobject(Mobject):
                 return self
             elif len(submobs2) == 0:
                 submobs2 = [vmobject]
-            for sm1, sm2 in zip(*make_even(submobs1, submobs2)):
+            for sm1, sm2 in zip(*make_even(submobs1, submobs2), strict=True):
                 sm1.match_style(sm2)
         return self
 
@@ -470,7 +476,14 @@ class VMobject(Mobject):
         self.set_stroke(opacity=opacity, family=family, background=True)
         return self
 
-    def scale(self, scale_factor: float, scale_stroke: bool = False, **kwargs) -> Self:
+    def scale(
+        self,
+        scale_factor: float,
+        scale_stroke: bool = False,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
         r"""Scale the size by a factor.
 
         Default behavior is to scale about the center of the vmobject.
@@ -525,7 +538,7 @@ class VMobject(Mobject):
                 width=abs(scale_factor) * self.get_stroke_width(background=True),
                 background=True,
             )
-        super().scale(scale_factor, **kwargs)
+        super().scale(scale_factor, about_point=about_point, about_edge=about_edge)
         return self
 
     def fade(self, darkness: float = 0.5, family: bool = True) -> Self:
@@ -539,7 +552,7 @@ class VMobject(Mobject):
         super().fade(darkness, family)
         return self
 
-    def get_fill_rgbas(self) -> RGBA_Array_Float | Zeros:
+    def get_fill_rgbas(self) -> FloatRGBA_Array:
         try:
             return self.fill_rgbas
         except AttributeError:
@@ -572,13 +585,13 @@ class VMobject(Mobject):
     def get_fill_opacities(self) -> npt.NDArray[ManimFloat]:
         return self.get_fill_rgbas()[:, 3]
 
-    def get_stroke_rgbas(self, background: bool = False) -> RGBA_Array_float | Zeros:
+    def get_stroke_rgbas(self, background: bool = False) -> FloatRGBA_Array:
         try:
             if background:
-                self.background_stroke_rgbas: RGBA_Array_Float
+                self.background_stroke_rgbas: FloatRGBA_Array
                 rgbas = self.background_stroke_rgbas
             else:
-                self.stroke_rgbas: RGBA_Array_Float
+                self.stroke_rgbas: FloatRGBA_Array
                 rgbas = self.stroke_rgbas
             return rgbas
         except AttributeError:
@@ -591,7 +604,6 @@ class VMobject(Mobject):
 
     def get_stroke_width(self, background: bool = False) -> float:
         if background:
-            self.background_stroke_width: float
             width = self.background_stroke_width
         else:
             width = self.stroke_width
@@ -616,7 +628,7 @@ class VMobject(Mobject):
             return self.get_stroke_color()
         return self.get_fill_color()
 
-    color = property(get_color, set_color)
+    color: ManimColor = property(get_color, set_color)
 
     def set_sheen_direction(self, direction: Vector3DLike, family: bool = True) -> Self:
         """Sets the direction of the applied sheen.
@@ -1175,7 +1187,13 @@ class VMobject(Mobject):
             self.points = self.points[:-1]
         self.append_points(vectorized_mobject.points)
 
-    def apply_function(self, function: MappingFunction) -> Self:
+    def apply_function(
+        self,
+        function: MappingFunction,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
         factor = self.pre_function_handle_to_anchor_scale_factor
         self.scale_handle_to_anchor_distances(factor)
         super().apply_function(function)
@@ -1188,11 +1206,12 @@ class VMobject(Mobject):
         self,
         angle: float,
         axis: Vector3DLike = OUT,
+        *,
         about_point: Point3DLike | None = None,
-        **kwargs,
+        about_edge: Vector3DLike | None = None,
     ) -> Self:
         self.rotate_sheen_direction(angle, axis)
-        super().rotate(angle, axis, about_point, **kwargs)
+        super().rotate(angle, axis, about_point=about_point, about_edge=about_edge)
         return self
 
     def scale_handle_to_anchor_distances(self, factor: float) -> Self:
@@ -1318,7 +1337,7 @@ class VMobject(Mobject):
         split_indices = [0] + list(filtered) + [len(points)]
         return (
             points[i1:i2]
-            for i1, i2 in zip(split_indices, split_indices[1:])
+            for i1, i2 in zip(split_indices[:-1], split_indices[1:], strict=True)
             if (i2 - i1) >= nppcc
         )
 
@@ -1672,7 +1691,7 @@ class VMobject(Mobject):
 
         s = self.get_start_anchors()
         e = self.get_end_anchors()
-        return list(it.chain.from_iterable(zip(s, e)))
+        return list(it.chain.from_iterable(zip(s, e, strict=True)))
 
     def get_points_defining_boundary(self) -> Point3D_Array:
         # Probably returns all anchors, but this is weird regarding  the name of the method.
@@ -2817,6 +2836,21 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
         self.dashed_ratio = dashed_ratio
         self.num_dashes = num_dashes
         super().__init__(color=color, **kwargs)
+
+        # Work on a copy to avoid mutating the caller's mobject (e.g. removing tips).
+        base_vmobject = vmobject
+        vmobject = base_vmobject.copy()
+
+        # TipableVMobject instances (Arrow, Vector, etc.) carry tips as submobjects.
+        # When dashing such objects, each subcurve would otherwise include its own
+        # tip, leading to many overlapping arrowheads. Pop tips from the working
+        # copy and re-attach them only once after the dashes are created.
+        tips = None
+        if hasattr(vmobject, "pop_tips"):
+            popped_tips = vmobject.pop_tips()
+            if len(popped_tips.submobjects) > 0:
+                tips = popped_tips
+
         r = self.dashed_ratio
         n = self.num_dashes
         if n > 0:
@@ -2902,6 +2936,9 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
         # Family is already taken care of by get_subcurve
         # implementation
         if config.renderer == RendererType.OPENGL:
-            self.match_style(vmobject, recurse=False)
+            self.match_style(base_vmobject, recurse=False)
         else:
-            self.match_style(vmobject, family=False)
+            self.match_style(base_vmobject, family=False)
+
+        if tips is not None:
+            self.add(*tips.submobjects)

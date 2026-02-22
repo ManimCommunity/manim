@@ -2,23 +2,34 @@ from __future__ import annotations
 
 __all__ = ["OpenGLPMobject", "OpenGLPGroup", "OpenGLPMPoint"]
 
+from typing import TYPE_CHECKING
+
 import moderngl
 import numpy as np
-from typing_extensions import Self
 
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.utils.bezier import interpolate
 from manim.utils.color import (
     BLACK,
+    PURE_YELLOW,
     WHITE,
-    YELLOW,
     ParsableManimColor,
     color_gradient,
     color_to_rgba,
 )
 from manim.utils.config_ops import _Uniforms
 from manim.utils.iterables import resize_with_interpolation
+
+if TYPE_CHECKING:
+    from typing import Self
+
+    from manim.typing import (
+        FloatRGBA_Array,
+        FloatRGBALike_Array,
+        Point3D_Array,
+        Point3DLike_Array,
+    )
 
 __all__ = ["OpenGLPMobject", "OpenGLPGroup", "OpenGLPMPoint"]
 
@@ -37,7 +48,7 @@ class OpenGLPMobject(OpenGLMobject):
     def __init__(
         self,
         stroke_width: float = 2.0,
-        color: ParsableManimColor = YELLOW,
+        color: ParsableManimColor = PURE_YELLOW,
         render_primitive: int = moderngl.POINTS,
         **kwargs,
     ):
@@ -48,21 +59,27 @@ class OpenGLPMobject(OpenGLMobject):
         )
 
     def reset_points(self) -> Self:
-        self.rgbas = np.zeros((1, 4))
-        self.points = np.zeros((0, 3))
+        self.rgbas: FloatRGBA_Array = np.zeros((1, 4))
+        self.points: Point3D_Array = np.zeros((0, 3))
         return self
 
     def get_array_attrs(self):
         return ["points", "rgbas"]
 
-    def add_points(self, points, rgbas=None, color=None, opacity=None):
+    def add_points(
+        self,
+        points: Point3DLike_Array,
+        rgbas: FloatRGBALike_Array | None = None,
+        color: ParsableManimColor | None = None,
+        opacity: float | None = None,
+    ) -> Self:
         """Add points.
 
         Points must be a Nx3 numpy array.
         Rgbas must be a Nx4 numpy array if it is not None.
         """
         if rgbas is None and color is None:
-            color = YELLOW
+            color = PURE_YELLOW
         self.append_points(points)
         # rgbas array will have been resized with points
         if color is not None:

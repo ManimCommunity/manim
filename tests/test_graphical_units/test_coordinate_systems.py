@@ -26,7 +26,7 @@ def test_line_graph(scene):
     first_line = plane.plot_line_graph(
         x_values=[-3, 1],
         y_values=[-2, 2],
-        line_color=YELLOW,
+        line_color=PURE_YELLOW,
     )
     second_line = plane.plot_line_graph(
         x_values=[0, 2, 2, 4],
@@ -71,7 +71,7 @@ def test_plot_surface_colorscale(scene):
         param_trig,
         u_range=(-3, 3),
         v_range=(-3, 3),
-        colorscale=[BLUE, GREEN, YELLOW, ORANGE, RED],
+        colorscale=[BLUE, GREEN, PURE_YELLOW, ORANGE, RED],
     )
 
     scene.add(axes, trig_plane)
@@ -151,7 +151,7 @@ def test_gradient_line_graph_x_axis(scene):
     curve = axes.plot(
         lambda x: 0.1 * x**3,
         x_range=(-3, 3, 0.001),
-        colorscale=[BLUE, GREEN, YELLOW, ORANGE, RED],
+        colorscale=[BLUE, GREEN, PURE_YELLOW, ORANGE, RED],
         colorscale_axis=0,
     )
 
@@ -166,7 +166,7 @@ def test_gradient_line_graph_y_axis(scene):
     curve = axes.plot(
         lambda x: 0.1 * x**3,
         x_range=(-3, 3, 0.001),
-        colorscale=[BLUE, GREEN, YELLOW, ORANGE, RED],
+        colorscale=[BLUE, GREEN, PURE_YELLOW, ORANGE, RED],
         colorscale_axis=1,
     )
 

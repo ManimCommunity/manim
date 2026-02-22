@@ -4,9 +4,7 @@ from __future__ import annotations
 
 __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
-from typing import Any
-
-from typing_extensions import Self
+from typing import Any, Self
 
 from manim import logger
 from manim._config import config
@@ -22,7 +20,7 @@ from manim.mobject.geometry.polygram import RoundedRectangle
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import VGroup
-from manim.utils.color import BLACK, RED, YELLOW, ManimColor, ParsableManimColor
+from manim.utils.color import BLACK, PURE_YELLOW, RED, ParsableManimColor
 
 
 class SurroundingRectangle(RoundedRectangle):
@@ -52,8 +50,8 @@ class SurroundingRectangle(RoundedRectangle):
     def __init__(
         self,
         *mobjects: Mobject,
-        color: ParsableManimColor = YELLOW,
-        buff: float = SMALL_BUFF,
+        color: ParsableManimColor = PURE_YELLOW,
+        buff: float | tuple[float, float] = SMALL_BUFF,
         corner_radius: float = 0.0,
         **kwargs: Any,
     ) -> None:
@@ -64,11 +62,17 @@ class SurroundingRectangle(RoundedRectangle):
                 "Expected all inputs for parameter mobjects to be a Mobjects"
             )
 
+        if isinstance(buff, tuple):
+            buff_x = buff[0]
+            buff_y = buff[1]
+        else:
+            buff_x = buff_y = buff
+
         group = Group(*mobjects)
         super().__init__(
             color=color,
-            width=group.width + 2 * buff,
-            height=group.height + 2 * buff,
+            width=group.width + 2 * buff_x,
+            height=group.height + 2 * buff_y,
             corner_radius=corner_radius,
             **kwargs,
         )
@@ -108,7 +112,7 @@ class BackgroundRectangle(SurroundingRectangle):
         stroke_width: float = 0,
         stroke_opacity: float = 0,
         fill_opacity: float = 0.75,
-        buff: float = 0,
+        buff: float | tuple[float, float] = 0,
         **kwargs: Any,
     ) -> None:
         if color is None:
@@ -144,12 +148,6 @@ class BackgroundRectangle(SurroundingRectangle):
                 kwargs,
             )
         return self
-
-    def get_fill_color(self) -> ManimColor:
-        # The type of the color property is set to Any using the property decorator
-        # vectorized_mobject.py#L571
-        temp_color: ManimColor = self.color
-        return temp_color
 
 
 class Cross(VGroup):

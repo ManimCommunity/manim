@@ -3,7 +3,7 @@ fail_fast: false
 exclude: ^(manim/grpc/gen/|docs/i18n/)
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: check-ast
         name: Validate Python
@@ -12,8 +12,16 @@ repos:
       - id: end-of-file-fixer
       - id: check-toml
         name: Validate pyproject.toml
+
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.4.1
+    hooks:
+      - id: codespell
+        files: ^.*\.(py|md|rst)$
+        args: ["-L", "medias,nam"]
+
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.7
+    rev: v0.14.10
     hooks:
       - id: ruff
         name: ruff lint
@@ -21,8 +29,9 @@ repos:
         args: [--exit-non-zero-on-fix]
       - id: ruff-format
         types: [python]
+
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.17.1
+    rev: v1.19.1
     hooks:
       - id: mypy
         additional_dependencies:
@@ -34,10 +43,3 @@ repos:
             types-setuptools,
           ]
         files: ^manim/
-
-  - repo: https://github.com/codespell-project/codespell
-    rev: v2.4.1
-    hooks:
-      - id: codespell
-        files: ^.*\.(py|md|rst)$
-        args: ["-L", "medias,nam"]
