@@ -242,7 +242,8 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         if self.has_start_tip():
             result.add(self.start_tip)
             self.remove(self.start_tip)
-        self.put_start_and_end_on(start, end)
+        if result.submobjects:
+            self.put_start_and_end_on(start, end)
         return result
 
     def get_tips(self) -> VGroup:
@@ -1232,7 +1233,7 @@ class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
 
         arcs = [
             ArcBetweenPoints(*pair, **conf)
-            for (pair, conf) in zip(point_pairs, all_arc_configs, strict=False)
+            for (pair, conf) in zip(point_pairs, all_arc_configs, strict=True)
         ]
 
         super().__init__(**kwargs)

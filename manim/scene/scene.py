@@ -177,7 +177,7 @@ class Scene:
     ) -> None:
         self.camera_class = camera_class
         self.always_update_mobjects = always_update_mobjects
-        self.random_seed = random_seed
+        self.random_seed = random_seed if random_seed is not None else config.seed
         self.skip_animations = skip_animations
 
         self.animations: list[Animation] | None = None
@@ -219,9 +219,9 @@ class Scene:
         self.mobjects: list[Mobject] = []
         # TODO, remove need for foreground mobjects
         self.foreground_mobjects: list[Mobject] = []
-        if self.random_seed is not None:
-            random.seed(self.random_seed)
-            np.random.default_rng(self.random_seed)
+
+        random.seed(self.random_seed)
+        np.random.seed(self.random_seed)  # noqa: NPY002 (only way to set seed globally)
 
     @property
     def camera(self) -> Camera | OpenGLCamera:
