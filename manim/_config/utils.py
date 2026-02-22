@@ -25,6 +25,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar, NoReturn
 
 import numpy as np
+from screeninfo import get_monitors
 
 from manim import constants
 from manim.constants import RendererType
@@ -140,6 +141,35 @@ def _determine_quality(qual: str) -> str:
             return quality
 
     return qual
+
+
+def _convert_window_size(window_size: str | tuple[int, int]) -> tuple[int, int]:
+    from manim.renderer.opengl_renderer import config
+
+    monitors = get_monitors()
+    mon_index = config.window_monitor
+    monitor = monitors[min(mon_index, len(monitors) - 1)]
+
+    if window_size == "default":
+        # make window_width half the width of the monitor
+        # but make it full screen if --fullscreen
+        window_width = monitor.width
+        if not config.fullscreen:
+            window_width //= 2
+
+        #  by default window_height = 9/16 * window_width
+        window_height = int(
+            window_width * config.frame_height // config.frame_width,
+        )
+        size = (window_width, window_height)
+    elif len(window_size.split(",")) == 2:
+        (window_width, window_height) = tuple(map(int, window_size.split(",")))
+        size = (window_width, window_height)
+    else:
+        raise ValueError(
+            "Window_size must be specified as 'width,height' or 'default'.",
+        )
+    return size
 
 
 class ManimConfig(MutableMapping):
@@ -1421,13 +1451,13 @@ class ManimConfig(MutableMapping):
         self._d.__setitem__("window_position", value)
 
     @property
-    def window_size(self) -> str:
+    def window_size(self) -> tuple[int, int]:
         """The size of the opengl window as 'width,height' or 'default' to automatically scale the window based on the display monitor."""
         return self._d["window_size"]
 
     @window_size.setter
-    def window_size(self, value: str) -> None:
-        self._d.__setitem__("window_size", value)
+    def window_size(self, value: str | tuple[int, int]) -> None:
+        self._d.__setitem__("window_size", _convert_window_size(value))
 
     def resolve_movie_file_extension(self, is_transparent: bool) -> None:
         prev_file_extension = self.movie_file_extension
