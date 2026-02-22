@@ -885,33 +885,6 @@ class Scene:
         self.foreground_mobjects = []
         return self
 
-    def recursively_unpack_animation_groups(
-        self, *animations: Animation
-    ) -> list[Mobject | OpenGLMobject]:
-        """
-        Unpacks animations
-        Parameters
-        ----------
-        *animations
-            The animations to unpack
-        Returns
-        ------
-        list
-            The list of mobjects in animations
-        """
-        # Imported inside the method to avoid cyclic import
-        from ..animation.composition import AnimationGroup
-
-        unpacked_mobjects = []
-        for anim in animations:
-            if isinstance(anim, AnimationGroup):
-                for sub in anim.animations:
-                    unpacked = self.recursively_unpack_animation_groups(sub)
-                    unpacked_mobjects.extend(unpacked)
-            else:
-                unpacked_mobjects.append(anim.mobject)
-        return unpacked_mobjects
-
     def get_moving_mobjects(self, *animations: Animation) -> list[Mobject]:
         """
         Gets all moving mobjects in the passed animation(s).
@@ -931,7 +904,24 @@ class Scene:
         # as soon as there's one that needs updating of
         # some kind per frame, return the list from that
         # point forward.
-        animation_mobjects = self.recursively_unpack_animation_groups(*animations)
+        # Imported inside the method to avoid cyclic import.
+        from ..animation.composition import AnimationGroup
+
+        def _collect_animation_mobjects(
+            nested_animations: Iterable[Animation],
+        ) -> list[Mobject | OpenGLMobject]:
+            animation_mobjects: list[Mobject | OpenGLMobject] = []
+            for anim in nested_animations:
+                if isinstance(anim, AnimationGroup):
+                    animation_mobjects.extend(
+                        _collect_animation_mobjects(anim.animations),
+                    )
+                else:
+                    animation_mobjects.extend(anim.mobject.get_family())
+            return animation_mobjects
+
+        animation_mobjects = _collect_animation_mobjects(animations)
+
         mobjects = self.get_mobject_family_members()
         for i, mob in enumerate(mobjects):
             update_possibilities = [
