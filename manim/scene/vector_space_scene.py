@@ -35,9 +35,9 @@ from ..utils.color import (
     BLUE_D,
     GREEN_C,
     GREY,
+    PURE_YELLOW,
     RED_C,
     WHITE,
-    YELLOW,
     ManimColor,
     ParsableManimColor,
 )
@@ -45,7 +45,7 @@ from ..utils.rate_functions import rush_from, rush_into
 from ..utils.space_ops import angle_of_vector
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
     from manim.typing import (
         MappingFunction,
@@ -172,7 +172,7 @@ class VectorScene(Scene):
     def add_vector(
         self,
         vector: Arrow | Vector3DLike,
-        color: ParsableManimColor | Iterable[ParsableManimColor] = YELLOW,
+        color: ParsableManimColor | Iterable[ParsableManimColor] = PURE_YELLOW,
         animate: bool = True,
         **kwargs: Any,
     ) -> Arrow:
@@ -682,7 +682,9 @@ class LinearTransformationScene(VectorScene):
         default_configs: Iterable[dict[str, Any]],
         passed_configs: Iterable[dict[str, Any] | None],
     ) -> None:
-        for default_config, passed_config in zip(default_configs, passed_configs):
+        for default_config, passed_config in zip(
+            default_configs, passed_configs, strict=False
+        ):
             if passed_config is not None:
                 update_dict_recursively(default_config, passed_config)
 
@@ -806,7 +808,7 @@ class LinearTransformationScene(VectorScene):
 
     def get_unit_square(
         self,
-        color: ParsableManimColor | Iterable[ParsableManimColor] = YELLOW,
+        color: ParsableManimColor | Iterable[ParsableManimColor] = PURE_YELLOW,
         opacity: float = 0.3,
         stroke_width: float = 3,
     ) -> Rectangle:
@@ -873,7 +875,7 @@ class LinearTransformationScene(VectorScene):
     def add_vector(
         self,
         vector: Arrow | list | tuple | np.ndarray,
-        color: ParsableManimColor = YELLOW,
+        color: ParsableManimColor = PURE_YELLOW,
         animate: bool = False,
         **kwargs: Any,
     ) -> Arrow:

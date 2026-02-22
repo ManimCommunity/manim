@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -717,6 +718,49 @@ def test_mov_can_be_set_as_output_format(tmp_path, manim_cfg_file, simple_scenes
     assert expected_mov_path.exists(), "expected .mov file not found at " + str(
         expected_mov_path,
     )
+
+
+@pytest.mark.slow
+def test_reproducible_animation(tmp_path: Path, manim_cfg_file, simple_scenes_path):
+    scene_name = "SceneWithRandomness"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+        "--seed",
+        "42",
+        str(simple_scenes_path),
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    first_path = tmp_path / "videos" / "simple_scenes" / "480p15" / f"{scene_name}.mp4"
+
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+        "--seed",
+        "42",
+        str(simple_scenes_path),
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    second_path = first_path.with_name(scene_name).with_suffix(".mp4")
+
+    with open(first_path, "rb") as f1, open(second_path, "rb") as f2:
+        first_data = f1.read()
+        second_data = f2.read()
+        assert first_data == second_data, "Videos with the same seed differ."
 
 
 @pytest.mark.slow

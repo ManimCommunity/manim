@@ -33,7 +33,7 @@ except ImportError:
     dearpygui_imported = False
 
 from collections.abc import Callable, Iterable, Sequence
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from tqdm import tqdm
@@ -62,14 +62,13 @@ from ..utils.module_ops import scene_classes_from_file
 
 if TYPE_CHECKING:
     from types import FrameType
-
-    from typing_extensions import Self, TypeAlias
+    from typing import Self, TypeAlias
 
     from manim.typing import Point3D
 
-    SceneInteractAction: TypeAlias = Union[
-        MethodWithArgs, "SceneInteractContinue", "SceneInteractRerun"
-    ]
+    SceneInteractAction: TypeAlias = (
+        MethodWithArgs | "SceneInteractContinue" | "SceneInteractRerun"
+    )
     """The SceneInteractAction type alias is used for elements in the queue
     used by :meth:`.Scene.interact()`.
 
@@ -178,7 +177,7 @@ class Scene:
     ) -> None:
         self.camera_class = camera_class
         self.always_update_mobjects = always_update_mobjects
-        self.random_seed = random_seed
+        self.random_seed = random_seed if random_seed is not None else config.seed
         self.skip_animations = skip_animations
 
         self.animations: list[Animation] | None = None
@@ -220,9 +219,9 @@ class Scene:
         self.mobjects: list[Mobject] = []
         # TODO, remove need for foreground mobjects
         self.foreground_mobjects: list[Mobject] = []
-        if self.random_seed is not None:
-            random.seed(self.random_seed)
-            np.random.seed(self.random_seed)
+
+        random.seed(self.random_seed)
+        np.random.seed(self.random_seed)  # noqa: NPY002 (only way to set seed globally)
 
     @property
     def camera(self) -> Camera | OpenGLCamera:

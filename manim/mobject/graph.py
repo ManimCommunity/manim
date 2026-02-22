@@ -16,7 +16,7 @@ import networkx as nx
 import numpy as np
 
 if TYPE_CHECKING:
-    from typing_extensions import TypeAlias
+    from typing import TypeAlias
 
     from manim.scene.scene import Scene
     from manim.typing import Point3D, Point3DLike
@@ -588,9 +588,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             self._labels = labels
         elif isinstance(labels, bool):
             if labels:
-                self._labels = {
-                    v: MathTex(v, fill_color=label_fill_color) for v in vertices
-                }
+                self._labels = {v: MathTex(v, color=label_fill_color) for v in vertices}
             else:
                 self._labels = {}
 
@@ -697,7 +695,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             )
 
         if label is True:
-            label = MathTex(vertex, fill_color=label_fill_color)
+            label = MathTex(vertex, color=label_fill_color)
         elif vertex in self._labels:
             label = self._labels[vertex]
         elif not isinstance(label, (Mobject, OpenGLMobject)):
