@@ -4,11 +4,10 @@ from __future__ import annotations
 
 __all__ = ["Brace", "BraceLabel", "ArcBrace", "BraceText", "BraceBetweenPoints"]
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Self
 
 import numpy as np
 import svgelements as se
-from typing_extensions import Self
 
 from manim._config import config
 from manim.mobject.geometry.arc import Arc

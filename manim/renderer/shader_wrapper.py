@@ -5,12 +5,11 @@ import logging
 import re
 from collections.abc import Mapping, Sequence
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self, TypeAlias
 
 import moderngl
 import numpy as np
 import numpy.typing as npt
-from typing_extensions import Self, TypeAlias
 
 if TYPE_CHECKING:
     from manim.typing import FloatRGBLike_Array
@@ -141,10 +140,9 @@ class ShaderWrapper:
 
     def replace_code(self, old: str, new: str) -> None:
         code_map = self.program_code
-        for name, _code in code_map.items():
-            if code_map[name] is None:
-                continue
-            code_map[name] = re.sub(old, new, code_map[name])
+        for name, code in code_map.items():
+            if code:
+                code_map[name] = re.sub(old, new, code)
         self.refresh_id()
 
     def combine_with(self, *shader_wrappers: "ShaderWrapper") -> Self:  # noqa: UP037

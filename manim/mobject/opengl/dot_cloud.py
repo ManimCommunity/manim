@@ -2,21 +2,20 @@ from __future__ import annotations
 
 __all__ = ["TrueDot", "DotCloud"]
 
-from typing import Any
+from typing import Any, Self
 
 import numpy as np
-from typing_extensions import Self
 
 from manim.constants import ORIGIN, RIGHT, UP
 from manim.mobject.opengl.opengl_point_cloud_mobject import OpenGLPMobject
 from manim.typing import Point3DLike
-from manim.utils.color import YELLOW, ParsableManimColor
+from manim.utils.color import PURE_YELLOW, ParsableManimColor
 
 
 class DotCloud(OpenGLPMobject):
     def __init__(
         self,
-        color: ParsableManimColor = YELLOW,
+        color: ParsableManimColor = PURE_YELLOW,
         stroke_width: float = 2.0,
         radius: float = 2.0,
         density: float = 10,
