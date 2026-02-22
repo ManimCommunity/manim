@@ -39,6 +39,7 @@ jobs:
           name: manim.tar.gz
 
     - name: Upload Release Asset
+      shell: bash
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
