@@ -174,6 +174,27 @@ def test_ZIndex(scene):
     scene.play(ApplyMethod(triangle.shift, 2 * UP))
 
 
+@frames_comparison(last_frame=False)
+def test_negative_z_index_AnimationGroup(scene):
+    # https://github.com/ManimCommunity/manim/issues/3334
+    s = Square().set_z_index(-1)
+    scene.play(AnimationGroup(GrowFromCenter(s)))
+
+
+@frames_comparison(last_frame=False)
+def test_negative_z_index_LaggedStart(scene):
+    # https://github.com/ManimCommunity/manim/issues/3914
+    line_1 = Line(LEFT, RIGHT, color=BLUE)
+    line_2 = Line(UP + LEFT, UP + RIGHT, color=RED).set_z_index(-1)
+    scene.play(LaggedStart(FadeIn(line_1), FadeIn(line_2), lag_ratio=0.5))
+
+
+@frames_comparison(last_frame=False)
+def test_nested_animation_groups_with_negative_z_index(scene):
+    line = Line(LEFT, RIGHT, color=BLUE).set_z_index(-1)
+    scene.play(AnimationGroup(AnimationGroup(AnimationGroup(FadeIn(line)))))
+
+
 @frames_comparison
 def test_Angle(scene):
     l1 = Line(ORIGIN, RIGHT)
