@@ -5,6 +5,7 @@ __all__ = [
 ]
 
 from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from PIL import Image
@@ -13,26 +14,29 @@ from PIL.Image import Resampling
 from manim.mobject.opengl.opengl_surface import OpenGLSurface, OpenGLTexturedSurface
 from manim.utils.images import get_full_raster_image_path
 
+if TYPE_CHECKING:
+    import numpy.typing as npt
+
 __all__ = ["OpenGLImageMobject"]
 
 
 class OpenGLImageMobject(OpenGLTexturedSurface):
     def __init__(
         self,
-        filename_or_array: str | Path | np.ndarray,
-        width: float = None,
-        height: float = None,
+        filename_or_array: str | Path | npt.NDArray,
+        width: float | None = None,
+        height: float | None = None,
         image_mode: str = "RGBA",
-        resampling_algorithm: int = Resampling.BICUBIC,
+        resampling_algorithm: Resampling = Resampling.BICUBIC,
         opacity: float = 1,
         gloss: float = 0,
         shadow: float = 0,
-        **kwargs,
+        **kwargs: Any,
     ):
         self.image = filename_or_array
         self.resampling_algorithm = resampling_algorithm
         if isinstance(filename_or_array, np.ndarray):
-            self.size = self.image.shape[1::-1]
+            self.size = filename_or_array.shape[1::-1]
         elif isinstance(filename_or_array, (str, Path)):
             path = get_full_raster_image_path(filename_or_array)
             self.size = Image.open(path).size
@@ -68,7 +72,7 @@ class OpenGLImageMobject(OpenGLTexturedSurface):
         self,
         image_file: str | Path | np.ndarray,
         image_mode: str,
-    ):
+    ) -> Image.Image:
         if isinstance(image_file, (str, Path)):
             return super().get_image_from_file(image_file, image_mode)
         else:
@@ -76,7 +80,7 @@ class OpenGLImageMobject(OpenGLTexturedSurface):
                 Image.fromarray(image_file.astype("uint8"))
                 .convert(image_mode)
                 .resize(
-                    np.array(image_file.shape[:2])
+                    image_file.shape[:2]
                     * 200,  # assumption of 200 ppmu (pixels per manim unit) would suffice
                     resample=self.resampling_algorithm,
                 )

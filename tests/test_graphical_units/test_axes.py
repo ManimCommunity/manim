@@ -32,7 +32,7 @@ def test_custom_coordinates(scene):
     ax = Axes(x_range=[0, 10])
 
     ax.add_coordinates(
-        dict(zip(list(range(1, 10)), [Tex("str") for _ in range(1, 10)], strict=False)),
+        dict(zip(list(range(1, 10)), [Tex("str") for _ in range(1, 10)], strict=True)),
     )
     scene.add(ax)
 
@@ -226,7 +226,7 @@ def test_get_area(scene):
     area2 = ax.get_area(
         curve1,
         x_range=(-4.5, -2),
-        color=(RED, YELLOW),
+        color=(RED, PURE_YELLOW),
         opacity=0.2,
         bounded_graph=curve2,
     )
@@ -266,7 +266,7 @@ def test_get_riemann_rectangles(scene, use_vectorized):
         quadratic,
         x_range=[-1.5, 1.5],
         dx=0.15,
-        color=YELLOW,
+        color=PURE_YELLOW,
     )
 
     bounding_line = ax.plot(lambda x: 1.5 * x, color=BLUE_B, x_range=[3.3, 6])

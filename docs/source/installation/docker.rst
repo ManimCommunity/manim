@@ -18,6 +18,13 @@ For our image ``manimcommunity/manim``, there are the following tags:
    ``-p`` (preview file) and ``-f`` (show output file in the file browser)
    are not supported.
 
+.. note::
+
+   The Docker image ships with a minimal TeX Live installation. In particular,
+   ``ctex`` is not installed by default. If your scenes rely on
+   ``TexTemplateLibrary.ctex``, install it in the container via
+   ``tlmgr install ctex``.
+
 
 Basic usage of the Docker container
 -----------------------------------
