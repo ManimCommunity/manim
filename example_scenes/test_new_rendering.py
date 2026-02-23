@@ -59,7 +59,21 @@ class Test(Scene):
                 positions={4: [2, 1, 0], 5: [2, -1, 0]},
             )
         )
+        self.play(  # TODO: this animation is currently broken
+            graph.animate.add_edges(
+                (2, 4),
+                (3, 5),
+                (4, 5),
+                edge_config={
+                    (2, 4): {"stroke_color": GREEN},
+                    (3, 5): {"stroke_color": GREEN},
+                    (4, 5): {"stroke_color": YELLOW},
+                },
+            )
+        )
         self.wait(1)
+        self.play(graph.animate.remove_vertices(1))
+        self.play(graph.animate.remove_edges((4, 5)))
         self.play(Uncreate(graph))
 
 
