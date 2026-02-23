@@ -46,6 +46,7 @@ from ..constants import (
     RendererType,
 )
 from ..mobject.mobject import Group, Mobject
+from ..mobject.types.vectorized_mobject import VGroup
 from ..utils.paths import path_along_arc, path_along_circles
 from ..utils.rate_functions import smooth, squish_rate_func
 
@@ -735,7 +736,10 @@ class CyclicReplace(Transform):
     def __init__(
         self, *mobjects: Mobject, path_arc: float = 90 * DEGREES, **kwargs
     ) -> None:
-        self.group = Group(*mobjects)
+        if len(mobjects) == 1 and isinstance(mobjects[0], (Group, VGroup)):
+            self.group = mobjects[0]
+        else:
+            self.group = Group(*mobjects)
         super().__init__(self.group, path_arc=path_arc, **kwargs)
 
     def create_target(self) -> Group:
@@ -747,7 +751,21 @@ class CyclicReplace(Transform):
 
 
 class Swap(CyclicReplace):
-    pass  # Renaming, more understandable for two entries
+    """Another name for :class:`~.CyclicReplace`, which is more understandable for two entries.
+
+    Examples
+    --------
+    .. manim :: SwapExample
+
+        class SwapExample(Scene):
+            def construct(self):
+                text_a = Text("A").move_to(LEFT)
+                text_b = Text("B").move_to(RIGHT)
+                text_group = Group(text_a, text_b)
+                self.play(FadeIn(text_group))
+                self.play(Swap(text_group))
+                self.wait()
+    """
 
 
 # TODO, this may be deprecated...worth reimplementing?
