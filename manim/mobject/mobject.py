@@ -1925,10 +1925,7 @@ class Mobject:
         curr_start, curr_end = self.get_start_and_end()
         curr_vect = curr_end - curr_start
         if np.all(curr_vect == 0):
-            # TODO: this looks broken. It makes self.points a Point3D instead
-            # of a Point3D_Array. However, modifying this breaks some tests
-            # where this is currently expected.
-            self.points = np.array(start)
+            self.points = np.array([start])
             return self
         target_vect = np.asarray(end) - np.asarray(start)
         axis = (
