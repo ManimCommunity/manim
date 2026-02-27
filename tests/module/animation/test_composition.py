@@ -14,7 +14,7 @@ from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RegularPolygon, Square
 from manim.mobject.types.vectorized_mobject import VGroup
 from manim.scene.scene import Scene
-from manim.utils.rate_functions import linear
+from manim.utils.rate_functions import linear, there_and_back
 
 
 def test_succession_timing():
