@@ -202,7 +202,9 @@ def test_laggedstartmap_only_passes_kwargs_to_subanimations():
 
     assert animation.rate_func is smooth
     assert animation.lag_ratio == 0.3
-    assert all(subanimation.rate_func is linear for subanimation in animation.animations)
+    assert all(
+        subanimation.rate_func is linear for subanimation in animation.animations
+    )
 
 
 def test_empty_animation_group_fails():
