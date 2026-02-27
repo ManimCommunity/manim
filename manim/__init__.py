@@ -41,6 +41,7 @@ from .animation.transform import *
 from .animation.transform_matching_parts import *
 from .animation.updaters.mobject_update_utils import *
 from .animation.updaters.update import *
+from .animation.video import *
 from .camera.camera import *
 from .camera.mapping_camera import *
 from .camera.moving_camera import *
@@ -79,6 +80,7 @@ from .mobject.three_d.three_dimensions import *
 from .mobject.types.image_mobject import *
 from .mobject.types.point_cloud_mobject import *
 from .mobject.types.vectorized_mobject import *
+from .mobject.types.video_mobject import *
 from .mobject.value_tracker import *
 from .mobject.vector_field import *
 from .renderer.cairo_renderer import *
