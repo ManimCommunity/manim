@@ -196,14 +196,14 @@ def test_laggedstartmap_only_passes_kwargs_to_subanimations():
     animation = LaggedStartMap(
         FadeIn,
         mobject,
-        rate_func=linear,
+        rate_func=there_and_back,
         lag_ratio=0.3,
     )
 
-    assert animation.rate_func is smooth
+    assert animation.rate_func is linear
     assert animation.lag_ratio == 0.3
     assert all(
-        subanimation.rate_func is linear for subanimation in animation.animations
+        subanimation.rate_func is there_and_back for subanimation in animation.animations
     )
 
 
