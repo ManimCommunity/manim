@@ -14,7 +14,7 @@ from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RegularPolygon, Square
 from manim.mobject.types.vectorized_mobject import VGroup
 from manim.scene.scene import Scene
-from manim.utils.rate_functions import linear, smooth
+from manim.utils.rate_functions import linear
 
 
 def test_succession_timing():
@@ -203,7 +203,8 @@ def test_laggedstartmap_only_passes_kwargs_to_subanimations():
     assert animation.rate_func is linear
     assert animation.lag_ratio == 0.3
     assert all(
-        subanimation.rate_func is there_and_back for subanimation in animation.animations
+        subanimation.rate_func is there_and_back
+        for subanimation in animation.animations
     )
 
 
