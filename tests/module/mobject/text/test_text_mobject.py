@@ -3,7 +3,10 @@ from __future__ import annotations
 from contextlib import redirect_stdout
 from io import StringIO
 
-from manim.mobject.text.text_mobject import MarkupText, Text
+from numpy.testing import assert_almost_equal
+
+from manim.constants import LEFT, RIGHT
+from manim.mobject.text.text_mobject import MarkupText, Paragraph, Text
 
 
 def test_font_size():
@@ -32,3 +35,38 @@ def test_font_warnings():
 
     # check random string (should be warning)
     assert warning_printed("Manim!" * 3, warn_missing_font=True)
+
+
+def test_paragraph_alignment():
+    # check paragraph left alignment
+    par_left = Paragraph("This is", "a left-aligned", "paragraph", alignment="left")
+    assert_almost_equal(
+        par_left[0][0].get_x(LEFT), par_left[1][0].get_x(LEFT), decimal=2
+    )
+    assert_almost_equal(
+        par_left[0][0].get_x(LEFT), par_left[2][0].get_x(LEFT), decimal=2
+    )
+
+    # check paragraph right alignment
+    par_right = Paragraph("This is", "a right-aligned", "paragraph", alignment="right")
+    assert_almost_equal(
+        par_right[0][-1].get_x(RIGHT), par_right[1][-1].get_x(RIGHT), decimal=2
+    )
+    assert_almost_equal(
+        par_right[0][-1].get_x(RIGHT), par_right[2][-1].get_x(RIGHT), decimal=2
+    )
+
+    # check paragraph center alignment
+    par_center = Paragraph(
+        "This is", "a center-aligned", "paragraph", alignment="center"
+    )
+    assert_almost_equal(
+        (par_center[0][0].get_x(LEFT) + par_center[0][-1].get_x(RIGHT)) / 2,
+        (par_center[1][0].get_x(LEFT) + par_center[1][-1].get_x(RIGHT)) / 2,
+        decimal=2,
+    )
+    assert_almost_equal(
+        (par_center[0][0].get_x(LEFT) + par_center[0][-1].get_x(RIGHT)) / 2,
+        (par_center[2][0].get_x(LEFT) + par_center[2][-1].get_x(RIGHT)) / 2,
+        decimal=2,
+    )
