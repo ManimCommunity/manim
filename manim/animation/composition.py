@@ -341,7 +341,7 @@ class LaggedStartMap(LaggedStart):
 
     Parameters
     ----------
-    AnimationClass
+    animation_class
         :class:`~.Animation` to apply to mobject.
     mobject
         :class:`~.Mobject` whose submobjects the animation, and optionally the function,
@@ -350,6 +350,17 @@ class LaggedStartMap(LaggedStart):
         Function which will be applied to :class:`~.Mobject`.
     run_time
         The duration of the animation in seconds.
+    lag_ratio
+        Defines the delay after which the animation is applied to submobjects. A lag_ratio of
+        ``n.nn`` means the next animation will play when ``nnn%`` of the current animation has played.
+        Defaults to 0.05, meaning that the next animation will begin when 5% of the current
+        animation has played.
+
+        This does not influence the total runtime of the animation. Instead the runtime
+        of individual animations is adjusted so that the complete animation has the defined
+        run time.
+    kwargs
+        Further keyword arguments that are passed to `animation_class`.
 
     Examples
     --------
@@ -380,6 +391,7 @@ class LaggedStartMap(LaggedStart):
         mobject: Mobject,
         arg_creator: Callable[[Mobject], Iterable[Any]] | None = None,
         run_time: float = 2,
+        lag_ratio: float = DEFAULT_LAGGED_START_LAG_RATIO,
         **kwargs: Any,
     ):
         if arg_creator is None:
@@ -394,4 +406,4 @@ class LaggedStartMap(LaggedStart):
         if "lag_ratio" in anim_kwargs:
             anim_kwargs.pop("lag_ratio")
         animations = [animation_class(*args, **anim_kwargs) for args in args_list]
-        super().__init__(*animations, run_time=run_time, **kwargs)
+        super().__init__(*animations, run_time=run_time, lag_ratio=lag_ratio)

@@ -29,7 +29,7 @@ class Window(PygletWindow, WindowProtocol):
     vsync: bool = True
     cursor: bool = True
 
-    def __init__(self, window_size: str = config.window_size) -> None:
+    def __init__(self, window_size: str | tuple[int, ...] = config.window_size):
         # TODO: remove size argument from window init,
         # move size computation below to config
 
@@ -37,7 +37,16 @@ class Window(PygletWindow, WindowProtocol):
         mon_index = config.window_monitor
         monitor = monitors[min(mon_index, len(monitors) - 1)]
 
-        if window_size == "default":
+        invalid_window_size_error_message = (
+            "window_size must be specified either as 'default', a string of the form "
+            "'width,height', or a tuple of 2 ints of the form (width, height)."
+        )
+
+        if isinstance(window_size, tuple):
+            if len(window_size) != 2:
+                raise ValueError(invalid_window_size_error_message)
+            size = window_size
+        elif window_size == "default":
             # make window_width half the width of the monitor
             # but make it full screen if --fullscreen
             window_width = monitor.width
@@ -53,9 +62,7 @@ class Window(PygletWindow, WindowProtocol):
             (window_width, window_height) = tuple(map(int, window_size.split(",")))
             size = (window_width, window_height)
         else:
-            raise ValueError(
-                "Window_size must be specified as 'width,height' or 'default'.",
-            )
+            raise ValueError(invalid_window_size_error_message)
 
         super().__init__(size=size)
         self.pressed_keys: set = set()

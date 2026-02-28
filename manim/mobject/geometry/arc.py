@@ -101,12 +101,12 @@ class TipableVMobject(VMobject):
         self,
         tip_length: float = DEFAULT_ARROW_TIP_LENGTH,
         normal_vector: Vector3DLike = OUT,
-        tip_style: dict = {},
+        tip_style: dict | None = None,
         **kwargs: Any,
     ) -> None:
         self.tip_length: float = tip_length
         self.normal_vector = normal_vector
-        self.tip_style: dict = tip_style
+        self.tip_style: dict = tip_style if tip_style is not None else {}
         super().__init__(**kwargs)
 
     # Adding, Creating, Modifying tips
@@ -128,7 +128,7 @@ class TipableVMobject(VMobject):
         else:
             self.position_tip(tip, at_start)
         self.reset_endpoints_based_on_tip(tip, at_start)
-        self.asign_tip_attr(tip, at_start)
+        self.assign_tip_attr(tip, at_start)
         self.add(tip)
         return self
 
@@ -201,6 +201,7 @@ class TipableVMobject(VMobject):
                 axis=axis,
             )  # Rotates the tip along the vertical wrt the axis
             self._init_positioning_axis = axis
+
         tip.shift(anchor - tip.tip_point)
         return tip
 
@@ -215,7 +216,7 @@ class TipableVMobject(VMobject):
             self.put_start_and_end_on(self.get_start(), tip.base)
         return self
 
-    def asign_tip_attr(self, tip: tips.ArrowTip, at_start: bool) -> Self:
+    def assign_tip_attr(self, tip: tips.ArrowTip, at_start: bool) -> Self:
         if at_start:
             self.start_tip = tip
         else:
@@ -241,7 +242,8 @@ class TipableVMobject(VMobject):
         if self.has_start_tip():
             result.add(self.start_tip)
             self.remove(self.start_tip)
-        self.put_start_and_end_on(start, end)
+        if result.submobjects:
+            self.put_start_and_end_on(start, end)
         return result
 
     def get_tips(self) -> VGroup:

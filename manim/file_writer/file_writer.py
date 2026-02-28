@@ -6,6 +6,7 @@ __all__ = ["FileWriter"]
 
 import json
 import shutil
+import warnings
 from fractions import Fraction
 from pathlib import Path
 from queue import Queue
@@ -17,7 +18,17 @@ import av
 import numpy as np
 import srt
 from PIL import Image
-from pydub import AudioSegment
+
+# Manim handles audio conversion through PyAV directly. Importing pydub emits a
+# RuntimeWarning if ffmpeg/avconv is not on PATH, even when only WAV code paths
+# are used (which do not need ffmpeg). Silence this specific warning.
+with warnings.catch_warnings():
+    warnings.filterwarnings(
+        "ignore",
+        message=r".*ffmpeg or avconv.*",
+        category=RuntimeWarning,
+    )
+    from pydub import AudioSegment
 
 from manim import __version__
 from manim._config import config, logger
