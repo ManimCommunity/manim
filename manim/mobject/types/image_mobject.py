@@ -216,6 +216,10 @@ class ImageMobject(AbstractImageMobject):
         """A simple getter method."""
         return self.pixel_array
 
+    def init_colors(self) -> None:
+        """Override base init_colors to avoid overwriting image pixels during init."""
+        return None
+
     def set_color(  # type: ignore[override]
         self,
         color: ParsableManimColor = YELLOW_C,
