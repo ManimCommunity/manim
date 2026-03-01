@@ -47,7 +47,7 @@ class _Memoizer:
     content-equality detection.
     """
 
-    _already_processed = set()
+    _already_processed: set[int] = set()
 
     # Can be changed to whatever string to help debugging the JSon generation.
     ALREADY_PROCESSED_PLACEHOLDER = "AP"
@@ -77,7 +77,7 @@ class _Memoizer:
             if is_method:
                 return lambda self, obj: cls._handle_already_processed(
                     obj,
-                    default_function=lambda obj: func(self, obj),
+                    default_function=lambda obj: func(obj),
                 )
             return lambda obj: cls._handle_already_processed(obj, default_function=func)
 
@@ -112,7 +112,7 @@ class _Memoizer:
             The object to mark as processed.
         """
         cls._handle_already_processed(obj, lambda x: x)
-        return cls._return(obj, id, lambda x: x, memoizing=False)
+        cls._return(obj, id, lambda x: x, memoizing=False)
 
     @classmethod
     def _handle_already_processed(
@@ -235,12 +235,12 @@ class _CustomEncoder(json.JSONEncoder):
         return str(type(obj))
 
     @overload
-    def _cleaned_iterable(self, iterable: Sequence[Any]) -> list[Any]: ...
-
-    @overload
     def _cleaned_iterable(self, iterable: dict[Any, Any]) -> dict[Any, Any]: ...
 
-    def _cleaned_iterable(self, iterable):
+    @overload
+    def _cleaned_iterable(self, iterable: Sequence[Any]) -> list[Any]: ...
+
+    def _cleaned_iterable(self, iterable: Iterable) -> dict[Any, Any] | list[Any]:
         """Check for circular reference at each iterable that will go through the JSONEncoder, as well as key of the wrong format.
 
         If a key with a bad format is found (i.e not a int, string, or float), it gets replaced by its hash using the same process implemented here.
@@ -255,17 +255,17 @@ class _CustomEncoder(json.JSONEncoder):
         def _key_to_hash(key: Any) -> int:
             return zlib.crc32(json.dumps(key, cls=_CustomEncoder).encode())
 
-        def _iter_check_list(lst: Sequence[Any]) -> list[Any]:
-            processed_list = [None] * len(lst)
-            for i, el in enumerate(lst):
+        def _iter_check_list(lst: Iterable[Any]) -> list[Any]:
+            processed_list = []
+            for el in lst:
                 el = _Memoizer.check_already_processed(el)
-                if isinstance(el, (list, tuple)):
-                    new_value = _iter_check_list(el)
-                elif isinstance(el, dict):
+                if isinstance(el, dict):
                     new_value = _iter_check_dict(el)
+                elif isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
+                    new_value = _iter_check_list(el)
                 else:
                     new_value = el
-                processed_list[i] = new_value
+                processed_list.append(new_value)
             return processed_list
 
         def _iter_check_dict(dct: dict[Any, Any]) -> dict[Any, Any]:
@@ -281,17 +281,17 @@ class _CustomEncoder(json.JSONEncoder):
                     k_new = k
                 if isinstance(v, dict):
                     new_value = _iter_check_dict(v)
-                elif isinstance(v, (list, tuple)):
+                elif isinstance(v, Iterable) and not isinstance(v, (str, bytes)):
                     new_value = _iter_check_list(v)
                 else:
                     new_value = v
                 processed_dict[k_new] = new_value
             return processed_dict
 
-        if isinstance(iterable, (list, tuple)):
-            return _iter_check_list(iterable)
-        elif isinstance(iterable, dict):
+        if isinstance(iterable, dict):
             return _iter_check_dict(iterable)
+        elif isinstance(iterable, Iterable):
+            return _iter_check_list(iterable)
         else:
             raise TypeError("'iterable' is neither an iterable nor a dictionary.")
 
