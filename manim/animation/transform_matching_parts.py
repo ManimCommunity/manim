@@ -4,12 +4,13 @@ from __future__ import annotations
 
 __all__ = ["TransformMatchingShapes", "TransformMatchingTex"]
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
 from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
+from manim.mobject.text.tex_mobject import SingleStringMathTex
 
 from .._config import config
 from ..constants import RendererType
@@ -74,10 +75,10 @@ class TransformMatchingAbstractBase(AnimationGroup):
         transform_mismatches: bool = False,
         fade_transform_mismatches: bool = False,
         key_map: dict | None = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         if isinstance(mobject, OpenGLVMobject):
-            group_type = OpenGLVGroup
+            group_type: type[OpenGLVGroup | OpenGLGroup | VGroup | Group] = OpenGLVGroup
         elif isinstance(mobject, OpenGLMobject):
             group_type = OpenGLGroup
         elif isinstance(mobject, VMobject):
@@ -141,7 +142,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
         self.to_add = target_mobject
 
     def get_shape_map(self, mobject: Mobject) -> dict:
-        shape_map = {}
+        shape_map: dict[int | str, VGroup | OpenGLVGroup] = {}
         for sm in self.get_mobject_parts(mobject):
             key = self.get_mobject_key(sm)
             if key not in shape_map:
@@ -149,6 +150,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
                     shape_map[key] = OpenGLVGroup()
                 else:
                     shape_map[key] = VGroup()
+            # error: Argument 1 to "add" of "OpenGLVGroup" has incompatible type "Mobject"; expected "OpenGLVMobject"  [arg-type]
             shape_map[key].add(sm)
         return shape_map
 
@@ -156,16 +158,17 @@ class TransformMatchingAbstractBase(AnimationGroup):
         # Interpolate all animations back to 0 to ensure source mobjects remain unchanged.
         for anim in self.animations:
             anim.interpolate(0)
+        # error: Argument 1 to "remove" of "Scene" has incompatible type "OpenGLMobject"; expected "Mobject"  [arg-type]
         scene.remove(self.mobject)
         scene.remove(*self.to_remove)
         scene.add(self.to_add)
 
     @staticmethod
-    def get_mobject_parts(mobject: Mobject):
+    def get_mobject_parts(mobject: Mobject) -> list[Mobject]:
         raise NotImplementedError("To be implemented in subclass.")
 
     @staticmethod
-    def get_mobject_key(mobject: Mobject):
+    def get_mobject_key(mobject: Mobject) -> int | str:
         raise NotImplementedError("To be implemented in subclass.")
 
 
@@ -205,7 +208,7 @@ class TransformMatchingShapes(TransformMatchingAbstractBase):
         transform_mismatches: bool = False,
         fade_transform_mismatches: bool = False,
         key_map: dict | None = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         super().__init__(
             mobject,
@@ -269,7 +272,7 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
         transform_mismatches: bool = False,
         fade_transform_mismatches: bool = False,
         key_map: dict | None = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         super().__init__(
             mobject,
@@ -294,4 +297,5 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
 
     @staticmethod
     def get_mobject_key(mobject: Mobject) -> str:
+        assert isinstance(mobject, SingleStringMathTex)
         return mobject.tex_string
