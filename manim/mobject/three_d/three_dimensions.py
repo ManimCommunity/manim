@@ -149,6 +149,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         self.pre_function_handle_to_anchor_scale_factor = (
             pre_function_handle_to_anchor_scale_factor
         )
+        self.list_of_faces: list[ThreeDVMobject] = []
         self._func = func
         self._setup_in_uv_space()
         self.apply_function(lambda p: func(p[0], p[1]))
@@ -172,6 +173,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
     def _setup_in_uv_space(self) -> None:
         u_values, v_values = self._get_u_values_and_v_values()
         faces = VGroup()
+        self.list_of_faces = []
         for i in range(len(u_values) - 1):
             for j in range(len(v_values) - 1):
                 u1, u2 = u_values[i : i + 2]
@@ -193,6 +195,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                 face.u2 = u2
                 face.v1 = v1
                 face.v2 = v2
+                self.list_of_faces.append(face)
         faces.set_fill(color=self.fill_color, opacity=self.fill_opacity)
         faces.set_stroke(
             color=self.stroke_color,
@@ -223,7 +226,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             The parametric surface with an alternating pattern.
         """
         n_colors = len(colors)
-        for face in self:
+        for face in self.list_of_faces:
             c_index = (face.u_index + face.v_index) % n_colors
             face.set_fill(colors[c_index], opacity=opacity)
         return self
