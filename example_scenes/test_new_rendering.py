@@ -8,15 +8,18 @@ class Test(Scene):
     def first_section(self) -> None:
         line = Line()
         line.add_updater(lambda m, dt: m.rotate(PI * dt))
-        tex = Tex(r"Math! $\sum e^{i\theta}$").add_updater(
-            lambda m: m.next_to(line, UP)
-        )
         line.to_edge(LEFT)
-        self.add(line, tex)
+        self.add(line)
         square = Square()
         tex = Tex(
-            "Hello, world!", stroke_color=RED, fill_color=BLUE, stroke_width=2
+            "Hello, ",
+            "world",
+            r" $e^{i\theta}$",
+            stroke_color=RED,
+            fill_color=BLUE,
+            stroke_width=2,
         ).to_edge(RIGHT)
+        tex.set_color_by_tex("world", GREEN)
         self.add(tex)
         self.play(Create(tex), Rotate(square, PI / 2))
         self.wait(1)
