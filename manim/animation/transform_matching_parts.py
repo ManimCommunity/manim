@@ -80,10 +80,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
         key_map: dict | None = None,
         **kwargs,
     ):
-        if isinstance(mobject, VMobject):
-            group_type = VGroup
-        else:
-            group_type = Group
+        group_type = VGroup if isinstance(mobject, VMobject) else Group
 
         source_map = self.get_shape_map(mobject)
         target_map = self.get_shape_map(target_mobject)

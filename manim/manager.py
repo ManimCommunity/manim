@@ -422,9 +422,12 @@ class Manager(Generic[SceneT]):
                 )
                 self._update_frame(dt, run_updaters=run_updaters)
                 for anim in animations:
-                    if isinstance(anim, Wait) and anim.stop_condition:
-                        if anim.stop_condition():
-                            return
+                    if (
+                        isinstance(anim, Wait)
+                        and anim.stop_condition is not None
+                        and anim.stop_condition()
+                    ):
+                        return
                 progress.update(1)
 
     # -------------------------#
