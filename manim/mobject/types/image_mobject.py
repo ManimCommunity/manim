@@ -12,11 +12,10 @@ from PIL import Image
 from PIL.Image import Resampling
 
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 
 from ... import config
-from ...camera.moving_camera import MovingCamera
 from ...constants import *
-from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
 from ...utils.color import (
     WHITE,

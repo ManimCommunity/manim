@@ -48,8 +48,7 @@ from manim.mobject.geometry.arc import Circle, Dot
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.scene.scene import Scene
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 
 from .. import config
 from ..animation.animation import Animation
@@ -60,8 +59,12 @@ from ..animation.movement import Homotopy
 from ..animation.transform import Transform
 from ..animation.updaters.update import UpdateFromFunc
 from ..constants import *
-from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
+from ..mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVGroup as VGroup,
+)
+from ..mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVMobject as VMobject,
+)
 from ..typing import Point3D, Point3DLike, Vector3DLike
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import GREY, PURE_YELLOW, ParsableManimColor
@@ -161,7 +164,7 @@ class Indicate(Transform):
         self.scale_factor = scale_factor
         super().__init__(mobject, rate_func=rate_func, **kwargs)
 
-    def create_target(self) -> Mobject | OpenGLMobject:
+    def create_target(self) -> Mobject:
         target = self.mobject.copy()
         target.scale(self.scale_factor)
         target.set_color(self.color)
@@ -319,8 +322,8 @@ class ShowPassingFlash(ShowPartial):
         lower = max(lower, 0)
         return (lower, upper)
 
-    def clean_up_from_scene(self, scene: Scene) -> None:
-        super().clean_up_from_scene(scene)
+    def finish(self) -> None:
+        super().finish()
         for submob, start in self.get_all_families_zipped():
             submob.pointwise_become_partial(start, 0, 1)
 
@@ -407,6 +410,7 @@ class ApplyWave(Homotopy):
         time_width: float = 1,
         ripples: int = 1,
         run_time: float = 2,
+        introducer: bool = True,
         **kwargs: Any,
     ):
         x_min = mobject.get_left()[0]
@@ -482,7 +486,9 @@ class ApplyWave(Homotopy):
             return_value: tuple[float, float, float] = np.array([x, y, z]) + nudge
             return return_value
 
-        super().__init__(homotopy, mobject, run_time=run_time, **kwargs)
+        super().__init__(
+            homotopy, mobject, run_time=run_time, introducer=introducer, **kwargs
+        )
 
 
 class Wiggle(Animation):
@@ -568,6 +574,7 @@ class Wiggle(Animation):
         return self
 
 
+# TODO: get rid of this if condition madness
 class Circumscribe(Succession):
     r"""Draw a temporary line surrounding the mobject.
 

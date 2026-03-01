@@ -13,6 +13,7 @@ __all__ = [
     "mid",
     "inverse_interpolate",
     "match_interpolate",
+    "get_smooth_quadratic_bezier_handle_points",
     "get_smooth_cubic_bezier_handle_points",
     "is_closed",
     "proportions_along_bezier_curve_for_point",
@@ -1246,6 +1247,35 @@ def match_interpolate(
         new_end,
         old_alpha,
     )
+
+
+def get_smooth_quadratic_bezier_handle_points(points: Point3D_Array) -> Point3D_Array:
+    """Given three successive points, P0, P1 and P2, you can compute that by defining
+    h = (1/4) P0 + P1 - (1/4)P2, the bezier curve defined by (P0, h, P1) will pass
+    through the point P2.
+
+    So for a given set of four successive points, P0, P1, P2, P3, if we want to add
+    a handle point h between P1 and P2 so that the quadratic bezier (P1, h, P2) is
+    part of a smooth curve passing through all four points, we calculate one solution
+    for h that would produce a parbola passing through P3, call it smooth_to_right, and
+    another that would produce a parabola passing through P0, call it smooth_to_left,
+    and use the midpoint between the two.
+    """
+    if len(points) == 2:
+        return 0.5 * (points[0] + points[1])
+
+    smooth_to_right, smooth_to_left = (
+        0.25 * ps[0:-2] + ps[1:-1] - 0.25 * ps[2:] for ps in (points, points[::-1])
+    )
+    if np.isclose(points[0], points[-1]).all():
+        last_str = 0.25 * points[-2] + points[-1] - 0.25 * points[1]
+        last_stl = 0.25 * points[1] + points[0] - 0.25 * points[-2]
+    else:
+        last_str = smooth_to_left[0]
+        last_stl = smooth_to_right[0]
+    handles = 0.5 * np.vstack([smooth_to_right, [last_str]])
+    handles += 0.5 * np.vstack([last_stl, smooth_to_left[::-1]])
+    return handles
 
 
 # Figuring out which Bézier curves most smoothly connect a sequence of points

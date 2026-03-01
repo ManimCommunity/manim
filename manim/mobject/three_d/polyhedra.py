@@ -9,12 +9,12 @@ import numpy as np
 
 from manim.mobject.geometry.polygram import Polygon
 from manim.mobject.graph import Graph
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup as VGroup
 from manim.mobject.three_d.three_dimensions import Dot3D
-from manim.mobject.types.vectorized_mobject import VGroup
 from manim.utils.qhull import QuickHull
 
 if TYPE_CHECKING:
-    from manim.mobject.mobject import Mobject
+    from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
     from manim.typing import Point3D, Point3DLike_Array
 
 __all__ = [
@@ -52,9 +52,9 @@ class Polyhedron(VGroup):
     .. manim:: SquarePyramidScene
         :save_last_frame:
 
-        class SquarePyramidScene(ThreeDScene):
+        class SquarePyramidScene(Scene):
             def construct(self):
-                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
                 vertex_coords = [
                     [1, 1, 0],
                     [1, -1, 0],
@@ -86,9 +86,9 @@ class Polyhedron(VGroup):
     .. manim:: PolyhedronSubMobjects
         :save_last_frame:
 
-        class PolyhedronSubMobjects(ThreeDScene):
+        class PolyhedronSubMobjects(Scene):
             def construct(self):
-                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
                 octahedron = Octahedron(edge_length = 3)
                 octahedron.graph[0].set_color(RED)
                 octahedron.faces[2].set_color(YELLOW)
@@ -173,9 +173,9 @@ class Tetrahedron(Polyhedron):
     .. manim:: TetrahedronScene
         :save_last_frame:
 
-        class TetrahedronScene(ThreeDScene):
+        class TetrahedronScene(Scene):
             def construct(self):
-                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
                 obj = Tetrahedron()
                 self.add(obj)
     """
@@ -208,9 +208,9 @@ class Octahedron(Polyhedron):
     .. manim:: OctahedronScene
         :save_last_frame:
 
-        class OctahedronScene(ThreeDScene):
+        class OctahedronScene(Scene):
             def construct(self):
-                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
                 obj = Octahedron()
                 self.add(obj)
     """
@@ -254,9 +254,9 @@ class Icosahedron(Polyhedron):
     .. manim:: IcosahedronScene
         :save_last_frame:
 
-        class IcosahedronScene(ThreeDScene):
+        class IcosahedronScene(Scene):
             def construct(self):
-                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
                 obj = Icosahedron()
                 self.add(obj)
     """
@@ -319,9 +319,9 @@ class Dodecahedron(Polyhedron):
     .. manim:: DodecahedronScene
         :save_last_frame:
 
-        class DodecahedronScene(ThreeDScene):
+        class DodecahedronScene(Scene):
             def construct(self):
-                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
                 obj = Dodecahedron()
                 self.add(obj)
     """
@@ -389,9 +389,9 @@ class ConvexHull3D(Polyhedron):
         :save_last_frame:
         :quality: high
 
-        class ConvexHull3DExample(ThreeDScene):
+        class ConvexHull3DExample(Scene):
             def construct(self):
-                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
                 points = [
                     [ 1.93192757,  0.44134585, -1.52407061],
                     [-0.93302521,  1.23206983,  0.64117067],

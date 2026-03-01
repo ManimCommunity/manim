@@ -357,10 +357,10 @@ A list of all config options
    'log_dir', 'log_to_file', 'max_files_cached', 'media_dir', 'media_width',
    'movie_file_extension', 'notify_outdated_version', 'output_file', 'partial_movie_dir',
    'pixel_height', 'pixel_width', 'plugins', 'preview',
-   'progress_bar', 'quality', 'right_side', 'save_as_gif', 'save_last_frame',
-   'save_pngs', 'scene_names', 'show_in_file_browser', 'sound', 'tex_dir',
+   'progress_bar', 'quality', 'right_side', 'save_last_frame',
+   'scene_names', 'show_in_file_browser', 'sound', 'tex_dir',
    'tex_template', 'tex_template_file', 'text_dir', 'top', 'transparent',
-   'upto_animation_number', 'use_opengl_renderer', 'verbosity', 'video_dir',
+   'upto_animation_number', 'verbosity', 'video_dir',
    'window_position', 'window_monitor', 'window_size', 'write_all', 'write_to_movie',
    'enable_wireframe', 'force_window']
 

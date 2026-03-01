@@ -17,98 +17,91 @@ except PackageNotFoundError:
 
 # Importing the config module should be the first thing we do, since other
 # modules depend on the global config dict for initialization.
-from ._config import *
+from manim._config import *
 
 # many scripts depend on this -> has to be loaded first
-from .utils.commands import *
+from manim.utils.commands import *
 
 # isort: on
 import numpy as np
 
-from .animation.animation import *
-from .animation.changing import *
-from .animation.composition import *
-from .animation.creation import *
-from .animation.fading import *
-from .animation.growing import *
-from .animation.indication import *
-from .animation.movement import *
-from .animation.numbers import *
-from .animation.rotation import *
-from .animation.specialized import *
-from .animation.speedmodifier import *
-from .animation.transform import *
-from .animation.transform_matching_parts import *
-from .animation.updaters.mobject_update_utils import *
-from .animation.updaters.update import *
-from .camera.camera import *
-from .camera.mapping_camera import *
-from .camera.moving_camera import *
-from .camera.multi_camera import *
-from .camera.three_d_camera import *
-from .constants import *
-from .mobject.frame import *
-from .mobject.geometry.arc import *
-from .mobject.geometry.boolean_ops import *
-from .mobject.geometry.labeled import *
-from .mobject.geometry.line import *
-from .mobject.geometry.polygram import *
-from .mobject.geometry.shape_matchers import *
-from .mobject.geometry.tips import *
-from .mobject.graph import *
-from .mobject.graphing.coordinate_systems import *
-from .mobject.graphing.functions import *
-from .mobject.graphing.number_line import *
-from .mobject.graphing.probability import *
-from .mobject.graphing.scale import *
-from .mobject.logo import *
-from .mobject.matrix import *
-from .mobject.mobject import *
-from .mobject.opengl.dot_cloud import *
-from .mobject.opengl.opengl_point_cloud_mobject import *
-from .mobject.svg.brace import *
-from .mobject.svg.svg_mobject import *
-from .mobject.table import *
-from .mobject.text.code_mobject import *
-from .mobject.text.numbers import *
-from .mobject.text.tex_mobject import *
-from .mobject.text.text_mobject import *
-from .mobject.three_d.polyhedra import *
-from .mobject.three_d.three_d_utils import *
-from .mobject.three_d.three_dimensions import *
-from .mobject.types.image_mobject import *
-from .mobject.types.point_cloud_mobject import *
-from .mobject.types.vectorized_mobject import *
-from .mobject.value_tracker import *
-from .mobject.vector_field import *
-from .renderer.cairo_renderer import *
-from .scene.moving_camera_scene import *
-from .scene.scene import *
-from .scene.scene_file_writer import *
-from .scene.section import *
-from .scene.three_d_scene import *
-from .scene.vector_space_scene import *
-from .scene.zoomed_scene import *
-from .utils import color, rate_functions, unit
-from .utils.bezier import *
-from .utils.color import *
-from .utils.config_ops import *
-from .utils.debug import *
-from .utils.file_ops import *
-from .utils.images import *
-from .utils.iterables import *
-from .utils.paths import *
-from .utils.rate_functions import *
-from .utils.simple_functions import *
-from .utils.sounds import *
-from .utils.space_ops import *
-from .utils.tex import *
-from .utils.tex_templates import *
+from manim.animation.animation import *
+from manim.animation.changing import *
+from manim.animation.composition import *
+from manim.animation.creation import *
+from manim.animation.fading import *
+from manim.animation.growing import *
+from manim.animation.indication import *
+from manim.animation.movement import *
+from manim.animation.numbers import *
+from manim.animation.rotation import *
+from manim.animation.specialized import *
+from manim.animation.speedmodifier import *
+from manim.animation.transform import *
+from manim.animation.transform_matching_parts import *
+from manim.animation.updaters.mobject_update_utils import *
+from manim.animation.updaters.update import *
+from manim.constants import *
+from manim.file_writer import *
+from manim.manager import *
+from manim.mobject.frame import *
+from manim.mobject.geometry.arc import *
+from manim.mobject.geometry.boolean_ops import *
+from manim.mobject.geometry.labeled import *
+from manim.mobject.geometry.line import *
+from manim.mobject.geometry.polygram import *
+from manim.mobject.geometry.shape_matchers import *
+from manim.mobject.geometry.tips import *
+from manim.mobject.graph import *
+from manim.mobject.graphing.coordinate_systems import *
+from manim.mobject.graphing.functions import *
+from manim.mobject.graphing.number_line import *
+from manim.mobject.graphing.probability import *
+from manim.mobject.graphing.scale import *
+from manim.mobject.logo import *
+from manim.mobject.matrix import *
+from manim.mobject.mobject import *
+from manim.mobject.opengl.dot_cloud import *
+from manim.mobject.opengl.opengl_point_cloud_mobject import *
+from manim.mobject.opengl.opengl_vectorized_mobject import *
+from manim.mobject.svg.brace import *
+from manim.mobject.svg.svg_mobject import *
+from manim.mobject.table import *
+from manim.mobject.text.code_mobject import *
+from manim.mobject.text.numbers import *
+from manim.mobject.text.tex_mobject import *
+from manim.mobject.text.text_mobject import *
+from manim.mobject.three_d.polyhedra import *
+from manim.mobject.three_d.three_d_utils import *
+from manim.mobject.three_d.three_dimensions import *
+from manim.mobject.types.image_mobject import *
+from manim.mobject.types.point_cloud_mobject import *
+from manim.mobject.types.vectorized_mobject import *
+from manim.mobject.value_tracker import *
+from manim.mobject.vector_field import *
+from manim.scene.scene import *
+from manim.scene.sections import *
+from manim.scene.vector_space_scene import *
+from manim.utils import color, rate_functions, unit
+from manim.utils.bezier import *
+from manim.utils.color import *
+from manim.utils.config_ops import *
+from manim.utils.debug import *
+from manim.utils.file_ops import *
+from manim.utils.images import *
+from manim.utils.iterables import *
+from manim.utils.paths import *
+from manim.utils.rate_functions import *
+from manim.utils.simple_functions import *
+from manim.utils.sounds import *
+from manim.utils.space_ops import *
+from manim.utils.tex import *
+from manim.utils.tex_templates import *
 
 try:
     from IPython import get_ipython
 
-    from .utils.ipython_magic import ManimMagic
+    from manim.utils.ipython_magic import ManimMagic
 except ImportError:
     pass
 else:
@@ -116,4 +109,4 @@ else:
     if ipy is not None:
         ipy.register_magics(ManimMagic)
 
-from .plugins import *
+from manim.plugins import *

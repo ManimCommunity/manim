@@ -70,14 +70,16 @@ from manimpango import MarkupUtils, PangoUtils, TextSetting
 from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVGroup as VGroup,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVMobject as VMobject,
+)
 from manim.mobject.svg.svg_mobject import SVGMobject
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
-from manim.typing import Point3D
 from manim.utils.color import ManimColor, ParsableManimColor, color_gradient
 
 if TYPE_CHECKING:
-    from typing import Self
-
     from manim.typing import Point3D
 
 TEXT_MOB_SCALE_FACTOR = 0.05
@@ -510,7 +512,7 @@ class Text(SVGMobject):
         else:
             self.line_spacing = self._font_size + self._font_size * self.line_spacing
 
-        parsed_color: ManimColor = ManimColor(color) if color else VMobject().color
+        parsed_color = ManimColor(color)
         file_name = self._text2svg(parsed_color.to_hex())
         PangoUtils.remove_last_M(file_name)
         super().__init__(
@@ -526,6 +528,7 @@ class Text(SVGMobject):
         self.text = text
         if self.disable_ligatures:
             self.submobjects = [*self._gen_chars()]
+            self.note_changed_family()
         self.chars = self.get_group_class()(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
         nppc = self.n_points_per_curve
@@ -588,6 +591,11 @@ class Text(SVGMobject):
         # anti-aliasing
         if height is None and width is None:
             self.scale(TEXT_MOB_SCALE_FACTOR)
+
+        # Just a temporary hack to get better triangulation
+        # See pr #1552 for details
+        for i in self.submobjects:
+            i.insert_n_curves(len(i.get_all_points()))
         self.initial_height = self.height
 
     def __repr__(self) -> str:
@@ -826,13 +834,6 @@ class Text(SVGMobject):
             )
 
         return svg_file
-
-    def init_colors(self, propagate_colors: bool = True) -> Self:
-        if config.renderer == RendererType.OPENGL:
-            super().init_colors()
-        elif config.renderer == RendererType.CAIRO:
-            super().init_colors(propagate_colors=propagate_colors)
-        return self
 
 
 class MarkupText(SVGMobject):
@@ -1208,7 +1209,7 @@ class MarkupText(SVGMobject):
         else:
             self.line_spacing = self._font_size + self._font_size * self.line_spacing
 
-        parsed_color: ManimColor = ManimColor(color) if color else VMobject().color
+        parsed_color = ManimColor(color)
         file_name = self._text2svg(parsed_color)
 
         PangoUtils.remove_last_M(file_name)

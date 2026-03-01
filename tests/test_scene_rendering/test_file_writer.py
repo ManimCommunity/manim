@@ -6,8 +6,9 @@ import av
 import numpy as np
 import pytest
 
-from manim import DR, Circle, Create, Scene, Star, tempconfig
-from manim.scene.scene_file_writer import to_av_frame_rate
+import manim
+from manim import DR, Circle, Create, Manager, Scene, Star
+from manim.file_writer.file_writer import to_av_frame_rate
 from manim.utils.commands import capture, get_video_metadata
 
 
@@ -34,18 +35,15 @@ class StarScene(Scene):
     "transparent",
     [False, True],
 )
-def test_gif_writing(config, tmp_path, transparent):
+def test_gif_writing(tmp_path, config, write_to_movie, transparent):
     output_filename = f"gif_{'transparent' if transparent else 'opaque'}"
-    with tempconfig(
-        {
-            "media_dir": tmp_path,
-            "quality": "low_quality",
-            "format": "gif",
-            "transparent": transparent,
-            "output_file": output_filename,
-        }
-    ):
-        StarScene().render()
+    config.media_dir = tmp_path
+    with manim.tempconfig({"renderer": "opengl"}):
+        config.quality = "low_quality"
+        config.format = "gif"
+        config.transparent = transparent
+        config.output_file = output_filename
+        Manager(StarScene).render()
 
     video_path = tmp_path / "videos" / "480p15" / f"{output_filename}.gif"
     assert video_path.exists()
@@ -92,18 +90,23 @@ def test_gif_writing(config, tmp_path, transparent):
         ("webm", True, "vp9", "yuv420p"),
     ],
 )
-def test_codecs(config, tmp_path, format, transparent, codec, pixel_format):
-    output_filename = f"codec_{format}_{'transparent' if transparent else 'opaque'}"
-    with tempconfig(
-        {
-            "media_dir": tmp_path,
-            "quality": "low_quality",
-            "format": format,
-            "transparent": transparent,
-            "output_file": output_filename,
-        }
-    ):
-        StarScene().render()
+def test_codecs(
+    tmp_path,
+    config,
+    write_to_movie,
+    format,
+    transparent,
+    codec,
+    pixel_format,
+):
+    with manim.tempconfig({"renderer": "opengl"}):
+        output_filename = f"codec_{format}_{'transparent' if transparent else 'opaque'}"
+        config.media_dir = tmp_path
+        config.quality = "low_quality"
+        config.format = format
+        config.transparent = transparent
+        config.output_file = output_filename
+        Manager(StarScene).render()
 
     video_path = tmp_path / "videos" / "480p15" / f"{output_filename}.{format}"
     assert video_path.exists()
@@ -154,7 +157,7 @@ def test_scene_with_non_raw_or_wav_audio(config, manim_caplog):
             self.add_sound(file_path)
             self.wait()
 
-    SceneWithMP3().render()
+    Manager(SceneWithMP3).render()
     assert "click.mp3 to .wav" in manim_caplog.text
 
 

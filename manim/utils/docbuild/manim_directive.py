@@ -82,6 +82,7 @@ from __future__ import annotations
 
 import csv
 import itertools as it
+import os
 import re
 import shutil
 import sys
@@ -184,6 +185,7 @@ class ManimDirective(Directive):
         should_skip = (
             "skip-manim" in self.state.document.settings.env.app.builder.tags
             or self.state.document.settings.env.app.builder.name == "gettext"
+            or os.getenv("READTHEDOCS_VERSION_NAME", None) in ["3112", "3475"]
         )
         if should_skip:
             clsname = self.arguments[0]
@@ -299,7 +301,7 @@ class ManimDirective(Directive):
         code = [
             "from manim import *",
             *user_code,
-            f"{clsname}().render()",
+            f"Manager({clsname}).render()",
         ]
 
         try:

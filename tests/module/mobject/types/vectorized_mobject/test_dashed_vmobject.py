@@ -1,5 +1,12 @@
-from manim import ORIGIN, UR, Arrow, DashedLine, DashedVMobject, VGroup
+from manim.constants import ORIGIN, UR
+from manim.mobject.geometry.line import Arrow, DashedLine
 from manim.mobject.geometry.tips import ArrowTip, StealthTip
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLDashedVMobject as DashedVMobject,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVGroup as VGroup,
+)
 
 
 def _collect_tips(mobject):
@@ -19,8 +26,8 @@ def test_dashed_arrow_tip_not_duplicated_in_group_opacity():
 
     dashed_group = (
         VGroup(DashedVMobject(faded_arrow))
-        .set_fill(opacity=0.4, family=True)
-        .set_stroke(opacity=0.4, family=True)
+        .set_fill(opacity=0.4, recurse=True)
+        .set_stroke(opacity=0.4, recurse=True)
     )
 
     tips = _collect_tips(dashed_group)

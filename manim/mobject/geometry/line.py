@@ -18,14 +18,15 @@ from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 
-from manim import config
 from manim.constants import *
 from manim.mobject.geometry.arc import Arc, ArcBetweenPoints, Dot, TipableVMobject
 from manim.mobject.geometry.tips import ArrowTriangleFilledTip
-from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLDashedVMobject as DashedVMobject,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup as VGroup
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject as VMobject
 from manim.utils.color import WHITE
 from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 
@@ -187,7 +188,7 @@ class Line(TipableVMobject):
         direction
             The direction.
         """
-        if isinstance(mob_or_point, (Mobject, OpenGLMobject)):
+        if isinstance(mob_or_point, Mobject):
             mob = mob_or_point
             if direction is None:
                 return mob.get_center()
@@ -458,7 +459,7 @@ class TangentLine(Line):
         self.scale(self.length / self.get_length())
 
 
-class Elbow(VMobject, metaclass=ConvertToOpenGL):
+class Elbow(VMobject):
     """Two lines that create a right angle about each other: L-shape.
 
     Parameters
@@ -599,7 +600,7 @@ class Arrow(Line):
         super().__init__(*args, buff=buff, stroke_width=stroke_width, **kwargs)  # type: ignore[misc]
         # TODO, should this be affected when
         # Arrow.set_stroke is called?
-        self.initial_stroke_width = self.stroke_width
+        self.initial_stroke_width = stroke_width
         self.add_tip(tip_shape=tip_shape)
         self._set_stroke_width_from_length()
 
@@ -688,20 +689,13 @@ class Arrow(Line):
     def _set_stroke_width_from_length(self) -> Self:
         """Sets stroke width based on length."""
         max_ratio = self.max_stroke_width_to_length_ratio
-        if config.renderer == RendererType.OPENGL:
-            # Mypy does not recognize that the self object in this case
-            # is a OpenGLVMobject and that the set_stroke method is
-            # defined here:
-            # mobject/opengl/opengl_vectorized_mobject.py#L248
-            self.set_stroke(  # type: ignore[call-arg]
-                width=min(self.initial_stroke_width, max_ratio * self.get_length()),
-                recurse=False,
-            )
-        else:
-            self.set_stroke(
-                width=min(self.initial_stroke_width, max_ratio * self.get_length()),
-                family=False,
-            )
+        self.set_stroke(
+            width=min(
+                self.initial_stroke_width,
+                [max_ratio * self.get_length()] * len(self.initial_stroke_width),
+            ),
+            recurse=False,
+        )
         return self
 
 
@@ -863,7 +857,7 @@ class DoubleArrow(Arrow):
         self.add_tip(at_start=True, tip_shape=tip_shape_start)
 
 
-class Angle(VMobject, metaclass=ConvertToOpenGL):
+class Angle(VMobject):
     """A circular arc or elbow-type mobject representing an angle of two lines.
 
     Parameters

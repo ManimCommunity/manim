@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 
 __all__ = ["global_options"]
 
+
 logger = logging.getLogger("manim")
 
 

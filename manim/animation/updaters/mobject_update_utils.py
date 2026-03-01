@@ -3,12 +3,9 @@
 from __future__ import annotations
 
 __all__ = [
-    "assert_is_mobject_method",
     "always",
     "f_always",
     "always_redraw",
-    "always_shift",
-    "always_rotate",
     "turn_animation_into_updater",
     "cycle_animation",
 ]
@@ -16,41 +13,56 @@ __all__ = [
 
 import inspect
 from collections.abc import Callable
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 import numpy as np
 
-from manim.constants import DEGREES, RIGHT
-from manim.mobject.mobject import Mobject
-from manim.opengl import OpenGLMobject
-from manim.utils.space_ops import normalize
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 
 if TYPE_CHECKING:
-    from manim.animation.animation import Animation
+    import types
+    from typing import Concatenate
+
+    from typing_extensions import ParamSpec, TypeIs
+
+    from manim.animation.protocol import MobjectAnimation
+
+    P = ParamSpec("P")
 
 
-def assert_is_mobject_method(method: Callable) -> None:
-    assert inspect.ismethod(method)
-    mobject = method.__self__
-    assert isinstance(mobject, (Mobject, OpenGLMobject))
+M = TypeVar("M", bound=Mobject)
 
 
-def always(method: Callable, *args, **kwargs) -> Mobject:
-    assert_is_mobject_method(method)
-    mobject = method.__self__
+# TODO: figure out how to typehint as MethodType[Mobject] to avoid the cast
+# madness in always/f_always
+def is_mobject_method(method: Callable[..., Any]) -> TypeIs[types.MethodType]:
+    return inspect.ismethod(method) and isinstance(method.__self__, Mobject)
+
+
+def always(
+    method: Callable[Concatenate[M, P], object], *args: P.args, **kwargs: P.kwargs
+) -> M:
+    if not is_mobject_method(method):
+        raise ValueError("always must take a method of a Mobject")
+    mobject = cast(M, method.__self__)
     func = method.__func__
     mobject.add_updater(lambda m: func(m, *args, **kwargs))
     return mobject
 
 
-def f_always(method: Callable[[Mobject], None], *arg_generators, **kwargs) -> Mobject:
+def f_always(
+    method: Callable[Concatenate[M, ...], None],
+    *arg_generators: Callable[[], object],
+    **kwargs,
+) -> M:
     """
     More functional version of always, where instead
     of taking in args, it takes in functions which output
     the relevant arguments.
     """
-    assert_is_mobject_method(method)
-    mobject = method.__self__
+    if not is_mobject_method(method):
+        raise ValueError("f_always must take a method of a Mobject")
+    mobject = cast(M, method.__self__)
     func = method.__func__
 
     def updater(mob):
@@ -61,7 +73,7 @@ def f_always(method: Callable[[Mobject], None], *arg_generators, **kwargs) -> Mo
     return mobject
 
 
-def always_redraw(func: Callable[[], Mobject]) -> Mobject:
+def always_redraw(func: Callable[[], M]) -> M:
     """Redraw the mobject constructed by a function every frame.
 
     This function returns a mobject with an attached updater that
@@ -76,7 +88,6 @@ def always_redraw(func: Callable[[], Mobject]) -> Mobject:
 
     Examples
     --------
-
     .. manim:: TangentAnimation
 
         class TangentAnimation(Scene):
@@ -106,81 +117,11 @@ def always_redraw(func: Callable[[], Mobject]) -> Mobject:
     return mob
 
 
-def always_shift(
-    mobject: Mobject, direction: np.ndarray[np.float64] = RIGHT, rate: float = 0.1
-) -> Mobject:
-    """A mobject which is continuously shifted along some direction
-    at a certain rate.
-
-    Parameters
-    ----------
-    mobject
-        The mobject to shift.
-    direction
-        The direction to shift. The vector is normalized, the specified magnitude
-        is not relevant.
-    rate
-        Length in Manim units which the mobject travels in one
-        second along the specified direction.
-
-    Examples
-    --------
-
-    .. manim:: ShiftingSquare
-
-        class ShiftingSquare(Scene):
-            def construct(self):
-                sq = Square().set_fill(opacity=1)
-                tri = Triangle()
-                VGroup(sq, tri).arrange(LEFT)
-
-                # construct a square which is continuously
-                # shifted to the right
-                always_shift(sq, RIGHT, rate=5)
-
-                self.add(sq)
-                self.play(tri.animate.set_fill(opacity=1))
-    """
-    mobject.add_updater(lambda m, dt: m.shift(dt * rate * normalize(direction)))
-    return mobject
-
-
-def always_rotate(mobject: Mobject, rate: float = 20 * DEGREES, **kwargs) -> Mobject:
-    """A mobject which is continuously rotated at a certain rate.
-
-    Parameters
-    ----------
-    mobject
-        The mobject to be rotated.
-    rate
-        The angle which the mobject is rotated by
-        over one second.
-    kwags
-        Further arguments to be passed to :meth:`.Mobject.rotate`.
-
-    Examples
-    --------
-
-    .. manim:: SpinningTriangle
-
-        class SpinningTriangle(Scene):
-            def construct(self):
-                tri = Triangle().set_fill(opacity=1).set_z_index(2)
-                sq = Square().to_edge(LEFT)
-
-                # will keep spinning while there is an animation going on
-                always_rotate(tri, rate=2*PI, about_point=ORIGIN)
-
-                self.add(tri, sq)
-                self.play(sq.animate.to_edge(RIGHT), rate_func=linear, run_time=1)
-    """
-    mobject.add_updater(lambda m, dt: m.rotate(dt * rate, **kwargs))
-    return mobject
-
-
 def turn_animation_into_updater(
-    animation: Animation, cycle: bool = False, delay: float = 0, **kwargs
-) -> Mobject:
+    animation: MobjectAnimation[M],
+    cycle: bool = False,
+    delay: float = 0,
+) -> M:
     """
     Add an updater to the animation's mobject which applies
     the interpolation and update functions of the animation
@@ -209,10 +150,12 @@ def turn_animation_into_updater(
     mobject = animation.mobject
     animation.suspend_mobject_updating = False
     animation.begin()
-    animation.total_time = -delay
 
-    def update(m: Mobject, dt: float):
-        if animation.total_time >= 0:
+    total_time = -delay
+
+    def update(m: M, dt: float):
+        nonlocal total_time
+        if total_time >= 0:
             run_time = animation.get_run_time()
 
             # handle zero/negative runtime safely
@@ -224,7 +167,7 @@ def turn_animation_into_updater(
                 m.remove_updater(update)
                 return
 
-            time_ratio = animation.total_time / run_time
+            time_ratio = total_time / run_time
             if cycle:
                 alpha = time_ratio % 1
             else:
@@ -235,11 +178,11 @@ def turn_animation_into_updater(
                     return
             animation.interpolate(alpha)
             animation.update_mobjects(dt)
-        animation.total_time += dt
+        total_time += dt
 
     mobject.add_updater(update)
     return mobject
 
 
-def cycle_animation(animation: Animation, **kwargs) -> Mobject:
+def cycle_animation(animation: MobjectAnimation[M], **kwargs) -> M:
     return turn_animation_into_updater(animation, cycle=True, **kwargs)

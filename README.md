@@ -34,7 +34,7 @@ Manim is an animation engine for explanatory math videos. It's used to create pr
 
 ## Installation
 
-> [!CAUTION]
+> [!WARNING]
 > These instructions are for the community version _only_. Trying to use these instructions to install [3b1b/manim](https://github.com/3b1b/manim) or instructions there to install this version will cause problems. Read [this](https://docs.manim.community/en/stable/faq/installation.html#why-are-there-different-versions-of-manim) and decide which version you wish to install, then only follow the instructions for your desired version.
 
 Manim requires a few dependencies that must be installed prior to using it. If you
@@ -71,7 +71,7 @@ In order to view the output of this scene, save the code in a file called `examp
 manim -p -ql example.py SquareToCircle
 ```
 
-You should see your native video player program pop up and play a simple scene in which a square is transformed into a circle. You may find some more simple examples within this
+You should see a window pop up and play a simple scene in which a square is transformed into a circle. You may find some more simple examples within this
 [GitHub repository](example_scenes). You can also visit the [official gallery](https://docs.manim.community/en/stable/examples.html) for more advanced examples.
 
 Manim also ships with a `%%manim` IPython magic which allows to use it conveniently in JupyterLab (as well as classic Jupyter) notebooks. See the
@@ -84,7 +84,8 @@ The general usage of Manim is as follows:
 
 ![manim-illustration](https://raw.githubusercontent.com/ManimCommunity/manim/main/docs/source/_static/command.png)
 
-The `-p` flag in the command above is for previewing, meaning the video file will automatically open when it is done rendering. The `-ql` flag is for a faster rendering at a lower quality.
+The `-p` flag in the command above is for previewing, meaning a window will show up to render it in real time.
+The `-ql` flag is for a faster rendering at a lower quality.
 
 Some other useful flags include:
 

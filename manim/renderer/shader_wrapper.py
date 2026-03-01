@@ -4,6 +4,7 @@ import copy
 import logging
 import re
 from collections.abc import Mapping, Sequence
+from functools import lru_cache
 from pathlib import Path
 from typing import TYPE_CHECKING, Self, TypeAlias
 
@@ -13,6 +14,8 @@ import numpy.typing as npt
 
 if TYPE_CHECKING:
     from manim.typing import FloatRGBLike_Array
+
+from manim.utils.iterables import resize_array
 
 # Mobjects that should be rendered with
 # the same shader will be organized and
@@ -35,10 +38,11 @@ def find_file(file_name: Path, directories: list[Path]) -> Path:
         return file_name
     possible_paths = (directory / file_name for directory in directories)
     for path in possible_paths:
+        logger.debug(f"Searching for {file_name} in {path}")
         if path.exists():
             return path
         else:
-            logger.debug(f"{path} does not exist.")
+            logger.debug(f"shader_wrapper.py::find_file() : {path} does not exist.")
     raise OSError(f"{file_name} not Found")
 
 
@@ -69,6 +73,29 @@ class ShaderWrapper:
         self.render_primitive: str = str(render_primitive)
         self.init_program_code()
         self.refresh_id()
+
+    def __eq__(self, shader_wrapper: object):
+        if not isinstance(shader_wrapper, ShaderWrapper):
+            raise TypeError(
+                f"Cannot compare ShaderWrapper with non-ShaderWrapper object of type {type(shader_wrapper)}"
+            )
+        return all(
+            (
+                np.all(self.vert_data == shader_wrapper.vert_data),
+                np.all(self.vert_indices == shader_wrapper.vert_indices),
+                self.shader_folder == shader_wrapper.shader_folder,
+                all(
+                    np.all(self.uniforms[key] == shader_wrapper.uniforms[key])
+                    for key in self.uniforms
+                ),
+                all(
+                    self.texture_paths[key] == shader_wrapper.texture_paths[key]
+                    for key in self.texture_paths
+                ),
+                self.depth_test == shader_wrapper.depth_test,
+                self.render_primitive == shader_wrapper.render_primitive,
+            )
+        )
 
     def copy(self):
         result = copy.copy(self)
@@ -125,9 +152,14 @@ class ShaderWrapper:
 
     def init_program_code(self):
         def get_code(name: str) -> str | None:
-            return get_shader_code_from_file(
-                self.shader_folder / f"{name}.glsl",
-            )
+            path = self.shader_folder / f"{name}.glsl"
+            logger.debug(f"Reading {name}.glsl shader code from {path.absolute()}")
+            code = get_shader_code_from_file(path)
+            if code is not None:
+                logger.debug(
+                    f"=============================================\n{code}\n============================================="
+                )
+            return code
 
         self.program_code: dict[str, str | None] = {
             "vertex_shader": get_code("vert"),
@@ -145,24 +177,28 @@ class ShaderWrapper:
                 code_map[name] = re.sub(old, new, code)
         self.refresh_id()
 
-    def combine_with(self, *shader_wrappers: "ShaderWrapper") -> Self:  # noqa: UP037
-        # Assume they are of the same type
-        if len(shader_wrappers) == 0:
-            return self
+    def combine_with(self, *shader_wrappers: ShaderWrapper) -> Self:
+        self.read_in(self.copy(), *shader_wrappers)
+        return self
+
+    def read_in(self, *shader_wrappers: ShaderWrapper) -> Self:
+        # Assume all are of the same type
+        total_len = sum(len(sw.vert_data) for sw in shader_wrappers)
+        self.vert_data = resize_array(self.vert_data, total_len)
         if self.vert_indices is not None:
-            num_verts = len(self.vert_data)
-            indices_list = [self.vert_indices]
-            data_list = [self.vert_data]
-            for sw in shader_wrappers:
-                indices_list.append(sw.vert_indices + num_verts)
-                data_list.append(sw.vert_data)
-                num_verts += len(sw.vert_data)
-            self.vert_indices = np.hstack(indices_list)
-            self.vert_data = np.hstack(data_list)
-        else:
-            self.vert_data = np.hstack(
-                [self.vert_data, *(sw.vert_data for sw in shader_wrappers)],
-            )
+            total_verts = sum(len(sw.vert_indices) for sw in shader_wrappers)
+            self.vert_indices = resize_array(self.vert_indices, total_verts)
+
+        n_points = 0
+        n_verts = 0
+        for sw in shader_wrappers:
+            new_n_points = n_points + len(sw.vert_data)
+            self.vert_data[n_points:new_n_points] = sw.vert_data
+            if self.vert_indices is not None and sw.vert_indices is not None:
+                new_n_verts = n_verts + len(sw.vert_indices)
+                self.vert_indices[n_verts:new_n_verts] = sw.vert_indices + n_points
+                n_verts = new_n_verts
+            n_points = new_n_points
         return self
 
 
@@ -170,16 +206,17 @@ class ShaderWrapper:
 filename_to_code_map: dict = {}
 
 
+@lru_cache(maxsize=12)
 def get_shader_code_from_file(filename: Path) -> str | None:
     if filename in filename_to_code_map:
         return filename_to_code_map[filename]
-
     try:
         filepath = find_file(
             filename,
             directories=[get_shader_dir(), Path("/")],
         )
     except OSError:
+        logger.warning(f"Could not find shader file {filename.absolute()}")
         return None
 
     result = filepath.read_text()
@@ -189,17 +226,25 @@ def get_shader_code_from_file(filename: Path) -> str | None:
     # passing to ctx.program for compiling
     # Replace "#INSERT " lines with relevant code
     insertions = re.findall(
-        r"^#include ../include/.*\.glsl$",
+        r"^#include.*",
         result,
         flags=re.MULTILINE,
     )
     for line in insertions:
+        include_path = line.strip().replace("#include", "")
+        include_path = include_path.replace('"', "")
+        path = (filepath.parent / Path(include_path.strip())).resolve()
+        logger.debug(f"Trying to get code from: {path} to include in {filepath.name}")
         inserted_code = get_shader_code_from_file(
-            Path() / "include" / line.replace("#include ../include/", ""),
+            path,
         )
         if inserted_code is None:
             return None
-        result = result.replace(line, inserted_code)
+
+        result = result.replace(
+            line,
+            f"// Start include of: {include_path}\n\n{inserted_code}\n\n// End include of: {include_path}",
+        )
     filename_to_code_map[filename] = result
     return result
 

@@ -12,8 +12,8 @@ import svgelements as se
 from manim._config import config
 from manim.mobject.geometry.arc import Arc
 from manim.mobject.geometry.line import Line
-from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject as VMobject
 from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex, Tex
 from manim.mobject.text.text_mobject import Text
 
@@ -22,7 +22,6 @@ from ...animation.composition import AnimationGroup
 from ...animation.fading import FadeIn
 from ...animation.growing import GrowFromCenter
 from ...constants import *
-from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import BLACK
 from ..svg.svg_mobject import VMobjectFromSVGPath
 
@@ -204,7 +203,7 @@ class Brace(VMobjectFromSVGPath):
         return vect / np.linalg.norm(vect)
 
 
-class BraceLabel(VMobject, metaclass=ConvertToOpenGL):
+class BraceLabel(VMobject):
     """Create a brace with a label attached.
 
     Parameters

@@ -18,7 +18,6 @@ import numpy as np
 if TYPE_CHECKING:
     from typing import TypeAlias
 
-    from manim.scene.scene import Scene
     from manim.typing import Point3D, Point3DLike
 
     NxGraph: TypeAlias = nx.classes.graph.Graph | nx.classes.digraph.DiGraph
@@ -27,11 +26,12 @@ from manim.animation.composition import AnimationGroup
 from manim.animation.creation import Create, Uncreate
 from manim.mobject.geometry.arc import Dot, LabeledDot
 from manim.mobject.geometry.line import Line
-from manim.mobject.mobject import Mobject, override_animate
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import (
+    override_animate,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup as VGroup
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject as VMobject
 from manim.mobject.text.tex_mobject import MathTex
-from manim.mobject.types.vectorized_mobject import VMobject
 from manim.utils.color import BLACK
 
 
@@ -476,7 +476,7 @@ def _determine_graph_layout(
             ) from e
 
 
-class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
+class GenericGraph(VMobject):
     """Abstract base class for graphs (that is, a collection of vertices
     connected with edges).
 
@@ -569,10 +569,10 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         layout: LayoutName | dict[Hashable, Point3DLike] | LayoutFunction = "spring",
         layout_scale: float | tuple[float, float, float] = 2,
         layout_config: dict | None = None,
-        vertex_type: type[Mobject] = Dot,
+        vertex_type: type[VMobject] = Dot,
         vertex_config: dict | None = None,
         vertex_mobjects: dict | None = None,
-        edge_type: type[Mobject] = Line,
+        edge_type: type[VMobject] = Line,
         partitions: Sequence[Sequence[Hashable]] | None = None,
         root_vertex: Hashable | None = None,
         edge_config: dict | None = None,
@@ -664,12 +664,12 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         raise NotImplementedError("To be implemented in concrete subclasses")
 
     def _populate_edge_dict(
-        self, edges: list[tuple[Hashable, Hashable]], edge_type: type[Mobject]
+        self, edges: list[tuple[Hashable, Hashable]], edge_type: type[VMobject]
     ):
         """Helper method for populating the edges of the graph."""
         raise NotImplementedError("To be implemented in concrete subclasses")
 
-    def __getitem__(self: Graph, v: Hashable) -> Mobject:
+    def __getitem__(self: Graph, v: Hashable) -> VMobject:
         return self.vertices[v]
 
     def _create_vertex(
@@ -678,10 +678,10 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         position: Point3DLike | None = None,
         label: bool = False,
         label_fill_color: str = BLACK,
-        vertex_type: type[Mobject] = Dot,
+        vertex_type: type[VMobject] = Dot,
         vertex_config: dict | None = None,
         vertex_mobject: dict | None = None,
-    ) -> tuple[Hashable, Point3D, dict, Mobject]:
+    ) -> tuple[Hashable, Point3D, dict, VMobject]:
         np_position: Point3D = (
             self.get_center() if position is None else np.asarray(position)
         )
@@ -698,7 +698,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             label = MathTex(vertex, color=label_fill_color)
         elif vertex in self._labels:
             label = self._labels[vertex]
-        elif not isinstance(label, (Mobject, OpenGLMobject)):
+        elif not isinstance(label, VMobject):
             label = None
 
         base_vertex_config = copy(self.default_vertex_config)
@@ -722,8 +722,8 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         vertex: Hashable,
         position: Point3DLike,
         vertex_config: dict,
-        vertex_mobject: Mobject,
-    ) -> Mobject:
+        vertex_mobject: VMobject,
+    ) -> VMobject:
         if vertex in self.vertices:
             raise ValueError(
                 f"Vertex identifier '{vertex}' is already used for a vertex in this graph.",
@@ -749,10 +749,10 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         position: Point3DLike | None = None,
         label: bool = False,
         label_fill_color: str = BLACK,
-        vertex_type: type[Mobject] = Dot,
+        vertex_type: type[VMobject] = Dot,
         vertex_config: dict | None = None,
         vertex_mobject: dict | None = None,
-    ) -> Mobject:
+    ) -> VMobject:
         """Add a vertex to the graph.
 
         Parameters
@@ -767,7 +767,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             Controls whether or not the vertex is labeled. If ``False`` (the default),
             the vertex is not labeled; if ``True`` it is labeled using its
             names (as specified in ``vertex``) via :class:`~.MathTex`. Alternatively,
-            any :class:`~.Mobject` can be passed to be used as the label.
+            any :class:`~.VMobject` can be passed to be used as the label.
         label_fill_color
             Sets the fill color of the default labels generated when ``labels``
             is set to ``True``. Has no effect for other values of ``label``.
@@ -798,10 +798,10 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         positions: dict | None = None,
         labels: bool = False,
         label_fill_color: str = BLACK,
-        vertex_type: type[Mobject] = Dot,
+        vertex_type: type[VMobject] = Dot,
         vertex_config: dict | None = None,
         vertex_mobjects: dict | None = None,
-    ) -> Iterable[tuple[Hashable, Point3D, dict, Mobject]]:
+    ) -> Iterable[tuple[Hashable, Point3D, dict, VMobject]]:
         if positions is None:
             positions = {}
         if vertex_mobjects is None:
@@ -852,10 +852,10 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         positions: dict | None = None,
         labels: bool = False,
         label_fill_color: str = BLACK,
-        vertex_type: type[Mobject] = Dot,
+        vertex_type: type[VMobject] = Dot,
         vertex_config: dict | None = None,
         vertex_mobjects: dict | None = None,
-    ):
+    ) -> VGroup:
         """Add a list of vertices to the graph.
 
         Parameters
@@ -870,7 +870,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             Controls whether or not the vertex is labeled. If ``False`` (the default),
             the vertex is not labeled; if ``True`` it is labeled using its
             names (as specified in ``vertex``) via :class:`~.MathTex`. Alternatively,
-            any :class:`~.Mobject` can be passed to be used as the label.
+            any :class:`~.VMobject` can be passed to be used as the label.
         label_fill_color
             Sets the fill color of the default labels generated when ``labels``
             is set to ``True``. Has no effect for other values of ``labels``.
@@ -884,7 +884,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             values are mobjects that should be used as vertices. Overrides
             all other vertex customization options.
         """
-        return [
+        return VGroup(
             self._add_created_vertex(*v)
             for v in self._create_vertices(
                 *vertices,
@@ -895,29 +895,30 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
                 vertex_config=vertex_config,
                 vertex_mobjects=vertex_mobjects,
             )
-        ]
-
-    @override_animate(add_vertices)
-    def _add_vertices_animation(self, *args, anim_args=None, **kwargs):
-        if anim_args is None:
-            anim_args = {}
-
-        animation = anim_args.pop("animation", Create)
-
-        vertex_mobjects = self._create_vertices(*args, **kwargs)
-
-        def on_finish(scene: Scene):
-            for v in vertex_mobjects:
-                scene.remove(v[-1])
-                self._add_created_vertex(*v)
-
-        return AnimationGroup(
-            *(animation(v[-1], **anim_args) for v in vertex_mobjects),
-            group=self,
-            _on_finish=on_finish,
         )
 
-    def _remove_vertex(self, vertex):
+    @override_animate(add_vertices)
+    def _add_vertices_animation(
+        self,
+        *vertices: Hashable,
+        anim_args: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> AnimationGroup:
+        # Use introducer=False to prevent re-adding the vertices when animating them
+        base_anim_args = {"animation": Create, "introducer": False}
+        if anim_args is not None:
+            base_anim_args.update(anim_args)
+        animation = base_anim_args.pop("animation")
+
+        vertex_mobjects = self.add_vertices(*vertices, **kwargs)
+        return AnimationGroup(
+            *(
+                animation(vertex_mobject, **base_anim_args)
+                for vertex_mobject in vertex_mobjects
+            ),
+        )
+
+    def _remove_vertex(self, vertex: Hashable) -> VGroup:
         """Remove a vertex (as well as all incident edges) from the graph.
 
         Parameters
@@ -951,9 +952,9 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         to_remove.append(self.vertices.pop(vertex))
 
         self.remove(*to_remove)
-        return self.get_group_class()(*to_remove)
+        return VGroup(*to_remove)
 
-    def remove_vertices(self, *vertices):
+    def remove_vertices(self, *vertices: Hashable) -> VGroup:
         """Remove several vertices from the graph.
 
         Parameters
@@ -967,7 +968,8 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         ::
 
             >>> G = Graph([1, 2, 3], [(1, 2), (2, 3)])
-            >>> removed = G.remove_vertices(2, 3); removed
+            >>> removed = G.remove_vertices(2, 3)
+            >>> removed
             VGroup(Line, Line, Dot, Dot)
             >>> G
             Undirected graph on 1 vertices and 0 edges
@@ -976,26 +978,32 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         mobjects = []
         for v in vertices:
             mobjects.extend(self._remove_vertex(v).submobjects)
-        return self.get_group_class()(*mobjects)
+        return VGroup(*mobjects)
 
     @override_animate(remove_vertices)
-    def _remove_vertices_animation(self, *vertices, anim_args=None):
-        if anim_args is None:
-            anim_args = {}
+    def _remove_vertices_animation(
+        self, *vertices: Hashable, anim_args: dict[str, Any] | None = None
+    ) -> AnimationGroup:
+        base_anim_args = {"animation": Uncreate}
+        if anim_args is not None:
+            base_anim_args.update(anim_args)
+        animation = base_anim_args.pop("animation")
 
-        animation = anim_args.pop("animation", Uncreate)
-
-        mobjects = self.remove_vertices(*vertices)
+        vertex_and_edge_mobjects = self.remove_vertices(*vertices)
         return AnimationGroup(
-            *(animation(mobj, **anim_args) for mobj in mobjects), group=self
+            *(
+                animation(vertex_or_edge_mobject, **anim_args)
+                for vertex_or_edge_mobject in vertex_and_edge_mobjects
+            ),
+            introducer=True,  # Reintroduce vertices and edges temporarily to animate them
         )
 
     def _add_edge(
         self,
         edge: tuple[Hashable, Hashable],
-        edge_type: type[Mobject] = Line,
+        edge_type: type[VMobject] = Line,
         edge_config: dict | None = None,
-    ):
+    ) -> VGroup:
         """Add a new edge to the graph.
 
         Parameters
@@ -1039,15 +1047,17 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
         self.add(edge_mobject)
         added_mobjects.append(edge_mobject)
-        return self.get_group_class()(*added_mobjects)
+        return VGroup(*added_mobjects)
 
     def add_edges(
         self,
         *edges: tuple[Hashable, Hashable],
-        edge_type: type[Mobject] = Line,
-        edge_config: dict | None = None,
-        **kwargs,
-    ):
+        edge_type: type[VMobject] = Line,
+        edge_config: dict[str, Any]
+        | dict[tuple[Hashable, Hashable], dict[str, Any]]
+        | None = None,
+        **kwargs: Any,
+    ) -> VGroup:
         """Add new edges to the graph.
 
         Parameters
@@ -1100,20 +1110,33 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             ),
             added_vertices,
         )
-        return self.get_group_class()(*added_mobjects)
+        return VGroup(*added_mobjects)
 
     @override_animate(add_edges)
-    def _add_edges_animation(self, *args, anim_args=None, **kwargs):
-        if anim_args is None:
-            anim_args = {}
-        animation = anim_args.pop("animation", Create)
+    def _add_edges_animation(
+        self,
+        *edges: tuple[Hashable, Hashable],
+        anim_args: dict[str, Any] | None = None,
+        **kwargs: Any,
+    ) -> AnimationGroup:
+        # TODO: the animation is broken with introducer=False, but not passing it
+        # disbands the graph upon re-adding the edges and vertices. Fix this
 
-        mobjects = self.add_edges(*args, **kwargs)
+        # Use introducer=False to prevent re-adding the edges and vertices when animating
+        base_anim_args = {"animation": Create, "introducer": False}
+        if anim_args is not None:
+            base_anim_args.update(anim_args)
+        animation = base_anim_args.pop("animation")
+
+        edge_and_vertex_mobjects = self.add_edges(*edges, **kwargs)
         return AnimationGroup(
-            *(animation(mobj, **anim_args) for mobj in mobjects), group=self
+            *(
+                animation(edge_or_vertex_mobject, **base_anim_args)
+                for edge_or_vertex_mobject in edge_and_vertex_mobjects
+            )
         )
 
-    def _remove_edge(self, edge: tuple[Hashable]):
+    def _remove_edge(self, edge: tuple[Hashable]) -> VMobject:
         """Remove an edge from the graph.
 
         Parameters
@@ -1125,7 +1148,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         Returns
         -------
 
-        Mobject
+        VMobject
             The removed edge.
 
         """
@@ -1140,7 +1163,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         self.remove(edge_mobject)
         return edge_mobject
 
-    def remove_edges(self, *edges: tuple[Hashable]):
+    def remove_edges(self, *edges: tuple[Hashable]) -> VGroup:
         """Remove several edges from the graph.
 
         Parameters
@@ -1155,17 +1178,25 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
         """
         edge_mobjects = [self._remove_edge(edge) for edge in edges]
-        return self.get_group_class()(*edge_mobjects)
+        return VGroup(*edge_mobjects)
 
     @override_animate(remove_edges)
-    def _remove_edges_animation(self, *edges, anim_args=None):
-        if anim_args is None:
-            anim_args = {}
+    def _remove_edges_animation(
+        self, *edges: tuple[Hashable, Hashable], anim_args: dict[str, Any] | None = None
+    ) -> AnimationGroup:
+        base_anim_args = {"animation": Uncreate}
+        if anim_args is not None:
+            base_anim_args.update(anim_args)
+        animation = base_anim_args.pop("animation")
 
-        animation = anim_args.pop("animation", Uncreate)
-
-        mobjects = self.remove_edges(*edges)
-        return AnimationGroup(*(animation(mobj, **anim_args) for mobj in mobjects))
+        edge_and_vertex_mobjects = self.remove_edges(*edges)
+        return AnimationGroup(
+            *(
+                animation(edge_or_vertex_mobject, **anim_args)
+                for edge_or_vertex_mobject in edge_and_vertex_mobjects
+            ),
+            introducer=True,  # Reintroduce edges and vertices temporarily to animate them
+        )
 
     @classmethod
     def from_networkx(
@@ -1537,7 +1568,7 @@ class Graph(GenericGraph):
         return nx.Graph()
 
     def _populate_edge_dict(
-        self, edges: list[tuple[Hashable, Hashable]], edge_type: type[Mobject]
+        self, edges: list[tuple[Hashable, Hashable]], edge_type: type[VMobject]
     ):
         self.edges = {
             (u, v): edge_type(
@@ -1561,6 +1592,9 @@ class Graph(GenericGraph):
 
     def __repr__(self: Graph) -> str:
         return f"Undirected graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
+
+    def __str__(self: Graph) -> str:
+        return self.__repr__()
 
 
 class DiGraph(GenericGraph):
@@ -1744,7 +1778,7 @@ class DiGraph(GenericGraph):
         return nx.DiGraph()
 
     def _populate_edge_dict(
-        self, edges: list[tuple[Hashable, Hashable]], edge_type: type[Mobject]
+        self, edges: list[tuple[Hashable, Hashable]], edge_type: type[VMobject]
     ):
         self.edges = {
             (u, v): edge_type(
@@ -1767,7 +1801,7 @@ class DiGraph(GenericGraph):
         """
         for (u, v), edge in graph.edges.items():
             tip = edge.pop_tips()[0]
-            # Passing the Mobject instead of the vertex makes the tip
+            # Passing the VMobject instead of the vertex makes the tip
             # stop on the bounding box of the vertex.
             edge.set_points_by_ends(
                 graph[u],
@@ -1779,3 +1813,6 @@ class DiGraph(GenericGraph):
 
     def __repr__(self: DiGraph) -> str:
         return f"Directed graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
+
+    def __str__(self: DiGraph) -> str:
+        return self.__repr__()

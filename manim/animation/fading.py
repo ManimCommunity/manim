@@ -23,12 +23,15 @@ from typing import Any
 
 import numpy as np
 
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLGroup as Group,
+)
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLMobject as Mobject,
+)
 
 from ..animation.transform import Transform
 from ..constants import ORIGIN
-from ..mobject.mobject import Group, Mobject
-from ..scene.scene import Scene
 
 
 class _Fade(Transform):
@@ -64,7 +67,7 @@ class _Fade(Transform):
         self.point_target = False
         if shift is None:
             if target_position is not None:
-                if isinstance(target_position, (Mobject, OpenGLMobject)):
+                if isinstance(target_position, Mobject):
                     target_position = target_position.get_center()
                 shift = target_position - mobject.get_center()
                 self.point_target = True
@@ -74,12 +77,12 @@ class _Fade(Transform):
         self.scale_factor = scale
         super().__init__(mobject, **kwargs)
 
-    def _create_faded_mobject(self, fadeIn: bool) -> Mobject:
+    def _create_faded_mobject(self, fade_in: bool) -> Mobject:
         """Create a faded, shifted and scaled copy of the mobject.
 
         Parameters
         ----------
-        fadeIn
+        fade_in
             Whether the faded mobject is used to fade in.
 
         Returns
@@ -89,7 +92,7 @@ class _Fade(Transform):
         """
         faded_mobject: Mobject = self.mobject.copy()  # type: ignore[assignment]
         faded_mobject.fade(1)
-        direction_modifier = -1 if fadeIn and not self.point_target else 1
+        direction_modifier = -1 if fade_in and not self.point_target else 1
         faded_mobject.shift(self.shift_vector * direction_modifier)
         faded_mobject.scale(self.scale_factor)
         return faded_mobject
@@ -137,10 +140,10 @@ class FadeIn(_Fade):
         super().__init__(*mobjects, introducer=True, **kwargs)
 
     def create_target(self) -> Mobject:
-        return self.mobject  # type: ignore[return-value]
+        return self.mobject
 
     def create_starting_mobject(self) -> Mobject:
-        return self._create_faded_mobject(fadeIn=True)
+        return self._create_faded_mobject(fade_in=True)
 
 
 class FadeOut(_Fade):
@@ -185,8 +188,8 @@ class FadeOut(_Fade):
         super().__init__(*mobjects, remover=True, **kwargs)
 
     def create_target(self) -> Mobject:
-        return self._create_faded_mobject(fadeIn=False)
+        return self._create_faded_mobject(fade_in=False)
 
-    def clean_up_from_scene(self, scene: Scene) -> None:
-        super().clean_up_from_scene(scene)
+    def begin(self) -> None:
+        super().begin()
         self.interpolate(0)

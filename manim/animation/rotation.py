@@ -4,18 +4,16 @@ from __future__ import annotations
 
 __all__ = ["Rotating", "Rotate"]
 
-from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
-from ..animation.animation import Animation
-from ..animation.transform import Transform
-from ..constants import OUT, PI, TAU
-from ..utils.rate_functions import linear
+from manim.animation.animation import Animation
+from manim.constants import ORIGIN, OUT, PI, TAU
+from manim.utils.rate_functions import RateFunction, linear
 
 if TYPE_CHECKING:
-    from ..mobject.mobject import Mobject
-    from ..mobject.opengl.opengl_mobject import OpenGLMobject
-    from ..typing import Point3DLike, Vector3DLike
+    from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
+    from manim.typing import Point3DLike, Vector3DLike
+    from manim.utils.rate_functions import RateFunction
 
 
 class Rotating(Animation):
@@ -92,18 +90,29 @@ class Rotating(Animation):
         axis: Vector3DLike = OUT,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
-        run_time: float = 5,
-        rate_func: Callable[[float], float] = linear,
+        rate_func: RateFunction = linear,
+        suspend_mobject_updating: bool = False,
         **kwargs: Any,
-    ) -> None:
+    ):
+        super().__init__(
+            mobject,
+            rate_func=rate_func,
+            suspend_mobject_updating=suspend_mobject_updating,
+            **kwargs,
+        )
         self.angle = angle
         self.axis = axis
         self.about_point = about_point
         self.about_edge = about_edge
-        super().__init__(mobject, run_time=run_time, rate_func=rate_func, **kwargs)
 
-    def interpolate_mobject(self, alpha: float) -> None:
-        self.mobject.become(self.starting_mobject)
+    def interpolate(self, alpha: float) -> None:
+        pairs = zip(
+            self.mobject.family_members_with_points(),
+            self.starting_mobject.family_members_with_points(),
+        )
+        for sm1, sm2 in pairs:
+            sm1.points[:] = sm2.points
+
         self.mobject.rotate(
             self.rate_func(alpha) * self.angle,
             axis=self.axis,
@@ -112,7 +121,7 @@ class Rotating(Animation):
         )
 
 
-class Rotate(Transform):
+class Rotate(Rotating):
     """Animation that rotates a Mobject.
 
     Parameters
@@ -144,7 +153,7 @@ class Rotate(Transform):
                         rate_func=linear,
                     ),
                     Rotate(Square(side_length=0.5), angle=2*PI, rate_func=linear),
-                    )
+                )
 
     See also
     --------
@@ -157,28 +166,16 @@ class Rotate(Transform):
         mobject: Mobject,
         angle: float = PI,
         axis: Vector3DLike = OUT,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        run_time: float = 1,
+        about_edge: Vector3DLike = ORIGIN,
         **kwargs: Any,
-    ) -> None:
-        if "path_arc" not in kwargs:
-            kwargs["path_arc"] = angle
-        if "path_arc_axis" not in kwargs:
-            kwargs["path_arc_axis"] = axis
-        self.angle = angle
-        self.axis = axis
-        self.about_edge = about_edge
-        self.about_point = about_point
-        if self.about_point is None:
-            self.about_point = mobject.get_center()
-        super().__init__(mobject, path_arc_centers=self.about_point, **kwargs)
-
-    def create_target(self) -> Mobject | OpenGLMobject:
-        target = self.mobject.copy()
-        target.rotate(
-            self.angle,
-            axis=self.axis,
-            about_point=self.about_point,
-            about_edge=self.about_edge,
+    ):
+        super().__init__(
+            mobject,
+            angle,
+            axis,
+            run_time=run_time,
+            about_edge=about_edge,
+            introducer=True,
+            **kwargs,
         )
-        return target

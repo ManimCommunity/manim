@@ -1,21 +1,55 @@
 from math import cos, sin
+from typing import TYPE_CHECKING, Any, TypeVar
 
 import numpy as np
 import pytest
 
-from manim import (
-    Circle,
-    CurvesAsSubmobjects,
-    Line,
-    Mobject,
-    Polygon,
-    RegularPolygon,
-    Square,
-    VDict,
-    VGroup,
-    VMobject,
-)
 from manim.constants import PI
+from manim.mobject.geometry.arc import Circle
+from manim.mobject.geometry.line import Line
+from manim.mobject.geometry.polygram import Polygon, RegularPolygon, Square
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLCurvesAsSubmobjects as CurvesAsSubmobjects,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVDict as VDict,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVGroup as VGroup,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVMobject as VMobject,
+)
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    T1 = TypeVar("T1", Any)
+    T2 = TypeVar("T2", Any)
+
+
+def get_add_type_error_message(
+    parent_mob: VMobject,
+    invalid_obj: Any,
+    index: int,
+    subindex: int | None = None,
+    suggest_using_group: bool = False,
+) -> str:
+    # TODO: when OpenGLVMobject is renamed to VMobject, also modify this message.
+    if subindex is None:
+        clarification = f"at index {index}"
+    else:
+        clarification = f"at subindex {subindex} of iterable at index {index}"
+
+    message = (
+        f"Only values of type OpenGLVMobject can be added as submobjects of "
+        f"{type(parent_mob).__name__}, but the value {repr(invalid_obj)} "
+        f"({clarification}) is of type {type(invalid_obj).__name__}."
+    )
+    if suggest_using_group:
+        message += " You can try adding this value into a Group instead."
+    return message
 
 
 def test_vmobject_add():
@@ -29,9 +63,8 @@ def test_vmobject_add():
     # Can't add non-VMobject values to a VMobject.
     with pytest.raises(TypeError) as add_int_info:
         obj.add(3)
-    assert str(add_int_info.value) == (
-        "Only values of type VMobject can be added as submobjects of VMobject, "
-        "but the value 3 (at index 0) is of type int."
+    assert str(add_int_info.value) == get_add_type_error_message(
+        parent_mob=obj, invalid_obj=3, index=0
     )
     assert len(obj.submobjects) == 1
 
@@ -39,20 +72,16 @@ def test_vmobject_add():
     # VMobjects. Suggest adding them into a Group instead.
     with pytest.raises(TypeError) as add_mob_info:
         obj.add(Mobject())
-    assert str(add_mob_info.value) == (
-        "Only values of type VMobject can be added as submobjects of VMobject, "
-        "but the value Mobject (at index 0) is of type Mobject. You can try "
-        "adding this value into a Group instead."
+    assert str(add_mob_info.value) == get_add_type_error_message(
+        parent_mob=obj, invalid_obj=Mobject(), index=0, suggest_using_group=True
     )
     assert len(obj.submobjects) == 1
 
     with pytest.raises(TypeError) as add_vmob_and_mob_info:
         # If only one of the added objects is not an instance of VMobject, none of them should be added
         obj.add(VMobject(), Mobject())
-    assert str(add_vmob_and_mob_info.value) == (
-        "Only values of type VMobject can be added as submobjects of VMobject, "
-        "but the value Mobject (at index 1) is of type Mobject. You can try "
-        "adding this value into a Group instead."
+    assert str(add_vmob_and_mob_info.value) == get_add_type_error_message(
+        parent_mob=obj, invalid_obj=Mobject(), index=1, suggest_using_group=True
     )
     assert len(obj.submobjects) == 1
 
@@ -60,7 +89,8 @@ def test_vmobject_add():
     with pytest.raises(ValueError) as add_self_info:
         obj.add(obj)
     assert str(add_self_info.value) == (
-        "Cannot add VMobject as a submobject of itself (at index 0)."
+        # TODO: when OpenGLVMobject is renamed to VMobject, also modify this message
+        "Cannot add OpenGLVMobject as a submobject of itself (at index 0)."
     )
     assert len(obj.submobjects) == 1
 
@@ -161,35 +191,35 @@ def test_vgroup_init():
     # A VGroup cannot contain non-VMobject values.
     with pytest.raises(TypeError) as init_with_float_info:
         VGroup(3.0)
-    assert str(init_with_float_info.value) == (
-        "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value 3.0 (at index 0 of parameter 0) is of type float."
+    assert str(init_with_float_info.value) == get_add_type_error_message(
+        parent_mob=VGroup(), invalid_obj=3.0, index=0
     )
 
     with pytest.raises(TypeError) as init_with_mob_info:
         VGroup(Mobject())
-    assert str(init_with_mob_info.value) == (
-        "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value Mobject (at index 0 of parameter 0) is of type Mobject. You can try "
-        "adding this value into a Group instead."
+    assert str(init_with_mob_info.value) == get_add_type_error_message(
+        parent_mob=VGroup(), invalid_obj=Mobject(), index=0, suggest_using_group=True
     )
 
     with pytest.raises(TypeError) as init_with_vmob_and_mob_info:
         VGroup(VMobject(), Mobject())
-    assert str(init_with_vmob_and_mob_info.value) == (
-        "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value Mobject (at index 0 of parameter 1) is of type Mobject. You can try "
-        "adding this value into a Group instead."
+    assert str(init_with_vmob_and_mob_info.value) == get_add_type_error_message(
+        parent_mob=VGroup(), invalid_obj=Mobject(), index=1, suggest_using_group=True
     )
 
 
 def test_vgroup_init_with_iterable():
     """Test VGroup instantiation with an iterable type."""
 
-    def type_generator(type_to_generate, n):
+    def type_generator(type_to_generate: type[T1], n: int) -> Iterable[T1]:
         return (type_to_generate() for _ in range(n))
 
-    def mixed_type_generator(major_type, minor_type, minor_type_positions, n):
+    def mixed_type_generator(
+        major_type: type[T1],
+        minor_type: type[T2],
+        minor_type_positions: list[int],
+        n: int,
+    ) -> Iterable[T1 | T2]:
         return (
             minor_type() if i in minor_type_positions else major_type()
             for i in range(n)
@@ -201,31 +231,43 @@ def test_vgroup_init_with_iterable():
     obj = VGroup(type_generator(VMobject, 38))
     assert len(obj.submobjects) == 38
 
-    obj = VGroup(VMobject(), [VMobject(), VMobject()], type_generator(VMobject, 38))
+    obj = VGroup(
+        VMobject(),
+        [VMobject(), VMobject()],
+        type_generator(VMobject, 38),
+    )
     assert len(obj.submobjects) == 41
 
     # A VGroup cannot be initialised with an iterable containing a Mobject
     with pytest.raises(TypeError) as init_with_mob_iterable:
         VGroup(type_generator(Mobject, 5))
-    assert str(init_with_mob_iterable.value) == (
-        "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value Mobject (at index 0 of parameter 0) is of type Mobject."
+    assert str(init_with_mob_iterable.value) == get_add_type_error_message(
+        parent_mob=VGroup(),
+        invalid_obj=Mobject(),
+        index=0,
+        subindex=0,
+        suggest_using_group=True,
     )
 
     # A VGroup cannot be initialised with an iterable containing a Mobject in any position
     with pytest.raises(TypeError) as init_with_mobs_and_vmobs_iterable:
         VGroup(mixed_type_generator(VMobject, Mobject, [3, 5], 7))
-    assert str(init_with_mobs_and_vmobs_iterable.value) == (
-        "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value Mobject (at index 3 of parameter 0) is of type Mobject."
+    assert str(init_with_mobs_and_vmobs_iterable.value) == get_add_type_error_message(
+        parent_mob=VGroup(),
+        invalid_obj=Mobject(),
+        index=0,
+        subindex=3,
+        suggest_using_group=True,
     )
 
     # A VGroup cannot be initialised with an iterable containing non VMobject's in any position
     with pytest.raises(TypeError) as init_with_float_and_vmobs_iterable:
         VGroup(mixed_type_generator(VMobject, float, [6, 7], 9))
-    assert str(init_with_float_and_vmobs_iterable.value) == (
-        "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value 0.0 (at index 6 of parameter 0) is of type float."
+    assert str(init_with_float_and_vmobs_iterable.value) == get_add_type_error_message(
+        parent_mob=VGroup(),
+        invalid_obj=0.0,
+        index=0,
+        subindex=6,
     )
 
 
@@ -240,9 +282,10 @@ def test_vgroup_add():
     # Can't add non-VMobject values to a VMobject or VGroup.
     with pytest.raises(TypeError) as add_int_info:
         obj.add(3)
-    assert str(add_int_info.value) == (
-        "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value 3 (at index 0 of parameter 0) is of type int."
+    assert str(add_int_info.value) == get_add_type_error_message(
+        parent_mob=obj,
+        invalid_obj=3,
+        index=0,
     )
     assert len(obj.submobjects) == 1
 
@@ -250,20 +293,16 @@ def test_vgroup_add():
     # VMobjects. Suggest adding them into a Group instead.
     with pytest.raises(TypeError) as add_mob_info:
         obj.add(Mobject())
-    assert str(add_mob_info.value) == (
-        "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value Mobject (at index 0 of parameter 0) is of type Mobject. You can try "
-        "adding this value into a Group instead."
+    assert str(add_mob_info.value) == get_add_type_error_message(
+        parent_mob=obj, invalid_obj=Mobject(), index=0, suggest_using_group=True
     )
     assert len(obj.submobjects) == 1
 
     with pytest.raises(TypeError) as add_vmob_and_mob_info:
         # If only one of the added objects is not an instance of VMobject, none of them should be added
         obj.add(VMobject(), Mobject())
-    assert str(add_vmob_and_mob_info.value) == (
-        "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value Mobject (at index 0 of parameter 1) is of type Mobject. You can try "
-        "adding this value into a Group instead."
+    assert str(add_vmob_and_mob_info.value) == get_add_type_error_message(
+        parent_mob=obj, invalid_obj=Mobject(), index=1, suggest_using_group=True
     )
     assert len(obj.submobjects) == 1
 
@@ -271,7 +310,7 @@ def test_vgroup_add():
     with pytest.raises(ValueError) as add_self_info:
         obj.add(obj)
     assert str(add_self_info.value) == (
-        "Cannot add VGroup as a submobject of itself (at index 0)."
+        "Cannot add OpenGLVGroup as a submobject of itself (at index 0)."
     )
     assert len(obj.submobjects) == 1
 
@@ -423,9 +462,8 @@ def test_vgroup_item_assignment_only_allows_vmobjects():
     vgroup = VGroup(VMobject())
     with pytest.raises(TypeError) as assign_str_info:
         vgroup[0] = "invalid object"
-    assert str(assign_str_info.value) == (
-        "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value invalid object (at index 0) is of type str."
+    assert str(assign_str_info.value) == get_add_type_error_message(
+        parent_mob=vgroup, invalid_obj="invalid object", index=0
     )
 
 
@@ -446,7 +484,7 @@ def test_trim_dummy():
     o2.add_line_to(np.array([1, 2, 0]))
 
     def path_length(p):
-        return len(p) // o.n_points_per_cubic_curve
+        return len(p) // o.n_points_per_curve
 
     assert tuple(map(path_length, o.get_subpaths())) == (3, 1)
     assert tuple(map(path_length, o2.get_subpaths())) == (1, 2)
@@ -529,22 +567,43 @@ def test_proportion_from_point():
 
 
 def test_pointwise_become_partial_where_vmobject_is_self():
-    sq = Square()
-    sq.pointwise_become_partial(vmobject=sq, a=0.2, b=0.7)
-    expected_points = np.array(
+    # remap=True forces the square to retain its initial amount of 4 Bézier curves after
+    # becoming partial, so it has 4 * 3 = 12 points.
+    square_1 = Square()
+    square_1.pointwise_become_partial(vmobject=square_1, a=0.2, b=0.7, remap=True)
+    expected_points_1 = np.array(
         [
             [-0.6, 1.0, 0.0],
-            [-0.73333333, 1.0, 0.0],
-            [-0.86666667, 1.0, 0.0],
+            [-0.7, 1.0, 0.0],
+            [-0.8, 1.0, 0.0],
+            [-0.8, 1.0, 0.0],
+            [-0.9, 1.0, 0.0],
             [-1.0, 1.0, 0.0],
             [-1.0, 1.0, 0.0],
-            [-1.0, 0.33333333, 0.0],
-            [-1.0, -0.33333333, 0.0],
+            [-1.0, 0.0, 0.0],
             [-1.0, -1.0, 0.0],
             [-1.0, -1.0, 0.0],
-            [-0.46666667, -1.0, 0.0],
-            [0.06666667, -1.0, 0.0],
+            [-0.2, -1.0, 0.0],
             [0.6, -1.0, 0.0],
         ]
     )
-    np.testing.assert_allclose(sq.points, expected_points)
+    np.testing.assert_allclose(square_1.points, expected_points_1)
+
+    # remap=False allows the square to end up with less Bézier curves after becoming
+    # partial. In this case, it ends up with 3 curves, so 3 * 3 = 9 points.
+    square_2 = Square()
+    square_2.pointwise_become_partial(vmobject=square_2, a=0.2, b=0.7, remap=False)
+    expected_points_2 = np.array(
+        [
+            [-0.6, 1.0, 0.0],
+            [-0.8, 1.0, 0.0],
+            [-1.0, 1.0, 0.0],
+            [-1.0, 1.0, 0.0],
+            [-1.0, 0.0, 0.0],
+            [-1.0, -1.0, 0.0],
+            [-1.0, -1.0, 0.0],
+            [-0.2, -1.0, 0.0],
+            [0.6, -1.0, 0.0],
+        ]
+    )
+    np.testing.assert_allclose(square_2.points, expected_points_2)

@@ -21,12 +21,12 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
+from manim import config, logger
+from manim.constants import *
 from manim.data_structures import MethodWithArgs
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-
-from .. import config, logger
-from ..constants import *
-from ..utils.color import (
+from manim.mobject.opengl.opengl_mobject import InvisibleMobject
+from manim.utils.color import (
     BLACK,
     PURE_YELLOW,
     WHITE,
@@ -35,14 +35,15 @@ from ..utils.color import (
     color_gradient,
     interpolate_color,
 )
-from ..utils.exceptions import MultiAnimationOverrideException
-from ..utils.iterables import list_update, remove_list_redundancies
-from ..utils.paths import straight_path
-from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
+from manim.utils.exceptions import MultiAnimationOverrideException
+from manim.utils.iterables import list_update, remove_list_redundancies
+from manim.utils.paths import straight_path
+from manim.utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 if TYPE_CHECKING:
     from typing import Self, TypeAlias
 
+    from manim.animation.animation import Animation
     from manim.typing import (
         FunctionOverride,
         MappingFunction,
@@ -55,8 +56,6 @@ if TYPE_CHECKING:
         Point3DLike_Array,
         Vector3DLike,
     )
-
-    from ..animation.animation import Animation
 
     TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
     NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
@@ -151,7 +150,7 @@ class Mobject:
         return self._assert_valid_submobjects_internal(submobjects, Mobject)
 
     def _assert_valid_submobjects_internal(
-        self, submobjects: list[Mobject], mob_class: type[Mobject]
+        self, submobjects: Iterable[Mobject], mob_class: type[Mobject]
     ) -> Self:
         for i, submob in enumerate(submobjects):
             if not isinstance(submob, mob_class):
@@ -269,10 +268,12 @@ class Mobject:
 
             >>> from manim import Square, GREEN
             >>> Square.set_default(color=GREEN, fill_opacity=0.25)
-            >>> s = Square(); s.color, s.fill_opacity
+            >>> s = Square()
+            >>> s.color, s.fill_opacity
             (ManimColor('#83C167'), 0.25)
             >>> Square.set_default()
-            >>> s = Square(); s.color, s.fill_opacity
+            >>> s = Square()
+            >>> s.color, s.fill_opacity
             (ManimColor('#FFFFFF'), 0.0)
 
         .. manim:: ChangedDefaultTextcolor
@@ -716,13 +717,10 @@ class Mobject:
         # Add automatic compatibility layer
         # between properties and get_* and set_*
         # methods.
-        #
-        # In python 3.9+ we could change this
-        # logic to use str.remove_prefix instead.
 
         if attr.startswith("get_"):
             # Remove the "get_" prefix
-            to_get = attr[4:]
+            to_get = attr.removeprefix("get_")
 
             def getter(self):
                 warnings.warn(
@@ -864,7 +862,7 @@ class Mobject:
 
     def get_image(self, camera=None) -> PixelArray:
         if camera is None:
-            from ..camera.camera import Camera
+            from manim.camera.cairo_camera import CairoCamera as Camera
 
             camera = Camera()
         camera.capture_mobject(self)
@@ -980,6 +978,22 @@ class Mobject:
         return any(
             "dt" in inspect.signature(updater).parameters for updater in self.updaters
         )
+
+    @property
+    def has_updaters(self) -> bool:
+        """Test if ``self`` has an updater.
+
+        Returns
+        -------
+        :class:`bool`
+            ``True`` if at least one updater is added, ``False`` otherwise.
+
+        See Also
+        --------
+        :meth:`get_updaters`
+
+        """
+        return len(self.updaters) > 0
 
     def get_updaters(self) -> list[Updater]:
         """Return all updaters.
@@ -1454,6 +1468,7 @@ class Mobject:
             about_point,
             about_edge,
         )
+        self.note_changed_family()
         return self
 
     def apply_function_to_position(self, function: MappingFunction) -> Self:
@@ -2489,6 +2504,24 @@ class Mobject:
         all_mobjects = [self] + list(it.chain(*sub_families))
         return remove_list_redundancies(all_mobjects)
 
+    def get_ancestors(self, extended: bool = False) -> list[Self]:
+        """Returns parents, grandparents, etc.
+
+        Base Mobject implementation returns empty list as it doesn't
+        track parent relationships. OpenGLMobject overrides this.
+
+        Parameters
+        ----------
+        extended
+            If True, includes ancestors of all family members.
+
+        Returns
+        -------
+        list[Self]
+            List of ancestor mobjects. Empty for base Mobject.
+        """
+        return []
+
     def family_members_with_points(self) -> list[Self]:
         """Filters the list of family members (generated by :meth:`.get_family`) to include only mobjects with points.
 
@@ -3297,7 +3330,7 @@ class Mobject:
         return self
 
 
-class Group(Mobject, metaclass=ConvertToOpenGL):
+class Group(Mobject, InvisibleMobject, metaclass=ConvertToOpenGL):
     """Groups together multiple :class:`Mobjects <.Mobject>`.
 
     Notes
@@ -3310,6 +3343,45 @@ class Group(Mobject, metaclass=ConvertToOpenGL):
     def __init__(self, *mobjects, **kwargs) -> None:
         super().__init__(**kwargs)
         self.add(*mobjects)
+
+
+class Point(Mobject, InvisibleMobject, metaclass=ConvertToOpenGL):
+    def __init__(
+        self,
+        location: np.ndarray = ORIGIN,
+        artificial_width: float = 1e-6,
+        artificial_height: float = 1e-6,
+        **kwargs,
+    ):
+        self.artificial_width = artificial_width
+        self.artificial_height = artificial_height
+        super().__init__(**kwargs)
+        self.set_location(location)
+
+    @property
+    def width(self):
+        return self.artificial_width
+
+    @property
+    def height(self):
+        return self.artificial_height
+
+    # TODO: properties vs. getter methods?
+
+    def get_width(self):
+        return self.artificial_width
+
+    def get_height(self):
+        return self.artificial_height
+
+    def get_location(self):
+        return self.points[0].copy()
+
+    def get_bounding_box_point(self, *args, **kwargs):
+        return self.get_location()
+
+    def set_location(self, new_loc):
+        self.set_points(np.array(new_loc, ndmin=2, dtype=float))
 
 
 class _AnimationBuilder:

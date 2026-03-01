@@ -12,10 +12,10 @@ from numpy import piecewise
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..animation.composition import AnimationGroup
 from ..mobject.mobject import Mobject, _AnimationBuilder
-from ..scene.scene import Scene
 
 if TYPE_CHECKING:
     from ..mobject.mobject import Updater
+    from .protocol import MobjectAnimation
 
 __all__ = ["ChangeSpeed"]
 
@@ -102,7 +102,7 @@ class ChangeSpeed(Animation):
         affects_speed_updaters: bool = True,
         **kwargs,
     ) -> None:
-        if issubclass(type(anim), AnimationGroup):
+        if isinstance(anim, AnimationGroup):
             self.anim = type(anim)(
                 *map(self.setup, anim.animations),
                 group=anim.group,
@@ -209,11 +209,11 @@ class ChangeSpeed(Animation):
         super().__init__(
             self.anim.mobject,
             rate_func=self.rate_func,
-            run_time=scaled_total_time * self.anim.run_time,
+            run_time=scaled_total_time * self.anim.get_run_time(),
             **kwargs,
         )
 
-    def setup(self, anim):
+    def setup(self, anim: MobjectAnimation):
         if type(anim) is Wait:
             anim.interpolate = types.MethodType(
                 lambda self, alpha: self.rate_func(alpha), anim
@@ -282,15 +282,11 @@ class ChangeSpeed(Animation):
     def update_mobjects(self, dt: float) -> None:
         self.anim.update_mobjects(dt)
 
+    def begin(self) -> None:
+        self.anim.begin()
+        self.process_subanimation_buffer(self.anim.buffer)
+
     def finish(self) -> None:
         ChangeSpeed.is_changing_dt = False
         self.anim.finish()
-
-    def begin(self) -> None:
-        self.anim.begin()
-
-    def clean_up_from_scene(self, scene: Scene) -> None:
-        self.anim.clean_up_from_scene(scene)
-
-    def _setup_scene(self, scene) -> None:
-        self.anim._setup_scene(scene)
+        self.process_subanimation_buffer(self.anim.buffer)
