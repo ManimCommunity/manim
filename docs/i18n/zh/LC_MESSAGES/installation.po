@@ -7,8 +7,8 @@ msgstr ""
 "Language: zh\n"
 "Language-Team: Chinese (Simplified)\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"PO-Revision-Date: 2026-03-03 00:00+0000\n"
-"Last-Translator: Codex <noreply@example.com>\n"
+"PO-Revision-Date: 2026-03-03 7:52\n"
+"Last-Translator: 小涵Naiwenel <yuhan2680@qq.com>\n"
 
 #: ../../source/installation.rst:2
 msgid "Installation"
@@ -16,55 +16,55 @@ msgstr "安装"
 
 #: ../../source/installation.rst:4
 msgid "Depending on your use case, different installation options are recommended: if you just want to play around with Manim for a bit, interactive in-browser notebooks are a really simple way of exploring the library as they require no local installation. Head over to https://try.manim.community to give our interactive tutorial a try."
-msgstr "根据你的使用场景，推荐的安装方式也不同：如果你只是想先体验一下 Manim，那么浏览器内的交互式 notebook 是非常简单的探索方式，因为它不需要本地安装。可以前往 https://try.manim.community 试用我们的交互式教程。"
+msgstr "对于不同的使用场景，推荐的安装方式也不同：如果你只是想体验一下 Manim，那用浏览器内的交互式notebook就能很快上手体验了，而无需本地安装。您可以访问https://try.manim.community以尝试我们的交互式教程。"
 
 #: ../../source/installation.rst:10
 msgid "Otherwise, if you intend to use Manim to work on an animation project, we recommend installing the library locally (either to your system's Python, or via Docker)."
-msgstr "否则，如果你计划使用 Manim 开展动画项目，我们建议在本地安装该库（安装到系统 Python，或通过 Docker 使用）。"
+msgstr "而如果您计划使用Manim制作动画&项目，我们则建议您在本地安装manim库（直接安装到系统Python或者通过Docker安装都行）。"
 
 #: ../../source/installation.rst:16
 msgid "Note that there are several different versions of Manim. The instructions on this website are **only** for the *community edition*. Find out more about the :ref:`differences between Manim versions <different-versions>` if you are unsure which version you should install."
-msgstr "请注意，Manim 有多个不同版本。本网站的说明**仅适用于** *社区版*。如果你不确定该安装哪个版本，请阅读 :ref:`Manim 各版本差异 <different-versions>`。"
+msgstr "请注意，Manim有多个不同版本。本网站的说明**仅适用**于*社区版*（即Comunity Edition，CE版）。如果你不确定该安装哪个版本，请阅读 :ref:`Manim 各版本差异 <different-versions>`。"
 
 #: ../../source/installation.rst:22
 msgid ":ref:`Installing Manim to your system's Python <local-installation>`"
-msgstr ":ref:`将 Manim 安装到系统 Python <local-installation>`"
+msgstr ":ref:`将Manim安装到系统 Python <local-installation>`"
 
 #: ../../source/installation.rst:23
 msgid ":ref:`Using Manim via Docker <docker-installation>`"
-msgstr ":ref:`通过 Docker 使用 Manim <docker-installation>`"
+msgstr ":ref:`通过Docker安装Manim <docker-installation>`"
 
 #: ../../source/installation.rst:24
 msgid ":ref:`Interactive Jupyter notebooks via Binder / Google Colab <interactive-online>`"
-msgstr ":ref:`通过 Binder / Google Colab 使用交互式 Jupyter notebook <interactive-online>`"
+msgstr ":ref:`通过Binder/Google Colab安装到Jupyter notebook <interactive-online>`"
 
 #: ../../source/installation.rst:31
 msgid "Installing Manim locally"
-msgstr "本地安装 Manim"
+msgstr "本地安装Manim"
 
 #: ../../source/installation.rst:33
 msgid "Manim is a Python library, and it can be `installed via pip <https://pypi.org/project/manim/>`__. However, in order for Manim to work properly, some additional system dependencies need to be installed first. The following pages have operating system specific instructions for you to follow."
-msgstr "Manim 是一个 Python 库，可以 `通过 pip 安装 <https://pypi.org/project/manim/>`__。但为了让 Manim 正常运行，需要先安装一些额外的系统依赖。下面的页面提供了按操作系统划分的安装说明。"
+msgstr "Manim是一个Python 库，可以`通过 pip 安装 <https://pypi.org/project/manim/>`__。不过您需要先安装一些额外的系统依赖，以Manim能正常运行；下列页面为不同操作系统的安装说明。"
 
 #: ../../source/installation.rst:39
 msgid "Manim requires Python version ``3.7`` or above to run."
-msgstr "Manim 运行需要 Python ``3.7`` 或更高版本。"
+msgstr "Manim 运行需要Python``3.7``以上的版本。"
 
 #: ../../source/installation.rst:43
 msgid "Depending on your particular setup, the installation process might be slightly different. Make sure that you have tried to follow the steps on the following pages carefully, but in case you hit a wall we are happy to help: either `join our Discord <https://www.manim.community/discord/>`__, or start a new Discussion `directly on GitHub <https://github.com/ManimCommunity/manim/discussions>`__."
-msgstr "根据你的具体环境，安装过程可能会略有不同。请先尽量仔细按照下述页面的步骤操作；如果仍然遇到困难，我们很乐意帮助你：可以 `加入 Discord <https://www.manim.community/discord/>`__，或在 `GitHub 上直接发起 Discussion <https://github.com/ManimCommunity/manim/discussions>`__。"
+msgstr "根据你的具体环境，安装过程可能会略有不同。请先仔细按照下述步骤操作；如果遇到了困难，我们也很乐意提供帮助：您可以 `加入 Discord <https://www.manim.community/discord/>`__，或在`GitHub上直接发起Discussion<https://github.com/ManimCommunity/manim/discussions>`__。"
 
 #: ../../source/installation.rst:58
 msgid "Once Manim is installed locally, you can proceed to our :doc:`quickstart guide <tutorials/quickstart>` which walks you through rendering a first simple scene."
-msgstr "完成本地安装后，你可以继续阅读我们的 :doc:`快速入门 <tutorials/quickstart>`，它会带你渲染第一个简单场景。"
+msgstr "安装完成后，请参阅:doc:`快速入门 <tutorials/quickstart>`，它会带你渲染第一个简单场景。"
 
 #: ../../source/installation.rst:62
 msgid "As mentioned above, do not worry if there are errors or other problems: consult our :doc:`FAQ section </faq/index>` for help (including instructions for how to ask Manim's community for help)."
-msgstr "如前所述，如果出现报错或其他问题请不要担心：请查看 :doc:`FAQ 章节 </faq/index>` 获取帮助（其中也包含如何向 Manim 社区求助的说明）。"
+msgstr "如上所述，如果您在安装过程中出现报错或其他问题，请不要担心：请查看:doc:`FAQ 章节 </faq/index>`以获取帮助（其中也包含如何向 Manim 社区求助的说明）。"
 
 #: ../../source/installation.rst:71
 msgid "Using Manim via Docker"
-msgstr "通过 Docker 使用 Manim"
+msgstr "通过Docker安装Manim"
 
 #: ../../source/installation.rst:73
 msgid "`Docker <https://www.docker.com>`__ is a virtualization tool that allows the distribution of encapsulated software environments (containers)."
@@ -72,15 +72,15 @@ msgstr "`Docker <https://www.docker.com>`__ 是一种虚拟化工具，可用于
 
 #: ../../source/installation.rst:76
 msgid "The following pages contain more information about the docker image maintained by the community, ``manimcommunity/manim``:"
-msgstr "以下页面提供了关于社区维护的 Docker 镜像 ``manimcommunity/manim`` 的更多信息："
+msgstr "以下页面提供了关于社区维护的Docker镜像 ``manimcommunity/manim`` 的更多信息："
 
 #: ../../source/installation.rst:87
 msgid "Interactive Jupyter notebooks for your browser"
-msgstr "浏览器中的交互式 Jupyter notebook"
+msgstr "在浏览器中使用交互式Jupyter notebook"
 
 #: ../../source/installation.rst:89
 msgid "Manim ships with a built-in ``%%manim`` IPython magic command designed for the use within `Jupyter notebooks <https://jupyter.org>`__. Our interactive tutorial over at https://try.manim.community illustrates how Manim can be used from within a Jupyter notebook."
-msgstr "Manim 内置了 ``%%manim`` IPython 魔法命令，专为在 `Jupyter notebook <https://jupyter.org>`__ 中使用而设计。我们的交互式教程 https://try.manim.community 展示了如何在 Jupyter notebook 中使用 Manim。"
+msgstr "Manim内置了``%%manim``IPython命令，专为在 `Jupyter notebook <https://jupyter.org>`__ 中使用而设计。我们的交互式教程https://try.manim.community展示了如何在Jupyter notebook中使用Manim。"
 
 #: ../../source/installation.rst:94
 msgid "The following pages explain how you can setup interactive environments like that yourself:"
@@ -92,7 +92,7 @@ msgstr "编辑器"
 
 #: ../../source/installation.rst:106
 msgid "If you're using Visual Studio Code you can install an extension called *Manim Sideview* which provides automated rendering and an integrated preview of the animation inside the editor. The extension can be installed through the `marketplace of VS Code <https://marketplace.visualstudio.com/items?itemName=Rickaym.manim-sideview>`__."
-msgstr "如果你使用 Visual Studio Code，可以安装名为 *Manim Sideview* 的扩展，它提供自动渲染以及在编辑器内集成动画预览。该扩展可通过 `VS Code 应用市场 <https://marketplace.visualstudio.com/items?itemName=Rickaym.manim-sideview>`__ 安装。"
+msgstr "如果你使用Visual Studio Code，可以安装名为*Manim Sideview*的扩展，它会自动渲染并在编辑器内集成动画预览。该扩展可通过`VS Code 应用市场 <https://marketplace.visualstudio.com/items?itemName=Rickaym.manim-sideview>`__安装。"
 
 #: ../../source/installation.rst:113
 msgid "Installation for developers"
