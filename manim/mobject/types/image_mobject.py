@@ -26,16 +26,12 @@ from ...utils.color import (
 )
 from ...utils.images import change_to_rgba_array, get_full_raster_image_path
 
-__all__ = ["ImageMobject", "ImageMobjectFromCamera"]
-
 if TYPE_CHECKING:
     from typing import Self
 
     import numpy.typing as npt
 
     from manim.typing import PixelArray, StrPath
-
-    from ...camera.moving_camera import MovingCamera
 
 
 class AbstractImageMobject(Mobject):
@@ -215,6 +211,10 @@ class ImageMobject(AbstractImageMobject):
     def get_pixel_array(self) -> PixelArray:
         """A simple getter method."""
         return self.pixel_array
+
+    def init_colors(self) -> None:
+        """Override base init_colors to avoid overwriting image pixels during init."""
+        return None
 
     def set_color(  # type: ignore[override]
         self,
