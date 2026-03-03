@@ -1,8 +1,12 @@
 from pathlib import Path
 
+from manim.opengl import *
+
 import manim.utils.opengl as opengl
 from manim import *
-from manim.opengl import *
+from manim.mobject.opengl.opengl_surface import OpenGLTexturedSurface
+from manim.mobject.opengl.opengl_three_dimensions import OpenGLSurfaceMesh
+from manim.mobject.opengl.shader import FullScreenQuad, Mesh, Shader
 
 # Copied from https://3b1b.github.io/manim/getting_started/example_scenes.html#surfaceexample.
 # Lines that do not yet work with the Community Version are commented.

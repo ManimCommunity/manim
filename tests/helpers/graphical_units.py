@@ -8,6 +8,7 @@ from pathlib import Path
 
 import numpy as np
 
+from manim import Manager
 from manim.scene.scene import Scene
 
 logger = logging.getLogger("manim")
@@ -31,28 +32,28 @@ def set_test_scene(scene_object: type[Scene], module_name: str, config):
         set_test_scene(DotTest, "geometry")
 
     """
-    config["write_to_movie"] = False
-    config["disable_caching"] = True
-    config["format"] = "png"
-    config["pixel_height"] = 480
-    config["pixel_width"] = 854
-    config["frame_rate"] = 15
+    config.write_to_movie = False
+    config.disable_caching = True
+    config.format = "png"
+    config.pixel_height = 480
+    config.pixel_width = 854
+    config.frame_rate = 15
 
     with tempfile.TemporaryDirectory() as tmpdir:
         temp_path = Path(tmpdir)
         config["text_dir"] = temp_path / "text"
         config["tex_dir"] = temp_path / "tex"
-        scene = scene_object(skip_animations=True)
-        scene.render()
-        data = scene.renderer.get_frame()
+        with Manager(scene_object) as manager:
+            manager.render()
+            data = manager.renderer.get_pixels()
 
     assert not np.all(
         data == np.array([0, 0, 0, 255]),
-    ), f"Control data generated for {scene!s} only contains empty pixels."
+    ), f"Control data generated for {manager.scene!s} only contains empty pixels."
     assert data.shape == (480, 854, 4)
     tests_directory = Path(__file__).absolute().parent.parent
     path_control_data = Path(tests_directory) / "control_data" / "graphical_units_data"
     path = Path(path_control_data) / module_name
     path.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(path / str(scene), frame_data=data)
-    logger.info(f"Test data for {str(scene)} saved in {path}\n")
+    np.savez_compressed(path / str(manager.scene), frame_data=data)
+    logger.info(f"Test data for {str(manager.scene)} saved in {path}\n")

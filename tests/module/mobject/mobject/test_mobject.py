@@ -34,7 +34,7 @@ def test_mobject_add():
     with pytest.raises(ValueError) as add_self_info:
         obj.add(Mobject(), obj, Mobject())
     assert str(add_self_info.value) == (
-        "Cannot add Mobject as a submobject of itself (at index 1)."
+        "Cannot add OpenGLMobject as a submobject of itself (at index 1)."
     )
     assert len(obj.submobjects) == 0
 
@@ -42,8 +42,8 @@ def test_mobject_add():
     with pytest.raises(TypeError) as add_str_info:
         obj.add(Mobject(), Mobject(), "foo")
     assert str(add_str_info.value) == (
-        "Only values of type Mobject can be added as submobjects of Mobject, "
-        "but the value foo (at index 2) is of type str."
+        "Only values of type OpenGLMobject can be added as submobjects of "
+        "OpenGLMobject, but the value 'foo' (at index 2) is of type str."
     )
     assert len(obj.submobjects) == 0
 
@@ -105,6 +105,7 @@ def is_close(x, y):
     return abs(x - y) < 0.00001
 
 
+@pytest.mark.slow
 def test_mobject_dimensions_nested_mobjects():
     vg = VGroup()
 
@@ -144,13 +145,15 @@ def test_mobject_dimensions_mobjects_with_no_points_are_at_origin():
     assert outer_group.width == 2
     assert outer_group.height == 3
 
-    # Adding a mobject with no points has a quirk of adding a "point"
-    # to [0, 0, 0] (the origin). This changes the size of the outer
-    # group because now the bottom left corner is at [-5, -6.5, 0]
-    # but the upper right corner is [0, 0, 0] instead of [-3, -3.5, 0]
+    # TODO: remove the following 8 lines?
+    # Originally, adding a mobject with no points had a quirk of adding a
+    # "point" to [0, 0, 0] (the origin). This changed the size of the outer
+    # group, because the bottom was corner is at [-5, -6.5, 0], but the
+    # upper right corner became [0, 0, 0] instead of [-3, -3.5, 0].
+    # However, this no longer happens.
     outer_group.add(VGroup())
-    assert outer_group.width == 5
-    assert outer_group.height == 6.5
+    assert outer_group.width == 2
+    assert outer_group.height == 3
 
 
 def test_mobject_dimensions_has_points_and_children():

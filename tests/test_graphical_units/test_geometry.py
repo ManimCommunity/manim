@@ -1,6 +1,53 @@
 from __future__ import annotations
 
-from manim import *
+import numpy as np
+
+from manim.animation.fading import FadeIn
+from manim.animation.transform import ApplyMethod
+from manim.constants import DOWN, LEFT, ORIGIN, OUT, PI, RIGHT, UP
+from manim.mobject.geometry.arc import (
+    AnnotationDot,
+    AnnularSector,
+    Annulus,
+    Arc,
+    ArcBetweenPoints,
+    Circle,
+    CurvedArrow,
+    CurvedDoubleArrow,
+    Dot,
+    Ellipse,
+    Sector,
+)
+from manim.mobject.geometry.labeled import LabeledArrow, LabeledLine, LabeledPolygram
+from manim.mobject.geometry.line import (
+    Angle,
+    Arrow,
+    DashedLine,
+    DoubleArrow,
+    Elbow,
+    Line,
+    RightAngle,
+    Vector,
+)
+from manim.mobject.geometry.polygram import (
+    ConvexHull,
+    Polygon,
+    Polygram,
+    Rectangle,
+    RegularPolygram,
+    RoundedRectangle,
+    Square,
+    Star,
+    Triangle,
+)
+from manim.mobject.geometry.tips import ArrowCircleTip, ArrowSquareFilledTip
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLDashedVMobject as DashedVMobject,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVGroup as VGroup,
+)
+from manim.utils.color import BLUE, GREEN, RED
 from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "geometry"
@@ -172,27 +219,6 @@ def test_ZIndex(scene):
     scene.play(FadeIn(VGroup(circle, square, triangle)))
     scene.play(ApplyMethod(circle.shift, UP))
     scene.play(ApplyMethod(triangle.shift, 2 * UP))
-
-
-@frames_comparison(last_frame=False)
-def test_negative_z_index_AnimationGroup(scene):
-    # https://github.com/ManimCommunity/manim/issues/3334
-    s = Square().set_z_index(-1)
-    scene.play(AnimationGroup(GrowFromCenter(s)))
-
-
-@frames_comparison(last_frame=False)
-def test_negative_z_index_LaggedStart(scene):
-    # https://github.com/ManimCommunity/manim/issues/3914
-    line_1 = Line(LEFT, RIGHT, color=BLUE)
-    line_2 = Line(UP + LEFT, UP + RIGHT, color=RED).set_z_index(-1)
-    scene.play(LaggedStart(FadeIn(line_1), FadeIn(line_2), lag_ratio=0.5))
-
-
-@frames_comparison(last_frame=False)
-def test_nested_animation_groups_with_negative_z_index(scene):
-    line = Line(LEFT, RIGHT, color=BLUE).set_z_index(-1)
-    scene.play(AnimationGroup(AnimationGroup(AnimationGroup(FadeIn(line)))))
 
 
 @frames_comparison

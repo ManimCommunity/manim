@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
-
 __all__ = ["NumberLine", "UnitInterval"]
 
 
@@ -23,10 +20,16 @@ from manim import config
 from manim.constants import *
 from manim.mobject.geometry.line import Line
 from manim.mobject.graphing.scale import LinearBase, _ScaleBase
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVGroup as VGroup,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVMobject as VMobject,
+)
 from manim.mobject.text.numbers import DecimalNumber, Integer
 from manim.mobject.text.tex_mobject import MathTex, Tex
 from manim.mobject.text.text_mobject import Text
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.bezier import interpolate
 from manim.utils.config_ops import merge_dicts_recursively
 from manim.utils.space_ops import normalize
@@ -651,7 +654,7 @@ class NumberLine(Line):
         :class:`~.VMobject`
             The label.
         """
-        if isinstance(label_tex, (VMobject, OpenGLVMobject)):
+        if isinstance(label_tex, VMobject):
             return label_tex
         if label_constructor is None:
             label_constructor = self.label_constructor
