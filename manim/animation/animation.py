@@ -337,7 +337,7 @@ class Animation(AnimationProtocol):
         families = tuple(self.get_all_families_zipped())
         for i, mobs in enumerate(families):
             sub_alpha = self.get_sub_alpha(alpha, i, len(families))
-            self.interpolate_submobject(*mobs, sub_alpha)  # type: ignore
+            self.interpolate_submobject(*mobs, sub_alpha)  # type: ignore[call-arg]
 
     def interpolate_submobject(
         self,
@@ -736,7 +736,7 @@ def override_animation(
     _F = TypeVar("_F", bound=Callable)
 
     def decorator(func: _F) -> _F:
-        func._override_animation = animation_class  # type: ignore
+        func._override_animation = animation_class  # type: ignore[attr-defined]
         return func
 
     return decorator

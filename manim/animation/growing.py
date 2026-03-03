@@ -43,8 +43,6 @@ if TYPE_CHECKING:
     from manim.typing import Point3DLike, Vector3DLike
     from manim.utils.color import ParsableManimColor
 
-    from ..mobject.mobject import Mobject
-
 
 class GrowFromPoint(Transform):
     """Introduce an :class:`~.Mobject` by growing it from a point.

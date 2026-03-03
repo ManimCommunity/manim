@@ -4,6 +4,7 @@ from collections.abc import Callable
 
 from manim.file_writer.protocols import FileWriterProtocol
 from manim.scene.scene import Scene
+from manim.typing import PixelArray
 
 from ._frames_testers import _FramesTester
 

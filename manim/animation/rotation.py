@@ -109,6 +109,7 @@ class Rotating(Animation):
         pairs = zip(
             self.mobject.family_members_with_points(),
             self.starting_mobject.family_members_with_points(),
+            strict=True,
         )
         for sm1, sm2 in pairs:
             sm1.points[:] = sm2.points
