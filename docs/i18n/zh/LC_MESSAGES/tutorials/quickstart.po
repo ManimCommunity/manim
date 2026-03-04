@@ -8,7 +8,7 @@ msgstr ""
 "Language-Team: Chinese (Simplified)\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "PO-Revision-Date: 2026-03-03 00:00+0000\n"
-"Last-Translator: Codex <noreply@example.com>\n"
+"Last-Translator: 小涵Naiwenel <yuhan2680@qq.com>\n"
 
 #: ../../source/tutorials/quickstart.rst:3
 msgid "Quickstart"
@@ -16,11 +16,11 @@ msgstr "快速入门"
 
 #: ../../source/tutorials/quickstart.rst:6
 msgid "Before proceeding, install Manim and make sure it is running properly by following the steps in :doc:`../installation`. For information on using Manim with Jupyterlab or Jupyter notebook, go to the documentation for the :meth:`IPython magic command <manim.utils.ipython_magic.ManimMagic.manim>`, ``%%manim``."
-msgstr "在继续之前，请先安装 Manim，并按照 :doc:`../installation` 中的步骤确认其可以正常运行。关于如何在 Jupyterlab 或 Jupyter notebook 中使用 Manim，请参阅 :meth:`IPython 魔法命令 <manim.utils.ipython_magic.ManimMagic.manim>` ``%%manim`` 的相关文档。"
+msgstr "在阅读下列内容之前，请确保您已经安装好了Manim，并按照 :doc:`../installation`中的步骤确认了其可正常运行。关于如何在Jupyterlab或Jupyter notebook中使用Manim，请参阅:meth:`IPython命令<manim.utils.ipython_magic.ManimMagic.manim>` ``%%manim``相关文档。"
 
 #: ../../source/tutorials/quickstart.rst:14
 msgid "If you installed Manim in the recommended way, using the Python management tool ``uv``, then you either need to make sure the corresponding virtual environment is activated (follow the instructions printed on running ``uv venv``), or you need to remember to prefix the ``manim`` command in the console with ``uv run``; that is, ``uv run manim ...``."
-msgstr "如果你按照推荐方式、使用 Python 管理工具 ``uv`` 安装了 Manim，那么你需要确保对应的虚拟环境已激活（可参考运行 ``uv venv`` 后打印的说明），或者在终端中使用 ``manim`` 命令时记得加上 ``uv run`` 前缀；也就是 ``uv run manim ...``。"
+msgstr "如果您是按照推荐的方式、使用Python管理工具``uv``安装的Manim，那么你需要确保相应的虚拟环境已激活（可参考运行``uv venv``后打印的说明），或者在终端中使用``manim``命令时加上 ``uv run``前缀；即使用``uv run manim ...``命令。"
 
 #: ../../source/tutorials/quickstart.rst:22
 msgid "Overview"
@@ -28,11 +28,11 @@ msgstr "概览"
 
 #: ../../source/tutorials/quickstart.rst:24
 msgid "This quickstart guide will lead you through creating a sample project using Manim: an animation engine for precise programmatic animations."
-msgstr "本快速入门将带你使用 Manim 创建一个示例项目。Manim 是一个用于精确、可编程动画的动画引擎。"
+msgstr "Manim是一个用于制作精确、可编程动画的动画引擎，而本快速入门文档将带你使用Manim创建一个示例项目。"
 
 #: ../../source/tutorials/quickstart.rst:27
 msgid "First, you will use a command line interface to create a ``Scene``, the class through which Manim generates videos. In the ``Scene`` you will animate a circle. Then you will add another ``Scene`` showing a square transforming into a circle. This will be your introduction to Manim's animation ability. Afterwards, you will position multiple mathematical objects (``Mobject``\\s). Finally, you will learn the ``.animate`` syntax, a powerful feature that animates the methods you use to modify ``Mobject``\\s."
-msgstr "首先，你将通过命令行界面创建一个 ``Scene``（场景）——这是 Manim 用于生成视频的核心类。在这个 ``Scene`` 中，你会先让一个圆动起来。随后，你会再添加一个 ``Scene``，展示一个正方形变换为圆形。这将帮助你初步了解 Manim 的动画能力。之后，你会学习如何摆放多个数学对象（``Mobject``\\s）。最后，你将学习 ``.animate`` 语法：这是一个非常强大的特性，能够把你用于修改 ``Mobject``\\s 的方法调用直接变成动画。"
+msgstr "首先，您需要通过命令行界面创建一个``Scene``（场景）。Scene是用于生成视频的核心类。在这个``Scene``中，先让一个圆动起来。随后再添加一个 ``Scene``，将一个正方形转换为圆形。这将帮您初步了解 Manim 的动画渲染能力。之后，您将会学习如何摆放多个数学对象（``Mobject``\\s）。并且最后会学到``.animate``语法：该语法是一个非常强大的特性，能够把您用于修改``Mobject``\\s的方法调用直接变成动画。"
 
 #: ../../source/tutorials/quickstart.rst:36
 msgid "Starting a new project"
@@ -44,7 +44,7 @@ msgstr "先创建一个新文件夹::"
 
 #: ../../source/tutorials/quickstart.rst:43
 msgid "The ``my-project`` folder is the root folder for your project. It contains all the files that Manim needs to function, as well as any output that your project produces."
-msgstr "``my-project`` 文件夹就是你项目的根目录。其中包含了 Manim 运行所需的全部文件，以及项目生成的所有输出内容。"
+msgstr "``my-project``文件夹就是您的项目的根目录。其中包含了Manim运行所需的全部文件，以及项目生成的所有输出内容。"
 
 #: ../../source/tutorials/quickstart.rst:48
 msgid "Animating a circle"
@@ -52,23 +52,23 @@ msgstr "让一个圆动起来"
 
 #: ../../source/tutorials/quickstart.rst:50
 msgid "Open a text editor, such as Notepad. Open the file ``main.py`` in the ``my-project`` folder. It should look something like this:"
-msgstr "打开文本编辑器（例如记事本），再打开 ``my-project`` 文件夹中的 ``main.py``。它的内容应类似如下："
+msgstr "打开文本编辑器（比如Notepad），再打开``my-project``文件夹中的``main.py``，其内容应大致如下："
 
 #: ../../source/tutorials/quickstart.rst:63
 msgid "Open the command line, navigate to your project folder, and execute the following command:"
-msgstr "打开命令行，进入你的项目文件夹，然后执行以下命令："
+msgstr "打开命令行，进入您的项目文件夹，然后执行以下命令："
 
 #: ../../source/tutorials/quickstart.rst:70
 msgid "Manim will output rendering information, then create an MP4 file. Your default movie player will play the MP4 file, displaying the following animation."
-msgstr "Manim 会输出渲染信息，然后生成一个 MP4 文件。默认视频播放器会自动播放该 MP4，效果如下。"
+msgstr "Manim会输出渲染信息，然后生成一个MP4文件。默认视频播放器会自动播放该MP4，效果如下。"
 
 #: ../../source/tutorials/quickstart.rst:83
 msgid "If you see an animation of a pink circle being drawn, congratulations! You just wrote your first Manim scene from scratch."
-msgstr "如果你看到了一个粉色圆被绘制出来的动画，恭喜！你已经从零写出了第一个 Manim 场景。"
+msgstr "如果您看到了一个绘制粉色圆圈的动画，恭喜！您已经从零写出了自己的第一个Manim场景。"
 
 #: ../../source/tutorials/quickstart.rst:86
 msgid "If you get an error message instead, you do not see a video, or if the video output does not look like the preceding animation, it is likely that Manim has not been installed correctly. Please refer to our :doc:`FAQ section </faq/index>` for help with the most common issues."
-msgstr "如果你看到的是报错信息、没有视频输出，或者视频效果与上方动画不一致，很可能是 Manim 没有正确安装。请参阅我们的 :doc:`FAQ 页面 </faq/index>`，查看最常见问题的解决方案。"
+msgstr "如果您看到的是报错信息、没有视频输出，或者视频效果与上方动画不一致，很可能是Manim安装有误。请参阅我们的:doc:`FAQ页面 </faq/index>`，查看常见问题的解决方案。"
 
 #: ../../source/tutorials/quickstart.rst:95
 msgid "Explanation"
@@ -76,7 +76,7 @@ msgstr "详细说明"
 
 #: ../../source/tutorials/quickstart.rst:97
 msgid "Let's go over the script you just executed line by line to see how Manim was able to draw the circle."
-msgstr "下面我们逐行看看刚刚执行的脚本，理解 Manim 是如何绘制出这个圆的。"
+msgstr "下面我们将逐行看看刚刚执行的脚本，理解Manim是如何绘制出这个圆的。"
 
 #: ../../source/tutorials/quickstart.rst:100
 msgid "The first line imports all of the contents of the library:"
@@ -84,7 +84,7 @@ msgstr "第一行导入了库中的所有内容："
 
 #: ../../source/tutorials/quickstart.rst:106
 msgid "This is the recommended way of using Manim, as a single script often uses multiple names from the Manim namespace. In your script, you imported and used ``Scene``, ``Circle``, ``PINK`` and ``Create``."
-msgstr "这是使用 Manim 的推荐方式，因为一个脚本通常会用到 Manim 命名空间中的多个名称。在这个脚本里，你导入并使用了 ``Scene``、``Circle``、``PINK`` 和 ``Create``。"
+msgstr "我们推荐您在使用manim时导入所有内容，因为一个脚本通常会用到Manim命名空间中的多个名称。光在这一个脚本里，您就已经导入并使用了``Scene``、``Circle``、``PINK``和``Create``。"
 
 #: ../../source/tutorials/quickstart.rst:110
 msgid "Now let's look at the next two lines:"
@@ -92,142 +92,142 @@ msgstr "接着看后两行："
 
 #: ../../source/tutorials/quickstart.rst:118
 msgid "Most of the time, the code for scripting an animation is entirely contained within the :meth:`~.Scene.construct` method of a :class:`.Scene` class. Inside :meth:`~.Scene.construct`, you can create objects, display them on screen, and animate them."
-msgstr "在大多数情况下，用于编写动画的代码都写在 :class:`.Scene` 类的 :meth:`~.Scene.construct` 方法里。在 :meth:`~.Scene.construct` 中，你可以创建对象、把它们显示在屏幕上并为其添加动画。"
+msgstr "大多数情况下，用于编写动画的代码都写在:class:`.Scene`类的:meth:`~.Scene.construct`方法里。在:meth:`~.Scene.construct`中，您可以创建对象、将其显示在屏幕上并为其添加动画。"
 
 #: ../../source/tutorials/quickstart.rst:122
 msgid "The next two lines create a circle and set its color and opacity:"
-msgstr "接下来的两行创建了一个圆，并设置它的颜色和透明度："
+msgstr "下面这两行创建了一个圆，并设置它的颜色和透明度："
 
 #: ../../source/tutorials/quickstart.rst:129
 msgid "Finally, the last line uses the animation :class:`.Create` to display the circle on your screen:"
-msgstr "最后一行通过 :class:`.Create` 动画把圆显示到屏幕上："
+msgstr "最后一行通过:class:`.Create`动画将圆显示到了屏幕上："
 
 #: ../../source/tutorials/quickstart.rst:136
 msgid "All animations must reside within the :meth:`~.Scene.construct` method of a class derived from :class:`.Scene`.  Other code, such as auxiliary or mathematical functions, may reside outside the class."
-msgstr "所有动画都必须写在继承自 :class:`.Scene` 的类中的 :meth:`~.Scene.construct` 方法内。其他代码（例如辅助函数或数学函数）可以写在类外。"
+msgstr "所有动画都必须写在继承自:class:`.Scene`的类中的:meth:`~.Scene.construct`方法内。其他代码（例如辅助函数或数学函数）则可以写在类外。"
 
 #: ../../source/tutorials/quickstart.rst:142
 msgid "Transforming a square into a circle"
-msgstr "将正方形变成圆形"
+msgstr "将正方形转换为圆形"
 
 #: ../../source/tutorials/quickstart.rst:144
 msgid "With our circle animation complete, let's move on to something a little more complicated."
-msgstr "完成圆形动画后，我们来做一个稍微复杂一点的例子。"
+msgstr "完成绘制圆形的动画后，我们来做一个稍微复杂一点的例子。"
 
 #: ../../source/tutorials/quickstart.rst:146
 msgid "Open ``scene.py``, and add the following code snippet below the ``CreateCircle`` class:"
-msgstr "打开 ``scene.py``，在 ``CreateCircle`` 类下面添加以下代码："
+msgstr "打开``scene.py``，在``CreateCircle``类下面添加以下代码："
 
 #: ../../source/tutorials/quickstart.rst:162
 msgid "Render ``SquareToCircle`` by running the following command in the command line:"
-msgstr "在命令行中运行以下命令，渲染 ``SquareToCircle``："
+msgstr "在命令行中运行以下命令，渲染``SquareToCircle``："
 
 #: ../../source/tutorials/quickstart.rst:168
 #: ../../source/tutorials/quickstart.rst:216
 #: ../../source/tutorials/quickstart.rst:284
 #: ../../source/tutorials/quickstart.rst:326
 msgid "The following animation will render:"
-msgstr "将得到如下动画："
+msgstr "您将得到如下动画："
 
 #: ../../source/tutorials/quickstart.rst:185
 msgid "This example shows one of the primary features of Manim: the ability to implement complicated and mathematically intensive animations (such as cleanly interpolating between two geometric shapes) with just a few lines of code."
-msgstr "这个例子展示了 Manim 的核心能力之一：只用少量代码就能实现复杂且数学意义明确的动画（例如在两个几何形状之间平滑插值变换）。"
+msgstr "该例子展示了Manim的核心能力之一：只用少量代码就能实现复杂且数学意义明确的动画（例如在两个几何形状之间平滑插值变换）。"
 
 #: ../../source/tutorials/quickstart.rst:191
 msgid "Positioning ``Mobject``\\s"
-msgstr "摆放 ``Mobject``\\s"
+msgstr "摆放``Mobject``\\s"
 
 #: ../../source/tutorials/quickstart.rst:193
 msgid "Next, let's go over some basic techniques for positioning ``Mobject``\\s."
-msgstr "接下来，我们学习一些摆放 ``Mobject``\\s 的基础技巧。"
+msgstr "接下来，我们学习一些摆放``Mobject``的基础技巧。"
 
 #: ../../source/tutorials/quickstart.rst:195
 msgid "Open ``scene.py``, and add the following code snippet below the ``SquareToCircle`` method:"
-msgstr "打开 ``scene.py``，在 ``SquareToCircle`` 方法下添加以下代码："
+msgstr "打开 ``scene.py``，在 ``SquareToCircle``方法下添加以下代码："
 
 #: ../../source/tutorials/quickstart.rst:210
 msgid "Render ``SquareAndCircle`` by running the following command in the command line:"
-msgstr "在命令行中运行以下命令，渲染 ``SquareAndCircle``："
+msgstr "在命令行中运行以下命令，渲染``SquareAndCircle``："
 
 #: ../../source/tutorials/quickstart.rst:232
 msgid "``next_to`` is a ``Mobject`` method for positioning ``Mobject``\\s."
-msgstr "``next_to`` 是 ``Mobject`` 用于定位 ``Mobject``\\s 的一个方法。"
+msgstr "``next_to``是``Mobject``用于定位``Mobject``的一个方法。"
 
 #: ../../source/tutorials/quickstart.rst:234
 msgid "We first specified the pink circle as the square's reference point by passing ``circle`` as the method's first argument. The second argument is used to specify the direction the ``Mobject`` is placed relative to the reference point. In this case, we set the direction to ``RIGHT``, telling Manim to position the square to the right of the circle. Finally, ``buff=0.5`` applied a small distance buffer between the two objects."
-msgstr "我们首先将粉色圆作为正方形的参考对象：把 ``circle`` 作为该方法的第一个参数。第二个参数用于指定相对参考对象的放置方向。这里我们使用 ``RIGHT``，告诉 Manim 把正方形放在圆的右侧。最后，``buff=0.5`` 在两者之间留出了一个小间距。"
+msgstr "首先将粉色圆作为正方形的参考对象：把``circle``作为该方法的第一个参数。第二个参数用于指定相对参考对象的放置方向。这里我们使用``RIGHT``，告诉 Manim 把正方形放在圆的右侧。最后``buff=0.5``将在两者之间留出了一个小间距。"
 
 #: ../../source/tutorials/quickstart.rst:240
 msgid "Try changing ``RIGHT`` to ``LEFT``, ``UP``, or ``DOWN`` instead, and see how that changes the position of the square."
-msgstr "你可以尝试把 ``RIGHT`` 改成 ``LEFT``、``UP`` 或 ``DOWN``，看看正方形位置会如何变化。"
+msgstr "您可以尝试把``RIGHT``改成``LEFT``、``UP``或``DOWN``，看看正方形位置会如何变化。"
 
 #: ../../source/tutorials/quickstart.rst:242
 msgid "Using positioning methods, you can render a scene with multiple ``Mobject``\\s, setting their locations in the scene using coordinates or positioning them relative to each other."
-msgstr "借助这些定位方法，你可以在同一场景中渲染多个 ``Mobject``\\s，并通过坐标或相对关系来安排它们的位置。"
+msgstr "借助以上这些定位方法，您可以在同一场景中渲染多个``Mobject``，并通过坐标或相对关系来安排它们的位置。"
 
 #: ../../source/tutorials/quickstart.rst:246
 msgid "For more information on ``next_to`` and other positioning methods, check out the list of :class:`.Mobject` methods in our reference manual."
-msgstr "关于 ``next_to`` 及其他定位方法的更多信息，请参阅参考手册中 :class:`.Mobject` 方法列表。"
+msgstr "关于``next_to``及其他定位方法的更多信息，请参阅参考手册中:class:`.Mobject`方法列表。"
 
 #: ../../source/tutorials/quickstart.rst:251
 msgid "Using ``.animate`` syntax to animate methods"
-msgstr "使用 ``.animate`` 语法为方法添加动画"
+msgstr "使用``.animate``为方法添加动画"
 
 #: ../../source/tutorials/quickstart.rst:253
 msgid "The final lesson in this tutorial is using ``.animate``, a ``Mobject`` method which animates changes you make to a ``Mobject``. When you prepend ``.animate`` to any method call that modifies a ``Mobject``, the method becomes an animation which can be played using ``self.play``. Let's return to ``SquareToCircle`` to see the differences between using methods when creating a ``Mobject``, and animating those method calls with ``.animate``."
-msgstr "本教程最后一部分是 ``.animate``：这是 ``Mobject`` 的一个方法，可以把你对 ``Mobject`` 做出的修改变成动画。当你把 ``.animate`` 加在任何会修改 ``Mobject`` 的方法调用前，该方法就会变成一个可以用 ``self.play`` 播放的动画。我们回到 ``SquareToCircle``，看看“创建 ``Mobject`` 时直接调用方法”与“通过 ``.animate`` 为方法调用添加动画”之间的区别。"
+msgstr "本教程最后一部分是``.animate``：这是``Mobject``的一个方法，可以把你对``Mobject``做出的修改变成动画。当你把``.animate``加在任何会修改``Mobject``的方法调用的前面，该方法就会变成一个可以用``self.play``播放的动画。我们回到``SquareToCircle``，看看“创建``Mobject``时直接调用方法”与“通过``.animate``为方法调用添加动画”之间的区别。"
 
 #: ../../source/tutorials/quickstart.rst:260
 msgid "Open ``scene.py``, and add the following code snippet below the ``SquareAndCircle`` class:"
-msgstr "打开 ``scene.py``，在 ``SquareAndCircle`` 类下添加以下代码："
+msgstr "打开``scene.py``，在``SquareAndCircle``类下添加以下代码："
 
 #: ../../source/tutorials/quickstart.rst:278
 msgid "Render ``AnimatedSquareToCircle`` by running the following command in the command line:"
-msgstr "在命令行中运行以下命令，渲染 ``AnimatedSquareToCircle``："
+msgstr "在命令行中运行以下命令，渲染``AnimatedSquareToCircle``："
 
 #: ../../source/tutorials/quickstart.rst:299
 msgid "The first ``self.play`` creates the square. The second animates rotating it 45 degrees. The third transforms the square into a circle, and the last colors the circle pink. Although the end result is the same as that of ``SquareToCircle``, ``.animate`` shows ``rotate`` and ``set_fill`` being applied to the ``Mobject`` dynamically, instead of creating them with the changes already applied."
-msgstr "第一句 ``self.play`` 创建正方形；第二句让它旋转 45 度；第三句将正方形变成圆形；最后一句把圆染成粉色。尽管最终效果与 ``SquareToCircle`` 相同，``.animate`` 会以动态方式展示 ``rotate`` 与 ``set_fill`` 如何作用在 ``Mobject`` 上，而不是在对象创建时就把变更一次性应用好。"
+msgstr "第一行``self.play``创建了一个正方形；第二行则让它旋转了45度；第三行将正方形变成了圆形；最后一行把圆染成了粉色。尽管最终效果与``SquareToCircle``相同，``.animate``会以动态方式展示``rotate``与``set_fill``是如何作用在``Mobject``上的，而不是在对象创建时就把变更一次性应用好。"
 
 #: ../../source/tutorials/quickstart.rst:305
 msgid "Try other methods, like ``flip`` or ``shift``, and see what happens."
-msgstr "你也可以试试其他方法，比如 ``flip`` 或 ``shift``，看看会发生什么。"
+msgstr "您也可以试试其他方法，比如使用``flip``或``shift``，看看会发生什么。"
 
 #: ../../source/tutorials/quickstart.rst:307
 msgid "Open ``scene.py``, and add the following code snippet below the ``AnimatedSquareToCircle`` class:"
-msgstr "打开 ``scene.py``，在 ``AnimatedSquareToCircle`` 类下添加以下代码："
+msgstr "打开``scene.py``，在``AnimatedSquareToCircle``类下添加以下代码："
 
 #: ../../source/tutorials/quickstart.rst:320
 msgid "Render ``DifferentRotations`` by running the following command in the command line:"
-msgstr "在命令行中运行以下命令，渲染 ``DifferentRotations``："
+msgstr "在命令行中运行以下命令，渲染``DifferentRotations``："
 
 #: ../../source/tutorials/quickstart.rst:338
 msgid "This ``Scene`` illustrates the quirks of ``.animate``. When using ``.animate``, Manim actually takes a ``Mobject``'s starting state and its ending state and interpolates the two. In the ``AnimatedSquareToCircle`` class, you can observe this when the square rotates: the corners of the square appear to contract slightly as they move into the positions required for the first square to transform into the second one."
-msgstr "这个 ``Scene`` 展示了 ``.animate`` 的一些“特性细节”。使用 ``.animate`` 时，Manim 实际上会取 ``Mobject`` 的起始状态和结束状态，并在两者之间做插值。在 ``AnimatedSquareToCircle`` 里，正方形旋转时你可以观察到这一点：方形的角在移动到目标位置时会略微“收缩”，以满足从第一个方形变换到第二个状态所需的位置变化。"
+msgstr "这个``Scene``展示了``.animate`` 的一些“特性细节”。使用 ``.animate`` 时，Manim实际上会取``Mobject``的起始状态和结束状态，并在两者之间做插值。在``AnimatedSquareToCircle``里，正方形旋转时您可以观察到这一点：正方形的角在移动到目标位置时会略微“收缩”，以从方形变换成圆形。"
 
 #: ../../source/tutorials/quickstart.rst:344
 msgid "In ``DifferentRotations``, the difference between ``.animate``'s interpretation of rotation and the ``Rotate`` method is far more apparent. The starting and ending states of a ``Mobject`` rotated 180 degrees are the same, so ``.animate`` tries to interpolate two identical objects and the result is the left square. If you find that your own usage of ``.animate`` is causing similar unwanted behavior, consider using conventional animation methods like the right square, which uses ``Rotate``."
-msgstr "在 ``DifferentRotations`` 中，``.animate`` 对旋转的解释与 ``Rotate`` 方法之间的差异更加明显。一个 ``Mobject`` 旋转 180 度后的起始状态和结束状态是相同的，因此 ``.animate`` 会尝试在两个相同对象之间插值，结果就是左边方形看起来没有旋转。如果你在使用 ``.animate`` 时遇到类似不符合预期的行为，可以考虑使用传统动画方法（例如右边方形使用的 ``Rotate``）。"
+msgstr "在``DifferentRotations``中，``.animate``对旋转的解释与``Rotate``方法之间的差异更加明显。一个``Mobject``旋转180度后的起始状态和结束状态是相同的，因此``.animate``会尝试在两个相同对象之间插值，结果就是左边方形看起来没有旋转。如果您在使用 ``.animate`` 时遇到类似不符合预期的行为，您可以考虑使用传统的动画方法（例如右边方形使用的``Rotate``）。"
 
 #: ../../source/tutorials/quickstart.rst:353
 msgid "``Transform`` vs ``ReplacementTransform``"
-msgstr "``Transform`` 与 ``ReplacementTransform``"
+msgstr "``Transform``与``ReplacementTransform``"
 
 #: ../../source/tutorials/quickstart.rst:355
 msgid "The difference between ``Transform`` and ``ReplacementTransform`` is that ``Transform(mob1, mob2)`` transforms the points (as well as other attributes like color) of ``mob1`` into the points/attributes of ``mob2``."
-msgstr "``Transform`` 和 ``ReplacementTransform`` 的区别在于：``Transform(mob1, mob2)`` 会把 ``mob1`` 的点（以及颜色等其他属性）变换为 ``mob2`` 的点/属性。"
+msgstr "``Transform``和``ReplacementTransform``的区别在于：``Transform(mob1, mob2)``会把``mob1`` 的点（以及颜色等其他属性）变换为``mob2``的点/属性。"
 
 #: ../../source/tutorials/quickstart.rst:358
 msgid "``ReplacementTransform(mob1, mob2)`` on the other hand literally replaces ``mob1`` on the scene with ``mob2``."
-msgstr "而 ``ReplacementTransform(mob1, mob2)`` 会在场景中把 ``mob1`` 直接替换成 ``mob2``。"
+msgstr "而``ReplacementTransform(mob1, mob2)``会在场景中把``mob1``直接替换成``mob2``。"
 
 #: ../../source/tutorials/quickstart.rst:360
 msgid "The use of ``ReplacementTransform`` or ``Transform`` is mostly up to personal preference. They can be used to accomplish the same effect, as shown below."
-msgstr "使用 ``ReplacementTransform`` 还是 ``Transform`` 多数情况下取决于个人偏好。如下面所示，它们都可以实现相同效果。"
+msgstr "该使用``ReplacementTransform``还是``Transform``多数情况下取决于您个人的偏好。如下面所示，它们都可以实现相同效果。"
 
 #: ../../source/tutorials/quickstart.rst:385
 msgid "However, in some cases it is more beneficial to use ``Transform``, like when you are transforming several mobjects one after the other. The code below avoids having to keep a reference to the last mobject that was transformed."
-msgstr "不过在某些情况下，使用 ``Transform`` 会更有优势，比如你需要依次变换多个 mobject 时。下面的代码避免了你总是保存“上一次变换后对象”的引用。"
+msgstr "不过在某些情况下，使用``Transform``会更有优势，比如在需要依次变换多个mobject时。以下代码避免了您总是保存“上一次变换后对象”的引用。"
 
 #: ../../source/tutorials/quickstart.rst:398
 msgid "You're done!"
@@ -235,4 +235,4 @@ msgstr "完成！"
 
 #: ../../source/tutorials/quickstart.rst:402
 msgid "With a working installation of Manim and this sample project under your belt, you're ready to start creating animations of your own.  To learn more about what Manim is doing under the hood, move on to the next tutorial: :doc:`output_and_config`.  For an overview of Manim's features, as well as its configuration and other settings, check out the other :doc:`Tutorials <../tutorials/index>`.  For a list of all available features, refer to the :doc:`../reference` page."
-msgstr "当你已经成功安装 Manim，并完成这个示例项目后，就可以开始创作你自己的动画了。如果你想进一步了解 Manim 在底层做了什么，请继续阅读下一篇教程：:doc:`output_and_config`。若想快速总览 Manim 的功能、配置与其他设置，请查看 :doc:`教程总览 <../tutorials/index>`。如需查看全部可用功能，请参考 :doc:`../reference` 页面。"
+msgstr "当你已成功安装Manim，并完成这个示例项目后，就可以开始创作你自己的动画了。如果您想进一步了解Manim在底层做了什么，请继续阅读下一篇教程：:doc:`output_and_config`。若想快速总览Manim的功能、配置与其他设置，请查看 :doc:`教程总览 <../tutorials/index>`。如需查看全部可用功能，请参考 :doc:`../reference`页面。"
