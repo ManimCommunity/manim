@@ -7,7 +7,7 @@ msgstr ""
 "Language: zh\n"
 "Language-Team: Chinese (Simplified)\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"PO-Revision-Date: 2026-03-03 7:52\n"
+"PO-Revision-Date: 2026-03-04 7:52\n"
 "Last-Translator: 小涵Naiwenel <yuhan2680@qq.com>\n"
 
 #: ../../source/installation.rst:2
