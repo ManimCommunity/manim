@@ -4,10 +4,10 @@ from __future__ import annotations
 
 __all__ = ["ValueTracker", "ComplexValueTracker"]
 
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
-from collections.abc import Sequence
 
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
@@ -238,9 +238,10 @@ class ComplexValueTracker(ValueTracker):
 
     def set_value(
         self,
-        value: complex | float | int | str | Sequence[float | int] | np.ndarray = 0+0j,
+        value: complex | float | int | str | Sequence[float | int] | np.ndarray = 0
+        + 0j,
         mode: str = "rectangular",  # "rectangular" or "polar"
-        angle_unit: str = "radians"  # "radians" or "degrees" — only used when mode="polar"
+        angle_unit: str = "radians",  # "radians" or "degrees" — only used when mode="polar"
     ) -> Self:
         """
         Sets a new complex value to the ComplexValueTracker.
@@ -271,12 +272,9 @@ class ComplexValueTracker(ValueTracker):
         set_value((1, 90), mode="polar", angle_unit="degrees")   # polar, degrees
         set_value((1, np.pi/2), mode="polar")              # polar, radians
         """
-
         # validate mode
         if mode not in ("rectangular", "polar"):
-            raise ValueError(
-                f"mode must be 'rectangular' or 'polar', got '{mode}'"
-            )
+            raise ValueError(f"mode must be 'rectangular' or 'polar', got '{mode}'")
 
         # validate angle_unit
         if angle_unit not in ("radians", "degrees"):
@@ -287,13 +285,11 @@ class ComplexValueTracker(ValueTracker):
         if isinstance(value, (list, tuple, np.ndarray)):
             # length check
             if len(value) != 2:
-                raise ValueError(
-                    f"Expected exactly 2 numbers, got {len(value)}"
-                )
+                raise ValueError(f"Expected exactly 2 numbers, got {len(value)}")
             # check for type of number provided and finiteness check
             if not all(np.isreal(v) and np.isfinite(v) for v in value):
                 raise TypeError(
-                    f"Elements must be real and finite numbers — no NAN(Not a Number) or infinity is allowed"
+                    "Elements must be real and finite numbers — no NAN(Not a Number) or infinity is allowed"
                 )
             a, b = value
 
@@ -315,13 +311,9 @@ class ComplexValueTracker(ValueTracker):
             z = complex(value)  # handles complex, float, int, valid strings
             # check real and imag parts individually for finiteness
             if not np.isfinite(z.real):
-                raise ValueError(
-                    f"Real part must be finite, got {z.real}"
-                )
+                raise ValueError(f"Real part must be finite, got {z.real}")
             if not np.isfinite(z.imag):
-                raise ValueError(
-                    f"Imaginary part must be finite, got {z.imag}"
-                )
+                raise ValueError(f"Imaginary part must be finite, got {z.imag}")
             x, y = z.real, z.imag
 
         self.points[0, :2] = (x, y)
