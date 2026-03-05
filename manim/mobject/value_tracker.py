@@ -4,7 +4,8 @@ from __future__ import annotations
 
 __all__ = ["ValueTracker", "ComplexValueTracker"]
 
-from typing import TYPE_CHECKING, Any
+from collections.abc import Sequence
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 
@@ -235,8 +236,86 @@ class ComplexValueTracker(ValueTracker):
         """Get the current value of this ComplexValueTracker as a complex number."""
         return complex(*self.points[0, :2])
 
-    def set_value(self, value: complex | float) -> Self:
-        """Sets a new complex value to the ComplexValueTracker."""
-        z = complex(value)
-        self.points[0, :2] = (z.real, z.imag)
+    def set_value(
+        self,
+        value: complex | float | int | str | Sequence[float | int] | np.ndarray = 0
+        + 0j,
+        mode: str = "rectangular",  # "rectangular" or "polar"
+        angle_unit: str = "radians",  # "radians" or "degrees" — only used when mode="polar"
+    ) -> Self:
+        """
+        Sets a new complex value to the ComplexValueTracker.
+
+        Parameters
+        ----------
+        value : complex | float | int | str | Sequence[float | int] | np.ndarray
+            The value to set. It can be:
+            - a complex number: 2+3j
+            - a float or int: 5.0 or 5
+            - a valid numeric string: "23" or "2+3j"
+            - a sequence of exactly 2 real numbers: (2, 3), [2, 3], np.array([2, 3])
+                - if mode="rectangular": interpreted as (x, y)
+                - if mode="polar": interpreted as (r, theta)
+                    - theta can be in radians or degrees, specified by angle_unit
+        mode : str
+            "rectangular" (default) or "polar".
+            Only relevant when value is a sequence.
+        angle_unit : str
+            "radians" (default) or "degrees".
+            Only relevant when mode="polar".
+            If "degrees", theta is converted to radians internally.
+
+        Examples
+        --------
+        set_value(2+3j)                                    # rectangular complex
+        set_value((2, 3))                                  # rectangular sequence
+        set_value((1, 90), mode="polar", angle_unit="degrees")   # polar, degrees
+        set_value((1, np.pi/2), mode="polar")              # polar, radians
+        """
+        # validate mode
+        if mode not in ("rectangular", "polar"):
+            raise ValueError(f"mode must be 'rectangular' or 'polar', got '{mode}'")
+
+        # validate angle_unit
+        if angle_unit not in ("radians", "degrees"):
+            raise ValueError(
+                f"angle_unit must be 'radians' or 'degrees', got '{angle_unit}'"
+            )
+
+        if isinstance(value, (list, tuple, np.ndarray)):
+            # length check
+            if len(value) != 2:
+                raise ValueError(f"Expected exactly 2 numbers, got {len(value)}")
+            # check for type of number provided and finiteness check
+            if not all(np.isreal(v) and np.isfinite(v) for v in value):
+                raise TypeError(
+                    "Elements must be real and finite numbers — no NAN(Not a Number) or infinity is allowed"
+                )
+            a, b = value
+
+            if mode == "polar":
+                r, theta = a, b
+                if r < 0:
+                    raise ValueError(
+                        f"Radius r must be non-negative in polar form, got {r}"
+                    )
+                # convert degrees to radians if needed
+                if angle_unit == "degrees":
+                    theta = np.deg2rad(theta)
+                x = r * np.cos(theta)
+                y = r * np.sin(theta)
+            else:  # rectangular
+                x, y = a, b
+
+        else:
+            value = cast(complex | float | int | str, value)
+            z = complex(value)  # handles complex, float, int, valid strings
+            # check real and imag parts individually for finiteness
+            if not np.isfinite(z.real):
+                raise ValueError(f"Real part must be finite, got {z.real}")
+            if not np.isfinite(z.imag):
+                raise ValueError(f"Imaginary part must be finite, got {z.imag}")
+            x, y = z.real, z.imag
+
+        self.points[0, :2] = (x, y)
         return self
