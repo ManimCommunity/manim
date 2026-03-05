@@ -5,7 +5,8 @@ from __future__ import annotations
 __all__ = ["ValueTracker", "ComplexValueTracker"]
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, Union, cast
+from typing import TYPE_CHECKING, Any, cast
+
 import numpy as np
 
 from manim.mobject.mobject import Mobject
@@ -237,7 +238,8 @@ class ComplexValueTracker(ValueTracker):
 
     def set_value(
         self,
-        value: complex | float | int | str | Sequence[float | int] | np.ndarray = 0 + 0j,
+        value: complex | float | int | str | Sequence[float | int] | np.ndarray = 0
+        + 0j,
         mode: str = "rectangular",  # "rectangular" or "polar"
         angle_unit: str = "radians",  # "radians" or "degrees" — only used when mode="polar"
     ) -> Self:
@@ -306,7 +308,7 @@ class ComplexValueTracker(ValueTracker):
                 x, y = a, b
 
         else:
-            value = cast(Union[complex, float, int, str], value)
+            value = cast(complex | float | int | str, value)
             z = complex(value)  # handles complex, float, int, valid strings
             # check real and imag parts individually for finiteness
             if not np.isfinite(z.real):
