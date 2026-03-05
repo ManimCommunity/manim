@@ -82,3 +82,136 @@ def test_typst_text_rendering(config):
     m = Typst(r"*Bold* and _italic_")
     assert m.height > 0
     assert len(m.submobjects) > 0
+
+
+# -- data-typst-label → id mapping tests ------------------------------------
+
+MANIMGRP_PREAMBLE = '#let manimgrp(lbl, body) = [#box(body) #label(lbl)]'
+
+
+def test_typst_labels_mapped_to_vgroups(config):
+    """data-typst-label attributes are promoted to id and appear in id_to_vgroup_dict."""
+    m = Typst(
+        '$ #manimgrp("numer", $a + b$) / #manimgrp("denom", $c - d$) $',
+        typst_preamble=MANIMGRP_PREAMBLE,
+        use_svg_cache=False,
+    )
+    assert "numer" in m.id_to_vgroup_dict
+    assert "denom" in m.id_to_vgroup_dict
+    # a, +, b → 3 submobjects; c, -, d → 3 submobjects
+    assert len(m.id_to_vgroup_dict["numer"]) == 3
+    assert len(m.id_to_vgroup_dict["denom"]) == 3
+
+
+def test_typst_nested_labels(config):
+    """Nested labeled boxes produce nested VGroups without cross-contamination."""
+    m = Typst(
+        '$ #manimgrp("outer", $#manimgrp("inner", $a$) + b$) $',
+        typst_preamble=MANIMGRP_PREAMBLE,
+        use_svg_cache=False,
+    )
+    assert "outer" in m.id_to_vgroup_dict
+    assert "inner" in m.id_to_vgroup_dict
+    # "inner" contains only "a" (1 submobject)
+    assert len(m.id_to_vgroup_dict["inner"]) == 1
+    # "outer" contains everything: a, +, b (3 submobjects)
+    assert len(m.id_to_vgroup_dict["outer"]) == 3
+    # The inner submobject is a subset of the outer one
+    inner_mob = m.id_to_vgroup_dict["inner"][0]
+    assert inner_mob in m.id_to_vgroup_dict["outer"]
+
+
+def test_typst_no_labels_no_extra_keys(config):
+    """Without labeled boxes, no extra label keys appear."""
+    m = Typst(r"$ a + b $", use_svg_cache=False)
+    label_keys = [
+        k
+        for k in m.id_to_vgroup_dict
+        if not k.startswith(("numbered_group", "root", "g"))
+    ]
+    assert label_keys == []
+
+
+def test_typst_select(config):
+    """select() returns the correct VGroup for a given label."""
+    m = Typst(
+        '$ #manimgrp("lhs", $a + b$) = #manimgrp("rhs", $c$) $',
+        typst_preamble=MANIMGRP_PREAMBLE,
+        use_svg_cache=False,
+    )
+    lhs = m.select("lhs")
+    rhs = m.select("rhs")
+    assert len(lhs) == 3  # a, +, b
+    assert len(rhs) == 1  # c
+
+
+def test_typst_select_keyerror(config):
+    """select() raises KeyError for a nonexistent label."""
+    m = Typst(r"$ a + b $", use_svg_cache=False)
+    with pytest.raises(KeyError, match="No group with label 'missing'"):
+        m.select("missing")
+
+
+# -- {{ }} double-brace preprocessor tests ----------------------------------
+
+
+def test_typstmath_double_brace_auto_numbered(config):
+    """{{ }} groups are auto-numbered and selectable by index."""
+    eq = TypstMath("{{ a + b }} / {{ c - d }} = {{ x }}", use_svg_cache=False)
+    assert eq._group_labels == ["_grp-0", "_grp-1", "_grp-2"]
+    assert len(eq.select(0)) == 3  # a, +, b
+    assert len(eq.select(1)) == 3  # c, -, d
+    assert len(eq.select(2)) == 1  # x
+
+
+def test_typstmath_double_brace_named(config):
+    """{{ content : label }} assigns an explicit label."""
+    eq = TypstMath(
+        "{{ a + b : numer }} / {{ c - d : denom }}", use_svg_cache=False
+    )
+    assert "numer" in eq._group_labels
+    assert "denom" in eq._group_labels
+    assert len(eq.select("numer")) == 3
+    assert len(eq.select("denom")) == 3
+
+
+def test_typstmath_double_brace_mixed_named_auto(config):
+    """Named and auto-numbered groups can coexist."""
+    eq = TypstMath(
+        "{{ a : lhs }} = {{ b }}", use_svg_cache=False
+    )
+    assert eq._group_labels == ["lhs", "_grp-0"]
+    assert len(eq.select("lhs")) == 1
+    assert len(eq.select(0)) == 1
+
+
+def test_typstmath_no_braces_no_preamble(config):
+    """Without {{ }}, the manimgrp preamble is not injected."""
+    eq = TypstMath("a + b", use_svg_cache=False)
+    assert eq._group_labels == []
+    assert "manimgrp" not in eq.typst_preamble
+
+
+def test_typstmath_select_index_error(config):
+    """select(int) raises IndexError for out-of-range index."""
+    eq = TypstMath("{{ a }}", use_svg_cache=False)
+    with pytest.raises(IndexError, match="out of range"):
+        eq.select(1)
+
+
+def test_typstmath_preprocessor_skips_strings():
+    """{{ }} inside string literals are not processed."""
+    processed, labels = TypstMath._preprocess_groups(
+        'x =_("{{ not a group }}") z'
+    )
+    assert labels == []
+    assert "manimgrp" not in processed
+
+
+def test_typstmath_preprocessor_skips_content_blocks():
+    """{{ }} inside [...] content blocks are not processed."""
+    processed, labels = TypstMath._preprocess_groups(
+        "[text {{ here }}] {{ real }}"
+    )
+    assert labels == ["_grp-0"]
+    assert processed.count("manimgrp") == 1

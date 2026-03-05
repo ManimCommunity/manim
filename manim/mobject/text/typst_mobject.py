@@ -15,15 +15,23 @@ __all__ = [
     "TypstMath",
 ]
 
+import re
 from pathlib import Path
 from typing import Any
+from xml.etree import ElementTree as ET
 
 from manim import config, logger
 from manim.constants import DEFAULT_FONT_SIZE, SCALE_FACTOR_PER_FONT_POINT, RendererType
 from manim.mobject.svg.svg_mobject import SVGMobject
-from manim.mobject.types.vectorized_mobject import VMobject
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import BLACK, ParsableManimColor
 from manim.utils.typst_file_writing import typst_to_svg_file
+
+_MANIMGRP_PREAMBLE = '#let manimgrp(lbl, body) = [#box(body) #label(lbl)]'
+
+# Pattern for the label part of {{ content : label }}.
+# The label must be a valid Typst label identifier.
+_LABEL_RE = re.compile(r'^(.*)\s*:\s*([a-zA-Z_][a-zA-Z0-9_-]*)\s*$', re.DOTALL)
 
 
 class Typst(SVGMobject):
@@ -141,6 +149,100 @@ class Typst(SVGMobject):
         if self.height > 0:
             self.scale(val / self.font_size)
 
+    # -- SVG post-processing -------------------------------------------------
+
+    def modify_xml_tree(self, element_tree: ET.ElementTree) -> ET.ElementTree:
+        """Convert ``data-typst-label`` attributes to ``id`` before parsing.
+
+        Typst's SVG renderer emits ``data-typst-label`` on ``<g>`` elements
+        that carry a label (created via ``#box(body) <label>``).  The
+        ``svgelements`` library propagates custom ``data-*`` attributes from
+        parent groups to all children, making them unusable as unique group
+        keys.  ``id`` attributes, on the other hand, are *not* inherited.
+
+        This method walks the XML tree and promotes every
+        ``data-typst-label`` to ``id`` (on ``<g>`` elements only), so that
+        :meth:`~.SVGMobject.get_mobjects_from` can pick them up via its
+        existing ``id``-based grouping logic.
+        """
+        # Let the base class inject default style wrappers first.
+        element_tree = super().modify_xml_tree(element_tree)
+
+        # Walk all elements regardless of namespace — ElementTree
+        # qualifies tags with the namespace URI, so a bare ``"g"``
+        # won't match ``{http://www.w3.org/2000/svg}g``.
+        for element in element_tree.iter():
+            label = element.get("data-typst-label")
+            if label is not None:
+                element.set("id", label)
+                del element.attrib["data-typst-label"]
+
+        return element_tree
+
+    # -- sub-expression selection --------------------------------------------
+
+    def select(self, key: str | int) -> VGroup:
+        """Select a labeled sub-expression.
+
+        Labels are created in the Typst source either manually via the
+        ``manimgrp`` helper or automatically through the ``{{ }}``
+        double-brace notation in :class:`TypstMath`.
+
+        Parameters
+        ----------
+        key
+            A label name (``str``) matching a ``data-typst-label`` in the
+            SVG, or an integer index into the auto-numbered ``{{ }}``
+            groups (``_grp-0``, ``_grp-1``, …).
+
+        Returns
+        -------
+        VGroup
+            The submobjects corresponding to the selected group.
+
+        Raises
+        ------
+        KeyError
+            If no group with the given label exists.
+        IndexError
+            If an integer index is out of range.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            eq = TypstMath("{{ a + b : num }} / {{ c : den }} = {{ x }}")
+            eq.select("num").set_color(RED)
+            eq.select("den").set_color(BLUE)
+            eq.select(2).set_color(GREEN)   # "x" (auto-numbered)
+        """
+        if isinstance(key, int):
+            label = f"_grp-{key}"
+            if label not in self.id_to_vgroup_dict:
+                raise IndexError(
+                    f"Group index {key} out of range. "
+                    f"Available labels: {self._user_label_keys()}"
+                )
+            return self.id_to_vgroup_dict[label]
+
+        if key not in self.id_to_vgroup_dict:
+            raise KeyError(
+                f"No group with label {key!r} found. "
+                f"Available labels: {self._user_label_keys()}"
+            )
+        return self.id_to_vgroup_dict[key]
+
+    def _user_label_keys(self) -> list[str]:
+        """Return the label keys that were created from ``data-typst-label``
+        attributes (filtering out internal Typst group IDs and auto-numbered
+        groups).
+        """
+        return [
+            k
+            for k in self.id_to_vgroup_dict
+            if not k.startswith(("numbered_group_", "root", "g"))
+        ]
+
     # -- color handling ------------------------------------------------------
 
     def init_colors(self, propagate_colors: bool = True) -> Typst:
@@ -168,10 +270,20 @@ class TypstMath(Typst):
     The expression is rendered as a display-level equation
     (``$ ... $`` with surrounding spaces).
 
+    Supports the ``{{ ... }}`` double-brace notation for grouping
+    sub-expressions.  Each ``{{ content }}`` is wrapped in a labeled
+    ``manimgrp`` call so that the resulting SVG contains identifiable
+    groups accessible via :meth:`~.Typst.select`.
+
+    Groups can optionally be given explicit labels:
+    ``{{ content : label }}``.  Without a label, groups are
+    auto-numbered (``_grp-0``, ``_grp-1``, …).
+
     Parameters
     ----------
     math_expression
         Typst math-mode content **without** the ``$ ... $`` delimiters.
+        May contain ``{{ ... }}`` groups.
     **kwargs
         Forwarded to :class:`Typst`.
 
@@ -183,7 +295,169 @@ class TypstMath(Typst):
             def construct(self):
                 eq = TypstMath(r"sum_(k=0)^n k = (n(n+1)) / 2")
                 self.add(eq)
+
+        class GroupedMath(Scene):
+            def construct(self):
+                eq = TypstMath("{{ a + b : lhs }} = {{ c }}")
+                eq.select("lhs").set_color(RED)
+                eq.select(0).set_color(BLUE)   # "c" (auto-numbered)
+                self.add(eq)
     """
 
     def __init__(self, math_expression: str, **kwargs: Any):
-        super().__init__(f"$ {math_expression} $", **kwargs)
+        processed, labels = self._preprocess_groups(math_expression)
+        self._group_labels = labels
+
+        # Inject the manimgrp helper when groups are present.
+        if labels:
+            preamble = kwargs.get("typst_preamble", "")
+            if _MANIMGRP_PREAMBLE not in preamble:
+                preamble = (
+                    f"{_MANIMGRP_PREAMBLE}\n{preamble}" if preamble else _MANIMGRP_PREAMBLE
+                )
+            kwargs["typst_preamble"] = preamble
+
+        super().__init__(f"$ {processed} $", **kwargs)
+
+    # -- double-brace preprocessor -------------------------------------------
+
+    @staticmethod
+    def _preprocess_groups(math_expr: str) -> tuple[str, list[str]]:
+        """Replace ``{{ ... }}`` groups with ``manimgrp(...)`` calls.
+
+        Parameters
+        ----------
+        math_expr
+            The raw math expression (without ``$ ... $`` delimiters).
+
+        Returns
+        -------
+        tuple[str, list[str]]
+            The processed expression and an ordered list of group labels.
+        """
+        result: list[str] = []
+        labels: list[str] = []
+        auto_index = 0
+        i = 0
+        n = len(math_expr)
+        outer_in_string = False
+        outer_bracket_depth = 0
+
+        while i < n:
+            ch = math_expr[i]
+
+            # Track string literals at the outer level.
+            if outer_in_string:
+                result.append(ch)
+                if ch == "\\" and i + 1 < n:
+                    result.append(math_expr[i + 1])
+                    i += 2
+                    continue
+                if ch == '"':
+                    outer_in_string = False
+                i += 1
+                continue
+            if ch == '"':
+                outer_in_string = True
+                result.append(ch)
+                i += 1
+                continue
+
+            # Track [...] content blocks at the outer level.
+            if ch == "[":
+                outer_bracket_depth += 1
+                result.append(ch)
+                i += 1
+                continue
+            if ch == "]" and outer_bracket_depth > 0:
+                outer_bracket_depth -= 1
+                result.append(ch)
+                i += 1
+                continue
+            if outer_bracket_depth > 0:
+                result.append(ch)
+                i += 1
+                continue
+
+            # Look for opening {{ (not a single {)
+            if i + 1 < n and ch == "{" and math_expr[i + 1] == "{":
+                i += 2  # skip {{
+                content_start = i
+                depth = 1
+                in_string = False
+                bracket_depth = 0
+
+                while i < n and depth > 0:
+                    ch = math_expr[i]
+
+                    if in_string:
+                        if ch == "\\" and i + 1 < n:
+                            i += 2
+                            continue
+                        if ch == '"':
+                            in_string = False
+                        i += 1
+                        continue
+
+                    if ch == '"':
+                        in_string = True
+                        i += 1
+                        continue
+
+                    if ch == "[":
+                        bracket_depth += 1
+                        i += 1
+                        continue
+                    if ch == "]" and bracket_depth > 0:
+                        bracket_depth -= 1
+                        i += 1
+                        continue
+                    if bracket_depth > 0:
+                        i += 1
+                        continue
+
+                    if (
+                        ch == "{"
+                        and i + 1 < n
+                        and math_expr[i + 1] == "{"
+                    ):
+                        depth += 1
+                        i += 2
+                        continue
+                    if (
+                        ch == "}"
+                        and i + 1 < n
+                        and math_expr[i + 1] == "}"
+                    ):
+                        depth -= 1
+                        if depth == 0:
+                            content = math_expr[content_start:i]
+                            i += 2  # skip }}
+                            break
+                        i += 2
+                        continue
+
+                    i += 1
+                else:
+                    # Unclosed {{ — emit literally and stop.
+                    result.append("{{")
+                    result.append(math_expr[content_start:])
+                    return "".join(result), labels
+
+                # Check for optional `: label` suffix.
+                m = _LABEL_RE.match(content)
+                if m is not None:
+                    body = m.group(1).strip()
+                    label = m.group(2)
+                else:
+                    body = content.strip()
+                    label = f"_grp-{auto_index}"
+                    auto_index += 1
+
+                labels.append(label)
+                result.append(f'manimgrp("{label}", {body})')
+            else:
+                result.append(math_expr[i])
+                i += 1
+
+        return "".join(result), labels
