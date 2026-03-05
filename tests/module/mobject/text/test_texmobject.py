@@ -20,11 +20,120 @@ def test_SingleStringMathTex(config):
 
 @pytest.mark.parametrize(  # : PT006
     ("text_input", "length_sub"),
-    [("{{ a }} + {{ b }} = {{ c }}", 5), (r"\frac{1}{a+b\sqrt{2}}", 1)],
+    [
+        ("{{ a }} + {{ b }} = {{ c }}", 5),
+        (r"\frac{1}{a+b\sqrt{2}}", 1),
+        # Regression test for https://github.com/ManimCommunity/manim/issues/4601:
+        # a string whose only }} comes from closing two nested LaTeX brace groups
+        # (not from the {{ }} notation) must not be split.
+        (r"\\+\int_{0}^{\frac{Mq}{M+m}}", 1),
+    ],
 )
 def test_double_braces_testing(text_input, length_sub):
     t1 = MathTex(text_input)
     assert len(t1.submobjects) == length_sub
+
+
+# ---------------------------------------------------------------------------
+# Unit tests for MathTex._split_double_braces — no LaTeX compilation needed.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("tex_string", "expected_segments"),
+    [
+        # ---- intended notation ----
+        # Basic split: each {{ }} group and the text between become segments.
+        (
+            "{{ a }} + {{ b }}",
+            ["", " a ", " + ", " b ", ""],
+        ),
+        # {{ }} at the very start of the string (no preceding character).
+        (
+            "{{x}}",
+            ["", "x", ""],
+        ),
+        # Content with arbitrarily nested LaTeX braces: inner }} must NOT close
+        # the Manim group early.
+        (
+            r"{{ a^{b^{c}} }}",
+            ["", r" a^{b^{c}} ", ""],
+        ),
+        # \frac inside a Manim group — the }} from {1}{a} are at inner_depth > 0.
+        (
+            r"{{ \frac{1}{a} }}",
+            ["", r" \frac{1}{a} ", ""],
+        ),
+        # ---- false-positive guards: {{ not preceded by whitespace ----
+        # \text{{word}}: {{ preceded by {, must not split.
+        (
+            r"\text{{word}}",
+            [r"\text{{word}}"],
+        ),
+        # ^{{\alpha}}: {{ preceded by {, must not split.
+        (
+            r"^{{\alpha}}",
+            [r"^{{\alpha}}"],
+        ),
+        # +{{a}}: {{ preceded by non-whitespace, must not split.
+        (
+            r"+{{a}}",
+            [r"+{{a}}"],
+        ),
+        # ---- bug case: }} without any {{ must not split ----
+        (
+            r"\\+\int_{0}^{\frac{Mq}{M+m}}",
+            [r"\\+\int_{0}^{\frac{Mq}{M+m}}"],
+        ),
+        # ---- backslash escape handling ----
+        # \}} — \} consumed as unit, remaining } is a lone close, not }}.
+        (
+            r"\}}",
+            [r"\}}"],
+        ),
+        # \\}} — \\ consumed as unit, leaving real }} which is not inside any
+        # Manim group so it passes through unchanged.
+        (
+            r"\\}}",
+            [r"\\}}"],
+        ),
+        # \\\}} — \\ consumed, then \} consumed; lone } passes through.
+        (
+            r"\\\}}",
+            [r"\\\}}"],
+        ),
+        # \\\\}} — two \\ consumed; lone }} passes through (no Manim group open).
+        (
+            r"\\\\}}",
+            [r"\\\\}}"],
+        ),
+        # Same backslash cases *inside* a Manim group.
+        # The escape sequence is placed right before the Manim }} close.
+        #
+        # {{ a \}}} — \} consumed as escaped brace (content), }} closes the group.
+        (
+            r"{{ a \}}}",
+            ["", r" a \}", ""],
+        ),
+        # {{ a \\}} — \\ consumed as escaped backslash (content), }} closes.
+        (
+            r"{{ a \\}}",
+            ["", r" a \\", ""],
+        ),
+        # {{ a \\\}}} — \\ then \} consumed (content), }} closes.
+        (
+            r"{{ a \\\}}}",
+            ["", r" a \\\}", ""],
+        ),
+        # {{ a \\\\}} — \\ then \\ consumed (content), }} closes.
+        (
+            r"{{ a \\\\}}",
+            ["", r" a \\\\", ""],
+        ),
+    ],
+)
+def test_split_double_braces(tex_string, expected_segments):
+    assert MathTex._split_double_braces(tex_string) == expected_segments
 
 
 def test_tex(config):

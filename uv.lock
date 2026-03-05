@@ -1396,7 +1396,7 @@ wheels = [
 
 [[package]]
 name = "manim"
-version = "0.20.0"
+version = "0.20.1"
 source = { editable = "." }
 dependencies = [
     { name = "audioop-lts", marker = "python_full_version >= '3.13'" },

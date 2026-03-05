@@ -237,6 +237,26 @@ class MathTex(SingleStringMathTex):
                 t = MathTex(r"\int_a^b f'(x) dx = f(b)- f(a)")
                 self.add(t)
 
+    Notes
+    -----
+    Double-brace notation ``{{ ... }}`` can be used to split a single
+    string argument into multiple submobjects without having to pass
+    separate strings::
+
+        MathTex(r"{{ a^2 }} + {{ b^2 }} = {{ c^2 }}")
+
+    Each ``{{ ... }}`` group and every piece of text between groups
+    becomes its own submobject, which is useful for
+    :class:`~.TransformMatchingTex` animations.
+
+    For ``{{`` to be recognised as a group opener it must appear either
+    at the very start of the string or be immediately preceded by a
+    whitespace character.  ``{{`` that follows non-whitespace — such as
+    in ``\frac{{{n}}}{k}`` or ``a^{{2}}`` — is left untouched, so
+    ordinary nested-brace LaTeX is not accidentally split.  To prevent
+    an unintentional split, insert a space between the two braces:
+    ``{{ ... }}`` → ``{ { ... } }``.
+
     Tests
     -----
     Check that creating a :class:`~.MathTex` works::
@@ -318,14 +338,93 @@ class MathTex(SingleStringMathTex):
         tex_strings_validated = [
             string if isinstance(string, str) else str(string) for string in tex_strings
         ]
-        # Locate double curly bracers
+        # Locate double curly bracers and split on them.
         tex_strings_validated_two = []
         for tex_string in tex_strings_validated:
-            split = re.split(r"{{|}}", tex_string)
+            split = self._split_double_braces(tex_string)
             tex_strings_validated_two.extend(split)
         if len(tex_strings_validated_two) > len(tex_strings_validated):
             self.brace_notation_split_occurred = True
         return [string for string in tex_strings_validated_two if len(string) > 0]
+
+    @staticmethod
+    def _split_double_braces(tex_string: str) -> list[str]:
+        r"""Split *tex_string* on Manim's ``{{ ... }}`` double-brace notation.
+
+        Rules that avoid false positives on ordinary LaTeX source:
+
+        * ``{{`` is only treated as a group opener when it appears at the very
+          start of the string or is immediately preceded by a whitespace
+          character.  Naturally-occurring ``{{`` in LaTeX is usually preceded
+          by non-whitespace (e.g. ``\frac{{{n}}}{k}`` or ``a^{{2}}``), so
+          the whitespace guard eliminates the most common false positives
+          without any brace-depth bookkeeping on the outer string.
+
+        * Inside an open group the depth of *real* LaTeX braces is tracked.
+          ``}}`` only closes the Manim group when the inner depth is zero,
+          so ``{{ a^{b^{c}} }}`` is handled correctly.
+
+        * Escape sequences are consumed as two-character units in priority
+          order: ``\\`` first (escaped backslash), then ``\{`` / ``\}``
+          (escaped braces).  This ensures e.g. ``\\}}`` is read as an
+          escaped backslash followed by a real ``}}`` rather than as
+          ``\`` + ``\}`` + lone ``}``.
+        """
+        segments: list[str] = []
+        current = ""
+        i = 0
+        inside_manim = False
+        inner_depth = 0
+
+        while i < len(tex_string):
+            # --- consume escape sequences as atomic units ---
+            if tex_string[i] == "\\" and i + 1 < len(tex_string):
+                next_ch = tex_string[i + 1]
+                if next_ch == "\\" or next_ch in "{}":
+                    # \\ (escaped backslash) checked before \{ / \} so that
+                    # the second \ in \\ is never mistaken for an escape prefix.
+                    current += tex_string[i : i + 2]
+                    i += 2
+                    continue
+
+            if not inside_manim:
+                # {{ opens a Manim group only at start-of-string or after whitespace.
+                if tex_string[i : i + 2] == "{{" and (
+                    i == 0 or tex_string[i - 1].isspace()
+                ):
+                    segments.append(current)
+                    current = ""
+                    inside_manim = True
+                    inner_depth = 0
+                    i += 2
+                else:
+                    current += tex_string[i]
+                    i += 1
+            else:
+                if tex_string[i] == "{":
+                    inner_depth += 1
+                    current += tex_string[i]
+                    i += 1
+                elif (
+                    tex_string[i] == "}"
+                    and inner_depth == 0
+                    and tex_string[i : i + 2] == "}}"
+                ):
+                    # }} at inner depth 0 closes the Manim group.
+                    segments.append(current)
+                    current = ""
+                    inside_manim = False
+                    i += 2
+                elif tex_string[i] == "}":
+                    inner_depth -= 1
+                    current += tex_string[i]
+                    i += 1
+                else:
+                    current += tex_string[i]
+                    i += 1
+
+        segments.append(current)
+        return segments
 
     def _join_tex_strings_with_unique_deliminters(
         self, tex_strings: list[str], substrings_to_isolate: Iterable[str]

@@ -1222,7 +1222,7 @@ class OpenGLMobject:
         ) -> Sequence[Vector3D]:
             if str_alignments is None:
                 # Use cell_alignment as fallback
-                return [cast(Vector3D, cell_alignment * direction)] * num
+                return [cast("Vector3D", cell_alignment * direction)] * num
             if len(str_alignments) != num:
                 raise ValueError(f"{name}_alignments has a mismatching size.")
             return [mapping[letter] for letter in str_alignments]
@@ -3037,7 +3037,7 @@ class OpenGLPoint(OpenGLMobject):
         return self.artificial_height
 
     def get_location(self) -> Point3D:
-        return cast(Point3D, self.points[0]).copy()
+        return cast("Point3D", self.points[0]).copy()
 
     @override
     def get_bounding_box_point(self, *args: object, **kwargs: Any) -> Point3D:
