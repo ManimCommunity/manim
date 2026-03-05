@@ -85,8 +85,22 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         value: float = self.points[0, 0]
         return value
 
-    def set_value(self, value: float) -> Self:
-        """Sets a new scalar value to the ValueTracker."""
+    def set_value(self, value: float | int | str) -> Self:
+        if isinstance(value, str):
+            try:
+                value = float(value)
+            except ValueError:
+                raise ValueError(
+                    f"String '{value}' cannot be converted to a float"
+                )
+        if not np.isreal(value):
+            raise TypeError(
+                f"ValueTracker only accepts real numbers — use ComplexValueTracker for having 2 ValueTrackers simultaneously, got {value}"
+            )
+        if not np.isfinite(value):
+            raise ValueError(
+                f"Value must be finite — no nan or inf allowed, got {value}"
+            )
         self.points[0, 0] = value
         return self
 
