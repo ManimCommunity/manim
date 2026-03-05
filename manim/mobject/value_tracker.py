@@ -85,14 +85,8 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         value: float = self.points[0, 0]
         return value
 
-    def set_value(self, value: float | int | str) -> Self:
-        if isinstance(value, str):
-            try:
-                value = float(value)
-            except ValueError:
-                raise ValueError(
-                    f"String '{value}' cannot be converted to a float"
-                )
+    def set_value(self, value: float | int | str) -> Self:        
+        value = float(value)            
         if not np.isreal(value):
             raise TypeError(
                 f"ValueTracker only accepts real numbers — use ComplexValueTracker for having 2 ValueTrackers simultaneously, got {value}"
