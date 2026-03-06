@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-__all__ = ["ValueTracker", "ComplexValueTracker"]
+__all__ = ["ValueTracker", "ComplexValueTracker", "ThreeDValueTracker"]
 
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Union, cast
+
 import numpy as np
 
 from manim.mobject.mobject import Mobject
@@ -85,8 +86,8 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         value: float = self.points[0, 0]
         return value
 
-    def set_value(self, value: float | int | str) -> Self:        
-        value = float(value)            
+    def set_value(self, value: float | int | str) -> Self:
+        value = float(value)
         if not np.isreal(value):
             raise TypeError(
                 f"ValueTracker only accepts real numbers — use ComplexValueTracker for having 2 ValueTrackers simultaneously, got {value}"
@@ -245,7 +246,8 @@ class ComplexValueTracker(ValueTracker):
 
     def set_value(
         self,
-        value: complex | float | int | str | Sequence[float | int] | np.ndarray = 0 + 0j,
+        value: complex | float | int | str | Sequence[float | int] | np.ndarray = 0
+        + 0j,
         mode: str = "rectangular",  # "rectangular" or "polar"
         angle_unit: str = "radians",  # "radians" or "degrees" — only used when mode="polar"
     ) -> Self:
@@ -324,4 +326,76 @@ class ComplexValueTracker(ValueTracker):
             x, y = z.real, z.imag
 
         self.points[0, :2] = (x, y)
+        return self
+
+
+class ThreeDValueTracker(ValueTracker):
+    """
+    A ValueTracker that tracks 3 numeric values simultaneously, equivalent to using 3 ValueTrackers at once.
+    Useful when working in 3D Scenes.
+    Accepts list, tuple, ndarray, int/float or numpy integer/floating as input.
+
+    Arrays of length < 3 are zero-padded on the right. Example:
+        If only 1 number is provided, it is stored as [float(number), 0., 0.].
+        If only 2 numbers are provided, it is stored as [float(number1), float(number2), 0.].
+
+    Arrays of length > 3 raise a ValueError.
+
+    Example of values
+    --------
+    tracker = ThreeDValueTracker([1, 2, 3])   # OK
+    tracker = ThreeDValueTracker([1, 2])      # stored as [1., 2., 0.]
+    tracker = ThreeDValueTracker(5)           # stored as [5., 0., 0.]
+
+    class testThreeDValueTracker(ThreeDScene):
+        def construct(self):
+            self.set_camera_orientation(**self.default_angled_camera_orientation_kwargs)
+            axes = ThreeDAxes().add_coordinates()
+            for axis,color in zip(axes.get_axes(),[RED, GREEN, BLUE]):
+                axis.set_color(color)
+            self.add(axes)
+            x = ThreeDValueTracker([-3,0,0])
+            t = Sphere(radius = 0.1).set_color(GOLD)
+            t.move_to(axes.c2p(x.get_value()))
+            self.add(t)
+            self.begin_ambient_camera_rotation(rate=2)
+            self.wait(2)
+            t.add_updater(lambda m: m.move_to(axes.c2p(x.get_value())))
+            self.play(x.animate(run_time = 2).set_value([0,3,4]))
+            self.wait()
+            self.play(x.animate(run_time = 2).set_value([-2,0,-4]))
+            self.wait()
+    """
+
+    def _validate(self, value: list | tuple | np.ndarray | int | float) -> np.ndarray:
+        """
+        Converts input to a float numpy array of shape (3,).
+
+        Accepts:
+            - int, float, np.integer, np.floating → [value, 0., 0.]
+            - list, tuple, ndarray of length <= 3 → zero padded if length < 3
+
+        Raises:
+            ValueError: if input is non-numeric or length > 3
+        """
+        if isinstance(value, (int, float, np.integer, np.floating)):
+            return np.array([float(value), 0.0, 0.0])
+        try:
+            value = np.asarray(value, dtype=float).flatten()
+        except (TypeError, ValueError):
+            raise ValueError(
+                "Value must be numeric — list, tuple, ndarray, int, or float"
+            )
+        if len(value) > 3:
+            raise ValueError(f"Expected length at most 3, got length {len(value)}")
+        value = np.pad(value, (0, 3 - len(value))) if len(value) < 3 else value
+        return value
+
+    def get_value(self) -> np.ndarray:
+        """Returns a copy of the current value."""
+        return self.points[0, :3].copy()
+
+    def set_value(self, value: list | tuple | np.ndarray | int | float) -> Self:
+        """Sets a new 3D vector value to the tracker."""
+        self.points[0, :3] = self._validate(value)
         return self
