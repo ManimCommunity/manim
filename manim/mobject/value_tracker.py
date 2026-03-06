@@ -354,16 +354,18 @@ class ThreeDValueTracker(ValueTracker):
             for axis,color in zip(axes.get_axes(),[RED, GREEN, BLUE]):
                 axis.set_color(color)
             self.add(axes)
-            x = ThreeDValueTracker([-3,0,0])
-            t = Sphere(radius = 0.1).set_color(GOLD)
-            t.move_to(axes.c2p(x.get_value()))
-            self.add(t)
-            self.begin_ambient_camera_rotation(rate=2)
+            position = ThreeDValueTracker([-3,0,0])
+            s = Sphere(radius = 0.1).set_color(GOLD)
+            s.move_to(axes.c2p(position.get_value()))
+            self.add(s)
+            self.begin_ambient_camera_rotation(rate=1.5)
             self.wait(2)
-            t.add_updater(lambda m: m.move_to(axes.c2p(x.get_value())))
-            self.play(x.animate(run_time = 2).set_value([0,3,4]))
+            s.add_updater(lambda m: m.move_to(axes.c2p(position.get_value())))
+            self.play(position.animate(run_time = 2).set_value([0,3,4]))
+            self.wait()                    
+            self.play(position.animate(run_time = 2).set_value([-2,0,-4]))
             self.wait()
-            self.play(x.animate(run_time = 2).set_value([-2,0,-4]))
+            self.play(position.animate(run_time = 2).set_value([2,0,0]))
             self.wait()
     """
 
@@ -382,10 +384,10 @@ class ThreeDValueTracker(ValueTracker):
             return np.array([float(value), 0.0, 0.0])
         try:
             value = np.asarray(value, dtype=float).flatten()
-        except (TypeError, ValueError):
+        except (TypeError, ValueError) as err:
             raise ValueError(
                 "Value must be numeric — list, tuple, ndarray, int, or float"
-            )
+            ) from err
         if len(value) > 3:
             raise ValueError(f"Expected length at most 3, got length {len(value)}")
         value = np.pad(value, (0, 3 - len(value))) if len(value) < 3 else value
