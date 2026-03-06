@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["ValueTracker", "ComplexValueTracker", "ThreeDValueTracker"]
 
 from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any, Union, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 
@@ -316,7 +316,7 @@ class ComplexValueTracker(ValueTracker):
                 x, y = a, b
 
         else:
-            value = cast(Union[complex, float, int, str], value)
+            value = cast(complex | float | int | str, value)
             z = complex(value)  # handles complex, float, int, valid strings
             # check real and imag parts individually for finiteness
             if not np.isfinite(z.real):
