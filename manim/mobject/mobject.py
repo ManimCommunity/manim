@@ -458,7 +458,7 @@ class Mobject:
         self.points = np.zeros((0, self.dim))
         return self
 
-    def init_colors(self) -> object:
+    def init_colors(self, propagate_colors: bool = True) -> object:
         """Initializes the colors.
 
         Gets called upon creation. This is an empty method that can be implemented by
@@ -2026,7 +2026,10 @@ class Mobject:
     # Color functions
 
     def set_color(
-        self, color: ParsableManimColor = PURE_YELLOW, family: bool = True
+        self,
+        color: ParsableManimColor = PURE_YELLOW,
+        alpha: Any = None,
+        family: bool = True,
     ) -> Self:
         """Condition is function which takes in one arguments, (x, y, z).
         Here it just recurses to submobjects, but in subclasses this
@@ -3431,9 +3434,9 @@ class _UpdaterBuilder:
     def __init__(self, mobject: Mobject):
         self._mobject = mobject
 
-    def __getattr__(self, name: str, /) -> Callable[..., Self]:
+    def __getattr__(self, name: str, /) -> Callable[..., _UpdaterBuilder]:
         # just return a function that will add the updater
-        def add_updater(*method_args, **method_kwargs) -> Self:
+        def add_updater(*method_args: Any, **method_kwargs: Any) -> _UpdaterBuilder:
             self._mobject.add_updater(
                 lambda m: getattr(m, name)(*method_args, **method_kwargs),
                 call_updater=True,
