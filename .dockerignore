@@ -1,1 +1,20 @@
 .git
+
+# Development / test artifacts
+__pycache__
+**/__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.egg-info
+dist/
+build/
+coverage.xml
+
+# Not needed to install the package
+docs/
+tests/
+example_scenes/
+media/
+logo/
+scripts/
