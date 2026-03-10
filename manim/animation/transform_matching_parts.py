@@ -151,7 +151,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
                 else:
                     shape_map[key] = VGroup()
             # error: Argument 1 to "add" of "OpenGLVGroup" has incompatible type "Mobject"; expected "OpenGLVMobject"  [arg-type]
-            shape_map[key].add(sm)
+            shape_map[key].add(sm)  # type: ignore[arg-type]
         return shape_map
 
     def clean_up_from_scene(self, scene: Scene) -> None:
@@ -159,7 +159,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
         for anim in self.animations:
             anim.interpolate(0)
         # error: Argument 1 to "remove" of "Scene" has incompatible type "OpenGLMobject"; expected "Mobject"  [arg-type]
-        scene.remove(self.mobject)
+        scene.remove(self.mobject)  # type: ignore[arg-type]
         scene.remove(*self.to_remove)
         scene.add(self.to_add)
 
