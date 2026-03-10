@@ -10,7 +10,7 @@ import numpy as np
 
 from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
-from manim.mobject.text.tex_mobject import SingleStringMathTex
+from manim.mobject.text.tex_mobject import MathTexPart
 
 from .._config import config
 from ..constants import RendererType
@@ -297,5 +297,5 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
 
     @staticmethod
     def get_mobject_key(mobject: Mobject) -> str:
-        assert isinstance(mobject, SingleStringMathTex)
+        assert isinstance(mobject, MathTexPart)
         return mobject.tex_string
