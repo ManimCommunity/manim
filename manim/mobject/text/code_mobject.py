@@ -209,10 +209,7 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         )
         for line, color_range in zip(self.code_lines, color_ranges, strict=False):
             for start, end, color in color_range:
-                if end == start:
-                    continue
-                for single_line in line[start:end]:
-                    single_line.set_color(color)
+                line[start:end].set_color(color)
 
         if add_line_numbers:
             base_paragraph_config.update({"alignment": "right"})
