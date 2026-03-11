@@ -338,12 +338,16 @@ class MathTex(SingleStringMathTex):
         tex_strings_validated = [
             string if isinstance(string, str) else str(string) for string in tex_strings
         ]
+        # Remove Python line breaks when strings are spread over multiple lines
+        tex_strings_validated_one = [
+            tex.replace("\n", " ") for tex in tex_strings_validated
+        ]
         # Locate double curly bracers and split on them.
         tex_strings_validated_two = []
-        for tex_string in tex_strings_validated:
+        for tex_string in tex_strings_validated_one:
             split = self._split_double_braces(tex_string)
             tex_strings_validated_two.extend(split)
-        if len(tex_strings_validated_two) > len(tex_strings_validated):
+        if len(tex_strings_validated_two) > len(tex_strings_validated_one):
             self.brace_notation_split_occurred = True
         return [string for string in tex_strings_validated_two if len(string) > 0]
 
