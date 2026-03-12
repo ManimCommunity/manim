@@ -5,6 +5,7 @@ from __future__ import annotations
 __all__ = [
     "ThreeDVMobject",
     "Surface",
+    "ImplicitSurface",
     "Sphere",
     "Dot3D",
     "Cube",
@@ -20,6 +21,7 @@ from collections.abc import Callable, Iterable, Sequence
 from typing import TYPE_CHECKING, Any, Literal, Self
 
 import numpy as np
+from isosurfaces import plot_isosurface
 
 from manim import config, logger
 from manim.constants import *
@@ -387,13 +389,164 @@ class Surface(BaseSurface, metaclass=ConvertToOpenGL):
                     ],
                 )
                 faces.add(face)
+                ## TODO: Possibly deprecated, doesnt seem to be used anywhere else
                 face.u_index = i
                 face.v_index = j
                 face.u1 = u1
                 face.u2 = u2
                 face.v1 = v1
                 face.v2 = v2
+                ## TODO: Possibly deprecated, doesnt seem to be used anywhere else
                 self.list_of_faces.append(face)
+        faces.set_fill(color=self.fill_color, opacity=self.fill_opacity)
+        faces.set_stroke(
+            color=self.stroke_color,
+            width=self.stroke_width,
+            opacity=self.stroke_opacity,
+        )
+        self.add(*faces)
+        if self.checkerboard_colors:
+            self.set_fill_by_checkerboard(*self.checkerboard_colors)
+
+class ImplicitSurface(BaseSurface, metaclass=ConvertToOpenGL):
+    """Creates a Implicit Surface using a checkerboard pattern.
+
+    Parameters
+    ----------
+    func
+        The implicit equation defining the surface as ``func(x, y, z) = 0``.
+    x_range
+        The range of the ``x`` variable: ``(x_min, x_max)``.
+    y_range
+        The range of the ``y`` variable: ``(y_min, y_max)``.
+    z_range
+        The range of the ``z`` variable: ``(z_min, z_max)``
+    min_depth
+        Minimum tree depth of the isosurface solver. A larger depth results in a
+        finer triangular mesh of the surface. Defaults to 3.
+    max_cells:
+        Maximum number of cells of the isosurface solver. A larger number results
+        in a finer triangular mesh of the surface. Defaults to 1000.
+    tol:
+        The tolerance of the isosurface solver. If `None` or unspecified,
+        defaults to 0.1% of the x, y, z range.
+    fill_color
+        The color of the :class:`ImplicitSurface`. Ignored if
+        ``checkerboard_colors`` is set.
+    fill_opacity
+        The opacity of the :class:`ImplicitSurface`, from 0 being fully
+        transparent to 1 being fully opaque. Defaults to 1.
+    checkerboard_colors
+        Filling individual faces alternating colors. Overrides ``fill_color``.
+    stroke_color
+        Color of the stroke surrounding each face of :class:`ImplicitSurface`.
+    stroke_width
+        Width of the stroke surrounding each face of :class:`ImplicitSurface`.
+        Defaults to 0.5.
+    should_make_jagged
+        Changes the anchor mode of the Bézier curves from smooth to jagged.
+        Defaults to ``False``.
+
+    Examples
+    --------
+    .. manim:: ImplicitSphere
+        :save_last_frame:
+
+        class ImplicitSphere(ThreeDScene):
+            def construct(self):
+                axes = ThreeDAxes()
+                surface = ImplicitSurface(
+                    lambda x, y, z: x**2 + y**2 + z**2 - 1,
+                    x_range=(-1.5, 1.5),
+                    y_range=(-1.5, 1.5),
+                    z_range=(-1.5, 1.5),
+                    checkerboard_colors=False
+                )
+                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.add(axes, surface)
+    """
+
+    def __init__(
+        self,
+        func: Callable[[float, float, float], float],
+        x_range: tuple[float, float] = (0, 1),
+        y_range: tuple[float, float] = (0, 1),
+        z_range: tuple[float, float] = (0, 1),
+        min_depth: int = 3,
+        max_cells: int = 1000,
+        tol: np.ndarray | None = None,
+        surface_piece_config: dict = {},
+        fill_color: ParsableManimColor = BLUE_D,
+        fill_opacity: float = 1.0,
+        checkerboard_colors: Iterable[ParsableManimColor] | Literal[False] = [
+            BLUE_D,
+            BLUE_E,
+        ],
+        stroke_color: ParsableManimColor = LIGHT_GREY,
+        stroke_width: float = 0.5,
+        should_make_jagged: bool = False,
+        pre_function_handle_to_anchor_scale_factor: float = 0.00001,
+        **kwargs: Any,
+    ) -> None:
+        self._func = func
+        self.x_range = x_range
+        self.y_range = y_range
+        self.z_range = z_range
+        self.min_depth = min_depth
+        self.max_cells = max_cells
+        self.tol = tol
+
+        super().__init__(
+            surface_piece_config = surface_piece_config,
+            fill_color=fill_color,
+            fill_opacity=fill_opacity,
+            checkerboard_colors=checkerboard_colors,
+            stroke_color=stroke_color,
+            stroke_width=stroke_width,
+            should_make_jagged=should_make_jagged,
+            pre_function_handle_to_anchor_scale_factor=pre_function_handle_to_anchor_scale_factor,
+            **kwargs,
+        )
+
+        self._plot_surface()
+        if self.should_make_jagged:
+            self.make_jagged()
+
+    def func(self, xyz: tuple[float, float, float]) -> float:
+        return self._func(*xyz)
+
+    def _plot_surface(self):
+        # isosurface solver
+        xyzmin = np.array([self.x_range[0], self.y_range[0], self.z_range[0]])
+        xyzmax = np.array([self.x_range[1], self.y_range[1], self.z_range[1]])
+        # try different offset eps to avoid singularities
+        for eps in (0, 1E-3, 1E-2, 1E-1):
+            try:
+                simplices, triangles = plot_isosurface(
+                    fn = self.func,
+                    pmin = xyzmin + eps,
+                    pmax = xyzmax - eps,
+                    min_depth = self.min_depth,
+                    max_cells = self.max_cells,
+                    tol = self.tol
+                )
+                break # choose the first successful run
+            except Exception:
+                pass # else try another eps
+        else:
+            raise RuntimeError(
+                "ImplicitSurface could not be solved. Please check the  "
+                "or try different min_depth, max_cells, tol."
+            )
+
+        # convert to manim's VMobject
+        faces = VGroup()
+        self.list_of_faces = []
+        for triangle in triangles:
+            face = VMobject()
+            face.set_points_as_corners([*triangle, triangle[-1]])
+            faces.add(face)
+            self.list_of_faces.append(face)
         faces.set_fill(color=self.fill_color, opacity=self.fill_opacity)
         faces.set_stroke(
             color=self.stroke_color,
