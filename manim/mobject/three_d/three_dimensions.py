@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 __all__ = [
-    "ThreeDVMobject",
     "Surface",
     "ImplicitSurface",
     "Sphere",
@@ -47,26 +46,15 @@ if TYPE_CHECKING:
     from manim.mobject.graphing.coordinate_systems import ThreeDAxes
     from manim.typing import Point3D, Point3DLike, Vector3D, Vector3DLike
 
-
-# TODO: possibly deprecate, seems unused. Only the parent `VMobject` is used
-class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
-    u_index: int
-    v_index: int
-    u1: float
-    u2: float
-    v1: float
-    v2: float
-
-    def __init__(self, shade_in_3d: bool = True, **kwargs: Any):
-        super().__init__(shade_in_3d=shade_in_3d, **kwargs)
-
 class BaseSurface(VGroup, metaclass=ConvertToOpenGL):
     """Creates a Surface using a checkerboard pattern.
 
     Parameters
     ----------
-    list_of_faces
-        The 2D faces that make up the surface
+    face_grid
+        A 2D nested list of the faces that make up the surface. The order is
+        primarily used for checkerboard coloring, with the order roughly
+        following the surface layout where possible.
     fill_color
         The color of the :class:`BaseSurface`. Ignored if ``checkerboard_colors``
         is set.
@@ -87,7 +75,7 @@ class BaseSurface(VGroup, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        list_of_faces: list[VMobject] = [],
+        face_grid: list[list[VMobject]] = [[]],
         surface_piece_config: dict = {},
         fill_color: ParsableManimColor = BLUE_D,
         fill_opacity: float = 1.0,
@@ -118,7 +106,7 @@ class BaseSurface(VGroup, metaclass=ConvertToOpenGL):
         self.pre_function_handle_to_anchor_scale_factor = (
             pre_function_handle_to_anchor_scale_factor
         )
-        self.list_of_faces = list_of_faces
+        self.face_grid = face_grid
 
     def set_fill_by_checkerboard(
         self, *colors: ParsableManimColor, opacity: float | None = None
@@ -140,9 +128,10 @@ class BaseSurface(VGroup, metaclass=ConvertToOpenGL):
             The surface with an alternating pattern.
         """
         n_colors = len(colors)
-        for face in self.list_of_faces:
-            c_index = (face.u_index + face.v_index) % n_colors
-            face.set_fill(colors[c_index], opacity=opacity)
+        for c_index, faces in enumerate(self.face_grid):
+            for face in faces:
+                c_index = (c_index + 1) % n_colors
+                face.set_fill(colors[c_index], opacity=opacity)
         return self
 
     def set_fill_by_value(
@@ -373,12 +362,13 @@ class Surface(BaseSurface, metaclass=ConvertToOpenGL):
     def _setup_in_uv_space(self) -> None:
         u_values, v_values = self._get_u_values_and_v_values()
         faces = VGroup()
-        self.list_of_faces = []
+        self.face_grid = []
         for i in range(len(u_values) - 1):
+            self.face_grid.append([])
             for j in range(len(v_values) - 1):
                 u1, u2 = u_values[i : i + 2]
                 v1, v2 = v_values[j : j + 2]
-                face = ThreeDVMobject()
+                face = VMobject()
                 face.set_points_as_corners(
                     [
                         [u1, v1, 0],
@@ -389,15 +379,7 @@ class Surface(BaseSurface, metaclass=ConvertToOpenGL):
                     ],
                 )
                 faces.add(face)
-                ## TODO: Possibly deprecated, doesnt seem to be used anywhere else
-                face.u_index = i
-                face.v_index = j
-                face.u1 = u1
-                face.u2 = u2
-                face.v1 = v1
-                face.v2 = v2
-                ## TODO: Possibly deprecated, doesnt seem to be used anywhere else
-                self.list_of_faces.append(face)
+                self.face_grid[-1].append(face)
         faces.set_fill(color=self.fill_color, opacity=self.fill_opacity)
         faces.set_stroke(
             color=self.stroke_color,
@@ -515,7 +497,7 @@ class ImplicitSurface(BaseSurface, metaclass=ConvertToOpenGL):
     def func(self, xyz: tuple[float, float, float]) -> float:
         return self._func(*xyz)
 
-    def _plot_surface(self):
+    def _plot_surface(self) -> None:
         # isosurface solver
         xyzmin = np.array([self.x_range[0], self.y_range[0], self.z_range[0]])
         xyzmax = np.array([self.x_range[1], self.y_range[1], self.z_range[1]])
@@ -541,12 +523,12 @@ class ImplicitSurface(BaseSurface, metaclass=ConvertToOpenGL):
 
         # convert to manim's VMobject
         faces = VGroup()
-        self.list_of_faces = []
+        self.face_grid = [[]]
         for triangle in triangles:
             face = VMobject()
             face.set_points_as_corners([*triangle, triangle[-1]])
             faces.add(face)
-            self.list_of_faces.append(face)
+            self.face_grid[-1].append(face)
         faces.set_fill(color=self.fill_color, opacity=self.fill_opacity)
         faces.set_stroke(
             color=self.stroke_color,
