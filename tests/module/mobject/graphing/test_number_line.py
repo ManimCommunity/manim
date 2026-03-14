@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 
 from manim import DashedLine, NumberLine
-from manim.mobject.text.numbers import Integer
+from manim.mobject.text.numbers import Integer, DecimalNumber
 
 
 def test_unit_vector():
@@ -69,6 +69,13 @@ def test_add_labels():
         f"Expected a VGroup with {expected_label_length} integers but got {actual_label_length}."
     )
 
+def test_get_number_mobjects():
+    num_line = NumberLine(x_range=[-4, 4])
+    mobjects = num_line.get_number_mobjects()
+    for mobject in mobjects:
+        assert isinstance(mobject, DecimalNumber), (
+            f"Expected a VGroup of DecimalNumber but got {type(mobject)}"
+        )
 
 def test_number_to_point():
     line = NumberLine()
