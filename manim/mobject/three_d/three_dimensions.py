@@ -252,6 +252,23 @@ class BaseSurface(VGroup, metaclass=ConvertToOpenGL):
 
         return self
 
+    def render_faces(self) -> None:
+        """ Renders the faces in the surface, adding them to the scene and
+        setting the stroke and fill colours.
+        """
+        faces = VGroup([face for row in self.face_grid for face in row])
+        faces.set_stroke(
+            color=self.stroke_color,
+            width=self.stroke_width,
+            opacity=self.stroke_opacity,
+        )
+        if self.checkerboard_colors:
+            self.set_fill_by_checkerboard(*self.checkerboard_colors,
+                opacity=self.fill_opacity)
+        else:
+            faces.set_fill(color=self.fill_color, opacity=self.fill_opacity)
+        self.add(*faces)
+
 class Surface(BaseSurface, metaclass=ConvertToOpenGL):
     """Creates a Parametric Surface using a checkerboard pattern.
 
@@ -361,7 +378,6 @@ class Surface(BaseSurface, metaclass=ConvertToOpenGL):
 
     def _setup_in_uv_space(self) -> None:
         u_values, v_values = self._get_u_values_and_v_values()
-        faces = VGroup()
         self.face_grid = []
         for i in range(len(u_values) - 1):
             self.face_grid.append([])
@@ -378,17 +394,9 @@ class Surface(BaseSurface, metaclass=ConvertToOpenGL):
                         [u1, v1, 0],
                     ],
                 )
-                faces.add(face)
                 self.face_grid[-1].append(face)
-        faces.set_fill(color=self.fill_color, opacity=self.fill_opacity)
-        faces.set_stroke(
-            color=self.stroke_color,
-            width=self.stroke_width,
-            opacity=self.stroke_opacity,
-        )
-        self.add(*faces)
-        if self.checkerboard_colors:
-            self.set_fill_by_checkerboard(*self.checkerboard_colors)
+
+        self.render_faces()
 
 class ImplicitSurface(BaseSurface, metaclass=ConvertToOpenGL):
     """Creates a Implicit Surface using a checkerboard pattern.
@@ -522,22 +530,13 @@ class ImplicitSurface(BaseSurface, metaclass=ConvertToOpenGL):
             )
 
         # convert to manim's VMobject
-        faces = VGroup()
         self.face_grid = [[]]
         for triangle in triangles:
             face = VMobject()
             face.set_points_as_corners([*triangle, triangle[-1]])
-            faces.add(face)
             self.face_grid[-1].append(face)
-        faces.set_fill(color=self.fill_color, opacity=self.fill_opacity)
-        faces.set_stroke(
-            color=self.stroke_color,
-            width=self.stroke_width,
-            opacity=self.stroke_opacity,
-        )
-        self.add(*faces)
-        if self.checkerboard_colors:
-            self.set_fill_by_checkerboard(*self.checkerboard_colors)
+
+        self.render_faces()
 
 # Specific shapes
 
