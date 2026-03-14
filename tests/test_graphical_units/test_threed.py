@@ -163,6 +163,22 @@ def test_Y_Direction(scene):
     scene.add(axes, surface_plane)
 
 
+@frames_comparison(base_scene=ThreeDScene)
+def test_Implicit_Surface(scene):
+    resolution_fa = 16
+    scene.set_camera_orientation(phi=75 * DEGREES, theta=-120 * DEGREES)
+    axes = ThreeDAxes(x_range=(-5, 5, 1), y_range=(-5, 5, 1), z_range=(-5, 5, 1))
+
+    implicit_surface = ImplicitSurface(
+        lambda x, y, z: np.cos(x) * np.sin(y) + np.cos(y) * np.sin(z) + np.cos(z) * np.sin(x),
+        x_range=(-np.pi, np.pi),
+        y_range=(-np.pi, np.pi),
+        z_range=(-np.pi, np.pi),
+        checkerboard_colors=False
+    )
+    scene.add(axes, implicit_surface)
+
+
 def test_get_start_and_end_Arrow3d():
     start, end = ORIGIN, np.array([2, 1, 0], dtype=np.float64)
     arrow = Arrow3D(start, end)
