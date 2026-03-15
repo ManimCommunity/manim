@@ -170,11 +170,13 @@ def test_Implicit_Surface(scene):
     axes = ThreeDAxes(x_range=(-5, 5, 1), y_range=(-5, 5, 1), z_range=(-5, 5, 1))
 
     implicit_surface = ImplicitSurface(
-        lambda x, y, z: np.cos(x) * np.sin(y) + np.cos(y) * np.sin(z) + np.cos(z) * np.sin(x),
+        lambda x, y, z: np.cos(x) * np.sin(y)
+        + np.cos(y) * np.sin(z)
+        + np.cos(z) * np.sin(x),
         x_range=(-np.pi, np.pi),
         y_range=(-np.pi, np.pi),
         z_range=(-np.pi, np.pi),
-        checkerboard_colors=False
+        checkerboard_colors=False,
     )
     scene.add(axes, implicit_surface)
 

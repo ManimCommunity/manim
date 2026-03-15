@@ -46,6 +46,7 @@ if TYPE_CHECKING:
     from manim.mobject.graphing.coordinate_systems import ThreeDAxes
     from manim.typing import Point3D, Point3DLike, Vector3D, Vector3DLike
 
+
 class BaseSurface(VGroup, metaclass=ConvertToOpenGL):
     """Creates a Surface using a checkerboard pattern.
 
@@ -253,7 +254,7 @@ class BaseSurface(VGroup, metaclass=ConvertToOpenGL):
         return self
 
     def render_faces(self) -> None:
-        """ Renders the faces in the surface, adding them to the scene and
+        """Renders the faces in the surface, adding them to the scene and
         setting the stroke and fill colours.
         """
         faces = VGroup([face for row in self.face_grid for face in row])
@@ -263,11 +264,13 @@ class BaseSurface(VGroup, metaclass=ConvertToOpenGL):
             opacity=self.stroke_opacity,
         )
         if self.checkerboard_colors:
-            self.set_fill_by_checkerboard(*self.checkerboard_colors,
-                opacity=self.fill_opacity)
+            self.set_fill_by_checkerboard(
+                *self.checkerboard_colors, opacity=self.fill_opacity
+            )
         else:
             faces.set_fill(color=self.fill_color, opacity=self.fill_opacity)
         self.add(*faces)
+
 
 class Surface(BaseSurface, metaclass=ConvertToOpenGL):
     """Creates a Parametric Surface using a checkerboard pattern.
@@ -346,7 +349,7 @@ class Surface(BaseSurface, metaclass=ConvertToOpenGL):
         self.resolution = resolution
 
         super().__init__(
-            surface_piece_config = surface_piece_config,
+            surface_piece_config=surface_piece_config,
             fill_color=fill_color,
             fill_opacity=fill_opacity,
             checkerboard_colors=checkerboard_colors,
@@ -397,6 +400,7 @@ class Surface(BaseSurface, metaclass=ConvertToOpenGL):
                 self.face_grid[-1].append(face)
 
         self.render_faces()
+
 
 class ImplicitSurface(BaseSurface, metaclass=ConvertToOpenGL):
     """Creates a Implicit Surface using a checkerboard pattern.
@@ -487,7 +491,7 @@ class ImplicitSurface(BaseSurface, metaclass=ConvertToOpenGL):
         self.tol = tol
 
         super().__init__(
-            surface_piece_config = surface_piece_config,
+            surface_piece_config=surface_piece_config,
             fill_color=fill_color,
             fill_opacity=fill_opacity,
             checkerboard_colors=checkerboard_colors,
@@ -510,19 +514,19 @@ class ImplicitSurface(BaseSurface, metaclass=ConvertToOpenGL):
         xyzmin = np.array([self.x_range[0], self.y_range[0], self.z_range[0]])
         xyzmax = np.array([self.x_range[1], self.y_range[1], self.z_range[1]])
         # try different offset eps to avoid singularities
-        for eps in (0, 1E-3, 1E-2, 1E-1):
+        for eps in (0, 1e-3, 1e-2, 1e-1):
             try:
                 simplices, triangles = plot_isosurface(
-                    fn = self.func,
-                    pmin = xyzmin + eps,
-                    pmax = xyzmax - eps,
-                    min_depth = self.min_depth,
-                    max_cells = self.max_cells,
-                    tol = self.tol
+                    fn=self.func,
+                    pmin=xyzmin + eps,
+                    pmax=xyzmax - eps,
+                    min_depth=self.min_depth,
+                    max_cells=self.max_cells,
+                    tol=self.tol,
                 )
-                break # choose the first successful run
+                break  # choose the first successful run
             except Exception:
-                pass # else try another eps
+                pass  # else try another eps
         else:
             raise RuntimeError(
                 "ImplicitSurface could not be solved. Please check the  "
@@ -537,6 +541,7 @@ class ImplicitSurface(BaseSurface, metaclass=ConvertToOpenGL):
             self.face_grid[-1].append(face)
 
         self.render_faces()
+
 
 # Specific shapes
 
