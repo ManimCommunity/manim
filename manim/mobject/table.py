@@ -208,8 +208,8 @@ class Table(VGroup):
         line_config: dict = {},
         **kwargs: Any,
     ):
-        self.row_labels = row_labels
-        self.col_labels = col_labels
+        self.row_labels = list(row_labels) if row_labels else None
+        self.col_labels = list(col_labels) if col_labels else None
         self.top_left_entry = top_left_entry
         self.row_dim = len(table)
         self.col_dim = len(table[0])
@@ -232,7 +232,7 @@ class Table(VGroup):
                 raise ValueError("Not all rows in table have the same length.")
 
         super().__init__(**kwargs)
-        mob_table = self._table_to_mob_table(table)
+        mob_table: list[list[VMobject]] = self._table_to_mob_table(table)
         self.elements_without_labels = VGroup(*it.chain(*mob_table))
         mob_table = self._add_labels(mob_table)
         self._organize_mob_table(mob_table)
@@ -254,7 +254,7 @@ class Table(VGroup):
     def _table_to_mob_table(
         self,
         table: Iterable[Iterable[float | str | VMobject]],
-    ) -> list:
+    ) -> list[list[VMobject]]:
         """Initializes the entries of ``table`` as :class:`~.VMobject`.
 
         Parameters
@@ -302,7 +302,7 @@ class Table(VGroup):
         )
         return help_table
 
-    def _add_labels(self, mob_table: VGroup) -> VGroup:
+    def _add_labels(self, mob_table: list[list[VMobject]]) -> list[list[VMobject]]:
         """Adds labels to an in a grid arranged :class:`~.VGroup`.
 
         Parameters
@@ -684,7 +684,10 @@ class Table(VGroup):
                         item.set_color(random_bright_color())
                     self.add(table)
         """
-        return VGroup(*self.row_labels)
+        if self.row_labels:
+            return VGroup(*self.row_labels)
+        else:
+            return VGroup()
 
     def get_col_labels(self) -> VGroup:
         """Return the column labels of the table.
@@ -712,7 +715,10 @@ class Table(VGroup):
                         item.set_color(random_bright_color())
                     self.add(table)
         """
-        return VGroup(*self.col_labels)
+        if self.col_labels:
+            return VGroup(*self.col_labels)
+        else:
+            return VGroup()
 
     def get_labels(self) -> VGroup:
         """Returns the labels of the table.
