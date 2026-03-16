@@ -66,6 +66,7 @@ __all__ = [
 
 import itertools as it
 from collections.abc import Callable, Iterable, Sequence
+from typing import Any, Self
 
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Polygon
@@ -204,7 +205,7 @@ class Table(VGroup):
         element_to_mobject_config: dict = {},
         arrange_in_grid_config: dict = {},
         line_config: dict = {},
-        **kwargs,
+        **kwargs: Any,
     ):
         self.row_labels = row_labels
         self.col_labels = col_labels
@@ -753,7 +754,7 @@ class Table(VGroup):
             mob.add_background_rectangle(color=ManimColor(color))
         return self
 
-    def get_cell(self, pos: Sequence[int] = (1, 1), **kwargs) -> Polygon:
+    def get_cell(self, pos: Sequence[int] = (1, 1), **kwargs: Any) -> Polygon:
         """Returns one specific cell as a rectangular :class:`~.Polygon` without the entry.
 
         Parameters
@@ -814,7 +815,7 @@ class Table(VGroup):
         self,
         pos: Sequence[int] = (1, 1),
         color: ParsableManimColor = PURE_YELLOW,
-        **kwargs,
+        **kwargs: Any,
     ) -> BackgroundRectangle:
         """Returns a :class:`~.BackgroundRectangle` of the cell at the given position.
 
@@ -853,7 +854,7 @@ class Table(VGroup):
         self,
         pos: Sequence[int] = (1, 1),
         color: ParsableManimColor = PURE_YELLOW,
-        **kwargs,
+        **kwargs: Any,
     ) -> Table:
         """Highlights one cell at a specific position on the table by adding a :class:`~.BackgroundRectangle`.
 
@@ -896,7 +897,7 @@ class Table(VGroup):
         label_animation: Callable[[VMobject | VGroup], Animation] = Write,
         element_animation: Callable[[VMobject | VGroup], Animation] = Create,
         entry_animation: Callable[[VMobject | VGroup], Animation] = FadeIn,
-        **kwargs,
+        **kwargs: Any,
     ) -> AnimationGroup:
         """Customized create-type function for tables.
 
@@ -963,7 +964,7 @@ class Table(VGroup):
 
         return AnimationGroup(*animations, lag_ratio=lag_ratio)
 
-    def scale(self, scale_factor: float, **kwargs):
+    def scale(self, scale_factor: float, **kwargs: Any) -> Self:
         # h_buff and v_buff must be adjusted so that Table.get_cell
         # can construct an accurate polygon for a cell.
         self.h_buff *= scale_factor
@@ -996,7 +997,7 @@ class MathTable(Table):
         self,
         table: Iterable[Iterable[float | str]],
         element_to_mobject: Callable[[float | str], VMobject] = MathTex,
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Special case of :class:`~.Table` with `element_to_mobject` set to :class:`~.MathTex`.
@@ -1051,7 +1052,7 @@ class MobjectTable(Table):
         self,
         table: Iterable[Iterable[VMobject]],
         element_to_mobject: Callable[[VMobject], VMobject] = lambda m: m,
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Special case of :class:`~.Table` with ``element_to_mobject`` set to an identity function.
@@ -1099,7 +1100,7 @@ class IntegerTable(Table):
         self,
         table: Iterable[Iterable[float | str]],
         element_to_mobject: Callable[[float | str], VMobject] = Integer,
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Special case of :class:`~.Table` with `element_to_mobject` set to :class:`~.Integer`.
@@ -1144,7 +1145,7 @@ class DecimalTable(Table):
         table: Iterable[Iterable[float | str]],
         element_to_mobject: Callable[[float | str], VMobject] = DecimalNumber,
         element_to_mobject_config: dict = {"num_decimal_places": 1},
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Special case of :class:`~.Table` with ``element_to_mobject`` set to :class:`~.DecimalNumber`.
