@@ -199,6 +199,14 @@ class Table(VGroup):
         include_background_rectangle: bool = False,
         background_rectangle_color: ParsableManimColor = BLACK,
         element_to_mobject: Callable[
+            [float | str],
+            VMobject,
+        ]
+        | Callable[
+            [VMobject],
+            VMobject,
+        ]
+        | Callable[
             [float | str | VMobject],
             VMobject,
         ]
@@ -270,7 +278,9 @@ class Table(VGroup):
         """
         return [
             [
-                self.element_to_mobject(item, **self.element_to_mobject_config)
+                # error: Argument 1 has incompatible type "float | str | VMobject"; expected "float | str"  [arg-type]
+                # error: Argument 1 has incompatible type "float | str | VMobject"; expected "VMobject"  [arg-type]
+                self.element_to_mobject(item, **self.element_to_mobject_config)  # type: ignore[arg-type]
                 for item in row
             ]
             for row in table
@@ -971,12 +981,14 @@ class Table(VGroup):
 
         return AnimationGroup(*animations, lag_ratio=lag_ratio)
 
-    def scale(self, scale_factor: float, **kwargs: Any) -> Self:
+    def scale(
+        self, scale_factor: float, scale_stroke: bool = False, **kwargs: Any
+    ) -> Self:
         # h_buff and v_buff must be adjusted so that Table.get_cell
         # can construct an accurate polygon for a cell.
         self.h_buff *= scale_factor
         self.v_buff *= scale_factor
-        super().scale(scale_factor, **kwargs)
+        super().scale(scale_factor, scale_stroke=scale_stroke, **kwargs)
         return self
 
 
