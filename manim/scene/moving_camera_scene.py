@@ -89,8 +89,12 @@ from __future__ import annotations
 
 __all__ = ["MovingCameraScene"]
 
-from manim.animation.animation import Animation
+from typing import Any
 
+from manim.animation.animation import Animation
+from manim.mobject.mobject import Mobject
+
+from ..camera.camera import Camera
 from ..camera.moving_camera import MovingCamera
 from ..scene.scene import Scene
 from ..utils.family import extract_mobject_family_members
@@ -111,10 +115,12 @@ class MovingCameraScene(Scene):
         :class:`.MovingCamera`
     """
 
-    def __init__(self, camera_class=MovingCamera, **kwargs):
+    def __init__(
+        self, camera_class: type[Camera] = MovingCamera, **kwargs: Any
+    ) -> None:
         super().__init__(camera_class=camera_class, **kwargs)
 
-    def get_moving_mobjects(self, *animations: Animation):
+    def get_moving_mobjects(self, *animations: Animation) -> list[Mobject]:
         """
         This method returns a list of all of the Mobjects in the Scene that
         are moving, that are also in the animations passed.
@@ -126,7 +132,7 @@ class MovingCameraScene(Scene):
         """
         moving_mobjects = super().get_moving_mobjects(*animations)
         all_moving_mobjects = extract_mobject_family_members(moving_mobjects)
-        movement_indicators = self.renderer.camera.get_mobjects_indicating_movement()
+        movement_indicators = self.renderer.camera.get_mobjects_indicating_movement()  # type: ignore[union-attr]
         for movement_indicator in movement_indicators:
             if movement_indicator in all_moving_mobjects:
                 # When one of these is moving, the camera should

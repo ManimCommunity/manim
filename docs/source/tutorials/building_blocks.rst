@@ -327,6 +327,13 @@ Generally, you start with the starting number and add only some part of the valu
 So, the logic of calculating the number to display at each step will be ``50 + alpha * (100 - 50)``.
 Once you set the calculated value for the :class:`~.DecimalNumber`, you are done.
 
+.. note::
+
+    If you're creating a custom animation and want to use a ``rate_func``, you must explicitly apply
+    ``self.rate_func(alpha)`` to the parameter you're animating. For example, try switching the rate
+    function to ``rate_functions.there_and_back`` to observe how it affects the counting behavior.
+
+
 Once you have defined your ``Count`` animation, you can play it in your :class:`~.Scene` for any duration you want for any :class:`~.DecimalNumber` with any rate function.
 
 .. manim:: CountingScene
@@ -343,7 +350,7 @@ Once you have defined your ``Count`` animation, you can play it in your :class:`
 
         def interpolate_mobject(self, alpha: float) -> None:
             # Set value of DecimalNumber according to alpha
-            value = self.start + (alpha * (self.end - self.start))
+            value = self.start + (self.rate_func(alpha) * (self.end - self.start))
             self.mobject.set_value(value)
 
 

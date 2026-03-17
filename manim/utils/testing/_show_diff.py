@@ -5,13 +5,15 @@ import warnings
 
 import numpy as np
 
+from manim.typing import PixelArray
+
 
 def show_diff_helper(
     frame_number: int,
-    frame_data: np.ndarray,
-    expected_frame_data: np.ndarray,
+    frame_data: PixelArray,
+    expected_frame_data: PixelArray,
     control_data_filename: str,
-):
+) -> None:
     """Will visually display with matplotlib differences between frame generated and the one expected."""
     import matplotlib.gridspec as gridspec
     import matplotlib.pyplot as plt

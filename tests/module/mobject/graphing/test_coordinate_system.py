@@ -152,7 +152,7 @@ def test_coords_to_point_vectorized():
 
     def ref_func(*coords):
         result = np.array(origin)
-        for axis, number in zip(plane.get_axes(), coords):
+        for axis, number in zip(plane.get_axes(), coords, strict=False):
             result += axis.number_to_point(number) - origin
         return result
 

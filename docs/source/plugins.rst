@@ -96,14 +96,15 @@ The only requirement of manim plugins is that they specify an entry point
 with the group, ``"manim.plugins"``. This allows Manim to discover plugins
 available in the user's environment. Everything regarding the plugin's
 directory structure, build system, and naming are completely up to your
-discretion as an author. The aforementioned template plugin is only a model
-using Poetry since this is the build system Manim uses. The plugin's `entry
-point <https://packaging.python.org/specifications/entry-points/>`_ can be
-specified in Poetry as:
+discretion as an author.
+
+The standard way to specify an entry point (see
+`the Python packaging guide <https://packaging.python.org/specifications/entry-points/>`__
+for details) is to include the following in your ``pyproject.toml``:
 
 .. code-block:: toml
 
-    [tool.poetry.plugins."manim.plugins"]
+    [project.entry-points."manim.plugins"]
     "name" = "object_reference"
 
 .. versionremoved:: 0.18.1

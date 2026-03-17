@@ -16,8 +16,9 @@ There are several predefined colors available in Manim:
 
 - The colors listed in :mod:`.color.manim_colors` are loaded into
   Manim's global name space.
-- The colors in :mod:`.color.AS2700`, :mod:`.color.BS381`, :mod:`.color.X11`,
-  and :mod:`.color.XKCD` need to be accessed via their module (which are available
+- The colors in :mod:`.color.AS2700`, :mod:`.color.BS381`,
+  :mod:`.color.DVIPSNAMES`, :mod:`.color.SVGNAMES`, :mod:`.color.X11` and
+  :mod:`.color.XKCD` need to be accessed via their module (which are available
   in Manim's global name space), or imported separately. For example:
 
   .. code:: pycon
@@ -42,6 +43,8 @@ The following modules contain the predefined color constants:
    manim_colors
    AS2700
    BS381
+   DVIPSNAMES
+   SVGNAMES
    XKCD
    X11
 
@@ -49,7 +52,7 @@ The following modules contain the predefined color constants:
 
 from __future__ import annotations
 
-from . import AS2700, BS381, X11, XKCD
+from . import AS2700, BS381, DVIPSNAMES, SVGNAMES, X11, XKCD
 from .core import *
 from .manim_colors import *
 

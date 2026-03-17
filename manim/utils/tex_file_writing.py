@@ -12,8 +12,10 @@ import hashlib
 import re
 import subprocess
 import unicodedata
-from collections.abc import Iterable
+from collections.abc import Generator, Iterable, Sequence
 from pathlib import Path
+from re import Match
+from typing import Any
 
 from manim.utils.tex import TexTemplate
 
@@ -22,7 +24,7 @@ from .. import config, logger
 __all__ = ["tex_to_svg_file"]
 
 
-def tex_hash(expression):
+def tex_hash(expression: Any) -> str:
     id_str = str(expression)
     hasher = hashlib.sha256()
     hasher.update(id_str.encode())
@@ -34,7 +36,7 @@ def tex_to_svg_file(
     expression: str,
     environment: str | None = None,
     tex_template: TexTemplate | None = None,
-):
+) -> Path:
     r"""Takes a tex expression and returns the svg version of the compiled tex
 
     Parameters
@@ -101,8 +103,7 @@ def generate_tex_file(
         output = tex_template.get_texcode_for_expression(expression)
 
     tex_dir = config.get_dir("tex_dir")
-    if not tex_dir.exists():
-        tex_dir.mkdir()
+    tex_dir.mkdir(parents=True, exist_ok=True)
 
     result = tex_dir / (tex_hash(output) + ".tex")
     if not result.exists():
@@ -165,14 +166,14 @@ def make_tex_compilation_command(
     return command
 
 
-def insight_inputenc_error(matching):
+def insight_inputenc_error(matching: Match[str]) -> Generator[str]:
     code_point = chr(int(matching[1], 16))
     name = unicodedata.name(code_point)
     yield f"TexTemplate does not support character '{name}' (U+{matching[1]})."
     yield "See the documentation for manim.mobject.svg.tex_mobject for details on using a custom TexTemplate."
 
 
-def insight_package_not_found_error(matching):
+def insight_package_not_found_error(matching: Match[str]) -> Generator[str]:
     yield f"You do not have package {matching[1]} installed."
     yield f"Install {matching[1]} it using your LaTeX package manager, or check for typos."
 
@@ -215,7 +216,7 @@ def compile_tex(tex_file: Path, tex_compiler: str, output_format: str) -> Path:
     return result
 
 
-def convert_to_svg(dvi_file: Path, extension: str, page: int = 1):
+def convert_to_svg(dvi_file: Path, extension: str, page: int = 1) -> Path:
     """Converts a .dvi, .xdv, or .pdf file into an svg using dvisvgm.
 
     Parameters
@@ -286,7 +287,7 @@ def print_all_tex_errors(log_file: Path, tex_compiler: str, tex_file: Path) -> N
         index for index, line in enumerate(tex_compilation_log) if line.startswith("!")
     ]
     if error_indices:
-        with tex_file.open() as f:
+        with tex_file.open(encoding="utf-8") as f:
             tex = f.readlines()
         for error_index in error_indices:
             print_tex_error(tex_compilation_log, error_index, tex)
@@ -304,7 +305,11 @@ LATEX_ERROR_INSIGHTS = [
 ]
 
 
-def print_tex_error(tex_compilation_log, error_start_index, tex_source):
+def print_tex_error(
+    tex_compilation_log: Sequence[str],
+    error_start_index: int,
+    tex_source: Sequence[str],
+) -> None:
     logger.error(
         f"LaTeX compilation error: {tex_compilation_log[error_start_index][2:]}",
     )
@@ -338,8 +343,8 @@ def print_tex_error(tex_compilation_log, error_start_index, tex_source):
         context += tex_source[line_of_tex_error - 3 : line_of_tex_error + 3]
         context[-4] = "-> " + context[-4]
 
-    context = "".join(context)
-    logger.error(context)
+    context_joined = "".join(context)
+    logger.error(context_joined)
 
     for insights in LATEX_ERROR_INSIGHTS:
         prob, get_insight = insights

@@ -8,7 +8,7 @@ or specific OpenGL classes like `OpenGLSurface`, but documentation for some of
 them is available in form of docstrings
 [in the source code](https://github.com/ManimCommunity/manim/tree/main/manim/mobject/opengl).
 
-Furthermore, [this user guide by *aquabeam*](https://www.aquabeam.me/manim/opengl_guide/)
+Furthermore, [this user guide by *aquabeam*](https://web.archive.org/web/20250708135737/https://www.aquabeam.me/manim/opengl_guide/)
 can be helpful to get started using the OpenGL renderer.
 
 ---

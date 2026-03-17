@@ -8,17 +8,21 @@ __all__ = [
 ]
 
 
+from typing import Any
+
 from manim.mobject.geometry.polygram import Rectangle
 
 from .. import config
 
 
 class ScreenRectangle(Rectangle):
-    def __init__(self, aspect_ratio=16.0 / 9.0, height=4, **kwargs):
+    def __init__(
+        self, aspect_ratio: float = 16.0 / 9.0, height: float = 4, **kwargs: Any
+    ) -> None:
         super().__init__(width=aspect_ratio * height, height=height, **kwargs)
 
     @property
-    def aspect_ratio(self):
+    def aspect_ratio(self) -> float:
         """The aspect ratio.
 
         When set, the width is stretched to accommodate
@@ -27,11 +31,11 @@ class ScreenRectangle(Rectangle):
         return self.width / self.height
 
     @aspect_ratio.setter
-    def aspect_ratio(self, value):
+    def aspect_ratio(self, value: float) -> None:
         self.stretch_to_fit_width(value * self.height)
 
 
 class FullScreenRectangle(ScreenRectangle):
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.height = config["frame_height"]
