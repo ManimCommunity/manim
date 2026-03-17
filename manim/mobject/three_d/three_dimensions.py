@@ -358,8 +358,6 @@ class Sphere(Surface):
                     center=(3, 0, 0),
                     radius=1,
                     resolution=(20, 20),
-                    u_range=[0, TAU],
-                    v_range=[0, PI]
                 )
                 sphere1.set_color(RED)
                 self.add(sphere1)
@@ -371,6 +369,7 @@ class Sphere(Surface):
                 self.add(sphere3)
 
     This example shows that overlapping spheres can intersect with rough transitions.
+    
     .. manim:: ExampleSphereOverlap
         :save_last_frame:
 
