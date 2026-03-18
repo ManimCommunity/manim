@@ -1785,7 +1785,9 @@ class VMobject(Mobject):
         def get_nth_subpath(path_list, n):
             if n >= len(path_list):
                 # Create a null path at the very end
-                return [path_list[-1][-1]] * nppcc
+                if len(path_list) == 0:
+                    return np.tile(np.zeros(3), (nppcc, 1))
+                return np.tile(path_list[-1][-1], (nppcc, 1))
             path = path_list[n]
             # Check for useless points at the end of the path and remove them
             # https://github.com/ManimCommunity/manim/issues/1959
