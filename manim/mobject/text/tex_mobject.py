@@ -587,7 +587,7 @@ class MathTex(SingleStringMathTex):
                     self.id_to_vgroup_dict[match[1]].set_color(color)
         return self
 
-    def index_of_part(self, part: MathTex) -> int:
+    def index_of_part(self, part: VMobject) -> int:
         split_self = self.split()
         if part not in split_self:
             raise ValueError("Trying to get index of part not in MathTex")
