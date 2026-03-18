@@ -396,27 +396,14 @@ class Sphere(Surface):
 
         class ExampleSphereOverlap(ThreeDScene):
             def construct(self):
-                self.set_camera_orientation(phi=PI / 4)
-                sphere1 = Sphere(
-                    center=(-2, 0, 0),
-                    resolution=(10, 20),
-                    u_range=[TAU / 4, 3 * TAU / 4],
-                )
+                self.set_camera_orientation(phi=PI / 4, theta=PI / 4)
+                sphere1 = Sphere(center=(0, 0, 0), radius=1, resolution=(20, 20))
                 sphere1.set_color(RED)
                 self.add(sphere1)
-                sphere2 = Sphere(
-                    center=(0, 0, 0),
-                    resolution=(20, 10),
-                    v_range=[0, TAU / 4],
-                )
+                sphere2 = Sphere(center=(-0.5, -1, 0.5), radius=1.2, resolution=(20, 20))
                 sphere2.set_color(GREEN)
                 self.add(sphere2)
-                sphere3 = Sphere(
-                    center=(2, 0, 0),
-                    resolution=(5, 10),
-                    u_range=[0, TAU / 4],
-                    v_range=[0, TAU / 2],
-                )
+                sphere3 = Sphere(center=(1, -1, 0), radius=1.1, resolution=(20, 20))
                 sphere3.set_color(BLUE)
                 self.add(sphere3)
 
