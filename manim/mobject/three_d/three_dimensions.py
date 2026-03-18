@@ -390,7 +390,7 @@ class Sphere(Surface):
                 self.add(sphere3)
 
     This example shows that overlapping spheres can intersect with rough transitions.
-    
+
     .. manim:: ExampleSphereOverlap
         :save_last_frame:
 
