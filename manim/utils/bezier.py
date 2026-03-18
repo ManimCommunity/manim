@@ -90,6 +90,7 @@ def bezier(
                     containing :math:`n` values to evaluate the Bézier curve at, returning instead
                     an :math:`(n, 3)`-shaped :class:`~.Point3D_Array` containing the points
                     resulting from evaluating the Bézier at each of the :math:`n` values.
+
                 .. warning::
                     If passing a vector of :math:`t`-values to ``bezier_func``, it **must**
                     be a column vector/matrix of shape :math:`(n, 1)`. Passing an 1D array of
@@ -106,6 +107,7 @@ def bezier(
                     Bézier curve defined by ``points`` is evaluated at the corresponding :math:`i`-th
                     value in ``t``, returning again an :math:`(M, 3)`-shaped :class:`~.Point3D_Array`
                     containing those :math:`M` evaluations.
+
                 .. warning::
                     Unlike the previous case, if you pass a :class:`~.ColVector` to ``bezier_func``,
                     it **must** contain exactly :math:`M` values, each value for each of the :math:`M`
@@ -999,7 +1001,7 @@ def bezier_remap(
 
     new_tuples = np.empty((new_number_of_curves, nppc, dim))
     index = 0
-    for curve, sf in zip(bezier_tuples, split_factors, strict=False):
+    for curve, sf in zip(bezier_tuples, split_factors, strict=True):
         new_tuples[index : index + sf] = subdivide_bezier(curve, sf).reshape(
             sf, nppc, dim
         )

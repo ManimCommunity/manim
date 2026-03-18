@@ -35,9 +35,9 @@ from ..utils.color import (
     BLUE_D,
     GREEN_C,
     GREY,
+    PURE_YELLOW,
     RED_C,
     WHITE,
-    YELLOW,
     ManimColor,
     ParsableManimColor,
 )
@@ -172,7 +172,7 @@ class VectorScene(Scene):
     def add_vector(
         self,
         vector: Arrow | Vector3DLike,
-        color: ParsableManimColor | Iterable[ParsableManimColor] = YELLOW,
+        color: ParsableManimColor | Iterable[ParsableManimColor] = PURE_YELLOW,
         animate: bool = True,
         **kwargs: Any,
     ) -> Arrow:
@@ -281,15 +281,19 @@ class VectorScene(Scene):
                 color (str),
                 label_scale_factor=VECTOR_LABEL_SCALE_FACTOR (int, float),
         """
-        i_hat, j_hat = self.get_basis_vectors()
+        i_hat = self.get_basis_vectors().submobjects[0]
+        j_hat = self.get_basis_vectors().submobjects[1]
         return VGroup(
             *(
                 self.get_vector_label(
                     vect, label, color=color, label_scale_factor=1, **kwargs
                 )
                 for vect, label, color in [
-                    (i_hat, "\\hat{\\imath}", X_COLOR),
-                    (j_hat, "\\hat{\\jmath}", Y_COLOR),
+                    # Casting i_hat and j_hat to Vector, as the VGroup from
+                    # self.get_basis_vectors() contains two vectors, but the
+                    # type checker is currently not aware of that.
+                    (cast(Vector, i_hat), "\\hat{\\imath}", X_COLOR),
+                    (cast(Vector, j_hat), "\\hat{\\jmath}", Y_COLOR),
                 ]
             )
         )
@@ -517,7 +521,9 @@ class VectorScene(Scene):
         y_line = Line(x_line.get_end(), arrow.get_end())
         x_line.set_color(X_COLOR)
         y_line.set_color(Y_COLOR)
-        x_coord, y_coord = cast(VGroup, array.get_entries())
+        temp = array.get_entries()
+        x_coord = temp.submobjects[0]
+        y_coord = temp.submobjects[1]
         x_coord_start = self.position_x_coordinate(x_coord.copy(), x_line, vector)
         y_coord_start = self.position_y_coordinate(y_coord.copy(), y_line, vector)
         brackets = array.get_brackets()
@@ -808,7 +814,7 @@ class LinearTransformationScene(VectorScene):
 
     def get_unit_square(
         self,
-        color: ParsableManimColor | Iterable[ParsableManimColor] = YELLOW,
+        color: ParsableManimColor | Iterable[ParsableManimColor] = PURE_YELLOW,
         opacity: float = 0.3,
         stroke_width: float = 3,
     ) -> Rectangle:
@@ -875,7 +881,7 @@ class LinearTransformationScene(VectorScene):
     def add_vector(
         self,
         vector: Arrow | list | tuple | np.ndarray,
-        color: ParsableManimColor = YELLOW,
+        color: ParsableManimColor = PURE_YELLOW,
         animate: bool = False,
         **kwargs: Any,
     ) -> Arrow:

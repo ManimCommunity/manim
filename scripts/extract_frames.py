@@ -13,8 +13,7 @@ def main():
         sys.exit(1)
     npz_file = sys.argv[1]
     output_folder = pathlib.Path(sys.argv[2])
-    if not output_folder.exists():
-        output_folder.mkdir(parents=True)
+    output_folder.mkdir(parents=True, exist_ok=True)
 
     data = np.load(npz_file)
     if "frame_data" not in data:

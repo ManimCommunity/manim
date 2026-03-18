@@ -1418,7 +1418,7 @@ def color_gradient(
     floors[-1] = num_colors - 2
     return [
         rgb_to_color((rgbs[i] * (1 - alpha)) + (rgbs[i + 1] * alpha))
-        for i, alpha in zip(floors, alphas_mod1, strict=False)
+        for i, alpha in zip(floors, alphas_mod1, strict=True)
     ]
 
 
@@ -1520,7 +1520,7 @@ class RandomColorGenerator:
 
         >>> rnd = RandomColorGenerator(42)
         >>> rnd.next()
-        ManimColor('#ECE7E2')
+        ManimColor('#8B4513')
         >>> rnd.next()
         ManimColor('#BBBBBB')
         >>> rnd.next()
@@ -1530,7 +1530,7 @@ class RandomColorGenerator:
 
         >>> rnd2 = RandomColorGenerator(42)
         >>> rnd2.next()
-        ManimColor('#ECE7E2')
+        ManimColor('#8B4513')
         >>> rnd2.next()
         ManimColor('#BBBBBB')
         >>> rnd2.next()

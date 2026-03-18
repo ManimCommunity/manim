@@ -903,7 +903,24 @@ class Scene:
         # as soon as there's one that needs updating of
         # some kind per frame, return the list from that
         # point forward.
-        animation_mobjects = [anim.mobject for anim in animations]
+        # Imported inside the method to avoid cyclic import.
+        from ..animation.composition import AnimationGroup
+
+        def _collect_animation_mobjects(
+            nested_animations: Iterable[Animation],
+        ) -> list[Mobject | OpenGLMobject]:
+            animation_mobjects: list[Mobject | OpenGLMobject] = []
+            for anim in nested_animations:
+                if isinstance(anim, AnimationGroup):
+                    animation_mobjects.extend(
+                        _collect_animation_mobjects(anim.animations),
+                    )
+                else:
+                    animation_mobjects.extend(anim.mobject.get_family())
+            return animation_mobjects
+
+        animation_mobjects = _collect_animation_mobjects(animations)
+
         mobjects = self.get_mobject_family_members()
         for i, mob in enumerate(mobjects):
             update_possibilities = [
