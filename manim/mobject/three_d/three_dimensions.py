@@ -411,7 +411,7 @@ class Sphere(Surface):
     ``v_range`` (the range of the polar angle), it is possible to obtain a portion of a
     sphere:
 
-    .. manim:: ExampleSphereOverlap
+    .. manim:: ExamplePartialSpheres
         :save_last_frame:
 
         class ExamplePartialSpheres(ThreeDScene):
