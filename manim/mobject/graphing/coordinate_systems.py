@@ -1932,8 +1932,8 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self,
         x_range: Sequence[float] | None = None,
         y_range: Sequence[float] | None = None,
-        x_length: float | None = round(config.frame_width) - 2,
-        y_length: float | None = round(config.frame_height) - 2,
+        x_length: float | None = None,
+        y_length: float | None = None,
         axis_config: dict | None = None,
         x_axis_config: dict | None = None,
         y_axis_config: dict | None = None,
@@ -1988,6 +1988,16 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             self.y_axis_config["exclude_origin_tick"] = True
         else:
             self.y_axis_config["exclude_origin_tick"] = False
+
+        if "unit_size" in self.x_axis_config:
+            x_length = self.x_axis_config["unit_size"]
+        else:
+            x_length = round(config.frame_width) - 2
+
+        if "unit_size" in self.y_axis_config:
+            y_length = self.y_axis_config["unit_size"]
+        else:
+            y_length = round(config.frame_width) - 2
 
         self.x_axis = self._create_axis(self.x_range, self.x_axis_config, self.x_length)
         self.y_axis = self._create_axis(self.y_range, self.y_axis_config, self.y_length)
