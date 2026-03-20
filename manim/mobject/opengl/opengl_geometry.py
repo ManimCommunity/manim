@@ -21,6 +21,7 @@ from manim.typing import (
     Vector3D,
     Vector3DLike,
 )
+from manim.utils.bezier import partial_bezier_points
 from manim.utils.color import *
 from manim.utils.iterables import adjacent_n_tuples, adjacent_pairs
 from manim.utils.simple_functions import clip
@@ -552,6 +553,45 @@ class OpenGLLine(OpenGLTipableVMobject):
         if (curr_start == curr_end).all():
             self.set_points_by_ends(start, end, self.path_arc)
         return super().put_start_and_end_on(start, end)
+
+    def _trim_path_with_tip_base(self, point: Point3DLike, at_start: bool) -> bool:
+        if self.path_arc != 0 or self.get_num_curves() <= 1:
+            return False
+
+        curve_index = 0 if at_start else self.get_num_curves() - 1
+        if curve_index < 0:
+            return False
+
+        curve_points = self.get_nth_curve_points(curve_index)
+        start_anchor = curve_points[0]
+        end_anchor = curve_points[-1]
+        segment = end_anchor - start_anchor
+        segment_length_sq = float(np.dot(segment, segment))
+        if segment_length_sq == 0:
+            return False
+
+        residue = float(
+            np.clip(
+                np.dot(np.asarray(point) - start_anchor, segment) / segment_length_sq,
+                0,
+                1,
+            )
+        )
+        nppc = self.n_points_per_curve
+        if at_start:
+            self.points[:nppc] = partial_bezier_points(curve_points, residue, 1)
+        else:
+            self.points[-nppc:] = partial_bezier_points(curve_points, 0, residue)
+        return True
+
+    def reset_endpoints_based_on_tip(self, tip: OpenGLArrowTip, at_start: bool) -> Self:
+        if self.get_length() == 0:
+            return self
+
+        if self._trim_path_with_tip_base(tip.get_base(), at_start):
+            return self
+
+        return super().reset_endpoints_based_on_tip(tip, at_start)
 
     def get_vector(self) -> Vector3D:
         return self.get_end() - self.get_start()
