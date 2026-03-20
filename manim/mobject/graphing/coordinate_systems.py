@@ -1994,7 +1994,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         else:
             x_length = round(config.frame_width) - 2
 
-        if "unit_size" in y_axis_config:
+        if "unit_size" in self.y_axis_config:
             y_length = self.y_axis_config["unit_size"]
         else:
             y_length = round(config.frame_width) - 2
