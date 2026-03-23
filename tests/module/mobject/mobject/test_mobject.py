@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from manim import DL, PI, UR, Circle, Mobject, Rectangle, Square, Triangle, VGroup
+from manim import DL, DOWN, LEFT, PI, RIGHT, UR, Circle, Mobject, Rectangle, Square, Triangle, VGroup
 
 
 def test_mobject_add():
@@ -243,3 +243,61 @@ def test_apply_matrix_about_vertex_view():
     # The first vertex should remain in the same position (within numerical precision)
     transformed_vertices = triangle.get_vertices()
     np.testing.assert_allclose(transformed_vertices[0], first_vertex, atol=1e-6)
+
+
+def test_arrange_default():
+    """Test that arrange() with default args still works."""
+    s1 = Square().move_to([-5, 3, 0])
+    s2 = Square().move_to([7, -2, 0])
+    group = VGroup(s1, s2)
+    group.arrange(RIGHT, buff=0.5)
+    # s2 should be to the right of s1
+    assert s2.get_center()[0] > s1.get_center()[0]
+
+
+def test_arrange_aligned_to():
+    """Test that arrange(aligned_to=i) keeps the i-th submobject in place."""
+    s1 = Square()
+    s2 = Square()
+    s3 = Square()
+
+    # Place s3 at a known position
+    s3.move_to([4, 4, 0])
+    original_s3_center = s3.get_center().copy()
+
+    group = VGroup(s1, s2, s3)
+    group.arrange(RIGHT, buff=0.5, aligned_to=2)
+
+    # s3 should remain at its original position
+    np.testing.assert_allclose(group.submobjects[2].get_center(), original_s3_center, atol=1e-6)
+    # s1 and s2 should be to the left of s3
+    assert group.submobjects[0].get_center()[0] < group.submobjects[2].get_center()[0]
+    assert group.submobjects[1].get_center()[0] < group.submobjects[2].get_center()[0]
+
+
+def test_arrange_aligned_to_first():
+    """Test that arrange(aligned_to=0) keeps the first submobject in place."""
+    s1 = Square().move_to([-3, 2, 0])
+    s2 = Square()
+    s3 = Square()
+
+    original_s1_center = s1.get_center().copy()
+
+    group = VGroup(s1, s2, s3)
+    group.arrange(DOWN, buff=1.0, aligned_to=0)
+
+    np.testing.assert_allclose(group.submobjects[0].get_center(), original_s1_center, atol=1e-6)
+
+
+def test_arrange_aligned_to_negative_index():
+    """Test that arrange(aligned_to=-1) works with negative indexing."""
+    s1 = Square()
+    s2 = Square()
+    s3 = Square().move_to([5, 5, 0])
+
+    original_last_center = s3.get_center().copy()
+
+    group = VGroup(s1, s2, s3)
+    group.arrange(LEFT, buff=0.5, aligned_to=-1)
+
+    np.testing.assert_allclose(group.submobjects[-1].get_center(), original_last_center, atol=1e-6)

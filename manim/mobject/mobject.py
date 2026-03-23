@@ -2558,9 +2558,24 @@ class Mobject:
         direction: Vector3DLike = RIGHT,
         buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         center: bool = True,
+        aligned_to: int | None = None,
         **kwargs: Any,
     ) -> Self:
         """Sorts :class:`~.Mobject` next to each other on screen.
+
+        Parameters
+        ----------
+        direction
+            The direction along which submobjects are arranged.
+        buff
+            The distance between adjacent submobjects.
+        center
+            Whether to center the arranged group. Ignored when
+            ``aligned_to`` is set.
+        aligned_to
+            If given, the index of the submobject that should remain
+            at its current position after arranging. All other
+            submobjects are rearranged around it. Overrides ``center``.
 
         Examples
         --------
@@ -2577,9 +2592,15 @@ class Mobject:
                     x = VGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
                     self.add(x)
         """
+        if aligned_to is not None and self.submobjects:
+            anchor_pos = self.submobjects[aligned_to].get_center().copy()
+
         for m1, m2 in zip(self.submobjects[:-1], self.submobjects[1:], strict=True):
             m2.next_to(m1, direction, buff, **kwargs)
-        if center:
+
+        if aligned_to is not None and self.submobjects:
+            self.shift(anchor_pos - self.submobjects[aligned_to].get_center())
+        elif center:
             self.center()
         return self
 
