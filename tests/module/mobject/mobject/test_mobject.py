@@ -3,7 +3,20 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from manim import DL, DOWN, LEFT, PI, RIGHT, UR, Circle, Mobject, Rectangle, Square, Triangle, VGroup
+from manim import (
+    DL,
+    DOWN,
+    LEFT,
+    PI,
+    RIGHT,
+    UR,
+    Circle,
+    Mobject,
+    Rectangle,
+    Square,
+    Triangle,
+    VGroup,
+)
 
 
 def test_mobject_add():
@@ -269,7 +282,9 @@ def test_arrange_aligned_to():
     group.arrange(RIGHT, buff=0.5, aligned_to=2)
 
     # s3 should remain at its original position
-    np.testing.assert_allclose(group.submobjects[2].get_center(), original_s3_center, atol=1e-6)
+    np.testing.assert_allclose(
+        group.submobjects[2].get_center(), original_s3_center, atol=1e-6
+    )
     # s1 and s2 should be to the left of s3
     assert group.submobjects[0].get_center()[0] < group.submobjects[2].get_center()[0]
     assert group.submobjects[1].get_center()[0] < group.submobjects[2].get_center()[0]
@@ -286,7 +301,9 @@ def test_arrange_aligned_to_first():
     group = VGroup(s1, s2, s3)
     group.arrange(DOWN, buff=1.0, aligned_to=0)
 
-    np.testing.assert_allclose(group.submobjects[0].get_center(), original_s1_center, atol=1e-6)
+    np.testing.assert_allclose(
+        group.submobjects[0].get_center(), original_s1_center, atol=1e-6
+    )
 
 
 def test_arrange_aligned_to_negative_index():
@@ -300,4 +317,6 @@ def test_arrange_aligned_to_negative_index():
     group = VGroup(s1, s2, s3)
     group.arrange(LEFT, buff=0.5, aligned_to=-1)
 
-    np.testing.assert_allclose(group.submobjects[-1].get_center(), original_last_center, atol=1e-6)
+    np.testing.assert_allclose(
+        group.submobjects[-1].get_center(), original_last_center, atol=1e-6
+    )
