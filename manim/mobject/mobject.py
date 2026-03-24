@@ -1890,8 +1890,12 @@ class Mobject:
         """Set z value of the center of the :class:`~.Mobject` (``int`` or ``float``)"""
         return self.set_coord(z, 2, direction)
 
-    def space_out_submobjects(self, factor: float = 2.5, direction: np.ndarray = RIGHT, **kwargs: Any) -> Self:
-        mobject_centre = self.get_center() # store the coordinate of centre of the Mobject
+    def space_out_submobjects(
+        self, factor: float = 2.5, direction: np.ndarray = RIGHT, **kwargs: Any
+    ) -> Self:
+        mobject_centre = (
+            self.get_center()
+        )  # store the coordinate of centre of the Mobject
 
         actual_submobjects = [
             submobject
