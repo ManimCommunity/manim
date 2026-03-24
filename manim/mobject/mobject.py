@@ -1900,9 +1900,11 @@ class Mobject:
         ]  # list of all the submobjects which do not have submobjectes of their own
 
         # store the coordinates of all the submobjects before they are spaced out.
-        submobject_center = [submobject.get_center() for submobject in actual_submobjects]
-        
-        for i,submobject in enumerate(actual_submobjects):
+        submobject_center = [
+            submobject.get_center() for submobject in actual_submobjects
+        ]
+
+        for i, submobject in enumerate(actual_submobjects):
             # How far is this submobject from the group center
             offset = submobject_center[i] - mobject_centre
 
