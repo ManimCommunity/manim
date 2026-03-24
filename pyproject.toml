@@ -1,6 +1,6 @@
 [project]
 name = "manim"
-version = "0.20.0"
+version = "0.20.1"
 description = "Animation engine for explanatory math videos."
 authors = [
   {name = "The Manim Community Developers", email = "contact@manim.community"},
@@ -62,7 +62,7 @@ documentation = "https://docs.manim.community/"
 homepage = "https://www.manim.community/"
 "Bug Tracker" = "https://github.com/ManimCommunity/manim/issues"
 "Changelog" = "https://docs.manim.community/en/stable/changelog.html"
-"X / Twitter" = "https://x.com/manim_community"
+"X / Twitter" = "https://x.com/manimcommunity"
 "Bluesky" = "https://bsky.app/profile/manim.community"
 "Discord" = "https://www.manim.community/discord/"
 
