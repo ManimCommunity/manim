@@ -1871,7 +1871,7 @@ class Mobject:
         """Set z value of the center of the :class:`~.Mobject` (``int`` or ``float``)"""
         return self.set_coord(z, 2, direction)
 
-    def space_out_submobjects(self, factor: float = 2.5, direction = RIGHT, **kwargs):
+    def space_out_submobjects(self, factor: float = 2.5, direction: np.ndarray = RIGHT, **kwargs) -> Self:
         mobject_centre = self.get_center() # store the coordinate of centre of the Mobject
 
         actual_submobjects = [submobject for submobject in self.get_family() if len(submobject.submobjects)==0]  # list of all the submobjects which do not have submobjectes of their own 
@@ -1879,7 +1879,7 @@ class Mobject:
         # store the coordinates of all the submobjects before they are spaced out.
         submobject_center = [submobject.get_center() for submobject in actual_submobjects]
         
-        for i,submobject in enumerate(actual_submobjects):           
+        for i,submobject in enumerate(actual_submobjects):
             # How far is this submobject from the group center
             offset = submobject_center[i] - mobject_centre               
             
