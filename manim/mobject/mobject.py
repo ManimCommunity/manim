@@ -2160,27 +2160,30 @@ class Mobject:
     def get_extreme_coord_along_dimension(
         self, measurement_function: Callable[[Iterable[float]], float], dim: int = 0
     ) -> float:
-        """        
+        """
         Finds the minimum or maximum coordinate value in a given dimension, across all points in self and its submobjects.
-        
+
         measurement_function can be either max or min.
         """
-        
         if not (0 <= dim <= 2):
-             raise ValueError("dim must be either 0, 1 or 2")
-        
+            raise ValueError("dim must be either 0, 1 or 2")
+
         extreme_coord = None
 
         if self.points.size > 0:
             extreme_coord = measurement_function(self.points[:, dim])
-        
-        
-        for submobject in self.submobjects:
-            submobject_extreme_coord = submobject.get_extreme_coord_along_dimension(measurement_function, dim)
-            extreme_coord = submobject_extreme_coord if extreme_coord is None else measurement_function([submobject_extreme_coord,extreme_coord])
-        
-        return extreme_coord if extreme_coord is not None else 0.0
 
+        for submobject in self.submobjects:
+            submobject_extreme_coord = submobject.get_extreme_coord_along_dimension(
+                measurement_function, dim
+            )
+            extreme_coord = (
+                submobject_extreme_coord
+                if extreme_coord is None
+                else measurement_function([submobject_extreme_coord, extreme_coord])
+            )
+
+        return extreme_coord if extreme_coord is not None else 0.0
 
     def nonempty_submobjects(self) -> Sequence[Mobject]:
         return [
