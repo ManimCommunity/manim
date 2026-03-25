@@ -2333,11 +2333,11 @@ class Mobject:
 
     def length_over_dim(self, dim: int) -> float:
         """Measure the length of an :class:`~.Mobject` in a certain direction."""
-        max_coord: float = self.reduce_across_dimension(
+        max_coord: float = self.get_extreme_coord_along_dimension(
             max,
             dim,
         )
-        min_coord: float = self.reduce_across_dimension(min, dim)
+        min_coord: float = self.get_extreme_coord_along_dimension(min, dim)
         return max_coord - min_coord
 
     def get_coord(self, dim: int, direction: Vector3DLike = ORIGIN) -> float:
