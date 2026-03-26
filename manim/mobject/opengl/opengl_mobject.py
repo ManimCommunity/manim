@@ -2100,7 +2100,7 @@ class OpenGLMobject:
         self.shift((target - point_to_align) * coor_mask)
         return self
 
-    def replace(
+    def match_size_and_position_to(
         self,
         mobject: OpenGLMobject,
         dim_to_match: int = 0,
@@ -2120,6 +2120,20 @@ class OpenGLMobject:
             )
         self.shift(mobject.get_center() - self.get_center())
         return self
+
+    def replace(
+        self, mobject: OpenGLMobject, dim_to_match: int = 0, stretch: bool = False
+    ) -> Self:
+        """Deprecated: use match_size_and_position_to() instead."""
+        import warnings
+        warnings.warn(
+            "replace() is deprecated, use match_size_and_position_to() instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.match_size_and_position_to(mobject, dim_to_match, stretch)
+
+
 
     def surround(
         self,
