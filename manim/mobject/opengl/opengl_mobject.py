@@ -2146,7 +2146,7 @@ class OpenGLMobject:
             )
             self.shift(np.asarray(start) - current_start)
             return self
-            
+
         target_vector = np.asarray(end) - np.asarray(start)
         axis = (
             normalize(np.cross(current_vector, target_vector))
@@ -2164,7 +2164,6 @@ class OpenGLMobject:
         )
         self.shift(np.asarray(start) - current_start)
         return self
-
 
     # Color functions
 
