@@ -1944,16 +1944,16 @@ class Mobject:
         current_start, current_end = self.get_start_and_end()
         current_vector = current_end - current_start
         if np.all(current_vector == 0):
-            # TODO: this looks broken. It makes self.points a Point3D instead
-            # of a Point3D_Array. However, modifying this breaks some tests
-            # where this is currently expected.
-            #self.points = np.array(start)
-
-            # Previously broken: self.points = np.array(start) would collapse
+            # Previously self.points = np.array(start) was used here, but it would have collapsed
             # all points to a single Point3D instead of shifting the mobject.
             # Fixed by using shift instead.
+            warnings.warn(
+                "put_start_and_end_on has been called on a closed loop or zero-length mobject. "
+                f"{type(self).__name__} will be shifted to start point instead."
+            )
             self.shift(np.asarray(start) - current_start)
             return self
+            
         target_vector = np.asarray(end) - np.asarray(start)
         axis = (
             normalize(np.cross(current_vector, target_vector))
