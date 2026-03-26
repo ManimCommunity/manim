@@ -1933,13 +1933,13 @@ class Mobject:
     ) -> Self:
         """Deprecated: use match_size_and_position_to() instead."""
         import warnings
+
         warnings.warn(
             "replace() is deprecated, use match_size_and_position_to() instead.",
             DeprecationWarning,
-            stacklevel = 2,
+            stacklevel=2,
         )
         return self.match_size_and_position_to(mobject, dim_to_match, stretch)
-
 
     def surround(
         self,
