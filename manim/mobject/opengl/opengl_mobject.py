@@ -2148,27 +2148,37 @@ class OpenGLMobject:
         return self
 
     def put_start_and_end_on(self, start: Point3DLike, end: Point3DLike) -> Self:
-        curr_start, curr_end = self.get_start_and_end()
-        curr_vect = curr_end - curr_start
-        if np.all(curr_vect == 0):
-            raise Exception("Cannot position endpoints of closed loop")
-        target_vect = np.array(end) - np.array(start)
+        current_start, current_end = self.get_start_and_end()
+        current_vector = current_end - current_start
+        if np.all(current_vector == 0):
+            # Previously self.points = np.array(start) was used here, but it would have collapsed
+            # all points to a single Point3D instead of shifting the mobject.
+            # Fixed by using shift instead.
+            warnings.warn(
+                "put_start_and_end_on has been called on a closed loop or zero-length mobject. "
+                f"{type(self).__name__} will be shifted to start point instead."
+            )
+            self.shift(np.asarray(start) - current_start)
+            return self
+            
+        target_vector = np.asarray(end) - np.asarray(start)
         axis = (
-            normalize(np.cross(curr_vect, target_vect))
-            if np.linalg.norm(np.cross(curr_vect, target_vect)) != 0
+            normalize(np.cross(current_vector, target_vector))
+            if np.linalg.norm(np.cross(current_vector, target_vector)) != 0
             else OUT
         )
         self.scale(
-            float(np.linalg.norm(target_vect) / np.linalg.norm(curr_vect)),
-            about_point=curr_start,
+            np.linalg.norm(target_vector) / np.linalg.norm(current_vector),
+            about_point=current_start,
         )
         self.rotate(
-            angle_between_vectors(curr_vect, target_vect),
-            about_point=curr_start,
+            angle_between_vectors(current_vector, target_vector),
+            about_point=current_start,
             axis=axis,
         )
-        self.shift(start - curr_start)
+        self.shift(np.asarray(start) - current_start)
         return self
+
 
     # Color functions
 
