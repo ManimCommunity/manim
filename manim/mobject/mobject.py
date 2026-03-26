@@ -1890,10 +1890,27 @@ class Mobject:
         """Set z value of the center of the :class:`~.Mobject` (``int`` or ``float``)"""
         return self.set_coord(z, 2, direction)
 
-    def space_out_submobjects(self, factor: float = 1.5, **kwargs: Any) -> Self:
-        self.scale(factor, **kwargs)
-        for submob in self.submobjects:
-            submob.scale(1.0 / factor)
+    def space_out(self, factor: float = 2.5, direction: np.ndarray = RIGHT, **kwargs: Any) -> Self:
+        mobject_centre = self.get_center() # store the coordinate of centre of the Mobject
+
+        actual_submobjects = [
+            submobject
+            for submobject in self.get_family()
+            if len(submobject.submobjects) == 0
+        ]  # list of all the submobjects which do not have submobjectes of their own
+
+        # store the coordinates of all the submobjects before they are spaced out.
+        submobject_center = [
+            submobject.get_center() for submobject in actual_submobjects
+        ]
+
+        for i, submobject in enumerate(actual_submobjects):
+            # How far is this submobject from the group center
+            offset = submobject_center[i] - mobject_centre
+
+            # Calculate how much to shift it from it's current position, but only in x direction, since we are multiplying offset by direction: RIGHT, i.e. by [1,0,0]
+            submobject.shift(direction * offset * (factor - 1))
+
         return self
 
     def move_to(
