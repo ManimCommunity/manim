@@ -2066,10 +2066,10 @@ class Mobject:
         alpha: Any = None,
         family: bool = True,
     ) -> Self:
-        """Condition is function which takes in one arguments, (x, y, z).
-        Here it just recurses to submobjects, but in subclasses this
-        should be further implemented based on the the inner workings
-        of color
+        """
+        Sets color of the mobject,
+        and as long as family is set to True, the submobjects are also coloured in same color.
+        alpha was introduced in PR 4388, but hasn't been used. Maybe, it was mistakenly introduced in that PR. 
         """
         if family:
             for submob in self.submobjects:
