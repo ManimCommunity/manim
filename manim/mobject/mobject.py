@@ -2032,9 +2032,9 @@ class Mobject:
         family: bool = True,
     ) -> Self:
         """
-        Sets color of the mobject 
-        and if family is set to True, then the submobjects are also coloured in same color.
-        alpha is the opacity. If alpha = None, opacity is 
+        Sets color of the mobject,
+        and as long as family is set to True, the submobjects are also coloured in same color.
+        alpha was introduced in PR 4388, but hasn't been used. Maybe, it was mistakenly introduced in that PR. 
         """
         if family:
             for submob in self.submobjects:
