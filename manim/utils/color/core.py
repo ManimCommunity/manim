@@ -70,7 +70,7 @@ import colorsys
 import random
 import re
 from collections.abc import Iterable, Sequence
-from typing import Self, TypeAlias, TypeVar, overload, Literal
+from typing import Literal, Self, TypeAlias, TypeVar, overload
 
 import numpy as np
 import numpy.typing as npt
@@ -1380,11 +1380,12 @@ def invert_color(color: ManimColorT) -> ManimColorT:
     """
     return color.invert()
 
+
 def color_gradient(
     colors_provided: Iterable[ParsableManimColor],
     number_of_colors_required: int,
-    transition_mode: Literal["darker", "lighter"]= "lighter",
-    blend_variation: float = 0.5
+    transition_mode: Literal["darker", "lighter"] = "lighter",
+    blend_variation: float = 0.5,
 ) -> list[ManimColor]:
     """Create a list of colors interpolated between the input array of colors with a
     specific number of colors.
@@ -1400,7 +1401,7 @@ def color_gradient(
         Ignored when number_of_colors_provided > 1.
     blend_variation
         This also is required only when number_of_colors_provided = 1.
-        This is required to tell how much variation in brightness is required.        
+        This is required to tell how much variation in brightness is required.
         When blend_variation = 0, all returned colors are of same brightness.
         Ignored when number_of_colors_provided > 1.
 
@@ -1411,25 +1412,25 @@ def color_gradient(
     """
     if number_of_colors_required == 0:
         return []
-    
+
     parsed_colors = [ManimColor(color) for color in colors_provided]
     number_of_colors_provided = len(parsed_colors)
 
     if number_of_colors_provided == 0:
         raise ValueError("Expected 1 or more reference colors. Got 0 colors.")
-    
+
     if number_of_colors_provided == 1:
         color = parsed_colors[0]
 
         if number_of_colors_required == 1:
             return [color]
-        
+
         transition_method = getattr(color, transition_mode)
         return [
-            transition_method((i/(number_of_colors_required - 1))*blend_variation)
+            transition_method((i / (number_of_colors_required - 1)) * blend_variation)
             for i in range(number_of_colors_required)
         ]
-    
+
     rgbs = [color.to_rgb() for color in parsed_colors]
     alphas = np.linspace(0, (number_of_colors_provided - 1), number_of_colors_required)
     floors = alphas.astype("int")
