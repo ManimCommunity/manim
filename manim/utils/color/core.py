@@ -1384,7 +1384,7 @@ def color_gradient(
     colors_provided: Iterable[ParsableManimColor],
     number_of_colors_required: int,
     transition_mode: Literal["darker", "lighter"]= "lighter",
-    blend_variation: float = 0.5
+    blend_variation: float = 0.0
 ) -> list[ManimColor]:
     """Create a list of colors interpolated between the input array of colors with a
     specific number of colors.
