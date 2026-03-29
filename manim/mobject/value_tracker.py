@@ -362,7 +362,7 @@ class ThreeDValueTracker(ValueTracker):
             self.wait(2)
             s.add_updater(lambda m: m.move_to(axes.c2p(position.get_value())))
             self.play(position.animate(run_time = 2).set_value([0,3,4]))
-            self.wait()                    
+            self.wait()
             self.play(position.animate(run_time = 2).set_value([-2,0,-4]))
             self.wait()
             self.play(position.animate(run_time = 2).set_value([2,0,0]))

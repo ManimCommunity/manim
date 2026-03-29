@@ -1890,8 +1890,12 @@ class Mobject:
         """Set z value of the center of the :class:`~.Mobject` (``int`` or ``float``)"""
         return self.set_coord(z, 2, direction)
 
-    def space_out(self, factor: float = 2.5, direction: np.ndarray = RIGHT, **kwargs: Any) -> Self:
-        mobject_centre = self.get_center() # store the coordinate of centre of the Mobject
+    def space_out(
+        self, factor: float = 2.5, direction: np.ndarray = RIGHT, **kwargs: Any
+    ) -> Self:
+        mobject_centre = (
+            self.get_center()
+        )  # store the coordinate of centre of the Mobject
 
         actual_submobjects = [
             submobject
@@ -1950,13 +1954,13 @@ class Mobject:
     ) -> Self:
         """Deprecated: use match_size_and_position_to() instead."""
         import warnings
+
         warnings.warn(
             "replace() is deprecated, use match_size_and_position_to() instead.",
             DeprecationWarning,
-            stacklevel = 2,
+            stacklevel=2,
         )
         return self.match_size_and_position_to(mobject, dim_to_match, stretch)
-
 
     def surround(
         self,
@@ -1983,7 +1987,7 @@ class Mobject:
             )
             self.shift(np.asarray(start) - current_start)
             return self
-            
+
         target_vector = np.asarray(end) - np.asarray(start)
         axis = (
             normalize(np.cross(current_vector, target_vector))
@@ -2069,7 +2073,7 @@ class Mobject:
         """
         Sets color of the mobject,
         and as long as family is set to True, the submobjects are also coloured in same color.
-        alpha was introduced in PR 4388, but hasn't been used. Maybe, it was mistakenly introduced in that PR. 
+        alpha was introduced in PR 4388, but hasn't been used. Maybe, it was mistakenly introduced in that PR.
         """
         if family:
             for submob in self.submobjects:
