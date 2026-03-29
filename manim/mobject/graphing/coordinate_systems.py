@@ -1298,7 +1298,7 @@ class CoordinateSystem:
         else:
             color = [ManimColor(color)]
 
-        colors = color_gradient(color, len(x_range_array), blend_variation = 0.0)
+        colors = color_gradient(color, len(x_range_array), blend_variation=0.0)
 
         for x, color in zip(x_range_array, colors, strict=True):
             if input_sample_type == "left":
