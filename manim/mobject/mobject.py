@@ -2087,12 +2087,32 @@ class Mobject:
     def set_submobject_colors_by_radial_gradient(
         self,
         center: Point3DLike | None = None,
-        radius: float = 1,
+        radius: float | None = None,
         inner_color: ParsableManimColor = WHITE,
         outer_color: ParsableManimColor = BLACK,
     ) -> Self:
+        """
+        Sets the color of each submobject according to its distance from the given point: center,
+        interpolating between ``inner_color`` at the center and ``outer_color`` at
+        the boundary defined by ``radius``.
+
+        Parameters
+        ----------
+        center
+            The center point of the gradient. Defaults to the center of the mobject.
+        radius
+            The radius at which ``outer_color`` is reached. Defaults to the distance
+            from the center to the corner of the bounding box, including all submobjects.
+        inner_color
+            The color at the center of the gradient.
+        outer_color
+            The color at the outer boundary of the gradient. 
+        """
         if center is None:
             center = self.get_center()
+
+        if radius is None: 
+            radius = np.linalg.norm(self.get_corner(UR) - self.get_center())
 
         for mob in self.family_members_with_points():
             t = np.linalg.norm(mob.get_center() - center) / radius
