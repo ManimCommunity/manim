@@ -2128,6 +2128,11 @@ class Mobject:
                 for mob in self.family_members_with_points()
             )
 
+        if inner_radius > outer_radius:
+            raise ValueError(
+                f"inner_radius ({inner_radius}) should be less than outer_radius ({outer_radius})"
+            )
+
         if np.isclose(inner_radius, outer_radius):
             return self
 
