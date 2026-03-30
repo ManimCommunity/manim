@@ -2218,6 +2218,7 @@ class Mobject:
         return self.get_all_points()
 
     def get_num_points(self) -> int:
+        """Returns the number of points which make up only the mobject, but not it's submobject."""
         return len(self.points)
 
     def get_extremum_along_dim(
