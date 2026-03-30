@@ -2066,7 +2066,7 @@ class Mobject:
     ) -> Self:
         """
         Sets the color of each submobject according to its distance from the given point: center,
-        interpolating between ``inner_color`` (which starts from ``inner_radius``), 
+        interpolating between ``inner_color`` (which starts from ``inner_radius``),
         and ``outer_color`` which is at the boundary defined by ``outer_radius``.
 
         Parameters
@@ -2081,7 +2081,7 @@ class Mobject:
         inner_color
             The color at the inner boundary of the gradient.
         outer_color
-            The color at the outer boundary of the gradient. 
+            The color at the outer boundary of the gradient.
         """
         self.set_submobject_colors_by_radial_gradient(
             center,
@@ -2140,9 +2140,11 @@ class Mobject:
             distance = np.linalg.norm(mob.get_center() - center)
             if distance < inner_radius and not np.isclose(distance, inner_radius):
                 continue
-            t = (distance - inner_radius) / (outer_radius - inner_radius)        
-            mob_color = interpolate_color(ManimColor(inner_color), ManimColor(outer_color), t)
-            mob.set_color(mob_color, family = False)
+            t = (distance - inner_radius) / (outer_radius - inner_radius)
+            mob_color = interpolate_color(
+                ManimColor(inner_color), ManimColor(outer_color), t
+            )
+            mob.set_color(mob_color, family=False)
 
         return self
 
