@@ -2113,9 +2113,8 @@ class Mobject:
         inner_color: ParsableManimColor = WHITE,
         outer_color: ParsableManimColor = BLACK,
     ) -> Self:
-        """
-        See :meth: `set_colors_by_radial_gradient`.
-        """
+        """See :meth:`set_colors_by_radial_gradient`."""
+        
         if center is None:
             center = self.get_center()
 
