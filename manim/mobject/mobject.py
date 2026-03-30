@@ -2138,6 +2138,8 @@ class Mobject:
             distance = np.linalg.norm(mob.get_center() - center)
             if distance < inner_radius and not np.isclose(distance, inner_radius):
                 continue
+            if distance > outer_radius and not np.isclose(distance, outer_radius):
+                continue
             t = (distance - inner_radius) / (outer_radius - inner_radius)
             mob_color = interpolate_color(
                 ManimColor(inner_color), ManimColor(outer_color), t
