@@ -17,6 +17,7 @@ from manim.mobject.geometry.shape_matchers import (
 )
 from manim.mobject.text.tex_mobject import MathTex, Tex
 from manim.mobject.text.text_mobject import Text
+from manim.mobject.text.typst_mobject import TypstMath, Typst
 from manim.mobject.types.vectorized_mobject import VGroup
 from manim.utils.color import WHITE
 from manim.utils.polylabel import polylabel
@@ -97,10 +98,10 @@ class Label(VGroup):
         self.rendered_label: MathTex | Tex | Text
         if isinstance(label, str):
             self.rendered_label = MathTex(label, **label_config)
-        elif isinstance(label, (MathTex, Tex, Text)):
+        elif isinstance(label, (MathTex, Tex, Text, Typst, TypstMath)):
             self.rendered_label = label
         else:
-            raise TypeError("Unsupported label type. Must be MathTex, Tex, or Text.")
+            raise TypeError("Unsupported label type. Must be MathTex, Tex, Text, Typst, or TypstMath.")
 
         # Add a background box
         self.background_rect = BackgroundRectangle(self.rendered_label, **box_config)

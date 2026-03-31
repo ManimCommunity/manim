@@ -329,16 +329,15 @@ class VectorScene(Scene):
         MathTex
             The MathTex of the label.
         """
-        if not isinstance(label, MathTex):
+        if isinstance(label, (str, int)):
             if len(label) == 1:
-                label = "\\vec{\\textbf{%s}}" % label  # noqa: UP031
+                label = rf"\vec{{\textbf{{{label}}}}}"
             label = MathTex(label)
             if color is None:
                 prepared_color: ParsableManimColor = vector.get_color()
             else:
                 prepared_color = color
             label.set_color(prepared_color)
-        assert isinstance(label, MathTex)
         label.scale(label_scale_factor)
         label.add_background_rectangle()
 
