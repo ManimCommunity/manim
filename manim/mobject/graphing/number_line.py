@@ -615,7 +615,6 @@ class NumberLine(Line):
                 label = self._create_label_tex(label, label_constructor)
 
             if hasattr(label, "font_size"):
-                assert isinstance(label, (MathTex, Tex, Text, Integer)), label
                 label.font_size = font_size
             else:
                 raise AttributeError(f"{label} is not compatible with add_labels.")
