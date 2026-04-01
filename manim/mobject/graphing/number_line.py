@@ -609,7 +609,7 @@ class NumberLine(Line):
             # TODO: remove this check and ability to call
             # this method via CoordinateSystem.add_coordinates()
             # must be explicitly called
-            if isinstance(label, str)
+            if isinstance(label, str):
                 if label_constructor is MathTex:
                     label = Tex(label)
                 elif label_constructor is TypstMath:
