@@ -2236,12 +2236,12 @@ class Mobject:
             return rv
 
     def get_critical_point(self, direction: Vector3DLike) -> Point3D:
-        """Picture a box bounding the :class:`~.Mobject`.  
+        """Picture a box bounding the :class:`~.Mobject`.
         In 2D such a bounding box has 9 critical points:
-            4 corners, 
-            4 edge centers, 
-            1 center point. 
-        
+            4 corners,
+            4 edge centers,
+            1 center point.
+
             This method returns one of them, along the given direction.
 
             2D Example::
@@ -2254,14 +2254,14 @@ class Mobject:
                 max_y_3 = sample.get_extremum_along_dim(dim=1, key=1)
 
                 # Corners: (±1, ±1, 0). Get the 4 corners of the bounding box
-                top_right_corner = sample.get_critical_point(UR)    # [1, 1, 0]
-                top_left_corner  = sample.get_critical_point(UL)    # [-1, 1, 0]
-                bot_right_corner = sample.get_critical_point(DR)    # [1, -1, 0]
-                bot_left_corner  = sample.get_critical_point(DL)    # [-1, -1, 0]
-                
+                top_right_corner = sample.get_critical_point(UR)  # [1, 1, 0]
+                top_left_corner = sample.get_critical_point(UL)  # [-1, 1, 0]
+                bot_right_corner = sample.get_critical_point(DR)  # [1, -1, 0]
+                bot_left_corner = sample.get_critical_point(DL)  # [-1, -1, 0]
+
                 # Edge centers: (±1, 0, 0), (0, ±1, 0)
                 sample.get_critical_point(RIGHT)  # [1, 0, 0]
-                sample.get_critical_point(UP)     # [0, 1, 0]
+                sample.get_critical_point(UP)  # [0, 1, 0]
 
                 # Center
                 sample.get_critical_point(ORIGIN)  # [0, 0, 0]
@@ -2274,32 +2274,32 @@ class Mobject:
             1 center point: ORIGIN = [0, 0, 0]
 
             This same method returns one of these 27 points along the given direction.
-            
+
             3D Example::
 
                 sample = Sphere()
 
                 # Face centers — 6 points (exactly one non-zero component)
                 # (±1, 0, 0), (0, ±1, 0), (0, 0, ±1)
-                sample.get_critical_point(RIGHT)   # [1, 0, 0]
-                sample.get_critical_point(UP)      # [0, 1, 0]
-                sample.get_critical_point(OUT)     # [0, 0, 1]
+                sample.get_critical_point(RIGHT)  # [1, 0, 0]
+                sample.get_critical_point(UP)  # [0, 1, 0]
+                sample.get_critical_point(OUT)  # [0, 0, 1]
                 # and their opposites: LEFT, DOWN, IN
 
                 # Edge centers — 12 points (exactly two non-zero components)
                 # (±1, ±1, 0), (±1, 0, ±1), (0, ±1, ±1)
-                sample.get_critical_point(UP + RIGHT)    # [1, 1, 0]
-                sample.get_critical_point(UP + OUT)      # [0, 1, 1]
-                sample.get_critical_point(RIGHT + OUT)   # [1, 0, 1]
+                sample.get_critical_point(UP + RIGHT)  # [1, 1, 0]
+                sample.get_critical_point(UP + OUT)  # [0, 1, 1]
+                sample.get_critical_point(RIGHT + OUT)  # [1, 0, 1]
                 # and their sign variations
 
                 # Corners — 8 points (all three components non-zero)
                 # (±1, ±1, ±1)
-                sample.get_critical_point(UP + RIGHT + OUT)   # [1, 1, 1]
+                sample.get_critical_point(UP + RIGHT + OUT)  # [1, 1, 1]
                 # and remaining 7 sign combinations
 
                 # Center — 1 point
-                sample.get_critical_point(ORIGIN)             # [0, 0, 0]
+                sample.get_critical_point(ORIGIN)  # [0, 0, 0]
 
         """
         result = np.zeros(self.dim)
@@ -2342,7 +2342,7 @@ class Mobject:
         """
         It returns: np.array([average of all the x coordinates, average of all the y coordinates, average of all the z coordinates])
         """
-        return self.get_all_points().mean(axis = 0)
+        return self.get_all_points().mean(axis=0)
 
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
         """
@@ -2400,7 +2400,7 @@ class Mobject:
         return self.get_edge_center(LEFT)
 
     def get_zenith(self) -> Point3D:
-        """ In 3D, zenith is the furthest point in the direction towards the positive z axis, which is 
+        """In 3D, zenith is the furthest point in the direction towards the positive z axis, which is
         towards the viewer/out of the screen.
         This method returns the furthest point i.e. the zenith of the bounding box of the 3D :class:`~.Mobject`.
         OUT = [0, 0, 1]
@@ -2408,7 +2408,7 @@ class Mobject:
         return self.get_edge_center(OUT)
 
     def get_nadir(self) -> Point3D:
-        """ In 3D, nadir is the furthest point in the direction towards the negative z axis, which is 
+        """In 3D, nadir is the furthest point in the direction towards the negative z axis, which is
         away from the viewer/into the screen.
         This method returns the furthest point i.e. the nadir
           of the bounding box of the 3D :class:`~.Mobject`.
@@ -2505,7 +2505,7 @@ class Mobject:
 
     def match_height(self, mobject: Mobject, **kwargs: Any) -> Self:
         """Matches the height with the height of another :class:`~.Mobject`.
-        
+
         By default, this is done via uniform scaling, preserving aspect ratio.
         If only the height needs to be matched (without affecting other dimensions),
         pass ``stretch=True``.
@@ -2514,7 +2514,7 @@ class Mobject:
 
     def match_depth(self, mobject: Mobject, **kwargs: Any) -> Self:
         """Matches the depth with the depth of another :class:`~.Mobject`.
-        
+
         By default, this is done via uniform scaling, preserving aspect ratio.
         If only the depth needs to be matched (without affecting other dimensions),
         pass ``stretch=True``.
@@ -2549,16 +2549,16 @@ class Mobject:
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
         """Aligns mobject to the critical_point of another :class:`~.Mobject` in the given direction.
-        or to the point, if mobject_or_point is a Point3DLike. 
-        
+        or to the point, if mobject_or_point is a Point3DLike.
+
         Parameter:
         mobject_or_point is the target :class:`~.Mobject`.
         direction is w.r.t the target mobject's center, when mobject_or_point is a :class:`~.Mobject`.
-        
-        
+
+
         Examples:
         mob1.align_to(mob2, UP) moves mob1 vertically so that mob1's
-        top edge alignes with mob2's top edge. The direction given here is UP, 
+        top edge alignes with mob2's top edge. The direction given here is UP,
         which is w.r.t mob2's center, i.e. UP is mob2's bounding box's top edge_center.
         """
         if isinstance(mobject_or_point, Mobject):
