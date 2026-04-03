@@ -2339,14 +2339,15 @@ class Mobject:
         return self.get_critical_point(ORIGIN)
 
     def get_center_of_mass(self) -> Point3D:
-        """
+        """Returns the mean position across all points.
+        
         It returns: np.array([average of all the x coordinates, average of all the y coordinates, average of all the z coordinates])
         """
         return self.get_all_points().mean(axis = 0)
 
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
         """
-        Returns the point furthest in the given direction among all points making the mobject and it's submobjects.
+        Returns the point furthest in the given direction among all points making the mobject and its submobjects.
         """
         all_points = self.get_points_defining_boundary()
         index = np.argmax(np.dot(all_points, direction))
@@ -2558,7 +2559,7 @@ class Mobject:
         
         Examples:
         mob1.align_to(mob2, UP) moves mob1 vertically so that mob1's
-        top edge alignes with mob2's top edge. The direction given here is UP, 
+        top edge aligns with mob2's top edge. The direction given here is UP, 
         which is w.r.t mob2's center, i.e. UP is mob2's bounding box's top edge_center.
         """
         if isinstance(mobject_or_point, Mobject):
