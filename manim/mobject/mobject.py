@@ -2346,7 +2346,8 @@ class Mobject:
         return self.get_all_points().mean(axis=0)
 
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
-        """
+        """Returns the point furthest in the given direction.
+        
         Returns the point furthest in the given direction among all points making the mobject and its submobjects.
         """
         all_points = self.get_points_defining_boundary()
