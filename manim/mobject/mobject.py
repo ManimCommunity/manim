@@ -2340,7 +2340,7 @@ class Mobject:
 
     def get_center_of_mass(self) -> Point3D:
         """Returns the mean position across all points.
-        
+
         It returns: np.array([average of all the x coordinates, average of all the y coordinates, average of all the z coordinates])
         """
         return self.get_all_points().mean(axis=0)
@@ -2559,7 +2559,7 @@ class Mobject:
 
         Examples:
         mob1.align_to(mob2, UP) moves mob1 vertically so that mob1's
-        top edge aligns with mob2's top edge. The direction given here is UP, 
+        top edge aligns with mob2's top edge. The direction given here is UP,
         which is w.r.t mob2's center, i.e. UP is mob2's bounding box's top edge_center.
         """
         if isinstance(mobject_or_point, Mobject):
