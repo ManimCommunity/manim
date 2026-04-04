@@ -56,7 +56,6 @@ if TYPE_CHECKING:
         CubicBezierPath,
         CubicBezierPointsLike,
         CubicSpline,
-        FloatRGBA,
         FloatRGBA_Array,
         ManimFloat,
         MappingFunction,
@@ -225,15 +224,15 @@ class VMobject(Mobject):
         color: ParsableManimColor | Iterable[ManimColor] | None,
         opacity: float | Iterable[float],
     ) -> FloatRGBA_Array:
-        """ Returns a 2D array of shape (N,4) where N is the number of colors in the list 
+        """Returns a 2D array of shape (N,4) where N is the number of colors in the list
         that has been provided to this method as argument. Works even for a single color.
-        
+
         Parameters
         ----------
             color: Can be a single color, or a tuple/list of colors, or any of the ParsableManimColor.
-        
+
             opacity: Can either be a float, or a tuple/list or any iterable of floats.
-        
+
         Notes
         -----
         If :attr:`sheen_factor` is not zero, and only one color is passed in,
@@ -248,12 +247,15 @@ class VMobject(Mobject):
             ManimColor(c) if (c is not None) else BLACK for c in tuplify(color)
         ]
         opacities: list[float] = [
-            opacity_value if (opacity_value is not None) else 0.0 for opacity_value in tuplify(opacity)
+            opacity_value if (opacity_value is not None) else 0.0
+            for opacity_value in tuplify(opacity)
         ]
         rgbas: FloatRGBA_Array = np.array(
             [
                 color.to_rgba_with_alpha(opacity_value)
-                for color, opacity_value in zip(*make_even(colors, opacities), strict=True)
+                for color, opacity_value in zip(
+                    *make_even(colors, opacities), strict=True
+                )
             ],
         )
 
