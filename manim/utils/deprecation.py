@@ -407,9 +407,11 @@ def deprecated_params(
 
         @deprecated_params(
             redirections=[
-                lambda buff=1: {"buff_x": buff[0], "buff_y": buff[1]}
-                if isinstance(buff, tuple)
-                else {"buff_x": buff, "buff_y": buff}
+                lambda buff=1: (
+                    {"buff_x": buff[0], "buff_y": buff[1]}
+                    if isinstance(buff, tuple)
+                    else {"buff_x": buff, "buff_y": buff}
+                )
             ]
         )
         def foo(**kwargs):
