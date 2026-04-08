@@ -8,14 +8,14 @@ from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 __all__ = ["NumberLine", "UnitInterval"]
 
 
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import Any, Self
 
     from manim.mobject.geometry.tips import ArrowTip
-    from manim.typing import Point3D, Point3DLike, Vector3D
+    from manim.typing import ManimTextLabel, Point3D, Point3DLike, Vector3D
 
 import numpy as np
 
@@ -161,7 +161,7 @@ class NumberLine(Line):
         include_numbers: bool = False,
         font_size: float = 36,
         label_direction: Point3DLike = DOWN,
-        label_constructor: type[MathTex] = MathTex,
+        label_constructor: type[ManimTextLabel] = MathTex,
         scaling: _ScaleBase = LinearBase(),
         line_to_number_buff: float = MED_SMALL_BUFF,
         decimal_number_config: dict | None = None,
@@ -450,7 +450,7 @@ class NumberLine(Line):
         direction: Vector3D | None = None,
         buff: float | None = None,
         font_size: float | None = None,
-        label_constructor: type[MathTex] | None = None,
+        label_constructor: type[ManimTextLabel] | None = None,
         **number_config: dict[str, Any],
     ) -> VMobject:
         """Generates a positioned :class:`~.DecimalNumber` mobject
@@ -515,7 +515,7 @@ class NumberLine(Line):
         x_values: Iterable[float] | None = None,
         excluding: Iterable[float] | None = None,
         font_size: float | None = None,
-        label_constructor: type[MathTex] | None = None,
+        label_constructor: type[ManimTextLabel] | None = None,
         **kwargs: Any,
     ) -> Self:
         """Adds :class:`~.DecimalNumber` mobjects representing their position
@@ -571,7 +571,7 @@ class NumberLine(Line):
         direction: Point3DLike | None = None,
         buff: float | None = None,
         font_size: float | None = None,
-        label_constructor: Callable[..., VMobject] | None = None,
+        label_constructor: type[ManimTextLabel] | None = None,
     ) -> Self:
         """Adds specifically positioned labels to the :class:`~.NumberLine` using a ``dict``.
         The labels can be accessed after creation via ``self.labels``.
@@ -633,7 +633,7 @@ class NumberLine(Line):
     def _create_label_tex(
         self,
         label_tex: str | float | VMobject,
-        label_constructor: Callable[..., VMobject] | None = None,
+        label_constructor: type[ManimTextLabel] | None = None,
         **kwargs: Any,
     ) -> VMobject:
         """Checks if the label is a :class:`~.VMobject`, otherwise, creates a
