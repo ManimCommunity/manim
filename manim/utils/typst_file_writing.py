@@ -15,7 +15,9 @@ from manim import config, logger
 
 __all__ = ["typst_to_svg_file"]
 
-TYPST_COMPILATION_FONT_SIZE = 11  # pt — Typst's default
+# Use 10pt instead of Typst's 11pt default so that the post-import scaling
+# based on Manim's font_size property matches TeX / MathTex more closely.
+TYPST_COMPILATION_FONT_SIZE = 10  # pt
 
 TYPST_TEMPLATE = """\
 #set page(width: auto, height: auto, margin: 0pt, fill: none)
@@ -67,11 +69,11 @@ def typst_to_svg_file(
     """
     try:
         import typst as typst_compiler
-    except ImportError:
+    except ImportError as err:
         raise ImportError(
             "TypstMobject requires the 'typst' Python package. "
             "Install it with:  pip install typst>=0.14"
-        )
+        ) from err
 
     full_source = TYPST_TEMPLATE.format(
         text_size=text_size,

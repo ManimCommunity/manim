@@ -6,7 +6,9 @@ import pytest
 from manim import (
     RIGHT,
     Label,
+    MathTex,
     NumberLine,
+    Tex,
     Typst,
     TypstMath,
     Vector,
@@ -94,6 +96,22 @@ def test_typst_preserves_svg_stroke_widths_by_default(config):
     """Default stroke_width=None preserves Typst-authored SVG strokes."""
     m = Typst("#underline[abc]", use_svg_cache=False)
     assert any(submobject.stroke_width > 0 for submobject in m.submobjects)
+
+
+def test_typst_text_font_size_matches_tex_closely(config):
+    """Typst text is calibrated close to Tex for the same font_size."""
+    tex = Tex("Hello", font_size=48)
+    typst = Typst("Hello", font_size=48, use_svg_cache=False)
+    assert np.isclose(typst.height, tex.height, rtol=0.02)
+    assert np.isclose(typst.width, tex.width, rtol=0.02)
+
+
+def test_typstmath_font_size_matches_mathtex_closely(config):
+    """Typst math is calibrated close to MathTex for the same font_size."""
+    mathtex = MathTex(r"\frac{a}{b}", font_size=48)
+    typstmath = TypstMath("frac(a,b)", font_size=48, use_svg_cache=False)
+    assert np.isclose(typstmath.height, mathtex.height, rtol=0.02)
+    assert np.isclose(typstmath.width, mathtex.width, rtol=0.02)
 
 
 # -- data-typst-label → id mapping tests ------------------------------------
