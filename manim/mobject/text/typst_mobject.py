@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import Any
 from xml.etree import ElementTree as ET
 
-from manim import config, logger
+from manim import config
 from manim.constants import DEFAULT_FONT_SIZE, SCALE_FACTOR_PER_FONT_POINT, RendererType
 from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
@@ -57,7 +57,8 @@ class Typst(SVGMobject):
         The color of the mobject. By default the standard VMobject color
         (white in dark mode). Overrides the Typst text fill color.
     stroke_width
-        SVG stroke width (default 0, matching :class:`~.MathTex` behavior).
+        SVG stroke width override. If ``None`` (default), the stroke widths
+        from Typst's SVG output are preserved.
     font_paths
         Optional list of additional font directories passed to the Typst
         compiler (e.g. for custom fonts not installed system-wide).
@@ -94,7 +95,7 @@ class Typst(SVGMobject):
         font_size: float = DEFAULT_FONT_SIZE,
         typst_preamble: str = "",
         color: ParsableManimColor | None = None,
-        stroke_width: float = 0,
+        stroke_width: float | None = None,
         font_paths: list[str | Path] | None = None,
         should_center: bool = True,
         height: float | None = None,

@@ -90,6 +90,12 @@ def test_typst_text_rendering(config):
     assert len(m.submobjects) > 0
 
 
+def test_typst_preserves_svg_stroke_widths_by_default(config):
+    """Default stroke_width=None preserves Typst-authored SVG strokes."""
+    m = Typst("#underline[abc]", use_svg_cache=False)
+    assert any(submobject.stroke_width > 0 for submobject in m.submobjects)
+
+
 # -- data-typst-label → id mapping tests ------------------------------------
 
 MANIMGRP_PREAMBLE = '#let manimgrp(lbl, body) = [#box(body) #label(lbl)]'
