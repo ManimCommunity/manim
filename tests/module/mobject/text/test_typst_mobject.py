@@ -1,11 +1,17 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 import numpy as np
 import pytest
 
-from manim import Typst, TypstMath, tempconfig
+from manim import (
+    RIGHT,
+    Label,
+    NumberLine,
+    Typst,
+    TypstMath,
+    Vector,
+    VectorScene,
+)
 
 
 def test_Typst(config):
@@ -215,3 +221,31 @@ def test_typstmath_preprocessor_skips_content_blocks():
     )
     assert labels == ["_grp-0"]
     assert processed.count("manimgrp") == 1
+
+
+# -- integration tests for existing APIs ------------------------------------
+
+
+def test_label_accepts_typst(config):
+    """Label accepts a prebuilt Typst mobject."""
+    rendered = Typst("hello", use_svg_cache=False)
+    label = Label(rendered)
+    assert label.rendered_label is rendered
+
+
+def test_numberline_add_labels_with_typstmath_constructor_uses_typst(config):
+    """String labels use Typst text mode when label_constructor is TypstMath."""
+    number_line = NumberLine(x_range=[-1, 1])
+    number_line.add_labels({0: "origin"}, label_constructor=TypstMath)
+    assert len(number_line.labels) == 1
+    assert isinstance(number_line.labels[0], Typst)
+    assert not isinstance(number_line.labels[0], TypstMath)
+
+
+def test_vector_scene_get_vector_label_accepts_typst(config):
+    """VectorScene accepts a prebuilt Typst label mobject."""
+    scene = VectorScene()
+    vector = Vector(RIGHT)
+    label = Typst("v", use_svg_cache=False)
+    returned = scene.get_vector_label(vector, label)
+    assert returned is label

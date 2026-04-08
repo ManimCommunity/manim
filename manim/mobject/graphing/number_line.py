@@ -571,7 +571,7 @@ class NumberLine(Line):
         direction: Point3DLike | None = None,
         buff: float | None = None,
         font_size: float | None = None,
-        label_constructor: type[MathTex] | None = None,
+        label_constructor: Callable[..., VMobject] | None = None,
     ) -> Self:
         """Adds specifically positioned labels to the :class:`~.NumberLine` using a ``dict``.
         The labels can be accessed after creation via ``self.labels``.
@@ -616,6 +616,8 @@ class NumberLine(Line):
                     label = Typst(label)
                 else:
                     label = self._create_label_tex(label, label_constructor)
+            else:
+                label = self._create_label_tex(label, label_constructor)
 
             if hasattr(label, "font_size"):
                 label.font_size = font_size
@@ -631,7 +633,7 @@ class NumberLine(Line):
     def _create_label_tex(
         self,
         label_tex: str | float | VMobject,
-        label_constructor: Callable | None = None,
+        label_constructor: Callable[..., VMobject] | None = None,
         **kwargs: Any,
     ) -> VMobject:
         """Checks if the label is a :class:`~.VMobject`, otherwise, creates a

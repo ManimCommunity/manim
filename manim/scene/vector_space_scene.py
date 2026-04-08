@@ -17,6 +17,7 @@ from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.graphing.coordinate_systems import Axes, NumberPlane
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.text.tex_mobject import MathTex, Tex
+from manim.mobject.text.typst_mobject import Typst, TypstMath
 from manim.utils.config_ops import update_dict_recursively
 
 from .. import config
@@ -297,13 +298,13 @@ class VectorScene(Scene):
     def get_vector_label(
         self,
         vector: Vector,
-        label: MathTex | str,
+        label: MathTex | Typst | TypstMath | str,
         at_tip: bool = False,
         direction: str = "left",
         rotate: bool = False,
         color: ParsableManimColor | None = None,
         label_scale_factor: float = LARGE_BUFF - 0.2,
-    ) -> MathTex:
+    ) -> MathTex | Typst | TypstMath:
         """
         Returns naming labels for the passed vector.
 
@@ -326,10 +327,10 @@ class VectorScene(Scene):
 
         Returns
         -------
-        MathTex
-            The MathTex of the label.
+        :class:`~.MathTex` | :class:`~.Typst` | :class:`~.TypstMath`
+            The rendered label mobject.
         """
-        if isinstance(label, (str, int)):
+        if isinstance(label, str):
             if len(label) == 1:
                 label = rf"\vec{{\textbf{{{label}}}}}"
             label = MathTex(label)
