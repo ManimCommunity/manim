@@ -2,10 +2,11 @@
 Rendering Text and Formulas
 ###########################
 
-There are two different ways by which you can render **Text** in videos:
+There are three different ways by which you can render **Text** in videos:
 
 1. Using Pango (:mod:`~.text_mobject`)
 2. Using LaTeX (:mod:`~.tex_mobject`)
+3. Using Typst (:mod:`~.typst_mobject`)
 
 If you want to render simple text, you should use either :class:`~.Text` or
 :class:`~.MarkupText`, or one of its derivatives like :class:`~.Paragraph`.
@@ -13,6 +14,11 @@ See :ref:`using-text-objects` for more information.
 
 LaTeX should be used when you need mathematical typesetting. See
 :ref:`rendering-with-latex` for more information.
+
+Typst support is available via :class:`~.Typst` and
+:class:`~.TypstMath`. It offers both general markup and mathematical
+typesetting through the Typst compiler without requiring a TeX
+distribution. See :ref:`typst-mobjects` for more information.
 
 .. _using-text-objects:
 

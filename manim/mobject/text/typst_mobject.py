@@ -1,11 +1,98 @@
 """Mobjects representing text rendered using Typst.
 
+.. _typst-mobjects:
+
 .. important::
 
    The ``typst`` Python package must be installed to use these classes.
    Install it via ``pip install typst>=0.14`` or add the ``typst`` optional
    dependency group (``pip install manim[typst]``).
 
+Typst mobjects compile Typst markup directly to SVG using the ``typst``
+Python package and then import the result through :class:`~.SVGMobject`.
+Use :class:`~.Typst` for general Typst markup and :class:`~.TypstMath`
+for display-style math.
+
+Examples
+--------
+
+Basic text and math
+^^^^^^^^^^^^^^^^^^^
+
+.. manim:: TypstTextReferenceExample
+    :save_last_frame:
+    :ref_classes: Typst
+
+    class TypstTextReferenceExample(Scene):
+        def construct(self):
+            text = Typst(
+                r"*Hello* from _Typst!_",
+                color=YELLOW,
+                font_size=72,
+            )
+            self.add(text)
+
+.. manim:: TypstMathReferenceExample
+    :save_last_frame:
+    :ref_classes: TypstMath
+
+    class TypstMathReferenceExample(Scene):
+        def construct(self):
+            equation = TypstMath(
+                r"sum_(k=1)^n k = (n(n + 1)) / 2",
+                font_size=72,
+            )
+            self.add(equation)
+
+Selecting subexpressions
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Typst mobjects expose label-based selection via :meth:`~.Typst.select`.
+There are two common ways to create selectable groups:
+
+- use ordinary Typst labels in :class:`~.Typst`
+- use Manim's ``{{ ... }}`` shorthand in :class:`~.TypstMath`
+
+.. note::
+
+   The ``{{ ... }}`` shorthand is currently only supported by
+   :class:`~.TypstMath`. For :class:`~.Typst`, create labels directly in the
+   Typst source, for example with ``#box[body] <label>``.
+
+.. manim:: TypstLabelSelectionExample
+    :save_last_frame:
+    :ref_classes: Typst
+
+    class TypstLabelSelectionExample(Scene):
+        def construct(self):
+            text = Typst(
+                r'''
+                #box[
+                    *Typst* labels also work in regular markup.
+                ] <headline>
+
+                #let pick(body) = [#box(body) <picked>]
+                We can s#pick[ele]ct #pick[multiple] fragment#pick[s].
+                ''',
+                font_size=42,
+            )
+            text.select("headline").set_color(BLUE)
+            text.select("picked").set_color(YELLOW)
+            self.add(text)
+
+.. manim:: TypstMathSelectionExample
+    :save_last_frame:
+    :ref_classes: TypstMath
+
+    class TypstMathSelectionExample(Scene):
+        def construct(self):
+            equation = TypstMath(
+                "{{ a + b : lhs }} = {{ c }}",
+                font_size=72,
+            )
+            equation.select("lhs").set_color(BLUE)
+            equation.select(0).set_color(YELLOW)
+            self.add(equation)
 """
 
 from __future__ import annotations
