@@ -137,7 +137,7 @@ def test_typstmath_font_size_matches_mathtex_closely(config):
 
 # -- data-typst-label → id mapping tests ------------------------------------
 
-MANIMGRP_PREAMBLE = '#let manimgrp(lbl, body) = [#box(body) #label(lbl)]'
+MANIMGRP_PREAMBLE = "#let manimgrp(lbl, body) = [#box(body) #label(lbl)]"
 
 
 def test_typst_labels_mapped_to_vgroups(config):
@@ -246,9 +246,7 @@ def test_typstmath_double_brace_auto_numbered(config):
 
 def test_typstmath_double_brace_named(config):
     """{{ content : label }} assigns an explicit label."""
-    eq = TypstMath(
-        "{{ a + b : numer }} / {{ c - d : denom }}", use_svg_cache=False
-    )
+    eq = TypstMath("{{ a + b : numer }} / {{ c - d : denom }}", use_svg_cache=False)
     assert "numer" in eq._group_labels
     assert "denom" in eq._group_labels
     assert len(eq.select("numer")) == 3
@@ -257,9 +255,7 @@ def test_typstmath_double_brace_named(config):
 
 def test_typstmath_double_brace_mixed_named_auto(config):
     """Named and auto-numbered groups can coexist."""
-    eq = TypstMath(
-        "{{ a : lhs }} = {{ b }}", use_svg_cache=False
-    )
+    eq = TypstMath("{{ a : lhs }} = {{ b }}", use_svg_cache=False)
     assert eq._group_labels == ["lhs", "_grp-0"]
     assert len(eq.select("lhs")) == 1
     assert len(eq.select(0)) == 1
@@ -281,18 +277,14 @@ def test_typstmath_select_index_error(config):
 
 def test_typstmath_preprocessor_skips_strings():
     """{{ }} inside string literals are not processed."""
-    processed, labels = TypstMath._preprocess_groups(
-        'x =_("{{ not a group }}") z'
-    )
+    processed, labels = TypstMath._preprocess_groups('x =_("{{ not a group }}") z')
     assert labels == []
     assert "manimgrp" not in processed
 
 
 def test_typstmath_preprocessor_skips_content_blocks():
     """{{ }} inside [...] content blocks are not processed."""
-    processed, labels = TypstMath._preprocess_groups(
-        "[text {{ here }}] {{ real }}"
-    )
+    processed, labels = TypstMath._preprocess_groups("[text {{ here }}] {{ real }}")
     assert labels == ["_grp-0"]
     assert processed.count("manimgrp") == 1
 

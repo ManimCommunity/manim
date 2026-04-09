@@ -135,11 +135,11 @@ from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import BLACK, ParsableManimColor
 from manim.utils.typst_file_writing import typst_to_svg_file
 
-_MANIMGRP_PREAMBLE = '#let manimgrp(lbl, body) = [#box(body) #label(lbl)]'
+_MANIMGRP_PREAMBLE = "#let manimgrp(lbl, body) = [#box(body) #label(lbl)]"
 
 # Pattern for the label part of {{ content : label }}.
 # The label must be a valid Typst label identifier.
-_LABEL_RE = re.compile(r'^(.*)\s*:\s*([a-zA-Z_][a-zA-Z0-9_-]*)\s*$', re.DOTALL)
+_LABEL_RE = re.compile(r"^(.*)\s*:\s*([a-zA-Z_][a-zA-Z0-9_-]*)\s*$", re.DOTALL)
 _INTERNAL_TYPST_ID_RE = re.compile(r"g[0-9A-Fa-f]+")
 
 
@@ -193,6 +193,7 @@ class Typst(SVGMobject):
             def construct(self):
                 formula = Typst(r"$ integral_a^b f(x) dif x $")
                 self.play(Write(formula))
+
 
         class TypstTextExample(Scene):
             def construct(self):
@@ -287,7 +288,11 @@ class Typst(SVGMobject):
 
         reference_points = mob.points.copy()
         reference_xy = np.column_stack(
-            [reference_points[:, 0], reference_points[:, 1], np.ones(len(reference_points))],
+            [
+                reference_points[:, 0],
+                reference_points[:, 1],
+                np.ones(len(reference_points)),
+            ],
         )
         if np.linalg.matrix_rank(reference_xy) < 3:
             return mob
@@ -319,7 +324,9 @@ class Typst(SVGMobject):
             ],
         )
 
-    def get_baseline_frame(self, submobject: VMobject) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def get_baseline_frame(
+        self, submobject: VMobject
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         """Return the current Typst baseline frame for a tracked submobject.
 
         The returned tuple contains the current positions of ``(orig, right, up)``.
@@ -336,7 +343,11 @@ class Typst(SVGMobject):
             ) from err
 
         reference_xy = np.column_stack(
-            [reference_points[:, 0], reference_points[:, 1], np.ones(len(reference_points))],
+            [
+                reference_points[:, 0],
+                reference_points[:, 1],
+                np.ones(len(reference_points)),
+            ],
         )
         if np.linalg.matrix_rank(reference_xy) < 3:
             raise ValueError(
@@ -344,9 +355,15 @@ class Typst(SVGMobject):
                 "frame cannot be recovered.",
             )
 
-        transform, _, _, _ = np.linalg.lstsq(reference_xy, submobject.points, rcond=None)
+        transform, _, _, _ = np.linalg.lstsq(
+            reference_xy, submobject.points, rcond=None
+        )
         frame_xy = np.column_stack(
-            [reference_frame[:, 0], reference_frame[:, 1], np.ones(len(reference_frame))],
+            [
+                reference_frame[:, 0],
+                reference_frame[:, 1],
+                np.ones(len(reference_frame)),
+            ],
         )
         current_frame = frame_xy @ transform
         return tuple(current_frame)  # type: ignore[return-value]
@@ -426,7 +443,7 @@ class Typst(SVGMobject):
             eq = TypstMath("{{ a + b : num }} / {{ c : den }} = {{ x }}")
             eq.select("num").set_color(RED)
             eq.select("den").set_color(BLUE)
-            eq.select(2).set_color(GREEN)   # "x" (auto-numbered)
+            eq.select(2).set_color(GREEN)  # "x" (auto-numbered)
         """
         if isinstance(key, int):
             label = f"_grp-{key}"
@@ -512,11 +529,12 @@ class TypstMath(Typst):
                 eq = TypstMath(r"sum_(k=0)^n k = (n(n+1)) / 2")
                 self.add(eq)
 
+
         class GroupedMath(Scene):
             def construct(self):
                 eq = TypstMath("{{ a + b : lhs }} = {{ c }}")
                 eq.select("lhs").set_color(RED)
-                eq.select(0).set_color(BLUE)   # "c" (auto-numbered)
+                eq.select(0).set_color(BLUE)  # "c" (auto-numbered)
                 self.add(eq)
     """
 
@@ -529,7 +547,9 @@ class TypstMath(Typst):
             preamble = kwargs.get("typst_preamble", "")
             if _MANIMGRP_PREAMBLE not in preamble:
                 preamble = (
-                    f"{_MANIMGRP_PREAMBLE}\n{preamble}" if preamble else _MANIMGRP_PREAMBLE
+                    f"{_MANIMGRP_PREAMBLE}\n{preamble}"
+                    if preamble
+                    else _MANIMGRP_PREAMBLE
                 )
             kwargs["typst_preamble"] = preamble
 
@@ -632,19 +652,11 @@ class TypstMath(Typst):
                         i += 1
                         continue
 
-                    if (
-                        ch == "{"
-                        and i + 1 < n
-                        and math_expr[i + 1] == "{"
-                    ):
+                    if ch == "{" and i + 1 < n and math_expr[i + 1] == "{":
                         depth += 1
                         i += 2
                         continue
-                    if (
-                        ch == "}"
-                        and i + 1 < n
-                        and math_expr[i + 1] == "}"
-                    ):
+                    if ch == "}" and i + 1 < n and math_expr[i + 1] == "}":
                         depth -= 1
                         if depth == 0:
                             content = math_expr[content_start:i]

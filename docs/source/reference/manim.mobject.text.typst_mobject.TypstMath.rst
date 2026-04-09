@@ -11,18 +11,18 @@ Qualified name: ``manim.mobject.text.typst\_mobject.TypstMath``
    :private-members:
 
 
-   
+
    .. rubric:: Methods
 
    .. autosummary::
       :nosignatures:
-      
 
-   
+
+
    .. rubric:: Attributes
 
    .. autosummary::
-     
+
      ~TypstMath.always
      ~TypstMath.animate
      ~TypstMath.animation_overrides
@@ -36,4 +36,3 @@ Qualified name: ``manim.mobject.text.typst\_mobject.TypstMath``
      ~TypstMath.sheen_factor
      ~TypstMath.stroke_color
      ~TypstMath.width
-   
