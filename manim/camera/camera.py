@@ -437,11 +437,17 @@ class Camera:
         Camera
             The camera object after setting the pixel array.
         """
-        self.set_pixel_array(self.background)
+        if hasattr(self, "pixel_array") and self.pixel_array.shape == self.background.shape:
+            np.copyto(self.pixel_array, self.background)
+        else:
+            self.pixel_array = self.background.copy()
         return self
 
     def set_frame_to_background(self, background: PixelArray) -> None:
-        self.set_pixel_array(background)
+        if hasattr(self, "pixel_array") and self.pixel_array.shape == background.shape:
+            np.copyto(self.pixel_array, background)
+        else:
+            self.pixel_array = background.copy()
 
     ####
 
