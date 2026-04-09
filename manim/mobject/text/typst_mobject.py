@@ -140,6 +140,7 @@ _MANIMGRP_PREAMBLE = '#let manimgrp(lbl, body) = [#box(body) #label(lbl)]'
 # Pattern for the label part of {{ content : label }}.
 # The label must be a valid Typst label identifier.
 _LABEL_RE = re.compile(r'^(.*)\s*:\s*([a-zA-Z_][a-zA-Z0-9_-]*)\s*$', re.DOTALL)
+_INTERNAL_TYPST_ID_RE = re.compile(r"g[0-9A-Fa-f]+")
 
 
 class Typst(SVGMobject):
@@ -451,7 +452,11 @@ class Typst(SVGMobject):
         return [
             k
             for k in self.id_to_vgroup_dict
-            if not k.startswith(("numbered_group_", "root", "g"))
+            if not (
+                k.startswith("numbered_group_")
+                or k == "root"
+                or _INTERNAL_TYPST_ID_RE.fullmatch(k) is not None
+            )
         ]
 
     # -- color handling ------------------------------------------------------

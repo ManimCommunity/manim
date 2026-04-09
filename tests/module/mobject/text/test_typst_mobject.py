@@ -221,6 +221,17 @@ def test_typst_select_keyerror(config):
         m.select("missing")
 
 
+def test_typst_select_keyerror_lists_labels_starting_with_g(config):
+    """Error messages keep user labels even when they start with ``g``."""
+    m = Typst(
+        '$ #manimgrp("gamma", $a$) $',
+        typst_preamble=MANIMGRP_PREAMBLE,
+        use_svg_cache=False,
+    )
+    with pytest.raises(KeyError, match="gamma"):
+        m.select("missing")
+
+
 # -- {{ }} double-brace preprocessor tests ----------------------------------
 
 

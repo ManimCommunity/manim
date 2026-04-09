@@ -8,12 +8,13 @@ There are three different ways by which you can render **Text** in videos:
 2. Using LaTeX (:mod:`~.tex_mobject`)
 3. Using Typst (:mod:`~.typst_mobject`)
 
-If you want to render simple text, you should use either :class:`~.Text` or
-:class:`~.MarkupText`, or one of its derivatives like :class:`~.Paragraph`.
+Manim's Pango-based text classes include :class:`~.Text`,
+:class:`~.MarkupText`, and derivatives such as :class:`~.Paragraph`.
 See :ref:`using-text-objects` for more information.
 
-LaTeX should be used when you need mathematical typesetting. See
-:ref:`rendering-with-latex` for more information.
+LaTeX rendering is available via :class:`~.Tex` and
+:class:`~.MathTex`. See :ref:`rendering-with-latex` for more
+information.
 
 Typst support is available via :class:`~.Typst` and
 :class:`~.TypstMath`. It offers both general markup and mathematical
