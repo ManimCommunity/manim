@@ -93,6 +93,24 @@ There are two common ways to create selectable groups:
             equation.select("lhs").set_color(BLUE)
             equation.select(0).set_color(YELLOW)
             self.add(equation)
+
+Inspecting baseline frames
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For debugging or alignment tasks, Typst mobjects can optionally track a
+per-element baseline frame. Enable this with ``track_baselines=True`` and
+query either :attr:`~.Typst.baseline_frames` for all tracked leaf elements or
+:meth:`~.Typst.get_baseline_frame` for a specific selected submobject.
+
+.. code-block:: python
+
+    text = Typst("Ggf", track_baselines=True)
+    orig, right, up = text.baseline_frames[0]
+
+    eq = TypstMath("{{ a + b : lhs }} = c", track_baselines=True)
+    for part in eq.select("lhs"):
+        orig, right, up = eq.get_baseline_frame(part)
+        print(orig, right, up)
 """
 
 from __future__ import annotations
