@@ -52,6 +52,17 @@ def test_typst_font_size_property_setter(config):
     assert m.height > original_height
 
 
+def test_typst_font_size_scaling_also_scales_svg_strokes(config):
+    """Typst-authored stroke widths scale together with font_size."""
+    m = TypstMath("frac(a,b)", font_size=48, use_svg_cache=False)
+    original_stroke_width = max(submobject.stroke_width for submobject in m.submobjects)
+
+    m.font_size = 96
+    scaled_stroke_width = max(submobject.stroke_width for submobject in m.submobjects)
+
+    assert np.isclose(scaled_stroke_width, 2 * original_stroke_width)
+
+
 def test_typst_font_size_error(config):
     """Setting font_size to a non-positive value raises ValueError."""
     m = Typst(r"$ a + b $")
@@ -194,6 +205,17 @@ def test_typst_select(config):
     rhs = m.select("rhs")
     assert len(lhs) == 3  # a, +, b
     assert len(rhs) == 1  # c
+
+
+def test_typst_select_collects_duplicate_labels(config):
+    """Repeated Typst labels are combined into one selectable group."""
+    m = Typst(
+        '$ #manimgrp("picked", $a$) + #manimgrp("picked", $b$) $',
+        typst_preamble=MANIMGRP_PREAMBLE,
+        use_svg_cache=False,
+    )
+    picked = m.select("picked")
+    assert len(picked) == 2
 
 
 def test_typst_get_baseline_frame_for_selected_submobjects(config):

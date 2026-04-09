@@ -39,7 +39,7 @@ Basic text and math
     class TypstMathReferenceExample(Scene):
         def construct(self):
             equation = TypstMath(
-                r"sum_(k=1)^n k = (n(n + 1)) / 2",
+                r"sum_(k=1)^n k = frac(n(n + 1), 2)",
                 font_size=72,
             )
             self.add(equation)
@@ -72,7 +72,7 @@ There are two common ways to create selectable groups:
                 ] <headline>
 
                 #let pick(body) = [#box(body) <picked>]
-                We can s#pick[ele]ct #pick[multiple] fragment#pick[s].
+                We can highlight #pick[multiple] #pick[fragments] at once.
                 ''',
                 font_size=42,
             )
@@ -87,7 +87,7 @@ There are two common ways to create selectable groups:
     class TypstMathSelectionExample(Scene):
         def construct(self):
             equation = TypstMath(
-                "{{ a + b : lhs }} = {{ c }}",
+                "{{ x^2 + y^2 : lhs }} = {{ z^2 }}",
                 font_size=72,
             )
             equation.select("lhs").set_color(BLUE)
@@ -107,7 +107,7 @@ query either :attr:`~.Typst.baseline_frames` for all tracked leaf elements or
     text = Typst("Ggf", track_baselines=True)
     orig, right, up = text.baseline_frames[0]
 
-    eq = TypstMath("{{ a + b : lhs }} = c", track_baselines=True)
+    eq = TypstMath("{{ x^2 + y^2 : lhs }} = z^2", track_baselines=True)
     for part in eq.select("lhs"):
         orig, right, up = eq.get_baseline_frame(part)
         print(orig, right, up)
@@ -141,6 +141,7 @@ _MANIMGRP_PREAMBLE = "#let manimgrp(lbl, body) = [#box(body) #label(lbl)]"
 # The label must be a valid Typst label identifier.
 _LABEL_RE = re.compile(r"^(.*)\s*:\s*([a-zA-Z_][a-zA-Z0-9_-]*)\s*$", re.DOTALL)
 _INTERNAL_TYPST_ID_RE = re.compile(r"g[0-9A-Fa-f]+")
+_DUPLICATE_LABEL_SUFFIX = "__manim_typst_dup_"
 
 
 class Typst(SVGMobject):
@@ -225,7 +226,10 @@ class Typst(SVGMobject):
         self.typst_code = typst_code
         self.typst_preamble = typst_preamble
         self.track_baselines = track_baselines
+        self._preserve_svg_stroke_widths = stroke_width is None
         self._baseline_tracked_submobjects: list[VMobject] = []
+        self._stroke_width_tracked_submobjects: list[VMobject] = []
+        self._label_aliases: dict[str, list[str]] = {}
 
         file_name = typst_to_svg_file(
             typst_code,
@@ -244,6 +248,8 @@ class Typst(SVGMobject):
             },
             **kwargs,
         )
+        self._rebuild_label_aliases()
+        self._refresh_svg_stroke_widths()
         self.init_colors()
 
         # Used for scaling via font_size property (mirrors SingleStringMathTex).
@@ -274,12 +280,64 @@ class Typst(SVGMobject):
         if self.height > 0:
             self.scale(val / self.font_size)
 
+    def scale(
+        self,
+        scale_factor: float,
+        scale_stroke: bool = False,
+        *,
+        about_point: np.ndarray | None = None,
+        about_edge: np.ndarray | None = None,
+    ) -> Typst:
+        result = super().scale(
+            scale_factor,
+            scale_stroke=scale_stroke,
+            about_point=about_point,
+            about_edge=about_edge,
+        )
+        self._refresh_svg_stroke_widths()
+        return result
+
+    def _refresh_svg_stroke_widths(self) -> None:
+        """Refresh pixel stroke widths for Typst-authored SVG strokes.
+
+        SVG stroke widths are specified in the SVG's local coordinate system,
+        while Manim stroke widths are pixel-based. For Typst-authored strokes
+        such as fraction bars or underlines, rescale them according to the
+        current geometric scale of the imported element so their visual weight
+        stays proportional to the rest of the expression.
+        """
+        if not self._preserve_svg_stroke_widths:
+            return
+
+        pixels_per_unit = config.pixel_width / config.frame_width
+        for submobject in self._stroke_width_tracked_submobjects:
+            reference_size = submobject._typst_reference_size  # type: ignore[attr-defined]
+            source_stroke_width = submobject._typst_source_stroke_width  # type: ignore[attr-defined]
+            current_size = max(submobject.width, submobject.height)
+            if reference_size <= 0:
+                continue
+            current_stroke_width = source_stroke_width * current_size / reference_size
+            submobject.set_stroke(
+                width=current_stroke_width * pixels_per_unit,
+                family=False,
+            )
+
     # -- baseline frame tracking ---------------------------------------------
 
     def get_mob_from_shape_element(self, shape: se.SVGElement) -> VMobject | None:
-        """Attach Typst baseline-reference data to imported shape mobjects."""
+        """Attach Typst-specific metadata to imported shape mobjects."""
         mob = super().get_mob_from_shape_element(shape)
-        if not self.track_baselines or mob is None or not mob.has_points():
+        if mob is None or not mob.has_points():
+            return mob
+
+        if self._preserve_svg_stroke_widths and shape.stroke_width not in (None, 0):
+            reference_size = max(mob.width, mob.height)
+            if reference_size > 0:
+                mob._typst_reference_size = reference_size  # type: ignore[attr-defined]
+                mob._typst_source_stroke_width = shape.stroke_width  # type: ignore[attr-defined]
+                self._stroke_width_tracked_submobjects.append(mob)
+
+        if not self.track_baselines:
             return mob
 
         baseline_marks = self._get_reference_baseline_frame(shape)
@@ -378,6 +436,39 @@ class Typst(SVGMobject):
             for submobject in self._baseline_tracked_submobjects
         ]
 
+    def _rebuild_label_aliases(self) -> None:
+        """Rebuild user-facing label aliases from imported SVG ids."""
+        aliases: dict[str, list[str]] = {}
+        for key in self.id_to_vgroup_dict:
+            if key == "root" or key.startswith("numbered_group_"):
+                continue
+            if _INTERNAL_TYPST_ID_RE.fullmatch(key) is not None:
+                continue
+
+            base_label = key
+            if _DUPLICATE_LABEL_SUFFIX in key:
+                base_label, _, _ = key.partition(_DUPLICATE_LABEL_SUFFIX)
+            aliases.setdefault(base_label, []).append(key)
+        self._label_aliases = aliases
+
+    def _select_label(self, label: str) -> VGroup:
+        if label not in self._label_aliases:
+            raise KeyError(
+                f"No group with label {label!r} found. "
+                f"Available labels: {self._user_label_keys()}"
+            )
+
+        result = VGroup()
+        seen_ids: set[int] = set()
+        for group_id in self._label_aliases[label]:
+            for submobject in self.id_to_vgroup_dict[group_id]:
+                submobject_id = id(submobject)
+                if submobject_id in seen_ids:
+                    continue
+                seen_ids.add(submobject_id)
+                result.add(submobject)
+        return result
+
     # -- SVG post-processing -------------------------------------------------
 
     def modify_xml_tree(self, element_tree: ET.ElementTree) -> ET.ElementTree:
@@ -400,10 +491,16 @@ class Typst(SVGMobject):
         # Walk all elements regardless of namespace — ElementTree
         # qualifies tags with the namespace URI, so a bare ``"g"``
         # won't match ``{http://www.w3.org/2000/svg}g``.
+        label_counts: dict[str, int] = {}
         for element in element_tree.iter():
             label = element.get("data-typst-label")
             if label is not None:
-                element.set("id", label)
+                count = label_counts.get(label, 0)
+                label_counts[label] = count + 1
+                svg_id = label
+                if count > 0:
+                    svg_id = f"{label}{_DUPLICATE_LABEL_SUFFIX}{count}"
+                element.set("id", svg_id)
                 del element.attrib["data-typst-label"]
 
         return element_tree
@@ -447,34 +544,21 @@ class Typst(SVGMobject):
         """
         if isinstance(key, int):
             label = f"_grp-{key}"
-            if label not in self.id_to_vgroup_dict:
+            if label not in self._label_aliases:
                 raise IndexError(
                     f"Group index {key} out of range. "
                     f"Available labels: {self._user_label_keys()}"
                 )
-            return self.id_to_vgroup_dict[label]
+            return self._select_label(label)
 
-        if key not in self.id_to_vgroup_dict:
-            raise KeyError(
-                f"No group with label {key!r} found. "
-                f"Available labels: {self._user_label_keys()}"
-            )
-        return self.id_to_vgroup_dict[key]
+        return self._select_label(key)
 
     def _user_label_keys(self) -> list[str]:
         """Return the label keys that were created from ``data-typst-label``
         attributes (filtering out internal Typst group IDs and auto-numbered
         groups).
         """
-        return [
-            k
-            for k in self.id_to_vgroup_dict
-            if not (
-                k.startswith("numbered_group_")
-                or k == "root"
-                or _INTERNAL_TYPST_ID_RE.fullmatch(k) is not None
-            )
-        ]
+        return list(self._label_aliases)
 
     # -- color handling ------------------------------------------------------
 
@@ -532,7 +616,7 @@ class TypstMath(Typst):
 
         class GroupedMath(Scene):
             def construct(self):
-                eq = TypstMath("{{ a + b : lhs }} = {{ c }}")
+                eq = TypstMath("{{ x^2 + y^2 : lhs }} = {{ z^2 }}")
                 eq.select("lhs").set_color(RED)
                 eq.select(0).set_color(BLUE)  # "c" (auto-numbered)
                 self.add(eq)
