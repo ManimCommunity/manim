@@ -297,6 +297,54 @@ and further references about PangoMarkup.
             )
             self.add(text)
 
+.. _rendering-with-typst:
+
+Text With Typst
+***************
+
+Manim also supports rendering text and formulas with Typst via
+:class:`~.Typst` and :class:`~.TypstMath`.
+
+.. important::
+
+    Typst support requires the optional ``typst`` dependency. Install it with
+    ``pip install manim[typst]``.
+
+Typst mobjects compile Typst markup directly to SVG and import the result as
+vector graphics. This works both for general markup and for mathematical
+expressions.
+
+.. manim:: HelloTypst
+    :save_last_frame:
+    :ref_classes: Typst
+
+    class HelloTypst(Scene):
+        def construct(self):
+            text = Typst(r"*Hello* from _Typst!_", font_size=96)
+            self.add(text)
+
+For mathematical expressions, use :class:`~.TypstMath`:
+
+.. manim:: HelloTypstMath
+    :save_last_frame:
+    :ref_classes: TypstMath
+
+    class HelloTypstMath(Scene):
+        def construct(self):
+            equation = TypstMath(r"sum_(k=1)^n k = (n(n + 1)) / 2", font_size=72)
+            self.add(equation)
+
+Typst also supports selecting subexpressions via labels in the Typst source,
+or via Manim's ``{{ ... }}`` shorthand in :class:`~.TypstMath`:
+
+.. code-block:: python
+
+    eq = TypstMath("{{ a + b : lhs }} = {{ c }}")
+    eq.select("lhs").set_color(BLUE)
+    eq.select(0).set_color(YELLOW)
+
+See :ref:`typst-mobjects` for more details and additional examples.
+
 .. _rendering-with-latex:
 
 Text With LaTeX
