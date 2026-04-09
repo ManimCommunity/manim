@@ -107,6 +107,9 @@ from pathlib import Path
 from typing import Any
 from xml.etree import ElementTree as ET
 
+import numpy as np
+import svgelements as se
+
 from manim import config
 from manim.constants import DEFAULT_FONT_SIZE, SCALE_FACTOR_PER_FONT_POINT, RendererType
 from manim.mobject.svg.svg_mobject import SVGMobject
@@ -149,6 +152,12 @@ class Typst(SVGMobject):
     font_paths
         Optional list of additional font directories passed to the Typst
         compiler (e.g. for custom fonts not installed system-wide).
+    track_baselines
+        Whether to keep enough per-element reference data to recover the
+        current Typst baseline frame for each imported submobject.
+        When enabled, :attr:`baseline_frames` and
+        :meth:`get_baseline_frame` can be used to retrieve the current
+        ``(orig, right, up)`` positions for the imported SVG elements.
     should_center
         Whether to center the mobject after import (default ``True``).
     height
@@ -184,6 +193,7 @@ class Typst(SVGMobject):
         color: ParsableManimColor | None = None,
         stroke_width: float | None = None,
         font_paths: list[str | Path] | None = None,
+        track_baselines: bool = False,
         should_center: bool = True,
         height: float | None = None,
         **kwargs: Any,
@@ -194,6 +204,8 @@ class Typst(SVGMobject):
         self._font_size = font_size
         self.typst_code = typst_code
         self.typst_preamble = typst_preamble
+        self.track_baselines = track_baselines
+        self._baseline_tracked_submobjects: list[VMobject] = []
 
         file_name = typst_to_svg_file(
             typst_code,
@@ -223,6 +235,11 @@ class Typst(SVGMobject):
     def __repr__(self) -> str:
         return f"{type(self).__name__}({self.typst_code!r})"
 
+    @property
+    def hash_seed(self) -> tuple:
+        """Include baseline tracking in the SVG cache key."""
+        return (*super().hash_seed, self.track_baselines)
+
     # -- font_size property (same approach as SingleStringMathTex) -----------
 
     @property
@@ -236,6 +253,94 @@ class Typst(SVGMobject):
             raise ValueError("font_size must be greater than 0.")
         if self.height > 0:
             self.scale(val / self.font_size)
+
+    # -- baseline frame tracking ---------------------------------------------
+
+    def get_mob_from_shape_element(self, shape: se.SVGElement) -> VMobject | None:
+        """Attach Typst baseline-reference data to imported shape mobjects."""
+        mob = super().get_mob_from_shape_element(shape)
+        if not self.track_baselines or mob is None or not mob.has_points():
+            return mob
+
+        baseline_marks = self._get_reference_baseline_frame(shape)
+        if baseline_marks is None:
+            return mob
+
+        reference_points = mob.points.copy()
+        reference_xy = np.column_stack(
+            [reference_points[:, 0], reference_points[:, 1], np.ones(len(reference_points))],
+        )
+        if np.linalg.matrix_rank(reference_xy) < 3:
+            return mob
+
+        mob._typst_reference_points = reference_points  # type: ignore[attr-defined]
+        mob._typst_reference_baseline_frame = baseline_marks  # type: ignore[attr-defined]
+        self._baseline_tracked_submobjects.append(mob)
+        return mob
+
+    @staticmethod
+    def _get_reference_baseline_frame(
+        shape: se.SVGElement,
+    ) -> np.ndarray | None:
+        """Return the reference ``(orig, right, up)`` frame for a Typst SVG element.
+
+        The frame is expressed in the same pre-centering coordinate system as the
+        imported submobject points after the element's own SVG transform has been
+        applied.
+        """
+        if not isinstance(shape, se.Transformable):
+            return None
+
+        matrix = shape.transform if shape.apply else se.Matrix()
+        return np.array(
+            [
+                [matrix.e, matrix.f, 0.0],
+                [matrix.a + matrix.e, matrix.b + matrix.f, 0.0],
+                [matrix.c + matrix.e, matrix.d + matrix.f, 0.0],
+            ],
+        )
+
+    def get_baseline_frame(self, submobject: VMobject) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Return the current Typst baseline frame for a tracked submobject.
+
+        The returned tuple contains the current positions of ``(orig, right, up)``.
+        These are recovered from the stored reference frame and the submobject's
+        current affine position in the scene.
+        """
+        try:
+            reference_points = submobject._typst_reference_points  # type: ignore[attr-defined]
+            reference_frame = submobject._typst_reference_baseline_frame  # type: ignore[attr-defined]
+        except AttributeError as err:
+            raise ValueError(
+                "No tracked Typst baseline frame is available for this submobject. "
+                "Construct the Typst mobject with track_baselines=True.",
+            ) from err
+
+        reference_xy = np.column_stack(
+            [reference_points[:, 0], reference_points[:, 1], np.ones(len(reference_points))],
+        )
+        if np.linalg.matrix_rank(reference_xy) < 3:
+            raise ValueError(
+                "The stored Typst reference geometry is degenerate, so its baseline "
+                "frame cannot be recovered.",
+            )
+
+        transform, _, _, _ = np.linalg.lstsq(reference_xy, submobject.points, rcond=None)
+        frame_xy = np.column_stack(
+            [reference_frame[:, 0], reference_frame[:, 1], np.ones(len(reference_frame))],
+        )
+        current_frame = frame_xy @ transform
+        return tuple(current_frame)  # type: ignore[return-value]
+
+    @property
+    def baseline_frames(self) -> list[tuple[np.ndarray, np.ndarray, np.ndarray]]:
+        """Current Typst baseline frames for all tracked leaf submobjects."""
+        if not self.track_baselines:
+            return []
+        return [
+            self.get_baseline_frame(submobject)
+            for submobject in self._baseline_tracked_submobjects
+        ]
 
     # -- SVG post-processing -------------------------------------------------
 

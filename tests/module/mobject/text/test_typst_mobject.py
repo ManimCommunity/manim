@@ -98,6 +98,27 @@ def test_typst_preserves_svg_stroke_widths_by_default(config):
     assert any(submobject.stroke_width > 0 for submobject in m.submobjects)
 
 
+def test_typst_baseline_frames_empty_without_tracking(config):
+    """Baseline frames are only collected when requested."""
+    m = Typst("Ggf", use_svg_cache=False)
+    assert m.baseline_frames == []
+
+
+def test_typst_baseline_frames_track_scene_positions(config):
+    """Tracked baseline frames follow ordinary affine transformations."""
+    m = Typst("Ggf", track_baselines=True, use_svg_cache=False)
+    assert m.baseline_frames
+
+    orig, right, up = m.baseline_frames[0]
+    delta = 2 * RIGHT
+    m.shift(delta)
+    shifted_orig, shifted_right, shifted_up = m.baseline_frames[0]
+
+    assert np.allclose(shifted_orig - orig, delta)
+    assert np.allclose(shifted_right - right, delta)
+    assert np.allclose(shifted_up - up, delta)
+
+
 def test_typst_text_font_size_matches_tex_closely(config):
     """Typst text is calibrated close to Tex for the same font_size."""
     tex = Tex("Hello", font_size=48)
@@ -173,6 +194,24 @@ def test_typst_select(config):
     rhs = m.select("rhs")
     assert len(lhs) == 3  # a, +, b
     assert len(rhs) == 1  # c
+
+
+def test_typst_get_baseline_frame_for_selected_submobjects(config):
+    """Tracked frames can be queried for submobjects returned by select()."""
+    m = Typst(
+        '$ #manimgrp("lhs", $a + b$) = c $',
+        typst_preamble=MANIMGRP_PREAMBLE,
+        track_baselines=True,
+        use_svg_cache=False,
+    )
+    lhs = m.select("lhs")
+    frames = [m.get_baseline_frame(submobject) for submobject in lhs]
+
+    assert len(frames) == len(lhs)
+    for orig, right, up in frames:
+        assert orig.shape == (3,)
+        assert right.shape == (3,)
+        assert up.shape == (3,)
 
 
 def test_typst_select_keyerror(config):
