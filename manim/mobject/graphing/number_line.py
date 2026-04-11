@@ -9,10 +9,10 @@ __all__ = ["NumberLine", "UnitInterval"]
 
 
 from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, cast
 
 if TYPE_CHECKING:
-    from typing import Any, Self
+    from typing import Self
 
     from manim.mobject.geometry.tips import ArrowTip
     from manim.typing import ManimTextLabel, Point3D, Point3DLike, Vector3D
