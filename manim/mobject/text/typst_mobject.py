@@ -142,6 +142,10 @@ _MANIMGRP_PREAMBLE = "#let manimgrp(lbl, body) = [#box(body) #label(lbl)]"
 _LABEL_RE = re.compile(r"^(.*)\s*:\s*([a-zA-Z_][a-zA-Z0-9_-]*)\s*$", re.DOTALL)
 _INTERNAL_TYPST_ID_RE = re.compile(r"g[0-9A-Fa-f]+")
 _DUPLICATE_LABEL_SUFFIX = "__manim_typst_dup_"
+# Empirical correction so Typst-authored SVG strokes (fraction bars,
+# underlines, etc.) visually match the weight of TeX-derived geometry more
+# closely after import into Manim's pixel-based stroke model.
+_TYPST_SVG_STROKE_WIDTH_SCALE = 0.5
 
 
 class Typst(SVGMobject):
@@ -318,7 +322,7 @@ class Typst(SVGMobject):
                 continue
             current_stroke_width = source_stroke_width * current_size / reference_size
             submobject.set_stroke(
-                width=current_stroke_width * pixels_per_unit,
+                width=current_stroke_width * pixels_per_unit * _TYPST_SVG_STROKE_WIDTH_SCALE,
                 family=False,
             )
 
