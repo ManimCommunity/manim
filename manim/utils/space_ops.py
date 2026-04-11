@@ -186,11 +186,11 @@ def rotate_vector(
     Parameters
     ----------
     vector
-        The vector to be rotated. It's either a 1D numpy array having 
+        The vector to be rotated. It's either a 1D numpy array having
         shape (2,) for a 2D vector, or having
-        shape (3,) for a 3D vector, 
+        shape (3,) for a 3D vector,
         or it is a tuple consisting of either 2 float numbers for a 2D vector or
-        3 float numbers for a 3D vector.        
+        3 float numbers for a 3D vector.
         2D vector is zero padded to make it a 3D vector.
     angle
         The angle (in radians) determines how much to rotate by.
@@ -204,7 +204,7 @@ def rotate_vector(
         The tail of the vector stays fixed at the origin; only the position of the tip changes.
         In ManimCE, a positive angle rotates the vector counterclockwise when viewed from the tip of the axis toward the origin,
         and a negative angle rotates the vector clockwise.
-    
+
     Returns
     -------
     np.ndarray
@@ -216,10 +216,11 @@ def rotate_vector(
         If vector is of shape larger than (3,).
     """
     if len(vector) > 3:
-        raise ValueError("Vector must be either a 1D numpy array of shape (2,) or (3,) "
-                         "or a tuple consisting of either 2 float numbers or 3 float numbers. "
-                         f"You have provided a vector of shape ({len(vector)},)."
-                         )
+        raise ValueError(
+            "Vector must be either a 1D numpy array of shape (2,) or (3,) "
+            "or a tuple consisting of either 2 float numbers or 3 float numbers. "
+            f"You have provided a vector of shape ({len(vector)},)."
+        )
     if len(vector) == 2:
         vector = np.append(vector, 0)
     return rotation_matrix(angle, axis) @ vector
