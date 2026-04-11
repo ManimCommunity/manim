@@ -181,29 +181,45 @@ def quaternion_conjugate(quaternion: Sequence[float]) -> np.ndarray:
 def rotate_vector(
     vector: Vector3DLike, angle: float, axis: Vector3DLike = OUT
 ) -> Vector3D:
-    """Function for rotating a vector.
+    """Rotates the vector.
 
     Parameters
     ----------
     vector
-        The vector to be rotated.
+        The vector to be rotated. It's either a 1D numpy array having 
+        shape (2,) for a 2D vector, or having
+        shape (3,) for a 3D vector, 
+        or it is a tuple consisting of either 2 float numbers for a 2D vector or
+        3 float numbers for a 3D vector.        
+        2D vector is zero padded to make it a 3D vector.
     angle
-        The angle to be rotated by.
+        The angle (in radians) determines how much to rotate by.
     axis
-        The axis to be rotated, by default OUT
+        The axis about which the vector will be rotated. Default axis is OUT.
 
+    Note
+    ----
+        "rotation_matrix(angle, axis) @ vector", treats the vector as starting at the origin,
+        and spins it around the given axis passing through the origin.
+        The tail of the vector stays fixed at the origin; only the position of the tip changes.
+        In ManimCE, a positive angle rotates the vector counterclockwise when viewed from the tip of the axis toward the origin,
+        and a negative angle rotates the vector clockwise.
+    
     Returns
     -------
     np.ndarray
-        The rotated vector with provided angle and axis.
+        The rotated vector.
 
     Raises
     ------
     ValueError
-        If vector is not of dimension 2 or 3.
+        If vector is of shape larger than (3,).
     """
     if len(vector) > 3:
-        raise ValueError("Vector must have the correct dimensions.")
+        raise ValueError("Vector must be either a 1D numpy array of shape (2,) or (3,) "
+                         "or a tuple consisting of either 2 float numbers or 3 float numbers. "
+                         f"You have provided a vector of shape ({len(vector)},)."
+                         )
     if len(vector) == 2:
         vector = np.append(vector, 0)
     return rotation_matrix(angle, axis) @ vector
