@@ -1009,44 +1009,26 @@ class VMobject(Mobject):
         return self
 
     def append_points(self, new_points: Point3DLike_Array) -> Self:
-        """Appends the given new_points array to the end of self.points.
+        """Append the given ``new_points`` to the end of
+        :attr:`VMobject.points`.
 
         Parameters
         ----------
         new_points
-            It's a 2D array of shape (N, 3) where N must either be a multiple
-            of 4, or if self.points has an incomplete curve i.e. if len(self.points) % 4 == 1,
-            then N must satisfy len(new_points) % 4 == 3 to complete it.
-            Each group of 4 points, where each point is itself a 1D numpy array of shape (3,),
-            defines one cubic Bezier curve as (start anchor, handle1, handle2, end anchor).
-
-            For example, if self.points already holds a lone start anchor,
-            passing new_points = [[1,2,3],[4,5,6],[7,8,9]], i.e. 3 points, is
-            valid — the 3 new points complete that curve.
-            But if the number of points in self.points is a multiple of 4, then
-            new_points must contain 4 points at least, or a multiple of 4 points.
-            For example, in this case, new_array could be = [[1,2,3],[4,5,6],[7,8,9],[10,11,12]].
+            A 2D numpy array of 3D points
+            i.e. new_points is a numpy array of shape(N,3) where N is the number of points to append.
+            For well-formed Bézier curves, N should be a multiple of 4,
+            where each group of 4 consecutive points defines
+            one cubic Bézier curve as (start anchor, handle1, handle2, end anchor).
 
         Returns
         -------
-            The VMobject itself, after appending new_points.
+        :class:`VMobject`
+            The VMobject itself, after appending ``new_points``.
         """
-        if len(new_points) % 4 != 0 and not (len(self.points) % 4 == 1 and len(new_points) % 4 == 3):
-                if len(self.points) % 4 == 1:
-                    raise ValueError(
-                        "Your existing shape has an incomplete curve waiting to be finished. "
-                        "The new_points array must have at least 3 more points, "
-                        "and then any multiple of 4 points after that, to complete it "
-                        "Each point is a 1D numpy array of shape (3,). "
-                        f"You've given {len(new_points)} points."
-                    )
-                else:
-                    raise ValueError(
-                        "This method requires valid number of points, each having the shape (3,) to work. "
-                        f"You've given only {len(new_points)} points, which cannot form a cubic bezier curve. "
-                        "Try giving 4 new points or a multiple of 4 points in the new_points array. "
-                        "Each point is a 1D numpy array of shape (3,)."
-                    )
+        # TODO, check that number new points is a multiple of 4?
+        # or else that if len(self.points) % 4 == 1, then
+        # len(new_points) % 4 == 3?
         n = len(self.points)
         points = np.empty((n + len(new_points), self.dim))
         points[:n] = self.points
