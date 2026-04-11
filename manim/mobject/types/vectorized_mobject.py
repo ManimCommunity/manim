@@ -1505,7 +1505,7 @@ class VMobject(Mobject):
             DeprecationWarning,
             stacklevel=2,
         )
-        return self.consider_points_equals([p0[0], p0[1], 0.0], [p1[0], p1[1], 0.0])
+        return self.consider_points_equals((p0[0], p0[1], 0.0), (p1[0], p1[1], 0.0))
 
     # Information about line
     def get_cubic_bezier_tuples_from_points(
