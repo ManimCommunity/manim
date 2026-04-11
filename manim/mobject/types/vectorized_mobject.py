@@ -1024,15 +1024,14 @@ class VMobject(Mobject):
             passing new_points = [[1,2,3],[4,5,6],[7,8,9]], i.e. 3 points, is
             valid — the 3 new points complete that curve.
             But if the number of points in self.points is a multiple of 4, then
-            new_points must contain 4 points atleast, or a multiple of 4 points.
+            new_points must contain 4 points at least, or a multiple of 4 points.
             For example, in this case, new_array could be = [[1,2,3],[4,5,6],[7,8,9],[10,11,12]].
 
         Returns
         -------
             The VMobject itself, after appending new_points.
         """
-        if len(new_points) % 4 != 0:
-            if not (len(self.points) % 4 == 1 and len(new_points) % 4 == 3):
+        if len(new_points) % 4 != 0 and not (len(self.points) % 4 == 1 and len(new_points) % 4 == 3):
                 if len(self.points) % 4 == 1:
                     raise ValueError(
                         "Your existing shape has an incomplete curve waiting to be finished. "
