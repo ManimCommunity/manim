@@ -87,7 +87,7 @@ There are two common ways to create selectable groups:
     class TypstMathSelectionExample(Scene):
         def construct(self):
             equation = TypstMath(
-                "{{ x^2 + y^2 : lhs }} = {{ z^2 }}",
+                "{{ a^2 + b^2 : lhs }} = {{ c^2 }}",
                 font_size=72,
             )
             equation.select("lhs").set_color(BLUE)
@@ -107,7 +107,7 @@ query either :attr:`~.Typst.baseline_frames` for all tracked leaf elements or
     text = Typst("Ggf", track_baselines=True)
     orig, right, up = text.baseline_frames[0]
 
-    eq = TypstMath("{{ x^2 + y^2 : lhs }} = z^2", track_baselines=True)
+    eq = TypstMath("{{ a^2 + b^2 : lhs }} = c^2", track_baselines=True)
     for part in eq.select("lhs"):
         orig, right, up = eq.get_baseline_frame(part)
         print(orig, right, up)
@@ -620,7 +620,7 @@ class TypstMath(Typst):
 
         class GroupedMath(Scene):
             def construct(self):
-                eq = TypstMath("{{ x^2 + y^2 : lhs }} = {{ z^2 }}")
+                eq = TypstMath("{{ a^2 + b^2 : lhs }} = {{ c^2 }}")
                 eq.select("lhs").set_color(RED)
                 eq.select(0).set_color(BLUE)  # "c" (auto-numbered)
                 self.add(eq)
