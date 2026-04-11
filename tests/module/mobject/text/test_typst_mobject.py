@@ -154,14 +154,14 @@ MANIMGRP_PREAMBLE = "#let manimgrp(lbl, body) = [#box(body) #label(lbl)]"
 def test_typst_labels_mapped_to_vgroups(config):
     """data-typst-label attributes are promoted to id and appear in id_to_vgroup_dict."""
     m = Typst(
-        '$ #manimgrp("numer", $a + b$) / #manimgrp("denom", $c - d$) $',
+        '$ #manimgrp("numerator", $a + b$) / #manimgrp("denom", $c - d$) $',
         typst_preamble=MANIMGRP_PREAMBLE,
         use_svg_cache=False,
     )
-    assert "numer" in m.id_to_vgroup_dict
+    assert "numerator" in m.id_to_vgroup_dict
     assert "denom" in m.id_to_vgroup_dict
     # a, +, b → 3 submobjects; c, -, d → 3 submobjects
-    assert len(m.id_to_vgroup_dict["numer"]) == 3
+    assert len(m.id_to_vgroup_dict["numerator"]) == 3
     assert len(m.id_to_vgroup_dict["denom"]) == 3
 
 
@@ -268,10 +268,10 @@ def test_typstmath_double_brace_auto_numbered(config):
 
 def test_typstmath_double_brace_named(config):
     """{{ content : label }} assigns an explicit label."""
-    eq = TypstMath("{{ a + b : numer }} / {{ c - d : denom }}", use_svg_cache=False)
-    assert "numer" in eq._group_labels
+    eq = TypstMath("{{ a + b : numerator }} / {{ c - d : denom }}", use_svg_cache=False)
+    assert "numerator" in eq._group_labels
     assert "denom" in eq._group_labels
-    assert len(eq.select("numer")) == 3
+    assert len(eq.select("numerator")) == 3
     assert len(eq.select("denom")) == 3
 
 

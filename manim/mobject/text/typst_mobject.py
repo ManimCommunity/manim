@@ -122,7 +122,7 @@ __all__ = [
 
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 from xml.etree import ElementTree as ET
 
 import numpy as np
@@ -315,14 +315,20 @@ class Typst(SVGMobject):
 
         pixels_per_unit = config.pixel_width / config.frame_width
         for submobject in self._stroke_width_tracked_submobjects:
-            reference_size = submobject._typst_reference_size  # type: ignore[attr-defined]
-            source_stroke_width = submobject._typst_source_stroke_width  # type: ignore[attr-defined]
+            submobject_any = cast(Any, submobject)
+            reference_size = cast(float, submobject_any._typst_reference_size)
+            source_stroke_width = cast(
+                float,
+                submobject_any._typst_source_stroke_width,
+            )
             current_size = max(submobject.width, submobject.height)
             if reference_size <= 0:
                 continue
             current_stroke_width = source_stroke_width * current_size / reference_size
             submobject.set_stroke(
-                width=current_stroke_width * pixels_per_unit * _TYPST_SVG_STROKE_WIDTH_SCALE,
+                width=current_stroke_width
+                * pixels_per_unit
+                * _TYPST_SVG_STROKE_WIDTH_SCALE,
                 family=False,
             )
 
@@ -337,8 +343,9 @@ class Typst(SVGMobject):
         if self._preserve_svg_stroke_widths and shape.stroke_width not in (None, 0):
             reference_size = max(mob.width, mob.height)
             if reference_size > 0:
-                mob._typst_reference_size = reference_size  # type: ignore[attr-defined]
-                mob._typst_source_stroke_width = shape.stroke_width  # type: ignore[attr-defined]
+                mob_any = cast(Any, mob)
+                mob_any._typst_reference_size = reference_size
+                mob_any._typst_source_stroke_width = shape.stroke_width
                 self._stroke_width_tracked_submobjects.append(mob)
 
         if not self.track_baselines:
@@ -359,8 +366,9 @@ class Typst(SVGMobject):
         if np.linalg.matrix_rank(reference_xy) < 3:
             return mob
 
-        mob._typst_reference_points = reference_points  # type: ignore[attr-defined]
-        mob._typst_reference_baseline_frame = baseline_marks  # type: ignore[attr-defined]
+        mob_any = cast(Any, mob)
+        mob_any._typst_reference_points = reference_points
+        mob_any._typst_reference_baseline_frame = baseline_marks
         self._baseline_tracked_submobjects.append(mob)
         return mob
 
@@ -396,8 +404,15 @@ class Typst(SVGMobject):
         current affine position in the scene.
         """
         try:
-            reference_points = submobject._typst_reference_points  # type: ignore[attr-defined]
-            reference_frame = submobject._typst_reference_baseline_frame  # type: ignore[attr-defined]
+            submobject_any = cast(Any, submobject)
+            reference_points = cast(
+                np.ndarray,
+                submobject_any._typst_reference_points,
+            )
+            reference_frame = cast(
+                np.ndarray,
+                submobject_any._typst_reference_baseline_frame,
+            )
         except AttributeError as err:
             raise ValueError(
                 "No tracked Typst baseline frame is available for this submobject. "
@@ -428,7 +443,9 @@ class Typst(SVGMobject):
             ],
         )
         current_frame = frame_xy @ transform
-        return tuple(current_frame)  # type: ignore[return-value]
+        return tuple(
+            cast(tuple[np.ndarray, np.ndarray, np.ndarray], tuple(current_frame))
+        )
 
     @property
     def baseline_frames(self) -> list[tuple[np.ndarray, np.ndarray, np.ndarray]]:

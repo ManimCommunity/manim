@@ -9,7 +9,7 @@ __all__ = ["NumberLine", "UnitInterval"]
 
 
 from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 if TYPE_CHECKING:
     from typing import Any, Self
@@ -24,7 +24,7 @@ from manim.constants import *
 from manim.mobject.geometry.line import Line
 from manim.mobject.graphing.scale import LinearBase, _ScaleBase
 from manim.mobject.text.numbers import DecimalNumber
-from manim.mobject.text.tex_mobject import MathTex, Tex
+from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex, Tex
 from manim.mobject.text.typst_mobject import Typst, TypstMath
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.bezier import interpolate
@@ -450,7 +450,7 @@ class NumberLine(Line):
         direction: Vector3D | None = None,
         buff: float | None = None,
         font_size: float | None = None,
-        label_constructor: type[ManimTextLabel] | None = None,
+        label_constructor: type[SingleStringMathTex] | None = None,
         **number_config: dict[str, Any],
     ) -> VMobject:
         """Generates a positioned :class:`~.DecimalNumber` mobject
@@ -487,7 +487,7 @@ class NumberLine(Line):
         if font_size is None:
             font_size = self.font_size
         if label_constructor is None:
-            label_constructor = self.label_constructor
+            label_constructor = cast(type[SingleStringMathTex], self.label_constructor)
 
         num_mob = DecimalNumber(
             x,
@@ -515,7 +515,7 @@ class NumberLine(Line):
         x_values: Iterable[float] | None = None,
         excluding: Iterable[float] | None = None,
         font_size: float | None = None,
-        label_constructor: type[ManimTextLabel] | None = None,
+        label_constructor: type[SingleStringMathTex] | None = None,
         **kwargs: Any,
     ) -> Self:
         """Adds :class:`~.DecimalNumber` mobjects representing their position
@@ -547,7 +547,7 @@ class NumberLine(Line):
             font_size = self.font_size
 
         if label_constructor is None:
-            label_constructor = self.label_constructor
+            label_constructor = cast(type[SingleStringMathTex], self.label_constructor)
 
         numbers = VGroup()
         for x in x_values:
@@ -620,7 +620,7 @@ class NumberLine(Line):
                 label = self._create_label_tex(label, label_constructor)
 
             if hasattr(label, "font_size"):
-                label.font_size = font_size
+                cast(Any, label).font_size = font_size
             else:
                 raise AttributeError(f"{label} is not compatible with add_labels.")
             label.next_to(self.number_to_point(x), direction=direction, buff=buff)

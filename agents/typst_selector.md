@@ -45,13 +45,13 @@ The following Typst helper wraps content in a labeled `box`:
 When used in math:
 
 ```typst
-$ #grp("numer", $a + b$) / #grp("denom", $c - d$) = #grp("result", $x$) $
+$ #grp("numerator", $a + b$) / #grp("denom", $c - d$) = #grp("result", $x$) $
 ```
 
 The compiled SVG contains:
 
 ```xml
-<g class="typst-group" ... data-typst-label="numer">
+<g class="typst-group" ... data-typst-label="numerator">
   <!-- glyphs for a + b -->
 </g>
 <g class="typst-group" ... data-typst-label="denom">
@@ -66,14 +66,14 @@ The compiled SVG contains:
 sub-parts produces nested `data-typst-label` groups:
 
 ```typst
-$ #grp("whole-frac", $frac(#grp("numer", $a + b$), #grp("denom", $c - d$))$) $
+$ #grp("whole-frac", $frac(#grp("numerator", $a + b$), #grp("denom", $c - d$))$) $
 ```
 
 SVG output:
 
 ```xml
 <g ... data-typst-label="whole-frac">
-  <g ... data-typst-label="numer"> ... </g>
+  <g ... data-typst-label="numerator"> ... </g>
   <g ... data-typst-label="denom"> ... </g>
   <path class="typst-shape" ... />  <!-- fraction bar -->
 </g>
@@ -131,9 +131,9 @@ Users can also assign explicit label names for retrieval by name:
 
 ```python
 eq = Typst(
-    r"$ #box[$a + b$] <numer> / #box[$c - d$] <denom> $"
+    r"$ #box[$a + b$] <numerator> / #box[$c - d$] <denom> $"
 )
-eq.select("numer").set_color(RED)
+eq.select("numerator").set_color(RED)
 eq.select("denom").set_color(BLUE)
 ```
 
@@ -141,8 +141,8 @@ Alternatively, an even more ergonomic approach that hides the `box` boilerplate
 and uses the `{{ ... : label }}` notation:
 
 ```python
-eq = TypstMath("{{ a + b : numer }} / {{ c - d : denom }}")
-eq.select("numer").set_color(RED)
+eq = TypstMath("{{ a + b : numerator }} / {{ c - d : denom }}")
+eq.select("numerator").set_color(RED)
 ```
 
 Here the pre-processor recognizes `{{ content : label }}` and emits
