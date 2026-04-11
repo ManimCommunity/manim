@@ -1031,22 +1031,24 @@ class VMobject(Mobject):
         -------
             The VMobject itself, after appending new_points.
         """
-        if len(new_points) % 4 != 0 and not (len(self.points) % 4 == 1 and len(new_points) % 4 == 3):
-                if len(self.points) % 4 == 1:
-                    raise ValueError(
-                        "Your existing shape has an incomplete curve waiting to be finished. "
-                        "The new_points array must have at least 3 more points, "
-                        "and then any multiple of 4 points after that, to complete it "
-                        "Each point is a 1D numpy array of shape (3,). "
-                        f"You've given {len(new_points)} points."
-                    )
-                else:
-                    raise ValueError(
-                        "This method requires valid number of points, each having the shape (3,) to work. "
-                        f"You've given only {len(new_points)} points, which cannot form a cubic bezier curve. "
-                        "Try giving 4 new points or a multiple of 4 points in the new_points array. "
-                        "Each point is a 1D numpy array of shape (3,)."
-                    )
+        if len(new_points) % 4 != 0 and not (
+            len(self.points) % 4 == 1 and len(new_points) % 4 == 3
+        ):
+            if len(self.points) % 4 == 1:
+                raise ValueError(
+                    "Your existing shape has an incomplete curve waiting to be finished. "
+                    "The new_points array must have at least 3 more points, "
+                    "and then any multiple of 4 points after that, to complete it "
+                    "Each point is a 1D numpy array of shape (3,). "
+                    f"You've given {len(new_points)} points."
+                )
+            else:
+                raise ValueError(
+                    "This method requires valid number of points, each having the shape (3,) to work. "
+                    f"You've given only {len(new_points)} points, which cannot form a cubic bezier curve. "
+                    "Try giving 4 new points or a multiple of 4 points in the new_points array. "
+                    "Each point is a 1D numpy array of shape (3,)."
+                )
         n = len(self.points)
         points = np.empty((n + len(new_points), self.dim))
         points[:n] = self.points
