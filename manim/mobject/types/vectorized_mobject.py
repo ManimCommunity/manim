@@ -1546,9 +1546,9 @@ class VMobject(Mobject):
         points: CubicBezierPath,
         filter_func: Callable[[int], bool],
     ) -> Iterable[CubicSpline]:
-        """Given an array of points defining a group of Bézier curves, 
+        """Given an array of points defining a group of Bézier curves,
         this method returns subpaths formed by those points.
-        
+
         Note
         ----
         A subpath can be a group of consecutive Bézier curves, not necessarily a single Bézier curve.
@@ -1558,7 +1558,7 @@ class VMobject(Mobject):
         i.e. if the end anchor of one curve and the start anchor of the next
         satisfy the relation defined by ``filter_func``.
 
-        The ``filter_func`` takes an integer n, in ``range(nppcc, len(points), nppcc)`` as parameter, 
+        The ``filter_func`` takes an integer n, in ``range(nppcc, len(points), nppcc)`` as parameter,
         and evaluates the relation between ``points[n - 1]`` (i.e. end anchor) and ``points[n]`` (i.e. start_anchor).
         This should probably be changed so that the function takes two points as parameters.
 
