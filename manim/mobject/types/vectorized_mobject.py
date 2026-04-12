@@ -155,7 +155,7 @@ class VMobject(Mobject):
         self.shade_in_3d: bool = shade_in_3d
         self.tolerance_for_point_equality: float = tolerance_for_point_equality
         self.n_points_per_cubic_curve: int = n_points_per_cubic_curve
-        self._bezier_t_values: npt.NDArray[float] = np.linspace(
+        self._bezier_t_values: npt.NDArray[np.float64] = np.linspace(
             0, 1, n_points_per_cubic_curve
         )
         self.cap_style: CapStyleType = cap_style
