@@ -1,17 +1,52 @@
-############
-Contributing
-############
+from manim import *
 
-.. important:: Manim is currently undergoing a major refactor. In general,
-   contributions implementing new features will not be accepted in this period.
-   Other contributions unrelated to cleaning up the codebase may also take a longer
-   period of time to be reviewed. This guide may quickly become outdated quickly; we
-   highly recommend joining our `Discord server <https://www.manim.community/discord/>`__
-   to discuss any potential contributions and keep up to date with the latest developments.
+class FractionAddition(Scene):
+    def construct(self):
+        # 1. إنشاء الكسور الأساسية
+        equation1 = MathTex(r"\frac{1}{2}", "+", r"\frac{1}{4}")
+        equation1.scale(1.5)
+        
+        # 2. عرض المسألة في البداية
+        self.play(Write(equation1))
+        self.wait(1)
 
-Thank you for your interest in contributing to Manim! However you have decided to contribute
-or interact with the community, please always be civil and respect other
-members of the community. If you haven't read our :doc:`code of conduct<conduct>`,
+        # 3. تحويل الكسر 1/2 ليكون 2/4 (توحيد المقامات)
+        # هنكتب الكسر الجديد في نفس مكان القديم
+        fraction_step2 = MathTex(r"\frac{1 \times 2}{2 \times 2}", "+", r"\frac{1}{4}")
+        fraction_step2.scale(1.5)
+        
+        fraction_step3 = MathTex(r"\frac{2}{4}", "+", r"\frac{1}{4}")
+        fraction_step3.scale(1.5)
+
+        self.play(ReplacementTransform(equation1[0], fraction_step3[0]))
+        self.wait(1)
+
+        # 4. تداخل الأرقام ليكون المقام موحد
+        common_denominator_step = MathTex(r"\frac{2+1}{4}")
+        common_denominator_step.scale(1.5)
+        
+        # إخفاء علامة الزائد والكسر التاني ودمجهم في كسر واحد
+        self.play(
+            ReplacementTransform(VGroup(fraction_step3[0], fraction_step3[1], fraction_step3[2]), common_denominator_step)
+        )
+        self.wait(1)
+
+        # 5. ظهور علامة اليساوي "كأنها وقعت من فوق"
+        equals_sign = MathTex("=")
+        equals_sign.scale(1.5)
+        equals_sign.next_to(common_denominator_step, RIGHT)
+        
+        # بنحطها فوق الشاشة الأول وبعدين بننزلها
+        equals_sign.shift(UP * 5) 
+        self.play(equals_sign.animate.shift(DOWN * 5), run_time=1, rate_func=bounce)
+        
+        # 6. كتابة الناتج النهائي
+        final_result = MathTex(r"\frac{3}{4}")
+        final_result.scale(1.5)
+        final_result.next_to(equals_sign, RIGHT)
+        
+        self.play(Write(final_result))
+        self.wait(2)
 do so here. Manim is Free and Open Source Software (FOSS) for mathematical
 animations. As such, **we welcome everyone** who is interested in
 mathematics, pedagogy, computer animations, open-source,
