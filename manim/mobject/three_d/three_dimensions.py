@@ -17,7 +17,7 @@ __all__ = [
 ]
 
 from collections.abc import Callable, Iterable, Sequence
-from typing import TYPE_CHECKING, Any, Literal, Self
+from typing import TYPE_CHECKING, Any, Literal, Self, Type
 
 import numpy as np
 from isosurfaces import plot_isosurface
@@ -77,7 +77,7 @@ class BaseSurface(VGroup, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        face_grid: list[list[VMobject | OpenGLVMobject]] = [[]],
+        face_grid: list[list[VMobject]] = [[]],
         surface_piece_config: dict = {},
         fill_color: ParsableManimColor = BLUE_D,
         fill_opacity: float = 1.0,
@@ -260,6 +260,7 @@ class BaseSurface(VGroup, metaclass=ConvertToOpenGL):
         """Renders the faces in the surface, adding them to the scene and
         setting the stroke and fill colours.
         """
+        faces: OpenGLVGroup | VGroup
         if config.renderer == RendererType.OPENGL:
             faces = OpenGLVGroup()
         elif config.renderer == RendererType.CAIRO:
@@ -267,7 +268,7 @@ class BaseSurface(VGroup, metaclass=ConvertToOpenGL):
         else:
             raise Exception("Unknown renderer")
 
-        faces.add(*[face for row in self.face_grid for face in row])
+        faces.add(*[face for row in self.face_grid for face in row])  # type: ignore[arg-type]
         faces.set_stroke(
             color=self.stroke_color,
             width=self.stroke_width,
@@ -392,8 +393,9 @@ class Surface(BaseSurface, metaclass=ConvertToOpenGL):
     def _setup_in_uv_space(self) -> None:
         u_values, v_values = self._get_u_values_and_v_values()
         self.face_grid = []
+        vmobj: type[VMobject]
         if config.renderer == RendererType.OPENGL:
-            vmobj = OpenGLVMobject
+            vmobj = OpenGLVMobject  # type: ignore[assignment]
         elif config.renderer == RendererType.CAIRO:
             vmobj = VMobject
         else:
@@ -551,8 +553,9 @@ class ImplicitSurface(BaseSurface, metaclass=ConvertToOpenGL):
             )
 
         # convert to manim's VMobject
+        vmobj: type[VMobject]
         if config.renderer == RendererType.OPENGL:
-            vmobj = OpenGLVMobject
+            vmobj = OpenGLVMobject  # type: ignore[assignment]
         elif config.renderer == RendererType.CAIRO:
             vmobj = VMobject
         else:
