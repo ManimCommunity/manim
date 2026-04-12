@@ -17,7 +17,7 @@ __all__ = [
 ]
 
 from collections.abc import Callable, Iterable, Sequence
-from typing import TYPE_CHECKING, Any, Literal, Self, Type
+from typing import TYPE_CHECKING, Any, Literal, Self
 
 import numpy as np
 from isosurfaces import plot_isosurface
