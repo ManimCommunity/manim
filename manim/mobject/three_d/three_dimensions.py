@@ -29,6 +29,7 @@ from manim.mobject.geometry.polygram import Square
 from manim.mobject.mobject import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
 from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
 from manim.utils.color import (
     BLUE,
@@ -76,7 +77,7 @@ class BaseSurface(VGroup, metaclass=ConvertToOpenGL):
 
     def __init__(
         self,
-        face_grid: list[list[VMobject]] = [[]],
+        face_grid: list[list[VMobject | OpenGLVMobject]] = [[]],
         surface_piece_config: dict = {},
         fill_color: ParsableManimColor = BLUE_D,
         fill_opacity: float = 1.0,
@@ -249,6 +250,8 @@ class BaseSurface(VGroup, metaclass=ConvertToOpenGL):
                             mob.set_color(mob_color, recurse=False)
                         elif config.renderer == RendererType.CAIRO:
                             mob.set_color(mob_color, family=False)
+                        else:
+                            raise Exception("Unknown renderer")
                         break
 
         return self
@@ -257,7 +260,14 @@ class BaseSurface(VGroup, metaclass=ConvertToOpenGL):
         """Renders the faces in the surface, adding them to the scene and
         setting the stroke and fill colours.
         """
-        faces = VGroup([face for row in self.face_grid for face in row])
+        if config.renderer == RendererType.OPENGL:
+            faces = OpenGLVGroup()
+        elif config.renderer == RendererType.CAIRO:
+            faces = VGroup()
+        else:
+            raise Exception("Unknown renderer")
+
+        faces.add(*[face for row in self.face_grid for face in row])
         faces.set_stroke(
             color=self.stroke_color,
             width=self.stroke_width,
@@ -382,12 +392,19 @@ class Surface(BaseSurface, metaclass=ConvertToOpenGL):
     def _setup_in_uv_space(self) -> None:
         u_values, v_values = self._get_u_values_and_v_values()
         self.face_grid = []
+        if config.renderer == RendererType.OPENGL:
+            vmobj = OpenGLVMobject
+        elif config.renderer == RendererType.CAIRO:
+            vmobj = VMobject
+        else:
+            raise Exception("Unknown renderer")
+
         for i in range(len(u_values) - 1):
             self.face_grid.append([])
             for j in range(len(v_values) - 1):
                 u1, u2 = u_values[i : i + 2]
                 v1, v2 = v_values[j : j + 2]
-                face = VMobject()
+                face = vmobj()
                 face.set_points_as_corners(
                     [
                         [u1, v1, 0],
@@ -525,7 +542,7 @@ class ImplicitSurface(BaseSurface, metaclass=ConvertToOpenGL):
                     tol=self.tol,
                 )
                 break  # choose the first successful run
-            except Exception:
+            except AssertionError:
                 pass  # else try another eps
         else:
             raise RuntimeError(
@@ -534,9 +551,16 @@ class ImplicitSurface(BaseSurface, metaclass=ConvertToOpenGL):
             )
 
         # convert to manim's VMobject
+        if config.renderer == RendererType.OPENGL:
+            vmobj = OpenGLVMobject
+        elif config.renderer == RendererType.CAIRO:
+            vmobj = VMobject
+        else:
+            raise Exception("Unknown renderer")
+
         self.face_grid = [[]]
         for triangle in triangles:
-            face = VMobject()
+            face = vmobj()
             face.set_points_as_corners([*triangle, triangle[-1]])
             self.face_grid[-1].append(face)
 
@@ -1078,6 +1102,8 @@ class Cylinder(Surface):
         elif config.renderer == RendererType.CAIRO:
             color = self.fill_color
             opacity = self.fill_opacity
+        else:
+            raise Exception("Unknown renderer")
 
         self.base_top = Circle(
             radius=self.radius,
@@ -1511,6 +1537,8 @@ class Torus(Surface):
             res_value = (101, 101)
         elif config.renderer == RendererType.CAIRO:
             res_value = (24, 24)
+        else:
+            raise Exception("Unknown renderer")
 
         resolution = resolution if resolution is not None else res_value
 
