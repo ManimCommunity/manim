@@ -1250,14 +1250,13 @@ class VMobject(Mobject):
 
     def has_new_path_started(self) -> bool:
         nppcc = self.n_points_per_cubic_curve  # 4
-        # A new path starting is defined by a control point which is not part of a bezier subcurve.
+        # A new path starting is defined by a start_anchor_point which is not part of a bezier subcurve.
         return len(self.points) % nppcc == 1
 
     def get_last_point(self) -> Point3D:
         return self.points[-1]
 
     def is_closed(self) -> bool:
-        # TODO use consider_points_equals_2d ?
         return self.consider_points_equals(self.points[0], self.points[-1])
 
     def close_path(self) -> None:
@@ -1547,25 +1546,33 @@ class VMobject(Mobject):
         points: CubicBezierPath,
         filter_func: Callable[[int], bool],
     ) -> Iterable[CubicSpline]:
-        """Given an array of points defining the bezier curves of the vmobject, return subpaths formed by these points.
-        Here, Two bezier curves form a path if at least two of their anchors are evaluated True by the relation defined by filter_func.
+        """Given an array of points defining a group of Bézier curves, 
+        this method returns subpaths formed by those points.
+        
+        Note
+        ----
+        A subpath can be a group of consecutive Bézier curves, not necessarily a single Bézier curve.
 
-        The algorithm every bezier tuple (anchors and handles) in ``self.points`` (by regrouping each n elements, where
-        n is the number of points per cubic curve)), and evaluate the relation between two anchors with filter_func.
-        NOTE : The filter_func takes an int n as parameter, and will evaluate the relation between points[n] and points[n - 1]. This should probably be changed so
-        the function takes two points as parameters.
+        Two consecutive cubic Bézier curves belong to the same subpath if
+        ``filter_func`` returns ``True`` for the index at their boundary,
+        i.e. if the end anchor of one curve and the start anchor of the next
+        satisfy the relation defined by ``filter_func``.
+
+        The ``filter_func`` takes an integer n, in ``range(nppcc, len(points), nppcc)`` as parameter, 
+        and evaluates the relation between ``points[n - 1]`` (i.e. end anchor) and ``points[n]`` (i.e. start_anchor).
+        This should probably be changed so that the function takes two points as parameters.
 
         Parameters
         ----------
         points
-            points defining the bezier curve.
+            Points defining the group of Bézier curves.
         filter_func
-            Filter-func defining the relation.
+            A callable defining the relation between two anchor points of consecutive Bézier curves.
 
         Returns
         -------
-        Iterable[CubicSpline]
-            subpaths formed by the points.
+            The method returns an iterable comprising subpaths.
+            CubicSpline here is used loosely — it really just means a group of consecutive connected Bézier curves, not a mathematically smooth spline.
         """
         nppcc = self.n_points_per_cubic_curve
         filtered = filter(filter_func, range(nppcc, len(points), nppcc))
