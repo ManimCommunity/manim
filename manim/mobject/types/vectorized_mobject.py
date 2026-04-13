@@ -2243,11 +2243,11 @@ class VMobject(Mobject):
             A float value(0 <= a <= 1) representing the lower bound.
         b
             A float value(0 <= b <= 1) representing the upper bound.
-        
+
         Note
         ----
         It's not necessary that a should always be less than b.
-        
+
         Returns
         -------
         VMobject
