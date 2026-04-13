@@ -795,7 +795,7 @@ class VMobject(Mobject):
         Parameters
         ----------
         angle
-            Angle by which the direction of sheen is rotated.
+            Angle, in radians, by which the direction of sheen is rotated.
         axis
             Axis of rotation.
 
@@ -1265,21 +1265,22 @@ class VMobject(Mobject):
 
     def add_points_as_corners(self, points: Point3DLike_Array) -> Self:
         """Append multiple straight lines at the end of
-        :attr:`VMobject.points`, which connect the given ``points`` in order
+        :attr:`VMobject.points`, which connect the given ``points`` in order,
         starting from the end of the current path. These ``points`` would be
         therefore the corners of the new polyline appended to the path.
 
         Parameters
         ----------
         points
-            An array of 3D points representing the corners of the polyline to
+            An 2D numpy array of 3D points
+            i.e. each point in this 2D array is a 1D numpy array of shape (3,).
+            ``points`` array representing the corners of the polyline to
             append to :attr:`VMobject.points`.
 
         Returns
         -------
         :class:`VMobject`
-            The VMobject itself, after appending the straight lines to its
-            path.
+            The VMobject itself.
         """
         self.throw_error_if_no_points()
 
@@ -1406,8 +1407,7 @@ class VMobject(Mobject):
 
     def append_vectorized_mobject(self, vectorized_mobject: VMobject) -> None:
         if self.has_new_path_started():
-            # Remove last point, which is starting
-            # a new path
+            # Remove last point, which is starting a new path
             self.points = self.points[:-1]
         self.append_points(vectorized_mobject.points)
 
@@ -1515,12 +1515,11 @@ class VMobject(Mobject):
     def gen_cubic_bezier_tuples_from_points(
         self, points: CubicBezierPathLike
     ) -> tuple[CubicBezierPointsLike, ...]:
-        """Returns the bezier tuples from an array of points.
+        """Returns the cubic bezier tuples from an array of points.
 
         self.points is a list of the anchors and handles of the bezier curves of the mobject (ie [anchor1, handle1, handle2, anchor2, anchor3 ..])
-        This algorithm basically retrieve them by taking an element every n, where n is the number of control points
-        of the bezier curve.
-
+        This algorithm basically retrieves them by taking every n consecutive points, where n is the number of control points
+        of a cubic bezier curve, which is the same as ``n_points_per_cubic_curve``.
 
         Parameters
         ----------
@@ -1551,7 +1550,7 @@ class VMobject(Mobject):
         
         Note
         ----
-        A subpath can be a group of consecutive Bézier curves, not necessarily a single Bézier curve.
+        A subpath can either be a group of consecutive Bézier curves, or a single Bézier curve.
 
         Two consecutive cubic Bézier curves belong to the same subpath if
         ``filter_func`` returns ``True`` for the index at their boundary,
@@ -1572,7 +1571,8 @@ class VMobject(Mobject):
         Returns
         -------
             The method returns an iterable comprising subpaths.
-            CubicSpline here is used loosely — it really just means a group of consecutive connected Bézier curves, not a mathematically smooth spline.
+            CubicSpline here is used loosely — it really just means a group of consecutive connected Bézier curves,
+            not a mathematically smooth spline.
         """
         nppcc = self.n_points_per_cubic_curve
         filtered = filter(filter_func, range(nppcc, len(points), nppcc))
@@ -1602,7 +1602,7 @@ class VMobject(Mobject):
     def get_subpaths(self) -> list[CubicSpline]:
         """Returns subpaths formed by the curves of the VMobject.
 
-        Subpaths are ranges of curves with each pair of consecutive curves having their end/start points coincident.
+        A subpath can either be a group of consecutive Bézier curves, or a single Bézier curve.
 
         Returns
         -------
@@ -1612,7 +1612,8 @@ class VMobject(Mobject):
         return self.get_subpaths_from_points(self.points)
 
     def get_nth_curve_points(self, n: int) -> CubicBezierPoints:
-        """Returns the points defining the nth curve of the vmobject.
+        """Returns all the four control points [start_anchor, handle1, handle2, end_anchor]
+        defining the nth cubic Bezier curve of the vmobject.
 
         Parameters
         ----------
@@ -1622,7 +1623,7 @@ class VMobject(Mobject):
         Returns
         -------
         CubicBezierPoints
-            points defining the nth bezier curve (anchors, handles)
+            points defining the nth cubic bezier curve.
         """
         assert n < self.get_num_curves()
         nppcc = self.n_points_per_cubic_curve
@@ -1735,7 +1736,7 @@ class VMobject(Mobject):
     def get_curve_functions(
         self,
     ) -> Iterable[Callable[[float], Point3D]]:
-        """Gets the functions for the curves of the mobject.
+        """Generates the functions for the curves of the mobject.
 
         Returns
         -------
@@ -1750,7 +1751,7 @@ class VMobject(Mobject):
     def get_curve_functions_with_lengths(
         self, **kwargs
     ) -> Iterable[tuple[Callable[[float], Point3D], float]]:
-        """Gets the functions and lengths of the curves for the mobject.
+        """Generates the functions and lengths of the curves for the VMobject.
 
         Parameters
         ----------
@@ -1768,7 +1769,7 @@ class VMobject(Mobject):
             yield self.get_nth_curve_function_with_length(n, **kwargs)
 
     def point_from_proportion(self, alpha: float) -> Point3D:
-        """Gets the point at a proportion along the path of the :class:`VMobject`.
+        """Returns the point at a proportion along the path of the :class:`VMobject`.
 
         Parameters
         ----------
@@ -1778,7 +1779,7 @@ class VMobject(Mobject):
         Returns
         -------
         :class:`numpy.ndarray`
-            The point on the :class:`VMobject`.
+            The 3D point at the position specified by alpha.
 
         Raises
         ------
@@ -1804,7 +1805,7 @@ class VMobject(Mobject):
                         ))
         """
         if alpha < 0 or alpha > 1:
-            raise ValueError(f"Alpha {alpha} not between 0 and 1.")
+            raise ValueError(f"Alpha is {alpha}. It must be between 0 and 1.")
 
         self.throw_error_if_no_points()
         if alpha == 1:
@@ -1936,7 +1937,7 @@ class VMobject(Mobject):
         return list(it.chain.from_iterable(zip(s, e, strict=True)))
 
     def get_points_defining_boundary(self) -> Point3D_Array:
-        # Probably returns all anchors, but this is weird regarding  the name of the method.
+        # Probably returns all anchors, but this is weird regarding the name of the method.
         return np.array(
             tuple(it.chain(*(sm.get_anchors() for sm in self.get_family())))
         )
@@ -1963,7 +1964,7 @@ class VMobject(Mobject):
 
     # Alignment
     def align_points(self, vmobject: VMobject) -> Self:
-        """Adds points to self and vmobject so that they both have the same number of subpaths, with
+        """Adds points to self and VMobject so that they both have the same number of subpaths, with
         corresponding subpaths each containing the same number of points.
 
         Points are added either by subdividing curves evenly along the subpath, or by creating new subpaths consisting
@@ -2040,12 +2041,12 @@ class VMobject(Mobject):
         return self
 
     def insert_n_curves(self, n: int) -> Self:
-        """Inserts n curves to the bezier curves of the vmobject.
+        """Inserts n number of cubic bezier curves to the bezier curves of the VMobject.
 
         Parameters
         ----------
         n
-            Number of curves to insert.
+            Number of cubic bezier curves to insert.
 
         Returns
         -------
@@ -2239,14 +2240,18 @@ class VMobject(Mobject):
         ----------
 
         a
-            The lower bound.
+            A float value(0 <= a <= 1) representing the lower bound.
         b
-            The upper bound.
-
+            A float value(0 <= b <= 1) representing the upper bound.
+        
+        Note
+        ----
+        It's not necessary that a should always be less than b.
+        
         Returns
         -------
         VMobject
-            The subcurve between of [a, b]
+            The subcurve between [a, b]
         """
         if self.is_closed() and a > b:
             vmob = self.copy()
