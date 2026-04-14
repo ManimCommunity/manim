@@ -2140,7 +2140,8 @@ class OpenGLMobject:
         if np.all(current_vector == 0):            
             warnings.warn(
                 "put_start_and_end_on has been called on a closed loop or zero-length mobject. "
-                f"{type(self).__name__} will be shifted to start point instead."
+                f"{type(self).__name__} will be shifted to start point instead.",
+                stacklevel=2,
             )
             self.shift(np.asarray(start) - current_start)
             return self
