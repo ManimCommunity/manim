@@ -54,9 +54,9 @@ if TYPE_CHECKING:
 
     from manim.typing import (
         CubicBezierPath,
-        CubicBezierPointsLike,
-        CubicBezierPoints_Array,
         CubicBezierPathLike,
+        CubicBezierPoints_Array,
+        CubicBezierPointsLike,
         CubicSpline,
         FloatRGBA,
         FloatRGBA_Array,
