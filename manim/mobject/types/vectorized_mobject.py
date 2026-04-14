@@ -2105,7 +2105,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
     Notes
     -----
     When adding the same mobject more than once, repetitions are ignored by default.
-    If you want to add same mobjects to the VGroup, use :meth:`.Mobject.copy` 
+    If you want to add same mobjects to the VGroup, use :meth:`.Mobject.copy`
     to create a separate copy which can then be added to the VGroup.
 
     Examples
