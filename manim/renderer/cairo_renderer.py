@@ -3,8 +3,6 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import TYPE_CHECKING, Any
 
-import numpy as np
-
 from manim.utils.hashing import get_hash_from_play_call
 
 from .. import config, logger

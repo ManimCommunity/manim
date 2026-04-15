@@ -437,7 +437,10 @@ class Camera:
         Camera
             The camera object after setting the pixel array.
         """
-        if hasattr(self, "pixel_array") and self.pixel_array.shape == self.background.shape:
+        if (
+            hasattr(self, "pixel_array")
+            and self.pixel_array.shape == self.background.shape
+        ):
             np.copyto(self.pixel_array, self.background)
         else:
             self.pixel_array = self.background.copy()
@@ -740,15 +743,13 @@ class Camera:
 
         # Check which boundaries are splits (points NOT equal)
         ends = points[boundary_indices - 1, :2]  # end of previous curve
-        starts = points[boundary_indices, :2]     # start of next curve
+        starts = points[boundary_indices, :2]  # start of next curve
         diffs = np.abs(ends - starts)
         thresholds = atol + rtol * np.abs(starts)
         is_split = np.any(diffs > thresholds, axis=1)
 
         # Build split indices: [0, split1, split2, ..., n_pts]
-        split_indices = np.concatenate(
-            [[0], boundary_indices[is_split], [n_pts]]
-        )
+        split_indices = np.concatenate([[0], boundary_indices[is_split], [n_pts]])
 
         # Precompute flat xy array for fast indexing
         pts_xy = points[:, :2].ravel()  # [x0, y0, x1, y1, ...]
@@ -776,17 +777,21 @@ class Camera:
             for i in range(start_idx, end_idx - nppcc + 1, nppcc):
                 b = (i + 1) * 2  # handle1
                 _curve_to(
-                    pts_xy[b], pts_xy[b + 1],
-                    pts_xy[b + 2], pts_xy[b + 3],
-                    pts_xy[b + 4], pts_xy[b + 5],
+                    pts_xy[b],
+                    pts_xy[b + 1],
+                    pts_xy[b + 2],
+                    pts_xy[b + 3],
+                    pts_xy[b + 4],
+                    pts_xy[b + 5],
                 )
 
             # Close if first and last points are equal
             last_base = (end_idx - 1) * 2
             dx = abs(pts_xy[base] - pts_xy[last_base])
             dy = abs(pts_xy[base + 1] - pts_xy[last_base + 1])
-            if (dx <= atol + rtol * abs(pts_xy[last_base]) and
-                    dy <= atol + rtol * abs(pts_xy[last_base + 1])):
+            if dx <= atol + rtol * abs(pts_xy[last_base]) and dy <= atol + rtol * abs(
+                pts_xy[last_base + 1]
+            ):
                 _close_path()
 
         return self

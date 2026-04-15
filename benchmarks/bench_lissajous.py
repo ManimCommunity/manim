@@ -15,10 +15,11 @@ import tempfile
 import time
 
 import numpy as np
+
 from manim import *
 
-
 # ─── Helper functions (from functions.py) ─────────────────────────────────────
+
 
 def color_map(speed, min_value, max_value, *colors):
     alpha = (speed - min_value) / (max_value - min_value)
@@ -47,6 +48,7 @@ def get_intersection_point(row_circ, column_circ):
 
 # ─── Custom mobject (from mobjects.py) ────────────────────────────────────────
 
+
 class LissajousCircle(Circle):
     def __init__(
         self,
@@ -57,7 +59,7 @@ class LissajousCircle(Circle):
         include_radius_line=True,
         radius_line_kwargs=None,
         start_angle=0,
-        **circle_kwargs
+        **circle_kwargs,
     ):
         if point_kwargs is None:
             point_kwargs = {}
@@ -113,7 +115,7 @@ class LissajousTableScene(Scene):
         include_radius_line=True,
         row_circle_speeds_range=(1, 3),
         column_circle_speeds_range=(1, 3),
-        **kwargs
+        **kwargs,
     ):
         if circle_kwargs is None:
             circle_kwargs = {}
@@ -285,11 +287,11 @@ class DrawLissajousFigures(LissajousTableScene):
             AnimationGroup(
                 LaggedStart(
                     *[FadeIn(c, shift=0.25 * LEFT) for c in self.row_circles],
-                    lag_ratio=0.25
+                    lag_ratio=0.25,
                 ),
                 LaggedStart(
                     *[FadeIn(c, shift=0.25 * UP) for c in self.column_circles],
-                    lag_ratio=0.25
+                    lag_ratio=0.25,
                 ),
                 lag_ratio=1,
                 run_time=4,
@@ -319,24 +321,33 @@ class DrawLissajousFigures(LissajousTableScene):
 class RadiusOne(DrawLissajousFigures):
     def __init__(self):
         super().__init__(
-            radius=1, row_buff=0.5, column_buff=0.4,
-            top_edge_buff=0.5, left_edge_buff=0.5,
+            radius=1,
+            row_buff=0.5,
+            column_buff=0.4,
+            top_edge_buff=0.5,
+            left_edge_buff=0.5,
         )
 
 
 class RadiusHalf(DrawLissajousFigures):
     def __init__(self):
         super().__init__(
-            radius=0.5, row_buff=0.25, column_buff=0.3,
-            top_edge_buff=0.5, left_edge_buff=0.5,
+            radius=0.5,
+            row_buff=0.25,
+            column_buff=0.3,
+            top_edge_buff=0.5,
+            left_edge_buff=0.5,
         )
 
 
 class RadiusThreeFourths(DrawLissajousFigures):
     def __init__(self):
         super().__init__(
-            radius=0.75, row_buff=0.25, column_buff=0.25,
-            top_edge_buff=0.5, left_edge_buff=0.5,
+            radius=0.75,
+            row_buff=0.25,
+            column_buff=0.25,
+            top_edge_buff=0.5,
+            left_edge_buff=0.5,
         )
 
 
@@ -378,10 +389,12 @@ if __name__ == "__main__":
             times = bench_scene(scene_cls)
             avg = sum(times) / len(times)
             grand_total += avg
-            runs_str = ", ".join(f"{t*1000:.0f}" for t in times)
-            print(f"  {scene_cls.__name__:<30s}  {avg*1000:>8.0f}ms  (runs: {runs_str}ms)")
+            runs_str = ", ".join(f"{t * 1000:.0f}" for t in times)
+            print(
+                f"  {scene_cls.__name__:<30s}  {avg * 1000:>8.0f}ms  (runs: {runs_str}ms)"
+            )
         except Exception as e:
             print(f"  {scene_cls.__name__:<30s}  FAILED: {e}")
 
-    print(f"-" * 75)
-    print(f"  {'TOTAL':<30s}  {grand_total*1000:>8.0f}ms")
+    print("-" * 75)
+    print(f"  {'TOTAL':<30s}  {grand_total * 1000:>8.0f}ms")
