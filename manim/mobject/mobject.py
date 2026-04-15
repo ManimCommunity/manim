@@ -1358,7 +1358,7 @@ class Mobject:
             The point about which the mobject rotates. If ``None``, rotation occurs around
             the center of the mobject.
         about_edge
-            The edge about which to apply the scaling.
+            The edge about which to apply the rotation.
 
         Returns
         -------
