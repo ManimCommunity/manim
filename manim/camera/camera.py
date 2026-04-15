@@ -437,6 +437,7 @@ class Camera:
         Camera
             The camera object after setting the pixel array.
         """
+        assert self.background is not None
         if (
             hasattr(self, "pixel_array")
             and self.pixel_array.shape == self.background.shape
