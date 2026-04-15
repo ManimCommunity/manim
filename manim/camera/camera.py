@@ -751,9 +751,7 @@ class Camera:
             is_split = np.any(diffs > thresholds, axis=1)
 
             # Build split indices: [0, split1, split2, ..., n_pts]
-            split_indices = np.concatenate(
-                [[0], boundary_indices[is_split], [n_pts]]
-            )
+            split_indices = np.concatenate([[0], boundary_indices[is_split], [n_pts]])
 
         # Precompute flat xy array for fast indexing
         pts_xy = points[:, :2].ravel()  # [x0, y0, x1, y1, ...]
