@@ -199,7 +199,7 @@ def rotate_vector(
 
     Note
     ----
-        "rotation_matrix(angle, axis) @ vector", treats the vector as starting at the origin,
+        ``rotation_matrix(angle, axis) @ vector`` treats the vector as starting at the origin,
         and spins it around the given axis passing through the origin.
         The tail of the vector stays fixed at the origin; only the position of the tip changes.
         In ManimCE, a positive angle rotates the vector counterclockwise when viewed from the tip of the axis toward the origin,
