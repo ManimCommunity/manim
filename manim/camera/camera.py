@@ -740,17 +740,20 @@ class Camera:
         # Indices where a new cubic curve starts
         boundary_indices = np.arange(nppcc, n_pts, nppcc)
         if len(boundary_indices) == 0:
-            return self
+            # Single cubic curve — no internal boundaries to split on.
+            split_indices = np.array([0, n_pts])
+        else:
+            # Check which boundaries are splits (points NOT equal)
+            ends = points[boundary_indices - 1, :2]  # end of previous curve
+            starts = points[boundary_indices, :2]  # start of next curve
+            diffs = np.abs(ends - starts)
+            thresholds = atol + rtol * np.abs(starts)
+            is_split = np.any(diffs > thresholds, axis=1)
 
-        # Check which boundaries are splits (points NOT equal)
-        ends = points[boundary_indices - 1, :2]  # end of previous curve
-        starts = points[boundary_indices, :2]  # start of next curve
-        diffs = np.abs(ends - starts)
-        thresholds = atol + rtol * np.abs(starts)
-        is_split = np.any(diffs > thresholds, axis=1)
-
-        # Build split indices: [0, split1, split2, ..., n_pts]
-        split_indices = np.concatenate([[0], boundary_indices[is_split], [n_pts]])
+            # Build split indices: [0, split1, split2, ..., n_pts]
+            split_indices = np.concatenate(
+                [[0], boundary_indices[is_split], [n_pts]]
+            )
 
         # Precompute flat xy array for fast indexing
         pts_xy = points[:, :2].ravel()  # [x0, y0, x1, y1, ...]
