@@ -723,6 +723,9 @@ class Camera:
         points = self.transform_points_pre_display(vmobject, vmobject.points)
         if len(points) == 0:
             return self
+        # vmobject.points may be a Python list (see VMobjectDemo in the docs);
+        # the vectorized path-building below needs an ndarray.
+        points = np.asarray(points)
 
         nppcc = vmobject.n_points_per_cubic_curve  # 4 for cubic bezier
         atol = vmobject.tolerance_for_point_equality
