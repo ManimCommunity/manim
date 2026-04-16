@@ -41,7 +41,9 @@ from manim.utils.tex_file_writing import tex_to_svg_file
 from ..opengl.opengl_compatibility import ConvertToOpenGL
 
 MATHTEX_SUBSTRING = "substring"
-
+TEX_DEFAULT_FONTSIZE_PT = 10
+"""The fontsize used by default by tex: 10pt.
+This means that one 'EM' character like '—' will be 13.333 svg units, since 1pt=4/3 px"""
 
 class SingleStringMathTex(SVGMobject):
     """Elementary building block for rendering text with LaTeX.
@@ -70,7 +72,7 @@ class SingleStringMathTex(SVGMobject):
         if color is None:
             color = VMobject().color
 
-        self._font_size = font_size
+        self.initial_font_size = font_size
         self.organize_left_to_right = organize_left_to_right
         self.tex_environment = tex_environment
         if tex_template is None:
@@ -97,11 +99,17 @@ class SingleStringMathTex(SVGMobject):
         )
         self.init_colors()
 
-        # used for scaling via font_size.setter
-        self.initial_height = self.height
-
         if height is None:
-            self.font_size = self._font_size
+            self.scale(
+               1 / PT_OVER_PX # convert latex svg output to pt
+               / TEX_DEFAULT_FONT_SIZE_PT # then to "fontsize" or "em" units
+               * DEFAULT_FONTSIZE_IN_WORLD_SPACE # then to worldspace
+            )
+
+
+       # used for scaling via font_size.setter
+       # we use the initial size in world space
+        self.initial_height = self.height
 
         if self.organize_left_to_right:
             self._organize_submobjects_left_to_right()
@@ -112,7 +120,9 @@ class SingleStringMathTex(SVGMobject):
     @property
     def font_size(self) -> float:
         """The font size of the tex mobject."""
-        return self.height / self.initial_height / SCALE_FACTOR_PER_FONT_POINT
+        return (
+           self.height / self.initial_height * self.initial_font_size
+        )
 
     @font_size.setter
     def font_size(self, font_val: float) -> None:
