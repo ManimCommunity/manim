@@ -611,6 +611,38 @@ class Table(VGroup):
         else:
             return self.elements
 
+    def get_entry(self, pos: Sequence[int]) -> VMobject:
+        """Return one specific entry of the table (including labels).
+
+        Parameters
+        ----------
+        pos
+            The position of a specific entry on the table. ``(1,1)`` being the top left entry
+            of the table.
+
+        Returns
+        -------
+        :class:`~.VMobject`
+            The :class:`~.VMobject` at the given position.
+
+        Examples
+        --------
+
+        .. manim:: GetEntryExample
+            :save_last_frame:
+
+            class GetEntryExample(Scene):
+                def construct(self):
+                    table = Table(
+                        [["First", "Second"],
+                        ["Third","Fourth"]],
+                        row_labels=[Text("R1"), Text("R2")],
+                        col_labels=[Text("C1"), Text("C2")])
+                    table.get_entry((2,2)).rotate(PI)
+                    self.add(table)
+        """
+        return self.get_entries(pos)
+
     def get_entries_without_labels(
         self,
         pos: Sequence[int] | None = None,
@@ -655,6 +687,38 @@ class Table(VGroup):
             return self.elements_without_labels[index]
         else:
             return self.elements_without_labels
+
+    def get_entry_without_label(self, pos: Sequence[int]) -> VMobject:
+        """Return one specific entry of the table (without labels).
+
+        Parameters
+        ----------
+        pos
+            The position of a specific entry on the table. ``(1,1)`` being the top left entry
+            of the table (without labels).
+
+        Returns
+        -------
+        :class:`~.VMobject`
+            The :class:`~.VMobject` at the given position.
+
+        Examples
+        --------
+
+        .. manim:: GetEntryWithoutLabelExample
+            :save_last_frame:
+
+            class GetEntryWithoutLabelExample(Scene):
+                def construct(self):
+                    table = Table(
+                        [["First", "Second"],
+                        ["Third","Fourth"]],
+                        row_labels=[Text("R1"), Text("R2")],
+                        col_labels=[Text("C1"), Text("C2")])
+                    table.get_entry_without_label((2,2)).rotate(PI)
+                    self.add(table)
+        """
+        return self.get_entries_without_labels(pos)
 
     def get_row_labels(self) -> VGroup:
         """Return the row labels of the table.
