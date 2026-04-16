@@ -177,12 +177,19 @@ DEFAULT_MOBJECT_TO_MOBJECT_BUFFER = MED_SMALL_BUFF
 DEFAULT_POINTWISE_FUNCTION_RUN_TIME = 3.0
 DEFAULT_WAIT_TIME = 1.0
 
+# Font calculation
+DEFAULT_TEX_FONT_SIZE_PT = 10
+PT_OVER_PX = 4 / 3
+DEFAULT_FONT_SIZE_IN_WOLRD_SPACE = 0.5
+"""Length occupied by an 'EM' character in manim space, using manim default font size.
+An example of an 'EM' character is the em dash: '—'"""
+
 # Misc
 DEFAULT_POINT_DENSITY_2D = 25
 DEFAULT_POINT_DENSITY_1D = 10
 DEFAULT_STROKE_WIDTH = 4
 DEFAULT_FONT_SIZE = 48
-SCALE_FACTOR_PER_FONT_POINT = 1 / 960
+
 
 # Mathematical constants
 PI = np.pi
