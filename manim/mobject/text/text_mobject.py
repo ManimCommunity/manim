@@ -467,7 +467,7 @@ class Text(SVGMobject):
                 else:
                     logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
-        self._font_size = float(font_size)
+        self.initial_font_size = float(font_size)
         # needs to be a float or else size is inflated when font_size = 24
         # (unknown cause)
         self.slant = slant
@@ -800,10 +800,8 @@ class Text(SVGMobject):
 
     def _text2svg(self, color: ParsableManimColor) -> str:
         """Convert the text to SVG using Pango."""
-        size = self._font_size
-        line_spacing = self.line_spacing
-        size /= TEXT2SVG_ADJUSTMENT_FACTOR /
-        line_spacing /= TEXT2SVG_ADJUSTMENT_FACTOR
+        size = TEXT_FONT_SIZE_PT * self.initial_font_size / DEFAULT_FONT_SIZE
+        line_spacing = TEXT_FONT_SIZE_PT * self.line_spacing / DEFAULT_FONT_SIZE
 
         dir_name = config.get_dir("text_dir")
         dir_name.mkdir(parents=True, exist_ok=True)
@@ -1183,7 +1181,7 @@ class MarkupText(SVGMobject):
                 else:
                     logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
-        self._font_size = float(font_size)
+        self.initial_font_size = float(font_size)
         self.slant = slant
         self.weight = weight
         self.gradient = gradient
@@ -1208,10 +1206,10 @@ class MarkupText(SVGMobject):
 
         if self.line_spacing == -1:
             self.line_spacing = (
-                self._font_size + self._font_size * DEFAULT_LINE_SPACING_SCALE
+                self.initial_font_size + self.initial_font_size * DEFAULT_LINE_SPACING_SCALE
             )
         else:
-            self.line_spacing = self._font_size + self._font_size * self.line_spacing
+            self.line_spacing = self.initial_font_size + self.initial_font_size * self.line_spacing
 
         parsed_color: ManimColor = ManimColor(color) if color else VMobject().color
         file_name = self._text2svg(parsed_color)
@@ -1317,7 +1315,7 @@ class MarkupText(SVGMobject):
         return (
             self.height
             / self.initial_height
-            * self._font_size
+            * self.initial_font_size
         )
 
     @font_size.setter
@@ -1337,7 +1335,7 @@ class MarkupText(SVGMobject):
             + self.weight
             + ManimColor(color).to_hex().lower()
         )  # to differentiate from classical Pango Text
-        settings += str(self.line_spacing) + str(self._font_size)
+        settings += str(self.line_spacing) + str(self.initial_font_size)
         settings += str(self.disable_ligatures)
         settings += str(self.justify)
         id_str = self.text + settings
@@ -1349,7 +1347,7 @@ class MarkupText(SVGMobject):
         """Convert the text to SVG using Pango."""
         color = ManimColor(color)
         # scale down so that manim font size becomes a specific target size in pt for pango
-        size = TEXT_FONT_SIZE_PT * self._font_size / DEFAULT_FONT_SIZE
+        size = TEXT_FONT_SIZE_PT * self.initial_font_size / DEFAULT_FONT_SIZE
         line_spacing = TEXT_FONT_SIZE_PT * self.line_spacing / DEFAULT_FONT_SIZE
 
         dir_name = config.get_dir("text_dir")
