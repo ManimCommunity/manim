@@ -592,9 +592,10 @@ class Text(SVGMobject):
         # anti-aliasing
         if height is None and width is None:
             self.scale(
-               1 / PT_OVER_PX # convert svg output to "pt" units
-               / TEXT_FONT_SIZE_PT # then to "fontsize" or "EM" units
-               * DEFAULT_FONT_SIZE_IN_WORLD_SPACE # then to world space
+                1
+                / PT_OVER_PX  # convert svg output to "pt" units
+                / TEXT_FONT_SIZE_PT  # then to "fontsize" or "EM" units
+                * DEFAULT_FONT_SIZE_IN_WORLD_SPACE  # then to world space
             )
         self.initial_height = self.height
 
@@ -603,11 +604,7 @@ class Text(SVGMobject):
 
     @property
     def font_size(self) -> float:
-        return (
-            self.height
-            / self.initial_height
-            * self._font_size
-        )
+        return self.height / self.initial_height * self._font_size
 
     @font_size.setter
     def font_size(self, font_val: float) -> None:
@@ -1206,10 +1203,13 @@ class MarkupText(SVGMobject):
 
         if self.line_spacing == -1:
             self.line_spacing = (
-                self.initial_font_size + self.initial_font_size * DEFAULT_LINE_SPACING_SCALE
+                self.initial_font_size
+                + self.initial_font_size * DEFAULT_LINE_SPACING_SCALE
             )
         else:
-            self.line_spacing = self.initial_font_size + self.initial_font_size * self.line_spacing
+            self.line_spacing = (
+                self.initial_font_size + self.initial_font_size * self.line_spacing
+            )
 
         parsed_color: ManimColor = ManimColor(color) if color else VMobject().color
         file_name = self._text2svg(parsed_color)
@@ -1303,20 +1303,17 @@ class MarkupText(SVGMobject):
         # anti-aliasing
         if height is None and width is None:
             self.scale(
-               1 / PT_OVER_PX # convert svg output to "pt" units
-               / TEXT_FONT_SIZE_PT # then to "fontsize" or "EM" units
-               * DEFAULT_FONT_SIZE_IN_WORLD_SPACE # then to world space
+                1
+                / PT_OVER_PX  # convert svg output to "pt" units
+                / TEXT_FONT_SIZE_PT  # then to "fontsize" or "EM" units
+                * DEFAULT_FONT_SIZE_IN_WORLD_SPACE  # then to world space
             )
 
         self.initial_height = self.height
 
     @property
     def font_size(self) -> float:
-        return (
-            self.height
-            / self.initial_height
-            * self.initial_font_size
-        )
+        return self.height / self.initial_height * self.initial_font_size
 
     @font_size.setter
     def font_size(self, font_val: float) -> None:
