@@ -45,6 +45,7 @@ TEX_DEFAULT_FONTSIZE_PT = 10
 """The fontsize used by default by tex: 10pt.
 This means that one 'EM' character like '—' will be 13.333 svg units, since 1pt=4/3 px"""
 
+
 class SingleStringMathTex(SVGMobject):
     """Elementary building block for rendering text with LaTeX.
 
@@ -101,14 +102,14 @@ class SingleStringMathTex(SVGMobject):
 
         if height is None:
             self.scale(
-               1 / PT_OVER_PX # convert latex svg output to pt
-               / TEX_DEFAULT_FONT_SIZE_PT # then to "fontsize" or "em" units
-               * DEFAULT_FONTSIZE_IN_WORLD_SPACE # then to worldspace
+                1
+                / PT_OVER_PX  # convert latex svg output to pt
+                / TEX_DEFAULT_FONT_SIZE_PT  # then to "fontsize" or "em" units
+                * DEFAULT_FONTSIZE_IN_WORLD_SPACE  # then to worldspace
             )
 
-
-       # used for scaling via font_size.setter
-       # we use the initial size in world space
+        # used for scaling via font_size.setter
+        # we use the initial size in world space
         self.initial_height = self.height
 
         if self.organize_left_to_right:
@@ -120,9 +121,7 @@ class SingleStringMathTex(SVGMobject):
     @property
     def font_size(self) -> float:
         """The font size of the tex mobject."""
-        return (
-           self.height / self.initial_height * self.initial_font_size
-        )
+        return self.height / self.initial_height * self.initial_font_size
 
     @font_size.setter
     def font_size(self, font_val: float) -> None:

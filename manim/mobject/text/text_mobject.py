@@ -79,7 +79,7 @@ if TYPE_CHECKING:
     from typing import Self
 
     from manim.typing import Point3D
-   
+
 DEFAULT_LINE_SPACING_SCALE = 0.3
 TEXT_FONT_SIZE_PT = 10
 """The font size we use to render the unscaled text in the SVG.
@@ -802,7 +802,7 @@ class Text(SVGMobject):
         """Convert the text to SVG using Pango."""
         size = self._font_size
         line_spacing = self.line_spacing
-        size /= TEXT2SVG_ADJUSTMENT_FACTOR / 
+        size /= TEXT2SVG_ADJUSTMENT_FACTOR /
         line_spacing /= TEXT2SVG_ADJUSTMENT_FACTOR
 
         dir_name = config.get_dir("text_dir")
