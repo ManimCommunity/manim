@@ -56,7 +56,6 @@ if TYPE_CHECKING:
         CubicBezierPath,
         CubicBezierPointsLike,
         CubicSpline,
-        FloatRGBA,
         FloatRGBA_Array,
         ManimFloat,
         MappingFunction,
@@ -155,7 +154,7 @@ class VMobject(Mobject):
         self.shade_in_3d: bool = shade_in_3d
         self.tolerance_for_point_equality: float = tolerance_for_point_equality
         self.n_points_per_cubic_curve: int = n_points_per_cubic_curve
-        self._bezier_t_values: npt.NDArray[float] = np.linspace(
+        self._bezier_t_values: npt.NDArray[np.float64] = np.linspace(
             0, 1, n_points_per_cubic_curve
         )
         self.cap_style: CapStyleType = cap_style
@@ -225,9 +224,9 @@ class VMobject(Mobject):
         color: ParsableManimColor | Iterable[ParsableManimColor] | None,
         opacity: float | Iterable[float] | None,
     ) -> FloatRGBA_Array:
-        """ Returns a 2D array of shape (N,4) where N is the number of colors in the list 
+        """Returns a 2D array of shape (N,4) where N is the number of colors in the list
         that has been provided to this method as argument. Works even for a single color.
-        
+
         Parameters
         ----------
         color
@@ -253,12 +252,15 @@ class VMobject(Mobject):
             ManimColor(c) if (c is not None) else BLACK for c in tuplify(color)
         ]
         opacities: list[float] = [
-            opacity_value if (opacity_value is not None) else 0.0 for opacity_value in tuplify(opacity)
+            opacity_value if (opacity_value is not None) else 0.0
+            for opacity_value in tuplify(opacity)
         ]
         rgbas: FloatRGBA_Array = np.array(
             [
                 color.to_rgba_with_alpha(opacity_value)
-                for color, opacity_value in zip(*make_even(colors, opacities), strict=True)
+                for color, opacity_value in zip(
+                    *make_even(colors, opacities), strict=True
+                )
             ],
         )
 
