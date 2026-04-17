@@ -222,17 +222,22 @@ class VMobject(Mobject):
 
     def generate_rgbas_array(
         self,
-        color: ParsableManimColor | Iterable[ManimColor] | None,
-        opacity: float | Iterable[float],
+        color: ParsableManimColor | Iterable[ParsableManimColor] | None,
+        opacity: float | Iterable[float] | None,
     ) -> FloatRGBA_Array:
         """ Returns a 2D array of shape (N,4) where N is the number of colors in the list 
         that has been provided to this method as argument. Works even for a single color.
         
         Parameters
         ----------
-            color: Can be a single color, or a tuple/list of colors, or any of the ParsableManimColor.
+        color
+            Is either a single color, or an Iterable of multiple colors, or
+            `None` (which is replaced with `BLACK`).
         
-            opacity: Can either be a float, or a tuple/list or any iterable of floats.
+        opacity
+            Is either a float number between 0.0 and 1.0, or 
+            an Iterable of multiple opacity values(all should be between 0.0 and 1.0), or
+            `None` which is replaced with 0.0.
         
         Notes
         -----
