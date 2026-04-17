@@ -232,12 +232,12 @@ class VMobject(Mobject):
         color
             Is either a single color, or an Iterable of multiple colors, or
             `None` (which is replaced with `BLACK`).
-        
+
         opacity
-            Is either a float number between 0.0 and 1.0, or 
+            Is either a float number between 0.0 and 1.0, or
             an Iterable of multiple opacity values(all should be between 0.0 and 1.0), or
             `None` which is replaced with 0.0.
-        
+
         Notes
         -----
         If :attr:`sheen_factor` is not zero, and only one color is passed in,
