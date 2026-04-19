@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 from manim import MathTex, SingleStringMathTex, Tex, TexTemplate, tempconfig
+from manim.constants import DEFAULT_FONT_SIZE_IN_WOLRD_SPACE
 
 
 def test_MathTex(config):
@@ -254,6 +255,11 @@ def test_changing_font_size():
     num.font_size = 48
 
     assert num.height == Tex("0", font_size=48).height
+
+
+def test_mathtex_em_dash_width_matches_default_font_size_in_world_space():
+    em_dash = MathTex(r"\text{---}")
+    assert em_dash.width == DEFAULT_FONT_SIZE_IN_WOLRD_SPACE
 
 
 def test_log_error_context(capsys):
