@@ -242,17 +242,20 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
                 **background_config_base,
             )
         elif background == "window":
-            buttons = VGroup(
+            self.buttons = VGroup(
                 Dot(radius=0.1, stroke_width=0, color=button_color)
                 for button_color in ["#ff5f56", "#ffbd2e", "#27c93f"]
             ).arrange(RIGHT, buff=0.1)
-            buttons.next_to(self, UP, buff=0.1).align_to(self, LEFT).shift(LEFT * 0.1)
+            self.buttons.next_to(self, UP, buff=0.1).align_to(self, LEFT).shift(
+                LEFT * 0.1
+            )
             self.background = SurroundingRectangle(
-                VGroup(self, buttons),
+                self,
+                self.buttons,
                 **background_config_base,
             )
-            buttons.shift(UP * 0.1 + LEFT * 0.1)
-            self.background.add(buttons)
+            self.buttons.shift(UP * 0.1 + LEFT * 0.1)
+            self.add_to_back(self.buttons)
         else:
             raise ValueError(f"Unknown background type: {background}")
 
