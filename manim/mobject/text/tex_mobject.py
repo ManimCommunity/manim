@@ -32,7 +32,6 @@ from typing import Any, Self
 
 from manim import config, logger
 from manim.constants import *
-from manim.constants import PT_OVER_PX
 from manim.mobject.geometry.line import Line
 from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
@@ -104,8 +103,7 @@ class SingleStringMathTex(SVGMobject):
         if height is None:
             self.scale(
                 1
-                / PT_OVER_PX  # convert latex svg output to pt
-                / TEX_DEFAULT_FONT_SIZE_PT  # then to "fontsize" or "em" units
+                / TEX_DEFAULT_FONT_SIZE_PT  # convert latex svg output to "fontsize" or "em" units
                 * DEFAULT_FONTSIZE_IN_WORLD_SPACE  # then to worldspace
             )
 
