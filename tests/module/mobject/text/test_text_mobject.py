@@ -3,7 +3,7 @@ from __future__ import annotations
 from contextlib import redirect_stdout
 from io import StringIO
 
-from manim.constants import DEFAULT_FONT_SIZE_IN_WOLRD_SPACE
+from manim.constants import DEFAULT_FONT_SIZE_IN_WORLD_SPACE
 from manim.mobject.text.text_mobject import MarkupText, Text
 
 
@@ -37,4 +37,4 @@ def test_font_warnings():
 
 def test_em_dash_width_matches_default_font_size_in_world_space():
     text_em_dash = Text("—")
-    assert text_em_dash.width == DEFAULT_FONT_SIZE_IN_WOLRD_SPACE
+    assert text_em_dash.width == DEFAULT_FONT_SIZE_IN_WORLD_SPACE
