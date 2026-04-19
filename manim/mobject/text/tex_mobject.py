@@ -31,11 +31,8 @@ from textwrap import dedent
 from typing import Any, Self
 
 from manim import config, logger
-from manim.constants import (
-    DEFAULT_FONT_SIZE,
-    DEFAULT_FONTSIZE_IN_WORLD_SPACE,
-    PT_OVER_PX,
-)
+from manim.constants import *
+from manim.constants import PT_OVER_PX
 from manim.mobject.geometry.line import Line
 from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
