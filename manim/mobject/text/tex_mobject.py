@@ -42,7 +42,7 @@ from manim.utils.tex_file_writing import tex_to_svg_file
 from ..opengl.opengl_compatibility import ConvertToOpenGL
 
 MATHTEX_SUBSTRING = "substring"
-TEX_DEFAULT_FONTSIZE_PT = 10
+TEX_DEFAULT_FONT_SIZE_PT = 10
 """The fontsize used by default by tex: 10pt.
 This means that one 'EM' character like '—' will be 13.333 svg units, since 1pt=4/3 px"""
 
