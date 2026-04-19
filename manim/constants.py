@@ -182,7 +182,7 @@ DEFAULT_WAIT_TIME = 1.0
 
 # Font calculation
 PT_OVER_PX = 4 / 3
-DEFAULT_FONT_SIZE_IN_WORLD_SPACE = 2 / 3
+DEFAULT_FONT_SIZE_IN_WORLD_SPACE = 0.5
 """Length occupied by an 'EM' character in manim space, when manim default font size is used.
 An example of an 'EM' character is the em dash: '—'.
 The chosen value is an arbitrary convention."""
