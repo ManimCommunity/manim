@@ -63,6 +63,8 @@ __all__ = [
     "DEFAULT_POINT_DENSITY_1D",
     "DEFAULT_STROKE_WIDTH",
     "DEFAULT_FONT_SIZE",
+    "DEFAULT_FONT_SIZE_IN_WORLD_SPACE",
+    "DEFAULT_FONTSIZE_IN_WORLD_SPACE",
     "DEFAULT_FONT_SIZE_IN_WOLRD_SPACE",
     "SCALE_FACTOR_PER_FONT_POINT",
     "PI",
@@ -184,6 +186,8 @@ DEFAULT_FONT_SIZE_IN_WOLRD_SPACE = 2 / 3
 """Length occupied by an 'EM' character in manim space, when manim default font size is used.
 An example of an 'EM' character is the em dash: '—'.
 The chosen value is an arbitrary convention."""
+DEFAULT_FONT_SIZE_IN_WORLD_SPACE = DEFAULT_FONT_SIZE_IN_WOLRD_SPACE
+DEFAULT_FONTSIZE_IN_WORLD_SPACE = DEFAULT_FONT_SIZE_IN_WOLRD_SPACE
 
 # Misc
 DEFAULT_POINT_DENSITY_2D = 25

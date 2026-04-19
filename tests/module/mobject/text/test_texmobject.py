@@ -258,7 +258,7 @@ def test_changing_font_size():
 
 
 def test_mathtex_em_dash_width_matches_default_font_size_in_world_space():
-    em_dash = MathTex(r"\text{---}")
+    em_dash = MathTex(r"\text{—}")
     assert em_dash.width == DEFAULT_FONT_SIZE_IN_WOLRD_SPACE
 
 
