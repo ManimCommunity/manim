@@ -102,7 +102,7 @@ class SingleStringMathTex(SVGMobject):
 
         if height is None:
             self.scale(
-                1
+                font_size / DEFAULT_FONT_SIZE
                 / TEX_DEFAULT_FONT_SIZE_PT  # convert latex svg output to "fontsize" or "em" units
                 * DEFAULT_FONTSIZE_IN_WORLD_SPACE  # then to worldspace
             )
