@@ -203,7 +203,9 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
 
         from manim.mobject.text.text_mobject import Paragraph
 
+        height_line = "A"  # The "height_line" is used to make sure the Paragraph bounding box has the same height as the line number bounding box
         self.code_lines = Paragraph(
+            height_line,
             *code_lines,
             **base_paragraph_config,
         )
@@ -217,7 +219,8 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
                 *[
                     str(i)
                     for i in range(
-                        line_numbers_from, line_numbers_from + len(self.code_lines)
+                        line_numbers_from - 1,
+                        line_numbers_from + len(self.code_lines) - 1,
                     )
                 ],
                 **base_paragraph_config,
@@ -230,6 +233,11 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         for line in self.code_lines:
             line.submobjects = [c for c in line if not isinstance(c, Dot)]
         self.add(self.code_lines)
+
+        self.code_lines.submobjects.pop(
+            0
+        )  # The "height_line" should not be displayed, neither does its line number
+        self.line_numbers.submobjects.pop(0)
 
         if background_config is None:
             background_config = {}
