@@ -3,6 +3,7 @@ from __future__ import annotations
 from contextlib import redirect_stdout
 from io import StringIO
 
+from manim.constants import DEFAULT_FONT_SIZE_IN_WORLD_SPACE
 from manim.mobject.text.text_mobject import MarkupText, Text
 
 
@@ -32,3 +33,8 @@ def test_font_warnings():
 
     # check random string (should be warning)
     assert warning_printed("Manim!" * 3, warn_missing_font=True)
+
+
+def test_em_dash_width_default_font_size():
+    text_em_dash = Text("—")
+    assert round(text_em_dash.width, 5) == round(DEFAULT_FONT_SIZE_IN_WORLD_SPACE, 5)

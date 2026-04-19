@@ -510,10 +510,13 @@ class Text(SVGMobject):
         self.text = text_without_tabs
         if self.line_spacing == -1:
             self.line_spacing = (
-                self._font_size + self._font_size * DEFAULT_LINE_SPACING_SCALE
+                self.initial_font_size
+                + self.initial_font_size * DEFAULT_LINE_SPACING_SCALE
             )
         else:
-            self.line_spacing = self._font_size + self._font_size * self.line_spacing
+            self.line_spacing = (
+                self.initial_font_size + self.initial_font_size * self.line_spacing
+            )
 
         parsed_color: ManimColor = ManimColor(color) if color else VMobject().color
         file_name = self._text2svg(parsed_color.to_hex())
@@ -605,7 +608,7 @@ class Text(SVGMobject):
 
     @property
     def font_size(self) -> float:
-        return self.height / self.initial_height * self._font_size
+        return self.height / self.initial_height * self.initial_font_size
 
     @font_size.setter
     def font_size(self, font_val: float) -> None:
@@ -657,7 +660,7 @@ class Text(SVGMobject):
             "PANGO" + self.font + self.slant + self.weight + str(color)
         )  # to differentiate Text and CairoText
         settings += str(self.t2f) + str(self.t2s) + str(self.t2w) + str(self.t2c)
-        settings += str(self.line_spacing) + str(self._font_size)
+        settings += str(self.line_spacing) + str(self.initial_font_size)
         settings += str(self.disable_ligatures)
         settings += str(self.gradient)
         id_str = self.text + settings
