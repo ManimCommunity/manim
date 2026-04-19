@@ -196,7 +196,7 @@ DEFAULT_STROKE_WIDTH = 4
 DEFAULT_FONT_SIZE = 48
 SCALE_FACTOR_PER_FONT_POINT = (  # legacy, not used in code anymore
     DEFAULT_FONT_SIZE_IN_WORLD_SPACE
-    / (10 * PT_OVER_PX)  # LaTeX default font size in pixels
+    / 10  # LaTeX default font size in pixels
     / DEFAULT_FONT_SIZE
 )
 """Downscale factor from LaTeX pixel to world space, divided by DEFAULT_FONT_SIZE"""
