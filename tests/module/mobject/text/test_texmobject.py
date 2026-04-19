@@ -257,7 +257,7 @@ def test_changing_font_size():
     assert num.height == Tex("0", font_size=48).height
 
 
-def test_mathtex_em_dash_width_matches_default_font_size_in_world_space():
+def test_mathtex_em_dash_width_default_font_size():
     em_dash = MathTex(r"\text{—}")
     assert round(em_dash.width, 5) == round(DEFAULT_FONT_SIZE_IN_WORLD_SPACE, 5)
 

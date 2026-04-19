@@ -35,6 +35,6 @@ def test_font_warnings():
     assert warning_printed("Manim!" * 3, warn_missing_font=True)
 
 
-def test_em_dash_width_matches_default_font_size_in_world_space():
+def test_em_dash_width_default_font_size():
     text_em_dash = Text("—")
     assert round(text_em_dash.width, 5) == round(DEFAULT_FONT_SIZE_IN_WORLD_SPACE, 5)
