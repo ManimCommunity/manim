@@ -56,7 +56,6 @@ if TYPE_CHECKING:
         CubicBezierPath,
         CubicBezierPointsLike,
         CubicSpline,
-        FloatRGBA,
         FloatRGBA_Array,
         ManimFloat,
         MappingFunction,
@@ -222,26 +221,46 @@ class VMobject(Mobject):
 
     def generate_rgbas_array(
         self,
-        color: ParsableManimColor | Iterable[ManimColor] | None,
-        opacity: float | Iterable[float],
-    ) -> FloatRGBA:
-        """
-        First arg can be either a color, or a tuple/list of colors.
-        Likewise, opacity can either be a float, or a tuple of floats.
-        If self.sheen_factor is not zero, and only
-        one color was passed in, a second slightly light color
-        will automatically be added for the gradient
+        color: ParsableManimColor | Iterable[ParsableManimColor] | None,
+        opacity: float | Iterable[float] | None,
+    ) -> FloatRGBA_Array:
+        """Returns a 2D array of shape (N,4) where N is the number of colors in the list
+        that has been provided to this method as argument. Works even for a single color.
+
+        Parameters
+        ----------
+        color
+            Is either a single color, or an Iterable of multiple colors, or
+            `None` (which is replaced with `BLACK`).
+
+        opacity
+            Is either a float number between 0.0 and 1.0, or
+            an Iterable of multiple opacity values(all should be between 0.0 and 1.0), or
+            `None` which is replaced with 0.0.
+
+        Notes
+        -----
+        If :attr:`sheen_factor` is not zero, and only one color is passed in,
+        a second slightly lighter color will automatically be added for the gradient.
+
+        Returns
+        -------
+        FloatRGBA_Array
+            A 2D array of shape (N, 4) containing RGBA values for all the colors supplied.
         """
         colors: list[ManimColor] = [
             ManimColor(c) if (c is not None) else BLACK for c in tuplify(color)
         ]
         opacities: list[float] = [
-            o if (o is not None) else 0.0 for o in tuplify(opacity)
+            opacity_value if (opacity_value is not None) else 0.0
+            for opacity_value in tuplify(opacity)
         ]
         rgbas: FloatRGBA_Array = np.array(
             [
-                c.to_rgba_with_alpha(o)
-                for c, o in zip(*make_even(colors, opacities), strict=True)
+                color.to_rgba_with_alpha(opacity_value)
+                for color, opacity_value in zip(
+                    *make_even(colors, opacities), strict=True
+                )
             ],
         )
 
