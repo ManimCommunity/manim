@@ -809,21 +809,28 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
 
 
 def cartesian_to_spherical(vec: Vector3DLike) -> np.ndarray:
-    """Returns an array of numbers corresponding to each
-    polar coordinate value (distance, phi, theta).
+    """Returns spherical coordinates in the order
+    ``[distance, azimuthal_angle, polar_angle]``.
 
     Parameters
     ----------
     vec
         A numpy array or a sequence of floats ``[x, y, z]``.
+
+    Returns
+    -------
+    np.ndarray
+        A numpy array ``[r, azimuthal_angle, polar_angle]`` where
+        ``azimuthal_angle`` is measured in the xy-plane from the positive
+        x-axis, and ``polar_angle`` is measured from the positive z-axis.
     """
     norm = np.linalg.norm(vec)
     if norm == 0:
         return np.zeros(3)
     r = norm
-    phi = np.arccos(vec[2] / r)
-    theta = np.arctan2(vec[1], vec[0])
-    return np.array([r, theta, phi])
+    polar_angle = np.arccos(vec[2] / r)
+    azimuthal_angle = np.arctan2(vec[1], vec[0])
+    return np.array([r, azimuthal_angle, polar_angle])
 
 
 def spherical_to_cartesian(spherical: Sequence[float]) -> np.ndarray:
@@ -837,16 +844,17 @@ def spherical_to_cartesian(spherical: Sequence[float]) -> np.ndarray:
 
         r - The distance between the point and the origin.
 
-        theta - The azimuthal angle of the point to the positive x-axis.
+        azimuthal_angle - The angle in the xy-plane measured from the
+        positive x-axis.
 
-        phi - The vertical angle of the point to the positive z-axis.
+        polar_angle - The angle measured from the positive z-axis.
     """
-    r, theta, phi = spherical
+    r, azimuthal_angle, polar_angle = spherical
     return np.array(
         [
-            r * np.cos(theta) * np.sin(phi),
-            r * np.sin(theta) * np.sin(phi),
-            r * np.cos(phi),
+            r * np.cos(azimuthal_angle) * np.sin(polar_angle),
+            r * np.sin(azimuthal_angle) * np.sin(polar_angle),
+            r * np.cos(polar_angle),
         ],
     )
 
