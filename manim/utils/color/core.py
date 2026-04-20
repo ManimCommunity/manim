@@ -70,7 +70,7 @@ import colorsys
 import random
 import re
 from collections.abc import Iterable, Sequence
-from typing import Self, TypeAlias, TypeVar, overload
+from typing import Literal, Self, TypeAlias, TypeVar, overload
 
 import numpy as np
 import numpy.typing as npt
@@ -1382,40 +1382,62 @@ def invert_color(color: ManimColorT) -> ManimColorT:
 
 
 def color_gradient(
-    reference_colors: Iterable[ParsableManimColor],
-    length_of_output: int,
+    colors_provided: Iterable[ParsableManimColor],
+    number_of_colors_required: int,
+    transition_mode: Literal["darker", "lighter"] = "lighter",
+    blend_variation: float = 0.0,
 ) -> list[ManimColor]:
     """Create a list of colors interpolated between the input array of colors with a
     specific number of colors.
 
     Parameters
     ----------
-    reference_colors
+    colors_provided
         The colors to be interpolated between or spread apart.
-    length_of_output
+    number_of_colors_required
         The number of colors that the output should have, ideally more than the input.
+    transition_mode
+        If number_of_colors_provided = 1, then returned colors will be of same hue, but of varying brightness.
+        Ignored when number_of_colors_provided > 1.
+    blend_variation
+        This also is required only when number_of_colors_provided = 1.
+        This is required to tell how much variation in brightness is required.
+        When blend_variation = 0, all returned colors are of same brightness.
+        Ignored when number_of_colors_provided > 1.
 
     Returns
     -------
     list[ManimColor]
         A list of interpolated :class:`ManimColor`'s.
     """
-    if length_of_output == 0:
+    if number_of_colors_required == 0:
         return []
-    parsed_colors = [ManimColor(color) for color in reference_colors]
-    num_colors = len(parsed_colors)
-    if num_colors == 0:
+
+    parsed_colors = [ManimColor(color) for color in colors_provided]
+    number_of_colors_provided = len(parsed_colors)
+
+    if number_of_colors_provided == 0:
         raise ValueError("Expected 1 or more reference colors. Got 0 colors.")
-    if num_colors == 1:
-        return parsed_colors * length_of_output
+
+    if number_of_colors_provided == 1:
+        color = parsed_colors[0]
+
+        if number_of_colors_required == 1:
+            return [color]
+
+        transition_method = getattr(color, transition_mode)
+        return [
+            transition_method((i / (number_of_colors_required - 1)) * blend_variation)
+            for i in range(number_of_colors_required)
+        ]
 
     rgbs = [color.to_rgb() for color in parsed_colors]
-    alphas = np.linspace(0, (num_colors - 1), length_of_output)
+    alphas = np.linspace(0, (number_of_colors_provided - 1), number_of_colors_required)
     floors = alphas.astype("int")
     alphas_mod1 = alphas % 1
     # End edge case
     alphas_mod1[-1] = 1
-    floors[-1] = num_colors - 2
+    floors[-1] = number_of_colors_provided - 2
     return [
         rgb_to_color((rgbs[i] * (1 - alpha)) + (rgbs[i + 1] * alpha))
         for i, alpha in zip(floors, alphas_mod1, strict=True)
