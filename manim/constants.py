@@ -181,7 +181,6 @@ DEFAULT_POINTWISE_FUNCTION_RUN_TIME = 3.0
 DEFAULT_WAIT_TIME = 1.0
 
 # Font calculation
-PT_OVER_PX = 4 / 3
 DEFAULT_FONT_SIZE_IN_WORLD_SPACE = 0.5
 """Length occupied by an 'EM' character in manim space, when manim default font size is used.
 An example of an 'EM' character is the em dash: '—'.
