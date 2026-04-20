@@ -2111,18 +2111,22 @@ class Mobject:
         self.set_color(self.color)
         return self
 
-    def fade_to(
+    def fade_to_color(
         self, color: ParsableManimColor, alpha: float, family: bool = True
     ) -> Self:
+        """Fades the color of the mobject towards the provided color by interpolating the colors.
+        As long as family is set to True, the submobject's colors are also faded likewise.
+        """
         if self.get_num_points() > 0:
             new_color = interpolate_color(self.get_color(), ManimColor(color), alpha)
             self.set_color(new_color, family=False)
         if family:
             for submob in self.submobjects:
-                submob.fade_to(color, alpha)
+                submob.fade_to_color(color, alpha)
         return self
 
     def fade(self, darkness: float = 0.5, family: bool = True) -> Self:
+        """This method is to be overridden in mobject's subclass"""
         if family:
             for submob in self.submobjects:
                 submob.fade(darkness, family)
@@ -2217,6 +2221,7 @@ class Mobject:
         return self.get_all_points()
 
     def get_num_points(self) -> int:
+        """Returns the number of points which make up only the mobject, but not it's submobject."""
         return len(self.points)
 
     def get_extremum_along_dim(
