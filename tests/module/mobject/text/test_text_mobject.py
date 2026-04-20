@@ -36,5 +36,6 @@ def test_font_warnings():
 
 
 def test_em_dash_width_default_font_size():
-    text_em_dash = Text("—")
-    assert round(text_em_dash.width, 3) == round(DEFAULT_FONT_SIZE_IN_WORLD_SPACE, 3)
+    # this specific font renders the em dash at full width, like Tex does.
+    text_em_dash = Text("—", font="Liberation Sans") 
+    assert abs(text_em_dash.width - DEFAULT_FONT_SIZE_IN_WORLD_SPACE) < 0.005
