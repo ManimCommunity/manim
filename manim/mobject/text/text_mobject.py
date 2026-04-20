@@ -69,6 +69,7 @@ from manimpango import MarkupUtils, PangoUtils, TextSetting
 
 from manim import config, logger
 from manim.constants import *
+
 # PANGO_SVG_UNITS_PER_PT moved below with other text-specific constants
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.svg.svg_mobject import SVGMobject
