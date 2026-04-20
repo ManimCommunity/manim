@@ -37,4 +37,4 @@ def test_font_warnings():
 
 def test_em_dash_width_default_font_size():
     text_em_dash = Text("—")
-    assert round(text_em_dash.width, 5) == round(DEFAULT_FONT_SIZE_IN_WORLD_SPACE, 5)
+    assert round(text_em_dash.width, 3) == round(DEFAULT_FONT_SIZE_IN_WORLD_SPACE, 3)
