@@ -54,6 +54,8 @@ if TYPE_CHECKING:
 
     from manim.typing import (
         CubicBezierPath,
+        CubicBezierPathLike,
+        CubicBezierPoints_Array,
         CubicBezierPointsLike,
         CubicSpline,
         FloatRGBA,
@@ -2711,7 +2713,8 @@ class VectorizedPoint(VMobject, metaclass=ConvertToOpenGL):
 
 
 class CurvesAsSubmobjects(VGroup):
-    """Convert a curve's elements to submobjects.
+    """Converts every single cubic Bezier points set(comprising 4 points) of the given VMobject,
+    into a VMobject and stores it in a container VGroup.
 
     Examples
     --------
@@ -2737,7 +2740,7 @@ class CurvesAsSubmobjects(VGroup):
             self.add(part)
 
     def point_from_proportion(self, alpha: float) -> Point3D:
-        """Gets the point at a proportion along the path of the :class:`CurvesAsSubmobjects`.
+        """Returns the point at a proportion along the path of the :class:`CurvesAsSubmobjects`.
 
         Parameters
         ----------
