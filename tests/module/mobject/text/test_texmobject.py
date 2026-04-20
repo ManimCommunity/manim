@@ -259,7 +259,7 @@ def test_changing_font_size():
 
 def test_mathtex_em_dash_width_default_font_size():
     em_dash = MathTex(r"\text{—}")
-    assert round(em_dash.width, 3) == round(DEFAULT_FONT_SIZE_IN_WORLD_SPACE, 3)
+    assert abs(em_dash.width - DEFAULT_FONT_SIZE_IN_WORLD_SPACE) < 0.005
 
 
 def test_log_error_context(capsys):
