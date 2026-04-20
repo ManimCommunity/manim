@@ -1586,7 +1586,7 @@ class Mobject:
     # Positioning methods
 
     def center(self) -> Self:
-        """Moves the center of the mobject to the center of the scene.
+        """Moves the center of the mobject to ORIGIN.
 
         Returns
         -------
@@ -1872,10 +1872,10 @@ class Mobject:
     def set_coord(
         self, value: float, dim: int, direction: Vector3DLike = ORIGIN
     ) -> Self:
-        curr = self.get_coord(dim, direction)
-        shift_vect = np.zeros(self.dim)
-        shift_vect[dim] = value - curr
-        self.shift(shift_vect)
+        current_coord = self.get_coord(dim, direction)
+        shift_vector = np.zeros(self.dim)
+        shift_vector[dim] = value - current_coord
+        self.shift(shift_vector)
         return self
 
     def set_x(self, x: float, direction: Vector3DLike = ORIGIN) -> Self:
@@ -2239,18 +2239,70 @@ class Mobject:
             return rv
 
     def get_critical_point(self, direction: Vector3DLike) -> Point3D:
-        """Picture a box bounding the :class:`~.Mobject`.  Such a box has
-        9 'critical points': 4 corners, 4 edge center, the
-        center. This returns one of them, along the given direction.
+        """Picture a box bounding the :class:`~.Mobject`.
+        In 2D such a bounding box has 9 critical points:
+            4 corners,
+            4 edge centers,
+            1 center point.
 
-        ::
+            This method returns one of them, along the given direction.
 
-            sample = Arc(start_angle=PI / 7, angle=PI / 5)
+            2D Example::
 
-            # These are all equivalent
-            max_y_1 = sample.get_top()[1]
-            max_y_2 = sample.get_critical_point(UP)[1]
-            max_y_3 = sample.get_extremum_along_dim(dim=1, key=1)
+                sample = Arc(start_angle=PI / 7, angle=PI / 5)
+
+                # These are all equivalent
+                max_y_1 = sample.get_top()[1]
+                max_y_2 = sample.get_critical_point(UP)[1]
+                max_y_3 = sample.get_extremum_along_dim(dim=1, key=1)
+
+                # Corners: (±1, ±1, 0). Get the 4 corners of the bounding box
+                top_right_corner = sample.get_critical_point(UR)  # [1, 1, 0]
+                top_left_corner = sample.get_critical_point(UL)  # [-1, 1, 0]
+                bot_right_corner = sample.get_critical_point(DR)  # [1, -1, 0]
+                bot_left_corner = sample.get_critical_point(DL)  # [-1, -1, 0]
+
+                # Edge centers: (±1, 0, 0), (0, ±1, 0)
+                sample.get_critical_point(RIGHT)  # [1, 0, 0]
+                sample.get_critical_point(UP)  # [0, 1, 0]
+
+                # Center
+                sample.get_critical_point(ORIGIN)  # [0, 0, 0]
+
+        In 3D, such a bounding box has 27 critical points:
+
+            8 corners: e.g. UP + RIGHT + OUT = [1, 1, 1]
+            12 edge centers: e.g.  UR = [1, 1, 0], UP + OUT = [0, 1, 1]
+            6 face centers: e.g. UP = [0, 1, 0], RIGHT = [1, 0, 0]
+            1 center point: ORIGIN = [0, 0, 0]
+
+            This same method returns one of these 27 points along the given direction.
+
+            3D Example::
+
+                sample = Sphere()
+
+                # Face centers — 6 points (exactly one non-zero component)
+                # (±1, 0, 0), (0, ±1, 0), (0, 0, ±1)
+                sample.get_critical_point(RIGHT)  # [1, 0, 0]
+                sample.get_critical_point(UP)  # [0, 1, 0]
+                sample.get_critical_point(OUT)  # [0, 0, 1]
+                # and their opposites: LEFT, DOWN, IN
+
+                # Edge centers — 12 points (exactly two non-zero components)
+                # (±1, ±1, 0), (±1, 0, ±1), (0, ±1, ±1)
+                sample.get_critical_point(UP + RIGHT)  # [1, 1, 0]
+                sample.get_critical_point(UP + OUT)  # [0, 1, 1]
+                sample.get_critical_point(RIGHT + OUT)  # [1, 0, 1]
+                # and their sign variations
+
+                # Corners — 8 points (all three components non-zero)
+                # (±1, ±1, ±1)
+                sample.get_critical_point(UP + RIGHT + OUT)  # [1, 1, 1]
+                # and remaining 7 sign combinations
+
+                # Center — 1 point
+                sample.get_critical_point(ORIGIN)  # [0, 0, 0]
 
         """
         result = np.zeros(self.dim)
@@ -2268,27 +2320,45 @@ class Mobject:
     # Pseudonyms for more general get_critical_point method
 
     def get_edge_center(self, direction: Vector3DLike) -> Point3D:
-        """Get edge Point3Ds for certain direction."""
+        """Returns edge point for given direction.
+        For 2D, the direction should be either one of: RIGHT, LEFT, UP, DOWN
+        For 3D, the direction should be either one of: UP/DOWN + RIGHT/LEFT,
+                                                       UP/DOWN + OUT/IN,
+                                                       RIGHT/LEFT + OUT/IN,
+        Example for 3D: mobject.get_edge_center(UP + RIGHT)
+        """
         return self.get_critical_point(direction)
 
     def get_corner(self, direction: Vector3DLike) -> Point3D:
-        """Get corner Point3Ds for certain direction."""
+        """Returns corner point for given direction.
+        For 2D, the direction should be either one of: UR, UL, DR, DL
+        For 3D, the direction should be either one of: UP/DOWN + RIGHT/LEFT + OUT/IN
+        Example for 3D: mobject.get_corner(UP + RIGHT + OUT)
+        """
         return self.get_critical_point(direction)
 
     def get_center(self) -> Point3D:
-        """Get center Point3Ds"""
-        return self.get_critical_point(np.zeros(self.dim))
+        """Returns center point of the mobject"""
+        return self.get_critical_point(ORIGIN)
 
     def get_center_of_mass(self) -> Point3D:
-        return np.apply_along_axis(np.mean, 0, self.get_all_points())
+        """Returns the mean position across all points.
+
+        It returns: np.array([average of all the x coordinates, average of all the y coordinates, average of all the z coordinates])
+        """
+        return self.get_all_points().mean(axis=0)
 
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
+        """Returns the point furthest in the given direction.
+
+        Returns the point furthest in the given direction among all points making the mobject and its submobjects.
+        """
         all_points = self.get_points_defining_boundary()
         index = np.argmax(np.dot(all_points, direction))
         return all_points[index]
 
     def get_midpoint(self) -> Point3D:
-        """Get Point3Ds of the middle of the path that forms the  :class:`~.Mobject`.
+        """Returns middle point of the path that forms the  :class:`~.Mobject`.
 
         Examples
         --------
@@ -2311,35 +2381,49 @@ class Mobject:
         return self.point_from_proportion(0.5)
 
     def get_top(self) -> Point3D:
-        """Get top Point3Ds of a box bounding the :class:`~.Mobject`"""
+        """Returns top point of the bounding box of the :class:`~.Mobject`
+        This method is to be used for 2D scenes.
+        """
         return self.get_edge_center(UP)
 
     def get_bottom(self) -> Point3D:
-        """Get bottom Point3Ds of a box bounding the :class:`~.Mobject`"""
+        """Returns bottom point of the bounding box of the :class:`~.Mobject`
+        This method is to be used for 2D scenes.
+        """
         return self.get_edge_center(DOWN)
 
     def get_right(self) -> Point3D:
-        """Get right Point3Ds of a box bounding the :class:`~.Mobject`"""
+        """Returns right edge_center of the bounding box of the :class:`~.Mobject`
+        This method is to be used for 2D scenes.
+        """
         return self.get_edge_center(RIGHT)
 
     def get_left(self) -> Point3D:
-        """Get left Point3Ds of a box bounding the :class:`~.Mobject`"""
+        """Returns right edge_center of the bounding box of the :class:`~.Mobject`
+        This method is to be used for 2D scenes.
+        """
         return self.get_edge_center(LEFT)
 
     def get_zenith(self) -> Point3D:
-        """Get zenith Point3Ds of a box bounding a 3D :class:`~.Mobject`."""
+        """In 3D, zenith is the furthest point in the direction towards the positive z axis, which is
+        towards the viewer/out of the screen.
+        This method returns the furthest point i.e. the zenith of the bounding box of the 3D :class:`~.Mobject`.
+        OUT = [0, 0, 1]
+        """
         return self.get_edge_center(OUT)
 
     def get_nadir(self) -> Point3D:
-        """Get nadir (opposite the zenith) Point3Ds of a box bounding a 3D :class:`~.Mobject`."""
+        """In 3D, nadir is the furthest point in the direction towards the negative z axis, which is
+        away from the viewer/into the screen.
+        This method returns the furthest point i.e. the nadir
+          of the bounding box of the 3D :class:`~.Mobject`.
+        IN = [0, 0, -1]
+        """
         return self.get_edge_center(IN)
 
     def length_over_dim(self, dim: int) -> float:
-        """Measure the length of an :class:`~.Mobject` in a certain direction."""
-        max_coord: float = self.reduce_across_dimension(
-            max,
-            dim,
-        )
+        """Returns the length of an :class:`~.Mobject` in a given dimension."""
+        max_coord: float = self.reduce_across_dimension(max, dim)
         min_coord: float = self.reduce_across_dimension(min, dim)
         return max_coord - min_coord
 
@@ -2348,15 +2432,15 @@ class Mobject:
         return self.get_extremum_along_dim(dim=dim, key=np.array(direction)[dim])
 
     def get_x(self, direction: Vector3DLike = ORIGIN) -> float:
-        """Returns x Point3D of the center of the :class:`~.Mobject` as ``float``"""
+        """Returns x coordinate of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(0, direction)
 
     def get_y(self, direction: Vector3DLike = ORIGIN) -> float:
-        """Returns y Point3D of the center of the :class:`~.Mobject` as ``float``"""
+        """Returns y coordinate of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(1, direction)
 
     def get_z(self, direction: Vector3DLike = ORIGIN) -> float:
-        """Returns z Point3D of the center of the :class:`~.Mobject` as ``float``"""
+        """Returns z coordinate of the center of the :class:`~.Mobject` as ``float``"""
         return self.get_coord(2, direction)
 
     def get_start(self) -> Point3D:
@@ -2396,39 +2480,56 @@ class Mobject:
         return z_index_group.get_center()
 
     def has_points(self) -> bool:
-        """Check if :class:`~.Mobject` contains points."""
+        """Checks if :class:`~.Mobject` itself contains points.
+        Doesn't check whether the submobjects have points or not.
+        """
         return len(self.points) > 0
 
     def has_no_points(self) -> bool:
-        """Check if :class:`~.Mobject` *does not* contains points."""
+        """Checks if :class:`~.Mobject` *does not* contains points."""
         return not self.has_points()
 
     # Match other mobject properties
 
     def match_color(self, mobject: Mobject) -> Self:
-        """Match the color with the color of another :class:`~.Mobject`."""
+        """Matches the color with the color of another :class:`~.Mobject`."""
         return self.set_color(mobject.get_color())
 
     def match_dim_size(self, mobject: Mobject, dim: int, **kwargs: Any) -> Self:
-        """Match the specified dimension with the dimension of another :class:`~.Mobject`."""
+        """Matches the specified dimension with the dimension of another :class:`~.Mobject`."""
         return self.rescale_to_fit(mobject.length_over_dim(dim), dim, **kwargs)
 
     def match_width(self, mobject: Mobject, **kwargs: Any) -> Self:
-        """Match the width with the width of another :class:`~.Mobject`."""
+        """Matches the width with the width of another :class:`~.Mobject`.
+
+        By default, this is done via uniform scaling, preserving aspect ratio.
+        If only the width needs to be matched (without affecting other dimensions),
+        pass ``stretch=True``.
+        """
         return self.match_dim_size(mobject, 0, **kwargs)
 
     def match_height(self, mobject: Mobject, **kwargs: Any) -> Self:
-        """Match the height with the height of another :class:`~.Mobject`."""
+        """Matches the height with the height of another :class:`~.Mobject`.
+
+        By default, this is done via uniform scaling, preserving aspect ratio.
+        If only the height needs to be matched (without affecting other dimensions),
+        pass ``stretch=True``.
+        """
         return self.match_dim_size(mobject, 1, **kwargs)
 
     def match_depth(self, mobject: Mobject, **kwargs: Any) -> Self:
-        """Match the depth with the depth of another :class:`~.Mobject`."""
+        """Matches the depth with the depth of another :class:`~.Mobject`.
+
+        By default, this is done via uniform scaling, preserving aspect ratio.
+        If only the depth needs to be matched (without affecting other dimensions),
+        pass ``stretch=True``.
+        """
         return self.match_dim_size(mobject, 2, **kwargs)
 
     def match_coord(
         self, mobject: Mobject, dim: int, direction: Vector3DLike = ORIGIN
     ) -> Self:
-        """Match the Point3Ds with the Point3Ds of another :class:`~.Mobject`."""
+        """Matches the points of the :class:`~.Mobject` with the points of another :class:`~.Mobject`."""
         return self.set_coord(
             mobject.get_coord(dim, direction),
             dim=dim,
@@ -2436,15 +2537,15 @@ class Mobject:
         )
 
     def match_x(self, mobject: Mobject, direction: Vector3DLike = ORIGIN) -> Self:
-        """Match x coord. to the x coord. of another :class:`~.Mobject`."""
+        """Matches x coordinate of the :class:`~.Mobject`to the x coordinate of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 0, direction)
 
     def match_y(self, mobject: Mobject, direction: Vector3DLike = ORIGIN) -> Self:
-        """Match y coord. to the x coord. of another :class:`~.Mobject`."""
+        """Matches y coordinate of the :class:`~.Mobject`to the y coordinate of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 1, direction)
 
     def match_z(self, mobject: Mobject, direction: Vector3DLike = ORIGIN) -> Self:
-        """Match z coord. to the x coord. of another :class:`~.Mobject`."""
+        """Matches x coordinate of the :class:`~.Mobject`to the x coordinate of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 2, direction)
 
     def align_to(
@@ -2452,11 +2553,18 @@ class Mobject:
         mobject_or_point: Mobject | Point3DLike,
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
-        """Aligns mobject to another :class:`~.Mobject` in a certain direction.
+        """Aligns mobject to the critical_point of another :class:`~.Mobject` in the given direction.
+        or to the point, if mobject_or_point is a Point3DLike.
+
+        Parameter:
+        mobject_or_point is the target :class:`~.Mobject`.
+        direction is w.r.t the target mobject's center, when mobject_or_point is a :class:`~.Mobject`.
+
 
         Examples:
-        mob1.align_to(mob2, UP) moves mob1 vertically so that its
-        top edge lines ups with mob2's top edge.
+        mob1.align_to(mob2, UP) moves mob1 vertically so that mob1's
+        top edge aligns with mob2's top edge. The direction given here is UP,
+        which is w.r.t mob2's center, i.e. UP is mob2's bounding box's top edge_center.
         """
         if isinstance(mobject_or_point, Mobject):
             point = mobject_or_point.get_critical_point(direction)
@@ -2879,7 +2987,7 @@ class Mobject:
                 def construct(self):
                     s = VGroup(*[Dot().shift(i*0.1*RIGHT) for i in range(-20,20)])
                     s2 = s.copy()
-                    s2.invert()
+                    s2.invert() # does s2 = s2[::-1]
                     s2.shift(DOWN)
                     self.play(Write(s), Write(s2))
         """
@@ -3341,8 +3449,8 @@ class Mobject:
         self.z_index = z_index_value
         return self
 
-    def set_z_index_by_z_Point3D(self) -> Self:
-        """Sets the :class:`~.Mobject`'s z Point3D to the value of :attr:`z_index`.
+    def set_z_index_by_z_coordinate(self) -> Self:
+        """Sets the :class:`~.Mobject`'s :attr:`z_index` to the value of z coordinate.
 
         Returns
         -------
