@@ -34,15 +34,16 @@ def test_font_warnings():
     # check random string (should be warning)
     assert warning_printed("Manim!" * 3, warn_missing_font=True)
 
-def test_em_dash_width_default_font_size():                                             
-   from manimpango import list_fonts                                                   
-                                                                                       
-   available = list_fonts()                                                            
-   # Fonts that render em dash at full font size width            
-   candidates = ["Arial", "Liberation Sans"]                                  
-                                                                                       
-   font = next((f for f in candidates if f in available), None)                        
-   assert font is not None, f"No suitable font found. Available: {available}"          
-                                                                                       
-   text_em_dash = Text("—", font=font)                                                 
-   assert abs(text_em_dash.width - DEFAULT_FONT_SIZE_IN_WORLD_SPACE) < 0.01
+
+def test_em_dash_width_default_font_size():
+    from manimpango import list_fonts
+
+    available = list_fonts()
+    # Fonts that render em dash at full font size width
+    candidates = ["Arial", "Liberation Sans"]
+
+    font = next((f for f in candidates if f in available), None)
+    assert font is not None, f"No suitable font found. Available: {available}"
+
+    text_em_dash = Text("—", font=font)
+    assert abs(text_em_dash.width - DEFAULT_FONT_SIZE_IN_WORLD_SPACE) < 0.01
