@@ -41,6 +41,9 @@ from manim.utils.tex_file_writing import tex_to_svg_file
 from ..opengl.opengl_compatibility import ConvertToOpenGL
 
 MATHTEX_SUBSTRING = "substring"
+TEX_SVG_UNITS_PER_PT = 1
+"""Scale factor from TeX SVG output to point units.
+TeX outputs 1 svg unit per point (72 DPI)."""
 TEX_DEFAULT_FONT_SIZE_PT = 10
 """The fontsize used by default by tex: 10pt.
 This means that one 'EM' character like '—' will be 13.333 svg units, since 1pt=4/3 px"""
