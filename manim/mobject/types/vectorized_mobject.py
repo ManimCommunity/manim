@@ -2112,9 +2112,9 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
 
     Notes
     -----
-    When adding the same mobject more than once, repetitions are ignored.
-    Use :meth:`.Mobject.copy` to create a separate copy which can then
-    be added to the group.
+    When adding the same mobject more than once, repetitions are ignored by default.
+    If you want to add same mobjects to the VGroup, use :meth:`.Mobject.copy`
+    to create a separate copy which can then be added to the VGroup.
 
     Examples
     --------
@@ -2306,7 +2306,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         return self.remove(vmobject)
 
     def __setitem__(self, key: int, value: VMobject | Sequence[VMobject]) -> None:
-        """Override the [] operator for item assignment.
+        """Overrides the [] operator for item assignment.
 
         Parameters
         ----------
