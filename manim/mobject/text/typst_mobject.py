@@ -1,0 +1,796 @@
+"""Mobjects representing text rendered using Typst.
+
+.. _typst-mobjects:
+
+.. important::
+
+   The ``typst`` Python package must be installed to use these classes.
+   Install it via ``pip install typst>=0.14`` or add the ``typst`` optional
+   dependency group (``pip install manim[typst]``).
+
+Typst mobjects compile Typst markup directly to SVG using the ``typst``
+Python package and then import the result through :class:`~.SVGMobject`.
+Use :class:`~.Typst` for general Typst markup and :class:`~.TypstMath`
+for display-style math.
+
+Examples
+--------
+
+Basic text and math
+^^^^^^^^^^^^^^^^^^^
+
+.. manim:: TypstTextReferenceExample
+    :save_last_frame:
+    :ref_classes: Typst
+
+    class TypstTextReferenceExample(Scene):
+        def construct(self):
+            text = Typst(
+                r"*Hello* from _Typst!_",
+                color=YELLOW,
+                font_size=72,
+            )
+            self.add(text)
+
+.. manim:: TypstMathReferenceExample
+    :save_last_frame:
+    :ref_classes: TypstMath
+
+    class TypstMathReferenceExample(Scene):
+        def construct(self):
+            equation = TypstMath(
+                r"sum_(k=1)^n k = frac(n(n + 1), 2)",
+                font_size=72,
+            )
+            self.add(equation)
+
+Selecting subexpressions
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+Typst mobjects expose label-based selection via :meth:`~.Typst.select`.
+There are two common ways to create selectable groups:
+
+- use ordinary Typst labels in :class:`~.Typst`
+- use Manim's ``{{ ... }}`` shorthand in :class:`~.TypstMath`
+
+.. note::
+
+   The ``{{ ... }}`` shorthand is currently only supported by
+   :class:`~.TypstMath`. For :class:`~.Typst`, create labels directly in the
+   Typst source, for example with ``#box[body] <label>``.
+
+.. manim:: TypstLabelSelectionExample
+    :save_last_frame:
+    :ref_classes: Typst
+
+    class TypstLabelSelectionExample(Scene):
+        def construct(self):
+            text = Typst(
+                r'''
+                #box[
+                    *Typst* labels also work in regular markup.
+                ] <headline>
+
+                #let pick(body) = [#box(body) <picked>]
+                We can highlight #pick[multiple] #pick[fragments] at once.
+                ''',
+                font_size=42,
+            )
+            text.select("headline").set_color(BLUE)
+            text.select("picked").set_color(YELLOW)
+            self.add(text)
+
+.. manim:: TypstMathSelectionExample
+    :save_last_frame:
+    :ref_classes: TypstMath
+
+    class TypstMathSelectionExample(Scene):
+        def construct(self):
+            equation = TypstMath(
+                "{{ a^2 + b^2 : lhs }} = {{ c^2 }}",
+                font_size=72,
+            )
+            equation.select("lhs").set_color(BLUE)
+            equation.select(0).set_color(YELLOW)
+            self.add(equation)
+
+Inspecting baseline frames
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For debugging or alignment tasks, Typst mobjects can optionally track a
+per-element baseline frame. Enable this with ``track_baselines=True`` and
+query either :attr:`~.Typst.baseline_frames` for all tracked leaf elements or
+:meth:`~.Typst.get_baseline_frame` for a specific selected submobject.
+
+.. code-block:: python
+
+    text = Typst("Ggf", track_baselines=True)
+    orig, right, up = text.baseline_frames[0]
+
+    eq = TypstMath("{{ a^2 + b^2 : lhs }} = c^2", track_baselines=True)
+    for part in eq.select("lhs"):
+        orig, right, up = eq.get_baseline_frame(part)
+        print(orig, right, up)
+"""
+
+from __future__ import annotations
+
+__all__ = [
+    "Typst",
+    "TypstMath",
+]
+
+import re
+from pathlib import Path
+from typing import Any, cast
+from xml.etree import ElementTree as ET
+
+import numpy as np
+import svgelements as se
+
+from manim import config
+from manim.constants import DEFAULT_FONT_SIZE, SCALE_FACTOR_PER_FONT_POINT, RendererType
+from manim.mobject.svg.svg_mobject import SVGMobject
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.utils.color import BLACK, ParsableManimColor
+from manim.utils.typst_file_writing import typst_to_svg_file
+
+_MANIMGRP_PREAMBLE = "#let manimgrp(lbl, body) = [#box(body) #label(lbl)]"
+
+# Pattern for the label part of {{ content : label }}.
+# The label must be a valid Typst label identifier.
+_LABEL_RE = re.compile(r"^(.*)\s*:\s*([a-zA-Z_][a-zA-Z0-9_-]*)\s*$", re.DOTALL)
+_INTERNAL_TYPST_ID_RE = re.compile(r"g[0-9A-Fa-f]+")
+_DUPLICATE_LABEL_SUFFIX = "__manim_typst_dup_"
+# Empirical correction so Typst-authored SVG strokes (fraction bars,
+# underlines, etc.) visually match the weight of TeX-derived geometry more
+# closely after import into Manim's pixel-based stroke model.
+_TYPST_SVG_STROKE_WIDTH_SCALE = 0.5
+
+
+class Typst(SVGMobject):
+    """A mobject rendered from a Typst markup string.
+
+    The Typst source is compiled to SVG via the ``typst`` Python package
+    (a self-contained Rust binary extension — no system-level install
+    required) and then imported through :class:`~.SVGMobject`.
+
+    Parameters
+    ----------
+    typst_code
+        Raw Typst markup to be compiled. This string is placed verbatim
+        into the body of a minimal Typst document.
+    font_size
+        Font size in Manim font-size units (default: ``DEFAULT_FONT_SIZE``,
+        i.e. 48). The actual scaling is applied *after* SVG import, matching
+        the approach used by :class:`~.SingleStringMathTex`.
+    typst_preamble
+        Extra Typst code inserted before the body. Useful for ``#import``,
+        ``#set``, or ``#show`` rules. Default: ``""``.
+    color
+        The color of the mobject. By default the standard VMobject color
+        (white in dark mode). Overrides the Typst text fill color.
+    stroke_width
+        SVG stroke width override. If ``None`` (default), the stroke widths
+        from Typst's SVG output are preserved.
+    font_paths
+        Optional list of additional font directories passed to the Typst
+        compiler (e.g. for custom fonts not installed system-wide).
+    track_baselines
+        Whether to keep enough per-element reference data to recover the
+        current Typst baseline frame for each imported submobject.
+        When enabled, :attr:`baseline_frames` and
+        :meth:`get_baseline_frame` can be used to retrieve the current
+        ``(orig, right, up)`` positions for the imported SVG elements.
+    should_center
+        Whether to center the mobject after import (default ``True``).
+    height
+        Target height of the mobject. If ``None`` (default), the height is
+        determined by ``font_size``.
+    **kwargs
+        Forwarded to :class:`~.SVGMobject`.
+
+    Examples
+    --------
+    .. code-block:: python
+
+        class TypstExample(Scene):
+            def construct(self):
+                formula = Typst(r"$ integral_a^b f(x) dif x $")
+                self.play(Write(formula))
+
+
+        class TypstTextExample(Scene):
+            def construct(self):
+                text = Typst(
+                    r"*Hello* from _Typst!_",
+                    font_size=72,
+                )
+                self.add(text)
+    """
+
+    def __init__(
+        self,
+        typst_code: str,
+        *,
+        font_size: float = DEFAULT_FONT_SIZE,
+        typst_preamble: str = "",
+        color: ParsableManimColor | None = None,
+        stroke_width: float | None = None,
+        font_paths: list[str | Path] | None = None,
+        track_baselines: bool = False,
+        should_center: bool = True,
+        height: float | None = None,
+        **kwargs: Any,
+    ):
+        if color is None:
+            color = VMobject().color
+
+        self._font_size = font_size
+        self.typst_code = typst_code
+        self.typst_preamble = typst_preamble
+        self.track_baselines = track_baselines
+        self._preserve_svg_stroke_widths = stroke_width is None
+        self._baseline_tracked_submobjects: list[VMobject] = []
+        self._stroke_width_tracked_submobjects: list[VMobject] = []
+        self._label_aliases: dict[str, list[str]] = {}
+
+        file_name = typst_to_svg_file(
+            typst_code,
+            preamble=typst_preamble,
+            font_paths=font_paths,
+        )
+        super().__init__(
+            file_name=file_name,
+            should_center=should_center,
+            stroke_width=stroke_width,
+            height=height,
+            color=color,
+            path_string_config={
+                "should_subdivide_sharp_curves": True,
+                "should_remove_null_curves": True,
+            },
+            **kwargs,
+        )
+        self._rebuild_label_aliases()
+        self._refresh_svg_stroke_widths()
+        self.init_colors()
+
+        # Used for scaling via font_size property (mirrors SingleStringMathTex).
+        self.initial_height = self.height
+
+        if height is None:
+            self.font_size = self._font_size
+
+    def __repr__(self) -> str:
+        return f"{type(self).__name__}({self.typst_code!r})"
+
+    @property
+    def hash_seed(self) -> tuple:
+        """Include baseline tracking in the SVG cache key."""
+        return (*super().hash_seed, self.track_baselines)
+
+    # -- font_size property (same approach as SingleStringMathTex) -----------
+
+    @property
+    def font_size(self) -> float:
+        """The font size of the Typst mobject."""
+        return self.height / self.initial_height / SCALE_FACTOR_PER_FONT_POINT
+
+    @font_size.setter
+    def font_size(self, val: float) -> None:
+        if val <= 0:
+            raise ValueError("font_size must be greater than 0.")
+        if self.height > 0:
+            self.scale(val / self.font_size)
+
+    def scale(
+        self,
+        scale_factor: float,
+        scale_stroke: bool = False,
+        *,
+        about_point: np.ndarray | None = None,
+        about_edge: np.ndarray | None = None,
+    ) -> Typst:
+        result = super().scale(
+            scale_factor,
+            scale_stroke=scale_stroke,
+            about_point=about_point,
+            about_edge=about_edge,
+        )
+        self._refresh_svg_stroke_widths()
+        return result
+
+    def _refresh_svg_stroke_widths(self) -> None:
+        """Refresh pixel stroke widths for Typst-authored SVG strokes.
+
+        SVG stroke widths are specified in the SVG's local coordinate system,
+        while Manim stroke widths are pixel-based. For Typst-authored strokes
+        such as fraction bars or underlines, rescale them according to the
+        current geometric scale of the imported element so their visual weight
+        stays proportional to the rest of the expression.
+        """
+        if not self._preserve_svg_stroke_widths:
+            return
+
+        pixels_per_unit = config.pixel_width / config.frame_width
+        for submobject in self._stroke_width_tracked_submobjects:
+            submobject_any = cast(Any, submobject)
+            reference_size = cast(float, submobject_any._typst_reference_size)
+            source_stroke_width = cast(
+                float,
+                submobject_any._typst_source_stroke_width,
+            )
+            current_size = max(submobject.width, submobject.height)
+            if reference_size <= 0:
+                continue
+            current_stroke_width = source_stroke_width * current_size / reference_size
+            submobject.set_stroke(
+                width=current_stroke_width
+                * pixels_per_unit
+                * _TYPST_SVG_STROKE_WIDTH_SCALE,
+                family=False,
+            )
+
+    # -- baseline frame tracking ---------------------------------------------
+
+    def get_mob_from_shape_element(self, shape: se.SVGElement) -> VMobject | None:
+        """Attach Typst-specific metadata to imported shape mobjects."""
+        mob = super().get_mob_from_shape_element(shape)
+        if mob is None or not mob.has_points():
+            return mob
+
+        if self._preserve_svg_stroke_widths and shape.stroke_width not in (None, 0):
+            reference_size = max(mob.width, mob.height)
+            if reference_size > 0:
+                mob_any = cast(Any, mob)
+                mob_any._typst_reference_size = reference_size
+                mob_any._typst_source_stroke_width = shape.stroke_width
+                self._stroke_width_tracked_submobjects.append(mob)
+
+        if not self.track_baselines:
+            return mob
+
+        baseline_marks = self._get_reference_baseline_frame(shape)
+        if baseline_marks is None:
+            return mob
+
+        reference_points = mob.points.copy()
+        reference_xy = np.column_stack(
+            [
+                reference_points[:, 0],
+                reference_points[:, 1],
+                np.ones(len(reference_points)),
+            ],
+        )
+        if np.linalg.matrix_rank(reference_xy) < 3:
+            return mob
+
+        mob_any = cast(Any, mob)
+        mob_any._typst_reference_points = reference_points
+        mob_any._typst_reference_baseline_frame = baseline_marks
+        self._baseline_tracked_submobjects.append(mob)
+        return mob
+
+    @staticmethod
+    def _get_reference_baseline_frame(
+        shape: se.SVGElement,
+    ) -> np.ndarray | None:
+        """Return the reference ``(orig, right, up)`` frame for a Typst SVG element.
+
+        The frame is expressed in the same pre-centering coordinate system as the
+        imported submobject points after the element's own SVG transform has been
+        applied.
+        """
+        if not isinstance(shape, se.Transformable):
+            return None
+
+        matrix = shape.transform if shape.apply else se.Matrix()
+        return np.array(
+            [
+                [matrix.e, matrix.f, 0.0],
+                [matrix.a + matrix.e, matrix.b + matrix.f, 0.0],
+                [matrix.c + matrix.e, matrix.d + matrix.f, 0.0],
+            ],
+        )
+
+    def get_baseline_frame(
+        self, submobject: VMobject
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Return the current Typst baseline frame for a tracked submobject.
+
+        The returned tuple contains the current positions of ``(orig, right, up)``.
+        These are recovered from the stored reference frame and the submobject's
+        current affine position in the scene.
+        """
+        try:
+            submobject_any = cast(Any, submobject)
+            reference_points = cast(
+                np.ndarray,
+                submobject_any._typst_reference_points,
+            )
+            reference_frame = cast(
+                np.ndarray,
+                submobject_any._typst_reference_baseline_frame,
+            )
+        except AttributeError as err:
+            raise ValueError(
+                "No tracked Typst baseline frame is available for this submobject. "
+                "Construct the Typst mobject with track_baselines=True.",
+            ) from err
+
+        reference_xy = np.column_stack(
+            [
+                reference_points[:, 0],
+                reference_points[:, 1],
+                np.ones(len(reference_points)),
+            ],
+        )
+        if np.linalg.matrix_rank(reference_xy) < 3:
+            raise ValueError(
+                "The stored Typst reference geometry is degenerate, so its baseline "
+                "frame cannot be recovered.",
+            )
+
+        transform, _, _, _ = np.linalg.lstsq(
+            reference_xy, submobject.points, rcond=None
+        )
+        frame_xy = np.column_stack(
+            [
+                reference_frame[:, 0],
+                reference_frame[:, 1],
+                np.ones(len(reference_frame)),
+            ],
+        )
+        current_frame = frame_xy @ transform
+        return tuple(
+            cast(tuple[np.ndarray, np.ndarray, np.ndarray], tuple(current_frame))
+        )
+
+    @property
+    def baseline_frames(self) -> list[tuple[np.ndarray, np.ndarray, np.ndarray]]:
+        """Current Typst baseline frames for all tracked leaf submobjects."""
+        if not self.track_baselines:
+            return []
+        return [
+            self.get_baseline_frame(submobject)
+            for submobject in self._baseline_tracked_submobjects
+        ]
+
+    def _rebuild_label_aliases(self) -> None:
+        """Rebuild user-facing label aliases from imported SVG ids."""
+        aliases: dict[str, list[str]] = {}
+        for key in self.id_to_vgroup_dict:
+            if key == "root" or key.startswith("numbered_group_"):
+                continue
+            if _INTERNAL_TYPST_ID_RE.fullmatch(key) is not None:
+                continue
+
+            base_label = key
+            if _DUPLICATE_LABEL_SUFFIX in key:
+                base_label, _, _ = key.partition(_DUPLICATE_LABEL_SUFFIX)
+            aliases.setdefault(base_label, []).append(key)
+        self._label_aliases = aliases
+
+    def _select_label(self, label: str) -> VGroup:
+        if label not in self._label_aliases:
+            raise KeyError(
+                f"No group with label {label!r} found. "
+                f"Available labels: {self._user_label_keys()}"
+            )
+
+        result = VGroup()
+        seen_ids: set[int] = set()
+        for group_id in self._label_aliases[label]:
+            for submobject in self.id_to_vgroup_dict[group_id]:
+                submobject_id = id(submobject)
+                if submobject_id in seen_ids:
+                    continue
+                seen_ids.add(submobject_id)
+                result.add(submobject)
+        return result
+
+    # -- SVG post-processing -------------------------------------------------
+
+    def modify_xml_tree(self, element_tree: ET.ElementTree) -> ET.ElementTree:
+        """Convert ``data-typst-label`` attributes to ``id`` before parsing.
+
+        Typst's SVG renderer emits ``data-typst-label`` on ``<g>`` elements
+        that carry a label (created via ``#box(body) <label>``).  The
+        ``svgelements`` library propagates custom ``data-*`` attributes from
+        parent groups to all children, making them unusable as unique group
+        keys.  ``id`` attributes, on the other hand, are *not* inherited.
+
+        This method walks the XML tree and promotes every
+        ``data-typst-label`` to ``id`` (on ``<g>`` elements only), so that
+        :meth:`~.SVGMobject.get_mobjects_from` can pick them up via its
+        existing ``id``-based grouping logic.
+        """
+        # Let the base class inject default style wrappers first.
+        element_tree = super().modify_xml_tree(element_tree)
+
+        # Walk all elements regardless of namespace — ElementTree
+        # qualifies tags with the namespace URI, so a bare ``"g"``
+        # won't match ``{http://www.w3.org/2000/svg}g``.
+        label_counts: dict[str, int] = {}
+        for element in element_tree.iter():
+            label = element.get("data-typst-label")
+            if label is not None:
+                count = label_counts.get(label, 0)
+                label_counts[label] = count + 1
+                svg_id = label
+                if count > 0:
+                    svg_id = f"{label}{_DUPLICATE_LABEL_SUFFIX}{count}"
+                element.set("id", svg_id)
+                del element.attrib["data-typst-label"]
+
+        return element_tree
+
+    # -- sub-expression selection --------------------------------------------
+
+    def select(self, key: str | int) -> VGroup:
+        """Select a labeled sub-expression.
+
+        Labels are created in the Typst source either manually via the
+        ``manimgrp`` helper or automatically through the ``{{ }}``
+        double-brace notation in :class:`TypstMath`.
+
+        Parameters
+        ----------
+        key
+            A label name (``str``) matching a ``data-typst-label`` in the
+            SVG, or an integer index into the auto-numbered ``{{ }}``
+            groups (``_grp-0``, ``_grp-1``, …).
+
+        Returns
+        -------
+        VGroup
+            The submobjects corresponding to the selected group.
+
+        Raises
+        ------
+        KeyError
+            If no group with the given label exists.
+        IndexError
+            If an integer index is out of range.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            eq = TypstMath("{{ a + b : num }} / {{ c : den }} = {{ x }}")
+            eq.select("num").set_color(RED)
+            eq.select("den").set_color(BLUE)
+            eq.select(2).set_color(GREEN)  # "x" (auto-numbered)
+        """
+        if isinstance(key, int):
+            label = f"_grp-{key}"
+            if label not in self._label_aliases:
+                raise IndexError(
+                    f"Group index {key} out of range. "
+                    f"Available labels: {self._user_label_keys()}"
+                )
+            return self._select_label(label)
+
+        return self._select_label(key)
+
+    def _user_label_keys(self) -> list[str]:
+        """Return the label keys that were created from ``data-typst-label``
+        attributes (filtering out internal Typst group IDs and auto-numbered
+        groups).
+        """
+        return list(self._label_aliases)
+
+    # -- color handling ------------------------------------------------------
+
+    def init_colors(self, propagate_colors: bool = True) -> Typst:
+        """Recolor black submobjects to ``self.color``.
+
+        Typst renders text in black (``fill="#000000"``) by default.
+        This mirrors the approach of :meth:`SingleStringMathTex.init_colors`:
+        any submobject whose color is black is recolored to ``self.color``,
+        while explicitly colored submobjects (non-black) are preserved.
+        """
+        for submobject in self.submobjects:
+            if submobject.color != BLACK:
+                continue
+            submobject.color = self.color
+            if config.renderer == RendererType.OPENGL:
+                submobject.init_colors()
+            elif config.renderer == RendererType.CAIRO:
+                submobject.init_colors(propagate_colors=propagate_colors)
+        return self
+
+
+class TypstMath(Typst):
+    r"""Convenience wrapper: wraps the input in Typst math delimiters.
+
+    The expression is rendered as a display-level equation
+    (``$ ... $`` with surrounding spaces).
+
+    Supports the ``{{ ... }}`` double-brace notation for grouping
+    sub-expressions.  Each ``{{ content }}`` is wrapped in a labeled
+    ``manimgrp`` call so that the resulting SVG contains identifiable
+    groups accessible via :meth:`~.Typst.select`.
+
+    Groups can optionally be given explicit labels:
+    ``{{ content : label }}``.  Without a label, groups are
+    auto-numbered (``_grp-0``, ``_grp-1``, …).
+
+    Parameters
+    ----------
+    math_expression
+        Typst math-mode content **without** the ``$ ... $`` delimiters.
+        May contain ``{{ ... }}`` groups.
+    **kwargs
+        Forwarded to :class:`Typst`.
+
+    Examples
+    --------
+    .. code-block:: python
+
+        class DisplayMath(Scene):
+            def construct(self):
+                eq = TypstMath(r"sum_(k=0)^n k = (n(n+1)) / 2")
+                self.add(eq)
+
+
+        class GroupedMath(Scene):
+            def construct(self):
+                eq = TypstMath("{{ a^2 + b^2 : lhs }} = {{ c^2 }}")
+                eq.select("lhs").set_color(RED)
+                eq.select(0).set_color(BLUE)  # "c" (auto-numbered)
+                self.add(eq)
+    """
+
+    def __init__(self, math_expression: str, **kwargs: Any):
+        processed, labels = self._preprocess_groups(math_expression)
+        self._group_labels = labels
+
+        # Inject the manimgrp helper when groups are present.
+        if labels:
+            preamble = kwargs.get("typst_preamble", "")
+            if _MANIMGRP_PREAMBLE not in preamble:
+                preamble = (
+                    f"{_MANIMGRP_PREAMBLE}\n{preamble}"
+                    if preamble
+                    else _MANIMGRP_PREAMBLE
+                )
+            kwargs["typst_preamble"] = preamble
+
+        super().__init__(f"$ {processed} $", **kwargs)
+
+    # -- double-brace preprocessor -------------------------------------------
+
+    @staticmethod
+    def _preprocess_groups(math_expr: str) -> tuple[str, list[str]]:
+        """Replace ``{{ ... }}`` groups with ``manimgrp(...)`` calls.
+
+        Parameters
+        ----------
+        math_expr
+            The raw math expression (without ``$ ... $`` delimiters).
+
+        Returns
+        -------
+        tuple[str, list[str]]
+            The processed expression and an ordered list of group labels.
+        """
+        result: list[str] = []
+        labels: list[str] = []
+        auto_index = 0
+        i = 0
+        n = len(math_expr)
+        outer_in_string = False
+        outer_bracket_depth = 0
+
+        while i < n:
+            ch = math_expr[i]
+
+            # Track string literals at the outer level.
+            if outer_in_string:
+                result.append(ch)
+                if ch == "\\" and i + 1 < n:
+                    result.append(math_expr[i + 1])
+                    i += 2
+                    continue
+                if ch == '"':
+                    outer_in_string = False
+                i += 1
+                continue
+            if ch == '"':
+                outer_in_string = True
+                result.append(ch)
+                i += 1
+                continue
+
+            # Track [...] content blocks at the outer level.
+            if ch == "[":
+                outer_bracket_depth += 1
+                result.append(ch)
+                i += 1
+                continue
+            if ch == "]" and outer_bracket_depth > 0:
+                outer_bracket_depth -= 1
+                result.append(ch)
+                i += 1
+                continue
+            if outer_bracket_depth > 0:
+                result.append(ch)
+                i += 1
+                continue
+
+            # Look for opening {{ (not a single {)
+            if i + 1 < n and ch == "{" and math_expr[i + 1] == "{":
+                i += 2  # skip {{
+                content_start = i
+                depth = 1
+                in_string = False
+                bracket_depth = 0
+
+                while i < n and depth > 0:
+                    ch = math_expr[i]
+
+                    if in_string:
+                        if ch == "\\" and i + 1 < n:
+                            i += 2
+                            continue
+                        if ch == '"':
+                            in_string = False
+                        i += 1
+                        continue
+
+                    if ch == '"':
+                        in_string = True
+                        i += 1
+                        continue
+
+                    if ch == "[":
+                        bracket_depth += 1
+                        i += 1
+                        continue
+                    if ch == "]" and bracket_depth > 0:
+                        bracket_depth -= 1
+                        i += 1
+                        continue
+                    if bracket_depth > 0:
+                        i += 1
+                        continue
+
+                    if ch == "{" and i + 1 < n and math_expr[i + 1] == "{":
+                        depth += 1
+                        i += 2
+                        continue
+                    if ch == "}" and i + 1 < n and math_expr[i + 1] == "}":
+                        depth -= 1
+                        if depth == 0:
+                            content = math_expr[content_start:i]
+                            i += 2  # skip }}
+                            break
+                        i += 2
+                        continue
+
+                    i += 1
+                else:
+                    # Unclosed {{ — emit literally and stop.
+                    result.append("{{")
+                    result.append(math_expr[content_start:])
+                    return "".join(result), labels
+
+                # Check for optional `: label` suffix.
+                m = _LABEL_RE.match(content)
+                if m is not None:
+                    body = m.group(1).strip()
+                    label = m.group(2)
+                else:
+                    body = content.strip()
+                    label = f"_grp-{auto_index}"
+                    auto_index += 1
+
+                labels.append(label)
+                result.append(f'manimgrp("{label}", {body})')
+            else:
+                result.append(math_expr[i])
+                i += 1
+
+        return "".join(result), labels
