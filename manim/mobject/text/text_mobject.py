@@ -69,7 +69,7 @@ from manimpango import MarkupUtils, PangoUtils, TextSetting
 
 from manim import config, logger
 from manim.constants import *
-from manim.constants import PT_OVER_PX
+# PANGO_SVG_UNITS_PER_PT moved below with other text-specific constants
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
@@ -82,6 +82,9 @@ if TYPE_CHECKING:
     from manim.typing import Point3D
 
 DEFAULT_LINE_SPACING_SCALE = 0.3
+PANGO_SVG_UNITS_PER_PT = 4 / 3
+"""Scale factor from Pango SVG output to point units.
+Pango outputs 4/3 svg units per point (96 DPI)."""
 TEXT_FONT_SIZE_PT = 10
 """The font size we use to render the unscaled text in the SVG.
 Note that the typical EM dash (—) will be 13.333 svg units, since 1pt = 4/3 px"""
@@ -597,7 +600,7 @@ class Text(SVGMobject):
         if height is None and width is None:
             self.scale(
                 1
-                / PT_OVER_PX  # convert svg output to "pt" units
+                / PANGO_SVG_UNITS_PER_PT  # convert svg output to "pt" units
                 / TEXT_FONT_SIZE_PT  # then to "fontsize" or "EM" units
                 * DEFAULT_FONT_SIZE_IN_WORLD_SPACE  # then to world space
             )
@@ -1308,7 +1311,7 @@ class MarkupText(SVGMobject):
         if height is None and width is None:
             self.scale(
                 1
-                / PT_OVER_PX  # convert svg output to "pt" units
+                / PANGO_SVG_UNITS_PER_PT  # convert svg output to "pt" units
                 / TEXT_FONT_SIZE_PT  # then to "fontsize" or "EM" units
                 * DEFAULT_FONT_SIZE_IN_WORLD_SPACE  # then to world space
             )
