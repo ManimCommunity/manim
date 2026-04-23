@@ -69,22 +69,22 @@ class VectorField(VGroup):
     color
         A single color for the entire vector field. If this is provided, position-specific coloring is disabled.
     color_scheme
-        A function mapping a vector at any position to a single value. This value is then used to calculate the position 
+        A function mapping a vector at any position to a single value. This value is then used to calculate the position
         in the color gradient range which itself is defined using:
-        `min_color_scheme_value`, 
-        `max_color_scheme_value` and 
+        `min_color_scheme_value`,
+        `max_color_scheme_value` and
         `colors`.
     min_color_scheme_value
-        The lower bound of the color mapping range. Values returned by the color_scheme 
+        The lower bound of the color mapping range. Values returned by the color_scheme
         function that are equal to this are mapped to the first color in `colors`.
-        If the value returned by the color_scheme function is lower than 
-        min_color_scheme_value, then that value is clipped to min_color_scheme_value, 
+        If the value returned by the color_scheme function is lower than
+        min_color_scheme_value, then that value is clipped to min_color_scheme_value,
         and thus maps to the first color in `colors`.
     max_color_scheme_value
-        The upper bound of the color mapping range. Values returned by the color_scheme 
+        The upper bound of the color mapping range. Values returned by the color_scheme
         function that are equal to this are mapped to the last color in `colors`.
-        If the value returned by the color_scheme function is higher than 
-        max_color_scheme_value, then that value is clipped to max_color_scheme_value, 
+        If the value returned by the color_scheme function is higher than
+        max_color_scheme_value, then that value is clipped to max_color_scheme_value,
         and thus maps to the last color in `colors`.
     colors
         The colors defining the color gradient of the vector field.
@@ -147,10 +147,10 @@ class VectorField(VGroup):
         z_range: Sequence[float] | None,
         three_dimensions: bool,
     ) -> None:
-        """Sets up self.x_range, self.y_range, self.z_range and self.ranges.        
-        
-        VectorField class by itself doesn't set up ranges. 
-        This method is to be used by ArrowVectorField and StreamLines. 
+        """Sets up self.x_range, self.y_range, self.z_range and self.ranges.
+
+        VectorField class by itself doesn't set up ranges.
+        This method is to be used by ArrowVectorField and StreamLines.
         """
         self.x_range = x_range or [
             floor(-config["frame_width"] / 2),
@@ -372,14 +372,14 @@ class VectorField(VGroup):
     ) -> Callable[[Mobject, float], Mobject]:
         """Returns an update function to move a :class:`~.Mobject` along the vector field.
 
-        When used with :meth:`~.Mobject.add_updater`, the mobject will move along the 
+        When used with :meth:`~.Mobject.add_updater`, the mobject will move along the
         vector field, where its speed is determined by the magnitude of the vector field.
 
         Parameters
         ----------
         speed
-            At `speed=1` the distance a mobject moves per second is equal to the 
-            magnitude of the vector field along its path. 
+            At `speed=1` the distance a mobject moves per second is equal to the
+            magnitude of the vector field along its path.
             The speed value scales the speed of such a mobject.
         pointwise
             Whether to move the mobject along the vector field. See :meth:`nudge` for details.
@@ -434,7 +434,7 @@ class VectorField(VGroup):
         return self
 
     def get_colored_background_image(self, sampling_rate: int = 5) -> Image.Image:
-        """Generates an image displaying the vector field colors.        
+        """Generates an image displaying the vector field colors.
 
         For each pixel position, the color is determined by:
         1. Evaluating the vector field function at that position.
@@ -467,7 +467,9 @@ class VectorField(VGroup):
         x_array = x_array.reshape((1, len(x_array)))
         y_array = y_array.reshape((len(y_array), 1))
         x_array = x_array.repeat(ph, axis=0)
-        y_array.repeat(pw, axis=1)  # TODO why not y_array = y_array.repeat(...)? Because numpy broadcasts it and is
+        y_array.repeat(
+            pw, axis=1
+        )  # TODO why not y_array = y_array.repeat(...)? Because numpy broadcasts it and is
         points_array[:, :, 0] = x_array
         points_array[:, :, 1] = y_array
         rgbs = np.apply_along_axis(self.pos_to_rgb, 2, points_array)
@@ -479,8 +481,8 @@ class VectorField(VGroup):
         end: float,
         colors: Iterable[ParsableManimColor],
     ) -> Callable[[Sequence[float], float], FloatRGBA_Array]:
-        """Returns a function that generates a 2D numpy array of shape (n, 4) consisting of 
-        RGBA values representing a color gradient, where n is the length of the `values` 
+        """Returns a function that generates a 2D numpy array of shape (n, 4) consisting of
+        RGBA values representing a color gradient, where n is the length of the `values`
         sequence passed to the returned function, and 4 represents the RGBA channels.
 
         Parameters
@@ -488,12 +490,12 @@ class VectorField(VGroup):
         start
             The value to be mapped to the first color in `colors`.
             Is equal to `min_color_scheme_value` of the vector field.
-            Any value lower than this is clipped to `start` and thus 
+            Any value lower than this is clipped to `start` and thus
             maps to the first color in `colors`.
         end
             The value to be mapped to the last color in `colors`.
             Is equal to `max_color_scheme_value` of the vector field.
-            Any value higher than this is clipped to `end` and thus 
+            Any value higher than this is clipped to `end` and thus
             maps to the last color in `colors`.
         colors
             list of colors to generate the gradient.
@@ -539,21 +541,21 @@ class ArrowVectorField(VectorField):
     color
         The color of the vector field. If set, position-specific coloring is disabled.
     color_scheme
-        A function mapping a vector at any position in space to a single scalar value 
+        A function mapping a vector at any position in space to a single scalar value
         in the range defined by `min_color_scheme_value` and `max_color_scheme_value`.
-        This scalar value determines which color is picked from the gradient defined 
+        This scalar value determines which color is picked from the gradient defined
         by `colors`.
     min_color_scheme_value
-        The lower bound of the color mapping range. Values returned by the color_scheme 
+        The lower bound of the color mapping range. Values returned by the color_scheme
         function that are equal to this are mapped to the first color in `colors`.
-        If the value returned by the color_scheme function is lower than 
-        min_color_scheme_value, then that value is clipped to min_color_scheme_value, 
+        If the value returned by the color_scheme function is lower than
+        min_color_scheme_value, then that value is clipped to min_color_scheme_value,
         and thus maps to the first color in `colors`.
     max_color_scheme_value
-        The upper bound of the color mapping range. Values returned by the color_scheme 
+        The upper bound of the color mapping range. Values returned by the color_scheme
         function that are equal to this are mapped to the last color in `colors`.
-        If the value returned by the color_scheme function is higher than 
-        max_color_scheme_value, then that value is clipped to max_color_scheme_value, 
+        If the value returned by the color_scheme function is higher than
+        max_color_scheme_value, then that value is clipped to max_color_scheme_value,
         and thus maps to the last color in `colors`.
     colors
         The colors defining the color gradient of the vector field.
@@ -647,12 +649,7 @@ class ArrowVectorField(VectorField):
             **kwargs,
         )
 
-        self._setup_ranges(
-            x_range, 
-            y_range, 
-            z_range, 
-            three_dimensions
-            )
+        self._setup_ranges(x_range, y_range, z_range, three_dimensions)
 
         self.length_func = length_func
         self.opacity = opacity
@@ -675,8 +672,8 @@ class ArrowVectorField(VectorField):
     def get_vector(self, position: np.ndarray):
         """Returns a vector in the vector field at the given position.
 
-        The vector's direction and magnitude are determined by the vector field 
-        function at that position. Its color is determined by `pos_to_color` 
+        The vector's direction and magnitude are determined by the vector field
+        function at that position. Its color is determined by `pos_to_color`
         or `single_color`, and its display length by `length_func`.
 
         Parameters
@@ -712,22 +709,22 @@ class StreamLines(VectorField):
     color
         The color of the vector field. If set, position-specific coloring is disabled.
     color_scheme
-        A function mapping a vector at any position to a single value. This value is then used to calculate the position 
+        A function mapping a vector at any position to a single value. This value is then used to calculate the position
         in the color gradient range which itself is defined using:
-        `min_color_scheme_value`, 
-        `max_color_scheme_value` and 
+        `min_color_scheme_value`,
+        `max_color_scheme_value` and
         `colors`.
     min_color_scheme_value
-        The lower bound of the color mapping range. Values returned by the color_scheme 
+        The lower bound of the color mapping range. Values returned by the color_scheme
         function that are equal to this are mapped to the first color in `colors`.
-        If the value returned by the color_scheme function is lower than 
-        min_color_scheme_value, then that value is clipped to min_color_scheme_value, 
+        If the value returned by the color_scheme function is lower than
+        min_color_scheme_value, then that value is clipped to min_color_scheme_value,
         and thus maps to the first color in `colors`.
     max_color_scheme_value
-        The upper bound of the color mapping range. Values returned by the color_scheme 
+        The upper bound of the color mapping range. Values returned by the color_scheme
         function that are equal to this are mapped to the last color in `colors`.
-        If the value returned by the color_scheme function is higher than 
-        max_color_scheme_value, then that value is clipped to max_color_scheme_value, 
+        If the value returned by the color_scheme function is higher than
+        max_color_scheme_value, then that value is clipped to max_color_scheme_value,
         and thus maps to the last color in `colors`.
     colors
         The colors defining the color gradient of the vector field.
@@ -741,22 +738,22 @@ class StreamLines(VectorField):
         Enables three_dimensions. Default set to False, automatically turns True if
         z_range is not None.
     noise_factor
-        The maximum amount by which the starting position of each streamline 
-        is randomly altered, independently along each axis. 
+        The maximum amount by which the starting position of each streamline
+        is randomly altered, independently along each axis.
         Defaults to :code:`delta_y / 2` if not defined.
     n_repeats
         The number of streamlines generated around each starting point.
     dt
         The time step used to simulate the movement of each streamline.
         At each step, the streamline moves by `dt * func(position)`.
-        Lower values result in smaller steps and a more accurate approximation 
+        Lower values result in smaller steps and a more accurate approximation
         of the trajectories in the vector field, but increase computation time.
     virtual_time
         virtual_time
-        Determines the length of the streamlines. Higher values result in 
+        Determines the length of the streamlines. Higher values result in
         longer streamlines but increase the computation time upon creation.
     max_anchors_per_line
-        The maximum number of anchor points per streamline. If a streamline has 
+        The maximum number of anchor points per streamline. If a streamline has
         more points than this, intermediate points are skipped to reduce complexity,
         which may slightly affect the visual accuracy of the streamline path.
     padding
@@ -822,7 +819,6 @@ class StreamLines(VectorField):
         opacity=1,
         **kwargs,
     ):
-        
         super().__init__(
             func,
             color,
@@ -833,12 +829,7 @@ class StreamLines(VectorField):
             **kwargs,
         )
 
-        self._setup_ranges(
-            x_range, 
-            y_range, 
-            z_range, 
-            three_dimensions
-            )
+        self._setup_ranges(x_range, y_range, z_range, three_dimensions)
 
         self.noise_factor = (
             noise_factor if noise_factor is not None else self.y_range[2] / 2
@@ -873,7 +864,7 @@ class StreamLines(VectorField):
                 or p[2] < self.z_range[0] - self.padding
                 or p[2] > self.z_range[1] + self.padding - self.z_range[2]
             )
-        
+
         if not self.single_color:
             self.background_img = self.get_colored_background_image()
             if config["renderer"] == RendererType.OPENGL:
@@ -893,7 +884,7 @@ class StreamLines(VectorField):
                 points.append(new_point)
             if len(points) <= 1:
                 continue
-            line = get_vectorized_mobject_class()()            
+            line = get_vectorized_mobject_class()()
             step = max(1, int(len(points) / self.max_anchors_per_line))
             line.duration = step * dt
             line.set_points_smoothly(points[::step])
@@ -937,7 +928,7 @@ class StreamLines(VectorField):
             The lag ratio of the animation.
             If ``None``, defaults to ``run_time / (2 * len(stream_lines))``.
         run_time
-            The time required for creation of a single streamline. 
+            The time required for creation of a single streamline.
             The runtime of the whole animation might be longer due to the ``lag_ratio``.
             If ``None``, the virtual time of the streamlines is used.
 
@@ -989,7 +980,7 @@ class StreamLines(VectorField):
     ) -> None:
         """Animates the stream lines using an updater.
 
-        The stream lines will continuously flow.        
+        The stream lines will continuously flow.
 
         Parameters
         ----------
@@ -998,7 +989,7 @@ class StreamLines(VectorField):
             If `False`, all streamlines are immediately visible and already in motion,
             each at a random point in their cycle.
         flow_speed
-            At `flow_speed=1` the distance the flow moves per second is equal to 
+            At `flow_speed=1` the distance the flow moves per second is equal to
             the magnitude of the vector field along its path. The speed value scales the speed of this flow.
         time_width
             The proportion of the stream line shown while being animated.
@@ -1049,7 +1040,7 @@ class StreamLines(VectorField):
         self.time_width = time_width
 
     def end_animation(self) -> AnimationGroup:
-        """Ends the stream line animation smoothly.        
+        """Ends the stream line animation smoothly.
 
         Returns an :class:`~.AnimationGroup` that completes any in-progress streamlines,
         resulting in fully displayed stream lines without a noticeable cut.
