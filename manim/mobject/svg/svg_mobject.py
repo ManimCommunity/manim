@@ -193,7 +193,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             config.renderer,
         )
 
-    def generate_mobject(self) -> None:
+    def generate_mobject(self, **kwargs: Any) -> None:
         """Parse the SVG and translate its elements to submobjects."""
         file_path = self.get_file_path()
         element_tree = ET.parse(file_path)
@@ -206,6 +206,8 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         modified_file_path.unlink()
 
         mobjects, mobject_dict = self.get_mobjects_from(svg)
+        for mobj in mobjects:
+            mobj.set(**kwargs)
         self.add(*mobjects)
         self.id_to_vgroup_dict = mobject_dict
         self.flip(RIGHT)  # Flip y
