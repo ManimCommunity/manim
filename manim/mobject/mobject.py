@@ -2555,7 +2555,7 @@ class Mobject:
 
         """
         return [m for m in self.get_family() if m.get_num_points() > 0]
-        
+
     def arrange(
         self,
         direction: Vector3DLike = RIGHT,

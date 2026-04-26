@@ -244,6 +244,7 @@ def test_apply_matrix_about_vertex_view():
     transformed_vertices = triangle.get_vertices()
     np.testing.assert_allclose(transformed_vertices[0], first_vertex, atol=1e-6)
 
+
 def test_mobject_arrange_last_reference():
     """Test Mobject.arrange() can use the last submobject as the reference."""
     square1 = Square()
