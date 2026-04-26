@@ -2557,42 +2557,43 @@ class Mobject:
         return [m for m in self.get_family() if m.get_num_points() > 0]
 
         def arrange(
-        self,
-        direction: Vector3DLike = RIGHT,
-        buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
-        center: bool = True,
-        reference: Mobject | None = None,
-        **kwargs: Any,
-    ) -> Self:
-         """Sorts :class:`~.Mobject` next to each other on screen.
+            self,
+            direction: Vector3DLike = RIGHT,
+            buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
+            center: bool = True,
+            reference: Mobject | None = None,
+            **kwargs: Any,
+        ) -> Self:
+            """Sorts :class:`~.Mobject` next to each other on screen.
 
             Parameters
-            ----------
-            direction
-                The direction in which the submobjects should be arranged.
-        buff
-                The distance between neighboring submobjects.
-        center
-                Whether to center the mobject after arranging.
-        reference
-                The submobject to use as the reference for the arrangement. If not
-                set, the first submobject is used.
+            ---------
+               direction
+                   The direction in which the submobjects should be arranged.
+            buff
+                   The distance between neighboring submobjects.
+            center
+                   Whether to center the mobject after arranging.
+            reference
+                   The submobject to use as the reference for the arrangement. If not
+                   set, the first submobject is used.
 
-        Examples
-        --------
+            Examples
+            --------
 
-        .. manim:: Example
-            :save_last_frame:
+            .. manim:: Example
+               :save_last_frame:
 
-            class Example(Scene):
-                def construct(self):
-                    s1 = Square()
-                    s2 = Square()
-                    s3 = Square()
-                    s4 = Square()
-                    x = VGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
-                    self.add(x)
-        """
+               class Example(Scene):
+                   def construct(self):
+                       s1 = Square()
+                       s2 = Square()
+                       s3 = Square()
+                       s4 = Square()
+                       x = VGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
+                       self.add(x)
+            """
+
         submobjects = list(self.submobjects)
 
         if reference is None:
@@ -2617,7 +2618,7 @@ class Mobject:
         if center:
             self.center()
         return self
-    
+
     def arrange_in_grid(
         self,
         rows: int | None = None,
