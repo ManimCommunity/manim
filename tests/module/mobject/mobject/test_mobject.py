@@ -257,5 +257,5 @@ def test_mobject_arrange_last_reference():
     group.arrange(last=True, center=False)
 
     assert np.allclose(square3.get_center(), original_last_center)
-    assert square2.get_x() < square3.get_x()
-    assert square1.get_x() < square2.get_x()
+    assert square3.get_x() < square2.get_x()
+    assert square2.get_x() < square1.get_x()
