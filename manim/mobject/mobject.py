@@ -2564,19 +2564,19 @@ class Mobject:
         reference: Mobject | None = None,
         **kwargs: Any,
     ) -> Self:
-        """Sorts :class:`~.Mobject` next to each other on screen.
+         """Sorts :class:`~.Mobject` next to each other on screen.
 
-        Parameters
-        ----------
-        direction
-            The direction in which the submobjects should be arranged.
+            Parameters
+            ----------
+            direction
+                The direction in which the submobjects should be arranged.
         buff
-            The distance between neighboring submobjects.
+                The distance between neighboring submobjects.
         center
-            Whether to center the mobject after arranging.
+                Whether to center the mobject after arranging.
         reference
-            The submobject to use as the reference for the arrangement. If not
-            set, the first submobject is used.
+                The submobject to use as the reference for the arrangement. If not
+                set, the first submobject is used.
 
         Examples
         --------
@@ -2617,7 +2617,7 @@ class Mobject:
         if center:
             self.center()
         return self
-
+    
     def arrange_in_grid(
         self,
         rows: int | None = None,
