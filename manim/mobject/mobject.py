@@ -2556,12 +2556,12 @@ class Mobject:
         """
         return [m for m in self.get_family() if m.get_num_points() > 0]
 
-    def arrange(
+        def arrange(
         self,
         direction: Vector3DLike = RIGHT,
         buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         center: bool = True,
-        last: bool = False,
+        reference: Mobject | None = None,
         **kwargs: Any,
     ) -> Self:
         """Sorts :class:`~.Mobject` next to each other on screen.
@@ -2574,8 +2574,9 @@ class Mobject:
             The distance between neighboring submobjects.
         center
             Whether to center the mobject after arranging.
-        last
-            If ``True``, arrange submobjects using the last submobject as the reference.
+        reference
+            The submobject to use as the reference for the arrangement. If not
+            set, the first submobject is used.
 
         Examples
         --------
@@ -2593,11 +2594,25 @@ class Mobject:
                     self.add(x)
         """
         submobjects = list(self.submobjects)
-        if last:
-            submobjects.reverse()
 
-        for m1, m2 in zip(submobjects[:-1], submobjects[1:], strict=True):
+        if reference is None:
+            reference_index = 0
+        else:
+            reference_index = submobjects.index(reference)
+
+        for m1, m2 in zip(
+            submobjects[reference_index:],
+            submobjects[reference_index + 1 :],
+            strict=True,
+        ):
             m2.next_to(m1, direction, buff, **kwargs)
+
+        for m1, m2 in zip(
+            reversed(submobjects[:reference_index]),
+            reversed(submobjects[1 : reference_index + 1]),
+            strict=True,
+        ):
+            m1.next_to(m2, -direction, buff, **kwargs)
 
         if center:
             self.center()
