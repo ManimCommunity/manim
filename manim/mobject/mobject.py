@@ -2561,9 +2561,22 @@ class Mobject:
         direction: Vector3DLike = RIGHT,
         buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         center: bool = True,
+        reference: Mobject | None = None,
         **kwargs: Any,
     ) -> Self:
         """Sorts :class:`~.Mobject` next to each other on screen.
+
+        Parameters
+        ----------
+        direction
+            The direction in which the submobjects should be arranged.
+        buff
+            The distance between neighboring submobjects.
+        center
+            Whether to center the mobject after arranging.
+        reference
+            The submobject to use as the reference for the arrangement. If not
+            set, the first submobject is used.
 
         Examples
         --------
@@ -2580,8 +2593,26 @@ class Mobject:
                     x = VGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
                     self.add(x)
         """
-        for m1, m2 in zip(self.submobjects[:-1], self.submobjects[1:], strict=True):
+        submobjects = list(self.submobjects)
+
+        if reference is None:
+            reference_index = 0
+        else:
+            reference_index = submobjects.index(reference)
+
+        for m1, m2 in zip(
+            submobjects[reference_index:],
+            submobjects[reference_index + 1 :],
+        ):
             m2.next_to(m1, direction, buff, **kwargs)
+
+        for m1, m2 in zip(
+            reversed(submobjects[:reference_index]),
+            reversed(submobjects[1 : reference_index + 1]),
+            strict=True,
+        ):
+            m1.next_to(m2, -direction, buff, **kwargs)
+
         if center:
             self.center()
         return self

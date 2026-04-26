@@ -243,3 +243,19 @@ def test_apply_matrix_about_vertex_view():
     # The first vertex should remain in the same position (within numerical precision)
     transformed_vertices = triangle.get_vertices()
     np.testing.assert_allclose(transformed_vertices[0], first_vertex, atol=1e-6)
+
+
+def test_mobject_arrange_reference():
+    """Test Mobject.arrange() can use a submobject as the reference."""
+    square1 = Square()
+    square2 = Square()
+    square3 = Square()
+
+    group = VGroup(square1, square2, square3)
+    original_reference_center = square3.get_center().copy()
+
+    group.arrange(reference=square3, center=False)
+
+    assert np.allclose(square3.get_center(), original_reference_center)
+    assert square1.get_x() < square2.get_x()
+    assert square2.get_x() < square3.get_x()
