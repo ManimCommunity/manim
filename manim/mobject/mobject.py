@@ -2603,7 +2603,6 @@ class Mobject:
         for m1, m2 in zip(
             submobjects[reference_index:],
             submobjects[reference_index + 1 :],
-            strict=True,
         ):
             m2.next_to(m1, direction, buff, **kwargs)
 
