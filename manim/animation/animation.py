@@ -40,18 +40,17 @@ class Animation:
         Defines the delay after which the animation is applied to submobjects. This lag
         is relative to the duration of the animation.
 
-        This does not influence the total
-        runtime of the animation. Instead the runtime of individual animations is
-        adjusted so that the complete animation has the defined run time.
-
+        This does not influence the total runtime of the animation.
+        Instead the runtime of individual animations is adjusted
+        so that the complete animation has the defined run time.
     run_time
         The duration of the animation in seconds.
     rate_func
-        The function defining the animation progress based on the relative runtime (see  :mod:`~.rate_functions`) .
+        The function defining the animation progress based on the
+        relative runtime (see  :mod:`~.rate_functions`) .
 
         For example ``rate_func(0.5)`` is the proportion of the animation that is done
         after half of the animations run time.
-
     reverse_rate_function
         Reverses the rate function of the animation. Setting ``reverse_rate_function``
         does not have any effect on ``remover`` or ``introducer``. These need to be
@@ -64,6 +63,21 @@ class Animation:
         Whether the given mobject should be removed from the scene after this animation.
     suspend_mobject_updating
         Whether updaters of the mobject should be suspended during the animation.
+    introducer
+        introducer controls whether the mobject is automatically added to the scene
+        before the animation starts.
+        If `introducer=True` then mobject gets added to scene automatically when animation starts
+        If `introducer=False` then mobject is assumed to already be in the scene.
+
+        For example:
+        self.play(Create(Square())) #Square doesn't exist yet, therefore, introducer=True adds it first, then animates it.
+        Create draws something for the first time i.e. the object doesn't exist on screen yet.
+        So Manim needs to add it to the scene before starting to draw it.
+
+        self.play(Uncreate(square)) ## square already exists, therefore, in Uncreate, introducer=False, just animates the erasure.
+        Uncreate erases something that is already on screen.
+        The object is already in the scene, so there's no need to add it again.
+
 
 
     .. NOTE::
@@ -217,7 +231,7 @@ class Animation:
         # TODO: begin and finish should require a scene as parameter.
         # That way Animation.clean_up_from_screen and Scene.add_mobjects_from_animations
         # could be removed as they fulfill basically the same purpose.
-        """Finish the animation.
+        """Finishes the animation.
 
         This method gets called when the animation is over.
 
@@ -229,8 +243,8 @@ class Animation:
     def clean_up_from_scene(self, scene: Scene) -> None:
         """Clean up the :class:`~.Scene` after finishing the animation.
 
-        This includes to :meth:`~.Scene.remove` the Animation's
-        :class:`~.Mobject` if the animation is a remover.
+        This includes the Animation's :class:`~.Mobject` to the method
+        :meth:`~.Scene.remove` if the animation is a remover.
 
         Parameters
         ----------
@@ -244,8 +258,8 @@ class Animation:
     def _setup_scene(self, scene: Scene) -> None:
         """Setup up the :class:`~.Scene` before starting the animation.
 
-        This includes to :meth:`~.Scene.add` the Animation's
-        :class:`~.Mobject` if the animation is an introducer.
+        This includes the Animation's :class:`~.Mobject` in the method
+        :meth:`~.Scene.add` if the animation is an introducer.
 
         Parameters
         ----------
@@ -261,7 +275,7 @@ class Animation:
             scene.add(self.mobject)
 
     def create_starting_mobject(self) -> Mobject | OpenGLMobject:
-        # Keep track of where the mobject starts
+        # Keep a copy of the mobject at the start of the Animation.
         return self.mobject.copy()
 
     def get_all_mobjects(self) -> Sequence[Mobject | OpenGLMobject]:
