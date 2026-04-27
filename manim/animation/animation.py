@@ -40,13 +40,13 @@ class Animation:
         Defines the delay after which the animation is applied to submobjects. This lag
         is relative to the duration of the animation.
 
-        This does not influence the total runtime of the animation. 
-        Instead the runtime of individual animations is adjusted 
+        This does not influence the total runtime of the animation.
+        Instead the runtime of individual animations is adjusted
         so that the complete animation has the defined run time.
     run_time
         The duration of the animation in seconds.
     rate_func
-        The function defining the animation progress based on the 
+        The function defining the animation progress based on the
         relative runtime (see  :mod:`~.rate_functions`) .
 
         For example ``rate_func(0.5)`` is the proportion of the animation that is done
@@ -64,18 +64,18 @@ class Animation:
     suspend_mobject_updating
         Whether updaters of the mobject should be suspended during the animation.
     introducer
-        introducer controls whether the mobject is automatically added to the scene 
+        introducer controls whether the mobject is automatically added to the scene
         before the animation starts.
         If `introducer=True` then mobject gets added to scene automatically when animation starts
         If `introducer=False` then mobject is assumed to already be in the scene.
 
         For example:
         self.play(Create(Square())) #Square doesn't exist yet, therefore, introducer=True adds it first, then animates it.
-        Create draws something for the first time i.e. the object doesn't exist on screen yet. 
+        Create draws something for the first time i.e. the object doesn't exist on screen yet.
         So Manim needs to add it to the scene before starting to draw it.
 
         self.play(Uncreate(square)) ## square already exists, therefore, in Uncreate, introducer=False, just animates the erasure.
-        Uncreate erases something that is already on screen. 
+        Uncreate erases something that is already on screen.
         The object is already in the scene, so there's no need to add it again.
 
 
