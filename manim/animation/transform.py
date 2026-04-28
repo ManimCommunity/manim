@@ -137,8 +137,8 @@ class Transform(Animation):
 
     def __init__(
         self,
-        mobject: VMobject | OpenGLVMobject | None,
-        target_mobject: VMobject | OpenGLVMobject | None = None,
+        mobject: Mobject | None,
+        target_mobject: Mobject | None = None,
         path_func: Callable | None = None,
         path_arc: float = 0,
         path_arc_axis: np.ndarray = OUT,
