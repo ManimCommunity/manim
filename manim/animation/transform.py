@@ -68,7 +68,7 @@ class Transform(Animation):
     path_func
         A function defining the path that the points of the ``mobject`` are being moved
         along until they match the points of the ``target_mobject``, see :mod:`.utils.paths`.
-        If path_func is None, it defaults to a straight line, 
+        If path_func is None, it defaults to a straight line,
         which is set up inside the path_arc setter.
     path_arc
         The arc angle (in radians) that the points of ``mobject`` will follow to reach
@@ -158,8 +158,10 @@ class Transform(Animation):
             )
 
         self.replace_mobject_with_target_in_scene = replace_mobject_with_target_in_scene
-        
-        self.target_mobject = target_mobject if target_mobject is not None else Mobject()
+
+        self.target_mobject = (
+            target_mobject if target_mobject is not None else Mobject()
+        )
 
         super().__init__(mobject, **kwargs)
 
