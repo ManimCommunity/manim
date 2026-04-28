@@ -29,12 +29,14 @@ __all__ = [
 import inspect
 import types
 from collections.abc import Callable, Iterable, Sequence
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Self
 
 import numpy as np
 
 from manim.data_structures import MethodWithArgs
 from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.types.vectorized_mobject import VMobject
 
 from .. import config
 from ..animation.animation import Animation
@@ -66,6 +68,8 @@ class Transform(Animation):
     path_func
         A function defining the path that the points of the ``mobject`` are being moved
         along until they match the points of the ``target_mobject``, see :mod:`.utils.paths`.
+        If path_func is None, it defaults to a straight line,
+        which is set up inside the path_arc setter.
     path_arc
         The arc angle (in radians) that the points of ``mobject`` will follow to reach
         the points of the target if using a circular path arc, see ``path_arc_centers``.
@@ -142,26 +146,23 @@ class Transform(Animation):
         replace_mobject_with_target_in_scene: bool = False,
         **kwargs,
     ) -> None:
-        self.path_arc_axis: np.ndarray = path_arc_axis
-        self.path_arc_centers: Point3DLike | Point3DLike_Array | None = path_arc_centers
-        self.path_arc: float = path_arc
-
-        # path_func is a property a few lines below so it doesn't need to be set in any case
-        if path_func is not None:
-            self.path_func: Callable = path_func
-        elif self.path_arc_centers is not None:
+        self.path_arc_axis = path_arc_axis
+        self.path_arc_centers = path_arc_centers
+        self.path_arc = path_arc
+        self.path_func = path_func
+        if self.path_arc_centers is not None:
             self.path_func = path_along_circles(
                 path_arc,
                 self.path_arc_centers,
                 self.path_arc_axis,
             )
 
-        self.replace_mobject_with_target_in_scene: bool = (
-            replace_mobject_with_target_in_scene
-        )
-        self.target_mobject: Mobject = (
+        self.replace_mobject_with_target_in_scene = replace_mobject_with_target_in_scene
+
+        self.target_mobject = (
             target_mobject if target_mobject is not None else Mobject()
         )
+
         super().__init__(mobject, **kwargs)
 
     @property
@@ -240,11 +241,11 @@ class Transform(Animation):
 
     def interpolate_submobject(
         self,
-        submobject: Mobject,
-        starting_submobject: Mobject,
-        target_copy: Mobject,
+        submobject: VMobject | OpenGLVMobject,
+        starting_submobject: VMobject | OpenGLVMobject,
+        target_copy: VMobject | OpenGLVMobject,
         alpha: float,
-    ) -> Transform:
+    ) -> Self:
         submobject.interpolate(starting_submobject, target_copy, alpha, self.path_func)
         return self
 
