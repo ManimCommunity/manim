@@ -12,6 +12,7 @@ __all__ = [
     "DoubleArrow",
     "Angle",
     "RightAngle",
+    "LoopEdge",
 ]
 
 from typing import TYPE_CHECKING, Any, Literal, cast
@@ -604,7 +605,7 @@ class Arrow(Line):
         self._set_stroke_width_from_length()
 
     def scale(self, factor: float, scale_tips: bool = False, **kwargs: Any) -> Self:  # type: ignore[override]
-        r"""Scale an arrow, but keep stroke width and arrow tip size fixed.
+        """Scale an arrow, but keep stroke width and arrow tip size fixed.
 
 
         .. seealso::
@@ -1210,3 +1211,86 @@ class RightAngle(Angle):
         **kwargs: Any,
     ) -> None:
         super().__init__(line1, line2, radius=length, elbow=True, **kwargs)
+
+
+class LoopEdge(TipableVMobject):
+    def __init__(
+        self,
+        vertex: Point3DLike,
+        graph_center: Point3DLike,
+        edge_type: type[Mobject] = Line,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(**kwargs)
+        self.anchor_vertex = self._pointify(vertex)
+        self.graph_center = self._pointify(graph_center)
+        self.edge_type = edge_type
+        edge = edge_type()
+        points = self._generate_arch_points()
+        edge.set_points(points)
+        self.set_points(edge.points)
+
+    def _generate_arch_points(self, vertex: Point3DLike | None = None) -> np.array:
+        radius = 0.5
+        anchor_vertex = self.anchor_vertex if vertex is None else self._pointify(vertex)
+
+        direction = anchor_vertex - self.graph_center
+        norm = np.linalg.norm(direction)
+        direction = UP if norm == 0 else direction / norm
+
+        self.arc_center = anchor_vertex + direction * radius
+
+        vector = anchor_vertex - self.arc_center
+        self.angle = np.arctan2(vector[1], vector[0])
+
+        arc = Arc(
+            arc_center=self.arc_center,
+            radius=radius,
+            start_angle=self.angle,
+            angle=2 * PI - 1e-3,
+        )
+        return arc.points
+
+    def set_points_by_vertex(self, vertex: Point3DLike | Mobject) -> None:
+        points = self._generate_arch_points(vertex)
+
+        edge = self.edge_type()
+        edge.set_points(points)
+        self.set_points(edge.points)
+
+    def get_center(self) -> Point3DLike:
+        return self.arc_center
+
+    def get_start(self) -> Point3DLike:
+        return self.points[0]
+
+    def get_end(self) -> Point3DLike:
+        return self.points[0]  # technically should be [-1], but that breaks the loop
+
+    def get_arch_point(self, t: float) -> Point3DLike:
+        radius = 0.5
+        theta = self.angle + 2 * t * PI
+        return (
+            np.array([radius * np.cos(theta), radius * np.sin(theta), 0])
+            + self.arc_center
+        )
+
+    def get_first_handle(self) -> Point3DLike:
+        return self.get_arch_point(0.18)
+
+    def get_last_handle(self) -> Point3DLike:
+        return self.get_arch_point(0.82)
+
+    # copied from Line
+    def _pointify(
+        self,
+        mob_or_point: Mobject | Point3DLike,
+        direction: Vector3DLike | None = None,
+    ) -> Point3D:
+        if isinstance(mob_or_point, (Mobject, OpenGLMobject)):
+            mob = mob_or_point
+            if direction is None:
+                return mob.get_center()
+            else:
+                return mob.get_boundary_point(direction)
+        return np.array(mob_or_point)

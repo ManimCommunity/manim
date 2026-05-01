@@ -134,3 +134,29 @@ dist/
 
 # Ignore the built dependencies
 third_party/*
+
+# Virtual environments
+.venv/
+venv/
+env/
+testenv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# mypy
+.mypy_cache/
+
+# pytest
+.pytest_cache/
+
+# IDEs
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

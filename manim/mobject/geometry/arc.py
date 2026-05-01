@@ -118,15 +118,16 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         tip_length: float | None = None,
         tip_width: float | None = None,
         at_start: bool = False,
+        is_loop: bool = False,
     ) -> Self:
         """Adds a tip to the TipableVMobject instance, recognising
         that the endpoints might need to be switched if it's
         a 'starting tip' or not.
         """
         if tip is None:
-            tip = self.create_tip(tip_shape, tip_length, tip_width, at_start)
+            tip = self.create_tip(tip_shape, tip_length, tip_width, at_start, is_loop)
         else:
-            self.position_tip(tip, at_start)
+            self.position_tip(tip, at_start, is_loop)
         self.reset_endpoints_based_on_tip(tip, at_start)
         self.assign_tip_attr(tip, at_start)
         self.add(tip)
@@ -138,12 +139,13 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         tip_length: float | None = None,
         tip_width: float | None = None,
         at_start: bool = False,
+        is_loop: bool = False,
     ) -> tips.ArrowTip:
         """Stylises the tip, positions it spatially, and returns
         the newly instantiated tip to the caller.
         """
         tip = self.get_unpositioned_tip(tip_shape, tip_length, tip_width)
-        self.position_tip(tip, at_start)
+        self.position_tip(tip, at_start, is_loop)
         return tip
 
     def get_unpositioned_tip(
@@ -175,7 +177,9 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         tip = tip_shape(length=tip_length, **style)
         return tip
 
-    def position_tip(self, tip: tips.ArrowTip, at_start: bool = False) -> tips.ArrowTip:
+    def position_tip(
+        self, tip: tips.ArrowTip, at_start: bool = False, is_loop: bool = False
+    ) -> tips.ArrowTip:
         # Last two control points, defining both
         # the end, and the tangency direction
         if at_start:
@@ -184,25 +188,36 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         else:
             handle = self.get_last_handle()
             anchor = self.get_end()
-        angles = cartesian_to_spherical(handle - anchor)
-        tip.rotate(
-            angles[1] - PI - tip.tip_angle,
-        )  # Rotates the tip along the azimuthal
-        if not hasattr(self, "_init_positioning_axis"):
-            axis = np.array(
-                [
-                    np.sin(angles[1]),
-                    -np.cos(angles[1]),
-                    0,
-                ]
-            )  # Obtains the perpendicular of the tip
-            tip.rotate(
-                -angles[2] + PI / 2,
-                axis=axis,
-            )  # Rotates the tip along the vertical wrt the axis
-            self._init_positioning_axis = axis
 
-        tip.shift(anchor - tip.tip_point)
+        angles = cartesian_to_spherical(handle - anchor)
+
+        if is_loop:
+            alpha = angles[1] - 10 * PI / 9 - tip.tip_angle
+            tip.rotate(
+                alpha,
+            )
+            tip.move_to(handle)
+        else:
+            tip.rotate(
+                angles[1] - PI - tip.tip_angle,
+            )  # Rotates the tip along the azimuthal
+
+            if not hasattr(self, "_init_positioning_axis"):
+                axis = np.array(
+                    [
+                        np.sin(angles[1]),
+                        -np.cos(angles[1]),
+                        0,
+                    ]
+                )  # Obtains the perpendicular of the tip
+
+                tip.rotate(
+                    -angles[2] + PI / 2,
+                    axis=axis,
+                )  # Rotates the tip along the vertical wrt the axis
+                self._init_positioning_axis = axis
+
+            tip.shift(anchor - tip.tip_point)
         return tip
 
     def reset_endpoints_based_on_tip(self, tip: tips.ArrowTip, at_start: bool) -> Self:
