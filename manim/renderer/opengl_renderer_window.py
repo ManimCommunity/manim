@@ -109,6 +109,14 @@ class Window(PygletWindow, WindowProtocol):
             -monitor.y + char_to_n[custom_position[0]] * height_diff // 2,
         )
 
+    def on_key_press(self, symbol: int, modifiers: int) -> bool:
+        self.pressed_keys.add(symbol)
+        return super().on_key_press(symbol, modifiers)
+
+    def on_key_release(self, symbol: int, modifiers: int) -> None:
+        self.pressed_keys.remove(symbol)
+        return super().on_key_release(symbol, modifiers)
+
 
 def tuple_len_2(pos: tuple[T, ...]) -> TypeGuard[tuple[T, T]]:
     return len(pos) == 2

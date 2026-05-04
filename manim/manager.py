@@ -252,6 +252,9 @@ class Manager(Generic[SceneT]):
             dt = current_time - last_time
             last_time = current_time
             self._update_frame(dt)
+            # update the window pressed keys attribute
+            # FIXME: need to get mouse info for this
+            self.scene.on_mouse_motion(np.array([0, 0, 0]), np.array([0.01, 0.01, 0]))
 
     @contextlib.contextmanager
     def no_render(self) -> Iterator[None]:

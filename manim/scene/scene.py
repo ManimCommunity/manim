@@ -534,21 +534,18 @@ class Scene:
         if propagate_event is not None and propagate_event is False:
             return
 
-        # TODO
-        return
-        frame = self.camera.frame
         # Handle perspective changes
-        if self.window.is_key_pressed(ord(PAN_3D_KEY)):
-            frame.increment_theta(-self.pan_sensitivity * d_point[0])
-            frame.increment_phi(self.pan_sensitivity * d_point[1])
+        if ord(PAN_3D_KEY) in self.manager.window.pressed_keys:
+            self.camera.increment_theta(-self.pan_sensitivity * d_point[0])
+            self.camera.increment_phi(self.pan_sensitivity * d_point[1])
         # Handle frame movements
-        elif self.window.is_key_pressed(ord(FRAME_SHIFT_KEY)):
+        elif ord(FRAME_SHIFT_KEY) in self.manager.window.pressed_keys:
             shift = -d_point
-            shift[0] *= frame.get_width() / 2
-            shift[1] *= frame.get_height() / 2
-            transform = frame.get_inverse_camera_rotation_matrix()
+            shift[0] *= self.camera.get_width() / 2
+            shift[1] *= self.camera.get_height() / 2
+            transform = self.camera.get_inverse_rotation_matrix()
             shift = np.dot(np.transpose(transform), shift)
-            frame.shift(shift)
+            self.camera.shift(shift)
 
     def on_mouse_drag(
         self, point: Point3D, d_point: Vector3D, buttons: int, modifiers: int

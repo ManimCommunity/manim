@@ -248,7 +248,7 @@ class Camera(Mobject, InvisibleMobject):
         :class:`Camera`
             The camera after incrementing its phi angle.
         """
-        return self.set_phi(self._phi + dgamma)
+        return self.set_phi(self._phi + dphi)
 
     def get_gamma(self) -> float:
         """Get the angle gamma by which the camera is rotated while standing on
