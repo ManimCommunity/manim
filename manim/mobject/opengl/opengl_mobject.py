@@ -39,6 +39,7 @@ from manim.data_structures import MethodWithArgs
 from manim.event_handler import EVENT_DISPATCHER
 from manim.event_handler.event_listener import EventListener
 from manim.event_handler.event_type import EventType
+from manim.typing import Point3D
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
 from manim.utils.exceptions import MultiAnimationOverrideException
