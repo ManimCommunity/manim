@@ -602,12 +602,12 @@ class Scene:
             return
 
         if EVENT_DISPATCHER.is_key_pressed(ord(ZOOM_KEY)):
-            factor = 1/1.25 if offset[1] > 0 else 1.25
+            factor = 1 / 1.25 if offset[1] > 0 else 1.25
             self.camera.scale(factor, about_point=point)
         else:
             transform = self.camera.get_inverse_rotation_matrix()
             shift = np.dot(np.transpose(transform), offset)
-            self.camera.shift(-shift/2)
+            self.camera.shift(-shift / 2)
 
     def on_key_release(self, symbol: int, modifiers: int) -> None:
         event_data = {"symbol": symbol, "modifiers": modifiers}
@@ -632,7 +632,7 @@ class Scene:
             return
 
         if char == RESET_FRAME_KEY:
-            self.play(self.camera.frame.animate.to_default_state())
+            self.camera.reset()
         elif char == "z" and modifiers == key.MOD_COMMAND:
             self.undo()
         elif char == "z" and modifiers == key.MOD_COMMAND | key.MOD_SHIFT:
@@ -657,25 +657,26 @@ class Scene:
         pass
 
     def _pos_window_to_camera(self, point: Point3D) -> Point3D:
-        """
-        The window gives position coordinates in pixels, we need them in camera coordinates
-        for intuitive interactions.
-        """
-        return np.array([
-            point[0]/self.manager.window.size[0]*self.camera.get_width() - self.camera.get_width()/2,
-            point[1]/self.manager.window.size[1]*self.camera.get_height() - self.camera.get_height()/2,
-            0
-        ])
+        """The window gives position coordinates in pixels, we need them in camera coordinates for intuitive interactions."""
+        return np.array(
+            [
+                point[0] / self.manager.window.size[0] * self.camera.get_width()
+                - self.camera.get_width() / 2,
+                point[1] / self.manager.window.size[1] * self.camera.get_height()
+                - self.camera.get_height() / 2,
+                0,
+            ]
+        )
 
     def _d_pos_window_to_camera(self, d_point: Point3D) -> Point3D:
-        """
-        The window gives positions differentials in pixels, we need them in camera units for untuitive interactions.
-        """
-        return np.array([
-            d_point[0]/self.manager.window.size[0]*self.camera.get_width(),
-            d_point[1]/self.manager.window.size[1]*self.camera.get_height(),
-            0
-        ])
+        """The window gives positions differentials in pixels, we need them in camera units for intuitive interactions."""
+        return np.array(
+            [
+                d_point[0] / self.manager.window.size[0] * self.camera.get_width(),
+                d_point[1] / self.manager.window.size[1] * self.camera.get_height(),
+                0,
+            ]
+        )
 
 
 class SceneState:

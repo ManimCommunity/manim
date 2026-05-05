@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-import numpy as np
 from typing import TYPE_CHECKING, TypeVar
-from manim.typing import Point3D
 
 import moderngl_window as mglw
+import numpy as np
 from moderngl_window.context.pyglet.window import Window as PygletWindow
 from moderngl_window.timers.clock import Timer
 from screeninfo import get_monitors
@@ -32,7 +31,9 @@ class Window(PygletWindow, WindowProtocol):
     vsync: bool = True
     cursor: bool = True
 
-    def __init__(self, scene: Scene, window_size: str | tuple[int, ...] = config.window_size):
+    def __init__(
+        self, scene: Scene, window_size: str | tuple[int, ...] = config.window_size
+    ):
         # TODO: remove size argument from window init,
         # move size computation below to config
 
@@ -114,26 +115,126 @@ class Window(PygletWindow, WindowProtocol):
         )
 
     def on_key_press(self, symbol: int, modifiers: int) -> bool:
+        """tie key pressing events to the scene response
+
+        Parameters
+        ----------
+        symbol
+            the key that is pressed
+        modifiers
+            keys like shift or ctrl
+
+        Returns
+        -------
+        bool
+            whether pyglet handled the event or not
+
+        """
+        # TODO: do we override pyglet's functions or call them like in this function?
         self.scene.on_key_press(symbol, modifiers)
         return super().on_key_press(symbol, modifiers)
 
     def on_key_release(self, symbol: int, modifiers: int) -> None:
+        """tie key release events to the scene response
+
+        Parameters
+        ----------
+        symbol
+            the key that is released
+        modifiers
+            keys like shift or ctrl
+        """
         self.scene.on_key_release(symbol, modifiers)
 
     def on_mouse_motion(self, x: int, y: int, dx: int, dy: int) -> None:
+        """tie mouse motion events to the scene response
+
+        Parameters
+        ----------
+        x
+            x pixel coordinate
+        y
+            y pixel coordinate
+        dx
+            change of x pixel coordinates
+        dy
+            change of y pixel coordinates
+        """
         self.scene.on_mouse_motion(np.array([x, y, 0]), np.array([dx, dy, 0]))
 
-    def on_mouse_drag(self, x: int, y: int, dx: int, dy: int, buttons: int, modifiers: int) -> None:
-        self.scene.on_mouse_drag(np.array([x, y, 0]), np.array([dx, dy, 0]), buttons, modifiers)
+    def on_mouse_drag(
+        self, x: int, y: int, dx: int, dy: int, buttons: int, modifiers: int
+    ) -> None:
+        """tie mouse drag events to the scene response
+
+        Parameters
+        ----------
+        x
+            x pixel coordinate
+        y
+            y pixel coordinate
+        dx
+            change of x pixel coordinates
+        dy
+            change of y pixel coordinates
+        buttons
+            the mouse buttons currently pressed
+        modifiers
+            keys like shift or ctrl
+        """
+        self.scene.on_mouse_drag(
+            np.array([x, y, 0]), np.array([dx, dy, 0]), buttons, modifiers
+        )
 
     def on_mouse_press(self, x: int, y: int, button: int, mods: int) -> None:
+        """tie mouse press events to the scene response
+
+        Parameters
+        ----------
+        x
+            x pixel coordinate
+        y
+            y pixel coordinate
+        button
+            the mouse button that is pressed
+        mods
+            keys like shift or ctrl
+        """
         self.scene.on_mouse_press(np.array([x, y, 0]), button, mods)
 
     def on_mouse_release(self, x: int, y: int, button: int, mods: int) -> None:
+        """tie mouse release events to the scene response
+
+        Parameters
+        ----------
+        x
+            x pixel coordinate
+        y
+            y pixel coordinate
+        button
+            the mouse button that is released
+        mods
+            keys like shift or ctrl
+        """
         self.scene.on_mouse_release(np.array([x, y, 0]), button, mods)
 
     def on_mouse_scroll(self, x: int, y: int, x_offset: float, y_offset: float) -> None:
-        self.scene.on_mouse_scroll(np.array([x, y, 0]), np.array([x_offset, y_offset, 0]))
+        """tie mouse scrolling events to the scene response
+
+        Parameters
+        ----------
+        x
+            x pixel coordinate
+        y
+            y pixel coordinate
+        x_offset
+            number of horizontal wheel ticks (not useful for most mice)
+        y_offset
+            number of vertical wheel ticks
+        """
+        self.scene.on_mouse_scroll(
+            np.array([x, y, 0]), np.array([x_offset, y_offset, 0])
+        )
 
 
 def tuple_len_2(pos: tuple[T, ...]) -> TypeGuard[tuple[T, T]]:

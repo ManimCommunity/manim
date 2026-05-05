@@ -56,6 +56,11 @@ class Camera(Mobject, InvisibleMobject):
         self.set_height(self.initial_frame_shape[1], stretch=True)
         self.move_to(self.center_point)
 
+    def reset(self) -> None:
+        """restores camera to default orientation and position."""
+        self.set_euler_angles(theta=-TAU / 4, phi=0.0, gamma=0.0)
+        self.init_points()
+
     def interpolate(
         self,
         mobject1: Mobject,
