@@ -525,6 +525,9 @@ class Scene:
     # Event handling
 
     def on_mouse_motion(self, point: Point3D, d_point: Vector3D) -> None:
+        point = self._pos_window_to_camera(point)
+        d_point = self._d_pos_window_to_camera(d_point)
+
         self.mouse_point.move_to(point)
 
         event_data = {"point": point, "d_point": d_point}
@@ -535,11 +538,11 @@ class Scene:
             return
 
         # Handle perspective changes
-        if ord(PAN_3D_KEY) in self.manager.window.pressed_keys:
+        if EVENT_DISPATCHER.is_key_pressed(ord(PAN_3D_KEY)):
             self.camera.increment_theta(-self.pan_sensitivity * d_point[0])
             self.camera.increment_phi(self.pan_sensitivity * d_point[1])
         # Handle frame movements
-        elif ord(FRAME_SHIFT_KEY) in self.manager.window.pressed_keys:
+        elif EVENT_DISPATCHER.is_key_pressed(ord(FRAME_SHIFT_KEY)):
             shift = -d_point
             shift[0] *= self.camera.get_width() / 2
             shift[1] *= self.camera.get_height() / 2
@@ -550,6 +553,9 @@ class Scene:
     def on_mouse_drag(
         self, point: Point3D, d_point: Vector3D, buttons: int, modifiers: int
     ) -> None:
+        point = self._pos_window_to_camera(point)
+        d_point = self._d_pos_window_to_camera(d_point)
+
         self.mouse_drag_point.move_to(point)
 
         event_data = {
@@ -565,6 +571,8 @@ class Scene:
             return
 
     def on_mouse_press(self, point: Point3D, button: int, mods: int) -> None:
+        point = self._pos_window_to_camera(point)
+
         self.mouse_drag_point.move_to(point)
         event_data = {"point": point, "button": button, "mods": mods}
         propagate_event = EVENT_DISPATCHER.dispatch(
@@ -574,6 +582,8 @@ class Scene:
             return
 
     def on_mouse_release(self, point: Point3D, button: int, mods: int) -> None:
+        point = self._pos_window_to_camera(point)
+
         event_data = {"point": point, "button": button, "mods": mods}
         propagate_event = EVENT_DISPATCHER.dispatch(
             EventType.MouseReleaseEvent, **event_data
@@ -582,6 +592,8 @@ class Scene:
             return
 
     def on_mouse_scroll(self, point: Point3D, offset: Vector3D) -> None:
+        point = self._pos_window_to_camera(point)
+
         event_data = {"point": point, "offset": offset}
         propagate_event = EVENT_DISPATCHER.dispatch(
             EventType.MouseScrollEvent, **event_data
@@ -589,14 +601,13 @@ class Scene:
         if propagate_event is not None and propagate_event is False:
             return
 
-        frame = self.camera.frame
-        if self.window.is_key_pressed(ord(ZOOM_KEY)):
-            factor = 1 + np.arctan(10 * offset[1])
-            frame.scale(1 / factor, about_point=point)
+        if EVENT_DISPATCHER.is_key_pressed(ord(ZOOM_KEY)):
+            factor = 1/1.25 if offset[1] > 0 else 1.25
+            self.camera.scale(factor, about_point=point)
         else:
-            transform = frame.get_inverse_camera_rotation_matrix()
+            transform = self.camera.get_inverse_rotation_matrix()
             shift = np.dot(np.transpose(transform), offset)
-            frame.shift(-20.0 * shift)
+            self.camera.shift(-shift/2)
 
     def on_key_release(self, symbol: int, modifiers: int) -> None:
         event_data = {"symbol": symbol, "modifiers": modifiers}
@@ -644,6 +655,27 @@ class Scene:
 
     def on_close(self) -> None:
         pass
+
+    def _pos_window_to_camera(self, point: Point3D) -> Point3D:
+        """
+        The window gives position coordinates in pixels, we need them in camera coordinates
+        for intuitive interactions.
+        """
+        return np.array([
+            point[0]/self.manager.window.size[0]*self.camera.get_width() - self.camera.get_width()/2,
+            point[1]/self.manager.window.size[1]*self.camera.get_height() - self.camera.get_height()/2,
+            0
+        ])
+
+    def _d_pos_window_to_camera(self, d_point: Point3D) -> Point3D:
+        """
+        The window gives positions differentials in pixels, we need them in camera units for untuitive interactions.
+        """
+        return np.array([
+            d_point[0]/self.manager.window.size[0]*self.camera.get_width(),
+            d_point[1]/self.manager.window.size[1]*self.camera.get_height(),
+            0
+        ])
 
 
 class SceneState:

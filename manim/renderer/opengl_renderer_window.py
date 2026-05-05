@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import numpy as np
 from typing import TYPE_CHECKING, TypeVar
+from manim.typing import Point3D
 
 import moderngl_window as mglw
 from moderngl_window.context.pyglet.window import Window as PygletWindow
@@ -9,6 +11,7 @@ from screeninfo import get_monitors
 
 from manim import __version__, config
 from manim.event_handler.window import WindowProtocol
+from manim.scene.scene import Scene
 
 if TYPE_CHECKING:
     from typing import TypeGuard
@@ -29,7 +32,7 @@ class Window(PygletWindow, WindowProtocol):
     vsync: bool = True
     cursor: bool = True
 
-    def __init__(self, window_size: str | tuple[int, ...] = config.window_size):
+    def __init__(self, scene: Scene, window_size: str | tuple[int, ...] = config.window_size):
         # TODO: remove size argument from window init,
         # move size computation below to config
 
@@ -65,6 +68,7 @@ class Window(PygletWindow, WindowProtocol):
             raise ValueError(invalid_window_size_error_message)
 
         super().__init__(size=size)
+        self.scene = scene
         self.pressed_keys: set = set()
         self.title = f"Manim Community {__version__}"
         self.size = size
@@ -110,12 +114,26 @@ class Window(PygletWindow, WindowProtocol):
         )
 
     def on_key_press(self, symbol: int, modifiers: int) -> bool:
-        self.pressed_keys.add(symbol)
+        self.scene.on_key_press(symbol, modifiers)
         return super().on_key_press(symbol, modifiers)
 
     def on_key_release(self, symbol: int, modifiers: int) -> None:
-        self.pressed_keys.remove(symbol)
-        return super().on_key_release(symbol, modifiers)
+        self.scene.on_key_release(symbol, modifiers)
+
+    def on_mouse_motion(self, x: int, y: int, dx: int, dy: int) -> None:
+        self.scene.on_mouse_motion(np.array([x, y, 0]), np.array([dx, dy, 0]))
+
+    def on_mouse_drag(self, x: int, y: int, dx: int, dy: int, buttons: int, modifiers: int) -> None:
+        self.scene.on_mouse_drag(np.array([x, y, 0]), np.array([dx, dy, 0]), buttons, modifiers)
+
+    def on_mouse_press(self, x: int, y: int, button: int, mods: int) -> None:
+        self.scene.on_mouse_press(np.array([x, y, 0]), button, mods)
+
+    def on_mouse_release(self, x: int, y: int, button: int, mods: int) -> None:
+        self.scene.on_mouse_release(np.array([x, y, 0]), button, mods)
+
+    def on_mouse_scroll(self, x: int, y: int, x_offset: float, y_offset: float) -> None:
+        self.scene.on_mouse_scroll(np.array([x, y, 0]), np.array([x_offset, y_offset, 0]))
 
 
 def tuple_len_2(pos: tuple[T, ...]) -> TypeGuard[tuple[T, T]]:
