@@ -99,7 +99,7 @@ class UpdateFromAlphaFunc(UpdateFromFunc):
 
         from manim import *
 
-        class UpdateFromFuncDemo(Scene):
+        class UpdateFromAlphaFuncDemo(Scene):
             def construct(self):         
                 dot = Dot().to_edge(1.5*LEFT)
                 label = Text("Hello").next_to(dot,UP)
@@ -124,6 +124,33 @@ class UpdateFromAlphaFunc(UpdateFromFunc):
 
 
 class MaintainPositionRelativeTo(Animation):
+    """ Useful when one mobject's position is to be maintained constant w.r.t another mobject's position.
+
+    Parameters
+    ----------
+    mobject
+        The mobject whose position is to be kept constant w.r.t another mobject
+    tracked_mobject
+        This is the mobject w.r.t whose position, the mobject's position is to be kept constant.
+    **kwargs
+        Any other keyword arguments to be passed to :class:`Animation`.
+    
+    Example::
+
+        from manim import *
+
+        class MaintainPositionRelativeToDemo(Scene):
+            def construct(self):         
+                dot = Dot().to_edge(1.5*LEFT)
+                label = Text("Hello").next_to(dot,UP)
+
+                self.play(
+                    dot.animate.to_edge(1.5*RIGHT),
+                    MaintainPositionRelativeTo(label, dot),
+                    run_time=3,
+                )
+
+    """
     def __init__(
         self, mobject: Mobject, tracked_mobject: Mobject, **kwargs: Any
     ) -> None:
@@ -137,4 +164,4 @@ class MaintainPositionRelativeTo(Animation):
     def interpolate_mobject(self, alpha: float) -> None:
         target = self.tracked_mobject.get_center()
         location = self.mobject.get_center()
-        self.mobject.shift(target - location + self.diff)
+        self.mobject.shift(target + self.diff - location)
