@@ -16,10 +16,44 @@ if TYPE_CHECKING:
 
 
 class UpdateFromFunc(Animation):
-    """
-    update_function of the form func(mobject), presumably
-    to be used when the state of one mobject is dependent
-    on another simultaneously animated mobject
+    """ Updates the mobject based on an update_function of the form func(mobject).
+    
+    This can be used when the state of one mobject is dependent
+    on another simultaneously animated mobject.
+
+    Parameters
+    ----------
+    mobject
+        The mobject which needs to be updated.
+
+    update_function
+        The function of the form func(mobject) 
+        which would determine how the mobject is getting updated each frame.
+    
+    suspend_mobject_updating
+        If ``True``, any updater added via ``add_updater`` on the mobject
+        is suspended for the duration of this animation. Defaults to ``False``.
+    
+    **kwargs
+        Any other keyword arguments to be passed to :class:`Animation`.
+
+    Example::
+
+        from manim import *
+
+        class UpdateFromFuncDemo(Scene):
+            def construct(self):         
+                dot = Dot().to_edge(1.5*LEFT)
+                label = Text("Hello").next_to(dot,UP)
+
+                def update_func(mob):
+                    mob.next_to(dot,UP)
+
+                self.play(
+                    dot.animate.to_edge(1.5*RIGHT),
+                    UpdateFromFunc(label, update_func),
+                    run_time=3,
+                )
     """
 
     def __init__(
@@ -39,6 +73,52 @@ class UpdateFromFunc(Animation):
 
 
 class UpdateFromAlphaFunc(UpdateFromFunc):
+    """ Updates the mobject based on an update_function of the form func(mobject, alpha).
+    
+    This can be used when the state of one mobject is dependent on:
+    (1) Another simultaneously animated mobject
+    (2) alpha value
+
+    Parameters
+    ----------
+    mobject
+        The mobject which needs to be updated.
+
+    update_function
+        The function of the form func(mobject, alpha) 
+        which would determine how the mobject is getting updated each frame.
+    
+    suspend_mobject_updating
+        If ``True``, any updater added via ``add_updater`` on the mobject
+        is suspended for the duration of this animation. Defaults to ``False``.
+    
+    **kwargs
+        Any other keyword arguments to be passed to :class:`Animation`.
+
+    Example::
+
+        from manim import *
+
+        class UpdateFromFuncDemo(Scene):
+            def construct(self):         
+                dot = Dot().to_edge(1.5*LEFT)
+                label = Text("Hello").next_to(dot,UP)
+                number = DecimalNumber()        
+                vg = VGroup(label, number)
+                self.add(vg)
+
+                def update_func(mob, alpha):
+                    m,n = mob
+                    m.next_to(dot,UP)
+                    m.set_opacity(alpha)
+                    n.set_value(alpha).next_to(dot, DOWN)
+
+                self.play(
+                    dot.animate.to_edge(1.5*RIGHT),
+                    UpdateFromAlphaFunc(vg, update_func),
+                    run_time=3,
+                )
+    """
     def interpolate_mobject(self, alpha: float) -> None:
         self.update_function(self.mobject, self.rate_func(alpha))  # type: ignore[call-arg, arg-type]
 
