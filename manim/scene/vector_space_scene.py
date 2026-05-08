@@ -704,7 +704,7 @@ class LinearTransformationScene(VectorScene):
         self.transformable_mobjects: list[Mobject] = []
         self.moving_vectors: list[Mobject] = []
         self.transformable_labels: list[MathTex] = []
-        self.moving_mobjects: list[Mobject] = []
+        self.vector_moving_mobjects: list[Mobject] = []
 
         self.background_plane = NumberPlane(**self.background_plane_kwargs)
 
@@ -803,7 +803,7 @@ class LinearTransformationScene(VectorScene):
             What the moving_mobject goes to, etc.
         """
         mobject.target = target_mobject
-        self.add_special_mobjects(self.moving_mobjects, mobject)
+        self.add_special_mobjects(self.vector_moving_mobjects, mobject)
 
     def get_ghost_vectors(self) -> VGroup:
         """
@@ -1088,7 +1088,7 @@ class LinearTransformationScene(VectorScene):
     def get_moving_mobject_movement(self, func: MappingFunction) -> Transform:
         """
         This method returns an animation that moves a mobject
-        in "self.moving_mobjects"  to its corresponding .target value.
+        in "self.vector_moving_mobjects"  to its corresponding .target value.
         func is a function that determines where the .target goes.
 
         Parameters
@@ -1103,13 +1103,13 @@ class LinearTransformationScene(VectorScene):
         Animation
             The animation of the movement.
         """
-        for m in self.moving_mobjects:
+        for m in self.vector_moving_mobjects:
             if m.target is None:
                 m.target = m.copy()
             temp: Point3D = m.get_center()
             target_point = func(temp)
             m.target.move_to(target_point)
-        return self.get_piece_movement(self.moving_mobjects)
+        return self.get_piece_movement(self.vector_moving_mobjects)
 
     def get_vector_movement(self, func: MappingFunction) -> Transform:
         """
