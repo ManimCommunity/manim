@@ -16,7 +16,7 @@ __all__ = [
 
 import inspect
 from collections.abc import Callable
-from typing import TYPE_CHECKING
+from typing import TypeVar, TYPE_CHECKING
 
 import numpy as np
 
@@ -27,6 +27,9 @@ from manim.utils.space_ops import normalize
 
 if TYPE_CHECKING:
     from manim.animation.animation import Animation
+
+
+M = TypeVar("M", bound=Mobject)
 
 
 def assert_is_mobject_method(method: Callable) -> None:
@@ -43,7 +46,7 @@ def always(method: Callable, *args, **kwargs) -> Mobject:
     return mobject
 
 
-def f_always(method: Callable[[Mobject], None], *arg_generators, **kwargs) -> Mobject:
+def f_always(method: Callable[[M], None], *arg_generators, **kwargs) -> M:
     """
     More functional version of always, where instead
     of taking in args, it takes in functions which output
@@ -61,7 +64,7 @@ def f_always(method: Callable[[Mobject], None], *arg_generators, **kwargs) -> Mo
     return mobject
 
 
-def always_redraw(func: Callable[[], Mobject]) -> Mobject:
+def always_redraw(func: Callable[[], M]) -> M:
     """Redraw the mobject constructed by a function every frame.
 
     This function returns a mobject with an attached updater that
@@ -107,8 +110,8 @@ def always_redraw(func: Callable[[], Mobject]) -> Mobject:
 
 
 def always_shift(
-    mobject: Mobject, direction: np.ndarray[np.float64] = RIGHT, rate: float = 0.1
-) -> Mobject:
+    mobject: M, direction: np.ndarray[np.float64] = RIGHT, rate: float = 0.1
+) -> M:
     """A mobject which is continuously shifted along some direction
     at a certain rate.
 
@@ -145,7 +148,7 @@ def always_shift(
     return mobject
 
 
-def always_rotate(mobject: Mobject, rate: float = 20 * DEGREES, **kwargs) -> Mobject:
+def always_rotate(mobject: M, rate: float = 20 * DEGREES, **kwargs) -> M:
     """A mobject which is continuously rotated at a certain rate.
 
     Parameters
