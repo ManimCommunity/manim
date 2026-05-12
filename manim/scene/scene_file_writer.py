@@ -631,7 +631,8 @@ class SceneFileWriter:
             audio_codec = (
                 "libvorbis" if config.movie_file_extension == ".webm" else "aac"
             )
-            self.audio_stream = self.video_container.add_stream(audio_codec)
+            if self.includes_sound:
+                self.audio_stream = self.video_container.add_stream(audio_codec)
 
         self.queue: Queue[tuple[int, PixelArray | None]] = Queue()
         self.writer_thread = Thread(target=self.listen_and_write, args=())
