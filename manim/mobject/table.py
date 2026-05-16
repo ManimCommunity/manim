@@ -104,6 +104,8 @@ class Table(VGroup):
         Horizontal buffer passed to :meth:`~.Mobject.arrange_in_grid`, by default 1.3.
     include_outer_lines
         ``True`` if the table should include outer lines, by default False.
+    include_inner_lines
+        ``True`` if the table should include inner lines, by default True.
     add_background_rectangles_to_entries
         ``True`` if background rectangles should be added to entries, by default ``False``.
     entries_background_color
@@ -193,6 +195,7 @@ class Table(VGroup):
         v_buff: float = 0.8,
         h_buff: float = 1.3,
         include_outer_lines: bool = False,
+        include_inner_lines: bool = True,
         add_background_rectangles_to_entries: bool = False,
         entries_background_color: ParsableManimColor = BLACK,
         include_background_rectangle: bool = False,
@@ -214,6 +217,7 @@ class Table(VGroup):
         self.v_buff = v_buff
         self.h_buff = h_buff
         self.include_outer_lines = include_outer_lines
+        self.include_inner_lines = include_inner_lines
         self.add_background_rectangles_to_entries = add_background_rectangles_to_entries
         self.entries_background_color = ManimColor(entries_background_color)
         self.include_background_rectangle = include_background_rectangle
@@ -349,15 +353,16 @@ class Table(VGroup):
             )
             line_group.add(line)
             self.add(line)
-        for k in range(len(self.mob_table) - 1):
-            anchor = self.get_rows()[k + 1].get_top()[1] + 0.5 * (
-                self.get_rows()[k].get_bottom()[1] - self.get_rows()[k + 1].get_top()[1]
-            )
-            line = Line(
-                [anchor_left, anchor, 0], [anchor_right, anchor, 0], **self.line_config
-            )
-            line_group.add(line)
-            self.add(line)
+            if self.include_inner_lines:
+                for k in range(len(self.mob_table) - 1):
+                    anchor = self.get_rows()[k + 1].get_top()[1] + 0.5 * (
+                        self.get_rows()[k].get_bottom()[1] - self.get_rows()[k + 1].get_top()[1]
+                    )
+                    line = Line(
+                        [anchor_left, anchor, 0], [anchor_right, anchor, 0], **self.line_config
+                    )
+                    line_group.add(line)
+                    self.add(line)
         self.horizontal_lines = line_group
         return self
 
@@ -379,16 +384,17 @@ class Table(VGroup):
             )
             line_group.add(line)
             self.add(line)
-        for k in range(len(self.mob_table[0]) - 1):
-            anchor = self.get_columns()[k + 1].get_left()[0] + 0.5 * (
-                self.get_columns()[k].get_right()[0]
-                - self.get_columns()[k + 1].get_left()[0]
-            )
-            line = Line(
-                [anchor, anchor_bottom, 0], [anchor, anchor_top, 0], **self.line_config
-            )
-            line_group.add(line)
-            self.add(line)
+            if self.include_inner_lines:
+                for k in range(len(self.mob_table[0]) - 1):
+                    anchor = self.get_columns()[k + 1].get_left()[0] + 0.5 * (
+                        self.get_columns()[k].get_right()[0]
+                        - self.get_columns()[k + 1].get_left()[0]
+                    )
+                    line = Line(
+                        [anchor, anchor_bottom, 0], [anchor, anchor_top, 0], **self.line_config
+                    )
+                    line_group.add(line)
+                    self.add(line)
         self.vertical_lines = line_group
         return self
 
