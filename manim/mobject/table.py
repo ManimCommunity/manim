@@ -356,10 +356,13 @@ class Table(VGroup):
             if self.include_inner_lines:
                 for k in range(len(self.mob_table) - 1):
                     anchor = self.get_rows()[k + 1].get_top()[1] + 0.5 * (
-                        self.get_rows()[k].get_bottom()[1] - self.get_rows()[k + 1].get_top()[1]
+                        self.get_rows()[k].get_bottom()[1]
+                        - self.get_rows()[k + 1].get_top()[1]
                     )
                     line = Line(
-                        [anchor_left, anchor, 0], [anchor_right, anchor, 0], **self.line_config
+                        [anchor_left, anchor, 0],
+                        [anchor_right, anchor, 0],
+                        **self.line_config,
                     )
                     line_group.add(line)
                     self.add(line)
@@ -391,7 +394,9 @@ class Table(VGroup):
                         - self.get_columns()[k + 1].get_left()[0]
                     )
                     line = Line(
-                        [anchor, anchor_bottom, 0], [anchor, anchor_top, 0], **self.line_config
+                        [anchor, anchor_bottom, 0],
+                        [anchor, anchor_top, 0],
+                        **self.line_config,
                     )
                     line_group.add(line)
                     self.add(line)
