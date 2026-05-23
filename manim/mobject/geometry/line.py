@@ -587,15 +587,15 @@ class Arrow(Line):
     def __init__(
         self,
         *args: Any,
+        tip_shape: type[ArrowTip] | None = ArrowTriangleFilledTip,
         stroke_width: float = 6,
         buff: float = MED_SMALL_BUFF,
         max_tip_length_to_length_ratio: float = 0.25,
-        max_stroke_width_to_length_ratio: float = 5,
+        max_stroke_width_to_length_ratio: float = 5,        
         **kwargs: Any,
     ) -> None:
         self.max_tip_length_to_length_ratio = max_tip_length_to_length_ratio
         self.max_stroke_width_to_length_ratio = max_stroke_width_to_length_ratio
-        tip_shape = kwargs.pop("tip_shape", ArrowTriangleFilledTip)
         super().__init__(*args, buff=buff, stroke_width=stroke_width, **kwargs)  # type: ignore[misc]
         # TODO, should this be affected when
         # Arrow.set_stroke is called?
