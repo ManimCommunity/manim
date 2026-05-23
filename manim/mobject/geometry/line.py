@@ -503,6 +503,8 @@ class Arrow(Line):
     ----------
     args
         Arguments to be passed to :class:`Line`.
+    tip_shape
+        Shape of the tip of the Arrow. Default value is ArrowTriangleFilledTip.
     stroke_width
         The thickness of the arrow. Influenced by :attr:`max_stroke_width_to_length_ratio`.
     buff
@@ -591,7 +593,7 @@ class Arrow(Line):
         stroke_width: float = 6,
         buff: float = MED_SMALL_BUFF,
         max_tip_length_to_length_ratio: float = 0.25,
-        max_stroke_width_to_length_ratio: float = 5,        
+        max_stroke_width_to_length_ratio: float = 5,
         **kwargs: Any,
     ) -> None:
         self.max_tip_length_to_length_ratio = max_tip_length_to_length_ratio
