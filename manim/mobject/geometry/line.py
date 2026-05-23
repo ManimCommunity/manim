@@ -504,7 +504,7 @@ class Arrow(Line):
     args
         Arguments to be passed to :class:`Line`.
     tip_shape
-        Shape of the tip of the Arrow. Default value is ArrowTriangleFilledTip.
+        Shape of the Arrow's tip. Default value is ArrowTriangleFilledTip.
     stroke_width
         The thickness of the arrow. Influenced by :attr:`max_stroke_width_to_length_ratio`.
     buff
