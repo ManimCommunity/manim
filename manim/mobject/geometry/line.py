@@ -591,7 +591,7 @@ class Arrow(Line):
         stroke_width: float = 6,
         buff: float = MED_SMALL_BUFF,
         max_tip_length_to_length_ratio: float = 0.25,
-        max_stroke_width_to_length_ratio: float = 5,        
+        max_stroke_width_to_length_ratio: float = 5,
         **kwargs: Any,
     ) -> None:
         self.max_tip_length_to_length_ratio = max_tip_length_to_length_ratio
