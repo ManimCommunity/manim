@@ -681,7 +681,7 @@ class Circle(Arc):
         mobject
             The mobject that the circle will be surrounding.
         dim_to_match
-            Determines which dimesion of the mobject is to be considered for the Circle to scale to.
+            Determines which dimension of the mobject is to be considered for the Circle to scale to.
         buffer_factor
             Scales the circle with respect to the mobject. A `buffer_factor` < 1 makes the circle smaller than the mobject.
         stretch
