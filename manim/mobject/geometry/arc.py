@@ -633,8 +633,12 @@ class Circle(Arc):
 
     Parameters
     ----------
+    center
+        Center of the Circle. Defaults to ORIGIN.
+    radius
+        Radius of the Circle. Default value is 1.
     color
-        The color of the shape.
+        The stroke_color of the Circle.
     kwargs
         Additional arguments to be passed to :class:`Arc`
 
@@ -655,11 +659,13 @@ class Circle(Arc):
 
     def __init__(
         self,
-        radius: float | None = None,
+        center: Point3DLike = ORIGIN,
+        radius: float = 1.0,
         color: ParsableManimColor = RED,
         **kwargs: Any,
     ) -> None:
         super().__init__(
+            arc_center=center,
             radius=radius,
             start_angle=0,
             angle=TAU,
@@ -710,14 +716,23 @@ class Circle(Arc):
                     group = Group(group1, group2, group3).arrange(buff=1)
                     self.add(group)
         """
-        # Ignores dim_to_match and stretch; result will always be a circle
-        # TODO: Perhaps create an ellipse class to handle single-dimension stretching
-
-        # Something goes wrong here when surrounding lines?
-        # TODO: Figure out and fix
-        self.replace(mobject, dim_to_match, stretch)
-
+        if dim_to_match != 0:
+            warnings.warn(
+                "The dim_to_match paramter of the method surround, of Circle class, is ignored "
+                "and it will be deprecated in a future version of Manim Community.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+        
+        if stretch != False:
+            warnings.warn(
+                "The stretch parameter of the method surround, of Circle class, is ignored "
+                "and it will be removed in a future version of Manim Community.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
         self.width = np.sqrt(mobject.width**2 + mobject.height**2)
+        self.move_to(mobject.get_center())
         return self.scale(buffer_factor)
 
     def point_at_angle(self, angle: float) -> Point3D:
@@ -781,7 +796,7 @@ class Circle(Arc):
         )
         # np.linalg.norm returns floating[Any] which is not compatible with float
         radius = cast(float, np.linalg.norm(p1 - center))
-        return Circle(radius=radius, **kwargs).shift(center)
+        return Circle(center = center, radius=radius, **kwargs)
 
 
 class Dot(Circle):
@@ -825,7 +840,7 @@ class Dot(Circle):
         **kwargs: Any,
     ) -> None:
         super().__init__(
-            arc_center=point,
+            center=point,
             radius=radius,
             stroke_width=stroke_width,
             fill_opacity=fill_opacity,
@@ -839,6 +854,7 @@ class AnnotationDot(Dot):
 
     def __init__(
         self,
+        point: Point3DLike = ORIGIN,
         radius: float = DEFAULT_DOT_RADIUS * 1.3,
         stroke_width: float = 5,
         stroke_color: ParsableManimColor = WHITE,
@@ -846,6 +862,7 @@ class AnnotationDot(Dot):
         **kwargs: Any,
     ) -> None:
         super().__init__(
+            point = point,
             radius=radius,
             stroke_width=stroke_width,
             stroke_color=stroke_color,
@@ -864,6 +881,8 @@ class LabeledDot(Dot):
         by default (i.e., when passing a :class:`str`), but other classes
         representing rendered strings like :class:`~.Text` or :class:`~.Tex`
         can be passed as well.
+    point
+        The center of the LabeledDot. Default value is ORIGIN.
     radius
         The radius of the :class:`Dot`. If provided, the ``buff`` is ignored.
         If ``None`` (the default), the radius is calculated based on the size
@@ -890,8 +909,9 @@ class LabeledDot(Dot):
     """
 
     def __init__(
-        self,
+        self,        
         label: str | SingleStringMathTex | Text | Tex,
+        point: Point3DLike = ORIGIN,
         radius: float | None = None,
         buff: float = SMALL_BUFF,
         **kwargs: Any,
@@ -907,16 +927,18 @@ class LabeledDot(Dot):
             radius = buff + float(
                 np.linalg.norm([rendered_label.width, rendered_label.height]) / 2
             )
-        super().__init__(radius=radius, **kwargs)
+        super().__init__(point = point, radius=radius, **kwargs)
         rendered_label.move_to(self.get_center())
         self.add(rendered_label)
 
 
 class Ellipse(Circle):
-    """A circular shape; oval, circle.
+    """An Ellipse.
 
     Parameters
     ----------
+    center
+        Point where the ellipse will be centered. Default is ORIGIN.
     width
        The horizontal width of the ellipse.
     height
@@ -937,8 +959,14 @@ class Ellipse(Circle):
                 self.add(ellipse_group)
     """
 
-    def __init__(self, width: float = 2, height: float = 1, **kwargs: Any) -> None:
-        super().__init__(**kwargs)
+    def __init__(
+        self,
+        center: Point3DLike = ORIGIN,
+        width: float = 2, 
+        height: float = 1, 
+        **kwargs: Any,
+    )-> None:
+        super().__init__(center = center, **kwargs)
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)
 
@@ -971,17 +999,15 @@ class AnnularSector(Arc):
 
         class AnnularSectorExample(Scene):
             def construct(self):
-                # Changes background color to clearly visualize changes in fill_opacity.
-                self.camera.background_color = WHITE
 
                 # The default parameter start_angle is 0, so the AnnularSector starts from the +x-axis.
-                s1 = AnnularSector(color=YELLOW).move_to(2 * UL)
+                s1 = AnnularSector(arc_center = [-3,1.5,0], color=YELLOW)
 
                 # Different inner_radius and outer_radius than the default.
                 s2 = AnnularSector(inner_radius=1.5, outer_radius=2, angle=45 * DEGREES, color=RED).move_to(2 * UR)
 
                 # fill_opacity is typically a number > 0 and <= 1. If fill_opacity=0, the AnnularSector is transparent.
-                s3 = AnnularSector(inner_radius=1, outer_radius=1.5, angle=PI, fill_opacity=0.25, color=BLUE).move_to(2 * DL)
+                s3 = AnnularSector(inner_radius=1, outer_radius=1.5, angle=PI, fill_opacity=1, color=BLUE).move_to(2 * DL)
 
                 # With a negative value for the angle, the AnnularSector is drawn clockwise from the start value.
                 s4 = AnnularSector(inner_radius=1, outer_radius=1.5, angle=-3 * PI / 2, color=GREEN).move_to(2 * DR)
@@ -991,6 +1017,7 @@ class AnnularSector(Arc):
 
     def __init__(
         self,
+        arc_center: Point3DLike = ORIGIN,
         inner_radius: float = 1,
         outer_radius: float = 2,
         angle: float = TAU / 4,
@@ -1000,9 +1027,11 @@ class AnnularSector(Arc):
         color: ParsableManimColor = WHITE,
         **kwargs: Any,
     ) -> None:
+        #self.arc_center = arc_center
         self.inner_radius = inner_radius
         self.outer_radius = outer_radius
         super().__init__(
+            arc_center = arc_center,
             start_angle=start_angle,
             angle=angle,
             fill_opacity=fill_opacity,
@@ -1021,13 +1050,13 @@ class AnnularSector(Arc):
             )
             for radius in (self.inner_radius, self.outer_radius)
         )
-        outer_arc.reverse_points()
+        outer_arc.reverse_points() # Cairo and OpenGL renderer both use non-zero winding rule. That's why the points of outer_arc are reversed. If instead of outer_arc, the points of inner_arc would have been reversed, the output would have been exactly the same.
         self.append_points(inner_arc.points)
         self.add_line_to(outer_arc.points[0])
         self.append_points(outer_arc.points)
         self.add_line_to(inner_arc.points[0])
 
-    def init_points(self) -> None:
+    def init_points(self) -> None: # used in OpenGLMobject class.
         self.generate_points()
 
 
@@ -1048,9 +1077,22 @@ class Sector(AnnularSector):
                 self.add(sector, sector2)
     """
 
-    def __init__(self, radius: float = 1, **kwargs: Any) -> None:
-        super().__init__(inner_radius=0, outer_radius=radius, **kwargs)
-
+    def __init__(
+        self,
+        arc_center: Point3DLike = ORIGIN,
+        start_angle: float = 0,
+        angle: float = TAU/4,
+        radius: float = 1, 
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(
+            arc_center=arc_center,
+            start_angle=start_angle,
+            angle=angle,
+            inner_radius=0, 
+            outer_radius=radius, 
+            **kwargs
+        )
 
 class Annulus(Circle):
     """Region between two concentric :class:`Circles <.Circle>`.
@@ -1078,26 +1120,29 @@ class Annulus(Circle):
 
     def __init__(
         self,
+        center: Point3DLike = ORIGIN,
         inner_radius: float = 1,
         outer_radius: float = 2,
         fill_opacity: float = 1,
         stroke_width: float = 0,
         color: ParsableManimColor = WHITE,
-        mark_paths_closed: bool = False,
         **kwargs: Any,
     ) -> None:
-        self.mark_paths_closed = mark_paths_closed  # is this even used?
         self.inner_radius = inner_radius
         self.outer_radius = outer_radius
         super().__init__(
-            fill_opacity=fill_opacity, stroke_width=stroke_width, color=color, **kwargs
+            center = center,
+            fill_opacity=fill_opacity, 
+            stroke_width=stroke_width, 
+            color=color, 
+            **kwargs
         )
 
     def generate_points(self) -> None:
         self.radius = self.outer_radius
         outer_circle = Circle(radius=self.outer_radius)
         inner_circle = Circle(radius=self.inner_radius)
-        inner_circle.reverse_points()
+        inner_circle.reverse_points() # Cairo and OpenGL renderer both use non-zero winding rule. That's why the points of inner_circle are reversed. If instead of inner_circle, the points of outer_circle would have been reversed, the output would have been exactly the same.
         self.append_points(outer_circle.points)
         self.append_points(inner_circle.points)
         self.shift(self.arc_center)
@@ -1385,6 +1430,7 @@ class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
         for arc1, arc2 in adjacent_pairs(arcs):
             self.append_points(arc1.points)
             line = Line(arc1.get_end(), arc2.get_start())
+            #line.reverse_points()
             len_ratio = line.get_length() / arc1.get_arc_length()
             if np.isnan(len_ratio) or np.isinf(len_ratio):
                 continue
