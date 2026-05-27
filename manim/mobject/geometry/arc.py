@@ -723,7 +723,7 @@ class Circle(Arc):
                 DeprecationWarning,
                 stacklevel=2,
             )
-        
+
         if stretch != False:
             warnings.warn(
                 "The stretch parameter of the method surround, of Circle class, is ignored "
@@ -796,7 +796,7 @@ class Circle(Arc):
         )
         # np.linalg.norm returns floating[Any] which is not compatible with float
         radius = cast(float, np.linalg.norm(p1 - center))
-        return Circle(center = center, radius=radius, **kwargs)
+        return Circle(center=center, radius=radius, **kwargs)
 
 
 class Dot(Circle):
@@ -862,7 +862,7 @@ class AnnotationDot(Dot):
         **kwargs: Any,
     ) -> None:
         super().__init__(
-            point = point,
+            point=point,
             radius=radius,
             stroke_width=stroke_width,
             stroke_color=stroke_color,
@@ -909,7 +909,7 @@ class LabeledDot(Dot):
     """
 
     def __init__(
-        self,        
+        self,
         label: str | SingleStringMathTex | Text | Tex,
         point: Point3DLike = ORIGIN,
         radius: float | None = None,
@@ -927,7 +927,7 @@ class LabeledDot(Dot):
             radius = buff + float(
                 np.linalg.norm([rendered_label.width, rendered_label.height]) / 2
             )
-        super().__init__(point = point, radius=radius, **kwargs)
+        super().__init__(point=point, radius=radius, **kwargs)
         rendered_label.move_to(self.get_center())
         self.add(rendered_label)
 
@@ -962,11 +962,11 @@ class Ellipse(Circle):
     def __init__(
         self,
         center: Point3DLike = ORIGIN,
-        width: float = 2, 
-        height: float = 1, 
+        width: float = 2,
+        height: float = 1,
         **kwargs: Any,
-    )-> None:
-        super().__init__(center = center, **kwargs)
+    ) -> None:
+        super().__init__(center=center, **kwargs)
         self.stretch_to_fit_width(width)
         self.stretch_to_fit_height(height)
 
@@ -1027,11 +1027,11 @@ class AnnularSector(Arc):
         color: ParsableManimColor = WHITE,
         **kwargs: Any,
     ) -> None:
-        #self.arc_center = arc_center
+        # self.arc_center = arc_center
         self.inner_radius = inner_radius
         self.outer_radius = outer_radius
         super().__init__(
-            arc_center = arc_center,
+            arc_center=arc_center,
             start_angle=start_angle,
             angle=angle,
             fill_opacity=fill_opacity,
@@ -1050,13 +1050,13 @@ class AnnularSector(Arc):
             )
             for radius in (self.inner_radius, self.outer_radius)
         )
-        outer_arc.reverse_points() # Cairo and OpenGL renderer both use non-zero winding rule. That's why the points of outer_arc are reversed. If instead of outer_arc, the points of inner_arc would have been reversed, the output would have been exactly the same.
+        outer_arc.reverse_points()  # Cairo and OpenGL renderer both use non-zero winding rule. That's why the points of outer_arc are reversed. If instead of outer_arc, the points of inner_arc would have been reversed, the output would have been exactly the same.
         self.append_points(inner_arc.points)
         self.add_line_to(outer_arc.points[0])
         self.append_points(outer_arc.points)
         self.add_line_to(inner_arc.points[0])
 
-    def init_points(self) -> None: # used in OpenGLMobject class.
+    def init_points(self) -> None:  # used in OpenGLMobject class.
         self.generate_points()
 
 
@@ -1081,18 +1081,19 @@ class Sector(AnnularSector):
         self,
         arc_center: Point3DLike = ORIGIN,
         start_angle: float = 0,
-        angle: float = TAU/4,
-        radius: float = 1, 
+        angle: float = TAU / 4,
+        radius: float = 1,
         **kwargs: Any,
     ) -> None:
         super().__init__(
             arc_center=arc_center,
             start_angle=start_angle,
             angle=angle,
-            inner_radius=0, 
-            outer_radius=radius, 
-            **kwargs
+            inner_radius=0,
+            outer_radius=radius,
+            **kwargs,
         )
+
 
 class Annulus(Circle):
     """Region between two concentric :class:`Circles <.Circle>`.
@@ -1131,18 +1132,18 @@ class Annulus(Circle):
         self.inner_radius = inner_radius
         self.outer_radius = outer_radius
         super().__init__(
-            center = center,
-            fill_opacity=fill_opacity, 
-            stroke_width=stroke_width, 
-            color=color, 
-            **kwargs
+            center=center,
+            fill_opacity=fill_opacity,
+            stroke_width=stroke_width,
+            color=color,
+            **kwargs,
         )
 
     def generate_points(self) -> None:
         self.radius = self.outer_radius
         outer_circle = Circle(radius=self.outer_radius)
         inner_circle = Circle(radius=self.inner_radius)
-        inner_circle.reverse_points() # Cairo and OpenGL renderer both use non-zero winding rule. That's why the points of inner_circle are reversed. If instead of inner_circle, the points of outer_circle would have been reversed, the output would have been exactly the same.
+        inner_circle.reverse_points()  # Cairo and OpenGL renderer both use non-zero winding rule. That's why the points of inner_circle are reversed. If instead of inner_circle, the points of outer_circle would have been reversed, the output would have been exactly the same.
         self.append_points(outer_circle.points)
         self.append_points(inner_circle.points)
         self.shift(self.arc_center)
@@ -1430,7 +1431,7 @@ class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
         for arc1, arc2 in adjacent_pairs(arcs):
             self.append_points(arc1.points)
             line = Line(arc1.get_end(), arc2.get_start())
-            #line.reverse_points()
+            # line.reverse_points()
             len_ratio = line.get_length() / arc1.get_arc_length()
             if np.isnan(len_ratio) or np.isinf(len_ratio):
                 continue
