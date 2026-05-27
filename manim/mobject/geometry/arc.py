@@ -77,6 +77,7 @@ if TYPE_CHECKING:
         QuadraticSpline,
         Vector3DLike,
     )
+    from manim.mobject.geometry.tips import ArrowTip
 
 
 class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
@@ -594,26 +595,35 @@ class TangentialArc(ArcBetweenPoints):
 
 class CurvedArrow(ArcBetweenPoints):
     def __init__(
-        self, start_point: Point3DLike, end_point: Point3DLike, **kwargs: Any
+        self, 
+        start_point: Point3DLike, 
+        end_point: Point3DLike, 
+        tip_shape: type[ArrowTip] | None = None, 
+        **kwargs: Any,
     ) -> None:
         from manim.mobject.geometry.tips import ArrowTriangleFilledTip
-
-        tip_shape = kwargs.pop("tip_shape", ArrowTriangleFilledTip)
+        if tip_shape is None:
+            tip_shape = ArrowTriangleFilledTip
         super().__init__(start_point, end_point, **kwargs)
         self.add_tip(tip_shape=tip_shape)
 
 
 class CurvedDoubleArrow(CurvedArrow):
     def __init__(
-        self, start_point: Point3DLike, end_point: Point3DLike, **kwargs: Any
+        self, 
+        start_point: Point3DLike, 
+        end_point: Point3DLike, 
+        tip_shape_at_start: type[ArrowTip] | None = None, 
+        tip_shape_at_end: type[ArrowTip] | None = None, 
+        **kwargs: Any,
     ) -> None:
-        if "tip_shape_end" in kwargs:
-            kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
         from manim.mobject.geometry.tips import ArrowTriangleFilledTip
-
-        tip_shape_start = kwargs.pop("tip_shape_start", ArrowTriangleFilledTip)
-        super().__init__(start_point, end_point, **kwargs)
-        self.add_tip(at_start=True, tip_shape=tip_shape_start)
+        if tip_shape_at_start is None:
+            tip_shape_at_start = ArrowTriangleFilledTip
+        if tip_shape_at_end is None: 
+            tip_shape_at_end = ArrowTriangleFilledTip
+        super().__init__(start_point, end_point, tip_shape = tip_shape_at_end, **kwargs)
+        self.add_tip(at_start=True, tip_shape=tip_shape_at_start)
 
 
 class Circle(Arc):
