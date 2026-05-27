@@ -1802,7 +1802,7 @@ class DiGraph(GenericGraph):
             else:
                 edge.set_points_by_vertex(graph[u])
 
-                edge.add_tip(tip, is_loop=True)
+                edge.add_tip(tip)
 
     def __repr__(self: DiGraph) -> str:
         return f"Directed graph on {len(self.vertices)} vertices and {len(self.edges)} edges"

@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from manim import DiGraph, Graph, LabeledLine, Scene, Text, tempconfig
-from manim.mobject.graph import _layouts
+from manim.mobject.graph import LoopEdge, _layouts
 
 
 def test_graph_creation():
@@ -171,11 +171,11 @@ def test_graph_accepts_labeledline_as_edge_type():
     )
 
     for edge_obj in G_manual.edges.values():
-        assert isinstance(edge_obj, LabeledLine)
+        assert isinstance(edge_obj, (LabeledLine, LoopEdge))
         assert hasattr(edge_obj, "label")
 
     for edge_obj in G_directed.edges.values():
-        assert isinstance(edge_obj, LabeledLine)
+        assert isinstance(edge_obj, (LabeledLine, LoopEdge))
         assert hasattr(edge_obj, "label")
 
 

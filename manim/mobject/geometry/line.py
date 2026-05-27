@@ -1221,14 +1221,38 @@ class LoopEdge(TipableVMobject):
         edge_type: type[Mobject] = Line,
         **kwargs: Any,
     ) -> None:
+        self.label: Label | None = None
+
+        label = kwargs.pop("label", None)
+        label_config = kwargs.pop("label_config", None)
+        box_config = kwargs.pop("box_config", None)
+        frame_config = kwargs.pop("frame_config", None)
+
         super().__init__(**kwargs)
         self.anchor_vertex = self._pointify(vertex)
         self.graph_center = self._pointify(graph_center)
         self.edge_type = edge_type
+
         edge = edge_type()
+
         points = self._generate_arch_points()
         edge.set_points(points)
         self.set_points(edge.points)
+
+        if label is not None:
+            from manim.mobject.geometry.labeled import Label
+
+            self.label = Label(
+                label=label,
+                label_config=label_config,
+                box_config=box_config,
+                frame_config=frame_config,
+            )
+
+            self.label.move_to(self.get_arch_point(0.25))
+            self.add(self.label)
+        else:
+            self.label = None
 
     def _generate_arch_points(self, vertex: Point3DLike | None = None) -> np.array:
         radius = 0.5
@@ -1255,8 +1279,13 @@ class LoopEdge(TipableVMobject):
         points = self._generate_arch_points(vertex)
 
         edge = self.edge_type()
+
         edge.set_points(points)
         self.set_points(edge.points)
+
+        if self.label is not None:
+            self.label.move_to(self.get_arch_point(0.25))
+            self.add(self.label)
 
     def get_center(self) -> Point3DLike:
         return self.arc_center
