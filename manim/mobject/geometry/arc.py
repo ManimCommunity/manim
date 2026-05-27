@@ -1430,7 +1430,6 @@ class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
         for arc1, arc2 in adjacent_pairs(arcs):
             self.append_points(arc1.points)
             line = Line(arc1.get_end(), arc2.get_start())
-            #line.reverse_points()
             len_ratio = line.get_length() / arc1.get_arc_length()
             if np.isnan(len_ratio) or np.isinf(len_ratio):
                 continue
