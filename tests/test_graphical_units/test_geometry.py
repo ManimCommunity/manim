@@ -278,8 +278,8 @@ def test_CurvedArrowCustomTip(scene):
     double_arrow = CurvedDoubleArrow(
         LEFT,
         RIGHT,
-        tip_shape_start=ArrowCircleTip,
-        tip_shape_end=ArrowSquareFilledTip,
+        tip_shape_at_start=ArrowCircleTip,
+        tip_shape_at_end=ArrowSquareFilledTip,
     )
     scene.add(arrow, double_arrow)
 
