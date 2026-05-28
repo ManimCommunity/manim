@@ -718,7 +718,7 @@ class Circle(Arc):
         """
         if dim_to_match != 0:
             warnings.warn(
-                "The dim_to_match paramter of the method surround, of Circle class, is ignored "
+                "The 'dim_to_match' parameter of the method surround, of Circle class, is ignored "
                 "and it will be deprecated in a future version of Manim Community.",
                 DeprecationWarning,
                 stacklevel=2,
@@ -726,7 +726,7 @@ class Circle(Arc):
 
         if stretch != False:
             warnings.warn(
-                "The stretch parameter of the method surround, of Circle class, is ignored "
+                "The 'stretch' parameter of the method surround, of Circle class, is ignored "
                 "and it will be removed in a future version of Manim Community.",
                 DeprecationWarning,
                 stacklevel=2,
