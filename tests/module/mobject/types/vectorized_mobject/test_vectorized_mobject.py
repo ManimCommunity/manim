@@ -572,9 +572,7 @@ def test_align_points_handles_vmobject_with_no_complete_cubic_curves():
     )
 
     sub_cubic = VMobject()
-    sub_cubic.set_points(
-        np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [2.0, 0.0, 0.0]])
-    )
+    sub_cubic.set_points(np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [2.0, 0.0, 0.0]]))
     assert sub_cubic.get_subpaths() == []
     assert not sub_cubic.has_no_points()
 
