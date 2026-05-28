@@ -90,7 +90,7 @@ def test_bring_to_back_introducer(scene):
 def test_z_index_introducer(scene):
     a = Circle().set_fill(color=RED, opacity=1.0)
     scene.add(a)
-    b = Circle(arc_center=(0.5, 0.5, 0.0), color=GREEN, fill_opacity=1)
+    b = Circle(center=(0.5, 0.5, 0.0), color=GREEN, fill_opacity=1)
     b.set_z_index(-1)
     scene.play(Create(b))
     scene.wait()
