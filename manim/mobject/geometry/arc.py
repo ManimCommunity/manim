@@ -1050,9 +1050,9 @@ class AnnularSector(Arc):
             )
             for radius in (self.inner_radius, self.outer_radius)
         )
-        outer_arc.reverse_points()  # Cairo and OpenGL renderer both use non-zero winding rule. 
-                                    # That's why the points of outer_arc are reversed. 
-                                    # If instead of outer_arc, the points of inner_arc is reversed, the output is exactly the same.
+        outer_arc.reverse_points()  # Cairo and OpenGL renderer both use non-zero winding rule.
+        # That's why the points of outer_arc are reversed.
+        # If instead of outer_arc, the points of inner_arc is reversed, the output is exactly the same.
         self.append_points(inner_arc.points)
         self.add_line_to(outer_arc.points[0])
         self.append_points(outer_arc.points)
@@ -1145,9 +1145,9 @@ class Annulus(Circle):
         self.radius = self.outer_radius
         outer_circle = Circle(radius=self.outer_radius)
         inner_circle = Circle(radius=self.inner_radius)
-        inner_circle.reverse_points()  # Cairo and OpenGL renderer both use non-zero winding rule. 
-                                       # That's why the points of inner_circle are reversed. 
-                                       # If instead of inner_circle, the points of outer_circle are reversed, the output is exactly the same.
+        inner_circle.reverse_points()  # Cairo and OpenGL renderer both use non-zero winding rule.
+        # That's why the points of inner_circle are reversed.
+        # If instead of inner_circle, the points of outer_circle are reversed, the output is exactly the same.
         self.append_points(outer_circle.points)
         self.append_points(inner_circle.points)
         self.shift(self.arc_center)
