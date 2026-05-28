@@ -1027,7 +1027,6 @@ class AnnularSector(Arc):
         color: ParsableManimColor = WHITE,
         **kwargs: Any,
     ) -> None:
-        # self.arc_center = arc_center
         self.inner_radius = inner_radius
         self.outer_radius = outer_radius
         super().__init__(
