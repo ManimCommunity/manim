@@ -31,7 +31,6 @@ from manim.utils.color.core import (
     rgba_to_color,
 )
 
-
 # ---------------------------------------------------------------------------
 # Parsing — one case per linearly independent input branch in ManimColor.__init__
 # ---------------------------------------------------------------------------
@@ -48,7 +47,15 @@ from manim.utils.color.core import (
         ((1.0, 0.0, 0.0), (1.0, 0.0, 0.0)),
         (RED, (0xFC / 255, 0x62 / 255, 0x55 / 255)),
     ],
-    ids=["hex_long", "hex_short", "name", "packed_int", "int_tuple", "float_tuple", "ManimColor"],
+    ids=[
+        "hex_long",
+        "hex_short",
+        "name",
+        "packed_int",
+        "int_tuple",
+        "float_tuple",
+        "ManimColor",
+    ],
 )
 def test_color_to_rgb_accepts_all_parsable_forms(color_input, expected_rgb) -> None:
     nt.assert_allclose(color_to_rgb(color_input), expected_rgb)
