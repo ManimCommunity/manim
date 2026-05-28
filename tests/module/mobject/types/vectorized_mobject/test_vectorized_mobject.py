@@ -96,6 +96,29 @@ def test_vmobject_add_points_as_corners():
     np.testing.assert_allclose(obj1.points, obj3.points)
 
 
+def test_add_points_as_corners_single_point_connects_to_existing_path():
+    """Regression test for #4218 / fix f6cdb547 (PR #4219).
+
+    When ``add_points_as_corners`` is called with a single new point on a
+    VMobject whose last subpath is complete (so ``has_new_path_started()``
+    returns False), the buggy version silently dropped the new point — the
+    ``else`` branch computed ``start_corners = points[:-1]`` which is empty
+    for a one-point input. The fix unifies the two branches so the existing
+    path's last point is always used as the start corner.
+    """
+    v = VMobject()
+    v.start_new_path(np.array([0.0, 0.0, 0.0]))
+    v.add_line_to(np.array([1.0, 0.0, 0.0]))
+    assert not v.has_new_path_started()
+    n_before = len(v.points)
+
+    v.add_points_as_corners([[2.0, 0.0, 0.0]])
+
+    # Post-fix: a cubic from [1, 0, 0] to [2, 0, 0] is appended.
+    assert len(v.points) > n_before
+    np.testing.assert_array_equal(v.points[-1], [2.0, 0.0, 0.0])
+
+
 def test_vmobject_point_from_proportion():
     obj = VMobject()
 
@@ -526,6 +549,65 @@ def test_proportion_from_point():
     abc.scale(0.8)
     props = [abc.proportion_from_point(p) for p in abc.get_vertices()]
     np.testing.assert_allclose(props, [0, 1 / 3, 2 / 3])
+
+
+def test_align_points_handles_vmobject_with_no_complete_cubic_curves():
+    """Regression test for #3569 / #4629 (fix 21cf9998 / PR #4630).
+
+    When ``align_points`` encounters a VMobject whose points array is
+    non-empty but holds fewer than ``n_points_per_cubic_curve`` points,
+    ``get_subpaths()`` returns ``[]`` while ``has_no_points()`` returns
+    ``False`` — so the pre-loop sanitization that would normally add a
+    null curve is skipped. The buggy ``get_nth_subpath`` closure then
+    indexed ``path_list[-1]`` on the empty list and raised
+    ``IndexError: list index out of range``.
+
+    The fix returns a zero-valued null path in that case and ensures the
+    closure always returns a NumPy array (the previous list return type
+    broke downstream ``reshape`` calls).
+    """
+    target = VMobject()
+    target.set_points(
+        np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [2.0, 0.0, 0.0], [3.0, 0.0, 0.0]])
+    )
+
+    sub_cubic = VMobject()
+    sub_cubic.set_points(
+        np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [2.0, 0.0, 0.0]])
+    )
+    assert sub_cubic.get_subpaths() == []
+    assert not sub_cubic.has_no_points()
+
+    # Pre-fix: raises IndexError. Post-fix: completes; points are ndarray.
+    target.align_points(sub_cubic)
+    assert isinstance(target.points, np.ndarray)
+    assert isinstance(sub_cubic.points, np.ndarray)
+
+
+def test_pointwise_become_partial_preserves_target_when_source_has_no_curves():
+    """Regression test for #4255 / fix 3d029c12 (PR #4320).
+
+    When ``pointwise_become_partial`` is called with a source ``VMobject`` that
+    has zero cubic curves (e.g. an empty ``VMobject`` or a ``VectorizedPoint``
+    holding a single point), the buggy version called ``self.clear_points()``
+    on the *target*, zeroing out its data. The fix removes that call.
+
+    This bug surfaced as ``Arrow3D.get_start()`` / ``get_end()`` returning
+    ``[0, 0, 0]`` after a ``Create`` animation, because the arrow's
+    ``end_point`` sub-mobject has 1 point but no cubic curves.
+    """
+    target = VMobject()
+    original_points = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+    target.set_points(original_points)
+
+    empty_source = VMobject()
+    assert empty_source.get_num_curves() == 0
+
+    # Choose a, b so the `(a <= 0 and b >= 1)` early-return is skipped
+    # and the `num_curves == 0` branch is exercised.
+    target.pointwise_become_partial(empty_source, 0.0, 0.5)
+
+    np.testing.assert_array_equal(target.points, original_points)
 
 
 def test_pointwise_become_partial_where_vmobject_is_self():
