@@ -724,7 +724,7 @@ class Circle(Arc):
                 stacklevel=2,
             )
 
-        if stretch != False:
+        if stretch:
             warnings.warn(
                 "The 'stretch' parameter of the method surround, of Circle class, is ignored "
                 "and it will be removed in a future version of Manim Community.",
