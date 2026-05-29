@@ -231,7 +231,9 @@ def test_color_gradient_passes_through_each_of_four_reference_colors() -> None:
     gradient = color_gradient(refs, 4)
     assert len(gradient) == 4
     assert gradient[0] == BLACK
-    assert gradient[-1] == WHITE
+    assert gradient[1] == RED
+    assert gradient[2] == BLUE
+    assert gradient[3] == WHITE
 
 
 # ---------------------------------------------------------------------------
