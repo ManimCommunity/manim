@@ -3,7 +3,8 @@ from manim import *
 
 class ConversationFlowScene(ThreeDScene):
     """Animates the flow of a conversation between a user and a chatbot named Kate,
-    then reveals metadata and applies evaluation rules one by one."""
+    then reveals metadata and applies evaluation rules one by one.
+    """
 
     def construct(self):
         # Camera setup for 3D perspective
@@ -12,9 +13,17 @@ class ConversationFlowScene(ThreeDScene):
         # ---- Build conversation messages ----
         messages = [
             ("User", "Hi Kate, what's the weather like today?", BLUE_C),
-            ("Kate", "The forecast shows partly cloudy skies\nwith a high of 72°F.", GREEN_C),
+            (
+                "Kate",
+                "The forecast shows partly cloudy skies\nwith a high of 72°F.",
+                GREEN_C,
+            ),
             ("User", "Any chance of rain this afternoon?", BLUE_C),
-            ("Kate", "There's a 30% chance of showers\nafter 3 PM in your area.", GREEN_C),
+            (
+                "Kate",
+                "There's a 30% chance of showers\nafter 3 PM in your area.",
+                GREEN_C,
+            ),
         ]
 
         message_mobjects = []
@@ -111,13 +120,13 @@ class ConversationFlowScene(ThreeDScene):
         # ---- Apply rules one by one with highlights and connections ----
         # Map each rule to a target (message or metadata entry)
         targets = [
-            message_mobjects[1],   # Rule 1 -> Kate's first response (tone)
-            message_mobjects[3],   # Rule 2 -> Kate's second response (accuracy)
-            message_mobjects[3],   # Rule 3 -> Kate's second response (no hallucination)
-            metadata_entries[0],   # Rule 4 -> Presented Flows (local forecast)
-            message_mobjects[1],   # Rule 5 -> Kate's first response (greeting/name)
-            metadata_entries[4],   # Rule 6 -> Tool Calls
-            metadata_entries[6],   # Rule 7 -> Metadata
+            message_mobjects[1],  # Rule 1 -> Kate's first response (tone)
+            message_mobjects[3],  # Rule 2 -> Kate's second response (accuracy)
+            message_mobjects[3],  # Rule 3 -> Kate's second response (no hallucination)
+            metadata_entries[0],  # Rule 4 -> Presented Flows (local forecast)
+            message_mobjects[1],  # Rule 5 -> Kate's first response (greeting/name)
+            metadata_entries[4],  # Rule 6 -> Tool Calls
+            metadata_entries[6],  # Rule 7 -> Metadata
         ]
 
         for rule_mob, target in zip(rule_mobjects, targets):
