@@ -1226,6 +1226,24 @@ class Arrow3D(Line3D):
     def get_end(self) -> np.ndarray:
         return self.end_point.get_center()
 
+    def scale(self, factor: float, scale_tips: bool = False, **kwargs: Any) -> Self:  # type: ignore[override]
+        if self.get_length() == 0:
+            return self
+
+        if scale_tips:  # if scaling tip scale entire group
+            super().scale(factor, **kwargs)
+            return self
+
+        # if scaling only shaft
+        cone = self.cone
+        self.remove(cone)
+
+        super().scale(factor, **kwargs)
+
+        self.add(cone)
+        cone.move_to(self.end_point.get_center())
+        return self
+
 
 class Torus(Surface):
     """A torus.
