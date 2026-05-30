@@ -670,6 +670,8 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         raise NotImplementedError("To be implemented in concrete subclasses")
 
     def __getitem__(self: Graph, v: Hashable) -> Mobject:
+        if isinstance(v, tuple) and len(v) == 2:
+            return self.edges[v]
         return self.vertices[v]
 
     def _create_vertex(
