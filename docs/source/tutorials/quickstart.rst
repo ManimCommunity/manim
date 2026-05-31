@@ -39,7 +39,7 @@ Output .left.> Input : Mạch kín
         Input [label="Đầu vào\n(Nhấn nút)", shape=box];
         Process [label="Xử lý\n(Chip)", shape=ellipse];
         Output [label="Đầu ra\n(Đèn sáng)", shape=box];
-        
+
         Input -> Process [label="Tín hiệu"];
         Process -> Output [label="Lệnh"];
         Output -> Input [label="Mạch kín", style=dashed];
@@ -50,6 +50,3 @@ Output .left.> Input : Mạch kín
 *   **Đặc điểm**: Nếu bạn là lập trình viên Python, bạn có thể dùng thư viện `diagrams` để vẽ sơ đồ trực tiếp bằng code Python. Rất phù hợp khi vẽ kiến trúc hệ thống đám mây (AWS, Azure) hoặc mạch logic lớn.
 
 Để tôi tư vấn kỹ hơn, bạn muốn **nhúng sơ đồ này vào đâu** (vào báo cáo Word, tài liệu Notion, GitHub, hay làm slide)? Tôi có thể cung cấp ngay **đoạn code chuẩn** tương ứng với phần mềm bạn chọn!
-
-
-
