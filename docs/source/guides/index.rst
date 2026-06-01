@@ -8,5 +8,6 @@ Thematic Guides
 
    configuration
    deep_dive
+   units
    using_text
    add_voiceovers

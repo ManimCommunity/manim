@@ -32,4 +32,5 @@ Module Index
    ~utils.tex
    ~utils.tex_file_writing
    ~utils.tex_templates
+   ~utils.unit
    typing

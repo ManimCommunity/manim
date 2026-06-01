@@ -1,4 +1,4 @@
-"""Implement the Unit class."""
+"""Helpers for converting common scalar units to Manim units."""
 
 from __future__ import annotations
 
@@ -11,6 +11,8 @@ __all__ = ["Pixels", "Degrees", "Munits", "Percent"]
 
 
 class _PixelUnits:
+    """Convert pixel lengths to Manim units."""
+
     def __mul__(self, val: float) -> float:
         return val * config.frame_width / config.pixel_width
 
@@ -19,6 +21,16 @@ class _PixelUnits:
 
 
 class Percent:
+    """Convert percentages of the frame width or height to Manim units.
+
+    Parameters
+    ----------
+    axis
+        Use :data:`~manim.constants.X_AXIS` for percentages of
+        ``config.frame_width`` or :data:`~manim.constants.Y_AXIS` for
+        percentages of ``config.frame_height``.
+    """
+
     def __init__(self, axis: Vector3D) -> None:
         if np.array_equal(axis, constants.X_AXIS):
             self.length = config.frame_width
