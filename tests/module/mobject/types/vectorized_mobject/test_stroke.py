@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import manim.utils.color as C
-from manim import VMobject
+from manim import ORIGIN, NumberPlane, VMobject
 from manim.mobject.vector_field import StreamLines
 
 
@@ -61,3 +61,27 @@ def test_background_stroke_scale():
     b.scale(0.5, scale_stroke=True)
     assert a.get_stroke_width(background=True) == 50
     assert b.get_stroke_width(background=True) == 25
+
+
+def test_scale_stroke_preserves_zero_width_on_number_plane_coordinates():
+    """Regression for #4648: compound scale with scale_stroke must not add stroke to text labels."""
+    npl = NumberPlane().add_coordinates()
+    zero_stroke_mobs = [
+        mob
+        for mob in npl.get_family()
+        if isinstance(mob, VMobject) and mob.get_stroke_width() == 0
+    ]
+
+    nonzero_stroke_mobs = [
+        mob
+        for mob in npl.get_family()
+        if isinstance(mob, VMobject) and mob.get_stroke_width() != 0
+    ]
+
+    assert zero_stroke_mobs
+    assert nonzero_stroke_mobs
+
+    npl.scale(0.01, scale_stroke=True, about_point=ORIGIN)
+
+    for mob in zero_stroke_mobs:
+        assert mob.get_stroke_width() == 0
