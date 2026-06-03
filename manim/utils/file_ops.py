@@ -195,9 +195,9 @@ def modify_atime(file_path: str) -> None:
 def open_file(file_path: Path, in_browser: bool = False) -> None:
     current_os = platform.system()
     if current_os == "Windows":
-        # The method os.startfile is only available in Windows.
-        if hasattr(os, "startfile"):
-            os.startfile(file_path if not in_browser else file_path.parent)
+        # The method os.startfile is only available in Windows,
+        # ignoring type error caused by this.
+        os.startfile(file_path if not in_browser else file_path.parent)  # type: ignore[attr-defined]
     else:
         if current_os == "Linux":
             commands = ["xdg-open"]
