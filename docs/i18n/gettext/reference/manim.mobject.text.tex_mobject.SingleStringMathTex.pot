@@ -1,0 +1,75 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.text.tex_mobject.SingleStringMathTex.rst:2
+msgid "SingleStringMathTex"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.tex_mobject.SingleStringMathTex.rst:4
+msgid "Qualified name: ``manim.mobject.text.tex\\_mobject.SingleStringMathTex``"
+msgstr ""
+
+#: ../../../manim/mobject/text/tex_mobject.py:docstring of manim.mobject.text.tex_mobject.SingleStringMathTex:1
+msgid "Bases: :py:class:`manim.mobject.svg.svg_mobject.SVGMobject`"
+msgstr ""
+
+#: ../../../manim/mobject/text/tex_mobject.py:docstring of manim.mobject.text.tex_mobject.SingleStringMathTex:1
+msgid "Elementary building block for rendering text with LaTeX."
+msgstr ""
+
+#: ../../../manim/mobject/text/tex_mobject.py:docstring of manim.mobject.text.tex_mobject.SingleStringMathTex:4
+msgid "Tests"
+msgstr ""
+
+#: ../../../manim/mobject/text/tex_mobject.py:docstring of manim.mobject.text.tex_mobject.SingleStringMathTex:5
+msgid "Check that creating a :class:`~.SingleStringMathTex` object works::"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.tex_mobject.SingleStringMathTex.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.tex_mobject.SingleStringMathTex.rst:22:<autosummary>:1
+#: ../../../manim/mobject/text/tex_mobject.py:docstring of manim.mobject.text.tex_mobject.SingleStringMathTex.init_colors:1
+msgid "Initializes the colors."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.tex_mobject.SingleStringMathTex.rst:24
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/text/tex_mobject.py:docstring of manim.mobject.text.tex_mobject.SingleStringMathTex.font_size:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/text/tex_mobject.py:docstring of manim.mobject.text.tex_mobject.SingleStringMathTex.font_size:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/text/tex_mobject.py:docstring of manim.mobject.text.tex_mobject.SingleStringMathTex.font_size:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/text/tex_mobject.py:docstring of manim.mobject.text.tex_mobject.SingleStringMathTex.font_size:1:<autosummary>:1
+#: ../../../manim/mobject/text/tex_mobject.py:docstring of manim.mobject.text.tex_mobject.SingleStringMathTex.font_size:1
+msgid "The font size of the tex mobject."
+msgstr ""
+
+#: ../../../manim/mobject/text/tex_mobject.py:docstring of manim.mobject.text.tex_mobject.SingleStringMathTex.font_size:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/text/tex_mobject.py:docstring of manim.mobject.text.tex_mobject.SingleStringMathTex.font_size:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/text/tex_mobject.py:docstring of manim.mobject.text.tex_mobject.SingleStringMathTex:0
+msgid "Parameters"
+msgstr ""
+
+

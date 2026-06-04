@@ -1,0 +1,57 @@
+{
+    "name": "SceneWithSkipAnimations",
+    "movie_metadata": {
+        "codec_name": "h264",
+        "width": 854,
+        "height": 480,
+        "avg_frame_rate": "15/1",
+        "duration": "6.000000",
+        "nb_frames": "90",
+        "pix_fmt": "yuv420p"
+    },
+    "section_dir_layout": [
+        "ElaborateSceneWithSections.json",
+        "ElaborateSceneWithSections_0003_fade out.mp4",
+        "ElaborateSceneWithSections_0001_transform to circle.mp4",
+        "ElaborateSceneWithSections_0000_create square.mp4",
+        "."
+    ],
+    "section_index": [
+        {
+            "name": "create square",
+            "type": "default.normal",
+            "video": "ElaborateSceneWithSections_0000_create square.mp4",
+            "codec_name": "h264",
+            "width": 854,
+            "height": 480,
+            "avg_frame_rate": "15/1",
+            "duration": "2.000000",
+            "nb_frames": "30",
+            "pix_fmt": "yuv420p"
+        },
+        {
+            "name": "transform to circle",
+            "type": "default.normal",
+            "video": "ElaborateSceneWithSections_0001_transform to circle.mp4",
+            "codec_name": "h264",
+            "width": 854,
+            "height": 480,
+            "avg_frame_rate": "15/1",
+            "duration": "2.000000",
+            "nb_frames": "30",
+            "pix_fmt": "yuv420p"
+        },
+        {
+            "name": "fade out",
+            "type": "default.normal",
+            "video": "ElaborateSceneWithSections_0003_fade out.mp4",
+            "codec_name": "h264",
+            "width": 854,
+            "height": 480,
+            "avg_frame_rate": "15/1",
+            "duration": "2.000000",
+            "nb_frames": "30",
+            "pix_fmt": "yuv420p"
+        }
+    ]
+}

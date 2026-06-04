@@ -1,0 +1,280 @@
+******
+v0.9.0
+******
+
+:Date: August 02, 2021
+
+Contributors
+============
+
+A total of 35 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Alex Lembcke
+* Benjamin Hackl
+* Darylgolden
+* Devin Neal
+* Harivinay +
+* Hugues Devimeux
+* Jared Hughes +
+* Jason Villanueva
+* Kadatatlu Kishore +
+* KingWampy
+* LED Me Explain +
+* Laith Bahodi
+* Mohammad Al-Fetyani
+* Noam Zaks
+* Oliver
+* PaulCMurdoch
+* Raghav Prabhakar +
+* Ryan McCauley
+* Suhail Sherif +
+* Taektiek +
+* Udeshya Dhungana +
+* UraniumCronorum +
+* Vinh H. Pham (Vincent) +
+* ccn +
+* icedcoffeeee +
+* sahilmakhijani +
+* sparshg
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Abhijith Muthyala
+* Alex Lembcke
+* Benjamin Hackl
+* Darylgolden
+* Devin Neal
+* Harivinay
+* Hugues Devimeux
+* Jan-Hendrik Müller
+* Jason Villanueva
+* KingWampy
+* Laith Bahodi
+* Lino
+* Mohammad Al-Fetyani
+* Oliver
+* Raghav Goel
+* Suhail Sherif
+* icedcoffeeee
+* sahilmakhijani
+* sparshg
+
+Pull requests merged
+====================
+
+A total of 55 pull requests were merged for this release.
+
+Highlights
+----------
+
+* :pr:`1677`: Added a new :class:`~.Table` mobject
+   This brings easy-to-use and customizable tables to Manim. Several examples for this new mobject can be found at :mod:`the module documentation page <.mobject.table>` and its subpages.
+
+Deprecated classes and functions
+--------------------------------
+
+* :pr:`1848`: Deprecated parameters for :class:`~.DashedLine` and :class:`~.DashedVMobject`
+   - ``dash_spacing`` is an unused parameter
+   - ``positive_space_ratio`` has been replaced with the shorter name ``dashed_ratio``
+
+* :pr:`1773`: Remove all classes and functions that were deprecated until ``v0.7.0`` and ``v0.8.0``
+   The classes ``FadeInFrom``, ``FadeOutAndShift``, ``FadeOutToPoint``, ``FadeInFromPoint``, ``FadeInFromLarge``, ``VFadeIn``, ``VFadeOut``, ``VFadeInThenOut`` have been removed, use :class:`~.FadeIn` or :class:`~.FadeOut` with appropriate
+   keyword arguments instead.
+
+   The classes ``CircleIndicate``, ``ShowCreationThenDestruction``, ``AnimationOnSurroundingRectangle``, ``ShowPassingFlashAround``, ``ShowCreationThenDestructionAround``, ``ShowCreationThenFadeAround``, ``WiggleOutThenIn``, ``TurnInsideOut`` have been removed. Use :class:`~.Circumscribe`, :class:`~.ShowPassingFlash`, or :class:`~.Wiggle` instead.
+
+   The classes ``OpenGLTexMobject`` and ``OpenGLTextMobject`` have been removed, use :class:`~.MathTex` and :class:`~.Tex` instead. Also, ``VMobjectFromSVGPathstring`` has been removed, use :class:`~.SVGPathMobject` instead.
+
+   Finally, the utility functions ``get_norm`` and ``cross`` have been removed (use the corresponding Numpy methods instead), and the function ``angle_between`` has been replaced with ``angle_between_vectors``.
+
+* :pr:`1731`: Deprecated :class:`~.ParametricSurface` parameters
+   - ``u_min`` and ``u_max`` have been replaced by ``u_range``.
+   - ``v_min`` and ``v_max`` have been replaced by ``v_range``.
+
+New features
+------------
+
+* :pr:`1780`: Allow non-numerical values to be added to :class:`~.NumberLine` and :class:`~.Axes`
+   - Added :meth:`.NumberLine.add_labels` method to :class:`~.NumberLine` which accepts a dictionary of positions/values.
+   - :meth:`.CoordinateSystem.add_coordinates` now accepts a dictionary too.
+
+* :pr:`1719`: Added a :class:`~.Broadcast` animation
+
+
+* :pr:`1765`: Added a static method :meth:`.Circle.from_three_points` for defining a circle from three points
+   - Added a new :func:`~.perpendicular_bisector` function in ``space_ops.py``
+
+* :pr:`1686`: Added :meth:`.ParametricSurface.set_fill_by_value`
+   This method enables a color gradient to be applied to a :class:`~.ParametricSurface`, including the ability to define at which points the colors should be centered.
+
+Enhancements
+------------
+
+* :pr:`1833`: Added OpenGL compatibility for :class:`~.VDict`, :meth:`~.Axes.get_line_graph` and :class:`~.FocusOn`
+
+
+* :pr:`1760`: Added ``window_size`` flag to manually adjust the size of the OpenGL window
+   Accepts a tuple in the form: ``x,y``.
+
+* :pr:`1823`: Reworked :class:`~.DashedVMobject`
+   Rewritten the logic to generate dashes
+
+* :pr:`1808`: OpenGL renderer updates
+   - Adds model matrices to all OpenGLVMobjects
+   - Improved performance on vectorized mobject shaders
+   - Added updaters that are part of the scene rather than a mobject
+
+* :pr:`1787`: Made :class:`~.DecimalNumber` apply color to the ellipsis
+   Made color apply to the dots when `show_ellipsis` is set to true in `DecimalNumber`
+
+* :pr:`1775`: Let :class:`~.Create` work on :class:`~.OpenGLSurface`
+
+
+* :pr:`1757`: Added warning when there is a large number of items to hash.
+
+
+* :pr:`1774`: Add the ``reverse`` parameter to :class:`~.Write`
+
+
+Fixed bugs
+----------
+
+* :pr:`1722`: Fixed ``remover=True`` for :class:`~.AnimationGroup`
+
+
+* :pr:`1727`: Fixed some hot reload issues and compatibility with IDEs
+   - Fixed interactive embed issue where it would fail when running on non-tty terminals
+   - Fixed issue where file observer would error after the second run as the first observer was not closed
+
+* :pr:`1844`: Fixed the oversized :class:`~.Code` window with the OpenGL renderer
+
+
+* :pr:`1821`: Fixed issues concerning ``frame_center`` in :class:`~.ThreeDScene`
+   - Changing ``frame_center`` in a :class:`~.ThreeDScene` now actually changes the camera position.
+   - An animation with only ``frame_center`` animated will now be rendered properly.
+   - A black dot is not created at the origin once ``frame_center`` is animated.
+
+* :pr:`1826`: Fixed scaling issue with :meth:`.BarChart.change_bar_values`
+
+
+* :pr:`1839`: Allow passing arguments to ``.animate`` with the OpenGL renderer
+
+
+* :pr:`1791`: :meth:`~.Mobject.set_z_index` now sets all submobjects' ``z_index`` value
+
+
+* :pr:`1792`: Fixed bug that caused dry runs to fail when using the PNG format
+
+
+* :pr:`1790`: Fixed an import from ``manimlib``
+
+
+* :pr:`1782`: Fixed :class:`~.Tex` not working properly with the OpenGL renderer
+
+
+* :pr:`1783`: Fixed :meth:`~.OpenGLMobject.shuffle` function and added :meth:`~.Mobject.invert` to OpenGL
+
+
+* :pr:`1786`: Fixed :class:`~.DecimalNumber` not working properly when the number of digits changes
+
+
+* :pr:`1763`: Fixed not being able to set some CLI flags in the configuration file
+
+
+* :pr:`1776`: :meth:`.CoordinateSystem.get_riemann_rectangles` now uses the graph's range instead of the axes range
+   If no range specified, `get_riemann_rectangles` generates the rectangles only where the area is correctly bounded
+
+* :pr:`1770`: Rewrote :meth:`.OpenGLMobject.put_start_and_end_on` to work correctly in 3D
+
+
+* :pr:`1736`: Fixed :class:`~.LinearTransformationScene` crashing on multiple animations
+
+
+Documentation-related changes
+-----------------------------
+
+* :pr:`1852`: Fixed docs for :meth:`.Coordinate_system.add_coordinates` and moved :class: `~.Code` example
+
+
+* :pr:`1807`: Updated installation instructions
+   - Added a warning about the incompatibility of different versions of Manim in the README
+   - Modified the admonition warning in the documentation
+   - Removed duplicated information from the README (``pip install manim`` is already covered in the docs)
+
+* :pr:`1739`: Added a section on creating a custom animation to the "Manim's building blocks" tutorial
+
+
+* :pr:`1835`: Updated documentation with information about reworked graphical unit test system
+
+
+* :pr:`1845`: Improve ``ThreeDSurfacePlot`` example in example gallery
+
+
+* :pr:`1842`: Removed instructions on installing Poetry from Developer Installation documentation, reference Poetry's documentation instead
+
+
+* :pr:`1829`: Switch the order of Scoop and Chocolatey in the docs for the Windows Installation
+
+
+* :pr:`1827`: Added ``robots.txt`` to prevent old versions of documentation from showing in search results
+
+
+* :pr:`1819`: Removed mention of ``-h`` CLI flag from documentation
+
+
+* :pr:`1813`: Removed unused variables from tutorial
+
+
+* :pr:`1815`: Added codespell to the list of used linters in the contribution guidelines
+
+
+* :pr:`1778`: Improve sidebar structure of the documentation's reference manual
+
+
+* :pr:`1749`: Added documentation and example for :meth:`.VMobject.set_fill`
+
+
+* :pr:`1743`: Edited the developer installation instructions to include information on cloning the repository
+
+
+* :pr:`1706`: Rework example for :class:`~.Variable`
+
+
+Changes concerning the testing system
+-------------------------------------
+
+* :pr:`1836`: Converted all the graphical tests to the new syntax
+
+
+* :pr:`1802`: Refactored graphical unit testing system, and implemented multi frames tests
+   This PR introduces a new ``@frames_comparison`` decorator which allows writing simple ``construct``-like functions as tests. Control data for new tests can be easily generated by calling ``pytest --set_test``.
+
+Changes to our development infrastructure
+-----------------------------------------
+
+* :pr:`1830`: Be more concise about the documentation URL in the PR template
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* :pr:`1851`: Renamed ``Tabular`` to :class:`~.Table`
+
+
+* :pr:`1817`: Remove pillow version requirement
+
+
+* :pr:`1806`: Fixed spelling mistake
+
+
+* :pr:`1745`: Updated the BibTeX template in the README to Manim v0.9.0
+
+
+New releases
+------------
+
+* :pr:`1850`: Bump version number to ``v0.9.0`` and generate changelog

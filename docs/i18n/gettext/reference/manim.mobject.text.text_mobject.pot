@@ -1,0 +1,125 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.text.text_mobject.rst:2
+msgid "text\\_mobject"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject:1
+msgid "Mobjects used for displaying (non-LaTeX) text."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject:4
+msgid "Just as you can use :class:`~.Tex` and :class:`~.MathTex` (from the module :mod:`~.tex_mobject`) to insert LaTeX to your videos, you can use :class:`~.Text` to to add normal text."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject:9
+msgid "See the corresponding tutorial :ref:`rendering-with-latex`"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject:12
+msgid "The simplest way to add text to your animations is to use the :class:`~.Text` class. It uses the Pango library to render text. With Pango, you are also able to render non-English alphabets like `你好` or  `こんにちは` or `안녕하세요` or `مرحبا بالعالم`."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject:16
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.register_font:13
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.text_mobject.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.text_mobject.rst:30:<autosummary>:1
+#: ../../source/reference/manim.mobject.text.text_mobject.rst:30:<autosummary>:1
+msgid "Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.text_mobject.rst:30:<autosummary>:1
+msgid "Display a paragraph of text."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.text_mobject.rst:33
+msgid "Functions"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.register_font:1
+msgid "Temporarily add a font file to Pango's search path."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.register_font:3
+msgid "This searches for the font_file at various places. The order it searches it described below."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.register_font:5
+msgid "Absolute path."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.register_font:6
+msgid "In ``assets/fonts`` folder."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.register_font:7
+msgid "In ``font/`` folder."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.register_font:8
+msgid "In the same directory."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.register_font:0
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.register_font:0
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.remove_invisible_chars:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.register_font:10
+msgid "The font file to add."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.register_font:14
+msgid "Use ``with register_font(...)`` to add a font file to search path."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.register_font:0
+msgid "Raises"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.register_font:22
+msgid "If the font doesn't exists."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.register_font:23
+msgid "If this method is used on macOS."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.register_font:24
+msgid "This method is available for macOS for ``ManimPango>=v0.2.3``. Using this     method with previous releases will raise an :class:`AttributeError` on macOS."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.remove_invisible_chars:1
+msgid "Function to remove unwanted invisible characters from some mobjects."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.remove_invisible_chars:3
+msgid "Any SVGMobject from which we want to remove unwanted invisible characters."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.remove_invisible_chars:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.remove_invisible_chars:5
+msgid "The SVGMobject without unwanted invisible characters."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.remove_invisible_chars:0
+msgid "Return type"
+msgstr ""
+
+

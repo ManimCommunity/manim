@@ -1,0 +1,134 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.logo.ManimBanner.rst:2
+msgid "ManimBanner"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.logo.ManimBanner.rst:4
+msgid "Qualified name: ``manim.mobject.logo.ManimBanner``"
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner:1
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VGroup`"
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner:1
+msgid "Convenience class representing Manim's banner."
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner:3
+msgid "Can be animated using custom methods."
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner:0
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:0
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.expand:0
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.scale:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner:5
+msgid "If ``True`` (the default), the dark theme version of the logo (with light text font) will be rendered. Otherwise, if ``False``, the light theme version (with dark text font) is used."
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner:10
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.expand:23
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.logo.ManimBanner.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.logo.ManimBanner.rst:22:<autosummary>:1
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:1
+msgid "The creation animation for Manim's logo."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.logo.ManimBanner.rst:22:<autosummary>:1
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.expand:1
+msgid "An animation that expands Manim's logo into its banner."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.logo.ManimBanner.rst:22:<autosummary>:1
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.scale:1
+msgid "Scale the banner by the specified scale factor."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.logo.ManimBanner.rst:24
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:3
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.expand:16
+msgid "The run time of the animation."
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:0
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.expand:0
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.scale:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:5
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.expand:19
+msgid "An animation to be used in a :meth:`.Scene.play` call."
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.create:0
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.expand:0
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.scale:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.expand:3
+msgid "The returned animation transforms the banner from its initial state (representing Manim's logo with just the icons) to its expanded state (showing the full name together with the icons)."
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.expand:7
+msgid "See the class documentation for how to use this."
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.expand:11
+msgid "Before calling this method, the text \"anim\" is not a submobject of the banner object. After the expansion, it is added as a submobject so subsequent animations to the banner object apply to the text \"anim\" as well."
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.expand:17
+msgid "The direction in which the logo is expanded."
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.scale:3
+msgid "The factor used for scaling the banner."
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo.ManimBanner.scale:5
+msgid "The scaled banner."
+msgstr ""
+
+

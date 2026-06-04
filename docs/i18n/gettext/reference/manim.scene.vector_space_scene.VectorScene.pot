@@ -1,0 +1,336 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:2
+msgid "VectorScene"
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:4
+msgid "Qualified name: ``manim.scene.vector\\_space\\_scene.VectorScene``"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene:1
+msgid "Bases: :py:class:`manim.scene.scene.Scene`"
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_axes:1
+msgid "Adds a pair of Axes to the Scene."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_plane:1
+msgid "Adds a NumberPlane object to the background."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_vector:1
+msgid "Returns the Vector after adding it to the Plane."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
+msgid "This method writes the vector as a column matrix (henceforth called the label), takes the values in it one by one, and form the corresponding lines that make up the x and y components of the vector."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_basis_vector_labels:1
+msgid "Returns naming labels for the basis vectors."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_basis_vectors:1
+msgid "Returns a VGroup of the Basis Vectors (1,0) and (0,1)"
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector:1
+msgid "Returns an arrow on the Plane given an input numerical vector."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector_label:1
+msgid "Returns naming labels for the passed vector."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.label_vector:1
+msgid "Shortcut method for creating, and animating the addition of a label for the vector."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.lock_in_faded_grid:1
+msgid "This method freezes the NumberPlane and Axes that were already in the background, and adds new, manipulatable ones to the foreground."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
+msgid "This method plays an animation that partially shows the entire plane moving in the direction of a particular vector."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
+msgid "This method displays vector as a Vector() based vector, and then shows the corresponding lines that make up the x and y components of the vector."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:34:<autosummary>:1
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.write_vector_coordinates:1
+msgid "Returns a column matrix indicating the vector coordinates, after writing them to the screen."
+msgstr ""
+
+#: ../../source/reference/manim.scene.vector_space_scene.VectorScene.rst:36
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_axes:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_plane:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_vector:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.coords_to_vector:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_basis_vector_labels:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_basis_vectors:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector_label:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.label_vector:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.lock_in_faded_grid:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.show_ghost_movement:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.vector_to_coords:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.write_vector_coordinates:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_axes:3
+msgid "Whether or not to animate the addition of the axes through Create."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_axes:5
+msgid "The color of the axes. Defaults to WHITE."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_plane:3
+msgid "Whether or not to animate the addition of the plane via Create."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_plane:5
+msgid "Any valid keyword arguments accepted by NumberPlane."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_plane:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_vector:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_basis_vectors:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector_label:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.label_vector:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.write_vector_coordinates:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_plane:7
+msgid "The NumberPlane object."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_plane:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_vector:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_basis_vectors:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector_label:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.label_vector:0
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.write_vector_coordinates:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_vector:3
+msgid "It can be a pre-made graphical vector, or the coordinates of one."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_vector:6
+msgid "The string of the hex color of the vector. This is only taken into consideration if 'vector' is not an Arrow. Defaults to YELLOW."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_vector:10
+msgid "Whether or not to animate the addition of the vector by using GrowArrow"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_vector:13
+msgid "Any valid keyword argument of Arrow. These are only considered if vector is not an Arrow."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.add_vector:17
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.write_vector_coordinates:4
+msgid "The arrow representing the vector."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.coords_to_vector:1
+msgid "This method writes the vector as a column matrix (henceforth called the label), takes the values in it one by one, and form the corresponding lines that make up the x and y components of the vector. Then, an Vector() based vector is created between the lines on the Screen."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.coords_to_vector:6
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.vector_to_coords:6
+msgid "The vector to show."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.coords_to_vector:8
+msgid "The starting point of the location of the label of the vector that shows it numerically. Defaults to 2 * RIGHT + 2 * UP or (2,2)"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.coords_to_vector:13
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.vector_to_coords:11
+msgid "Whether or not to remove whatever this method did after it's done."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_basis_vector_labels:3
+msgid "Any valid keyword arguments of get_vector_label:     vector,     label (str,MathTex)     at_tip (bool=False),     direction (str=\"left\"),     rotate (bool),     color (str),     label_scale_factor=VECTOR_LABEL_SCALE_FACTOR (int, float),"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_basis_vector_labels:10
+msgid "Any valid keyword arguments of get_vector_label:"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_basis_vector_labels:5
+msgid "vector, label (str,MathTex) at_tip (bool=False), direction (str=\"left\"), rotate (bool), color (str), label_scale_factor=VECTOR_LABEL_SCALE_FACTOR (int, float),"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_basis_vectors:3
+msgid "The hex colour to use for the basis vector in the x direction"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_basis_vectors:5
+msgid "The hex colour to use for the basis vector in the y direction"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_basis_vectors:8
+msgid "VGroup of the Vector Mobjects representing the basis vectors."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector:3
+msgid "The Vector to plot."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector:5
+msgid "Any valid keyword argument of Arrow."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector:7
+msgid "The Arrow representing the Vector."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector_label:3
+msgid "Vector Object for which to get the label."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector_label:5
+msgid "Whether or not to place the label at the tip of the vector."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector_label:7
+msgid "If the label should be on the \"left\" or right of the vector."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector_label:9
+msgid "Whether or not to rotate it to align it with the vector."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector_label:11
+msgid "The color to give the label."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector_label:13
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector_label:14
+msgid "How much to scale the label by."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.get_vector_label:16
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.label_vector:12
+msgid "The MathTex of the label."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.label_vector:4
+msgid "The vector for which the label must be added."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.label_vector:6
+msgid "The MathTex/string of the label."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.label_vector:8
+msgid "Whether or not to animate the labelling w/ Write"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.label_vector:10
+msgid "Any valid keyword argument of get_vector_label"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.lock_in_faded_grid:4
+msgid "The required dimness of the NumberPlane"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.lock_in_faded_grid:6
+msgid "The required dimness of the Axes."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.show_ghost_movement:1
+msgid "This method plays an animation that partially shows the entire plane moving in the direction of a particular vector. This is useful when you wish to convey the idea of mentally moving the entire plane in a direction, without actually moving the plane."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.show_ghost_movement:6
+msgid "The vector which indicates the direction of movement."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.vector_to_coords:1
+msgid "This method displays vector as a Vector() based vector, and then shows the corresponding lines that make up the x and y components of the vector. Then, a column matrix (henceforth called the label) is created near the head of the Vector."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.vector_to_coords:8
+msgid "Whether or not to round the value displayed. in the vector's label to the nearest integer"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.write_vector_coordinates:6
+msgid "Any valid keyword arguments of :meth:`~.geometry.Vector.coordinate_label`:  integer_labels : :class:`bool`     Whether or not to round the coordinates to integers. Default: ``True``. n_dim : :class:`int`     The number of dimensions of the vector. Default: ``2``. color     The color of the label. Default: ``WHITE``."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.write_vector_coordinates:6
+msgid "Any valid keyword arguments of :meth:`~.geometry.Vector.coordinate_label`:"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.write_vector_coordinates:8
+msgid "integer_labels : :class:`bool`"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.write_vector_coordinates:7
+msgid "bool"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.write_vector_coordinates:9
+msgid "Whether or not to round the coordinates to integers. Default: ``True``."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.write_vector_coordinates:10
+msgid "n_dim : :class:`int`"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.write_vector_coordinates:9
+msgid "int"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.write_vector_coordinates:11
+msgid "The number of dimensions of the vector. Default: ``2``."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.write_vector_coordinates:13
+msgid "color"
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.write_vector_coordinates:13
+msgid "The color of the label. Default: ``WHITE``."
+msgstr ""
+
+#: ../../../manim/scene/vector_space_scene.py:docstring of manim.scene.vector_space_scene.VectorScene.write_vector_coordinates:15
+msgid "The column matrix representing the vector."
+msgstr ""
+
+

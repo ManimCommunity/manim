@@ -1,0 +1,105 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.geometry.arc.ArcPolygonFromArcs.rst:2
+msgid "ArcPolygonFromArcs"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.ArcPolygonFromArcs.rst:4
+msgid "Qualified name: ``manim.mobject.geometry.arc.ArcPolygonFromArcs``"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.ArcPolygonFromArcs:1
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.ArcPolygonFromArcs:1
+msgid "A generalized polygon allowing for points to be connected with arcs."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.ArcPolygonFromArcs:3
+msgid "This version takes in pre-defined arcs to generate the arcpolygon and introduces little new syntax. However unlike :class:`Polygon` it can't be created with points directly."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.ArcPolygonFromArcs:7
+msgid "For proper appearance the passed arcs should connect seamlessly: ``[a,b][b,c][c,a]``"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.ArcPolygonFromArcs:10
+msgid "If there are any gaps between the arcs, those will be filled in with straight lines, which can be used deliberately for any straight sections. Arcs can also be passed as straight lines such as an arc initialized with ``angle=0``."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.ArcPolygonFromArcs:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.ArcPolygonFromArcs:15
+msgid "These are the arcs from which the arcpolygon is assembled."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.ArcPolygonFromArcs:16
+msgid "Keyword arguments that are passed to the constructor of :class:`~.VMobject`. Affects how the ArcPolygon itself is drawn, but doesn't affect passed arcs."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.ArcPolygonFromArcs:24
+msgid "The arcs used to initialize the ArcPolygonFromArcs::"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.ArcPolygonFromArcs:33
+msgid "Two instances of :class:`ArcPolygon` can be transformed properly into one another as well. Be advised that any arc initialized with ``angle=0`` will actually be a straight line, so if a straight section should seamlessly transform into an arced section or vice versa, initialize the straight section with a negligible angle instead (such as ``angle=0.0001``)."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.ArcPolygonFromArcs:40
+msgid "There is an alternative version (:class:`ArcPolygon`) that can be instantiated with points."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.ArcPolygonFromArcs:47
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.ArcPolygonFromArcs:48
+msgid "One example of an arcpolygon is the Reuleaux triangle. Instead of 3 straight lines connecting the outer points, a Reuleaux triangle has 3 arcs connecting those points, making a shape with constant width."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.ArcPolygonFromArcs:53
+msgid "Passed arcs are stored as submobjects in the arcpolygon. This means that the arcs are changed along with the arcpolygon, for example when it's shifted, and these arcs can be manipulated after the arcpolygon has been initialized."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.ArcPolygonFromArcs:58
+msgid "Also both the arcs contained in an :class:`~.ArcPolygonFromArcs`, as well as the arcpolygon itself are drawn, which affects draw time in :class:`~.Create` for example. In most cases the arcs themselves don't need to be drawn, in which case they can be passed as invisible."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.ArcPolygonFromArcs:80
+msgid "The arcpolygon itself can also be hidden so that instead only the contained arcs are drawn. This can be used to easily debug arcs or to highlight them."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.ArcPolygonFromArcs.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.ArcPolygonFromArcs.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.ArcPolygonFromArcs.rst:32:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.ArcPolygonFromArcs.rst:32:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.ArcPolygonFromArcs.rst:32:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.ArcPolygonFromArcs.rst:32:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+

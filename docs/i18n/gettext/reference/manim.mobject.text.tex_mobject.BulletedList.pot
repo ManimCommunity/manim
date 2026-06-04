@@ -1,0 +1,53 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.text.tex_mobject.BulletedList.rst:2
+msgid "BulletedList"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.tex_mobject.BulletedList.rst:4
+msgid "Qualified name: ``manim.mobject.text.tex\\_mobject.BulletedList``"
+msgstr ""
+
+#: ../../../manim/mobject/text/tex_mobject.py:docstring of manim.mobject.text.tex_mobject.BulletedList:1
+msgid "Bases: :py:class:`manim.mobject.text.tex_mobject.Tex`"
+msgstr ""
+
+#: ../../../manim/mobject/text/tex_mobject.py:docstring of manim.mobject.text.tex_mobject.BulletedList:2
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.tex_mobject.BulletedList.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.tex_mobject.BulletedList.rst:22
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.tex_mobject.BulletedList.rst:34:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.tex_mobject.BulletedList.rst:34:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.tex_mobject.BulletedList.rst:34:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.tex_mobject.BulletedList.rst:34:<autosummary>:1
+msgid "The font size of the tex mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.tex_mobject.BulletedList.rst:34:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+

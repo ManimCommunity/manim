@@ -1,0 +1,13 @@
+<svg viewBox="-50 -50 100 100" xmlns="http://www.w3.org/2000/svg">
+    <!-- uniform scale -->
+    <circle cx="0" cy="0" r="10" fill="red" transform="scale(4)" />
+
+    <!-- vertical scale -->
+    <circle cx="0" cy="0" r="10" fill="yellow" transform="scale(1,4)" />
+
+    <!-- horizontal scale -->
+    <circle cx="0" cy="0" r="10" fill="pink" transform="scale(4,1)" />
+
+    <!-- No scale -->
+    <circle cx="0" cy="0" r="10" fill="black" />
+</svg>

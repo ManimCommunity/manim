@@ -1,0 +1,112 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:2
+msgid "SVGPathMobject"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:4
+msgid "Qualified name: ``manim.mobject.svg.svg\\_path.SVGPathMobject``"
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject:1
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:26:<autosummary>:1
+#: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:26:<autosummary>:1
+#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.generate_points:1
+#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.generate_points:1
+msgid "Generates points from a given an SVG ``d`` attribute."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:26:<autosummary>:1
+#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.get_original_path_string:1
+msgid "A simple getter for the path's ``d`` attribute."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:26:<autosummary>:1
+#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.get_path_commands:1
+msgid "Returns a list of possible path commands used within an SVG ``d`` attribute."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:26:<autosummary>:1
+#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.handle_command:1
+msgid "Core logic for handling each of the various path commands."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:26:<autosummary>:1
+#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.string_to_points:1
+msgid "Convert an SVG command string into a sequence of absolute-positioned control points."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_path.SVGPathMobject.rst:28
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.generate_points:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.generate_points:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.generate_points:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.generate_points:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.generate_points:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.get_path_commands:4
+msgid "See: https://svgwg.org/svg2-draft/paths.html#DProperty for further details on what each path command does."
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.get_path_commands:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.get_path_commands:7
+msgid "The various upper and lower cased path commands."
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.get_path_commands:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.get_path_commands:8
+msgid "List[:class:`str`]"
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.string_to_points:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.string_to_points:3
+msgid "A string containing a single uppercase letter representing the SVG command."
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.string_to_points:5
+msgid "Whether the command is relative to the end of the previous command"
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_path.py:docstring of manim.mobject.svg.svg_path.SVGPathMobject.string_to_points:7
+msgid "A string that contains many comma- or space-separated numbers that defined the control points. Different commands require different numbers of numbers as arguments."
+msgstr ""
+
+

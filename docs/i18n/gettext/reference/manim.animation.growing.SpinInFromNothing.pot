@@ -1,0 +1,53 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.animation.growing.SpinInFromNothing.rst:2
+msgid "SpinInFromNothing"
+msgstr ""
+
+#: ../../source/reference/manim.animation.growing.SpinInFromNothing.rst:4
+msgid "Qualified name: ``manim.animation.growing.SpinInFromNothing``"
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.SpinInFromNothing:1
+msgid "Bases: :py:class:`manim.animation.growing.GrowFromCenter`"
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.SpinInFromNothing:1
+msgid "Introduce an :class:`~.Mobject` spinning and growing it from its center."
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.SpinInFromNothing:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.SpinInFromNothing:3
+msgid "The mobjects to be introduced."
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.SpinInFromNothing:4
+msgid "The amount of spinning before mobject reaches its full size. E.g. 2*PI means that the object will do one full spin before being fully introduced."
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.SpinInFromNothing:6
+msgid "Initial color of the mobject before growing to its full size. Leave empty to match mobject's color."
+msgstr ""
+
+#: ../../../manim/animation/growing.py:docstring of manim.animation.growing.SpinInFromNothing:9
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.animation.growing.SpinInFromNothing.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.animation.growing.SpinInFromNothing.rst:21
+msgid "Attributes"
+msgstr ""
+
+

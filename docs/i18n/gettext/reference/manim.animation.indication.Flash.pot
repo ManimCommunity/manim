@@ -1,0 +1,73 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.animation.indication.Flash.rst:2
+msgid "Flash"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.Flash.rst:4
+msgid "Qualified name: ``manim.animation.indication.Flash``"
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:1
+msgid "Bases: :py:class:`manim.animation.composition.AnimationGroup`"
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:1
+msgid "Send out lines in all directions."
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:3
+msgid "The center of the flash lines. If it is a :class:`.~Mobject` its center will be used."
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:4
+msgid "The length of the flash lines."
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:5
+msgid "The number of flash lines."
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:6
+msgid "The distance from `point` at which the flash lines start."
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:7
+msgid "The stroke width of the flash lines."
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:8
+msgid "The color of the flash lines."
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:9
+msgid "The time width used for the flash lines. See :class:`.~ShowPassingFlash` for more details."
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:10
+msgid "The duration of the animation."
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:11
+msgid "Additional arguments to be passed to the :class:`~.Succession` constructor"
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Flash:15
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.Flash.rst:14
+msgid "Methods"
+msgstr ""
+
+

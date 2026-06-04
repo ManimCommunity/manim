@@ -1,0 +1,170 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VDict.rst:2
+msgid "VDict"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VDict.rst:4
+msgid "Qualified name: ``manim.mobject.types.vectorized\\_mobject.VDict``"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict:1
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict:1
+msgid "A VGroup-like class, also offering submobject access by key, like a python dict"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add_key_value_pair:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.remove:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict:4
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add:6
+msgid "The parameter specifying the key-value mapping of keys and mobjects."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict:6
+msgid "Whether to also display the key associated with the mobject. This might be useful when debugging, especially when there are a lot of mobjects in the :class:`VDict`. Defaults to False."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict:11
+msgid "Other arguments to be passed to `Mobject`."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict:16
+msgid "Whether to also display the key associated with the mobject. This might be useful when debugging, especially when there are a lot of mobjects in the :class:`VDict`. When displayed, the key is towards the left of the mobject. Defaults to False."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict:0
+msgid "type"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict:27
+msgid "Is the actual python dictionary that is used to bind the keys to the mobjects."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict:33
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add:13
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add_key_value_pair:14
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.get_all_submobjects:7
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.remove:13
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VDict.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VDict.rst:23:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add:1
+msgid "Adds the key-value pairs to the :class:`VDict` object."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VDict.rst:23:<autosummary>:1
+msgid "A utility function used by :meth:`add` to add the key-value pair to :attr:`submob_dict`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VDict.rst:23:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.get_all_submobjects:1
+msgid "To get all the submobjects associated with a particular :class:`VDict` object"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VDict.rst:23:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.remove:1
+msgid "Removes the mobject from the :class:`VDict` object having the key `key`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VDict.rst:25
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add:3
+msgid "Also, it internally adds the value to the `submobjects` :class:`list` of :class:`~.Mobject`, which is responsible for actual on-screen display."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.get_all_submobjects:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.remove:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add:9
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.remove:9
+msgid "Returns the :class:`VDict` object on which this method was called."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add_key_value_pair:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.get_all_submobjects:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.remove:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add:14
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add_key_value_pair:15
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.get_all_submobjects:8
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.remove:14
+msgid "Normal usage::"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add_key_value_pair:1
+msgid "A utility function used by :meth:`add` to add the key-value pair to :attr:`submob_dict`. Not really meant to be used externally."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add_key_value_pair:4
+msgid "The key of the submobject to be added."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add_key_value_pair:6
+msgid "The mobject associated with the key"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add_key_value_pair:0
+msgid "Raises"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.add_key_value_pair:11
+msgid "If the value is not an instance of VMobject"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.get_all_submobjects:3
+msgid "All the submobjects associated with the :class:`VDict` object"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VDict.remove:3
+msgid "Also, it internally removes the mobject from the `submobjects` :class:`list` of :class:`~.Mobject`, (which is responsible for removing it from the screen)"
+msgstr ""
+
+

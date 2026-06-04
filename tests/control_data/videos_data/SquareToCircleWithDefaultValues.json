@@ -1,0 +1,14 @@
+{
+    "name": "SquareToCircleWithDefaultValues",
+    "movie_metadata": {
+        "codec_name": "h264",
+        "width": 1920,
+        "height": 1080,
+        "avg_frame_rate": "60/1",
+        "duration": "1.000000",
+        "nb_frames": "60",
+        "pix_fmt": "yuv420p"
+    },
+    "section_dir_layout": [],
+    "section_index": []
+}

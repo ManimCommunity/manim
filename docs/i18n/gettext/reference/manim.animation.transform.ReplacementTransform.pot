@@ -1,0 +1,53 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.animation.transform.ReplacementTransform.rst:2
+msgid "ReplacementTransform"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.ReplacementTransform.rst:4
+msgid "Qualified name: ``manim.animation.transform.ReplacementTransform``"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ReplacementTransform:1
+msgid "Bases: :py:class:`manim.animation.transform.Transform`"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ReplacementTransform:1
+msgid "Replaces and morphs a mobject into a target mobject."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ReplacementTransform:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ReplacementTransform:3
+msgid "The starting :class:`~.Mobject`."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ReplacementTransform:4
+msgid "The target :class:`~.Mobject`."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ReplacementTransform:5
+msgid "Further keyword arguments that are passed to :class:`Transform`."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ReplacementTransform:8
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.ReplacementTransform.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.ReplacementTransform.rst:21
+msgid "Attributes"
+msgstr ""
+
+

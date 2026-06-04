@@ -1,0 +1,83 @@
+{
+    "name": "SceneWithSections",
+    "movie_metadata": {
+        "codec_name": "h264",
+        "width": 854,
+        "height": 480,
+        "avg_frame_rate": "15/1",
+        "duration": "7.000000",
+        "nb_frames": "105",
+        "pix_fmt": "yuv420p"
+    },
+    "section_dir_layout": [
+        "SceneWithSections.json",
+        "SceneWithSections_0004_unnamed.mp4",
+        "SceneWithSections_0003_Prepare For Unforeseen Consequences..mp4",
+        "SceneWithSections_0002_test.mp4",
+        "SceneWithSections_0001_unnamed.mp4",
+        "SceneWithSections_0000_autocreated.mp4",
+        "."
+    ],
+    "section_index": [
+        {
+            "name": "autocreated",
+            "type": "default.normal",
+            "video": "SceneWithSections_0000_autocreated.mp4",
+            "codec_name": "h264",
+            "width": 854,
+            "height": 480,
+            "avg_frame_rate": "15/1",
+            "duration": "1.000000",
+            "nb_frames": "15",
+            "pix_fmt": "yuv420p"
+        },
+        {
+            "name": "unnamed",
+            "type": "default.normal",
+            "video": "SceneWithSections_0001_unnamed.mp4",
+            "codec_name": "h264",
+            "width": 854,
+            "height": 480,
+            "avg_frame_rate": "15/1",
+            "duration": "2.000000",
+            "nb_frames": "30",
+            "pix_fmt": "yuv420p"
+        },
+        {
+            "name": "test",
+            "type": "default.normal",
+            "video": "SceneWithSections_0002_test.mp4",
+            "codec_name": "h264",
+            "width": 854,
+            "height": 480,
+            "avg_frame_rate": "15/1",
+            "duration": "1.000000",
+            "nb_frames": "15",
+            "pix_fmt": "yuv420p"
+        },
+        {
+            "name": "Prepare For Unforeseen Consequences.",
+            "type": "default.normal",
+            "video": "SceneWithSections_0003_Prepare For Unforeseen Consequences..mp4",
+            "codec_name": "h264",
+            "width": 854,
+            "height": 480,
+            "avg_frame_rate": "15/1",
+            "duration": "2.000000",
+            "nb_frames": "30",
+            "pix_fmt": "yuv420p"
+        },
+        {
+            "name": "unnamed",
+            "type": "presentation.skip",
+            "video": "SceneWithSections_0004_unnamed.mp4",
+            "codec_name": "h264",
+            "width": 854,
+            "height": 480,
+            "avg_frame_rate": "15/1",
+            "duration": "1.000000",
+            "nb_frames": "15",
+            "pix_fmt": "yuv420p"
+        }
+    ]
+}

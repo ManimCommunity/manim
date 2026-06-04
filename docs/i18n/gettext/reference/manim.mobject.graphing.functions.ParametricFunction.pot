@@ -1,0 +1,100 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.graphing.functions.ParametricFunction.rst:2
+msgid "ParametricFunction"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.functions.ParametricFunction.rst:4
+msgid "Qualified name: ``manim.mobject.graphing.functions.ParametricFunction``"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/functions.py:docstring of manim.mobject.graphing.functions.ParametricFunction:1
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/functions.py:docstring of manim.mobject.graphing.functions.ParametricFunction:1
+msgid "A parametric curve."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/functions.py:docstring of manim.mobject.graphing.functions.ParametricFunction:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/functions.py:docstring of manim.mobject.graphing.functions.ParametricFunction:3
+msgid "The function to be plotted in the form of ``(lambda x: x**2)``"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/functions.py:docstring of manim.mobject.graphing.functions.ParametricFunction:4
+msgid "Determines the length that the function spans. By default ``[0, 1]``"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/functions.py:docstring of manim.mobject.graphing.functions.ParametricFunction:5
+msgid "Scaling class applied to the points of the function. Default of :class:`~.LinearBase`."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/functions.py:docstring of manim.mobject.graphing.functions.ParametricFunction:6
+msgid "Whether to interpolate between the points of the function after they have been created. (Will have odd behaviour with a low number of points)"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/functions.py:docstring of manim.mobject.graphing.functions.ParametricFunction:8
+msgid "Whether to pass in the generated t value array to the function as ``[t_0, t_1, ...]``. Only use this if your function supports it. Output should be a numpy array of shape ``[[x_0, x_1, ...], [y_0, y_1, ...], [z_0, z_1, ...]]`` but ``z`` can also be 0 if the Axes is 2D"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/functions.py:docstring of manim.mobject.graphing.functions.ParametricFunction:12
+msgid "Values of t at which the function experiences discontinuity."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/functions.py:docstring of manim.mobject.graphing.functions.ParametricFunction:13
+msgid "The left and right tolerance for the discontinuities."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/functions.py:docstring of manim.mobject.graphing.functions.ParametricFunction:16
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/functions.py:docstring of manim.mobject.graphing.functions.ParametricFunction:46
+msgid "If your function has discontinuities, you'll have to specify the location of the discontinuities manually. See the following example for guidance."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.functions.ParametricFunction.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.functions.ParametricFunction.rst:23:<autosummary>:1
+#: ../../source/reference/manim.mobject.graphing.functions.ParametricFunction.rst:23:<autosummary>:1
+#: ../../../manim/mobject/graphing/functions.py:docstring of manim.mobject.graphing.functions.ParametricFunction.generate_points:1
+#: ../../../manim/mobject/graphing/functions.py:docstring of manim.mobject.graphing.functions.ParametricFunction.generate_points:1
+msgid "Initializes :attr:`points` and therefore the shape."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.functions.ParametricFunction.rst:25
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/functions.py:docstring of manim.mobject.graphing.functions.ParametricFunction.generate_points:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/functions.py:docstring of manim.mobject.graphing.functions.ParametricFunction.generate_points:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/functions.py:docstring of manim.mobject.graphing.functions.ParametricFunction.generate_points:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/functions.py:docstring of manim.mobject.graphing.functions.ParametricFunction.generate_points:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/functions.py:docstring of manim.mobject.graphing.functions.ParametricFunction.generate_points:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+

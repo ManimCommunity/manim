@@ -1,0 +1,165 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/faq/installation.md:1
+msgid "FAQ: Installation"
+msgstr ""
+
+#: ../../source/faq/installation.md:4
+msgid "Why are there different versions of Manim?"
+msgstr ""
+
+#: ../../source/faq/installation.md:6
+msgid "Manim was originally created by Grant Sanderson as a personal project and for use in his YouTube channel, [3Blue1Brown](https://www.youtube.com/channel/UCYO_jab_esuFRV4b17AJtAw). As his channel gained popularity, many grew to like the style of his animations and wanted to use manim for their own projects. However, as manim was only intended for personal use, it was very difficult for other users to install and use it."
+msgstr ""
+
+#: ../../source/faq/installation.md:13
+msgid "In late 2019, Grant started working on faster OpenGL rendering in a new branch, known as the `shaders` branch. In mid-2020, a group of developers forked it into what is now the community edition; this is the version documented on this website. In early 2021, Grant merged the shaders branch back into master, making it the default branch in his repository -- and this is what `manimgl` is. The old version, before merging the `shaders` branch is sometimes referred to as `ManimCairo` and is, at this point, only useful for one singular purpose: rendering Grant's old videos locally on your machine. It is still available in his GitHub repository in form of the `cairo-backend` branch."
+msgstr ""
+
+#: ../../source/faq/installation.md:22
+msgid "To summarize:"
+msgstr ""
+
+#: ../../source/faq/installation.md:23
+msgid "[**Manim**, or **ManimCE**](https://manim.community) refers to the community maintained version of the library. This is the version documented on this website; the package name on PyPI is [`manim`](https://pypi.org/project/manim/)."
+msgstr ""
+
+#: ../../source/faq/installation.md:26
+msgid "[ManimGL](https://github.com/3b1b/manim) is the latest released version of the version of the library developed by Grant \"3b1b\" Sanderson. It has more experimental features and breaking changes between versions are not documented. Check out its documentation [here](https://3b1b.github.io/manim/index.html); on PyPI the package name is [`manimgl`](https://pypi.org/project/manimgl/)."
+msgstr ""
+
+#: ../../source/faq/installation.md:31
+msgid "[ManimCairo](https://github.com/3b1b/manim/tree/cairo-backend) is the name that is sometimes used for the old, pre-OpenGL version of `manimgl`. The latest version of it is available [on PyPI as `manimlib`](https://pypi.org/project/manimgl/), but note that if you intend to use it to compile some old project of Grant, you will likely have to install the exact version from the time the project was created from source."
+msgstr ""
+
+#: ../../source/faq/installation.md:40
+msgid "Which version should I use?"
+msgstr ""
+
+#: ../../source/faq/installation.md:42
+msgid "We recommend the community maintained version especially for beginners. It has been developed to be more stable, better tested and documented (!), and quicker to respond to community contributions. It is also perfectly reasonable to start learning with the community maintained version and then switch to a different version later on."
+msgstr ""
+
+#: ../../source/faq/installation.md:47
+msgid "If you do not care so much about documentation or stability, and would like to use the exact same version that Grant is using, then use ManimGL."
+msgstr ""
+
+#: ../../source/faq/installation.md:50
+msgid "And as mentioned above, ManimCairo should only be used for (re)rendering old 3Blue1Brown projects (basically 2019 and before)."
+msgstr ""
+
+#: ../../source/faq/installation.md:55
+msgid "What are the differences between Manim, ManimGL, ManimCairo? Can I tell for which version a scene was written for?"
+msgstr ""
+
+#: ../../source/faq/installation.md:57
+msgid "You can! The thing that usually gives it away is the `import` statement at the top of the file; depending on how the code imports Manim you can tell for which version of the code it was written for:"
+msgstr ""
+
+#: ../../source/faq/installation.md:61
+msgid "If the code imports from `manim` (i.e., `from manim import *`, `import manim as mn`, etc.), then the code you are reading is supposed to be run with the community maintained version."
+msgstr ""
+
+#: ../../source/faq/installation.md:63
+msgid "If the import reads `import manimlib` (or `from manimlib import *`), you are likely reading a file to be rendered with ManimGL."
+msgstr ""
+
+#: ../../source/faq/installation.md:65
+msgid "And if the import reads `from manimlib.imports import *`, or perhaps even `from big_ol_pile_of_manim_imports import *` you are reading a snippet that is supposed to be rendered with an early, or very early version of ManimCairo, respectively."
+msgstr ""
+
+#: ../../source/faq/installation.md:71
+msgid "How do I know which version of Manim I have installed?"
+msgstr ""
+
+#: ../../source/faq/installation.md:73
+msgid "Assuming you can run `manim` in your terminal and there is some output, check the first line of the text being produced. If you are using the community maintained version, the first line of any output will be `Manim Community <version number>`. If it does not say that, you are likely using ManimGL."
+msgstr ""
+
+#: ../../source/faq/installation.md:78
+msgid "You can also check the list of packages you have installed: if typing `python` in your terminal spawns the interpreter that corresponds to the Python installation you use (might also be `py`, or `python3`, depending on your operating system), running `python -m pip list` will print a list of all installed packages. Check whether `manim` or `manimgl` appear in that list."
+msgstr ""
+
+#: ../../source/faq/installation.md:84
+msgid "Similarly, you can use `python -m pip install <package name>` and `python -m pip uninstall <package name>` to install and uninstall packages from that list, respectively."
+msgstr ""
+
+#: ../../source/faq/installation.md:90
+msgid "I am following the video guide X to install Manim, but some step fails. What do I do?"
+msgstr ""
+
+#: ../../source/faq/installation.md:92
+msgid "It is only natural that there are many video guides on installing Manim out there, given that Manim is a library used for creating videos. Unfortunately however, (YouTube) videos can't be updated easily (without uploading a new one, that is) when some step in the installation process changes, and so there are many **severely outdated** resources out there."
+msgstr ""
+
+#: ../../source/faq/installation.md:98
+msgid "This is why we strongly recommend following our {doc}`written installation guide </installation>` to guide you through the process. In case you prefer using a video guide regardless, please check whether the creator whose guide you have been watching has made a more recent version available, and otherwise please contact them directly. Asking for help in the community will likely lead to being suggested to follow our written guide."
+msgstr ""
+
+#: ../../source/faq/installation.md:107
+msgid "Why does ManimPango fail to install when running `pip install manim`?"
+msgstr ""
+
+#: ../../source/faq/installation.md:109
+msgid "This most likely means that pip was not able to use our pre-built wheels of the `manimpango` dependency. Let us know (via [Discord](https://www.manim.community/discord/) or by opening a [new issue on GitHub](https://github.com/ManimCommunity/ManimPango/issues/new)) which architecture you would like to see supported, and we'll see what we can do about it."
+msgstr ""
+
+#: ../../source/faq/installation.md:116
+msgid "To fix errors when installing `manimpango`, you need to make sure you have all the necessary build requirements. Check out the detailed instructions given in [the BUILDING section](https://github.com/ManimCommunity/ManimPango#BUILDING) of [ManimPango's README](https://github.com/ManimCommunity/ManimPango)."
+msgstr ""
+
+#: ../../source/faq/installation.md:123
+msgid "I am using Windows and get the error `X is not recognized as an internal or external command, operable program or batch file`"
+msgstr ""
+
+#: ../../source/faq/installation.md:125
+msgid "Regardless of whether `X` says `python` or `manim`, this means that the executable you are trying to run is not located in one of the directories your system is looking for them (specified by the `PATH` variable). Take a look at the instructions {doc}`in the installation guide for Windows </installation/windows>`, or [this StackExchange answer](https://superuser.com/questions/143119/how-do-i-add-python-to-the-windows-path/143121#143121) to get help with editing the `PATH` variable manually."
+msgstr ""
+
+#: ../../source/faq/installation.md:132
+msgid "If `python` is recognized but not `manim` or `pip`, you can try running commands by prepending `python -m`. That is, `manim` becomes `python -m manim`, and `pip` becomes `python -m pip`."
+msgstr ""
+
+#: ../../source/faq/installation.md:138
+msgid "I have tried using Chocolatey (`choco install manimce`) to install Manim, but it failed!"
+msgstr ""
+
+#: ../../source/faq/installation.md:140
+msgid "Make sure that you were running the command with administrator permissions, otherwise there can be problems. If this is not the issue, read Chocolatey's output carefully, it should mention a `.log` file containing information why the process failed."
+msgstr ""
+
+#: ../../source/faq/installation.md:145
+msgid "You are welcome to take this file (and any other input you feel might be relevant) and submit it to Manim's community to ask for help with your problem. See the {doc}`FAQ on getting help </faq/help>` for instructions."
+msgstr ""
+
+#: ../../source/faq/installation.md:151
+msgid "On Windows, when typing `python` or `python3` the Windows store is opened, can I fix this?"
+msgstr ""
+
+#: ../../source/faq/installation.md:153
+msgid "Yes: you can remove these aliases with these steps:"
+msgstr ""
+
+#: ../../source/faq/installation.md:155
+msgid "Go to the Windows Setting."
+msgstr ""
+
+#: ../../source/faq/installation.md:156
+msgid "Under *Apps and Features* you will find application execution aliases."
+msgstr ""
+
+#: ../../source/faq/installation.md:157
+msgid "Within this menu, disable the alias(es) that are causing the issue (`python` and/or `python3`)."
+msgstr ""
+
+#: ../../source/faq/installation.md:162
+msgid "I am using Anaconda and get an `ImportError` mentioning that some Symbol is not found."
+msgstr ""
+
+

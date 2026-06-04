@@ -1,0 +1,58 @@
+*******
+v0.17.1
+*******
+
+:Date: December 08, 2022
+
+Contributors
+============
+
+A total of 5 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Alex Lembcke
+* Benjamin Hackl
+* Naveen M K
+* Onur Solmaz
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Benjamin Hackl
+* Naveen M K
+* Sparsh Goenka
+
+Pull requests merged
+====================
+
+A total of 6 pull requests were merged for this release.
+
+Fixed bugs
+----------
+
+* :pr:`3061`: Always expand file paths using ``/`` when calling LaTeX
+
+
+* :pr:`3062`: Added Unicode encoding in :meth:`.Scene.add_subcaption`
+
+
+Documentation-related changes
+-----------------------------
+
+* :pr:`2953`: Added documentation for lagged animations in :mod:`.animation.composition`
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* :pr:`3064`: Increased minimal required version of ``svgelements``
+
+
+* :pr:`3066`: Increased minimal version of ``pytest``
+
+
+New releases
+------------
+
+* :pr:`3065`: Prepared new release: ``v0.17.1``

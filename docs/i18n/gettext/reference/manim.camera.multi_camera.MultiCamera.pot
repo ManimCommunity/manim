@@ -1,0 +1,117 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.camera.multi_camera.MultiCamera.rst:2
+msgid "MultiCamera"
+msgstr ""
+
+#: ../../source/reference/manim.camera.multi_camera.MultiCamera.rst:4
+msgid "Qualified name: ``manim.camera.multi\\_camera.MultiCamera``"
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera:1
+msgid "Bases: :py:class:`manim.camera.moving_camera.MovingCamera`"
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera:1
+msgid "Camera Object that allows for multiple perspectives."
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera:3
+msgid "Initialises the MultiCamera"
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera:0
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:0
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.capture_mobjects:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera:7
+msgid "Any valid keyword arguments of MovingCamera."
+msgstr ""
+
+#: ../../source/reference/manim.camera.multi_camera.MultiCamera.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.camera.multi_camera.MultiCamera.rst:24:<autosummary>:1
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:1
+msgid "Adds an ImageMobject that's been obtained from the camera into the list ``self.image_mobject_from_cameras``"
+msgstr ""
+
+#: ../../source/reference/manim.camera.multi_camera.MultiCamera.rst:24:<autosummary>:1
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.capture_mobjects:1
+msgid "Capture mobjects by printing them on :attr:`pixel_array`."
+msgstr ""
+
+#: ../../source/reference/manim.camera.multi_camera.MultiCamera.rst:24:<autosummary>:1
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.get_mobjects_indicating_movement:1
+msgid "Returns all mobjects whose movement implies that the camera should think of all other mobjects on the screen as moving"
+msgstr ""
+
+#: ../../source/reference/manim.camera.multi_camera.MultiCamera.rst:24:<autosummary>:1
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.reset:1
+msgid "Resets the MultiCamera."
+msgstr ""
+
+#: ../../source/reference/manim.camera.multi_camera.MultiCamera.rst:24:<autosummary>:1
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.update_sub_cameras:1
+msgid "Reshape sub_camera pixel_arrays"
+msgstr ""
+
+#: ../../source/reference/manim.camera.multi_camera.MultiCamera.rst:26
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:1:<autosummary>:1
+msgid "Returns the centerpoint of the frame in cartesian coordinates."
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:1:<autosummary>:1
+msgid "Returns the height of the frame."
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:1:<autosummary>:1
+msgid "Returns the width of the frame"
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.add_image_mobject_from_camera:4
+msgid "The ImageMobject to add to self.image_mobject_from_cameras"
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.capture_mobjects:3
+msgid "This is the essential function that converts the contents of a Scene into an array, which is then converted to an image or video."
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.capture_mobjects:6
+msgid "Mobjects to capture."
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.capture_mobjects:8
+msgid "Keyword arguments to be passed to :meth:`get_mobjects_to_display`."
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.capture_mobjects:12
+msgid "Notes"
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.capture_mobjects:13
+msgid "For a list of classes that can currently be rendered, see :meth:`display_funcs`."
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.get_mobjects_indicating_movement:0
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.reset:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/camera/multi_camera.py:docstring of manim.camera.multi_camera.MultiCamera.reset:0
+msgid "Returns"
+msgstr ""
+
+

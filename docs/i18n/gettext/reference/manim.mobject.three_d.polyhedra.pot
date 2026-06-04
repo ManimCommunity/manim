@@ -1,0 +1,37 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.three_d.polyhedra.rst:2
+msgid "polyhedra"
+msgstr ""
+
+#: ../../../manim/mobject/three_d/polyhedra.py:docstring of manim.mobject.three_d.polyhedra:1
+msgid "General polyhedral class and platonic solids."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.polyhedra.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.polyhedra.rst:28:<autosummary>:1
+msgid "A dodecahedron, one of the five platonic solids."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.polyhedra.rst:28:<autosummary>:1
+msgid "An icosahedron, one of the five platonic solids."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.polyhedra.rst:28:<autosummary>:1
+msgid "An octahedron, one of the five platonic solids."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.polyhedra.rst:28:<autosummary>:1
+msgid "An abstract polyhedra class."
+msgstr ""
+
+

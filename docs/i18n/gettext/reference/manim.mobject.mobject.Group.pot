@@ -1,0 +1,53 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.mobject.Group.rst:2
+msgid "Group"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.mobject.Group.rst:4
+msgid "Qualified name: ``manim.mobject.mobject.Group``"
+msgstr ""
+
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Group:1
+msgid "Bases: :py:class:`manim.mobject.mobject.Mobject`"
+msgstr ""
+
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Group:1
+msgid "Groups together multiple :class:`Mobjects <.Mobject>`."
+msgstr ""
+
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Group:4
+msgid "Notes"
+msgstr ""
+
+#: ../../../manim/mobject/mobject.py:docstring of manim.mobject.mobject.Group:5
+msgid "When adding the same mobject more than once, repetitions are ignored. Use :meth:`.Mobject.copy` to create a separate copy which can then be added to the group."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.mobject.Group.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.mobject.Group.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.mobject.Group.rst:28:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.mobject.Group.rst:28:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.mobject.Group.rst:28:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+

@@ -1,0 +1,69 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.geometry.arc.LabeledDot.rst:2
+msgid "LabeledDot"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.LabeledDot.rst:4
+msgid "Qualified name: ``manim.mobject.geometry.arc.LabeledDot``"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.LabeledDot:1
+msgid "Bases: :py:class:`manim.mobject.geometry.arc.Dot`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.LabeledDot:1
+msgid "A :class:`Dot` containing a label in its center."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.LabeledDot:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.LabeledDot:3
+msgid "The label of the :class:`Dot`. This is rendered as :class:`~.MathTex` by default (i.e., when passing a :class:`str`), but other classes representing rendered strings like :class:`~.Text` or :class:`~.Tex` can be passed as well."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.LabeledDot:7
+msgid "The radius of the :class:`Dot`. If ``None`` (the default), the radius is calculated based on the size of the ``label``."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.LabeledDot:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.LabeledDot:11
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.LabeledDot.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.LabeledDot.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.LabeledDot.rst:32:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.LabeledDot.rst:32:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.LabeledDot.rst:32:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.LabeledDot.rst:32:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+

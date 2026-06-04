@@ -1,0 +1,30 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.three_d.rst:2
+msgid "three\\_d"
+msgstr ""
+
+#: ../../../manim/mobject/three_d/__init__.py:docstring of manim.mobject.three_d:1
+#: ../../../manim/mobject/three_d/__init__.py:docstring of manim.mobject.three_d:12:<autosummary>:1
+msgid "Three-dimensional mobjects."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/__init__.py:docstring of manim.mobject.three_d:4
+msgid "Modules"
+msgstr ""
+
+#: ../../../manim/mobject/three_d/__init__.py:docstring of manim.mobject.three_d:12:<autosummary>:1
+msgid "General polyhedral class and platonic solids."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/__init__.py:docstring of manim.mobject.three_d:12:<autosummary>:1
+msgid "Utility functions for three-dimensional mobjects."
+msgstr ""
+
+

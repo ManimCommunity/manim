@@ -1,0 +1,42 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.animation.updaters.update.UpdateFromFunc.rst:2
+msgid "UpdateFromFunc"
+msgstr ""
+
+#: ../../source/reference/manim.animation.updaters.update.UpdateFromFunc.rst:4
+msgid "Qualified name: ``manim.animation.updaters.update.UpdateFromFunc``"
+msgstr ""
+
+#: ../../../manim/animation/updaters/update.py:docstring of manim.animation.updaters.update.UpdateFromFunc:1
+msgid "Bases: :py:class:`manim.animation.animation.Animation`"
+msgstr ""
+
+#: ../../../manim/animation/updaters/update.py:docstring of manim.animation.updaters.update.UpdateFromFunc:1
+msgid "update_function of the form func(mobject), presumably to be used when the state of one mobject is dependent on another simultaneously animated mobject"
+msgstr ""
+
+#: ../../source/reference/manim.animation.updaters.update.UpdateFromFunc.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../../manim/animation/updaters/update.py:docstring of manim.animation.updaters.update.UpdateFromFunc.interpolate_mobject:1:<autosummary>:1
+#: ../../../manim/animation/updaters/update.py:docstring of manim.animation.updaters.update.UpdateFromFunc.interpolate_mobject:1
+msgid "Interpolates the mobject of the :class:`Animation` based on alpha value."
+msgstr ""
+
+#: ../../../manim/animation/updaters/update.py:docstring of manim.animation.updaters.update.UpdateFromFunc.interpolate_mobject:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/animation/updaters/update.py:docstring of manim.animation.updaters.update.UpdateFromFunc.interpolate_mobject:3
+msgid "A float between 0 and 1 expressing the ratio to which the animation is completed. For example, alpha-values of 0, 0.5, and 1 correspond to the animation being completed 0%, 50%, and 100%, respectively."
+msgstr ""
+
+

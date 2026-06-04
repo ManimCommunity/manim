@@ -1,0 +1,25 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.scene.moving_camera_scene.rst:2
+msgid "moving\\_camera\\_scene"
+msgstr ""
+
+#: ../../../manim/scene/moving_camera_scene.py:docstring of manim.scene.moving_camera_scene:1
+msgid "A scene whose camera can be moved around."
+msgstr ""
+
+#: ../../../manim/scene/moving_camera_scene.py:docstring of manim.scene.moving_camera_scene:9
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.scene.moving_camera_scene.rst:15
+msgid "Classes"
+msgstr ""
+
+

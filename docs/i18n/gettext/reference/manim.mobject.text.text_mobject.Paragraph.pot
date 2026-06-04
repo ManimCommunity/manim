@@ -1,0 +1,81 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.text.text_mobject.Paragraph.rst:2
+msgid "Paragraph"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.text_mobject.Paragraph.rst:4
+msgid "Qualified name: ``manim.mobject.text.text\\_mobject.Paragraph``"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Paragraph:1
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VGroup`"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Paragraph:1
+msgid "Display a paragraph of text."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Paragraph:3
+msgid "For a given :class:`.Paragraph` ``par``, the attribute ``par.chars`` is a :class:`.VGroup` containing all the lines. In this context, every line is constructed as a :class:`.VGroup` of characters contained in the line."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Paragraph:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Paragraph:8
+msgid "Represents the spacing between lines. Defaults to -1, which means auto."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Paragraph:9
+msgid "Defines the alignment of paragraph. Defaults to None. Possible values are \"left\", \"right\" or \"center\"."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Paragraph:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Paragraph:12
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Paragraph:13
+msgid "Normal usage::"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.Paragraph:20
+msgid "Remove unwanted invisible characters::"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.text_mobject.Paragraph.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.text_mobject.Paragraph.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.text_mobject.Paragraph.rst:32:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.text_mobject.Paragraph.rst:32:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.text_mobject.Paragraph.rst:32:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.text_mobject.Paragraph.rst:32:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+

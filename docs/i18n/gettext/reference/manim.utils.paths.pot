@@ -1,0 +1,91 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.utils.paths.rst:2
+msgid "paths"
+msgstr ""
+
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths:1
+msgid "Functions determining transformation paths between sets of points."
+msgstr ""
+
+#: ../../source/reference/manim.utils.paths.rst:20
+msgid "Functions"
+msgstr ""
+
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.clockwise_path:1
+msgid "This function transforms each point by moving clockwise around a half circle."
+msgstr ""
+
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.clockwise_path:4
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.counterclockwise_path:4
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.path_along_arc:7
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.path_along_circles:10
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.spiral_path:7
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.straight_path:4
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.clockwise_path:0
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.counterclockwise_path:0
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.path_along_arc:0
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.path_along_circles:0
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.spiral_path:0
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.straight_path:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.counterclockwise_path:1
+msgid "This function transforms each point by moving counterclockwise around a half circle."
+msgstr ""
+
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.path_along_arc:1
+msgid "This function transforms each point by moving it along a circular arc."
+msgstr ""
+
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.path_along_arc:0
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.path_along_circles:0
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.spiral_path:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.path_along_arc:3
+msgid "The angle each point traverses around a circular arc."
+msgstr ""
+
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.path_along_arc:4
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.path_along_circles:7
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.spiral_path:4
+msgid "The axis of rotation."
+msgstr ""
+
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.path_along_circles:1
+msgid "This function transforms each point by moving it roughly along a circle, each with its own specified center."
+msgstr ""
+
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.path_along_circles:3
+msgid "The path may be seen as each point smoothly changing its orbit from its starting position to its destination."
+msgstr ""
+
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.path_along_circles:5
+msgid "The angle each point traverses around the quasicircle."
+msgstr ""
+
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.path_along_circles:6
+msgid "The centers of each point's quasicircle to rotate around."
+msgstr ""
+
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.spiral_path:1
+msgid "This function transforms each point by moving along a spiral to its destination."
+msgstr ""
+
+#: ../../../manim/utils/paths.py:docstring of manim.utils.paths.spiral_path:3
+msgid "The angle each point traverses around a spiral."
+msgstr ""
+
+

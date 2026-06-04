@@ -1,0 +1,79 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.scene.section.Section.rst:2
+msgid "Section"
+msgstr ""
+
+#: ../../source/reference/manim.scene.section.Section.rst:4
+msgid "Qualified name: ``manim.scene.section.Section``"
+msgstr ""
+
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.Section:1
+msgid "Bases: :py:class:`object`"
+msgstr ""
+
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.Section:1
+msgid "A :class:`.Scene` can be segmented into multiple Sections. Refer to :doc:`the documentation</tutorials/output_and_config>` for more info. It consists of multiple animations."
+msgstr ""
+
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.Section:0
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.Section.get_dict:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.Section:7
+msgid "Can be used by a third party applications to classify different types of sections."
+msgstr ""
+
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.Section:11
+msgid "Path to video file with animations belonging to section relative to sections directory. If ``None``, then the section will not be saved."
+msgstr ""
+
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.Section:16
+msgid "Human readable, non-unique name for this section."
+msgstr ""
+
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.Section:20
+msgid "Skip rendering the animations in this section when ``True``."
+msgstr ""
+
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.Section:24
+msgid "Animations belonging to this section."
+msgstr ""
+
+#: ../../source/reference/manim.scene.section.Section.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.Section.get_clean_partial_movie_files:1:<autosummary>:1
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.Section.get_clean_partial_movie_files:1
+msgid "Return all partial movie files that are not ``None``."
+msgstr ""
+
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.Section.get_clean_partial_movie_files:1:<autosummary>:1
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.Section.get_dict:1
+msgid "Get dictionary representation with metadata of output video."
+msgstr ""
+
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.Section.get_clean_partial_movie_files:1:<autosummary>:1
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.Section.is_empty:1
+msgid "Check whether this section is empty."
+msgstr ""
+
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.Section.get_clean_partial_movie_files:0
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.Section.get_dict:0
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.Section.is_empty:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.Section.get_dict:3
+msgid "The output from this function is used from every section to build the sections index file. The output video must have been created in the ``sections_dir`` before executing this method. This is the main part of the Segmented Video API."
+msgstr ""
+
+

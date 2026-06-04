@@ -1,0 +1,210 @@
+*******
+v0.13.0
+*******
+
+:Date: December 04, 2021
+
+Contributors
+============
+
+A total of 27 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Alex Lembcke
+* Benjamin Hackl
+* Christopher Besch
+* Darylgolden
+* Filip +
+* John Ingles +
+* Laith Bahodi
+* Lucas Ricci +
+* Marcin Serwin +
+* Mysaa
+* Naveen M K
+* Ricky +
+* Viicos
+* ask09ok +
+* citrusmunch +
+* icedcoffeeee
+* mostlyaman +
+* vmiezys +
+* zhujisheng +
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Alex Lembcke
+* Benjamin Hackl
+* Christopher Besch
+* Darylgolden
+* Filip
+* Hugues Devimeux
+* Jan-Hendrik Müller
+* Laith Bahodi
+* Lucas Ricci
+* Naveen M K
+* Oliver
+* Ryan McCauley
+* Viicos
+* ask09ok
+* icedcoffeeee
+* mostlyaman
+
+Pull requests merged
+====================
+
+A total of 39 pull requests were merged for this release.
+
+Highlights
+----------
+
+* :pr:`2313`: Finalized translation process and documentation
+
+
+Deprecated classes and functions
+--------------------------------
+
+* :pr:`2331`: Removed deprecations up to ``v0.12.0``
+   - Removed ``distance`` parameters from :class:`~.ThreeDCamera` (replacement: ``focal_distance``)
+   - Removed ``min_distance_to_new_point`` parameter from :class:`~.TracedPath`
+   - Removed ``positive_space_ratio`` and ``dash_spacing`` parameters from :class:`~.DashedVMobject`
+   - Removed ``<method>_in_place`` methods from :mod:`.mobject`
+   - Removed ``ReconfigurableScene``
+   - Removed ``SampleSpaceScene``
+
+* :pr:`2312`: Replaced all occurrences of ``set_submobjects``
+
+
+New features
+------------
+
+* :pr:`2314`: Added basic support for adding subcaptions via :meth:`.Scene.add_subcaption`
+   - New method :meth:`.Scene.add_subcaption`
+   - New keyword arguments ``subcaption``, ``subcaption_duration``, ``subcaption_offset`` for :meth:`.Scene.play`
+
+* :pr:`2267`: Implemented :meth:`.CoordinateSystem.plot_antiderivative_graph`
+
+
+Enhancements
+------------
+
+* :pr:`2347`: Moved ``manim_directive.py`` to ``manim.utils.docbuild``
+
+
+* :pr:`2340`: Added documentation for :mod:`.animation.growing` and improved :class:`.SpinInFromNothing`
+
+
+* :pr:`2343`: Replaced current tree layout algorithm with SageMath's for improved layout of large trees
+
+
+* :pr:`2351`: Added missing ``**kwargs`` parameter to :meth:`.Table.add_highlighted_cell`
+
+
+* :pr:`2344`: Resized SVG logos, fit content to canvas
+
+
+Fixed bugs
+----------
+
+* :pr:`2359`: Resolved ``ValueError`` when calling ``manim cfg write``
+
+
+* :pr:`2276`: Fixed bug with alignment of z-axis in :class:`~.ThreeDAxes`
+
+
+* :pr:`2325`: Several improvements to handling of ``quality`` argument
+
+
+* :pr:`2335`: Fixed bug with zooming camera and :class:`~.PointCloud`
+
+
+* :pr:`2328`: Fixed bug causing incorrect RGBA values to be passed to cairo
+
+
+* :pr:`2292`: Fixed positioning of :class:`~.Flash`
+
+
+* :pr:`2262`: Fixed wrong cell coordinates with :meth:`.Table.get_cell` after scaling
+
+
+* :pr:`2280`: Fixed :class:`~.DecimalNumber` color when number of displayed digits changes
+
+
+Documentation-related changes
+-----------------------------
+
+* :pr:`2354`: Port over docs and typings from ``mobject.py`` and ``vectorized_mobject.py`` to their OpenGL counterparts
+
+
+* :pr:`2350`: Added mention of Manim sideview extension for VS Code
+
+
+* :pr:`2342`: Removed :meth:`~.CoordinateSystem.get_graph` usage from :class:`~.Axes` example
+
+
+* :pr:`2216`: Edited and added new sections to the quickstart tutorial
+
+
+* :pr:`2279`: Added documentation for discontinuous functions
+
+
+* :pr:`2319`: Swapped ``dotL`` and ``dotR`` in :meth:`.Mobject.interpolate` example
+
+
+* :pr:`2230`: Copyedited building blocks tutorial
+
+
+* :pr:`2310`: Clarified that Manim does not support Python 3.10 yet in the documentation
+
+
+* :pr:`2294`: Made documentation front page more concise and rearranged order of tutorials
+
+
+* :pr:`2287`: Replace link to old interactive notebook
+
+
+Changes concerning the testing system
+-------------------------------------
+
+* :pr:`2346`: Made ``frames_comparsion`` decorator for frame testing a proper module of the library
+
+
+* :pr:`2318`: Added tests for ``remover`` keyword argument of :class:`~.AnimationGroup`
+
+
+* :pr:`2301`: Added a test for :meth:`.ThreeDScene.add_fixed_in_frame_mobjects`
+
+
+* :pr:`2274`: Optimized some tests to reduce duration
+
+
+* :pr:`2272`: Added test for :class:`~.Broadcast`
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* :pr:`2327`: Corrected type hint for ``labels`` keyword argument of :class:`~.Graph`
+
+
+* :pr:`2329`: Remove unintended line break in README
+
+
+* :pr:`2305`: Corrected type hint ``discontinuities`` argument for :class:`~.ParametricFunction`
+
+
+* :pr:`2300`: Add contact email for PyPi
+
+
+New releases
+------------
+
+* :pr:`2353`: Prepare new release: ``v0.13.0``
+
+
+Unclassified changes
+--------------------
+
+* :pr:`2348`: Updated translation source files

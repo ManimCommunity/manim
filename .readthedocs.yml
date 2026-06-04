@@ -1,0 +1,21 @@
+version: 2
+
+sphinx:
+  configuration: docs/source/conf.py
+
+build:
+  os: ubuntu-22.04
+
+  tools:
+    python: "3.13"
+
+  apt_packages:
+    - libpango1.0-dev
+    - graphviz
+
+python:
+   install:
+      - requirements: docs/rtd-requirements.txt
+      - requirements: docs/requirements.txt
+      - method: pip
+        path: .

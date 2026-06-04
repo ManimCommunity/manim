@@ -1,0 +1,117 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/contributing/internationalization.rst:3
+msgid "Internationalization"
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:5
+msgid "Thank you for your interest in localizing Manim! Please read the instructions below to get started. You are also encouraged, though not required, to join our `Discord server <https://manim.community/discord>`__."
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:11
+msgid "Signing up"
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:13
+msgid "You will first need to create an account for our project. Go to our `project homepage <https://translate.manim.community/>`__ and click the sign up button at the top right hand corner. Follow the instructions to create an account. After creating an account, you should return back to our homepage. Click the Manim project to contribute translations for the main library."
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:21
+msgid "Contributing"
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:24
+msgid "Keep in mind that Manim is still a work in progress. Tutorials and documentation are always subject to change. When a developer implements a new feature, they are not forced to respect any translations. This means that parts of the translation might become outdated over time."
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:29
+msgid "That being said, improving the documentation and making it more accessible is still highly encouraged. And even if your work gets outdated and requires change, you or someone else can simply adjust the translation. Your efforts are not in vail!"
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:35
+msgid "Voting"
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:37
+msgid "To ensure that our translations are of good quality, we use crowdsourcing and voting to approve good translations and reject bad ones. The current threshold for a translation being accepted is 3 votes; this may change as we gauge the level of activity in the community and the quality of translations."
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:43
+msgid "To vote on translations, first click on a language you would like to help with, then click the \"translate all\" button. You should then enter the translation editor. Next to the search bar, you will see a funnel-like icon - click it and select the \"Need to Be Voted\" option to see translations that need to be voted on. You can then select a string on the left sidebar, view the translations at the bottom and vote with the + and - icons for good and poor translations respectively."
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:52
+msgid "Translations"
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:54
+msgid "You can also help with contributing translations directly. Follow the steps above to enter the translation editor (instead of clicking \"Translate all\", you may also choose to translate strings from a specific file by clicking them). Crowdin's on-screen tutorial should guide you through the process."
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:61
+msgid "Translation guidelines"
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:63
+msgid "In general, follow the conventions for technical writing in your target language. You may want to refer to similar, high quality sources (eg. Python's documentation in your language) for guidance. Note that code blocks, code literals, names and pseudonyms should be left unchanged."
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:69
+msgid "Proofreading"
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:71
+msgid "For certain languages with a significant number of speakers within the Manim Community, an additional step of proofreading is used after crowdsourcing to further ensure the quality of our translations. Proofreaders are trusted community members who will look over and give the final approval on translations. If you would like to be a proofreader, please email translations@manim.community with the answers to the following questions:"
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:79
+msgid "What is your Crowdin username?"
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:80
+msgid "What is your Discord username (optional)?"
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:81
+msgid "What is your GitHub username (optional)?"
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:82
+msgid "List the languages you speak, and your level of fluency with them."
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:83
+msgid "What language(s) are you applying to be a proofreader for?"
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:84
+msgid "Do you have any previous experience with translations?"
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:85
+msgid "If yes, give us more details."
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:86
+msgid "How will you ensure the quality of translations, should you become a proofreader?"
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:89
+msgid "Please note that you don't need to have prior translation experience to be a proofreader, just a commitment to maintaining a good quality of translations."
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:94
+msgid "Errors"
+msgstr ""
+
+#: ../../source/contributing/internationalization.rst:97
+msgid "Source errors"
+msgstr ""
+
+

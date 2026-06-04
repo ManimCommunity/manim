@@ -1,0 +1,37 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.animation.creation.Unwrite.rst:2
+msgid "Unwrite"
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.Unwrite.rst:4
+msgid "Qualified name: ``manim.animation.creation.Unwrite``"
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Unwrite:1
+msgid "Bases: :py:class:`manim.animation.creation.Write`"
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Unwrite:1
+msgid "Simulate erasing by hand a :class:`~.Text` or a :class:`~.VMobject`."
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Unwrite:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Unwrite:3
+msgid "Set True to have the animation start erasing from the last submobject first."
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation.Unwrite:7
+msgid "Examples"
+msgstr ""
+
+

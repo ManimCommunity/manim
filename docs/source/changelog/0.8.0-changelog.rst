@@ -1,0 +1,334 @@
+******
+v0.8.0
+******
+
+:Date: July 02, 2021
+
+Contributors
+============
+
+A total of 37 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Benjamin Hackl
+* Bill Shillito +
+* Darigov Research +
+* Darylgolden
+* Devin Neal
+* Iced-Tea3
+* Jan-Hendrik Müller
+* Jason Villanueva
+* KingWampy
+* Laith Bahodi
+* MathInvariance +
+* Max Stoumen
+* Mehmet Ali Özer +
+* Michael Pilosov +
+* Mohammad Al-Fetyani
+* Naveen M K
+* Nikhil Garuda
+* Oliver
+* PaulCMurdoch
+* Philipp Imhof
+* PipedQuintes +
+* Raghav Goel
+* Ryan McCauley
+* Ujjayanta +
+* Vagrid +
+* andrehisatsuga +
+* friedkeenan
+* peaceheis +
+* yit6 +
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Abhijith Muthyala
+* Anton Ballmaier
+* Aron
+* Benjamin Hackl
+* Clar Fon
+* Darylgolden
+* Devin Neal
+* Jan-Hendrik Müller
+* Jason Villanueva
+* KingWampy
+* Laith Bahodi
+* Mark Miller
+* MathInvariance
+* Mohammad Al-Fetyani
+* Naveen M K
+* Nikhil Garuda
+* Oliver
+* Philipp Imhof
+* Raghav Goel
+* Ryan McCauley
+* Ujjayanta
+* Vagrid
+* friedkeenan
+
+Pull requests merged
+====================
+
+A total of 76 pull requests were merged for this release.
+
+Deprecated classes and functions
+--------------------------------
+
+* :pr:`1616`: Remove all functions and classes that were deprecated until ``v0.6.0``
+
+
+New features
+------------
+
+* :pr:`1716`: Rewrite stroke and fill shaders
+   Rewrite vectorized mobject shaders to be compatible with transformation matrices.
+
+* :pr:`1695`: Add option to justify text with :class:`~.MarkupText`
+   A new parameter ``justify`` is added to :class:`~.MarkupText`. It can be used to justify a paragraph of text.
+
+* :pr:`1660`: Added support for ``.webm`` and transparency of videos in Jupyter notebooks
+   - Added support for generating ``webm`` videos via the command line flag ``--format=webm``
+   - Added transparency support for Jupyter notebooks
+
+* :pr:`1553`: Add dearpygui integration
+
+
+Enhancements
+------------
+
+* :pr:`1728`: Improved positioning and size of the OpenGL window; added some configuration options
+
+
+* :pr:`1733`: Let OpenGLMobject.copy return a deep copy by default
+
+
+* :pr:`1735`: Metaclass compatibility for `coordinate_system.py`, `Code` and `ParametricSurface`
+
+
+* :pr:`1585`: OpenGL compatibility via metaclass for :class:`~.Matrix`, :class:`~.DecimalNumber`, :class:`~.Variable`
+
+
+* :pr:`1713`: Exit the command line interface gracefully if no scene was chosen
+
+
+* :pr:`1652`: Refactored :class:`~.Mobject` and :class:`~.Scene` to no longer inherit from the abstract base class ``Container``
+   - Moved tests in ``test_container.py`` for :class:`Container` that test :class:`~.Scene` and :class:`~.Mobject` to their own files.
+   - Corrected various instances of incorrectly passed keyword arguments, or unused keyword arguments.
+
+* :pr:`1693`: Made the default arrowhead size for :class:`~.Arrow3D` smaller
+
+
+* :pr:`1678`: Allow some rate functions to assume values outside of [0, 1]; introduce clamping decorators
+   - Fixed animations so that certain rate functions (``running_start``, ``wiggle``, ``ease_in_back``, ``ease_out_back``, ``ease_in_out_back``, ``ease_in_elastic``, ``ease_out_elastic``, and ``ease_out_elastic``) can go outside the range from 0 to 1.
+   - Fixed lag ratios so that they're spaced out evenly within the time interval and the rate functions are applied to each animation individually, rather than having the rate function determine when the animation starts.
+   - Fixed faulty code for ``ease_in_out_expo``, ``ease_in_bounce``, ``ease_out_bounce``, and ``ease_in_out_bounce``.
+
+* :pr:`1649`: Made video file names in Jupyter notebook more readable
+
+
+* :pr:`1667`: Determine the default number of decimal places for :class:`~.NumberLine` labels automatically from the step size
+   As an example: If the step size is set to 0.5, labels will now show at least one decimal place.
+
+* :pr:`1608`: Color file paths in terminal; remove curly braces surrounding the file path in "Partial movie file written in..." messages
+
+
+* :pr:`1632`: OpenGL compatibility via metaclass: :class:`~.Group`
+
+
+Fixed bugs
+----------
+
+* :pr:`1740`: Fix pillow to <8.3.0
+
+
+* :pr:`1729`: Fix bug when using :class:`~.Text` with the OpenGL renderer
+
+
+* :pr:`1675`: Fixed ignored fill and stroke colors for :class:`~.SVGMobject`
+
+
+* :pr:`1664`: Fixed accidental displacement in :class:`~.Axes` caused by ``include_numbers`` / ``numbers_to_include``
+
+
+* :pr:`1670`: Fixed missing ``numpy`` import in OpenGL shader example
+
+
+* :pr:`1636`: Fixed bugs and added examples to methods and classes in :mod:`manim.mobject.matrix`
+
+
+* :pr:`1614`: Fix tick issues and improve tick placement for :class:`~.NumberLine`
+
+
+* :pr:`1593`: Un-flip output of ``get_frame()`` when using the OpenGL renderer
+
+
+* :pr:`1619`: Fix output of automatically detected LaTeX errors
+
+
+* :pr:`1595`: Fixed a few CLI and rendering bugs
+   - Corrected issue where gifs were being logged with an incorrect extension
+   - Fixed issue where videos were output when format was set to png
+   - Added logging for png output
+   - Added precedence handling when the ``write_to_movie`` flag would conflict with ``--format``
+   - Fixed issue that caused png image output to be ignored when caching was enabled
+
+* :pr:`1635`: Added missing numpy import for :mod:`manim.mobject.probability`
+
+
+* :pr:`1634`: Fixed OpenGL examples for MacOS
+   Renamed deprecated ``gl_FragColor`` to ``fragColor``.
+
+Documentation-related changes
+-----------------------------
+
+* :pr:`1732`: Remove reference to ``--plugins`` flag
+
+
+* :pr:`1734`: Fix inheritance graph background color
+
+
+* :pr:`1698`: Added an example for :class:`~.PMobject`
+
+
+* :pr:`1690`: Added an example for :class:`~.CoordinateSystem`
+
+
+* :pr:`1510`: Add a tutorial for using :class:`~.Text` and :class:`~.Tex`
+
+
+* :pr:`1685`: Added an example and parameter description for :class:`~.AnnularSector`
+
+
+* :pr:`1687`: Updated imports in ``geometry.py`` and added example to :class:`~.Arrow`
+
+
+* :pr:`1681`: Added an example for :class:`~.NumberLine`
+
+
+* :pr:`1697`: Added an example for :class:`~.PGroup`
+
+
+* :pr:`1594`: Several improvements to the documentation design and layout
+
+
+* :pr:`1696`: Added an example for :class:`~.DashedVMobject`
+
+
+* :pr:`1637`: Added an example for :class:`~.FunctionGraph`
+
+
+* :pr:`1626`: Added an example for :class:`~.Prism`
+
+
+* :pr:`1712`: Added a second example for :class:`~.DoubleArrow`
+
+
+* :pr:`1710`: Update copyright year in documentation to 2020-2021
+
+
+* :pr:`1708`: Fixed link to interactive example notebook
+
+
+* :pr:`1657`: Added an example for :class:`~.ParametricSurface`
+
+
+* :pr:`1642`: Added examples and docstrings for :class:`~.BarChart`
+
+
+* :pr:`1700`: Added an example for :meth:`~.Mobject.scale`
+
+
+* :pr:`1689`: Added an example for :class:`~.SurroundingRectangle`
+
+
+* :pr:`1627`: Added an example for :class:`~.Sphere`
+
+
+* :pr:`1569`: Added example to demonstrate differences between :class:`~.Transform` and :class:`~.ReplacementTransform`
+
+
+* :pr:`1647`: Added an example for :class:`~.Sector`
+
+
+* :pr:`1673`: Updated documentation examples for :class:`~.Text` and :class:`~.MarkupText`: set ``weight=BOLD`` instead of ``style``
+
+
+* :pr:`1650`: Added an example for :class:`~.ArcBetweenPoints`
+
+
+* :pr:`1628`: Added an example for :class:`~.NumberPlane`
+
+
+* :pr:`1646`: Added an example for :class:`~.Underline`
+
+
+* :pr:`1659`: Added more details to the Google Colab installation instructions
+
+
+* :pr:`1658`: Updated python requirement in the documentation
+
+
+* :pr:`1639`: Added an example for :class:`~.SampleSpace`
+
+
+* :pr:`1640`: Added an example for :class:`~.Point`
+
+
+* :pr:`1643`: Fixed ``RightArcAngleExample`` for :class:`~.Angle` in documentation
+
+
+* :pr:`1617`: Visually improved an example in our tutorial
+
+
+* :pr:`1641`: Added an example for :class:`~.ComplexPlane`
+
+
+* :pr:`1644`: Added an example for :class:`~.BackgroundRectangle`
+
+
+* :pr:`1633`: Added an example for :class:`~.Integer`
+
+
+* :pr:`1630`: Added an example for :class:`~.Arc`
+
+
+* :pr:`1631`: Added an example for :class:`~.BulletedList`
+
+
+* :pr:`1620`: Fixed reference to command line interface help command
+
+
+Changes to our development infrastructure
+-----------------------------------------
+
+* :pr:`1623`: CI: branch rename: master -> main
+
+
+* :pr:`1621`: Revert default template and add new templates
+
+
+* :pr:`1573`: PR template for the manim hackathon
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* :pr:`1720`: Renamed incorrect references of ``master`` to ``main``
+
+
+* :pr:`1692`: Removed redundant warning in CLI parsing
+
+
+* :pr:`1651`: Small code cleanup for :class:`~.Polygram`
+
+
+* :pr:`1610`: Changed one image extension to lowercase letters
+
+
+New releases
+------------
+
+* :pr:`1738`: Preparation for v0.8.0: added changelog and bumped version number

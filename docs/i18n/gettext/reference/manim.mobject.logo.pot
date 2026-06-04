@@ -1,0 +1,21 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.logo.rst:2
+msgid "logo"
+msgstr ""
+
+#: ../../../manim/mobject/logo.py:docstring of manim.mobject.logo:1
+msgid "Utilities for Manim's logo and banner."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.logo.rst:15
+msgid "Classes"
+msgstr ""
+
+

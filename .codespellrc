@@ -1,0 +1,4 @@
+[codespell]
+check-hidden = True
+skip = .git,*.js,*.js.map,*.css,*.css.map,*.html,*.po,*.pot,uv.lock,*.log,*.svg
+ignore-words = .codespell_ignorewords

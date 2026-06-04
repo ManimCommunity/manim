@@ -1,0 +1,29 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference_index/cameras.rst:2
+msgid "Cameras"
+msgstr ""
+
+#: ../../source/reference_index/cameras.rst:13:<autosummary>:1
+msgid "A camera converts the mobjects contained in a Scene into an array of pixels."
+msgstr ""
+
+#: ../../source/reference_index/cameras.rst:13:<autosummary>:1
+msgid "A camera that allows mapping between objects."
+msgstr ""
+
+#: ../../source/reference_index/cameras.rst:13:<autosummary>:1
+msgid "A camera able to move through a scene."
+msgstr ""
+
+#: ../../source/reference_index/cameras.rst:13:<autosummary>:1
+msgid "A camera supporting multiple perspectives."
+msgstr ""
+
+

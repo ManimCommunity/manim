@@ -1,0 +1,26 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.utils.commands.rst:2
+msgid "commands"
+msgstr ""
+
+#: ../../source/reference/manim.utils.commands.rst:20
+msgid "Functions"
+msgstr ""
+
+#: ../../../manim/utils/commands.py:docstring of manim.utils.commands.get_dir_layout:1
+msgid "Get list of paths relative to dirpath of all files in dir and subdirs recursively."
+msgstr ""
+
+#: ../../../manim/utils/commands.py:docstring of manim.utils.commands.get_dir_layout:0
+#: ../../../manim/utils/commands.py:docstring of manim.utils.commands.get_video_metadata:0
+msgid "Parameters"
+msgstr ""
+
+

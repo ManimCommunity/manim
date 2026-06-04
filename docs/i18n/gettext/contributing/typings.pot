@@ -1,0 +1,105 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/contributing/typings.rst:3
+msgid "Adding Typings"
+msgstr ""
+
+#: ../../source/contributing/typings.rst:6
+msgid "Adding type hints to functions and parameters"
+msgstr ""
+
+#: ../../source/contributing/typings.rst:9
+msgid "This section is still a work in progress."
+msgstr ""
+
+#: ../../source/contributing/typings.rst:11
+msgid "If you've never used type hints before, this is a good place to get started: https://realpython.com/python-type-checking/#hello-types."
+msgstr ""
+
+#: ../../source/contributing/typings.rst:14
+msgid "When adding type hints to manim, there are some guidelines that should be followed:"
+msgstr ""
+
+#: ../../source/contributing/typings.rst:16
+msgid "Coordinates have the typehint ``Sequence[float]``, e.g."
+msgstr ""
+
+#: ../../source/contributing/typings.rst:23
+msgid "``**kwargs`` has no typehint"
+msgstr ""
+
+#: ../../source/contributing/typings.rst:25
+msgid "Mobjects have the typehint \"Mobject\", e.g."
+msgstr ""
+
+#: ../../source/contributing/typings.rst:33
+msgid "Colors have the typehint ``Color``, e.g."
+msgstr ""
+
+#: ../../source/contributing/typings.rst:40
+msgid "As ``float`` and ``Union[int, float]`` are the same, use only ``float``"
+msgstr ""
+
+#: ../../source/contributing/typings.rst:42
+msgid "For numpy arrays use the typehint ``np.ndarray``"
+msgstr ""
+
+#: ../../source/contributing/typings.rst:44
+msgid "Functions that does not return a value should get the type hint ``None``. (This annotations help catch the kinds of subtle bugs where you are trying to use a meaningless return value. )"
+msgstr ""
+
+#: ../../source/contributing/typings.rst:51
+msgid "Parameters that are None by default should get the type hint ``Optional``"
+msgstr ""
+
+#: ../../source/contributing/typings.rst:65
+msgid "The ``__init__()`` method always should have None as its return type."
+msgstr ""
+
+#: ../../source/contributing/typings.rst:67
+msgid "Functions and lambda functions should get the typehint ``Callable``"
+msgstr ""
+
+#: ../../source/contributing/typings.rst:74
+msgid "Assuming that typical path objects are either Paths or strs, one can use the typehint ``typing.Union[str, pathlib.Path]``"
+msgstr ""
+
+#: ../../source/contributing/typings.rst:77
+msgid "As a helper for tool for typesets, you can use `typestring-parser <https://github.com/Dominik1123/typestring-parser>`_ which can be accessed by first installing it via ``pip`` - ``pip install typestring-parser`` and then using ``from typestring_parser import parse``."
+msgstr ""
+
+#: ../../source/contributing/typings.rst:96
+msgid "Missing Sections for typehints are:"
+msgstr ""
+
+#: ../../source/contributing/typings.rst:97
+msgid "Tools for typehinting"
+msgstr ""
+
+#: ../../source/contributing/typings.rst:98
+msgid "Link to MyPy"
+msgstr ""
+
+#: ../../source/contributing/typings.rst:99
+msgid "Mypy and numpy import errors: https://realpython.com/python-type-checking/#running-mypy"
+msgstr ""
+
+#: ../../source/contributing/typings.rst:100
+msgid "Where to find the alias"
+msgstr ""
+
+#: ../../source/contributing/typings.rst:101
+msgid "When to use Object and when to use \"Object\"."
+msgstr ""
+
+#: ../../source/contributing/typings.rst:102
+msgid "The use of a TypeVar on the type hints for copy()."
+msgstr ""
+
+

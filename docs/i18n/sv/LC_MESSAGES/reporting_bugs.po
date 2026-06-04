@@ -1,0 +1,48 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: 031f65d9b7a2e83b265c23f1c4450271\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: 031f65d9b7a2e83b265c23f1c4450271\n"
+"X-Crowdin-Project-ID: 1\n"
+"X-Crowdin-Language: sv\n"
+"X-Crowdin-File: /[ManimCommunity.manim] main/docs/i18n/gettext/reporting_bugs.pot\n"
+"X-Crowdin-File-ID: 5833\n"
+"Language-Team: Swedish\n"
+"Language: sv_SE\n"
+"PO-Revision-Date: 2021-11-06 12:30\n"
+
+#: ../../source/reporting_bugs.rst:2
+msgid "Reporting bugs"
+msgstr "Rapportering av buggar"
+
+#: ../../source/reporting_bugs.rst:4
+msgid "One of the best ways of contributing to Manim is by reporting bugs.  If you have encountered something that you believe is a bug, please follow these steps:"
+msgstr "Ett av de bästa sätten att bidra till Manim är genom att rapportera buggar. Om du har stött på något som du tror är en bugg, följ dessa steg:"
+
+#: ../../source/reporting_bugs.rst:8
+msgid "First of all, make sure you are running the latest version of manim.  If not, update your version and try again."
+msgstr "Först och främst, se till att du kör den senaste versionen av manim. Om inte, uppdatera din version och försök igen."
+
+#: ../../source/reporting_bugs.rst:11
+msgid "Search for other users who may have had similar issues in the past. Search the repository's `issues page <https://github.com/ManimCommunity/manim/issues>`_ (don't forget to search closed issues), bring it up on our `Discord server <https://www.manim.community/discord/>`_, use sites like StackOverflow, and exercise your best Google practices.  If you can't find anything helpful, then go to the next step."
+msgstr "Sök efter andra användare som kan ha haft liknande problem tidigare. Sök i arkivets (repository) `issues page <https://github.com/ManimCommunity/manim/issues>`_ (glöm inte att söka även bland slutna ärenden), ta upp det i vår `Discord-server <https://www.manim.community/discord/>`_, använd webbplatser som StackOverflow och använd dig av dina bästa Google-metoder. Om du inte kan hitta något hjälpsamt, gå sedan till nästa steg."
+
+#: ../../source/reporting_bugs.rst:17
+msgid "Can reproduce the issue, i.e. that you have some code that illustrates the bug **every time** (or at least most of the time) it is executed."
+msgstr "Kan reproducera problemet, dvs att du har en kod som illustrerar felet **varje gång** (eller åtminstone de flesta gångerna) det körs."
+
+#: ../../source/reporting_bugs.rst:21
+msgid "Clarify what behavior you expected, and how the actual behavior differs from your expectation."
+msgstr "Klargör vilket beteende du förväntade dig och hur det faktiska beteendet skiljer sig från dina förväntningar."
+
+#: ../../source/reporting_bugs.rst:24
+msgid "Gather information about your environment, such as your operating system, python version, and any stack traces that the code may have generated (if applicable)."
+msgstr "Samla information om din miljö, såsom ditt operativsystem, python-version, och eventuella stackspår som koden kan ha genererat (om möjligt)."
+
+#: ../../source/reporting_bugs.rst:28
+msgid "Please open an issue only after you have gathered this information. When submitting an issue, make sure to follow the template (this is the default text you are shown when first opening the 'New Issue' page).  A community member will (hopefully) respond and start a conversation to address the issue."
+msgstr "Vänligen öppna ett problem först efter att du har samlat in denna information. När du skickar in ett ärende, se till att följa mallen (detta är standardtexten du visas när du först öppnar sidan 'Nytt ärende'. En medlem i communityn kommer (förhoppningsvis) att svara och starta en konversation för att ta itu med problemet."
+

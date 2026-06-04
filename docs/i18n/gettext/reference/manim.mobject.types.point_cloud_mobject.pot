@@ -1,0 +1,30 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.rst:2
+msgid "point\\_cloud\\_mobject"
+msgstr ""
+
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject:1
+msgid "Mobjects representing point clouds."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.rst:30:<autosummary>:0
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.rst:30:<autosummary>:0
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.rst:30:<autosummary>:1
+msgid "A disc made of a cloud of Dots"
+msgstr ""
+
+

@@ -1,0 +1,104 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: 031f65d9b7a2e83b265c23f1c4450271\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: 031f65d9b7a2e83b265c23f1c4450271\n"
+"X-Crowdin-Project-ID: 1\n"
+"X-Crowdin-Language: sv\n"
+"X-Crowdin-File: /[ManimCommunity.manim] main/docs/i18n/gettext/plugins.pot\n"
+"X-Crowdin-File-ID: 5181\n"
+"Language-Team: Swedish\n"
+"Language: sv_SE\n"
+"PO-Revision-Date: 2021-11-06 12:30\n"
+
+#: ../../source/plugins.rst:5
+msgid "Plugins"
+msgstr "Plugins"
+
+#: ../../source/plugins.rst:7
+msgid "Plugins are features that extend Manim's core functionality. Since Manim is extensible and not everything belongs in its core, we'll go over how to install, use, and create your own plugins."
+msgstr "Plugins är tillägg som utökar Manims kärnfunktionalitet. Eftersom Manim är utökningsbart, och inte allt hör hemma dess kärna, så kommer vi gå över hur man kan installera, använda och skapa egna plugins."
+
+#: ../../source/plugins.rst:13
+msgid "The standard naming convention for plugins is to prefix the plugin with ``manim-``. This makes them easy for users to find on package repositories such as PyPI."
+msgstr "Den namnkonvention som används som standard för plugins är att sätta prefixet ``manim-`` i början pluginens namn. Detta gör det enkelt för andra användare att hitta plugins via paketarkiv (repositories) som exempel PyPI."
+
+#: ../../source/plugins.rst:19
+msgid "The plugin feature is new and under active development. Expect updates for the best practices on installing, using, and creating plugins; as well as new subcommands/flags for ``manim plugins``"
+msgstr "Pluginfunktionen är ny och under aktiv utveckling. Räkna med att de bästa metoderna att installera, använda och skapa plugins, samt nya underkommandon/flaggor för ``manim-plugins``, kommer uppdateras"
+
+#: ../../source/plugins.rst:25
+msgid "See https://plugins.manim.community/ for the list of plugins available."
+msgstr "Se https://plugins.manim.community/ för listan över tillgängliga plugins."
+
+#: ../../source/plugins.rst:28
+msgid "Installing Plugins"
+msgstr "Installering av Plugins"
+
+#: ../../source/plugins.rst:29
+msgid "Plugins can be easily installed via the ``pip`` command:"
+msgstr "Plugins kan enkelt installeras via ``pip`` kommandot:"
+
+#: ../../source/plugins.rst:36
+msgid "After installing a plugin, you may use the ``manim plugins`` command to list your available plugins, see the following help output:"
+msgstr "Efter att du har installerat en plugin kan du använda kommandot ``manim plugins`` för att lista dina tillgängliga plugins, se följande hjälpmeddelande:"
+
+#: ../../source/plugins.rst:52
+msgid "You can list plugins as such:"
+msgstr "Du kan få en lista av plugins på detta sätt:"
+
+#: ../../source/plugins.rst:61
+msgid "Using Plugins in Projects"
+msgstr "Användning av Plugins i Projekt"
+
+#: ../../source/plugins.rst:62
+msgid "For enabling a plugin ``manim.cfg`` or command line parameters should be used."
+msgstr "För att aktivera en plugin bör ``manim.cfg`` eller command line parametrar användas."
+
+#: ../../source/plugins.rst:66
+msgid "The plugins should be module name of the plugin and not PyPi name."
+msgstr "Pluginerna bör vara namnet på modulen, inte dess PyPI namn."
+
+#: ../../source/plugins.rst:68
+msgid "Enabling plugins through ``manim.cfg``"
+msgstr "Aktivering av plugins via ``manim.cfg``"
+
+#: ../../source/plugins.rst:75
+msgid "For specifying multiple plugins, command separated values must be used."
+msgstr "För att ange flera plugins så måste kommandoseparerade värden användas."
+
+#: ../../source/plugins.rst:83
+msgid "Creating Plugins"
+msgstr "Skapa Plugins"
+
+#: ../../source/plugins.rst:84
+msgid "Plugins are intended to extend Manim's core functionality. If you aren't sure whether a feature should be included in Manim's core, feel free to ask over on the `Discord server <https://www.manim.community/discord/>`_. Visit `manim-plugintemplate <https://pypi.org/project/manim-plugintemplate/>`_ on PyPI.org which serves as an in-depth tutorial for creating plugins."
+msgstr "Plugins är avsedda att utöka Manims kärnfunktionalitet. Om du inte är säker på om en funktion ska inkluderas i Manims kärna, fråga gärna på `Discord-servern <https://www.manim.community/discord/>`_. Besök även `manim-plugintemplate <https://pypi.org/project/manim-plugintemplate/>`_ på PyPI.org eftersom det fungerar som en fördjupad handledning för att skapa plugins."
+
+#: ../../source/plugins.rst:94
+msgid "The only requirement of manim plugins is that they specify an entry point with the group, ``\"manim.plugins\"``. This allows Manim to discover plugins available in the user's environment. Everything regarding the plugin's directory structure, build system, and naming are completely up to your discretion as an author. The aforementioned template plugin is only a model using Poetry since this is the build system Manim uses. The plugin's `entry point <https://packaging.python.org/specifications/entry-points/>`_ can be specified in poetry as:"
+msgstr "Det enda kravet på manim plugins är att de anger en ingångspunkt genom gruppen, ``\"manim.plugins\"``. Detta gör det möjligt för Manim att upptäcka plugins som finns i användarens arbetsmiljö. Allt om pluginens katalogstruktur, byggsystem och namngivning är helt upp till din dina egna val som författare. Den ovannämnda mallpluginen är bara en modell med Poesi eftersom detta är byggsystemet som Manim använder. Pluginens `ingångspunkt <https://packaging.python.org/specifications/entry-points/>`_ kan anges i poesi som:"
+
+#: ../../source/plugins.rst:108
+msgid "Here ``name`` is the name of the module of the plugin."
+msgstr "Här är ``name`` namnet på pluginens modul."
+
+#: ../../source/plugins.rst:110
+msgid "Here ``object_reference`` can point to either a function in a module or a module itself. For example,"
+msgstr "Här kan ``object_reference`` peka mot antingen en funktion i en modul eller en modul själv. Till exempel,"
+
+#: ../../source/plugins.rst:118
+msgid "Here a module is used as ``object_reference``, and when this plugin is enabled, Manim will look for ``__all__`` keyword defined in ``manim_plugintemplate`` and everything as a global variable one by one."
+msgstr "Här används en modul som ``object_reference``. När denna modul aktiveras så kommer Manim att leta efter nyckelordet ``__all__`` som definierats i ``manim_plugintemplate`` och allt som en global variabel en efter en."
+
+#: ../../source/plugins.rst:122
+msgid "If ``object_reference`` is a function, Manim calls the function and expects the function to return a list of modules or functions that need to be defined globally."
+msgstr "Om ``object_reference`` är en funktion så kommer Manim anropa funktionen och förväntar sig att funktionen returnerar en lista över moduler eller funktioner som behöver definieras globalt."
+
+#: ../../source/plugins.rst:125
+msgid "For example,"
+msgstr "Till exempel,"
+

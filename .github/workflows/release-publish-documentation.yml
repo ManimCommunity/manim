@@ -1,0 +1,87 @@
+name: Publish downloadable documentation
+
+on:
+  release:
+    types: [released]
+  workflow_dispatch:
+
+jobs:
+  build-and-publish-htmldocs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: 3.13
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
+
+    - name: Install system dependencies
+      run: |
+        sudo apt update && sudo apt install -y \
+          pkg-config libcairo-dev libpango1.0-dev wget fonts-roboto
+        wget -qO- "https://yihui.org/tinytex/install-bin-unix.sh" | sh
+        echo ${HOME}/.TinyTeX/bin/x86_64-linux >> $GITHUB_PATH
+
+    - name: Install LaTeX and Python dependencies
+      run: |
+        tlmgr update --self
+        tlmgr install \
+          babel-english ctex doublestroke dvisvgm frcursive fundus-calligra jknapltx \
+          mathastext microtype physics preview ragged2e relsize rsfs setspace standalone \
+          wasy wasysym
+        uv sync
+
+    - name: Build and package documentation
+      run: |
+        cd docs/
+        uv run make html
+        cd build/html/
+        tar -czvf ../html-docs.tar.gz *
+
+    - name: Store artifacts
+      uses: actions/upload-artifact@v6
+      with:
+          path: ${{ github.workspace }}/docs/build/html-docs.tar.gz
+          name: html-docs.tar.gz
+
+    - name: Install Dependency
+      run: pip install requests
+
+    - name: Get Upload URL
+      if: github.event == 'release'
+      id: create_release
+      shell: python
+      env:
+          access_token: ${{ secrets.GITHUB_TOKEN }}
+          tag_act: ${{ github.ref }}
+      run: |
+          import requests
+          import os
+          ref_tag = os.getenv('tag_act').split('/')[-1]
+          access_token = os.getenv('access_token')
+          headers = {
+              "Accept":"application/vnd.github.v3+json",
+              "Authorization": f"token {access_token}"
+          }
+          url = f"https://api.github.com/repos/ManimCommunity/manim/releases/tags/{ref_tag}"
+          c = requests.get(url,headers=headers)
+          upload_url=c.json()['upload_url']
+          with open(os.getenv('GITHUB_OUTPUT'), 'w') as f:
+            print(f"upload_url={upload_url}", file=f)
+            print(f"tag_name={ref_tag[1:]}", file=f)
+
+    - name: Upload Release Asset
+      if: github.event == 'release'
+      id: upload-release
+      uses: actions/upload-release-asset@v1
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ${{ github.workspace }}/docs/build/html-docs.tar.gz
+          asset_name: manim-htmldocs-${{ steps.create_release.outputs.tag_name }}.tar.gz
+          asset_content_type: application/gzip

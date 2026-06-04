@@ -1,0 +1,13 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <!-- No translation -->
+    <rect x="5" y="5" width="40" height="40" fill="green" />
+
+    <!-- Horizontal translation -->
+    <rect x="5" y="5" width="40" height="40" fill="blue" transform="translate(50)" />
+
+    <!-- Vertical translation -->
+    <rect x="5" y="5" width="40" height="40" fill="red" transform="translate(0 50)" />
+
+    <!-- Both horizontal and vertical translation -->
+    <rect x="5" y="5" width="40" height="40" fill="yellow" transform="translate(50,50)" />
+</svg>

@@ -1,0 +1,65 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.animation.indication.Wiggle.rst:2
+msgid "Wiggle"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.Wiggle.rst:4
+msgid "Qualified name: ``manim.animation.indication.Wiggle``"
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Wiggle:1
+msgid "Bases: :py:class:`manim.animation.animation.Animation`"
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Wiggle:1
+msgid "Wiggle a Mobject."
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Wiggle:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Wiggle:3
+msgid "The mobject to wiggle."
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Wiggle:5
+msgid "The factor by which the mobject will be temporarily scaled."
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Wiggle:6
+msgid "The wiggle angle."
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Wiggle:7
+msgid "The number of wiggles."
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Wiggle:8
+msgid "The point about which the mobject gets scaled."
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Wiggle:9
+msgid "The point around which the mobject gets rotated."
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Wiggle:10
+msgid "The duration of the animation"
+msgstr ""
+
+#: ../../../manim/animation/indication.py:docstring of manim.animation.indication.Wiggle:13
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.animation.indication.Wiggle.rst:14
+msgid "Methods"
+msgstr ""
+
+

@@ -1,0 +1,37 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.animation.transform.ClockwiseTransform.rst:2
+msgid "ClockwiseTransform"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.ClockwiseTransform.rst:4
+msgid "Qualified name: ``manim.animation.transform.ClockwiseTransform``"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ClockwiseTransform:1
+msgid "Bases: :py:class:`manim.animation.transform.Transform`"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ClockwiseTransform:1
+msgid "Transforms the points of a mobject along a clockwise oriented arc."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ClockwiseTransform:6
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.ClockwiseTransform.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.ClockwiseTransform.rst:21
+msgid "Attributes"
+msgstr ""
+
+

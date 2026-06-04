@@ -1,0 +1,33 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:2
+msgid "ManimFrame"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:4
+msgid "Qualified name: ``manim.\\_config.utils.ManimFrame``"
+msgstr ""
+
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimFrame:1
+msgid "Bases: :py:class:`collections.abc.Mapping`"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim._config.utils.ManimFrame.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimFrame:0
+msgid "Parameters"
+msgstr ""
+
+

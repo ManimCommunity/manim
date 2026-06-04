@@ -1,0 +1,47 @@
+name: Publish Release
+
+on:
+  release:
+    types: [released]
+
+jobs:
+  release:
+    name: "Publish release"
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      id-token: write
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y build-essential python3-dev libcairo2-dev libpango1.0-dev
+
+    - name: Set up Python 3.13
+      uses: actions/setup-python@v6
+      with:
+        python-version: 3.13
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
+
+    - name: Build and push release to PyPI
+      run: |
+        uv build
+        uv publish
+
+    - name: Store artifacts
+      uses: actions/upload-artifact@v6
+      with:
+          path: dist/*.tar.gz
+          name: manim.tar.gz
+
+    - name: Upload Release Asset
+      shell: bash
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        TAG=${{ github.event.release.tag_name }}
+        gh release upload "$TAG" "dist/manim-${TAG#v}.tar.gz"

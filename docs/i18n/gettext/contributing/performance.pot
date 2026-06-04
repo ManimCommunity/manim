@@ -1,0 +1,65 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/contributing/performance.rst:3
+msgid "Improving performance"
+msgstr ""
+
+#: ../../source/contributing/performance.rst:5
+msgid "One of Manim's main flaws as an animation library is its slow performance. As of time of writing (January 2022), the library is still very unoptimized. As such, we highly encourage contributors to help out in optimizing the code."
+msgstr ""
+
+#: ../../source/contributing/performance.rst:10
+msgid "Profiling"
+msgstr ""
+
+#: ../../source/contributing/performance.rst:12
+msgid "Before the library can be optimized, we first need to identify the bottlenecks in performance via profiling. There are numerous Python profilers available for this purpose; some examples include cProfile and Scalene."
+msgstr ""
+
+#: ../../source/contributing/performance.rst:17
+msgid "Running an animation as a script"
+msgstr ""
+
+#: ../../source/contributing/performance.rst:19
+msgid "Most instructions for profilers assume you can run the python file directly as a script from the command line. While Manim animations are usually run from the command-line, we can run them as scripts by adding something like the following to the bottom of the file:"
+msgstr ""
+
+#: ../../source/contributing/performance.rst:30
+msgid "Where ``SceneName`` is the name of the scene you want to run. You can then run the file directly, and can thus follow the instructions for most profilers."
+msgstr ""
+
+#: ../../source/contributing/performance.rst:34
+msgid "An example: profiling with cProfile and SnakeViz"
+msgstr ""
+
+#: ../../source/contributing/performance.rst:36
+msgid "Install SnakeViz:"
+msgstr ""
+
+#: ../../source/contributing/performance.rst:42
+msgid "cProfile is included with in Python's standard library and does not need to be installed."
+msgstr ""
+
+#: ../../source/contributing/performance.rst:44
+msgid "Suppose we want to profile ``SquareToCircle``. Then we add and save the following code to ``square_to_circle.py``:"
+msgstr ""
+
+#: ../../source/contributing/performance.rst:64
+msgid "Now run the following in the terminal:"
+msgstr ""
+
+#: ../../source/contributing/performance.rst:70
+msgid "This will create a file called ``square_to_circle.txt``."
+msgstr ""
+
+#: ../../source/contributing/performance.rst:72
+msgid "Now, we can run SnakeViz on the profile file:"
+msgstr ""
+
+

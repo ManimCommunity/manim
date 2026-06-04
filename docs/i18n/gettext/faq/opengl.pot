@@ -1,0 +1,29 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/faq/opengl.md:1
+msgid "FAQ: OpenGL rendering"
+msgstr ""
+
+#: ../../source/faq/opengl.md:3
+msgid "Are there any resources on how the OpenGL renderer in the community maintained version can be used?"
+msgstr ""
+
+#: ../../source/faq/opengl.md:5
+msgid "Yes. Unfortunately, at this point, the official online documentation does not contain the relevant base classes like `OpenGLMobject` and `OpenGLVMobject` or specific OpenGL classes like `OpenGLSurface`, but documentation for some of them is available in form of docstrings [in the source code](https://github.com/ManimCommunity/manim/tree/main/manim/mobject/opengl)."
+msgstr ""
+
+#: ../../source/faq/opengl.md:11
+msgid "Furthermore, [this user guide by *aquabeam*](https://www.aquabeam.me/manim/opengl_guide/) can be helpful to get started using the OpenGL renderer."
+msgstr ""
+
+#: ../../source/faq/opengl.md:16
+msgid "I am trying to run an interactive scene with `--renderer=opengl` and `Scene.interactive_embed`, but an error (`sqlite3.ProgrammingError`) is raised. How can I fix this?"
+msgstr ""
+
+
