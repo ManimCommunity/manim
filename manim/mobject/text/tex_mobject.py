@@ -469,7 +469,11 @@ class MathTex(SingleStringMathTex):
         first_match_length = 0
         first_match = None
         for substring in substrings_to_isolate:
-            match = re.match(f"(.*?)({re.escape(substring)})(.*)", unprocessed_string)
+            match = re.match(
+                f"(.*?)({re.escape(substring)})(.*)",
+                unprocessed_string,
+                flags=re.DOTALL,
+            )
             if match and len(match.group(1)) < first_match_start:
                 first_match = match
                 first_match_start = len(match.group(1))
