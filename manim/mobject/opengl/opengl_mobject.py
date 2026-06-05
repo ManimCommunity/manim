@@ -2841,11 +2841,16 @@ class OpenGLMobject:
         self.is_fixed_in_frame = 1.0
         return self
 
-    @affects_shader_info_id
     def fix_orientation(self) -> Self:
-        self.is_fixed_orientation = 1.0
-        self.fixed_orientation_center = tuple(self.get_center())
-        self.depth_test = True
+        # do not use @affects_shader_info_id: that invokes this once per family
+        # member with that member as self, so each submobject would use its own
+        # get_center(). simply share one pivot for the whole tree.
+        anchor = tuple(self.get_center())
+        for mob in self.get_family():
+            mob.is_fixed_orientation = 1.0
+            mob.fixed_orientation_center = anchor
+            mob.depth_test = True
+            mob.refresh_shader_wrapper_id()
         return self
 
     @affects_shader_info_id
