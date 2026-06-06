@@ -562,18 +562,18 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
 
     def __getitem__(self, key):
         """Get a vertex or an edge from the graph.
-        
+
         Parameters
         ----------
         key : hashable or tuple
             If key is a vertex label, return the corresponding Dot object.
             If key is a tuple (u, v) representing an edge, return the corresponding Line object.
-        
+
         Returns
         -------
         Union[Dot, Line]
             The vertex Dot or edge Line object.
-        
+
         Raises
         ------
         KeyError
