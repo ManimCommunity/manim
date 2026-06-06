@@ -242,6 +242,8 @@ wants to merge your changes! Once approved, your changes may be merged!
 7. Please do as much as possible to keep issues, PRs, and development in
    general as tidy as possible.
 
+For detailed rules and examples, see our [Commit Message Guide](commits.md).
+
 You can find examples for the `docs` in several places:
 the {doc}`Example Gallery <../examples>`, {doc}`Tutorials <../tutorials/index>`,
 and {doc}`Reference Classes <../reference>`.
