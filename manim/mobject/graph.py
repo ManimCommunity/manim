@@ -560,6 +560,34 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         keyword arguments for the mobject related to the corresponding edge.
     """
 
+    def __getitem__(self, key):
+        """Get a vertex or an edge from the graph.
+        
+        Parameters
+        ----------
+        key : hashable or tuple
+            If key is a vertex label, return the corresponding Dot object.
+            If key is a tuple (u, v) representing an edge, return the corresponding Line object.
+        
+        Returns
+        -------
+        Union[Dot, Line]
+            The vertex Dot or edge Line object.
+        
+        Raises
+        ------
+        KeyError
+            If neither a vertex nor an edge with the given key exists.
+        """
+        # First, try to get a vertex
+        if key in self.vertices:
+            return self.vertices[key]
+        # If not a vertex, and it's a tuple (potential edge), try to get an edge
+        if isinstance(key, tuple) and key in self.edges:
+            return self.edges[key]
+        # If still not found, raise an error
+        raise KeyError(f"Vertex {key} or Edge {key} not found")
+
     def __init__(
         self,
         vertices: Sequence[Hashable],
@@ -668,9 +696,6 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
     ):
         """Helper method for populating the edges of the graph."""
         raise NotImplementedError("To be implemented in concrete subclasses")
-
-    def __getitem__(self: Graph, v: Hashable) -> Mobject:
-        return self.vertices[v]
 
     def _create_vertex(
         self,
