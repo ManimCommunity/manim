@@ -12,6 +12,7 @@ import hashlib
 import re
 import subprocess
 import unicodedata
+import platform
 from collections.abc import Generator, Iterable, Sequence
 from pathlib import Path
 from re import Match
@@ -23,14 +24,12 @@ from .. import config, logger
 
 __all__ = ["tex_to_svg_file"]
 
-
 def tex_hash(expression: Any) -> str:
     id_str = str(expression)
     hasher = hashlib.sha256()
     hasher.update(id_str.encode())
     # Truncating at 16 bytes for cleanliness
     return hasher.hexdigest()[:16]
-
 
 def tex_to_svg_file(
     expression: str,
@@ -72,7 +71,6 @@ def tex_to_svg_file(
         delete_nonsvg_files()
     return svg_file
 
-
 def generate_tex_file(
     expression: str,
     environment: str | None = None,
@@ -113,7 +111,6 @@ def generate_tex_file(
         )
         result.write_text(output, encoding="utf-8")
     return result
-
 
 def make_tex_compilation_command(
     tex_compiler: str, output_format: str, tex_file: Path, tex_dir: Path
@@ -165,7 +162,6 @@ def make_tex_compilation_command(
         raise ValueError(f"Tex compiler {tex_compiler} unknown.")
     return command
 
-
 def insight_inputenc_error(matching: Match[str]) -> Generator[str]:
     code_point = chr(int(matching[1], 16))
     name = unicodedata.name(code_point)
@@ -176,7 +172,6 @@ def insight_inputenc_error(matching: Match[str]) -> Generator[str]:
 def insight_package_not_found_error(matching: Match[str]) -> Generator[str]:
     yield f"You do not have package {matching[1]} installed."
     yield f"Install {matching[1]} it using your LaTeX package manager, or check for typos."
-
 
 def compile_tex(tex_file: Path, tex_compiler: str, output_format: str) -> Path:
     """Compiles a tex_file into a .dvi or a .xdv or a .pdf
@@ -233,6 +228,26 @@ def convert_to_svg(dvi_file: Path, extension: str, page: int = 1) -> Path:
     :class:`Path`
         Path to generated SVG file.
     """
+
+    if platform.system() == "Darwin" and extension == ".pdf":
+        try:
+            check_result = subprocess.run(
+                ["dvisvgm", "--pdf", "--version"],
+                capture_output=True, text=True
+            )
+            if check_result.returncode != 0:
+                raise RuntimeError(
+                    "\n"
+                    "[ manim ] ERROR: dvisvgm does not support PDF to SVG conversion.\n"
+                    "          This is a known issue on macOS with MacTeX from Homebrew.\n"
+                    "          Please install Ghostscript: brew install ghostscript\n"
+                    "          If the issue persists, set: export LIBGS=$(brew --prefix)/lib/libgs.dylib\n"
+                    "          See troubleshooting guide:\n"
+                    "          https://github.com/ManimCommunity/manim/blob/main/docs/source/installation/troubleshooting.rst\n"
+                )
+        except FileNotFoundError:
+            raise RuntimeError("'dvisvgm' not found. Please install MacTeX or Ghostscripts.")
+    
     result = dvi_file.with_suffix(".svg")
     if not result.exists():
         command = [
