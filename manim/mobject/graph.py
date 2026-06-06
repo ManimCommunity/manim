@@ -588,7 +588,9 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             self._labels = labels
         elif isinstance(labels, bool):
             if labels:
-                self._labels = {v: MathTex(v, fill_color=label_fill_color) for v in vertices}
+                self._labels = {
+                    v: MathTex(v, fill_color=label_fill_color) for v in vertices
+                }
             else:
                 self._labels = {}
 
@@ -1561,6 +1563,7 @@ class Graph(GenericGraph):
 
     def __repr__(self: Graph) -> str:
         return f"Undirected graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
+
 
 class DiGraph(GenericGraph):
     """A directed graph.
