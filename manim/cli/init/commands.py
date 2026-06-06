@@ -16,10 +16,10 @@ import cloup
 from manim import config
 from manim._config.utils import (
     CFG_DEFAULTS,
+    copy_template_files,
     get_template_names,
     select_resolution,
     update_cfg,
-    copy_template_files,
 )
 
 from ..console import console
@@ -135,6 +135,8 @@ def scene(scene_name: str, file_name: str | None = None) -> None:
         return
 
     with file_path.open("a") as f:
-        f.write(f"\n\nclass {scene_name}(Scene):\n    def construct(self):\n        pass\n")
+        f.write(
+            f"\n\nclass {scene_name}(Scene):\n    def construct(self):\n        pass\n"
+        )
 
     console.print(f"\n[green]Added scene {scene_name} to {file_name}[/green]")
