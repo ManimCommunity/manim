@@ -1,5 +1,5 @@
 from __future__ import annotations
-
+from manim.typing import Vector3D
 import copy
 import inspect
 import itertools as it
