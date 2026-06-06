@@ -97,10 +97,15 @@ def update_cfg(cfg_dict: dict[str, Any], project_cfg_path: Path) -> None:
     help="Default settings for project creation.",
     nargs=1,
 )
-def project(default_settings: bool, **kwargs: Any) -> None:
+def project(default_settings: bool, force: bool = False, **kwargs: Any) -> None:
     """Creates a new project.
 
     PROJECT_NAME is the name of the folder in which the new project will be initialized.
+
+    Options
+    -------
+    -f, --force
+        Initialize project even if folder already exists.
     """
     project_name: Path
     if kwargs["project_name"]:
@@ -108,47 +113,44 @@ def project(default_settings: bool, **kwargs: Any) -> None:
     else:
         project_name = click.prompt("Project Name", type=Path)
 
-    # in the future when implementing a full template system. Choices are going to be saved in some sort of config file for templates
     template_name = click.prompt(
         "Template",
         type=click.Choice(get_template_names(), False),
         default="Default",
     )
 
+    new_cfg: dict[str, Any] = {}
+    new_cfg_path = Path.resolve(project_name / "manim.cfg")
+
     if project_name.is_dir():
-        console.print(
-            f"\nFolder [red]{project_name}[/red] exists. Please type another name\n",
-        )
+        if not force:
+            console.print(
+                f"\nFolder [red]{project_name}[/red] exists. Use --force to override.\n",
+            )
+            return
+        else:
+            console.print(
+                f"\nFolder [yellow]{project_name}[/yellow] exists. Overwriting with --force...\n",
+            )
     else:
         project_name.mkdir()
-        new_cfg: dict[str, Any] = {}
-        new_cfg_path = Path.resolve(project_name / "manim.cfg")
 
-        if not default_settings:
-            for key, value in CFG_DEFAULTS.items():
-                if key == "scene_names":
-                    new_cfg[key] = template_name + "Template"
-                elif key == "resolution":
-                    new_cfg[key] = select_resolution()
-                else:
-                    new_cfg[key] = click.prompt(f"\n{key}", default=value)
+    if not default_settings:
+        for key, value in CFG_DEFAULTS.items():
+            if key == "scene_names":
+                new_cfg[key] = template_name + "Template"
+            elif key == "resolution":
+                new_cfg[key] = select_resolution()
+            else:
+                new_cfg[key] = click.prompt(f"\n{key}", default=value)
 
-            console.print("\n", new_cfg)
-            if click.confirm("Do you want to continue?", default=True, abort=True):
-                copy_template_files(project_name, template_name)
-                update_cfg(new_cfg, new_cfg_path)
-        else:
+        console.print("\n", new_cfg)
+        if click.confirm("Do you want to continue?", default=True, abort=True):
             copy_template_files(project_name, template_name)
-            update_cfg(CFG_DEFAULTS, new_cfg_path)
-
-
-@cloup.command(
-    context_settings=CONTEXT_SETTINGS,
-    no_args_is_help=True,
-    epilog=EPILOG,
-)
-@cloup.argument("scene_name", type=str, required=True)
-@cloup.argument("file_name", type=str, required=False)
+            update_cfg(new_cfg, new_cfg_path)
+    else:
+        copy_template_files(project_name, template_name)
+        update_cfg(CFG_DEFAULTS, new_cfg_path)
 def scene(**kwargs: Any) -> None:
     """Inserts a SCENE to an existing FILE or creates a new FILE.
 
