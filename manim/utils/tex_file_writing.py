@@ -249,10 +249,10 @@ def convert_to_svg(dvi_file: Path, extension: str, page: int = 1) -> Path:
                     "          See troubleshooting guide:\n"
                     "          https://github.com/ManimCommunity/manim/blob/main/docs/source/installation/troubleshooting.rst\n"
                 )
-        except FileNotFoundError:
+        except FileNotFoundError as err:
             raise RuntimeError(
                 "'dvisvgm' not found. Please install MacTeX or Ghostscripts."
-            )
+            ) from err
 
     result = dvi_file.with_suffix(".svg")
     if not result.exists():
