@@ -1,5 +1,5 @@
 from __future__ import annotations
-from manim.typing import Vector3D
+
 import copy
 import inspect
 import itertools as it
@@ -39,6 +39,7 @@ from manim.typing import (
     Point3D_Array,
     Point3DLike,
     Point3DLike_Array,
+    Vector3D,
 )
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import (
