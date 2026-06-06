@@ -151,6 +151,8 @@ def project(default_settings: bool, force: bool = False, **kwargs: Any) -> None:
     else:
         copy_template_files(project_name, template_name)
         update_cfg(CFG_DEFAULTS, new_cfg_path)
+
+
 def scene(**kwargs: Any) -> None:
     """Inserts a SCENE to an existing FILE or creates a new FILE.
 
