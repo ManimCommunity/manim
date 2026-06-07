@@ -596,6 +596,27 @@ class MathTex(SingleStringMathTex):
     def sort_alphabetically(self) -> None:
         self.submobjects.sort(key=lambda m: m.get_tex_string())
 
+    def get_lines(self) -> VGroup:
+        r"""Groups submobjects into lines based on the \\ line break indicator.
+
+        Returns
+        -------
+        VGroup
+            A VGroup containing VGroups, each representing a line of the LaTeX expression.
+        """
+        lines = VGroup()
+        current_line = VGroup()
+        for submob in self.submobjects:
+            if submob.get_tex_string() == r"\\":
+                if len(current_line) > 0:
+                    lines.add(current_line)
+                    current_line = VGroup()
+            else:
+                current_line.add(submob)
+        if len(current_line) > 0:
+            lines.add(current_line)
+        return lines
+
 
 class MathTexPart(VMobject, metaclass=ConvertToOpenGL):
     tex_string: str

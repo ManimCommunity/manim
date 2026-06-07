@@ -157,15 +157,21 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
         self.dissipating_time = dissipating_time
         self.time = 1.0 if self.dissipating_time else None
         self.add_updater(self.update_path)
+        self._point_history: list = []
 
     def update_path(self, mob: Mobject, dt: float) -> None:
         new_point = self.traced_point_func()
         if not self.has_points():
             self.start_new_path(new_point)
-        self.add_line_to(new_point)
+            self._point_history = [new_point]
+        else:
+            self._point_history.append(new_point)
+            self.set_points_as_corners(self._point_history)
+
         if self.dissipating_time:
             assert self.time is not None
             self.time += dt
             if self.time - 1 > self.dissipating_time:
                 nppcc = self.n_points_per_curve
-                self.set_points(self.points[nppcc:])
+                self._point_history = self._point_history[nppcc:]
+                self.set_points_as_corners(self._point_history)
