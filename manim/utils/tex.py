@@ -6,7 +6,6 @@ __all__ = [
     "TexTemplate",
 ]
 
-import copy
 import re
 import warnings
 from dataclasses import dataclass, field
@@ -140,8 +139,11 @@ class TexTemplate:
             LaTeX code based on current template, containing the given ``expression`` and ready for typesetting
         """
         return self.body.replace(self.placeholder_text, expression)
-        
-def get_texcode_for_expression_in_env(self, expression: str, environment: str | list[str]) -> str:
+
+
+def get_texcode_for_expression_in_env(
+    self, expression: str, environment: str | list[str]
+) -> str:
     """Wrap an expression in one or more LaTeX environments.
 
     Parameters
