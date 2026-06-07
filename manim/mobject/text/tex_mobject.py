@@ -61,7 +61,7 @@ class SingleStringMathTex(SVGMobject):
         should_center: bool = True,
         height: float | None = None,
         organize_left_to_right: bool = False,
-        tex_environment: str | None = "align*",
+        tex_environment: str | list[str] | None = "center",
         tex_template: TexTemplate | None = None,
         font_size: float = DEFAULT_FONT_SIZE,
         color: ParsableManimColor | None = None,
@@ -281,7 +281,7 @@ class MathTex(SingleStringMathTex):
         arg_separator: str = " ",
         substrings_to_isolate: Iterable[str] | None = None,
         tex_to_color_map: dict[str, ParsableManimColor] | None = None,
-        tex_environment: str | None = "align*",
+        tex_environment: str | list[str] | None = "center",
         **kwargs: Any,
     ):
         self.tex_template = kwargs.pop("tex_template", config["tex_template"])
