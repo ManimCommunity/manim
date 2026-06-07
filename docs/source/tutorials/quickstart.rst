@@ -35,17 +35,6 @@ will learn the ``.animate`` syntax, a powerful feature that animates the methods
 use to modify ``Mobject``\s.
 
 
-Starting a new project
-**********************
-
-Start by creating a new folder::
-
-   manim init project my-project --default
-
-The ``my-project`` folder is the root folder for your project. It contains all the files that Manim needs to function,
-as well as any output that your project produces.
-
-
 Animating a circle
 ******************
 
@@ -55,7 +44,6 @@ Animating a circle
    .. code-block:: python
 
      from manim import *
-
 
      class CreateCircle(Scene):
          def construct(self):
