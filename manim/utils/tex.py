@@ -140,28 +140,30 @@ class TexTemplate:
             LaTeX code based on current template, containing the given ``expression`` and ready for typesetting
         """
         return self.body.replace(self.placeholder_text, expression)
+        
+def get_texcode_for_expression_in_env(self, expression: str, environment: str | list[str]) -> str:
+    """Wrap an expression in one or more LaTeX environments.
 
-    def get_texcode_for_expression_in_env(
-        self, expression: str, environment: str
-    ) -> str:
-        r"""Inserts expression into TeX template wrapped in ``\begin{environment}`` and ``\end{environment}``.
+    Parameters
+    ----------
+    expression : str
+        The LaTeX expression to be wrapped.
+    environment : str or list of str
+        A single environment name or a list of environment names to be nested.
+        When a list is provided, the first environment becomes the outermost.
 
-        Parameters
-        ----------
-        expression
-            The string containing the expression to be typeset, e.g. ``$\sqrt{2}$``.
-        environment
-            The string containing the environment in which the expression should be typeset, e.g. ``align*``.
-
-        Returns
-        -------
-        :class:`str`
-            LaTeX code based on template, containing the given expression inside its environment, ready for typesetting
-        """
-        begin, end = _texcode_for_environment(environment)
-        return self.body.replace(
-            self.placeholder_text, "\n".join([begin, expression, end])
-        )
+    Returns
+    -------
+    str
+        The expression wrapped in the specified LaTeX environment(s).
+    """
+    if isinstance(environment, list):
+        # Nest environments: the first in the list becomes the outermost
+        for env in reversed(environment):
+            expression = f"\\begin{{{env}}}\n{expression}\n\\end{{{env}}}"
+        return expression
+    else:
+        return f"\\begin{{{environment}}}\n{expression}\n\\end{{{environment}}}"
 
     def copy(self) -> Self:
         """Create a deep copy of the TeX template instance."""
