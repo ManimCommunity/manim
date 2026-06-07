@@ -1,4 +1,5 @@
 """Manim's init subcommand."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -59,8 +60,20 @@ def update_cfg(cfg_dict: dict[str, Any], project_cfg_path: Path) -> None:
 
 @cloup.command(context_settings=CONTEXT_SETTINGS, epilog=EPILOG)
 @cloup.argument("project_name", type=cloup.Path(path_type=Path), required=False)
-@cloup.option("-d", "--default", "default_settings", is_flag=True, help="Default settings for project creation.", nargs=1)
-@cloup.option("-f", "--force", is_flag=True, help="Initialize project even if folder already exists.")
+@cloup.option(
+    "-d",
+    "--default",
+    "default_settings",
+    is_flag=True,
+    help="Default settings for project creation.",
+    nargs=1,
+)
+@cloup.option(
+    "-f",
+    "--force",
+    is_flag=True,
+    help="Initialize project even if folder already exists.",
+)
 def project(default_settings: bool, force: bool = False, **kwargs: Any) -> None:
     """Creates a new project. PROJECT_NAME is the name of the folder in which the new project will be initialized."""
     project_name: Path
@@ -69,16 +82,22 @@ def project(default_settings: bool, force: bool = False, **kwargs: Any) -> None:
     else:
         project_name = click.prompt("Project Name", type=Path)
 
-    template_name = click.prompt("Template", type=click.Choice(get_template_names(), False), default="Default")
+    template_name = click.prompt(
+        "Template", type=click.Choice(get_template_names(), False), default="Default"
+    )
     new_cfg: dict[str, Any] = {}
     new_cfg_path = Path.resolve(project_name / "manim.cfg")
 
     if project_name.is_dir():
         if not force:
-            console.print(f"\nFolder [red]{project_name}[/red] exists. Use --force to override.\n")
+            console.print(
+                f"\nFolder [red]{project_name}[/red] exists. Use --force to override.\n"
+            )
             return
         else:
-            console.print(f"\nFolder [yellow]{project_name}[/yellow] exists. Overwriting with --force...\n")
+            console.print(
+                f"\nFolder [yellow]{project_name}[/yellow] exists. Overwriting with --force...\n"
+            )
     else:
         project_name.mkdir()
 
@@ -100,9 +119,13 @@ def project(default_settings: bool, force: bool = False, **kwargs: Any) -> None:
 
 
 def scene(**kwargs: Any) -> None:
-    template_name = click.prompt("template", type=click.Choice(get_template_names(), False), default="Default")
+    template_name = click.prompt(
+        "template", type=click.Choice(get_template_names(), False), default="Default"
+    )
     scene_content = (get_template_path() / f"{template_name}.mtp").resolve().read_text()
-    scene_content = scene_content.replace(template_name + "Template", kwargs["scene_name"], 1)
+    scene_content = scene_content.replace(
+        template_name + "Template", kwargs["scene_name"], 1
+    )
 
     if kwargs["file_name"]:
         file_name = Path(kwargs["file_name"])
@@ -119,7 +142,13 @@ def scene(**kwargs: Any) -> None:
             f.write("\n\n\n" + scene_content)
 
 
-@cloup.group(context_settings=CONTEXT_SETTINGS, invoke_without_command=True, no_args_is_help=True, epilog=EPILOG, help="Create a new project or insert a new scene.")
+@cloup.group(
+    context_settings=CONTEXT_SETTINGS,
+    invoke_without_command=True,
+    no_args_is_help=True,
+    epilog=EPILOG,
+    help="Create a new project or insert a new scene.",
+)
 @cloup.pass_context
 def init(ctx: cloup.Context) -> None:
     pass
