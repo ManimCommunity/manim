@@ -153,6 +153,7 @@ def project(default_settings: bool, force: bool = False, **kwargs: Any) -> None:
         copy_template_files(project_name, template_name)
         update_cfg(CFG_DEFAULTS, new_cfg_path)
 
+
 @cloup.command(
     context_settings=CONTEXT_SETTINGS,
     no_args_is_help=True,
