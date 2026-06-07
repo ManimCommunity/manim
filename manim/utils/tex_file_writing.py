@@ -34,7 +34,7 @@ def tex_hash(expression: Any) -> str:
 
 def tex_to_svg_file(
     expression: str,
-    environment: str | None = None,
+    environment: str | list[str] | None = None,
     tex_template: TexTemplate | None = None,
 ) -> Path:
     r"""Takes a tex expression and returns the svg version of the compiled tex
@@ -44,7 +44,8 @@ def tex_to_svg_file(
     expression
         String containing the TeX expression to be rendered, e.g. ``\\sqrt{2}`` or ``foo``
     environment
-        The string containing the environment in which the expression should be typeset, e.g. ``align*``
+        The string containing the environment in which the expression should be typeset, e.g. ``align*``.
+        Can also be a list of strings for nested environments (e.g. ``["flushright", "Arabic"]``).
     tex_template
         Template class used to typesetting. If not set, use default template set via `config["tex_template"]`
 
@@ -75,7 +76,7 @@ def tex_to_svg_file(
 
 def generate_tex_file(
     expression: str,
-    environment: str | None = None,
+    environment: str | list[str] | None = None,
     tex_template: TexTemplate | None = None,
 ) -> Path:
     r"""Takes a tex expression (and an optional tex environment),
@@ -86,7 +87,8 @@ def generate_tex_file(
     expression
         String containing the TeX expression to be rendered, e.g. ``\\sqrt{2}`` or ``foo``
     environment
-        The string containing the environment in which the expression should be typeset, e.g. ``align*``
+        The string containing the environment in which the expression should be typeset, e.g. ``align*``.
+        Can also be a list of strings for nested environments (e.g. ``["flushright", "Arabic"]``).
     tex_template
         Template class used to typesetting. If not set, use default template set via `config["tex_template"]`
 
@@ -98,7 +100,16 @@ def generate_tex_file(
     if tex_template is None:
         tex_template = config["tex_template"]
     if environment is not None:
-        output = tex_template.get_texcode_for_expression_in_env(expression, environment)
+        if isinstance(environment, list):
+            # For nested environments, we need to wrap them properly
+            # The TexTemplate will handle the nesting via get_texcode_for_expression_in_env
+            output = tex_template.get_texcode_for_expression_in_env(
+                expression, environment
+            )
+        else:
+            output = tex_template.get_texcode_for_expression_in_env(
+                expression, environment
+            )
     else:
         output = tex_template.get_texcode_for_expression(expression)
 
@@ -178,8 +189,20 @@ def insight_package_not_found_error(matching: Match[str]) -> Generator[str]:
     yield f"Install {matching[1]} it using your LaTeX package manager, or check for typos."
 
 
+LATEX_ERROR_INSIGHTS = [
+    (
+        r"inputenc Error: Unicode character (?:.*) \(U\+([0-9a-fA-F]+)\)",
+        insight_inputenc_error,
+    ),
+    (
+        r"LaTeX Error: File `(.*?[clsty])' not found",
+        insight_package_not_found_error,
+    ),
+]
+
+
 def compile_tex(tex_file: Path, tex_compiler: str, output_format: str) -> Path:
-    """Compiles a tex_file into a .dvi or a .xdv or a .pdf
+    """Compiles a tex_file into a .dvi or .xdv or .pdf.
 
     Parameters
     ----------
@@ -293,18 +316,6 @@ def print_all_tex_errors(log_file: Path, tex_compiler: str, tex_file: Path) -> N
             print_tex_error(tex_compilation_log, error_index, tex)
 
 
-LATEX_ERROR_INSIGHTS = [
-    (
-        r"inputenc Error: Unicode character (?:.*) \(U\+([0-9a-fA-F]+)\)",
-        insight_inputenc_error,
-    ),
-    (
-        r"LaTeX Error: File `(.*?[clsty])' not found",
-        insight_package_not_found_error,
-    ),
-]
-
-
 def print_tex_error(
     tex_compilation_log: Sequence[str],
     error_start_index: int,
@@ -316,18 +327,22 @@ def print_tex_error(
 
     # TeX errors eventually contain a line beginning 'l.xxx` where xxx is the line number that caused the compilation
     # failure. This code finds the next such line after the error current error message
-    line_of_tex_error = (
-        int(
-            [
-                log_line
-                for log_line in tex_compilation_log[error_start_index:]
-                if log_line.startswith("l.")
-            ][0]
-            .split(" ")[0]
-            .split(".")[1],
+    try:
+        line_of_tex_error = (
+            int(
+                [
+                    log_line
+                    for log_line in tex_compilation_log[error_start_index:]
+                    if log_line.startswith("l.")
+                ][0]
+                .split(" ")[0]
+                .split(".")[1],
+            )
+            - 1
         )
-        - 1
-    )
+    except IndexError:
+        return
+
     # our tex error may be on a line outside our user input because of post-processing
     if line_of_tex_error >= len(tex_source):
         return None

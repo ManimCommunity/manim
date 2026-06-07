@@ -142,26 +142,34 @@ class TexTemplate:
         return self.body.replace(self.placeholder_text, expression)
 
     def get_texcode_for_expression_in_env(
-        self, expression: str, environment: str
+        self, expression: str, environment: str | list[str]
     ) -> str:
-        r"""Inserts expression into TeX template wrapped in ``\begin{environment}`` and ``\end{environment}``.
+        r"""Inserts expression into TeX template wrapped in one or more LaTeX environments.
 
         Parameters
         ----------
         expression
             The string containing the expression to be typeset, e.g. ``$\sqrt{2}$``.
         environment
-            The string containing the environment in which the expression should be typeset, e.g. ``align*``.
+            A single environment name (str) or a list of environment names to be nested.
+            When a list is provided, the first environment becomes the outermost.
 
         Returns
         -------
         :class:`str`
-            LaTeX code based on template, containing the given expression inside its environment, ready for typesetting
+            LaTeX code based on template, containing the given expression inside its environment(s), ready for typesetting
         """
-        begin, end = _texcode_for_environment(environment)
-        return self.body.replace(
-            self.placeholder_text, "\n".join([begin, expression, end])
-        )
+        if isinstance(environment, list):
+            # Nest environments: the first in the list becomes the outermost
+            for env in reversed(environment):
+                begin, end = _texcode_for_environment(env)
+                expression = f"{begin}\n{expression}\n{end}"
+            return self.body.replace(self.placeholder_text, expression)
+        else:
+            begin, end = _texcode_for_environment(environment)
+            return self.body.replace(
+                self.placeholder_text, "\n".join([begin, expression, end])
+            )
 
     def copy(self) -> Self:
         """Create a deep copy of the TeX template instance."""
