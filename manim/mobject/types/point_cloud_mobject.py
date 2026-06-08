@@ -102,7 +102,13 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         num_new_points = len(points)
         self.points = np.append(self.points, points, axis=0)
         if rgbas is None:
-            color = ManimColor(color) if color else self.color
+            if color is not None:
+                color = ManimCorlor(color)
+            else:
+                color = getattr(self, "color", WHITE)
+                color = (
+                    ManimColor(color) if not isinstance(color, ManimColor) else color
+                )
             rgbas = np.repeat([color_to_rgba(color, alpha)], num_new_points, axis=0)
         elif len(rgbas) != len(points):
             raise ValueError("points and rgbas must have same length")
