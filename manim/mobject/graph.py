@@ -304,6 +304,14 @@ def _partite_layout(
         if "subset" not in nx_graph.nodes[v]:
             nx_graph.nodes[v]["subset"] = partition_count
 
+    if "subset_key" not in kwargs:
+        subset_key = {}
+        for i, part in enumerate(partitions):
+            if not isinstance(part, list):
+                part = list(part)
+            subset_key[i] = part
+        kwargs["subset_key"] = subset_key
+
     return nx.layout.multipartite_layout(nx_graph, scale=scale, **kwargs)
 
 
