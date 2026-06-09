@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
@@ -11,13 +13,13 @@ __all__ = ["OpenGLSurfaceMesh"]
 class OpenGLSurfaceMesh(OpenGLVGroup):
     def __init__(
         self,
-        uv_surface,
-        resolution=None,
-        stroke_width=1,
-        normal_nudge=1e-2,
-        depth_test=True,
-        flat_stroke=False,
-        **kwargs,
+        uv_surface: OpenGLSurface,
+        resolution: tuple[int, int] | None = None,
+        stroke_width: float = 1,
+        normal_nudge: float = 1e-2,
+        depth_test: bool = True,
+        flat_stroke: bool = False,
+        **kwargs: Any,
     ):
         if not isinstance(uv_surface, OpenGLSurface):
             raise Exception("uv_surface must be of type OpenGLSurface")
@@ -31,7 +33,7 @@ class OpenGLSurfaceMesh(OpenGLVGroup):
             **kwargs,
         )
 
-    def init_points(self):
+    def init_points(self) -> None:
         uv_surface = self.uv_surface
 
         full_nu, full_nv = uv_surface.resolution

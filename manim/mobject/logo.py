@@ -4,8 +4,9 @@ from __future__ import annotations
 
 __all__ = ["ManimBanner"]
 
+from typing import Any
+
 import svgelements as se
-from typing_extensions import Any
 
 from manim.animation.updaters.update import UpdateFromAlphaFunc
 from manim.mobject.geometry.arc import Circle

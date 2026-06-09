@@ -59,7 +59,9 @@ class Section:
     :meth:`.OpenGLRenderer.update_skipping_status`
     """
 
-    def __init__(self, type_: str, video: str | None, name: str, skip_animations: bool):
+    def __init__(
+        self, type_: str, video: str | None, name: str, skip_animations: bool
+    ) -> None:
         self.type_ = type_
         # None when not to be saved -> still keeps section alive
         self.video: str | None = video

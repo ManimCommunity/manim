@@ -14,12 +14,10 @@ from ..utils.rate_functions import linear, smooth
 __all__ = ["Animation", "Wait", "Add", "override_animation"]
 
 
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from copy import deepcopy
 from functools import partialmethod
-from typing import TYPE_CHECKING, Any, Callable
-
-from typing_extensions import Self
+from typing import TYPE_CHECKING, Any, Self
 
 if TYPE_CHECKING:
     from manim.scene.scene import Scene
@@ -129,7 +127,7 @@ class Animation:
 
     def __init__(
         self,
-        mobject: Mobject | None,
+        mobject: Mobject | OpenGLMobject | None,
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
         run_time: float = DEFAULT_ANIMATION_RUN_TIME,
         rate_func: Callable[[float], float] = smooth,
@@ -262,11 +260,11 @@ class Animation:
         ):
             scene.add(self.mobject)
 
-    def create_starting_mobject(self) -> Mobject:
+    def create_starting_mobject(self) -> Mobject | OpenGLMobject:
         # Keep track of where the mobject starts
         return self.mobject.copy()
 
-    def get_all_mobjects(self) -> Sequence[Mobject]:
+    def get_all_mobjects(self) -> Sequence[Mobject | OpenGLMobject]:
         """Get all mobjects involved in the animation.
 
         Ordering must match the ordering of arguments to interpolate_submobject
@@ -280,9 +278,12 @@ class Animation:
 
     def get_all_families_zipped(self) -> Iterable[tuple]:
         if config["renderer"] == RendererType.OPENGL:
-            return zip(*(mob.get_family() for mob in self.get_all_mobjects()))
+            return zip(
+                *(mob.get_family() for mob in self.get_all_mobjects()), strict=False
+            )
         return zip(
-            *(mob.family_members_with_points() for mob in self.get_all_mobjects())
+            *(mob.family_members_with_points() for mob in self.get_all_mobjects()),
+            strict=False,
         )
 
     def update_mobjects(self, dt: float) -> None:
@@ -540,7 +541,7 @@ class Animation:
 
 
 def prepare_animation(
-    anim: Animation | mobject._AnimationBuilder,
+    anim: Animation | mobject._AnimationBuilder | opengl_mobject._AnimationBuilder,
 ) -> Animation:
     r"""Returns either an unchanged animation, or the animation built
     from a passed animation factory.

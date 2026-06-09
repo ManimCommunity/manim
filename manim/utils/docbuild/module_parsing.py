@@ -6,9 +6,7 @@ import ast
 import sys
 from ast import Attribute, Name, Subscript
 from pathlib import Path
-from typing import Any
-
-from typing_extensions import TypeAlias
+from typing import Any, TypeAlias
 
 __all__ = ["parse_module_attributes"]
 
@@ -177,8 +175,8 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict, TypeVarDict]:
                     # TODO: ast.TypeAlias does not exist before Python 3.12, and that
                     # could be the reason why MyPy does not recognize these as
                     # attributes of node.
-                    alias_name = node.name.id if is_type_alias else node.target.id  # type: ignore[attr-defined]
-                    definition_node = node.value  # type: ignore[attr-defined]
+                    alias_name = node.name.id if is_type_alias else node.target.id
+                    definition_node = node.value
 
                     # If the definition is a Union, replace with vertical bar notation.
                     # Instead of "Union[Type1, Type2]", we'll have "Type1 | Type2".

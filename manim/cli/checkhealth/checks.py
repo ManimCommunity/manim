@@ -6,7 +6,8 @@ from __future__ import annotations
 
 import os
 import shutil
-from typing import Callable, Protocol, cast
+from collections.abc import Callable
+from typing import Protocol, cast
 
 __all__ = ["HEALTH_CHECKS"]
 

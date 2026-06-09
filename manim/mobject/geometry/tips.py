@@ -13,7 +13,7 @@ __all__ = [
     "StealthTip",
 ]
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -25,8 +25,6 @@ from manim.mobject.types.vectorized_mobject import VMobject
 from manim.utils.space_ops import angle_of_vector
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from manim.typing import Point3D, Vector3D
 
 
