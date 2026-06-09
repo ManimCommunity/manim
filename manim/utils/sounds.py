@@ -39,16 +39,28 @@ def read_audio(file_path: str | Path) -> tuple[np.ndarray, int]:
     with av.open(str(file_path)) as container:
         stream = container.streams.audio[0]
         sample_rate = stream.sample_rate
-        samples: list = []
+        samples = []
         for frame in container.decode(stream):
             frame_samples = frame.to_ndarray()
             # Convert mono to stereo
             if frame_samples.shape[-1] == 1:
                 frame_samples = np.repeat(frame_samples, 2, axis=-1)
             samples.append(frame_samples)
+
         if not samples:
             return np.array([]), sample_rate
-        return np.concatenate(samples, axis=0), sample_rate
+
+        # Find the maximum length among all frames
+        max_length = max(frame.shape[0] for frame in samples)
+        # Pad each frame to the max length (with zeros)
+        padded_samples = []
+        for frame in samples:
+            if frame.shape[0] < max_length:
+                pad_width = ((0, max_length - frame.shape[0]), (0, 0))
+                frame = np.pad(frame, pad_width, mode="constant")
+            padded_samples.append(frame)
+
+        return np.concatenate(padded_samples, axis=0), sample_rate
 
 
 def create_silent_audio(duration: float, sample_rate: int = 44100) -> np.ndarray:
