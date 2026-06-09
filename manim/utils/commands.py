@@ -18,7 +18,9 @@ __all__ = [
 
 
 def capture(
-    command: str, cwd: StrOrBytesPath | None = None, command_input: str | None = None
+    command: str | list[str],
+    cwd: StrOrBytesPath | None = None,
+    command_input: str | None = None,
 ) -> tuple[str, str, int]:
     p = run(
         command,

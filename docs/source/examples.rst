@@ -299,7 +299,7 @@ Animations
                 path.become(previous_path)
             path.add_updater(update_path)
             self.add(path, dot)
-            self.play(Rotating(dot, radians=PI, about_point=RIGHT, run_time=2))
+            self.play(Rotating(dot, angle=PI, about_point=RIGHT, run_time=2))
             self.wait()
             self.play(dot.animate.shift(UP))
             self.play(dot.animate.shift(LEFT))

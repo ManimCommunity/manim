@@ -13,3 +13,11 @@ Multi-platform builds are possible by running
 docker buildx build --push --platform linux/arm64/v8,linux/amd64 --tag manimcommunity/manim:TAG -f docker/Dockerfile .
 ```
 from the root directory of the repository.
+
+# Runtime notes
+- The image is built via a multi-stage Dockerfile (build dependencies are not
+  carried into the runtime stage).
+- The image does not include the `ffmpeg` CLI binary.
+- The default TeX installation is minimal and does not include `ctex`.
+- Headless OpenGL rendering relies on EGL/GL runtime libraries available in the
+  image.

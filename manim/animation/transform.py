@@ -28,11 +28,12 @@ __all__ = [
 
 import inspect
 import types
-from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, Any, Callable
+from collections.abc import Callable, Iterable, Sequence
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
+from manim.data_structures import MethodWithArgs
 from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
 
 from .. import config
@@ -51,6 +52,7 @@ from ..utils.rate_functions import smooth, squish_rate_func
 
 if TYPE_CHECKING:
     from ..scene.scene import Scene
+    from ..typing import Point3DLike, Point3DLike_Array
 
 
 class Transform(Animation):
@@ -124,6 +126,10 @@ class Transform(Animation):
 
                 self.play(*anims, run_time=2)
                 self.wait()
+
+    See also
+    --------
+    :class:`~.ReplacementTransform`, :meth:`~.Mobject.interpolate`, :meth:`~.Mobject.align_data`
     """
 
     def __init__(
@@ -133,12 +139,12 @@ class Transform(Animation):
         path_func: Callable | None = None,
         path_arc: float = 0,
         path_arc_axis: np.ndarray = OUT,
-        path_arc_centers: np.ndarray = None,
+        path_arc_centers: Point3DLike | Point3DLike_Array | None = None,
         replace_mobject_with_target_in_scene: bool = False,
         **kwargs,
     ) -> None:
         self.path_arc_axis: np.ndarray = path_arc_axis
-        self.path_arc_centers: np.ndarray = path_arc_centers
+        self.path_arc_centers: Point3DLike | Point3DLike_Array | None = path_arc_centers
         self.path_arc: float = path_arc
 
         # path_func is a property a few lines below so it doesn't need to be set in any case
@@ -205,7 +211,7 @@ class Transform(Animation):
             self.mobject.align_data(self.target_copy)
         super().begin()
 
-    def create_target(self) -> Mobject:
+    def create_target(self) -> Mobject | OpenGLMobject:
         # Has no meaningful effect here, but may be useful
         # in subclasses
         return self.target_mobject
@@ -230,8 +236,8 @@ class Transform(Animation):
             self.target_copy,
         ]
         if config.renderer == RendererType.OPENGL:
-            return zip(*(mob.get_family() for mob in mobs))
-        return zip(*(mob.family_members_with_points() for mob in mobs))
+            return zip(*(mob.get_family() for mob in mobs), strict=True)
+        return zip(*(mob.family_members_with_points() for mob in mobs), strict=True)
 
     def interpolate_submobject(
         self,
@@ -299,7 +305,7 @@ class ReplacementTransform(Transform):
 
 
 class TransformFromCopy(Transform):
-    """Performs a reversed Transform"""
+    """Preserves a copy of the original VMobject and transforms only it's copy to the target VMobject"""
 
     def __init__(self, mobject: Mobject, target_mobject: Mobject, **kwargs) -> None:
         super().__init__(target_mobject, mobject, **kwargs)
@@ -435,13 +441,13 @@ class MoveToTarget(Transform):
 
 
 class _MethodAnimation(MoveToTarget):
-    def __init__(self, mobject, methods):
+    def __init__(self, mobject: Mobject, methods: list[MethodWithArgs]) -> None:
         self.methods = methods
         super().__init__(mobject)
 
     def finish(self) -> None:
-        for method, method_args, method_kwargs in self.methods:
-            method.__func__(self.mobject, *method_args, **method_kwargs)
+        for item in self.methods:
+            item.method.__func__(self.mobject, *item.args, **item.kwargs)
         super().finish()
 
 
@@ -739,7 +745,7 @@ class CyclicReplace(Transform):
     def create_target(self) -> Group:
         target = self.group.copy()
         cycled_targets = [target[-1], *target[:-1]]
-        for m1, m2 in zip(cycled_targets, self.group):
+        for m1, m2 in zip(cycled_targets, self.group, strict=True):
             m1.move_to(m2)
         return target
 
@@ -847,7 +853,14 @@ class FadeTransform(Transform):
 
     """
 
-    def __init__(self, mobject, target_mobject, stretch=True, dim_to_match=1, **kwargs):
+    def __init__(
+        self,
+        mobject: Mobject,
+        target_mobject: Mobject,
+        stretch: bool = True,
+        dim_to_match: int = 1,
+        **kwargs: Any,
+    ):
         self.to_add_on_completion = target_mobject
         self.stretch = stretch
         self.dim_to_match = dim_to_match
@@ -941,5 +954,5 @@ class FadeTransformPieces(FadeTransform):
         """Replaces the source submobjects by the target submobjects and sets
         the opacity to 0.
         """
-        for sm0, sm1 in zip(source.get_family(), target.get_family()):
+        for sm0, sm1 in zip(source.get_family(), target.get_family(), strict=True):
             super().ghost_to(sm0, sm1)

@@ -11,11 +11,10 @@ __all__ = [
     "DashedVMobject",
 ]
 
-
 import itertools as it
 import sys
-from collections.abc import Hashable, Iterable, Mapping, Sequence
-from typing import TYPE_CHECKING, Callable, Literal
+from collections.abc import Callable, Hashable, Iterable, Mapping, Sequence
+from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 from PIL.Image import Image
@@ -48,15 +47,17 @@ from manim.utils.iterables import (
 from manim.utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
-    from typing import Any
+    from collections.abc import Iterator
+    from typing import Self
 
     import numpy.typing as npt
-    from typing_extensions import Self
 
     from manim.typing import (
         CubicBezierPath,
         CubicBezierPointsLike,
         CubicSpline,
+        FloatRGBA,
+        FloatRGBA_Array,
         ManimFloat,
         MappingFunction,
         Point2DLike,
@@ -64,9 +65,8 @@ if TYPE_CHECKING:
         Point3D_Array,
         Point3DLike,
         Point3DLike_Array,
-        RGBA_Array_Float,
         Vector3D,
-        Zeros,
+        Vector3DLike,
     )
 
 # TODO
@@ -104,6 +104,7 @@ class VMobject(Mobject):
     """
 
     sheen_factor = 0.0
+    target: VMobject
 
     def __init__(
         self,
@@ -117,7 +118,7 @@ class VMobject(Mobject):
         background_stroke_width: float = 0,
         sheen_factor: float = 0.0,
         joint_type: LineJointType | None = None,
-        sheen_direction: Vector3D = UL,
+        sheen_direction: Vector3DLike = UL,
         close_new_points: bool = False,
         pre_function_handle_to_anchor_scale_factor: float = 0.01,
         make_smooth_after_applying_functions: bool = False,
@@ -142,7 +143,7 @@ class VMobject(Mobject):
         self.joint_type: LineJointType = (
             LineJointType.AUTO if joint_type is None else joint_type
         )
-        self.sheen_direction: Vector3D = sheen_direction
+        self.sheen_direction = sheen_direction
         self.close_new_points: bool = close_new_points
         self.pre_function_handle_to_anchor_scale_factor: float = (
             pre_function_handle_to_anchor_scale_factor
@@ -154,7 +155,7 @@ class VMobject(Mobject):
         self.shade_in_3d: bool = shade_in_3d
         self.tolerance_for_point_equality: float = tolerance_for_point_equality
         self.n_points_per_cubic_curve: int = n_points_per_cubic_curve
-        self._bezier_t_values: npt.NDArray[float] = np.linspace(
+        self._bezier_t_values: npt.NDArray[np.float64] = np.linspace(
             0, 1, n_points_per_cubic_curve
         )
         self.cap_style: CapStyleType = cap_style
@@ -172,6 +173,9 @@ class VMobject(Mobject):
 
     def _assert_valid_submobjects(self, submobjects: Iterable[VMobject]) -> Self:
         return self._assert_valid_submobjects_internal(submobjects, VMobject)
+
+    def __iter__(self) -> Iterator[VMobject]:
+        return iter(self.split())
 
     # OpenGL compatibility
     @property
@@ -217,8 +221,10 @@ class VMobject(Mobject):
         return self
 
     def generate_rgbas_array(
-        self, color: ManimColor | list[ManimColor], opacity: float | Iterable[float]
-    ) -> RGBA_Array_Float:
+        self,
+        color: ParsableManimColor | Iterable[ManimColor] | None,
+        opacity: float | Iterable[float],
+    ) -> FloatRGBA:
         """
         First arg can be either a color, or a tuple/list of colors.
         Likewise, opacity can either be a float, or a tuple of floats.
@@ -232,8 +238,11 @@ class VMobject(Mobject):
         opacities: list[float] = [
             o if (o is not None) else 0.0 for o in tuplify(opacity)
         ]
-        rgbas: npt.NDArray[RGBA_Array_Float] = np.array(
-            [c.to_rgba_with_alpha(o) for c, o in zip(*make_even(colors, opacities))],
+        rgbas: FloatRGBA_Array = np.array(
+            [
+                c.to_rgba_with_alpha(o)
+                for c, o in zip(*make_even(colors, opacities), strict=True)
+            ],
         )
 
         sheen_factor = self.get_sheen_factor()
@@ -247,7 +256,7 @@ class VMobject(Mobject):
     def update_rgbas_array(
         self,
         array_name: str,
-        color: ManimColor | None = None,
+        color: ParsableManimColor | Iterable[ManimColor] | None = None,
         opacity: float | None = None,
     ) -> Self:
         rgbas = self.generate_rgbas_array(color, opacity)
@@ -315,7 +324,7 @@ class VMobject(Mobject):
             for submobject in self.submobjects:
                 submobject.set_fill(color, opacity, family)
         self.update_rgbas_array("fill_rgbas", color, opacity)
-        self.fill_rgbas: RGBA_Array_Float
+        self.fill_rgbas: FloatRGBA_Array
         if opacity is not None:
             self.fill_opacity = opacity
         return self
@@ -395,7 +404,7 @@ class VMobject(Mobject):
         background_stroke_width: float | None = None,
         background_stroke_opacity: float | None = None,
         sheen_factor: float | None = None,
-        sheen_direction: Vector3D | None = None,
+        sheen_direction: Vector3DLike | None = None,
         background_image: Image | str | None = None,
         family: bool = True,
     ) -> Self:
@@ -457,7 +466,7 @@ class VMobject(Mobject):
                 return self
             elif len(submobs2) == 0:
                 submobs2 = [vmobject]
-            for sm1, sm2 in zip(*make_even(submobs1, submobs2)):
+            for sm1, sm2 in zip(*make_even(submobs1, submobs2), strict=True):
                 sm1.match_style(sm2)
         return self
 
@@ -472,7 +481,14 @@ class VMobject(Mobject):
         self.set_stroke(opacity=opacity, family=family, background=True)
         return self
 
-    def scale(self, scale_factor: float, scale_stroke: bool = False, **kwargs) -> Self:
+    def scale(
+        self,
+        scale_factor: float,
+        scale_stroke: bool = False,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
         r"""Scale the size by a factor.
 
         Default behavior is to scale about the center of the vmobject.
@@ -484,8 +500,10 @@ class VMobject(Mobject):
             will shrink, and for :math:`|\alpha| > 1` it will grow. Furthermore,
             if :math:`\alpha < 0`, the mobject is also flipped.
         scale_stroke
-            Boolean determining if the object's outline is scaled when the object is scaled.
-            If enabled, and object with 2px outline is scaled by a factor of .5, it will have an outline of 1px.
+            Boolean determining if each submobject's outline is scaled when the object
+            is scaled. If enabled, each submobject keeps its relative stroke width (for
+            example, a submobject with a 2px outline scaled by a factor of .5 will have
+            a 1px outline, while a submobject with 0px stroke remains at 0px).
         kwargs
             Additional keyword arguments passed to
             :meth:`~.Mobject.scale`.
@@ -522,12 +540,18 @@ class VMobject(Mobject):
 
         """
         if scale_stroke:
-            self.set_stroke(width=abs(scale_factor) * self.get_stroke_width())
-            self.set_stroke(
-                width=abs(scale_factor) * self.get_stroke_width(background=True),
-                background=True,
-            )
-        super().scale(scale_factor, **kwargs)
+            for mob in self.get_family():
+                if isinstance(mob, VMobject):
+                    mob.set_stroke(
+                        width=abs(scale_factor) * mob.get_stroke_width(),
+                        family=False,
+                    )
+                    mob.set_stroke(
+                        width=abs(scale_factor) * mob.get_stroke_width(background=True),
+                        background=True,
+                        family=False,
+                    )
+        super().scale(scale_factor, about_point=about_point, about_edge=about_edge)
         return self
 
     def fade(self, darkness: float = 0.5, family: bool = True) -> Self:
@@ -541,7 +565,7 @@ class VMobject(Mobject):
         super().fade(darkness, family)
         return self
 
-    def get_fill_rgbas(self) -> RGBA_Array_Float | Zeros:
+    def get_fill_rgbas(self) -> FloatRGBA_Array:
         try:
             return self.fill_rgbas
         except AttributeError:
@@ -574,13 +598,13 @@ class VMobject(Mobject):
     def get_fill_opacities(self) -> npt.NDArray[ManimFloat]:
         return self.get_fill_rgbas()[:, 3]
 
-    def get_stroke_rgbas(self, background: bool = False) -> RGBA_Array_float | Zeros:
+    def get_stroke_rgbas(self, background: bool = False) -> FloatRGBA_Array:
         try:
             if background:
-                self.background_stroke_rgbas: RGBA_Array_Float
+                self.background_stroke_rgbas: FloatRGBA_Array
                 rgbas = self.background_stroke_rgbas
             else:
-                self.stroke_rgbas: RGBA_Array_Float
+                self.stroke_rgbas: FloatRGBA_Array
                 rgbas = self.stroke_rgbas
             return rgbas
         except AttributeError:
@@ -593,7 +617,6 @@ class VMobject(Mobject):
 
     def get_stroke_width(self, background: bool = False) -> float:
         if background:
-            self.background_stroke_width: float
             width = self.background_stroke_width
         else:
             width = self.stroke_width
@@ -618,9 +641,20 @@ class VMobject(Mobject):
             return self.get_stroke_color()
         return self.get_fill_color()
 
-    color = property(get_color, set_color)
+    color: ManimColor = property(get_color, set_color)
 
-    def set_sheen_direction(self, direction: Vector3D, family: bool = True) -> Self:
+    def nonempty_submobjects(self) -> Sequence[VMobject]:
+        return [
+            submob
+            for submob in self.submobjects
+            if len(submob.submobjects) != 0 or len(submob.points) != 0
+        ]
+
+    def split(self) -> list[VMobject]:
+        result: list[VMobject] = [self] if len(self.points) > 0 else []
+        return result + self.submobjects
+
+    def set_sheen_direction(self, direction: Vector3DLike, family: bool = True) -> Self:
         """Sets the direction of the applied sheen.
 
         Parameters
@@ -639,16 +673,16 @@ class VMobject(Mobject):
         :meth:`~.VMobject.set_sheen`
         :meth:`~.VMobject.rotate_sheen_direction`
         """
-        direction = np.array(direction)
+        direction_copy = np.array(direction)
         if family:
             for submob in self.get_family():
-                submob.sheen_direction = direction
+                submob.sheen_direction = direction_copy.copy()
         else:
-            self.sheen_direction: Vector3D = direction
+            self.sheen_direction = direction_copy
         return self
 
     def rotate_sheen_direction(
-        self, angle: float, axis: Vector3D = OUT, family: bool = True
+        self, angle: float, axis: Vector3DLike = OUT, family: bool = True
     ) -> Self:
         """Rotates the direction of the applied sheen.
 
@@ -681,7 +715,7 @@ class VMobject(Mobject):
         return self
 
     def set_sheen(
-        self, factor: float, direction: Vector3D | None = None, family: bool = True
+        self, factor: float, direction: Vector3DLike | None = None, family: bool = True
     ) -> Self:
         """Applies a color gradient from a direction.
 
@@ -1047,22 +1081,21 @@ class VMobject(Mobject):
             The VMobject itself, after appending the straight lines to its
             path.
         """
+        self.throw_error_if_no_points()
+
         points = np.asarray(points).reshape(-1, self.dim)
         num_points = points.shape[0]
         if num_points == 0:
             return self
 
+        start_corners = np.empty((num_points, self.dim))
+        start_corners[0] = self.points[-1]
+        start_corners[1:] = points[:-1]
+        end_corners = points
+
         if self.has_new_path_started():
-            # Pop the last point from self.points and
-            # add it to start_corners
-            start_corners = np.empty((num_points, self.dim))
-            start_corners[0] = self.points[-1]
-            start_corners[1:] = points[:-1]
-            end_corners = points
+            # Remove the last point from the new path
             self.points = self.points[:-1]
-        else:
-            start_corners = points[:-1]
-            end_corners = points[1:]
 
         nppcc = self.n_points_per_cubic_curve
         new_points = np.empty((nppcc * start_corners.shape[0], self.dim))
@@ -1178,7 +1211,13 @@ class VMobject(Mobject):
             self.points = self.points[:-1]
         self.append_points(vectorized_mobject.points)
 
-    def apply_function(self, function: MappingFunction) -> Self:
+    def apply_function(
+        self,
+        function: MappingFunction,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
         factor = self.pre_function_handle_to_anchor_scale_factor
         self.scale_handle_to_anchor_distances(factor)
         super().apply_function(function)
@@ -1190,12 +1229,13 @@ class VMobject(Mobject):
     def rotate(
         self,
         angle: float,
-        axis: Vector3D = OUT,
+        axis: Vector3DLike = OUT,
+        *,
         about_point: Point3DLike | None = None,
-        **kwargs,
+        about_edge: Vector3DLike | None = None,
     ) -> Self:
         self.rotate_sheen_direction(angle, axis)
-        super().rotate(angle, axis, about_point, **kwargs)
+        super().rotate(angle, axis, about_point=about_point, about_edge=about_edge)
         return self
 
     def scale_handle_to_anchor_distances(self, factor: float) -> Self:
@@ -1321,7 +1361,7 @@ class VMobject(Mobject):
         split_indices = [0] + list(filtered) + [len(points)]
         return (
             points[i1:i2]
-            for i1, i2 in zip(split_indices, split_indices[1:])
+            for i1, i2 in zip(split_indices[:-1], split_indices[1:], strict=True)
             if (i2 - i1) >= nppcc
         )
 
@@ -1675,7 +1715,7 @@ class VMobject(Mobject):
 
         s = self.get_start_anchors()
         e = self.get_end_anchors()
-        return list(it.chain.from_iterable(zip(s, e)))
+        return list(it.chain.from_iterable(zip(s, e, strict=True)))
 
     def get_points_defining_boundary(self) -> Point3D_Array:
         # Probably returns all anchors, but this is weird regarding  the name of the method.
@@ -1720,6 +1760,10 @@ class VMobject(Mobject):
         -------
         :class:`VMobject`
            ``self``
+
+        See also
+        --------
+        :meth:`~.Mobject.interpolate`, :meth:`~.Mobject.align_data`
         """
         self.align_rgbas(vmobject)
         # TODO: This shortcut can be a bit over eager. What if they have the same length, but different subpath lengths?
@@ -1749,7 +1793,9 @@ class VMobject(Mobject):
         def get_nth_subpath(path_list, n):
             if n >= len(path_list):
                 # Create a null path at the very end
-                return [path_list[-1][-1]] * nppcc
+                if len(path_list) == 0:
+                    return np.tile(np.zeros(3), (nppcc, 1))
+                return np.tile(path_list[-1][-1], (nppcc, 1))
             path = path_list[n]
             # Check for useless points at the end of the path and remove them
             # https://github.com/ManimCommunity/manim/issues/1959
@@ -1913,7 +1959,6 @@ class VMobject(Mobject):
             return self
         num_curves = vmobject.get_num_curves()
         if num_curves == 0:
-            self.clear_points()
             return self
 
         # The following two lines will compute which Bézier curves of the given Mobject must be processed.
@@ -1928,12 +1973,18 @@ class VMobject(Mobject):
         upper_index, upper_residue = integer_interpolate(0, num_curves, b)
 
         nppc = self.n_points_per_curve
+
+        # Copy vmobject.points if vmobject is self to prevent unintended in-place modification
+        vmobject_points = (
+            vmobject.points.copy() if self is vmobject else vmobject.points
+        )
+
         # If both indices coincide, get a part of a single Bézier curve.
         if lower_index == upper_index:
             # Look at the "lower_index"-th Bézier curve and select its part from
             # t=lower_residue to t=upper_residue.
             self.points = partial_bezier_points(
-                vmobject.points[nppc * lower_index : nppc * (lower_index + 1)],
+                vmobject_points[nppc * lower_index : nppc * (lower_index + 1)],
                 lower_residue,
                 upper_residue,
             )
@@ -1943,19 +1994,19 @@ class VMobject(Mobject):
             # Look at the "lower_index"-th Bezier curve and select its part from
             # t=lower_residue to t=1. This is the first curve in self.points.
             self.points[:nppc] = partial_bezier_points(
-                vmobject.points[nppc * lower_index : nppc * (lower_index + 1)],
+                vmobject_points[nppc * lower_index : nppc * (lower_index + 1)],
                 lower_residue,
                 1,
             )
             # If there are more curves between the "lower_index"-th and the
             # "upper_index"-th Béziers, add them all to self.points.
-            self.points[nppc:-nppc] = vmobject.points[
+            self.points[nppc:-nppc] = vmobject_points[
                 nppc * (lower_index + 1) : nppc * upper_index
             ]
             # Look at the "upper_index"-th Bézier curve and select its part from
             # t=0 to t=upper_residue. This is the last curve in self.points.
             self.points[-nppc:] = partial_bezier_points(
-                vmobject.points[nppc * upper_index : nppc * (upper_index + 1)],
+                vmobject_points[nppc * upper_index : nppc * (upper_index + 1)],
                 0,
                 upper_residue,
             )
@@ -2277,6 +2328,11 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         """
         self._assert_valid_submobjects(tuplify(value))
         self.submobjects[key] = value
+
+    def __getitem__(self, key: int | slice) -> VMobject:
+        if isinstance(key, slice):
+            return VGroup(self.submobjects[key])
+        return self.submobjects[key]
 
 
 class VDict(VMobject, metaclass=ConvertToOpenGL):
@@ -2811,6 +2867,21 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
         self.dashed_ratio = dashed_ratio
         self.num_dashes = num_dashes
         super().__init__(color=color, **kwargs)
+
+        # Work on a copy to avoid mutating the caller's mobject (e.g. removing tips).
+        base_vmobject = vmobject
+        vmobject = base_vmobject.copy()
+
+        # TipableVMobject instances (Arrow, Vector, etc.) carry tips as submobjects.
+        # When dashing such objects, each subcurve would otherwise include its own
+        # tip, leading to many overlapping arrowheads. Pop tips from the working
+        # copy and re-attach them only once after the dashes are created.
+        tips = None
+        if hasattr(vmobject, "pop_tips"):
+            popped_tips = vmobject.pop_tips()
+            if len(popped_tips.submobjects) > 0:
+                tips = popped_tips
+
         r = self.dashed_ratio
         n = self.num_dashes
         if n > 0:
@@ -2896,6 +2967,9 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
         # Family is already taken care of by get_subcurve
         # implementation
         if config.renderer == RendererType.OPENGL:
-            self.match_style(vmobject, recurse=False)
+            self.match_style(base_vmobject, recurse=False)
         else:
-            self.match_style(vmobject, family=False)
+            self.match_style(base_vmobject, family=False)
+
+        if tips is not None:
+            self.add(*tips.submobjects)
