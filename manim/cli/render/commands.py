@@ -17,6 +17,7 @@ from argparse import Namespace
 from pathlib import Path
 from typing import Any, cast
 
+import click
 import cloup
 
 from manim import __version__
@@ -57,6 +58,22 @@ class ClickArgs(Namespace):
         return str(self.__dict__)
 
 
+def parse_scene_spec(scene_spec: str) -> tuple[str, int | None]:
+    """Parse 'MyScene:3' -> ('MyScene', 3). Return (name, None) if no index."""
+    if ":" not in scene_spec:
+        return scene_spec, None
+    name, idx_str = scene_spec.split(":", 1)
+    try:
+        idx = int(idx_str)
+    except ValueError:
+        raise click.BadParameter(
+            f"Invalid section index: {idx_str!r} in {scene_spec!r}"
+        ) from None
+    if idx < 1:
+        raise click.BadParameter(f"Section index must be >= 1, got {idx}") from None
+    return name, idx
+
+
 @cloup.command(
     context_settings=None,
     no_args_is_help=True,
@@ -94,6 +111,11 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
 
     config.digest_args(click_args)
     file = Path(config.input_file)
+
+    scene_specs = list(config.scene_names) if config.scene_names else []
+    if not scene_specs:
+        scene_specs = [sc.__name__ for sc in scene_classes_from_file(file)]
+
     if config.renderer == RendererType.OPENGL:
         from manim.renderer.opengl_renderer import OpenGLRenderer
 
@@ -101,9 +123,27 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
             renderer = OpenGLRenderer()
             keep_running = True
             while keep_running:
-                for SceneClass in scene_classes_from_file(file):
+                for scene_spec in scene_specs:
+                    scene_name, section_index = parse_scene_spec(scene_spec)
+                    SceneClass = None
+                    for sc in scene_classes_from_file(file):
+                        if sc.__name__ == scene_name:
+                            SceneClass = sc
+                            break
+                    if SceneClass is None:
+                        error_console.print(
+                            f"[red]Scene '{scene_name}' not found in {file}[/red]"
+                        )
+                        sys.exit(1)
+
                     with tempconfig({}):
                         scene = SceneClass(renderer)
+                        if section_index is not None:
+                            if hasattr(scene, "section_index"):
+                                cast(Any, scene).section_index = section_index
+                            else:
+                                scene.section_index = section_index
+
                         rerun = scene.render()
                     if rerun or config["write_all"]:
                         renderer.num_plays = 0
@@ -118,10 +158,24 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
             error_console.print_exception()
             sys.exit(1)
     else:
-        for SceneClass in scene_classes_from_file(file):
+        for scene_spec in scene_specs:
+            scene_name, section_index = parse_scene_spec(scene_spec)
+            SceneClass = None
+            for sc in scene_classes_from_file(file):
+                if sc.__name__ == scene_name:
+                    SceneClass = sc
+                    break
+            if SceneClass is None:
+                error_console.print(
+                    f"[red]Scene '{scene_name}' not found in {file}[/red]"
+                )
+                sys.exit(1)
+
             try:
                 with tempconfig({}):
                     scene = SceneClass()
+                    if section_index is not None:
+                        cast(Any, scene).section_index = section_index
                     scene.render()
             except Exception:
                 error_console.print_exception()

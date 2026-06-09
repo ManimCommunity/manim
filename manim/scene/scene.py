@@ -179,6 +179,7 @@ class Scene:
         self.always_update_mobjects = always_update_mobjects
         self.random_seed = random_seed if random_seed is not None else config.seed
         self.skip_animations = skip_animations
+        self._target_section_index = None
 
         self.animations: list[Animation] | None = None
         self.stop_condition: Callable[[], bool] | None = None
