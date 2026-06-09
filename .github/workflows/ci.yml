@@ -104,8 +104,8 @@ jobs:
           oriPath=$PATH
           sudo mkdir -p $PWD/macos-cache
           echo "Install TinyTeX"
-          sudo curl -L -o "/tmp/TinyTeX.tgz" "https://github.com/yihui/tinytex-releases/releases/download/daily/TinyTeX-1.tgz"
-          sudo tar zxf "/tmp/TinyTeX.tgz" -C "$PWD/macos-cache"
+          sudo curl -L -o "/tmp/TinyTeX.tar.xz" "https://github.com/rstudio/tinytex-releases/releases/download/daily/TinyTeX-1-darwin.tar.xz"
+          sudo tar xJf "/tmp/TinyTeX.tar.xz" -C "$PWD/macos-cache"
           export PATH="$PWD/macos-cache/TinyTeX/bin/universal-darwin:$PATH"
           sudo tlmgr update --self
           for i in "${ttp[@]}"; do
@@ -129,7 +129,7 @@ jobs:
           path: ${{ github.workspace }}\ManimCache
           key: ${{ runner.os }}-dependencies-tinytex-${{ hashFiles('.github/manimdependency.json') }}-${{ steps.cache-vars.outputs.date }}-1
 
-      - uses: ssciwr/setup-mesa-dist-win@v2
+      - uses: ssciwr/setup-mesa-dist-win@v3
 
       - name: Install system dependencies (Windows)
         if: runner.os == 'Windows' && steps.cache-windows.outputs.cache-hit != 'true'
@@ -137,8 +137,8 @@ jobs:
           $tinyTexPackages = $(python -c "import json;print(' '.join(json.load(open('.github/manimdependency.json'))['windows']['tinytex']))") -Split ' '
           $OriPath = $env:PATH
           echo "Install Tinytex"
-          Invoke-WebRequest "https://github.com/yihui/tinytex-releases/releases/download/daily/TinyTeX-1.zip" -OutFile "$($env:TMP)\TinyTex.zip"
-          Expand-Archive -LiteralPath "$($env:TMP)\TinyTex.zip" -DestinationPath "$($PWD)\ManimCache\LatexWindows"
+          Invoke-WebRequest "https://github.com/rstudio/tinytex-releases/releases/download/daily/TinyTeX-1-windows.exe" -OutFile "$($env:TMP)\TinyTex.exe"
+          .$env:TMP\TinyTex.exe -o"$($PWD)\ManimCache\LatexWindows"
           $env:Path = "$($PWD)\ManimCache\LatexWindows\TinyTeX\bin\windows;$($env:PATH)"
           tlmgr update --self
           tlmgr install $tinyTexPackages
