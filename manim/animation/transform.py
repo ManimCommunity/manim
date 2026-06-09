@@ -742,7 +742,7 @@ class CyclicReplace(Transform):
             self.group = Group(*mobjects)
         super().__init__(self.group, path_arc=path_arc, **kwargs)
 
-    def create_target(self) -> Group:
+    def create_target(self) -> Group | VGroup:
         target = self.group.copy()
         cycled_targets = [target[-1], *target[:-1]]
         for m1, m2 in zip(cycled_targets, self.group, strict=True):
