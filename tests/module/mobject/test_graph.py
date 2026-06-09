@@ -3,12 +3,24 @@ from __future__ import annotations
 import pytest
 
 from manim import DiGraph, Graph, LabeledLine, Scene, Text, tempconfig
-from manim.mobject.graph import _layouts
+from manim.mobject.graph import LoopEdge, _layouts
 
 
 def test_graph_creation():
     vertices = [1, 2, 3, 4]
     edges = [(1, 2), (2, 3), (3, 4), (4, 1)]
+    layout = {1: [0, 0, 0], 2: [1, 1, 0], 3: [1, -1, 0], 4: [-1, 0, 0]}
+    G_manual = Graph(vertices=vertices, edges=edges, layout=layout)
+    assert str(G_manual) == "Undirected graph on 4 vertices and 4 edges"
+    G_spring = Graph(vertices=vertices, edges=edges)
+    assert str(G_spring) == "Undirected graph on 4 vertices and 4 edges"
+    G_directed = DiGraph(vertices=vertices, edges=edges)
+    assert str(G_directed) == "Directed graph on 4 vertices and 4 edges"
+
+
+def test_graph_creation_with_loopedge():
+    vertices = [1, 2, 3, 4]
+    edges = [(1, 2), (2, 3), (3, 4), (4, 4)]
     layout = {1: [0, 0, 0], 2: [1, 1, 0], 3: [1, -1, 0], 4: [-1, 0, 0]}
     G_manual = Graph(vertices=vertices, edges=edges, layout=layout)
     assert str(G_manual) == "Undirected graph on 4 vertices and 4 edges"
@@ -59,10 +71,16 @@ def test_graph_add_edges():
     assert set(G.vertices.keys()) == {1, 2, 3, 4, 5, 42}
     assert set(G.edges.keys()) == {(1, 2), (2, 3), (1, 3), (1, 42)}
 
+    added_mobjects = G.add_edges((20, 20))
+    assert str(added_mobjects.submobjects) == "[Dot, Line]"
+    assert str(G) == "Undirected graph on 7 vertices and 5 edges"
+    assert set(G.vertices.keys()) == {1, 2, 3, 4, 5, 42, 20}
+    assert set(G.edges.keys()) == {(1, 2), (2, 3), (1, 3), (1, 42), (20, 20)}
+
     added_mobjects = G.add_edges((4, 5), (5, 6), (6, 7))
     assert len(added_mobjects) == 5
-    assert str(G) == "Undirected graph on 8 vertices and 7 edges"
-    assert set(G.vertices.keys()) == {1, 2, 3, 4, 5, 42, 6, 7}
+    assert str(G) == "Undirected graph on 9 vertices and 8 edges"
+    assert set(G.vertices.keys()) == {1, 2, 3, 4, 5, 42, 6, 7, 20}
     assert set(G._graph.nodes()) == set(G.vertices.keys())
     assert set(G.edges.keys()) == {
         (1, 2),
@@ -72,6 +90,7 @@ def test_graph_add_edges():
         (4, 5),
         (5, 6),
         (6, 7),
+        (20, 20),
     }
     assert set(G._graph.edges()) == set(G.edges.keys())
 
@@ -89,6 +108,30 @@ def test_graph_remove_edges():
     assert str(G) == "Undirected graph on 5 vertices and 0 edges"
     assert set(G._graph.edges()) == set()
     assert set(G.edges.keys()) == set()
+
+    G = Graph(
+        [1, 2, 3, 4, 5],
+        [(1, 2), (2, 3), (3, 4), (4, 5), (1, 5), (4, 4), (2, 2), (1, 1)],
+    )
+    removed_mobjects = G.remove_edges((4, 4))
+    assert str(removed_mobjects.submobjects) == "[LoopEdge]"
+    assert str(G) == "Undirected graph on 5 vertices and 7 edges"
+    assert set(G.edges.keys()) == {
+        (1, 2),
+        (2, 3),
+        (3, 4),
+        (4, 5),
+        (1, 5),
+        (2, 2),
+        (1, 1),
+    }
+    assert set(G._graph.edges()) == set(G.edges.keys())
+
+    removed_mobjects = G.remove_edges((2, 3), (2, 2), (1, 1))
+    assert len(removed_mobjects) == 3
+    assert str(G) == "Undirected graph on 5 vertices and 4 edges"
+    assert set(G.edges.keys()) == {(1, 2), (3, 4), (4, 5), (1, 5)}
+    assert set(G._graph.edges()) == set(G.edges.keys())
 
 
 def test_graph_accepts_labeledline_as_edge_type():
@@ -111,6 +154,28 @@ def test_graph_accepts_labeledline_as_edge_type():
 
     for edge_obj in G_directed.edges.values():
         assert isinstance(edge_obj, LabeledLine)
+        assert hasattr(edge_obj, "label")
+
+    vertices = [1, 2, 3]
+    edges = [(1, 1), (2, 3), (1, 3), (2, 2)]
+    edge_config = {
+        (1, 1): {"label": "A"},
+        (2, 3): {"label": "B"},
+        (1, 3): {"label": "C"},
+        (2, 2): {"label": "D"},
+    }
+
+    G_manual = Graph(vertices, edges, edge_type=LabeledLine, edge_config=edge_config)
+    G_directed = DiGraph(
+        vertices, edges, edge_type=LabeledLine, edge_config=edge_config
+    )
+
+    for edge_obj in G_manual.edges.values():
+        assert isinstance(edge_obj, (LabeledLine, LoopEdge))
+        assert hasattr(edge_obj, "label")
+
+    for edge_obj in G_directed.edges.values():
+        assert isinstance(edge_obj, (LabeledLine, LoopEdge))
         assert hasattr(edge_obj, "label")
 
 
@@ -189,6 +254,13 @@ def test_graph_change_layout():
         G = Graph([1, 2, 3], [(1, 2), (2, 3)])
         G.change_layout(layout=layout)
         assert str(G) == "Undirected graph on 3 vertices and 2 edges"
+
+
+def test_graph_change_layout_with_loop_edge():
+    for layout in (layout for layout in _layouts if layout not in ["tree", "partite"]):
+        G = Graph([1, 2, 3], [(1, 2), (2, 3), (3, 3)])
+        G.change_layout(layout=layout)
+        assert str(G) == "Undirected graph on 3 vertices and 3 edges"
 
 
 def test_tree_layout_no_root_error():

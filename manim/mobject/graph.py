@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 from manim.animation.composition import AnimationGroup
 from manim.animation.creation import Create, Uncreate
 from manim.mobject.geometry.arc import Dot, LabeledDot
-from manim.mobject.geometry.line import Line
+from manim.mobject.geometry.line import Line, LoopEdge
 from manim.mobject.mobject import Mobject, override_animate
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -1093,7 +1093,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             (
                 self._add_edge(
                     edge,
-                    edge_type=edge_type,
+                    edge_type=edge_type,  # TODO: change edge type for loop edges , has to be defined (in line.py)
                     edge_config=edge_config[edge],
                 ).submobjects
                 for edge in edges
@@ -1540,24 +1540,36 @@ class Graph(GenericGraph):
         self, edges: list[tuple[Hashable, Hashable]], edge_type: type[Mobject]
     ):
         self.edges = {
-            (u, v): edge_type(
-                start=self[u].get_center(),
-                end=self[v].get_center(),
-                z_index=-1,
-                **self._edge_config[(u, v)],
+            (u, v): (
+                edge_type(
+                    start=self[u].get_center(),
+                    end=self[v].get_center(),
+                    z_index=-1,
+                    **self._edge_config[(u, v)],
+                )
+                if u != v
+                else LoopEdge(
+                    vertex=self[u].get_center(),
+                    graph_center=self.get_center(),
+                    edge_type=edge_type,
+                    z_index=-1,
+                    **self._edge_config[(u, v)],
+                )
             )
             for (u, v) in edges
         }
 
     def update_edges(self, graph):
         for (u, v), edge in graph.edges.items():
-            # Undirected graph has a Line edge
-            edge.set_points_by_ends(
-                graph[u].get_center(),
-                graph[v].get_center(),
-                buff=self._edge_config.get("buff", 0),
-                path_arc=self._edge_config.get("path_arc", 0),
-            )
+            if u != v:
+                edge.set_points_by_ends(
+                    graph[u].get_center(),
+                    graph[v].get_center(),
+                    buff=self._edge_config.get("buff", 0),
+                    path_arc=self._edge_config.get("path_arc", 0),
+                )
+            else:
+                edge.set_points_by_vertex(graph[u].get_center())
 
     def __repr__(self: Graph) -> str:
         return f"Undirected graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
@@ -1747,17 +1759,27 @@ class DiGraph(GenericGraph):
         self, edges: list[tuple[Hashable, Hashable]], edge_type: type[Mobject]
     ):
         self.edges = {
-            (u, v): edge_type(
-                start=self[u],
-                end=self[v],
-                z_index=-1,
-                **self._edge_config[(u, v)],
+            (u, v): (
+                edge_type(
+                    start=self[u],
+                    end=self[v],
+                    z_index=-1,
+                    **self._edge_config[(u, v)],
+                )
+                if u != v
+                else LoopEdge(
+                    vertex=self[u].get_center(),
+                    graph_center=self.get_center(),
+                    edge_type=edge_type,
+                    z_index=-1,
+                    **self._edge_config[(u, v)],
+                )
             )
             for (u, v) in edges
         }
 
         for (u, v), edge in self.edges.items():
-            edge.add_tip(**self._tip_config[(u, v)])
+            edge.add_tip(is_loop=(u == v), **self._tip_config[(u, v)])
 
     def update_edges(self, graph):
         """Updates the edges to stick at their corresponding vertices.
@@ -1767,15 +1789,20 @@ class DiGraph(GenericGraph):
         """
         for (u, v), edge in graph.edges.items():
             tip = edge.pop_tips()[0]
-            # Passing the Mobject instead of the vertex makes the tip
-            # stop on the bounding box of the vertex.
-            edge.set_points_by_ends(
-                graph[u],
-                graph[v],
-                buff=self._edge_config.get("buff", 0),
-                path_arc=self._edge_config.get("path_arc", 0),
-            )
-            edge.add_tip(tip)
+            if u != v:
+                # Passing the Mobject instead of the vertex makes the tip
+                # stop on the bounding box of the vertex.
+                edge.set_points_by_ends(
+                    graph[u],
+                    graph[v],
+                    buff=self._edge_config.get("buff", 0),
+                    path_arc=self._edge_config.get("path_arc", 0),
+                )
+                edge.add_tip(tip)
+            else:
+                edge.set_points_by_vertex(graph[u])
+
+                edge.add_tip(tip)
 
     def __repr__(self: DiGraph) -> str:
         return f"Directed graph on {len(self.vertices)} vertices and {len(self.edges)} edges"

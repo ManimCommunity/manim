@@ -155,7 +155,7 @@ class LabeledLine(Line):
 
     def __init__(
         self,
-        label: str | Tex | MathTex | Text,
+        label: str | Tex | MathTex | Text = "",
         label_position: float = 0.5,
         label_config: dict[str, Any] | None = None,
         box_config: dict[str, Any] | None = None,
