@@ -219,3 +219,9 @@ convention = "numpy"
 
 [tool.ruff.format]
 docstring-code-format = true
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+pattern = "^(?P<type>build|ci|docs|feat|fix|perf|refactor|test)(?:\\((?P<scope>mobject|scene|animation|renderer|camera|cli|config|utils|docs|tests)\\))?: (?P<subject>[^\\n]+)$"
+schema_pattern = "^(build|ci|docs|feat|fix|perf|refactor|test)(?:\\((mobject|scene|animation|renderer|camera|cli|config|utils|docs|tests)\\))?: [^\\n]+$"
+schema = "Example: fix(mobject): resolve vectorized fill opacity bug"
