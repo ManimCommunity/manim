@@ -6,7 +6,6 @@ __all__ = ["SceneFileWriter"]
 
 import json
 import shutil
-import warnings
 from fractions import Fraction
 from pathlib import Path
 from queue import Queue
@@ -18,17 +17,6 @@ import av
 import numpy as np
 import srt
 from PIL import Image
-
-# Manim handles audio conversion through PyAV directly. Importing pydub emits a
-# RuntimeWarning if ffmpeg/avconv is not on PATH, even when only WAV code paths
-# are used (which do not need ffmpeg). Silence this specific warning.
-with warnings.catch_warnings():
-    warnings.filterwarnings(
-        "ignore",
-        message=r".*ffmpeg or avconv.*",
-        category=RuntimeWarning,
-    )
-    from pydub import AudioSegment
 
 from manim import __version__
 
@@ -76,6 +64,7 @@ def to_av_frame_rate(fps: float) -> Fraction:
 def convert_audio(
     input_path: Path, output_path: Path | _TemporaryFileWrapper[bytes], codec_name: str
 ) -> None:
+    """Convert an audio file to a different codec using PyAV."""
     with (
         av.open(input_path) as input_audio,
         av.open(output_path, "w") as output_audio,
@@ -311,51 +300,62 @@ class SceneFileWriter:
         self.includes_sound = False
 
     def create_audio_segment(self) -> None:
-        """Creates an empty, silent, Audio Segment."""
-        self.audio_segment = AudioSegment.silent()
+        """Creates an empty, silent, Audio Segment using numpy array."""
+        from manim.utils.sounds import create_silent_audio
+
+        self.audio_array = create_silent_audio(0)  # duration = 0
+        self.audio_sample_rate = 44100
 
     def add_audio_segment(
         self,
-        new_segment: AudioSegment,
+        new_array: np.ndarray,
+        sample_rate: int,
         time: float | None = None,
         gain_to_background: float | None = None,
     ) -> None:
-        """This method adds an audio segment from an AudioSegment type object
-        and suitable parameters.
+        """Adds a numpy audio array to the global audio mix.
 
         Parameters
         ----------
-        new_segment
-            The audio segment to add
-
+        new_array
+            Audio data as a numpy array (float32, range -1 to 1).
+        sample_rate
+            Sample rate of the audio data.
         time
-            the timestamp at which the sound should be added.
-
+            The timestamp at which the sound should be added.
         gain_to_background
-            The gain of the segment from the background.
+            The gain of the segment from the background (not used currently).
         """
+        from manim.utils.sounds import create_silent_audio
+
         if not self.includes_sound:
             self.includes_sound = True
             self.create_audio_segment()
-        segment = self.audio_segment
-        curr_end = segment.duration_seconds
-        if time is None:
-            time = curr_end
-        if time < 0:
-            raise ValueError("Adding sound at timestamp < 0")
 
-        new_end = time + new_segment.duration_seconds
-        diff = new_end - curr_end
-        if diff > 0:
-            segment = segment.append(
-                AudioSegment.silent(int(np.ceil(diff * 1000))),
-                crossfade=0,
-            )
-        self.audio_segment = segment.overlay(
-            new_segment,
-            position=int(1000 * time),
-            gain_during_overlay=gain_to_background,
-        )
+        curr_duration = self.audio_array.shape[0] / self.audio_sample_rate
+        if time is None:
+            time = curr_duration
+
+        new_duration = new_array.shape[0] / sample_rate
+        new_end = time + new_duration
+
+        # Pad with silence if new audio extends beyond current length
+        if new_end > curr_duration:
+            extra_duration = new_end - curr_duration
+            silent_array = create_silent_audio(extra_duration, self.audio_sample_rate)
+            self.audio_array = np.concatenate([self.audio_array, silent_array], axis=0)
+
+        # Mix the new audio into the global array at the specified time
+        start_sample = int(time * self.audio_sample_rate)
+        end_sample = start_sample + new_array.shape[0]
+        self.audio_array[start_sample:end_sample] += new_array[
+            : self.audio_array.shape[0] - start_sample
+        ]
+
+        # Normalize to prevent clipping
+        max_val = np.max(np.abs(self.audio_array))
+        if max_val > 1:
+            self.audio_array = self.audio_array / max_val
 
     def add_sound(
         self,
@@ -364,41 +364,40 @@ class SceneFileWriter:
         gain: float | None = None,
         **kwargs: Any,
     ) -> None:
-        """This method adds an audio segment from a sound file.
+        """Load a sound file and add it to the global audio mix.
 
         Parameters
         ----------
         sound_file
             The path to the sound file.
-
         time
             The timestamp at which the audio should be added.
-
         gain
-            The gain of the given audio segment.
-
+            The gain (in dB) to apply to the audio segment.
         **kwargs
-            This method uses add_audio_segment, so any keyword arguments
-            used there can be referenced here.
-
+            Additional keyword arguments (passed to add_audio_segment).
         """
+        from manim.utils.sounds import read_audio
+
         file_path = get_full_sound_file_path(sound_file)
-        # we assume files with .wav / .raw suffix are actually
-        # .wav and .raw files, respectively.
+
+        # Convert non-WAV/RAW files to WAV first
         if file_path.suffix not in (".wav", ".raw"):
-            # we need to pass delete=False to work on Windows
-            # TODO: figure out a way to cache the wav file generated (benchmark needed)
             with NamedTemporaryFile(suffix=".wav", delete=False) as wav_file_path:
                 convert_audio(file_path, wav_file_path, "pcm_s16le")
-                new_segment = AudioSegment.from_file(wav_file_path.name)
+                audio_array, sample_rate = read_audio(wav_file_path.name)
                 logger.info(f"Automatically converted {file_path} to .wav")
             Path(wav_file_path.name).unlink()
         else:
-            new_segment = AudioSegment.from_file(file_path)
+            audio_array, sample_rate = read_audio(file_path)
 
-        if gain:
-            new_segment = new_segment.apply_gain(gain)
-        self.add_audio_segment(new_segment, time, **kwargs)
+        # Apply gain if specified (convert dB to linear factor)
+        if gain is not None:
+            gain_linear = 10 ** (gain / 20)
+            audio_array = audio_array * gain_linear
+
+        # Add to global audio mix
+        self.add_audio_segment(audio_array, sample_rate, time=time, **kwargs)
 
     # Writers
     def begin_animation(
@@ -760,14 +759,12 @@ class SceneFileWriter:
 
         # handle sound
         if self.includes_sound and config.format != "gif":
+            from manim.utils.sounds import save_audio_to_wav
+
             sound_file_path = movie_file_path.with_suffix(".wav")
             # Makes sure sound file length will match video file
-            self.add_audio_segment(AudioSegment.silent(0))
-            self.audio_segment.export(
-                sound_file_path,
-                format="wav",
-                bitrate="312k",
-            )
+            save_audio_to_wav(self.audio_array, self.audio_sample_rate, sound_file_path)
+
             # Audio added to a VP9 encoded (webm) video file needs
             # to be encoded as vorbis or opus. Directly exporting
             # self.audio_segment with such a codec works in principle,
