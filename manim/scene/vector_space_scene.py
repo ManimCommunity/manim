@@ -1229,7 +1229,7 @@ class LinearTransformationScene(VectorScene):
         for label in self.transformable_labels:
             target_text: MathTex | str = label.target_text
             label.target = self.get_vector_label(
-                label.vector.target,  # type: ignore [arg-type]
+                label.vector.target,  # type: ignore[arg-type]
                 target_text,
                 **label.original_kwargs,
             )
