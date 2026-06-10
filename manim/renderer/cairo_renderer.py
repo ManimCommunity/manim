@@ -3,8 +3,6 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import TYPE_CHECKING, Any
 
-import numpy as np
-
 from manim.utils.hashing import get_hash_from_play_call
 
 from .. import config, logger
@@ -178,7 +176,7 @@ class CairoRenderer:
             NumPy array of pixel values of each pixel in screen.
             The shape of the array is height x width x 3.
         """
-        return np.array(self.camera.pixel_array)
+        return self.camera.pixel_array.copy()
 
     def add_frame(self, frame: PixelArray, num_frames: int = 1) -> None:
         """Adds a frame to the video_file_stream
