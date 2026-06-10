@@ -15,6 +15,7 @@ from manim import (
     Square,
     Triangle,
     VGroup,
+    VMobject,
 )
 
 
@@ -148,6 +149,10 @@ def test_mobject_dimensions_nested_mobjects():
 
 
 def test_mobject_dimensions_mobjects_with_no_points():
+    empty_mob = VMobject()
+    assert empty_mob.width == 0
+    assert empty_mob.height == 0
+    
     for direction in [DL, DR, UL, UR]:
         rect = Rectangle(width=2, height=3)
         rect.move_to(direction * 10)
@@ -157,8 +162,8 @@ def test_mobject_dimensions_mobjects_with_no_points():
         assert outer_group.width == 2
         assert outer_group.height == 3
 
-        # Adding a mobject with no points does not change its size
-        outer_group.add(VGroup())
+        # Adding a submobject with no points does not change the group size
+        outer_group.add(empty_mob)
         assert outer_group.width == 2
         assert outer_group.height == 3
 
