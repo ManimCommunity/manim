@@ -7,7 +7,7 @@ import sys
 import types
 import warnings
 from pathlib import Path
-from typing import TYPE_CHECKING, Literal, overload
+from typing import TYPE_CHECKING, Any, Literal, overload
 
 from manim._config import config, console, logger
 from manim.constants import (
@@ -19,8 +19,6 @@ from manim.constants import (
 from manim.scene.scene_file_writer import SceneFileWriter
 
 if TYPE_CHECKING:
-    from typing import Any
-
     from manim.scene.scene import Scene
 
 __all__ = ["scene_classes_from_file"]
@@ -123,12 +121,18 @@ def prompt_user_for_choice(scene_classes: list[type[Scene]]) -> list[type[Scene]
         user_input = console.input(
             f"[log.message] {CHOOSE_NUMBER_MESSAGE} [/log.message]",
         )
-        scene_classes = [
-            num_to_class[int(num_str)]
-            for num_str in re.split(r"\s*,\s*", user_input.strip())
+
+        if user_input == "*":
+            selected_scenes_classes = scene_classes
+        else:
+            selected_scenes_classes = [
+                num_to_class[int(num_str)]
+                for num_str in re.split(r"\s*,\s*", user_input.strip())
+            ]
+        config["scene_names"] = [
+            scene_class.__name__ for scene_class in selected_scenes_classes
         ]
-        config["scene_names"] = [scene_class.__name__ for scene_class in scene_classes]
-        return scene_classes
+        return selected_scenes_classes
     except KeyError:
         logger.error(INVALID_NUMBER_MESSAGE)
         sys.exit(2)

@@ -105,11 +105,11 @@ def test_graph_accepts_labeledline_as_edge_type():
         vertices, edges, edge_type=LabeledLine, edge_config=edge_config
     )
 
-    for _edge_key, edge_obj in G_manual.edges.items():
+    for edge_obj in G_manual.edges.values():
         assert isinstance(edge_obj, LabeledLine)
         assert hasattr(edge_obj, "label")
 
-    for _edge_key, edge_obj in G_directed.edges.items():
+    for edge_obj in G_directed.edges.values():
         assert isinstance(edge_obj, LabeledLine)
         assert hasattr(edge_obj, "label")
 

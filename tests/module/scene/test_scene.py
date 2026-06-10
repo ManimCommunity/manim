@@ -4,7 +4,7 @@ import datetime
 
 import pytest
 
-from manim import Circle, FadeIn, Group, Mobject, Scene, Square
+from manim import Circle, Dot, FadeIn, Group, Mobject, Scene, Square
 from manim.animation.animation import Wait
 
 
@@ -101,3 +101,48 @@ def test_replace(dry_run):
     scene.replace(second, beta)
     assert_names(scene.mobjects, ["alpha", "group", "fourth"])
     assert_names(scene.mobjects[1], ["beta", "third"])
+
+
+def test_reproducible_scene(dry_run):
+    import numpy as np
+
+    scene = Scene(random_seed=42)
+    dots1 = []
+    for _ in range(10):
+        dot = Dot(np.random.uniform(-3, 3, size=3))  # noqa: NPY002
+        dots1.append(dot)
+    scene.add(*dots1)
+
+    scene2 = Scene(random_seed=42)
+    dots2 = []
+    for _ in range(5):
+        dot = Dot(np.random.uniform(-3, 3, size=3))  # noqa: NPY002
+        dots2.append(dot)
+    scene2.add(*dots2)
+
+    for d1, d2 in zip(dots1, dots2, strict=False):
+        np.testing.assert_allclose(d1.get_center(), d2.get_center())
+
+
+def test_random_color_reproducibility_with_seed(dry_run):
+    from manim import random_color, tempconfig
+
+    with tempconfig({"seed": 123}):
+        # First run: create scene (which seeds global random state) and generate colors
+        scene1 = Scene()
+        colors_first_run = [random_color() for _ in range(5)]
+
+        # Interrupt with a scene that has an explicit different seed
+        scene_explicit = Scene(random_seed=999)
+        colors_interrupted = [random_color() for _ in range(3)]
+
+        # Second run: create a new scene without explicit seed (should use config.seed)
+        scene2 = Scene()
+        colors_second_run = [random_color() for _ in range(5)]
+
+        # The colors from the first and second run should match
+        # because both scenes were seeded with config.seed=123
+        assert colors_first_run == colors_second_run
+
+        # The interrupted colors should be different (seeded with 999)
+        assert colors_interrupted != colors_first_run[:3]
