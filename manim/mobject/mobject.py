@@ -2167,7 +2167,7 @@ class Mobject:
         submobjects. This allows for using :meth:`~.length_over_dim` to calculate its length over
         a dimension, i.e. its height, width or depth. If this Mobject is empty, return ``None``,
         since this Mobject should not be taken into account when calculating lengths.
-        
+
         Parameters
         ----------
         reduce_func
@@ -2175,14 +2175,13 @@ class Mobject:
         dim
             The dimension to use. It should be 0, 1 or 2, representing the X, Y or Z coordinate,
             respectively.
-            
+
         Returns
         -------
         float | None
             The min or max value over the dimension specified by ``dim``, or ``None`` if this
-            Mobject is empty.     	
+            Mobject is empty.
         """
-        
         assert dim >= 0
         assert dim <= 2
         if len(self.submobjects) == 0 and len(self.points) == 0:
