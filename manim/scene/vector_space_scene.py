@@ -438,19 +438,18 @@ class VectorScene(Scene):
         x_line: Line,
         vector: Vector3DLike,
     ) -> MathTex:
-        """
-        Positions and styles the x-axis coordinate label relative to its projection line.
+        """Position and style the x-axis coordinate label relative to its projection line.
 
         This will place `x_coord` just above or below `x_line` depending on the
         sign of the y-component of the original vector, and color it with X_COLOR.
 
         Parameters
         ----------
-        x_coord : MathTex
+        x_coord
             The coordinate label to position (e.g. “x” or “3”).
-        x_line : Line
+        x_line
             The line segment representing the x-projection of the vector.
-        vector : Vector3DLike
+        vector
             The 3D vector whose x-projection is being labeled. Used only for
             determining whether to place the label above (positive y) or
             below (negative y) the projection line.
@@ -470,19 +469,18 @@ class VectorScene(Scene):
         y_line: Line,
         vector: Vector3DLike,
     ) -> MathTex:
-        """
-        Positions and styles the y-axis coordinate label relative to its projection line.
+        """Position and style the y-axis coordinate label relative to its projection line.
 
         This will place `y_coord` just to the left or right of `y_line` depending on the
         sign of the x-component of the original vector, and color it with Y_COLOR.
 
         Parameters
         ----------
-        y_coord : MathTex
+        y_coord
             The coordinate label to position (e.g. “y” or “5”).
-        y_line : Line
+        y_line
             The line segment representing the y-projection of the vector.
-        vector : Vector3DLike
+        vector
             The 3D vector whose y-projection is being labeled. Used only for
             determining whether to place the label to the right (positive x) or
             left (negative x) of the projection line.
