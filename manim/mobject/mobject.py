@@ -2163,7 +2163,26 @@ class Mobject:
     def reduce_across_dimension(
         self, reduce_func: Callable[[Iterable[float]], float], dim: int
     ) -> float | None:
-        """Find the min or max value from a dimension across all points in this and submobjects."""
+        """Find the min or max value from a dimension across all points in this Mobject and its
+        submobjects. This allows for using :meth:`~.length_over_dim` to calculate its length over
+        a dimension, i.e. its height, width or depth. If this Mobject is empty, return ``None``,
+        since this Mobject should not be taken into account when calculating lengths.
+        
+        Parameters
+        ----------
+        reduce_func
+            The reducer function to use in order to calculate a value over a dimension.
+        dim
+            The dimension to use. It should be 0, 1 or 2, representing the X, Y or Z coordinate,
+            respectively.
+            
+        Returns
+        -------
+        float | None
+            The min or max value over the dimension specified by ``dim``, or ``None`` if this
+            Mobject is empty.     	
+        """
+        
         assert dim >= 0
         assert dim <= 2
         if len(self.submobjects) == 0 and len(self.points) == 0:
