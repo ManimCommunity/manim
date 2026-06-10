@@ -1229,8 +1229,6 @@ class LinearTransformationScene(VectorScene):
             The animation of the movement.
         """
         for label in self.transformable_labels:
-            # TODO: This location and lines 933 and 335 are the only locations in
-            # the code where the target_text property is referenced.
             target_text: MathTex | str = label.target_text
             label.target = self.get_vector_label(
                 label.vector.target,  # type: ignore [arg-type]
