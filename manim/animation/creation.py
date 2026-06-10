@@ -76,8 +76,8 @@ __all__ = [
 
 
 import itertools as it
-from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, Callable
+from collections.abc import Callable, Iterable, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -472,7 +472,7 @@ class SpiralIn(Animation):
 
     def interpolate_mobject(self, alpha: float) -> None:
         alpha = self.rate_func(alpha)
-        for original_shape, shape in zip(self.shapes, self.mobject):
+        for original_shape, shape in zip(self.shapes, self.mobject, strict=True):
             shape.restore()
             fill_opacity = original_shape.get_fill_opacity()
             stroke_opacity = original_shape.get_stroke_opacity()

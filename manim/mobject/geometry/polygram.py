@@ -18,7 +18,7 @@ __all__ = [
 
 
 from math import ceil
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 
@@ -32,10 +32,9 @@ from manim.utils.qhull import QuickHull
 from manim.utils.space_ops import angle_between_vectors, normalize, regular_vertices
 
 if TYPE_CHECKING:
-    from typing import Any, Literal
+    from typing import Self
 
     import numpy.typing as npt
-    from typing_extensions import Self
 
     from manim.typing import (
         Point3D,
@@ -152,7 +151,9 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
         # TODO: If any of the original vertex groups contained the starting vertex N
         # times, then .get_vertex_groups() splits it into N vertex groups.
         group = []
-        for start, end in zip(self.get_start_anchors(), self.get_end_anchors()):
+        for start, end in zip(
+            self.get_start_anchors(), self.get_end_anchors(), strict=True
+        ):
             group.append(start)
 
             if self.consider_points_equals(end, group[0]):
@@ -239,7 +240,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
                 radius_list = radius * ceil(len(vertex_group) / len(radius))
 
             for current_radius, (v1, v2, v3) in zip(
-                radius_list, adjacent_n_tuples(vertex_group, 3)
+                radius_list, adjacent_n_tuples(vertex_group, 3), strict=True
             ):
                 vect1 = v2 - v1
                 vect2 = v3 - v2
@@ -551,7 +552,7 @@ class Star(Polygon):
         )
 
         vertices: list[npt.NDArray] = []
-        for pair in zip(outer_vertices, inner_vertices):
+        for pair in zip(outer_vertices, inner_vertices, strict=True):
             vertices.extend(pair)
 
         super().__init__(*vertices, **kwargs)

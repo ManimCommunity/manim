@@ -8,7 +8,7 @@ __all__ = [
 ]
 
 
-from typing_extensions import Any
+from typing import Any
 
 from manim.mobject.geometry.polygram import Rectangle
 

@@ -8,13 +8,11 @@ from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 __all__ = ["NumberLine", "UnitInterval"]
 
 
-from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, Callable
+from collections.abc import Callable, Iterable, Sequence
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Any
-
-    from typing_extensions import Self
+    from typing import Any, Self
 
     from manim.mobject.geometry.tips import ArrowTip
     from manim.typing import Point3D, Point3DLike, Vector3D
@@ -264,6 +262,7 @@ class NumberLine(Line):
                         zip(
                             tick_range,
                             custom_labels,
+                            strict=True,
                         )
                     ),
                 )

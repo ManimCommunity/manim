@@ -19,8 +19,9 @@ __all__ = [
     "FadeIn",
 ]
 
+from typing import Any
+
 import numpy as np
-from typing_extensions import Any
 
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 

@@ -14,14 +14,14 @@ __all__ = [
     "RightAngle",
 ]
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
 
 from manim import config
 from manim.constants import *
 from manim.mobject.geometry.arc import Arc, ArcBetweenPoints, Dot, TipableVMobject
-from manim.mobject.geometry.tips import ArrowTriangleFilledTip
+from manim.mobject.geometry.tips import ArrowTip, ArrowTriangleFilledTip
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -30,9 +30,7 @@ from manim.utils.color import WHITE
 from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 
 if TYPE_CHECKING:
-    from typing import Any
-
-    from typing_extensions import Literal, Self, TypeAlias
+    from typing import Self, TypeAlias
 
     from manim.typing import Point3D, Point3DLike, Vector2DLike, Vector3D, Vector3DLike
     from manim.utils.color import ParsableManimColor
@@ -147,7 +145,8 @@ class Line(TipableVMobject):
 
         self._account_for_buff(buff)
 
-    init_points = generate_points
+    def init_points(self) -> None:
+        self.generate_points()
 
     def _account_for_buff(self, buff: float) -> None:
         if buff <= 0:
@@ -649,9 +648,11 @@ class Arrow(Line):
         self._set_stroke_width_from_length()
 
         if has_tip:
-            self.add_tip(tip=old_tips[0])
+            # error: Argument "tip" to "add_tip" of "TipableVMobject" has incompatible type "VMobject"; expected "ArrowTip | None"  [arg-type]
+            self.add_tip(tip=cast(ArrowTip, old_tips[0]))
         if has_start_tip:
-            self.add_tip(tip=old_tips[1], at_start=True)
+            # error: Argument "tip" to "add_tip" of "TipableVMobject" has incompatible type "VMobject"; expected "ArrowTip | None"  [arg-type]
+            self.add_tip(tip=cast(ArrowTip, old_tips[1]), at_start=True)
         return self
 
     def get_normal_vector(self) -> Vector3D:

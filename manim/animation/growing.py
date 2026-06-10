@@ -31,15 +31,13 @@ __all__ = [
     "SpinInFromNothing",
 ]
 
-import typing
+from typing import TYPE_CHECKING, Any
 
 from ..animation.transform import Transform
 from ..constants import PI
 from ..utils.paths import spiral_path
 
-if typing.TYPE_CHECKING:
-    from typing import Any
-
+if TYPE_CHECKING:
     from manim.mobject.geometry.line import Arrow
     from manim.mobject.opengl.opengl_mobject import OpenGLMobject
     from manim.typing import Point3DLike, Vector3DLike

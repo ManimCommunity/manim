@@ -4,10 +4,9 @@ from __future__ import annotations
 
 __all__ = ["DecimalNumber", "Integer", "Variable"]
 
-from typing import Any
+from typing import Any, Self
 
 import numpy as np
-from typing_extensions import Self
 
 from manim import config
 from manim.constants import *
@@ -18,7 +17,7 @@ from manim.mobject.types.vectorized_mobject import VMobject
 from manim.mobject.value_tracker import ValueTracker
 from manim.typing import Vector3DLike
 
-string_to_mob_map: dict[str, VMobject] = {}
+string_to_mob_map: dict[str, SingleStringMathTex] = {}
 
 
 class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
@@ -227,7 +226,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         if string not in string_to_mob_map:
             string_to_mob_map[string] = mob_class(string, **kwargs)
         mob = string_to_mob_map[string].copy()
-        mob.font_size = self._font_size  # type: ignore[attr-defined]
+        mob.font_size = self._font_size
         return mob
 
     def _get_formatter(self, **kwargs: Any) -> str:
@@ -295,7 +294,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         self._set_submobjects_from_number(number)
         self.font_size = old_font_size
         self.move_to(move_to_point, self.edge_to_fix)
-        for sm1, sm2 in zip(self.submobjects, old_submobjects):
+        for sm1, sm2 in zip(self.submobjects, old_submobjects, strict=False):
             sm1.match_style(sm2)
 
         if config.renderer == RendererType.CAIRO:

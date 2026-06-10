@@ -20,9 +20,9 @@ __all__ = [
 ]
 
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from functools import reduce
-from typing import TYPE_CHECKING, Callable, overload
+from typing import TYPE_CHECKING, overload
 
 import numpy as np
 
@@ -90,6 +90,7 @@ def bezier(
                     containing :math:`n` values to evaluate the Bézier curve at, returning instead
                     an :math:`(n, 3)`-shaped :class:`~.Point3D_Array` containing the points
                     resulting from evaluating the Bézier at each of the :math:`n` values.
+
                 .. warning::
                     If passing a vector of :math:`t`-values to ``bezier_func``, it **must**
                     be a column vector/matrix of shape :math:`(n, 1)`. Passing an 1D array of
@@ -106,6 +107,7 @@ def bezier(
                     Bézier curve defined by ``points`` is evaluated at the corresponding :math:`i`-th
                     value in ``t``, returning again an :math:`(M, 3)`-shaped :class:`~.Point3D_Array`
                     containing those :math:`M` evaluations.
+
                 .. warning::
                     Unlike the previous case, if you pass a :class:`~.ColVector` to ``bezier_func``,
                     it **must** contain exactly :math:`M` values, each value for each of the :math:`M`
@@ -915,10 +917,10 @@ def subdivide_bezier(points: BezierPointsLike, n_divisions: int) -> Spline:
     :class:`~.Spline`
         An array containing the points defining the new :math:`n` subcurves.
     """
+    points = np.asarray(points)
     if n_divisions == 1:
         return points
 
-    points = np.asarray(points)
     N, dim = points.shape
 
     if N <= 4:
@@ -999,7 +1001,7 @@ def bezier_remap(
 
     new_tuples = np.empty((new_number_of_curves, nppc, dim))
     index = 0
-    for curve, sf in zip(bezier_tuples, split_factors):
+    for curve, sf in zip(bezier_tuples, split_factors, strict=True):
         new_tuples[index : index + sf] = subdivide_bezier(curve, sf).reshape(
             sf, nppc, dim
         )
@@ -1234,6 +1236,7 @@ def match_interpolate(
 
     Examples
     --------
+    >>> from manim import match_interpolate
     >>> match_interpolate(0, 100, 10, 20, 15)
     np.float64(50.0)
     """
