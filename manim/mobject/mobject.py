@@ -2356,8 +2356,8 @@ class Mobject:
 
     def length_over_dim(self, dim: int) -> float:
         """Measure the length of an :class:`~.Mobject` in a certain direction."""
-        max_coord: float = self.reduce_across_dimension(max, dim)
-        min_coord: float = self.reduce_across_dimension(min, dim)
+        max_coord = self.reduce_across_dimension(max, dim)
+        min_coord = self.reduce_across_dimension(min, dim)
         if max_coord is None or min_coord is None:
             return 0
         return max_coord - min_coord
