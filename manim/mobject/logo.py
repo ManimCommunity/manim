@@ -4,11 +4,15 @@ from __future__ import annotations
 
 __all__ = ["ManimBanner"]
 
+from typing import Any
+
 import svgelements as se
 
 from manim.animation.updaters.update import UpdateFromAlphaFunc
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square, Triangle
+from manim.mobject.mobject import Mobject
+from manim.typing import Vector3D
 
 from .. import constants as cst
 from ..animation.animation import override_animation
@@ -146,7 +150,7 @@ class ManimBanner(VGroup):
         m_height_over_anim_height = 0.75748
 
         self.font_color = "#ece6e2" if dark_theme else "#343434"
-        self.scale_factor = 1
+        self.scale_factor = 1.0
 
         self.M = VMobjectFromSVGPath(MANIM_SVG_PATHS[0]).flip(cst.RIGHT).center()
         self.M.set(stroke_width=0).scale(
@@ -180,7 +184,7 @@ class ManimBanner(VGroup):
         # and thus not yet added to the submobjects of self.
         self.anim = anim
 
-    def scale(self, scale_factor: float, **kwargs) -> ManimBanner:
+    def scale(self, scale_factor: float, **kwargs: Any) -> ManimBanner:
         """Scale the banner by the specified scale factor.
 
         Parameters
@@ -219,7 +223,7 @@ class ManimBanner(VGroup):
             lag_ratio=0.1,
         )
 
-    def expand(self, run_time: float = 1.5, direction="center") -> Succession:
+    def expand(self, run_time: float = 1.5, direction: str = "center") -> Succession:
         """An animation that expands Manim's logo into its banner.
 
         The returned animation transforms the banner from its initial
@@ -277,7 +281,7 @@ class ManimBanner(VGroup):
         self.M.save_state()
         left_group = VGroup(self.M, self.anim, m_clone)
 
-        def shift(vector):
+        def shift(vector: Vector3D) -> None:
             self.shapes.restore()
             left_group.align_to(self.M.saved_state, cst.LEFT)
             if direction == "right":
@@ -288,7 +292,7 @@ class ManimBanner(VGroup):
             elif direction == "left":
                 left_group.shift(-vector)
 
-        def slide_and_uncover(mob, alpha):
+        def slide_and_uncover(mob: Mobject, alpha: float) -> None:
             shift(alpha * (m_shape_offset + shape_sliding_overshoot) * cst.RIGHT)
 
             # Add letters when they are covered
@@ -305,7 +309,7 @@ class ManimBanner(VGroup):
                 mob.shapes.save_state()
                 mob.M.save_state()
 
-        def slide_back(mob, alpha):
+        def slide_back(mob: Mobject, alpha: float) -> None:
             if alpha == 0:
                 m_clone.set_opacity(1)
                 m_clone.move_to(mob.anim[-1])

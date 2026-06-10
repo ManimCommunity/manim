@@ -10,4 +10,4 @@ def show_diff(request):
 
 @pytest.fixture(params=[True, False])
 def use_vectorized(request):
-    yield request.param
+    return request.param

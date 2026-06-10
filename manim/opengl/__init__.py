@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-try:
+import contextlib
+
+with contextlib.suppress(ImportError):
     from dearpygui import dearpygui as dpg
-except ImportError:
-    pass
 
 
 from manim.mobject.opengl.dot_cloud import *

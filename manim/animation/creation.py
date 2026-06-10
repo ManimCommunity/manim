@@ -76,8 +76,8 @@ __all__ = [
 
 
 import itertools as it
-from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, Callable
+from collections.abc import Callable, Iterable, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -120,7 +120,7 @@ class ShowPartial(Animation):
     ):
         pointwise = getattr(mobject, "pointwise_become_partial", None)
         if not callable(pointwise):
-            raise NotImplementedError("This animation is not defined for this Mobject.")
+            raise TypeError(f"{self.__class__.__name__} only works for VMobjects.")
         super().__init__(mobject, **kwargs)
 
     def interpolate_submobject(
@@ -133,7 +133,7 @@ class ShowPartial(Animation):
             starting_submobject, *self._get_bounds(alpha)
         )
 
-    def _get_bounds(self, alpha: float) -> None:
+    def _get_bounds(self, alpha: float) -> tuple[float, float]:
         raise NotImplementedError("Please use Create or ShowPassingFlash")
 
 
@@ -173,7 +173,7 @@ class Create(ShowPartial):
     ) -> None:
         super().__init__(mobject, lag_ratio=lag_ratio, introducer=introducer, **kwargs)
 
-    def _get_bounds(self, alpha: float) -> tuple[int, float]:
+    def _get_bounds(self, alpha: float) -> tuple[float, float]:
         return (0, alpha)
 
 
@@ -229,8 +229,6 @@ class DrawBorderThenFill(Animation):
         rate_func: Callable[[float], float] = double_smooth,
         stroke_width: float = 2,
         stroke_color: str = None,
-        draw_border_animation_config: dict = {},  # what does this dict accept?
-        fill_animation_config: dict = {},
         introducer: bool = True,
         **kwargs,
     ) -> None:
@@ -244,13 +242,13 @@ class DrawBorderThenFill(Animation):
         )
         self.stroke_width = stroke_width
         self.stroke_color = stroke_color
-        self.draw_border_animation_config = draw_border_animation_config
-        self.fill_animation_config = fill_animation_config
         self.outline = self.get_outline()
 
     def _typecheck_input(self, vmobject: VMobject | OpenGLVMobject) -> None:
         if not isinstance(vmobject, (VMobject, OpenGLVMobject)):
-            raise TypeError("DrawBorderThenFill only works for vectorized Mobjects")
+            raise TypeError(
+                f"{self.__class__.__name__} only works for vectorized Mobjects"
+            )
 
     def begin(self) -> None:
         self.outline = self.get_outline()
@@ -281,7 +279,7 @@ class DrawBorderThenFill(Animation):
         alpha: float,
     ) -> None:  # Fixme: not matching the parent class? What is outline doing here?
         index: int
-        subalpha: int
+        subalpha: float
         index, subalpha = integer_interpolate(0, 2, alpha)
         if index == 0:
             submobject.pointwise_become_partial(outline, 0, subalpha)
@@ -351,10 +349,7 @@ class Write(DrawBorderThenFill):
     ) -> tuple[float, float]:
         length = len(vmobject.family_members_with_points())
         if run_time is None:
-            if length < 15:
-                run_time = 1
-            else:
-                run_time = 2
+            run_time = 1 if length < 15 else 2
         if lag_ratio is None:
             lag_ratio = min(4.0 / max(1.0, length), 0.2)
         return run_time, lag_ratio
@@ -477,7 +472,7 @@ class SpiralIn(Animation):
 
     def interpolate_mobject(self, alpha: float) -> None:
         alpha = self.rate_func(alpha)
-        for original_shape, shape in zip(self.shapes, self.mobject):
+        for original_shape, shape in zip(self.shapes, self.mobject, strict=True):
             shape.restore()
             fill_opacity = original_shape.get_fill_opacity()
             stroke_opacity = original_shape.get_stroke_opacity()

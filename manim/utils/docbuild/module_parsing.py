@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import ast
+import sys
+from ast import Attribute, Name, Subscript
 from pathlib import Path
-
-from typing_extensions import TypeAlias
+from typing import Any, TypeAlias
 
 __all__ = ["parse_module_attributes"]
 
@@ -26,6 +27,10 @@ ModuleLevelAliasDict: TypeAlias = dict[str, AliasCategoryDict]
 classified by category in different `AliasCategoryDict` objects.
 """
 
+ModuleTypeVarDict: TypeAlias = dict[str, str]
+"""Dictionary containing every :class:`TypeVar` defined in a module."""
+
+
 AliasDocsDict: TypeAlias = dict[str, ModuleLevelAliasDict]
 """Dictionary which, for every module in Manim, contains documentation
 about their module-level attributes which are explicitly defined as
@@ -39,8 +44,12 @@ by Sphinx via the ``data`` role, hence the name) which are NOT
 explicitly defined as :class:`TypeAlias`.
 """
 
+TypeVarDict: TypeAlias = dict[str, ModuleTypeVarDict]
+"""A dictionary mapping module names to dictionaries of :class:`TypeVar` objects."""
+
 ALIAS_DOCS_DICT: AliasDocsDict = {}
 DATA_DICT: DataDict = {}
+TYPEVAR_DICT: TypeVarDict = {}
 
 MANIM_ROOT = Path(__file__).resolve().parent.parent.parent
 
@@ -50,7 +59,7 @@ MANIM_ROOT = Path(__file__).resolve().parent.parent.parent
 # ruff: noqa: E721
 
 
-def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
+def parse_module_attributes() -> tuple[AliasDocsDict, DataDict, TypeVarDict]:
     """Read all files, generate Abstract Syntax Trees from them, and
     extract useful information about the type aliases defined in the
     files: the category they belong to, their definition and their
@@ -58,25 +67,30 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
 
     Returns
     -------
-    ALIAS_DOCS_DICT : `AliasDocsDict`
+    ALIAS_DOCS_DICT : :class:`AliasDocsDict`
         A dictionary containing the information from all the type
-        aliases in Manim. See `AliasDocsDict` for more information.
+        aliases in Manim. See :class:`AliasDocsDict` for more information.
 
-    DATA_DICT : `DataDict`
+    DATA_DICT : :class:`DataDict`
         A dictionary containing the names of all DOCUMENTED
         module-level attributes which are not a :class:`TypeAlias`.
+
+    TYPEVAR_DICT : :class:`TypeVarDict`
+        A dictionary containing the definitions of :class:`TypeVar` objects,
+        organized by modules.
     """
     global ALIAS_DOCS_DICT
     global DATA_DICT
+    global TYPEVAR_DICT
 
-    if ALIAS_DOCS_DICT or DATA_DICT:
-        return ALIAS_DOCS_DICT, DATA_DICT
+    if ALIAS_DOCS_DICT or DATA_DICT or TYPEVAR_DICT:
+        return ALIAS_DOCS_DICT, DATA_DICT, TYPEVAR_DICT
 
     for module_path in MANIM_ROOT.rglob("*.py"):
-        module_name = module_path.resolve().relative_to(MANIM_ROOT)
-        module_name = list(module_name.parts)
-        module_name[-1] = module_name[-1].removesuffix(".py")
-        module_name = ".".join(module_name)
+        module_name_t1 = module_path.resolve().relative_to(MANIM_ROOT)
+        module_name_t2 = list(module_name_t1.parts)
+        module_name_t2[-1] = module_name_t2[-1].removesuffix(".py")
+        module_name = ".".join(module_name_t2)
 
         module_content = module_path.read_text(encoding="utf-8")
 
@@ -84,6 +98,9 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
         module_dict: ModuleLevelAliasDict = {}
         category_dict: AliasCategoryDict | None = None
         alias_info: AliasInfo | None = None
+
+        # For storing TypeVars
+        module_typevars: ModuleTypeVarDict = {}
 
         # For storing regular module attributes
         data_list: list[str] = []
@@ -137,32 +154,43 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
                     )
                 )
             ):
-                inner_nodes = node.body
+                inner_nodes: list[Any] = node.body
             else:
                 inner_nodes = [node]
 
             for node in inner_nodes:
-                # If we encounter an assignment annotated as "TypeAlias":
-                if (
+                # Check if this node is a TypeAlias (type <name> = <value>)
+                # or an AnnAssign annotated as TypeAlias (<target>: TypeAlias = <value>).
+                is_type_alias = (
+                    sys.version_info >= (3, 12) and type(node) is ast.TypeAlias
+                )
+                is_annotated_assignment_with_value = (
                     type(node) is ast.AnnAssign
                     and type(node.annotation) is ast.Name
                     and node.annotation.id == "TypeAlias"
                     and type(node.target) is ast.Name
                     and node.value is not None
-                ):
-                    alias_name = node.target.id
-                    def_node = node.value
-                    # If it's an Union, replace it with vertical bar notation
+                )
+                if is_type_alias or is_annotated_assignment_with_value:
+                    # TODO: ast.TypeAlias does not exist before Python 3.12, and that
+                    # could be the reason why MyPy does not recognize these as
+                    # attributes of node.
+                    alias_name = node.name.id if is_type_alias else node.target.id
+                    definition_node = node.value
+
+                    # If the definition is a Union, replace with vertical bar notation.
+                    # Instead of "Union[Type1, Type2]", we'll have "Type1 | Type2".
                     if (
-                        type(def_node) is ast.Subscript
-                        and type(def_node.value) is ast.Name
-                        and def_node.value.id == "Union"
+                        type(definition_node) is ast.Subscript
+                        and type(definition_node.value) is ast.Name
+                        and definition_node.value.id == "Union"
                     ):
+                        union_elements = definition_node.slice.elts  # type: ignore[attr-defined]
                         definition = " | ".join(
-                            ast.unparse(elem) for elem in def_node.slice.elts
+                            ast.unparse(elem) for elem in union_elements
                         )
                     else:
-                        definition = ast.unparse(def_node)
+                        definition = ast.unparse(definition_node)
 
                     definition = definition.replace("npt.", "")
                     if category_dict is None:
@@ -172,6 +200,19 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
                     alias_info = category_dict[alias_name]
                     continue
 
+                # Check if it is a typing.TypeVar (<target> = TypeVar(...)).
+                elif (
+                    type(node) is ast.Assign
+                    and type(node.targets[0]) is ast.Name
+                    and type(node.value) is ast.Call
+                    and type(node.value.func) is ast.Name
+                    and node.value.func.id.endswith("TypeVar")
+                ):
+                    module_typevars[node.targets[0].id] = ast.unparse(
+                        node.value
+                    ).replace("_", r"\_")
+                    continue
+
                 # If here, the node is not a TypeAlias definition
                 alias_info = None
 
@@ -179,13 +220,15 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
                 # Does the assignment have a target of type Name? Then
                 # it could be considered a definition of a module attribute.
                 if type(node) is ast.AnnAssign:
-                    target = node.target
+                    target: Name | Attribute | Subscript | ast.expr | None = node.target
                 elif type(node) is ast.Assign and len(node.targets) == 1:
                     target = node.targets[0]
                 else:
                     target = None
 
-                if type(target) is ast.Name:
+                if type(target) is ast.Name and not (
+                    type(node) is ast.Assign and target.id not in module_typevars
+                ):
                     data_name = target.id
                 else:
                     data_name = None
@@ -194,5 +237,7 @@ def parse_module_attributes() -> tuple[AliasDocsDict, DataDict]:
             ALIAS_DOCS_DICT[module_name] = module_dict
         if len(data_list) > 0:
             DATA_DICT[module_name] = data_list
+        if module_typevars:
+            TYPEVAR_DICT[module_name] = module_typevars
 
-    return ALIAS_DOCS_DICT, DATA_DICT
+    return ALIAS_DOCS_DICT, DATA_DICT, TYPEVAR_DICT

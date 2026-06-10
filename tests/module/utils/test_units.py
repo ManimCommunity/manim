@@ -3,13 +3,13 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from manim import PI, X_AXIS, Y_AXIS, Z_AXIS, config
+from manim import PI, X_AXIS, Y_AXIS, Z_AXIS
 from manim.utils.unit import Degrees, Munits, Percent, Pixels
 
 
-def test_units():
+def test_units(config):
     # make sure we are using the right frame geometry
-    assert config.pixel_width == 1920
+    config.pixel_width = 1920
 
     np.testing.assert_allclose(config.frame_height, 8.0)
 

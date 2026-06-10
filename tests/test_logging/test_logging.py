@@ -46,7 +46,8 @@ def test_error_logging(tmp_path, python_version):
     out, err, exitcode = capture(command)
     if err is None:
         err = out
-    assert exitcode != 0 and "Traceback (most recent call last)" in err
+    assert exitcode != 0
+    assert "Traceback (most recent call last)" in err
 
 
 @logs_comparison(
@@ -69,4 +70,5 @@ def test_tex_error_logs(tmp_path, python_version):
         "BadTex",
     ]
     _, err, exitcode = capture(command)
-    assert exitcode != 0 and len(err) > 0
+    assert exitcode != 0
+    assert len(err) > 0

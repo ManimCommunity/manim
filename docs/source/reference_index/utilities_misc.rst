@@ -10,10 +10,12 @@ Module Index
    :toctree: ../reference
 
    ~utils.bezier
+   cli
    ~utils.color
    ~utils.commands
    ~utils.config_ops
    constants
+   data_structures
    ~utils.debug
    ~utils.deprecation
    ~utils.docbuild

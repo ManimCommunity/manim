@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from manim import BraceLabel, Mobject, config
+from manim import BraceLabel, Mobject
 
 
 def test_mobject_copy():
@@ -18,7 +18,7 @@ def test_mobject_copy():
         assert orig.submobjects[i] is not copy.submobjects[i]
 
 
-def test_bracelabel_copy(tmp_path):
+def test_bracelabel_copy(tmp_path, config):
     """Test that a copy is a deepcopy."""
     # For this test to work, we need to tweak some folders temporarily
     original_text_dir = config["text_dir"]
@@ -27,7 +27,7 @@ def test_bracelabel_copy(tmp_path):
     config["text_dir"] = str(mediadir.joinpath("Text"))
     config["tex_dir"] = str(mediadir.joinpath("Tex"))
     for el in ["text_dir", "tex_dir"]:
-        Path(config[el]).mkdir(parents=True)
+        Path(config[el]).mkdir(parents=True, exist_ok=True)
 
     # Before the refactoring of Mobject.copy(), the class BraceLabel was the
     # only one to have a non-trivial definition of copy.  Here we test that it
