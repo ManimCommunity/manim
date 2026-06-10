@@ -147,7 +147,7 @@ def test_mobject_dimensions_nested_mobjects():
     assert is_close(vg.depth, 0.775), vg.depth
 
 
-def test_mobject_dimensions_mobjects_with_no_points_are_at_origin():
+def test_mobject_dimensions_mobjects_with_no_points():
     for direction in [DL, DR, UL, UR]:
         rect = Rectangle(width=2, height=3)
         rect.move_to(direction * 10)
