@@ -159,6 +159,55 @@ def test_scene_with_non_raw_or_wav_audio(config, manim_caplog):
 
 
 @pytest.mark.slow
+def test_partial_movie_files_include_audio(config, tmp_path):
+    output_filename = "partial_audio"
+
+    class AudioPartialScene(Scene):
+        def construct(self):
+            click_path = (
+                Path(__file__).parent.parent.parent
+                / "docs"
+                / "source"
+                / "_static"
+                / "click.wav"
+            )
+            self.add_sound(click_path)
+            self.play(Create(Circle()))
+            self.wait(0.5)
+
+    with tempconfig(
+        {
+            "media_dir": tmp_path,
+            "quality": "low_quality",
+            "format": "mp4",
+            "output_file": output_filename,
+        }
+    ):
+        scene = AudioPartialScene()
+        scene.render()
+
+    partial_files = [
+        Path(path)
+        for path in scene.renderer.file_writer.partial_movie_files
+        if path is not None
+    ]
+    assert partial_files
+
+    has_nonzero_audio = False
+    for partial_file in partial_files:
+        with av.open(partial_file) as container:
+            assert container.streams.audio, "Partial movie missing audio stream"
+            for frame in container.decode(audio=0):
+                if np.any(frame.to_ndarray()):
+                    has_nonzero_audio = True
+                    break
+        if has_nonzero_audio:
+            break
+
+    assert has_nonzero_audio, "All partial audio samples are zero"
+
+
+@pytest.mark.slow
 def test_unicode_partial_movie(config, tmpdir, simple_scenes_path):
     # Characters that failed for a user on Windows
     # due to its weird default encoding.
