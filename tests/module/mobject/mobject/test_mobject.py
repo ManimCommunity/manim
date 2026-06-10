@@ -152,7 +152,7 @@ def test_mobject_dimensions_mobjects_with_no_points():
     empty_mob = VMobject()
     assert empty_mob.width == 0
     assert empty_mob.height == 0
-    
+
     for direction in [DL, DR, UL, UR]:
         rect = Rectangle(width=2, height=3)
         rect.move_to(direction * 10)
