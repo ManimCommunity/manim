@@ -62,12 +62,12 @@ def test_add_labels():
     expected_label_length = 6
     num_line = NumberLine(x_range=[-4, 4])
     num_line.add_labels(
-        dict(zip(list(range(-3, 3)), [Integer(m) for m in range(-1, 5)])),
+        dict(zip(list(range(-3, 3)), [Integer(m) for m in range(-1, 5)], strict=True)),
     )
     actual_label_length = len(num_line.labels)
-    assert (
-        actual_label_length == expected_label_length
-    ), f"Expected a VGroup with {expected_label_length} integers but got {actual_label_length}."
+    assert actual_label_length == expected_label_length, (
+        f"Expected a VGroup with {expected_label_length} integers but got {actual_label_length}."
+    )
 
 
 def test_number_to_point():
@@ -129,4 +129,6 @@ def test_start_and_end_at_same_point():
     line = DashedLine(np.zeros(3), np.zeros(3))
     line.put_start_and_end_on(np.zeros(3), np.array([0, 0, 0]))
 
-    np.testing.assert_array_equal(np.round(np.zeros(3), 4), np.round(line.points, 4))
+    np.testing.assert_array_equal(
+        np.round(line.points, 4), np.round(np.zeros((4, 3)), 4)
+    )

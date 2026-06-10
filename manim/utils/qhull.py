@@ -114,8 +114,9 @@ class QuickHull:
 
     def initialize(self, points: PointND_Array) -> None:
         # Sample Points
+        rng = np.random.default_rng()
         simplex = points[
-            np.random.choice(points.shape[0], points.shape[1] + 1, replace=False)
+            rng.choice(points.shape[0], points.shape[1] + 1, replace=False)
         ]
         self.unclaimed = points
         new_internal: PointND = np.mean(simplex, axis=0)
@@ -133,9 +134,9 @@ class QuickHull:
                 self.neighbors.setdefault(sf, set()).add(f)
 
     def classify(self, facet: Facet) -> None:
-        assert (
-            self.unclaimed is not None
-        ), "Call .initialize() before using .classify()."
+        assert self.unclaimed is not None, (
+            "Call .initialize() before using .classify()."
+        )
 
         if not self.unclaimed.size:
             self.outside[facet] = (None, None)

@@ -143,7 +143,7 @@ render_options = option_group(
         + ", ".join(
             reversed(
                 [
-                    f'{q["pixel_width"]}x{q["pixel_height"]} {q["frame_rate"]}FPS'
+                    f"{q['pixel_width']}x{q['pixel_height']} {q['frame_rate']}FPS"
                     for q in QUALITIES.values()
                     if q["flag"]
                 ]

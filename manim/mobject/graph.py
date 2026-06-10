@@ -16,7 +16,7 @@ import networkx as nx
 import numpy as np
 
 if TYPE_CHECKING:
-    from typing_extensions import TypeAlias
+    from typing import TypeAlias
 
     from manim.scene.scene import Scene
     from manim.typing import Point3D, Point3DLike
@@ -335,7 +335,7 @@ def _tree_layout(
     # Always make a copy of the children because they get eaten
     stack = [list(children[root_vertex]).copy()]
     stick = [root_vertex]
-    parent = {u: root_vertex for u in children[root_vertex]}
+    parent = dict.fromkeys(children[root_vertex], root_vertex)
     pos = {}
     obstruction = [0.0] * len(T)
     o = -1 if orientation == "down" else 1
@@ -588,9 +588,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             self._labels = labels
         elif isinstance(labels, bool):
             if labels:
-                self._labels = {
-                    v: MathTex(v, fill_color=label_fill_color) for v in vertices
-                }
+                self._labels = {v: MathTex(v, color=label_fill_color) for v in vertices}
             else:
                 self._labels = {}
 
@@ -697,7 +695,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             )
 
         if label is True:
-            label = MathTex(vertex, fill_color=label_fill_color)
+            label = MathTex(vertex, color=label_fill_color)
         elif vertex in self._labels:
             label = self._labels[vertex]
         elif not isinstance(label, (Mobject, OpenGLMobject)):
@@ -810,12 +808,12 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
             vertex_mobjects = {}
 
         graph_center = self.get_center()
-        base_positions = {v: graph_center for v in vertices}
+        base_positions = dict.fromkeys(vertices, graph_center)
         base_positions.update(positions)
         positions = base_positions
 
         if isinstance(labels, bool):
-            labels = {v: labels for v in vertices}
+            labels = dict.fromkeys(vertices, labels)
         else:
             assert isinstance(labels, dict)
             base_labels = dict.fromkeys(vertices, False)
@@ -1021,10 +1019,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         """
         if edge_config is None:
             edge_config = self.default_edge_config.copy()
-        added_mobjects = []
-        for v in edge:
-            if v not in self.vertices:
-                added_mobjects.append(self._add_vertex(v))
+        added_mobjects = [self._add_vertex(v) for v in edge if v not in self.vertices]
         u, v = edge
 
         self._graph.add_edge(u, v)
@@ -1035,7 +1030,10 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         self._edge_config[(u, v)] = edge_config
 
         edge_mobject = edge_type(
-            self[u].get_center(), self[v].get_center(), z_index=-1, **edge_config
+            start=self[u].get_center(),
+            end=self[v].get_center(),
+            z_index=-1,
+            **edge_config,
         )
         self.edges[(u, v)] = edge_mobject
 
@@ -1501,7 +1499,9 @@ class Graph(GenericGraph):
             VERTEX_CONF = {"radius": 0.25, "color": BLUE_B, "fill_opacity": 1}
 
             def expand_vertex(self, g, vertex_id: str, depth: int):
-                new_vertices = [f"{vertex_id}/{i}" for i in range(self.CHILDREN_PER_VERTEX)]
+                new_vertices = [
+                    f"{vertex_id}/{i}" for i in range(self.CHILDREN_PER_VERTEX)
+                ]
                 new_edges = [(vertex_id, child_id) for child_id in new_vertices]
                 g.add_edges(
                     *new_edges,
@@ -1541,8 +1541,8 @@ class Graph(GenericGraph):
     ):
         self.edges = {
             (u, v): edge_type(
-                self[u].get_center(),
-                self[v].get_center(),
+                start=self[u].get_center(),
+                end=self[v].get_center(),
                 z_index=-1,
                 **self._edge_config[(u, v)],
             )
@@ -1748,8 +1748,8 @@ class DiGraph(GenericGraph):
     ):
         self.edges = {
             (u, v): edge_type(
-                self[u],
-                self[v],
+                start=self[u],
+                end=self[v],
                 z_index=-1,
                 **self._edge_config[(u, v)],
             )

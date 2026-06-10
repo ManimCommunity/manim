@@ -236,7 +236,7 @@ class ManimDirective(Directive):
         ref_block = "References: " + " ".join(ref_content) if ref_content else ""
 
         if "quality" in self.options:
-            quality = f'{self.options["quality"]}_quality'
+            quality = f"{self.options['quality']}_quality"
         else:
             quality = "example_quality"
         frame_rate = QUALITIES[quality]["frame_rate"]
@@ -268,11 +268,11 @@ class ManimDirective(Directive):
         ]
         source_block = "\n".join(source_block_in)
 
-        config.media_dir = (Path(setup.confdir) / "media").absolute()  # type: ignore[attr-defined,assignment]
+        config.media_dir = (Path(setup.confdir) / "media").absolute()  # type: ignore[attr-defined]
         config.images_dir = "{media_dir}/images"
         config.video_dir = "{media_dir}/videos/{quality}"
         output_file = f"{clsname}-{classnamedict[clsname]}"
-        config.assets_dir = Path("_static")  # type: ignore[assignment]
+        config.assets_dir = Path("_static")
         config.progress_bar = "none"
         config.verbosity = "WARNING"
 
@@ -399,7 +399,11 @@ def _delete_rendering_times(*args: tuple[Any]) -> None:
 
 
 def setup(app: Sphinx) -> SetupMetadata:
-    app.add_node(SkipManimNode, html=(visit, depart))
+    app.add_node(
+        SkipManimNode,
+        html=(visit, depart),
+        latex=(lambda a, b: None, lambda a, b: None),
+    )
 
     setup.app = app  # type: ignore[attr-defined]
     setup.config = app.config  # type: ignore[attr-defined]

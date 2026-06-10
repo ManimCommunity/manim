@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from collections.abc import Hashable
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -14,7 +15,7 @@ from manim.utils.qhull import QuickHull
 
 if TYPE_CHECKING:
     from manim.mobject.mobject import Mobject
-    from manim.typing import Point3D
+    from manim.typing import Point3D, Point3DLike_Array
 
 __all__ = [
     "Polyhedron",
@@ -96,10 +97,10 @@ class Polyhedron(VGroup):
 
     def __init__(
         self,
-        vertex_coords: list[list[float] | np.ndarray],
+        vertex_coords: Point3DLike_Array,
         faces_list: list[list[int]],
         faces_config: dict[str, str | int | float | bool] = {},
-        graph_config: dict[str, str | int | float | bool] = {},
+        graph_config: dict[str, Any] = {},
     ):
         super().__init__()
         self.faces_config = dict(
@@ -116,7 +117,7 @@ class Polyhedron(VGroup):
         )
         self.vertex_coords = vertex_coords
         self.vertex_indices = list(range(len(self.vertex_coords)))
-        self.layout = dict(enumerate(self.vertex_coords))
+        self.layout: dict[Hashable, Any] = dict(enumerate(self.vertex_coords))
         self.faces_list = faces_list
         self.face_coords = [[self.layout[j] for j in i] for i in faces_list]
         self.edges = self.get_edges(self.faces_list)
@@ -129,14 +130,14 @@ class Polyhedron(VGroup):
 
     def get_edges(self, faces_list: list[list[int]]) -> list[tuple[int, int]]:
         """Creates list of cyclic pairwise tuples."""
-        edges = []
+        edges: list[tuple[int, int]] = []
         for face in faces_list:
-            edges += zip(face, face[1:] + face[:1])
+            edges += zip(face, face[1:] + face[:1], strict=True)
         return edges
 
     def create_faces(
         self,
-        face_coords: list[list[list | np.ndarray]],
+        face_coords: Point3DLike_Array,
     ) -> VGroup:
         """Creates VGroup of faces from a list of face coordinates."""
         face_group = VGroup()
@@ -144,18 +145,16 @@ class Polyhedron(VGroup):
             face_group.add(Polygon(*face, **self.faces_config))
         return face_group
 
-    def update_faces(self, m: Mobject):
+    def update_faces(self, m: Mobject) -> None:
         face_coords = self.extract_face_coords()
         new_faces = self.create_faces(face_coords)
         self.faces.match_points(new_faces)
 
-    def extract_face_coords(self) -> list[list[np.ndarray]]:
+    def extract_face_coords(self) -> Point3DLike_Array:
         """Extracts the coordinates of the vertices in the graph.
         Used for updating faces.
         """
-        new_vertex_coords = []
-        for v in self.graph.vertices:
-            new_vertex_coords.append(self.graph[v].get_center())
+        new_vertex_coords = [self.graph[v].get_center() for v in self.graph.vertices]
         layout = dict(enumerate(new_vertex_coords))
         return [[layout[j] for j in i] for i in self.faces_list]
 
@@ -181,7 +180,7 @@ class Tetrahedron(Polyhedron):
                 self.add(obj)
     """
 
-    def __init__(self, edge_length: float = 1, **kwargs):
+    def __init__(self, edge_length: float = 1, **kwargs: Any):
         unit = edge_length * np.sqrt(2) / 4
         super().__init__(
             vertex_coords=[
@@ -216,7 +215,7 @@ class Octahedron(Polyhedron):
                 self.add(obj)
     """
 
-    def __init__(self, edge_length: float = 1, **kwargs):
+    def __init__(self, edge_length: float = 1, **kwargs: Any):
         unit = edge_length * np.sqrt(2) / 2
         super().__init__(
             vertex_coords=[
@@ -262,7 +261,7 @@ class Icosahedron(Polyhedron):
                 self.add(obj)
     """
 
-    def __init__(self, edge_length: float = 1, **kwargs):
+    def __init__(self, edge_length: float = 1, **kwargs: Any):
         unit_a = edge_length * ((1 + np.sqrt(5)) / 4)
         unit_b = edge_length * (1 / 2)
         super().__init__(
@@ -327,7 +326,7 @@ class Dodecahedron(Polyhedron):
                 self.add(obj)
     """
 
-    def __init__(self, edge_length: float = 1, **kwargs):
+    def __init__(self, edge_length: float = 1, **kwargs: Any):
         unit_a = edge_length * ((1 + np.sqrt(5)) / 4)
         unit_b = edge_length * ((3 + np.sqrt(5)) / 4)
         unit_c = edge_length * (1 / 2)
@@ -427,7 +426,7 @@ class ConvexHull3D(Polyhedron):
                 self.add(dots)
     """
 
-    def __init__(self, *points: Point3D, tolerance: float = 1e-5, **kwargs):
+    def __init__(self, *points: Point3D, tolerance: float = 1e-5, **kwargs: Any):
         # Build Convex Hull
         array = np.array(points)
         hull = QuickHull(tolerance)
