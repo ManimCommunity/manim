@@ -66,12 +66,6 @@ Z_COLOR = BLUE_D
 class TransformableLabel(MathTex):
     """A MathTex object with additional attributes for transformation tracking."""
 
-    target_text: str | MathTex
-    vector: Vector
-    original_kwargs: dict[str, Any]
-    transformation_name: str | MathTex
-    target: Mobject | None
-
     def __init__(
         self,
         base_tex: str,
@@ -1239,7 +1233,7 @@ class LinearTransformationScene(VectorScene):
             # the code where the target_text property is referenced.
             target_text: MathTex | str = label.target_text
             label.target = self.get_vector_label(
-                label.vector.target,
+                label.vector.target,  # type: ignore [arg-type]
                 target_text,
                 **label.original_kwargs,
             )
