@@ -166,9 +166,12 @@ class Paragraph(VGroup):
         lines_str_list = lines_str.split("\n")
         self.chars = self._gen_chars(lines_str_list)
 
-        self.lines = [list(self.chars), [self.alignment] * len(self.chars)]
-        self.lines_initial_positions = [line.get_center() for line in self.lines[0]]
-        self.add(*self.lines[0])
+        # TODO: If possible get rid of self.lines_chars, as it seems to be a
+        # listified duplicate of self.chars.
+        self.lines_chars = list(self.chars)
+        self.lines_alignments = [self.alignment] * len(self.chars)
+        self.lines_initial_positions = [line.get_center() for line in self.lines_chars]
+        self.add(*self.lines_chars)
         self.move_to(np.array([0, 0, 0]))
         if self.alignment:
             self._set_all_lines_alignments(self.alignment)
@@ -221,7 +224,7 @@ class Paragraph(VGroup):
         alignment
             Defines the alignment of paragraph. Possible values are "left", "right", "center".
         """
-        for line_no in range(len(self.lines[0])):
+        for line_no in range(len(self.lines_chars)):
             self._change_alignment_for_a_line(alignment, line_no)
         return self
 
@@ -240,8 +243,8 @@ class Paragraph(VGroup):
 
     def _set_all_lines_to_initial_positions(self) -> Paragraph:
         """Set all lines to their initial positions."""
-        self.lines[1] = [None] * len(self.lines[0])
-        for line_no in range(len(self.lines[0])):
+        self.lines_alignments = [None] * len(self.lines_chars)
+        for line_no in range(len(self.lines_chars)):
             self[line_no].move_to(
                 self.get_center() + self.lines_initial_positions[line_no],
             )
@@ -255,7 +258,7 @@ class Paragraph(VGroup):
         line_no
             Defines the line number for which we want to set given alignment.
         """
-        self.lines[1][line_no] = None
+        self.lines_alignments[line_no] = None
         self[line_no].move_to(self.get_center() + self.lines_initial_positions[line_no])
         return self
 
@@ -269,12 +272,12 @@ class Paragraph(VGroup):
         line_no
             Defines the line number for which we want to set given alignment.
         """
-        self.lines[1][line_no] = alignment
-        if self.lines[1][line_no] == "center":
+        self.lines_alignments[line_no] = alignment
+        if self.lines_alignments[line_no] == "center":
             self[line_no].move_to(
                 np.array([self.get_center()[0], self[line_no].get_center()[1], 0]),
             )
-        elif self.lines[1][line_no] == "right":
+        elif self.lines_alignments[line_no] == "right":
             self[line_no].move_to(
                 np.array(
                     [
@@ -284,7 +287,7 @@ class Paragraph(VGroup):
                     ],
                 ),
             )
-        elif self.lines[1][line_no] == "left":
+        elif self.lines_alignments[line_no] == "left":
             self[line_no].move_to(
                 np.array(
                     [
