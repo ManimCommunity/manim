@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 __all__ = [
-    "ThreeDVMobject",
     "Surface",
+    "ImplicitSurface",
     "Sphere",
     "Dot3D",
     "Cube",
@@ -20,6 +20,7 @@ from collections.abc import Callable, Iterable, Sequence
 from typing import TYPE_CHECKING, Any, Literal, Self
 
 import numpy as np
+from isosurfaces import plot_isosurface
 
 from manim import config, logger
 from manim.constants import *
@@ -28,6 +29,7 @@ from manim.mobject.geometry.polygram import Square
 from manim.mobject.mobject import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
 from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
 from manim.utils.color import (
     BLUE,
@@ -46,76 +48,36 @@ if TYPE_CHECKING:
     from manim.typing import Point3D, Point3DLike, Vector3D, Vector3DLike
 
 
-class ThreeDVMobject(VMobject, metaclass=ConvertToOpenGL):
-    u_index: int
-    v_index: int
-    u1: float
-    u2: float
-    v1: float
-    v2: float
-
-    def __init__(self, shade_in_3d: bool = True, **kwargs: Any):
-        super().__init__(shade_in_3d=shade_in_3d, **kwargs)
-
-
-class Surface(VGroup, metaclass=ConvertToOpenGL):
-    """Creates a Parametric Surface using a checkerboard pattern.
+class BaseSurface(VGroup, metaclass=ConvertToOpenGL):
+    """Creates a Surface using a checkerboard pattern.
 
     Parameters
     ----------
-    func
-        The function defining the :class:`Surface`.
-    u_range
-        The range of the ``u`` variable: ``(u_min, u_max)``.
-    v_range
-        The range of the ``v`` variable: ``(v_min, v_max)``.
-    resolution
-        The number of samples taken of the :class:`Surface`. A tuple can be
-        used to define different resolutions for ``u`` and ``v`` respectively.
+    face_grid
+        A 2D nested list of the faces that make up the surface. The order is
+        primarily used for checkerboard coloring, with the order roughly
+        following the surface layout where possible.
     fill_color
-        The color of the :class:`Surface`. Ignored if ``checkerboard_colors``
+        The color of the :class:`BaseSurface`. Ignored if ``checkerboard_colors``
         is set.
     fill_opacity
-        The opacity of the :class:`Surface`, from 0 being fully transparent
+        The opacity of the :class:`BaseSurface`, from 0 being fully transparent
         to 1 being fully opaque. Defaults to 1.
     checkerboard_colors
-        ng individual faces alternating colors. Overrides ``fill_color``.
+        Filling individual faces alternating colors. Overrides ``fill_color``.
     stroke_color
-        Color of the stroke surrounding each face of :class:`Surface`.
+        Color of the stroke surrounding each face of :class:`BaseSurface`.
     stroke_width
-        Width of the stroke surrounding each face of :class:`Surface`.
+        Width of the stroke surrounding each face of :class:`BaseSurface`.
         Defaults to 0.5.
     should_make_jagged
         Changes the anchor mode of the Bézier curves from smooth to jagged.
         Defaults to ``False``.
-
-    Examples
-    --------
-    .. manim:: ParaSurface
-        :save_last_frame:
-
-        class ParaSurface(ThreeDScene):
-            def func(self, u, v):
-                return np.array([np.cos(u) * np.cos(v), np.cos(u) * np.sin(v), u])
-
-            def construct(self):
-                axes = ThreeDAxes(x_range=[-4,4], x_length=8)
-                surface = Surface(
-                    lambda u, v: axes.c2p(*self.func(u, v)),
-                    u_range=[-PI, PI],
-                    v_range=[0, TAU],
-                    resolution=8,
-                )
-                self.set_camera_orientation(theta=70 * DEGREES, phi=75 * DEGREES)
-                self.add(axes, surface)
     """
 
     def __init__(
         self,
-        func: Callable[[float, float], np.ndarray],
-        u_range: tuple[float, float] = (0, 1),
-        v_range: tuple[float, float] = (0, 1),
-        resolution: int | Sequence[int] = 32,
+        face_grid: list[list[VMobject]] = [[]],
         surface_piece_config: dict = {},
         fill_color: ParsableManimColor = BLUE_D,
         fill_opacity: float = 1.0,
@@ -129,8 +91,6 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         pre_function_handle_to_anchor_scale_factor: float = 0.00001,
         **kwargs: Any,
     ) -> None:
-        self.u_range = u_range
-        self.v_range = v_range
         super().__init__(
             fill_color=fill_color,
             fill_opacity=fill_opacity,
@@ -138,7 +98,6 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             stroke_width=stroke_width,
             **kwargs,
         )
-        self.resolution = resolution
         self.surface_piece_config = surface_piece_config
         self.checkerboard_colors: list[ManimColor] | Literal[False]
         if checkerboard_colors is False:
@@ -149,86 +108,32 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         self.pre_function_handle_to_anchor_scale_factor = (
             pre_function_handle_to_anchor_scale_factor
         )
-        self.list_of_faces: list[ThreeDVMobject] = []
-        self._func = func
-        self._setup_in_uv_space()
-        self.apply_function(lambda p: func(p[0], p[1]))
-        if self.should_make_jagged:
-            self.make_jagged()
-
-    def func(self, u: float, v: float) -> np.ndarray:
-        return self._func(u, v)
-
-    def _get_u_values_and_v_values(self) -> tuple[np.ndarray, np.ndarray]:
-        if isinstance(self.resolution, int):
-            u_res = v_res = self.resolution
-        else:
-            u_res, v_res = self.resolution
-
-        u_values = np.linspace(*self.u_range, u_res + 1)
-        v_values = np.linspace(*self.v_range, v_res + 1)
-
-        return u_values, v_values
-
-    def _setup_in_uv_space(self) -> None:
-        u_values, v_values = self._get_u_values_and_v_values()
-        faces = VGroup()
-        self.list_of_faces = []
-        for i in range(len(u_values) - 1):
-            for j in range(len(v_values) - 1):
-                u1, u2 = u_values[i : i + 2]
-                v1, v2 = v_values[j : j + 2]
-                face = ThreeDVMobject()
-                face.set_points_as_corners(
-                    [
-                        [u1, v1, 0],
-                        [u2, v1, 0],
-                        [u2, v2, 0],
-                        [u1, v2, 0],
-                        [u1, v1, 0],
-                    ],
-                )
-                faces.add(face)
-                face.u_index = i
-                face.v_index = j
-                face.u1 = u1
-                face.u2 = u2
-                face.v1 = v1
-                face.v2 = v2
-                self.list_of_faces.append(face)
-        faces.set_fill(color=self.fill_color, opacity=self.fill_opacity)
-        faces.set_stroke(
-            color=self.stroke_color,
-            width=self.stroke_width,
-            opacity=self.stroke_opacity,
-        )
-        self.add(*faces)
-        if self.checkerboard_colors:
-            self.set_fill_by_checkerboard(*self.checkerboard_colors)
+        self.face_grid = face_grid
 
     def set_fill_by_checkerboard(
         self, *colors: ParsableManimColor, opacity: float | None = None
     ) -> Self:
-        """Sets the fill_color of each face of :class:`Surface` in
-        an alternating pattern.
+        """Sets the fill_color of each face of :class:`BaseSurface` in an
+        alternating pattern.
 
         Parameters
         ----------
         colors
             List of colors for alternating pattern.
         opacity
-            The fill_opacity of :class:`Surface`, from 0 being fully transparent
-            to 1 being fully opaque.
+            The fill_opacity of :class:`BaseSurface`, from 0 being fully
+            transparent to 1 being fully opaque.
 
         Returns
         -------
-        :class:`~.Surface`
-            The parametric surface with an alternating pattern.
+        :class:`~.BaseSurface`
+            The surface with an alternating pattern.
         """
         n_colors = len(colors)
-        for face in self.list_of_faces:
-            c_index = (face.u_index + face.v_index) % n_colors
-            face.set_fill(colors[c_index], opacity=opacity)
+        for c_index, faces in enumerate(self.face_grid):
+            for face in faces:
+                c_index = (c_index + 1) % n_colors
+                face.set_fill(colors[c_index], opacity=opacity)
         return self
 
     def set_fill_by_value(
@@ -240,14 +145,14 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         axis: int = 2,
         **kwargs: Any,
     ) -> Self:
-        """Sets the color of each mobject of a parametric surface to a color
-        relative to its axis-value.
+        """Sets the color of each mobject of a surface to a color relative to
+        its axis-value.
 
         Parameters
         ----------
         axes
-            The axes for the parametric surface, which will be used to map
-            axis-values to colors.
+            The axes for the surface, which will be used to map axis-values to
+            colors.
         colorscale
             A list of colors, ordered from lower axis-values to higher axis-values.
             If a list of tuples is passed containing colors paired with numbers,
@@ -257,8 +162,8 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
 
         Returns
         -------
-        :class:`~.Surface`
-            The parametric surface with a gradient applied by value. For chaining.
+        :class:`~.BaseSurface`
+            The surface with a gradient applied by value. For chaining.
 
         Examples
         --------
@@ -345,9 +250,324 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                             mob.set_color(mob_color, recurse=False)
                         elif config.renderer == RendererType.CAIRO:
                             mob.set_color(mob_color, family=False)
+                        else:
+                            raise Exception("Unknown renderer")
                         break
 
         return self
+
+    def render_faces(self) -> None:
+        """Renders the faces in the surface, adding them to the scene and
+        setting the stroke and fill colours.
+        """
+        faces: OpenGLVGroup | VGroup
+        if config.renderer == RendererType.OPENGL:
+            faces = OpenGLVGroup()
+        elif config.renderer == RendererType.CAIRO:
+            faces = VGroup()
+        else:
+            raise Exception("Unknown renderer")
+
+        faces.add(*[face for row in self.face_grid for face in row])  # type: ignore[arg-type]
+        faces.set_stroke(
+            color=self.stroke_color,
+            width=self.stroke_width,
+            opacity=self.stroke_opacity,
+        )
+        if self.checkerboard_colors:
+            self.set_fill_by_checkerboard(
+                *self.checkerboard_colors, opacity=self.fill_opacity
+            )
+        else:
+            faces.set_fill(color=self.fill_color, opacity=self.fill_opacity)
+        self.add(*faces)
+
+
+class Surface(BaseSurface, metaclass=ConvertToOpenGL):
+    """Creates a Parametric Surface using a checkerboard pattern.
+
+    Parameters
+    ----------
+    func
+        The function defining the :class:`Surface`.
+    u_range
+        The range of the ``u`` variable: ``(u_min, u_max)``.
+    v_range
+        The range of the ``v`` variable: ``(v_min, v_max)``.
+    resolution
+        The number of samples taken of the :class:`Surface`. A tuple can be
+        used to define different resolutions for ``u`` and ``v`` respectively.
+    fill_color
+        The color of the :class:`Surface`. Ignored if ``checkerboard_colors``
+        is set.
+    fill_opacity
+        The opacity of the :class:`Surface`, from 0 being fully transparent
+        to 1 being fully opaque. Defaults to 1.
+    checkerboard_colors
+        Filling individual faces alternating colors. Overrides ``fill_color``.
+    stroke_color
+        Color of the stroke surrounding each face of :class:`Surface`.
+    stroke_width
+        Width of the stroke surrounding each face of :class:`Surface`.
+        Defaults to 0.5.
+    should_make_jagged
+        Changes the anchor mode of the Bézier curves from smooth to jagged.
+        Defaults to ``False``.
+
+    Examples
+    --------
+    .. manim:: ParaSurface
+        :save_last_frame:
+
+        class ParaSurface(ThreeDScene):
+            def func(self, u, v):
+                return np.array([np.cos(u) * np.cos(v), np.cos(u) * np.sin(v), u])
+
+            def construct(self):
+                axes = ThreeDAxes(x_range=[-4,4], x_length=8)
+                surface = Surface(
+                    lambda u, v: axes.c2p(*self.func(u, v)),
+                    u_range=[-PI, PI],
+                    v_range=[0, TAU],
+                    resolution=8,
+                )
+                self.set_camera_orientation(theta=70 * DEGREES, phi=75 * DEGREES)
+                self.add(axes, surface)
+    """
+
+    def __init__(
+        self,
+        func: Callable[[float, float], np.ndarray],
+        u_range: tuple[float, float] = (0, 1),
+        v_range: tuple[float, float] = (0, 1),
+        resolution: int | Sequence[int] = 32,
+        surface_piece_config: dict = {},
+        fill_color: ParsableManimColor = BLUE_D,
+        fill_opacity: float = 1.0,
+        checkerboard_colors: Iterable[ParsableManimColor] | Literal[False] = [
+            BLUE_D,
+            BLUE_E,
+        ],
+        stroke_color: ParsableManimColor = LIGHT_GREY,
+        stroke_width: float = 0.5,
+        should_make_jagged: bool = False,
+        pre_function_handle_to_anchor_scale_factor: float = 0.00001,
+        **kwargs: Any,
+    ) -> None:
+        self._func = func
+        self.u_range = u_range
+        self.v_range = v_range
+        self.resolution = resolution
+
+        super().__init__(
+            surface_piece_config=surface_piece_config,
+            fill_color=fill_color,
+            fill_opacity=fill_opacity,
+            checkerboard_colors=checkerboard_colors,
+            stroke_color=stroke_color,
+            stroke_width=stroke_width,
+            should_make_jagged=should_make_jagged,
+            pre_function_handle_to_anchor_scale_factor=pre_function_handle_to_anchor_scale_factor,
+            **kwargs,
+        )
+
+        self._setup_in_uv_space()
+        self.apply_function(lambda p: func(p[0], p[1]))
+        if self.should_make_jagged:
+            self.make_jagged()
+
+    def func(self, u: float, v: float) -> np.ndarray:
+        return self._func(u, v)
+
+    def _get_u_values_and_v_values(self) -> tuple[np.ndarray, np.ndarray]:
+        if isinstance(self.resolution, int):
+            u_res = v_res = self.resolution
+        else:
+            u_res, v_res = self.resolution
+
+        u_values = np.linspace(*self.u_range, u_res + 1)
+        v_values = np.linspace(*self.v_range, v_res + 1)
+
+        return u_values, v_values
+
+    def _setup_in_uv_space(self) -> None:
+        u_values, v_values = self._get_u_values_and_v_values()
+        self.face_grid = []
+        vmobj: type[VMobject]
+        if config.renderer == RendererType.OPENGL:
+            vmobj = OpenGLVMobject  # type: ignore[assignment]
+        elif config.renderer == RendererType.CAIRO:
+            vmobj = VMobject
+        else:
+            raise Exception("Unknown renderer")
+
+        for i in range(len(u_values) - 1):
+            self.face_grid.append([])
+            for j in range(len(v_values) - 1):
+                u1, u2 = u_values[i : i + 2]
+                v1, v2 = v_values[j : j + 2]
+                face = vmobj()
+                face.set_points_as_corners(
+                    [
+                        [u1, v1, 0],
+                        [u2, v1, 0],
+                        [u2, v2, 0],
+                        [u1, v2, 0],
+                        [u1, v1, 0],
+                    ],
+                )
+                self.face_grid[-1].append(face)
+
+        self.render_faces()
+
+
+class ImplicitSurface(BaseSurface, metaclass=ConvertToOpenGL):
+    """Creates a Implicit Surface using a checkerboard pattern.
+
+    Parameters
+    ----------
+    func
+        The implicit equation defining the surface as ``func(x, y, z) = 0``.
+    x_range
+        The range of the ``x`` variable: ``(x_min, x_max)``.
+    y_range
+        The range of the ``y`` variable: ``(y_min, y_max)``.
+    z_range
+        The range of the ``z`` variable: ``(z_min, z_max)``
+    min_depth
+        Minimum tree depth of the isosurface solver. A larger depth results in a
+        finer triangular mesh of the surface. Defaults to 3.
+    max_cells:
+        Maximum number of cells of the isosurface solver. A larger number results
+        in a finer triangular mesh of the surface. Defaults to 1000.
+    tol:
+        The tolerance of the isosurface solver. If `None` or unspecified,
+        defaults to 0.1% of the x, y, z range.
+    fill_color
+        The color of the :class:`ImplicitSurface`. Ignored if
+        ``checkerboard_colors`` is set.
+    fill_opacity
+        The opacity of the :class:`ImplicitSurface`, from 0 being fully
+        transparent to 1 being fully opaque. Defaults to 1.
+    checkerboard_colors
+        Filling individual faces alternating colors. Overrides ``fill_color``.
+    stroke_color
+        Color of the stroke surrounding each face of :class:`ImplicitSurface`.
+    stroke_width
+        Width of the stroke surrounding each face of :class:`ImplicitSurface`.
+        Defaults to 0.5.
+    should_make_jagged
+        Changes the anchor mode of the Bézier curves from smooth to jagged.
+        Defaults to ``False``.
+
+    Examples
+    --------
+    .. manim:: ImplicitSphere
+        :save_last_frame:
+
+        class ImplicitSphere(ThreeDScene):
+            def construct(self):
+                axes = ThreeDAxes()
+                surface = ImplicitSurface(
+                    lambda x, y, z: x**2 + y**2 + z**2 - 1,
+                    x_range=(-1.5, 1.5),
+                    y_range=(-1.5, 1.5),
+                    z_range=(-1.5, 1.5),
+                    checkerboard_colors=False
+                )
+                self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+                self.add(axes, surface)
+    """
+
+    def __init__(
+        self,
+        func: Callable[[float, float, float], float],
+        x_range: tuple[float, float] = (0, 1),
+        y_range: tuple[float, float] = (0, 1),
+        z_range: tuple[float, float] = (0, 1),
+        min_depth: int = 3,
+        max_cells: int = 1000,
+        tol: np.ndarray | None = None,
+        surface_piece_config: dict = {},
+        fill_color: ParsableManimColor = BLUE_D,
+        fill_opacity: float = 1.0,
+        checkerboard_colors: Iterable[ParsableManimColor] | Literal[False] = [
+            BLUE_D,
+            BLUE_E,
+        ],
+        stroke_color: ParsableManimColor = LIGHT_GREY,
+        stroke_width: float = 0.5,
+        should_make_jagged: bool = False,
+        pre_function_handle_to_anchor_scale_factor: float = 0.00001,
+        **kwargs: Any,
+    ) -> None:
+        self._func = func
+        self.x_range = x_range
+        self.y_range = y_range
+        self.z_range = z_range
+        self.min_depth = min_depth
+        self.max_cells = max_cells
+        self.tol = tol
+
+        super().__init__(
+            surface_piece_config=surface_piece_config,
+            fill_color=fill_color,
+            fill_opacity=fill_opacity,
+            checkerboard_colors=checkerboard_colors,
+            stroke_color=stroke_color,
+            stroke_width=stroke_width,
+            should_make_jagged=should_make_jagged,
+            pre_function_handle_to_anchor_scale_factor=pre_function_handle_to_anchor_scale_factor,
+            **kwargs,
+        )
+
+        self._plot_surface()
+        if self.should_make_jagged:
+            self.make_jagged()
+
+    def func(self, xyz: tuple[float, float, float]) -> float:
+        return self._func(*xyz)
+
+    def _plot_surface(self) -> None:
+        # isosurface solver
+        xyzmin = np.array([self.x_range[0], self.y_range[0], self.z_range[0]])
+        xyzmax = np.array([self.x_range[1], self.y_range[1], self.z_range[1]])
+        # try different offset eps to avoid singularities
+        for eps in (0, 1e-3, 1e-2, 1e-1):
+            try:
+                simplices, triangles = plot_isosurface(
+                    fn=self.func,
+                    pmin=xyzmin + eps,
+                    pmax=xyzmax - eps,
+                    min_depth=self.min_depth,
+                    max_cells=self.max_cells,
+                    tol=self.tol,
+                )
+                break  # choose the first successful run
+            except AssertionError:
+                pass  # else try another eps
+        else:
+            raise RuntimeError(
+                "ImplicitSurface could not be solved. Please check the  "
+                "or try different min_depth, max_cells, tol."
+            )
+
+        # convert to manim's VMobject
+        vmobj: type[VMobject]
+        if config.renderer == RendererType.OPENGL:
+            vmobj = OpenGLVMobject  # type: ignore[assignment]
+        elif config.renderer == RendererType.CAIRO:
+            vmobj = VMobject
+        else:
+            raise Exception("Unknown renderer")
+
+        self.face_grid = [[]]
+        for triangle in triangles:
+            face = vmobj()
+            face.set_points_as_corners([*triangle, triangle[-1]])
+            self.face_grid[-1].append(face)
+
+        self.render_faces()
 
 
 # Specific shapes
@@ -885,6 +1105,8 @@ class Cylinder(Surface):
         elif config.renderer == RendererType.CAIRO:
             color = self.fill_color
             opacity = self.fill_opacity
+        else:
+            raise Exception("Unknown renderer")
 
         self.base_top = Circle(
             radius=self.radius,
@@ -1318,6 +1540,8 @@ class Torus(Surface):
             res_value = (101, 101)
         elif config.renderer == RendererType.CAIRO:
             res_value = (24, 24)
+        else:
+            raise Exception("Unknown renderer")
 
         resolution = resolution if resolution is not None else res_value
 
