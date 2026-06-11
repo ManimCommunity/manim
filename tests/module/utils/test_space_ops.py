@@ -112,13 +112,13 @@ def test_shoelace():
     assert shoelace(np.array([[1, 2], [3, 4]])) == 6
 
 
-def test_polar_coords():
-    a = np.array([1, 1, 0])
-    b = (2, np.pi / 2, np.pi / 2)
+def test_spherical_coords():
+    cartesian_point = np.array([1, 1, 0])
+    spherical_point = (2, np.pi / 2, np.pi / 2)
     np.testing.assert_array_equal(
-        np.round(cartesian_to_spherical(a), 4),
+        np.round(cartesian_to_spherical(cartesian_point), 4),
         np.round([2**0.5, np.pi / 4, np.pi / 2], 4),
     )
     np.testing.assert_array_equal(
-        np.round(spherical_to_cartesian(b), 4), np.array([0, 2, 0])
+        np.round(spherical_to_cartesian(spherical_point), 4), np.array([0, 2, 0])
     )
