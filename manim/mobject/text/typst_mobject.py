@@ -62,6 +62,7 @@ There are two common ways to create selectable groups:
 .. manim:: TypstLabelSelectionExample
     :save_last_frame:
     :ref_classes: Typst
+    :ref_methods: Typst.select
 
     class TypstLabelSelectionExample(Scene):
         def construct(self):
@@ -83,6 +84,7 @@ There are two common ways to create selectable groups:
 .. manim:: TypstMathSelectionExample
     :save_last_frame:
     :ref_classes: TypstMath
+    :ref_methods: Typst.select
 
     class TypstMathSelectionExample(Scene):
         def construct(self):
@@ -192,13 +194,17 @@ class Typst(SVGMobject):
 
     Examples
     --------
-    .. code-block:: python
+    .. manim:: TypstExample
+        :ref_classes: Typst
 
         class TypstExample(Scene):
             def construct(self):
                 formula = Typst(r"$ integral_a^b f(x) dif x $")
                 self.play(Write(formula))
 
+    .. manim:: TypstTextExample
+        :save_last_frame:
+        :ref_classes: Typst
 
         class TypstTextExample(Scene):
             def construct(self):
@@ -556,12 +562,22 @@ class Typst(SVGMobject):
 
         Examples
         --------
-        .. code-block:: python
+        .. manim:: TypstSelectExample
+            :save_last_frame:
+            :ref_classes: TypstMath
+            :ref_methods: Typst.select
 
-            eq = TypstMath("{{ a + b : num }} / {{ c : den }} = {{ x }}")
-            eq.select("num").set_color(RED)
-            eq.select("den").set_color(BLUE)
-            eq.select(2).set_color(GREEN)  # "x" (auto-numbered)
+            class TypstSelectExample(Scene):
+                def construct(self):
+                    eq = TypstMath(
+                        "{{ a + b : num }} / {{ c : den }} = {{ lambda }} {{ x }}"
+                    )
+                    eq.select("num").set_color(RED)  # "a + b"
+                    eq.select("den").set_color(BLUE) # "c"
+                    eq.select(0).set_color(YELLOW)   # "lambda" (auto-numbered: "grp-0")
+                    eq.select(1).set_color(GREEN)    # "x" (auto-numbered: "grp-1")
+
+                    self.add(eq)
         """
         if isinstance(key, int):
             label = f"_grp-{key}"
@@ -627,19 +643,25 @@ class TypstMath(Typst):
 
     Examples
     --------
-    .. code-block:: python
+    .. manim:: DisplayMath
+        :save_last_frame:
+        :ref_classes: TypstMath
 
         class DisplayMath(Scene):
             def construct(self):
                 eq = TypstMath(r"sum_(k=0)^n k = (n(n+1)) / 2")
                 self.add(eq)
 
+    .. manim:: GroupedMath
+        :save_last_frame:
+        :ref_classes: TypstMath
+        :ref_methods: Typst.select
 
         class GroupedMath(Scene):
             def construct(self):
                 eq = TypstMath("{{ a^2 + b^2 : lhs }} = {{ c^2 }}")
                 eq.select("lhs").set_color(RED)
-                eq.select(0).set_color(BLUE)  # "c" (auto-numbered)
+                eq.select(0).set_color(BLUE)  # "c" (auto-numbered: "grp-0")
                 self.add(eq)
     """
 
