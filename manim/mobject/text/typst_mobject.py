@@ -660,8 +660,8 @@ class TypstMath(Typst):
         class GroupedMath(Scene):
             def construct(self):
                 eq = TypstMath("{{ a^2 + b^2 : lhs }} = {{ c^2 }}")
-                eq.select("lhs").set_color(RED)
-                eq.select(0).set_color(BLUE)  # "c" (auto-numbered: "grp-0")
+                eq.select("lhs").set_color(RED) # "a^2 + b^2"
+                eq.select(0).set_color(BLUE)    # "c^2" (auto-numbered: "grp-0")
                 self.add(eq)
     """
 
