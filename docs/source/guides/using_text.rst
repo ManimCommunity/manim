@@ -2,17 +2,24 @@
 Rendering Text and Formulas
 ###########################
 
-There are two different ways by which you can render **Text** in videos:
+There are three different ways by which you can render **Text** in videos:
 
 1. Using Pango (:mod:`~.text_mobject`)
 2. Using LaTeX (:mod:`~.tex_mobject`)
+3. Using Typst (:mod:`~.typst_mobject`)
 
-If you want to render simple text, you should use either :class:`~.Text` or
-:class:`~.MarkupText`, or one of its derivatives like :class:`~.Paragraph`.
+Manim's Pango-based text classes include :class:`~.Text`,
+:class:`~.MarkupText`, and derivatives such as :class:`~.Paragraph`.
 See :ref:`using-text-objects` for more information.
 
-LaTeX should be used when you need mathematical typesetting. See
-:ref:`rendering-with-latex` for more information.
+LaTeX rendering is available via :class:`~.Tex` and
+:class:`~.MathTex`. See :ref:`rendering-with-latex` for more
+information.
+
+Typst support is available via :class:`~.Typst` and
+:class:`~.TypstMath`. It offers both general markup and mathematical
+typesetting through the Typst compiler without requiring a TeX
+distribution. See :ref:`typst-mobjects` for more information.
 
 .. _using-text-objects:
 
@@ -50,7 +57,7 @@ For example:
             )
             self.add(text)
 
-.. _Pango library: https://pango.gnome.org
+.. _Pango library: https://pango.org
 
 Working with :class:`~.Text`
 ============================
@@ -291,6 +298,54 @@ and further references about PangoMarkup.
             )
             self.add(text)
 
+.. _rendering-with-typst:
+
+Text With Typst
+***************
+
+Manim also supports rendering text and formulas with Typst via
+:class:`~.Typst` and :class:`~.TypstMath`.
+
+.. important::
+
+    Typst support requires the optional ``typst`` dependency. Install it with
+    ``pip install manim[typst]``.
+
+Typst mobjects compile Typst markup directly to SVG and import the result as
+vector graphics. This works both for general markup and for mathematical
+expressions.
+
+.. manim:: HelloTypst
+    :save_last_frame:
+    :ref_classes: Typst
+
+    class HelloTypst(Scene):
+        def construct(self):
+            text = Typst(r"*Hello* from _Typst!_", font_size=96)
+            self.add(text)
+
+For mathematical expressions, use :class:`~.TypstMath`:
+
+.. manim:: HelloTypstMath
+    :save_last_frame:
+    :ref_classes: TypstMath
+
+    class HelloTypstMath(Scene):
+        def construct(self):
+            equation = TypstMath(r"sum_(k=1)^n k = (n(n + 1)) / 2", font_size=72)
+            self.add(equation)
+
+Typst also supports selecting subexpressions via labels in the Typst source,
+or via Manim's ``{{ ... }}`` shorthand in :class:`~.TypstMath`:
+
+.. code-block:: python
+
+    eq = TypstMath("{{ a + b : lhs }} = {{ c }}")
+    eq.select("lhs").set_color(BLUE)
+    eq.select(0).set_color(YELLOW)
+
+See :ref:`typst-mobjects` for more details and additional examples.
+
 .. _rendering-with-latex:
 
 Text With LaTeX
@@ -389,8 +444,9 @@ Substrings and parts
 
 The TeX mobject can accept multiple strings as arguments. Afterwards you can
 refer to the individual parts either by their index (like ``tex[1]``), or by
-selecting parts of the tex code. In this example, we set the color
-of the ``\bigstar`` using :func:`~.set_color_by_tex`:
+using :func:`~.set_color_by_tex`, which matches the argument exactly against
+the strings passed to the constructor. In this example, we color the
+``\bigstar`` part:
 
 .. manim:: LaTeXSubstrings
     :save_last_frame:
@@ -398,25 +454,13 @@ of the ``\bigstar`` using :func:`~.set_color_by_tex`:
     class LaTeXSubstrings(Scene):
         def construct(self):
             tex = Tex('Hello', r'$\bigstar$', r'\LaTeX', font_size=144)
-            tex.set_color_by_tex('igsta', RED)
+            tex.set_color_by_tex(r'$\bigstar$', RED)
             self.add(tex)
 
-Note that :func:`~.set_color_by_tex` colors the entire substring containing
-the Tex, not just the specific symbol or Tex expression. Consider the following example:
-
-.. manim:: IncorrectLaTeXSubstringColoring
-    :save_last_frame:
-
-    class IncorrectLaTeXSubstringColoring(Scene):
-        def construct(self):
-            equation = MathTex(
-                r"e^x = x^0 + x^1 + \frac{1}{2} x^2 + \frac{1}{6} x^3 + \cdots + \frac{1}{n!} x^n + \cdots"
-            )
-            equation.set_color_by_tex("x", YELLOW)
-            self.add(equation)
-
-As you can see, this colors the entire equation yellow, contrary to what
-may be expected. To color only ``x`` yellow, we have to do the following:
+Because :func:`~.set_color_by_tex` requires an exact match, it cannot directly
+target a token inside a string that was passed as a single argument. To color
+every ``x`` in a formula, use ``substrings_to_isolate`` to split the string at
+each occurrence first:
 
 .. manim:: CorrectLaTeXSubstringColoring
     :save_last_frame:
@@ -424,24 +468,32 @@ may be expected. To color only ``x`` yellow, we have to do the following:
     class CorrectLaTeXSubstringColoring(Scene):
         def construct(self):
             equation = MathTex(
-                r"e^x = x^0 + x^1 + \frac{1}{2} x^2 + \frac{1}{6} x^3 + \cdots + \frac{1}{n!} x^n + \cdots",
+                r"e^{x} = x^0 + x^1 + \frac{1}{2} x^2 + \frac{1}{6} x^3 + \cdots + \frac{1}{n!} x^n + \cdots",
                 substrings_to_isolate="x"
             )
             equation.set_color_by_tex("x", YELLOW)
             self.add(equation)
 
-By setting ``substrings_to_isolate`` to ``x``, we split up the
-:class:`~.MathTex` into substrings automatically and isolate the ``x`` components
-into individual substrings. Only then can :meth:`~.set_color_by_tex` be used
-to achieve the desired result.
+Each isolated occurrence of ``x`` becomes its own sub-mobject that
+:meth:`~.set_color_by_tex` can match exactly.
+If one of the ``substrings_to_isolate`` is in a sub or superscript, it needs
+to be enclosed by curly brackets.
 
 Note that Manim also supports a custom syntax that allows splitting
 a TeX string into substrings easily: simply enclose parts of your formula
 that you want to isolate with double braces. In the string
-``MathTex(r"{{ a^2 }} + {{ b^2 }} = {{ c^2 }}")``, the rendered mobject
+``MathTex(r"{{ a^2 }} + {{ b^2 }} = {{ c^2 }}")``, the rendered mobject
 will consist of the substrings ``a^2``, ``+``, ``b^2``, ``=``, and ``c^2``.
 This makes transformations between similar text fragments easy
 to write using :class:`~.TransformMatchingTex`.
+
+For Manim to recognise a ``{{`` as a group opener, it must appear either
+at the very start of the string or be immediately preceded by a whitespace
+character.  This means that ``{{`` embedded directly after non-whitespace
+LaTeX — such as ``\frac{{{n}}}{k}`` or ``a^{{2}}`` — is left untouched,
+which prevents accidental splitting of ordinary nested-brace expressions.
+To stop a leading ``{{`` from being treated as a group opener, insert a
+space between the two braces: ``{{ ... }}`` → ``{ { ... } }``.
 
 Using ``index_labels`` to work with complicated strings
 =======================================================

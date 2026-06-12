@@ -50,16 +50,15 @@ def test_background_color(config, using_opengl_renderer, dry_run):
 
 def test_digest_file(config, using_opengl_renderer, tmp_path):
     """Test that a config file can be digested programmatically."""
-    tmp_cfg = tempfile.NamedTemporaryFile("w", dir=tmp_path, delete=False)
-    tmp_cfg.write(
-        """
-        [CLI]
-        media_dir = this_is_my_favorite_path
-        video_dir = {media_dir}/videos
-        frame_height = 10
-        """,
-    )
-    tmp_cfg.close()
+    with tempfile.NamedTemporaryFile("w", dir=tmp_path, delete=False) as tmp_cfg:
+        tmp_cfg.write(
+            """
+            [CLI]
+            media_dir = this_is_my_favorite_path
+            video_dir = {media_dir}/videos
+            frame_height = 10
+            """,
+        )
     config.digest_file(tmp_cfg.name)
 
     assert config.get_dir("media_dir") == Path("this_is_my_favorite_path")
@@ -74,15 +73,14 @@ def test_frame_size(config, using_opengl_renderer, tmp_path):
     np.testing.assert_allclose(config.frame_height, 8.0)
 
     with tempconfig({}):
-        tmp_cfg = tempfile.NamedTemporaryFile("w", dir=tmp_path, delete=False)
-        tmp_cfg.write(
-            """
-            [CLI]
-            pixel_height = 10
-            pixel_width = 10
-            """,
-        )
-        tmp_cfg.close()
+        with tempfile.NamedTemporaryFile("w", dir=tmp_path, delete=False) as tmp_cfg:
+            tmp_cfg.write(
+                """
+                [CLI]
+                pixel_height = 10
+                pixel_width = 10
+                """,
+            )
         config.digest_file(tmp_cfg.name)
 
         # aspect ratio is set using pixel measurements
@@ -93,16 +91,16 @@ def test_frame_size(config, using_opengl_renderer, tmp_path):
 
 
 def test_frame_size_if_frame_width(config, using_opengl_renderer, tmp_path):
-    tmp_cfg = tempfile.NamedTemporaryFile("w", dir=tmp_path, delete=False)
-    tmp_cfg.write(
-        """
-        [CLI]
-        pixel_height = 10
-        pixel_width = 10
-        frame_height = 10
-        frame_width = 10
-        """,
-    )
+    with tempfile.NamedTemporaryFile("w", dir=tmp_path, delete=False) as tmp_cfg:
+        tmp_cfg.write(
+            """
+            [CLI]
+            pixel_height = 10
+            pixel_width = 10
+            frame_height = 10
+            frame_width = 10
+            """,
+        )
     tmp_cfg.close()
     config.digest_file(tmp_cfg.name)
 

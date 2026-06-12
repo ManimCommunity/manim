@@ -20,7 +20,8 @@ def test_Text2Color():
 
 def test_text_color_inheritance():
     """Test that Text and MarkupText correctly inherit colour from
-    their parent class."""
+    their parent class.
+    """
     VMobject.set_default(color=RED)
     # set both to a singular font so that the tests agree.
     text = Text("test_color_inheritance", font="Sans")

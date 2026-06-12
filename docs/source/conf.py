@@ -51,10 +51,21 @@ extensions = [
     "sphinx.ext.inheritance_diagram",
     "sphinxcontrib.programoutput",
     "myst_parser",
+    "sphinx_design",
+    "sphinx_reredirects",
 ]
 
 # Automatically generate stub pages when using the .. autosummary directive
 autosummary_generate = True
+
+myst_enable_extensions = ["colon_fence", "amsmath", "deflist"]
+
+# redirects (for moved / deleted pages)
+redirects = {
+    "installation/linux": "uv.html",
+    "installation/macos": "uv.html",
+    "installation/windows": "uv.html",
+}
 
 # generate documentation from type hints
 ALIAS_DOCS_DICT = parse_module_attributes()[0]
@@ -113,7 +124,6 @@ html_theme_options = {
     "source_repository": "https://github.com/ManimCommunity/manim/",
     "source_branch": "main",
     "source_directory": "docs/source/",
-    "top_of_page_button": None,
     "light_logo": "manim-logo-sidebar.svg",
     "dark_logo": "manim-logo-sidebar-dark.svg",
     "light_css_variables": {
@@ -146,11 +156,13 @@ html_title = f"Manim Community v{manim.__version__}"
 # This specifies any additional css files that will override the theme's
 html_css_files = ["custom.css"]
 
+latex_engine = "lualatex"
 
 # external links
 extlinks = {
     "issue": ("https://github.com/ManimCommunity/manim/issues/%s", "#%s"),
-    "pr": ("https://github.com/ManimCommunity/manim/pull/%s", "#%s"),
+    "pr": ("https://github.com/ManimCommunity/manim/pull/%s", "PR #%s"),
+    "user": ("https://github.com/%s", "@%s"),
 }
 
 # opengraph settings

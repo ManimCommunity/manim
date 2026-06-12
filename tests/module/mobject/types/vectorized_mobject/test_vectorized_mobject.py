@@ -65,6 +65,60 @@ def test_vmobject_add():
     assert len(obj.submobjects) == 1
 
 
+def test_vmobject_add_points_as_corners():
+    points = np.array(
+        [
+            [2, 0, 0],
+            [1, 1, 0],
+            [-1, 1, 0],
+            [-2, 0, 0],
+            [-1, -1, 0],
+            [1, -1, 0],
+            [2, 0, 0],
+        ]
+    )
+
+    # Test that add_points_as_corners(points) is equivalent to calling
+    # add_line_to(point) for every point in points.
+    obj1 = VMobject().start_new_path(points[0]).add_points_as_corners(points[1:])
+    obj2 = VMobject().start_new_path(points[0])
+    for point in points[1:]:
+        obj2.add_line_to(point)
+    np.testing.assert_allclose(obj1.points, obj2.points)
+
+    # Test that passing an array with no points does nothing.
+    obj3 = VMobject().start_new_path(points[0])
+    points3_old = obj3.points.copy()
+    obj3.add_points_as_corners([])
+    np.testing.assert_allclose(points3_old, obj3.points)
+
+    obj3.add_points_as_corners(points[1:]).add_points_as_corners([])
+    np.testing.assert_allclose(obj1.points, obj3.points)
+
+
+def test_add_points_as_corners_single_point_connects_to_existing_path():
+    """Regression test for #4218 / fix f6cdb547 (PR #4219).
+
+    When ``add_points_as_corners`` is called with a single new point on a
+    VMobject whose last subpath is complete (so ``has_new_path_started()``
+    returns False), the buggy version silently dropped the new point — the
+    ``else`` branch computed ``start_corners = points[:-1]`` which is empty
+    for a one-point input. The fix unifies the two branches so the existing
+    path's last point is always used as the start corner.
+    """
+    v = VMobject()
+    v.start_new_path(np.array([0.0, 0.0, 0.0]))
+    v.add_line_to(np.array([1.0, 0.0, 0.0]))
+    assert not v.has_new_path_started()
+    n_before = len(v.points)
+
+    v.add_points_as_corners([[2.0, 0.0, 0.0]])
+
+    # Post-fix: a cubic from [1, 0, 0] to [2, 0, 0] is appended.
+    assert len(v.points) > n_before
+    np.testing.assert_array_equal(v.points[-1], [2.0, 0.0, 0.0])
+
+
 def test_vmobject_point_from_proportion():
     obj = VMobject()
 
@@ -132,14 +186,14 @@ def test_vgroup_init():
         VGroup(3.0)
     assert str(init_with_float_info.value) == (
         "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value 3.0 (at index 0) is of type float."
+        "but the value 3.0 (at index 0 of parameter 0) is of type float."
     )
 
     with pytest.raises(TypeError) as init_with_mob_info:
         VGroup(Mobject())
     assert str(init_with_mob_info.value) == (
         "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value Mobject (at index 0) is of type Mobject. You can try "
+        "but the value Mobject (at index 0 of parameter 0) is of type Mobject. You can try "
         "adding this value into a Group instead."
     )
 
@@ -147,8 +201,54 @@ def test_vgroup_init():
         VGroup(VMobject(), Mobject())
     assert str(init_with_vmob_and_mob_info.value) == (
         "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value Mobject (at index 1) is of type Mobject. You can try "
+        "but the value Mobject (at index 0 of parameter 1) is of type Mobject. You can try "
         "adding this value into a Group instead."
+    )
+
+
+def test_vgroup_init_with_iterable():
+    """Test VGroup instantiation with an iterable type."""
+
+    def type_generator(type_to_generate, n):
+        return (type_to_generate() for _ in range(n))
+
+    def mixed_type_generator(major_type, minor_type, minor_type_positions, n):
+        return (
+            minor_type() if i in minor_type_positions else major_type()
+            for i in range(n)
+        )
+
+    obj = VGroup(VMobject())
+    assert len(obj.submobjects) == 1
+
+    obj = VGroup(type_generator(VMobject, 38))
+    assert len(obj.submobjects) == 38
+
+    obj = VGroup(VMobject(), [VMobject(), VMobject()], type_generator(VMobject, 38))
+    assert len(obj.submobjects) == 41
+
+    # A VGroup cannot be initialised with an iterable containing a Mobject
+    with pytest.raises(TypeError) as init_with_mob_iterable:
+        VGroup(type_generator(Mobject, 5))
+    assert str(init_with_mob_iterable.value) == (
+        "Only values of type VMobject can be added as submobjects of VGroup, "
+        "but the value Mobject (at index 0 of parameter 0) is of type Mobject."
+    )
+
+    # A VGroup cannot be initialised with an iterable containing a Mobject in any position
+    with pytest.raises(TypeError) as init_with_mobs_and_vmobs_iterable:
+        VGroup(mixed_type_generator(VMobject, Mobject, [3, 5], 7))
+    assert str(init_with_mobs_and_vmobs_iterable.value) == (
+        "Only values of type VMobject can be added as submobjects of VGroup, "
+        "but the value Mobject (at index 3 of parameter 0) is of type Mobject."
+    )
+
+    # A VGroup cannot be initialised with an iterable containing non VMobject's in any position
+    with pytest.raises(TypeError) as init_with_float_and_vmobs_iterable:
+        VGroup(mixed_type_generator(VMobject, float, [6, 7], 9))
+    assert str(init_with_float_and_vmobs_iterable.value) == (
+        "Only values of type VMobject can be added as submobjects of VGroup, "
+        "but the value 0.0 (at index 6 of parameter 0) is of type float."
     )
 
 
@@ -165,7 +265,7 @@ def test_vgroup_add():
         obj.add(3)
     assert str(add_int_info.value) == (
         "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value 3 (at index 0) is of type int."
+        "but the value 3 (at index 0 of parameter 0) is of type int."
     )
     assert len(obj.submobjects) == 1
 
@@ -175,7 +275,7 @@ def test_vgroup_add():
         obj.add(Mobject())
     assert str(add_mob_info.value) == (
         "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value Mobject (at index 0) is of type Mobject. You can try "
+        "but the value Mobject (at index 0 of parameter 0) is of type Mobject. You can try "
         "adding this value into a Group instead."
     )
     assert len(obj.submobjects) == 1
@@ -185,7 +285,7 @@ def test_vgroup_add():
         obj.add(VMobject(), Mobject())
     assert str(add_vmob_and_mob_info.value) == (
         "Only values of type VMobject can be added as submobjects of VGroup, "
-        "but the value Mobject (at index 1) is of type Mobject. You can try "
+        "but the value Mobject (at index 0 of parameter 1) is of type Mobject. You can try "
         "adding this value into a Group instead."
     )
     assert len(obj.submobjects) == 1
@@ -292,7 +392,7 @@ def test_vdict_init():
     # Test VDict made from a python dict
     VDict({"a": VMobject(), "b": VMobject(), "c": VMobject()})
     # Test VDict made using zip
-    VDict(zip(["a", "b", "c"], [VMobject(), VMobject(), VMobject()]))
+    VDict(zip(["a", "b", "c"], [VMobject(), VMobject(), VMobject()], strict=True))
     # If the value is of type Mobject, must raise a TypeError
     with pytest.raises(TypeError):
         VDict({"a": Mobject()})
@@ -449,3 +549,82 @@ def test_proportion_from_point():
     abc.scale(0.8)
     props = [abc.proportion_from_point(p) for p in abc.get_vertices()]
     np.testing.assert_allclose(props, [0, 1 / 3, 2 / 3])
+
+
+def test_align_points_handles_vmobject_with_no_complete_cubic_curves():
+    """Regression test for #3569 / #4629 (fix 21cf9998 / PR #4630).
+
+    When ``align_points`` encounters a VMobject whose points array is
+    non-empty but holds fewer than ``n_points_per_cubic_curve`` points,
+    ``get_subpaths()`` returns ``[]`` while ``has_no_points()`` returns
+    ``False`` — so the pre-loop sanitization that would normally add a
+    null curve is skipped. The buggy ``get_nth_subpath`` closure then
+    indexed ``path_list[-1]`` on the empty list and raised
+    ``IndexError: list index out of range``.
+
+    The fix returns a zero-valued null path in that case and ensures the
+    closure always returns a NumPy array (the previous list return type
+    broke downstream ``reshape`` calls).
+    """
+    target = VMobject()
+    target.set_points(
+        np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [2.0, 0.0, 0.0], [3.0, 0.0, 0.0]])
+    )
+
+    sub_cubic = VMobject()
+    sub_cubic.set_points(np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [2.0, 0.0, 0.0]]))
+    assert sub_cubic.get_subpaths() == []
+    assert not sub_cubic.has_no_points()
+
+    # Pre-fix: raises IndexError. Post-fix: completes; points are ndarray.
+    target.align_points(sub_cubic)
+    assert isinstance(target.points, np.ndarray)
+    assert isinstance(sub_cubic.points, np.ndarray)
+
+
+def test_pointwise_become_partial_preserves_target_when_source_has_no_curves():
+    """Regression test for #4255 / fix 3d029c12 (PR #4320).
+
+    When ``pointwise_become_partial`` is called with a source ``VMobject`` that
+    has zero cubic curves (e.g. an empty ``VMobject`` or a ``VectorizedPoint``
+    holding a single point), the buggy version called ``self.clear_points()``
+    on the *target*, zeroing out its data. The fix removes that call.
+
+    This bug surfaced as ``Arrow3D.get_start()`` / ``get_end()`` returning
+    ``[0, 0, 0]`` after a ``Create`` animation, because the arrow's
+    ``end_point`` sub-mobject has 1 point but no cubic curves.
+    """
+    target = VMobject()
+    original_points = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+    target.set_points(original_points)
+
+    empty_source = VMobject()
+    assert empty_source.get_num_curves() == 0
+
+    # Choose a, b so the `(a <= 0 and b >= 1)` early-return is skipped
+    # and the `num_curves == 0` branch is exercised.
+    target.pointwise_become_partial(empty_source, 0.0, 0.5)
+
+    np.testing.assert_array_equal(target.points, original_points)
+
+
+def test_pointwise_become_partial_where_vmobject_is_self():
+    sq = Square()
+    sq.pointwise_become_partial(vmobject=sq, a=0.2, b=0.7)
+    expected_points = np.array(
+        [
+            [-0.6, 1.0, 0.0],
+            [-0.73333333, 1.0, 0.0],
+            [-0.86666667, 1.0, 0.0],
+            [-1.0, 1.0, 0.0],
+            [-1.0, 1.0, 0.0],
+            [-1.0, 0.33333333, 0.0],
+            [-1.0, -0.33333333, 0.0],
+            [-1.0, -1.0, 0.0],
+            [-1.0, -1.0, 0.0],
+            [-0.46666667, -1.0, 0.0],
+            [0.06666667, -1.0, 0.0],
+            [0.6, -1.0, 0.0],
+        ]
+    )
+    np.testing.assert_allclose(sq.points, expected_points)

@@ -20,6 +20,7 @@ __all__ = [
 
 import itertools as it
 from collections.abc import (
+    Callable,
     Collection,
     Generator,
     Hashable,
@@ -27,13 +28,13 @@ from collections.abc import (
     Reversible,
     Sequence,
 )
-from typing import TYPE_CHECKING, Callable, TypeVar, overload
+from typing import TYPE_CHECKING, TypeVar, overload
 
 import numpy as np
 
 T = TypeVar("T")
 U = TypeVar("U")
-F = TypeVar("F", np.float_, np.int_)
+F = TypeVar("F", np.float64, np.int_)
 H = TypeVar("H", bound=Hashable)
 
 
@@ -57,7 +58,7 @@ def adjacent_n_tuples(objects: Sequence[T], n: int) -> zip[tuple[T, ...]]:
         >>> list(adjacent_n_tuples([1, 2, 3, 4], 3))
         [(1, 2, 3), (2, 3, 4), (3, 4, 1), (4, 1, 2)]
     """
-    return zip(*([*objects[k:], *objects[:k]] for k in range(n)))
+    return zip(*([*objects[k:], *objects[:k]] for k in range(n)), strict=True)
 
 
 def adjacent_pairs(objects: Sequence[T]) -> zip[tuple[T, ...]]:
@@ -311,8 +312,8 @@ def resize_array(nparray: npt.NDArray[F], length: int) -> npt.NDArray[F]:
 
 
 def resize_preserving_order(
-    nparray: npt.NDArray[np.float_], length: int
-) -> npt.NDArray[np.float_]:
+    nparray: npt.NDArray[np.float64], length: int
+) -> npt.NDArray[np.float64]:
     """Extends/truncates nparray so that ``len(result) == length``.
         The elements of nparray are duplicated to achieve the desired length
         (favours earlier elements).

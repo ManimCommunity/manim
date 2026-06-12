@@ -10,6 +10,7 @@ from manim.utils.bezier import (
     _get_subdivision_matrix,
     get_quadratic_approximation_of_cubic,
     get_smooth_cubic_bezier_handle_points,
+    interpolate,
     partial_bezier_points,
     split_bezier,
     subdivide_bezier,
@@ -215,3 +216,18 @@ def test_get_quadratic_approximation_of_cubic() -> None:
             ]
         ),
     )
+
+
+def test_interpolate() -> None:
+    """Test that :func:`interpolate` handles interpolation of both float and uint8 values."""
+    start = 127.0
+    end = 25.0
+    alpha = 0.2
+    val = interpolate(start, end, alpha)
+    assert np.allclose(val, 106.6000000)
+
+    start = np.array(127, dtype=np.uint8)
+    end = np.array(25, dtype=np.uint8)
+    alpha = 0.09739
+    val = interpolate(start, end, alpha)
+    assert np.allclose(val, np.array([117.06622]))
