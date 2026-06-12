@@ -56,7 +56,7 @@ def test_dimension():
 
 def test_abstract_base_class():
     """Check that CoordinateSystem has some abstract methods."""
-    with pytest.raises(Exception):
+    with pytest.raises(NotImplementedError):
         CS().get_axes()
 
 
@@ -152,7 +152,7 @@ def test_coords_to_point_vectorized():
 
     def ref_func(*coords):
         result = np.array(origin)
-        for axis, number in zip(plane.get_axes(), coords):
+        for axis, number in zip(plane.get_axes(), coords, strict=False):
             result += axis.number_to_point(number) - origin
         return result
 

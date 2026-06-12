@@ -135,7 +135,7 @@ class SceneWithSections(Scene):
         )
         self.wait(2)
 
-        self.next_section(type=PresentationSectionType.SKIP)
+        self.next_section(section_type=PresentationSectionType.SKIP)
         self.wait()
 
         self.next_section(
@@ -164,4 +164,16 @@ class ElaborateSceneWithSections(Scene):
 
         self.next_section("fade out")
         self.play(FadeOut(square))
+        self.wait()
+
+
+class SceneWithRandomness(Scene):
+    def construct(self):
+        dots = VGroup()
+        for _ in range(10):
+            dot = Dot(
+                point=np.random.uniform(-3, 3, size=3),  # noqa: NPY002
+            )
+            dots.add(dot)
+        self.add(dots)
         self.wait()

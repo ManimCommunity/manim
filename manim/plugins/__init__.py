@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from manim import config, logger
-
-from .plugins_flags import get_plugins, list_plugins
+from manim._config import config, logger
+from manim.plugins.plugins_flags import get_plugins, list_plugins
 
 __all__ = [
     "get_plugins",

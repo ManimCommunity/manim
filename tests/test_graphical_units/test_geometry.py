@@ -139,6 +139,20 @@ def test_RoundedRectangle(scene):
 
 
 @frames_comparison
+def test_ConvexHull(scene):
+    a = ConvexHull(
+        *[
+            [-2.7, -0.6, 0],
+            [0.2, -1.7, 0],
+            [1.9, 1.2, 0],
+            [-2.7, 0.9, 0],
+            [1.6, 2.2, 0],
+        ]
+    )
+    scene.add(a)
+
+
+@frames_comparison
 def test_Arrange(scene):
     s1 = Square()
     s2 = Square()
@@ -158,6 +172,27 @@ def test_ZIndex(scene):
     scene.play(FadeIn(VGroup(circle, square, triangle)))
     scene.play(ApplyMethod(circle.shift, UP))
     scene.play(ApplyMethod(triangle.shift, 2 * UP))
+
+
+@frames_comparison(last_frame=False)
+def test_negative_z_index_AnimationGroup(scene):
+    # https://github.com/ManimCommunity/manim/issues/3334
+    s = Square().set_z_index(-1)
+    scene.play(AnimationGroup(GrowFromCenter(s)))
+
+
+@frames_comparison(last_frame=False)
+def test_negative_z_index_LaggedStart(scene):
+    # https://github.com/ManimCommunity/manim/issues/3914
+    line_1 = Line(LEFT, RIGHT, color=BLUE)
+    line_2 = Line(UP + LEFT, UP + RIGHT, color=RED).set_z_index(-1)
+    scene.play(LaggedStart(FadeIn(line_1), FadeIn(line_2), lag_ratio=0.5))
+
+
+@frames_comparison(last_frame=False)
+def test_nested_animation_groups_with_negative_z_index(scene):
+    line = Line(LEFT, RIGHT, color=BLUE).set_z_index(-1)
+    scene.play(AnimationGroup(AnimationGroup(AnimationGroup(FadeIn(line)))))
 
 
 @frames_comparison
@@ -254,9 +289,7 @@ def test_LabeledLine(scene):
     line = LabeledLine(
         label="0.5",
         label_position=0.8,
-        font_size=20,
-        label_color=WHITE,
-        label_frame=True,
+        label_config={"font_size": 20},
         start=LEFT + DOWN,
         end=RIGHT + UP,
     )
@@ -266,6 +299,27 @@ def test_LabeledLine(scene):
 @frames_comparison
 def test_LabeledArrow(scene):
     l_arrow = LabeledArrow(
-        "0.5", start=LEFT * 3, end=RIGHT * 3 + UP * 2, label_position=0.5, font_size=15
+        label="0.5",
+        label_position=0.5,
+        label_config={"font_size": 15},
+        start=LEFT * 3,
+        end=RIGHT * 3 + UP * 2,
     )
     scene.add(l_arrow)
+
+
+@frames_comparison
+def test_LabeledPolygram(scene):
+    polygram = LabeledPolygram(
+        [
+            [-2.5, -2.5, 0],
+            [2.5, -2.5, 0],
+            [2.5, 2.5, 0],
+            [-2.5, 2.5, 0],
+            [-2.5, -2.5, 0],
+        ],
+        [[-1, -1, 0], [0.5, -1, 0], [0.5, 0.5, 0], [-1, 0.5, 0], [-1, -1, 0]],
+        [[1, 1, 0], [2, 1, 0], [2, 2, 0], [1, 2, 0], [1, 1, 0]],
+        label="C",
+    )
+    scene.add(polygram)
