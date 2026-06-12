@@ -807,7 +807,7 @@ class Dot(Circle):
         point: Point3DLike = ORIGIN,
         radius: float = DEFAULT_DOT_RADIUS,
         stroke_width: float = 0,
-        fill_opacity: float = None,
+        fill_opacity: float | None = None,
         color: ParsableManimColor = WHITE,
         **kwargs: Any,
     ) -> None:
