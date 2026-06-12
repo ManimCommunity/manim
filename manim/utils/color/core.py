@@ -166,7 +166,9 @@ class ManimColor:
         alpha: float = 1.0,
     ) -> None:
         if value is None:
-            self._internal_value = np.array((0, 0, 0, alpha), dtype=ManimColorDType)
+            self._internal_value = np.array(
+                (1.0, 1.0, 1.0, alpha), dtype=ManimColorDType
+            )
         elif isinstance(value, ManimColor):
             # logger.info(
             #     "ManimColor was passed another ManimColor. This is probably not what "
@@ -629,6 +631,39 @@ class ManimColor:
             new[-1] = alpha
             return self._construct_from_space(new)
 
+    @overload
+    def opacity(self, opacity: float) -> ManimColor:
+        """Returns a new ManimColor with the same color and the given opacity
+
+        Parameters
+        ----------
+        opacity : float
+            The opacity for the new ManimColor
+
+        Returns
+        -------
+        ManimColor
+            The new ManimColor object with changed opacity
+        """
+
+    @overload
+    def opacity(self, opacity: None) -> float:
+        """Returns the opacity of the current ManimColor in a range from zero to one
+
+        Returns
+        -------
+        float
+            The opacity of the ManimColor
+        """
+
+    def opacity(self, opacity=None):
+        """Returns a new ManimColor with the same color and a new opacity or changes the opacity"""
+        if opacity is None:
+            return self._internal_value[3]
+        tmp = self._internal_value.copy()
+        tmp[3] = opacity
+        return ManimColor.parse(tmp)
+
     def interpolate(self, other: Self, alpha: float) -> Self:
         """Interpolate between the current and the given :class:`ManimColor`, and return
         the result.
@@ -743,24 +778,6 @@ class ManimColor:
             if dark is not None:
                 return dark
             return self._from_internal(BLACK._internal_value)
-
-    def opacity(self, opacity: float) -> Self:
-        """Create a new :class:`ManimColor` with the given opacity and the same color
-        values as before.
-
-        Parameters
-        ----------
-        opacity
-            The new opacity value to be used.
-
-        Returns
-        -------
-        ManimColor
-            The new :class:`ManimColor` with the same color values and the new opacity.
-        """
-        tmp = self._internal_space.copy()
-        tmp[-1] = opacity
-        return self._construct_from_space(tmp)
 
     def into(self, class_type: type[ManimColorT]) -> ManimColorT:
         """Convert the current color into a different colorspace given by ``class_type``,
@@ -965,7 +982,7 @@ class ManimColor:
         raise NotImplementedError
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}('{self.to_hex()}')"
+        return f"{self.__class__.__name__}('{self.to_hex(True)}')"
 
     def __str__(self) -> str:
         return f"{self.to_hex()}"

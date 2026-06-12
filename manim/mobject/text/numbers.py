@@ -111,7 +111,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         self.include_background_rectangle = include_background_rectangle
         self.edge_to_fix = edge_to_fix
         self._font_size = font_size
-        self.fill_opacity = fill_opacity
+        self.set_fill_opacity(fill_opacity)
 
         self.initial_config = kwargs.copy()
         self.initial_config.update(
@@ -132,7 +132,6 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         )
 
         self._set_submobjects_from_number(number)
-        self.init_colors()
 
     @property
     def font_size(self) -> float:

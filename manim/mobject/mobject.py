@@ -106,7 +106,7 @@ class Mobject:
 
     def __init__(
         self,
-        color: ParsableManimColor | list[ParsableManimColor] = WHITE,
+        color: ParsableManimColor | list[ParsableManimColor] | None = WHITE,
         name: str | None = None,
         dim: int = 3,
         target: Mobject | None = None,
@@ -451,7 +451,9 @@ class Mobject:
         return result
 
     def __repr__(self) -> str:
-        return str(self.name)
+        if hasattr(self, "name"):
+            return str(self.name)
+        return str(self.__class__.__name__)
 
     def reset_points(self) -> Self:
         """Sets :attr:`points` to be an empty array."""
