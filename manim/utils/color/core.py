@@ -779,24 +779,6 @@ class ManimColor:
                 return dark
             return self._from_internal(BLACK._internal_value)
 
-    def opacity(self, opacity: float) -> Self:
-        """Create a new :class:`ManimColor` with the given opacity and the same color
-        values as before.
-
-        Parameters
-        ----------
-        opacity
-            The new opacity value to be used.
-
-        Returns
-        -------
-        ManimColor
-            The new :class:`ManimColor` with the same color values and the new opacity.
-        """
-        tmp = self._internal_space.copy()
-        tmp[-1] = opacity
-        return self._construct_from_space(tmp)
-
     def into(self, class_type: type[ManimColorT]) -> ManimColorT:
         """Convert the current color into a different colorspace given by ``class_type``,
         without changing the :attr:`_internal_value`.
