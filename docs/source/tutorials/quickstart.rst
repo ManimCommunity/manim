@@ -1,411 +1,205 @@
-==========
-Quickstart
-==========
-
-.. note::
-
-  Before proceeding, install Manim and make sure it is running properly by
-  following the steps in :doc:`../installation`. For
-  information on using Manim with Jupyterlab or Jupyter notebook, go to the
-  documentation for the
-  :meth:`IPython magic command <manim.utils.ipython_magic.ManimMagic.manim>`,
-  ``%%manim``.
-
-
-.. important::
-
-  If you installed Manim in the recommended way, using the
-  Python management tool ``uv``, then you either need to make sure the corresponding
-  virtual environment is activated (follow the instructions printed on running ``uv venv``),
-  or you need to remember to prefix the ``manim`` command in the console with ``uv run``;
-  that is, ``uv run manim ...``.
-
-Overview
-********
-
-This quickstart guide will lead you through creating a sample project using Manim: an animation
-engine for precise programmatic animations.
-
-First, you will use a command line
-interface to create a ``Scene``, the class through which Manim generates videos.
-In the ``Scene`` you will animate a circle. Then you will add another ``Scene`` showing
-a square transforming into a circle. This will be your introduction to Manim's animation ability.
-Afterwards, you will position multiple mathematical objects (``Mobject``\s). Finally, you
-will learn the ``.animate`` syntax, a powerful feature that animates the methods you
-use to modify ``Mobject``\s.
-
-
-Starting a new project
-**********************
-
-Start by creating a new folder::
-
-   manim init project my-project --default
-
-The ``my-project`` folder is the root folder for your project. It contains all the files that Manim needs to function,
-as well as any output that your project produces.
-
-
-Animating a circle
-******************
-
-1. Open a text editor, such as Notepad. Open the file ``main.py`` in the ``my-project`` folder.
-   It should look something like this:
-
-   .. code-block:: python
-
-     from manim import *
-
-
-     class CreateCircle(Scene):
-         def construct(self):
-             circle = Circle()  # create a circle
-             circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
-             self.play(Create(circle))  # show the circle on screen
-
-
-2. Open the command line, navigate to your project folder, and execute
-   the following command:
-
-   .. code-block:: bash
-
-     manim -pql main.py CreateCircle
-
-Manim will output rendering information, then create an MP4 file.
-Your default movie player will play the MP4 file, displaying the following animation.
-
-.. manim:: CreateCircle
-   :hide_source:
-
-   class CreateCircle(Scene):
-       def construct(self):
-           circle = Circle()                   # create a circle
-           circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
-           self.play(Create(circle))     # show the circle on screen
-
-If you see an animation of a pink circle being drawn, congratulations!
-You just wrote your first Manim scene from scratch.
-
-If you get an error
-message instead, you do not see a video, or if the video output does not
-look like the preceding animation, it is likely that Manim has not been
-installed correctly. Please refer to our :doc:`FAQ section </faq/index>`
-for help with the most common issues.
-
-
-***********
-Explanation
-***********
-
-Let's go over the script you just executed line by line to see how Manim was
-able to draw the circle.
-
-The first line imports all of the contents of the library:
-
-.. code-block:: python
-
-   from manim import *
-
-This is the recommended way of using Manim, as a single script often uses
-multiple names from the Manim namespace. In your script, you imported and used
-``Scene``, ``Circle``, ``PINK`` and ``Create``.
-
-Now let's look at the next two lines:
-
-.. code-block:: python
-
-   class CreateCircle(Scene):
-       def construct(self):
-           [...]
-
-Most of the time, the code for scripting an animation is entirely contained within
-the :meth:`~.Scene.construct` method of a :class:`.Scene` class.
-Inside :meth:`~.Scene.construct`, you can create objects, display them on screen, and animate them.
-
-The next two lines create a circle and set its color and opacity:
-
-.. code-block:: python
-
-           circle = Circle()  # create a circle
-           circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
-
-Finally, the last line uses the animation :class:`.Create` to display the
-circle on your screen:
-
-.. code-block:: python
-
-           self.play(Create(circle))  # show the circle on screen
-
-.. tip:: All animations must reside within the :meth:`~.Scene.construct` method of a
-         class derived from :class:`.Scene`.  Other code, such as auxiliary
-         or mathematical functions, may reside outside the class.
-
-
-Transforming a square into a circle
-***********************************
-
-With our circle animation complete, let's move on to something a little more complicated.
-
-1. Open ``scene.py``, and add the following code snippet below the ``CreateCircle`` class:
-
-.. code-block:: python
-
-   class SquareToCircle(Scene):
-       def construct(self):
-           circle = Circle()  # create a circle
-           circle.set_fill(PINK, opacity=0.5)  # set color and transparency
-
-           square = Square()  # create a square
-           square.rotate(PI / 4)  # rotate a certain amount
-
-           self.play(Create(square))  # animate the creation of the square
-           self.play(Transform(square, circle))  # interpolate the square into the circle
-           self.play(FadeOut(square))  # fade out animation
-
-2. Render ``SquareToCircle`` by running the following command in the command line:
-
-.. code-block:: bash
-
-   manim -pql scene.py SquareToCircle
-
-The following animation will render:
-
-.. manim:: SquareToCircle2
-   :hide_source:
-
-   class SquareToCircle2(Scene):
-       def construct(self):
-           circle = Circle()  # create a circle
-           circle.set_fill(PINK, opacity=0.5)  # set color and transparency
-
-           square = Square()  # create a square
-           square.rotate(PI / 4)  # rotate a certain amount
-
-           self.play(Create(square))  # animate the creation of the square
-           self.play(Transform(square, circle))  # interpolate the square into the circle
-           self.play(FadeOut(square))  # fade out animation
-
-This example shows one of the primary features of Manim: the ability to
-implement complicated and mathematically intensive animations (such as cleanly
-interpolating between two geometric shapes) with just a few lines of code.
-
-
-Positioning ``Mobject``\s
-*************************
-
-Next, let's go over some basic techniques for positioning ``Mobject``\s.
-
-1. Open ``scene.py``, and add the following code snippet below the ``SquareToCircle`` class:
-
-.. code-block:: python
-
-   class SquareAndCircle(Scene):
-       def construct(self):
-           circle = Circle()  # create a circle
-           circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
-
-           square = Square()  # create a square
-           square.set_fill(BLUE, opacity=0.5)  # set the color and transparency
-
-           square.next_to(circle, RIGHT, buff=0.5)  # set the position
-           self.play(Create(circle), Create(square))  # show the shapes on screen
-
-2. Render ``SquareAndCircle`` by running the following command in the command line:
-
-.. code-block:: bash
-
-   manim -pql scene.py SquareAndCircle
-
-The following animation will render:
-
-.. manim:: SquareAndCircle2
-   :hide_source:
-
-   class SquareAndCircle2(Scene):
-       def construct(self):
-           circle = Circle()  # create a circle
-           circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
-
-           square = Square() # create a square
-           square.set_fill(BLUE, opacity=0.5) # set the color and transparency
-
-           square.next_to(circle, RIGHT, buff=0.5) # set the position
-           self.play(Create(circle), Create(square))  # show the shapes on screen
-
-``next_to`` is a ``Mobject`` method for positioning ``Mobject``\s.
-
-We first specified
-the pink circle as the square's reference point by passing ``circle`` as the method's first argument.
-The second argument is used to specify the direction the ``Mobject`` is placed relative to the reference point.
-In this case, we set the direction to ``RIGHT``, telling Manim to position the square to the right of the circle.
-Finally, ``buff=0.5`` applied a small distance buffer between the two objects.
-
-Try changing ``RIGHT`` to ``LEFT``, ``UP``, or ``DOWN`` instead, and see how that changes the position of the square.
-
-Using positioning methods, you can render a scene with multiple ``Mobject``\s,
-setting their locations in the scene using coordinates or positioning them
-relative to each other.
-
-For more information on ``next_to`` and other positioning methods, check out the
-list of :class:`.Mobject` methods in our reference manual.
-
-
-Using ``.animate`` syntax to animate methods
-********************************************
-
-The final lesson in this tutorial is using ``.animate``, a ``Mobject`` method which
-animates changes you make to a ``Mobject``. When you prepend ``.animate`` to any
-method call that modifies a ``Mobject``, the method becomes an animation which
-can be played using ``self.play``. Let's return to ``SquareToCircle`` to see the
-differences between using methods when creating a ``Mobject``,
-and animating those method calls with ``.animate``.
-
-1. Open ``scene.py``, and add the following code snippet below the ``SquareAndCircle`` class:
-
-.. code-block:: python
-
-   class AnimatedSquareToCircle(Scene):
-       def construct(self):
-           circle = Circle()  # create a circle
-           square = Square()  # create a square
-
-           self.play(Create(square))  # show the square on screen
-           self.play(square.animate.rotate(PI / 4))  # rotate the square
-           self.play(Transform(square, circle))  # transform the square into a circle
-           self.play(
-               square.animate.set_fill(PINK, opacity=0.5)
-           )  # color the circle on screen
-
-2. Render ``AnimatedSquareToCircle`` by running the following command in the command line:
-
-.. code-block:: bash
-
-   manim -pql scene.py AnimatedSquareToCircle
-
-The following animation will render:
-
-.. manim:: AnimatedSquareToCircle2
-   :hide_source:
-
-   class AnimatedSquareToCircle2(Scene):
-       def construct(self):
-           circle = Circle()  # create a circle
-           square = Square()  # create a square
-
-           self.play(Create(square))  # show the square on screen
-           self.play(square.animate.rotate(PI / 4))  # rotate the square
-           self.play(Transform(square, circle))  # transform the square into a circle
-           self.play(square.animate.set_fill(PINK, opacity=0.5))  # color the circle on screen
-
-The first ``self.play`` creates the square. The second animates rotating it 45 degrees.
-The third transforms the square into a circle, and the last colors the circle pink.
-Although the end result is the same as that of ``SquareToCircle``, ``.animate`` shows
-``rotate`` and ``set_fill`` being applied to the ``Mobject`` dynamically, instead of creating them
-with the changes already applied.
-
-Try other methods, like ``flip`` or ``shift``, and see what happens.
-
-3. Open ``scene.py``, and add the following code snippet below the ``AnimatedSquareToCircle`` class:
-
-.. code-block:: python
-
-   class DifferentRotations(Scene):
-       def construct(self):
-           left_square = Square(color=BLUE, fill_opacity=0.7).shift(2 * LEFT)
-           right_square = Square(color=GREEN, fill_opacity=0.7).shift(2 * RIGHT)
-           self.play(
-               left_square.animate.rotate(PI), Rotate(right_square, angle=PI), run_time=2
-           )
-           self.wait()
-
-4. Render ``DifferentRotations`` by running the following command in the command line:
-
-.. code-block:: bash
-
-   manim -pql scene.py DifferentRotations
-
-The following animation will render:
-
-.. manim:: DifferentRotations2
-   :hide_source:
-
-   class DifferentRotations2(Scene):
-       def construct(self):
-           left_square = Square(color=BLUE, fill_opacity=0.7).shift(2*LEFT)
-           right_square = Square(color=GREEN, fill_opacity=0.7).shift(2*RIGHT)
-           self.play(left_square.animate.rotate(PI), Rotate(right_square, angle=PI), run_time=2)
-           self.wait()
-
-This ``Scene`` illustrates the quirks of ``.animate``. When using ``.animate``, Manim
-actually takes a ``Mobject``'s starting state and its ending state and interpolates the two.
-In the ``AnimatedSquareToCircle`` class, you can observe this when the square rotates:
-the corners of the square appear to contract slightly as they move into the positions required
-for the first square to transform into the second one.
-
-In ``DifferentRotations``, the difference between ``.animate``'s interpretation of rotation and the
-``Rotate`` method is far more apparent. The starting and ending states of a ``Mobject`` rotated 180 degrees
-are the same, so ``.animate`` tries to interpolate two identical objects and the result is the left square.
-If you find that your own usage of ``.animate`` is causing similar unwanted behavior, consider
-using conventional animation methods like the right square, which uses ``Rotate``.
-
-
-``Transform`` vs ``ReplacementTransform``
-*****************************************
-The difference between ``Transform`` and ``ReplacementTransform`` is that ``Transform(mob1, mob2)`` transforms the points
-(as well as other attributes like color) of ``mob1`` into the points/attributes of ``mob2``.
-
-``ReplacementTransform(mob1, mob2)`` on the other hand literally replaces ``mob1`` on the scene with ``mob2``.
-
-The use of ``ReplacementTransform`` or ``Transform`` is mostly up to personal preference. They can be used to accomplish the same effect, as shown below.
-
-.. code-block:: python
-
-    class TwoTransforms(Scene):
-        def transform(self):
-            a = Circle()
-            b = Square()
-            c = Triangle()
-            self.play(Transform(a, b))
-            self.play(Transform(a, c))
-            self.play(FadeOut(a))
-
-        def replacement_transform(self):
-            a = Circle()
-            b = Square()
-            c = Triangle()
-            self.play(ReplacementTransform(a, b))
-            self.play(ReplacementTransform(b, c))
-            self.play(FadeOut(c))
-
-        def construct(self):
-            self.transform()
-            self.wait(0.5)  # wait for 0.5 seconds
-            self.replacement_transform()
-
-
-However, in some cases it is more beneficial to use ``Transform``, like when you are transforming several mobjects one after the other.
-The code below avoids having to keep a reference to the last mobject that was transformed.
-
-.. manim:: TransformCycle
-
-    class TransformCycle(Scene):
-        def construct(self):
-            a = Circle()
-            t1 = Square()
-            t2 = Triangle()
-            self.add(a)
-            self.wait()
-            for t in [t1,t2]:
-                self.play(Transform(a,t))
-
-************
-You're done!
-************
-
-With a working installation of Manim and this sample project under your belt,
-you're ready to start creating animations of your own.  To learn
-more about what Manim is doing under the hood, move on to the next tutorial:
-:doc:`output_and_config`.  For an overview of
-Manim's features, as well as its configuration and other settings, check out the
-other :doc:`Tutorials <../tutorials/index>`.  For a list of all available features, refer to the
-:doc:`../reference` page.
+from manim import *
+import numpy as np
+
+class AbsoluteRefineryPro(Scene):
+    def construct(self):
+        # ========== 1. معرفی داستان ==========
+        story_title = Text("🏭 داستان قدر مطلق", font="B Nazanin", font_size=48, color=GOLD)
+        story_subtitle = Text("پالایشگاه اعداد منفی", font="B Nazanin", font_size=32, color=BLUE_C)
+        story_subtitle.next_to(story_title, DOWN)
+        
+        self.play(Write(story_title), run_time=1.5)
+        self.play(FadeIn(story_subtitle, shift=UP), run_time=1)
+        self.wait(1.5)
+        self.play(FadeOut(story_title), FadeOut(story_subtitle))
+        
+        # ========== 2. ساختن پالایشگاه پیشرفته ==========
+        # بدنه اصلی
+        refinery_body = Rectangle(width=5, height=3.5, color=BLUE_D, fill_opacity=0.3, stroke_width=3)
+        refinery_body.set_stroke(color=BLUE_C, width=3)
+        
+        # دودکش‌ها
+        chimney1 = Rectangle(width=0.4, height=1.2, color=GRAY, fill_opacity=0.8)
+        chimney1.move_to(refinery_body.get_top() + UP*0.2 + LEFT*1.2)
+        chimney2 = Rectangle(width=0.4, height=1, color=GRAY, fill_opacity=0.8)
+        chimney2.move_to(refinery_body.get_top() + UP*0.2 + RIGHT*1.2)
+        
+        # چرخ‌دنده‌ها
+        gear1 = Circle(radius=0.3, color=YELLOW, fill_opacity=0.5)
+        gear1.move_to(refinery_body.get_center() + LEFT*1)
+        gear2 = Circle(radius=0.3, color=YELLOW, fill_opacity=0.5)
+        gear2.move_to(refinery_body.get_center() + RIGHT*1)
+        
+        # دایره‌های داخلی چرخ‌دنده
+        inner_gear1 = Circle(radius=0.15, color=RED, fill_opacity=0.8)
+        inner_gear1.move_to(gear1.get_center())
+        inner_gear2 = Circle(radius=0.15, color=RED, fill_opacity=0.8)
+        inner_gear2.move_to(gear2.get_center())
+        
+        # تسمه نقاله (فلش ورودی و خروجی)
+        conveyor_belt_in = Arrow(LEFT*4.5, LEFT*2.8, color=GRAY, stroke_width=5)
+        conveyor_belt_out = Arrow(RIGHT*2.8, RIGHT*4.5, color=GRAY, stroke_width=5)
+        
+        # تابلو پالایشگاه
+        sign_board = Rectangle(width=3, height=0.8, color=GREEN, fill_opacity=0.9)
+        sign_board.next_to(refinery_body, UP, buff=0.3)
+        sign_text = Text("پالایشگاه |x|", font_size=28, color=BLACK, font="B Nazanin")
+        sign_text.move_to(sign_board.get_center())
+        
+        # جمع‌آوری پالایشگاه
+        refinery_group = VGroup(refinery_body, chimney1, chimney2, gear1, gear2, 
+                                inner_gear1, inner_gear2, sign_board, sign_text)
+        conveyor_group = VGroup(conveyor_belt_in, conveyor_belt_out)
+        
+        self.play(
+            Create(refinery_body),
+            *[Create(chimney) for chimney in [chimney1, chimney2]],
+            run_time=1.5
+        )
+        self.play(
+            *[Create(gear) for gear in [gear1, gear2]],
+            *[Create(inner) for inner in [inner_gear1, inner_gear2]],
+            run_time=1
+        )
+        self.play(
+            Create(sign_board),
+            Write(sign_text),
+            *[Create(conv) for conv in [conveyor_belt_in, conveyor_belt_out]],
+            run_time=1.5
+        )
+        
+        # ========== 3. دود و جرقه ==========
+        smoke1 = VGroup(*[Dot(point=chimney1.get_top() + UP*i, color=GRAY, radius=0.05) for i in range(1, 4)])
+        smoke2 = VGroup(*[Dot(point=chimney2.get_top() + UP*i, color=GRAY, radius=0.05) for i in range(1, 4)])
+        
+        self.play(
+            *[FadeIn(smoke, scale=0.5) for smoke in [smoke1, smoke2]],
+            run_time=0.5
+        )
+        
+        # ========== 4. تعریف اعداد با شخصیت ==========
+        numbers_data = [
+            {"input": "-5", "output": "5", "color": RED, "emoji": "😢"},
+            {"input": "-3", "output": "3", "color": RED, "emoji": "😞"},
+            {"input": "+4", "output": "4", "color": GREEN, "emoji": "😊"},
+            {"input": "-2", "output": "2", "color": RED, "emoji": "🥺"},
+            {"input": "+7", "output": "7", "color": GREEN, "emoji": "😄"},
+            {"input": "-8", "output": "8", "color": RED, "emoji": "😭"}
+        ]
+        
+        # لیست برای ذخیره انیمیشن‌های چرخ‌دنده
+        gear_animations = []
+        
+        for i, num in enumerate(numbers_data):
+            # ساخت عدد با کاراکتر صورتک
+            number_group = VGroup(
+                Text(num["emoji"], font_size=36),
+                MathTex(num["input"], color=num["color"], font_size=48)
+            )
+            number_group.arrange(RIGHT, buff=0.2)
+            number_group.move_to(conveyor_belt_in.get_end() + LEFT*0.5)
+            
+            # ورودی
+            self.play(FadeIn(number_group, shift=RIGHT, scale=0.8), run_time=0.5)
+            self.wait(0.3)
+            
+            # حرکت به سمت پالایشگاه
+            self.play(
+                number_group.animate.move_to(refinery_body.get_center()),
+                run_time=1,
+                rate_func=linear
+            )
+            
+            # چرخش چرخ‌دنده‌ها و جرقه
+            self.play(
+                Rotate(gear1, angle=2*PI, run_time=0.5, rate_func=linear),
+                Rotate(gear2, angle=-2*PI, run_time=0.5, rate_func=linear),
+                Flash(refinery_body.get_center(), color=YELLOW, flash_radius=0.5, line_length=0.2),
+                run_time=0.8
+            )
+            
+            # دود اضافی
+            puff = Circle(radius=0.2, color=GRAY, fill_opacity=0.6)
+            puff.move_to(refinery_body.get_center())
+            self.play(FadeOut(puff, scale=1.5), run_time=0.3)
+            
+            # تبدیل عدد
+            new_number = MathTex(num["output"], color=GREEN, font_size=48)
+            new_number.move_to(number_group.get_center())
+            smile = Text("😊", font_size=36)
+            smile.move_to(number_group.get_center() + LEFT*0.8)
+            
+            if num["color"] == RED:  # اگر منفی بود تبدیل شود
+                self.play(
+                    Transform(number_group, VGroup(smile, new_number)),
+                    run_time=0.6
+                )
+            else:  # اگر مثبت بود فقط خوشحال می‌شود
+                self.play(
+                    number_group[0].animate.set_color(YELLOW),
+                    run_time=0.3
+                )
+            
+            # خروج از پالایشگاه
+            self.play(
+                number_group.animate.move_to(conveyor_belt_out.get_start() + RIGHT*0.5),
+                run_time=1,
+                rate_func=linear
+            )
+            
+            # نمایش قانون
+            if i == 2:  # وسط کار قانون را نشان بده
+                rule = MathTex("|x| = \\begin{cases} x & x \\geq 0 \\\\ -x & x < 0 \\end{cases}", color=YELLOW)
+                rule.scale(0.7)
+                rule.to_edge(DOWN, buff=0.5)
+                rule_box = SurroundingRectangle(rule, color=GOLD, buff=0.2)
+                self.play(
+                    Write(rule),
+                    Create(rule_box),
+                    run_time=2
+                )
+                self.wait(1)
+            
+            # محو شدن عدد بعد از خروج
+            self.play(FadeOut(number_group, shift=RIGHT), run_time=0.4)
+        
+        # ========== 5. نتیجه‌گیری نهایی ==========
+        conclusion = Text(
+            "✨ هر عدد منفی که وارد پالایشگاه شود،\nبا قدر مطلق به عدد مثبت تبدیل می‌شود! ✨",
+            font_size=36,
+            color=GOLD,
+            font="B Nazanin",
+            line_spacing=1.5
+        )
+        conclusion.move_to(ORIGIN)
+        conclusion_box = SurroundingRectangle(conclusion, color=PURPLE, buff=0.5, stroke_width=3)
+        
+        self.play(
+            FadeOut(conveyor_group),
+            FadeOut(rule),
+            FadeOut(rule_box),
+            run_time=1
+        )
+        
+        self.play(
+            Write(conclusion),
+            Create(conclusion_box),
+            run_time=2
+        )
+        
+        # چرخش نهایی چرخ‌دنده‌ها
+        self.play(
+            Rotate(gear1, angle=4*PI, run_time=2, rate_func=linear),
+            Rotate(gear2, angle=-4*PI, run_time=2, rate_func=linear),
+            *[FadeIn(smoke, scale=0.8) for smoke in [smoke1, smoke2]],
+            run_time=2
+        )
+        
+        self.wait(2)
+        
+        # ========== 6. پایان ==========
+        end_text = Text("پایان داستان | قدر مطلق یعنی فاصله از صفر |", font_size=30, color=BLUE)
+        end_text.next_to(conclusion, DOWN, buff=0.8)
+        
+        self.play(Write(end_text), run_time=1.5)
+        self.wait(3)
