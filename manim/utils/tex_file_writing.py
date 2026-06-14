@@ -178,7 +178,9 @@ def insight_package_not_found_error(matching: Match[str]) -> Generator[str]:
     yield f"Install {matching[1]} it using your LaTeX package manager, or check for typos."
 
 
-def compile_tex(tex_file: Path, tex_compiler: str, output_format: str) -> Path:
+def compile_tex(
+    tex_file: Path, tex_compiler: str | list[str], output_format: str
+) -> Path:
     """Compiles a tex_file into a .dvi or a .xdv or a .pdf
 
     Parameters
@@ -197,22 +199,26 @@ def compile_tex(tex_file: Path, tex_compiler: str, output_format: str) -> Path:
     """
     result = tex_file.with_suffix(output_format)
     tex_dir = config.get_dir("tex_dir")
+    tex_compiler = [tex_compiler] if isinstance(tex_compiler, str) else tex_compiler
     if not result.exists():
-        command = make_tex_compilation_command(
-            tex_compiler,
-            output_format,
-            tex_file,
-            tex_dir,
-        )
-        cp = subprocess.run(command, stdout=subprocess.DEVNULL)
-        if cp.returncode != 0:
-            log_file = tex_file.with_suffix(".log")
-            print_all_tex_errors(log_file, tex_compiler, tex_file)
-            raise ValueError(
-                f"{tex_compiler} error converting to"
-                f" {output_format[1:]}. See log output above or"
-                f" the log file: {log_file}",
+        for i, compiler in enumerate(tex_compiler, start=1):
+            if len(tex_compiler) > 1:
+                logger.info(f"Compiling {i} of {len(tex_compiler)}: {compiler}")
+            command = make_tex_compilation_command(
+                compiler,
+                output_format,
+                tex_file,
+                tex_dir,
             )
+            cp = subprocess.run(command, stdout=subprocess.DEVNULL)
+            if cp.returncode != 0:
+                log_file = tex_file.with_suffix(".log")
+                print_all_tex_errors(log_file, compiler, tex_file)
+                raise ValueError(
+                    f"{compiler} error converting to"
+                    f" {output_format[1:]}. See log output above or"
+                    f" the log file: {log_file}",
+                )
     return result
 
 
