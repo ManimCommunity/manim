@@ -202,7 +202,8 @@ def compile_tex(
     tex_compiler = [tex_compiler] if isinstance(tex_compiler, str) else tex_compiler
     if not result.exists():
         for i, compiler in enumerate(tex_compiler, start=1):
-            logger.info(f"Compiling {i} of {len(tex_compiler)}: {compiler}")
+            if len(tex_compiler) > 1:
+                logger.info(f"Compiling {i} of {len(tex_compiler)}: {compiler}")
             command = make_tex_compilation_command(
                 compiler,
                 output_format,
