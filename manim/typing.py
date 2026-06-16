@@ -22,10 +22,15 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from os import PathLike
-from typing import TypeAlias
+from typing import TYPE_CHECKING, TypeAlias
 
 import numpy as np
 import numpy.typing as npt
+
+if TYPE_CHECKING:
+    from manim.mobject.text.tex_mobject import MathTex
+    from manim.mobject.text.text_mobject import Text
+    from manim.mobject.text.typst_mobject import Typst
 
 __all__ = [
     "ManimFloat",
@@ -108,6 +113,7 @@ __all__ = [
     "PathFuncType",
     "MappingFunction",
     "MultiMappingFunction",
+    "ManimTextLabel",
     "PixelArray",
     "GrayscalePixelArray",
     "RGBPixelArray",
@@ -929,6 +935,19 @@ MappingFunction: TypeAlias = Callable[[Point3D], Point3D]
 MultiMappingFunction: TypeAlias = Callable[[Point3D_Array], Point3D_Array]
 """A function mapping a :class:`.Point3D_Array` to another
 :class:`.Point3D_Array`.
+"""
+
+"""
+[CATEGORY]
+Text mobject types
+"""
+
+ManimTextLabel: TypeAlias = "Text | MathTex | Typst"
+"""Text-like label mobjects commonly used across Manim.
+
+This includes :class:`~.Text`, :class:`~.MathTex`, and :class:`~.Typst`.
+Subtype-specific variants like :class:`~.Tex` and :class:`~.TypstMath` are
+covered implicitly through inheritance.
 """
 
 """

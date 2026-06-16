@@ -139,7 +139,10 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         if code_file is not None:
             code_file = Path(code_file)
             code_string = code_file.read_text(encoding="utf-8")
-            lexer = guess_lexer_for_filename(code_file.name, code_string)
+            if language is not None:
+                lexer = get_lexer_by_name(language)
+            else:
+                lexer = guess_lexer_for_filename(code_file.name, code_string)
         elif code_string is not None:
             if language is not None:
                 lexer = get_lexer_by_name(language)
