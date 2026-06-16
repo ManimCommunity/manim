@@ -669,12 +669,12 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         """Helper method for populating the edges of the graph."""
         raise NotImplementedError("To be implemented in concrete subclasses")
 
-    def __getitem__(self: Graph, v: Hashable | tuple[Hashable, ...]) -> Mobject:
+    def __getitem__(self: Graph, k: Hashable | tuple[Hashable, Hashable]) -> Mobject:
         """Get a vertex or edge by its name/identifier.
 
         Parameters
         ----------
-        v
+        k
             A vertex name (hashable) or an edge tuple ``(u, v)``.
 
         Returns
@@ -685,11 +685,14 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         Raises
         ------
         KeyError
-            If ``v`` is not a valid vertex or edge.
+            If ``k`` is not a valid vertex or edge.
         """
-        if isinstance(v, tuple):
-            return self.edges[v]
-        return self.vertices[v]
+        if k in self.vertices:
+            return self.vertices[k]
+        elif k in self.edges:
+            return self.edges[k]
+        else:
+            raise ValueError(f"Could not find {k} in vertices or edges")
 
     def _create_vertex(
         self,
@@ -1361,6 +1364,11 @@ class Graph(GenericGraph):
                           g[2].animate.move_to([-1, 1, 0]),
                           g[3].animate.move_to([1, -1, 0]),
                           g[4].animate.move_to([-1, -1, 0]))
+                self.play(LaggedStart(Wiggle(g[(1, 2)]),
+                                      Wiggle(g[(2, 3)]),
+                                      Wiggle(g[(3, 4)]),
+                                      Wiggle(g[(1, 3)]),
+                                      Wiggle(g[(1, 4)])))
                 self.wait()
 
     There are several automatic positioning algorithms to choose from:
