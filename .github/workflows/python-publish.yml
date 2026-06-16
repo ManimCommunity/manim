@@ -33,7 +33,7 @@ jobs:
         uv publish
 
     - name: Store artifacts
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
           path: dist/*.tar.gz
           name: manim.tar.gz
