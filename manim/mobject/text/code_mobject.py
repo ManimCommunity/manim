@@ -22,7 +22,7 @@ from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.typing import StrPath
-from manim.utils.color import BLACK, GRAY, WHITE, ManimColor
+from manim.utils.color import BLACK, GRAY, WHITE
 
 
 class Code(VMobject, metaclass=ConvertToOpenGL):
@@ -251,8 +251,6 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         if background_config_base["fill_color"] is None:
             background_color: str = selected_style.background_color
             background_config_base.update({"fill_color": background_color})
-        else:
-            background_config_base.update({"fill_color": ManimColor("#222")})
 
         if background == "rectangle":
             self.background = SurroundingRectangle(
