@@ -14,7 +14,7 @@ from bs4 import BeautifulSoup, Tag
 from pygments import highlight
 from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, guess_lexer, guess_lexer_for_filename
-from pygments.styles import get_all_styles
+from pygments.styles import get_all_styles, get_style_by_name
 
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
@@ -22,7 +22,7 @@ from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.typing import StrPath
-from manim.utils.color import WHITE, ManimColor
+from manim.utils.color import BLACK, GRAY, WHITE, ManimColor
 
 
 class Code(VMobject, metaclass=ConvertToOpenGL):
@@ -107,7 +107,7 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
     _styles_list_cache: list[str] | None = None
     default_background_config: dict[str, Any] = {
         "buff": 0.3,
-        "fill_color": ManimColor("#222"),
+        "fill_color": None,
         "stroke_color": WHITE,
         "corner_radius": 0.2,
         "stroke_width": 1,
@@ -203,6 +203,7 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
             paragraph_config = {}
         base_paragraph_config = self.default_paragraph_config.copy()
         base_paragraph_config.update(paragraph_config)
+        base_paragraph_config.update({"color": BLACK})
 
         from manim.mobject.text.text_mobject import Paragraph
 
@@ -214,8 +215,16 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
             for start, end, color in color_range:
                 line[start:end].set_color(color)
 
+        selected_style = get_style_by_name(formatter_style)
         if add_line_numbers:
             base_paragraph_config.update({"alignment": "right"})
+
+            line_number_color: str = selected_style.line_number_color
+            if line_number_color == "inherit":
+                base_paragraph_config.update({"color": GRAY})
+            else:
+                base_paragraph_config.update({"color": line_number_color})
+
             self.line_numbers = Paragraph(
                 *[
                     str(i)
@@ -238,6 +247,12 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
             background_config = {}
         background_config_base = self.default_background_config.copy()
         background_config_base.update(background_config)
+
+        if background_config_base["fill_color"] is None:
+            background_color: str = selected_style.background_color
+            background_config_base.update({"fill_color": background_color})
+        else:
+            background_config_base.update({"fill_color": ManimColor("#222")})
 
         if background == "rectangle":
             self.background = SurroundingRectangle(
