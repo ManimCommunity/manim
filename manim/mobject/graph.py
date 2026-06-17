@@ -670,6 +670,23 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         raise NotImplementedError("To be implemented in concrete subclasses")
 
     def __getitem__(self: Graph, k: Hashable | tuple[Hashable, Hashable]) -> Mobject:
+        """Get a vertex or edge by its name/identifier.
+
+        Parameters
+        ----------
+        k
+            A vertex name (hashable) or an edge tuple ``(u, v)``.
+
+        Returns
+        -------
+        Mobject
+            The :class:`~.Mobject` corresponding to the given vertex or edge.
+
+        Raises
+        ------
+        KeyError
+            If ``k`` is not a valid vertex or edge.
+        """
         if k in self.vertices:
             return self.vertices[k]
         elif k in self.edges:
