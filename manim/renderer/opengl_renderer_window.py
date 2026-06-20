@@ -140,7 +140,7 @@ class Window(PygletWindow, WindowProtocol):
         modifiers
             keys like shift or ctrl
         """
-        return super().on_key_release(symbol, modifiers)
+        self.scene.on_key_release(symbol, modifiers)
 
     def on_mouse_motion(self, x: int, y: int, dx: int, dy: int) -> None:
         """tie mouse motion events to the scene response
