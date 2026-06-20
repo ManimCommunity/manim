@@ -131,7 +131,7 @@ class Manager(Generic[SceneT]):
         -------
             A window if previewing, else None
         """
-        return Window() if config.preview else None
+        return Window(self.scene) if config.preview else None
 
     def create_file_writer(self) -> FileWriterProtocol:
         """Create and return a file writer instance.
@@ -242,9 +242,15 @@ class Manager(Generic[SceneT]):
         if self.window is None:
             return
         logger.info(
-            "\nTips: Using the keys `d`, `f`, or `z` "
-            "you can interact with the scene. "
-            "Press `command + q` or `esc` to quit"
+            """\nTips: To interact with the scene:
+                press the key `d` and drag the mouse to 3D pan,
+                press the key `f` and drag the mouse to shift the frame,
+                press the key `z` and scroll the mouse wheel to zoom,
+                press the key `r` to reset the camera to its default settings,
+                press the key `o` to print the current camera configuration that may be copied and pasted into self.camera.set_orientation() for quick configuration,
+                scroll the mouse wheel to shift the scene vertically,
+                press `command + q` or `esc` to quit
+            """
         )
         last_time = time.perf_counter()
         while not self.window.is_closing:
