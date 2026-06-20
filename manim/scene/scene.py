@@ -179,6 +179,7 @@ class Scene:
     def _update_mobjects(self, dt: float) -> None:
         for mobject in self.mobjects:
             mobject.update(dt)
+        self.camera.update(dt)
 
     def should_update_mobjects(self) -> bool:
         """
@@ -193,7 +194,7 @@ class Scene:
         return (
             self.always_update_mobjects
             or (len(self.updaters) > 0)
-            or any(mob.has_updaters for mob in self.mobjects)
+            or any(mob.has_updaters for mob in [*self.mobjects, self.camera])
         )
 
     def is_current_animation_frozen_frame(
