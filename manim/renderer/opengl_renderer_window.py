@@ -31,7 +31,9 @@ class Window(PygletWindow, WindowProtocol):
     vsync: bool = True
     cursor: bool = True
 
-    def __init__(self, scene: Scene, window_size: str | tuple[int, ...] = config.window_size):
+    def __init__(
+        self, scene: Scene, window_size: str | tuple[int, ...] = config.window_size
+    ):
         # TODO: remove size argument from window init,
         # move size computation below to config
 
@@ -158,7 +160,9 @@ class Window(PygletWindow, WindowProtocol):
         """
         self.scene.on_mouse_motion(np.array([x, y, 0]), np.array([dx, dy, 0]))
 
-    def on_mouse_drag(self, x: int, y: int, dx: int, dy: int, buttons: int, modifiers: int) -> None:
+    def on_mouse_drag(
+        self, x: int, y: int, dx: int, dy: int, buttons: int, modifiers: int
+    ) -> None:
         """tie mouse drag events to the scene response
 
         Parmeters
@@ -226,7 +230,10 @@ class Window(PygletWindow, WindowProtocol):
         y_offset
             number of vertical wheel ticks
         """
-        self.scene.on_mouse_scroll(np.array([x, y, 0]), np.array([x_offset, y_offset, 0]))
+        self.scene.on_mouse_scroll(
+            np.array([x, y, 0]), np.array([x_offset, y_offset, 0])
+        )
+
 
 def tuple_len_2(pos: tuple[T, ...]) -> TypeGuard[tuple[T, T]]:
     return len(pos) == 2

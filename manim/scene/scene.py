@@ -10,7 +10,6 @@ import numpy as np
 from pyglet.window import key
 
 from manim import config, logger
-from manim.animation import transform
 from manim.animation.animation import Wait, prepare_animation
 from manim.animation.scene_buffer import SceneBuffer, SceneOperation
 from manim.camera.camera import Camera
