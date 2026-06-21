@@ -3,7 +3,7 @@
 
 layout(std140) uniform ubo_mobject
 {
-    vec3 light_source_position;
+    vec4 light_source_position;
     float gloss;
     float shadow;
     float reflectiveness;
