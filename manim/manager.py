@@ -131,7 +131,7 @@ class Manager(Generic[SceneT]):
         -------
             A window if previewing, else None
         """
-        return Window() if config.preview else None
+        return Window(self.scene) if config.preview else None
 
     def create_file_writer(self) -> FileWriterProtocol:
         """Create and return a file writer instance.
