@@ -352,11 +352,17 @@ class OpenGLRenderer(Renderer, RendererProtocol):
             gl.ONE,
         )
 
-        def enable_depth(sub):
+        def enable_depth(sub) -> bool:
             if sub.depth_test:
                 self.ctx.enable(gl.DEPTH_TEST)
+                if (sub.has_fill() and sub.get_fill_opacity() != 1.0) or (
+                    sub.has_stroke() and sub.get_stroke_opacity() != 1.0
+                ):
+                    self.render_target_fbo.depth_mask = False
+                    return True
             else:
                 self.ctx.disable(gl.DEPTH_TEST)
+            return False
 
         for sub in mob.family_members_with_points():
             # TODO: review this renderer data optimization attempt
@@ -382,7 +388,7 @@ class OpenGLRenderer(Renderer, RendererProtocol):
         for counter, sub in enumerate(family):
             if not isinstance(sub.renderer_data, GLRenderData):
                 return
-            enable_depth(sub)
+            reenable_depth_mask = enable_depth(sub)
             uniforms = {}
             uniforms["index"] = (counter + 1) / num_mobs / 2
             uniforms["disable_stencil"] = float(True)
@@ -399,11 +405,13 @@ class OpenGLRenderer(Renderer, RendererProtocol):
                     GLVMobjectManager.get_stroke_shader_data(sub),
                     np.array(range(len(sub.points))),
                 )
+            if reenable_depth_mask:
+                self.render_target_fbo.depth_mask = True
 
         for counter, sub in enumerate(family):
             if not isinstance(sub.renderer_data, GLRenderData):
                 return
-            enable_depth(sub)
+            reenable_depth_mask = enable_depth(sub)
             uniforms = {}
             # uniforms['z_shift'] = counter/9
             uniforms["index"] = (counter + 1) / num_mobs
@@ -420,11 +428,13 @@ class OpenGLRenderer(Renderer, RendererProtocol):
                     GLVMobjectManager.get_fill_shader_data(sub),
                     sub.renderer_data.vert_indices,
                 )
+            if reenable_depth_mask:
+                self.render_target_fbo.depth_mask = True
 
         for counter, sub in enumerate(family):
             if not isinstance(sub.renderer_data, GLRenderData):
                 return
-            enable_depth(sub)
+            reenable_depth_mask = enable_depth(sub)
             uniforms = {}
             uniforms["index"] = (counter + 1) / num_mobs
             uniforms["disable_stencil"] = float(False)
@@ -441,6 +451,8 @@ class OpenGLRenderer(Renderer, RendererProtocol):
                     GLVMobjectManager.get_stroke_shader_data(sub),
                     np.array(range(len(sub.points))),
                 )
+            if reenable_depth_mask:
+                self.render_target_fbo.depth_mask = True
 
     def get_pixels(self) -> PixelArray:
         raw = self.output_fbo.read(components=4, dtype="f1", clamp=True)  # RGBA, floats
