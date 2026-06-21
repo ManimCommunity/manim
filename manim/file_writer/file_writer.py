@@ -687,7 +687,7 @@ class FileWriter(FileWriterProtocol):
                 output_container.mux(packet)
 
         else:
-            output_stream = output_container.add_stream(
+            output_stream = output_container.add_stream_from_template(
                 template=partial_movies_stream,
             )
             if config.transparent and config.movie_file_extension == ".webm":
