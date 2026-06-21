@@ -235,5 +235,6 @@ class Window(PygletWindow, WindowProtocol):
             np.array([x, y, 0]), np.array([x_offset, y_offset, 0])
         )
 
+
 def tuple_len_2(pos: tuple[T, ...]) -> TypeGuard[tuple[T, T]]:
     return len(pos) == 2
