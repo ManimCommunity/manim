@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
+
 import numpy as np
 
 from manim._config import logger
@@ -46,7 +47,12 @@ class Renderer(ABC):
             else:
                 non_depth_testing.append(mob)
         # sort depth testing mobjects according to center distance from camera
-        depth_testing.sort(key=lambda m: np.linalg.norm(m.get_center() - state.camera.get_implied_camera_location()), reverse=True)
+        depth_testing.sort(
+            key=lambda m: np.linalg.norm(
+                m.get_center() - state.camera.get_implied_camera_location()
+            ),
+            reverse=True,
+        )
         # render depth testing mobs followed by otherwise
         for mob in depth_testing:
             self.render_mobject(mob)
