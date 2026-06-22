@@ -1,4 +1,4 @@
-from manim import Circle, Square, ThreeDScene
+from manim import DEGREES, Circle, Square, ThreeDScene
 
 
 def test_fixed_mobjects():
@@ -15,3 +15,12 @@ def test_fixed_mobjects():
     assert set(scene.camera.fixed_orientation_mobjects) == {s}
     scene.remove_fixed_orientation_mobjects(s)
     assert len(scene.camera.fixed_orientation_mobjects) == 0
+
+
+def test_set_to_default_angled_camera_orientation():
+    scene = ThreeDScene()
+
+    scene.set_to_default_angled_camera_orientation(phi=45 * DEGREES)
+
+    assert scene.camera.get_phi() == 45 * DEGREES
+    assert scene.camera.get_theta() == -135 * DEGREES

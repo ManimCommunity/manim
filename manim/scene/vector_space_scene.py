@@ -48,6 +48,7 @@ if TYPE_CHECKING:
     from typing import Self
 
     from manim.typing import (
+        ManimTextLabel,
         MappingFunction,
         Point3D,
         Point3DLike,
@@ -337,13 +338,13 @@ class VectorScene(Scene):
     def get_vector_label(
         self,
         vector: Vector,
-        label: MathTex | str,
+        label: ManimTextLabel | str,
         at_tip: bool = False,
         direction: str = "left",
         rotate: bool = False,
         color: ParsableManimColor | None = None,
         label_scale_factor: float = LARGE_BUFF - 0.2,
-    ) -> MathTex:
+    ) -> ManimTextLabel:
         """
         Returns naming labels for the passed vector.
 
@@ -366,19 +367,18 @@ class VectorScene(Scene):
 
         Returns
         -------
-        MathTex
-            The MathTex of the label.
+        :class:`~.ManimTextLabel`
+            The rendered label mobject.
         """
-        if not isinstance(label, MathTex):
+        if isinstance(label, str):
             if len(label) == 1:
-                label = "\\vec{\\textbf{%s}}" % label  # noqa: UP031
+                label = rf"\vec{{\textbf{{{label}}}}}"
             label = MathTex(label)
             if color is None:
                 prepared_color: ParsableManimColor = vector.get_color()
             else:
                 prepared_color = color
             label.set_color(prepared_color)
-        assert isinstance(label, MathTex)
         label.scale(label_scale_factor)
         label.add_background_rectangle()
 
@@ -401,8 +401,12 @@ class VectorScene(Scene):
         return label
 
     def label_vector(
-        self, vector: Vector, label: MathTex | str, animate: bool = True, **kwargs: Any
-    ) -> MathTex:
+        self,
+        vector: Vector,
+        label: ManimTextLabel | str,
+        animate: bool = True,
+        **kwargs: Any,
+    ) -> ManimTextLabel:
         """
         Shortcut method for creating, and animating the addition of
         a label for the vector.
@@ -413,7 +417,7 @@ class VectorScene(Scene):
             The vector for which the label must be added.
 
         label
-            The MathTex/string of the label.
+            The rendered label mobject or the string used to create one.
 
         animate
             Whether or not to animate the labelling w/ Write
@@ -423,8 +427,8 @@ class VectorScene(Scene):
 
         Returns
         -------
-        :class:`~.MathTex`
-            The MathTex of the label.
+        :class:`~.ManimTextLabel`
+            The rendered label mobject.
         """
         mathtex_label = self.get_vector_label(vector, label, **kwargs)
         if animate:

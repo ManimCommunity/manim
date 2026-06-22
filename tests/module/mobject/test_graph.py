@@ -76,6 +76,19 @@ def test_graph_add_edges():
     assert set(G._graph.edges()) == set(G.edges.keys())
 
 
+def test_graph_getitem():
+    vertices = [1, 2, 3, 4]
+    edges = [(1, 2), (2, 3), (3, 4), (4, 1)]
+    G = Graph(vertices, edges)
+    # Vertex access
+    assert G[1] is G.vertices[1]
+    # Edge access via tuple key
+    assert G[(1, 2)] is G.edges[(1, 2)]
+    # DiGraph edge access
+    DG = DiGraph(vertices, edges)
+    assert DG[(1, 2)] is DG.edges[(1, 2)]
+
+
 def test_graph_remove_edges():
     G = Graph([1, 2, 3, 4, 5], [(1, 2), (2, 3), (3, 4), (4, 5), (1, 5)])
     removed_mobjects = G.remove_edges((1, 2))
