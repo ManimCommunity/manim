@@ -327,7 +327,7 @@ class ManimConfig(MutableMapping):
     }
 
     def __init__(self) -> None:
-        self._d: dict[str, Any | None] = dict.fromkeys(self._OPTS)
+        self._d: dict[str, Any] = dict.fromkeys(self._OPTS)
 
     # behave like a dict
     def __iter__(self) -> Iterator[str]:
@@ -423,13 +423,13 @@ class ManimConfig(MutableMapping):
         """See ManimConfig.copy()."""
         return copy.deepcopy(self)
 
-    def __deepcopy__(self, memo: dict[str, Any]) -> Self:
+    def __deepcopy__(self, memo: dict[int, Any]) -> Self:
         """See ManimConfig.copy()."""
         c = type(self)()
         # Deepcopying the underlying dict is enough because all properties
         # either read directly from it or compute their value on the fly from
         # values read directly from it.
-        c._d = copy.deepcopy(self._d, memo)  # type: ignore[arg-type]
+        c._d = copy.deepcopy(self._d, memo)
         return c
 
     # helper type-checking methods
@@ -1142,24 +1142,22 @@ class ManimConfig(MutableMapping):
     @property
     def frame_y_radius(self) -> float:
         """Half the frame height (no flag)."""
-        return self._d["frame_height"] / 2  # type: ignore[operator]
+        return self._d["frame_height"] / 2
 
     @frame_y_radius.setter
     def frame_y_radius(self, value: float) -> None:
-        self._d.__setitem__("frame_y_radius", value) or self._d.__setitem__(  # type: ignore[func-returns-value]
-            "frame_height", 2 * value
-        )
+        self._d["frame_y_radius"] = value
+        self._d["frame_height"] = 2 * value
 
     @property
     def frame_x_radius(self) -> float:
         """Half the frame width (no flag)."""
-        return self._d["frame_width"] / 2  # type: ignore[operator]
+        return self._d["frame_width"] / 2
 
     @frame_x_radius.setter
     def frame_x_radius(self, value: float) -> None:
-        self._d.__setitem__("frame_x_radius", value) or self._d.__setitem__(  # type: ignore[func-returns-value]
-            "frame_width", 2 * value
-        )
+        self._d["frame_x_radius"] = value
+        self._d["frame_width"] = 2 * value
 
     @property
     def top(self) -> Vector3D:
@@ -1290,9 +1288,8 @@ class ManimConfig(MutableMapping):
 
     @frame_size.setter
     def frame_size(self, value: tuple[int, int]) -> None:
-        self._d.__setitem__("pixel_width", value[0]) or self._d.__setitem__(  # type: ignore[func-returns-value]
-            "pixel_height", value[1]
-        )
+        self._d["pixel_width"] = value[0]
+        self._d["pixel_height"] = value[1]
 
     @property
     def quality(self) -> str | None:
