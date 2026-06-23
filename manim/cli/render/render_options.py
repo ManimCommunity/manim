@@ -212,4 +212,10 @@ render_options = option_group(
         help="Use shaders for OpenGLVMobject stroke which are compatible with transformation matrices.",
         default=None,
     ),
+    option(
+        "--render_imported_scenes",
+        is_flag=True,
+        help="Also render scenes which have been imported into the specified file.",
+        default=None,
+    ),
 )
