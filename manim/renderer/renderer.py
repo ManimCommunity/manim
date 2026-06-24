@@ -3,6 +3,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Protocol, runtime_checkable
 
+import numpy as np
+
 from manim._config import logger
 from manim.mobject.mobject import InvisibleMobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -35,8 +37,28 @@ class Renderer(ABC):
 
     def render(self, state: SceneState) -> None:
         self.pre_render(state.camera)
+
+        # seperate depth testing mobjects and otherwise
+        depth_testing: list[OpenGLVMobject] = []
+        non_depth_testing: list[OpenGLVMobject] = []
         for mob in state.mobjects:
+            if mob.depth_test:
+                depth_testing.append(mob)
+            else:
+                non_depth_testing.append(mob)
+        # sort depth testing mobjects according to center distance from camera
+        depth_testing.sort(
+            key=lambda m: np.linalg.norm(
+                m.get_center() - state.camera.get_implied_camera_location()
+            ),
+            reverse=True,
+        )
+        # render depth testing mobs followed by otherwise
+        for mob in depth_testing:
             self.render_mobject(mob)
+        for mob in non_depth_testing:
+            self.render_mobject(mob)
+
         self.post_render()
 
     def render_mobject(self, mob: OpenGLMobject) -> None:
