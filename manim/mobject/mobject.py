@@ -111,6 +111,7 @@ class Mobject:
         dim: int = 3,
         target: Mobject | None = None,
         z_index: float = 0,
+        should_render: bool = True,
     ):
         self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
@@ -121,6 +122,7 @@ class Mobject:
         self.updaters: list[_Updater] = []
         self.updating_suspended = False
         self.color = ManimColor.parse(color)
+        self.should_render = should_render
 
         self.reset_points()
         self.generate_points()
