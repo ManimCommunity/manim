@@ -56,6 +56,11 @@ class Camera(Mobject, InvisibleMobject):
         self.set_height(self.initial_frame_shape[1], stretch=True)
         self.move_to(self.center_point)
 
+    def reset(self) -> None:
+        """restores camera to default orientation and position."""
+        self.set_euler_angles(theta=-TAU / 4, phi=0.0, gamma=0.0)
+        self.init_points()
+
     def interpolate(
         self,
         mobject1: Mobject,
@@ -248,7 +253,7 @@ class Camera(Mobject, InvisibleMobject):
         :class:`Camera`
             The camera after incrementing its phi angle.
         """
-        return self.set_phi(self._phi + dgamma)
+        return self.set_phi(self._phi + dphi)
 
     def get_gamma(self) -> float:
         """Get the angle gamma by which the camera is rotated while standing on
