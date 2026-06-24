@@ -129,6 +129,11 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         pre_function_handle_to_anchor_scale_factor: float = 0.00001,
         **kwargs: Any,
     ) -> None:
+        # If `color` is explicitly passed, use it as fill_color and disable
+        # checkerboard so the explicit color isn't silently overridden.
+        if "color" in kwargs:
+            fill_color = kwargs.pop("color")
+            checkerboard_colors = False
         self.u_range = u_range
         self.v_range = v_range
         super().__init__(
