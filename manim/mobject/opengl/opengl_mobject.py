@@ -10,6 +10,8 @@ import os
 import pickle
 import random
 import sys
+import types
+import warnings
 from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from functools import partialmethod, wraps
@@ -78,16 +80,15 @@ if TYPE_CHECKING:
         Vector3DLike,
     )
 
-    TimeBasedUpdater: TypeAlias = Callable[
-        ["OpenGLMobject", float], "OpenGLMobject | None"
-    ]
-    NonTimeUpdater: TypeAlias = Callable[["OpenGLMobject"], "OpenGLMobject | None"]
-    Updater: TypeAlias = TimeBasedUpdater | NonTimeUpdater
-
     M = TypeVar("M", bound="OpenGLMobject")
     T = TypeVar("T")
     P = ParamSpec("P")
 
+_TimeBasedUpdater: TypeAlias = Callable[
+    ["OpenGLMobject", float], "OpenGLMobject | None"
+]
+_NonTimeBasedUpdater: TypeAlias = Callable[["OpenGLMobject"], "OpenGLMobject | None"]
+_Updater: TypeAlias = _TimeBasedUpdater | _NonTimeBasedUpdater
 
 R = TypeVar("R", bound="RendererData")
 T_co = TypeVar("T_co", covariant=True, bound="OpenGLMobject")
@@ -1284,7 +1285,7 @@ class OpenGLMobject:
         def init_alignments(alignments, num, mapping, name, dir_):
             if alignments is None:
                 # Use cell_alignment as fallback
-                return [cell_alignment * dir_] * num
+                return [cast("Vector3D", cell_alignment * dir_)] * num
             if len(alignments) != num:
                 raise ValueError(f"{name}_alignments has a mismatching size.")
             alignments = list(alignments)
@@ -1649,8 +1650,8 @@ class OpenGLMobject:
     # Updating
 
     def init_updaters(self) -> None:
-        self.time_based_updaters: list[TimeBasedUpdater] = []
-        self.non_time_updaters: list[NonTimeUpdater] = []
+        self.time_based_updaters: list[_TimeBasedUpdater] = []
+        self.non_time_updaters: list[_NonTimeBasedUpdater] = []
         # so that we don't have to refind updaters
         self.has_updaters: bool = False
         self.updating_suspended: bool = False
@@ -1667,16 +1668,16 @@ class OpenGLMobject:
                 submob.update(dt, recurse)
         return self
 
-    def get_time_based_updaters(self) -> list[TimeBasedUpdater]:
+    def get_time_based_updaters(self) -> list[_TimeBasedUpdater]:
         return self.time_based_updaters
 
     def has_time_based_updater(self) -> bool:
         return len(self.time_based_updaters) > 0
 
-    def get_updaters(self) -> list[Updater]:
+    def get_updaters(self) -> list[_Updater]:
         return self.time_based_updaters + self.non_time_updaters
 
-    def get_family_updaters(self) -> list[Updater]:
+    def get_family_updaters(self) -> list[_Updater]:
         return list(it.chain(*(sm.get_updaters() for sm in self.get_family())))
 
     def add_updater(
@@ -1687,9 +1688,9 @@ class OpenGLMobject:
     ) -> Self:
         updater_list: list[_TimeBasedUpdater] | list[_NonTimeBasedUpdater]
         if "dt" in inspect.signature(update_function).parameters:
-            updater_list: list[Updater] = self.time_based_updaters
+            updater_list: list[_Updater] = self.time_based_updaters
         else:
-            updater_list: list[Updater] = self.non_time_updaters
+            updater_list: list[_Updater] = self.non_time_updaters
 
         if index is None:
             cast("list[_Updater]", updater_list).append(update_function)
@@ -1701,8 +1702,8 @@ class OpenGLMobject:
             self.update()
         return self
 
-    def remove_updater(self, update_function: Updater) -> Self:
-        updater_lists: list[list[Updater]] = [
+    def remove_updater(self, update_function: _Updater) -> Self:
+        updater_lists: list[list[_Updater]] = [
             self.time_based_updaters,
             self.non_time_updaters,
         ]
@@ -2326,26 +2327,33 @@ class OpenGLMobject:
 
     # ! TODO: Check implementation of 3b1b for this method
     def put_start_and_end_on_legacy(self, start: Point3DLike, end: Point3DLike) -> Self:
-        curr_start, curr_end = self.get_start_and_end()
-        curr_vect = curr_end - curr_start
-        if np.all(curr_vect == 0):
-            raise Exception("Cannot position endpoints of closed loop")
-        target_vect = np.asarray(end) - np.asarray(start)
+        current_start, current_end = self.get_start_and_end()
+        current_vector = current_end - current_start
+        if np.all(current_vector == 0):
+            warnings.warn(
+                "put_start_and_end_on has been called on a closed loop or zero-length mobject. "
+                f"{type(self).__name__} will be shifted to start point instead.",
+                stacklevel=2,
+            )
+            self.shift(np.asarray(start) - current_start)
+            return self
+
+        target_vector = np.asarray(end) - np.asarray(start)
         axis = (
-            normalize(np.cross(curr_vect, target_vect))
-            if np.linalg.norm(np.cross(curr_vect, target_vect)) != 0
+            normalize(np.cross(current_vector, target_vector))
+            if np.linalg.norm(np.cross(current_vector, target_vector)) != 0
             else OUT
         )
         self.scale(
-            float(np.linalg.norm(target_vect) / np.linalg.norm(curr_vect)),
-            about_point=curr_start,
+            np.linalg.norm(target_vector) / np.linalg.norm(current_vector),
+            about_point=current_start,
         )
         self.rotate(
-            angle_between_vectors(curr_vect, target_vect),
-            about_point=curr_start,
+            angle_between_vectors(current_vector, target_vector),
+            about_point=current_start,
             axis=axis,
         )
-        self.shift(start - curr_start)
+        self.shift(np.asarray(start) - current_start)
         return self
 
     def put_start_and_end_on(self, start: Point3DLike, end: Point3DLike) -> Self:
@@ -3161,7 +3169,7 @@ class OpenGLPoint(OpenGLMobject):
         return self.artificial_height
 
     def get_location(self) -> Point3D:
-        return cast(Point3D, self.points[0]).copy()
+        return cast("Point3D", self.points[0]).copy()
 
     @override
     def get_bounding_box_point(self, *args: object, **kwargs: Any) -> Point3D:

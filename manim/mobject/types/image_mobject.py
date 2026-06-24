@@ -63,7 +63,7 @@ class AbstractImageMobject(Mobject):
     def get_pixel_array(self) -> PixelArray:
         raise NotImplementedError()
 
-    def set_color(  # type: ignore[override]
+    def set_color(
         self,
         color: ParsableManimColor = YELLOW_C,
         alpha: Any = None,
@@ -216,7 +216,7 @@ class ImageMobject(AbstractImageMobject):
         """Override base init_colors to avoid overwriting image pixels during init."""
         return None
 
-    def set_color(  # type: ignore[override]
+    def set_color(
         self,
         color: ParsableManimColor = YELLOW_C,
         alpha: Any = None,

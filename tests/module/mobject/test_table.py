@@ -17,3 +17,27 @@ def test_highlighted_cell_color_access():
     # Should not raise RecursionError
     color = rect.color
     assert color == GREEN
+
+
+def test_table_include_inner_lines_false():
+    """Verify that inner lines can be disabled while outer lines remain."""
+    table = Table(
+        [["A", "B"], ["C", "D"]],
+        include_outer_lines=True,
+        include_inner_lines=False,
+    )
+
+    assert len(table.get_horizontal_lines()) == 2
+    assert len(table.get_vertical_lines()) == 2
+
+
+def test_table_include_inner_lines_true():
+    """Verify that inner lines are present by default."""
+    table = Table(
+        [["A", "B"], ["C", "D"]],
+        include_outer_lines=True,
+        include_inner_lines=True,
+    )
+
+    assert len(table.get_horizontal_lines()) == 3
+    assert len(table.get_vertical_lines()) == 3

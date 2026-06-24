@@ -40,12 +40,11 @@ __all__ = [
 
 
 import itertools as it
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Callable, Iterable
 from typing import Any, Self
 
 import numpy as np
 
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 from manim.mobject.opengl.opengl_vectorized_mobject import (
     OpenGLVGroup as VGroup,
 )
@@ -54,6 +53,7 @@ from manim.mobject.opengl.opengl_vectorized_mobject import (
 )
 from manim.mobject.text.numbers import DecimalNumber, Integer
 from manim.mobject.text.tex_mobject import MathTex, Tex
+from manim.typing import Vector2DLike, Vector3DLike
 
 from ..constants import *
 
@@ -168,16 +168,16 @@ class Matrix(VMobject):
 
     def __init__(
         self,
-        matrix: Iterable,
+        matrix: Iterable[Iterable[Any] | Vector2DLike],
         v_buff: float = 0.8,
         h_buff: float = 1.3,
         bracket_h_buff: float = MED_SMALL_BUFF,
         bracket_v_buff: float = MED_SMALL_BUFF,
         add_background_rectangles_to_entries: bool = False,
         include_background_rectangle: bool = False,
-        element_to_mobject: type[Mobject] | Callable[..., Mobject] = MathTex,
-        element_to_mobject_config: dict = {},
-        element_alignment_corner: Sequence[float] = DR,
+        element_to_mobject: type[VMobject] | Callable[..., VMobject] = MathTex,
+        element_to_mobject_config: dict[str, Any] = {},
+        element_alignment_corner: Vector3DLike = DR,
         left_bracket: str = "[",
         right_bracket: str = "]",
         stretch_brackets: bool = True,
@@ -210,7 +210,9 @@ class Matrix(VMobject):
         if self.include_background_rectangle:
             self.add_background_rectangle()
 
-    def _matrix_to_mob_matrix(self, matrix: np.ndarray) -> list[list[Mobject]]:
+    def _matrix_to_mob_matrix(
+        self, matrix: Iterable[Iterable[Any]]
+    ) -> list[list[VMobject]]:
         return [
             [
                 self.element_to_mobject(item, **self.element_to_mobject_config)
@@ -219,7 +221,7 @@ class Matrix(VMobject):
             for row in matrix
         ]
 
-    def _organize_mob_matrix(self, matrix: list[list[Mobject]]) -> Self:
+    def _organize_mob_matrix(self, matrix: list[list[VMobject]]) -> Self:
         for i, row in enumerate(matrix):
             for j, _ in enumerate(row):
                 mob = matrix[i][j]
@@ -405,7 +407,7 @@ class Matrix(VMobject):
             mob.add_background_rectangle()
         return self
 
-    def get_mob_matrix(self) -> list[list[Mobject]]:
+    def get_mob_matrix(self) -> list[list[VMobject]]:
         """Return the underlying mob matrix mobjects.
 
         Returns
@@ -487,8 +489,8 @@ class DecimalMatrix(Matrix):
 
     def __init__(
         self,
-        matrix: Iterable,
-        element_to_mobject: type[Mobject] = DecimalNumber,
+        matrix: Iterable[Iterable[Any]],
+        element_to_mobject: type[VMobject] | Callable[..., VMobject] = DecimalNumber,
         element_to_mobject_config: dict[str, Any] = {"num_decimal_places": 1},
         **kwargs: Any,
     ):
@@ -532,8 +534,8 @@ class IntegerMatrix(Matrix):
 
     def __init__(
         self,
-        matrix: Iterable,
-        element_to_mobject: type[Mobject] = Integer,
+        matrix: Iterable[Iterable[Any]],
+        element_to_mobject: type[VMobject] | Callable[..., VMobject] = Integer,
         **kwargs: Any,
     ):
         """
@@ -570,8 +572,8 @@ class MobjectMatrix(Matrix):
 
     def __init__(
         self,
-        matrix: Iterable,
-        element_to_mobject: type[Mobject] | Callable[..., Mobject] = lambda m: m,
+        matrix: Iterable[Iterable[Any]],
+        element_to_mobject: type[VMobject] | Callable[..., VMobject] = lambda m: m,
         **kwargs: Any,
     ):
         super().__init__(matrix, element_to_mobject=element_to_mobject, **kwargs)

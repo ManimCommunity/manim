@@ -17,7 +17,9 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 import numpy as np
 
+from manim.constants import DEGREES, RIGHT
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
+from manim.utils.space_ops import normalize
 
 if TYPE_CHECKING:
     import types
@@ -26,6 +28,7 @@ if TYPE_CHECKING:
     from typing_extensions import ParamSpec, TypeIs
 
     from manim.animation.protocol import MobjectAnimation
+    from manim.typing import Vector3DLike
 
     P = ParamSpec("P")
 
@@ -115,6 +118,76 @@ def always_redraw(func: Callable[[], M]) -> M:
     mob = func()
     mob.add_updater(lambda _: mob.become(func()))
     return mob
+
+
+def always_shift(mobject: M, direction: Vector3DLike = RIGHT, rate: float = 0.1) -> M:
+    """A mobject which is continuously shifted along some direction
+    at a certain rate.
+
+    Parameters
+    ----------
+    mobject
+        The mobject to shift.
+    direction
+        The direction to shift. The vector is normalized, the specified magnitude
+        is not relevant.
+    rate
+        Length in Manim units which the mobject travels in one
+        second along the specified direction.
+
+    Examples
+    --------
+
+    .. manim:: ShiftingSquare
+
+        class ShiftingSquare(Scene):
+            def construct(self):
+                sq = Square().set_fill(opacity=1)
+                tri = Triangle()
+                VGroup(sq, tri).arrange(LEFT)
+
+                # construct a square which is continuously
+                # shifted to the right
+                always_shift(sq, RIGHT, rate=5)
+
+                self.add(sq)
+                self.play(tri.animate.set_fill(opacity=1))
+    """
+    mobject.add_updater(lambda m, dt: m.shift(dt * rate * normalize(direction)))
+    return mobject
+
+
+def always_rotate(mobject: M, rate: float = 20 * DEGREES, **kwargs: Any) -> M:
+    """A mobject which is continuously rotated at a certain rate.
+
+    Parameters
+    ----------
+    mobject
+        The mobject to be rotated.
+    rate
+        The angle which the mobject is rotated by
+        over one second.
+    kwags
+        Further arguments to be passed to :meth:`.Mobject.rotate`.
+
+    Examples
+    --------
+
+    .. manim:: SpinningTriangle
+
+        class SpinningTriangle(Scene):
+            def construct(self):
+                tri = Triangle().set_fill(opacity=1).set_z_index(2)
+                sq = Square().to_edge(LEFT)
+
+                # will keep spinning while there is an animation going on
+                always_rotate(tri, rate=2*PI, about_point=ORIGIN)
+
+                self.add(tri, sq)
+                self.play(sq.animate.to_edge(RIGHT), rate_func=linear, run_time=1)
+    """
+    mobject.add_updater(lambda m, dt: m.rotate(dt * rate, **kwargs))
+    return mobject
 
 
 def turn_animation_into_updater(

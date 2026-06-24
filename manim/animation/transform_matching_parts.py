@@ -4,6 +4,7 @@ from __future__ import annotations
 
 __all__ = ["TransformMatchingShapes", "TransformMatchingTex"]
 
+from typing import Any
 
 import numpy as np
 
@@ -19,9 +20,8 @@ from manim.mobject.opengl.opengl_vectorized_mobject import (
 from manim.mobject.opengl.opengl_vectorized_mobject import (
     OpenGLVMobject as VMobject,
 )
+from manim.mobject.text.tex_mobject import MathTexPart
 
-from .._config import config
-from ..constants import RendererType
 from .composition import AnimationGroup
 from .fading import FadeIn, FadeOut
 from .transform import FadeTransformPieces, Transform
@@ -78,7 +78,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
         transform_mismatches: bool = False,
         fade_transform_mismatches: bool = False,
         key_map: dict | None = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         group_type = VGroup if isinstance(mobject, VMobject) else Group
 
@@ -138,14 +138,11 @@ class TransformMatchingAbstractBase(AnimationGroup):
         self.to_add = target_mobject
 
     def get_shape_map(self, mobject: Mobject) -> dict:
-        shape_map = {}
+        shape_map: dict[int | str, VGroup] = {}
         for sm in self.get_mobject_parts(mobject):
             key = self.get_mobject_key(sm)
             if key not in shape_map:
-                if config["renderer"] == RendererType.OPENGL:
-                    shape_map[key] = VGroup()
-                else:
-                    shape_map[key] = VGroup()
+                shape_map[key] = VGroup()
             shape_map[key].add(sm)
         return shape_map
 
@@ -159,11 +156,11 @@ class TransformMatchingAbstractBase(AnimationGroup):
         self.buffer.add(self.to_add)
 
     @staticmethod
-    def get_mobject_parts(mobject: Mobject):
+    def get_mobject_parts(mobject: Mobject) -> list[Mobject]:
         raise NotImplementedError("To be implemented in subclass.")
 
     @staticmethod
-    def get_mobject_key(mobject: Mobject):
+    def get_mobject_key(mobject: Mobject) -> int | str:
         raise NotImplementedError("To be implemented in subclass.")
 
 
@@ -203,7 +200,7 @@ class TransformMatchingShapes(TransformMatchingAbstractBase):
         transform_mismatches: bool = False,
         fade_transform_mismatches: bool = False,
         key_map: dict | None = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         super().__init__(
             mobject,
@@ -267,7 +264,7 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
         transform_mismatches: bool = False,
         fade_transform_mismatches: bool = False,
         key_map: dict | None = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         super().__init__(
             mobject,
@@ -292,4 +289,5 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
 
     @staticmethod
     def get_mobject_key(mobject: Mobject) -> str:
+        assert isinstance(mobject, MathTexPart)
         return mobject.tex_string
