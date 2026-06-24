@@ -30,7 +30,7 @@ const vec2 uv_coords_arr[3] = vec2[3](vec2(0, 0), vec2(0.5, 0), vec2(1, 1));
 
 void emit_vertex_wrapper(vec3 point, int index)
 {
-    color = finalize_color(v_color[index], point, v_global_unit_normal[index], light_source_position, gloss, shadow,
+    color = finalize_color(v_color[index], point, v_global_unit_normal[index], light_source_position.xyz, gloss, shadow,
                            reflectiveness);
     gl_Position = get_gl_Position(point);
     uv_coords = uv_coords_arr[index];
