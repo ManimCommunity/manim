@@ -15,6 +15,7 @@ from manim import (
     BackgroundRectangle,
     Circle,
     Line,
+    Polygon,
     Polygram,
     Sector,
     Square,
@@ -263,3 +264,24 @@ def test_Circle_point_at_angle():
     # Angle 0 should return start point even after reflection
     p_reflected_0 = reflected_circle.point_at_angle(0)
     np.testing.assert_array_almost_equal(p_reflected_0, reflected_start, decimal=5)
+
+
+def test_round_corners_collinear_points_does_not_oom():
+    """Rounding corners on a degenerate polygon whose vertices are collinear
+    must not attempt to allocate enormous amounts of memory (issue #3052).
+
+    Three collinear points form a "polygon" where one edge is antiparallel to
+    its neighbour.  Before the fix, tan(π/2) ≈ 1.6e16 caused cut_off_length
+    to overflow, leading to ArcBetweenPoints spanning astronomically distant
+    endpoints and a reported 8.70 PiB allocation attempt.
+    """
+    points = [
+        [-1, 0, 0],
+        [0, 0, 0],
+        [1, 0, 0],
+    ]
+    p = Polygon(*points)
+    # Must complete without MemoryError or any other exception.
+    p.round_corners(0.15)
+    # The resulting points must be finite (no Inf or NaN).
+    assert np.all(np.isfinite(p.points))
