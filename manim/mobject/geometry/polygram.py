@@ -258,7 +258,9 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
                 # (e.g. three points on a line) yield tan(π/2) ≈ 1.6e16,
                 # producing an astronomically large arc that exhausts memory.
                 max_cut_off = min(np.linalg.norm(vect1), np.linalg.norm(vect2)) / 2
-                cut_off_length = float(np.clip(cut_off_length, -max_cut_off, max_cut_off))
+                cut_off_length = float(
+                    np.clip(cut_off_length, -max_cut_off, max_cut_off)
+                )
 
                 # Determines counterclockwise vs. clockwise
                 sign = np.sign(np.cross(vect1, vect2)[2])
