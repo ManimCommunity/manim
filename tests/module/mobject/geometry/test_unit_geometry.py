@@ -217,6 +217,50 @@ def test_line_with_buff_and_path_arc():
     np.testing.assert_allclose(line.points, expected_points)
 
 
+def test_add_tip_preserves_polyline_corner():
+    line = Line()
+    line.set_points_as_corners(
+        [
+            np.array([0.0, 0.0, 0.0]),
+            np.array([0.0, 2.0, 0.0]),
+            np.array([3.0, 2.0, 0.0]),
+        ]
+    )
+    original_first_curve = line.points[:4].copy()
+
+    line.add_tip(tip_length=0.5)
+
+    np.testing.assert_allclose(line.points[:4], original_first_curve)
+    np.testing.assert_allclose(line.points[3], np.array([0.0, 2.0, 0.0]))
+    np.testing.assert_allclose(line.points[4], np.array([0.0, 2.0, 0.0]))
+    np.testing.assert_allclose(line.points[-1], line.tip.base)
+    np.testing.assert_allclose(line.tip.base, np.array([2.5, 2.0, 0.0]))
+
+
+def test_add_start_tip_preserves_polyline_corner():
+    line = Line()
+    line.set_points_as_corners(
+        [
+            np.array([0.0, 0.0, 0.0]),
+            np.array([0.0, 2.0, 0.0]),
+            np.array([3.0, 2.0, 0.0]),
+        ]
+    )
+    original_last_curve = line.points[-4:].copy()
+
+    line.add_tip(at_start=True, tip_length=0.5)
+
+    np.testing.assert_allclose(line.points[-4:], original_last_curve)
+    np.testing.assert_allclose(line.points[3], np.array([0.0, 2.0, 0.0]))
+    np.testing.assert_allclose(line.points[4], np.array([0.0, 2.0, 0.0]))
+    np.testing.assert_allclose(line.points[0], line.start_tip.base, atol=1e-12)
+    np.testing.assert_allclose(
+        line.start_tip.base,
+        np.array([0.0, 0.5, 0.0]),
+        atol=1e-12,
+    )
+
+
 def test_Circle_point_at_angle():
     from manim import TAU
 
