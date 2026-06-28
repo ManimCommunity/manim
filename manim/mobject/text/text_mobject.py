@@ -80,9 +80,13 @@ if TYPE_CHECKING:
 
     from manim.typing import Point3D
 
-TEXT_MOB_SCALE_FACTOR = 0.05
 DEFAULT_LINE_SPACING_SCALE = 0.3
-TEXT2SVG_ADJUSTMENT_FACTOR = 4.8
+PANGO_SVG_UNITS_PER_PT = 4 / 3
+"""Scale factor from Pango SVG output to point units.
+Pango outputs 4/3 svg units per point (72 DPI)."""
+TEXT_FONT_SIZE_PT = 10
+"""The font size we use to render the unscaled text in the SVG.
+Note that the typical EM dash (—) will be 13.333 svg units, since 1pt = 4/3 px"""
 
 __all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
 
@@ -466,7 +470,7 @@ class Text(SVGMobject):
                 else:
                     logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
-        self._font_size = float(font_size)
+        self.initial_font_size = float(font_size)
         # needs to be a float or else size is inflated when font_size = 24
         # (unknown cause)
         self.slant = slant
@@ -508,10 +512,13 @@ class Text(SVGMobject):
         self.text = text_without_tabs
         if self.line_spacing == -1:
             self.line_spacing = (
-                self._font_size + self._font_size * DEFAULT_LINE_SPACING_SCALE
+                self.initial_font_size
+                + self.initial_font_size * DEFAULT_LINE_SPACING_SCALE
             )
         else:
-            self.line_spacing = self._font_size + self._font_size * self.line_spacing
+            self.line_spacing = (
+                self.initial_font_size + self.initial_font_size * self.line_spacing
+            )
 
         parsed_color: ManimColor = ManimColor(color) if color else VMobject().color
         file_name = self._text2svg(parsed_color.to_hex())
@@ -590,7 +597,12 @@ class Text(SVGMobject):
             each.points = np.array(closed_curve_points, ndmin=2)
         # anti-aliasing
         if height is None and width is None:
-            self.scale(TEXT_MOB_SCALE_FACTOR)
+            self.scale(
+                1
+                / PANGO_SVG_UNITS_PER_PT  # convert svg output to "pt" units
+                / TEXT_FONT_SIZE_PT  # then to "fontsize" or "EM" units
+                * DEFAULT_FONT_SIZE_IN_WORLD_SPACE  # then to world space
+            )
         self.initial_height = self.height
 
     def __repr__(self) -> str:
@@ -598,14 +610,7 @@ class Text(SVGMobject):
 
     @property
     def font_size(self) -> float:
-        return (
-            self.height
-            / self.initial_height
-            / TEXT_MOB_SCALE_FACTOR
-            * 2.4
-            * self._font_size
-            / DEFAULT_FONT_SIZE
-        )
+        return self.height / self.initial_height * self.initial_font_size
 
     @font_size.setter
     def font_size(self, font_val: float) -> None:
@@ -657,7 +662,7 @@ class Text(SVGMobject):
             "PANGO" + self.font + self.slant + self.weight + str(color)
         )  # to differentiate Text and CairoText
         settings += str(self.t2f) + str(self.t2s) + str(self.t2w) + str(self.t2c)
-        settings += str(self.line_spacing) + str(self._font_size)
+        settings += str(self.line_spacing) + str(self.initial_font_size)
         settings += str(self.disable_ligatures)
         settings += str(self.gradient)
         id_str = self.text + settings
@@ -798,10 +803,8 @@ class Text(SVGMobject):
 
     def _text2svg(self, color: ParsableManimColor) -> str:
         """Convert the text to SVG using Pango."""
-        size = self._font_size
-        line_spacing = self.line_spacing
-        size /= TEXT2SVG_ADJUSTMENT_FACTOR
-        line_spacing /= TEXT2SVG_ADJUSTMENT_FACTOR
+        size = TEXT_FONT_SIZE_PT * self.initial_font_size / DEFAULT_FONT_SIZE
+        line_spacing = TEXT_FONT_SIZE_PT * self.line_spacing / DEFAULT_FONT_SIZE
 
         dir_name = config.get_dir("text_dir")
         dir_name.mkdir(parents=True, exist_ok=True)
@@ -1181,7 +1184,7 @@ class MarkupText(SVGMobject):
                 else:
                     logger.warning(f"Font {font} not in {fonts_list}.")
         self.font = font
-        self._font_size = float(font_size)
+        self.initial_font_size = float(font_size)
         self.slant = slant
         self.weight = weight
         self.gradient = gradient
@@ -1206,10 +1209,13 @@ class MarkupText(SVGMobject):
 
         if self.line_spacing == -1:
             self.line_spacing = (
-                self._font_size + self._font_size * DEFAULT_LINE_SPACING_SCALE
+                self.initial_font_size
+                + self.initial_font_size * DEFAULT_LINE_SPACING_SCALE
             )
         else:
-            self.line_spacing = self._font_size + self._font_size * self.line_spacing
+            self.line_spacing = (
+                self.initial_font_size + self.initial_font_size * self.line_spacing
+            )
 
         parsed_color: ManimColor = ManimColor(color) if color else VMobject().color
         file_name = self._text2svg(parsed_color)
@@ -1302,20 +1308,18 @@ class MarkupText(SVGMobject):
             )
         # anti-aliasing
         if height is None and width is None:
-            self.scale(TEXT_MOB_SCALE_FACTOR)
+            self.scale(
+                1
+                / PANGO_SVG_UNITS_PER_PT  # convert svg output to "pt" units
+                / TEXT_FONT_SIZE_PT  # then to "fontsize" or "EM" units
+                * DEFAULT_FONT_SIZE_IN_WORLD_SPACE  # then to world space
+            )
 
         self.initial_height = self.height
 
     @property
     def font_size(self) -> float:
-        return (
-            self.height
-            / self.initial_height
-            / TEXT_MOB_SCALE_FACTOR
-            * 2.4
-            * self._font_size
-            / DEFAULT_FONT_SIZE
-        )
+        return self.height / self.initial_height * self.initial_font_size
 
     @font_size.setter
     def font_size(self, font_val: float) -> None:
@@ -1334,7 +1338,7 @@ class MarkupText(SVGMobject):
             + self.weight
             + ManimColor(color).to_hex().lower()
         )  # to differentiate from classical Pango Text
-        settings += str(self.line_spacing) + str(self._font_size)
+        settings += str(self.line_spacing) + str(self.initial_font_size)
         settings += str(self.disable_ligatures)
         settings += str(self.justify)
         id_str = self.text + settings
@@ -1345,10 +1349,9 @@ class MarkupText(SVGMobject):
     def _text2svg(self, color: ParsableManimColor | None) -> str:
         """Convert the text to SVG using Pango."""
         color = ManimColor(color)
-        size = self._font_size
-        line_spacing: float = self.line_spacing
-        size /= TEXT2SVG_ADJUSTMENT_FACTOR
-        line_spacing /= TEXT2SVG_ADJUSTMENT_FACTOR
+        # scale down so that manim font size becomes a specific target size in pt for pango
+        size = TEXT_FONT_SIZE_PT * self.initial_font_size / DEFAULT_FONT_SIZE
+        line_spacing = TEXT_FONT_SIZE_PT * self.line_spacing / DEFAULT_FONT_SIZE
 
         dir_name = config.get_dir("text_dir")
         dir_name.mkdir(parents=True, exist_ok=True)
