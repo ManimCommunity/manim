@@ -504,11 +504,11 @@ class NumberLine(Line):
 
     def get_number_mobjects(self, *numbers: float, **kwargs: Any) -> VGroup:
         if len(numbers) == 0:
-            numbers = self.default_numbers_to_display()
+            numbers = self.get_tick_range()
         return VGroup([self.get_number_mobject(number, **kwargs) for number in numbers])
 
     def get_labels(self) -> VGroup:
-        return self.get_number_mobjects()
+        return getattr(self, "labels", self.get_number_mobjects())
 
     def add_numbers(
         self,
