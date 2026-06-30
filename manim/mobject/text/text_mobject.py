@@ -593,6 +593,9 @@ class Text(SVGMobject):
             self.scale(TEXT_MOB_SCALE_FACTOR)
         self.initial_height = self.height
 
+        if color is not None:
+            self.color = parsed_color
+
     def __repr__(self) -> str:
         return f"Text({repr(self.original_text)})"
 

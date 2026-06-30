@@ -32,3 +32,10 @@ def test_text_color_inheritance():
 
     # reset the default color so that future tests aren't affected by this change.
     VMobject.set_default()
+
+
+def test_text_constructor_color():
+    from manim import WHITE
+
+    text = Text("test", color=WHITE)
+    assert text.get_color().to_hex() == WHITE.to_hex()
