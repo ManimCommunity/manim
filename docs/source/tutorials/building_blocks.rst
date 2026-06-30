@@ -134,6 +134,19 @@ measuring units but as a way to determine the border to use for alignment.  The
 coordinates of the borders of a mobject are determined using an imaginary
 bounding box around it.
 
+Manim also provides helpers in :mod:`~.utils.unit` for converting between
+common units and scene coordinates:
+
+.. code-block:: python
+
+    from manim import unit, X_AXIS
+
+    pixel_width = 50 * unit.Pixels
+    angle_radians = 90 * unit.Degrees
+    tenth_of_frame = unit.Percent(X_AXIS) * 10
+
+See :mod:`~.utils.unit` for details.
+
 .. tip:: Many methods in manim can be chained together.  For example the two
          lines
 
