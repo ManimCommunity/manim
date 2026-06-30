@@ -60,3 +60,12 @@ print(var)
             )
         except ValueError as e:
             pytest.fail(f"Code initialization failed for style {style} with error: {e}")
+
+
+def test_code_background_matches_formatter_style():
+    rendered_code = Code(
+        code_string="x = 1\n",
+        language="python",
+        formatter_style="xcode",
+    )
+    assert rendered_code.background.fill_color == ManimColor("#ffffff")
