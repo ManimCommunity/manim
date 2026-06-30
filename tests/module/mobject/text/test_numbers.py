@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from manim import DEGREES, RED, DecimalNumber, Integer, RIGHT
+from manim import DEGREES, RED, RIGHT, DecimalNumber, Integer
 from manim.utils.space_ops import angle_between_vectors
 
 
