@@ -9,8 +9,11 @@ Examples
 
     >>> from manim import unit, X_AXIS
     >>> 50 * unit.Pixels  # 50 pixels -> Munits
+    0.37037037037037035
     >>> 90 * unit.Degrees  # degrees -> radians
+    1.5707963267948966
     >>> unit.Percent(X_AXIS) * 10  # 10% of frame width
+    1.4222222222222223
 """
 
 from __future__ import annotations
@@ -47,7 +50,9 @@ class Percent:
 
         >>> from manim import unit, X_AXIS, Y_AXIS
         >>> unit.Percent(X_AXIS) * 10  # 10% of frame width
+        1.4222222222222223
         >>> unit.Percent(Y_AXIS) * 25  # 25% of frame height
+        2.0
     """
 
     def __init__(self, axis: Vector3D) -> None:
