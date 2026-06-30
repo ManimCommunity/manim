@@ -236,6 +236,21 @@ def test_color_gradient_passes_through_each_of_four_reference_colors() -> None:
     assert gradient[3] == WHITE
 
 
+def test_manim_color_gradient_matches_color_gradient() -> None:
+    gradient = ManimColor.gradient([BLACK, WHITE], 5)
+    assert gradient == color_gradient([BLACK, WHITE], 5)
+
+
+def test_manim_color_gradient_length_one_returns_single_color() -> None:
+    color = ManimColor.gradient([RED], 1)
+    assert isinstance(color, ManimColor)
+    assert color == RED
+
+
+def test_manim_color_gradient_zero_length_returns_empty_list() -> None:
+    assert ManimColor.gradient([RED], 0) == []
+
+
 # ---------------------------------------------------------------------------
 # Random color machinery
 # ---------------------------------------------------------------------------
