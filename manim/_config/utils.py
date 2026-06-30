@@ -1190,11 +1190,14 @@ class ManimConfig(MutableMapping):
     def frame_rate(self, value: float) -> None:
         self._d.__setitem__("frame_rate", value)
 
-    # TODO: This was parsed before maybe add ManimColor(val), but results in circular import
     @property
     def background_color(self) -> ManimColor:
         """Background color of the scene (-c)."""
-        return self._d["background_color"]
+        # Lazy import avoids a circular import at module load; guarantees the
+        # return value matches the annotation even if _d holds a raw value (#4801).
+        from manim.utils.color import ManimColor
+
+        return ManimColor(self._d["background_color"])
 
     @background_color.setter
     def background_color(self, value: Any) -> None:
