@@ -958,11 +958,28 @@ class ManimColor:
     def gradient(
         colors: list[ManimColor], length: int
     ) -> ManimColor | list[ManimColor]:
-        """This method is currently not implemented. Refer to :func:`color_gradient` for
-        a working implementation for now.
+        """Create a gradient of colors interpolated between the given colors.
+
+        Parameters
+        ----------
+        colors
+            Reference colors to interpolate between.
+        length
+            Number of colors in the output gradient.
+
+        Returns
+        -------
+        ManimColor or list[ManimColor]
+            A single color if ``length == 1``, otherwise a list of colors.
+
+        See Also
+        --------
+        :func:`color_gradient`
         """
-        # TODO: implement proper gradient, research good implementation for this or look at 3b1b implementation
-        raise NotImplementedError
+        gradient = color_gradient(colors, length)
+        if length == 1:
+            return gradient[0]
+        return gradient
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}('{self.to_hex()}')"
