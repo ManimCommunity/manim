@@ -527,6 +527,10 @@ class Text(SVGMobject):
             **kwargs,
         )
         self.text = text
+        # The color is baked into the glyph SVGs, but the parent mobject keeps
+        # the default fill/stroke, so get_color() ignores it. Reflect it here
+        # (family=False preserves any per-character t2c/gradient colors).
+        self.set_color(parsed_color, family=False)
         if self.disable_ligatures:
             self.submobjects = [*self._gen_chars()]
         self.chars = self.get_group_class()(*self.submobjects)
@@ -1224,6 +1228,11 @@ class MarkupText(SVGMobject):
             should_center=should_center,
             **kwargs,
         )
+
+        # The color is baked into the glyph SVGs, but the parent mobject keeps
+        # the default fill/stroke, so get_color() ignores it. Reflect it here;
+        # gradient/colormap tags below still override per-character colors.
+        self.set_color(parsed_color, family=False)
 
         self.chars = self.get_group_class()(*self.submobjects)
         self.text = text_without_tabs.replace(" ", "").replace("\n", "")
