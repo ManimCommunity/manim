@@ -27,5 +27,8 @@ def test_units(config):
     with pytest.raises(NotImplementedError):
         Percent(Z_AXIS)
 
+    with pytest.raises(ValueError, match="X_AXIS or Y_AXIS"):
+        Percent(np.array([1, 1, 0]))
+
     # Degrees should convert from degrees to radians
     np.testing.assert_allclose(180 * Degrees, PI)
