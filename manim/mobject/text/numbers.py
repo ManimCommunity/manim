@@ -16,6 +16,7 @@ from manim.mobject.text.text_mobject import Text
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.mobject.value_tracker import ValueTracker
 from manim.typing import Vector3DLike
+from manim.utils.space_ops import angle_between_vectors
 
 string_to_mob_map: dict[str, SingleStringMathTex] = {}
 
@@ -290,10 +291,22 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         old_font_size = self.font_size
         move_to_point = self.get_edge_center(self.edge_to_fix)
         old_submobjects = self.submobjects
+        direction = self.get_right() - self.get_center()
+        rotation_angle = (
+            angle_between_vectors(RIGHT, direction)
+            if np.linalg.norm(direction) > 1e-8
+            else 0
+        )
+        if abs(rotation_angle) > 1e-8:
+            measure = self.copy()
+            measure.rotate(-rotation_angle, about_point=measure.get_center())
+            old_font_size = measure.font_size
 
         self._set_submobjects_from_number(number)
         self.font_size = old_font_size
         self.move_to(move_to_point, self.edge_to_fix)
+        if abs(rotation_angle) > 1e-8:
+            self.rotate(rotation_angle, about_point=self.get_center())
         for sm1, sm2 in zip(self.submobjects, old_submobjects, strict=False):
             sm1.match_style(sm2)
 
