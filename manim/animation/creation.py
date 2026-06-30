@@ -123,6 +123,15 @@ class ShowPartial(Animation):
             raise TypeError(f"{self.__class__.__name__} only works for VMobjects.")
         super().__init__(mobject, **kwargs)
 
+    def begin(self) -> None:
+        super().begin()
+        # Each frame is rebuilt from starting_mobject via pointwise_become_partial,
+        # so its updaters must also be suspended; otherwise they keep mutating the
+        # reference copy and leak back into the result, ignoring
+        # suspend_mobject_updating (#4763).
+        if self.suspend_mobject_updating and self.starting_mobject is not None:
+            self.starting_mobject.suspend_updating()
+
     def interpolate_submobject(
         self,
         submobject: Mobject,

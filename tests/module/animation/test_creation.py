@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from manim import AddTextLetterByLetter, Text
+from manim import RIGHT, AddTextLetterByLetter, Circle, Create, Text
 
 
 def test_non_empty_text_creation():
@@ -32,3 +32,13 @@ def test_run_time_for_non_empty_text(config):
     expected_run_time = np.max((1 / config.frame_rate, run_time_per_char)) * len(s.text)
     anim = AddTextLetterByLetter(s, time_per_char=run_time_per_char)
     assert anim.run_time == expected_run_time
+
+
+def test_create_suspends_starting_mobject_updaters() -> None:
+    """Create rebuilds from starting_mobject each frame; its updaters must pause too (#4763)."""
+    circle = Circle()
+    circle.add_updater(lambda m, dt: m.shift(RIGHT * dt))
+    anim = Create(circle, suspend_mobject_updating=True)
+    anim.begin()
+    assert anim.starting_mobject is not None
+    assert anim.starting_mobject.updating_suspended
