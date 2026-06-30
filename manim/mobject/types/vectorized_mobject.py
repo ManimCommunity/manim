@@ -1592,6 +1592,16 @@ class VMobject(Mobject):
         if alpha == 1:
             return self.points[-1]
 
+        # Non-finite points (e.g. a function returning NaN/inf) make every
+        # length NaN, so the comparisons below always fail and the loop falls
+        # through. Surface a clear error instead of an unreachable one.
+        if not np.all(np.isfinite(self.points)):
+            raise ValueError(
+                "Cannot compute point_from_proportion for a VMobject with "
+                "non-finite points; check that the underlying function does "
+                "not return NaN or infinite values."
+            )
+
         curves_and_lengths = tuple(self.get_curve_functions_with_lengths())
 
         target_length = alpha * sum(length for _, length in curves_and_lengths)
@@ -1607,9 +1617,9 @@ class VMobject(Mobject):
                 return curve(residue)
 
             current_length += length
-        raise Exception(
-            "Not sure how you reached here, please file a bug report at https://github.com/ManimCommunity/manim/issues/new/choose"
-        )
+        # Floating-point summation can leave current_length just short of
+        # target_length on the final curve; fall back to the last point.
+        return self.points[-1]
 
     def proportion_from_point(
         self,
