@@ -15,6 +15,7 @@ from manim import (
     BackgroundRectangle,
     Circle,
     Line,
+    Polygon,
     Polygram,
     Sector,
     Square,
@@ -263,3 +264,9 @@ def test_Circle_point_at_angle():
     # Angle 0 should return start point even after reflection
     p_reflected_0 = reflected_circle.point_at_angle(0)
     np.testing.assert_array_almost_equal(p_reflected_0, reflected_start, decimal=5)
+
+
+def test_round_corners_collinear_points_stays_finite() -> None:
+    points = [[-1, 0, 0], [0, 0, 0], [1, 0, 0]]
+    polygon = Polygon(*points).round_corners(0.15)
+    assert np.isfinite(polygon.points).all()

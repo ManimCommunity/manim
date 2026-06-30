@@ -253,6 +253,12 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
                 # Distance between vertex and start of the arc
                 cut_off_length = current_radius * np.tan(angle / 2)
+                max_cut_off = min(np.linalg.norm(vect1), np.linalg.norm(vect2)) / 2
+                cut_off_length = np.clip(
+                    cut_off_length,
+                    -max_cut_off,
+                    max_cut_off,
+                )
 
                 # Determines counterclockwise vs. clockwise
                 sign = np.sign(np.cross(vect1, vect2)[2])
