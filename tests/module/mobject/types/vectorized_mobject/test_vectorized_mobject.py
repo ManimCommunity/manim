@@ -143,6 +143,19 @@ def test_vmobject_point_from_proportion():
         obj.point_from_proportion(0)
 
 
+def test_vmobject_point_from_proportion_non_finite_points():
+    obj = VMobject()
+    obj.set_points_as_corners(
+        [np.array([0, 0, 0]), np.array([4, 0, 0]), np.array([4, 2, 0])],
+    )
+    points = obj.points.copy()
+    points[1] = [np.nan, np.nan, 0]
+    obj.set_points(points)
+
+    with pytest.raises(ValueError, match="non-finite"):
+        obj.point_from_proportion(0.5)
+
+
 def test_curves_as_submobjects_point_from_proportion():
     obj = CurvesAsSubmobjects(VGroup())
 
