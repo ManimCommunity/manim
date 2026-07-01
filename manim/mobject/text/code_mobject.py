@@ -7,8 +7,9 @@ __all__ = [
 ]
 
 import re
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable, Literal
+from typing import Any, Literal
 
 from bs4 import BeautifulSoup, Tag
 from pygments import highlight
