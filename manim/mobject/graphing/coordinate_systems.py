@@ -155,12 +155,16 @@ class CoordinateSystem:
         self.num_sampled_graph_points_per_tick = 10
         self.x_axis: NumberLine
 
-    def coords_to_point(self, *coords: ManimFloat) -> Point3D:
-        # TODO: I think the method should be able to return more than just a single point.
-        # E.g. see the implementation of it on line 2065.
+    def coords_to_point(
+        self, *coords: float | Sequence[float] | Sequence[Sequence[float]] | np.ndarray
+    ) -> np.ndarray:
+        # Concrete subclasses (e.g. Axes, NumberPlane) return a single Point3D for
+        # a single coordinate and a stacked array for batched input.
         raise NotImplementedError()
 
-    def point_to_coords(self, point: Point3DLike) -> list[ManimFloat]:
+    def point_to_coords(
+        self, point: Point3DLike | Sequence[Point3DLike] | np.ndarray
+    ) -> np.ndarray:
         raise NotImplementedError()
 
     def polar_to_point(self, radius: float, azimuth: float) -> Point2D:
@@ -216,7 +220,9 @@ class CoordinateSystem:
         """Abbreviation for :meth:`coords_to_point`"""
         return self.coords_to_point(*coords)
 
-    def p2c(self, point: Point3DLike) -> list[ManimFloat]:
+    def p2c(
+        self, point: Point3DLike | Sequence[Point3DLike] | np.ndarray
+    ) -> np.ndarray:
         """Abbreviation for :meth:`point_to_coords`"""
         return self.point_to_coords(point)
 
