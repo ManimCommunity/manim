@@ -1124,6 +1124,14 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         """
         return self.angle_value / DEGREES if degrees else self.angle_value
 
+    def become(self, mobject: Mobject, *args: Any, **kwargs: Any) -> Self:
+        # become() only copies points/submobjects, not angle_value, so
+        # always_redraw(lambda: Angle(...)) left get_value() stale (#4512).
+        super().become(mobject, *args, **kwargs)
+        if isinstance(mobject, Angle):
+            self.angle_value = mobject.angle_value
+        return self
+
     @staticmethod
     def from_three_points(
         A: Point3DLike, B: Point3DLike, C: Point3DLike, **kwargs: Any
