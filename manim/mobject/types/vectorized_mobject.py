@@ -1607,9 +1607,17 @@ class VMobject(Mobject):
                 return curve(residue)
 
             current_length += length
-        raise Exception(
-            "Not sure how you reached here, please file a bug report at https://github.com/ManimCommunity/manim/issues/new/choose"
-        )
+
+        # Non-finite points (e.g. a parametric function returning NaN) make every
+        # length NaN, so no branch above triggers; fail with an actionable message.
+        if not np.isfinite(target_length):
+            raise ValueError(
+                "Cannot compute point_from_proportion: the VMobject contains "
+                "non-finite (NaN or infinite) points."
+            )
+        # Otherwise floating-point summation left target_length marginally past the
+        # accumulated lengths (alpha ≈ 1); return the path's endpoint.
+        return curves_and_lengths[-1][0](1)
 
     def proportion_from_point(
         self,
