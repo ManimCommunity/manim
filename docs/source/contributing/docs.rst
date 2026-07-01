@@ -81,3 +81,4 @@ Index
    docs/examples
    docs/references
    docs/typings
+   docs/types

@@ -1,6 +1,6 @@
-==============
-Adding Typings
-==============
+==================
+Typing Conventions
+==================
 
 .. warning::
    This section is still a work in progress.

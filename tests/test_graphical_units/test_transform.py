@@ -159,7 +159,7 @@ def test_AnimationBuilder(scene):
 
 @frames_comparison(last_frame=False)
 def test_ReplacementTransform(scene):
-    yellow = Square(fill_opacity=1.0, fill_color=YELLOW)
+    yellow = Square(fill_opacity=1.0, fill_color=PURE_YELLOW)
     yellow.move_to([0, 0.75, 0])
 
     green = Square(fill_opacity=1.0, fill_color=GREEN)

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import math
-from typing import TYPE_CHECKING, Any, Iterable
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Any, overload
 
 import numpy as np
 
@@ -10,7 +11,9 @@ __all__ = ["LogBase", "LinearBase"]
 from manim.mobject.text.numbers import Integer
 
 if TYPE_CHECKING:
-    from manim.mobject.mobject import Mobject
+    from collections.abc import Callable
+
+    from manim.mobject.types.vectorized_mobject import VMobject
 
 
 class _ScaleBase:
@@ -24,6 +27,12 @@ class _ScaleBase:
 
     def __init__(self, custom_labels: bool = False):
         self.custom_labels = custom_labels
+
+    @overload
+    def function(self, value: float) -> float: ...
+
+    @overload
+    def function(self, value: np.ndarray) -> np.ndarray: ...
 
     def function(self, value: float) -> float:
         """The function that will be used to scale the values.
@@ -58,7 +67,8 @@ class _ScaleBase:
     def get_custom_labels(
         self,
         val_range: Iterable[float],
-    ) -> Iterable[Mobject]:
+        **kw_args: Any,
+    ) -> Iterable[VMobject]:
         """Custom instructions for generating labels along an axis.
 
         Parameters
@@ -89,7 +99,6 @@ class LinearBase(_ScaleBase):
         scale_factor
             The slope of the linear function, by default 1.0
         """
-
         super().__init__()
         self.scale_factor = scale_factor
 
@@ -139,13 +148,19 @@ class LogBase(_ScaleBase):
 
     def function(self, value: float) -> float:
         """Scales the value to fit it to a logarithmic scale.``self.function(5)==10**5``"""
-        return self.base**value
+        return_value: float = self.base**value
+        return return_value
 
     def inverse_function(self, value: float) -> float:
         """Inverse of ``function``. The value must be greater than 0"""
         if isinstance(value, np.ndarray):
             condition = value.any() <= 0
-            func = lambda value, base: np.log(value) / np.log(base)
+
+            func: Callable[[float, float], float]
+
+            def func(value: float, base: float) -> float:
+                return_value: float = np.log(value) / np.log(base)
+                return return_value
         else:
             condition = value <= 0
             func = math.log
@@ -161,8 +176,8 @@ class LogBase(_ScaleBase):
         self,
         val_range: Iterable[float],
         unit_decimal_places: int = 0,
-        **base_config: dict[str, Any],
-    ) -> list[Mobject]:
+        **base_config: Any,
+    ) -> list[Integer]:
         """Produces custom :class:`~.Integer` labels in the form of ``10^2``.
 
         Parameters
@@ -174,12 +189,11 @@ class LogBase(_ScaleBase):
         base_config
             Additional arguments to be passed to :class:`~.Integer`.
         """
-
         # uses `format` syntax to control the number of decimal places.
-        tex_labels = [
+        tex_labels: list[Integer] = [
             Integer(
                 self.base,
-                unit="^{%s}" % (f"{self.inverse_function(i):.{unit_decimal_places}f}"),
+                unit="^{%s}" % (f"{self.inverse_function(i):.{unit_decimal_places}f}"),  # noqa: UP031
                 **base_config,
             )
             for i in val_range

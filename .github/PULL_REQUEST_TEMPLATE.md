@@ -1,10 +1,6 @@
 <!-- Thank you for contributing to Manim! Learn more about the process in our contributing guidelines: https://docs.manim.community/en/latest/contributing.html -->
 
 ## Overview: What does this pull request change?
-<!-- If there is more information than the PR title that should be added to our release changelog, add it in the following changelog section. This is optional, but recommended for larger pull requests. -->
-<!--changelog-start-->
-
-<!--changelog-end-->
 
 ## Motivation and Explanation: Why and how do your changes improve the library?
 <!-- Optional for bugfixes, small enhancements, and documentation-related PRs. Otherwise, please give a short reasoning for your changes. -->

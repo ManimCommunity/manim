@@ -6,7 +6,8 @@
         "height": 480,
         "avg_frame_rate": "15/1",
         "duration": "6.000000",
-        "nb_frames": "90"
+        "nb_frames": "90",
+        "pix_fmt": "yuv420p"
     },
     "section_dir_layout": [
         "ElaborateSceneWithSections.json",
@@ -25,7 +26,8 @@
             "height": 480,
             "avg_frame_rate": "15/1",
             "duration": "2.000000",
-            "nb_frames": "30"
+            "nb_frames": "30",
+            "pix_fmt": "yuv420p"
         },
         {
             "name": "transform to circle",
@@ -36,7 +38,8 @@
             "height": 480,
             "avg_frame_rate": "15/1",
             "duration": "2.000000",
-            "nb_frames": "30"
+            "nb_frames": "30",
+            "pix_fmt": "yuv420p"
         },
         {
             "name": "fade out",
@@ -47,7 +50,8 @@
             "height": 480,
             "avg_frame_rate": "15/1",
             "duration": "2.000000",
-            "nb_frames": "30"
+            "nb_frames": "30",
+            "pix_fmt": "yuv420p"
         }
     ]
 }

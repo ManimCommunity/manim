@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
+from typing import TYPE_CHECKING
 
 import moderngl
 import numpy as np
@@ -12,10 +13,14 @@ from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.utils.bezier import integer_interpolate, interpolate
 from manim.utils.color import *
 from manim.utils.config_ops import _Data, _Uniforms
-from manim.utils.deprecation import deprecated
 from manim.utils.images import change_to_rgba_array, get_full_raster_image_path
 from manim.utils.iterables import listify
 from manim.utils.space_ops import normalize_along_axis
+
+if TYPE_CHECKING:
+    import numpy.typing as npt
+
+    from manim.typing import Point3D_Array, Vector3D_Array
 
 __all__ = ["OpenGLSurface", "OpenGLTexturedSurface"]
 
@@ -83,7 +88,7 @@ class OpenGLSurface(OpenGLMobject):
         render_primitive=moderngl.TRIANGLES,
         depth_test=True,
         shader_folder=None,
-        **kwargs,
+        **kwargs: Any,
     ):
         self.passed_uv_func = uv_func
         self.u_range = u_range if u_range is not None else (0, 1)
@@ -161,12 +166,14 @@ class OpenGLSurface(OpenGLMobject):
     def get_triangle_indices(self):
         return self.triangle_indices
 
-    def get_surface_points_and_nudged_points(self):
+    def get_surface_points_and_nudged_points(
+        self,
+    ) -> tuple[Point3D_Array, Point3D_Array, Point3D_Array]:
         points = self.points
         k = len(points) // 3
         return points[:k], points[k : 2 * k], points[2 * k :]
 
-    def get_unit_normals(self):
+    def get_unit_normals(self) -> Vector3D_Array:
         s_points, du_points, dv_points = self.get_surface_points_and_nudged_points()
         normals = np.cross(
             (du_points - s_points) / self.epsilon,
@@ -372,7 +379,7 @@ class OpenGLTexturedSurface(OpenGLSurface):
     def __init__(
         self,
         uv_surface: OpenGLSurface,
-        image_file: str | Path,
+        image_file: str | Path | npt.NDArray,
         dark_image_file: str | Path = None,
         image_mode: str | Iterable[str] = "RGBA",
         shader_folder: str | Path = None,
@@ -414,7 +421,7 @@ class OpenGLTexturedSurface(OpenGLSurface):
         self,
         image_file: str | Path,
         image_mode: str,
-    ):
+    ) -> Image.Image:
         image_file = get_full_raster_image_path(image_file)
         return Image.open(image_file).convert(image_mode)
 

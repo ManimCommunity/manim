@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import itertools as it
 import operator as op
+from collections.abc import Callable, Iterable, Sequence
 from functools import reduce, wraps
-from typing import Callable, Iterable, Sequence
+from typing import Any, Self
 
 import moderngl
 import numpy as np
@@ -12,19 +13,20 @@ from manim import config
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 from manim.renderer.shader_wrapper import ShaderWrapper
+from manim.typing import Point3D, Point3DLike, Point3DLike_Array
 from manim.utils.bezier import (
     bezier,
+    bezier_remap,
     get_quadratic_approximation_of_cubic,
     get_smooth_cubic_bezier_handle_points,
     integer_interpolate,
     interpolate,
-    partial_quadratic_bezier_points,
+    partial_bezier_points,
     proportions_along_bezier_curve_for_point,
-    quadratic_bezier_remap,
 )
 from manim.utils.color import BLACK, WHITE, ManimColor, ParsableManimColor
 from manim.utils.config_ops import _Data
-from manim.utils.iterables import listify, make_even, resize_with_interpolation
+from manim.utils.iterables import make_even, resize_with_interpolation, tuplify
 from manim.utils.space_ops import (
     angle_between_vectors,
     cross2d,
@@ -82,6 +84,9 @@ class OpenGLVMobject(OpenGLMobject):
     stroke_shader_folder = "quadratic_bezier_stroke"
     fill_shader_folder = "quadratic_bezier_fill"
 
+    # TODO: although these are called "rgba" in singular, they are used as
+    # FloatRGBA_Arrays and should be called instead "rgbas" in plural for consistency.
+    # The same should probably apply for "stroke_width" and "unit_normal".
     fill_rgba = _Data()
     stroke_rgba = _Data()
     stroke_width = _Data()
@@ -160,12 +165,24 @@ class OpenGLVMobject(OpenGLMobject):
         if stroke_color is not None:
             self.stroke_color = ManimColor.parse(stroke_color)
 
+    def _assert_valid_submobjects(self, submobjects: Iterable[OpenGLVMobject]) -> Self:
+        return self._assert_valid_submobjects_internal(submobjects, OpenGLVMobject)
+
     def get_group_class(self):
         return OpenGLVGroup
 
     @staticmethod
     def get_mobject_type_class():
         return OpenGLVMobject
+
+    @property
+    def submobjects(self) -> Sequence[OpenGLVMobject]:
+        return self._submobjects if hasattr(self, "_submobjects") else []
+
+    @submobjects.setter
+    def submobjects(self, submobject_list: Iterable[OpenGLVMobject]) -> None:
+        self.remove(*self.submobjects)
+        self.add(*submobject_list)
 
     def init_data(self):
         super().init_data()
@@ -265,7 +282,10 @@ class OpenGLVMobject(OpenGLMobject):
 
         if width is not None:
             for mob in self.get_family(recurse):
-                mob.stroke_width = np.array([[width] for width in listify(width)])
+                if isinstance(width, np.ndarray):
+                    mob.stroke_width = width
+                else:
+                    mob.stroke_width = np.array([[width] for width in tuplify(width)])
 
         if background is not None:
             for mob in self.get_family(recurse):
@@ -320,6 +340,7 @@ class OpenGLVMobject(OpenGLMobject):
         vmobject_style = vmobject.get_style()
         if config.renderer == RendererType.OPENGL:
             vmobject_style["stroke_width"] = vmobject_style["stroke_width"][0][0]
+            vmobject_style["fill_opacity"] = self.get_fill_opacity()
         self.set_style(**vmobject_style, recurse=False)
         if recurse:
             # Does its best to match up submobject lists, and
@@ -329,7 +350,7 @@ class OpenGLVMobject(OpenGLMobject):
                 return self
             elif len(submobs2) == 0:
                 submobs2 = [vmobject]
-            for sm1, sm2 in zip(*make_even(submobs1, submobs2)):
+            for sm1, sm2 in zip(*make_even(submobs1, submobs2), strict=True):
                 sm1.match_style(sm2)
         return self
 
@@ -401,7 +422,7 @@ class OpenGLVMobject(OpenGLMobject):
         return self.get_stroke_opacities()[0]
 
     def get_color(self):
-        if self.has_stroke():
+        if not self.has_fill():
             return self.get_stroke_color()
         return self.get_fill_color()
 
@@ -457,7 +478,13 @@ class OpenGLVMobject(OpenGLMobject):
         self.append_points([point])
         return self
 
-    def add_cubic_bezier_curve(self, anchor1, handle1, handle2, anchor2):
+    def add_cubic_bezier_curve(
+        self,
+        anchor1: Point3DLike,
+        handle1: Point3DLike,
+        handle2: Point3DLike,
+        anchor2: Point3DLike,
+    ):
         new_points = get_quadratic_approximation_of_cubic(
             anchor1,
             handle1,
@@ -467,9 +494,7 @@ class OpenGLVMobject(OpenGLMobject):
         self.append_points(new_points)
 
     def add_cubic_bezier_curve_to(self, handle1, handle2, anchor):
-        """
-        Add cubic bezier curve to the path.
-        """
+        """Add cubic bezier curve to the path."""
         self.throw_error_if_no_points()
         quadratic_approx = get_quadratic_approximation_of_cubic(
             self.get_last_point(),
@@ -554,8 +579,8 @@ class OpenGLVMobject(OpenGLMobject):
                     alphas = np.linspace(0, 1, n + 1)
                     new_points.extend(
                         [
-                            partial_quadratic_bezier_points(tup, a1, a2)
-                            for a1, a2 in zip(alphas, alphas[1:])
+                            partial_bezier_points(tup, a1, a2)
+                            for a1, a2 in zip(alphas[:-1], alphas[1:], strict=True)
                         ],
                     )
                 else:
@@ -568,7 +593,7 @@ class OpenGLVMobject(OpenGLMobject):
             self.add_line_to(point)
         return points
 
-    def set_points_as_corners(self, points: Iterable[float]) -> OpenGLVMobject:
+    def set_points_as_corners(self, points: Point3DLike_Array) -> OpenGLVMobject:
         """Given an array of points, set them as corner of the vmobject.
 
         To achieve that, this algorithm sets handles aligned with the anchors such that the resultant bezier curve will be the segment
@@ -591,7 +616,9 @@ class OpenGLVMobject(OpenGLMobject):
         )
         return self
 
-    def set_points_smoothly(self, points, true_smooth=False):
+    def set_points_smoothly(
+        self, points: Point3DLike_Array, true_smooth: bool = False
+    ) -> Self:
         self.set_points_as_corners(points)
         self.make_smooth()
         return self
@@ -742,7 +769,7 @@ class OpenGLVMobject(OpenGLMobject):
         split_indices = [0, *split_indices, len(points)]
         return [
             points[i1:i2]
-            for i1, i2 in zip(split_indices, split_indices[1:])
+            for i1, i2 in zip(split_indices[:-1], split_indices[1:], strict=True)
             if (i2 - i1) >= nppc
         ]
 
@@ -812,7 +839,6 @@ class OpenGLVMobject(OpenGLMobject):
         length : :class:`float`
             The length of the nth curve.
         """
-
         if sample_points is None:
             sample_points = 10
 
@@ -852,7 +878,6 @@ class OpenGLVMobject(OpenGLMobject):
         length : :class:`float`
             The length of the nth curve.
         """
-
         _, length = self.get_nth_curve_function_with_length(n, sample_points)
 
         return length
@@ -867,7 +892,6 @@ class OpenGLVMobject(OpenGLMobject):
         Iterable[Callable[[float], np.ndarray]]
             The functions for the curves.
         """
-
         num_curves = self.get_num_curves()
 
         for n in range(num_curves):
@@ -917,13 +941,12 @@ class OpenGLVMobject(OpenGLMobject):
         Iterable[Tuple[Callable[[float], np.ndarray], float]]
             The functions and lengths of the curves.
         """
-
         num_curves = self.get_num_curves()
 
         for n in range(num_curves):
             yield self.get_nth_curve_function_with_length(n, **kwargs)
 
-    def point_from_proportion(self, alpha: float) -> np.ndarray:
+    def point_from_proportion(self, alpha: float) -> Point3D:
         """Gets the point at a proportion along the path of the :class:`OpenGLVMobject`.
 
         Parameters
@@ -933,7 +956,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         Returns
         -------
-        :class:`numpy.ndarray`
+        :class:`Point3D`
             The point on the :class:`OpenGLVMobject`.
 
         Raises
@@ -943,7 +966,6 @@ class OpenGLVMobject(OpenGLMobject):
         :exc:`Exception`
             If the :class:`OpenGLVMobject` has no points.
         """
-
         if alpha < 0 or alpha > 1:
             raise ValueError(f"Alpha {alpha} not between 0 and 1.")
 
@@ -971,7 +993,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def proportion_from_point(
         self,
-        point: Iterable[float | int],
+        point: Point3DLike,
     ) -> float:
         """Returns the proportion along the path of the :class:`OpenGLVMobject`
         a particular given point is at.
@@ -1071,7 +1093,7 @@ class OpenGLVMobject(OpenGLMobject):
 
         s = self.get_start_anchors()
         e = self.get_end_anchors()
-        return list(it.chain.from_iterable(zip(s, e)))
+        return list(it.chain.from_iterable(zip(s, e, strict=True)))
 
     def get_points_without_null_curves(self, atol=1e-9):
         nppc = self.n_points_per_curve
@@ -1098,7 +1120,6 @@ class OpenGLVMobject(OpenGLMobject):
         float
             The length of the :class:`OpenGLVMobject`.
         """
-
         return np.sum(
             length
             for _, length in self.get_curve_functions_with_lengths(
@@ -1206,7 +1227,9 @@ class OpenGLVMobject(OpenGLMobject):
         def get_nth_subpath(path_list, n):
             if n >= len(path_list):
                 # Create a null path at the very end
-                return [path_list[-1][-1]] * nppc
+                if len(path_list) == 0:
+                    return np.tile(np.zeros(3), (nppc, 1))
+                return np.tile(path_list[-1][-1], (nppc, 1))
             path = path_list[n]
             # Check for useless points at the end of the path and remove them
             # https://github.com/ManimCommunity/manim/issues/1959
@@ -1219,8 +1242,8 @@ class OpenGLVMobject(OpenGLMobject):
             return path
 
         for n in range(n_subpaths):
-            sp1 = get_nth_subpath(subpaths1, n)
-            sp2 = get_nth_subpath(subpaths2, n)
+            sp1 = np.asarray(get_nth_subpath(subpaths1, n))
+            sp2 = np.asarray(get_nth_subpath(subpaths2, n))
             diff1 = max(0, (len(sp2) - len(sp1)) // nppc)
             diff2 = max(0, (len(sp1) - len(sp2)) // nppc)
             sp1 = self.insert_n_curves_to_point_list(diff1, sp1)
@@ -1274,33 +1297,12 @@ class OpenGLVMobject(OpenGLMobject):
         if len(points) == 1:
             return np.repeat(points, nppc * n, 0)
 
-        bezier_groups = self.get_bezier_tuples_from_points(points)
-        norms = np.array([np.linalg.norm(bg[nppc - 1] - bg[0]) for bg in bezier_groups])
-        total_norm = sum(norms)
-        # Calculate insertions per curve (ipc)
-        if total_norm < 1e-6:
-            ipc = [n] + [0] * (len(bezier_groups) - 1)
-        else:
-            ipc = np.round(n * norms / sum(norms)).astype(int)
-
-        diff = n - sum(ipc)
-        for _ in range(diff):
-            ipc[np.argmin(ipc)] += 1
-        for _ in range(-diff):
-            ipc[np.argmax(ipc)] -= 1
-
-        new_length = sum(x + 1 for x in ipc)
-        new_points = np.empty((new_length, nppc, 3))
-        i = 0
-        for group, n_inserts in zip(bezier_groups, ipc):
-            # What was once a single quadratic curve defined
-            # by "group" will now be broken into n_inserts + 1
-            # smaller quadratic curves
-            alphas = np.linspace(0, 1, n_inserts + 2)
-            for a1, a2 in zip(alphas, alphas[1:]):
-                new_points[i] = partial_quadratic_bezier_points(group, a1, a2)
-                i = i + 1
-        return np.vstack(new_points)
+        bezier_tuples = self.get_bezier_tuples_from_points(points)
+        current_number_of_curves = len(bezier_tuples)
+        new_number_of_curves = current_number_of_curves + n
+        new_bezier_tuples = bezier_remap(bezier_tuples, new_number_of_curves)
+        new_points = new_bezier_tuples.reshape(-1, 3)
+        return new_points
 
     def interpolate(self, mobject1, mobject2, alpha, *args, **kwargs):
         super().interpolate(mobject1, mobject2, alpha, *args, **kwargs)
@@ -1353,7 +1355,7 @@ class OpenGLVMobject(OpenGLMobject):
             return self
         if lower_index == upper_index:
             self.append_points(
-                partial_quadratic_bezier_points(
+                partial_bezier_points(
                     bezier_triplets[lower_index],
                     lower_residue,
                     upper_residue,
@@ -1361,24 +1363,18 @@ class OpenGLVMobject(OpenGLMobject):
             )
         else:
             self.append_points(
-                partial_quadratic_bezier_points(
-                    bezier_triplets[lower_index], lower_residue, 1
-                ),
+                partial_bezier_points(bezier_triplets[lower_index], lower_residue, 1),
             )
             inner_points = bezier_triplets[lower_index + 1 : upper_index]
             if len(inner_points) > 0:
                 if remap:
-                    new_triplets = quadratic_bezier_remap(
-                        inner_points, num_quadratics - 2
-                    )
+                    new_triplets = bezier_remap(inner_points, num_quadratics - 2)
                 else:
                     new_triplets = bezier_triplets
 
                 self.append_points(np.asarray(new_triplets).reshape(-1, 3))
             self.append_points(
-                partial_quadratic_bezier_points(
-                    bezier_triplets[upper_index], 0, upper_residue
-                ),
+                partial_bezier_points(bezier_triplets[upper_index], 0, upper_residue),
             )
         return self
 
@@ -1405,7 +1401,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     # Related to triangulation
 
-    def refresh_triangulation(self):
+    def refresh_triangulation(self) -> Self:
         for mob in self.get_family():
             mob.needs_new_triangulation = True
         return self
@@ -1684,9 +1680,7 @@ class OpenGLVGroup(OpenGLVMobject):
                 self.add(circles_group)
     """
 
-    def __init__(self, *vmobjects, **kwargs):
-        if not all(isinstance(m, OpenGLVMobject) for m in vmobjects):
-            raise Exception("All submobjects must be of type OpenGLVMobject")
+    def __init__(self, *vmobjects: OpenGLVMobject, **kwargs: Any):
         super().__init__(**kwargs)
         self.add(*vmobjects)
 
@@ -1752,8 +1746,6 @@ class OpenGLVGroup(OpenGLVMobject):
                         (gr-circle_red).animate.shift(RIGHT)
                     )
         """
-        if not all(isinstance(m, OpenGLVMobject) for m in vmobjects):
-            raise TypeError("All submobjects must be of type OpenGLVMobject")
         return super().add(*vmobjects)
 
     def __add__(self, vmobject):
@@ -1799,8 +1791,7 @@ class OpenGLVGroup(OpenGLVMobject):
 
             >>> config.renderer = original_renderer
         """
-        if not all(isinstance(m, OpenGLVMobject) for m in value):
-            raise TypeError("All submobjects must be of type OpenGLVMobject")
+        self._assert_valid_submobjects(tuplify(value))
         self.submobjects[key] = value
 
 
@@ -1901,10 +1892,7 @@ class OpenGLDashedVMobject(OpenGLVMobject):
         if num_dashes > 0:
             # Assuming total length is 1
             dash_len = r / n
-            if vmobject.is_closed():
-                void_len = (1 - r) / n
-            else:
-                void_len = (1 - r) / (n - 1)
+            void_len = (1 - r) / n if vmobject.is_closed() else (1 - r) / (n - 1)
 
             self.add(
                 *(

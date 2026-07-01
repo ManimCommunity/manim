@@ -4,17 +4,23 @@ from __future__ import annotations
 
 __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
-from typing import Any
+from typing import Any, Self
 
-from typing_extensions import Self
-
-from manim import config, logger
-from manim.constants import *
+from manim import logger
+from manim._config import config
+from manim.constants import (
+    DOWN,
+    LEFT,
+    RIGHT,
+    SMALL_BUFF,
+    UP,
+)
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RoundedRectangle
 from manim.mobject.mobject import Mobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import VGroup
-from manim.utils.color import BLACK, RED, YELLOW, ManimColor, ParsableManimColor
+from manim.utils.color import BLACK, PURE_YELLOW, RED, ParsableManimColor
 
 
 class SurroundingRectangle(RoundedRectangle):
@@ -43,21 +49,35 @@ class SurroundingRectangle(RoundedRectangle):
 
     def __init__(
         self,
-        mobject: Mobject,
-        color: ParsableManimColor = YELLOW,
-        buff: float = SMALL_BUFF,
+        *mobjects: Mobject,
+        color: ParsableManimColor = PURE_YELLOW,
+        buff: float | tuple[float, float] = SMALL_BUFF,
         corner_radius: float = 0.0,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
+        from manim.mobject.mobject import Group
+
+        if not all(isinstance(mob, (Mobject, OpenGLMobject)) for mob in mobjects):
+            raise TypeError(
+                "Expected all inputs for parameter mobjects to be a Mobjects"
+            )
+
+        if isinstance(buff, tuple):
+            buff_x = buff[0]
+            buff_y = buff[1]
+        else:
+            buff_x = buff_y = buff
+
+        group = Group(*mobjects)
         super().__init__(
             color=color,
-            width=mobject.width + 2 * buff,
-            height=mobject.height + 2 * buff,
+            width=group.width + 2 * buff_x,
+            height=group.height + 2 * buff_y,
             corner_radius=corner_radius,
             **kwargs,
         )
         self.buff = buff
-        self.move_to(mobject)
+        self.move_to(group)
 
 
 class BackgroundRectangle(SurroundingRectangle):
@@ -87,19 +107,19 @@ class BackgroundRectangle(SurroundingRectangle):
 
     def __init__(
         self,
-        mobject: Mobject,
+        *mobjects: Mobject,
         color: ParsableManimColor | None = None,
         stroke_width: float = 0,
         stroke_opacity: float = 0,
         fill_opacity: float = 0.75,
-        buff: float = 0,
-        **kwargs,
-    ):
+        buff: float | tuple[float, float] = 0,
+        **kwargs: Any,
+    ) -> None:
         if color is None:
             color = config.background_color
 
         super().__init__(
-            mobject,
+            *mobjects,
             color=color,
             stroke_width=stroke_width,
             stroke_opacity=stroke_opacity,
@@ -113,7 +133,7 @@ class BackgroundRectangle(SurroundingRectangle):
         self.set_fill(opacity=b * self.original_fill_opacity)
         return self
 
-    def set_style(self, fill_opacity: float, **kwargs) -> Self:
+    def set_style(self, fill_opacity: float, **kwargs: Any) -> Self:  # type: ignore[override]
         # Unchangeable style, except for fill_opacity
         # All other style arguments are ignored
         super().set_style(
@@ -128,9 +148,6 @@ class BackgroundRectangle(SurroundingRectangle):
                 kwargs,
             )
         return self
-
-    def get_fill_color(self) -> ManimColor:
-        return self.color
 
 
 class Cross(VGroup):
@@ -164,7 +181,7 @@ class Cross(VGroup):
         stroke_color: ParsableManimColor = RED,
         stroke_width: float = 6.0,
         scale_factor: float = 1.0,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         super().__init__(
             Line(UP + LEFT, DOWN + RIGHT), Line(UP + RIGHT, DOWN + LEFT), **kwargs
@@ -190,7 +207,9 @@ class Underline(Line):
                 self.add(man, ul)
     """
 
-    def __init__(self, mobject: Mobject, buff: float = SMALL_BUFF, **kwargs) -> None:
+    def __init__(
+        self, mobject: Mobject, buff: float = SMALL_BUFF, **kwargs: Any
+    ) -> None:
         super().__init__(LEFT, RIGHT, buff=buff, **kwargs)
         self.match_width(mobject)
         self.next_to(mobject, DOWN, buff=self.buff)

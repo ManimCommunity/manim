@@ -46,21 +46,22 @@ These colors form Manim's default color space.
             for line, char in zip(color_groups[0], "abcde"):
                 color_groups.add(Text(char).scale(0.6).next_to(line, LEFT, buff=0.2))
 
-            def named_lines_group(length, colors, names, text_colors, align_to_block):
+            def named_lines_group(length, color_names, labels, align_to_block):
+                colors = [getattr(Colors, color.upper()) for color in color_names]
                 lines = VGroup(
                     *[
                         Line(
                             ORIGIN,
                             RIGHT * length,
                             stroke_width=55,
-                            color=getattr(Colors, color.upper()),
+                            color=color,
                         )
                         for color in colors
                     ]
                 ).arrange_submobjects(buff=0.6, direction=DOWN)
 
-                for line, name, color in zip(lines, names, text_colors):
-                    line.add(Text(name, color=color).scale(0.6).move_to(line))
+                for line, name, color in zip(lines, labels, colors):
+                    line.add(Text(name, color=color.contrasting()).scale(0.6).move_to(line))
                 lines.next_to(color_groups, DOWN, buff=0.5).align_to(
                     color_groups[align_to_block], LEFT
                 )
@@ -79,7 +80,6 @@ These colors form Manim's default color space.
                 3.2,
                 other_colors,
                 other_colors,
-                [BLACK] * 4 + [WHITE] * 2,
                 0,
             )
 
@@ -95,7 +95,6 @@ These colors form Manim's default color space.
                     "darker_gray / gray_e",
                     "black",
                 ],
-                [BLACK] * 3 + [WHITE] * 4,
                 2,
             )
 
@@ -103,13 +102,15 @@ These colors form Manim's default color space.
                 "pure_red",
                 "pure_green",
                 "pure_blue",
+                "pure_cyan",
+                "pure_magenta",
+                "pure_yellow",
             )
 
             pure_lines = named_lines_group(
                 3.2,
                 pure_colors,
                 pure_colors,
-                [BLACK, BLACK, WHITE],
                 6,
             )
 
@@ -121,7 +122,7 @@ These colors form Manim's default color space.
 
 """
 
-from typing import List
+from __future__ import annotations
 
 from .core import ManimColor
 
@@ -147,12 +148,17 @@ DARK_GRAY = ManimColor("#444444")
 DARK_GREY = ManimColor("#444444")
 DARKER_GRAY = ManimColor("#222222")
 DARKER_GREY = ManimColor("#222222")
+PURE_RED = ManimColor("#FF0000")
+PURE_GREEN = ManimColor("#00FF00")
+PURE_BLUE = ManimColor("#0000FF")
+PURE_CYAN = ManimColor("#00FFFF")
+PURE_MAGENTA = ManimColor("#FF00FF")
+PURE_YELLOW = ManimColor("#FFFF00")
 BLUE_A = ManimColor("#C7E9F1")
 BLUE_B = ManimColor("#9CDCEB")
 BLUE_C = ManimColor("#58C4DD")
 BLUE_D = ManimColor("#29ABCA")
 BLUE_E = ManimColor("#236B8E")
-PURE_BLUE = ManimColor("#0000FF")
 BLUE = ManimColor("#58C4DD")
 DARK_BLUE = ManimColor("#236B8E")
 TEAL_A = ManimColor("#ACEAD7")
@@ -166,14 +172,13 @@ GREEN_B = ManimColor("#A6CF8C")
 GREEN_C = ManimColor("#83C167")
 GREEN_D = ManimColor("#77B05D")
 GREEN_E = ManimColor("#699C52")
-PURE_GREEN = ManimColor("#00FF00")
 GREEN = ManimColor("#83C167")
 YELLOW_A = ManimColor("#FFF1B6")
 YELLOW_B = ManimColor("#FFEA94")
-YELLOW_C = ManimColor("#FFFF00")
+YELLOW_C = ManimColor("#F7D96F")
 YELLOW_D = ManimColor("#F4D345")
 YELLOW_E = ManimColor("#E8C11C")
-YELLOW = ManimColor("#FFFF00")
+YELLOW = ManimColor("#F7D96F")
 GOLD_A = ManimColor("#F7C797")
 GOLD_B = ManimColor("#F9B775")
 GOLD_C = ManimColor("#F0AC5F")
@@ -185,7 +190,6 @@ RED_B = ManimColor("#FF8080")
 RED_C = ManimColor("#FC6255")
 RED_D = ManimColor("#E65A4C")
 RED_E = ManimColor("#CF5044")
-PURE_RED = ManimColor("#FF0000")
 RED = ManimColor("#FC6255")
 MAROON_A = ManimColor("#ECABC1")
 MAROON_B = ManimColor("#EC92AB")
@@ -215,6 +219,6 @@ LOGO_BLUE = ManimColor("#525893")
 LOGO_RED = ManimColor("#E07A5F")
 LOGO_BLACK = ManimColor("#343434")
 
-_all_manim_colors: List[ManimColor] = [
+_all_manim_colors: list[ManimColor] = [
     x for x in globals().values() if isinstance(x, ManimColor)
 ]
