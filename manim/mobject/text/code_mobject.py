@@ -9,7 +9,7 @@ __all__ = [
 import re
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from bs4 import BeautifulSoup, Tag
 from pygments import highlight
@@ -29,6 +29,9 @@ from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.typing import StrPath
 from manim.utils.color import WHITE, ManimColor
 from manim.utils.rate_functions import linear
+
+if TYPE_CHECKING:
+    from manim.mobject.text.text_mobject import Paragraph
 
 
 class Code(VMobject, metaclass=ConvertToOpenGL):
@@ -348,13 +351,9 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         for i, j in matches:
             transform_anims.append(Transform(old_lines[i], new_lines[j]))
 
-        fadeout_anims = []
-        for i in deletions:
-            fadeout_anims.append(FadeOut(old_lines[i], remover=True))
+        fadeout_anims = [FadeOut(old_lines[i], remover=True) for i in deletions]
 
-        fadein_anims = []
-        for j in additions:
-            fadein_anims.append(FadeIn(new_lines[j]))
+        fadein_anims = [FadeIn(new_lines[j]) for j in additions]
 
         extra_anims = []
         if old_background and new_background:
