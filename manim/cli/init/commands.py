@@ -115,12 +115,18 @@ def project(default_settings: bool, **kwargs: Any) -> None:
         default="Default",
     )
 
-    if project_name.is_dir():
+    # Only refuse when the files we would create already exist, so that
+    # initializing into an existing (e.g. ``uv init``ed) folder still works.
+    conflicts = [
+        name for name in ("manim.cfg", "main.py") if (project_name / name).exists()
+    ]
+    if conflicts:
         console.print(
-            f"\nFolder [red]{project_name}[/red] exists. Please type another name\n",
+            f"\nFolder [red]{project_name}[/red] already contains "
+            f"{', '.join(conflicts)}. Please type another name or clear the folder\n",
         )
     else:
-        project_name.mkdir()
+        project_name.mkdir(parents=True, exist_ok=True)
         new_cfg: dict[str, Any] = {}
         new_cfg_path = Path.resolve(project_name / "manim.cfg")
 

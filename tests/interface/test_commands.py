@@ -133,6 +133,31 @@ def test_manim_init_project(tmp_path):
         assert (Path(tmp_dir) / "testproject/manim.cfg").exists()
 
 
+def test_manim_init_project_existing_folder(tmp_path):
+    command = ["init", "project", "--default", "."]
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path) as tmp_dir:
+        # A pre-existing, non-conflicting folder should be usable.
+        (Path(tmp_dir) / "pyproject.toml").write_text("")
+        result = runner.invoke(main, command, prog_name="manim", input="Default\n")
+        assert not result.exception
+        assert (Path(tmp_dir) / "main.py").exists()
+        assert (Path(tmp_dir) / "manim.cfg").exists()
+
+
+def test_manim_init_project_conflicting_files(tmp_path):
+    command = ["init", "project", "--default", "."]
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path) as tmp_dir:
+        # A conflicting main.py must not be overwritten.
+        (Path(tmp_dir) / "main.py").write_text("# keep me\n")
+        result = runner.invoke(main, command, prog_name="manim", input="Default\n")
+        assert not result.exception
+        assert "already contains" in result.output
+        assert (Path(tmp_dir) / "main.py").read_text() == "# keep me\n"
+        assert not (Path(tmp_dir) / "manim.cfg").exists()
+
+
 def test_manim_init_scene(tmp_path):
     command_named = ["init", "scene", "NamedFileTestScene", "my_awesome_file.py"]
     command_unnamed = ["init", "scene", "DefaultFileTestScene"]
