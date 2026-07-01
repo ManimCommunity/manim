@@ -294,7 +294,7 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         self._target_code_language = language
         return self
 
-    @override_animate(update_code)
+    @override_animate(update_code)  # type: ignore[arg-type]
     def _animate_update_code(
         self,
         code_file: StrPath | None = None,
