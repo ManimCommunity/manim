@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Setup Python ${{ matrix.python }}
         uses: actions/setup-python@v6
