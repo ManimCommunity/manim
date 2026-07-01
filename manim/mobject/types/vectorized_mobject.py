@@ -1429,7 +1429,7 @@ class VMobject(Mobject):
 
         diff_bools = [
             not points_are_equal(start, end)
-            for start, end in zip(starts[1:], ends[:-1])
+            for start, end in zip(starts[1:], ends[:-1], strict=True)
         ]
         diff_indices = np.arange(1, ends.shape[0])[diff_bools]
 
