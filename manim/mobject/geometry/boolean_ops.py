@@ -57,7 +57,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
         list_of_points = list(points)
         for i, point in enumerate(list_of_points):
             if len(point) == 2:
-                list_of_points[i] = np.array(list(point) + [z_dim])
+                list_of_points[i] = np.append(point, z_dim)
         return np.asarray(list_of_points)
 
     def _convert_vmobject_to_skia_path(self, vmobject: VMobject) -> SkiaPath:
@@ -76,10 +76,10 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
         """
         path = SkiaPath()
 
-        if not np.all(np.isfinite(vmobject.points)):
-            points = np.zeros((1, 3))  # point invalid?
-        else:
+        if np.all(np.isfinite(vmobject.points)):
             points = vmobject.points
+        else:
+            points = np.zeros((1, 3))  # point invalid?
 
         if len(points) == 0:  # what? No points so return empty path
             return path
@@ -182,9 +182,9 @@ class Union(_BooleanOps):
         if len(vmobjects) < 2:
             raise ValueError("At least 2 mobjects needed for Union.")
         super().__init__(**kwargs)
-        paths = []
-        for vmobject in vmobjects:
-            paths.append(self._convert_vmobject_to_skia_path(vmobject))
+        paths = [
+            self._convert_vmobject_to_skia_path(vmobject) for vmobject in vmobjects
+        ]
         outpen = SkiaPath()
         union(paths, outpen.getPen())
         self._convert_skia_path_to_vmobject(outpen)

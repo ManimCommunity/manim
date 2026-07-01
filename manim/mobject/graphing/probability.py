@@ -107,7 +107,7 @@ class SampleSpace(Rectangle):
 
         last_point = self.get_edge_center(-vect)
         parts = VGroup()
-        for factor, color in zip(p_list_complete, colors_in_gradient):
+        for factor, color in zip(p_list_complete, colors_in_gradient, strict=True):
             part = SampleSpace()
             part.set_fill(color, 1)
             part.replace(self, stretch=True)
@@ -151,7 +151,7 @@ class SampleSpace(Rectangle):
     ) -> VGroup:
         label_mobs = VGroup()
         braces = VGroup()
-        for label, part in zip(labels, parts):
+        for label, part in zip(labels, parts, strict=False):
             brace = Brace(part, direction, min_num_quads=min_num_quads, buff=buff)
             if isinstance(label, (VMobject, OpenGLVMobject)):
                 label_mob = label
@@ -207,13 +207,11 @@ class SampleSpace(Rectangle):
                 if hasattr(parts, subattr):
                     self.add(getattr(parts, subattr))
 
-    def __getitem__(self, index: int) -> SampleSpace:
+    def __getitem__(self, index: int) -> VMobject:
         if hasattr(self, "horizontal_parts"):
-            val: SampleSpace = self.horizontal_parts[index]
-            return val
+            return self.horizontal_parts[index]
         elif hasattr(self, "vertical_parts"):
-            val = self.vertical_parts[index]
-            return val
+            return self.vertical_parts[index]
         return self.split()[index]
 
 
@@ -367,11 +365,13 @@ class BarChart(Axes):
 
         labels = VGroup()
 
-        for i, (value, bar_name) in enumerate(zip(val_range, self.bar_names)):
+        for i, (value, bar_name) in enumerate(
+            zip(val_range, self.bar_names, strict=True)
+        ):
             # to accommodate negative bars, the label may need to be
             # below or above the x_axis depending on the value of the bar
             direction = UP if self.values[i] < 0 else DOWN
-            bar_name_label: MathTex = self.x_axis.label_constructor(bar_name)
+            bar_name_label = self.x_axis.label_constructor(bar_name)
 
             bar_name_label.font_size = self.x_axis.font_size
             bar_name_label.next_to(
@@ -463,7 +463,7 @@ class BarChart(Axes):
                     self.add(chart, c_bar_lbls)
         """
         bar_labels = VGroup()
-        for bar, value in zip(self.bars, self.values):
+        for bar, value in zip(self.bars, self.values, strict=False):
             bar_lbl: MathTex = label_constructor(str(value))
 
             if color is None:
@@ -511,7 +511,7 @@ class BarChart(Axes):
                     chart.change_bar_values(list(reversed(values)))
                     self.add(chart.get_bar_labels(font_size=24))
         """
-        for i, (bar, value) in enumerate(zip(self.bars, values)):
+        for i, (bar, value) in enumerate(zip(self.bars, values, strict=False)):
             chart_val = self.values[i]
 
             if chart_val > 0:

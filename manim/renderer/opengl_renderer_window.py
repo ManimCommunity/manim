@@ -25,14 +25,23 @@ class Window(PygletWindow):
     def __init__(
         self,
         renderer: OpenGLRenderer,
-        window_size: str = config.window_size,
+        window_size: str | tuple[int, ...] = config.window_size,
         **kwargs: Any,
     ) -> None:
         monitors = get_monitors()
         mon_index = config.window_monitor
         monitor = monitors[min(mon_index, len(monitors) - 1)]
 
-        if window_size == "default":
+        invalid_window_size_error_message = (
+            "window_size must be specified either as 'default', a string of the form "
+            "'width,height', or a tuple of 2 ints of the form (width, height)."
+        )
+
+        if isinstance(window_size, tuple):
+            if len(window_size) != 2:
+                raise ValueError(invalid_window_size_error_message)
+            size = window_size
+        elif window_size == "default":
             # make window_width half the width of the monitor
             # but make it full screen if --fullscreen
             window_width = monitor.width
@@ -48,9 +57,7 @@ class Window(PygletWindow):
             (window_width, window_height) = tuple(map(int, window_size.split(",")))
             size = (window_width, window_height)
         else:
-            raise ValueError(
-                "Window_size must be specified as 'width,height' or 'default'.",
-            )
+            raise ValueError(invalid_window_size_error_message)
 
         super().__init__(size=size)
 

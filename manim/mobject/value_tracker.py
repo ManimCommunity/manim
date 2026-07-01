@@ -13,7 +13,7 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.utils.paths import straight_path
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
     from manim.typing import PathFuncType
 

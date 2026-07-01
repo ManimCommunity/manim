@@ -35,9 +35,9 @@ from ..utils.color import (
     BLUE_D,
     GREEN_C,
     GREY,
+    PURE_YELLOW,
     RED_C,
     WHITE,
-    YELLOW,
     ManimColor,
     ParsableManimColor,
 )
@@ -45,9 +45,10 @@ from ..utils.rate_functions import rush_from, rush_into
 from ..utils.space_ops import angle_of_vector
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
     from manim.typing import (
+        ManimTextLabel,
         MappingFunction,
         Point3D,
         Point3DLike,
@@ -172,7 +173,7 @@ class VectorScene(Scene):
     def add_vector(
         self,
         vector: Arrow | Vector3DLike,
-        color: ParsableManimColor | Iterable[ParsableManimColor] = YELLOW,
+        color: ParsableManimColor | Iterable[ParsableManimColor] = PURE_YELLOW,
         animate: bool = True,
         **kwargs: Any,
     ) -> Arrow:
@@ -281,15 +282,19 @@ class VectorScene(Scene):
                 color (str),
                 label_scale_factor=VECTOR_LABEL_SCALE_FACTOR (int, float),
         """
-        i_hat, j_hat = self.get_basis_vectors()
+        i_hat = self.get_basis_vectors().submobjects[0]
+        j_hat = self.get_basis_vectors().submobjects[1]
         return VGroup(
             *(
                 self.get_vector_label(
                     vect, label, color=color, label_scale_factor=1, **kwargs
                 )
                 for vect, label, color in [
-                    (i_hat, "\\hat{\\imath}", X_COLOR),
-                    (j_hat, "\\hat{\\jmath}", Y_COLOR),
+                    # Casting i_hat and j_hat to Vector, as the VGroup from
+                    # self.get_basis_vectors() contains two vectors, but the
+                    # type checker is currently not aware of that.
+                    (cast(Vector, i_hat), "\\hat{\\imath}", X_COLOR),
+                    (cast(Vector, j_hat), "\\hat{\\jmath}", Y_COLOR),
                 ]
             )
         )
@@ -297,13 +302,13 @@ class VectorScene(Scene):
     def get_vector_label(
         self,
         vector: Vector,
-        label: MathTex | str,
+        label: ManimTextLabel | str,
         at_tip: bool = False,
         direction: str = "left",
         rotate: bool = False,
         color: ParsableManimColor | None = None,
         label_scale_factor: float = LARGE_BUFF - 0.2,
-    ) -> MathTex:
+    ) -> ManimTextLabel:
         """
         Returns naming labels for the passed vector.
 
@@ -326,19 +331,18 @@ class VectorScene(Scene):
 
         Returns
         -------
-        MathTex
-            The MathTex of the label.
+        :class:`~.ManimTextLabel`
+            The rendered label mobject.
         """
-        if not isinstance(label, MathTex):
+        if isinstance(label, str):
             if len(label) == 1:
-                label = "\\vec{\\textbf{%s}}" % label  # noqa: UP031
+                label = rf"\vec{{\textbf{{{label}}}}}"
             label = MathTex(label)
             if color is None:
                 prepared_color: ParsableManimColor = vector.get_color()
             else:
                 prepared_color = color
             label.set_color(prepared_color)
-        assert isinstance(label, MathTex)
         label.scale(label_scale_factor)
         label.add_background_rectangle()
 
@@ -361,8 +365,12 @@ class VectorScene(Scene):
         return label
 
     def label_vector(
-        self, vector: Vector, label: MathTex | str, animate: bool = True, **kwargs: Any
-    ) -> MathTex:
+        self,
+        vector: Vector,
+        label: ManimTextLabel | str,
+        animate: bool = True,
+        **kwargs: Any,
+    ) -> ManimTextLabel:
         """
         Shortcut method for creating, and animating the addition of
         a label for the vector.
@@ -373,7 +381,7 @@ class VectorScene(Scene):
             The vector for which the label must be added.
 
         label
-            The MathTex/string of the label.
+            The rendered label mobject or the string used to create one.
 
         animate
             Whether or not to animate the labelling w/ Write
@@ -383,8 +391,8 @@ class VectorScene(Scene):
 
         Returns
         -------
-        :class:`~.MathTex`
-            The MathTex of the label.
+        :class:`~.ManimTextLabel`
+            The rendered label mobject.
         """
         mathtex_label = self.get_vector_label(vector, label, **kwargs)
         if animate:
@@ -517,7 +525,9 @@ class VectorScene(Scene):
         y_line = Line(x_line.get_end(), arrow.get_end())
         x_line.set_color(X_COLOR)
         y_line.set_color(Y_COLOR)
-        x_coord, y_coord = cast(VGroup, array.get_entries())
+        temp = array.get_entries()
+        x_coord = temp.submobjects[0]
+        y_coord = temp.submobjects[1]
         x_coord_start = self.position_x_coordinate(x_coord.copy(), x_line, vector)
         y_coord_start = self.position_y_coordinate(y_coord.copy(), y_line, vector)
         brackets = array.get_brackets()
@@ -682,7 +692,9 @@ class LinearTransformationScene(VectorScene):
         default_configs: Iterable[dict[str, Any]],
         passed_configs: Iterable[dict[str, Any] | None],
     ) -> None:
-        for default_config, passed_config in zip(default_configs, passed_configs):
+        for default_config, passed_config in zip(
+            default_configs, passed_configs, strict=False
+        ):
             if passed_config is not None:
                 update_dict_recursively(default_config, passed_config)
 
@@ -695,7 +707,7 @@ class LinearTransformationScene(VectorScene):
         self.foreground_mobjects: list[Mobject] = []
         self.transformable_mobjects: list[Mobject] = []
         self.moving_vectors: list[Mobject] = []
-        self.transformable_labels: list[MathTex] = []
+        self.transformable_labels: list[Any] = []
         self.moving_mobjects: list[Mobject] = []
 
         self.background_plane = NumberPlane(**self.background_plane_kwargs)
@@ -806,7 +818,7 @@ class LinearTransformationScene(VectorScene):
 
     def get_unit_square(
         self,
-        color: ParsableManimColor | Iterable[ParsableManimColor] = YELLOW,
+        color: ParsableManimColor | Iterable[ParsableManimColor] = PURE_YELLOW,
         opacity: float = 0.3,
         stroke_width: float = 3,
     ) -> Rectangle:
@@ -873,7 +885,7 @@ class LinearTransformationScene(VectorScene):
     def add_vector(
         self,
         vector: Arrow | list | tuple | np.ndarray,
-        color: ParsableManimColor = YELLOW,
+        color: ParsableManimColor = PURE_YELLOW,
         animate: bool = False,
         **kwargs: Any,
     ) -> Arrow:
@@ -963,16 +975,17 @@ class LinearTransformationScene(VectorScene):
         """
         # TODO: Clear up types in this function. This is currently a mess.
         label_mob = self.label_vector(vector, label, **kwargs)
+        label_mob_any = cast(Any, label_mob)
         if new_label:
-            label_mob.target_text = new_label  # type: ignore[attr-defined]
+            label_mob_any.target_text = new_label
         else:
-            label_mob.target_text = (  # type: ignore[attr-defined]
+            label_mob_any.target_text = (
                 f"{transformation_name}({label_mob.get_tex_string()})"
             )
-        label_mob.vector = vector  # type: ignore[attr-defined]
-        label_mob.kwargs = kwargs  # type: ignore[attr-defined]
-        if "animate" in label_mob.kwargs:
-            label_mob.kwargs.pop("animate")
+        label_mob_any.vector = vector
+        label_mob_any.kwargs = kwargs
+        if "animate" in label_mob_any.kwargs:
+            label_mob_any.kwargs.pop("animate")
         self.transformable_labels.append(label_mob)
         return cast(MathTex, label_mob)
 
@@ -1141,11 +1154,12 @@ class LinearTransformationScene(VectorScene):
         for label in self.transformable_labels:
             # TODO: This location and lines 933 and 335 are the only locations in
             # the code where the target_text property is referenced.
-            target_text: MathTex | str = label.target_text  # type: ignore[assignment]
+            label_any = cast(Any, label)
+            target_text: MathTex | str = label_any.target_text
             label.target = self.get_vector_label(
-                label.vector.target,  # type: ignore[attr-defined]
+                label_any.vector.target,
                 target_text,
-                **label.kwargs,  # type: ignore[arg-type]
+                **label_any.kwargs,
             )
         return self.get_piece_movement(self.transformable_labels)
 

@@ -58,7 +58,7 @@ extensions = [
 # Automatically generate stub pages when using the .. autosummary directive
 autosummary_generate = True
 
-myst_enable_extensions = ["colon_fence", "amsmath"]
+myst_enable_extensions = ["colon_fence", "amsmath", "deflist"]
 
 # redirects (for moved / deleted pages)
 redirects = {
@@ -161,7 +161,8 @@ latex_engine = "lualatex"
 # external links
 extlinks = {
     "issue": ("https://github.com/ManimCommunity/manim/issues/%s", "#%s"),
-    "pr": ("https://github.com/ManimCommunity/manim/pull/%s", "#%s"),
+    "pr": ("https://github.com/ManimCommunity/manim/pull/%s", "PR #%s"),
+    "user": ("https://github.com/%s", "@%s"),
 }
 
 # opengraph settings

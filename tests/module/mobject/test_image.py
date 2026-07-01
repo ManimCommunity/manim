@@ -6,7 +6,8 @@ from manim import ImageMobject
 
 @pytest.mark.parametrize("dtype", [np.uint8, np.uint16])
 def test_invert_image(dtype):
-    array = (255 * np.random.rand(10, 10, 4)).astype(dtype)
+    rng = np.random.default_rng()
+    array = (255 * rng.random((10, 10, 4))).astype(dtype)
     image = ImageMobject(array, pixel_array_dtype=dtype, invert=True)
     assert image.pixel_array.dtype == dtype
 

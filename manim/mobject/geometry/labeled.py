@@ -15,14 +15,15 @@ from manim.mobject.geometry.shape_matchers import (
     BackgroundRectangle,
     SurroundingRectangle,
 )
-from manim.mobject.text.tex_mobject import MathTex, Tex
+from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.text.text_mobject import Text
+from manim.mobject.text.typst_mobject import Typst
 from manim.mobject.types.vectorized_mobject import VGroup
 from manim.utils.color import WHITE
 from manim.utils.polylabel import polylabel
 
 if TYPE_CHECKING:
-    from manim.typing import Point3DLike_Array
+    from manim.typing import ManimTextLabel, Point3DLike_Array
 
 
 class Label(VGroup):
@@ -61,7 +62,7 @@ class Label(VGroup):
 
     def __init__(
         self,
-        label: str | Tex | MathTex | Text,
+        label: str | ManimTextLabel,
         label_config: dict[str, Any] | None = None,
         box_config: dict[str, Any] | None = None,
         frame_config: dict[str, Any] | None = None,
@@ -94,13 +95,15 @@ class Label(VGroup):
         frame_config = default_frame_config | (frame_config or {})
 
         # Determine the type of label and instantiate the appropriate object
-        self.rendered_label: MathTex | Tex | Text
+        self.rendered_label: ManimTextLabel
         if isinstance(label, str):
             self.rendered_label = MathTex(label, **label_config)
-        elif isinstance(label, (MathTex, Tex, Text)):
+        elif isinstance(label, (MathTex, Text, Typst)):
             self.rendered_label = label
         else:
-            raise TypeError("Unsupported label type. Must be MathTex, Tex, or Text.")
+            raise TypeError(
+                "Unsupported label type. Must be MathTex, Tex, Text, Typst, or TypstMath."
+            )
 
         # Add a background box
         self.background_rect = BackgroundRectangle(self.rendered_label, **box_config)
@@ -155,7 +158,7 @@ class LabeledLine(Line):
 
     def __init__(
         self,
-        label: str | Tex | MathTex | Text,
+        label: str | ManimTextLabel,
         label_position: float = 0.5,
         label_config: dict[str, Any] | None = None,
         box_config: dict[str, Any] | None = None,
@@ -343,7 +346,7 @@ class LabeledPolygram(Polygram):
     def __init__(
         self,
         *vertex_groups: Point3DLike_Array,
-        label: str | Tex | MathTex | Text,
+        label: str | ManimTextLabel,
         precision: float = 0.01,
         label_config: dict[str, Any] | None = None,
         box_config: dict[str, Any] | None = None,

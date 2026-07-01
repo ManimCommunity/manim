@@ -329,3 +329,13 @@ version satisfies the requirement. Change the line to, for example
 to pin the python version to `3.12`. Finally, run `uv sync`, and your
 environment is updated!
 :::
+
+:::{dropdown} Installing the latest development version
+If you want to install the latest (potentially unstable!)
+development version of Manim from our source repository
+[on GitHub](https://github.com/ManimCommunity/manim), then
+simply run
+```bash
+uv add git+https://github.com/ManimCommunity/manim.git@main
+```
+:::

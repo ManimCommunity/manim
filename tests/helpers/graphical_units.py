@@ -53,7 +53,6 @@ def set_test_scene(scene_object: type[Scene], module_name: str, config):
     tests_directory = Path(__file__).absolute().parent.parent
     path_control_data = Path(tests_directory) / "control_data" / "graphical_units_data"
     path = Path(path_control_data) / module_name
-    if not path.is_dir():
-        path.mkdir(parents=True)
+    path.mkdir(parents=True, exist_ok=True)
     np.savez_compressed(path / str(scene), frame_data=data)
     logger.info(f"Test data for {str(scene)} saved in {path}\n")
