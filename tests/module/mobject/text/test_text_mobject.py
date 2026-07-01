@@ -17,6 +17,21 @@ def test_font_size():
     assert round(markuptext_string.font_size, 5) == 14.4
 
 
+def test_z_index_propagates_to_glyphs():
+    """A z_index passed to the constructor must reach the glyph submobjects,
+    otherwise the z-ordering is ignored during rendering (see issue #4667).
+    """
+    text = Text("AB", z_index=3)
+    assert text.z_index == 3
+    assert all(glyph.z_index == 3 for glyph in text.family_members_with_points())
+
+    markup = MarkupText("AB", z_index=3)
+    assert all(glyph.z_index == 3 for glyph in markup.family_members_with_points())
+
+    # The default must remain unchanged.
+    assert all(glyph.z_index == 0 for glyph in Text("AB").family_members_with_points())
+
+
 def test_font_warnings():
     def warning_printed(font: str, **kwargs) -> bool:
         io = StringIO()
