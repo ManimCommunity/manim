@@ -810,12 +810,24 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
 
 def cartesian_to_spherical(vec: Vector3DLike) -> np.ndarray:
     """Returns an array of numbers corresponding to each
-    polar coordinate value (distance, phi, theta).
+    spherical coordinate value ``(r, theta, phi)``.
+
+    This is the inverse of :func:`spherical_to_cartesian` and uses the same
+    coordinate order, so the two functions round-trip.
 
     Parameters
     ----------
     vec
         A numpy array or a sequence of floats ``[x, y, z]``.
+
+    Returns
+    -------
+    np.ndarray
+        A numpy array ``[r, theta, phi]`` where:
+
+        * ``r`` is the distance between the point and the origin.
+        * ``theta`` is the azimuthal angle to the positive x-axis.
+        * ``phi`` is the vertical angle to the positive z-axis.
     """
     norm = np.linalg.norm(vec)
     if norm == 0:
