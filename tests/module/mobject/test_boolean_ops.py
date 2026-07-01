@@ -8,7 +8,7 @@ from manim.mobject.geometry.boolean_ops import _BooleanOps
 
 
 @pytest.mark.parametrize(
-    "test_input,expected",
+    ("test_input", "expected"),
     [
         (
             [(1.0, 2.0), (3.0, 4.0)],

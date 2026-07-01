@@ -5,7 +5,8 @@ from manim import RED, DecimalNumber, Integer
 
 def test_font_size():
     """Test that DecimalNumber returns the correct font_size value
-    after being scaled."""
+    after being scaled.
+    """
     num = DecimalNumber(0).scale(0.3)
 
     assert round(num.font_size, 5) == 14.4
@@ -39,7 +40,8 @@ def test_set_value_size():
 
 def test_color_when_number_of_digits_changes():
     """Test that all digits of an Integer are colored correctly when
-    the number of digits changes."""
+    the number of digits changes.
+    """
     mob = Integer(color=RED)
     mob.set_value(42)
     assert all(

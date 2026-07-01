@@ -9,11 +9,13 @@
 from __future__ import annotations
 
 import hashlib
-import os
 import re
+import subprocess
 import unicodedata
-from collections.abc import Iterable
+from collections.abc import Generator, Iterable, Sequence
 from pathlib import Path
+from re import Match
+from typing import Any
 
 from manim.utils.tex import TexTemplate
 
@@ -22,7 +24,7 @@ from .. import config, logger
 __all__ = ["tex_to_svg_file"]
 
 
-def tex_hash(expression):
+def tex_hash(expression: Any) -> str:
     id_str = str(expression)
     hasher = hashlib.sha256()
     hasher.update(id_str.encode())
@@ -34,8 +36,8 @@ def tex_to_svg_file(
     expression: str,
     environment: str | None = None,
     tex_template: TexTemplate | None = None,
-):
-    """Takes a tex expression and returns the svg version of the compiled tex
+) -> Path:
+    r"""Takes a tex expression and returns the svg version of the compiled tex
 
     Parameters
     ----------
@@ -76,7 +78,7 @@ def generate_tex_file(
     environment: str | None = None,
     tex_template: TexTemplate | None = None,
 ) -> Path:
-    """Takes a tex expression (and an optional tex environment),
+    r"""Takes a tex expression (and an optional tex environment),
     and returns a fully formed tex file ready for compilation.
 
     Parameters
@@ -101,8 +103,7 @@ def generate_tex_file(
         output = tex_template.get_texcode_for_expression(expression)
 
     tex_dir = config.get_dir("tex_dir")
-    if not tex_dir.exists():
-        tex_dir.mkdir()
+    tex_dir.mkdir(parents=True, exist_ok=True)
 
     result = tex_dir / (tex_hash(output) + ".tex")
     if not result.exists():
@@ -114,10 +115,11 @@ def generate_tex_file(
     return result
 
 
-def tex_compilation_command(
+def make_tex_compilation_command(
     tex_compiler: str, output_format: str, tex_file: Path, tex_dir: Path
-) -> str:
-    """Prepares the tex compilation command with all necessary cli flags
+) -> list[str]:
+    """Prepares the TeX compilation command, i.e. the TeX compiler name
+    and all necessary CLI flags.
 
     Parameters
     ----------
@@ -132,55 +134,53 @@ def tex_compilation_command(
 
     Returns
     -------
-    :class:`str`
+    :class:`list[str]`
         Compilation command according to given parameters
     """
     if tex_compiler in {"latex", "pdflatex", "luatex", "lualatex"}:
-        commands = [
+        command = [
             tex_compiler,
             "-interaction=batchmode",
-            f'-output-format="{output_format[1:]}"',
+            f"-output-format={output_format[1:]}",
             "-halt-on-error",
-            f'-output-directory="{tex_dir.as_posix()}"',
-            f'"{tex_file.as_posix()}"',
-            ">",
-            os.devnull,
+            f"-output-directory={tex_dir.as_posix()}",
+            f"{tex_file.as_posix()}",
         ]
     elif tex_compiler == "xelatex":
         if output_format == ".xdv":
-            outflag = "-no-pdf"
+            outflag = ["-no-pdf"]
         elif output_format == ".pdf":
-            outflag = ""
+            outflag = []
         else:
             raise ValueError("xelatex output is either pdf or xdv")
-        commands = [
+        command = [
             "xelatex",
-            outflag,
+            *outflag,
             "-interaction=batchmode",
             "-halt-on-error",
-            f'-output-directory="{tex_dir.as_posix()}"',
-            f'"{tex_file.as_posix()}"',
-            ">",
-            os.devnull,
+            f"-output-directory={tex_dir.as_posix()}",
+            f"{tex_file.as_posix()}",
         ]
     else:
         raise ValueError(f"Tex compiler {tex_compiler} unknown.")
-    return " ".join(commands)
+    return command
 
 
-def insight_inputenc_error(matching):
+def insight_inputenc_error(matching: Match[str]) -> Generator[str]:
     code_point = chr(int(matching[1], 16))
     name = unicodedata.name(code_point)
     yield f"TexTemplate does not support character '{name}' (U+{matching[1]})."
     yield "See the documentation for manim.mobject.svg.tex_mobject for details on using a custom TexTemplate."
 
 
-def insight_package_not_found_error(matching):
+def insight_package_not_found_error(matching: Match[str]) -> Generator[str]:
     yield f"You do not have package {matching[1]} installed."
     yield f"Install {matching[1]} it using your LaTeX package manager, or check for typos."
 
 
-def compile_tex(tex_file: Path, tex_compiler: str, output_format: str) -> Path:
+def compile_tex(
+    tex_file: Path, tex_compiler: str | list[str], output_format: str
+) -> Path:
     """Compiles a tex_file into a .dvi or a .xdv or a .pdf
 
     Parameters
@@ -188,7 +188,8 @@ def compile_tex(tex_file: Path, tex_compiler: str, output_format: str) -> Path:
     tex_file
         File name of TeX file to be typeset.
     tex_compiler
-        String containing the compiler to be used, e.g. ``pdflatex`` or ``lualatex``
+        The TeX compiler(s) to be used.
+        Can be a single compiler (e.g. ``"latex"``, ``"pdflatex"`` ``"lualatex"``) or a list of compilers to compile in order (e.g. ``["lualatex", "pdflatex"]``).
     output_format
         String containing the output format generated by the compiler, e.g. ``.dvi`` or ``.pdf``
 
@@ -199,26 +200,30 @@ def compile_tex(tex_file: Path, tex_compiler: str, output_format: str) -> Path:
     """
     result = tex_file.with_suffix(output_format)
     tex_dir = config.get_dir("tex_dir")
+    tex_compilers = [tex_compiler] if isinstance(tex_compiler, str) else tex_compiler
     if not result.exists():
-        command = tex_compilation_command(
-            tex_compiler,
-            output_format,
-            tex_file,
-            tex_dir,
-        )
-        exit_code = os.system(command)
-        if exit_code != 0:
-            log_file = tex_file.with_suffix(".log")
-            print_all_tex_errors(log_file, tex_compiler, tex_file)
-            raise ValueError(
-                f"{tex_compiler} error converting to"
-                f" {output_format[1:]}. See log output above or"
-                f" the log file: {log_file}",
+        for i, compiler in enumerate(tex_compilers, start=1):
+            if len(tex_compilers) > 1:
+                logger.info(f"Compiling {i} of {len(tex_compilers)}: {compiler}")
+            command = make_tex_compilation_command(
+                compiler,
+                output_format,
+                tex_file,
+                tex_dir,
             )
+            cp = subprocess.run(command, stdout=subprocess.DEVNULL)
+            if cp.returncode != 0:
+                log_file = tex_file.with_suffix(".log")
+                print_all_tex_errors(log_file, compiler, tex_file)
+                raise ValueError(
+                    f"{compiler} error converting to"
+                    f" {output_format[1:]}. See log output above or"
+                    f" the log file: {log_file}",
+                )
     return result
 
 
-def convert_to_svg(dvi_file: Path, extension: str, page: int = 1):
+def convert_to_svg(dvi_file: Path, extension: str, page: int = 1) -> Path:
     """Converts a .dvi, .xdv, or .pdf file into an svg using dvisvgm.
 
     Parameters
@@ -237,18 +242,16 @@ def convert_to_svg(dvi_file: Path, extension: str, page: int = 1):
     """
     result = dvi_file.with_suffix(".svg")
     if not result.exists():
-        commands = [
+        command = [
             "dvisvgm",
-            "--pdf" if extension == ".pdf" else "",
-            "-p " + str(page),
-            f'"{dvi_file.as_posix()}"',
-            "-n",
-            "-v 0",
-            "-o " + f'"{result.as_posix()}"',
-            ">",
-            os.devnull,
+            *(["--pdf"] if extension == ".pdf" else []),
+            f"--page={page}",
+            "--no-fonts",
+            "--verbosity=0",
+            f"--output={result.as_posix()}",
+            f"{dvi_file.as_posix()}",
         ]
-        os.system(" ".join(commands))
+        subprocess.run(command, stdout=subprocess.DEVNULL)
 
     # if the file does not exist now, this means conversion failed
     if not result.exists():
@@ -271,7 +274,6 @@ def delete_nonsvg_files(additional_endings: Iterable[str] = ()) -> None:
     additional_endings
         Additional endings to whitelist
     """
-
     tex_dir = config.get_dir("tex_dir")
     file_suffix_whitelist = {".svg", ".tex", *additional_endings}
 
@@ -292,7 +294,7 @@ def print_all_tex_errors(log_file: Path, tex_compiler: str, tex_file: Path) -> N
         index for index, line in enumerate(tex_compilation_log) if line.startswith("!")
     ]
     if error_indices:
-        with tex_file.open() as f:
+        with tex_file.open(encoding="utf-8") as f:
             tex = f.readlines()
         for error_index in error_indices:
             print_tex_error(tex_compilation_log, error_index, tex)
@@ -310,7 +312,11 @@ LATEX_ERROR_INSIGHTS = [
 ]
 
 
-def print_tex_error(tex_compilation_log, error_start_index, tex_source):
+def print_tex_error(
+    tex_compilation_log: Sequence[str],
+    error_start_index: int,
+    tex_source: Sequence[str],
+) -> None:
     logger.error(
         f"LaTeX compilation error: {tex_compilation_log[error_start_index][2:]}",
     )
@@ -344,8 +350,8 @@ def print_tex_error(tex_compilation_log, error_start_index, tex_source):
         context += tex_source[line_of_tex_error - 3 : line_of_tex_error + 3]
         context[-4] = "-> " + context[-4]
 
-    context = "".join(context)
-    logger.error(context)
+    context_joined = "".join(context)
+    logger.error(context_joined)
 
     for insights in LATEX_ERROR_INSIGHTS:
         prob, get_insight = insights

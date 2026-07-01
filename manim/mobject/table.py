@@ -65,8 +65,7 @@ __all__ = [
 
 
 import itertools as it
-from collections.abc import Iterable, Sequence
-from typing import Callable
+from collections.abc import Callable, Iterable, Sequence
 
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Polygon
@@ -80,12 +79,12 @@ from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Write
 from ..animation.fading import FadeIn
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..utils.color import BLACK, YELLOW, ManimColor, ParsableManimColor
+from ..utils.color import BLACK, PURE_YELLOW, ManimColor, ParsableManimColor
 from .utils import get_vectorized_mobject_class
 
 
 class Table(VGroup):
-    """A mobject that displays a table on the screen.
+    r"""A mobject that displays a table on the screen.
 
     Parameters
     ----------
@@ -105,6 +104,8 @@ class Table(VGroup):
         Horizontal buffer passed to :meth:`~.Mobject.arrange_in_grid`, by default 1.3.
     include_outer_lines
         ``True`` if the table should include outer lines, by default False.
+    include_inner_lines
+        ``True`` if the table should include inner lines, by default True.
     add_background_rectangles_to_entries
         ``True`` if background rectangles should be added to entries, by default ``False``.
     entries_background_color
@@ -194,6 +195,7 @@ class Table(VGroup):
         v_buff: float = 0.8,
         h_buff: float = 1.3,
         include_outer_lines: bool = False,
+        include_inner_lines: bool = True,
         add_background_rectangles_to_entries: bool = False,
         entries_background_color: ParsableManimColor = BLACK,
         include_background_rectangle: bool = False,
@@ -215,6 +217,7 @@ class Table(VGroup):
         self.v_buff = v_buff
         self.h_buff = h_buff
         self.include_outer_lines = include_outer_lines
+        self.include_inner_lines = include_inner_lines
         self.add_background_rectangles_to_entries = add_background_rectangles_to_entries
         self.entries_background_color = ManimColor(entries_background_color)
         self.include_background_rectangle = include_background_rectangle
@@ -254,7 +257,7 @@ class Table(VGroup):
         self,
         table: Iterable[Iterable[float | str | VMobject]],
     ) -> list:
-        """Initilaizes the entries of ``table`` as :class:`~.VMobject`.
+        """Initializes the entries of ``table`` as :class:`~.VMobject`.
 
         Parameters
         ----------
@@ -350,15 +353,19 @@ class Table(VGroup):
             )
             line_group.add(line)
             self.add(line)
-        for k in range(len(self.mob_table) - 1):
-            anchor = self.get_rows()[k + 1].get_top()[1] + 0.5 * (
-                self.get_rows()[k].get_bottom()[1] - self.get_rows()[k + 1].get_top()[1]
-            )
-            line = Line(
-                [anchor_left, anchor, 0], [anchor_right, anchor, 0], **self.line_config
-            )
-            line_group.add(line)
-            self.add(line)
+        if self.include_inner_lines:
+            for k in range(len(self.mob_table) - 1):
+                anchor = self.get_rows()[k + 1].get_top()[1] + 0.5 * (
+                    self.get_rows()[k].get_bottom()[1]
+                    - self.get_rows()[k + 1].get_top()[1]
+                )
+                line = Line(
+                    [anchor_left, anchor, 0],
+                    [anchor_right, anchor, 0],
+                    **self.line_config,
+                )
+                line_group.add(line)
+                self.add(line)
         self.horizontal_lines = line_group
         return self
 
@@ -380,16 +387,19 @@ class Table(VGroup):
             )
             line_group.add(line)
             self.add(line)
-        for k in range(len(self.mob_table[0]) - 1):
-            anchor = self.get_columns()[k + 1].get_left()[0] + 0.5 * (
-                self.get_columns()[k].get_right()[0]
-                - self.get_columns()[k + 1].get_left()[0]
-            )
-            line = Line(
-                [anchor, anchor_bottom, 0], [anchor, anchor_top, 0], **self.line_config
-            )
-            line_group.add(line)
-            self.add(line)
+        if self.include_inner_lines:
+            for k in range(len(self.mob_table[0]) - 1):
+                anchor = self.get_columns()[k + 1].get_left()[0] + 0.5 * (
+                    self.get_columns()[k].get_right()[0]
+                    - self.get_columns()[k + 1].get_left()[0]
+                )
+                line = Line(
+                    [anchor, anchor_bottom, 0],
+                    [anchor, anchor_top, 0],
+                    **self.line_config,
+                )
+                line_group.add(line)
+                self.add(line)
         self.vertical_lines = line_group
         return self
 
@@ -527,7 +537,7 @@ class Table(VGroup):
                     self.add(table)
         """
         columns = self.get_columns()
-        for color, column in zip(colors, columns):
+        for color, column in zip(colors, columns, strict=False):
             column.set_color(color)
         return self
 
@@ -556,7 +566,7 @@ class Table(VGroup):
                     self.add(table)
         """
         rows = self.get_rows()
-        for color, row in zip(colors, rows):
+        for color, row in zip(colors, rows, strict=False):
             row.set_color(color)
         return self
 
@@ -683,7 +693,6 @@ class Table(VGroup):
                         item.set_color(random_bright_color())
                     self.add(table)
         """
-
         return VGroup(*self.row_labels)
 
     def get_col_labels(self) -> VGroup:
@@ -712,7 +721,6 @@ class Table(VGroup):
                         item.set_color(random_bright_color())
                     self.add(table)
         """
-
         return VGroup(*self.col_labels)
 
     def get_labels(self) -> VGroup:
@@ -814,7 +822,10 @@ class Table(VGroup):
         return rec
 
     def get_highlighted_cell(
-        self, pos: Sequence[int] = (1, 1), color: ParsableManimColor = YELLOW, **kwargs
+        self,
+        pos: Sequence[int] = (1, 1),
+        color: ParsableManimColor = PURE_YELLOW,
+        **kwargs,
     ) -> BackgroundRectangle:
         """Returns a :class:`~.BackgroundRectangle` of the cell at the given position.
 
@@ -850,7 +861,10 @@ class Table(VGroup):
         return bg_cell
 
     def add_highlighted_cell(
-        self, pos: Sequence[int] = (1, 1), color: ParsableManimColor = YELLOW, **kwargs
+        self,
+        pos: Sequence[int] = (1, 1),
+        color: ParsableManimColor = PURE_YELLOW,
+        **kwargs,
     ) -> Table:
         """Highlights one cell at a specific position on the table by adding a :class:`~.BackgroundRectangle`.
 
@@ -1067,7 +1081,7 @@ class MobjectTable(Table):
 
 
 class IntegerTable(Table):
-    """A specialized :class:`~.Table` mobject for use with :class:`~.Integer`.
+    r"""A specialized :class:`~.Table` mobject for use with :class:`~.Integer`.
 
     Examples
     --------
@@ -1081,14 +1095,14 @@ class IntegerTable(Table):
                     [[0,30,45,60,90],
                     [90,60,45,30,0]],
                     col_labels=[
-                        MathTex("\\\\frac{\\sqrt{0}}{2}"),
-                        MathTex("\\\\frac{\\sqrt{1}}{2}"),
-                        MathTex("\\\\frac{\\sqrt{2}}{2}"),
-                        MathTex("\\\\frac{\\sqrt{3}}{2}"),
-                        MathTex("\\\\frac{\\sqrt{4}}{2}")],
-                    row_labels=[MathTex("\\sin"), MathTex("\\cos")],
+                        MathTex(r"\frac{ \sqrt{0} }{2}"),
+                        MathTex(r"\frac{ \sqrt{1} }{2}"),
+                        MathTex(r"\frac{ \sqrt{2} }{2}"),
+                        MathTex(r"\frac{ \sqrt{3} }{2}"),
+                        MathTex(r"\frac{ \sqrt{4} }{2}")],
+                    row_labels=[MathTex(r"\sin"), MathTex(r"\cos")],
                     h_buff=1,
-                    element_to_mobject_config={"unit": "^{\\circ}"})
+                    element_to_mobject_config={"unit": r"^{\circ}"})
                 self.add(t0)
     """
 

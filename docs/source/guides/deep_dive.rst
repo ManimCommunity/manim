@@ -577,7 +577,7 @@ sound odd at first. Practically, this ensures that mobjects are not
 added twice, as mentioned above: if they were present in the scene
 ``Scene.mobjects`` list before (even if they were contained as a
 child of some other mobject), they are first removed from the list.
-The way :meth:`.Scene.restrucutre_mobjects` works is rather aggressive:
+The way :meth:`.Scene.restructure_mobjects` works is rather aggressive:
 It always operates on a given list of mobjects; in the ``add`` method
 two different lists occur: the default one, ``Scene.mobjects`` (no extra
 keyword argument is passed), and ``Scene.moving_mobjects`` (which we will

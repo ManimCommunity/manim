@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from manim import DiGraph, Graph, Scene, Text, tempconfig
+from manim import DiGraph, Graph, LabeledLine, Scene, Text, tempconfig
 from manim.mobject.graph import _layouts
 
 
@@ -76,6 +76,19 @@ def test_graph_add_edges():
     assert set(G._graph.edges()) == set(G.edges.keys())
 
 
+def test_graph_getitem():
+    vertices = [1, 2, 3, 4]
+    edges = [(1, 2), (2, 3), (3, 4), (4, 1)]
+    G = Graph(vertices, edges)
+    # Vertex access
+    assert G[1] is G.vertices[1]
+    # Edge access via tuple key
+    assert G[(1, 2)] is G.edges[(1, 2)]
+    # DiGraph edge access
+    DG = DiGraph(vertices, edges)
+    assert DG[(1, 2)] is DG.edges[(1, 2)]
+
+
 def test_graph_remove_edges():
     G = Graph([1, 2, 3, 4, 5], [(1, 2), (2, 3), (3, 4), (4, 5), (1, 5)])
     removed_mobjects = G.remove_edges((1, 2))
@@ -89,6 +102,29 @@ def test_graph_remove_edges():
     assert str(G) == "Undirected graph on 5 vertices and 0 edges"
     assert set(G._graph.edges()) == set()
     assert set(G.edges.keys()) == set()
+
+
+def test_graph_accepts_labeledline_as_edge_type():
+    vertices = [1, 2, 3, 4]
+    edges = [(1, 2), (2, 3), (3, 4), (4, 1)]
+    edge_config = {
+        (1, 2): {"label": "A"},
+        (2, 3): {"label": "B"},
+        (3, 4): {"label": "C"},
+        (4, 1): {"label": "D"},
+    }
+    G_manual = Graph(vertices, edges, edge_type=LabeledLine, edge_config=edge_config)
+    G_directed = DiGraph(
+        vertices, edges, edge_type=LabeledLine, edge_config=edge_config
+    )
+
+    for edge_obj in G_manual.edges.values():
+        assert isinstance(edge_obj, LabeledLine)
+        assert hasattr(edge_obj, "label")
+
+    for edge_obj in G_directed.edges.values():
+        assert isinstance(edge_obj, LabeledLine)
+        assert hasattr(edge_obj, "label")
 
 
 def test_custom_animation_mobject_list():

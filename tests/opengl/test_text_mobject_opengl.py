@@ -5,7 +5,8 @@ from manim.mobject.text.text_mobject import MarkupText, Text
 
 def test_font_size(using_opengl_renderer):
     """Test that Text and MarkupText return the
-    correct font_size value after being scaled."""
+    correct font_size value after being scaled.
+    """
     text_string = Text("0").scale(0.3)
     markuptext_string = MarkupText("0").scale(0.3)
 

@@ -64,14 +64,37 @@ Examples
             self.play(Restore(self.camera.frame))
             self.wait()
 
+.. manim:: SlidingMultipleScenes
+
+    class SlidingMultipleScenes(MovingCameraScene):
+        def construct(self):
+            def create_scene(number):
+                frame = Rectangle(width=16,height=9)
+                circ = Circle().shift(LEFT)
+                text = Tex(f"This is Scene {str(number)}").next_to(circ, RIGHT)
+                frame.add(circ,text)
+                return frame
+
+            group = VGroup(*(create_scene(i) for i in range(4))).arrange_in_grid(buff=4)
+            self.add(group)
+            self.camera.auto_zoom(group[0], animate=False)
+            for scene in group:
+                self.play(self.camera.auto_zoom(scene))
+                self.wait()
+
+            self.play(self.camera.auto_zoom(group, margin=2))
 """
 
 from __future__ import annotations
 
 __all__ = ["MovingCameraScene"]
 
-from manim.animation.animation import Animation
+from typing import Any
 
+from manim.animation.animation import Animation
+from manim.mobject.mobject import Mobject
+
+from ..camera.camera import Camera
 from ..camera.moving_camera import MovingCamera
 from ..scene.scene import Scene
 from ..utils.family import extract_mobject_family_members
@@ -83,15 +106,21 @@ class MovingCameraScene(Scene):
     This is a Scene, with special configurations and properties that
     make it suitable for cases where the camera must be moved around.
 
+    Note: Examples are included in the moving_camera_scene module
+    documentation, see below in the 'see also' section.
+
     .. SEEALSO::
 
+        :mod:`.moving_camera_scene`
         :class:`.MovingCamera`
     """
 
-    def __init__(self, camera_class=MovingCamera, **kwargs):
+    def __init__(
+        self, camera_class: type[Camera] = MovingCamera, **kwargs: Any
+    ) -> None:
         super().__init__(camera_class=camera_class, **kwargs)
 
-    def get_moving_mobjects(self, *animations: Animation):
+    def get_moving_mobjects(self, *animations: Animation) -> list[Mobject]:
         """
         This method returns a list of all of the Mobjects in the Scene that
         are moving, that are also in the animations passed.
@@ -103,7 +132,7 @@ class MovingCameraScene(Scene):
         """
         moving_mobjects = super().get_moving_mobjects(*animations)
         all_moving_mobjects = extract_mobject_family_members(moving_mobjects)
-        movement_indicators = self.renderer.camera.get_mobjects_indicating_movement()
+        movement_indicators = self.renderer.camera.get_mobjects_indicating_movement()  # type: ignore[union-attr]
         for movement_indicator in movement_indicators:
             if movement_indicator in all_moving_mobjects:
                 # When one of these is moving, the camera should

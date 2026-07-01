@@ -64,7 +64,8 @@ def test_angle_of_vector():
 
 
 def test_angle_of_vector_vectorized():
-    vec = np.random.randn(4, 10)
+    rng = np.random.default_rng()
+    vec = rng.standard_normal((4, 10))
     ref = [np.angle(complex(*v[:2])) for v in vec.T]
     np.testing.assert_array_equal(ref, angle_of_vector(vec))
 

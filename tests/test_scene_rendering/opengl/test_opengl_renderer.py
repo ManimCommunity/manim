@@ -23,7 +23,7 @@ def test_write_to_movie_disables_window(
     assert_file_exists(config.output_file)
 
 
-@pytest.mark.skip(reason="Temporarily skip due to failing in Windows CI")  # type: ignore
+@pytest.mark.skip(reason="Temporarily skip due to failing in Windows CI")
 def test_force_window_opengl_render_with_movies(
     config,
     using_temp_opengl_config,

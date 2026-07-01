@@ -6,6 +6,7 @@ from collections.abc import Sequence
 from typing import Any
 
 from manim.animation.transform import Restore
+from manim.mobject.mobject import Mobject
 
 from ..constants import *
 from .composition import LaggedStart
@@ -50,7 +51,7 @@ class Broadcast(LaggedStart):
 
     def __init__(
         self,
-        mobject,
+        mobject: Mobject,
         focal_point: Sequence[float] = ORIGIN,
         n_mobs: int = 5,
         initial_opacity: float = 1,
@@ -70,10 +71,7 @@ class Broadcast(LaggedStart):
         anims = []
 
         # Works by saving the mob that is passed into the animation, scaling it to 0 (or the initial_width) and then restoring the original mob.
-        if mobject.fill_opacity:
-            fill_o = True
-        else:
-            fill_o = False
+        fill_o = bool(mobject.fill_opacity)
 
         for _ in range(self.n_mobs):
             mob = mobject.copy()

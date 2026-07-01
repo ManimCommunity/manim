@@ -23,10 +23,9 @@ __all__ = [
 
 parser = make_config_parser()
 
-# The logger can be accessed from anywhere as manim.logger, or as
-# logging.getLogger("manim").  The console must be accessed as manim.console.
-# Throughout the codebase, use manim.console.print() instead of print().
-# Use error_console to print errors so that it outputs to stderr.
+# Logger usage: accessible globally as `manim.logger` or via `logging.getLogger("manim")`.
+# For printing, use `manim.console.print()` instead of the built-in `print()`.
+# For error output, use `error_console`, which prints to stderr.
 logger, console, error_console = make_logger(
     parser["logger"],
     parser["CLI"]["verbosity"],
@@ -45,7 +44,7 @@ frame = ManimFrame(config)
 # This has to go here because it needs access to this module's config
 @contextmanager
 def tempconfig(temp: ManimConfig | dict[str, Any]) -> Generator[None, None, None]:
-    """Context manager that temporarily modifies the global ``config`` object.
+    """Temporarily modifies the global ``config`` object using a context manager.
 
     Inside the ``with`` statement, the modified config will be used.  After
     context manager exits, the config will be restored to its original state.
