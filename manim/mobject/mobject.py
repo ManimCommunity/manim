@@ -2380,11 +2380,21 @@ class Mobject:
 
     def get_start(self) -> Point3D:
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` starts."""
+        # Points may live only on submobjects (e.g. a Text/Tex-shaped mobject, or
+        # the result of a Transform onto one), so fall back to the family (#4510).
+        if self.has_no_points():
+            members = self.family_members_with_points()
+            if members:
+                return members[0].get_start()
         self.throw_error_if_no_points()
         return np.array(self.points[0])
 
     def get_end(self) -> Point3D:
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` ends."""
+        if self.has_no_points():
+            members = self.family_members_with_points()
+            if members:
+                return members[-1].get_end()
         self.throw_error_if_no_points()
         return np.array(self.points[-1])
 
