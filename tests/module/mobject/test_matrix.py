@@ -8,8 +8,8 @@ from manim.mobject.matrix import (
     IntegerMatrix,
     Matrix,
 )
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup as VGroup
 from manim.mobject.text.tex_mobject import MathTex
-from manim.mobject.types.vectorized_mobject import VGroup
 
 
 class TestMatrix:

@@ -15,10 +15,10 @@ from manim.mobject.geometry.shape_matchers import (
     BackgroundRectangle,
     SurroundingRectangle,
 )
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup as VGroup
 from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.text.text_mobject import Text
 from manim.mobject.text.typst_mobject import Typst
-from manim.mobject.types.vectorized_mobject import VGroup
 from manim.utils.color import WHITE
 from manim.utils.polylabel import polylabel
 

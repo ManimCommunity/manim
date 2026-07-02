@@ -7,7 +7,7 @@ __module_test__ = "plot"
 
 
 @frames_comparison
-def test_axes(scene):
+def test_axes(scene: Scene) -> None:
     graph = Axes(
         x_range=[-10, 10, 1],
         y_range=[-10, 10, 1],
@@ -21,14 +21,14 @@ def test_axes(scene):
 
 
 @frames_comparison
-def test_plot_functions(scene, use_vectorized):
+def test_plot_functions(scene: Scene, use_vectorized: bool) -> None:
     ax = Axes(x_range=(-10, 10.3), y_range=(-1.5, 1.5))
     graph = ax.plot(lambda x: x**2, use_vectorized=use_vectorized)
     scene.add(ax, graph)
 
 
 @frames_comparison
-def test_custom_coordinates(scene):
+def test_custom_coordinates(scene: Scene) -> None:
     ax = Axes(x_range=[0, 10])
 
     ax.add_coordinates(
@@ -38,14 +38,14 @@ def test_custom_coordinates(scene):
 
 
 @frames_comparison
-def test_get_axis_labels(scene):
+def test_get_axis_labels(scene: Scene) -> None:
     ax = Axes()
     labels = ax.get_axis_labels(Tex("$x$-axis").scale(0.7), Tex("$y$-axis").scale(0.45))
     scene.add(ax, labels)
 
 
 @frames_comparison
-def test_get_x_axis_label(scene):
+def test_get_x_axis_label(scene: Scene) -> None:
     ax = Axes(x_range=(0, 8), y_range=(0, 5), x_length=8, y_length=5)
     x_label = ax.get_x_axis_label(
         Tex("$x$-values").scale(0.65),
@@ -57,7 +57,7 @@ def test_get_x_axis_label(scene):
 
 
 @frames_comparison
-def test_get_y_axis_label(scene):
+def test_get_y_axis_label(scene: Scene) -> None:
     ax = Axes(x_range=(0, 8), y_range=(0, 5), x_length=8, y_length=5)
     y_label = ax.get_y_axis_label(
         Tex("$y$-values").scale(0.65).rotate(90 * DEGREES),
@@ -69,7 +69,7 @@ def test_get_y_axis_label(scene):
 
 
 @frames_comparison
-def test_axis_tip_default_width_height(scene):
+def test_axis_tip_default_width_height(scene: Scene) -> None:
     ax = Axes(
         x_range=(0, 4),
         y_range=(0, 4),
@@ -80,7 +80,7 @@ def test_axis_tip_default_width_height(scene):
 
 
 @frames_comparison
-def test_axis_tip_custom_width_height(scene):
+def test_axis_tip_custom_width_height(scene: Scene) -> None:
     ax = Axes(
         x_range=(0, 4),
         y_range=(0, 4),
@@ -93,7 +93,7 @@ def test_axis_tip_custom_width_height(scene):
 
 
 @frames_comparison
-def test_plot_derivative_graph(scene, use_vectorized):
+def test_plot_derivative_graph(scene: Scene, use_vectorized: bool) -> None:
     ax = NumberPlane(y_range=[-1, 7], background_line_style={"stroke_opacity": 0.4})
 
     curve_1 = ax.plot(lambda x: x**2, color=PURPLE_B, use_vectorized=use_vectorized)
@@ -104,7 +104,7 @@ def test_plot_derivative_graph(scene, use_vectorized):
 
 
 @frames_comparison
-def test_plot(scene, use_vectorized):
+def test_plot(scene: Scene, use_vectorized: bool) -> None:
     # construct the axes
     ax_1 = Axes(
         x_range=[0.001, 6],
@@ -150,7 +150,7 @@ def test_plot(scene, use_vectorized):
 
 
 @frames_comparison
-def test_get_graph_label(scene):
+def test_get_graph_label(scene: Scene) -> None:
     ax = Axes()
     sin = ax.plot(lambda x: np.sin(x), color=PURPLE_B)
     label = ax.get_graph_label(
@@ -166,7 +166,7 @@ def test_get_graph_label(scene):
 
 
 @frames_comparison
-def test_get_lines_to_point(scene):
+def test_get_lines_to_point(scene: Scene) -> None:
     ax = Axes()
     circ = Circle(radius=0.5).move_to([-4, -1.5, 0])
 
@@ -176,7 +176,7 @@ def test_get_lines_to_point(scene):
 
 
 @frames_comparison
-def test_plot_line_graph(scene):
+def test_plot_line_graph(scene: Scene) -> None:
     plane = NumberPlane(
         x_range=(0, 7),
         y_range=(0, 5),
@@ -199,7 +199,7 @@ def test_plot_line_graph(scene):
 
 
 @frames_comparison
-def test_t_label(scene):
+def test_t_label(scene: Scene) -> None:
     # defines the axes and linear function
     axes = Axes(x_range=[-1, 10], y_range=[-1, 10], x_length=9, y_length=6)
     func = axes.plot(lambda x: x, color=BLUE)
@@ -209,7 +209,7 @@ def test_t_label(scene):
 
 
 @frames_comparison
-def test_get_area(scene):
+def test_get_area(scene: Scene) -> None:
     ax = Axes().add_coordinates()
     curve1 = ax.plot(
         lambda x: 2 * np.sin(x),
@@ -235,7 +235,7 @@ def test_get_area(scene):
 
 
 @frames_comparison
-def test_get_area_with_boundary_and_few_plot_points(scene):
+def test_get_area_with_boundary_and_few_plot_points(scene: Scene) -> None:
     ax = Axes(x_range=[-2, 2], y_range=[-2, 2], color=WHITE)
     f1 = ax.plot(lambda t: t, [-1, 1, 0.5])
     f2 = ax.plot(lambda t: 1, [-1, 1, 0.5])
@@ -246,7 +246,7 @@ def test_get_area_with_boundary_and_few_plot_points(scene):
 
 
 @frames_comparison
-def test_get_riemann_rectangles(scene, use_vectorized):
+def test_get_riemann_rectangles(scene: Scene, use_vectorized: bool) -> None:
     ax = Axes(y_range=[-2, 10])
     quadratic = ax.plot(lambda x: 0.5 * x**2 - 0.5, use_vectorized=use_vectorized)
 
@@ -282,16 +282,16 @@ def test_get_riemann_rectangles(scene, use_vectorized):
     scene.add(ax, bounding_line, quadratic, rects_right, rects_left, bounded_rects)
 
 
-@frames_comparison(base_scene=ThreeDScene)
-def test_get_z_axis_label(scene):
+@frames_comparison
+def test_get_z_axis_label(scene: Scene) -> None:
     ax = ThreeDAxes()
     lab = ax.get_z_axis_label(Tex("$z$-label"))
-    scene.set_camera_orientation(phi=2 * PI / 5, theta=PI / 5)
+    scene.camera.set_orientation(theta=PI / 5, phi=2 * PI / 5)
     scene.add(ax, lab)
 
 
 @frames_comparison
-def test_polar_graph(scene):
+def test_polar_graph(scene: Scene) -> None:
     polar = PolarPlane()
 
     def r(theta):
@@ -302,7 +302,7 @@ def test_polar_graph(scene):
 
 
 @frames_comparison
-def test_log_scaling_graph(scene):
+def test_log_scaling_graph(scene: Scene) -> None:
     ax = Axes(
         x_range=[0, 8],
         y_range=[-2, 4],

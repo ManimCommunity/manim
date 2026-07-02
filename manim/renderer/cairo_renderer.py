@@ -5,17 +5,16 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
+from manim import config, logger
+from manim.camera.camera import Camera
+from manim.mobject.mobject import Mobject, _AnimationBuilder
+from manim.utils.exceptions import EndSceneEarlyException
 from manim.utils.hashing import get_hash_from_play_call
-
-from .. import config, logger
-from ..camera.camera import Camera
-from ..mobject.mobject import Mobject, _AnimationBuilder
-from ..scene.scene_file_writer import SceneFileWriter
-from ..utils.exceptions import EndSceneEarlyException
-from ..utils.iterables import list_update
+from manim.utils.iterables import list_update
 
 if TYPE_CHECKING:
     from manim.animation.animation import Animation
+    from manim.file_writer import FileWriter
     from manim.scene.scene import Scene
 
     from ..typing import PixelArray
@@ -37,7 +36,7 @@ class CairoRenderer:
 
     def __init__(
         self,
-        file_writer_class: type[SceneFileWriter] = SceneFileWriter,
+        file_writer_class: type[FileWriter] | None = None,
         camera_class: type[Camera] | None = None,
         skip_animations: bool = False,
         **kwargs: Any,

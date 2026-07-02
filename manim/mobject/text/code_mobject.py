@@ -19,13 +19,17 @@ from pygments.styles import get_all_styles
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVGroup as VGroup,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVMobject as VMobject,
+)
 from manim.typing import StrPath
 from manim.utils.color import WHITE, ManimColor
 
 
-class Code(VMobject, metaclass=ConvertToOpenGL):
+class Code(VMobject):
     """A highlighted source code listing.
 
     Examples

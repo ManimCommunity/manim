@@ -4,7 +4,7 @@ import struct
 import wave
 from pathlib import Path
 
-from manim import Scene
+from manim import Manager, Scene
 
 
 def test_add_sound(tmpdir):
@@ -17,5 +17,6 @@ def test_add_sound(tmpdir):
             f.writeframes(packed_value)
             f.writeframes(packed_value)
 
-    scene = Scene()
+    manager = Manager(Scene)
+    scene = manager.scene
     scene.add_sound(sound_loc)

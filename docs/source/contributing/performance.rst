@@ -24,8 +24,8 @@ to the bottom of the file:
 .. code-block:: python
 
     with tempconfig({"quality": "medium_quality", "disable_caching": True}):
-        scene = SceneName()
-        scene.render()
+        manager = Manager(SceneName)
+        manager.render()
 
 Where ``SceneName`` is the name of the scene you want to run. You can then run the
 file directly, and can thus follow the instructions for most profilers.
@@ -58,8 +58,8 @@ to ``square_to_circle.py``:
 
 
     with tempconfig({"quality": "medium_quality", "disable_caching": True}):
-        scene = SquareToCircle()
-        scene.render()
+        manager = Manager(SquareToCircle)
+        manager.render()
 
 Now run the following in the terminal:
 

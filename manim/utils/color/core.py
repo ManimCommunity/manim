@@ -166,7 +166,7 @@ class ManimColor:
         alpha: float = 1.0,
     ) -> None:
         if value is None:
-            self._internal_value = np.array((0, 0, 0, alpha), dtype=ManimColorDType)
+            self._internal_value = np.array((1, 1, 1, alpha), dtype=ManimColorDType)
         elif isinstance(value, ManimColor):
             # logger.info(
             #     "ManimColor was passed another ManimColor. This is probably not what "
@@ -543,7 +543,7 @@ class ManimColor:
         tmp[3] = alpha * 255
         return tmp.astype(int)
 
-    def to_hex(self, with_alpha: bool = False) -> str:
+    def to_hex(self, *, with_alpha: bool = False) -> str:
         """Convert the :class:`ManimColor` to a hexadecimal representation of the color.
 
         Parameters
@@ -602,7 +602,7 @@ class ManimColor:
         hls = colorsys.rgb_to_hls(*self.to_rgb())
         return np.array([hls[0], hls[2], hls[1]])
 
-    def invert(self, with_alpha: bool = False) -> Self:
+    def invert(self, *, with_alpha: bool = False) -> Self:
         """Return a new, linearly inverted version of this :class:`ManimColor` (no
         inplace changes).
 
@@ -744,9 +744,18 @@ class ManimColor:
                 return dark
             return self._from_internal(BLACK._internal_value)
 
-    def opacity(self, opacity: float) -> Self:
+    @overload
+    def opacity(self, opacity: float) -> Self: ...
+
+    @overload
+    def opacity(self, opacity: None = None) -> float: ...
+
+    def opacity(self, opacity: float | None = None) -> float | Self:
         """Create a new :class:`ManimColor` with the given opacity and the same color
-        values as before.
+        values as before, or return opacity.
+
+        If no opacity is passed it will return the current opacity value. Otherwise, it will set the opacity
+        to the given value, returning a new ManimColor object.
 
         Parameters
         ----------
@@ -758,6 +767,8 @@ class ManimColor:
         ManimColor
             The new :class:`ManimColor` with the same color values and the new opacity.
         """
+        if opacity is None:
+            return self._internal_space[-1]
         tmp = self._internal_space.copy()
         tmp[-1] = opacity
         return self._construct_from_space(tmp)

@@ -146,7 +146,7 @@ class ZoomedScene(MovingCameraScene):
             of the zoomed camera.
         """
         self.zoom_activated = True
-        self.renderer.camera.add_image_mobject_from_camera(self.zoomed_display)  # type: ignore[union-attr]
+        self.renderer.camera.add_image_mobject_from_camera(self.zoomed_display)
         if animate:
             self.play(self.get_zoom_in_animation())
             self.play(self.get_zoomed_display_pop_out_animation())

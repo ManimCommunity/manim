@@ -4,24 +4,27 @@ from __future__ import annotations
 
 __all__ = ["TransformMatchingShapes", "TransformMatchingTex"]
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import numpy as np
 
-from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLGroup as Group,
+)
+from manim.mobject.opengl.opengl_mobject import (
+    OpenGLMobject as Mobject,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVGroup as VGroup,
+)
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVMobject as VMobject,
+)
 from manim.mobject.text.tex_mobject import MathTexPart
 
-from .._config import config
-from ..constants import RendererType
-from ..mobject.mobject import Group, Mobject
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from .composition import AnimationGroup
 from .fading import FadeIn, FadeOut
 from .transform import FadeTransformPieces, Transform
-
-if TYPE_CHECKING:
-    from ..scene.scene import Scene
 
 
 class TransformMatchingAbstractBase(AnimationGroup):
@@ -77,14 +80,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
         key_map: dict | None = None,
         **kwargs: Any,
     ):
-        if isinstance(mobject, OpenGLVMobject):
-            group_type: type[OpenGLVGroup | OpenGLGroup | VGroup | Group] = OpenGLVGroup
-        elif isinstance(mobject, OpenGLMobject):
-            group_type = OpenGLGroup
-        elif isinstance(mobject, VMobject):
-            group_type = VGroup
-        else:
-            group_type = Group
+        group_type = VGroup if isinstance(mobject, VMobject) else Group
 
         source_map = self.get_shape_map(mobject)
         target_map = self.get_shape_map(target_mobject)
@@ -142,26 +138,22 @@ class TransformMatchingAbstractBase(AnimationGroup):
         self.to_add = target_mobject
 
     def get_shape_map(self, mobject: Mobject) -> dict:
-        shape_map: dict[int | str, VGroup | OpenGLVGroup] = {}
+        shape_map: dict[int | str, VGroup] = {}
         for sm in self.get_mobject_parts(mobject):
             key = self.get_mobject_key(sm)
             if key not in shape_map:
-                if config["renderer"] == RendererType.OPENGL:
-                    shape_map[key] = OpenGLVGroup()
-                else:
-                    shape_map[key] = VGroup()
-            # error: Argument 1 to "add" of "OpenGLVGroup" has incompatible type "Mobject"; expected "OpenGLVMobject"  [arg-type]
-            shape_map[key].add(sm)  # type: ignore[arg-type]
+                shape_map[key] = VGroup()
+            shape_map[key].add(sm)
         return shape_map
 
-    def clean_up_from_scene(self, scene: Scene) -> None:
+    def finish(self) -> None:
+        super().finish()
         # Interpolate all animations back to 0 to ensure source mobjects remain unchanged.
         for anim in self.animations:
             anim.interpolate(0)
-        # error: Argument 1 to "remove" of "Scene" has incompatible type "OpenGLMobject"; expected "Mobject"  [arg-type]
-        scene.remove(self.mobject)  # type: ignore[arg-type]
-        scene.remove(*self.to_remove)
-        scene.add(self.to_add)
+        self.buffer.remove(self.mobject)
+        self.buffer.remove(*self.to_remove)
+        self.buffer.add(self.to_add)
 
     @staticmethod
     def get_mobject_parts(mobject: Mobject) -> list[Mobject]:
@@ -285,7 +277,7 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
 
     @staticmethod
     def get_mobject_parts(mobject: Mobject) -> list[Mobject]:
-        if isinstance(mobject, (Group, VGroup, OpenGLGroup, OpenGLVGroup)):
+        if isinstance(mobject, (Group, VGroup)):
             return [
                 p
                 for s in mobject.submobjects

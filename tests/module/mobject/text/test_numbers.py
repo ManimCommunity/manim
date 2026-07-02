@@ -45,5 +45,5 @@ def test_color_when_number_of_digits_changes():
     mob = Integer(color=RED)
     mob.set_value(42)
     assert all(
-        submob.stroke_color.to_hex() == RED.to_hex() for submob in mob.submobjects
+        submob.get_stroke_color().to_hex() == RED.to_hex() for submob in mob.submobjects
     )
