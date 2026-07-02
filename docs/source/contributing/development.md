@@ -106,8 +106,7 @@ You are now ready to work on Manim!
    hooks fail.
 
    :::{tip}
-   When crafting commit messages, it is highly recommended that
-   you adhere to [these guidelines](https://www.conventionalcommits.org/en/v1.0.0/).
+   When crafting commit messages, you must adhere to the formatting rules defined in our {doc}`Commit Message Guidelines <commits>`.
    :::
 
 4. Add new or update existing tests.
