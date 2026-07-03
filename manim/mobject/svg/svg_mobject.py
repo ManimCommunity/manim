@@ -160,8 +160,12 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
 
         # Glyph submobjects are added after super().__init__ set self.z_index,
         # so a z_index passed to the constructor never reached them. Propagate
-        # it so the whole SVG (e.g. Text/MathTex) shares one z_index.
-        self.set_z_index(self.z_index)
+        # it so the whole SVG (e.g. Text/MathTex) shares one z_index. Guard with
+        # getattr since the OpenGL renderer does not track z_index as an attribute.
+        z_index = getattr(self, "z_index", None)
+        if z_index is not None:
+            for submob in self.get_family():
+                submob.z_index = z_index
 
     def init_svg_mobject(self, use_svg_cache: bool) -> None:
         """Checks whether the SVG has already been imported and
