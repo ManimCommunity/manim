@@ -115,37 +115,40 @@ def project(default_settings: bool, **kwargs: Any) -> None:
         default="Default",
     )
 
-    # Only refuse when the files we would create already exist, so that
-    # initializing into an existing (e.g. ``uv init``ed) folder still works.
+    # Initializing into an existing (e.g. ``uv init``ed) folder is allowed;
+    # only the files we would create can conflict, so confirm before
+    # overwriting them instead of refusing outright.
     conflicts = [
         name for name in ("manim.cfg", "main.py") if (project_name / name).exists()
     ]
-    if conflicts:
-        console.print(
-            f"\nFolder [red]{project_name}[/red] already contains "
-            f"{', '.join(conflicts)}. Please type another name or clear the folder\n",
-        )
-    else:
-        project_name.mkdir(parents=True, exist_ok=True)
-        new_cfg: dict[str, Any] = {}
-        new_cfg_path = Path.resolve(project_name / "manim.cfg")
+    if conflicts and not click.confirm(
+        f"\nFolder [red]{project_name}[/red] already contains "
+        f"{', '.join(conflicts)}. Overwrite?",
+        default=False,
+    ):
+        console.print("\nAborted; existing files were left untouched.\n")
+        return
 
-        if not default_settings:
-            for key, value in CFG_DEFAULTS.items():
-                if key == "scene_names":
-                    new_cfg[key] = template_name + "Template"
-                elif key == "resolution":
-                    new_cfg[key] = select_resolution()
-                else:
-                    new_cfg[key] = click.prompt(f"\n{key}", default=value)
+    project_name.mkdir(parents=True, exist_ok=True)
+    new_cfg: dict[str, Any] = {}
+    new_cfg_path = Path.resolve(project_name / "manim.cfg")
 
-            console.print("\n", new_cfg)
-            if click.confirm("Do you want to continue?", default=True, abort=True):
-                copy_template_files(project_name, template_name)
-                update_cfg(new_cfg, new_cfg_path)
-        else:
+    if not default_settings:
+        for key, value in CFG_DEFAULTS.items():
+            if key == "scene_names":
+                new_cfg[key] = template_name + "Template"
+            elif key == "resolution":
+                new_cfg[key] = select_resolution()
+            else:
+                new_cfg[key] = click.prompt(f"\n{key}", default=value)
+
+        console.print("\n", new_cfg)
+        if click.confirm("Do you want to continue?", default=True, abort=True):
             copy_template_files(project_name, template_name)
-            update_cfg(CFG_DEFAULTS, new_cfg_path)
+            update_cfg(new_cfg, new_cfg_path)
+    else:
+        copy_template_files(project_name, template_name)
+        update_cfg(CFG_DEFAULTS, new_cfg_path)
 
 
 @cloup.command(

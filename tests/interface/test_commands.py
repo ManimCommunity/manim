@@ -145,17 +145,29 @@ def test_manim_init_project_existing_folder(tmp_path):
         assert (Path(tmp_dir) / "manim.cfg").exists()
 
 
-def test_manim_init_project_conflicting_files(tmp_path):
+def test_manim_init_project_conflicting_files_declined(tmp_path):
     command = ["init", "project", "--default", "."]
     runner = CliRunner()
     with runner.isolated_filesystem(temp_dir=tmp_path) as tmp_dir:
-        # A conflicting main.py must not be overwritten.
+        # Declining the overwrite prompt must leave the conflicting file intact.
         (Path(tmp_dir) / "main.py").write_text("# keep me\n")
-        result = runner.invoke(main, command, prog_name="manim", input="Default\n")
+        result = runner.invoke(main, command, prog_name="manim", input="Default\nn\n")
         assert not result.exception
         assert "already contains" in result.output
         assert (Path(tmp_dir) / "main.py").read_text() == "# keep me\n"
         assert not (Path(tmp_dir) / "manim.cfg").exists()
+
+
+def test_manim_init_project_conflicting_files_overwritten(tmp_path):
+    command = ["init", "project", "--default", "."]
+    runner = CliRunner()
+    with runner.isolated_filesystem(temp_dir=tmp_path) as tmp_dir:
+        # Confirming the overwrite prompt replaces the conflicting file.
+        (Path(tmp_dir) / "main.py").write_text("# keep me\n")
+        result = runner.invoke(main, command, prog_name="manim", input="Default\ny\n")
+        assert not result.exception
+        assert (Path(tmp_dir) / "main.py").read_text() != "# keep me\n"
+        assert (Path(tmp_dir) / "manim.cfg").exists()
 
 
 def test_manim_init_scene(tmp_path):
