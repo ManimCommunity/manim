@@ -3,6 +3,8 @@ from __future__ import annotations
 from contextlib import redirect_stdout
 from io import StringIO
 
+import pytest
+
 from manim.mobject.text.text_mobject import MarkupText, Text
 
 
@@ -32,3 +34,19 @@ def test_font_warnings():
 
     # check random string (should be warning)
     assert warning_printed("Manim!" * 3, warn_missing_font=True)
+
+
+def test_gen_chars_raises_clear_error_on_glyph_mismatch():
+    """``_gen_chars`` should raise a clear, actionable error instead of an
+    opaque ``IndexError`` when the number of rendered glyphs doesn't match
+    the number of non-space characters. This happens when a font implements
+    some of its ligatures (e.g. programming ligatures like ``<=``) through
+    an OpenType feature that ``disable_ligatures`` doesn't disable, such as
+    ``calt`` (see issue #3237). This test simulates that mismatch directly,
+    without depending on any particular font being installed.
+    """
+    text = Text("ab", disable_ligatures=True)
+    # Simulate a font that merged "ab" into a single ligature glyph.
+    text.submobjects = text.submobjects[:1]
+    with pytest.raises(ValueError, match="glyph"):
+        text._gen_chars()
