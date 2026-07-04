@@ -305,6 +305,20 @@ class Text(SVGMobject):
     Text objects behave like a :class:`.VGroup`-like iterable of all characters
     in the given text. In particular, slicing is possible.
 
+    .. warning::
+
+        Whitespace and newline characters are stripped internally and never
+        become their own submobject (there is nothing to render for them), so
+        indices used for slicing (``my_text[3:5]``) or for the slice syntax in
+        ``t2c``/``t2s``/``t2w``/``t2f``/``t2g`` (e.g. ``t2c={'[3:5]': RED}``)
+        refer to positions in the text *with whitespace removed*, not to
+        positions in the original ``text`` argument. For example, in
+        ``Text("Hello world")``, index ``5`` refers to ``"w"``, not to the
+        space between the two words. When the substring you want to select is
+        known in advance, prefer keying ``t2c``/``t2s``/``t2w``/``t2f``/``t2g``
+        by that substring directly (e.g. ``t2c={"world": RED}``), which matches
+        by text search instead of by index and is unaffected by this quirk.
+
     Parameters
     ----------
     text
