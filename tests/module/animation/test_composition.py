@@ -6,9 +6,9 @@ import pytest
 
 from manim.animation.animation import Animation, Wait
 from manim.animation.composition import AnimationGroup, LaggedStartMap, Succession
-from manim.animation.transform import Restore
 from manim.animation.creation import Create, Write
 from manim.animation.fading import FadeIn, FadeOut
+from manim.animation.transform import Restore
 from manim.constants import DOWN, UP
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.line import Line
@@ -199,7 +199,9 @@ def test_laggedstartmap_restore_builds_subanimations():
         submob.scale(0)
     animation = LaggedStartMap(Restore, mobject, lag_ratio=0.1, run_time=1)
     assert len(animation.animations) == len(mobject)
-    assert all(isinstance(subanimation, Restore) for subanimation in animation.animations)
+    assert all(
+        isinstance(subanimation, Restore) for subanimation in animation.animations
+    )
 
 
 def test_laggedstartmap_empty_mobject_raises():

@@ -433,7 +433,6 @@ class LaggedStartMap(LaggedStart):
         if "lag_ratio" in anim_kwargs:
             anim_kwargs.pop("lag_ratio")
         animations = [
-            animation_class(*animation_args(args), **anim_kwargs)
-            for args in args_list
+            animation_class(*animation_args(args), **anim_kwargs) for args in args_list
         ]
         super().__init__(*animations, run_time=run_time, lag_ratio=lag_ratio)
