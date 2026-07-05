@@ -413,9 +413,27 @@ class LaggedStartMap(LaggedStart):
 
             arg_creator = identity
 
+        def animation_args(value: Any) -> tuple[Any, ...]:
+            # ``arg_creator`` may return either a tuple of constructor args (e.g.
+            # ``(m.set_color, YELLOW)``) or a single mobject (the default identity).
+            # Only tuples are unpacked; mobjects must be passed as a single argument
+            # so animations like ``Restore(mob)`` are not called as ``Restore(*mob)``.
+            if isinstance(value, tuple):
+                return value
+            return (value,)
+
         args_list = [arg_creator(submob) for submob in mobject]
+        if not args_list:
+            raise ValueError(
+                f"LaggedStartMap cannot build animations from {mobject!r}: "
+                "it has no submobjects to map over. Pass a VGroup of the "
+                "targets to animate, or provide a non-empty mobject."
+            )
         anim_kwargs = dict(kwargs)
         if "lag_ratio" in anim_kwargs:
             anim_kwargs.pop("lag_ratio")
-        animations = [animation_class(*args, **anim_kwargs) for args in args_list]
+        animations = [
+            animation_class(*animation_args(args), **anim_kwargs)
+            for args in args_list
+        ]
         super().__init__(*animations, run_time=run_time, lag_ratio=lag_ratio)

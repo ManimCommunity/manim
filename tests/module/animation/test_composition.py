@@ -6,6 +6,7 @@ import pytest
 
 from manim.animation.animation import Animation, Wait
 from manim.animation.composition import AnimationGroup, LaggedStartMap, Succession
+from manim.animation.transform import Restore
 from manim.animation.creation import Create, Write
 from manim.animation.fading import FadeIn, FadeOut
 from manim.constants import DOWN, UP
@@ -189,6 +190,22 @@ def test_animationgroup_calls_finish():
     scene.play(animation_group)
     assert sqr_animation.finished
     assert circ_animation.finished
+
+
+def test_laggedstartmap_restore_builds_subanimations():
+    mobject = VGroup(Square(), Square().shift(UP))
+    for submob in mobject:
+        submob.save_state()
+        submob.scale(0)
+    animation = LaggedStartMap(Restore, mobject, lag_ratio=0.1, run_time=1)
+    assert len(animation.animations) == len(mobject)
+    assert all(isinstance(subanimation, Restore) for subanimation in animation.animations)
+
+
+def test_laggedstartmap_empty_mobject_raises():
+    mobject = VGroup()
+    with pytest.raises(ValueError, match="no submobjects"):
+        LaggedStartMap(Restore, mobject)
 
 
 def test_laggedstartmap_only_passes_kwargs_to_subanimations():
