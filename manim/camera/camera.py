@@ -320,31 +320,26 @@ class Camera:
         return Image.fromarray(pixel_array, mode=self.image_mode)
 
     def convert_pixel_array(
-        self, pixel_array: PixelArray | list | tuple, convert_from_floats: bool = False
+        self, pixel_array: PixelArray | list | tuple
     ) -> PixelArray:
-        """Converts a pixel array from values that have floats in then
-        to proper RGB values.
+        """Converts a pixel array with float values to proper RGB values.
 
         Parameters
         ----------
         pixel_array
             Pixel array to convert.
-        convert_from_floats
-            Whether or not to convert float values to ints, by default False
 
         Returns
         -------
         np.array
             The new, converted pixel array.
         """
-        retval = np.array(pixel_array)
-        if convert_from_floats:
-            retval = np.apply_along_axis(
-                lambda f: (f * self.rgb_max_val).astype(self.pixel_array_dtype),
-                2,
-                retval,
-            )
-        return retval
+        pixel_array = np.asarray(pixel_array)
+        return np.apply_along_axis(
+            lambda f: (f * self.rgb_max_val).astype(self.pixel_array_dtype),
+            2,
+            pixel_array,
+        )
 
     def set_pixel_array(
         self, pixel_array: PixelArray | list | tuple, convert_from_floats: bool = False
@@ -358,17 +353,19 @@ class Camera:
         convert_from_floats
             Whether or not to convert float values to proper RGB values, by default False
         """
-        converted_array: PixelArray = self.convert_pixel_array(
-            pixel_array, convert_from_floats
+        converted_array: PixelArray = (
+            self.convert_pixel_array(pixel_array)
+            if convert_from_floats
+            else np.asarray(pixel_array)
         )
-        if not (
+        if (
             hasattr(self, "pixel_array")
             and self.pixel_array.shape == converted_array.shape
         ):
-            self.pixel_array: PixelArray = converted_array
-        else:
             # Set in place
-            self.pixel_array[:, :, :] = converted_array[:, :, :]
+            np.copyto(self.pixel_array, converted_array)
+        else:
+            self.pixel_array: PixelArray = converted_array.copy()
 
     def set_background(
         self, pixel_array: PixelArray | list | tuple, convert_from_floats: bool = False
@@ -383,7 +380,11 @@ class Camera:
         convert_from_floats
             Whether or not to convert floats values to proper RGB valid ones, by default False
         """
-        self.background = self.convert_pixel_array(pixel_array, convert_from_floats)
+        self.background = (
+            self.convert_pixel_array(pixel_array)
+            if convert_from_floats
+            else np.array(pixel_array)
+        )
 
     # TODO, this should live in utils, not as a method of Camera
     def make_background_from_func(
@@ -410,7 +411,7 @@ class Camera:
         new_background = np.apply_along_axis(coords_to_colors_func, 2, coords)
         logger.info("Ending set_background")
 
-        return self.convert_pixel_array(new_background, convert_from_floats=True)
+        return self.convert_pixel_array(new_background)
 
     def set_background_from_func(
         self, coords_to_colors_func: Callable[[np.ndarray], np.ndarray]
@@ -438,20 +439,11 @@ class Camera:
             The camera object after setting the pixel array.
         """
         assert self.background is not None
-        if (
-            hasattr(self, "pixel_array")
-            and self.pixel_array.shape == self.background.shape
-        ):
-            np.copyto(self.pixel_array, self.background)
-        else:
-            self.pixel_array = self.background.copy()
+        self.set_pixel_array(self.background)
         return self
 
     def set_frame_to_background(self, background: PixelArray) -> None:
-        if hasattr(self, "pixel_array") and self.pixel_array.shape == background.shape:
-            np.copyto(self.pixel_array, background)
-        else:
-            self.pixel_array = background.copy()
+        self.set_pixel_array(background)
 
     ####
 
