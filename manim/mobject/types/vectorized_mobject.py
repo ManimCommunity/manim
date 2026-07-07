@@ -500,8 +500,10 @@ class VMobject(Mobject):
             will shrink, and for :math:`|\alpha| > 1` it will grow. Furthermore,
             if :math:`\alpha < 0`, the mobject is also flipped.
         scale_stroke
-            Boolean determining if the object's outline is scaled when the object is scaled.
-            If enabled, and object with 2px outline is scaled by a factor of .5, it will have an outline of 1px.
+            Boolean determining if each submobject's outline is scaled when the object
+            is scaled. If enabled, each submobject keeps its relative stroke width (for
+            example, a submobject with a 2px outline scaled by a factor of .5 will have
+            a 1px outline, while a submobject with 0px stroke remains at 0px).
         kwargs
             Additional keyword arguments passed to
             :meth:`~.Mobject.scale`.
@@ -538,11 +540,17 @@ class VMobject(Mobject):
 
         """
         if scale_stroke:
-            self.set_stroke(width=abs(scale_factor) * self.get_stroke_width())
-            self.set_stroke(
-                width=abs(scale_factor) * self.get_stroke_width(background=True),
-                background=True,
-            )
+            for mob in self.get_family():
+                if isinstance(mob, VMobject):
+                    mob.set_stroke(
+                        width=abs(scale_factor) * mob.get_stroke_width(),
+                        family=False,
+                    )
+                    mob.set_stroke(
+                        width=abs(scale_factor) * mob.get_stroke_width(background=True),
+                        background=True,
+                        family=False,
+                    )
         super().scale(scale_factor, about_point=about_point, about_edge=about_edge)
         return self
 
