@@ -513,7 +513,7 @@ def test_get_subpath_split_indices_from_points():
                 if end - start >= nppcc
             ]
             assert len(rebuilt) == len(reference)
-            for got, expected in zip(rebuilt, reference):
+            for got, expected in zip(rebuilt, reference, strict=True):
                 np.testing.assert_array_equal(got, expected)
 
 
