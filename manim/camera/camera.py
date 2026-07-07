@@ -319,9 +319,7 @@ class Camera:
             pixel_array = self.pixel_array
         return Image.fromarray(pixel_array, mode=self.image_mode)
 
-    def convert_pixel_array(
-        self, pixel_array: PixelArray | list | tuple
-    ) -> PixelArray:
+    def convert_pixel_array(self, pixel_array: PixelArray | list | tuple) -> PixelArray:
         """Converts a pixel array with float values to proper RGB values.
 
         Parameters
@@ -724,9 +722,7 @@ class Camera:
 
         # Subpath boundaries are computed by VMobject; a split occurs wherever
         # one curve's end anchor is not close to the next curve's start anchor.
-        split_indices = vmobject.get_subpath_split_indices_from_points(
-            points, n_dims=2
-        )
+        split_indices = vmobject.get_subpath_split_indices_from_points(points, n_dims=2)
         if len(split_indices) == 0:
             return self
 
