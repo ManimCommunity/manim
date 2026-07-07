@@ -403,17 +403,18 @@ The handles are drawn as red dots with a line to their closest anchor.
     class VMobjectDemo(Scene):
         def construct(self):
             plane = NumberPlane()
-            my_vmobject = VMobject(color=GREEN)
-            my_vmobject.points = [
-                np.array([-2, -1, 0]),  # start of first curve
-                np.array([-3, 1, 0]),
-                np.array([0, 3, 0]),
-                np.array([1, 3, 0]),  # end of first curve
-                np.array([1, 3, 0]),  # start of second curve
-                np.array([0, 1, 0]),
-                np.array([4, 3, 0]),
-                np.array([4, -2, 0]),  # end of second curve
-            ]
+            my_vmobject = VMobject(color=GREEN).set_points(
+                [
+                    [-2, -1, 0],  # start of first curve
+                    [-3, 1, 0],
+                    [0, 3, 0],
+                    [1, 3, 0],  # end of first curve
+                    [1, 3, 0],  # start of second curve
+                    [0, 1, 0],
+                    [4, 3, 0],
+                    [4, -2, 0],  # end of second curve
+                ]
+            )
             handles = [
                 Dot(point, color=RED) for point in
                 [[-3, 1, 0], [0, 3, 0], [0, 1, 0], [4, 3, 0]]

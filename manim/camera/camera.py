@@ -712,9 +712,7 @@ class Camera:
         Camera
             Camera object after setting cairo_context_path
         """
-        points = np.asarray(
-            self.transform_points_pre_display(vmobject, vmobject.points)
-        )
+        points = self.transform_points_pre_display(vmobject, vmobject.points)
         if len(points) == 0:
             return self
 
