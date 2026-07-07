@@ -712,12 +712,11 @@ class Camera:
         Camera
             Camera object after setting cairo_context_path
         """
-        points = self.transform_points_pre_display(vmobject, vmobject.points)
+        points = np.asarray(
+            self.transform_points_pre_display(vmobject, vmobject.points)
+        )
         if len(points) == 0:
             return self
-        # vmobject.points may be a Python list (see VMobjectDemo in the docs);
-        # the vectorized path-building below needs an ndarray.
-        points = np.asarray(points)
 
         nppcc = vmobject.n_points_per_cubic_curve  # 4 for cubic bezier
         atol = vmobject.tolerance_for_point_equality
@@ -725,28 +724,13 @@ class Camera:
 
         ctx.new_path()
 
-        # Find subpath split points using vectorized comparison.
-        # A split occurs where consecutive anchors (at nppcc boundaries)
-        # are NOT close — i.e., there's a gap between subpaths.
-        n_pts = len(points)
-        if n_pts < nppcc:
+        # Subpath boundaries are computed by VMobject; a split occurs wherever
+        # one curve's end anchor is not close to the next curve's start anchor.
+        split_indices = vmobject.get_subpath_split_indices_from_points(
+            points, n_dims=2
+        )
+        if len(split_indices) == 0:
             return self
-
-        # Indices where a new cubic curve starts
-        boundary_indices = np.arange(nppcc, n_pts, nppcc)
-        if len(boundary_indices) == 0:
-            # Single cubic curve — no internal boundaries to split on.
-            split_indices = np.array([0, n_pts])
-        else:
-            # Check which boundaries are splits (points NOT equal)
-            ends = points[boundary_indices - 1, :2]  # end of previous curve
-            starts = points[boundary_indices, :2]  # start of next curve
-            diffs = np.abs(ends - starts)
-            thresholds = atol + rtol * np.abs(starts)
-            is_split = np.any(diffs > thresholds, axis=1)
-
-            # Build split indices: [0, split1, split2, ..., n_pts]
-            split_indices = np.concatenate([[0], boundary_indices[is_split], [n_pts]])
 
         # Precompute flat xy array for fast indexing
         pts_xy = points[:, :2].ravel()  # [x0, y0, x1, y1, ...]
@@ -757,9 +741,9 @@ class Camera:
         _new_sub_path = ctx.new_sub_path
         _close_path = ctx.close_path
 
-        for si in range(len(split_indices) - 1):
-            start_idx = int(split_indices[si])
-            end_idx = int(split_indices[si + 1])
+        for start_idx, end_idx in split_indices:
+            start_idx = int(start_idx)
+            end_idx = int(end_idx)
             if end_idx - start_idx < nppcc:
                 continue
 
