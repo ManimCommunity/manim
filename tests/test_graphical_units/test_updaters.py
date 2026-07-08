@@ -31,7 +31,7 @@ def test_UpdateSceneDuringAnimation(scene):
         scene.add(Square())
 
     s = Circle().add_updater(f)
-    scene.play(Create(s, suspend_mobject_updating=False))
+    scene.play(GrowFromCenter(s))
 
 
 @frames_comparison(last_frame=False)
