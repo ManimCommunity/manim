@@ -327,6 +327,39 @@ class DashedLine(Line):
         self.clear_points()
         self.add(*dashes)
 
+    def _reset_dashes_from_endpoints(
+        self, start: Point3DLike, end: Point3DLike
+    ) -> None:
+        underlying = Line(np.asarray(start, dtype=float), np.asarray(end, dtype=float))
+        underlying.match_style(self)
+        for attr in ("path_arc", "buff"):
+            if hasattr(self, attr):
+                setattr(underlying, attr, getattr(self, attr))
+        if underlying.path_arc != 0:
+            underlying.generate_points()
+        num_dashes = max(
+            2,
+            int(
+                np.ceil(
+                    (underlying.get_length() / self.dash_length) * self.dashed_ratio
+                )
+            ),
+        )
+        dashes = DashedVMobject(
+            underlying,
+            num_dashes=num_dashes,
+            dashed_ratio=self.dashed_ratio,
+        )
+        self.set_submobjects(list(dashes.submobjects))
+
+    def put_start_and_end_on(
+        self,
+        start: Point3DLike,
+        end: Point3DLike,
+    ) -> Self:
+        self._reset_dashes_from_endpoints(start, end)
+        return self
+
     def _calculate_num_dashes(self) -> int:
         """Returns the number of dashes in the dashed line.
 

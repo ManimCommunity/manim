@@ -1,4 +1,6 @@
-from manim import ORIGIN, UR, Arrow, DashedLine, DashedVMobject, VGroup
+import pytest
+
+from manim import ORIGIN, RIGHT, UR, Arrow, DashedLine, DashedVMobject, VGroup
 from manim.mobject.geometry.tips import ArrowTip, StealthTip
 
 
@@ -57,3 +59,15 @@ def test_become_nonzero_to_zero_dashed_line_does_not_crash():
     normal = DashedLine(ORIGIN, 2 * UR)
     zero = DashedLine(ORIGIN, ORIGIN)
     normal.become(zero)
+
+
+def test_dashed_line_recomputes_dashes_on_put_start_and_end_on():
+    """Regression test for https://github.com/ManimCommunity/manim/issues/3989."""
+    line = DashedLine(ORIGIN, RIGHT)
+    initial_dash_length = line.submobjects[0].get_length()
+    initial_num_dashes = len(line.submobjects)
+    line.put_start_and_end_on(ORIGIN, 5 * RIGHT)
+    assert len(line.submobjects) > initial_num_dashes
+    assert line.submobjects[0].get_length() == pytest.approx(
+        initial_dash_length, rel=0.05
+    )
