@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+from unittest.mock import patch
 
 import pytest
 
@@ -159,18 +160,17 @@ def test_random_color_reproducibility_with_seed(dry_run):
         assert colors_interrupted != colors_first_run[:3]
 
 
-def test_warn_overlapping_animate_targets(caplog) -> None:
+def test_warn_overlapping_animate_targets() -> None:
     scene = Scene()
     square = Square()
     circle = Circle()
     group = VGroup(square, circle)
 
-    with caplog.at_level("WARNING", logger=logger.name):
+    with patch.object(logger, "warning") as warn:
         scene.compile_animations(
             group.animate.shift(RIGHT),
             circle.animate.set_opacity(0.5),
         )
 
-    assert any(
-        "Multiple .animate animations" in record.message for record in caplog.records
-    )
+    warn.assert_called_once()
+    assert "Multiple .animate animations" in warn.call_args[0][0]
