@@ -34,7 +34,7 @@ from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.line import Line
 from manim.mobject.svg.svg_mobject import SVGMobject
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject, VectorizedPoint
 from manim.utils.tex import TexTemplate
 from manim.utils.tex_file_writing import tex_to_svg_file
 
@@ -522,17 +522,15 @@ class MathTex(SingleStringMathTex):
         of tex_strings)
         """
         new_submobjects: list[VMobject] = []
-        try:
-            for tex_string, tex_string_id in self._main_matches:
-                mtp = MathTexPart()
-                mtp.tex_string = tex_string
-                mtp.add(*self.id_to_vgroup_dict[tex_string_id].submobjects)
-                new_submobjects.append(mtp)
-        except KeyError:
-            logger.error(
-                f"MathTex: Could not find SVG group for tex part '{tex_string}' (id: {tex_string_id}). Using fallback to root group."
-            )
-            new_submobjects.append(self.id_to_vgroup_dict["root"])
+        for tex_string, tex_string_id in self._main_matches:
+            mtp = MathTexPart()
+            mtp.tex_string = tex_string
+            vgroup = self.id_to_vgroup_dict.get(tex_string_id)
+            if vgroup is None or len(vgroup.submobjects) == 0:
+                mtp.add(VectorizedPoint())
+            else:
+                mtp.add(*vgroup.submobjects)
+            new_submobjects.append(mtp)
         self.submobjects = new_submobjects
         return self
 

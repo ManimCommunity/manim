@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from manim import MathTex, SingleStringMathTex, Tex, TexTemplate, tempconfig
+from manim import MathTex, RIGHT, SingleStringMathTex, Tex, TexTemplate, UP, tempconfig
 
 
 def test_MathTex(config):
@@ -335,3 +335,13 @@ def test_tex_garbage_collection(tmpdir, monkeypatch, config):
 
     tex_with_log = Tex("Hello World, again!")  # 45b4e7819cc20cb1.tex
     assert Path("media", "Tex", "45b4e7819cc20cb1.log").exists()
+
+
+def test_mathtex_bounding_box_stable_after_shift(config):
+    """Regression test for https://github.com/ManimCommunity/manim/issues/4643."""
+    parts = [r"\overrightarrow{", "C", "A", "}", "=", r"\bold{", "m", "}"]
+    math_tex = MathTex(*parts)
+    width_before, height_before = math_tex.width, math_tex.height
+    math_tex.shift(2 * RIGHT + UP)
+    assert math_tex.width == pytest.approx(width_before, rel=0, abs=1e-6)
+    assert math_tex.height == pytest.approx(height_before, rel=0, abs=1e-6)
