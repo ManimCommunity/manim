@@ -994,7 +994,32 @@ class Scene:
             for k, v in kwargs.items():
                 setattr(animation, k, v)
 
+        self._warn_if_overlapping_animate_targets(animations)
+
         return animations
+
+    @staticmethod
+    def _warn_if_overlapping_animate_targets(animations: list[Animation]) -> None:
+        from ..animation.transform import _MethodAnimation
+
+        method_anims = [anim for anim in animations if isinstance(anim, _MethodAnimation)]
+        if len(method_anims) < 2:
+            return
+
+        seen: set[int] = set()
+        for anim in method_anims:
+            for member in anim.mobject.get_family():
+                member_id = id(member)
+                if member_id in seen:
+                    logger.warning(
+                        "Multiple .animate animations in the same play() affect "
+                        "the same mobject (%s). Later animations override earlier "
+                        "ones for unchanged attributes; reorder arguments or "
+                        "animate mobjects individually.",
+                        member.__class__.__name__,
+                    )
+                    return
+                seen.add(member_id)
 
     def _get_animation_time_progression(
         self, animations: list[Animation], duration: float

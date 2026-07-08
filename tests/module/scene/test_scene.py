@@ -4,7 +4,7 @@ import datetime
 
 import pytest
 
-from manim import Circle, Dot, FadeIn, Group, Mobject, Scene, Square
+from manim import Circle, Dot, FadeIn, Group, Mobject, RIGHT, Scene, Square, VGroup
 from manim.animation.animation import Wait
 
 
@@ -146,3 +146,20 @@ def test_random_color_reproducibility_with_seed(dry_run):
 
         # The interrupted colors should be different (seeded with 999)
         assert colors_interrupted != colors_first_run[:3]
+
+
+def test_warn_overlapping_animate_targets(caplog) -> None:
+    scene = Scene()
+    square = Square()
+    circle = Circle()
+    group = VGroup(square, circle)
+
+    with caplog.at_level("WARNING"):
+        scene.compile_animations(
+            group.animate.shift(RIGHT),
+            circle.animate.set_opacity(0.5),
+        )
+
+    assert any(
+        "Multiple .animate animations" in record.message for record in caplog.records
+    )
