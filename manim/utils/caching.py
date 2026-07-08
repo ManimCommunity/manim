@@ -36,6 +36,7 @@ def handle_caching_play(func: Callable[..., None]) -> Callable[..., None]:
     def wrapper(self: OpenGLRenderer, scene: Scene, *args: Any, **kwargs: Any) -> None:
         self.skip_animations = self._original_skipping_status
         self.update_skipping_status()
+        skip_due_to_cache = False
         animations = scene.compile_animations(*args, **kwargs)
         scene.add_mobjects_from_animations(animations)
         if self.skip_animations:
@@ -60,6 +61,7 @@ def handle_caching_play(func: Callable[..., None]) -> Callable[..., None]:
                     {"hash_play": hash_play},
                 )
                 self.skip_animations = True
+                skip_due_to_cache = True
         else:
             hash_play = f"uncached_{self.num_plays:05}"
         self.animations_hashes.append(hash_play)
@@ -69,5 +71,8 @@ def handle_caching_play(func: Callable[..., None]) -> Callable[..., None]:
             {"h": str(self.animations_hashes[:5])},
         )
         func(self, scene, *args, **kwargs)
+        if skip_due_to_cache:
+            self.skip_animations = self._original_skipping_status
+            self.update_skipping_status()
 
     return wrapper
