@@ -4,7 +4,7 @@ import datetime
 
 import pytest
 
-from manim import RIGHT, Circle, Dot, FadeIn, Group, Mobject, Scene, Square, VGroup
+from manim import RIGHT, Circle, Dot, FadeIn, Group, Mobject, Scene, Square, VGroup, logger
 from manim.animation.animation import Wait
 
 
@@ -154,7 +154,7 @@ def test_warn_overlapping_animate_targets(caplog) -> None:
     circle = Circle()
     group = VGroup(square, circle)
 
-    with caplog.at_level("WARNING"):
+    with caplog.at_level("WARNING", logger=logger.name):
         scene.compile_animations(
             group.animate.shift(RIGHT),
             circle.animate.set_opacity(0.5),
