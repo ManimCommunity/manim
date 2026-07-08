@@ -357,6 +357,10 @@ class DashedLine(Line):
         start: Point3DLike,
         end: Point3DLike,
     ) -> Self:
+        start_arr = np.asarray(start, dtype=float)
+        end_arr = np.asarray(end, dtype=float)
+        if np.allclose(start_arr, end_arr):
+            return super().put_start_and_end_on(start, end)
         self._reset_dashes_from_endpoints(start, end)
         return self
 
