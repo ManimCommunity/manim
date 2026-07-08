@@ -71,6 +71,7 @@ class CairoRenderer:
         # Needed when rendering only some animations, and skipping others.
         self.skip_animations = self._original_skipping_status
         self.update_skipping_status()
+        skip_due_to_cache = False
 
         scene.compile_animation_data(*args, **kwargs)
 
@@ -96,6 +97,7 @@ class CairoRenderer:
                         {"hash_current_animation": hash_current_animation},
                     )
                     self.skip_animations = True
+                    skip_due_to_cache = True
                     self.time += scene.duration
         # adding None as a partial movie file will make file_writer ignore the latter.
         self.file_writer.add_partial_movie_file(hash_current_animation)
@@ -121,6 +123,9 @@ class CairoRenderer:
         self.file_writer.end_animation(not self.skip_animations)
 
         self.num_plays += 1
+        if skip_due_to_cache:
+            self.skip_animations = self._original_skipping_status
+            self.update_skipping_status()
 
     def update_frame(  # TODO Description in Docstring
         self,
