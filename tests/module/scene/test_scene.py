@@ -4,7 +4,7 @@ import datetime
 
 import pytest
 
-from manim import Circle, Dot, FadeIn, Group, Mobject, RIGHT, Scene, Square, VGroup
+from manim import RIGHT, Circle, Dot, FadeIn, Group, Mobject, Scene, Square, VGroup
 from manim.animation.animation import Wait
 
 

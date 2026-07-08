@@ -1002,7 +1002,9 @@ class Scene:
     def _warn_if_overlapping_animate_targets(animations: list[Animation]) -> None:
         from ..animation.transform import _MethodAnimation
 
-        method_anims = [anim for anim in animations if isinstance(anim, _MethodAnimation)]
+        method_anims = [
+            anim for anim in animations if isinstance(anim, _MethodAnimation)
+        ]
         if len(method_anims) < 2:
             return
 
