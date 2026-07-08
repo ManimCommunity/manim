@@ -335,3 +335,10 @@ def test_tex_garbage_collection(tmpdir, monkeypatch, config):
 
     tex_with_log = Tex("Hello World, again!")  # 45b4e7819cc20cb1.tex
     assert Path("media", "Tex", "45b4e7819cc20cb1.log").exists()
+
+
+def test_locate_first_match_multiline_substring(config) -> None:
+    unprocessed = "This is a very long string,\n    which tests the implementation."
+    match = MathTex("a")._locate_first_match(["implementation"], unprocessed)
+    assert match is not None
+    assert match.group(2) == "implementation"
