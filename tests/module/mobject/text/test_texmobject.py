@@ -5,7 +5,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from manim import MathTex, RIGHT, SingleStringMathTex, Tex, TexTemplate, UP, tempconfig
+from manim import RIGHT, UP, MathTex, SingleStringMathTex, Tex, TexTemplate, tempconfig
 
 
 def test_MathTex(config):
