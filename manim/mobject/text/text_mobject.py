@@ -1491,7 +1491,7 @@ def register_font(font_file: str | Path) -> Iterator[None]:
 
     1. Absolute path.
     2. In ``assets/fonts`` folder.
-    3. In ``font/`` folder.
+    3. In ``fonts/`` folder.
     4. In the same directory.
 
     Parameters
