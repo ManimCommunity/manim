@@ -618,18 +618,6 @@ class Text(SVGMobject):
     def _gen_chars(self) -> VGroup:
         chars = self.get_group_class()()
         submobjects_char_index = 0
-        non_space_chars = sum(1 for char in self.text if not char.isspace())
-        if non_space_chars != len(self.submobjects):
-            raise ValueError(
-                f"Text {self.original_text!r} produced {len(self.submobjects)} "
-                f"glyph(s) for {non_space_chars} non-space character(s) with "
-                "disable_ligatures=True. This usually means the chosen font "
-                "implements some of its ligatures through an OpenType feature "
-                "that isn't disabled (e.g. 'calt', used for programming "
-                "ligatures like '<=' or '->' by fonts such as Fira Code), so "
-                "characters and glyphs no longer correspond one-to-one. Try a "
-                "different font to work around this."
-            )
         for char_index in range(len(self.text)):
             if self.text[char_index].isspace():
                 space = Dot(radius=0, fill_opacity=0, stroke_opacity=0)
@@ -641,6 +629,18 @@ class Text(SVGMobject):
                     )
                 chars.add(space)
             else:
+                if submobjects_char_index >= len(self.submobjects):
+                    raise ValueError(
+                        f"Text {self.original_text!r} rendered fewer glyph(s) "
+                        "than its non-space characters even with "
+                        "disable_ligatures=True. This usually means the chosen "
+                        "font implements some of its ligatures through an "
+                        "OpenType feature that isn't disabled (e.g. 'calt', "
+                        "used for programming ligatures like '<=' or '->' by "
+                        "fonts such as Fira Code), so characters and glyphs no "
+                        "longer correspond one-to-one. Try a different font to "
+                        "work around this."
+                    )
                 chars.add(self.submobjects[submobjects_char_index])
                 submobjects_char_index += 1
         return chars

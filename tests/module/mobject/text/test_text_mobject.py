@@ -38,15 +38,27 @@ def test_font_warnings():
 
 def test_gen_chars_raises_clear_error_on_glyph_mismatch():
     """``_gen_chars`` should raise a clear, actionable error instead of an
-    opaque ``IndexError`` when the number of rendered glyphs doesn't match
-    the number of non-space characters. This happens when a font implements
-    some of its ligatures (e.g. programming ligatures like ``<=``) through
-    an OpenType feature that ``disable_ligatures`` doesn't disable, such as
-    ``calt`` (see issue #3237). This test simulates that mismatch directly,
-    without depending on any particular font being installed.
+    opaque ``IndexError`` when a font renders fewer glyphs than there are
+    non-space characters. This happens when a font implements some of its
+    ligatures (e.g. programming ligatures like ``<=``) through an OpenType
+    feature that ``disable_ligatures`` doesn't disable, such as ``calt``
+    (see issue #3237). This test simulates that mismatch directly, without
+    depending on any particular font being installed.
     """
     text = Text("ab", disable_ligatures=True)
     # Simulate a font that merged "ab" into a single ligature glyph.
     text.submobjects = text.submobjects[:1]
     with pytest.raises(ValueError, match="glyph"):
         text._gen_chars()
+
+
+def test_gen_chars_handles_spaces_with_disable_ligatures():
+    """``_gen_chars`` must not raise for ordinary text containing spaces when
+    ``disable_ligatures=True``. Spaces are rendered as their own glyph, so the
+    number of submobjects legitimately exceeds the number of non-space
+    characters; this should not be mistaken for a glyph/char mismatch.
+    """
+    text = Text("fl ligature", disable_ligatures=True)
+    chars = text._gen_chars()
+    # One entry per character of the (whitespace-stripped) indexing text.
+    assert len(chars) == len(text.text)
