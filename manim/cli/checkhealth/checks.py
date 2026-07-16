@@ -142,7 +142,7 @@ def is_manim_executable_associated_to_this_library() -> bool:
 
     # support uv toolchain's shim executable structure
     companion_script = path_to_manim + ".__script__.py"
-    if os.path.exists(companion_script):
+    if os.path.isfile(companion_script):
         with open(companion_script, "rb") as f:
             manim_exec += f.read()
 
