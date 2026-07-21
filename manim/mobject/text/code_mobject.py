@@ -164,39 +164,6 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         self._code_html = soup.find("pre")
         assert isinstance(self._code_html, Tag)
 
-        # as we are using Paragraph to render the text, we need to find the character indices
-        # of the segments of changed color in the HTML code
-        color_ranges = []
-        current_line_color_ranges = []
-        current_line_char_index = 0
-        for child in self._code_html.children:
-            if child.name == "span":
-                try:
-                    child_style = child["style"]
-                    match_ = re.match(
-                        r"color: (#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{3})", child_style
-                    )
-                    color = None if match_ is None else match_.group(1)
-                except KeyError:
-                    color = None
-                current_line_color_ranges.append(
-                    (
-                        current_line_char_index,
-                        current_line_char_index + len(child.text),
-                        color,
-                    )
-                )
-                current_line_char_index += len(child.text)
-            else:
-                for char in child.text:
-                    if char == "\n":
-                        color_ranges.append(current_line_color_ranges)
-                        current_line_color_ranges = []
-                        current_line_char_index = 0
-                    else:
-                        current_line_char_index += 1
-
-        color_ranges.append(current_line_color_ranges)
         code_lines = self._code_html.get_text().removesuffix("\n").split("\n")
 
         if paragraph_config is None:
@@ -210,9 +177,28 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
             *code_lines,
             **base_paragraph_config,
         )
-        for line, color_range in zip(self.code_lines, color_ranges, strict=False):
-            for start, end, color in color_range:
-                line[start:end].set_color(color)
+
+        i_line, i_char = 0, 0
+        for child in self._code_html.children:
+            if (
+                isinstance(child, Tag)
+                and child.name == "span"
+                and child.has_attr("style")
+            ):
+                match_ = re.match(
+                    r"color: (#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{3})", child["style"]
+                )
+                if match_ is not None:
+                    self.code_lines[i_line][
+                        i_char : i_char + len(child.text)
+                    ].set_color(match_.group(1))
+
+            for char in child.text:
+                if char == "\n":
+                    i_line += 1
+                    i_char = 0
+                else:
+                    i_char += 1
 
         if add_line_numbers:
             base_paragraph_config.update({"alignment": "right"})
@@ -251,11 +237,11 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
             ).arrange(RIGHT, buff=0.1)
             buttons.next_to(self, UP, buff=0.1).align_to(self, LEFT).shift(LEFT * 0.1)
             self.background = SurroundingRectangle(
-                VGroup(self, buttons),
-                **background_config_base,
+                VGroup(self, buttons), 
+                **background_config_base
             )
             buttons.shift(UP * 0.1 + LEFT * 0.1)
-            self.background.add(buttons)
+            self.add_to_back(buttons)
         else:
             raise ValueError(f"Unknown background type: {background}")
 
