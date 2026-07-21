@@ -90,8 +90,6 @@ class AnimationGroup(Animation):
                 "Please add at least one subanimation."
             )
         self.anim_group_time = 0.0
-        if self.suspend_mobject_updating:
-            self.group.suspend_updating()
         for anim in self.animations:
             anim.begin()
 
