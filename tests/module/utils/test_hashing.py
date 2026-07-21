@@ -3,10 +3,11 @@ from __future__ import annotations
 import json
 from zlib import crc32
 
+import numpy as np
 import pytest
 
 import manim.utils.hashing as hashing
-from manim import Square
+from manim import ImageMobject, Square
 
 ALREADY_PROCESSED_PLACEHOLDER = hashing._Memoizer.ALREADY_PROCESSED_PLACEHOLDER
 
@@ -115,11 +116,196 @@ def test_JSON_with_circular_references():
 
 
 def test_JSON_with_big_np_array():
-    import numpy as np
-
     a = np.zeros((1000, 1000))
-    o_ser = hashing.get_json(a)
-    assert "TRUNCATED ARRAY" in o_ser
+    serialized = hashing.get_json(a)
+    hashing._Memoizer.reset_already_processed()
+    assert hashing.get_json(a.copy()) == serialized
+
+    a[500, 500] = 1
+    hashing._Memoizer.reset_already_processed()
+    assert hashing.get_json(a) != serialized
+
+
+def test_JSON_with_equivalent_np_array_layouts():
+    logical = np.arange(24, dtype=np.float64).reshape(4, 6) / 3
+    serialized = hashing.get_json(np.array(logical, order="C"))
+
+    for equivalent in [
+        np.array(logical, order="F"),
+        logical.astype(logical.dtype.newbyteorder(">")),
+    ]:
+        hashing._Memoizer.reset_already_processed()
+        assert hashing.get_json(equivalent) == serialized
+
+    backing = np.empty((4, 12), dtype=np.float64)
+    backing[:, ::2] = logical
+    backing[:, 1::2] = -1
+    hashing._Memoizer.reset_already_processed()
+    assert hashing.get_json(backing[:, ::2]) == serialized
+
+
+def test_JSON_with_out_of_order_and_overlapping_structured_arrays():
+    for dtype in [
+        np.dtype(
+            {
+                "names": ["late", "early"],
+                "formats": ["<i4", "<i2"],
+                "offsets": [8, 0],
+                "itemsize": 12,
+            }
+        ),
+        np.dtype(
+            {
+                "names": ["wide", "narrow"],
+                "formats": ["<u4", "<u2"],
+                "offsets": [0, 2],
+                "itemsize": 4,
+            }
+        ),
+    ]:
+        array = np.zeros(8, dtype=dtype)
+        first_field = dtype.names[0]
+        array[first_field] = np.arange(8) + 100
+        hashing._Memoizer.reset_already_processed()
+        serialized = hashing.get_json(array)
+
+        changed = array.copy()
+        changed[first_field][4] += 1
+        hashing._Memoizer.reset_already_processed()
+        assert hashing.get_json(changed) != serialized
+
+
+def test_JSON_preserves_structured_dtype_identity_without_hashing_padding():
+    compact_dtype = np.dtype([("value", "<i4")])
+    padded_dtype = np.dtype(
+        {
+            "names": ["value"],
+            "formats": ["<i4"],
+            "offsets": [0],
+            "itemsize": 12,
+        }
+    )
+    compact = np.zeros(4, dtype=compact_dtype)
+    padded = np.zeros(4, dtype=padded_dtype)
+    compact["value"] = padded["value"] = np.arange(4)
+
+    compact_json = hashing.get_json(compact)
+    hashing._Memoizer.reset_already_processed()
+    assert hashing.get_json(padded) != compact_json
+
+    shifted_dtype = np.dtype(
+        {
+            "names": ["value"],
+            "formats": ["<i4"],
+            "offsets": [4],
+            "itemsize": 12,
+        }
+    )
+    shifted = np.zeros(4, dtype=shifted_dtype)
+    shifted["value"] = np.arange(4)
+    hashing._Memoizer.reset_already_processed()
+    shifted_json = hashing.get_json(shifted)
+    hashing._Memoizer.reset_already_processed()
+    assert shifted_json != hashing.get_json(padded)
+
+    alternate_padding = padded.copy()
+    alternate_padding.view(np.uint8).reshape(4, 12)[:, 4:] = 0xFF
+    hashing._Memoizer.reset_already_processed()
+    padded_json = hashing.get_json(padded)
+    hashing._Memoizer.reset_already_processed()
+    assert hashing.get_json(alternate_padding) == padded_json
+
+    titled = np.zeros(4, dtype=np.dtype([(("title", "value"), "<i4")]))
+    titled["value"] = np.arange(4)
+    hashing._Memoizer.reset_already_processed()
+    assert hashing.get_json(titled) != compact_json
+
+    aligned_dtype = np.dtype([("flag", "u1"), ("value", "<u4")], align=True)
+    unaligned_dtype = np.dtype(
+        {
+            "names": ["flag", "value"],
+            "formats": ["u1", "<u4"],
+            "offsets": [0, 4],
+            "itemsize": 8,
+        },
+        align=False,
+    )
+    aligned = np.zeros(4, dtype=aligned_dtype)
+    unaligned = np.zeros(4, dtype=unaligned_dtype)
+    aligned["value"] = unaligned["value"] = np.arange(4)
+    hashing._Memoizer.reset_already_processed()
+    aligned_json = hashing.get_json(aligned)
+    hashing._Memoizer.reset_already_processed()
+    assert aligned_json != hashing.get_json(unaligned)
+
+    hashing._Memoizer.reset_already_processed()
+    empty_struct_json = hashing.get_json(np.empty(4, dtype=np.dtype([])))
+    hashing._Memoizer.reset_already_processed()
+    assert hashing.get_json(np.empty(4, dtype=np.dtype("V0"))) != empty_struct_json
+
+    empty_padded_dtype = np.dtype({"names": [], "formats": [], "itemsize": 8})
+    empty_padded = np.zeros(4, dtype=empty_padded_dtype)
+    alternate_empty_padding = empty_padded.copy()
+    alternate_empty_padding.view(np.uint8)[:] = 0xFF
+    hashing._Memoizer.reset_already_processed()
+    empty_padded_json = hashing.get_json(empty_padded)
+    hashing._Memoizer.reset_already_processed()
+    assert hashing.get_json(alternate_empty_padding) == empty_padded_json
+    hashing._Memoizer.reset_already_processed()
+    assert hashing.get_json(np.zeros(4, dtype="V8")) != empty_padded_json
+
+    bytes_title = np.zeros(4, dtype=np.dtype([((b"title", "value"), "<i4")]))
+    scalar_title = np.zeros(
+        4,
+        dtype=np.dtype([((np.int64(7), "value"), "<i4")]),
+    )
+    bytes_title["value"] = scalar_title["value"] = np.arange(4)
+    hashing._Memoizer.reset_already_processed()
+    bytes_title_json = hashing.get_json(bytes_title)
+    hashing._Memoizer.reset_already_processed()
+    assert bytes_title_json != hashing.get_json(scalar_title)
+
+
+def test_play_hash_includes_mobject_pixels_but_not_camera_pixels():
+    class HashableObject:
+        def __init__(self, name: str, pixels: np.ndarray) -> None:
+            self.name = name
+            self.pixel_array = pixels
+
+        def __str__(self) -> str:
+            return self.name
+
+    scene = HashableObject("scene", np.arange(8, dtype=np.uint8))
+    camera = HashableObject("camera", np.arange(8, dtype=np.uint8))
+    mobject = ImageMobject(np.zeros((8, 8, 4), dtype=np.uint8))
+
+    original = hashing.get_hash_from_play_call(scene, camera, [], [mobject])
+    mobject.pixel_array[4, 4, 0] ^= 1
+    assert hashing.get_hash_from_play_call(scene, camera, [], [mobject]) != original
+
+    mobject.pixel_array[4, 4, 0] ^= 1
+    camera.pixel_array[0] ^= 1
+    assert hashing.get_hash_from_play_call(scene, camera, [], [mobject]) == original
+
+
+def test_play_hash_keeps_distinct_mobjects_with_equal_python_hashes():
+    class CollidingObject:
+        def __init__(self, name: str) -> None:
+            self.name = name
+
+        def __str__(self) -> str:
+            return self.name
+
+        def __hash__(self) -> int:
+            return 1
+
+    scene = CollidingObject("scene")
+    camera = CollidingObject("camera")
+    mobjects = [CollidingObject("first"), CollidingObject("second")]
+
+    original = hashing.get_hash_from_play_call(scene, camera, [], mobjects)
+    mobjects[1].name = "changed"
+    assert hashing.get_hash_from_play_call(scene, camera, [], mobjects) != original
 
 
 def test_JSON_with_tuple():

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import inspect
 import json
 import zlib
@@ -32,6 +33,58 @@ KEYS_TO_FILTER_OUT = {
     "pixel_array",
     "pixel_array_to_cairo_context",
 }
+
+
+def _canonical_field_title(title: Any) -> Any:
+    if title is None:
+        return None
+    title_type = type(title)
+    return [f"{title_type.__module__}.{title_type.__qualname__}", repr(title)]
+
+
+def _canonical_dtype_descriptor(dtype: np.dtype) -> Any:
+    canonical = dtype.newbyteorder("<")
+    if canonical.names is not None:
+        return [
+            "struct",
+            [
+                [
+                    name,
+                    _canonical_dtype_descriptor(canonical.fields[name][0]),
+                    canonical.fields[name][1],
+                    _canonical_field_title(canonical.fields[name][2])
+                    if len(canonical.fields[name]) > 2
+                    else None,
+                ]
+                for name in canonical.names or ()
+            ],
+            canonical.itemsize,
+            canonical.alignment,
+            canonical.isalignedstruct,
+        ]
+    if canonical.subdtype:
+        base, shape = canonical.subdtype
+        return ["subarray", _canonical_dtype_descriptor(base), list(shape)]
+    return canonical.str
+
+
+def _hash_ndarray(array: np.ndarray) -> str:
+    descriptor = _canonical_dtype_descriptor(array.dtype)
+    canonical_dtype = array.dtype.newbyteorder("<")
+    digest = hashlib.sha256()
+    if canonical_dtype.names is not None:
+        for name in canonical_dtype.names or ():
+            field_hash = _hash_ndarray(np.asarray(array[name])).encode()
+            digest.update(len(field_hash).to_bytes(8, "little"))
+            digest.update(field_hash)
+    else:
+        canonical = np.ascontiguousarray(
+            array.astype(canonical_dtype, copy=False),
+        )
+        digest.update(canonical)
+    encoded_descriptor = json.dumps(descriptor, separators=(",", ":"))
+    # This compacts array content before the existing CRC32 play-key pipeline.
+    return f"NDARRAY:{encoded_descriptor}:{array.shape}:{digest.hexdigest()}"
 
 
 class _Memoizer:
@@ -174,6 +227,15 @@ class _Memoizer:
 
 
 class _CustomEncoder(json.JSONEncoder):
+    def __init__(
+        self,
+        *args: Any,
+        include_pixel_array: bool = False,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        self.include_pixel_array = include_pixel_array
+
     def default(self, obj: Any) -> Any:
         """This method is used to serialize objects to JSON format.
 
@@ -217,11 +279,12 @@ class _CustomEncoder(json.JSONEncoder):
                 code = ""
             return self._cleaned_iterable({"code": code, "nonlocals": cvardict})
         elif isinstance(obj, np.ndarray):
-            if obj.size > 1000:
-                obj = np.resize(obj, (100, 100))
-                return f"TRUNCATED ARRAY: {repr(obj)}"
-            # We return the repr and not a list to avoid the JSONEncoder to iterate over it.
-            return repr(obj)
+            if obj.__class__ is not np.ndarray or obj.dtype.hasobject:
+                if obj.size > 1000:
+                    obj = np.resize(obj, (100, 100))
+                    return f"TRUNCATED ARRAY: {repr(obj)}"
+                return repr(obj)
+            return _hash_ndarray(obj)
         elif hasattr(obj, "__dict__"):
             temp = obj.__dict__
             # MappingProxy is scene-caching nightmare. It contains all of the object methods and attributes. We skip it as the mechanism will at some point process the object, but instantiated.
@@ -272,7 +335,9 @@ class _CustomEncoder(json.JSONEncoder):
             processed_dict = {}
             for k, v in dct.items():
                 v = _Memoizer.check_already_processed(v)
-                if k in KEYS_TO_FILTER_OUT:
+                if k in KEYS_TO_FILTER_OUT and not (
+                    self.include_pixel_array and k == "pixel_array"
+                ):
                     continue
                 # We check if the k is of the right format (supported by JSON)
                 if not isinstance(k, (str, int, float, bool)) and k is not None:
@@ -314,20 +379,26 @@ class _CustomEncoder(json.JSONEncoder):
         return super().encode(obj)
 
 
-def get_json(obj: Any) -> str:
+def get_json(obj: Any, *, include_pixel_array: bool = False) -> str:
     """Recursively serialize `object` to JSON using the :class:`CustomEncoder` class.
 
     Parameters
     ----------
     obj
         The dict to flatten
+    include_pixel_array
+        Whether to include pixel arrays encountered while flattening the object.
 
     Returns
     -------
     :class:`str`
         The flattened object
     """
-    return json.dumps(obj, cls=_CustomEncoder)
+    return json.dumps(
+        obj,
+        cls=_CustomEncoder,
+        include_pixel_array=include_pixel_array,
+    )
 
 
 def get_hash_from_play_call(
@@ -361,8 +432,13 @@ def get_hash_from_play_call(
     t_start = perf_counter()
     _Memoizer.mark_as_processed(scene_object)
     camera_json = get_json(camera_object)
-    animations_list_json = [get_json(x) for x in sorted(animations_list, key=str)]
-    current_mobjects_list_json = [get_json(x) for x in current_mobjects_list]
+    animations_list_json = [
+        get_json(animation, include_pixel_array=True)
+        for animation in sorted(animations_list, key=str)
+    ]
+    current_mobjects_list_json = [
+        get_json(mobject, include_pixel_array=True) for mobject in current_mobjects_list
+    ]
     hash_camera, hash_animations, hash_current_mobjects = (
         zlib.crc32(repr(json_val).encode())
         for json_val in [camera_json, animations_list_json, current_mobjects_list_json]
