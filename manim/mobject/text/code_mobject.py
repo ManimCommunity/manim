@@ -238,14 +238,14 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
             buttons.next_to(self, UP, buff=0.1).align_to(self, LEFT).shift(LEFT * 0.1)
             self.background = SurroundingRectangle(
                 VGroup(self, buttons), 
-                **background_config_base
+                **background_config_base,
             )
             buttons.shift(UP * 0.1 + LEFT * 0.1)
             self.add_to_back(buttons)
         else:
             raise ValueError(f"Unknown background type: {background}")
 
-        self.add_to_back(self.background)
+        self.background.add(buttons)
 
     @classmethod
     def get_styles_list(cls) -> list[str]:
