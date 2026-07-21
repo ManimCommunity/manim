@@ -1,4 +1,4 @@
-default_stages: [pre-commit, pre-push]
+default_stages: [pre-commit, pre-push, commit-msg]
 fail_fast: false
 exclude: ^(manim/grpc/gen/|docs/i18n/)
 repos:
@@ -43,3 +43,9 @@ repos:
             types-setuptools,
           ]
         files: ^manim/
+
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v3.27.0
+    hooks:
+      - id: commitizen
+        stages: [commit-msg]
