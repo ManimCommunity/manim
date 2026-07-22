@@ -9,4 +9,5 @@ Modules
     ~image_mobject
     ~point_cloud_mobject
     ~vectorized_mobject
+    ~video_mobject
 """
