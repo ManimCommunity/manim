@@ -319,32 +319,25 @@ class Camera:
             pixel_array = self.pixel_array
         return Image.fromarray(pixel_array, mode=self.image_mode)
 
-    def convert_pixel_array(
-        self, pixel_array: PixelArray | list | tuple, convert_from_floats: bool = False
-    ) -> PixelArray:
-        """Converts a pixel array from values that have floats in then
-        to proper RGB values.
+    def convert_pixel_array(self, pixel_array: PixelArray | list | tuple) -> PixelArray:
+        """Converts a pixel array with float values to proper RGB values.
 
         Parameters
         ----------
         pixel_array
             Pixel array to convert.
-        convert_from_floats
-            Whether or not to convert float values to ints, by default False
 
         Returns
         -------
         np.array
             The new, converted pixel array.
         """
-        retval = np.array(pixel_array)
-        if convert_from_floats:
-            retval = np.apply_along_axis(
-                lambda f: (f * self.rgb_max_val).astype(self.pixel_array_dtype),
-                2,
-                retval,
-            )
-        return retval
+        pixel_array = np.asarray(pixel_array)
+        return np.apply_along_axis(
+            lambda f: (f * self.rgb_max_val).astype(self.pixel_array_dtype),
+            2,
+            pixel_array,
+        )
 
     def set_pixel_array(
         self, pixel_array: PixelArray | list | tuple, convert_from_floats: bool = False
@@ -358,17 +351,19 @@ class Camera:
         convert_from_floats
             Whether or not to convert float values to proper RGB values, by default False
         """
-        converted_array: PixelArray = self.convert_pixel_array(
-            pixel_array, convert_from_floats
+        converted_array: PixelArray = (
+            self.convert_pixel_array(pixel_array)
+            if convert_from_floats
+            else np.asarray(pixel_array)
         )
-        if not (
+        if (
             hasattr(self, "pixel_array")
             and self.pixel_array.shape == converted_array.shape
         ):
-            self.pixel_array: PixelArray = converted_array
-        else:
             # Set in place
-            self.pixel_array[:, :, :] = converted_array[:, :, :]
+            np.copyto(self.pixel_array, converted_array)
+        else:
+            self.pixel_array: PixelArray = converted_array.copy()
 
     def set_background(
         self, pixel_array: PixelArray | list | tuple, convert_from_floats: bool = False
@@ -383,7 +378,11 @@ class Camera:
         convert_from_floats
             Whether or not to convert floats values to proper RGB valid ones, by default False
         """
-        self.background = self.convert_pixel_array(pixel_array, convert_from_floats)
+        self.background = (
+            self.convert_pixel_array(pixel_array)
+            if convert_from_floats
+            else np.array(pixel_array)
+        )
 
     # TODO, this should live in utils, not as a method of Camera
     def make_background_from_func(
@@ -410,7 +409,7 @@ class Camera:
         new_background = np.apply_along_axis(coords_to_colors_func, 2, coords)
         logger.info("Ending set_background")
 
-        return self.convert_pixel_array(new_background, convert_from_floats=True)
+        return self.convert_pixel_array(new_background)
 
     def set_background_from_func(
         self, coords_to_colors_func: Callable[[np.ndarray], np.ndarray]
@@ -437,6 +436,7 @@ class Camera:
         Camera
             The camera object after setting the pixel array.
         """
+        assert self.background is not None
         self.set_pixel_array(self.background)
         return self
 
@@ -711,22 +711,64 @@ class Camera:
             Camera object after setting cairo_context_path
         """
         points = self.transform_points_pre_display(vmobject, vmobject.points)
-        # TODO, shouldn't this be handled in transform_points_pre_display?
-        # points = points - self.get_frame_center()
         if len(points) == 0:
             return self
 
+        nppcc = vmobject.n_points_per_cubic_curve  # 4 for cubic bezier
+        atol = vmobject.tolerance_for_point_equality
+        rtol = 1.0e-5
+
         ctx.new_path()
-        subpaths = vmobject.gen_subpaths_from_points_2d(points)
-        for subpath in subpaths:
-            quads = vmobject.gen_cubic_bezier_tuples_from_points(subpath)
-            ctx.new_sub_path()
-            start = subpath[0]
-            ctx.move_to(*start[:2])
-            for _p0, p1, p2, p3 in quads:
-                ctx.curve_to(*p1[:2], *p2[:2], *p3[:2])
-            if vmobject.consider_points_equals_2d(subpath[0], subpath[-1]):
-                ctx.close_path()
+
+        # Subpath boundaries are computed by VMobject; a split occurs wherever
+        # one curve's end anchor is not close to the next curve's start anchor.
+        split_indices = vmobject.get_subpath_split_indices_from_points(points, n_dims=2)
+        if len(split_indices) == 0:
+            return self
+
+        # Precompute flat xy array for fast indexing
+        pts_xy = points[:, :2].ravel()  # [x0, y0, x1, y1, ...]
+
+        # Local references for speed (avoid attribute lookups in loop)
+        _move_to = ctx.move_to
+        _curve_to = ctx.curve_to
+        _new_sub_path = ctx.new_sub_path
+        _close_path = ctx.close_path
+
+        for start_idx, end_idx in split_indices:
+            start_idx = int(start_idx)
+            end_idx = int(end_idx)
+            if end_idx - start_idx < nppcc:
+                continue
+
+            _new_sub_path()
+            # move_to first point
+            base = start_idx * 2
+            _move_to(pts_xy[base], pts_xy[base + 1])
+
+            # Emit all cubic curves in this subpath.
+            # Points are: [anchor, handle1, handle2, anchor, handle1, handle2, anchor, ...]
+            # Each curve uses indices 1,2,3 relative to the start of each group of 4.
+            for i in range(start_idx, end_idx - nppcc + 1, nppcc):
+                b = (i + 1) * 2  # handle1
+                _curve_to(
+                    pts_xy[b],
+                    pts_xy[b + 1],
+                    pts_xy[b + 2],
+                    pts_xy[b + 3],
+                    pts_xy[b + 4],
+                    pts_xy[b + 5],
+                )
+
+            # Close if first and last points are equal
+            last_base = (end_idx - 1) * 2
+            dx = abs(pts_xy[base] - pts_xy[last_base])
+            dy = abs(pts_xy[base + 1] - pts_xy[last_base + 1])
+            if dx <= atol + rtol * abs(pts_xy[last_base]) and dy <= atol + rtol * abs(
+                pts_xy[last_base + 1]
+            ):
+                _close_path()
+
         return self
 
     def set_cairo_context_color(
