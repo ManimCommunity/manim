@@ -7,6 +7,7 @@ This page contains a list of changes made between releases.
 .. toctree::
     :maxdepth: 1
 
+    changelog/experimental
     changelog/0.20.1-changelog
     changelog/0.20.0-changelog
     changelog/0.19.2-changelog

@@ -22,9 +22,10 @@ from manim.constants import ORIGIN, UP
 from manim.utils.space_ops import get_unit_normal
 
 if TYPE_CHECKING:
+    from manim.mobject.opengl.opengl_vectorized_mobject import (
+        OpenGLVMobject as VMobject,
+    )
     from manim.typing import Point3D, Vector3D
-
-    from ..types.vectorized_mobject import VMobject
 
 
 def get_3d_vmob_gradient_start_and_end_points(

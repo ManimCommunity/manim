@@ -1,3 +1,5 @@
+import pytest
+
 from manim.constants import LEFT
 from manim.mobject.graphing.probability import BarChart
 from manim.mobject.text.tex_mobject import MathTex
@@ -7,6 +9,7 @@ from manim.utils.testing.frames_comparison import frames_comparison
 __module_test__ = "probability"
 
 
+@pytest.mark.slow
 @frames_comparison
 def test_default_chart(scene):
     pull_req = [54, 23, 47, 48, 40, 64, 112, 87]
