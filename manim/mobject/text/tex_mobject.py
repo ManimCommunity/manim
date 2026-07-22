@@ -660,6 +660,7 @@ class BulletedList(Tex):
         buff: float = MED_LARGE_BUFF,
         dot_scale_factor: float = 2,
         tex_environment: str | None = None,
+        dot_buff: float = SMALL_BUFF,
         **kwargs: Any,
     ):
         self.buff = buff
@@ -673,7 +674,7 @@ class BulletedList(Tex):
         )
         for part in self:
             dot = MathTex("\\cdot").scale(self.dot_scale_factor)
-            dot.next_to(part[0], LEFT, SMALL_BUFF)
+            dot.next_to(part[0], LEFT, dot_buff)
             part.add_to_back(dot)
         self.arrange(DOWN, aligned_edge=LEFT, buff=self.buff)
 
