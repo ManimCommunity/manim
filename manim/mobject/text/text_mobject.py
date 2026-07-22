@@ -615,6 +615,8 @@ class Text(SVGMobject):
         if height is None and width is None:
             self.scale(TEXT_MOB_SCALE_FACTOR)
         self.initial_height = self.height
+        for submobj in self.submobjects:
+            submobj.set(**kwargs)
 
     def __repr__(self) -> str:
         return f"Text({repr(self.original_text)})"
@@ -1328,6 +1330,8 @@ class MarkupText(SVGMobject):
             self.scale(TEXT_MOB_SCALE_FACTOR)
 
         self.initial_height = self.height
+        for submobj in self.submobjects:
+            submobj.set(**kwargs)
 
     @property
     def font_size(self) -> float:
