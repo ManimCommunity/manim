@@ -158,6 +158,7 @@ class CairoRenderer:
             self.camera.reset()
 
         kwargs["include_submobjects"] = include_submobjects
+        kwargs["excluded_mobjects"] = [mob for mob in mobjects if not mob.should_render]
         self.camera.capture_mobjects(mobjects, **kwargs)
 
     def render(
