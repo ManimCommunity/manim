@@ -49,12 +49,20 @@ class _Memoizer:
 
     _already_processed = set()
 
+    """Transient objects created during serialisation (eg the closure variable dict built for every updater or rate function)
+    are freed mid-pass, and when a later allocation reuses one of those addresses the fresh object is incorrectly collapsed to
+    the "already processed" placeholder. This results in the play hash depending on a race, meaning an identical scene can produce
+    different partial-movie-file hashes from run to run, resulting in unnecessary re-renders of already cached partials.
+    """
+    _keep_alive = []
+
     # Can be changed to whatever string to help debugging the JSon generation.
     ALREADY_PROCESSED_PLACEHOLDER = "AP"
     THRESHOLD_WARNING = 170_000
 
     @classmethod
     def reset_already_processed(cls: type[_Memoizer]) -> None:
+        cls._keep_alive.clear()
         cls._already_processed.clear()
 
     @classmethod
@@ -150,6 +158,7 @@ class _Memoizer:
         default_func: Callable[[Any], Any],
         memoizing: bool = True,
     ) -> str | Any:
+        cls._keep_alive.append(obj)
         # hash() values and id() addresses are both raw ints that share no meaning, so entries are tagged with
         # their signature kind: in an untagged set, a hash() value that numerically equals a recorded id() address
         # (or vice versa) collapses a never-processed object to the placeholder. Whether such a coincidence occurs

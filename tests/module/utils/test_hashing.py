@@ -186,3 +186,41 @@ def test_memoizer_does_not_confuse_hash_and_id_signatures():
 
     hashing._Memoizer.check_already_processed(HashCollidingWithLiveId())
     assert hashing._Memoizer.check_already_processed(unhashable) is unhashable
+
+
+def test_memoizer_does_not_confuse_fresh_objects_with_dead_ones():
+    """
+    A fresh object must never be reported as already processed just because it was allocated at the address of a
+    dead object recorded earlier in the same pass (membership signs are id-derived, and ids are only unique among
+    simultaneously live objects).
+    """
+    transient = {"value": 1}
+    hashing._Memoizer.check_already_processed(transient)
+    del transient
+    for i in range(10):
+        fresh = {"value": i + 2}
+        assert hashing._Memoizer.check_already_processed(fresh) is fresh
+        del fresh
+
+
+def test_sibling_closures_are_not_collapsed_to_placeholder():
+    """
+    Serializing many closures in one pass builds a transient closure-vars dict per closure (via inspect.getclosurevars).
+    These share nothing, so none of them may collapse to the already-processed placeholder — yet without the
+    keep-alive fix, dead dicts' reused addresses collapse most of them.
+    """
+
+    def make_closure(k):
+        def closure(x):
+            return x + k
+
+        return closure
+
+    closures = [make_closure(k) for k in range(20)]
+    entries = json.loads(hashing.get_json(closures))
+    assert len(entries) == 20
+    for k, entry in enumerate(entries):
+        assert entry != ALREADY_PROCESSED_PLACEHOLDER
+        assert entry["nonlocals"] == {"k": k}, (
+            f"closure {k} collapsed: {entry['nonlocals']!r}"
+        )
