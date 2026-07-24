@@ -49,11 +49,10 @@ class _Memoizer:
 
     _already_processed = set()
 
-    """Transient objects created during serialisation (eg the closure variable dict built for every updater or rate function)
-    are freed mid-pass, and when a later allocation reuses one of those addresses the fresh object is incorrectly collapsed to
-    the "already processed" placeholder. This results in the play hash depending on a race, meaning an identical scene can produce
-    different partial-movie-file hashes from run to run, resulting in unnecessary re-renders of already cached partials.
-    """
+    # Transient objects created during serialisation (eg the closure variable dict built for every updater or rate function)
+    # are freed mid-pass, and when a later allocation reuses one of those addresses the fresh object is incorrectly collapsed to
+    # the "already processed" placeholder. This results in the play hash depending on a race, meaning an identical scene can produce
+    # different partial-movie-file hashes from run to run, resulting in unnecessary re-renders of already cached partials.
     _keep_alive = []
 
     # Can be changed to whatever string to help debugging the JSon generation.
