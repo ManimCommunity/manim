@@ -1,4 +1,4 @@
-"""Mobjects used to display Text using Pango or LaTeX.
+"""Mobjects used to display Text using Pango, LaTeX, or Typst.
 
 Modules
 =======
@@ -10,4 +10,5 @@ Modules
     ~numbers
     ~tex_mobject
     ~text_mobject
+    ~typst_mobject
 """
