@@ -8,8 +8,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
-from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 from manim.utils.paths import straight_path
 
 if TYPE_CHECKING:
@@ -18,7 +17,7 @@ if TYPE_CHECKING:
     from manim.typing import PathFuncType
 
 
-class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
+class ValueTracker(Mobject):
     """A mobject that can be used for tracking (real-valued) parameters.
     Useful for animating parameter changes.
 

@@ -597,25 +597,25 @@ Special Camera Settings
 
 .. manim:: FixedInFrameMObjectTest
     :save_last_frame:
-    :ref_classes: ThreeDScene
-    :ref_methods: ThreeDScene.set_camera_orientation ThreeDScene.add_fixed_in_frame_mobjects
+    :ref_classes: Scene
+    :ref_methods: Camera.set_orientation OpenGLMobject.fix_in_frame
 
-    class FixedInFrameMObjectTest(ThreeDScene):
+    class FixedInFrameMObjectTest(Scene):
         def construct(self):
             axes = ThreeDAxes()
-            self.set_camera_orientation(phi=75 * DEGREES, theta=-45 * DEGREES)
+            self.camera.set_orientation(theta=-45 * DEGREES, phi=75 * DEGREES)
             text3d = Text("This is a 3D text")
-            self.add_fixed_in_frame_mobjects(text3d)
+            text3d.fix_in_frame()
             text3d.to_corner(UL)
             self.add(axes)
             self.wait()
 
 .. manim:: ThreeDLightSourcePosition
     :save_last_frame:
-    :ref_classes: ThreeDScene ThreeDAxes Surface
-    :ref_methods: ThreeDScene.set_camera_orientation
+    :ref_classes: Scene ThreeDAxes Surface
+    :ref_methods: Camera.set_orientation
 
-    class ThreeDLightSourcePosition(ThreeDScene):
+    class ThreeDLightSourcePosition(Scene):
         def construct(self):
             axes = ThreeDAxes()
             sphere = Surface(
@@ -626,49 +626,57 @@ Special Camera Settings
                 ]), v_range=[0, TAU], u_range=[-PI / 2, PI / 2],
                 checkerboard_colors=[RED_D, RED_E], resolution=(15, 32)
             )
-            self.renderer.camera.light_source.move_to(3*IN) # changes the source of the light
-            self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+            # TODO: implement light source
+            self.camera.light_source.move_to(3*IN) # changes the source of the light
+            self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
             self.add(axes, sphere)
 
 
 .. manim:: ThreeDCameraRotation
-    :ref_classes: ThreeDScene ThreeDAxes
-    :ref_methods: ThreeDScene.begin_ambient_camera_rotation ThreeDScene.stop_ambient_camera_rotation
+    :ref_classes: Circle Scene ThreeDAxes
+    :ref_methods: Camera.begin_ambient_rotation Camera.stop_ambient_rotation
 
-    class ThreeDCameraRotation(ThreeDScene):
+    class ThreeDCameraRotation(Scene):
         def construct(self):
             axes = ThreeDAxes()
-            circle=Circle()
-            self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+            circle = Circle()
+            self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
             self.add(circle,axes)
-            self.begin_ambient_camera_rotation(rate=0.1)
+            self.camera.begin_ambient_rotation(rate=0.1)
+            self.add(self.camera)
             self.wait()
-            self.stop_ambient_camera_rotation()
-            self.move_camera(phi=75 * DEGREES, theta=30 * DEGREES)
+            self.camera.stop_ambient_rotation()
+            self.play(
+                self.camera.animate.set_orientation(
+                    theta=30 * DEGREES, phi=75 * DEGREES
+                ),
+            )
             self.wait()
 
-.. manim:: ThreeDCameraIllusionRotation
-    :ref_classes: ThreeDScene ThreeDAxes
-    :ref_methods: ThreeDScene.begin_3dillusion_camera_rotation ThreeDScene.stop_3dillusion_camera_rotation
+.. manim:: ThreeDCameraPrecession
+    :ref_classes: Circle Scene ThreeDAxes
+    :ref_methods: Camera.begin_precession Camera.stop_precession
 
-    class ThreeDCameraIllusionRotation(ThreeDScene):
+    class ThreeDCameraPrecession(Scene):
         def construct(self):
             axes = ThreeDAxes()
-            circle=Circle()
-            self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
+            circle = Circle()
+            self.camera.set_orientation(theta=30 * DEGREES, phi=75 * DEGREES)
             self.add(circle,axes)
-            self.begin_3dillusion_camera_rotation(rate=2)
+            self.camera.begin_precession(rate=2)
+            self.add(self.camera)
             self.wait(PI/2)
-            self.stop_3dillusion_camera_rotation()
+            self.camera.stop_precession()
 
 .. manim:: ThreeDSurfacePlot
    :save_last_frame:
-   :ref_classes: ThreeDScene Surface
+   :ref_classes: Scene Surface
+   :ref_methods: Camera.set_orientation
 
-   class ThreeDSurfacePlot(ThreeDScene):
+   class ThreeDSurfacePlot(Scene):
        def construct(self):
            resolution_fa = 24
-           self.set_camera_orientation(phi=75 * DEGREES, theta=-30 * DEGREES)
+           self.camera.set_orientation(theta=-30 * DEGREES, phi=75 * DEGREES)
 
            def param_gauss(u, v):
                x = u

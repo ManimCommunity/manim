@@ -13,8 +13,7 @@ from isosurfaces import plot_isoline
 
 from manim import config
 from manim.mobject.graphing.scale import LinearBase, _ScaleBase
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.types.vectorized_mobject import VMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject as VMobject
 
 if TYPE_CHECKING:
     from typing import Any, Self
@@ -25,7 +24,7 @@ if TYPE_CHECKING:
 from manim.utils.color import PURE_YELLOW
 
 
-class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
+class ParametricFunction(VMobject):
     """A parametric curve.
 
     Parameters
@@ -66,7 +65,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
     .. manim:: ThreeDParametricSpring
         :save_last_frame:
 
-        class ThreeDParametricSpring(ThreeDScene):
+        class ThreeDParametricSpring(Scene):
             def construct(self):
                 curve1 = ParametricFunction(
                     lambda u: (
@@ -77,7 +76,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
                 ).set_shade_in_3d(True)
                 axes = ThreeDAxes()
                 self.add(axes, curve1)
-                self.set_camera_orientation(phi=80 * DEGREES, theta=-60 * DEGREES)
+                self.camera.set_orientation(theta=-60 * DEGREES, phi=80 * DEGREES)
                 self.wait()
 
     .. attention::
@@ -237,7 +236,7 @@ class FunctionGraph(ParametricFunction):
         return self.parametric_function(x)
 
 
-class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
+class ImplicitFunction(VMobject):
     def __init__(
         self,
         func: Callable[[float, float], float],

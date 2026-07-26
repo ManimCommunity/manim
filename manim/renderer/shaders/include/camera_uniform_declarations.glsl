@@ -1,8 +1,11 @@
-uniform vec2 frame_shape;
-uniform float anti_alias_width;
-uniform vec3 camera_center;
-uniform mat3 camera_rotation;
-uniform float is_fixed_in_frame;
-uniform float is_fixed_orientation;
-uniform vec3 fixed_orientation_center;
-uniform float focal_distance;
+#ifndef CAMERA_GLSL
+#define CAMERA_GLSL
+layout(std140) uniform ubo_camera
+{
+    // mat4 u_projection_view_matrix; # TODO: convert to mat4 instead of the following...
+    vec2 frame_shape;
+    vec3 camera_center;
+    mat3 camera_rotation;
+    float focal_distance;
+};
+#endif // CAMERA_GLSL

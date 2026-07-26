@@ -33,12 +33,11 @@ from typing import Any, Self
 from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.line import Line
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup as VGroup
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject as VMobject
 from manim.mobject.svg.svg_mobject import SVGMobject
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.tex import TexTemplate
 from manim.utils.tex_file_writing import tex_to_svg_file
-
-from ..opengl.opengl_compatibility import ConvertToOpenGL
 
 MATHTEX_SUBSTRING = "substring"
 
@@ -67,15 +66,12 @@ class SingleStringMathTex(SVGMobject):
         color: ParsableManimColor | None = None,
         **kwargs: Any,
     ):
-        if color is None:
-            color = VMobject().color
-
         self._font_size = font_size
         self.organize_left_to_right = organize_left_to_right
         self.tex_environment = tex_environment
         if tex_template is None:
-            tex_template = config["tex_template"]
-        self.tex_template: TexTemplate = tex_template
+            tex_template = config.tex_template
+        self.tex_template = tex_template
 
         self.tex_string = tex_string
         file_name = tex_to_svg_file(
@@ -312,7 +308,7 @@ class MathTex(SingleStringMathTex):
             # Save the original tex_string
             self.tex_string = self.arg_separator.join(self.tex_strings)
             self._break_up_by_substrings()
-        except ValueError as compilation_error:
+        except ValueError:
             if self.brace_notation_split_occurred:
                 logger.error(
                     dedent(
@@ -326,7 +322,7 @@ class MathTex(SingleStringMathTex):
                         """,
                     ),
                 )
-            raise compilation_error
+            raise
         self.set_color_by_tex_to_color_map(self.tex_to_color_map)
 
         if self.organize_left_to_right:
@@ -534,6 +530,12 @@ class MathTex(SingleStringMathTex):
             )
             new_submobjects.append(self.id_to_vgroup_dict["root"])
         self.submobjects = new_submobjects
+
+        # 5 hours of work went into this line
+        # and it's still not perfect
+        # July 18, 2024
+        self.note_changed_family()
+
         return self
 
     def get_part_by_tex(self, tex: str, **kwargs: Any) -> VGroup | None:
@@ -595,9 +597,10 @@ class MathTex(SingleStringMathTex):
 
     def sort_alphabetically(self) -> None:
         self.submobjects.sort(key=lambda m: m.get_tex_string())
+        self.note_changed_family()
 
 
-class MathTexPart(VMobject, metaclass=ConvertToOpenGL):
+class MathTexPart(VMobject):
     tex_string: str
 
     def __repr__(self) -> str:

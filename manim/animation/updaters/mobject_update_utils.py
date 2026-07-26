@@ -3,12 +3,9 @@
 from __future__ import annotations
 
 __all__ = [
-    "assert_is_mobject_method",
     "always",
     "f_always",
     "always_redraw",
-    "always_shift",
-    "always_rotate",
     "turn_animation_into_updater",
     "cycle_animation",
 ]
@@ -16,44 +13,59 @@ __all__ = [
 
 import inspect
 from collections.abc import Callable
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 import numpy as np
 
 from manim.constants import DEGREES, RIGHT
-from manim.mobject.mobject import Mobject
-from manim.opengl import OpenGLMobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
 from manim.utils.space_ops import normalize
 
 if TYPE_CHECKING:
-    from manim.animation.animation import Animation
+    import types
+    from typing import Concatenate
+
+    from typing_extensions import ParamSpec, TypeIs
+
+    from manim.animation.protocol import MobjectAnimation
+    from manim.typing import Vector3DLike
+
+    P = ParamSpec("P")
 
 
 M = TypeVar("M", bound=Mobject)
 
 
-def assert_is_mobject_method(method: Callable) -> None:
-    assert inspect.ismethod(method)
-    mobject = method.__self__
-    assert isinstance(mobject, (Mobject, OpenGLMobject))
+# TODO: figure out how to typehint as MethodType[Mobject] to avoid the cast
+# madness in always/f_always
+def is_mobject_method(method: Callable[..., Any]) -> TypeIs[types.MethodType]:
+    return inspect.ismethod(method) and isinstance(method.__self__, Mobject)
 
 
-def always(method: Callable, *args, **kwargs) -> Mobject:
-    assert_is_mobject_method(method)
-    mobject = method.__self__
+def always(
+    method: Callable[Concatenate[M, P], object], *args: P.args, **kwargs: P.kwargs
+) -> M:
+    if not is_mobject_method(method):
+        raise ValueError("always must take a method of a Mobject")
+    mobject = cast(M, method.__self__)
     func = method.__func__
     mobject.add_updater(lambda m: func(m, *args, **kwargs))
     return mobject
 
 
-def f_always(method: Callable[[M], None], *arg_generators, **kwargs) -> M:
+def f_always(
+    method: Callable[Concatenate[M, ...], None],
+    *arg_generators: Callable[[], object],
+    **kwargs,
+) -> M:
     """
     More functional version of always, where instead
     of taking in args, it takes in functions which output
     the relevant arguments.
     """
-    assert_is_mobject_method(method)
-    mobject = method.__self__
+    if not is_mobject_method(method):
+        raise ValueError("f_always must take a method of a Mobject")
+    mobject = cast(M, method.__self__)
     func = method.__func__
 
     def updater(mob):
@@ -79,7 +91,6 @@ def always_redraw(func: Callable[[], M]) -> M:
 
     Examples
     --------
-
     .. manim:: TangentAnimation
 
         class TangentAnimation(Scene):
@@ -109,9 +120,7 @@ def always_redraw(func: Callable[[], M]) -> M:
     return mob
 
 
-def always_shift(
-    mobject: M, direction: np.ndarray[np.float64] = RIGHT, rate: float = 0.1
-) -> M:
+def always_shift(mobject: M, direction: Vector3DLike = RIGHT, rate: float = 0.1) -> M:
     """A mobject which is continuously shifted along some direction
     at a certain rate.
 
@@ -148,7 +157,7 @@ def always_shift(
     return mobject
 
 
-def always_rotate(mobject: M, rate: float = 20 * DEGREES, **kwargs) -> M:
+def always_rotate(mobject: M, rate: float = 20 * DEGREES, **kwargs: Any) -> M:
     """A mobject which is continuously rotated at a certain rate.
 
     Parameters
@@ -182,8 +191,10 @@ def always_rotate(mobject: M, rate: float = 20 * DEGREES, **kwargs) -> M:
 
 
 def turn_animation_into_updater(
-    animation: Animation, cycle: bool = False, delay: float = 0, **kwargs
-) -> Mobject:
+    animation: MobjectAnimation[M],
+    cycle: bool = False,
+    delay: float = 0,
+) -> M:
     """
     Add an updater to the animation's mobject which applies
     the interpolation and update functions of the animation
@@ -212,10 +223,12 @@ def turn_animation_into_updater(
     mobject = animation.mobject
     animation.suspend_mobject_updating = False
     animation.begin()
-    animation.total_time = -delay
 
-    def update(m: Mobject, dt: float):
-        if animation.total_time >= 0:
+    total_time = -delay
+
+    def update(m: M, dt: float):
+        nonlocal total_time
+        if total_time >= 0:
             run_time = animation.get_run_time()
 
             # handle zero/negative runtime safely
@@ -227,7 +240,7 @@ def turn_animation_into_updater(
                 m.remove_updater(update)
                 return
 
-            time_ratio = animation.total_time / run_time
+            time_ratio = total_time / run_time
             if cycle:
                 alpha = time_ratio % 1
             else:
@@ -238,11 +251,11 @@ def turn_animation_into_updater(
                     return
             animation.interpolate(alpha)
             animation.update_mobjects(dt)
-        animation.total_time += dt
+        total_time += dt
 
     mobject.add_updater(update)
     return mobject
 
 
-def cycle_animation(animation: Animation, **kwargs) -> Mobject:
+def cycle_animation(animation: MobjectAnimation[M], **kwargs) -> M:
     return turn_animation_into_updater(animation, cycle=True, **kwargs)

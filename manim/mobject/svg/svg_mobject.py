@@ -11,7 +11,8 @@ import numpy as np
 import svgelements as se
 
 from manim import config, logger
-from manim.utils.color import ManimColor, ParsableManimColor
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup as VGroup
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject as VMobject
 
 from ...constants import RIGHT
 from ...utils.bezier import get_quadratic_approximation_of_cubic
@@ -20,8 +21,6 @@ from ...utils.iterables import hash_obj
 from ..geometry.arc import Circle
 from ..geometry.line import Line
 from ..geometry.polygram import Polygon, Rectangle, RoundedRectangle
-from ..opengl.opengl_compatibility import ConvertToOpenGL
-from ..types.vectorized_mobject import VGroup, VMobject
 
 __all__ = ["SVGMobject", "VMobjectFromSVGPath"]
 
@@ -33,7 +32,7 @@ def _convert_point_to_3d(x: float, y: float) -> np.ndarray:
     return np.array([x, y, 0.0])
 
 
-class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
+class SVGMobject(VMobject):
     """A vectorized mobject created from importing an SVG file.
 
     Parameters
@@ -100,36 +99,21 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         should_center: bool = True,
         height: float | None = 2,
         width: float | None = None,
-        color: ParsableManimColor | None = None,
         opacity: float | None = None,
-        fill_color: ParsableManimColor | None = None,
-        fill_opacity: float | None = None,
-        stroke_color: ParsableManimColor | None = None,
-        stroke_opacity: float | None = None,
-        stroke_width: float | None = None,
         svg_default: dict | None = None,
         path_string_config: dict | None = None,
         use_svg_cache: bool = True,
         **kwargs: Any,
     ):
-        super().__init__(color=None, stroke_color=None, fill_color=None, **kwargs)
+        super().__init__(**kwargs)
 
         # process keyword arguments
         self.file_name = Path(file_name) if file_name is not None else None
-
         self.should_center = should_center
         self.svg_height = height
         self.svg_width = width
-        self.color = ManimColor(color)
         self.opacity = opacity
-        self.fill_color = fill_color
-        self.fill_opacity = fill_opacity  # type: ignore[assignment]
-        self.stroke_color = stroke_color
-        self.stroke_opacity = stroke_opacity  # type: ignore[assignment]
-        self.stroke_width = stroke_width  # type: ignore[assignment]
         self.id_to_vgroup_dict: dict[str, VGroup] = {}
-        if self.stroke_width is None:
-            self.stroke_width = 0
 
         if svg_default is None:
             svg_default = {
@@ -137,24 +121,20 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                 "opacity": None,
                 "fill_color": None,
                 "fill_opacity": None,
-                "stroke_width": 0,
+                "stroke_width": [0],
                 "stroke_color": None,
                 "stroke_opacity": None,
             }
         self.svg_default = svg_default
 
-        if path_string_config is None:
-            path_string_config = {}
-        self.path_string_config = path_string_config
+        self.path_string_config = path_string_config or {}
 
         self.init_svg_mobject(use_svg_cache=use_svg_cache)
 
         self.set_style(
-            fill_color=fill_color,
-            fill_opacity=fill_opacity,
-            stroke_color=stroke_color,
-            stroke_opacity=stroke_opacity,
-            stroke_width=stroke_width,
+            fill_color=self.fill_color,
+            stroke_color=self.stroke_color,
+            stroke_width=self.stroke_width,
         )
         self.move_into_position()
 
@@ -497,7 +477,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             self.set(width=self.svg_width)
 
 
-class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
+class VMobjectFromSVGPath(VMobject):
     """A vectorized mobject representing an SVG path.
 
     .. note::
@@ -547,13 +527,12 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
 
         self.handle_commands()
 
-        if config.renderer == "opengl":
-            if self.should_subdivide_sharp_curves:
-                # For a healthy triangulation later
-                self.subdivide_sharp_curves()
-            if self.should_remove_null_curves:
-                # Get rid of any null curves
-                self.set_points(self.get_points_without_null_curves())
+        if self.should_subdivide_sharp_curves:
+            # For a healthy triangulation later
+            self.subdivide_sharp_curves()
+        if self.should_remove_null_curves:
+            # Get rid of any null curves
+            self.set_points(self.get_points_without_null_curves())
 
     def init_points(self) -> None:
         self.generate_points()

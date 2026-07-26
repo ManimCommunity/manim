@@ -266,6 +266,44 @@ You can also skip rendering all animations belonging to a section like this:
 
 
 
+Groups
+******
+Sections are a powerful tool to organize your animations into different parts. However, sometimes it's
+more useful to look at bigger parts of your animations. *Groups* are effectively sections of sections.
+
+The syntax is fairly simple::
+
+    class MyScene(Scene):
+        # enable groups
+        groups_api = True
+
+        @group
+        def introduction(self) -> None:
+            self.play(Write(Text("Hello World!")))
+            self.next_section(...)
+            self.play(Write(Text("This is a group!")))
+            self.next_section(...)
+
+        @group
+        def main_part(self) -> None:
+            self.play(Write(Text("This is the main part!")))
+            self.next_section(...)
+            self.play(Write(Text("This is a group as well!")))
+            self.next_section(...)
+
+        @group
+        def conclusion(self) -> None:
+            self.play(FadeOut(*self.mobjects))
+
+You can then play specific groups by using the ``--groups`` flag::
+
+    manim --groups introduction,conclusion scene.py
+
+Note that they must be separated by commas and without spaces.
+Alternatively, you can set it on Manim's global ``config`` variable::
+
+    config.groups = ["introduction", "conclusion"]
+
 
 Some command line flags
 ***********************

@@ -1,0 +1,34 @@
+from __future__ import annotations
+
+import contextlib
+from collections.abc import Callable
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from typing import Any
+
+    from manim.event_handler.event_type import EventType
+    from manim.mobject.opengl.opengl_mobject import OpenGLMobject as Mobject
+
+
+class EventListener:
+    def __init__(
+        self,
+        mobject: Mobject,
+        event_type: EventType,
+        event_callback: Callable[[Mobject, dict[str, str]], None],
+    ) -> None:
+        self.mobject = mobject
+        self.event_type = event_type
+        self.callback = event_callback
+
+    def __eq__(self, other: Any) -> bool:
+        return_val = False
+        if isinstance(other, EventListener):
+            with contextlib.suppress(Exception):
+                return_val = (
+                    self.callback == other.callback
+                    and self.mobject == other.mobject
+                    and self.event_type == other.event_type
+                )
+        return return_val

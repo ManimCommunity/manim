@@ -104,7 +104,7 @@ def test_to_rgb() -> None:
 def test_to_hex() -> None:
     color = ManimColor((0x1, 0x2, 0x3, 0x4))
     nt.assert_equal(color.to_hex(), "#010203")
-    nt.assert_equal(color.to_hex(True), "#01020304")
+    nt.assert_equal(color.to_hex(with_alpha=True), "#01020304")
 
 
 def test_to_hsv() -> None:
@@ -143,7 +143,7 @@ def test_invert() -> None:
 def test_invert_with_alpha() -> None:
     color = ManimColor((0x1, 0x2, 0x3, 0x4))
     rgba = color._internal_value
-    inverted = color.invert(True)
+    inverted = color.invert(with_alpha=True)
     nt.assert_array_equal(
         inverted._internal_value, (1 - rgba[0], 1 - rgba[1], 1 - rgba[2], 1 - rgba[3])
     )
@@ -182,10 +182,10 @@ def test_mc_from_functions() -> None:
     nt.assert_equal(color.to_hex(), "#FFFF00")
 
     color = ManimColor.from_rgba((1.0, 1.0, 0.0, 1.0))
-    nt.assert_equal(color.to_hex(True), "#FFFF00FF")
+    nt.assert_equal(color.to_hex(with_alpha=True), "#FFFF00FF")
 
     color = ManimColor.from_hsv((1.0, 1.0, 1.0), alpha=0.0)
-    nt.assert_equal(color.to_hex(True), "#FF000000")
+    nt.assert_equal(color.to_hex(with_alpha=True), "#FF000000")
 
 
 def test_hsv_init() -> None:

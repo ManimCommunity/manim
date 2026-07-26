@@ -4,7 +4,6 @@ import logging
 import sys
 from pathlib import Path
 
-import cairo
 import moderngl
 import pytest
 
@@ -20,7 +19,6 @@ def pytest_report_header(config):
         raise Exception("Error while creating moderngl context") from e
 
     return (
-        f"\nCairo Version: {cairo.cairo_version()}",
         "\nOpenGL information",
         "------------------",
         f"vendor: {info['GL_VENDOR'].strip()}",
@@ -118,10 +116,15 @@ def reset_cfg_file():
 
 
 @pytest.fixture
-def using_opengl_renderer(config):
-    """Standard fixture for running with opengl that makes tests use a standard_config.cfg with a temp dir."""
-    config.renderer = "opengl"
-    yield
-    # as a special case needed to manually revert back to cairo
-    # due to side effects of setting the renderer
-    config.renderer = "cairo"
+def using_opengl_renderer():
+    """Standard fixture for running with opengl that makes tests use a standard_config.cfg with a temp dir.
+
+    .. warning::
+
+        As of experimental, this fixture is deprecated and should not be using
+    """
+
+
+@pytest.fixture
+def write_to_movie(config):
+    config.write_to_movie = True

@@ -4,7 +4,6 @@ __all__ = ["OpenGLPMobject", "OpenGLPGroup", "OpenGLPMPoint"]
 
 from typing import TYPE_CHECKING
 
-import moderngl
 import numpy as np
 
 from manim.constants import *
@@ -18,7 +17,6 @@ from manim.utils.color import (
     color_gradient,
     color_to_rgba,
 )
-from manim.utils.config_ops import _Uniforms
 from manim.utils.iterables import resize_with_interpolation
 
 if TYPE_CHECKING:
@@ -35,25 +33,17 @@ __all__ = ["OpenGLPMobject", "OpenGLPGroup", "OpenGLPMPoint"]
 
 
 class OpenGLPMobject(OpenGLMobject):
-    shader_folder = "true_dot"
     # Scale for consistency with cairo units
     OPENGL_POINT_RADIUS_SCALE_FACTOR = 0.01
-    shader_dtype = [
-        ("point", np.float32, (3,)),
-        ("color", np.float32, (4,)),
-    ]
-
-    point_radius = _Uniforms()
 
     def __init__(
         self,
         stroke_width: float = 2.0,
         color: ParsableManimColor = PURE_YELLOW,
-        render_primitive: int = moderngl.POINTS,
         **kwargs,
     ):
         self.stroke_width = stroke_width
-        super().__init__(color=color, render_primitive=render_primitive, **kwargs)
+        super().__init__(color=color, **kwargs)
         self.point_radius = (
             self.stroke_width * OpenGLPMobject.OPENGL_POINT_RADIUS_SCALE_FACTOR
         )
@@ -148,21 +138,26 @@ class OpenGLPMobject(OpenGLMobject):
     def filter_out(self, condition):
         for mob in self.family_members_with_points():
             to_keep = ~np.apply_along_axis(condition, 1, mob.points)
-            for key in mob.data:
-                mob.data[key] = mob.data[key][to_keep]
+            for attr_name in mob.get_array_attrs():
+                array = getattr(mob, attr_name)
+                filtered_array = array[to_keep]
+                setattr(mob, attr_name, filtered_array)
         return self
 
     def sort_points(self, function=lambda p: p[0]):
         """function is any map from R^3 to R"""
         for mob in self.family_members_with_points():
             indices = np.argsort(np.apply_along_axis(function, 1, mob.points))
-            for key in mob.data:
-                mob.data[key] = mob.data[key][indices]
+            for attr_name in mob.get_array_attrs():
+                array = getattr(mob, attr_name)
+                sorted_array = array[indices]
+                setattr(mob, attr_name, sorted_array)
         return self
 
     def ingest_submobjects(self):
-        for key in self.data:
-            self.data[key] = np.vstack([sm.data[key] for sm in self.get_family()])
+        for attr_name in self.get_array_attrs():
+            submob_arrays = [getattr(sm, attr_name) for sm in self.get_family()]
+            setattr(self, attr_name, np.vstack(submob_arrays))
         return self
 
     def point_from_proportion(self, alpha):
@@ -172,15 +167,11 @@ class OpenGLPMobject(OpenGLMobject):
     def pointwise_become_partial(self, pmobject, a, b):
         lower_index = int(a * pmobject.get_num_points())
         upper_index = int(b * pmobject.get_num_points())
-        for key in self.data:
-            self.data[key] = pmobject.data[key][lower_index:upper_index]
+        for attr_name in self.get_array_attrs():
+            pmob_array = getattr(pmobject, attr_name)
+            partial_pmob_array = pmob_array[lower_index:upper_index]
+            setattr(self, attr_name, partial_pmob_array)
         return self
-
-    def get_shader_data(self):
-        shader_data = np.zeros(len(self.points), dtype=self.shader_dtype)
-        self.read_data_to_shader(shader_data, "point", "points")
-        self.read_data_to_shader(shader_data, "color", "rgbas")
-        return shader_data
 
     @staticmethod
     def get_mobject_type_class():

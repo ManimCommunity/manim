@@ -34,8 +34,6 @@ def handle_caching_play(func: Callable[..., None]) -> Callable[..., None]:
     # method has to be deleted.
 
     def wrapper(self: OpenGLRenderer, scene: Scene, *args: Any, **kwargs: Any) -> None:
-        self.skip_animations = self._original_skipping_status
-        self.update_skipping_status()
         animations = scene.compile_animations(*args, **kwargs)
         scene.add_mobjects_from_animations(animations)
         if self.skip_animations:
