@@ -283,6 +283,7 @@ class ManimConfig(MutableMapping):
         "log_dir",
         "log_to_file",
         "max_files_cached",
+        "max_inflight_encoders",
         "media_dir",
         "movie_file_extension",
         "notify_outdated_version",
@@ -605,6 +606,7 @@ class ManimConfig(MutableMapping):
             "from_animation_number",
             "upto_animation_number",
             "max_files_cached",
+            "max_inflight_encoders",
             # the next two must be set BEFORE digesting frame_width and frame_height
             "pixel_height",
             "pixel_width",
@@ -1226,6 +1228,22 @@ class ManimConfig(MutableMapping):
     @max_files_cached.setter
     def max_files_cached(self, value: int) -> None:
         self._set_pos_number("max_files_cached", value, True)
+
+    @property
+    def max_inflight_encoders(self) -> int:
+        """Maximum number of partial movie files encoded concurrently while the
+        scene continues rendering. 1 encodes each animation's file before the
+        next animation starts; values > 1 overlap encoding with rendering
+        (4 is a good value on typical hardware). No flag.
+        """
+        return self._d["max_inflight_encoders"]
+
+    @max_inflight_encoders.setter
+    def max_inflight_encoders(self, value: int) -> None:
+        if isinstance(value, int) and value >= 1:
+            self._d.__setitem__("max_inflight_encoders", value)
+        else:
+            raise ValueError("max_inflight_encoders must be a positive integer")
 
     @property
     def window_monitor(self) -> int:

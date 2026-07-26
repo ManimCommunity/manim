@@ -1,0 +1,404 @@
+from __future__ import annotations
+
+import sys
+import textwrap
+import threading
+from unittest.mock import Mock
+
+import av
+import numpy as np
+import pytest
+
+from manim import FadeIn, Scene, Square, capture, tempconfig
+
+_ENCODER_THREAD_PREFIX = "partial-movie-encoder-"
+_UNIQUE_PLAYS = 30
+_TOTAL_PLAYS = _UNIQUE_PLAYS + 2
+
+_SCENE_NAME = "ParallelEncodingCacheScene"
+# Animation hashing memoizes objects by mixed hash()/id() signatures, so a
+# rare collision (heap-address reuse, per-process str-hash seeds) can flip one
+# play's cache key. Rendering in fresh interpreters (like the neighboring
+# subprocess-based tests) keeps that rate low but not zero, so the cache
+# assertions below distinguish a rare flip from a systematic regression.
+_SCENE_SOURCE = textwrap.dedent(
+    f"""\
+    from manim import FadeIn, Scene, Square
+
+
+    class {_SCENE_NAME}(Scene):
+        def construct(self):
+            for index in range({_UNIQUE_PLAYS}):
+                square = Square(side_length=0.2 + index / 100)
+                self.play(FadeIn(square), run_time=0.1)
+                self.clear()
+
+            self.play(FadeIn(Square(side_length=0.75)), run_time=0.1)
+            self.clear()
+            self.play(FadeIn(Square(side_length=0.75)), run_time=0.1)
+    """
+)
+
+
+def _alive_encoder_threads():
+    return [
+        thread
+        for thread in threading.enumerate()
+        if thread.name.startswith(_ENCODER_THREAD_PREFIX) and thread.is_alive()
+    ]
+
+
+def _render_scene(media_dir, scene_file):
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--media_dir",
+        str(media_dir),
+        str(scene_file),
+        _SCENE_NAME,
+    ]
+    _, err, exit_code = capture(command)
+    assert exit_code == 0, err
+    quality_directory = media_dir / "videos" / scene_file.stem / "480p15"
+    return quality_directory, quality_directory / "partial_movie_files" / _SCENE_NAME
+
+
+@pytest.mark.slow
+def test_parallel_encoding_cache_behavior(tmp_path):
+    scene_file = tmp_path / "parallel_encoding_scenes.py"
+    scene_file.write_text(_SCENE_SOURCE)
+
+    # The duplicate tail play must cache-hit within the run (one file fewer
+    # than the number of plays); that hit exercises the writer's in-flight
+    # lookup while the first tail file may still be encoding. A hash collision
+    # (see note above) can rarely split the duplicate pair, in which case that
+    # path was not exercised, so retry once in a fresh media dir; two splits
+    # in a row indicate a real caching regression.
+    for attempt in range(2):
+        media_dir = tmp_path / f"attempt{attempt}"
+        quality_directory, partial_directory = _render_scene(media_dir, scene_file)
+        partial_movies = sorted(partial_directory.glob("*.mp4"))
+        if len(partial_movies) == _TOTAL_PLAYS - 1:
+            break
+    assert len(partial_movies) == _TOTAL_PLAYS - 1
+    assert (quality_directory / f"{_SCENE_NAME}.mp4").exists()
+    for partial_movie in partial_movies:
+        with av.open(partial_movie) as container:
+            next(container.decode(video=0))
+
+    partial_snapshot = {
+        partial_movie.name: partial_movie.stat().st_mtime_ns
+        for partial_movie in partial_movies
+    }
+
+    _render_scene(media_dir, scene_file)
+
+    second_snapshot = {
+        partial_movie.name: partial_movie.stat().st_mtime_ns
+        for partial_movie in sorted(partial_directory.glob("*.mp4"))
+    }
+    # Every cached partial must survive the second render untouched (not withstanding
+    # the rare hash collisions mentioned above). A play or two as extra files
+    # might be expected, but systematic growth means caching is broken.
+    for name, mtime_ns in partial_snapshot.items():
+        assert second_snapshot.get(name) == mtime_ns
+    assert len(second_snapshot) <= len(partial_snapshot) + 2
+
+
+@pytest.mark.slow
+def test_no_encoder_threads_survive_render(config, tmp_path):
+    class ThreadSweepScene(Scene):
+        def construct(self):
+            for index in range(3):
+                square = Square(side_length=0.3 + index / 10)
+                self.play(FadeIn(square), run_time=0.1)
+                self.clear()
+
+    with tempconfig({"media_dir": tmp_path, "quality": "low_quality"}):
+        scene = ThreadSweepScene()
+        scene.render()
+
+    assert not _alive_encoder_threads()
+
+
+def _frame():
+    return np.zeros((4, 4, 4), dtype=np.uint8)
+
+
+def _new_encode_job(tmp_path, monkeypatch, name, stream, container):
+    from manim.scene.scene_file_writer import _PartialMovieEncodeJob
+
+    job = _PartialMovieEncodeJob(
+        path=tmp_path / f"{name}.mp4",
+        animation_index=0,
+        stream=Mock(),
+        container=Mock(),
+    )
+    monkeypatch.setattr(job, "stream", stream)
+    monkeypatch.setattr(job, "container", container)
+    return job
+
+
+def _assert_failed_join(job, expected_exception):
+    job.thread.join(timeout=5)
+    assert not job.thread.is_alive(), "Partial movie encoder did not finish"
+
+    with pytest.raises(type(expected_exception)) as exc_info:
+        job.join()
+
+    assert exc_info.value is expected_exception
+    assert not _alive_encoder_threads()
+
+
+def test_encode_failure_propagates_and_drains_bounded_queue(
+    tmp_path,
+    monkeypatch,
+    manim_caplog,
+):
+    expected_exception = RuntimeError("encode failed")
+    encode_failed = threading.Event()
+    stream = Mock()
+    container = Mock()
+
+    def encode(*args):
+        if args:
+            encode_failed.set()
+            raise expected_exception
+        return []
+
+    stream.encode.side_effect = encode
+    job = _new_encode_job(tmp_path, monkeypatch, "encode_failure", stream, container)
+    job.put(1, _frame())
+    assert encode_failed.wait(timeout=2), "Encode failure was not triggered"
+
+    def fill_queue_and_seal():
+        for _ in range(job.queue.maxsize + 1):
+            job.put(1, _frame())
+        job.seal()
+
+    producer = threading.Thread(target=fill_queue_and_seal, daemon=True)
+    producer.start()
+    producer.join(timeout=5)
+    assert not producer.is_alive(), "Producer deadlocked on the bounded queue"
+
+    _assert_failed_join(job, expected_exception)
+    container.close.assert_called_once_with()
+    assert "Partial movie file written" not in manim_caplog.text
+
+
+def test_flush_failure_propagates_and_closes_container(
+    tmp_path,
+    monkeypatch,
+    manim_caplog,
+):
+    expected_exception = RuntimeError("flush failed")
+    stream = Mock()
+    container = Mock()
+
+    def encode(*args):
+        if args:
+            return []
+        raise expected_exception
+
+    stream.encode.side_effect = encode
+    job = _new_encode_job(tmp_path, monkeypatch, "flush_failure", stream, container)
+    job.put(1, _frame())
+    job.seal()
+
+    _assert_failed_join(job, expected_exception)
+    container.close.assert_called_once_with()
+    assert "Partial movie file written" not in manim_caplog.text
+
+
+def test_close_failure_propagates_after_close_attempt(
+    tmp_path,
+    monkeypatch,
+    manim_caplog,
+):
+    expected_exception = RuntimeError("close failed")
+    stream = Mock()
+    stream.encode.return_value = []
+    container = Mock()
+    container.close.side_effect = expected_exception
+    job = _new_encode_job(tmp_path, monkeypatch, "close_failure", stream, container)
+    job.put(1, _frame())
+    job.seal()
+
+    _assert_failed_join(job, expected_exception)
+    container.close.assert_called_once_with()
+    assert "Partial movie file written" not in manim_caplog.text
+
+
+def test_encode_failure_precedes_close_failure_and_removes_partial(
+    tmp_path,
+    monkeypatch,
+    manim_caplog,
+):
+    expected_exception = RuntimeError("encode failed")
+    close_exception = RuntimeError("close failed")
+    stream = Mock()
+    container = Mock()
+
+    def encode(*args):
+        if args:
+            raise expected_exception
+        return []
+
+    stream.encode.side_effect = encode
+    container.close.side_effect = close_exception
+    job = _new_encode_job(
+        tmp_path,
+        monkeypatch,
+        "encode_and_close_failure",
+        stream,
+        container,
+    )
+    job.path.write_bytes(b"stale")
+    job.put(1, _frame())
+    job.seal()
+
+    _assert_failed_join(job, expected_exception)
+    container.close.assert_called_once_with()
+    assert not job.path.exists()
+    assert "Partial movie file written" not in manim_caplog.text
+
+
+def test_successful_encode_job_logs_partial_movie_written(
+    tmp_path,
+    monkeypatch,
+    manim_caplog,
+):
+    stream = Mock()
+    stream.encode.return_value = []
+    container = Mock()
+    job = _new_encode_job(tmp_path, monkeypatch, "encode_success", stream, container)
+    job.put(1, _frame())
+    job.seal()
+
+    job.join()
+
+    container.close.assert_called_once_with()
+    assert "Partial movie file written" in manim_caplog.text
+    assert not _alive_encoder_threads()
+
+
+@pytest.mark.parametrize("max_inflight_encoders", [1, 2, 3])
+def test_close_partial_movie_stream_respects_cap_and_joins_fifo(
+    config,
+    tmp_path,
+    max_inflight_encoders,
+):
+    from manim.scene.scene_file_writer import SceneFileWriter
+
+    config.max_inflight_encoders = max_inflight_encoders
+    renderer = Mock()
+    renderer.num_plays = 0
+    writer = SceneFileWriter(renderer, "EncoderCapScene")
+    jobs = [Mock(path=tmp_path / f"partial_{index}.mp4") for index in range(3)]
+
+    for index, job in enumerate(jobs):
+        writer._current_encode_job = job
+        writer.close_partial_movie_stream()
+
+        closed_jobs = jobs[: index + 1]
+        expected_joined = max(
+            0,
+            len(closed_jobs) - max_inflight_encoders + 1,
+        )
+        expected_inflight = closed_jobs[expected_joined:]
+        assert writer._inflight_encode_jobs == expected_inflight
+        assert writer._inflight_by_path == {
+            str(inflight_job.path): inflight_job for inflight_job in expected_inflight
+        }
+        assert len(writer._inflight_encode_jobs) < max_inflight_encoders
+
+        for joined_job in closed_jobs[:expected_joined]:
+            joined_job.join.assert_called_once_with()
+            assert str(joined_job.path) not in writer._inflight_by_path
+        for inflight_job in expected_inflight:
+            inflight_job.join.assert_not_called()
+            assert writer._inflight_by_path[str(inflight_job.path)] is inflight_job
+
+    for job in jobs:
+        job.seal.assert_called_once_with()
+
+
+def test_is_already_cached_joins_same_path_inflight_job(config, tmp_path):
+    from manim.scene.scene_file_writer import SceneFileWriter
+
+    renderer = Mock()
+    renderer.num_plays = 0
+    writer = SceneFileWriter(renderer, "CachedInflightScene")
+    hash_invocation = "same_path_hash"
+    path = (
+        writer.partial_movie_directory
+        / f"{hash_invocation}{config['movie_file_extension']}"
+    )
+    job = Mock(path=path)
+    writer._inflight_encode_jobs.append(job)
+    writer._inflight_by_path[str(path)] = job
+
+    writer.is_already_cached(hash_invocation)
+
+    job.join.assert_called_once_with()
+    assert writer._inflight_encode_jobs == []
+    assert writer._inflight_by_path == {}
+
+
+def test_open_partial_movie_stream_joins_same_path_inflight_job(config, tmp_path):
+    from manim.scene.scene_file_writer import SceneFileWriter
+
+    renderer = Mock()
+    renderer.num_plays = 0
+    writer = SceneFileWriter(renderer, "OpenInflightScene")
+    path = tmp_path / "same_path.mp4"
+    inflight_job = Mock(path=path)
+    writer._inflight_encode_jobs.append(inflight_job)
+    writer._inflight_by_path[str(path)] = inflight_job
+
+    writer.open_partial_movie_stream(file_path=path)
+    current_job = writer._current_encode_job
+    assert current_job is not None
+    try:
+        inflight_job.join.assert_called_once_with()
+        assert writer._inflight_encode_jobs == []
+        assert writer._inflight_by_path == {}
+    finally:
+        current_job.seal()
+        current_job.join()
+        writer._current_encode_job = None
+
+    assert not _alive_encoder_threads()
+
+
+def test_finish_propagates_join_failure_and_clears_inflight_state(
+    config,
+    tmp_path,
+    monkeypatch,
+):
+    from manim.scene.scene_file_writer import SceneFileWriter
+
+    expected_exception = RuntimeError("join failed")
+    renderer = Mock()
+    renderer.num_plays = 0
+    writer = SceneFileWriter(renderer, "JoinFailureScene")
+    failing_job = Mock(path=tmp_path / "failing.mp4")
+    failing_job.join.side_effect = expected_exception
+    succeeding_job = Mock(path=tmp_path / "succeeding.mp4")
+    writer._inflight_encode_jobs.extend([failing_job, succeeding_job])
+    writer._inflight_by_path[str(failing_job.path)] = failing_job
+    writer._inflight_by_path[str(succeeding_job.path)] = succeeding_job
+    combine_to_movie = Mock()
+    monkeypatch.setattr(writer, "combine_to_movie", combine_to_movie)
+
+    with pytest.raises(RuntimeError) as exc_info:
+        writer.finish()
+
+    assert exc_info.value is expected_exception
+    failing_job.join.assert_called_once_with()
+    succeeding_job.join.assert_called_once_with()
+    assert writer._inflight_encode_jobs == []
+    assert writer._inflight_by_path == {}
+    combine_to_movie.assert_not_called()
