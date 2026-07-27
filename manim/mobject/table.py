@@ -369,30 +369,72 @@ class Table(VGroup):
         self.horizontal_lines = line_group
         return self
 
+    def _get_column_x_edges(self, col_index: int) -> tuple[float, float]:
+        """Return the ``(left, right)`` x-coordinates of a column's arranged slot.
+
+        When ``col_widths`` (in :attr:`arrange_in_grid_config`) makes a slot wider
+        than its contents, grid lines should follow the slot edges rather than the
+        content bounding box. With no width set, the slot equals the content, so
+        the previous behaviour is preserved.
+
+        Parameters
+        ----------
+        col_index
+            Index of the column whose slot edges are returned.
+        """
+        col = self.get_columns()[col_index]
+        left, right = col.get_left()[0], col.get_right()[0]
+
+        # Column labels shift the column indexing relative to ``col_widths``; keep
+        # the original content-based behaviour in that case to avoid mismatches.
+        if self.row_labels is not None or self.col_labels is not None:
+            return left, right
+
+        col_widths = self.arrange_in_grid_config.get("col_widths")
+        if (
+            col_widths is None
+            or col_index >= len(col_widths)
+            or col_widths[col_index] is None
+        ):
+            return left, right
+
+        width = col_widths[col_index]
+        col_alignments = self.arrange_in_grid_config.get("col_alignments")
+        align = None
+        if col_alignments is not None and col_index < len(col_alignments):
+            align = col_alignments[col_index]
+        if align == "l":
+            return left, left + width
+        if align == "r":
+            return right - width, right
+        # centered within the slot (arrange_in_grid's default alignment)
+        center_x = col.get_center()[0]
+        return center_x - width / 2, center_x + width / 2
+
     def _add_vertical_lines(self) -> Table:
         """Adds the vertical lines to the table"""
         anchor_top = self.get_rows().get_top()[1] + 0.5 * self.v_buff
         anchor_bottom = self.get_rows().get_bottom()[1] - 0.5 * self.v_buff
         line_group = VGroup()
+        num_cols = len(self.get_columns())
         if self.include_outer_lines:
-            anchor = self.get_columns()[0].get_left()[0] - 0.5 * self.h_buff
+            anchor = self._get_column_x_edges(0)[0] - 0.5 * self.h_buff
             line = Line(
                 [anchor, anchor_top, 0], [anchor, anchor_bottom, 0], **self.line_config
             )
             line_group.add(line)
             self.add(line)
-            anchor = self.get_columns()[-1].get_right()[0] + 0.5 * self.h_buff
+            anchor = self._get_column_x_edges(num_cols - 1)[1] + 0.5 * self.h_buff
             line = Line(
                 [anchor, anchor_top, 0], [anchor, anchor_bottom, 0], **self.line_config
             )
             line_group.add(line)
             self.add(line)
         if self.include_inner_lines:
-            for k in range(len(self.mob_table[0]) - 1):
-                anchor = self.get_columns()[k + 1].get_left()[0] + 0.5 * (
-                    self.get_columns()[k].get_right()[0]
-                    - self.get_columns()[k + 1].get_left()[0]
-                )
+            for k in range(num_cols - 1):
+                left_col_right = self._get_column_x_edges(k)[1]
+                right_col_left = self._get_column_x_edges(k + 1)[0]
+                anchor = 0.5 * (left_col_right + right_col_left)
                 line = Line(
                     [anchor, anchor_bottom, 0],
                     [anchor, anchor_top, 0],
@@ -797,24 +839,24 @@ class Table(VGroup):
                     self.add(table, cell)
         """
         row = self.get_rows()[pos[0] - 1]
-        col = self.get_columns()[pos[1] - 1]
+        col_left, col_right = self._get_column_x_edges(pos[1] - 1)
         edge_UL = [
-            col.get_left()[0] - self.h_buff / 2,
+            col_left - self.h_buff / 2,
             row.get_top()[1] + self.v_buff / 2,
             0,
         ]
         edge_UR = [
-            col.get_right()[0] + self.h_buff / 2,
+            col_right + self.h_buff / 2,
             row.get_top()[1] + self.v_buff / 2,
             0,
         ]
         edge_DL = [
-            col.get_left()[0] - self.h_buff / 2,
+            col_left - self.h_buff / 2,
             row.get_bottom()[1] - self.v_buff / 2,
             0,
         ]
         edge_DR = [
-            col.get_right()[0] + self.h_buff / 2,
+            col_right + self.h_buff / 2,
             row.get_bottom()[1] - self.v_buff / 2,
             0,
         ]
