@@ -337,9 +337,14 @@ class Table(VGroup):
 
     def _add_horizontal_lines(self) -> Table:
         """Adds the horizontal lines to the table."""
-        anchor_left = min(self.get_left()[0], self._get_column_x_edges(0)[0]) - 0.5 * self.h_buff
+        anchor_left = (
+            min(self.get_left()[0], self._get_column_x_edges(0)[0]) - 0.5 * self.h_buff
+        )
         anchor_right = (
-            max(self.get_right()[0], self._get_column_x_edges(len(self.get_columns()) - 1)[1])
+            max(
+                self.get_right()[0],
+                self._get_column_x_edges(len(self.get_columns()) - 1)[1],
+            )
             + 0.5 * self.h_buff
         )
         line_group = VGroup()
