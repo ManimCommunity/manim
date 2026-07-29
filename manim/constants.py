@@ -63,6 +63,9 @@ __all__ = [
     "DEFAULT_POINT_DENSITY_1D",
     "DEFAULT_STROKE_WIDTH",
     "DEFAULT_FONT_SIZE",
+    "DEFAULT_FONT_SIZE_IN_WORLD_SPACE",
+    "DEFAULT_FONTSIZE_IN_WORLD_SPACE",
+    "DEFAULT_FONT_SIZE_IN_WOLRD_SPACE",
     "SCALE_FACTOR_PER_FONT_POINT",
     "PI",
     "TAU",
@@ -177,12 +180,25 @@ DEFAULT_MOBJECT_TO_MOBJECT_BUFFER = MED_SMALL_BUFF
 DEFAULT_POINTWISE_FUNCTION_RUN_TIME = 3.0
 DEFAULT_WAIT_TIME = 1.0
 
+# Font calculation
+DEFAULT_FONT_SIZE_IN_WORLD_SPACE = 0.5
+"""Length occupied by an 'EM' character in manim space, when manim default font size is used.
+An example of an 'EM' character is the em dash: '—'.
+The chosen value is an arbitrary convention."""
+DEFAULT_FONT_SIZE_IN_WOLRD_SPACE = DEFAULT_FONT_SIZE_IN_WORLD_SPACE
+DEFAULT_FONTSIZE_IN_WORLD_SPACE = DEFAULT_FONT_SIZE_IN_WORLD_SPACE
+
 # Misc
 DEFAULT_POINT_DENSITY_2D = 25
 DEFAULT_POINT_DENSITY_1D = 10
 DEFAULT_STROKE_WIDTH = 4
 DEFAULT_FONT_SIZE = 48
-SCALE_FACTOR_PER_FONT_POINT = 1 / 960
+SCALE_FACTOR_PER_FONT_POINT = (  # legacy, not used in code anymore
+    DEFAULT_FONT_SIZE_IN_WORLD_SPACE
+    / 10  # LaTeX default font size in pixels
+    / DEFAULT_FONT_SIZE
+)
+"""Downscale factor from LaTeX pixel to world space, divided by DEFAULT_FONT_SIZE"""
 
 # Mathematical constants
 PI = np.pi
