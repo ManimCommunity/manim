@@ -1391,7 +1391,8 @@ class VMobject(Mobject):
         split is introduced wherever two consecutive anchors differ. This is
         the vectorized equivalent of the comparison done by
         :meth:`consider_points_equals` (or :meth:`consider_points_equals_2d`
-        when ``n_dims == 2``).
+        when ``n_dims == 2``), matching their handling of non-finite
+        coordinates (``NaN``/``inf``) as well.
 
         Parameters
         ----------
@@ -1421,12 +1422,26 @@ class VMobject(Mobject):
             return np.array([[0, n_pts]])
 
         # A boundary is a split where the previous curve's end anchor is not
-        # close to the next curve's start anchor.
+        # close to the next curve's start anchor. These are the exact
+        # vectorized transcriptions of the scalar comparison methods, so they
+        # agree on non-finite coordinates too (where the plain tolerance
+        # formula would diverge from np.isclose/np.allclose).
         rtol = 1.0e-5  # default from np.isclose()
         atol = self.tolerance_for_point_equality
         ends = points[boundary_indices - 1, :n_dims]  # end of previous curve
         starts = points[boundary_indices, :n_dims]  # start of next curve
-        is_split = np.any(np.abs(ends - starts) > atol + rtol * np.abs(starts), axis=1)
+        if n_dims == 2:
+            # Mirror consider_points_equals_2d: x is an early-reject guard and
+            # y is the returned comparison, so they exit through different code.
+            thresholds = atol + rtol * np.abs(starts)
+            diffs = np.abs(ends - starts)
+            x_reject = diffs[:, 0] > thresholds[:, 0]
+            y_equal = diffs[:, 1] <= thresholds[:, 1]
+            is_split = x_reject | ~y_equal
+        else:
+            # Mirror consider_points_equals (i.e. np.allclose): NaN is never
+            # close, and inf is compared by exact equality.
+            is_split = ~np.all(np.isclose(ends, starts, rtol=rtol, atol=atol), axis=1)
 
         split_points = np.concatenate([[0], boundary_indices[is_split], [n_pts]])
         return np.stack([split_points[:-1], split_points[1:]], axis=1)
