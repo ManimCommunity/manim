@@ -150,7 +150,13 @@ class _Memoizer:
         default_func: Callable[[Any], Any],
         memoizing: bool = True,
     ) -> str | Any:
-        obj_membership_sign = obj_to_membership_sign(obj)
+        # hash() values and id() addresses are both raw ints that share no meaning, so entries are tagged with
+        # their signature kind: in an untagged set, a hash() value that numerically equals a recorded id() address
+        # (or vice versa) collapses a never-processed object to the placeholder. Whether such a coincidence occurs
+        # varies from process to process (str hashes are randomized), making play hashes unstable across identical
+        # runs and causing unnecessary re-renders of already cached partial movie files.
+        sign_kind = "h" if obj_to_membership_sign is hash else "i"
+        obj_membership_sign = (sign_kind, obj_to_membership_sign(obj))
         if obj_membership_sign in cls._already_processed:
             return cls.ALREADY_PROCESSED_PLACEHOLDER
         if memoizing:
