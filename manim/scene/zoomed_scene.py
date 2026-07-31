@@ -155,6 +155,58 @@ class ZoomedScene(MovingCameraScene):
             self.zoomed_display,
         )
 
+    def deactivate_zooming(self, animate: bool = False) -> None:
+        """This method is used to deactivate the zooming for the zoomed_camera.
+
+        It reverses the effects of :meth:`activate_zooming`, removing the
+        zoomed camera frame and the zoomed display from the scene.
+        If zooming is not currently activated, nothing happens.
+
+        Parameters
+        ----------
+        animate
+            Whether or not to animate the deactivation
+            of the zoomed camera.
+        """
+        if not self.zoom_activated:
+            return
+        frame = self.zoomed_camera.frame
+        display = self.zoomed_display
+        if animate:
+            frame.save_state()
+            # save_state cannot be used for the display: its pixel array is
+            # reshaped while animating, which makes a later restore fail.
+            display_height = display.height
+            display_width = display.width
+            display_center = display.get_center()
+            # Reverse of the pop out animation: the display collapses back
+            # onto the zoomed camera frame.
+            self.play(display.animate.replace(frame, stretch=True))
+            # Reverse of the zoom in animation: the frame expands to cover
+            # the full frame while its stroke fades out.
+            if isinstance(self.camera, OpenGLCamera):
+                full_frame_width, full_frame_height = self.camera.frame_shape
+            else:
+                full_frame_height = self.camera.frame_height
+                full_frame_width = self.camera.frame_width
+            self.play(
+                frame.animate.stretch_to_fit_width(full_frame_width)
+                .stretch_to_fit_height(full_frame_height)
+                .center()
+                .set_stroke(width=0),
+            )
+        self.remove_foreground_mobjects(frame, display)
+        self.remove(frame, display)
+        self.renderer.camera.remove_image_mobject_from_camera(display)  # type: ignore[union-attr]
+        if animate:
+            # Restore the original geometry so that a later call to
+            # activate_zooming starts from the original layout.
+            frame.restore()
+            display.stretch_to_fit_height(display_height)
+            display.stretch_to_fit_width(display_width)
+            display.move_to(display_center)
+        self.zoom_activated = False
+
     def get_zoom_in_animation(self, run_time: float = 2, **kwargs: Any) -> ApplyMethod:
         """Returns the animation of camera zooming in.
 

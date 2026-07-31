@@ -59,6 +59,18 @@ class MultiCamera(MovingCamera):
         assert isinstance(imfc.camera, MovingCamera)
         self.image_mobjects_from_cameras.append(imfc)
 
+    def remove_image_mobject_from_camera(
+        self, image_mobject_from_camera: ImageMobjectFromCamera
+    ) -> None:
+        """Removes an ImageMobject from ``self.image_mobjects_from_cameras``.
+
+        Parameters
+        ----------
+        image_mobject_from_camera
+            The ImageMobject to remove from ``self.image_mobjects_from_cameras``.
+        """
+        self.image_mobjects_from_cameras.remove(image_mobject_from_camera)
+
     def update_sub_cameras(self) -> None:
         """Reshape sub_camera pixel_arrays"""
         for imfc in self.image_mobjects_from_cameras:
