@@ -17,6 +17,7 @@ from manim import (
     BackgroundRectangle,
     Circle,
     Line,
+    Polygon,
     Polygram,
     Sector,
     Square,
@@ -293,3 +294,18 @@ def test_angle_non_xy_lines_raise():
 
     with pytest.raises(ValueError, match="xy-plane"):
         Angle(l1, l2)
+
+
+def test_round_corners_collinear_points_stays_finite():
+    # Regression test for https://github.com/ManimCommunity/manim/issues/3052
+    # Collinear vertices create a (near) 180 degree turn at a corner, which
+    # makes ``tan(angle / 2)`` diverge to infinity.  This previously produced
+    # either astronomically large coordinates (default mode) or an 8.70 PiB
+    # ``MemoryError`` when anchors were evenly distributed.
+    for kwargs in ({}, {"evenly_distribute_anchors": True}):
+        poly = Polygon([-1, 0, 0], [0, 0, 0], [1, 0, 0])
+        poly.round_corners(0.15, **kwargs)
+        assert np.all(np.isfinite(poly.points))
+        # The rounded corner is bounded by half the shorter adjacent edge, so
+        # no coordinate should blow up beyond the original extent.
+        assert np.max(np.abs(poly.points)) <= 1.0
