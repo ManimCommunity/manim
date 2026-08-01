@@ -159,3 +159,30 @@ def test_hash_consistency():
     assert_two_objects_produce_same_hash(Square(), Square())
     s = Square()
     assert_two_objects_produce_same_hash(s, s.copy())
+
+
+def test_memoizer_does_not_confuse_hash_and_id_signatures():
+    """
+    hash() values and id() addresses are recorded in the same set, so a numeric coincidence between the two kinds
+    must not mark a never-processed object as already processed. Whether such a coincidence occurs varies from
+    process to process (str hashes are randomized), so an untagged set makes play hashes unstable across runs.
+    """
+    id_signed = {"a": 1}  # dicts are unhashable, so this is recorded under its id.
+    hashing._Memoizer.check_already_processed(id_signed)
+
+    class HashCollidingWithRecordedId:
+        def __hash__(self):
+            return id(id_signed)
+
+    collider = HashCollidingWithRecordedId()
+    assert hashing._Memoizer.check_already_processed(collider) is collider
+
+    # The other direction: an id() address colliding with a recorded hash() value.
+    unhashable = {"b": 2}
+
+    class HashCollidingWithLiveId:
+        def __hash__(self):
+            return id(unhashable)
+
+    hashing._Memoizer.check_already_processed(HashCollidingWithLiveId())
+    assert hashing._Memoizer.check_already_processed(unhashable) is unhashable
