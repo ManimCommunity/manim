@@ -12,6 +12,7 @@ from manim import (
     ORIGIN,
     RIGHT,
     UP,
+    Angle,
     BackgroundRectangle,
     Circle,
     Line,
@@ -263,3 +264,23 @@ def test_Circle_point_at_angle():
     # Angle 0 should return start point even after reflection
     p_reflected_0 = reflected_circle.point_at_angle(0)
     np.testing.assert_array_almost_equal(p_reflected_0, reflected_start, decimal=5)
+
+
+def test_angle_parallel_lines_returns_empty():
+    # Regression test for https://github.com/ManimCommunity/manim/issues/1930
+    # When two lines are parallel or collinear, line_intersection raises
+    # ValueError.  Angle should gracefully become an empty Mobject instead
+    # of propagating the error.
+    # Collinear lines (infinitely many intersections)
+    l1 = Line(LEFT, RIGHT)
+    l2 = Line(LEFT * 0.5, RIGHT * 0.5)
+    angle = Angle(l1, l2)
+    assert not angle.has_points()
+    assert angle.get_value() == 0
+
+    # Parallel but non-collinear lines (no intersection)
+    l3 = Line(UP, UP + RIGHT)
+    l4 = Line(DOWN, DOWN + RIGHT)
+    angle2 = Angle(l3, l4)
+    assert not angle2.has_points()
+    assert angle2.get_value() == 0

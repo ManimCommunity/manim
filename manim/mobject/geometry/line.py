@@ -993,10 +993,17 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         self.quadrant = quadrant
         self.dot_distance = dot_distance
         self.elbow = elbow
-        inter = line_intersection(
-            [line1.get_start(), line1.get_end()],
-            [line2.get_start(), line2.get_end()],
-        )
+        try:
+            inter = line_intersection(
+                [line1.get_start(), line1.get_end()],
+                [line2.get_start(), line2.get_end()],
+            )
+        except ValueError:
+            # When the two lines are parallel or collinear there is no
+            # unique intersection point.  Rather than raising, Angle
+            # becomes an empty Mobject (see issue #1930).
+            self.angle_value = 0
+            return
 
         if radius is None:
             if quadrant[0] == 1:
