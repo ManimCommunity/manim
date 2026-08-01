@@ -773,7 +773,11 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
         # Move the ring which j belongs to from the
         # attached list to the detached list
         new_ring = next(
-            (ring for ring in detached_rings if ring[0] <= j < ring[-1]), None
+            # ring[-1] is the last valid index in the ring so the upper bound needs
+            # to be inclusive. Otherwise, a connection point on a ring's final vertex
+            # doesn't match any ring and triggers "Could not find a ring to attach"
+            (ring for ring in detached_rings if ring[0] <= j <= ring[-1]),
+            None,
         )
         if new_ring is not None:
             detached_rings.remove(new_ring)
