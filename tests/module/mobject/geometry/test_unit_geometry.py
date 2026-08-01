@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 
 import numpy as np
+import pytest
 
 from manim import (
     DEGREES,
@@ -284,3 +285,11 @@ def test_angle_parallel_lines_returns_empty():
     angle2 = Angle(l3, l4)
     assert not angle2.has_points()
     assert angle2.get_value() == 0
+
+
+def test_angle_non_xy_lines_raise():
+    l1 = Line([0, 0, 1], [1, 0, 1])
+    l2 = Line([0, 0, 1], [0, 1, 1])
+
+    with pytest.raises(ValueError, match="xy-plane"):
+        Angle(l1, l2)
