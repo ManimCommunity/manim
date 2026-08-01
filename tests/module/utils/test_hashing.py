@@ -1,19 +1,14 @@
 from __future__ import annotations
 
+import gc
 import json
+import weakref
 from zlib import crc32
-
-import pytest
 
 import manim.utils.hashing as hashing
 from manim import Square
 
 ALREADY_PROCESSED_PLACEHOLDER = hashing._Memoizer.ALREADY_PROCESSED_PLACEHOLDER
-
-
-@pytest.fixture(autouse=True)
-def reset_already_processed():
-    hashing._Memoizer.reset_already_processed()
 
 
 def test_JSON_basic():
@@ -145,9 +140,7 @@ def test_hash_consistency():
         and pytest will display a nice difference summary making it easier to debug.
         """
         json1 = hashing.get_json(obj1)
-        hashing._Memoizer.reset_already_processed()
         json2 = hashing.get_json(obj2)
-        hashing._Memoizer.reset_already_processed()
         hash1 = crc32(repr(json1).encode())
         hash2 = crc32(repr(json2).encode())
         if hash1 != hash2 and debug:
@@ -167,15 +160,16 @@ def test_memoizer_does_not_confuse_hash_and_id_signatures():
     must not mark a never-processed object as already processed. Whether such a coincidence occurs varies from
     process to process (str hashes are randomized), so an untagged set makes play hashes unstable across runs.
     """
+    memoizer = hashing._Memoizer()
     id_signed = {"a": 1}  # dicts are unhashable, so this is recorded under its id.
-    hashing._Memoizer.check_already_processed(id_signed)
+    memoizer.check_already_processed(id_signed)
 
     class HashCollidingWithRecordedId:
         def __hash__(self):
             return id(id_signed)
 
     collider = HashCollidingWithRecordedId()
-    assert hashing._Memoizer.check_already_processed(collider) is collider
+    assert memoizer.check_already_processed(collider) is collider
 
     # The other direction: an id() address colliding with a recorded hash() value.
     unhashable = {"b": 2}
@@ -184,8 +178,8 @@ def test_memoizer_does_not_confuse_hash_and_id_signatures():
         def __hash__(self):
             return id(unhashable)
 
-    hashing._Memoizer.check_already_processed(HashCollidingWithLiveId())
-    assert hashing._Memoizer.check_already_processed(unhashable) is unhashable
+    memoizer.check_already_processed(HashCollidingWithLiveId())
+    assert memoizer.check_already_processed(unhashable) is unhashable
 
 
 def test_memoizer_does_not_confuse_fresh_objects_with_dead_ones():
@@ -194,13 +188,61 @@ def test_memoizer_does_not_confuse_fresh_objects_with_dead_ones():
     dead object recorded earlier in the same pass (membership signs are id-derived, and ids are only unique among
     simultaneously live objects).
     """
+    memoizer = hashing._Memoizer()
     transient = {"value": 1}
-    hashing._Memoizer.check_already_processed(transient)
+    memoizer.check_already_processed(transient)
     del transient
     for i in range(10):
         fresh = {"value": i + 2}
-        assert hashing._Memoizer.check_already_processed(fresh) is fresh
+        assert memoizer.check_already_processed(fresh) is fresh
         del fresh
+
+
+def test_memoizer_retains_each_distinct_tracked_object_once():
+    memoizer = hashing._Memoizer()
+    hash_tracked = object()
+    memoizer.check_already_processed(hash_tracked)
+    memoizer.check_already_processed(hash_tracked)
+
+    id_tracked = {}
+    memoizer.check_already_processed(id_tracked)
+    memoizer.check_already_processed(id_tracked)
+
+    assert memoizer._keep_alive == {
+        id(hash_tracked): hash_tracked,
+        id(id_tracked): id_tracked,
+    }
+
+
+def test_get_json_does_not_retain_tracked_objects_after_returning():
+    class HashTracked:
+        pass
+
+    class IdTracked:
+        __hash__ = None
+
+    references = []
+    for tracked_type in (HashTracked, IdTracked):
+        obj = tracked_type()
+        references.append(weakref.ref(obj))
+        hashing.get_json(obj)
+        del obj
+
+    gc.collect()
+    assert all(reference() is None for reference in references)
+
+
+def test_get_json_calls_have_independent_memoizers():
+    shared = {}
+    assert hashing.get_json([shared]) == "[{}]"
+    assert hashing.get_json([shared]) == "[{}]"
+
+
+def test_shared_memoizer_spans_component_serializations():
+    shared = {}
+    memoizer = hashing._Memoizer()
+    assert hashing._get_json([shared], memoizer) == "[{}]"
+    assert hashing._get_json([shared], memoizer) == '["AP"]'
 
 
 def test_sibling_closures_are_not_collapsed_to_placeholder():
