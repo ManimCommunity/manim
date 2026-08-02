@@ -687,7 +687,7 @@ class BulletedList(Tex):
         )
         for part in self:
             dot = MathTex("\\cdot").scale(self.dot_scale_factor)
-            dot.next_to(part[0], LEFT, dot_buff)
+            dot.next_to(part[0], LEFT, buff=dot_buff)
             part.add_to_back(dot)
         self.arrange(DOWN, aligned_edge=LEFT, buff=self.buff)
 
