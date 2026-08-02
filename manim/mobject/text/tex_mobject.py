@@ -639,6 +639,19 @@ class Tex(MathTex):
 class BulletedList(Tex):
     """A bulleted list.
 
+    Parameters
+    ----------
+    items
+        The text elements.
+    buff
+        The vertical spacing between the list elements.
+    dot_scale_factor
+        The scale factor for the bullets.
+    tex_environment
+        The tex environment used for the text elements.
+    dot_buff
+        The horizontal spacing between the dots and the text elements.
+
     Examples
     --------
 
