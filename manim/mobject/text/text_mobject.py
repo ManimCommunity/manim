@@ -652,6 +652,18 @@ class Text(SVGMobject):
                     )
                 chars.add(space)
             else:
+                if submobjects_char_index >= len(self.submobjects):
+                    raise ValueError(
+                        f"Text {self.original_text!r} rendered fewer glyph(s) "
+                        "than its non-space characters even with "
+                        "disable_ligatures=True. This usually means the chosen "
+                        "font implements some of its ligatures through an "
+                        "OpenType feature that isn't disabled (e.g. 'calt', "
+                        "used for programming ligatures like '<=' or '->' by "
+                        "fonts such as Fira Code), so characters and glyphs no "
+                        "longer correspond one-to-one. Try a different font to "
+                        "work around this."
+                    )
                 chars.add(self.submobjects[submobjects_char_index])
                 submobjects_char_index += 1
         return chars
@@ -1514,7 +1526,7 @@ def register_font(font_file: str | Path) -> Iterator[None]:
 
     1. Absolute path.
     2. In ``assets/fonts`` folder.
-    3. In ``font/`` folder.
+    3. In ``fonts/`` folder.
     4. In the same directory.
 
     Parameters
