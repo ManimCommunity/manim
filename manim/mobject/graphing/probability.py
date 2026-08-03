@@ -371,7 +371,7 @@ class BarChart(Axes):
             # to accommodate negative bars, the label may need to be
             # below or above the x_axis depending on the value of the bar
             direction = UP if self.values[i] < 0 else DOWN
-            bar_name_label: MathTex = self.x_axis.label_constructor(bar_name)
+            bar_name_label = self.x_axis.label_constructor(bar_name)
 
             bar_name_label.font_size = self.x_axis.font_size
             bar_name_label.next_to(
