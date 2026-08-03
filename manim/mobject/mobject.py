@@ -2162,13 +2162,31 @@ class Mobject:
 
     def reduce_across_dimension(
         self, reduce_func: Callable[[Iterable[float]], float], dim: int
-    ) -> float:
-        """Find the min or max value from a dimension across all points in this and submobjects."""
+    ) -> float | None:
+        """Find the min or max value from a dimension across all points in this Mobject and its
+        submobjects. This allows for using :meth:`~.length_over_dim` to calculate its length over
+        a dimension, i.e. its height, width or depth. If this Mobject is empty, return ``None``,
+        since this Mobject should not be taken into account when calculating lengths.
+
+        Parameters
+        ----------
+        reduce_func
+            The reducer function to use in order to calculate a value over a dimension.
+        dim
+            The dimension to use. It should be 0, 1 or 2, representing the X, Y or Z coordinate,
+            respectively.
+
+        Returns
+        -------
+        float | None
+            The min or max value over the dimension specified by ``dim``, or ``None`` if this
+            Mobject is empty.
+        """
         assert dim >= 0
         assert dim <= 2
         if len(self.submobjects) == 0 and len(self.points) == 0:
-            # If we have no points and no submobjects, return 0 (e.g. center)
-            return 0
+            # If we have no points and no submobjects, return None
+            return None
 
         # If we do not have points (but do have submobjects)
         # use only the points from those.
@@ -2181,8 +2199,10 @@ class Mobject:
         # smallest dimension they have and compare it to the return value.
         for mobj in self.submobjects:
             value = mobj.reduce_across_dimension(reduce_func, dim)
-            rv = value if rv is None else reduce_func([value, rv])
-        assert rv is not None
+            if rv is None:
+                rv = value
+            elif value is not None:
+                rv = reduce_func([value, rv])
         return rv
 
     def nonempty_submobjects(self) -> Sequence[Mobject]:
@@ -2336,11 +2356,10 @@ class Mobject:
 
     def length_over_dim(self, dim: int) -> float:
         """Measure the length of an :class:`~.Mobject` in a certain direction."""
-        max_coord: float = self.reduce_across_dimension(
-            max,
-            dim,
-        )
-        min_coord: float = self.reduce_across_dimension(min, dim)
+        max_coord = self.reduce_across_dimension(max, dim)
+        min_coord = self.reduce_across_dimension(min, dim)
+        if max_coord is None or min_coord is None:
+            return 0
         return max_coord - min_coord
 
     def get_coord(self, dim: int, direction: Vector3DLike = ORIGIN) -> float:

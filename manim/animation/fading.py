@@ -161,9 +161,9 @@ class FadeOut(_Fade):
     Examples
     --------
 
-    .. manim :: FadeInExample
+    .. manim :: FadeOutExample
 
-        class FadeInExample(Scene):
+        class FadeOutExample(Scene):
             def construct(self):
                 dot = Dot(UP * 2 + LEFT)
                 self.add(dot)
