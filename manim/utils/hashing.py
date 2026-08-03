@@ -454,7 +454,7 @@ def get_hash_from_play_call(
         for animation in sorted(animations_list, key=str)
     ]
     current_mobjects_list_json = [
-        get_json(mobject, memoizer, include_pixel_array=True) 
+        get_json(mobject, memoizer, include_pixel_array=True)
         for mobject in current_mobjects_list
     ]
     hash_camera, hash_animations, hash_current_mobjects = (
