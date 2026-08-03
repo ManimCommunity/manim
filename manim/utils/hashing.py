@@ -410,11 +410,7 @@ def get_json(obj: Any, *, include_pixel_array: bool = False) -> str:
     :class:`str`
         The flattened object
     """
-    return json.dumps(
-        obj,
-        _Memoizer(),
-        include_pixel_array=include_pixel_array,
-    )
+    return _get_json(obj, _Memoizer(), include_pixel_array=include_pixel_array)
 
 
 def get_hash_from_play_call(
@@ -448,13 +444,13 @@ def get_hash_from_play_call(
     t_start = perf_counter()
     memoizer = _Memoizer()
     memoizer.mark_as_processed(scene_object)
-    camera_json = get_json(camera_object, memoizer)
+    camera_json = _get_json(camera_object, memoizer)
     animations_list_json = [
-        get_json(animation, memoizer, include_pixel_array=True)
+        _get_json(animation, memoizer, include_pixel_array=True)
         for animation in sorted(animations_list, key=str)
     ]
     current_mobjects_list_json = [
-        get_json(mobject, memoizer, include_pixel_array=True)
+        _get_json(mobject, memoizer, include_pixel_array=True)
         for mobject in current_mobjects_list
     ]
     hash_camera, hash_animations, hash_current_mobjects = (
