@@ -308,7 +308,13 @@ def test_vdict_init(using_opengl_renderer):
     # Test VDict made from a python dict
     VDict({"a": OpenGLVMobject(), "b": OpenGLVMobject(), "c": OpenGLVMobject()})
     # Test VDict made using zip
-    VDict(zip(["a", "b", "c"], [OpenGLVMobject(), OpenGLVMobject(), OpenGLVMobject()]))
+    VDict(
+        zip(
+            ["a", "b", "c"],
+            [OpenGLVMobject(), OpenGLVMobject(), OpenGLVMobject()],
+            strict=True,
+        )
+    )
     # If the value is of type OpenGLMobject, must raise a TypeError
     with pytest.raises(TypeError):
         VDict({"a": OpenGLMobject()})

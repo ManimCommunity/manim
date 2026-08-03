@@ -105,7 +105,7 @@ def create_plugin(tmp_path, python_version, random_string):
     def _create_plugin(entry_point, class_name, function_name, all_dec=""):
         entry_point = entry_point.format(plugin_name=plugin_name)
         module_dir = plugin_dir / plugin_name
-        module_dir.mkdir(parents=True)
+        module_dir.mkdir(parents=True, exist_ok=True)
         (module_dir / "__init__.py").write_text(
             plugin_init_template.format(
                 class_name=class_name,

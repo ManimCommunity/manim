@@ -14,10 +14,9 @@ __all__ = [
 import fractions as fr
 import numbers
 from collections.abc import Callable, Iterable, Sequence
-from typing import TYPE_CHECKING, Any, TypeVar, overload
+from typing import TYPE_CHECKING, Any, Self, TypeVar, overload
 
 import numpy as np
-from typing_extensions import Self
 
 from manim import config
 from manim.constants import *
@@ -43,8 +42,8 @@ from manim.utils.color import (
     BLUE,
     BLUE_D,
     GREEN,
+    PURE_YELLOW,
     WHITE,
-    YELLOW,
     ManimColor,
     ParsableManimColor,
     color_gradient,
@@ -438,14 +437,20 @@ class CoordinateSystem:
         if not axes_numbers:
             axes_numbers = [None for _ in range(self.dimension)]
 
-        for axis, values in zip(self.axes, axes_numbers):
+        for axis, values in zip(self.axes, axes_numbers, strict=False):
             if isinstance(values, dict):
                 axis.add_labels(values, **kwargs)
                 labels = axis.labels
             elif values is None and axis.scaling.custom_labels:
                 tick_range = axis.get_tick_range()
                 axis.add_labels(
-                    dict(zip(tick_range, axis.scaling.get_custom_labels(tick_range)))
+                    dict(
+                        zip(
+                            tick_range,
+                            axis.scaling.get_custom_labels(tick_range),
+                            strict=True,
+                        )
+                    )
                 )
                 labels = axis.labels
             else:
@@ -1295,7 +1300,7 @@ class CoordinateSystem:
 
         colors = color_gradient(color, len(x_range_array))
 
-        for x, color in zip(x_range_array, colors):
+        for x, color in zip(x_range_array, colors, strict=True):
             if input_sample_type == "left":
                 sample_input = x
             elif input_sample_type == "right":
@@ -1609,7 +1614,7 @@ class CoordinateSystem:
         x: float,
         graph: ParametricFunction,
         dx: float | None = None,
-        dx_line_color: ParsableManimColor = YELLOW,
+        dx_line_color: ParsableManimColor = PURE_YELLOW,
         dy_line_color: ParsableManimColor | None = None,
         dx_label: float | str | None = None,
         dy_label: float | str | None = None,
@@ -1791,7 +1796,7 @@ class CoordinateSystem:
         triangle_size: float = MED_SMALL_BUFF,
         triangle_color: ParsableManimColor | None = WHITE,
         line_func: type[Line] = Line,
-        line_color: ParsableManimColor = YELLOW,
+        line_color: ParsableManimColor = PURE_YELLOW,
     ) -> VGroup:
         """Creates a labelled triangle marker with a vertical line from the x-axis
         to a curve at a given x-value.
@@ -2031,7 +2036,9 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                 )
             )
         """
-        for default_config, passed_config in zip(default_configs, passed_configs):
+        for default_config, passed_config in zip(
+            default_configs, passed_configs, strict=False
+        ):
             if passed_config is not None:
                 update_dict_recursively(default_config, passed_config)
 
@@ -2082,6 +2089,10 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
             ``ax.coords_to_point( [[x_0, y_0, z_0], [x_1, y_1, z_1]] )``
 
+            A single coordinate can also be passed as a flat list or 1D array:
+
+            ``ax.coords_to_point( [x, y, z] )``
+
         Returns
         -------
         np.ndarray
@@ -2110,6 +2121,10 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             array([[0.  , 0.86, 0.86],
                    [0.75, 0.75, 0.  ],
                    [0.  , 0.  , 0.  ]])
+            >>> np.around(ax.coords_to_point([1, 0, 0]), 2)
+            array([0.86, 0.  , 0.  ])
+            >>> np.around(ax.coords_to_point(np.array([1, 0])), 2)
+            array([0.86, 0.  , 0.  ])
 
         .. manim:: CoordsToPointExample
             :save_last_frame:
@@ -2152,6 +2167,10 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             else:
                 coords = coords.T
                 are_coordinates_transposed = True
+        # If coords is in the format ([x, y, z]) -- a single flat list/array passed as one argument:
+        elif coords.ndim == 2 and coords.shape[0] == 1:
+            # Extract the single list so [x, y, z] is treated like c2p(x, y, z).
+            coords = coords[0]
         # Otherwise, coords already looked like (x, y, z) or ([x1 x2 ...], [y1 y2 ...], [z1 z2 ...]),
         # so no further processing is needed.
 
@@ -2161,7 +2180,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         # Although "points" and "nums" are in plural, there might be a single point or number.
         points = self.x_axis.number_to_point(coords[0])
         other_axes = self.axes.submobjects[1:]
-        for axis, nums in zip(other_axes, coords[1:]):
+        for axis, nums in zip(other_axes, coords[1:], strict=False):
             points += axis.number_to_point(nums) - origin
 
         # Return points as is, except if coords originally looked like
@@ -2286,7 +2305,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         x_values: Iterable[float],
         y_values: Iterable[float],
         z_values: Iterable[float] | None = None,
-        line_color: ParsableManimColor = YELLOW,
+        line_color: ParsableManimColor = PURE_YELLOW,
         add_vertex_dots: bool = True,
         vertex_dot_radius: float = DEFAULT_DOT_RADIUS,
         vertex_dot_style: dict[str, Any] | None = None,
@@ -2355,7 +2374,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
         vertices = [
             self.coords_to_point(x, y, z)
-            for x, y, z in zip(x_values, y_values, z_values)
+            for x, y, z in zip(x_values, y_values, z_values, strict=True)
         ]
         graph.set_points_as_corners(vertices)
         line_graph["line_graph"] = graph
@@ -3238,6 +3257,7 @@ class PolarPlane(Axes):
             }
             for i in a_values
         ]
+        a_tex = []
         if self.azimuth_units == "PI radians" or self.azimuth_units == "TAU radians":
             a_tex = [
                 self.get_radian_label(

@@ -791,13 +791,13 @@ class StreamLines(VectorField):
         self.stroke_width = stroke_width
 
         half_noise = self.noise_factor / 2
-        np.random.seed(0)
+        rng = np.random.default_rng(0)
         start_points = np.array(
             [
                 (x - half_noise) * RIGHT
                 + (y - half_noise) * UP
                 + (z - half_noise) * OUT
-                + self.noise_factor * np.random.random(3)
+                + self.noise_factor * rng.random(3)
                 for n in range(self.n_repeats)
                 for x in np.arange(*self.x_range)
                 for y in np.arange(*self.y_range)

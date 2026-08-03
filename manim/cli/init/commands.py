@@ -29,7 +29,7 @@ CFG_DEFAULTS = {
     "background_color": "BLACK",
     "background_opacity": 1,
     "scene_names": "Default",
-    "resolution": (1920, 1080),
+    "resolution": (1080, 1920),
 }
 
 __all__ = ["select_resolution", "update_cfg", "project", "scene"]

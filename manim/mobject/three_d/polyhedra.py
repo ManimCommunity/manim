@@ -132,7 +132,7 @@ class Polyhedron(VGroup):
         """Creates list of cyclic pairwise tuples."""
         edges: list[tuple[int, int]] = []
         for face in faces_list:
-            edges += zip(face, face[1:] + face[:1])
+            edges += zip(face, face[1:] + face[:1], strict=True)
         return edges
 
     def create_faces(
