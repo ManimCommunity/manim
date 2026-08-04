@@ -195,6 +195,33 @@ class GrowArrow(GrowFromPoint):
                 self.play(GrowArrow(arrows[0]))
                 self.play(GrowArrow(arrows[1], point_color=RED))
 
+    .. manim :: GrowArrow3DExample
+        class GrowArrow3DExample(ThreeDScene):
+            def construct(self):
+                self.set_camera_orientation(
+                    phi=0 * DEGREES,
+                    theta=90 * DEGREES,
+                )
+                arrows = [
+                    Arrow3D(
+                        2 * LEFT,
+                        2 * RIGHT,
+                        thickness=0.05,
+                        color=BLUE,),
+                    Arrow3D(
+                        2 * DR,
+                        2 * UL,
+                        thickness=0.05,
+                        color=RED,
+                        )
+                    ]
+                VGroup(*arrows).set_x(0).arrange(buff=2)
+                self.wait(0.5)
+
+                self.play(GrowArrow(arrows[0]), run_time=2)
+                self.play(GrowArrow(arrows[1]), run_time=2)
+
+                self.wait(1)
     """
 
     def __init__(
