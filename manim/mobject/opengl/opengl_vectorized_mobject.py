@@ -281,14 +281,14 @@ class OpenGLVMobject(OpenGLMobject):
         self.set_rgba_array(color, opacity, "stroke_rgba", recurse)
 
         if width is not None:
-            for mob in self.get_family(recurse):
+            for mob in self.get_family(recurse=recurse):
                 if isinstance(width, np.ndarray):
                     mob.stroke_width = width
                 else:
                     mob.stroke_width = np.array([[width] for width in tuplify(width)])
 
         if background is not None:
-            for mob in self.get_family(recurse):
+            for mob in self.get_family(recurse=recurse):
                 mob.draw_stroke_behind_fill = background
         return self
 
@@ -455,7 +455,7 @@ class OpenGLVMobject(OpenGLMobject):
         return self.get_stroke_opacity()
 
     def set_flat_stroke(self, flat_stroke=True, recurse=True):
-        for mob in self.get_family(recurse):
+        for mob in self.get_family(recurse=recurse):
             mob.flat_stroke = flat_stroke
         return self
 
@@ -569,7 +569,7 @@ class OpenGLVMobject(OpenGLMobject):
         return self.consider_points_equals(self.points[0], self.points[-1])
 
     def subdivide_sharp_curves(self, angle_threshold=30 * DEGREES, recurse=True):
-        vmobs = [vm for vm in self.get_family(recurse) if vm.has_points()]
+        vmobs = [vm for vm in self.get_family(recurse=recurse) if vm.has_points()]
         for vmob in vmobs:
             new_points = []
             for tup in vmob.get_bezier_tuples():
@@ -1267,7 +1267,7 @@ class OpenGLVMobject(OpenGLMobject):
         OpenGLVMobject
             for chaining.
         """
-        for mob in self.get_family(recurse):
+        for mob in self.get_family(recurse=recurse):
             if mob.get_num_curves() > 0:
                 new_points = mob.insert_n_curves_to_point_list(n, mob.points)
                 # TODO, this should happen in insert_n_curves_to_point_list
