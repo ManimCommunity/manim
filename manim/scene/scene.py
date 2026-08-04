@@ -1307,7 +1307,14 @@ class Scene:
         self.animations = self.compile_animations(*animations, **play_kwargs)
         self.add_mobjects_from_animations(self.animations)
 
-        self.last_t = 0
+        # The first frame of an animation is rendered one frame period after
+        # the last frame of whatever preceded it, so that frame's ``dt`` has to
+        # be a whole frame period. Resetting ``last_t`` to 0 here made it 0
+        # instead, which froze every dt-based updater for one frame at the
+        # start of every play() and wait(), and made the dt an updater
+        # accumulates fall a frame short of the run_time. Only the very first
+        # frame of a scene has nothing before it.
+        self.last_t = 0.0 if self.renderer.time == 0 else -1 / config.frame_rate
         self.stop_condition = None
         self.moving_mobjects = []
         self.static_mobjects = []

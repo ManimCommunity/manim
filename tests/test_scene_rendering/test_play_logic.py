@@ -6,6 +6,7 @@ from unittest.mock import Mock
 import pytest
 
 from manim import (
+    Animation,
     Dot,
     Mobject,
     Scene,
@@ -119,6 +120,69 @@ def test_t_values_save_last_frame(config, using_temp_config):
     scene.update_to_time = Mock()
     scene.render()
     scene.update_to_time.assert_called_once_with(1)
+
+
+@pytest.mark.parametrize("frame_rate", argvalues=[15, 30, 60])
+def test_dt_of_the_first_frame_of_an_animation(
+    config, using_temp_config, disabling_caching, frame_rate
+):
+    """The first frame of an animation comes one frame period after the last
+    frame of the animation before it, so its ``dt`` has to be that period.
+
+    Regression test for #3005 and #4611: ``compile_animation_data`` reset
+    ``last_t`` to 0, so the first frame of every ``play()`` and ``wait()`` was
+    dispatched with ``dt=0``. Every dt-based updater held still for that frame,
+    and the dt such an updater accumulated over an animation came out one frame
+    short of its ``run_time`` -- an error that grew with the number of calls.
+    """
+    config.frame_rate = frame_rate
+
+    class TestScene(Scene):
+        def construct(self):
+            self.dts: list[list[float]] = []
+            dot = Dot()
+            dot.add_updater(lambda mobj, dt: self.dts[-1].append(dt))
+            self.add(dot)
+            for _ in range(3):
+                self.dts.append([])
+                self.play(Animation(Mobject()), run_time=1)
+
+    scene = TestScene()
+    scene.render()
+
+    frame_period = 1 / frame_rate
+    for dts in scene.dts[1:]:
+        # The trailing zero is the settling update at the end of play_internal,
+        # which renders nothing. Every frame that is rendered advances the
+        # clock by exactly one frame period...
+        assert dts[-1] == 0
+        np.testing.assert_allclose(dts[:-1], frame_period)
+        assert len(dts[:-1]) == frame_rate
+        # ...so an updater accumulates the run_time over the animation, and no
+        # more. Before the fix this summed to run_time - 1 / frame_rate.
+        np.testing.assert_allclose(sum(dts), 1)
+
+
+def test_dt_of_the_very_first_frame_of_a_scene_is_zero(
+    using_temp_config, disabling_caching
+):
+    """No frame precedes the first one, so no time has passed before it.
+
+    This is the one exception to the rule pinned above, and it is deliberate:
+    it keeps the opening frame of every scene exactly as it was.
+    """
+
+    class TestScene(Scene):
+        def construct(self):
+            self.dts: list[float] = []
+            dot = Dot()
+            dot.add_updater(lambda mobj, dt: self.dts.append(dt))
+            self.add(dot)
+            self.play(Animation(Mobject()), run_time=1)
+
+    scene = TestScene()
+    scene.render()
+    assert scene.dts[0] == 0
 
 
 def test_animate_with_changed_custom_attribute(using_temp_config):
