@@ -780,6 +780,7 @@ class ManimConfig(MutableMapping):
             "no_latex_cleanup",
             "preview_command",
             "seed",
+            "max_inflight_encoders",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -1234,7 +1235,7 @@ class ManimConfig(MutableMapping):
         """Maximum number of partial movie files encoded concurrently while the
         scene continues rendering. 1 encodes each animation's file before the
         next animation starts; values > 1 overlap encoding with rendering
-        (4 is a good value on typical hardware). No flag.
+        (4 is a good value on typical hardware) (--max-inflight-encoders).
         """
         return self._d["max_inflight_encoders"]
 

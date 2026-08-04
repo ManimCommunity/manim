@@ -8,8 +8,11 @@ from unittest.mock import Mock
 import av
 import numpy as np
 import pytest
+from click.testing import CliRunner
 
 from manim import FadeIn, Scene, Square, capture, tempconfig
+from manim._config import config
+from manim.cli.render.commands import render
 
 _ENCODER_THREAD_PREFIX = "partial-movie-encoder-"
 _UNIQUE_PLAYS = 30
@@ -402,3 +405,45 @@ def test_finish_propagates_join_failure_and_clears_inflight_state(
     assert writer._inflight_encode_jobs == []
     assert writer._inflight_by_path == {}
     combine_to_movie.assert_not_called()
+
+
+def test_max_inflight_encoders_flag_digests_into_config(tmp_path):
+    scene_file = tmp_path / "trivial_scene.py"
+    scene_file.write_text("# never executed: --jupyter returns before rendering\n")
+    cfg_file = tmp_path / "custom.cfg"
+    cfg_file.write_text("[CLI]\nmax_inflight_encoders = 2\n")
+    runner = CliRunner()
+
+    common_args = [str(scene_file), "--jupyter", "--config_file", str(cfg_file)]
+    result = runner.invoke(
+        render,
+        [*common_args, "--max-inflight-encoders", "4"],
+        standalone_mode=False,
+    )
+    assert result.exit_code == 0
+    with tempconfig({}):
+        config.digest_args(result.return_value)
+        assert config.max_inflight_encoders == 4
+
+    result = runner.invoke(render, common_args, standalone_mode=False)
+    assert result.exit_code == 0
+    with tempconfig({}):
+        config.digest_args(result.return_value)
+        assert config.max_inflight_encoders == 2
+
+    with tempconfig({}):
+        assert config.max_inflight_encoders == 1
+
+
+def test_max_inflight_encoders_flag_rejects_non_positive(tmp_path):
+    scene_file = tmp_path / "trivial_scene.py"
+    scene_file.write_text("# never executed: parsing fails before any render\n")
+    runner = CliRunner()
+
+    for bad_value in ["0", "-1"]:
+        result = runner.invoke(
+            render,
+            [str(scene_file), "--max-inflight-encoders", bad_value],
+        )
+        assert result.exit_code == 2
+        assert "Invalid value" in result.output
