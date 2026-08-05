@@ -14,14 +14,14 @@ __all__ = [
     "RightAngle",
 ]
 
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
 
 from manim import config
 from manim.constants import *
 from manim.mobject.geometry.arc import Arc, ArcBetweenPoints, Dot, TipableVMobject
-from manim.mobject.geometry.tips import ArrowTriangleFilledTip
+from manim.mobject.geometry.tips import ArrowTip, ArrowTriangleFilledTip
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -648,9 +648,11 @@ class Arrow(Line):
         self._set_stroke_width_from_length()
 
         if has_tip:
-            self.add_tip(tip=old_tips[0])
+            # error: Argument "tip" to "add_tip" of "TipableVMobject" has incompatible type "VMobject"; expected "ArrowTip | None"  [arg-type]
+            self.add_tip(tip=cast(ArrowTip, old_tips[0]))
         if has_start_tip:
-            self.add_tip(tip=old_tips[1], at_start=True)
+            # error: Argument "tip" to "add_tip" of "TipableVMobject" has incompatible type "VMobject"; expected "ArrowTip | None"  [arg-type]
+            self.add_tip(tip=cast(ArrowTip, old_tips[1]), at_start=True)
         return self
 
     def get_normal_vector(self) -> Vector3D:
@@ -991,10 +993,27 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         self.quadrant = quadrant
         self.dot_distance = dot_distance
         self.elbow = elbow
-        inter = line_intersection(
-            [line1.get_start(), line1.get_end()],
-            [line2.get_start(), line2.get_end()],
-        )
+        try:
+            inter = line_intersection(
+                [line1.get_start(), line1.get_end()],
+                [line2.get_start(), line2.get_end()],
+            )
+        except ValueError:
+            lines_are_in_xy_plane = all(
+                point[2] == 0
+                for line in (line1, line2)
+                for point in (line.get_start(), line.get_end())
+            )
+            directions_are_parallel = (
+                np.cross(line1.get_vector(), line2.get_vector())[2] == 0
+            )
+            if not (lines_are_in_xy_plane and directions_are_parallel):
+                raise
+            # When the two lines are parallel or collinear there is no
+            # unique intersection point.  Rather than raising, Angle
+            # becomes an empty Mobject (see issue #1930).
+            self.angle_value = 0.0
+            return
 
         if radius is None:
             if quadrant[0] == 1:

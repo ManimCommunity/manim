@@ -166,9 +166,12 @@ class Paragraph(VGroup):
         lines_str_list = lines_str.split("\n")
         self.chars = self._gen_chars(lines_str_list)
 
-        self.lines = [list(self.chars), [self.alignment] * len(self.chars)]
-        self.lines_initial_positions = [line.get_center() for line in self.lines[0]]
-        self.add(*self.lines[0])
+        # TODO: If possible get rid of self.lines_chars, as it seems to be a
+        # listified duplicate of self.chars.
+        self.lines_chars = list(self.chars)
+        self.lines_alignments = [self.alignment] * len(self.chars)
+        self.lines_initial_positions = [line.get_center() for line in self.lines_chars]
+        self.add(*self.lines_chars)
         self.move_to(np.array([0, 0, 0]))
         if self.alignment:
             self._set_all_lines_alignments(self.alignment)
@@ -221,7 +224,7 @@ class Paragraph(VGroup):
         alignment
             Defines the alignment of paragraph. Possible values are "left", "right", "center".
         """
-        for line_no in range(len(self.lines[0])):
+        for line_no in range(len(self.lines_chars)):
             self._change_alignment_for_a_line(alignment, line_no)
         return self
 
@@ -240,8 +243,8 @@ class Paragraph(VGroup):
 
     def _set_all_lines_to_initial_positions(self) -> Paragraph:
         """Set all lines to their initial positions."""
-        self.lines[1] = [None] * len(self.lines[0])
-        for line_no in range(len(self.lines[0])):
+        self.lines_alignments = [None] * len(self.lines_chars)
+        for line_no in range(len(self.lines_chars)):
             self[line_no].move_to(
                 self.get_center() + self.lines_initial_positions[line_no],
             )
@@ -255,7 +258,7 @@ class Paragraph(VGroup):
         line_no
             Defines the line number for which we want to set given alignment.
         """
-        self.lines[1][line_no] = None
+        self.lines_alignments[line_no] = None
         self[line_no].move_to(self.get_center() + self.lines_initial_positions[line_no])
         return self
 
@@ -269,12 +272,12 @@ class Paragraph(VGroup):
         line_no
             Defines the line number for which we want to set given alignment.
         """
-        self.lines[1][line_no] = alignment
-        if self.lines[1][line_no] == "center":
+        self.lines_alignments[line_no] = alignment
+        if self.lines_alignments[line_no] == "center":
             self[line_no].move_to(
                 np.array([self.get_center()[0], self[line_no].get_center()[1], 0]),
             )
-        elif self.lines[1][line_no] == "right":
+        elif self.lines_alignments[line_no] == "right":
             self[line_no].move_to(
                 np.array(
                     [
@@ -284,7 +287,7 @@ class Paragraph(VGroup):
                     ],
                 ),
             )
-        elif self.lines[1][line_no] == "left":
+        elif self.lines_alignments[line_no] == "left":
             self[line_no].move_to(
                 np.array(
                     [
@@ -301,6 +304,29 @@ class Text(SVGMobject):
 
     Text objects behave like a :class:`.VGroup`-like iterable of all characters
     in the given text. In particular, slicing is possible.
+
+    .. warning::
+
+        Whitespace and newline characters are stripped internally and never
+        become their own submobject (there is nothing to render for them), so
+        slicing indices are interpreted differently depending on where they
+        are used, and the two conventions disagree with each other:
+
+        - Slicing the object itself (``my_text[3:5]``) indexes into the
+          rendered characters, i.e. the text *with whitespace removed*. For
+          ``Text("Hello world")``, index ``5`` refers to ``"w"``, not to the
+          space between the two words.
+        - The slice syntax in ``t2c``/``t2s``/``t2w``/``t2f``/``t2g``
+          (e.g. ``t2c={'[3:7]': RED}``) indexes into the *original* ``text``
+          argument, whitespace included. For ``Text("Hello World")``,
+          ``t2c={'[3:7]': RED}`` colors ``"l"``, ``"o"``, ``"W"`` (the space
+          at index 5 falls in range but has nothing to color), whereas
+          ``my_text[3:7]`` selects the 4 rendered characters ``"loWo"``.
+
+        When the substring you want to select is known in advance, prefer
+        keying ``t2c``/``t2s``/``t2w``/``t2f``/``t2g`` by that substring
+        directly (e.g. ``t2c={"world": RED}``), which matches by text search
+        instead of by index and is unaffected by this quirk.
 
     Parameters
     ----------
@@ -626,6 +652,18 @@ class Text(SVGMobject):
                     )
                 chars.add(space)
             else:
+                if submobjects_char_index >= len(self.submobjects):
+                    raise ValueError(
+                        f"Text {self.original_text!r} rendered fewer glyph(s) "
+                        "than its non-space characters even with "
+                        "disable_ligatures=True. This usually means the chosen "
+                        "font implements some of its ligatures through an "
+                        "OpenType feature that isn't disabled (e.g. 'calt', "
+                        "used for programming ligatures like '<=' or '->' by "
+                        "fonts such as Fira Code), so characters and glyphs no "
+                        "longer correspond one-to-one. Try a different font to "
+                        "work around this."
+                    )
                 chars.add(self.submobjects[submobjects_char_index])
                 submobjects_char_index += 1
         return chars
@@ -1488,7 +1526,7 @@ def register_font(font_file: str | Path) -> Iterator[None]:
 
     1. Absolute path.
     2. In ``assets/fonts`` folder.
-    3. In ``font/`` folder.
+    3. In ``fonts/`` folder.
     4. In the same directory.
 
     Parameters

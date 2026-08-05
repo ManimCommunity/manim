@@ -129,4 +129,6 @@ def test_start_and_end_at_same_point():
     line = DashedLine(np.zeros(3), np.zeros(3))
     line.put_start_and_end_on(np.zeros(3), np.array([0, 0, 0]))
 
-    np.testing.assert_array_equal(np.round(np.zeros(3), 4), np.round(line.points, 4))
+    np.testing.assert_array_equal(
+        np.round(line.points, 4), np.round(np.zeros((4, 3)), 4)
+    )

@@ -587,7 +587,7 @@ class MathTex(SingleStringMathTex):
                     self.id_to_vgroup_dict[match[1]].set_color(color)
         return self
 
-    def index_of_part(self, part: MathTex) -> int:
+    def index_of_part(self, part: VMobject) -> int:
         split_self = self.split()
         if part not in split_self:
             raise ValueError("Trying to get index of part not in MathTex")
@@ -639,6 +639,19 @@ class Tex(MathTex):
 class BulletedList(Tex):
     """A bulleted list.
 
+    Parameters
+    ----------
+    items
+        The text elements.
+    buff
+        The vertical spacing between the list elements.
+    dot_scale_factor
+        The scale factor for the bullets.
+    tex_environment
+        The tex environment used for the text elements.
+    dot_buff
+        The horizontal spacing between the dots and the text elements.
+
     Examples
     --------
 
@@ -660,6 +673,7 @@ class BulletedList(Tex):
         buff: float = MED_LARGE_BUFF,
         dot_scale_factor: float = 2,
         tex_environment: str | None = None,
+        dot_buff: float = SMALL_BUFF,
         **kwargs: Any,
     ):
         self.buff = buff
@@ -673,7 +687,7 @@ class BulletedList(Tex):
         )
         for part in self:
             dot = MathTex("\\cdot").scale(self.dot_scale_factor)
-            dot.next_to(part[0], LEFT, SMALL_BUFF)
+            dot.next_to(part[0], LEFT, buff=dot_buff)
             part.add_to_back(dot)
         self.arrange(DOWN, aligned_edge=LEFT, buff=self.buff)
 
