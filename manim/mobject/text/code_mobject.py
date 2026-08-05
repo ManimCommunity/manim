@@ -15,6 +15,7 @@ from pygments import highlight
 from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, guess_lexer, guess_lexer_for_filename
 from pygments.styles import get_all_styles, get_style_by_name
+from pygments.token import Text as TextToken
 
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
@@ -22,7 +23,7 @@ from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.typing import StrPath
-from manim.utils.color import BLACK, GRAY, WHITE
+from manim.utils.color import BLACK, GRAY, WHITE, ManimColor
 
 
 class Code(VMobject, metaclass=ConvertToOpenGL):
@@ -95,7 +96,8 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         Keyword arguments passed to the background constructor. Default
         settings are stored in the class attribute
         :attr:`.default_background_config` (which can also be modified
-        directly).
+        directly). If ``fill_color`` is not specified, it is taken from
+        the selected ``formatter_style``.
     paragraph_config
         Keyword arguments passed to the constructor of the
         :class:`.Paragraph` objects holding the code, and the line
@@ -153,6 +155,7 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
 
         code_string = code_string.expandtabs(tabsize=tab_width)
 
+        selected_style = get_style_by_name(formatter_style)
         formatter = HtmlFormatter(
             style=formatter_style,
             noclasses=True,
@@ -166,11 +169,12 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
 
         code_lines = self._code_html.get_text().removesuffix("\n").split("\n")
 
-        if paragraph_config is None:
-            paragraph_config = {}
         base_paragraph_config = self.default_paragraph_config.copy()
-        base_paragraph_config.update(paragraph_config)
-        base_paragraph_config.update({"color": BLACK})
+        base_paragraph_config.update(paragraph_config or {})
+        default_text_color = selected_style.style_for_token(TextToken).get("color")
+        if default_text_color is not None:
+            default_text_color = ManimColor(f"#{default_text_color}")
+        base_paragraph_config.setdefault("color", default_text_color or BLACK)
 
         from manim.mobject.text.text_mobject import Paragraph
 
@@ -201,16 +205,13 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
                 else:
                     i_char += 1
 
-        selected_style = get_style_by_name(formatter_style)
         if add_line_numbers:
-            base_paragraph_config.update({"alignment": "right"})
-
-            line_number_color: str = selected_style.line_number_color
-            if line_number_color == "inherit":
-                base_paragraph_config.update({"color": GRAY})
-            else:
-                base_paragraph_config.update({"color": line_number_color})
-
+            line_number_config = base_paragraph_config.copy()
+            line_number_config["alignment"] = "right"
+            line_number_color = selected_style.line_number_color
+            line_number_config["color"] = (
+                GRAY if line_number_color == "inherit" else line_number_color
+            )
             self.line_numbers = Paragraph(
                 *[
                     str(i)
@@ -218,7 +219,7 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
                         line_numbers_from, line_numbers_from + len(self.code_lines)
                     )
                 ],
-                **base_paragraph_config,
+                **line_number_config,
             )
             self.line_numbers.next_to(self.code_lines, direction=LEFT).align_to(
                 self.code_lines, UP
@@ -229,14 +230,10 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
             line.submobjects = [c for c in line if not isinstance(c, Dot)]
         self.add(self.code_lines)
 
-        if background_config is None:
-            background_config = {}
         background_config_base = self.default_background_config.copy()
-        background_config_base.update(background_config)
-
+        background_config_base.update(background_config or {})
         if background_config_base["fill_color"] is None:
-            background_color: str = selected_style.background_color
-            background_config_base.update({"fill_color": background_color})
+            background_config_base["fill_color"] = selected_style.background_color
 
         if background == "rectangle":
             self.background = SurroundingRectangle(

@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from manim.mobject.text.code_mobject import Code
+from manim.utils.color import GRAY
 from manim.utils.color.core import ManimColor
 
 
@@ -32,6 +33,58 @@ def test_code_initialization_from_file():
     )
     assert len(rendered_code.code_lines) == len(rendered_code.line_numbers)
     assert rendered_code.background.fill_color == ManimColor("#101010")
+
+
+@pytest.mark.parametrize(
+    ("formatter_style", "background_color", "text_color"),
+    [
+        ("xcode", "#ffffff", "#000000"),
+        ("vim", "#000000", "#cccccc"),
+    ],
+)
+def test_code_uses_formatter_style_colors(
+    formatter_style, background_color, text_color
+):
+    rendered_code = Code(
+        code_string="plain text",
+        language="text",
+        formatter_style=formatter_style,
+        add_line_numbers=False,
+    )
+
+    assert rendered_code.background.fill_color == ManimColor(background_color)
+    assert rendered_code.code_lines[0][0].get_color() == ManimColor(text_color)
+
+
+def test_code_paragraph_color_overrides_formatter_style_color():
+    rendered_code = Code(
+        code_string="plain text",
+        language="text",
+        formatter_style="vim",
+        add_line_numbers=False,
+        paragraph_config={"color": "#ff0000"},
+    )
+
+    assert rendered_code.code_lines[0][0].get_color() == ManimColor("#ff0000")
+
+
+@pytest.mark.parametrize(
+    ("formatter_style", "line_number_color"),
+    [
+        ("solarized-light", ManimColor("#93a1a1")),
+        ("vim", GRAY),
+    ],
+)
+def test_code_line_numbers_use_formatter_style_color(
+    formatter_style, line_number_color
+):
+    rendered_code = Code(
+        code_string="plain text",
+        language="text",
+        formatter_style=formatter_style,
+    )
+
+    assert rendered_code.line_numbers[0][0].get_color() == line_number_color
 
 
 def test_line_heights_initial_whitespace():
