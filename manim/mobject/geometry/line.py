@@ -26,6 +26,7 @@ from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
+from manim.utils.bezier import partial_bezier_points
 from manim.utils.color import WHITE
 from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 
@@ -233,6 +234,49 @@ class Line(TipableVMobject):
             self.end = np.asarray(end)
             self.generate_points()
         return super().put_start_and_end_on(start, end)
+
+    def _trim_path_with_tip_base(
+        self,
+        point: Point3DLike,
+        at_start: bool,
+    ) -> bool:
+        if self.path_arc != 0 or self.get_num_curves() <= 1:
+            return False
+
+        curve_index = 0 if at_start else self.get_num_curves() - 1
+        if curve_index < 0:
+            return False
+
+        curve_points = self.get_nth_curve_points(curve_index)
+        start_anchor = curve_points[0]
+        end_anchor = curve_points[-1]
+        segment = end_anchor - start_anchor
+        segment_length_sq = float(np.dot(segment, segment))
+        if segment_length_sq == 0:
+            return False
+
+        residue = float(
+            np.clip(
+                np.dot(np.asarray(point) - start_anchor, segment) / segment_length_sq,
+                0,
+                1,
+            )
+        )
+        nppc = self.n_points_per_curve
+        if at_start:
+            self.points[:nppc] = partial_bezier_points(curve_points, residue, 1)
+        else:
+            self.points[-nppc:] = partial_bezier_points(curve_points, 0, residue)
+        return True
+
+    def reset_endpoints_based_on_tip(self, tip: ArrowTip, at_start: bool) -> Self:
+        if self.get_length() == 0:
+            return self
+
+        if self._trim_path_with_tip_base(tip.base, at_start):
+            return self
+
+        return super().reset_endpoints_based_on_tip(tip, at_start)
 
     def get_vector(self) -> Vector3D:
         return self.get_end() - self.get_start()
