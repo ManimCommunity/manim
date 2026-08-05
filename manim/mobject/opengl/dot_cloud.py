@@ -27,7 +27,7 @@ class DotCloud(OpenGLPMobject):
             stroke_width=stroke_width, density=density, color=color, **kwargs
         )
 
-    def init_points(self) -> None:
+    def init_points(self) -> Self:
         self.points = np.array(
             [
                 r * (np.cos(theta) * RIGHT + np.sin(theta) * UP)
@@ -41,6 +41,7 @@ class DotCloud(OpenGLPMobject):
             ],
             dtype=np.float32,
         )
+        return self
 
     def make_3d(self, gloss: float = 0.5, shadow: float = 0.2) -> Self:
         self.set_gloss(gloss)

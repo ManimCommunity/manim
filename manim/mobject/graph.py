@@ -10,7 +10,7 @@ __all__ = [
 import itertools as it
 from collections.abc import Hashable, Iterable, Sequence
 from copy import copy
-from typing import TYPE_CHECKING, Any, Literal, Protocol, cast
+from typing import TYPE_CHECKING, Any, Literal, Protocol, Self, cast
 
 import networkx as nx
 import numpy as np
@@ -31,7 +31,7 @@ from manim.mobject.mobject import Mobject, override_animate
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.text.tex_mobject import MathTex
-from manim.mobject.types.vectorized_mobject import VMobject
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import BLACK
 
 
@@ -975,7 +975,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         self.remove(*to_remove)
         return self.get_group_class()(*to_remove)
 
-    def remove_vertices(self, *vertices):
+    def remove_vertices(self, *vertices) -> Self:
         """Remove several vertices from the graph.
 
         Parameters
@@ -999,6 +999,8 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         for v in vertices:
             mobjects.extend(self._remove_vertex(v).submobjects)
         return self.get_group_class()(*mobjects)
+
+        return self
 
     @override_animate(remove_vertices)
     def _remove_vertices_animation(self, *vertices, anim_args=None):
@@ -1162,7 +1164,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         self.remove(edge_mobject)
         return edge_mobject
 
-    def remove_edges(self, *edges: tuple[Hashable]):
+    def remove_edges(self, *edges: tuple[Hashable]) -> VGroup:
         """Remove several edges from the graph.
 
         Parameters
@@ -1576,7 +1578,7 @@ class Graph(GenericGraph):
             for (u, v) in edges
         }
 
-    def update_edges(self, graph):
+    def update_edges(self, graph) -> Self:
         for (u, v), edge in graph.edges.items():
             # Undirected graph has a Line edge
             edge.set_points_by_ends(
@@ -1585,6 +1587,7 @@ class Graph(GenericGraph):
                 buff=self._edge_config.get("buff", 0),
                 path_arc=self._edge_config.get("path_arc", 0),
             )
+        return self
 
     def __repr__(self: Graph) -> str:
         return f"Undirected graph on {len(self.vertices)} vertices and {len(self.edges)} edges"
@@ -1786,7 +1789,7 @@ class DiGraph(GenericGraph):
         for (u, v), edge in self.edges.items():
             edge.add_tip(**self._tip_config[(u, v)])
 
-    def update_edges(self, graph):
+    def update_edges(self, graph) -> Self:
         """Updates the edges to stick at their corresponding vertices.
 
         Arrow tips need to be repositioned since otherwise they can be
@@ -1803,6 +1806,7 @@ class DiGraph(GenericGraph):
                 path_arc=self._edge_config.get("path_arc", 0),
             )
             edge.add_tip(tip)
+        return self
 
     def __repr__(self: DiGraph) -> str:
         return f"Directed graph on {len(self.vertices)} vertices and {len(self.edges)} edges"

@@ -54,6 +54,7 @@ Examples
 """
 
 from __future__ import annotations
+from typing import Self
 
 __all__ = [
     "Table",
@@ -974,7 +975,7 @@ class Table(VGroup):
 
         return AnimationGroup(*animations, lag_ratio=lag_ratio)
 
-    def scale(self, scale_factor: float, **kwargs):
+    def scale(self, scale_factor: float, **kwargs) -> Self:
         # h_buff and v_buff must be adjusted so that Table.get_cell
         # can construct an accurate polygon for a cell.
         self.h_buff *= scale_factor

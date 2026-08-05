@@ -852,9 +852,9 @@ class VMobject(Mobject):
             self.points[index::nppcc] = array
         return self
 
-    def clear_points(self) -> None:
-        # TODO: shouldn't this return self instead of None?
+    def clear_points(self) -> Self:
         self.points = np.zeros((0, self.dim))
+        return self
 
     def append_points(self, new_points: Point3DLike_Array) -> Self:
         """Append the given ``new_points`` to the end of
@@ -916,13 +916,15 @@ class VMobject(Mobject):
         handle1: Point3DLike,
         handle2: Point3DLike,
         anchor2: Point3DLike,
-    ) -> None:
+    ) -> Self:
         # TODO, check the len(self.points) % 4 == 0?
         self.append_points([anchor1, handle1, handle2, anchor2])
+        return self
 
     # what type is curves?
-    def add_cubic_bezier_curves(self, curves) -> None:
+    def add_cubic_bezier_curves(self, curves) -> Self:
         self.append_points(curves.flatten())
+        return self
 
     def add_cubic_bezier_curve_to(
         self,
@@ -1059,9 +1061,10 @@ class VMobject(Mobject):
         # TODO use consider_points_equals_2d ?
         return self.consider_points_equals(self.points[0], self.points[-1])
 
-    def close_path(self) -> None:
+    def close_path(self) -> Self:
         if not self.is_closed():
             self.add_line_to(self.get_subpaths()[-1][0])
+        return self
 
     def add_points_as_corners(self, points: Point3DLike_Array) -> Self:
         """Append multiple straight lines at the end of
@@ -1204,12 +1207,13 @@ class VMobject(Mobject):
         self.append_points(points)
         return self
 
-    def append_vectorized_mobject(self, vectorized_mobject: VMobject) -> None:
+    def append_vectorized_mobject(self, vectorized_mobject: VMobject) -> Self:
         if self.has_new_path_started():
             # Remove last point, which is starting
             # a new path
             self.points = self.points[:-1]
         self.append_points(vectorized_mobject.points)
+        return self
 
     def apply_function(
         self,
@@ -1893,7 +1897,7 @@ class VMobject(Mobject):
 
     def interpolate_color(
         self, mobject1: VMobject, mobject2: VMobject, alpha: float
-    ) -> None:
+    ) -> Self:
         attrs = [
             "fill_rgbas",
             "stroke_rgbas",
@@ -1914,6 +1918,7 @@ class VMobject(Mobject):
                 if isinstance(val, np.ndarray):
                     val = val.copy()
                 setattr(self, attr, val)
+        return self
 
     def pointwise_become_partial(
         self,
@@ -2631,7 +2636,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         submobjects = self.submob_dict.values()
         return submobjects
 
-    def add_key_value_pair(self, key: Hashable, value: VMobject) -> None:
+    def add_key_value_pair(self, key: Hashable, value: VMobject) -> Self:
         """A utility function used by :meth:`add` to add the key-value pair
         to :attr:`submob_dict`. Not really meant to be used externally.
 
@@ -2670,6 +2675,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
 
         self.submob_dict[key] = mob
         super().add(value)
+        return self
 
 
 class VectorizedPoint(VMobject, metaclass=ConvertToOpenGL):

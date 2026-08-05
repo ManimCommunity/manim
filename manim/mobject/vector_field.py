@@ -12,7 +12,7 @@ import itertools as it
 import random
 from collections.abc import Callable, Iterable, Sequence
 from math import ceil, floor
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 import numpy as np
 from PIL import Image
@@ -187,7 +187,7 @@ class VectorField(VGroup):
         """
         return lambda p: func(p * scalar)
 
-    def fit_to_coordinate_system(self, coordinate_system: CoordinateSystem):
+    def fit_to_coordinate_system(self, coordinate_system: CoordinateSystem) -> Self:
         """Scale the vector field to fit a coordinate system.
 
         This method is useful when the vector field is defined in a coordinate system
@@ -202,6 +202,7 @@ class VectorField(VGroup):
 
         """
         self.apply_function(lambda pos: coordinate_system.coords_to_point(*pos))
+        return self
 
     def nudge(
         self,
@@ -1023,18 +1024,20 @@ class StreamLines(VectorField):
         if self.flow_animation is None:
             raise ValueError("You have to start the animation before fading it out.")
 
-        def hide_and_wait(mob, alpha):
+        def hide_and_wait(mob, alpha) -> Self:
             if alpha == 0:
                 mob.set_stroke(opacity=0)
             elif alpha == 1:
                 mob.set_stroke(opacity=1)
+            return self
 
-        def finish_updater_cycle(line, alpha):
+        def finish_updater_cycle(line, alpha) -> Self:
             line.time += dt * self.flow_speed
             line.anim.interpolate(min(line.time / line.anim.run_time, 1))
             if alpha == 1:
                 self.remove(line.anim.mobject)
                 line.anim.finish()
+            return self
 
         max_run_time = self.virtual_time / self.flow_speed
         creation_rate_func = ease_out_sine

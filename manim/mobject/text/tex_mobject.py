@@ -593,8 +593,9 @@ class MathTex(SingleStringMathTex):
             raise ValueError("Trying to get index of part not in MathTex")
         return split_self.index(part)
 
-    def sort_alphabetically(self) -> None:
+    def sort_alphabetically(self) -> Self:
         self.submobjects.sort(key=lambda m: m.get_tex_string())
+        return self
 
 
 class MathTexPart(VMobject, metaclass=ConvertToOpenGL):
@@ -691,7 +692,7 @@ class BulletedList(Tex):
             part.add_to_back(dot)
         self.arrange(DOWN, aligned_edge=LEFT, buff=self.buff)
 
-    def fade_all_but(self, index_or_string: int | str, opacity: float = 0.5) -> None:
+    def fade_all_but(self, index_or_string: int | str, opacity: float = 0.5) -> Self:
         arg = index_or_string
         if isinstance(arg, str):
             part: VGroup | VMobject | None = self.get_part_by_tex(arg)
@@ -708,6 +709,8 @@ class BulletedList(Tex):
                 other_part.set_fill(opacity=1)
             else:
                 other_part.set_fill(opacity=opacity)
+
+        return self
 
 
 class Title(Tex):

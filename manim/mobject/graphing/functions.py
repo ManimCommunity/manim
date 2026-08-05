@@ -180,8 +180,9 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
             self.make_smooth()
         return self
 
-    def init_points(self) -> None:
+    def init_points(self) -> Self:
         self.generate_points()
+        return self
 
 
 class FunctionGraph(ParametricFunction):
