@@ -486,7 +486,7 @@ class BarChart(Axes):
 
     def change_bar_values(
         self, values: Iterable[float], update_colors: bool = True
-    ) -> None:
+    ) -> Self:
         """Updates the height of the bars of the chart.
 
         Parameters
@@ -553,3 +553,4 @@ class BarChart(Axes):
             self._update_colors()
 
         self.values[: len(list(values))] = values
+        return self

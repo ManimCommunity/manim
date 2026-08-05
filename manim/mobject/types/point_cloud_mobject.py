@@ -373,11 +373,12 @@ class PointCloudDot(Mobject1D):
         )
         self.shift(center)
 
-    def init_points(self) -> None:
+    def init_points(self) -> Self:
         self.reset_points()
         self.generate_points()
+        return self
 
-    def generate_points(self) -> None:
+    def generate_points(self) -> Self:
         self.add_points(
             np.array(
                 [
@@ -392,6 +393,7 @@ class PointCloudDot(Mobject1D):
                 ]
             ),
         )
+        return self
 
 
 class Point(PMobject):

@@ -1425,7 +1425,7 @@ class OpenGLMobject:
 
     # Copying
 
-    def copy(self, shallow: bool = False) -> OpenGLMobject:
+    def copy(self, shallow: bool = False) -> Self:
         """Create and return an identical copy of the :class:`OpenGLMobject` including all
         :attr:`submobjects`.
 
@@ -1483,14 +1483,14 @@ class OpenGLMobject:
             #     setattr(copy_mobject, attr, value.copy())
         return copy_mobject
 
-    def deepcopy(self) -> OpenGLMobject:
+    def deepcopy(self) -> Self:
         parents = self.parents
         self.parents = []
         result = copy.deepcopy(self)
         self.parents = parents
         return result
 
-    def generate_target(self, use_deepcopy: bool = False) -> OpenGLMobject:
+    def generate_target(self, use_deepcopy: bool = False) -> Self:
         self.target: OpenGLMobject | None = None  # Prevent exponential explosion
         if use_deepcopy:
             self.target = self.deepcopy()

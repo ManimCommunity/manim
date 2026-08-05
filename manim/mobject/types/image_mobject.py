@@ -73,7 +73,7 @@ class AbstractImageMobject(Mobject):
         color: ParsableManimColor = YELLOW_C,
         alpha: Any = None,
         family: bool = True,
-    ) -> AbstractImageMobject:
+    ) -> Self:
         # Likely to be implemented in subclasses, but no obligation
         raise NotImplementedError()
 

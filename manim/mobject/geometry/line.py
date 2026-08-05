@@ -198,9 +198,10 @@ class Line(TipableVMobject):
                 return mob.get_boundary_point(direction)
         return np.array(mob_or_point)
 
-    def set_path_arc(self, new_value: float) -> None:
+    def set_path_arc(self, new_value: float) -> Self:
         self.path_arc = new_value
         self.init_points()
+        return self
 
     def put_start_and_end_on(
         self,
