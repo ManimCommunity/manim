@@ -2489,7 +2489,7 @@ class Mobject:
 
     # Family matters
 
-    def __getitem__(self, value: Any) -> Mobject | Group:
+    def __getitem__(self, value: Any) -> Mobject:
         if isinstance(value, slice):
             GroupClass = self.get_group_class()
 
@@ -2497,22 +2497,20 @@ class Mobject:
                 return GroupClass(*self.submobjects[value])
 
             r = range(*value.indices(len(self)))
+            if not r:  # If slice is empty
+                return GroupClass()
             if 0 not in r:
                 # If self is not included in the slice, we can gain a small speed boost
                 # by indexing directly into the submobjects list.
                 stop = r.stop - 1 if (r.step > 0 or r.stop > 0) else None
                 return GroupClass(*self.submobjects[r.start - 1 : stop : r.step])
 
-            slice_elements = [self.submobjects[i - 1] if i != 0 else self for i in r]
-            return GroupClass(*slice_elements)
+            return GroupClass(*[self.submobjects[i - 1] if i != 0 else self for i in r])
 
+        index: int = range(len(self))[value]  # Normalize the index
         if self.has_no_points():
-            return cast(Mobject | Group, self.submobjects[value])
-        if value % len(self) == 0:
-            return self
-        return cast(
-            Mobject | Group, self.submobjects[value - 1 if value > 0 else value]
-        )
+            return self.submobjects[index]
+        return self if index == 0 else self.submobjects[index - 1]
 
     def __iter__(self) -> Iterator[Mobject]:
         return it.chain([self] if self.has_points() else [], self.submobjects)
