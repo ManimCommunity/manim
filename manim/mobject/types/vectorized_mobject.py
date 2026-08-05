@@ -12,6 +12,7 @@ __all__ = [
 ]
 
 import itertools as it
+import math
 import sys
 from collections.abc import Callable, Hashable, Iterable, Mapping, Sequence
 from typing import TYPE_CHECKING, Any, Literal
@@ -1276,8 +1277,8 @@ class VMobject(Mobject):
     def consider_points_equals_2d(self, p0: Point2DLike, p1: Point2DLike) -> bool:
         """Determine if two points are close enough to be considered equal.
 
-        This uses the algorithm from np.isclose(), but expanded here for the
-        2D point case. NumPy is overkill for such a small question.
+        This uses the semantics of :func:`numpy.isclose`, but expands the
+        comparison for two coordinates to avoid NumPy's per-call overhead.
         Parameters
         ----------
         p0
@@ -1292,9 +1293,17 @@ class VMobject(Mobject):
         """
         rtol = 1.0e-5  # default from np.isclose()
         atol = self.tolerance_for_point_equality
-        if abs(p0[0] - p1[0]) > atol + rtol * abs(p1[0]):
-            return False
-        return abs(p0[1] - p1[1]) <= atol + rtol * abs(p1[1])
+
+        x0, y0 = p0[0], p0[1]
+        x1, y1 = p1[0], p1[1]
+        if x0 != x1:
+            x_diff = abs(x0 - x1)
+            if not (x_diff <= atol + rtol * abs(x1) and math.isfinite(x_diff)):
+                return False
+        if y0 == y1:
+            return True
+        y_diff = abs(y0 - y1)
+        return bool(y_diff <= atol + rtol * abs(y1) and math.isfinite(y_diff))
 
     # Information about line
     def get_cubic_bezier_tuples_from_points(
@@ -1422,26 +1431,22 @@ class VMobject(Mobject):
             return np.array([[0, n_pts]])
 
         # A boundary is a split where the previous curve's end anchor is not
-        # close to the next curve's start anchor. These are the exact
-        # vectorized transcriptions of the scalar comparison methods, so they
-        # agree on non-finite coordinates too (where the plain tolerance
-        # formula would diverge from np.isclose/np.allclose).
+        # close to the next curve's start anchor. This is an allocation-light
+        # vectorization of np.isclose semantics: NaN is never close, while
+        # infinities compare equal only when they have the same sign.
         rtol = 1.0e-5  # default from np.isclose()
         atol = self.tolerance_for_point_equality
         ends = points[boundary_indices - 1, :n_dims]  # end of previous curve
         starts = points[boundary_indices, :n_dims]  # start of next curve
-        if n_dims == 2:
-            # Mirror consider_points_equals_2d: x is an early-reject guard and
-            # y is the returned comparison, so they exit through different code.
-            thresholds = atol + rtol * np.abs(starts)
+        with np.errstate(invalid="ignore"):
             diffs = np.abs(ends - starts)
-            x_reject = diffs[:, 0] > thresholds[:, 0]
-            y_equal = diffs[:, 1] <= thresholds[:, 1]
-            is_split = x_reject | ~y_equal
-        else:
-            # Mirror consider_points_equals (i.e. np.allclose): NaN is never
-            # close, and inf is compared by exact equality.
-            is_split = ~np.all(np.isclose(ends, starts, rtol=rtol, atol=atol), axis=1)
+            thresholds = atol + rtol * np.abs(starts)
+            is_close = diffs <= thresholds
+            finite_diffs = np.isfinite(diffs)
+            if not finite_diffs.all():
+                is_close &= finite_diffs
+                is_close |= ends == starts
+        is_split = ~np.all(is_close, axis=1)
 
         split_points = np.concatenate([[0], boundary_indices[is_split], [n_pts]])
         return np.stack([split_points[:-1], split_points[1:]], axis=1)

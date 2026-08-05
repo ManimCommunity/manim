@@ -715,8 +715,6 @@ class Camera:
             return self
 
         nppcc = vmobject.n_points_per_cubic_curve  # 4 for cubic bezier
-        atol = vmobject.tolerance_for_point_equality
-        rtol = 1.0e-5
 
         ctx.new_path()
 
@@ -760,12 +758,9 @@ class Camera:
                     pts_xy[b + 5],
                 )
 
-            # Close if first and last points are equal
-            last_base = (end_idx - 1) * 2
-            dx = abs(pts_xy[base] - pts_xy[last_base])
-            dy = abs(pts_xy[base + 1] - pts_xy[last_base + 1])
-            if dx <= atol + rtol * abs(pts_xy[last_base]) and dy <= atol + rtol * abs(
-                pts_xy[last_base + 1]
+            # Close if first and last points are equal.
+            if vmobject.consider_points_equals_2d(
+                points[start_idx], points[end_idx - 1]
             ):
                 _close_path()
 

@@ -530,10 +530,26 @@ def test_get_subpath_split_indices_from_points_edge_cases():
     np.testing.assert_array_equal(one_curve, [[0, nppcc]])
 
 
+@pytest.mark.parametrize(
+    ("p0", "p1", "expected"),
+    [
+        ([np.nan, 0], [np.nan, 0], False),
+        ([np.inf, 0], [np.inf, 0], True),
+        ([-np.inf, 0], [-np.inf, 0], True),
+        ([np.inf, 0], [-np.inf, 0], False),
+        ([np.inf, 0], [0, 0], False),
+        ([0, np.nan], [0, np.nan], False),
+        ([0, np.inf], [0, np.inf], True),
+        ([0, np.inf], [0, -np.inf], False),
+    ],
+)
+def test_consider_points_equals_2d_non_finite(p0, p1, expected):
+    assert VMobject().consider_points_equals_2d(p0, p1) is expected
+
+
 def test_get_subpath_split_indices_from_points_non_finite():
-    """Non-finite anchors (NaN/inf) must be split the same way the scalar
-    getters split them, so the vectorized path stays equivalent to the
-    original code even when a projection produces inf/NaN (see PR #4695).
+    """Non-finite anchors (NaN/inf) must be split consistently by the scalar
+    and vectorized implementations, even when a projection produces them.
     """
     v = VMobject()
     nppcc = v.n_points_per_cubic_curve
