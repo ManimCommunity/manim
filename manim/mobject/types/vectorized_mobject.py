@@ -13,8 +13,8 @@ __all__ = [
 
 import itertools as it
 import sys
-from collections.abc import Callable, Hashable, Iterable, Mapping, Sequence
-from typing import TYPE_CHECKING, Any, Literal
+from collections.abc import Callable, Hashable, Iterable, Iterator, Mapping, Sequence
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
 from PIL.Image import Image
@@ -47,7 +47,6 @@ from manim.utils.iterables import (
 from manim.utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
     from typing import Self
 
     import numpy.typing as npt
@@ -175,7 +174,7 @@ class VMobject(Mobject):
         return self._assert_valid_submobjects_internal(submobjects, VMobject)
 
     def __iter__(self) -> Iterator[VMobject]:
-        return iter(self.split())
+        return cast(Iterator[VMobject], super().__iter__())
 
     # OpenGL compatibility
     @property
