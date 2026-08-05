@@ -458,19 +458,21 @@ class Mobject:
         self.points = np.zeros((0, self.dim))
         return self
 
-    def init_colors(self, propagate_colors: bool = True) -> object:
+    def init_colors(self, propagate_colors: bool = True) -> Self:
         """Initializes the colors.
 
         Gets called upon creation. This is an empty method that can be implemented by
         subclasses.
         """
+        return self
 
-    def generate_points(self) -> object:
+    def generate_points(self) -> Self:
         """Initializes :attr:`points` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be implemented by
         subclasses.
         """
+        return self
 
     def add(self, *mobjects: Mobject) -> Self:
         """Add mobjects as submobjects.

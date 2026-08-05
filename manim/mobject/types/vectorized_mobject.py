@@ -2712,8 +2712,9 @@ class VectorizedPoint(VMobject, metaclass=ConvertToOpenGL):
     def get_location(self) -> Point3D:
         return np.array(self.points[0])
 
-    def set_location(self, new_loc: Point3D):
+    def set_location(self, new_loc: Point3D) -> Self:
         self.set_points(np.array([new_loc]))
+        return self
 
 
 class CurvesAsSubmobjects(VGroup):
