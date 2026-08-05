@@ -305,6 +305,29 @@ class Text(SVGMobject):
     Text objects behave like a :class:`.VGroup`-like iterable of all characters
     in the given text. In particular, slicing is possible.
 
+    .. warning::
+
+        Whitespace and newline characters are stripped internally and never
+        become their own submobject (there is nothing to render for them), so
+        slicing indices are interpreted differently depending on where they
+        are used, and the two conventions disagree with each other:
+
+        - Slicing the object itself (``my_text[3:5]``) indexes into the
+          rendered characters, i.e. the text *with whitespace removed*. For
+          ``Text("Hello world")``, index ``5`` refers to ``"w"``, not to the
+          space between the two words.
+        - The slice syntax in ``t2c``/``t2s``/``t2w``/``t2f``/``t2g``
+          (e.g. ``t2c={'[3:7]': RED}``) indexes into the *original* ``text``
+          argument, whitespace included. For ``Text("Hello World")``,
+          ``t2c={'[3:7]': RED}`` colors ``"l"``, ``"o"``, ``"W"`` (the space
+          at index 5 falls in range but has nothing to color), whereas
+          ``my_text[3:7]`` selects the 4 rendered characters ``"loWo"``.
+
+        When the substring you want to select is known in advance, prefer
+        keying ``t2c``/``t2s``/``t2w``/``t2f``/``t2g`` by that substring
+        directly (e.g. ``t2c={"world": RED}``), which matches by text search
+        instead of by index and is unaffected by this quirk.
+
     Parameters
     ----------
     text
@@ -629,6 +652,18 @@ class Text(SVGMobject):
                     )
                 chars.add(space)
             else:
+                if submobjects_char_index >= len(self.submobjects):
+                    raise ValueError(
+                        f"Text {self.original_text!r} rendered fewer glyph(s) "
+                        "than its non-space characters even with "
+                        "disable_ligatures=True. This usually means the chosen "
+                        "font implements some of its ligatures through an "
+                        "OpenType feature that isn't disabled (e.g. 'calt', "
+                        "used for programming ligatures like '<=' or '->' by "
+                        "fonts such as Fira Code), so characters and glyphs no "
+                        "longer correspond one-to-one. Try a different font to "
+                        "work around this."
+                    )
                 chars.add(self.submobjects[submobjects_char_index])
                 submobjects_char_index += 1
         return chars
@@ -1491,7 +1526,7 @@ def register_font(font_file: str | Path) -> Iterator[None]:
 
     1. Absolute path.
     2. In ``assets/fonts`` folder.
-    3. In ``font/`` folder.
+    3. In ``fonts/`` folder.
     4. In the same directory.
 
     Parameters
