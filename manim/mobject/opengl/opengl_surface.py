@@ -153,7 +153,7 @@ class OpenGLSurface(OpenGLMobject):
         nu, nv = self.resolution
         if nu == 0 or nv == 0:
             self.triangle_indices = np.zeros(0, dtype=int)
-            return
+            return self
         index_grid = np.arange(nu * nv).reshape((nu, nv))
         indices = np.zeros(6 * (nu - 1) * (nv - 1), dtype=int)
         indices[0::6] = index_grid[:-1, :-1].flatten()  # Top left

@@ -975,7 +975,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         self.remove(*to_remove)
         return self.get_group_class()(*to_remove)
 
-    def remove_vertices(self, *vertices) -> Self:
+    def remove_vertices(self, *vertices):
         """Remove several vertices from the graph.
 
         Parameters
@@ -999,8 +999,6 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         for v in vertices:
             mobjects.extend(self._remove_vertex(v).submobjects)
         return self.get_group_class()(*mobjects)
-
-        return self
 
     @override_animate(remove_vertices)
     def _remove_vertices_animation(self, *vertices, anim_args=None):
