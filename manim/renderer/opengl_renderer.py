@@ -208,12 +208,13 @@ class OpenGLCamera(OpenGLMobject):
     def unformatted_view_matrix(self) -> MatrixMN:
         return typing.cast(MatrixMN, np.linalg.inv(self.model_matrix))
 
-    def init_points(self) -> None:
+    def init_points(self) -> Self:
         """Initialize the camera's points based on frame shape and center point."""
         self.set_points([ORIGIN, LEFT, RIGHT, DOWN, UP])
         self.set_width(self.frame_shape[0], stretch=True)
         self.set_height(self.frame_shape[1], stretch=True)
         self.move_to(self.center_point)
+        return self
 
     def to_default_state(self) -> Self:
         """Reset the camera to its default state
