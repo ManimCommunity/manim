@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import hashlib
 import inspect
 import json
 import zlib
@@ -34,6 +35,58 @@ KEYS_TO_FILTER_OUT = {
 }
 
 
+def _canonical_field_title(title: Any) -> Any:
+    if title is None:
+        return None
+    title_type = type(title)
+    return [f"{title_type.__module__}.{title_type.__qualname__}", repr(title)]
+
+
+def _canonical_dtype_descriptor(dtype: np.dtype) -> Any:
+    canonical = dtype.newbyteorder("<")
+    if canonical.names is not None:
+        return [
+            "struct",
+            [
+                [
+                    name,
+                    _canonical_dtype_descriptor(canonical.fields[name][0]),
+                    canonical.fields[name][1],
+                    _canonical_field_title(canonical.fields[name][2])
+                    if len(canonical.fields[name]) > 2
+                    else None,
+                ]
+                for name in canonical.names or ()
+            ],
+            canonical.itemsize,
+            canonical.alignment,
+            canonical.isalignedstruct,
+        ]
+    if canonical.subdtype:
+        base, shape = canonical.subdtype
+        return ["subarray", _canonical_dtype_descriptor(base), list(shape)]
+    return canonical.str
+
+
+def _hash_ndarray(array: np.ndarray) -> str:
+    descriptor = _canonical_dtype_descriptor(array.dtype)
+    canonical_dtype = array.dtype.newbyteorder("<")
+    digest = hashlib.sha256()
+    if canonical_dtype.names is not None:
+        for name in canonical_dtype.names or ():
+            field_hash = _hash_ndarray(np.asarray(array[name])).encode()
+            digest.update(len(field_hash).to_bytes(8, "little"))
+            digest.update(field_hash)
+    else:
+        canonical = np.ascontiguousarray(
+            array.astype(canonical_dtype, copy=False),
+        )
+        digest.update(canonical)
+    encoded_descriptor = json.dumps(descriptor, separators=(",", ":"))
+    # This compacts array content before the existing CRC32 play-key pipeline.
+    return f"NDARRAY:{encoded_descriptor}:{array.shape}:{digest.hexdigest()}"
+
+
 class _Memoizer:
     """Implements the memoization logic to optimize the hashing procedure and prevent
     the circular references within iterable processed.
@@ -47,20 +100,18 @@ class _Memoizer:
     content-equality detection.
     """
 
-    _already_processed = set()
-
-    # Can be changed to whatever string to help debugging the JSon generation.
+    # Can be changed to whatever string to help debugging the JSON generation.
     ALREADY_PROCESSED_PLACEHOLDER = "AP"
     THRESHOLD_WARNING = 170_000
 
-    @classmethod
-    def reset_already_processed(cls: type[_Memoizer]) -> None:
-        cls._already_processed.clear()
+    def __init__(self) -> None:
+        self._already_processed: set[tuple[str, int]] = set()
+        # Keep tracked objects alive for this serialization operation. CPython can
+        # otherwise reuse a transient object's address before encoding has completed;
+        # this also matters for objects whose hash is derived from their identity.
+        self._keep_alive: dict[int, Any] = {}
 
-    @classmethod
-    def check_already_processed_decorator(
-        cls: type[_Memoizer], is_method: bool = False
-    ) -> Callable:
+    def check_already_processed_decorator(self, is_method: bool = False) -> Callable:
         """Decorator to handle the arguments that goes through the decorated function.
         Returns the value of ALREADY_PROCESSED_PLACEHOLDER if the obj has been processed,
         or lets the decorated function call go ahead.
@@ -75,16 +126,17 @@ class _Memoizer:
             # NOTE : There is probably a better way to separate both case when func is
             # a method or a function.
             if is_method:
-                return lambda self, obj: cls._handle_already_processed(
+                return lambda obj_self, obj: self._handle_already_processed(
                     obj,
-                    default_function=lambda obj: func(self, obj),
+                    default_function=lambda obj: func(obj_self, obj),
                 )
-            return lambda obj: cls._handle_already_processed(obj, default_function=func)
+            return lambda obj: self._handle_already_processed(
+                obj, default_function=func
+            )
 
         return layer
 
-    @classmethod
-    def check_already_processed(cls: type[_Memoizer], obj: Any) -> Any:
+    def check_already_processed(self, obj: Any) -> Any:
         """Checks if obj has been already processed. Returns itself if it has not been,
         or the value of ALREADY_PROCESSED_PLACEHOLDER if it has.
         Marks the object as processed in the second case.
@@ -100,10 +152,9 @@ class _Memoizer:
             Either the object itself or the placeholder.
         """
         # When the object is not memoized, we return the object itself.
-        return cls._handle_already_processed(obj, lambda x: x)
+        return self._handle_already_processed(obj, lambda x: x)
 
-    @classmethod
-    def mark_as_processed(cls: type[_Memoizer], obj: Any) -> None:
+    def mark_as_processed(self, obj: Any) -> None:
         """Marks an object as processed.
 
         Parameters
@@ -111,12 +162,11 @@ class _Memoizer:
         obj
             The object to mark as processed.
         """
-        cls._handle_already_processed(obj, lambda x: x)
-        return cls._return(obj, id, lambda x: x, memoizing=False)
+        self._handle_already_processed(obj, lambda x: x)
+        self._return(obj, id, lambda x: x, memoizing=False)
 
-    @classmethod
     def _handle_already_processed(
-        cls: type[_Memoizer],
+        self,
         obj: Any,
         default_function: Callable[[Any], Any],
     ) -> str | Any:
@@ -128,35 +178,39 @@ class _Memoizer:
                 str,
                 complex,
             ),
-        ) and obj not in [None, cls.ALREADY_PROCESSED_PLACEHOLDER]:
+        ) and obj not in [None, self.ALREADY_PROCESSED_PLACEHOLDER]:
             # It makes no sense (and it'd slower) to memoize objects of these primitive
             # types.  Hence, we simply return the object.
             return obj
         if isinstance(obj, Hashable):
             try:
-                return cls._return(obj, hash, default_function)
+                return self._return(obj, hash, default_function)
             except TypeError:
                 # In case of an error with the hash (eg an object is marked as hashable
                 # but contains a non hashable within it)
                 # Fallback to use the built-in function id instead.
                 pass
-        return cls._return(obj, id, default_function)
+        return self._return(obj, id, default_function)
 
-    @classmethod
     def _return(
-        cls: type[_Memoizer],
+        self,
         obj: Any,
         obj_to_membership_sign: Callable[[Any], int],
         default_func: Callable[[Any], Any],
         memoizing: bool = True,
     ) -> str | Any:
-        obj_membership_sign = obj_to_membership_sign(obj)
-        if obj_membership_sign in cls._already_processed:
-            return cls.ALREADY_PROCESSED_PLACEHOLDER
+        # hash() values and id() addresses are both raw ints that share no meaning, so entries are tagged with
+        # their signature kind: in an untagged set, a hash() value that numerically equals a recorded id() address
+        # (or vice versa) collapses a never-processed object to the placeholder.
+        sign_kind = "h" if obj_to_membership_sign is hash else "i"
+        signature = obj_to_membership_sign(obj)
+        obj_membership_sign = (sign_kind, signature)
+        if obj_membership_sign in self._already_processed:
+            return self.ALREADY_PROCESSED_PLACEHOLDER
         if memoizing:
             if (
                 not config.disable_caching_warning
-                and len(cls._already_processed) == cls.THRESHOLD_WARNING
+                and len(self._already_processed) == self.THRESHOLD_WARNING
             ):
                 logger.warning(
                     "It looks like the scene contains a lot of sub-mobjects. Caching "
@@ -169,11 +223,23 @@ class _Memoizer:
                     "to True in your config file.",
                 )
 
-            cls._already_processed.add(obj_membership_sign)
+            self._already_processed.add(obj_membership_sign)
+            self._keep_alive.setdefault(id(obj), obj)
         return default_func(obj)
 
 
 class _CustomEncoder(json.JSONEncoder):
+    def __init__(
+        self,
+        *args: Any,
+        memoizer: _Memoizer,
+        include_pixel_array: bool = False,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        self._memoizer = memoizer
+        self.include_pixel_array = include_pixel_array
+
     def default(self, obj: Any) -> Any:
         """This method is used to serialize objects to JSON format.
 
@@ -217,11 +283,12 @@ class _CustomEncoder(json.JSONEncoder):
                 code = ""
             return self._cleaned_iterable({"code": code, "nonlocals": cvardict})
         elif isinstance(obj, np.ndarray):
-            if obj.size > 1000:
-                obj = np.resize(obj, (100, 100))
-                return f"TRUNCATED ARRAY: {repr(obj)}"
-            # We return the repr and not a list to avoid the JSONEncoder to iterate over it.
-            return repr(obj)
+            if obj.__class__ is not np.ndarray or obj.dtype.hasobject:
+                if obj.size > 1000:
+                    obj = np.resize(obj, (100, 100))
+                    return f"TRUNCATED ARRAY: {repr(obj)}"
+                return repr(obj)
+            return _hash_ndarray(obj)
         elif hasattr(obj, "__dict__"):
             temp = obj.__dict__
             # MappingProxy is scene-caching nightmare. It contains all of the object methods and attributes. We skip it as the mechanism will at some point process the object, but instantiated.
@@ -253,12 +320,12 @@ class _CustomEncoder(json.JSONEncoder):
         """
 
         def _key_to_hash(key: Any) -> int:
-            return zlib.crc32(json.dumps(key, cls=_CustomEncoder).encode())
+            return zlib.crc32(_get_json(key, self._memoizer).encode())
 
         def _iter_check_list(lst: Sequence[Any]) -> list[Any]:
             processed_list = [None] * len(lst)
             for i, el in enumerate(lst):
-                el = _Memoizer.check_already_processed(el)
+                el = self._memoizer.check_already_processed(el)
                 if isinstance(el, (list, tuple)):
                     new_value = _iter_check_list(el)
                 elif isinstance(el, dict):
@@ -271,8 +338,10 @@ class _CustomEncoder(json.JSONEncoder):
         def _iter_check_dict(dct: dict[Any, Any]) -> dict[Any, Any]:
             processed_dict = {}
             for k, v in dct.items():
-                v = _Memoizer.check_already_processed(v)
-                if k in KEYS_TO_FILTER_OUT:
+                v = self._memoizer.check_already_processed(v)
+                if k in KEYS_TO_FILTER_OUT and not (
+                    self.include_pixel_array and k == "pixel_array"
+                ):
                     continue
                 # We check if the k is of the right format (supported by JSON)
                 if not isinstance(k, (str, int, float, bool)) and k is not None:
@@ -308,26 +377,40 @@ class _CustomEncoder(json.JSONEncoder):
         :class:`str`
            The object encoder with the standard json process.
         """
-        _Memoizer.mark_as_processed(obj)
+        self._memoizer.mark_as_processed(obj)
         if isinstance(obj, (dict, list, tuple)):
             return super().encode(self._cleaned_iterable(obj))
         return super().encode(obj)
 
 
-def get_json(obj: Any) -> str:
+def _get_json(
+    obj: Any, memoizer: _Memoizer, *, include_pixel_array: bool = False
+) -> str:
+    """Serialize ``obj`` using an existing serialization-operation memoizer."""
+    return json.dumps(
+        obj,
+        cls=_CustomEncoder,
+        memoizer=memoizer,
+        include_pixel_array=include_pixel_array,
+    )
+
+
+def get_json(obj: Any, *, include_pixel_array: bool = False) -> str:
     """Recursively serialize `object` to JSON using the :class:`CustomEncoder` class.
 
     Parameters
     ----------
     obj
         The dict to flatten
+    include_pixel_array
+        Whether to include pixel arrays encountered while flattening the object.
 
     Returns
     -------
     :class:`str`
         The flattened object
     """
-    return json.dumps(obj, cls=_CustomEncoder)
+    return _get_json(obj, _Memoizer(), include_pixel_array=include_pixel_array)
 
 
 def get_hash_from_play_call(
@@ -359,10 +442,17 @@ def get_hash_from_play_call(
     """
     logger.debug("Hashing ...")
     t_start = perf_counter()
-    _Memoizer.mark_as_processed(scene_object)
-    camera_json = get_json(camera_object)
-    animations_list_json = [get_json(x) for x in sorted(animations_list, key=str)]
-    current_mobjects_list_json = [get_json(x) for x in current_mobjects_list]
+    memoizer = _Memoizer()
+    memoizer.mark_as_processed(scene_object)
+    camera_json = _get_json(camera_object, memoizer)
+    animations_list_json = [
+        _get_json(animation, memoizer, include_pixel_array=True)
+        for animation in sorted(animations_list, key=str)
+    ]
+    current_mobjects_list_json = [
+        _get_json(mobject, memoizer, include_pixel_array=True)
+        for mobject in current_mobjects_list
+    ]
     hash_camera, hash_animations, hash_current_mobjects = (
         zlib.crc32(repr(json_val).encode())
         for json_val in [camera_json, animations_list_json, current_mobjects_list_json]
@@ -370,7 +460,5 @@ def get_hash_from_play_call(
     hash_complete = f"{hash_camera}_{hash_animations}_{hash_current_mobjects}"
     t_end = perf_counter()
     logger.debug("Hashing done in %(time)s s.", {"time": str(t_end - t_start)[:8]})
-    # End of the hashing for the animation, reset all the memoize.
-    _Memoizer.reset_already_processed()
     logger.debug("Hash generated :  %(h)s", {"h": hash_complete})
     return hash_complete
