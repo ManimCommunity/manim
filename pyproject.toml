@@ -7,10 +7,10 @@ authors = [
   {name = "Grant '3Blue1Brown' Sanderson", email = "grant@3blue1brown.com"},
 ]
 license = "MIT"
+license-files = ["LICENSE", "LICENSE.community"]
 readme = "README.md"
 classifiers = [
     "Development Status :: 4 - Beta",
-    "License :: OSI Approved :: MIT License",
     "Topic :: Scientific/Engineering",
     "Topic :: Multimedia :: Video",
     "Topic :: Multimedia :: Graphics",
