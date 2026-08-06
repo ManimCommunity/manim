@@ -2990,6 +2990,7 @@ class Mobject:
             >>> rect = Rectangle(width=4.0, height=2.0, grid_xstep=1.0, grid_ystep=0.5)
             >>> line = Line(start=ORIGIN,end=RIGHT)
             >>> line.align_data(rect)
+            Line
             >>> len(line.get_family()) == len(rect.get_family())
             True
             >>> line.get_num_points() == rect.get_num_points()
