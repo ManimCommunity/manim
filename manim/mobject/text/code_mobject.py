@@ -23,7 +23,7 @@ from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.typing import StrPath
-from manim.utils.color import BLACK, GRAY, WHITE, ManimColor
+from manim.utils.color import BLACK, WHITE, ManimColor
 
 
 class Code(VMobject, metaclass=ConvertToOpenGL):
@@ -171,6 +171,7 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
 
         base_paragraph_config = self.default_paragraph_config.copy()
         base_paragraph_config.update(paragraph_config or {})
+        paragraph_color_is_configured = "color" in base_paragraph_config
         default_text_color = selected_style.style_for_token(TextToken).get("color")
         if default_text_color is not None:
             default_text_color = ManimColor(f"#{default_text_color}")
@@ -208,10 +209,10 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         if add_line_numbers:
             line_number_config = base_paragraph_config.copy()
             line_number_config["alignment"] = "right"
-            line_number_color = selected_style.line_number_color
-            line_number_config["color"] = (
-                GRAY if line_number_color == "inherit" else line_number_color
-            )
+            if not paragraph_color_is_configured:
+                line_number_color = selected_style.line_number_color
+                if line_number_color != "inherit":
+                    line_number_config["color"] = line_number_color
             self.line_numbers = Paragraph(
                 *[
                     str(i)

@@ -2,7 +2,6 @@ import numpy as np
 import pytest
 
 from manim.mobject.text.code_mobject import Code
-from manim.utils.color import GRAY
 from manim.utils.color.core import ManimColor
 
 
@@ -61,18 +60,32 @@ def test_code_paragraph_color_overrides_formatter_style_color():
         code_string="plain text",
         language="text",
         formatter_style="vim",
-        add_line_numbers=False,
         paragraph_config={"color": "#ff0000"},
     )
 
     assert rendered_code.code_lines[0][0].get_color() == ManimColor("#ff0000")
+    assert rendered_code.line_numbers[0][0].get_color() == ManimColor("#ff0000")
+
+
+def test_code_default_paragraph_color_overrides_formatter_style_color(monkeypatch):
+    monkeypatch.setitem(Code.default_paragraph_config, "color", "#ff0000")
+
+    rendered_code = Code(
+        code_string="plain text",
+        language="text",
+        formatter_style="vim",
+    )
+
+    assert rendered_code.code_lines[0][0].get_color() == ManimColor("#ff0000")
+    assert rendered_code.line_numbers[0][0].get_color() == ManimColor("#ff0000")
 
 
 @pytest.mark.parametrize(
     ("formatter_style", "line_number_color"),
     [
         ("solarized-light", ManimColor("#93a1a1")),
-        ("vim", GRAY),
+        ("vim", ManimColor("#cccccc")),
+        ("xcode", ManimColor("#000000")),
     ],
 )
 def test_code_line_numbers_use_formatter_style_color(
