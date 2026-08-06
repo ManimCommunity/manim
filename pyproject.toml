@@ -7,10 +7,10 @@ authors = [
   {name = "Grant '3Blue1Brown' Sanderson", email = "grant@3blue1brown.com"},
 ]
 license = "MIT"
+license-files = ["LICENSE", "LICENSE.community"]
 readme = "README.md"
 classifiers = [
     "Development Status :: 4 - Beta",
-    "License :: OSI Approved :: MIT License",
     "Topic :: Scientific/Engineering",
     "Topic :: Multimedia :: Video",
     "Topic :: Multimedia :: Graphics",
@@ -102,18 +102,15 @@ dev = [
 ]
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.12.1,<0.13.0"]
+build-backend = "uv_build"
 
-[tool.hatch.build]
-include = [
-  "/manim"
-]
-exclude = [
-  "/docker",
-  "/logo",
-  "/scripts",
-]
+[tool.uv]
+required-version = ">=0.10.0"
+
+[tool.uv.build-backend]
+module-root = ""
+module-name = "manim"
 
 [tool.pytest.ini_options]
 markers = "slow: Mark the test as slow. Can be skipped with --skip_slow"
