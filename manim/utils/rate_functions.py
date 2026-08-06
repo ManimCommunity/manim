@@ -34,7 +34,7 @@ for the non-standard ones
                                 .next_to(plot_bg, UP, buff=0.1)
                             )
                             x.add(VGroup(plot_bg, plot, plot_title))
-                        except: # because functions `not_quite_there`, `function squish_rate_func` are not working.
+                        except Exception: # because functions `not_quite_there`, `function squish_rate_func` are not working.
                             pass
             x.arrange_in_grid(cols=8)
             x.height = config.frame_height
