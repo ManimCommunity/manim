@@ -1024,20 +1024,18 @@ class StreamLines(VectorField):
         if self.flow_animation is None:
             raise ValueError("You have to start the animation before fading it out.")
 
-        def hide_and_wait(mob, alpha) -> Self:
+        def hide_and_wait(mob, alpha):
             if alpha == 0:
                 mob.set_stroke(opacity=0)
             elif alpha == 1:
                 mob.set_stroke(opacity=1)
-            return self
 
-        def finish_updater_cycle(line, alpha) -> Self:
+        def finish_updater_cycle(line, alpha):
             line.time += dt * self.flow_speed
             line.anim.interpolate(min(line.time / line.anim.run_time, 1))
             if alpha == 1:
                 self.remove(line.anim.mobject)
                 line.anim.finish()
-            return self
 
         max_run_time = self.virtual_time / self.flow_speed
         creation_rate_func = ease_out_sine
