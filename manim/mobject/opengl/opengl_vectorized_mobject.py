@@ -595,10 +595,10 @@ class OpenGLVMobject(OpenGLMobject):
             vmob.set_points(np.vstack(new_points))
         return self
 
-    def add_points_as_corners(self, points):
+    def add_points_as_corners(self, points) -> Self:
         for point in points:
             self.add_line_to(point)
-        return points
+        return self
 
     def set_points_as_corners(self, points: Point3DLike_Array) -> Self:
         """Given an array of points, set them as corner of the vmobject.
