@@ -90,12 +90,12 @@ class Table(VGroup):
     Parameters
     ----------
     table
-        A 2D array or list of lists. Content of the table has to be a valid input
-        for the callable set in ``element_to_mobject``.
+        A non-empty, finite iterable of equally sized iterables. The content has
+        to be valid input for the callable set in ``element_to_mobject``.
     row_labels
-        List of :class:`~.VMobject` representing the labels of each row.
+        An iterable of :class:`~.VMobject` representing the labels of each row.
     col_labels
-        List of :class:`~.VMobject` representing the labels of each column.
+        An iterable of :class:`~.VMobject` representing the labels of each column.
     top_left_entry
         The top-left entry of the table, can only be specified if row and
         column labels are given.
@@ -189,9 +189,9 @@ class Table(VGroup):
 
     def __init__(
         self,
-        table: Sequence[Sequence[float | str | VMobject]],
-        row_labels: Sequence[VMobject] | None = None,
-        col_labels: Sequence[VMobject] | None = None,
+        table: Iterable[Iterable[float | str | VMobject]],
+        row_labels: Iterable[VMobject] | None = None,
+        col_labels: Iterable[VMobject] | None = None,
         top_left_entry: VMobject | None = None,
         v_buff: float = 0.8,
         h_buff: float = 1.3,
@@ -219,11 +219,14 @@ class Table(VGroup):
         line_config: dict = {},
         **kwargs: Any,
     ):
-        self.row_labels = list(row_labels) if row_labels else None
-        self.col_labels = list(col_labels) if col_labels else None
+        table_data = [list(row) for row in table]
+        row_label_data = list(row_labels) if row_labels is not None else []
+        col_label_data = list(col_labels) if col_labels is not None else []
+        self.row_labels = row_label_data or None
+        self.col_labels = col_label_data or None
         self.top_left_entry = top_left_entry
-        self.row_dim = len(table)
-        self.col_dim = len(table[0])
+        self.row_dim = len(table_data)
+        self.col_dim = len(table_data[0])
         self.v_buff = v_buff
         self.h_buff = h_buff
         self.include_outer_lines = include_outer_lines
@@ -237,14 +240,14 @@ class Table(VGroup):
         self.arrange_in_grid_config = arrange_in_grid_config
         self.line_config = line_config
 
-        for row in table:
-            if len(row) == len(table[0]):
+        for row in table_data:
+            if len(row) == len(table_data[0]):
                 pass
             else:
                 raise ValueError("Not all rows in table have the same length.")
 
         super().__init__(**kwargs)
-        mob_table: list[list[VMobject]] = self._table_to_mob_table(table)
+        mob_table: list[list[VMobject]] = self._table_to_mob_table(table_data)
         self.elements_without_labels = VGroup(*it.chain(*mob_table))
         mob_table = self._add_labels(mob_table)
         self._organize_mob_table(mob_table)
@@ -272,8 +275,8 @@ class Table(VGroup):
         Parameters
         ----------
         table
-            A 2D array or list of lists. Content of the table has to be a valid input
-            for the callable set in ``element_to_mobject``.
+            A non-empty, finite iterable of equally sized iterables. The content
+            has to be valid input for the callable set in ``element_to_mobject``.
 
         Returns
         --------
@@ -335,13 +338,13 @@ class Table(VGroup):
         if self.col_labels is not None:
             if self.row_labels is not None:
                 if self.top_left_entry is not None:
-                    col_labels = [self.top_left_entry] + list(self.col_labels)
+                    col_labels = [self.top_left_entry] + self.col_labels
                     mob_table.insert(0, col_labels)
                 else:
                     # Placeholder to use arrange_in_grid if top_left_entry is not set.
                     # Import OpenGLVMobject to work with --renderer=opengl
                     dummy_mobject = get_vectorized_mobject_class()()
-                    col_labels = [dummy_mobject] + list(self.col_labels)
+                    col_labels = [dummy_mobject] + self.col_labels
                     mob_table.insert(0, col_labels)
             else:
                 mob_table.insert(0, self.col_labels)
@@ -705,10 +708,9 @@ class Table(VGroup):
                         item.set_color(random_bright_color())
                     self.add(table)
         """
-        if self.row_labels:
+        if self.row_labels is not None:
             return VGroup(*self.row_labels)
-        else:
-            return VGroup()
+        return VGroup()
 
     def get_col_labels(self) -> VGroup:
         """Return the column labels of the table.
@@ -736,10 +738,9 @@ class Table(VGroup):
                         item.set_color(random_bright_color())
                     self.add(table)
         """
-        if self.col_labels:
+        if self.col_labels is not None:
             return VGroup(*self.col_labels)
-        else:
-            return VGroup()
+        return VGroup()
 
     def get_labels(self) -> VGroup:
         """Returns the labels of the table.
@@ -1025,7 +1026,7 @@ class MathTable(Table):
 
     def __init__(
         self,
-        table: Sequence[Sequence[float | str]],
+        table: Iterable[Iterable[float | str]],
         element_to_mobject: Callable[[float | str], VMobject]
         | type[VMobject] = MathTex,
         **kwargs: Any,
@@ -1037,8 +1038,8 @@ class MathTable(Table):
         Parameters
         ----------
         table
-            A 2d array or list of lists. Content of the table have to be valid input
-            for :class:`~.MathTex`.
+            A non-empty, finite iterable of equally sized iterables. The content
+            has to be valid input for :class:`~.MathTex`.
         element_to_mobject
             The :class:`~.Mobject` class applied to the table entries. Set as :class:`~.MathTex`.
         kwargs
@@ -1081,7 +1082,7 @@ class MobjectTable(Table):
 
     def __init__(
         self,
-        table: Sequence[Sequence[VMobject]],
+        table: Iterable[Iterable[VMobject]],
         element_to_mobject: Callable[[VMobject], VMobject]
         | type[VMobject] = lambda m: m,
         **kwargs: Any,
@@ -1093,7 +1094,8 @@ class MobjectTable(Table):
         Parameters
         ----------
         table
-            A 2D array or list of lists. Content of the table must be of type :class:`~.Mobject`.
+            A non-empty, finite iterable of equally sized iterables containing
+            objects of type :class:`~.Mobject`.
         element_to_mobject
             The :class:`~.Mobject` class applied to the table entries. Set as ``lambda m : m`` to return itself.
         kwargs
@@ -1130,7 +1132,7 @@ class IntegerTable(Table):
 
     def __init__(
         self,
-        table: Sequence[Sequence[float | str]],
+        table: Iterable[Iterable[float | str]],
         element_to_mobject: Callable[[float | str], VMobject]
         | type[VMobject] = Integer,
         **kwargs: Any,
@@ -1142,8 +1144,8 @@ class IntegerTable(Table):
         Parameters
         ----------
         table
-            A 2d array or list of lists. Content of the table has to be valid input
-            for :class:`~.Integer`.
+            A non-empty, finite iterable of equally sized iterables. The content
+            has to be valid input for :class:`~.Integer`.
         element_to_mobject
             The :class:`~.Mobject` class applied to the table entries. Set as :class:`~.Integer`.
         kwargs
@@ -1175,7 +1177,7 @@ class DecimalTable(Table):
 
     def __init__(
         self,
-        table: Sequence[Sequence[float | str]],
+        table: Iterable[Iterable[float | str]],
         element_to_mobject: Callable[[float | str], VMobject]
         | type[VMobject] = DecimalNumber,
         element_to_mobject_config: dict = {"num_decimal_places": 1},
@@ -1189,8 +1191,8 @@ class DecimalTable(Table):
         Parameters
         ----------
         table
-            A 2D array, or a list of lists. Content of the table must be valid input
-            for :class:`~.DecimalNumber`.
+            A non-empty, finite iterable of equally sized iterables. The content
+            has to be valid input for :class:`~.DecimalNumber`.
         element_to_mobject
             The :class:`~.Mobject` class applied to the table entries. Set as :class:`~.DecimalNumber`.
         element_to_mobject_config
