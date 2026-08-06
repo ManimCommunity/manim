@@ -23,6 +23,18 @@ class FadeInSquare(Scene):
     assert len(rendered_code.line_numbers) == num_lines
 
 
+@pytest.mark.parametrize("code_string", ["pass", "   "])
+def test_code_initialization_without_line_numbers(code_string):
+    rendered_code = Code(
+        code_string=code_string,
+        language="python",
+        add_line_numbers=False,
+    )
+
+    assert len(rendered_code.code_lines) == 1
+    assert not hasattr(rendered_code, "line_numbers")
+
+
 def test_code_initialization_from_file():
     rendered_code = Code(
         code_file="tests/test_code_mobject.py",
@@ -46,6 +58,34 @@ for _ in range(42):
         rendered_code.code_lines[0].height,
         rendered_code.code_lines[2].height,
     )
+
+
+def test_code_baseline_alignment():
+    baseline_offsets = []
+    for code_string in ("pass", "pass b"):
+        rendered_code = Code(code_string=code_string, language="python")
+        baseline_offsets.append(
+            rendered_code.code_lines[0].get_bottom()[1]
+            - rendered_code.line_numbers[0].get_bottom()[1]
+        )
+
+    np.testing.assert_allclose(baseline_offsets[0], baseline_offsets[1], atol=1e-6)
+
+
+def test_code_syntax_highlighting_colors():
+    rendered_code = Code(
+        code_string="pass\n# comment",
+        language="python",
+        formatter_style="vim",
+    )
+
+    assert {char.color for char in rendered_code.code_lines[0]} == {
+        ManimColor("#CDCD00")
+    }
+    assert {char.color for char in rendered_code.code_lines[1]} == {
+        ManimColor("#000080")
+    }
+    assert len(rendered_code.code_lines) == len(rendered_code.code_lines.chars)
 
 
 def test_code_initialization_style_correct_color():

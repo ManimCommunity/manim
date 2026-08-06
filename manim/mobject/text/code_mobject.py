@@ -173,10 +173,15 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
 
         from manim.mobject.text.text_mobject import Paragraph
 
-        height_line = "A"  # The "height_line" is used to make sure the Paragraph bounding box has the same height as the line number bounding box
+        # Paragraph cannot render input consisting entirely of whitespace, but
+        # such lines contain no visible glyphs and can safely be represented as empty.
+        rendered_code_lines = (
+            code_lines
+            if any(line.strip() for line in code_lines)
+            else [""] * len(code_lines)
+        )
         self.code_lines = Paragraph(
-            height_line,
-            *code_lines,
+            *rendered_code_lines,
             **base_paragraph_config,
         )
 
@@ -203,30 +208,58 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
                     i_char += 1
 
         if add_line_numbers:
-            base_paragraph_config.update({"alignment": "right"})
+            line_number_strings = [
+                str(i)
+                for i in range(
+                    line_numbers_from,
+                    line_numbers_from + len(self.code_lines),
+                )
+            ]
+            line_number_config = base_paragraph_config | {"alignment": "right"}
             self.line_numbers = Paragraph(
-                *[
-                    str(i)
-                    for i in range(
-                        line_numbers_from - 1,
-                        line_numbers_from + len(self.code_lines) - 1,
+                *line_number_strings,
+                **line_number_config,
+            )
+            self.line_numbers.next_to(self.code_lines, direction=LEFT)
+
+            reference_line = next(
+                (
+                    index
+                    for index, line in enumerate(self.code_lines)
+                    if line.width > 0 or line.height > 0
+                ),
+                None,
+            )
+            if reference_line is not None:
+                # Until Pango exposes baseline metrics, use short-lived reference
+                # paragraphs to align the code and line-number baselines.
+                code_reference = Paragraph(
+                    "A",
+                    code_lines[reference_line],
+                    **base_paragraph_config,
+                )
+                line_number_reference = Paragraph(
+                    str(line_numbers_from - 1),
+                    line_number_strings[reference_line],
+                    **line_number_config,
+                ).align_to(code_reference, UP)
+                baseline_offset = (
+                    line_number_reference[1].get_center()[1]
+                    - code_reference[1].get_center()[1]
+                )
+                self.line_numbers.shift(
+                    UP
+                    * (
+                        self.code_lines[reference_line].get_center()[1]
+                        + baseline_offset
+                        - self.line_numbers[reference_line].get_center()[1]
                     )
-                ],
-                **base_paragraph_config,
-            )
-            self.line_numbers.next_to(self.code_lines, direction=LEFT).align_to(
-                self.code_lines, UP
-            )
+                )
             self.add(self.line_numbers)
 
         for line in self.code_lines:
             line.submobjects = [c for c in line if not isinstance(c, Dot)]
         self.add(self.code_lines)
-
-        self.code_lines.submobjects.pop(
-            0
-        )  # The "height_line" should not be displayed, neither does its line number
-        self.line_numbers.submobjects.pop(0)
 
         if background_config is None:
             background_config = {}
