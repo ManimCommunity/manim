@@ -9,7 +9,6 @@ from ..mobject.mobject import _AnimationBuilder
 __all__ = ["Scene"]
 
 import copy
-import datetime
 import inspect
 import platform
 import random
@@ -18,8 +17,6 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 from queue import Queue
-
-import srt
 
 from manim.scene.section import DefaultSectionType
 
@@ -197,7 +194,7 @@ class Scene:
         self.key_to_function_map: dict[str, Callable[[], None]] = {}
         self.mouse_press_callbacks: list[Callable[[], None]] = []
         self.interactive_mode = False
-        self.manager: Manager | None = None
+        self.manager: Manager[Self] | None = None
 
         if config.renderer == RendererType.OPENGL:
             # Items associated with interaction
@@ -258,7 +255,7 @@ class Scene:
         """
         return self._get_manager().render(preview)
 
-    def _get_manager(self) -> Manager:
+    def _get_manager(self) -> Manager[Self]:
         """Return this scene's manager, creating it for legacy entry points."""
         manager = self.manager
         if manager is None:
@@ -324,7 +321,7 @@ class Scene:
         ``skip_animations`` skips the rendering of all animations in this section.
         Refer to :doc:`the documentation</tutorials/output_and_config>` on how to use sections.
         """
-        self.renderer.file_writer.next_section(name, section_type, skip_animations)
+        self._get_manager().next_section(name, section_type, skip_animations)
 
     def __str__(self) -> str:
         return self.__class__.__name__
@@ -1713,13 +1710,7 @@ class Scene:
                     )
 
         """
-        subtitle = srt.Subtitle(
-            index=len(self.renderer.file_writer.subcaptions),
-            content=content,
-            start=datetime.timedelta(seconds=float(self.time + offset)),
-            end=datetime.timedelta(seconds=float(self.time + offset + duration)),
-        )
-        self.renderer.file_writer.subcaptions.append(subtitle)
+        self._get_manager().add_subcaption(content, duration, offset)
 
     def add_sound(
         self,
@@ -1763,10 +1754,7 @@ class Scene:
 
         Download the resource for the previous example `here <https://github.com/ManimCommunity/manim/blob/main/docs/source/_static/click.wav>`_ .
         """
-        if self.renderer.skip_animations:
-            return
-        time = self.time + time_offset
-        self.renderer.file_writer.add_sound(sound_file, time, gain, **kwargs)
+        self._get_manager().add_sound(sound_file, time_offset, gain, **kwargs)
 
     def on_mouse_motion(self, point: Point3D, d_point: Point3D) -> None:
         assert isinstance(self.camera, OpenGLCamera)
