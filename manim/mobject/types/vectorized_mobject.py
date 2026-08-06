@@ -1772,7 +1772,7 @@ class VMobject(Mobject):
         self.align_rgbas(vmobject)
         # TODO: This shortcut can be a bit over eager. What if they have the same length, but different subpath lengths?
         if self.get_num_points() == vmobject.get_num_points():
-            return
+            return self
 
         for mob in self, vmobject:
             # If there are no points, add one to
