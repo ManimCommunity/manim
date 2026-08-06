@@ -2,13 +2,16 @@ from __future__ import annotations
 
 import copy
 import datetime
+import threading
 from unittest.mock import Mock
 
 import pytest
 import srt
 
-from manim import Manager, Scene
+from manim import Manager, Scene, tempconfig
 from manim.animation.animation import Wait
+from manim.constants import RendererType
+from manim.scene.scene import SceneInteractRerun
 from manim.utils.exceptions import EndSceneEarlyException, RerunSceneException
 
 
@@ -172,13 +175,106 @@ def test_manager_render_finalizes_after_early_scene_end(dry_run):
 def test_scene_play_forwards_through_manager(dry_run, monkeypatch):
     scene = Scene()
     renderer_play = Mock()
+    file_writer = Mock()
+    file_writer.subcaptions = []
     monkeypatch.setattr(scene.renderer, "play", renderer_play)
+    scene.renderer.file_writer = file_writer
     animation = Wait()
 
     scene.play(animation, run_time=2)
 
     assert isinstance(scene.manager, Manager)
     renderer_play.assert_called_once_with(scene, animation, run_time=2)
+    assert file_writer.subcaptions == []
+
+
+def test_scene_play_adds_subcaption_with_explicit_duration(dry_run, monkeypatch):
+    scene = Scene()
+    file_writer = Mock()
+    file_writer.subcaptions = []
+    scene.renderer.file_writer = file_writer
+    scene.renderer.time = 2.5
+    renderer_play = Mock(
+        side_effect=lambda *args, **kwargs: setattr(scene.renderer, "time", 4.5)
+    )
+    monkeypatch.setattr(scene.renderer, "play", renderer_play)
+    animation = Wait()
+
+    scene.play(
+        animation,
+        run_time=2,
+        subcaption="Hello",
+        subcaption_duration=1.25,
+        subcaption_offset=0.25,
+    )
+
+    renderer_play.assert_called_once_with(scene, animation, run_time=2)
+    assert file_writer.subcaptions == [
+        srt.Subtitle(
+            index=0,
+            content="Hello",
+            start=datetime.timedelta(seconds=2.75),
+            end=datetime.timedelta(seconds=4.0),
+        )
+    ]
+
+
+def test_scene_play_uses_animation_duration_for_default_subcaption_after_skip(
+    dry_run, monkeypatch
+):
+    scene = Scene()
+    file_writer = Mock()
+    file_writer.subcaptions = []
+    scene.renderer.file_writer = file_writer
+    scene.renderer.time = 1.0
+    scene.renderer.skip_animations = True
+    renderer_play = Mock(
+        side_effect=lambda *args, **kwargs: setattr(scene.renderer, "time", 3.5)
+    )
+    monkeypatch.setattr(scene.renderer, "play", renderer_play)
+
+    scene.play(Wait(), subcaption="Hello")
+
+    assert file_writer.subcaptions == [
+        srt.Subtitle(
+            index=0,
+            content="Hello",
+            start=datetime.timedelta(seconds=1.0),
+            end=datetime.timedelta(seconds=3.5),
+        )
+    ]
+
+
+def test_scene_play_queues_interactive_calls_without_attaching_manager(
+    dry_run, monkeypatch
+):
+    scene = Scene()
+    scene.interactive_mode = True
+    renderer_play = Mock()
+    monkeypatch.setattr(scene.renderer, "play", renderer_play)
+    worker_thread = threading.Thread(name="Worker")
+    monkeypatch.setattr(threading, "current_thread", lambda: worker_thread)
+
+    with tempconfig({"renderer": RendererType.OPENGL}):
+        scene.play(
+            Wait(),
+            run_time=2,
+            subcaption="Hello",
+            subcaption_duration=1.25,
+            subcaption_offset=0.5,
+        )
+
+    assert scene.manager is None
+    renderer_play.assert_not_called()
+    queued_call = scene.queue.get_nowait()
+    assert isinstance(queued_call, SceneInteractRerun)
+    assert queued_call.sender == "play"
+    assert queued_call.kwargs == {
+        "run_time": 2,
+        "subcaption": "Hello",
+        "subcaption_duration": 1.25,
+        "subcaption_offset": 0.5,
+    }
 
 
 def test_manager_views_follow_the_scene_renderer(dry_run):

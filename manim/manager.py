@@ -141,10 +141,26 @@ class Manager(Generic[SceneT]):
     def play(
         self,
         *args: Animation | Mobject | _AnimationBuilder,
+        subcaption: str | None = None,
+        subcaption_duration: float | None = None,
+        subcaption_offset: float = 0,
         **kwargs: Any,
     ) -> None:
-        """Forward an animation request to the scene's current renderer."""
+        """Coordinate an animation request and its optional subcaption."""
+        start_time = self.time
         self.renderer.play(self.scene, *args, **kwargs)
+        run_time = self.time - start_time
+
+        if subcaption:
+            if subcaption_duration is None:
+                subcaption_duration = run_time
+            # The start of the subcaption needs to be offset by the run time
+            # because it is added after the animation has already played.
+            self.add_subcaption(
+                content=subcaption,
+                duration=subcaption_duration,
+                offset=-run_time + subcaption_offset,
+            )
 
     def next_section(
         self,

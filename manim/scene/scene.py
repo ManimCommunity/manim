@@ -1164,21 +1164,13 @@ class Scene:
             self.queue.put(SceneInteractRerun("play", **kwargs))
             return
 
-        start_time = self.time
-        self._get_manager().play(*args, **kwargs)
-        run_time = self.time - start_time
-        if subcaption:
-            if subcaption_duration is None:
-                subcaption_duration = run_time
-            # The start of the subcaption needs to be offset by the
-            # run_time of the animation because it is added after
-            # the animation has already been played (and Scene.time
-            # has already been updated).
-            self.add_subcaption(
-                content=subcaption,
-                duration=subcaption_duration,
-                offset=-run_time + subcaption_offset,
-            )
+        self._get_manager().play(
+            *args,
+            subcaption=subcaption,
+            subcaption_duration=subcaption_duration,
+            subcaption_offset=subcaption_offset,
+            **kwargs,
+        )
 
     def wait(
         self,
