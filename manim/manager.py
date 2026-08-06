@@ -92,6 +92,7 @@ class Manager(Generic[SceneT]):
         try:
             self.construct()
         except EndSceneEarlyException:
+            # Reaching the configured animation boundary ends the scene normally.
             pass
         except RerunSceneException:
             self.scene.remove(*self.scene.mobjects)
