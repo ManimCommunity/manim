@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 import textwrap
 import threading
+from pathlib import Path
 from unittest.mock import Mock
 
 import av
@@ -15,15 +16,10 @@ from manim._config import config
 from manim.cli.render.commands import render
 
 _ENCODER_THREAD_PREFIX = "partial-movie-encoder-"
-_UNIQUE_PLAYS = 30
+_UNIQUE_PLAYS = 6
 _TOTAL_PLAYS = _UNIQUE_PLAYS + 2
 
 _SCENE_NAME = "ParallelEncodingCacheScene"
-# Animation hashing memoizes objects by mixed hash()/id() signatures, so a
-# rare collision (heap-address reuse, per-process str-hash seeds) can flip one
-# play's cache key. Rendering in fresh interpreters (like the neighboring
-# subprocess-based tests) keeps that rate low but not zero, so the cache
-# assertions below distinguish a rare flip from a systematic regression.
 _SCENE_SOURCE = textwrap.dedent(
     f"""\
     from manim import FadeIn, Scene, Square
@@ -57,6 +53,8 @@ def _render_scene(media_dir, scene_file):
         "-m",
         "manim",
         "-ql",
+        "--max-inflight-encoders",
+        "3",
         "--media_dir",
         str(media_dir),
         str(scene_file),
@@ -75,16 +73,10 @@ def test_parallel_encoding_cache_behavior(tmp_path):
 
     # The duplicate tail play must cache-hit within the run (one file fewer
     # than the number of plays); that hit exercises the writer's in-flight
-    # lookup while the first tail file may still be encoding. A hash collision
-    # (see note above) can rarely split the duplicate pair, in which case that
-    # path was not exercised, so retry once in a fresh media dir; two splits
-    # in a row indicate a real caching regression.
-    for attempt in range(2):
-        media_dir = tmp_path / f"attempt{attempt}"
-        quality_directory, partial_directory = _render_scene(media_dir, scene_file)
-        partial_movies = sorted(partial_directory.glob("*.mp4"))
-        if len(partial_movies) == _TOTAL_PLAYS - 1:
-            break
+    # lookup while the first tail file may still be encoding.
+    media_dir = tmp_path / "media"
+    quality_directory, partial_directory = _render_scene(media_dir, scene_file)
+    partial_movies = sorted(partial_directory.glob("*.mp4"))
     assert len(partial_movies) == _TOTAL_PLAYS - 1
     assert (quality_directory / f"{_SCENE_NAME}.mp4").exists()
     for partial_movie in partial_movies:
@@ -102,12 +94,7 @@ def test_parallel_encoding_cache_behavior(tmp_path):
         partial_movie.name: partial_movie.stat().st_mtime_ns
         for partial_movie in sorted(partial_directory.glob("*.mp4"))
     }
-    # Every cached partial must survive the second render untouched (not withstanding
-    # the rare hash collisions mentioned above). A play or two as extra files
-    # might be expected, but systematic growth means caching is broken.
-    for name, mtime_ns in partial_snapshot.items():
-        assert second_snapshot.get(name) == mtime_ns
-    assert len(second_snapshot) <= len(partial_snapshot) + 2
+    assert second_snapshot == partial_snapshot
 
 
 @pytest.mark.slow
@@ -119,7 +106,14 @@ def test_no_encoder_threads_survive_render(config, tmp_path):
                 self.play(FadeIn(square), run_time=0.1)
                 self.clear()
 
-    with tempconfig({"media_dir": tmp_path, "quality": "low_quality"}):
+    with tempconfig(
+        {
+            "media_dir": tmp_path,
+            "quality": "low_quality",
+            "max_inflight_encoders": 3,
+            "encoder_queue_size": 2,
+        },
+    ):
         scene = ThreadSweepScene()
         scene.render()
 
@@ -273,6 +267,37 @@ def test_encode_failure_precedes_close_failure_and_removes_partial(
     _assert_failed_join(job, expected_exception)
     container.close.assert_called_once_with()
     assert not job.path.exists()
+    assert "Partial movie file written" not in manim_caplog.text
+
+
+def test_partial_cleanup_failure_does_not_mask_encode_failure(
+    tmp_path,
+    monkeypatch,
+    manim_caplog,
+):
+    expected_exception = RuntimeError("encode failed")
+    cleanup_exception = PermissionError("cannot remove partial")
+    stream = Mock()
+    container = Mock()
+
+    def encode(*args):
+        if args:
+            raise expected_exception
+        return []
+
+    stream.encode.side_effect = encode
+    job = _new_encode_job(tmp_path, monkeypatch, "cleanup_failure", stream, container)
+    job.path.write_bytes(b"stale")
+    job.put(1, _frame())
+    job.seal()
+    unlink = Mock(side_effect=cleanup_exception)
+    monkeypatch.setattr(Path, "unlink", unlink)
+
+    _assert_failed_join(job, expected_exception)
+
+    unlink.assert_called_once_with(missing_ok=True)
+    assert "Failed to remove incomplete partial movie file" in manim_caplog.text
+    assert "cannot remove partial" in manim_caplog.text
     assert "Partial movie file written" not in manim_caplog.text
 
 

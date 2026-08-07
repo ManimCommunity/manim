@@ -174,7 +174,14 @@ class _PartialMovieEncodeJob:
         if self._exception is not None:
             # A failed encode may leave a structurally valid but truncated
             # file behind; remove it so a later run cannot cache-hit it.
-            Path(self.path).unlink(missing_ok=True)
+            try:
+                Path(self.path).unlink(missing_ok=True)
+            except OSError as cleanup_error:
+                logger.warning(
+                    "Failed to remove incomplete partial movie file %(path)s: "
+                    "%(error)s",
+                    {"path": f"'{self.path}'", "error": cleanup_error},
+                )
             raise self._exception
 
         logger.info(
