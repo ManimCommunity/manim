@@ -125,7 +125,7 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
 
         .. code-block:: python
 
-            from manim import Code
+            from manim import *
             from pygments.token import Comment
 
             BaseStyle = Code.get_pygments_style("vim")
@@ -140,11 +140,16 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
                 }
 
 
-            listing = Code(
-                code_string="print('Hello, world!')  # greeting",
-                language="python",
-                formatter_style=CustomStyle,
-            )
+            class Example(Scene):
+                def construct(self):
+                    rendered_code = Code(
+                        code_string="print('Hello, world!')  # greeting",
+                        language="python",
+                        formatter_style=CustomStyle,
+                    )
+
+                    self.add(rendered_code)
+                    self.wait(2)
     """
 
     _styles_list_cache: list[str] | None = None
