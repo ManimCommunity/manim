@@ -175,6 +175,14 @@ render_options = option_group(
         "encoding with rendering (4 is a good value on typical hardware).",
     ),
     option(
+        "--encoder-queue-size",
+        type=IntRange(min=1),
+        default=None,
+        help="Maximum number of pending frame buffers held by each encoder when "
+        "parallel encoding is enabled. Ignored when --max-inflight-encoders is "
+        "1 (the default). Defaults to 8.",
+    ),
+    option(
         "--renderer",
         type=Choice(
             [renderer_type.value for renderer_type in RendererType],

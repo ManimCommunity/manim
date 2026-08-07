@@ -99,14 +99,19 @@ class _PartialMovieEncodeJob:
         animation_index: int,
         container: OutputContainer,
         stream: Stream,
+        frame_queue_size: int,
     ) -> None:
         self.path = path
         self.animation_index = animation_index
         self.container = container
         self.stream = stream
-        # About 66 MB of 1080p RGBA frames per job. The worker drains through
+        # A size of 0 preserves the unbounded queue used by serial encoding.
+        # Parallel encoding uses a bounded queue; at the default capacity, eight
+        # 1080p RGBA frames occupy about 66 MB per job. The worker drains through
         # the sentinel after an exception, so a bounded queue cannot deadlock.
-        self.queue: Queue[tuple[int, PixelArray | None]] = Queue(maxsize=8)
+        self.queue: Queue[tuple[int, PixelArray | None]] = Queue(
+            maxsize=frame_queue_size,
+        )
         self._exception: BaseException | None = None
         self.thread = Thread(
             target=self._listen_and_write,
@@ -656,11 +661,15 @@ class SceneFileWriter:
         stream.width = config.pixel_width
         stream.height = config.pixel_height
 
+        frame_queue_size = (
+            0 if config.max_inflight_encoders == 1 else config.encoder_queue_size
+        )
         self._current_encode_job = _PartialMovieEncodeJob(
             path=file_path,
             animation_index=self.renderer.num_plays,
             container=video_container,
             stream=stream,
+            frame_queue_size=frame_queue_size,
         )
 
     def _join_job(self, job: _PartialMovieEncodeJob) -> None:

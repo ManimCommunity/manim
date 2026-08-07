@@ -130,7 +130,14 @@ def _frame():
     return np.zeros((4, 4, 4), dtype=np.uint8)
 
 
-def _new_encode_job(tmp_path, monkeypatch, name, stream, container):
+def _new_encode_job(
+    tmp_path,
+    monkeypatch,
+    name,
+    stream,
+    container,
+    frame_queue_size=8,
+):
     from manim.scene.scene_file_writer import _PartialMovieEncodeJob
 
     job = _PartialMovieEncodeJob(
@@ -138,6 +145,7 @@ def _new_encode_job(tmp_path, monkeypatch, name, stream, container):
         animation_index=0,
         stream=Mock(),
         container=Mock(),
+        frame_queue_size=frame_queue_size,
     )
     monkeypatch.setattr(job, "stream", stream)
     monkeypatch.setattr(job, "container", container)
@@ -287,6 +295,35 @@ def test_successful_encode_job_logs_partial_movie_written(
     assert not _alive_encoder_threads()
 
 
+@pytest.mark.parametrize(
+    ("max_inflight_encoders", "encoder_queue_size", "expected_queue_size"),
+    [(1, 8, 0), (1, 3, 0), (2, 8, 8), (2, 3, 3)],
+)
+def test_frame_queue_configuration(
+    config,
+    tmp_path,
+    max_inflight_encoders,
+    encoder_queue_size,
+    expected_queue_size,
+):
+    from manim.scene.scene_file_writer import SceneFileWriter
+
+    config.max_inflight_encoders = max_inflight_encoders
+    config.encoder_queue_size = encoder_queue_size
+    renderer = Mock()
+    renderer.num_plays = 0
+    writer = SceneFileWriter(renderer, "FrameQueueSizeScene")
+
+    writer.open_partial_movie_stream(tmp_path / "partial.mp4")
+    job = writer._current_encode_job
+    assert job is not None
+    assert job.queue.maxsize == expected_queue_size
+
+    writer.close_partial_movie_stream()
+    writer.join_all_encode_jobs()
+    assert not _alive_encoder_threads()
+
+
 @pytest.mark.parametrize("max_inflight_encoders", [1, 2, 3])
 def test_close_partial_movie_stream_respects_cap_and_joins_fifo(
     config,
@@ -407,43 +444,61 @@ def test_finish_propagates_join_failure_and_clears_inflight_state(
     combine_to_movie.assert_not_called()
 
 
-def test_max_inflight_encoders_flag_digests_into_config(tmp_path):
+def test_parallel_encoder_flags_digest_into_config(tmp_path):
     scene_file = tmp_path / "trivial_scene.py"
     scene_file.write_text("# never executed: --jupyter returns before rendering\n")
     cfg_file = tmp_path / "custom.cfg"
-    cfg_file.write_text("[CLI]\nmax_inflight_encoders = 2\n")
+    cfg_file.write_text(
+        "[CLI]\nmax_inflight_encoders = 2\nencoder_queue_size = 5\n",
+    )
     runner = CliRunner()
 
     common_args = [str(scene_file), "--jupyter", "--config_file", str(cfg_file)]
     result = runner.invoke(
         render,
-        [*common_args, "--max-inflight-encoders", "4"],
+        [
+            *common_args,
+            "--max-inflight-encoders",
+            "4",
+            "--encoder-queue-size",
+            "7",
+        ],
         standalone_mode=False,
     )
     assert result.exit_code == 0
     with tempconfig({}):
         config.digest_args(result.return_value)
         assert config.max_inflight_encoders == 4
+        assert config.encoder_queue_size == 7
 
     result = runner.invoke(render, common_args, standalone_mode=False)
     assert result.exit_code == 0
     with tempconfig({}):
         config.digest_args(result.return_value)
         assert config.max_inflight_encoders == 2
+        assert config.encoder_queue_size == 5
 
     with tempconfig({}):
         assert config.max_inflight_encoders == 1
+        assert config.encoder_queue_size == 8
 
 
-def test_max_inflight_encoders_flag_rejects_non_positive(tmp_path):
+@pytest.mark.parametrize(
+    "flag",
+    ["--max-inflight-encoders", "--encoder-queue-size"],
+)
+def test_parallel_encoder_flags_reject_non_positive(tmp_path, flag):
     scene_file = tmp_path / "trivial_scene.py"
     scene_file.write_text("# never executed: parsing fails before any render\n")
     runner = CliRunner()
 
     for bad_value in ["0", "-1"]:
-        result = runner.invoke(
-            render,
-            [str(scene_file), "--max-inflight-encoders", bad_value],
-        )
+        result = runner.invoke(render, [str(scene_file), flag, bad_value])
         assert result.exit_code == 2
         assert "Invalid value" in result.output
+
+
+def test_encoder_queue_size_rejects_non_positive_programmatic_values():
+    for bad_value in [0, -1]:
+        with pytest.raises(ValueError, match="positive integer"):
+            config.encoder_queue_size = bad_value

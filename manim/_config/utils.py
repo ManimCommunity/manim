@@ -266,6 +266,7 @@ class ManimConfig(MutableMapping):
         "disable_caching",
         "disable_caching_warning",
         "dry_run",
+        "encoder_queue_size",
         "enable_wireframe",
         "ffmpeg_loglevel",
         "format",
@@ -607,6 +608,7 @@ class ManimConfig(MutableMapping):
             "upto_animation_number",
             "max_files_cached",
             "max_inflight_encoders",
+            "encoder_queue_size",
             # the next two must be set BEFORE digesting frame_width and frame_height
             "pixel_height",
             "pixel_width",
@@ -781,6 +783,7 @@ class ManimConfig(MutableMapping):
             "preview_command",
             "seed",
             "max_inflight_encoders",
+            "encoder_queue_size",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -1245,6 +1248,21 @@ class ManimConfig(MutableMapping):
             self._d.__setitem__("max_inflight_encoders", value)
         else:
             raise ValueError("max_inflight_encoders must be a positive integer")
+
+    @property
+    def encoder_queue_size(self) -> int:
+        """Maximum number of pending frame buffers held by each encoder when
+        parallel encoding is enabled. Ignored when ``max_inflight_encoders`` is
+        1 (--encoder-queue-size).
+        """
+        return self._d["encoder_queue_size"]
+
+    @encoder_queue_size.setter
+    def encoder_queue_size(self, value: int) -> None:
+        if isinstance(value, int) and value >= 1:
+            self._d.__setitem__("encoder_queue_size", value)
+        else:
+            raise ValueError("encoder_queue_size must be a positive integer")
 
     @property
     def window_monitor(self) -> int:
