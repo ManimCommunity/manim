@@ -25,13 +25,96 @@ class FadeInSquare(Scene):
 
 def test_code_initialization_from_file():
     rendered_code = Code(
-        code_file="tests/test_code_mobject.py",
+        code_file="example_scenes/basic.py",
         language="python",
         background="window",
         background_config={"fill_color": "#101010"},
+        paragraph_config={"font_size": 14},
     )
     assert len(rendered_code.code_lines) == len(rendered_code.line_numbers)
     assert rendered_code.background.fill_color == ManimColor("#101010")
+
+
+@pytest.mark.parametrize(
+    ("formatter_style", "background_color", "text_color"),
+    [
+        ("xcode", "#ffffff", "#000000"),
+        ("vim", "#000000", "#cccccc"),
+    ],
+)
+def test_code_uses_formatter_style_colors(
+    formatter_style, background_color, text_color
+):
+    rendered_code = Code(
+        code_string="plain text",
+        language="text",
+        formatter_style=formatter_style,
+        add_line_numbers=False,
+    )
+
+    assert rendered_code.background.fill_color == ManimColor(background_color)
+    assert rendered_code.code_lines[0][0].get_color() == ManimColor(text_color)
+
+
+def test_code_ignores_paragraph_color():
+    rendered_code = Code(
+        code_string="plain text",
+        language="text",
+        formatter_style="vim",
+        paragraph_config={"color": "#ff0000"},
+    )
+
+    assert rendered_code.code_lines[0][0].get_color() == ManimColor("#cccccc")
+    assert rendered_code.line_numbers[0][0].get_color() == ManimColor("#cccccc")
+
+
+def test_code_ignores_default_paragraph_color(monkeypatch):
+    monkeypatch.setitem(Code.default_paragraph_config, "color", "#ff0000")
+
+    rendered_code = Code(
+        code_string="plain text",
+        language="text",
+        formatter_style="vim",
+    )
+
+    assert rendered_code.code_lines[0][0].get_color() == ManimColor("#cccccc")
+    assert rendered_code.line_numbers[0][0].get_color() == ManimColor("#cccccc")
+
+
+def test_code_accepts_custom_pygments_style():
+    class CustomStyle(Code.get_pygments_style("xcode")):
+        background_color = "#123456"
+        line_number_color = "#abcdef"
+
+    rendered_code = Code(
+        code_string="plain text",
+        language="text",
+        formatter_style=CustomStyle,
+    )
+
+    assert rendered_code.background.fill_color == ManimColor("#123456")
+    assert rendered_code.code_lines[0][0].get_color() == ManimColor("#000000")
+    assert rendered_code.line_numbers[0][0].get_color() == ManimColor("#abcdef")
+
+
+@pytest.mark.parametrize(
+    ("formatter_style", "line_number_color"),
+    [
+        ("solarized-light", ManimColor("#93a1a1")),
+        ("vim", ManimColor("#cccccc")),
+        ("xcode", ManimColor("#000000")),
+    ],
+)
+def test_code_line_numbers_use_formatter_style_color(
+    formatter_style, line_number_color
+):
+    rendered_code = Code(
+        code_string="plain text",
+        language="text",
+        formatter_style=formatter_style,
+    )
+
+    assert rendered_code.line_numbers[0][0].get_color() == line_number_color
 
 
 def test_line_heights_initial_whitespace():

@@ -8,13 +8,15 @@ __all__ = [
 
 import re
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from bs4 import BeautifulSoup, Tag
 from pygments import highlight
 from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, guess_lexer, guess_lexer_for_filename
-from pygments.styles import get_all_styles
+from pygments.style import Style
+from pygments.styles import get_all_styles, get_style_by_name
+from pygments.token import Text as TextToken
 
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
@@ -22,7 +24,7 @@ from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.typing import StrPath
-from manim.utils.color import WHITE, ManimColor
+from manim.utils.color import BLACK, WHITE
 
 
 class Code(VMobject, metaclass=ConvertToOpenGL):
@@ -79,9 +81,11 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         The programming language of the code. If not specified, it will be
         guessed from the file extension or the code itself.
     formatter_style
-        The style to use for the code highlighting. Defaults to ``"vim"``.
-        A list of all available styles can be obtained by calling
-        :meth:`.Code.get_styles_list`.
+        The style to use for the code highlighting. This can be either the name
+        of a Pygments style or a custom Pygments style class. Defaults to
+        ``"vim"``. A list of all available styles can be obtained by calling
+        :meth:`.Code.get_styles_list`; style classes can be retrieved with
+        :meth:`.Code.get_pygments_style`.
     tab_width
         The width of a tab character in spaces. Defaults to 4.
     add_line_numbers
@@ -95,19 +99,63 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         Keyword arguments passed to the background constructor. Default
         settings are stored in the class attribute
         :attr:`.default_background_config` (which can also be modified
-        directly).
+        directly). If ``fill_color`` is not specified, it is taken from
+        the selected ``formatter_style``.
     paragraph_config
         Keyword arguments passed to the constructor of the
         :class:`.Paragraph` objects holding the code, and the line
         numbers. Default settings are stored in the class attribute
         :attr:`.default_paragraph_config` (which can also be modified
-        directly).
+        directly). The ``color`` setting is ignored because colors are
+        determined by the selected Pygments style.
+
+    Notes
+    -----
+    .. note::
+
+        The Pygments style controls the colors of the rendered code, including
+        its default foreground, background, and line number colors. To
+        customize the color scheme, pass a custom Pygments style class via
+        ``formatter_style`` rather than setting ``paragraph_config["color"]``.
+        See `Creating own styles with Pygments
+        <https://pygments.org/docs/styledevelopment/>`_ for details.
+
+        For example, a built-in style can be subclassed without importing its
+        style class directly:
+
+        .. code-block:: python
+
+            from manim import *
+            from pygments.token import Comment
+
+            BaseStyle = Code.get_pygments_style("vim")
+
+
+            class CustomStyle(BaseStyle):
+                background_color = "#1e1e1e"
+                line_number_color = "#858585"
+                styles = {
+                    **BaseStyle.styles,
+                    Comment: "italic #6a9955",
+                }
+
+
+            class Example(Scene):
+                def construct(self):
+                    rendered_code = Code(
+                        code_string="print('Hello, world!')  # greeting",
+                        language="python",
+                        formatter_style=CustomStyle,
+                    )
+
+                    self.add(rendered_code)
+                    self.wait(2)
     """
 
     _styles_list_cache: list[str] | None = None
     default_background_config: dict[str, Any] = {
         "buff": 0.3,
-        "fill_color": ManimColor("#222"),
+        "fill_color": None,
         "stroke_color": WHITE,
         "corner_radius": 0.2,
         "stroke_width": 1,
@@ -126,7 +174,7 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         code_file: StrPath | None = None,
         code_string: str | None = None,
         language: str | None = None,
-        formatter_style: str = "vim",
+        formatter_style: str | type[Style] = "vim",
         tab_width: int = 4,
         add_line_numbers: bool = True,
         line_numbers_from: int = 1,
@@ -158,6 +206,7 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
             noclasses=True,
             cssclasses="",
         )
+        selected_style = formatter.style
         soup = BeautifulSoup(
             highlight(code_string, lexer, formatter), features="html.parser"
         )
@@ -166,15 +215,19 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
 
         code_lines = self._code_html.get_text().removesuffix("\n").split("\n")
 
-        if paragraph_config is None:
-            paragraph_config = {}
         base_paragraph_config = self.default_paragraph_config.copy()
-        base_paragraph_config.update(paragraph_config)
+        base_paragraph_config.update(paragraph_config or {})
+        base_paragraph_config.pop("color", None)
+        default_text_color = selected_style.style_for_token(TextToken).get("color")
+        foreground_color = (
+            BLACK if default_text_color is None else f"#{default_text_color}"
+        )
 
         from manim.mobject.text.text_mobject import Paragraph
 
         self.code_lines = Paragraph(
             *code_lines,
+            color=foreground_color,
             **base_paragraph_config,
         )
 
@@ -201,7 +254,11 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
                     i_char += 1
 
         if add_line_numbers:
-            base_paragraph_config.update({"alignment": "right"})
+            line_number_config = base_paragraph_config.copy()
+            line_number_config["alignment"] = "right"
+            line_number_color = selected_style.line_number_color
+            if line_number_color == "inherit":
+                line_number_color = foreground_color
             self.line_numbers = Paragraph(
                 *[
                     str(i)
@@ -209,7 +266,8 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
                         line_numbers_from, line_numbers_from + len(self.code_lines)
                     )
                 ],
-                **base_paragraph_config,
+                color=line_number_color,
+                **line_number_config,
             )
             self.line_numbers.next_to(self.code_lines, direction=LEFT).align_to(
                 self.code_lines, UP
@@ -220,10 +278,10 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
             line.submobjects = [c for c in line if not isinstance(c, Dot)]
         self.add(self.code_lines)
 
-        if background_config is None:
-            background_config = {}
         background_config_base = self.default_background_config.copy()
-        background_config_base.update(background_config)
+        background_config_base.update(background_config or {})
+        if background_config_base["fill_color"] is None:
+            background_config_base["fill_color"] = selected_style.background_color
 
         if background == "rectangle":
             self.background = SurroundingRectangle(
@@ -246,6 +304,22 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
             raise ValueError(f"Unknown background type: {background}")
 
         self.add_to_back(self.background)
+
+    @classmethod
+    def get_pygments_style(cls, name: str) -> type[Style]:
+        """Return the Pygments style registered under ``name``.
+
+        Parameters
+        ----------
+        name
+            The name of the Pygments style to retrieve.
+
+        Returns
+        -------
+        type[Style]
+            The corresponding Pygments style class.
+        """
+        return cast(type[Style], get_style_by_name(name))
 
     @classmethod
     def get_styles_list(cls) -> list[str]:
