@@ -8,7 +8,7 @@ __all__ = [
 
 import re
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from bs4 import BeautifulSoup, Tag
 from pygments import highlight
@@ -314,7 +314,7 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         type[Style]
             The corresponding Pygments style class.
         """
-        return get_style_by_name(name)
+        return cast(type[Style], get_style_by_name(name))
 
     @classmethod
     def get_styles_list(cls) -> list[str]:
