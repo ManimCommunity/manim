@@ -146,10 +146,15 @@ for _ in range(42):
     )
 
 
-def test_code_baseline_alignment():
+@pytest.mark.parametrize("line_numbers_from", [1, 10, -2])
+def test_code_baseline_alignment(line_numbers_from):
     baseline_offsets = []
     for code_string in ("pass", "pass b"):
-        rendered_code = Code(code_string=code_string, language="python")
+        rendered_code = Code(
+            code_string=code_string,
+            language="python",
+            line_numbers_from=line_numbers_from,
+        )
         baseline_offsets.append(
             rendered_code.code_lines[0].get_bottom()[1]
             - rendered_code.line_numbers[0].get_bottom()[1]

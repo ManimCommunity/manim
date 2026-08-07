@@ -247,13 +247,6 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
             color=foreground_color,
             **base_paragraph_config,
         )
-        alignment_mobjects = VGroup(
-            *(
-                self.code_lines[index].submobjects.pop()
-                for index in boundary_line_indices
-                for _ in range(len(alignment_suffix))
-            )
-        ).stretch_to_fit_width(0, about_edge=LEFT)
 
         i_line, i_char = 0, 0
         for child in self._code_html.children:
@@ -297,40 +290,21 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
             )
             self.line_numbers.next_to(self.code_lines, direction=LEFT)
 
-            reference_line = next(
-                (
-                    index
-                    for index, line in enumerate(self.code_lines)
-                    if any(not isinstance(char, Dot) for char in line)
-                ),
-                None,
+            line_number_reference = VGroup(
+                *self.code_lines[0][-len(str(line_numbers_from)) :]
             )
-            if reference_line is not None:
-                # Use short-lived reference paragraphs to align the code and
-                # line-number baselines.
-                code_reference = Paragraph(
-                    "A",
-                    code_lines[reference_line],
-                    **base_paragraph_config,
-                )
-                line_number_reference = Paragraph(
-                    str(line_numbers_from - 1),
-                    str(line_numbers_from + reference_line),
-                    color=line_number_color,
-                    **line_number_config,
-                ).align_to(code_reference, UP)
-                baseline_offset = (
-                    line_number_reference[1].get_y() - code_reference[1].get_y()
-                )
-                self.line_numbers.shift(
-                    UP
-                    * (
-                        self.code_lines[reference_line].get_y()
-                        + baseline_offset
-                        - self.line_numbers[reference_line].get_y()
-                    )
-                )
+            self.line_numbers.shift(
+                UP * (line_number_reference.get_y() - self.line_numbers[0].get_y())
+            )
             self.add(self.line_numbers)
+
+        alignment_mobjects = VGroup(
+            *(
+                self.code_lines[index].submobjects.pop()
+                for index in boundary_line_indices
+                for _ in range(len(alignment_suffix))
+            )
+        ).stretch_to_fit_width(0, about_edge=LEFT)
 
         for line in self.code_lines:
             line.submobjects = [c for c in line if not isinstance(c, Dot)]
