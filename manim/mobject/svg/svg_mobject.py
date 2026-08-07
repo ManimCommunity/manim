@@ -340,7 +340,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             logger.warning(f"Unsupported element type: {type(shape)}")
             mob = None
         if mob is None or not mob.has_points():
-            return mob
+            return None
         self.apply_style_to_mobject(mob, shape)
         if isinstance(shape, se.Transformable) and shape.apply:
             self.handle_transform(mob, shape.transform)
