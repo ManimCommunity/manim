@@ -23,6 +23,21 @@ class FadeInSquare(Scene):
     assert len(rendered_code.line_numbers) == num_lines
 
 
+@pytest.mark.parametrize(
+    ("code_string", "num_lines"),
+    [("pass", 1), ("   ", 1), (" \n ", 2)],
+)
+def test_code_initialization_without_line_numbers(code_string, num_lines):
+    rendered_code = Code(
+        code_string=code_string,
+        language="python",
+        add_line_numbers=False,
+    )
+
+    assert len(rendered_code.code_lines) == num_lines
+    assert not hasattr(rendered_code, "line_numbers")
+
+
 def test_code_initialization_from_file():
     rendered_code = Code(
         code_file="example_scenes/basic.py",
@@ -129,6 +144,69 @@ for _ in range(42):
         rendered_code.code_lines[0].height,
         rendered_code.code_lines[2].height,
     )
+
+
+@pytest.mark.parametrize("line_numbers_from", [1, 10, -2])
+def test_code_baseline_alignment(line_numbers_from):
+    baseline_offsets = []
+    for code_string in ("pass", "pass b"):
+        rendered_code = Code(
+            code_string=code_string,
+            language="python",
+            line_numbers_from=line_numbers_from,
+        )
+        baseline_offsets.append(
+            rendered_code.code_lines[0].get_bottom()[1]
+            - rendered_code.line_numbers[0].get_bottom()[1]
+        )
+
+    np.testing.assert_allclose(baseline_offsets[0], baseline_offsets[1], atol=1e-6)
+
+
+@pytest.mark.parametrize("background", ["rectangle", "window"])
+@pytest.mark.parametrize("add_line_numbers", [True, False])
+def test_code_height_is_independent_of_boundary_glyphs(
+    background,
+    add_line_numbers,
+):
+    code_strings = (
+        "AAA\nppp",
+        "ppp\nAAA",
+        "AAA\nAAA",
+        "ppp\nppp",
+        "---\n---",
+    )
+    background_heights = [
+        Code(
+            code_string=code_string,
+            language="python",
+            background=background,
+            add_line_numbers=add_line_numbers,
+        ).background.height
+        for code_string in code_strings
+    ]
+
+    np.testing.assert_allclose(background_heights, background_heights[0], atol=1e-6)
+
+
+def test_code_syntax_highlighting_colors():
+    code_string = "pass\n# comment"
+    rendered_code = Code(
+        code_string=code_string,
+        language="python",
+        formatter_style="vim",
+    )
+
+    assert {char.color for char in rendered_code.code_lines[0]} == {
+        ManimColor("#CDCD00")
+    }
+    assert {char.color for char in rendered_code.code_lines[1]} == {
+        ManimColor("#000080")
+    }
+    assert [len(line) for line in rendered_code.code_lines] == [
+        sum(not char.isspace() for char in line) for line in code_string.splitlines()
+    ]
+    assert len(rendered_code.code_lines) == len(rendered_code.code_lines.chars)
 
 
 def test_code_initialization_style_correct_color():
