@@ -6,7 +6,7 @@ import textwrap
 import threading
 import time
 from pathlib import Path
-from unittest.mock import Mock
+from unittest.mock import ANY, Mock, call
 
 import av
 import numpy as np
@@ -860,6 +860,229 @@ def test_mid_play_exception_does_not_hang_process(tmp_path):
     )
     assert (partial_directory / "uncached_00000.mp4").exists()
     assert not (partial_directory / "uncached_00001.mp4").exists()
+
+
+_BURST_SCENE_NAME = "ParallelEncodingBurstScene"
+_BURST_PLAYS = 6
+# Distinct side lengths so every play gets its own cache key and partial file.
+_BURST_SCENE_SOURCE = textwrap.dedent(
+    f"""\
+    from manim import FadeIn, Scene, Square
+
+
+    class {_BURST_SCENE_NAME}(Scene):
+        def construct(self):
+            for index in range({_BURST_PLAYS}):
+                square = Square(side_length=0.2 + index / 50)
+                self.play(FadeIn(square), run_time=0.1)
+                self.clear()
+    """
+)
+
+
+def _render_scene_with_args(media_dir, scene_file, scene_name, extra_args=()):
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--media_dir",
+        str(media_dir),
+        *extra_args,
+        str(scene_file),
+        scene_name,
+    ]
+    _, err, exit_code = capture(command)
+    assert exit_code == 0, err
+    quality_directory = media_dir / "videos" / scene_file.stem / "480p15"
+    return quality_directory, quality_directory / "partial_movie_files" / scene_name
+
+
+def _decode_frame_count(path):
+    with av.open(path) as container:
+        return sum(1 for _ in container.decode(video=0))
+
+
+@pytest.mark.slow
+def test_render_with_multiple_inflight_encoders(tmp_path):
+    """Render with the cap raised so several encoders are genuinely in flight.
+
+    This is the only end-to-end exercise of a raised cap with real encoders;
+    it also covers the CLI flag reaching a real render (elsewhere only
+    ``digest_args`` is tested).
+    """
+    scene_file = tmp_path / "parallel_burst_scenes.py"
+    scene_file.write_text(_BURST_SCENE_SOURCE)
+
+    quality_directory, partial_directory = _render_scene_with_args(
+        tmp_path / "media",
+        scene_file,
+        _BURST_SCENE_NAME,
+        extra_args=["--max-inflight-encoders", "4"],
+    )
+
+    partial_movies = sorted(partial_directory.glob("*.mp4"))
+    assert len(partial_movies) == _BURST_PLAYS
+    assert (quality_directory / f"{_BURST_SCENE_NAME}.mp4").exists()
+    # Every partial must decode completely, not just produce a first frame.
+    for partial_movie in partial_movies:
+        assert _decode_frame_count(partial_movie) > 0
+
+
+@pytest.mark.slow
+def test_parallel_encoding_output_matches_serial(tmp_path):
+    """The cap must not change what gets encoded: byte-identical partials.
+
+    Per-job encoding is single-streamed and deterministic, so cap=1 and cap=4
+    runs of the same scene must produce identical files. Partial file names
+    come from animation hashes, which can rarely flip between processes, so
+    mismatched *name sets* get one retry in fresh directories; mismatched
+    *bytes* for a shared name is an immediate failure — that would mean
+    parallelism changed the output.
+    """
+    scene_file = tmp_path / "parallel_identity_scenes.py"
+    scene_file.write_text(_BURST_SCENE_SOURCE)
+
+    for attempt in range(2):
+        serial_dir = tmp_path / f"serial{attempt}"
+        parallel_dir = tmp_path / f"parallel{attempt}"
+        _, serial_partials = _render_scene_with_args(
+            serial_dir,
+            scene_file,
+            _BURST_SCENE_NAME,
+            extra_args=["--max-inflight-encoders", "1"],
+        )
+        _, parallel_partials = _render_scene_with_args(
+            parallel_dir,
+            scene_file,
+            _BURST_SCENE_NAME,
+            extra_args=["--max-inflight-encoders", "4"],
+        )
+        serial_files = {p.name: p for p in serial_partials.glob("*.mp4")}
+        parallel_files = {p.name: p for p in parallel_partials.glob("*.mp4")}
+        if serial_files.keys() == parallel_files.keys():
+            break
+    assert serial_files.keys() == parallel_files.keys()
+
+    for name, serial_file in serial_files.items():
+        assert serial_file.read_bytes() == parallel_files[name].read_bytes(), (
+            f"partial movie {name} differs between cap=1 and cap=4 runs"
+        )
+
+
+def test_encode_job_repeats_frame_num_frames_times(tmp_path):
+    """``put(n, frame)`` must encode the frame n times and mux every packet.
+
+    Every other test in this module uses ``num_frames=1``, leaving the
+    repetition loop in ``_encode_and_write_frame`` uncovered.
+    """
+    from manim.scene.scene_file_writer import _PartialMovieEncodeJob
+
+    packet = object()
+    stream = Mock()
+    stream.encode.side_effect = lambda *args: [packet] if args else []
+    container = Mock()
+
+    job = _PartialMovieEncodeJob(
+        path=tmp_path / "freeze_frame.mp4",
+        animation_index=0,
+        container=container,
+        stream=stream,
+        frame_queue_size=8,
+    )
+    job.put(3, _frame())
+    job.seal()
+    job.join()
+
+    # Three encode calls with a frame, then the argless flush.
+    assert stream.encode.call_args_list == [call(ANY)] * 3 + [call()]
+    assert container.mux.call_args_list == [call(packet)] * 3
+
+
+def test_is_already_cached_false_after_joining_failed_path(config, tmp_path):
+    """After joining the in-flight job, a missing file means "not cached".
+
+    The existing same-path test asserts the join happens but never checks the
+    return value.
+    """
+    from manim.scene.scene_file_writer import SceneFileWriter
+
+    with tempconfig({"media_dir": str(tmp_path)}):
+        renderer = Mock()
+        renderer.num_plays = 0
+        writer = SceneFileWriter(renderer, "CachedReturnScene")
+        hash_invocation = "missing_partial_hash"
+        path = (
+            writer.partial_movie_directory
+            / f"{hash_invocation}{config['movie_file_extension']}"
+        )
+        job = Mock(path=path)
+        writer._inflight_encode_jobs.append(job)
+        writer._inflight_by_path[str(path)] = job
+
+        assert writer.is_already_cached(hash_invocation) is False
+        job.join.assert_called_once_with()
+
+
+def test_is_already_cached_true_when_partial_exists(config, tmp_path):
+    from manim.scene.scene_file_writer import SceneFileWriter
+
+    with tempconfig({"media_dir": str(tmp_path)}):
+        renderer = Mock()
+        renderer.num_plays = 0
+        writer = SceneFileWriter(renderer, "CachedReturnScene")
+        hash_invocation = "present_partial_hash"
+        path = (
+            writer.partial_movie_directory
+            / f"{hash_invocation}{config['movie_file_extension']}"
+        )
+        path.write_bytes(b"cached partial")
+
+        assert writer.is_already_cached(hash_invocation) is True
+
+
+def test_close_partial_movie_stream_without_open_stream_raises(config, tmp_path):
+    from manim.scene.scene_file_writer import SceneFileWriter
+
+    with tempconfig({"media_dir": str(tmp_path)}):
+        renderer = Mock()
+        renderer.num_plays = 0
+        writer = SceneFileWriter(renderer, "GuardScene")
+
+        with pytest.raises(RuntimeError, match="without an open partial"):
+            writer.close_partial_movie_stream()
+
+
+def test_open_partial_movie_stream_without_path_raises(config, tmp_path):
+    from manim.scene.scene_file_writer import SceneFileWriter
+
+    with tempconfig({"media_dir": str(tmp_path)}):
+        renderer = Mock()
+        renderer.num_plays = 0
+        writer = SceneFileWriter(renderer, "GuardScene")
+        writer.partial_movie_files = [None]
+
+        with pytest.raises(RuntimeError, match="partial movie file path"):
+            writer.open_partial_movie_stream()
+
+
+def test_write_frame_without_open_stream_drops_frame(config, tmp_path):
+    """Interactive OpenGL emits frames with no open stream; they are dropped.
+
+    ``write_to_movie()`` is true under the default test config, so the call
+    reaches the drop branch in ``write_frame``.
+    """
+    from manim.scene.scene_file_writer import SceneFileWriter
+
+    with tempconfig({"media_dir": str(tmp_path)}):
+        renderer = Mock()
+        renderer.num_plays = 0
+        writer = SceneFileWriter(renderer, "DropFrameScene")
+        assert writer._current_encode_job is None
+
+        # Must not raise and must not create a job.
+        writer.write_frame(_frame())
+        assert writer._current_encode_job is None
 
 
 def test_parallel_encoder_flags_digest_into_config(tmp_path):
