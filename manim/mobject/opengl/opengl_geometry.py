@@ -255,7 +255,7 @@ class OpenGLArc(OpenGLTipableVMobject):
         super().__init__(**kwargs)
         self.orientation = -1
 
-    def init_points(self) -> None:
+    def init_points(self) -> Self:
         self.set_points(
             OpenGLArc.create_quadratic_bezier_points(
                 angle=self.angle,
@@ -266,6 +266,7 @@ class OpenGLArc(OpenGLTipableVMobject):
         # To maintain proper orientation for fill shaders.
         self.scale(self.radius, about_point=ORIGIN)
         self.shift(self.arc_center)
+        return self
 
     @staticmethod
     def create_quadratic_bezier_points(
@@ -420,7 +421,7 @@ class OpenGLAnnularSector(OpenGLArc):
             **kwargs,
         )
 
-    def init_points(self) -> None:
+    def init_points(self) -> Self:
         inner_arc, outer_arc = (
             OpenGLArc(
                 start_angle=self.start_angle,
@@ -435,6 +436,7 @@ class OpenGLAnnularSector(OpenGLArc):
         self.add_line_to(outer_arc.points[0])
         self.append_points(outer_arc.points)
         self.add_line_to(inner_arc.points[0])
+        return self
 
 
 class OpenGLSector(OpenGLAnnularSector):
@@ -460,7 +462,7 @@ class OpenGLAnnulus(OpenGLCircle):
             fill_opacity=fill_opacity, stroke_width=stroke_width, color=color, **kwargs
         )
 
-    def init_points(self) -> None:
+    def init_points(self) -> Self:
         self.radius = self.outer_radius
         outer_circle = OpenGLCircle(radius=self.outer_radius)
         inner_circle = OpenGLCircle(radius=self.inner_radius)
@@ -468,6 +470,7 @@ class OpenGLAnnulus(OpenGLCircle):
         self.append_points(outer_circle.points)
         self.append_points(inner_circle.points)
         self.shift(self.arc_center)
+        return self
 
 
 class OpenGLLine(OpenGLTipableVMobject):
@@ -485,22 +488,25 @@ class OpenGLLine(OpenGLTipableVMobject):
         self.set_start_and_end_attrs(start, end)
         super().__init__(**kwargs)
 
-    def init_points(self) -> None:
+    def init_points(self) -> Self:
         self.set_points_by_ends(self.start, self.end, self.buff, self.path_arc)
+        return self
 
     def set_points_by_ends(
         self, start: Point3DLike, end: Point3DLike, buff: float = 0, path_arc: float = 0
-    ) -> None:
+    ) -> Self:
         if path_arc:
             self.set_points(OpenGLArc.create_quadratic_bezier_points(path_arc))
             self.put_start_and_end_on(start, end)
         else:
             self.set_points_as_corners([start, end])
         self.account_for_buff(self.buff)
+        return self
 
-    def set_path_arc(self, new_value: float) -> None:
+    def set_path_arc(self, new_value: float) -> Self:
         self.path_arc = new_value
         self.init_points()
+        return self
 
     def account_for_buff(self, buff: float) -> Self:
         if buff == 0:
@@ -516,7 +522,7 @@ class OpenGLLine(OpenGLTipableVMobject):
 
     def set_start_and_end_attrs(
         self, start: Mobject | Point3DLike, end: Mobject | Point3DLike
-    ) -> None:
+    ) -> Self:
         # If either start or end are Mobjects, this
         # gives their centers
         rough_start = self.pointify(start)
@@ -527,6 +533,7 @@ class OpenGLLine(OpenGLTipableVMobject):
         # start and end, if they're mobjects
         self.start = self.pointify(start, vect) + self.buff * vect
         self.end = self.pointify(end, -vect) - self.buff * vect
+        return self
 
     def pointify(
         self, mob_or_point: Mobject | Point3DLike, direction: Vector3DLike = None
@@ -581,8 +588,9 @@ class OpenGLLine(OpenGLTipableVMobject):
         )
         return self
 
-    def set_length(self, length: float) -> None:
+    def set_length(self, length: float) -> Self:
         self.scale(length / self.get_length())
+        return self
 
 
 class OpenGLDashedLine(OpenGLLine):
@@ -693,7 +701,7 @@ class OpenGLArrow(OpenGLLine):
 
     def set_points_by_ends(
         self, start: Point3DLike, end: Point3DLike, buff: float = 0, path_arc: float = 0
-    ) -> None:
+    ) -> Self:
         # Find the right tip length and thickness
         vect = np.asarray(end) - np.asarray(start)
         length = max(np.linalg.norm(vect), 1e-8)
@@ -755,6 +763,7 @@ class OpenGLArrow(OpenGLLine):
         )
         self.shift(start - self.get_start())
         self.refresh_triangulation()
+        return self
 
     def reset_points_around_ends(self) -> Self:
         self.set_points_by_ends(
@@ -786,10 +795,10 @@ class OpenGLArrow(OpenGLLine):
         self.reset_points_around_ends()
         return self
 
-    def set_path_arc(self, path_arc: float) -> None:
+    def set_path_arc(self, path_arc: float) -> Self:
         self.path_arc = path_arc
         self.reset_points_around_ends()
-        # return self
+        return self
 
 
 class OpenGLVector(OpenGLArrow):
@@ -829,9 +838,10 @@ class OpenGLPolygon(OpenGLVMobject):
         self.vertices: Point3D_Array = np.array(vertices)
         super().__init__(**kwargs)
 
-    def init_points(self) -> None:
+    def init_points(self) -> Self:
         verts = self.vertices
         self.set_points_as_corners([*verts, verts[0]])
+        return self
 
     def get_vertices(self) -> Point3D_Array:
         return self.get_start_anchors()

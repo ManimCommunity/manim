@@ -311,8 +311,9 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
     def get_value(self) -> float:
         return self.number
 
-    def increment_value(self, delta_t: float = 1) -> None:
+    def increment_value(self, delta_t: float = 1) -> Self:
         self.set_value(self.get_value() + delta_t)
+        return self
 
 
 class Integer(DecimalNumber):

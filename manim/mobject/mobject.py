@@ -458,19 +458,21 @@ class Mobject:
         self.points = np.zeros((0, self.dim))
         return self
 
-    def init_colors(self, propagate_colors: bool = True) -> object:
+    def init_colors(self, propagate_colors: bool = True) -> Self:
         """Initializes the colors.
 
         Gets called upon creation. This is an empty method that can be implemented by
         subclasses.
         """
+        return self
 
-    def generate_points(self) -> object:
+    def generate_points(self) -> Self:
         """Initializes :attr:`points` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be implemented by
         subclasses.
         """
+        return self
 
     def add(self, *mobjects: Mobject) -> Self:
         """Add mobjects as submobjects.
@@ -560,7 +562,7 @@ class Mobject:
         self.submobjects = list_update(self.submobjects, unique_mobjects)
         return self
 
-    def insert(self, index: int, mobject: Mobject) -> None:
+    def insert(self, index: int, mobject: Mobject) -> Self:
         """Inserts a mobject at a specific position into self.submobjects
 
         Effectively just calls  ``self.submobjects.insert(index, mobject)``,
@@ -577,6 +579,7 @@ class Mobject:
         """
         self._assert_valid_submobjects([mobject])
         self.submobjects.insert(index, mobject)
+        return self
 
     def __add__(self, mobject: Mobject) -> Self:
         raise NotImplementedError
@@ -1232,7 +1235,7 @@ class Mobject:
 
     # Transforming operations
 
-    def apply_to_family(self, func: Callable[[Mobject], None]) -> None:
+    def apply_to_family(self, func: Callable[[Mobject], None]) -> Self:
         """Apply a function to ``self`` and every submobject with points recursively.
 
         Parameters
@@ -1253,6 +1256,8 @@ class Mobject:
         """
         for mob in self.family_members_with_points():
             func(mob)
+
+        return self
 
     def shift(self, *vectors: Vector3DLike) -> Self:
         """Shift by the given vectors.
@@ -2889,14 +2894,15 @@ class Mobject:
         self.submobjects.sort(key=submob_func)
         return self
 
-    def shuffle(self, recursive: bool = False) -> None:
+    def shuffle(self, recursive: bool = False) -> Self:
         """Shuffles the list of :attr:`submobjects`."""
         if recursive:
             for submob in self.submobjects:
                 submob.shuffle(recursive=True)
         random.shuffle(self.submobjects)
+        return self
 
-    def invert(self, recursive: bool = False) -> None:
+    def invert(self, recursive: bool = False) -> Self:
         """Inverts the list of :attr:`submobjects`.
 
         Parameters
@@ -2921,6 +2927,7 @@ class Mobject:
             for submob in self.submobjects:
                 submob.invert(recursive=True)
         self.submobjects.reverse()
+        return self
 
     # Just here to keep from breaking old scenes.
     def arrange_submobjects(self, *args: Any, **kwargs: Any) -> Self:
@@ -2948,7 +2955,7 @@ class Mobject:
         """Sort the :attr:`submobjects`"""
         return self.sort(*args, **kwargs)
 
-    def shuffle_submobjects(self, *args: Any, **kwargs: Any) -> None:
+    def shuffle_submobjects(self, *args: Any, **kwargs: Any) -> Self:
         """Shuffles the order of :attr:`submobjects`
 
         Examples
@@ -2967,7 +2974,7 @@ class Mobject:
         return self.shuffle(*args, **kwargs)
 
     # Alignment
-    def align_data(self, mobject: Mobject, skip_point_alignment: bool = False) -> None:
+    def align_data(self, mobject: Mobject, skip_point_alignment: bool = False) -> Self:
         """Aligns the family structure and data of this mobject with another mobject.
 
         Afterwards, the two mobjects will have the same number of submobjects
@@ -2998,6 +3005,7 @@ class Mobject:
             >>> rect = Rectangle(width=4.0, height=2.0, grid_xstep=1.0, grid_ystep=0.5)
             >>> line = Line(start=ORIGIN,end=RIGHT)
             >>> line.align_data(rect)
+            Line
             >>> len(line.get_family()) == len(rect.get_family())
             True
             >>> line.get_num_points() == rect.get_num_points()
@@ -3015,6 +3023,7 @@ class Mobject:
         # Recurse
         for m1, m2 in zip(self.submobjects, mobject.submobjects, strict=True):
             m1.align_data(m2)
+        return self
 
     def get_point_mobject(self, center: Point3DLike | None = None) -> Point:
         """The simplest :class:`~.Mobject` to be transformed to or from self.
@@ -3032,7 +3041,7 @@ class Mobject:
             mobject.align_points_with_larger(self)
         return self
 
-    def align_points_with_larger(self, larger_mobject: Mobject) -> None:
+    def align_points_with_larger(self, larger_mobject: Mobject) -> Self:
         raise NotImplementedError("Please override in a child class.")
 
     def align_submobjects(self, mobject: Mobject) -> Self:
@@ -3167,7 +3176,7 @@ class Mobject:
 
     def interpolate_color(
         self, mobject1: Mobject, mobject2: Mobject, alpha: float
-    ) -> None:
+    ) -> Self:
         raise NotImplementedError("Please override in a child class.")
 
     def become(
