@@ -841,15 +841,22 @@ def test_mid_play_exception_does_not_hang_process(tmp_path):
     # Without the abort path in Scene.render, the mid-play exception leaves
     # an unsealed encode job whose non-daemon worker hangs the interpreter
     # at exit; this run then dies with subprocess.TimeoutExpired.
+    #
+    # The decoding is pinned: with the locale default (cp1252 on Windows),
+    # the UTF-8 box-drawing bytes in the traceback kill the pipe reader
+    # thread with a UnicodeDecodeError, which communicate() swallows,
+    # returning None instead of the captured stderr.
     completed = subprocess.run(
         command,
         capture_output=True,
-        text=True,
+        encoding="utf-8",
+        errors="replace",
         timeout=90,
     )
 
     assert completed.returncode != 0
-    assert "updater failure mid-play" in completed.stdout + completed.stderr
+    output = (completed.stdout or "") + (completed.stderr or "")
+    assert "updater failure mid-play" in output
     partial_directory = (
         media_dir
         / "videos"
