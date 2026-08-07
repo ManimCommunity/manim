@@ -588,10 +588,12 @@ class MathTex(SingleStringMathTex):
         return self
 
     def index_of_part(self, part: VMobject) -> int:
-        split_self = self.split()
-        if part not in split_self:
+        index, *_ = next(
+            ((i, mob) for i, mob in enumerate(self) if mob == part), [None]
+        )
+        if index is None:
             raise ValueError("Trying to get index of part not in MathTex")
-        return split_self.index(part)
+        return index
 
     def sort_alphabetically(self) -> None:
         self.submobjects.sort(key=lambda m: m.get_tex_string())

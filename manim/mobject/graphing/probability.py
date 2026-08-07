@@ -6,7 +6,7 @@ __all__ = ["SampleSpace", "BarChart"]
 
 
 from collections.abc import Iterable, MutableSequence, Sequence
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 
@@ -207,12 +207,12 @@ class SampleSpace(Rectangle):
                 if hasattr(parts, subattr):
                     self.add(getattr(parts, subattr))
 
-    def __getitem__(self, index: int) -> VMobject:
+    def __getitem__(self, index: Any) -> VMobject:
         if hasattr(self, "horizontal_parts"):
             return self.horizontal_parts[index]
         elif hasattr(self, "vertical_parts"):
             return self.vertical_parts[index]
-        return self.split()[index]
+        return cast(VMobject, super().__getitem__(index))
 
 
 class BarChart(Axes):
