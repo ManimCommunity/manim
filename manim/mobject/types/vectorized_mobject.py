@@ -2329,9 +2329,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         self.submobjects[key] = value
 
     def __getitem__(self, key: int | slice) -> VMobject:
-        if isinstance(key, slice):
-            return VGroup(self.submobjects[key])
-        return self.submobjects[key]
+        return cast(VMobject, super().__getitem__(key))
 
 
 class VDict(VMobject, metaclass=ConvertToOpenGL):
