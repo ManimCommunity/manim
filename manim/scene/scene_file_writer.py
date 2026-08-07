@@ -124,6 +124,11 @@ class _PartialMovieEncodeJob:
         if self._exception is None:
             self._exception = exception
 
+    @property
+    def failed(self) -> bool:
+        """Whether the worker has captured an exception."""
+        return self._exception is not None
+
     def _listen_and_write(self) -> None:
         while True:
             num_frames, frame_data = self.queue.get()
@@ -556,6 +561,12 @@ class SceneFileWriter:
                 # Interactive OpenGL rendering emits frames outside an open
                 # partial movie stream; drop them silently.
                 return
+            if job.failed:
+                # Surface the failure at the first write after it was captured;
+                # join() unlinks the partial and re-raises.
+                job.seal()
+                self._current_encode_job = None
+                job.join()
             job.put(num_frames, frame)
 
         if is_png_format() and not config["dry_run"]:

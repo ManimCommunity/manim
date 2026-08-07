@@ -3,6 +3,7 @@ from __future__ import annotations
 import sys
 import textwrap
 import threading
+import time
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -318,6 +319,55 @@ def test_successful_encode_job_logs_partial_movie_written(
     container.close.assert_called_once_with()
     assert "Partial movie file written" in manim_caplog.text
     assert not _alive_encoder_threads()
+
+
+def test_write_frame_fails_fast_after_encoder_failure(
+    config,
+    tmp_path,
+    monkeypatch,
+):
+    from manim.scene.scene_file_writer import SceneFileWriter
+
+    expected_exception = RuntimeError("encode failed")
+    stream = Mock()
+    container = Mock()
+
+    def encode(*args):
+        if args:
+            raise expected_exception
+        return []
+
+    stream.encode.side_effect = encode
+    config.media_dir = str(tmp_path)
+    renderer = Mock()
+    renderer.num_plays = 0
+    writer = SceneFileWriter(renderer, "FailFastScene")
+    job = _new_encode_job(tmp_path, monkeypatch, "fail_fast", stream, container)
+    job.path.write_bytes(b"stale")
+    writer._current_encode_job = job
+
+    try:
+        writer.write_frame(_frame())
+        for _ in range(500):
+            if job.failed:
+                break
+            time.sleep(0.01)
+        assert job.failed, "Encoder failure was not captured in time"
+
+        with pytest.raises(RuntimeError) as exc_info:
+            writer.write_frame(_frame())
+
+        assert exc_info.value is expected_exception
+        assert writer._current_encode_job is None
+        assert not job.path.exists()
+        assert not _alive_encoder_threads()
+    finally:
+        # An assertion failure above must not leave an unsealed non-daemon
+        # worker behind: it would hang pytest at exit.
+        if writer._current_encode_job is not None:
+            job.seal()
+            writer._current_encode_job = None
+        job.thread.join(timeout=5)
 
 
 @pytest.mark.parametrize(
