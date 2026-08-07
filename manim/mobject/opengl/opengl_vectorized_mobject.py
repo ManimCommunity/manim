@@ -566,9 +566,10 @@ class OpenGLVMobject(OpenGLMobject):
         points = self.points
         return 2 * points[-1] - points[-2]
 
-    def close_path(self):
+    def close_path(self) -> Self:
         if not self.is_closed():
             self.add_line_to(self.get_subpaths()[-1][0])
+        return self
 
     def is_closed(self):
         return self.consider_points_equals(self.points[0], self.points[-1])

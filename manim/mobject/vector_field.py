@@ -930,7 +930,7 @@ class StreamLines(VectorField):
         rate_func: Callable[[float], float] = linear,
         line_animation_class: type[ShowPassingFlash] = ShowPassingFlash,
         **kwargs,
-    ) -> None:
+    ) -> Self:
         """Animates the stream lines using an updater.
 
         The stream lines will continuously flow
@@ -988,6 +988,7 @@ class StreamLines(VectorField):
         self.flow_animation = updater
         self.flow_speed = flow_speed
         self.time_width = time_width
+        return self
 
     def end_animation(self) -> AnimationGroup:
         """End the stream line animation smoothly.

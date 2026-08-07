@@ -227,7 +227,7 @@ class OpenGLCamera(OpenGLMobject):
         self.model_matrix = self.default_model_matrix
         return self
 
-    def refresh_rotation_matrix(self) -> None:
+    def refresh_rotation_matrix(self) -> Self:
         """Refresh the camera's inverse rotation matrix based on its Euler angles."""
         # Rotate based on camera orientation
         theta, phi, gamma = self.euler_angles
@@ -239,6 +239,7 @@ class OpenGLCamera(OpenGLMobject):
         self.inverse_rotation_matrix = rotation_matrix_transpose_from_quaternion(
             np.asarray(quat, dtype=float)
         )
+        return self
 
     @override
     def rotate(
