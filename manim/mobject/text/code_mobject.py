@@ -180,10 +180,27 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
             if any(line.strip() for line in code_lines)
             else [""] * len(code_lines)
         )
+
+        # Until Pango exposes baseline metrics, temporarily add glyphs with an
+        # ascender and a descender to the first and last lines. This normalizes
+        # the vertical bounds of code listings independently of their contents.
+        alignment_suffix = " pA" + str(line_numbers_from)
+        boundary_line_indices = sorted({0, len(rendered_code_lines) - 1})
+        aligned_code_lines = rendered_code_lines.copy()
+        for index in boundary_line_indices:
+            aligned_code_lines[index] += alignment_suffix
+
         self.code_lines = Paragraph(
-            *rendered_code_lines,
+            *aligned_code_lines,
             **base_paragraph_config,
         )
+        alignment_mobjects = VGroup(
+            *(
+                self.code_lines[index].submobjects.pop()
+                for index in boundary_line_indices
+                for _ in range(len(alignment_suffix))
+            )
+        ).stretch_to_fit_width(0, about_edge=LEFT)
 
         i_line, i_char = 0, 0
         for child in self._code_html.children:
@@ -208,13 +225,13 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
                     i_char += 1
 
         if add_line_numbers:
-            line_number_strings = [
-                str(i)
-                for i in range(
+            line_number_strings = map(
+                str,
+                range(
                     line_numbers_from,
                     line_numbers_from + len(self.code_lines),
-                )
-            ]
+                ),
+            )
             line_number_config = base_paragraph_config | {"alignment": "right"}
             self.line_numbers = Paragraph(
                 *line_number_strings,
@@ -226,13 +243,13 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
                 (
                     index
                     for index, line in enumerate(self.code_lines)
-                    if line.width > 0 or line.height > 0
+                    if any(not isinstance(char, Dot) for char in line)
                 ),
                 None,
             )
             if reference_line is not None:
-                # Until Pango exposes baseline metrics, use short-lived reference
-                # paragraphs to align the code and line-number baselines.
+                # Use short-lived reference paragraphs to align the code and
+                # line-number baselines.
                 code_reference = Paragraph(
                     "A",
                     code_lines[reference_line],
@@ -240,19 +257,18 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
                 )
                 line_number_reference = Paragraph(
                     str(line_numbers_from - 1),
-                    line_number_strings[reference_line],
+                    str(line_numbers_from + reference_line),
                     **line_number_config,
                 ).align_to(code_reference, UP)
                 baseline_offset = (
-                    line_number_reference[1].get_center()[1]
-                    - code_reference[1].get_center()[1]
+                    line_number_reference[1].get_y() - code_reference[1].get_y()
                 )
                 self.line_numbers.shift(
                     UP
                     * (
-                        self.code_lines[reference_line].get_center()[1]
+                        self.code_lines[reference_line].get_y()
                         + baseline_offset
-                        - self.line_numbers[reference_line].get_center()[1]
+                        - self.line_numbers[reference_line].get_y()
                     )
                 )
             self.add(self.line_numbers)
@@ -269,6 +285,7 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         if background == "rectangle":
             self.background = SurroundingRectangle(
                 self,
+                alignment_mobjects,
                 **background_config_base,
             )
         elif background == "window":
@@ -276,9 +293,13 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
                 Dot(radius=0.1, stroke_width=0, color=button_color)
                 for button_color in ["#ff5f56", "#ffbd2e", "#27c93f"]
             ).arrange(RIGHT, buff=0.1)
-            buttons.next_to(self, UP, buff=0.1).align_to(self, LEFT).shift(LEFT * 0.1)
+            code_and_alignment = VGroup(self, alignment_mobjects)
+            buttons.next_to(code_and_alignment, UP, buff=0.1).align_to(
+                code_and_alignment, LEFT
+            ).shift(LEFT * 0.1)
             self.background = SurroundingRectangle(
-                VGroup(self, buttons),
+                code_and_alignment,
+                buttons,
                 **background_config_base,
             )
             buttons.shift(UP * 0.1 + LEFT * 0.1)
