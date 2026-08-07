@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import subprocess
 import sys
 import textwrap
 import threading
@@ -15,6 +16,7 @@ from click.testing import CliRunner
 from manim import FadeIn, Scene, Square, capture, tempconfig
 from manim._config import config
 from manim.cli.render.commands import render
+from manim.utils.exceptions import RerunSceneException
 
 _ENCODER_THREAD_PREFIX = "partial-movie-encoder-"
 _UNIQUE_PLAYS = 6
@@ -576,6 +578,288 @@ def test_finish_propagates_join_failure_and_clears_inflight_state(
     assert writer._inflight_encode_jobs == []
     assert writer._inflight_by_path == {}
     combine_to_movie.assert_not_called()
+
+
+def _new_writer(config, tmp_path, scene_name):
+    from manim.scene.scene_file_writer import SceneFileWriter
+
+    config.media_dir = str(tmp_path)
+    renderer = Mock()
+    renderer.num_plays = 0
+    return SceneFileWriter(renderer, scene_name)
+
+
+def _healthy_current_job(tmp_path, monkeypatch, name):
+    stream = Mock()
+    stream.encode.return_value = []
+    job = _new_encode_job(tmp_path, monkeypatch, name, stream, Mock())
+    job.path.write_bytes(b"stale")
+    return job
+
+
+def _add_inflight_job(writer, job):
+    writer._inflight_encode_jobs.append(job)
+    writer._inflight_by_path[str(job.path)] = job
+
+
+def test_abort_encode_jobs_unlinks_current_and_drains_inflight(
+    config,
+    tmp_path,
+    monkeypatch,
+    manim_caplog,
+):
+    writer = _new_writer(config, tmp_path, "AbortScene")
+    job = _healthy_current_job(tmp_path, monkeypatch, "abort_current")
+    writer._current_encode_job = job
+    failing_inflight = Mock(path=tmp_path / "inflight.mp4")
+    failing_inflight.join.side_effect = RuntimeError("in-flight join failed")
+    _add_inflight_job(writer, failing_inflight)
+
+    writer.abort_encode_jobs()
+
+    assert writer._current_encode_job is None
+    assert not job.path.exists()
+    assert writer._inflight_encode_jobs == []
+    assert writer._inflight_by_path == {}
+    assert not _alive_encoder_threads()
+    assert "Discarded partial movie file" in manim_caplog.text
+    assert "Encoder failure while aborting render" in manim_caplog.text
+
+    # A second call must be a no-op.
+    writer.abort_encode_jobs()
+    assert writer._current_encode_job is None
+
+
+def test_abort_encode_jobs_reraise_propagates_inflight_failure(
+    config,
+    tmp_path,
+):
+    expected_exception = RuntimeError("in-flight join failed")
+    writer = _new_writer(config, tmp_path, "AbortReraiseScene")
+    failing_inflight = Mock(path=tmp_path / "inflight.mp4")
+    failing_inflight.join.side_effect = expected_exception
+    _add_inflight_job(writer, failing_inflight)
+
+    with pytest.raises(RuntimeError) as exc_info:
+        writer.abort_encode_jobs(reraise_encoder_failures=True)
+
+    assert exc_info.value is expected_exception
+    assert writer._inflight_encode_jobs == []
+    assert writer._inflight_by_path == {}
+
+
+def test_abort_encode_jobs_cleanup_failure_logs_warning(
+    config,
+    tmp_path,
+    monkeypatch,
+    manim_caplog,
+):
+    writer = _new_writer(config, tmp_path, "AbortCleanupFailureScene")
+    job = _healthy_current_job(tmp_path, monkeypatch, "abort_cleanup_failure")
+    writer._current_encode_job = job
+    unlink = Mock(side_effect=PermissionError("cannot remove partial"))
+    monkeypatch.setattr(Path, "unlink", unlink)
+
+    writer.abort_encode_jobs()
+
+    assert writer._current_encode_job is None
+    unlink.assert_called_once_with(missing_ok=True)
+    assert "Failed to remove incomplete partial movie file" in manim_caplog.text
+    assert "cannot remove partial" in manim_caplog.text
+    assert "Discarded partial movie file" not in manim_caplog.text
+    assert not _alive_encoder_threads()
+
+
+def test_abort_encode_jobs_noop_on_dry_run_writer(config):
+    from manim.scene.scene_file_writer import SceneFileWriter
+
+    with tempconfig({"dry_run": True}):
+        renderer = Mock()
+        renderer.num_plays = 0
+        writer = SceneFileWriter(renderer, "DryRunAbortScene")
+
+        writer.abort_encode_jobs()
+        writer.abort_encode_jobs(reraise_encoder_failures=True)
+
+    assert not _alive_encoder_threads()
+
+
+def test_keyboard_interrupt_aborts_encode_jobs_and_reraises(config):
+    scene = Scene(renderer=Mock())
+
+    def construct():
+        raise KeyboardInterrupt
+
+    scene.construct = construct
+
+    with pytest.raises(KeyboardInterrupt):
+        scene.render()
+
+    scene.renderer.file_writer.abort_encode_jobs.assert_called_once_with()
+
+
+def test_rerun_propagates_encoder_failure(config, tmp_path):
+    expected_exception = RuntimeError("in-flight encoder failed")
+    writer = _new_writer(config, tmp_path, "RerunFailureScene")
+    failing_inflight = Mock(path=tmp_path / "inflight.mp4")
+    failing_inflight.join.side_effect = expected_exception
+    _add_inflight_job(writer, failing_inflight)
+    scene = Scene(renderer=Mock())
+    scene.renderer.file_writer = writer
+
+    def construct():
+        raise RerunSceneException
+
+    scene.construct = construct
+
+    with pytest.raises(RuntimeError) as exc_info:
+        scene.render()
+
+    assert exc_info.value is expected_exception
+    assert writer._inflight_encode_jobs == []
+    assert writer._inflight_by_path == {}
+
+
+def test_rerun_propagates_failed_current_job(config, tmp_path, monkeypatch):
+    expected_exception = RuntimeError("encode failed")
+    stream = Mock()
+
+    def encode(*args):
+        if args:
+            raise expected_exception
+        return []
+
+    stream.encode.side_effect = encode
+    writer = _new_writer(config, tmp_path, "RerunCurrentFailureScene")
+    job = _new_encode_job(tmp_path, monkeypatch, "rerun_current", stream, Mock())
+    job.path.write_bytes(b"stale")
+    writer._current_encode_job = job
+    job.put(1, _frame())
+    for _ in range(500):
+        if job.failed:
+            break
+        time.sleep(0.01)
+
+    scene = Scene(renderer=Mock())
+    scene.renderer.file_writer = writer
+
+    def construct():
+        raise RerunSceneException
+
+    scene.construct = construct
+
+    try:
+        assert job.failed, "Encoder failure was not captured in time"
+
+        with pytest.raises(RuntimeError) as exc_info:
+            scene.render()
+
+        assert exc_info.value is expected_exception
+        assert writer._current_encode_job is None
+        assert not job.path.exists()
+        assert not _alive_encoder_threads()
+    finally:
+        # An assertion failure above must not leave an unsealed non-daemon
+        # worker behind: it would hang pytest at exit.
+        if writer._current_encode_job is not None:
+            job.seal()
+            writer._current_encode_job = None
+        job.thread.join(timeout=5)
+
+
+@pytest.mark.slow
+def test_end_scene_early_keeps_completed_partials(config, tmp_path):
+    class EarlyEndScene(Scene):
+        def construct(self):
+            for index in range(3):
+                square = Square(side_length=0.3 + index / 10)
+                self.play(FadeIn(square), run_time=0.1)
+                self.clear()
+
+    with tempconfig(
+        {
+            "media_dir": tmp_path,
+            "quality": "low_quality",
+            "max_inflight_encoders": 3,
+            "disable_caching": True,
+            "upto_animation_number": 1,
+        },
+    ):
+        scene = EarlyEndScene()
+        scene.render()
+        partial_directory = Path(scene.renderer.file_writer.partial_movie_directory)
+
+    partial_movies = sorted(path.name for path in partial_directory.glob("*.mp4"))
+    assert partial_movies == ["uncached_00000.mp4", "uncached_00001.mp4"]
+    assert not _alive_encoder_threads()
+
+
+_MID_PLAY_FAILURE_SCENE_NAME = "MidPlayFailureScene"
+_MID_PLAY_FAILURE_SCENE_SOURCE = textwrap.dedent(
+    f"""\
+    from manim import FadeIn, Scene, Square
+
+
+    class {_MID_PLAY_FAILURE_SCENE_NAME}(Scene):
+        def construct(self):
+            self.play(FadeIn(Square(side_length=0.5)), run_time=0.1)
+
+            square = Square()
+
+            def fail(mobject, dt):
+                # compile_animation_data pre-runs updaters with dt=0 before
+                # the partial movie stream opens; only raise during playback.
+                if dt > 0:
+                    raise RuntimeError("updater failure mid-play")
+
+            square.add_updater(fail)
+            self.add(square)
+            self.wait(0.1)
+    """
+)
+
+
+@pytest.mark.slow
+def test_mid_play_exception_does_not_hang_process(tmp_path):
+    scene_file = tmp_path / "mid_play_failure_scene.py"
+    scene_file.write_text(_MID_PLAY_FAILURE_SCENE_SOURCE)
+    media_dir = tmp_path / "media"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--disable_caching",
+        "--max-inflight-encoders",
+        "3",
+        "--media_dir",
+        str(media_dir),
+        str(scene_file),
+        _MID_PLAY_FAILURE_SCENE_NAME,
+    ]
+
+    # Without the abort path in Scene.render, the mid-play exception leaves
+    # an unsealed encode job whose non-daemon worker hangs the interpreter
+    # at exit; this run then dies with subprocess.TimeoutExpired.
+    completed = subprocess.run(
+        command,
+        capture_output=True,
+        text=True,
+        timeout=90,
+    )
+
+    assert completed.returncode != 0
+    assert "updater failure mid-play" in completed.stdout + completed.stderr
+    partial_directory = (
+        media_dir
+        / "videos"
+        / scene_file.stem
+        / "480p15"
+        / "partial_movie_files"
+        / _MID_PLAY_FAILURE_SCENE_NAME
+    )
+    assert (partial_directory / "uncached_00000.mp4").exists()
+    assert not (partial_directory / "uncached_00001.mp4").exists()
 
 
 def test_parallel_encoder_flags_digest_into_config(tmp_path):

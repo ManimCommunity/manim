@@ -726,6 +726,58 @@ class SceneFileWriter:
         if first_exception is not None:
             raise first_exception
 
+    def abort_encode_jobs(self, reraise_encoder_failures: bool = False) -> None:
+        """Tear down encode jobs after an aborted or rerun render.
+
+        Seals the current job so its worker can exit (a non-daemon thread
+        blocked on the queue would hang the process at exit), then deletes its
+        partial file unconditionally: an aborted partial is structurally valid
+        but truncated, so leaving it behind produces an erroneous cache hit on
+        a later run. Sealed in-flight jobs are then drained. With
+        ``reraise_encoder_failures=False`` (a render exception is already
+        propagating) drain failures are logged, not raised; with ``True``
+        (rerun path -- no primary exception exists) the first drain failure
+        propagates so corrupt completed partials cannot be silently ignored.
+        """
+        current_exception: BaseException | None = None
+        job = self._current_encode_job
+        if job is not None:
+            # Seal before clearing: an interrupt landing between the two
+            # statements must not orphan the worker.
+            job.seal()
+            self._current_encode_job = None
+            job.thread.join()
+            current_exception = job._exception
+            if current_exception is not None:
+                logger.error(
+                    "Encoder for aborted animation %d had also failed",
+                    job.animation_index,
+                    exc_info=current_exception,
+                )
+            try:
+                Path(job.path).unlink(missing_ok=True)
+                logger.info(
+                    "Discarded partial movie file of aborted animation %(index)d",
+                    {"index": job.animation_index},
+                )
+            except OSError as cleanup_error:
+                logger.warning(
+                    "Failed to remove incomplete partial movie file %(path)s: "
+                    "%(error)s",
+                    {"path": f"'{job.path}'", "error": cleanup_error},
+                )
+        if reraise_encoder_failures:
+            self.join_all_encode_jobs()
+            if current_exception is not None:
+                # The rerun path has no primary exception: a failed current
+                # job must not be silently absorbed.
+                raise current_exception
+        else:
+            try:
+                self.join_all_encode_jobs()
+            except BaseException:
+                logger.exception("Encoder failure while aborting render")
+
     def close_partial_movie_stream(self) -> None:
         """Close the currently opened video container.
 
