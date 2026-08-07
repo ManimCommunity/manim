@@ -284,7 +284,7 @@ class NumberLine(Line):
     ) -> Self:
         return self.rotate(angle, axis, about_point=self.n2p(number), **kwargs)
 
-    def add_ticks(self) -> None:
+    def add_ticks(self) -> Self:
         """Adds ticks to the number line. Ticks can be accessed after creation
         via ``self.ticks``.
         """
@@ -300,6 +300,7 @@ class NumberLine(Line):
             ticks.add(self.get_tick(x, size))
         self.add(ticks)
         self.ticks = ticks
+        return self
 
     def get_tick(self, x: float, size: float | None = None) -> Line:
         """Generates a tick and positions it along the number line.

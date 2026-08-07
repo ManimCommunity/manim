@@ -55,6 +55,8 @@ Examples
 
 from __future__ import annotations
 
+from typing import Self
+
 __all__ = [
     "Table",
     "MathTable",
@@ -66,7 +68,7 @@ __all__ = [
 
 import itertools as it
 from collections.abc import Callable, Iterable, Sequence
-from typing import Any, Self
+from typing import Any
 
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Polygon
@@ -527,7 +529,7 @@ class Table(VGroup):
         """
         return VGroup(*(VGroup(*row) for row in self.mob_table))
 
-    def set_column_colors(self, *colors: Iterable[ParsableManimColor]) -> Table:
+    def set_column_colors(self, *colors: Iterable[ParsableManimColor]) -> Self:
         """Set individual colors for each column of the table.
 
         Parameters
@@ -556,7 +558,7 @@ class Table(VGroup):
             column.set_color(color)
         return self
 
-    def set_row_colors(self, *colors: Iterable[ParsableManimColor]) -> Table:
+    def set_row_colors(self, *colors: Iterable[ParsableManimColor]) -> Self:
         """Set individual colors for each row of the table.
 
         Parameters
@@ -777,7 +779,7 @@ class Table(VGroup):
                 label_group.add(*label)
         return label_group
 
-    def add_background_to_entries(self, color: ParsableManimColor = BLACK) -> Table:
+    def add_background_to_entries(self, color: ParsableManimColor = BLACK) -> Self:
         """Adds a black :class:`~.BackgroundRectangle` to each entry of the table."""
         for mob in self.get_entries():
             mob.add_background_rectangle(color=ManimColor(color))
@@ -884,7 +886,7 @@ class Table(VGroup):
         pos: Sequence[int] = (1, 1),
         color: ParsableManimColor = PURE_YELLOW,
         **kwargs: Any,
-    ) -> Table:
+    ) -> Self:
         """Highlights one cell at a specific position on the table by adding a :class:`~.BackgroundRectangle`.
 
         Parameters
