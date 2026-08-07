@@ -7,6 +7,7 @@ __all__ = ["SceneFileWriter"]
 import json
 import shutil
 import warnings
+from contextlib import suppress
 from fractions import Fraction
 from pathlib import Path
 from queue import Queue
@@ -629,7 +630,7 @@ class SceneFileWriter:
                 )
         path_key = str(file_path)
         if path_key in self._inflight_by_path:
-            self._join_job(self._inflight_by_path[path_key])
+            self._join_job_and_drain_on_failure(self._inflight_by_path[path_key])
         self.partial_movie_file_path = file_path
 
         fps = to_av_frame_rate(config.frame_rate)
@@ -679,6 +680,19 @@ class SceneFileWriter:
         self._inflight_by_path.pop(str(job.path), None)
         job.join()
 
+    def _join_job_and_drain_on_failure(
+        self,
+        job: _PartialMovieEncodeJob,
+    ) -> None:
+        """Join one job, draining all remaining jobs if it fails."""
+        try:
+            self._join_job(job)
+        except BaseException:
+            # Preserve the failure which triggered the drain.
+            with suppress(BaseException):
+                self.join_all_encode_jobs()
+            raise
+
     def join_all_encode_jobs(self) -> None:
         """Join every in-flight encode job, re-raising the first failure."""
         first_exception: BaseException | None = None
@@ -713,7 +727,7 @@ class SceneFileWriter:
         self._current_encode_job = None
 
         while len(self._inflight_encode_jobs) >= config.max_inflight_encoders:
-            self._join_job(self._inflight_encode_jobs[0])
+            self._join_job_and_drain_on_failure(self._inflight_encode_jobs[0])
 
     def is_already_cached(self, hash_invocation: str) -> bool:
         """Will check if a file named with `hash_invocation` exists.
@@ -736,7 +750,7 @@ class SceneFileWriter:
         )
         path_key = str(path)
         if path_key in self._inflight_by_path:
-            self._join_job(self._inflight_by_path[path_key])
+            self._join_job_and_drain_on_failure(self._inflight_by_path[path_key])
         return path.exists()
 
     def combine_files(

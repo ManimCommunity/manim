@@ -365,6 +365,36 @@ def test_close_partial_movie_stream_respects_cap_and_joins_fifo(
         job.seal.assert_called_once_with()
 
 
+def test_cap_join_failure_drains_all_inflight_jobs(config, tmp_path):
+    from manim.scene.scene_file_writer import SceneFileWriter
+
+    primary_exception = RuntimeError("first join failed")
+    secondary_exception = RuntimeError("second join failed")
+    config.max_inflight_encoders = 3
+    renderer = Mock()
+    renderer.num_plays = 0
+    writer = SceneFileWriter(renderer, "EncoderCapFailureScene")
+    jobs = [Mock(path=tmp_path / f"partial_{index}.mp4") for index in range(3)]
+    jobs[0].join.side_effect = primary_exception
+    jobs[1].join.side_effect = secondary_exception
+
+    for job in jobs[:2]:
+        writer._current_encode_job = job
+        writer.close_partial_movie_stream()
+
+    writer._current_encode_job = jobs[2]
+    with pytest.raises(RuntimeError) as exc_info:
+        writer.close_partial_movie_stream()
+
+    assert exc_info.value is primary_exception
+    for job in jobs:
+        job.seal.assert_called_once_with()
+        job.join.assert_called_once_with()
+    assert writer._current_encode_job is None
+    assert writer._inflight_encode_jobs == []
+    assert writer._inflight_by_path == {}
+
+
 def test_is_already_cached_joins_same_path_inflight_job(config, tmp_path):
     from manim.scene.scene_file_writer import SceneFileWriter
 
@@ -383,6 +413,35 @@ def test_is_already_cached_joins_same_path_inflight_job(config, tmp_path):
     writer.is_already_cached(hash_invocation)
 
     job.join.assert_called_once_with()
+    assert writer._inflight_encode_jobs == []
+    assert writer._inflight_by_path == {}
+
+
+def test_same_path_join_failure_drains_unrelated_jobs(config, tmp_path):
+    from manim.scene.scene_file_writer import SceneFileWriter
+
+    expected_exception = RuntimeError("same-path join failed")
+    renderer = Mock()
+    renderer.num_plays = 0
+    writer = SceneFileWriter(renderer, "CachedInflightFailureScene")
+    hash_invocation = "failing_same_path_hash"
+    path = (
+        writer.partial_movie_directory
+        / f"{hash_invocation}{config['movie_file_extension']}"
+    )
+    unrelated_job = Mock(path=tmp_path / "unrelated.mp4")
+    same_path_job = Mock(path=path)
+    same_path_job.join.side_effect = expected_exception
+    writer._inflight_encode_jobs.extend([unrelated_job, same_path_job])
+    writer._inflight_by_path[str(unrelated_job.path)] = unrelated_job
+    writer._inflight_by_path[str(path)] = same_path_job
+
+    with pytest.raises(RuntimeError) as exc_info:
+        writer.is_already_cached(hash_invocation)
+
+    assert exc_info.value is expected_exception
+    same_path_job.join.assert_called_once_with()
+    unrelated_job.join.assert_called_once_with()
     assert writer._inflight_encode_jobs == []
     assert writer._inflight_by_path == {}
 
