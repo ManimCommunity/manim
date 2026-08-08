@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from manim import Table
+from manim import LEFT, Table, Text
 from manim.utils.color import GREEN
 
 
@@ -64,3 +64,41 @@ def test_table_col_widths_are_honored():
     # Each drawn column spans its slot width plus the horizontal buffer.
     for width in drawn_widths:
         assert abs(width - (3 + 0.1)) < 1e-6
+
+
+def test_table_col_widths_with_labels():
+    """``col_widths`` should be honored even when row/column labels are present.
+
+    Regression test for https://github.com/ManimCommunity/manim/issues/3446
+    """
+    table = Table(
+        [["a", "b"], ["c", "d"]],
+        row_labels=[Text("r1"), Text("r2")],
+        col_labels=[Text("c1"), Text("c2")],
+        top_left_entry=Text(""),
+        h_buff=0.1,
+        include_outer_lines=True,
+        arrange_in_grid_config={"col_widths": [2, 3, 3], "col_alignments": "ccc"},
+    )
+    line_xs = sorted(line.get_center()[0] for line in table.get_vertical_lines())
+    drawn_widths = [line_xs[i + 1] - line_xs[i] for i in range(len(line_xs) - 1)]
+    for width, expected in zip(drawn_widths, [2 + 0.1, 3 + 0.1, 3 + 0.1], strict=True):
+        assert abs(width - expected) < 1e-6
+
+
+def test_table_col_widths_respects_cell_alignment():
+    """A non-centered ``cell_alignment`` must not be treated as centered when
+    positioning the grid lines around a fixed-width column.
+
+    Regression test for https://github.com/ManimCommunity/manim/issues/3446
+    """
+    table = Table(
+        [["a"]],
+        h_buff=0.1,
+        include_outer_lines=True,
+        arrange_in_grid_config={"col_widths": [3], "cell_alignment": LEFT},
+    )
+    column = table.get_columns()[0]
+    actual_left = min(line.get_center()[0] for line in table.get_vertical_lines())
+    expected_left = column.get_left()[0] - table.h_buff / 2
+    assert abs(actual_left - expected_left) < 1e-6

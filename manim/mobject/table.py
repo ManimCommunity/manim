@@ -382,8 +382,10 @@ class Table(VGroup):
 
         When ``col_widths`` (in :attr:`arrange_in_grid_config`) makes a slot wider
         than its contents, grid lines should follow the slot edges rather than the
-        content bounding box. With no width set, the slot equals the content, so
-        the previous behaviour is preserved.
+        content bounding box. The column's horizontal alignment (``col_alignments``
+        or ``cell_alignment``) determines where the content sits within the slot.
+        With no width set, the slot equals the content, so the previous behaviour
+        is preserved.
 
         Parameters
         ----------
@@ -392,11 +394,6 @@ class Table(VGroup):
         """
         col = self.get_columns()[col_index]
         left, right = col.get_left()[0], col.get_right()[0]
-
-        # Column labels shift the column indexing relative to ``col_widths``; keep
-        # the original content-based behaviour in that case to avoid mismatches.
-        if self.row_labels is not None or self.col_labels is not None:
-            return left, right
 
         col_widths = self.arrange_in_grid_config.get("col_widths")
         if (
@@ -407,15 +404,26 @@ class Table(VGroup):
             return left, right
 
         width = col_widths[col_index]
+
+        # Determine the column's horizontal alignment the same way
+        # ``arrange_in_grid`` does: an explicit ``col_alignments`` entry wins,
+        # otherwise fall back to the horizontal component of ``cell_alignment``
+        # (which defaults to centered).
         col_alignments = self.arrange_in_grid_config.get("col_alignments")
-        align = None
         if col_alignments is not None and col_index < len(col_alignments):
             align = col_alignments[col_index]
+        else:
+            cell_alignment = self.arrange_in_grid_config.get("cell_alignment")
+            x = cell_alignment[0] if cell_alignment is not None else 0
+            align = "l" if x < 0 else "r" if x > 0 else "c"
+
         if align == "l":
+            # left-aligned: the content hugs the left edge of the slot
             return left, left + width
         if align == "r":
+            # right-aligned: the content hugs the right edge of the slot
             return right - width, right
-        # centered within the slot (arrange_in_grid's default alignment)
+        # centered: the content centre coincides with the slot centre
         center_x = col.get_center()[0]
         return center_x - width / 2, center_x + width / 2
 
