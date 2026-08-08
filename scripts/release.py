@@ -215,6 +215,98 @@ def version_gte(version: str, min_version: str) -> bool:
 # =============================================================================
 
 
+_PR_REFERENCE = re.compile(
+    r"(?:\{pr\}`(?P<myst>\d+)`|"
+    r"https://github\.com/ManimCommunity/manim/pull/(?P<url>\d+))"
+)
+_TOP_LEVEL_BULLET = re.compile(r"^[*-]\s")
+_SECOND_LEVEL_HEADING = re.compile(r"^##(?!#)\s+(.+?)\s*$")
+_ANY_HEADING = re.compile(r"^#{1,6}\s")
+_CHANGELOG_SECTION_SCOPES = {
+    "What's Changed": "changes",
+    "New Contributors": "contributors",
+}
+
+
+def _find_pull_request_blocks(
+    lines: list[str],
+) -> list[tuple[int, int, tuple[str, str]]]:
+    """Find PR list items and their continuation lines in a changelog.
+
+    The returned key includes the enclosing second-level section so that a PR's
+    release note and its potential "New Contributors" entry are kept separate.
+    Third-level category headings are deliberately not part of the key: the
+    newly generated changelog remains authoritative for PR categorization.
+    """
+    blocks = []
+    section_scope: str | None = None
+    line_number = 0
+
+    while line_number < len(lines):
+        line = lines[line_number]
+        heading = _SECOND_LEVEL_HEADING.match(line.rstrip("\r\n"))
+        if heading:
+            section_scope = _CHANGELOG_SECTION_SCOPES.get(heading.group(1))
+            line_number += 1
+            continue
+
+        if section_scope is None or not _TOP_LEVEL_BULLET.match(line):
+            line_number += 1
+            continue
+
+        pr_reference = _PR_REFERENCE.search(line)
+        if pr_reference is None:
+            line_number += 1
+            continue
+
+        pr_number = pr_reference.group("myst") or pr_reference.group("url")
+        block_end = line_number + 1
+        while block_end < len(lines):
+            next_line = lines[block_end]
+            if _TOP_LEVEL_BULLET.match(next_line) or _ANY_HEADING.match(next_line):
+                break
+            block_end += 1
+        while block_end > line_number + 1 and not lines[block_end - 1].strip():
+            block_end -= 1
+
+        blocks.append(
+            (line_number, block_end, (section_scope, pr_number)),
+        )
+        line_number = block_end
+
+    return blocks
+
+
+def merge_changelog(generated: str, existing: str) -> str:
+    """Merge existing PR note edits into a newly generated changelog.
+
+    The generated changelog controls which PRs are present, their ordering, and
+    their category headings. For every PR that is present in both versions, its
+    existing list item (including indented descriptions) is retained. Thus,
+    deleted entries are restored and label changes move entries to their newly
+    generated categories without discarding copy edits.
+    """
+    generated_lines = generated.splitlines(keepends=True)
+    existing_lines = existing.splitlines(keepends=True)
+    existing_blocks = {
+        key: "".join(existing_lines[start:end])
+        for start, end, key in _find_pull_request_blocks(existing_lines)
+    }
+
+    merged = []
+    previous_end = 0
+    for start, end, key in _find_pull_request_blocks(generated_lines):
+        merged.extend(generated_lines[previous_end:start])
+        existing_block = existing_blocks.get(key)
+        if existing_block is None:
+            merged.extend(generated_lines[start:end])
+        else:
+            merged.append(existing_block)
+        previous_end = end
+    merged.extend(generated_lines[previous_end:])
+    return "".join(merged)
+
+
 def convert_to_myst(body: str) -> str:
     """
     Convert GitHub markdown to MyST format.
@@ -375,11 +467,16 @@ def changelog(
     body = generate_release_notes(head_tag, base_tag)
     date = datetime.now().strftime("%B %d, %Y")
     content = format_changelog(version, body, date=date, title=title)
+    filepath = CHANGELOG_DIR / f"{version}-changelog.md"
+
+    if filepath.exists():
+        click.echo("  Preserving existing PR note edits...")
+        content = merge_changelog(content, filepath.read_text())
 
     if dry_run:
         click.echo()
         click.secho("[DRY RUN]", fg="yellow", bold=True)
-        click.echo(f"  Would save: {CHANGELOG_DIR / f'{version}-changelog.md'}")
+        click.echo(f"  Would save: {filepath}")
         if also_update_citation:
             click.echo(f"  Would update: {CITATION_FILE}")
         click.echo()
