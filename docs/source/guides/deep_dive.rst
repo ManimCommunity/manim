@@ -102,10 +102,12 @@ discussing the contents of the following chapters on a very high level.
   a part in which the passed animations and keyword arguments are processed
   and prepared, followed by the actual "render loop" in which the library
   steps through a time line and renders frame by frame. The final part
-  does some post-processing to save a short video segment ("partial movie file")
-  and cleanup for the next call to :meth:`.Scene.play`. In the end, after all of
-  :meth:`.Scene.construct` has been run, the library combines the partial movie
-  files to one video.
+  does some post-processing and seals the encoding job for a short video segment
+  ("partial movie file") before cleaning up for the next call to
+  :meth:`.Scene.play`. Depending on the encoding configuration, the partial movie
+  file can continue encoding while the next animation is rendered. In the end,
+  after all of :meth:`.Scene.construct` has been run, the library waits for any
+  remaining encoding jobs and combines the partial movie files into one video.
 
 And with that, let us get *in medias res*.
 
@@ -310,10 +312,11 @@ the order they are called, these customizable methods are:
 After these three methods are run, the animations have been fully rendered,
 and Manim calls :meth:`.CairoRenderer.scene_finished` to gracefully
 complete the rendering process. This checks whether any animations have been
-played -- and if so, it tells the :class:`.SceneFileWriter` to close the output
-file. If not, Manim assumes that a static image should be output
-which it then renders using the same strategy by calling the render loop
-(see below) once.
+played -- and if so, it tells the :class:`.SceneFileWriter` to finish the output.
+For video output, this first waits for any partial movie files that are still
+being encoded and then combines them into the final movie. If no animations have
+been played, Manim assumes that a static image should be output, which it renders
+using the same strategy by calling the render loop (see below) once.
 
 **Back in our toy example,** the call to :meth:`.Scene.render` first
 triggers :meth:`.Scene.setup` (which only consists of ``pass``), followed by
@@ -762,12 +765,18 @@ to learn more, the :func:`.get_hash_from_play_call` function in the
 mechanism.
 
 In the event that the animation has to be rendered, the renderer asks
-its :class:`.SceneFileWriter` to open an output container. The process
-is started by a call to ``libav`` and opens a container to which rendered
-raw frames can be written. As long as the output is open, the container
-can be accessed via the ``output_container`` attribute of the file writer.
-With the writing process in place, the renderer then asks the scene
-to "begin" the animations.
+its :class:`.SceneFileWriter` to open a partial movie stream. The file writer
+uses ``libav`` to create a container and video stream, then wraps them in a
+``_PartialMovieEncodeJob``. Each encoding job owns its container, stream, frame
+queue, and worker thread. During the render loop, rendered raw frames are added
+to this queue and encoded by the worker. With the writing process in place, the
+renderer then asks the scene to "begin" the animations.
+
+By default, Manim finishes encoding each partial movie file before rendering the
+next animation. If ``max_inflight_encoders`` is set to a value greater than 1,
+encoding can instead overlap with rendering. The setting bounds the number of
+partial movie encoders active at the same time, while ``encoder_queue_size``
+bounds the number of pending frame buffers held by each parallel encoder.
 
 First, it literally *begins* all of the animations by calling their
 setup methods (:meth:`.Animation._setup_scene`, :meth:`.Animation.begin`).
@@ -1001,26 +1010,33 @@ and :meth:`.Animation.clean_up_from_scene` methods are called.
 In the end, the time progression is closed (which completes the displayed progress bar)
 in the terminal. With the closing of the time progression, the
 :meth:`.Scene.play_internal` call is completed, and we return to the renderer,
-which now orders the :class:`.SceneFileWriter` to close the output container that has
-been opened for this animation: a partial movie file is written.
+which now orders the :class:`.SceneFileWriter` to close the partial movie stream.
+This seals the corresponding encoding job so that it accepts no more frames. With
+the default ``max_inflight_encoders = 1``, the file writer immediately waits for
+the job and the partial movie file has been written when the call returns. With a
+higher value, the job can remain in flight while the next animation is rendered;
+the oldest jobs are joined as the configured limit is reached.
 
 This pretty much concludes the walkthrough of a :class:`.Scene.play` call,
 and actually there is not too much more to say for our toy example either: at
-this point, a partial movie file that represents playing the
-:class:`.ReplacementTransform` has been written. The initialization of
-the :class:`.Dot` happens analogous to the initialization of ``blue_circle``,
-which has been discussed above. The :meth:`.Mobject.add_updater` call literally
-just attaches a function to the ``updaters`` attribute of the ``small_dot``. And
-the remaining :meth:`.Scene.play` and :meth:`.Scene.wait` calls follow the
-exact same procedure as discussed in the render loop section above; each such call
-produces a corresponding partial movie file.
+this point, the encoding job for a partial movie file representing the
+:class:`.ReplacementTransform` has been sealed (and, with the default encoding
+configuration, the file has been written). The initialization of the
+:class:`.Dot` happens analogous to the initialization of ``blue_circle``, which
+has been discussed above. The :meth:`.Mobject.add_updater` call literally just
+attaches a function to the ``updaters`` attribute of the ``small_dot``. And the
+remaining :meth:`.Scene.play` and :meth:`.Scene.wait` calls follow the exact same
+procedure as discussed in the render loop section above; each such call produces
+a corresponding partial movie file.
 
-Once the :meth:`.Scene.construct` method has been fully processed (and thus all
-of the corresponding partial movie files have been written), the
-scene calls its cleanup method :meth:`.Scene.tear_down`, and then
-asks its renderer to finish the scene. The renderer, in turn, asks
-its scene file writer to wrap things up by calling :meth:`.SceneFileWriter.finish`,
-which triggers the combination of the partial movie files into the final product.
+Once the :meth:`.Scene.construct` method has been fully processed, the scene calls
+its cleanup method :meth:`.Scene.tear_down`, and then asks its renderer to finish
+the scene. The renderer, in turn, asks its scene file writer to wrap things up by
+calling :meth:`.SceneFileWriter.finish`. The file writer first waits for all
+remaining encoding jobs, then combines the completed partial movie files into the
+final product. If rendering aborts during a play instead, the current job is
+sealed and drained, and its incomplete partial movie file is removed so that it
+cannot be mistaken for a valid cached result on a later render.
 
 And there you go! This is a more or less detailed description of how Manim works
 under the hood. While we did not discuss every single line of code in detail
