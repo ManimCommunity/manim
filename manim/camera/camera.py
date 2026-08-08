@@ -361,7 +361,7 @@ class Camera:
             and self.pixel_array.shape == converted_array.shape
         ):
             # Set in place
-            np.copyto(self.pixel_array, converted_array)
+            np.copyto(self.pixel_array, converted_array, casting="unsafe")
         else:
             self.pixel_array: PixelArray = converted_array.copy()
 
