@@ -22,6 +22,7 @@ from ...animation.composition import AnimationGroup
 from ...animation.fading import FadeIn
 from ...animation.growing import GrowFromCenter
 from ...constants import *
+from ...constants import RendererType
 from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import BLACK
 from ..svg.svg_mobject import VMobjectFromSVGPath
@@ -192,9 +193,13 @@ class Brace(VMobjectFromSVGPath):
 
     def get_tip(self) -> Point3D:
         """Returns the point at the brace tip."""
-        # Returns the position of the seventh point in the path, which is the tip.
-        if config["renderer"] == "opengl":
-            return self.points[34]
+        # Returns the tip anchor of the path. Cairo stores 4 points per cubic
+        # curve, putting the tip anchor at index 28. OpenGL stores 3 points
+        # per quadratic curve with anchors duplicated at curve boundaries, so
+        # the tip anchor lands on index 35 (and its duplicate 36); index 34 is
+        # the preceding Bezier handle, not the tip.
+        if config.renderer == RendererType.OPENGL:
+            return self.points[35]
 
         return self.points[28]  # = 7*4
 
