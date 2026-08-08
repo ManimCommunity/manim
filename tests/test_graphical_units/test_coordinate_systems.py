@@ -51,7 +51,7 @@ def test_plot_surface(scene):
         param_trig,
         u_range=(-5, 5),
         v_range=(-5, 5),
-        color=BLUE,
+        color=GREEN,
     )
 
     scene.add(axes, trig_plane)
