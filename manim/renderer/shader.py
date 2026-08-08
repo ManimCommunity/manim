@@ -247,9 +247,9 @@ class Object3D:
 
     def remove_updater(self, update_function: MeshUpdater) -> Self:
         while update_function in self.time_based_updaters:
-            self.time_based_updaters.remove(update_function)  # type: ignore[arg-type]
+            self.time_based_updaters.remove(update_function)
         while update_function in self.non_time_updaters:
-            self.non_time_updaters.remove(update_function)  # type: ignore[arg-type]
+            self.non_time_updaters.remove(update_function)
         self.refresh_has_updater_status()
         return self
 
