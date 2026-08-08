@@ -266,6 +266,7 @@ class ManimConfig(MutableMapping):
         "disable_caching",
         "disable_caching_warning",
         "dry_run",
+        "encoder_queue_size",
         "enable_wireframe",
         "ffmpeg_loglevel",
         "format",
@@ -283,6 +284,7 @@ class ManimConfig(MutableMapping):
         "log_dir",
         "log_to_file",
         "max_files_cached",
+        "max_inflight_encoders",
         "media_dir",
         "movie_file_extension",
         "notify_outdated_version",
@@ -605,6 +607,8 @@ class ManimConfig(MutableMapping):
             "from_animation_number",
             "upto_animation_number",
             "max_files_cached",
+            "max_inflight_encoders",
+            "encoder_queue_size",
             # the next two must be set BEFORE digesting frame_width and frame_height
             "pixel_height",
             "pixel_width",
@@ -778,6 +782,8 @@ class ManimConfig(MutableMapping):
             "no_latex_cleanup",
             "preview_command",
             "seed",
+            "max_inflight_encoders",
+            "encoder_queue_size",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -1226,6 +1232,37 @@ class ManimConfig(MutableMapping):
     @max_files_cached.setter
     def max_files_cached(self, value: int) -> None:
         self._set_pos_number("max_files_cached", value, True)
+
+    @property
+    def max_inflight_encoders(self) -> int:
+        """Maximum number of partial movie files encoded concurrently while the
+        scene continues rendering. 1 encodes each animation's file before the
+        next animation starts; values > 1 overlap encoding with rendering
+        (4 is a good value on typical hardware) (--max-inflight-encoders).
+        """
+        return self._d["max_inflight_encoders"]
+
+    @max_inflight_encoders.setter
+    def max_inflight_encoders(self, value: int) -> None:
+        if isinstance(value, int) and value >= 1:
+            self._d.__setitem__("max_inflight_encoders", value)
+        else:
+            raise ValueError("max_inflight_encoders must be a positive integer")
+
+    @property
+    def encoder_queue_size(self) -> int:
+        """Maximum number of pending frame buffers held by each encoder when
+        parallel encoding is enabled. Ignored when ``max_inflight_encoders`` is
+        1 (--encoder-queue-size).
+        """
+        return self._d["encoder_queue_size"]
+
+    @encoder_queue_size.setter
+    def encoder_queue_size(self, value: int) -> None:
+        if isinstance(value, int) and value >= 1:
+            self._d.__setitem__("encoder_queue_size", value)
+        else:
+            raise ValueError("encoder_queue_size must be a positive integer")
 
     @property
     def window_monitor(self) -> int:

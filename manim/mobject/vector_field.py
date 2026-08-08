@@ -12,7 +12,7 @@ import itertools as it
 import random
 from collections.abc import Callable, Iterable, Sequence
 from math import ceil, floor
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 import numpy as np
 from PIL import Image
@@ -187,7 +187,7 @@ class VectorField(VGroup):
         """
         return lambda p: func(p * scalar)
 
-    def fit_to_coordinate_system(self, coordinate_system: CoordinateSystem):
+    def fit_to_coordinate_system(self, coordinate_system: CoordinateSystem) -> Self:
         """Scale the vector field to fit a coordinate system.
 
         This method is useful when the vector field is defined in a coordinate system
@@ -202,6 +202,7 @@ class VectorField(VGroup):
 
         """
         self.apply_function(lambda pos: coordinate_system.coords_to_point(*pos))
+        return self
 
     def nudge(
         self,
@@ -209,7 +210,7 @@ class VectorField(VGroup):
         dt: float = 1,
         substeps: int = 1,
         pointwise: bool = False,
-    ) -> VectorField:
+    ) -> Self:
         """Nudge a :class:`~.Mobject` along the vector field.
 
         Parameters
@@ -293,7 +294,7 @@ class VectorField(VGroup):
         dt: float = 1,
         substeps: int = 1,
         pointwise: bool = False,
-    ) -> VectorField:
+    ) -> Self:
         """Apply a nudge along the vector field to all submobjects.
 
         Parameters
@@ -344,7 +345,7 @@ class VectorField(VGroup):
         self,
         speed: float = 1,
         pointwise: bool = False,
-    ) -> VectorField:
+    ) -> Self:
         """Start continuously moving all submobjects along the vector field.
 
         Calling this method multiple times will result in removing the previous updater created by this method.
@@ -370,7 +371,7 @@ class VectorField(VGroup):
         self.add_updater(self.submob_movement_updater)
         return self
 
-    def stop_submobject_movement(self) -> VectorField:
+    def stop_submobject_movement(self) -> Self:
         """Stops the continuous movement started using :meth:`start_submobject_movement`.
 
         Returns
@@ -929,7 +930,7 @@ class StreamLines(VectorField):
         rate_func: Callable[[float], float] = linear,
         line_animation_class: type[ShowPassingFlash] = ShowPassingFlash,
         **kwargs,
-    ) -> None:
+    ) -> Self:
         """Animates the stream lines using an updater.
 
         The stream lines will continuously flow
@@ -987,6 +988,7 @@ class StreamLines(VectorField):
         self.flow_animation = updater
         self.flow_speed = flow_speed
         self.time_width = time_width
+        return self
 
     def end_animation(self) -> AnimationGroup:
         """End the stream line animation smoothly.

@@ -106,13 +106,14 @@ class Line(TipableVMobject):
         self._set_start_and_end_attrs(start, end)
         super().__init__(**kwargs)
 
-    def generate_points(self) -> None:
+    def generate_points(self) -> Self:
         self.set_points_by_ends(
             start=self.start,
             end=self.end,
             buff=self.buff,
             path_arc=self.path_arc,
         )
+        return self
 
     def set_points_by_ends(
         self,
@@ -120,7 +121,7 @@ class Line(TipableVMobject):
         end: Point3DLike | Mobject,
         buff: float = 0,
         path_arc: float = 0,
-    ) -> None:
+    ) -> Self:
         """Sets the points of the line based on its start and end points.
         Unlike :meth:`put_start_and_end_on`, this method respects `self.buff` and
         Mobject bounding boxes.
@@ -144,9 +145,11 @@ class Line(TipableVMobject):
             self.set_points_as_corners(np.asarray([self.start, self.end]))
 
         self._account_for_buff(buff)
+        return self
 
-    def init_points(self) -> None:
+    def init_points(self) -> Self:
         self.generate_points()
+        return self
 
     def _account_for_buff(self, buff: float) -> None:
         if buff <= 0:
@@ -195,9 +198,10 @@ class Line(TipableVMobject):
                 return mob.get_boundary_point(direction)
         return np.array(mob_or_point)
 
-    def set_path_arc(self, new_value: float) -> None:
+    def set_path_arc(self, new_value: float) -> Self:
         self.path_arc = new_value
         self.init_points()
+        return self
 
     def put_start_and_end_on(
         self,
@@ -993,10 +997,27 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         self.quadrant = quadrant
         self.dot_distance = dot_distance
         self.elbow = elbow
-        inter = line_intersection(
-            [line1.get_start(), line1.get_end()],
-            [line2.get_start(), line2.get_end()],
-        )
+        try:
+            inter = line_intersection(
+                [line1.get_start(), line1.get_end()],
+                [line2.get_start(), line2.get_end()],
+            )
+        except ValueError:
+            lines_are_in_xy_plane = all(
+                point[2] == 0
+                for line in (line1, line2)
+                for point in (line.get_start(), line.get_end())
+            )
+            directions_are_parallel = (
+                np.cross(line1.get_vector(), line2.get_vector())[2] == 0
+            )
+            if not (lines_are_in_xy_plane and directions_are_parallel):
+                raise
+            # When the two lines are parallel or collinear there is no
+            # unique intersection point.  Rather than raising, Angle
+            # becomes an empty Mobject (see issue #1930).
+            self.angle_value = 0.0
+            return
 
         if radius is None:
             if quadrant[0] == 1:

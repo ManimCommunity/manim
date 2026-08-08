@@ -264,7 +264,19 @@ class Scene:
             # TODO: The CairoRenderer does not have the method clear_screen()
             self.renderer.clear_screen()  # type: ignore[union-attr]
             self.renderer.num_plays = 0
+            # The rerun replaces the file writer; tear down its encode jobs so
+            # no worker is still writing a partial file the new writer may
+            # reuse. Encoder failures propagate: a rerun must not silently
+            # continue past corrupt output.
+            self.renderer.file_writer.abort_encode_jobs(
+                reraise_encoder_failures=True,
+            )
             return True
+        except BaseException:
+            # A mid-play exception leaves an unsealed encode job whose
+            # non-daemon worker would hang the process at exit.
+            self.renderer.file_writer.abort_encode_jobs()
+            raise
         self.tear_down()
         # We have to reset these settings in case of multiple renders.
         self.renderer.scene_finished(self)
