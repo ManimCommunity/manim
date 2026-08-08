@@ -923,12 +923,13 @@ class Scene:
         ) -> list[Mobject | OpenGLMobject]:
             animation_mobjects: list[Mobject | OpenGLMobject] = []
             for anim in nested_animations:
+                # Keep composition wrappers as conservative boundaries for the
+                # static frame cache, in addition to their nested animations.
+                animation_mobjects.extend(anim.mobject.get_family())
                 if isinstance(anim, AnimationGroup):
                     animation_mobjects.extend(
                         _collect_animation_mobjects(anim.animations),
                     )
-                else:
-                    animation_mobjects.extend(anim.mobject.get_family())
             return animation_mobjects
 
         animation_mobjects = _collect_animation_mobjects(animations)
