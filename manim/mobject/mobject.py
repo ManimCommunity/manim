@@ -23,6 +23,7 @@ import numpy as np
 
 from manim.data_structures import MethodWithArgs
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.utils.deprecation import deprecated
 
 from .. import config, logger
 from ..constants import *
@@ -1332,7 +1333,7 @@ class Mobject:
         :meth:`move_to`
 
         """
-        self.apply_points_function_about_point(
+        self.apply_points_function(
             lambda points: scale_factor * points, about_point, about_edge
         )
         return self
@@ -1408,7 +1409,7 @@ class Mobject:
 
         """
         rot_matrix = rotation_matrix(angle, axis)
-        self.apply_points_function_about_point(
+        self.apply_points_function(
             lambda points: np.dot(points, rot_matrix.T), about_point, about_edge
         )
         return self
@@ -1452,7 +1453,7 @@ class Mobject:
             points[:, dim] *= factor
             return points
 
-        self.apply_points_function_about_point(func, about_point, about_edge)
+        self.apply_points_function(func, about_point, about_edge)
         return self
 
     def apply_function(
@@ -1470,7 +1471,7 @@ class Mobject:
             result: Point3D_Array = np.apply_along_axis(function, 1, points)
             return result
 
-        self.apply_points_function_about_point(
+        self.apply_points_function(
             multi_mapping_function,
             about_point,
             about_edge,
@@ -1499,7 +1500,7 @@ class Mobject:
         full_matrix = np.identity(self.dim)
         matrix = np.array(matrix)
         full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
-        self.apply_points_function_about_point(
+        self.apply_points_function(
             lambda points: np.dot(points, full_matrix.T), about_point, about_edge
         )
         return self
@@ -1565,8 +1566,7 @@ class Mobject:
     # Note, much of these are now redundant with default behavior of
     # above methods
 
-    # TODO: name is inconsistent with OpenGLMobject.apply_points_function()
-    def apply_points_function_about_point(
+    def apply_points_function(
         self,
         func: MultiMappingFunction,
         about_point: Point3DLike | None = None,
@@ -1583,6 +1583,19 @@ class Mobject:
             mob.points = func(mob.points)
             mob.points += about_point
         return self
+
+    @deprecated(message="Use apply_points_function() instead.")
+    def apply_points_function_about_point(
+        self,
+        func: MultiMappingFunction,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
+        return self.apply_points_function(
+            func,
+            about_point=about_point,
+            about_edge=about_edge,
+        )
 
     def pose_at_angle(self, **kwargs: Any) -> Self:
         self.rotate(TAU / 14, RIGHT + UP, **kwargs)
