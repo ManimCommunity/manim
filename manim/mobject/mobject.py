@@ -1221,21 +1221,6 @@ class Mobject(Positionable):
         )
         return self
 
-    def stretch(
-        self,
-        factor: float,
-        dim: int,
-        *,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-    ) -> Self:
-        def func(points: Point3D_Array) -> Point3D_Array:
-            points[:, dim] *= factor
-            return points
-
-        self.apply_points_function(func, about_point, about_edge)
-        return self
-
     def apply_function_to_submobject_positions(self, function: MappingFunction) -> Self:
         for submob in self.submobjects:
             submob.apply_function_to_position(function)

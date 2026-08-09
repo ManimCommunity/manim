@@ -782,8 +782,19 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        works_on_bounding_box: bool = False,
     ) -> Self:
-        raise NotImplementedError
+        def func(points: Point3D_Array) -> Point3D_Array:
+            points[:, dim] *= factor
+            return points
+
+        self.apply_points_function(
+            func,
+            about_point=about_point,
+            about_edge=about_edge,
+            works_on_bounding_box=works_on_bounding_box,
+        )
+        return self
 
     def stretch_about_point(self, factor: float, dim: int, point: Point3DLike) -> Self:
         raise NotImplementedError

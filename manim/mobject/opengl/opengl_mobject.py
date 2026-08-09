@@ -1583,18 +1583,15 @@ class OpenGLMobject(Positionable):
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        works_on_bounding_box: bool = True,
     ) -> Self:
-        def func(points: Point3D_Array) -> Point3D_Array:
-            points[:, dim] *= factor
-            return points
-
-        self.apply_points_function(
-            func,
+        return super().stretch(
+            factor,
+            dim,
             about_point=about_point,
             about_edge=about_edge,
-            works_on_bounding_box=True,
+            works_on_bounding_box=works_on_bounding_box,
         )
-        return self
 
     def rotate(
         self,
