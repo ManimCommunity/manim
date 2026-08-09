@@ -31,7 +31,7 @@ from typing_extensions import (
     override,
 )
 
-from manim import config, logger
+from manim import logger
 from manim.constants import *
 from manim.data_structures import MethodWithArgs
 from manim.mobject.abstract.positionable import Positionable
@@ -1717,20 +1717,6 @@ class OpenGLMobject(Positionable):
             aligner = self
         point_to_align = aligner.get_critical_point(np_aligned_edge - np_direction)
         self.shift((target_point - point_to_align + buff * np_direction) * coor_mask)
-        return self
-
-    def shift_onto_screen(self, **kwargs: Any) -> Self:
-        space_lengths: list[float] = [
-            config["frame_x_radius"],
-            config["frame_y_radius"],
-        ]
-        for vect in UP, DOWN, LEFT, RIGHT:
-            dim = np.argmax(np.abs(vect))
-            buff: float = kwargs.get("buff", DEFAULT_MOBJECT_TO_EDGE_BUFFER)
-            max_val = space_lengths[dim] - buff
-            edge_center = self.get_edge_center(vect)
-            if np.dot(edge_center, vect) > max_val:
-                self.to_edge(vect, buff=buff)
         return self
 
     def stretch_about_point(self, factor: float, dim: int, point: Point3DLike) -> Self:

@@ -1406,17 +1406,6 @@ class Mobject(Positionable):
         self.shift((target_point - point_to_align + buff * np_direction) * coor_mask)
         return self
 
-    def shift_onto_screen(self, **kwargs: Any) -> Self:
-        space_lengths = [config["frame_x_radius"], config["frame_y_radius"]]
-        for vect in UP, DOWN, LEFT, RIGHT:
-            dim = np.argmax(np.abs(vect))
-            buff = kwargs.get("buff", DEFAULT_MOBJECT_TO_EDGE_BUFFER)
-            max_val = space_lengths[dim] - buff
-            edge_center = self.get_edge_center(vect)
-            if np.dot(edge_center, vect) > max_val:
-                self.to_edge(vect, **kwargs)
-        return self
-
     def stretch_about_point(self, factor: float, dim: int, point: Point3DLike) -> Self:
         return self.stretch(factor, dim, about_point=point)
 
