@@ -379,12 +379,14 @@ class Positionable:
         raise NotImplementedError
 
     def match_coord(
-        self,
-        mobject: Mobject,
-        dim: int,
-        direction: Vector3DLike = ORIGIN,
+        self, mobject: Mobject, dim: int, direction: Vector3DLike = ORIGIN
     ) -> Self:
-        raise NotImplementedError
+        """Match the Point3Ds with the Point3Ds of another :class:`~.Mobject`."""
+        return self.set_coord(
+            mobject.get_coord(dim, direction),
+            dim=dim,
+            direction=direction,
+        )
 
     def match_depth(self, mobject: Mobject, **kwargs: Any) -> Self:
         raise NotImplementedError
