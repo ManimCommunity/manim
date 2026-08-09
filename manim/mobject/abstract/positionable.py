@@ -265,9 +265,6 @@ class Positionable:
         """Get left Point3Ds of a box bounding the :class:`~.Mobject`"""
         return self.get_edge_center(LEFT)
 
-    def get_merged_array(self, array_attr: str) -> np.ndarray:
-        raise NotImplementedError
-
     def get_midpoint(self) -> Point3D:
         raise NotImplementedError
 
