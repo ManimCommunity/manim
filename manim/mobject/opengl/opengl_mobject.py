@@ -1716,32 +1716,6 @@ class OpenGLMobject(Positionable):
         self.shift((target_point - point_to_align + buff * np_direction) * coor_mask)
         return self
 
-    def stretch_to_fit_width(self, width: float, **kwargs: Any) -> Self:
-        """Stretches the :class:`~.OpenGLMobject` to fit a width, not keeping height/depth proportional.
-
-        Returns
-        -------
-        :class:`OpenGLMobject`
-            ``self``
-
-        Examples
-        --------
-        ::
-
-            >>> from manim import *
-            >>> import numpy as np
-            >>> sq = Square()
-            >>> sq.height
-            np.float64(2.0)
-            >>> sq.stretch_to_fit_width(5)
-            Square
-            >>> sq.width
-            np.float64(5.0)
-            >>> sq.height
-            np.float64(2.0)
-        """
-        return self.rescale_to_fit(width, 0, stretch=True, **kwargs)
-
     def space_out_submobjects(self, factor: float = 1.5, **kwargs: Any) -> Self:
         self.scale(factor, **kwargs)
         for submob in self.submobjects:

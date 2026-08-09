@@ -829,7 +829,29 @@ class Positionable:
         return self.rescale_to_fit(height, 1, stretch=True, **kwargs)
 
     def stretch_to_fit_width(self, width: float, **kwargs: Any) -> Self:
-        raise NotImplementedError
+        """Stretches the :class:`~.Mobject` to fit a width, not keeping height/depth proportional.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> sq = Square()
+            >>> sq.height
+            np.float64(2.0)
+            >>> sq.stretch_to_fit_width(5)
+            Square
+            >>> sq.width
+            np.float64(5.0)
+            >>> sq.height
+            np.float64(2.0)
+        """
+        return self.rescale_to_fit(width, 0, stretch=True, **kwargs)
 
     def to_corner(
         self,
