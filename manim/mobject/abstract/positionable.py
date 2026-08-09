@@ -698,7 +698,8 @@ class Positionable:
         stretch: bool = False,
         **kwargs: Any,
     ) -> Self:
-        raise NotImplementedError
+        """Scales the :class:`~.OpenGLMobject` to fit a height while keeping width/depth proportional."""
+        return self.rescale_to_fit(height, 1, stretch=stretch, **kwargs)
 
     def set_width(
         self,

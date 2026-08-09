@@ -1801,15 +1801,6 @@ class OpenGLMobject(Positionable):
         """
         return self.rescale_to_fit(width, 0, stretch=stretch, **kwargs)
 
-    def set_height(
-        self,
-        height: float,
-        stretch: bool = False,
-        **kwargs: Any,
-    ) -> Self:
-        """Scales the :class:`~.OpenGLMobject` to fit a height while keeping width/depth proportional."""
-        return self.rescale_to_fit(height, 1, stretch=stretch, **kwargs)
-
     def set_x(self, x: float, direction: Vector3DLike = ORIGIN) -> Self:
         """Set x value of the center of the :class:`~.OpenGLMobject` (``int`` or ``float``)"""
         return self.set_coord(x, 0, direction)
