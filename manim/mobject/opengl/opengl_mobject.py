@@ -52,6 +52,7 @@ from manim.utils.color import (
 from manim.utils.config_ops import _Data, _Uniforms
 
 # from ..utils.iterables import batch_by_property
+from manim.utils.deprecation import deprecated
 from manim.utils.iterables import (
     batch_by_property,
     list_update,
@@ -683,7 +684,7 @@ class OpenGLMobject:
         works_on_bounding_box: bool = False,
     ) -> Self:
         if about_point is None and about_edge is not None:
-            about_point = self.get_bounding_box_point(about_edge)
+            about_point = self.get_critical_point(about_edge)
 
         for mob in self.get_family():
             arrs: list[Point3D_Array] = []
@@ -1855,7 +1856,7 @@ class OpenGLMobject:
             config["frame_y_radius"],
             0,
         )
-        point_to_align = self.get_bounding_box_point(direction)
+        point_to_align = self.get_critical_point(direction)
         shift_val = target_point - point_to_align - buff * np.asarray(direction)
         shift_val = shift_val * abs(np.sign(direction))
         self.shift(shift_val)
@@ -1915,7 +1916,7 @@ class OpenGLMobject:
                 target_aligner = mob[index_of_submobject_to_align]
             else:
                 target_aligner = mob
-            target_point = target_aligner.get_bounding_box_point(
+            target_point = target_aligner.get_critical_point(
                 np_aligned_edge + np_direction,
             )
         else:
@@ -1926,7 +1927,7 @@ class OpenGLMobject:
             aligner = self[index_of_submobject_to_align]
         else:
             aligner = self
-        point_to_align = aligner.get_bounding_box_point(np_aligned_edge - np_direction)
+        point_to_align = aligner.get_critical_point(np_aligned_edge - np_direction)
         self.shift((target_point - point_to_align + buff * np_direction) * coor_mask)
         return self
 
@@ -2097,10 +2098,10 @@ class OpenGLMobject:
         """Move center of the :class:`~.OpenGLMobject` to certain coordinate."""
         target: Point3DLike
         if isinstance(point_or_mobject, OpenGLMobject):
-            target = point_or_mobject.get_bounding_box_point(aligned_edge)
+            target = point_or_mobject.get_critical_point(aligned_edge)
         else:
             target = point_or_mobject
-        point_to_align = self.get_bounding_box_point(aligned_edge)
+        point_to_align = self.get_critical_point(aligned_edge)
         self.shift((target - point_to_align) * coor_mask)
         return self
 
@@ -2362,18 +2363,22 @@ class OpenGLMobject:
 
     # Getters
 
-    def get_bounding_box_point(self, direction: Vector3DLike) -> Point3D:
+    def get_critical_point(self, direction: Vector3DLike) -> Point3D:
         bb = self.get_bounding_box()
         indices = (np.sign(direction) + 1).astype(int)
         return np.array([bb[indices[i]][i] for i in range(3)])
 
+    @deprecated(message="Use get_critical_point() instead.")
+    def get_bounding_box_point(self, direction: Vector3DLike) -> Point3D:
+        return self.get_critical_point(direction=direction)
+
     def get_edge_center(self, direction: Vector3DLike) -> Point3D:
         """Get edge coordinates for certain direction."""
-        return self.get_bounding_box_point(direction)
+        return self.get_critical_point(direction)
 
     def get_corner(self, direction: Vector3DLike) -> Point3D:
         """Get corner coordinates for certain direction."""
-        return self.get_bounding_box_point(direction)
+        return self.get_critical_point(direction)
 
     def get_center(self) -> Point3D:
         """Get center coordinates."""
@@ -2448,7 +2453,7 @@ class OpenGLMobject:
 
     def get_coord(self, dim: int, direction: Vector3DLike = ORIGIN) -> ManimFloat:
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
-        return self.get_bounding_box_point(direction)[dim]
+        return self.get_critical_point(direction)[dim]
 
     def get_x(self, direction: Vector3DLike = ORIGIN) -> ManimFloat:
         """Returns x coordinate of the center of the :class:`~.OpenGLMobject` as ``float``"""
@@ -2566,7 +2571,7 @@ class OpenGLMobject:
         """
         point: Point3DLike
         if isinstance(mobject_or_point, OpenGLMobject):
-            point = mobject_or_point.get_bounding_box_point(direction)
+            point = mobject_or_point.get_critical_point(direction)
         else:
             point = mobject_or_point
 
@@ -3055,7 +3060,7 @@ class OpenGLPoint(OpenGLMobject):
         return cast("Point3D", self.points[0]).copy()
 
     @override
-    def get_bounding_box_point(self, *args: object, **kwargs: Any) -> Point3D:
+    def get_critical_point(self, *args: object, **kwargs: Any) -> Point3D:
         return self.get_location()
 
     def set_location(self, new_loc: Point3DLike) -> Self:
