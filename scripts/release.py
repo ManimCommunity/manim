@@ -334,7 +334,11 @@ def _find_pull_request_blocks(
         block_end = line_number + 1
         while block_end < len(lines):
             next_line = lines[block_end]
-            if _TOP_LEVEL_BULLET.match(next_line) or _ANY_HEADING.match(next_line):
+            if (
+                _TOP_LEVEL_BULLET.match(next_line)
+                or _ANY_HEADING.match(next_line)
+                or next_line.startswith("**Full Changelog**:")
+            ):
                 break
             block_end += 1
         while block_end > line_number + 1 and not lines[block_end - 1].strip():

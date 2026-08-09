@@ -45,6 +45,8 @@ def test_merge_changelog_keeps_release_and_contributor_entries_separate():
 
 ## New Contributors
 * Edited welcome for the author of {pr}`10`
+
+**Full Changelog**: existing compare link
 """
     generated = """## What's Changed
 ### Documentation
@@ -52,6 +54,9 @@ def test_merge_changelog_keeps_release_and_contributor_entries_separate():
 
 ## New Contributors
 * Generated welcome for the author of {pr}`10`
+* Welcome for the author of {pr}`11`
+
+**Full Changelog**: generated compare link
 """
 
     merged = merge_changelog(generated, existing)
@@ -61,6 +66,9 @@ def test_merge_changelog_keeps_release_and_contributor_entries_separate():
     assert "Generated release note" not in merged
     assert "Generated welcome" not in merged
     assert merged.count("{pr}`10`") == 2
+    assert "Welcome for the author of {pr}`11`" in merged
+    assert merged.count("**Full Changelog**") == 1
+    assert "generated compare link" in merged
 
 
 def test_include_extra_pull_requests_adds_other_changes_category(monkeypatch):
