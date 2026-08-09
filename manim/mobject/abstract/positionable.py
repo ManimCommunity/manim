@@ -611,7 +611,8 @@ class Positionable:
         stretch: bool = False,
         **kwargs: Any,
     ) -> Self:
-        raise NotImplementedError
+        """Scales the :class:`~.Mobject` to fit a depth while keeping width/height proportional."""
+        return self.rescale_to_fit(depth, 2, stretch=stretch, **kwargs)
 
     def scale_to_fit_height(
         self,
