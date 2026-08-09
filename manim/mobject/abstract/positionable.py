@@ -213,7 +213,7 @@ class Positionable:
         )
 
     def get_array_attrs(self) -> Iterable[str]:
-        raise NotImplementedError
+        return []
 
     def get_bottom(self) -> Point3D:
         raise NotImplementedError
