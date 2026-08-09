@@ -141,7 +141,9 @@ class Positionable:
         return self
 
     def apply_over_attr_arrays(self, func: MultiMappingFunction) -> Self:
-        raise NotImplementedError
+        for attr in self.get_array_attrs():
+            setattr(self, attr, func(getattr(self, attr)))
+        return self
 
     def apply_points_function(
         self,

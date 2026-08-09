@@ -870,11 +870,6 @@ class Mobject(Positionable):
     def get_array_attrs(self) -> list[str]:
         return ["points"]
 
-    def apply_over_attr_arrays(self, func: MultiMappingFunction) -> Self:
-        for attr in self.get_array_attrs():
-            setattr(self, attr, func(getattr(self, attr)))
-        return self
-
     # Displaying
     def get_image(self, camera: Camera | None = None) -> Image.Image:
         if camera is None:
