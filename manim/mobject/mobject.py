@@ -1279,34 +1279,6 @@ class Mobject(Positionable):
 
     # Positioning methods
 
-    def to_corner(
-        self, corner: Vector3DLike = DL, buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER
-    ) -> Self:
-        """Moves this :class:`~.Mobject` to the given corner of the screen.
-
-        Returns
-        -------
-        :class:`.Mobject`
-            The newly positioned mobject.
-
-        Examples
-        --------
-
-        .. manim:: ToCornerExample
-            :save_last_frame:
-
-            class ToCornerExample(Scene):
-                def construct(self):
-                    c = Circle()
-                    c.to_corner(UR)
-                    t = Tex("To the corner!")
-                    t2 = MathTex("x^3").shift(DOWN)
-                    self.add(c,t,t2)
-                    t.to_corner(DL, buff=0)
-                    t2.to_corner(UL, buff=1.5)
-        """
-        return self.align_on_border(corner, buff)
-
     def to_edge(
         self, edge: Vector3DLike = LEFT, buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER
     ) -> Self:

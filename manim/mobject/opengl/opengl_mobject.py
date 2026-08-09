@@ -1647,13 +1647,6 @@ class OpenGLMobject(Positionable):
 
     # Positioning methods
 
-    def to_corner(
-        self,
-        corner: Vector3DLike = LEFT + DOWN,
-        buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
-    ) -> Self:
-        return self.align_on_border(corner, buff)
-
     def to_edge(
         self,
         edge: Vector3DLike = LEFT,
