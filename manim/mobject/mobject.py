@@ -1416,31 +1416,6 @@ class Mobject(Positionable):
         """
         return self.rescale_to_fit(width, 0, stretch=True, **kwargs)
 
-    def stretch_to_fit_height(self, height: float, **kwargs: Any) -> Self:
-        """Stretches the :class:`~.Mobject` to fit a height, not keeping width/depth proportional.
-
-        Returns
-        -------
-        :class:`Mobject`
-            ``self``
-
-        Examples
-        --------
-        ::
-
-            >>> from manim import *
-            >>> sq = Square()
-            >>> sq.width
-            np.float64(2.0)
-            >>> sq.stretch_to_fit_height(5)
-            Square
-            >>> sq.height
-            np.float64(5.0)
-            >>> sq.width
-            np.float64(2.0)
-        """
-        return self.rescale_to_fit(height, 1, stretch=True, **kwargs)
-
     def space_out_submobjects(self, factor: float = 1.5, **kwargs: Any) -> Self:
         self.scale(factor, **kwargs)
         for submob in self.submobjects:

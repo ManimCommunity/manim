@@ -1742,10 +1742,6 @@ class OpenGLMobject(Positionable):
         """
         return self.rescale_to_fit(width, 0, stretch=True, **kwargs)
 
-    def stretch_to_fit_height(self, height: float, **kwargs: Any) -> Self:
-        """Stretches the :class:`~.OpenGLMobject` to fit a height, not keeping width/height proportional."""
-        return self.rescale_to_fit(height, 1, stretch=True, **kwargs)
-
     def space_out_submobjects(self, factor: float = 1.5, **kwargs: Any) -> Self:
         self.scale(factor, **kwargs)
         for submob in self.submobjects:
