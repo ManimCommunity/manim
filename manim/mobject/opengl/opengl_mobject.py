@@ -3,12 +3,13 @@ from __future__ import annotations
 import copy
 import inspect
 import itertools as it
+import operator as op
 import random
 import sys
 import types
 import warnings
 from collections.abc import Callable, Iterable, Iterator, Sequence
-from functools import partialmethod, wraps
+from functools import partialmethod, reduce, wraps
 from math import ceil
 from typing import (
     TYPE_CHECKING,
@@ -1618,9 +1619,10 @@ class OpenGLMobject:
 
     # Transforming operations
 
-    def shift(self, vector: Vector3DLike) -> Self:
+    def shift(self, *vectors: Vector3DLike) -> Self:
+        total_vector = reduce(op.add, vectors)
         self.apply_points_function(
-            lambda points: points + vector,
+            lambda points: points + total_vector,
             about_edge=None,
             works_on_bounding_box=True,
         )
