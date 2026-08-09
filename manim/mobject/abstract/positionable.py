@@ -317,7 +317,8 @@ class Positionable:
         return self.get_coord(2, direction)
 
     def get_zenith(self) -> Point3D:
-        raise NotImplementedError
+        """Get zenith Point3Ds of a box bounding a 3D :class:`~.Mobject`."""
+        return self.get_edge_center(OUT)
 
     @property
     def height(self) -> float:

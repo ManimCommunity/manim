@@ -2167,10 +2167,6 @@ class Mobject(Positionable):
         index = np.argmax(np.dot(all_points, direction))
         return all_points[index]
 
-    def get_zenith(self) -> Point3D:
-        """Get zenith Point3Ds of a box bounding a 3D :class:`~.Mobject`."""
-        return self.get_edge_center(OUT)
-
     def length_over_dim(self, dim: int) -> float:
         """Measure the length of an :class:`~.Mobject` in a certain direction."""
         max_coord = self.reduce_across_dimension(max, dim)
