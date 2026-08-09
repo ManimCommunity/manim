@@ -1,5 +1,6 @@
+from collections.abc import Iterable
 from math import cos, sin
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import Any, TypeVar
 
 import numpy as np
 import pytest
@@ -22,11 +23,8 @@ from manim.mobject.opengl.opengl_vectorized_mobject import (
     OpenGLVMobject as VMobject,
 )
 
-if TYPE_CHECKING:
-    from collections.abc import Iterable
-
-    T1 = TypeVar("T1", Any)
-    T2 = TypeVar("T2", Any)
+T1 = TypeVar("T1", bound=Any)
+T2 = TypeVar("T2", bound=Any)
 
 
 def get_add_type_error_message(
@@ -589,11 +587,11 @@ def test_proportion_from_point():
     np.testing.assert_allclose(props, [0, 1 / 3, 2 / 3])
 
 
-def test_align_points_handles_vmobject_with_no_complete_cubic_curves():
+def test_align_points_handles_vmobject_with_no_complete_curves():
     """Regression test for #3569 / #4629 (fix 21cf9998 / PR #4630).
 
     When ``align_points`` encounters a VMobject whose points array is
-    non-empty but holds fewer than ``n_points_per_cubic_curve`` points,
+    non-empty but holds fewer than ``n_points_per_curve`` points,
     ``get_subpaths()`` returns ``[]`` while ``has_no_points()`` returns
     ``False`` — so the pre-loop sanitization that would normally add a
     null curve is skipped. The buggy ``get_nth_subpath`` closure then
@@ -605,19 +603,17 @@ def test_align_points_handles_vmobject_with_no_complete_cubic_curves():
     broke downstream ``reshape`` calls).
     """
     target = VMobject()
-    target.set_points(
-        np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [2.0, 0.0, 0.0], [3.0, 0.0, 0.0]])
-    )
+    target.set_points(np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [2.0, 0.0, 0.0]]))
 
-    sub_cubic = VMobject()
-    sub_cubic.set_points(np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [2.0, 0.0, 0.0]]))
-    assert sub_cubic.get_subpaths() == []
-    assert sub_cubic.has_points()
+    sub_quadratic = VMobject()
+    sub_quadratic.set_points(np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0]]))
+    assert sub_quadratic.get_subpaths() == []
+    assert sub_quadratic.has_points()
 
     # Pre-fix: raises IndexError. Post-fix: completes; points are ndarray.
-    target.align_points(sub_cubic)
+    target.align_points(sub_quadratic)
     assert isinstance(target.points, np.ndarray)
-    assert isinstance(sub_cubic.points, np.ndarray)
+    assert isinstance(sub_quadratic.points, np.ndarray)
 
 
 def test_pointwise_become_partial_preserves_target_when_source_has_no_curves():
