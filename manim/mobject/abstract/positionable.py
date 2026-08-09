@@ -262,7 +262,8 @@ class Positionable:
         return self.length_over_dim(1)
 
     def get_left(self) -> Point3D:
-        raise NotImplementedError
+        """Get left Point3Ds of a box bounding the :class:`~.Mobject`"""
+        return self.get_edge_center(LEFT)
 
     def get_merged_array(self, array_attr: str) -> np.ndarray:
         raise NotImplementedError

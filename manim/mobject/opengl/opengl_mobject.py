@@ -2292,10 +2292,6 @@ class OpenGLMobject(Positionable):
         """Get right coordinates of a box bounding the :class:`~.OpenGLMobject`"""
         return self.get_edge_center(RIGHT)
 
-    def get_left(self) -> Point3D:
-        """Get left coordinates of a box bounding the :class:`~.OpenGLMobject`"""
-        return self.get_edge_center(LEFT)
-
     def get_zenith(self) -> Point3D:
         """Get zenith coordinates of a box bounding a 3D :class:`~.OpenGLMobject`."""
         return self.get_edge_center(OUT)
