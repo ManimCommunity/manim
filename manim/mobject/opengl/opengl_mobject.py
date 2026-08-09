@@ -1769,7 +1769,11 @@ class OpenGLMobject:
         return self
 
     def apply_complex_function(
-        self, function: Callable[[complex], complex], **kwargs: Any
+        self,
+        function: Callable[[complex], complex],
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
     ) -> Self:
         """Applies a complex function to a :class:`OpenGLMobject`.
         The x and y coordinates correspond to the real and imaginary parts respectively.
@@ -1802,7 +1806,11 @@ class OpenGLMobject:
             xy_complex = function(complex(x, y))
             return np.array([xy_complex.real, xy_complex.imag, z])
 
-        return self.apply_function(R3_func, **kwargs)
+        return self.apply_function(
+            R3_func,
+            about_point=about_point,
+            about_edge=about_edge,
+        )
 
     def hierarchical_model_matrix(self) -> MatrixMN:
         if self.parent is None:
