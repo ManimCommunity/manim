@@ -1513,17 +1513,6 @@ class Mobject(Positionable):
 
     # Positioning methods
 
-    def center(self) -> Self:
-        """Moves the center of the mobject to the center of the scene.
-
-        Returns
-        -------
-        :class:`.Mobject`
-            The centered mobject.
-        """
-        self.shift(-self.get_center())
-        return self
-
     def to_corner(
         self, corner: Vector3DLike = DL, buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER
     ) -> Self:

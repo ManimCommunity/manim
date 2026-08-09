@@ -1794,11 +1794,6 @@ class OpenGLMobject(Positionable):
 
     # Positioning methods
 
-    def center(self) -> Self:
-        """Moves the mobject to the center of the Scene."""
-        self.shift(-self.get_center())
-        return self
-
     def to_corner(
         self,
         corner: Vector3DLike = LEFT + DOWN,
