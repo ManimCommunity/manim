@@ -553,9 +553,57 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        works_on_bounding_box: bool = False,
         **kwargs: Any,
     ) -> Self:
-        raise NotImplementedError
+        r"""Scale the size by a factor.
+
+        Default behavior is to scale about the center of the mobject.
+
+        Parameters
+        ----------
+        scale_factor
+            The scaling factor :math:`\alpha`. If :math:`0 < |\alpha| < 1`, the mobject
+            will shrink, and for :math:`|\alpha| > 1` it will grow. Furthermore,
+            if :math:`\alpha < 0`, the mobject is also flipped.
+        about_point
+            The point about which to apply the scaling.
+        about_edge
+            The edge about which to apply the scaling.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Examples
+        --------
+
+        .. manim:: MobjectScaleExample
+            :save_last_frame:
+
+            class MobjectScaleExample(Scene):
+                def construct(self):
+                    f1 = Text("F")
+                    f2 = Text("F").scale(2)
+                    f3 = Text("F").scale(0.5)
+                    f4 = Text("F").scale(-1)
+
+                    vgroup = VGroup(f1, f2, f3, f4).arrange(6 * RIGHT)
+                    self.add(vgroup)
+
+        See also
+        --------
+        :meth:`move_to`
+
+        """
+        self.apply_points_function(
+            lambda points: scale_factor * points,
+            about_point=about_point,
+            about_edge=about_edge,
+            works_on_bounding_box=works_on_bounding_box,
+        )
+        return self
 
     def scale_to_fit_depth(
         self,
