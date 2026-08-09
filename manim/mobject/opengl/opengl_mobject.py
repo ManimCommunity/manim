@@ -1714,7 +1714,13 @@ class OpenGLMobject:
         )
         return self
 
-    def flip(self, axis: Vector3DLike = UP, **kwargs: Any) -> Self:
+    def flip(
+        self,
+        axis: Vector3DLike = UP,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
         """Flips/Mirrors an mobject about its center.
 
         Examples
@@ -1731,7 +1737,12 @@ class OpenGLMobject:
                     self.add(s2)
 
         """
-        return self.rotate(TAU / 2, axis, **kwargs)
+        return self.rotate(
+            TAU / 2,
+            axis,
+            about_point=about_point,
+            about_edge=about_edge,
+        )
 
     def apply_function(
         self,
