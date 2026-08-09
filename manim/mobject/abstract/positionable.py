@@ -119,7 +119,8 @@ class Positionable:
         return self
 
     def apply_function_to_position(self, function: MappingFunction) -> Self:
-        raise NotImplementedError
+        self.move_to(function(self.get_center()))
+        return self
 
     def apply_matrix(
         self,

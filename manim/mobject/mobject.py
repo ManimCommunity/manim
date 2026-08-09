@@ -1457,10 +1457,6 @@ class Mobject(Positionable):
         self.apply_points_function(func, about_point, about_edge)
         return self
 
-    def apply_function_to_position(self, function: MappingFunction) -> Self:
-        self.move_to(function(self.get_center()))
-        return self
-
     def apply_function_to_submobject_positions(self, function: MappingFunction) -> Self:
         for submob in self.submobjects:
             submob.apply_function_to_position(function)
