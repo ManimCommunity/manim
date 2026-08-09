@@ -1996,6 +1996,7 @@ class OpenGLMobject(Positionable):
         i, subalpha = integer_interpolate(0, len(points) - 1, alpha)
         return interpolate(points[i], points[i + 1], subalpha)
 
+    @deprecated(message="Use point_from_proportion() instead.")
     def pfp(self, alpha: float) -> Point3D:
         """Abbreviation for point_from_proportion"""
         return self.point_from_proportion(alpha)

@@ -653,7 +653,9 @@ class OpenGLTangentLine(OpenGLLine):
         da = self.d_alpha
         a1 = clip(alpha - da, 0, 1)
         a2 = clip(alpha + da, 0, 1)
-        super().__init__(vmob.pfp(a1), vmob.pfp(a2), **kwargs)
+        super().__init__(
+            vmob.point_from_proportion(a1), vmob.point_from_proportion(a2), **kwargs
+        )
         self.scale(self.length / self.get_length())
 
 
