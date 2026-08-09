@@ -2183,18 +2183,6 @@ class Mobject(Positionable):
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
         return self.get_extremum_along_dim(dim=dim, key=np.array(direction)[dim])
 
-    def get_x(self, direction: Vector3DLike = ORIGIN) -> float:
-        """Returns x Point3D of the center of the :class:`~.Mobject` as ``float``"""
-        return self.get_coord(0, direction)
-
-    def get_y(self, direction: Vector3DLike = ORIGIN) -> float:
-        """Returns y Point3D of the center of the :class:`~.Mobject` as ``float``"""
-        return self.get_coord(1, direction)
-
-    def get_z(self, direction: Vector3DLike = ORIGIN) -> float:
-        """Returns z Point3D of the center of the :class:`~.Mobject` as ``float``"""
-        return self.get_coord(2, direction)
-
     def get_start(self) -> Point3D:
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` starts."""
         self.throw_error_if_no_points()

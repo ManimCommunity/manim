@@ -305,13 +305,16 @@ class Positionable:
         return self.length_over_dim(0)
 
     def get_x(self, direction: Vector3DLike = ORIGIN) -> float:
-        raise NotImplementedError
+        """Returns x Point3D of the center of the :class:`~.Mobject` as ``float``"""
+        return self.get_coord(0, direction)
 
     def get_y(self, direction: Vector3DLike = ORIGIN) -> float:
-        raise NotImplementedError
+        """Returns y Point3D of the center of the :class:`~.Mobject` as ``float``"""
+        return self.get_coord(1, direction)
 
     def get_z(self, direction: Vector3DLike = ORIGIN) -> float:
-        raise NotImplementedError
+        """Returns z Point3D of the center of the :class:`~.Mobject` as ``float``"""
+        return self.get_coord(2, direction)
 
     def get_zenith(self) -> Point3D:
         raise NotImplementedError

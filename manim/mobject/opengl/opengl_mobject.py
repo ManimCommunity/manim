@@ -2297,18 +2297,6 @@ class OpenGLMobject(Positionable):
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
         return self.get_critical_point(direction)[dim]
 
-    def get_x(self, direction: Vector3DLike = ORIGIN) -> ManimFloat:
-        """Returns x coordinate of the center of the :class:`~.OpenGLMobject` as ``float``"""
-        return self.get_coord(0, direction)
-
-    def get_y(self, direction: Vector3DLike = ORIGIN) -> ManimFloat:
-        """Returns y coordinate of the center of the :class:`~.OpenGLMobject` as ``float``"""
-        return self.get_coord(1, direction)
-
-    def get_z(self, direction: Vector3DLike = ORIGIN) -> ManimFloat:
-        """Returns z coordinate of the center of the :class:`~.OpenGLMobject` as ``float``"""
-        return self.get_coord(2, direction)
-
     def get_start(self) -> Point3D:
         """Returns the point, where the stroke that surrounds the :class:`~.OpenGLMobject` starts."""
         self.throw_error_if_no_points()
