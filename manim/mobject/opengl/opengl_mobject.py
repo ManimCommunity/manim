@@ -1791,15 +1791,6 @@ class OpenGLMobject(Positionable):
                 self.to_edge(vect, buff=buff)
         return self
 
-    def is_off_screen(self) -> bool:
-        if self.get_left()[0] > config.frame_x_radius:
-            return True
-        if self.get_right()[0] < config.frame_x_radius:
-            return True
-        if self.get_bottom()[1] > config.frame_y_radius:
-            return True
-        return cast(float, self.get_top()[1]) < -config.frame_y_radius
-
     def stretch_about_point(self, factor: float, dim: int, point: Point3DLike) -> Self:
         return self.stretch(factor, dim, about_point=point)
 

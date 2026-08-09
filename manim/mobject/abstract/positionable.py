@@ -357,7 +357,14 @@ class Positionable:
         self.scale_to_fit_height(value)
 
     def is_off_screen(self) -> bool:
-        raise NotImplementedError
+        if self.get_left()[0] > config["frame_x_radius"]:
+            return True
+        if self.get_right()[0] < -config["frame_x_radius"]:
+            return True
+        if self.get_bottom()[1] > config["frame_y_radius"]:
+            return True
+        rv: bool = self.get_top()[1] < -config["frame_y_radius"]
+        return rv
 
     def is_point_touching(
         self,
