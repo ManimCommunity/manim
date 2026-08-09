@@ -437,7 +437,7 @@ class Positionable:
 
     def next_to(
         self,
-        mobject_or_point: "Positionable" | Point3DLike,
+        mobject_or_point: "Positionable | Point3DLike",
         direction: Vector3DLike = RIGHT,
         buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         aligned_edge: Vector3DLike = ORIGIN,
