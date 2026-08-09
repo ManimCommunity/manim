@@ -51,7 +51,6 @@ if TYPE_CHECKING:
     from manim.typing import (
         FunctionOverride,
         MappingFunction,
-        MatrixMN,
         MultiMappingFunction,
         PathFuncType,
         Point3D,
@@ -1460,24 +1459,6 @@ class Mobject(Positionable):
     def apply_function_to_submobject_positions(self, function: MappingFunction) -> Self:
         for submob in self.submobjects:
             submob.apply_function_to_position(function)
-        return self
-
-    def apply_matrix(
-        self,
-        matrix: MatrixMN,
-        *,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-    ) -> Self:
-        # Default to applying matrix about the origin, not mobjects center
-        if about_point is None and about_edge is None:
-            about_point = ORIGIN
-        full_matrix = np.identity(self.dim)
-        matrix = np.array(matrix)
-        full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
-        self.apply_points_function(
-            lambda points: np.dot(points, full_matrix.T), about_point, about_edge
-        )
         return self
 
     def reverse_points(self) -> Self:

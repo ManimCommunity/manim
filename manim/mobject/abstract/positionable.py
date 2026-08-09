@@ -129,7 +129,16 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
-        raise NotImplementedError
+        # Default to applying matrix about the origin, not mobjects center
+        if about_point is None and about_edge is None:
+            about_point = ORIGIN
+        full_matrix = np.identity(self.dim)
+        matrix = np.array(matrix)
+        full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
+        self.apply_points_function(
+            lambda points: np.dot(points, full_matrix.T), about_point, about_edge
+        )
+        return self
 
     def apply_over_attr_arrays(self, func: MultiMappingFunction) -> Self:
         raise NotImplementedError
