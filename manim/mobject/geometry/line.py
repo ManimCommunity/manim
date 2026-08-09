@@ -691,11 +691,13 @@ class Arrow(Line):
     def _set_stroke_width_from_length(self) -> Self:
         """Sets stroke width based on length."""
         max_ratio = self.max_stroke_width_to_length_ratio
+        target_stroke_width = max_ratio * self.get_length()
+        if np.isscalar(self.initial_stroke_width):
+            width = min(float(self.initial_stroke_width), target_stroke_width)
+        else:
+            width = np.minimum(self.initial_stroke_width, target_stroke_width)
         self.set_stroke(
-            width=min(
-                self.initial_stroke_width,
-                [max_ratio * self.get_length()] * len(self.initial_stroke_width),
-            ),
+            width=width,
             recurse=False,
         )
         return self
