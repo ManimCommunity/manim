@@ -1279,36 +1279,6 @@ class Mobject(Positionable):
 
     # Positioning methods
 
-    def to_edge(
-        self, edge: Vector3DLike = LEFT, buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER
-    ) -> Self:
-        """Moves this :class:`~.Mobject` to the given edge of the screen,
-        without affecting its position in the other dimension.
-
-        Returns
-        -------
-        :class:`.Mobject`
-            The newly positioned mobject.
-
-        Examples
-        --------
-
-        .. manim:: ToEdgeExample
-            :save_last_frame:
-
-            class ToEdgeExample(Scene):
-                def construct(self):
-                    tex_top = Tex("I am at the top!")
-                    tex_top.to_edge(UP)
-                    tex_side = Tex("I am moving to the side!")
-                    c = Circle().shift(2*DOWN)
-                    self.add(tex_top, tex_side, c)
-                    tex_side.to_edge(LEFT)
-                    c.to_edge(RIGHT, buff=0)
-
-        """
-        return self.align_on_border(edge, buff)
-
     def next_to(
         self,
         mobject_or_point: Mobject | Point3DLike,
