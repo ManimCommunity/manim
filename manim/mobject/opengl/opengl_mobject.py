@@ -2254,10 +2254,6 @@ class OpenGLMobject(Positionable):
     def get_bounding_box_point(self, direction: Vector3DLike) -> Point3D:
         return self.get_critical_point(direction=direction)
 
-    def get_edge_center(self, direction: Vector3DLike) -> Point3D:
-        """Get edge coordinates for certain direction."""
-        return self.get_critical_point(direction)
-
     def get_center(self) -> Point3D:
         """Get center coordinates."""
         return self.get_bounding_box()[1]

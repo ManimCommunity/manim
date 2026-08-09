@@ -2155,10 +2155,6 @@ class Mobject(Positionable):
 
     # Pseudonyms for more general get_critical_point method
 
-    def get_edge_center(self, direction: Vector3DLike) -> Point3D:
-        """Get edge Point3Ds for certain direction."""
-        return self.get_critical_point(direction)
-
     def get_center(self) -> Point3D:
         """Get center Point3Ds"""
         return self.get_critical_point(np.zeros(self.dim))

@@ -246,7 +246,8 @@ class Positionable:
         return self.length_over_dim(2)
 
     def get_edge_center(self, direction: Vector3DLike) -> Point3D:
-        raise NotImplementedError
+        """Get edge Point3Ds for certain direction."""
+        return self.get_critical_point(direction)
 
     def get_extremum_along_dim(
         self,
