@@ -216,11 +216,12 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         return PMobject
 
     # Alignment
-    def align_points_with_larger(self, larger_mobject: Mobject) -> None:
+    def align_points_with_larger(self, larger_mobject: Mobject) -> Self:
         assert isinstance(larger_mobject, PMobject)
         self.apply_over_attr_arrays(
             lambda a: stretch_array_to_length(a, larger_mobject.get_num_points()),
         )
+        return self
 
     def get_point_mobject(self, center: Point3DLike | None = None) -> Point:
         if center is None:
@@ -240,12 +241,13 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         )
         return self
 
-    def pointwise_become_partial(self, mobject: Mobject, a: float, b: float) -> None:
+    def pointwise_become_partial(self, mobject: Mobject, a: float, b: float) -> Self:
         lower_index, upper_index = (int(x * mobject.get_num_points()) for x in (a, b))
         for attr in self.get_array_attrs():
             full_array = getattr(mobject, attr)
             partial_array = full_array[lower_index:upper_index]
             setattr(self, attr, partial_array)
+        return self
 
 
 # TODO, Make the two implementations below non-redundant
@@ -260,7 +262,7 @@ class Mobject1D(PMobject, metaclass=ConvertToOpenGL):
         start: npt.NDArray,
         end: npt.NDArray,
         color: ParsableManimColor | None = None,
-    ) -> None:
+    ) -> Self:
         start, end = list(map(np.array, [start, end]))
         length = np.linalg.norm(end - start)
         if length == 0:
@@ -271,6 +273,8 @@ class Mobject1D(PMobject, metaclass=ConvertToOpenGL):
                 [interpolate(start, end, t) for t in np.arange(0, 1, epsilon)]
             )
         self.add_points(points, color=color)
+
+        return self
 
 
 class Mobject2D(PMobject, metaclass=ConvertToOpenGL):
@@ -369,11 +373,12 @@ class PointCloudDot(Mobject1D):
         )
         self.shift(center)
 
-    def init_points(self) -> None:
+    def init_points(self) -> Self:
         self.reset_points()
         self.generate_points()
+        return self
 
-    def generate_points(self) -> None:
+    def generate_points(self) -> Self:
         self.add_points(
             np.array(
                 [
@@ -388,6 +393,7 @@ class PointCloudDot(Mobject1D):
                 ]
             ),
         )
+        return self
 
 
 class Point(PMobject):
@@ -417,10 +423,12 @@ class Point(PMobject):
         self.location = location
         super().__init__(color=color, **kwargs)
 
-    def init_points(self) -> None:
+    def init_points(self) -> Self:
         self.reset_points()
         self.generate_points()
         self.set_points([self.location])
+        return self
 
-    def generate_points(self) -> None:
+    def generate_points(self) -> Self:
         self.add_points(np.array([self.location]))
+        return self
