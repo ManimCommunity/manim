@@ -167,11 +167,23 @@ class Positionable:
 
     @property
     def depth(self) -> float:
-        raise NotImplementedError
+        """The depth of the mobject.
+
+        Returns
+        -------
+        :class:`float`
+
+        See also
+        --------
+        :meth:`length_over_dim`
+
+        """
+        # Get the length across the Z dimension
+        return self.length_over_dim(2)
 
     @depth.setter
     def depth(self, value: float) -> None:
-        raise NotImplementedError
+        self.scale_to_fit_depth(value)
 
     def flip(
         self,

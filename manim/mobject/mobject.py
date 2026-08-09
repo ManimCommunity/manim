@@ -846,26 +846,6 @@ class Mobject(Positionable):
     def height(self, value: float) -> None:
         self.scale_to_fit_height(value)
 
-    @property
-    def depth(self) -> float:
-        """The depth of the mobject.
-
-        Returns
-        -------
-        :class:`float`
-
-        See also
-        --------
-        :meth:`length_over_dim`
-
-        """
-        # Get the length across the Z dimension
-        return self.length_over_dim(2)
-
-    @depth.setter
-    def depth(self, value: float) -> None:
-        self.scale_to_fit_depth(value)
-
     # Can't be staticmethod because of point_cloud_mobject.py
     def get_array_attrs(self) -> list[str]:
         return ["points"]

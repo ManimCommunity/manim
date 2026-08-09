@@ -593,26 +593,6 @@ class OpenGLMobject(Positionable):
     def height(self, value: float) -> None:
         self.rescale_to_fit(value, 1, stretch=False)
 
-    @property
-    def depth(self) -> float:
-        """The depth of the mobject.
-
-        Returns
-        -------
-        :class:`float`
-
-        See also
-        --------
-        :meth:`length_over_dim`
-
-        """
-        # Get the length across the Z dimension
-        return self.length_over_dim(2)
-
-    @depth.setter
-    def depth(self, value: float) -> None:
-        self.rescale_to_fit(value, 2, stretch=False)
-
     def resize_points(
         self,
         new_length: int,
