@@ -2159,10 +2159,6 @@ class Mobject(Positionable):
         """Get edge Point3Ds for certain direction."""
         return self.get_critical_point(direction)
 
-    def get_corner(self, direction: Vector3DLike) -> Point3D:
-        """Get corner Point3Ds for certain direction."""
-        return self.get_critical_point(direction)
-
     def get_center(self) -> Point3D:
         """Get center Point3Ds"""
         return self.get_critical_point(np.zeros(self.dim))
