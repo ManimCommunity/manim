@@ -1616,23 +1616,6 @@ class Mobject(Positionable):
         self.shift(-self.get_center())
         return self
 
-    def align_on_border(
-        self, direction: Vector3DLike, buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER
-    ) -> Self:
-        """Direction just needs to be a vector pointing towards side or
-        corner in the 2d plane.
-        """
-        target_point = np.sign(direction) * (
-            config["frame_x_radius"],
-            config["frame_y_radius"],
-            0,
-        )
-        point_to_align = self.get_critical_point(direction)
-        shift_val = target_point - point_to_align - buff * np.array(direction)
-        shift_val = shift_val * abs(np.sign(direction))
-        self.shift(shift_val)
-        return self
-
     def to_corner(
         self, corner: Vector3DLike = DL, buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER
     ) -> Self:
