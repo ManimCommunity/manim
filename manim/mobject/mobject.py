@@ -1291,6 +1291,7 @@ class Mobject:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         r"""Scale the size by a factor.
 

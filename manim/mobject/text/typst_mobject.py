@@ -117,6 +117,8 @@ query either :attr:`~.Typst.baseline_frames` for all tracked leaf elements or
 
 from __future__ import annotations
 
+from manim.typing import Point3DLike, Vector3DLike
+
 __all__ = [
     "Typst",
     "TypstMath",
@@ -295,8 +297,9 @@ class Typst(SVGMobject):
         scale_factor: float,
         scale_stroke: bool = False,
         *,
-        about_point: np.ndarray | None = None,
-        about_edge: np.ndarray | None = None,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         result = super().scale(
             scale_factor,
