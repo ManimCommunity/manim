@@ -397,7 +397,8 @@ class Positionable:
         return self.rescale_to_fit(mobject.length_over_dim(dim), dim, **kwargs)
 
     def match_height(self, mobject: Mobject, **kwargs: Any) -> Self:
-        raise NotImplementedError
+        """Match the height with the height of another :class:`~.Mobject`."""
+        return self.match_dim_size(mobject, 1, **kwargs)
 
     def match_width(self, mobject: Mobject, **kwargs: Any) -> Self:
         raise NotImplementedError
