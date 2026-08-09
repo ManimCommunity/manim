@@ -1641,9 +1641,6 @@ class OpenGLMobject(Positionable):
         )
         return self
 
-    def rotate_about_origin(self, angle: float, axis: Vector3DLike = OUT) -> Self:
-        return self.rotate(angle, axis, about_point=ORIGIN)
-
     def rotate(
         self,
         angle: float,

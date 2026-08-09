@@ -1278,10 +1278,6 @@ class Mobject(Positionable):
         )
         return self
 
-    def rotate_about_origin(self, angle: float, axis: Vector3DLike = OUT) -> Self:
-        """Rotates the :class:`~.Mobject` about the ORIGIN, which is at [0,0,0]."""
-        return self.rotate(angle, axis, about_point=ORIGIN)
-
     def rotate(
         self,
         angle: float,

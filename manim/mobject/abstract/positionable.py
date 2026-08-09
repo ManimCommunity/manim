@@ -544,7 +544,8 @@ class Positionable:
         raise NotImplementedError
 
     def rotate_about_origin(self, angle: float, axis: Vector3DLike = OUT) -> Self:
-        raise NotImplementedError
+        """Rotates the :class:`~.Mobject` about the ORIGIN, which is at [0,0,0]."""
+        return self.rotate(angle, axis, about_point=ORIGIN)
 
     def scale(
         self,
