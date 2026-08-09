@@ -1424,10 +1424,6 @@ class Mobject(Positionable):
             about_edge=about_edge,
         )
 
-    def pose_at_angle(self, **kwargs: Any) -> Self:
-        self.rotate(TAU / 14, RIGHT + UP, **kwargs)
-        return self
-
     # Positioning methods
 
     def to_corner(
