@@ -289,7 +289,8 @@ class Positionable:
         return self.point_from_proportion(0.5)
 
     def get_nadir(self) -> Point3D:
-        raise NotImplementedError
+        """Get nadir (opposite the zenith) Point3Ds of a box bounding a 3D :class:`~.Mobject`."""
+        return self.get_edge_center(IN)
 
     def get_right(self) -> Point3D:
         raise NotImplementedError

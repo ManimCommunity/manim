@@ -2296,10 +2296,6 @@ class OpenGLMobject(Positionable):
         """Get zenith coordinates of a box bounding a 3D :class:`~.OpenGLMobject`."""
         return self.get_edge_center(OUT)
 
-    def get_nadir(self) -> Point3D:
-        """Get nadir (opposite the zenith) coordinates of a box bounding a 3D :class:`~.OpenGLMobject`."""
-        return self.get_edge_center(IN)
-
     def length_over_dim(self, dim: int) -> float:
         bb = self.get_bounding_box()
         rv: float = abs((bb[2] - bb[0])[dim])
