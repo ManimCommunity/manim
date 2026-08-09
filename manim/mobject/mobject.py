@@ -2167,29 +2167,6 @@ class Mobject(Positionable):
         index = np.argmax(np.dot(all_points, direction))
         return all_points[index]
 
-    def get_midpoint(self) -> Point3D:
-        """Get Point3Ds of the middle of the path that forms the  :class:`~.Mobject`.
-
-        Examples
-        --------
-
-        .. manim:: AngleMidPoint
-            :save_last_frame:
-
-            class AngleMidPoint(Scene):
-                def construct(self):
-                    line1 = Line(ORIGIN, 2*RIGHT)
-                    line2 = Line(ORIGIN, 2*RIGHT).rotate_about_origin(80*DEGREES)
-
-                    a = Angle(line1, line2, radius=1.5, other_angle=False)
-                    d = Dot(a.get_midpoint()).set_color(RED)
-
-                    self.add(line1, line2, a, d)
-                    self.wait()
-
-        """
-        return self.point_from_proportion(0.5)
-
     def get_top(self) -> Point3D:
         """Get top Point3Ds of a box bounding the :class:`~.Mobject`"""
         return self.get_edge_center(UP)
