@@ -1457,28 +1457,6 @@ class Mobject(Positionable):
         self.apply_points_function(func, about_point, about_edge)
         return self
 
-    def apply_function(
-        self,
-        function: MappingFunction,
-        *,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-    ) -> Self:
-        # Default to applying matrix about the origin, not mobjects center
-        if about_point is None and about_edge is None:
-            about_point = ORIGIN
-
-        def multi_mapping_function(points: Point3D_Array) -> Point3D_Array:
-            result: Point3D_Array = np.apply_along_axis(function, 1, points)
-            return result
-
-        self.apply_points_function(
-            multi_mapping_function,
-            about_point,
-            about_edge,
-        )
-        return self
-
     def apply_function_to_position(self, function: MappingFunction) -> Self:
         self.move_to(function(self.get_center()))
         return self
