@@ -61,7 +61,40 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
-        raise NotImplementedError
+        """Applies a complex function to a :class:`Mobject`.
+        The x and y Point3Ds correspond to the real and imaginary parts respectively.
+
+        Example
+        -------
+
+        .. manim:: ApplyFuncExample
+
+            class ApplyFuncExample(Scene):
+                def construct(self):
+                    circ = Circle().scale(1.5)
+                    circ_ref = circ.copy()
+                    circ.apply_complex_function(
+                        lambda x: np.exp(x*1j)
+                    )
+                    t = ValueTracker(0)
+                    circ.add_updater(
+                        lambda x: x.become(circ_ref.copy().apply_complex_function(
+                            lambda x: np.exp(x+t.get_value()*1j)
+                        )).set_color(BLUE)
+                    )
+                    self.add(circ_ref)
+                    self.play(TransformFromCopy(circ_ref, circ))
+                    self.play(t.animate.set_value(TAU), run_time=3)
+        """
+
+        def R3_func(point: Point3D) -> Point3D:
+            x, y, z = point
+            xy_complex = function(complex(x, y))
+            return np.array([xy_complex.real, xy_complex.imag, z])
+
+        return self.apply_function(
+            R3_func, about_point=about_point, about_edge=about_edge
+        )
 
     def apply_function(
         self,
