@@ -2301,10 +2301,6 @@ class OpenGLMobject(Positionable):
         """Match the height with the height of another :class:`~.OpenGLMobject`."""
         return self.match_dim_size(mobject, 1, **kwargs)
 
-    def match_depth(self, mobject: OpenGLMobject, **kwargs: Any) -> Self:
-        """Match the depth with the depth of another :class:`~.OpenGLMobject`."""
-        return self.match_dim_size(mobject, 2, **kwargs)
-
     def match_x(self, mobject: OpenGLMobject, direction: Vector3DLike = ORIGIN) -> Self:
         """Match x coord. to the x coord. of another :class:`~.OpenGLMobject`."""
         return self.match_coord(mobject, 0, direction)

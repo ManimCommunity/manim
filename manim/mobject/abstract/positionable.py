@@ -389,7 +389,8 @@ class Positionable:
         )
 
     def match_depth(self, mobject: Mobject, **kwargs: Any) -> Self:
-        raise NotImplementedError
+        """Match the depth with the depth of another :class:`~.Mobject`."""
+        return self.match_dim_size(mobject, 2, **kwargs)
 
     def match_dim_size(self, mobject: Mobject, dim: int, **kwargs: Any) -> Self:
         raise NotImplementedError

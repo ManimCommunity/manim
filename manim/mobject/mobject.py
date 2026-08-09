@@ -2195,10 +2195,6 @@ class Mobject(Positionable):
         """Match the height with the height of another :class:`~.Mobject`."""
         return self.match_dim_size(mobject, 1, **kwargs)
 
-    def match_depth(self, mobject: Mobject, **kwargs: Any) -> Self:
-        """Match the depth with the depth of another :class:`~.Mobject`."""
-        return self.match_dim_size(mobject, 2, **kwargs)
-
     def match_x(self, mobject: Mobject, direction: Vector3DLike = ORIGIN) -> Self:
         """Match x coord. to the x coord. of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 0, direction)
