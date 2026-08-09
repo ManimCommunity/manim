@@ -367,11 +367,13 @@ class Positionable:
         return rv
 
     def is_point_touching(
-        self,
-        point: Point3DLike,
-        buff: float = MED_SMALL_BUFF,
+        self, point: Point3DLike, buff: float = MED_SMALL_BUFF
     ) -> bool:
-        raise NotImplementedError
+        bb = self.get_bounding_box()
+        mins = bb[0] - buff
+        maxs = bb[2] + buff
+        rv: bool = (point >= mins).all() and (point <= maxs).all()
+        return rv
 
     def length_over_dim(self, dim: int) -> float:
         raise NotImplementedError

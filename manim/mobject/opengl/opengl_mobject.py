@@ -719,15 +719,6 @@ class OpenGLMobject(Positionable):
                 parent.refresh_bounding_box()
         return self
 
-    def is_point_touching(
-        self, point: Point3DLike, buff: float = MED_SMALL_BUFF
-    ) -> bool:
-        bb = self.get_bounding_box()
-        mins = bb[0] - buff
-        maxs = bb[2] + buff
-        rv: bool = (point >= mins).all() and (point <= maxs).all()
-        return rv
-
     # Family matters
 
     def __getitem__(self, value: int | slice) -> OpenGLMobject:
