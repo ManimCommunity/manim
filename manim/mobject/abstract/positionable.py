@@ -405,13 +405,16 @@ class Positionable:
         return self.match_dim_size(mobject, 0, **kwargs)
 
     def match_x(self, mobject: Mobject, direction: Vector3DLike = ORIGIN) -> Self:
-        raise NotImplementedError
+        """Match x coord. to the x coord. of another :class:`~.Mobject`."""
+        return self.match_coord(mobject, 0, direction)
 
     def match_y(self, mobject: Mobject, direction: Vector3DLike = ORIGIN) -> Self:
-        raise NotImplementedError
+        """Match y coord. to the x coord. of another :class:`~.Mobject`."""
+        return self.match_coord(mobject, 1, direction)
 
     def match_z(self, mobject: Mobject, direction: Vector3DLike = ORIGIN) -> Self:
-        raise NotImplementedError
+        """Match z coord. to the x coord. of another :class:`~.Mobject`."""
+        return self.match_coord(mobject, 2, direction)
 
     def move_to(
         self,

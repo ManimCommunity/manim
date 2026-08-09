@@ -2183,18 +2183,6 @@ class Mobject(Positionable):
         """Match the color with the color of another :class:`~.Mobject`."""
         return self.set_color(mobject.get_color())
 
-    def match_x(self, mobject: Mobject, direction: Vector3DLike = ORIGIN) -> Self:
-        """Match x coord. to the x coord. of another :class:`~.Mobject`."""
-        return self.match_coord(mobject, 0, direction)
-
-    def match_y(self, mobject: Mobject, direction: Vector3DLike = ORIGIN) -> Self:
-        """Match y coord. to the x coord. of another :class:`~.Mobject`."""
-        return self.match_coord(mobject, 1, direction)
-
-    def match_z(self, mobject: Mobject, direction: Vector3DLike = ORIGIN) -> Self:
-        """Match z coord. to the x coord. of another :class:`~.Mobject`."""
-        return self.match_coord(mobject, 2, direction)
-
     # Family matters
 
     def __getitem__(self, value: Any) -> Mobject:

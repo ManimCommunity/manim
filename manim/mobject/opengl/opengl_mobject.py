@@ -2284,18 +2284,6 @@ class OpenGLMobject(Positionable):
         """Match the color with the color of another :class:`~.OpenGLMobject`."""
         return self.set_color(mobject.get_color())
 
-    def match_x(self, mobject: OpenGLMobject, direction: Vector3DLike = ORIGIN) -> Self:
-        """Match x coord. to the x coord. of another :class:`~.OpenGLMobject`."""
-        return self.match_coord(mobject, 0, direction)
-
-    def match_y(self, mobject: OpenGLMobject, direction: Vector3DLike = ORIGIN) -> Self:
-        """Match y coord. to the x coord. of another :class:`~.OpenGLMobject`."""
-        return self.match_coord(mobject, 1, direction)
-
-    def match_z(self, mobject: OpenGLMobject, direction: Vector3DLike = ORIGIN) -> Self:
-        """Match z coord. to the x coord. of another :class:`~.OpenGLMobject`."""
-        return self.match_coord(mobject, 2, direction)
-
     def get_group_class(self) -> type[OpenGLGroup]:
         return OpenGLGroup
 
