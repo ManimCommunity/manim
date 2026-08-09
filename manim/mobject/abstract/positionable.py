@@ -675,12 +675,13 @@ class Positionable:
         return self.rescale_to_fit(width, 0, stretch=stretch, **kwargs)
 
     def set_coord(
-        self,
-        value: float,
-        dim: int,
-        direction: Vector3DLike = ORIGIN,
+        self, value: float, dim: int, direction: Vector3DLike = ORIGIN
     ) -> Self:
-        raise NotImplementedError
+        curr = self.get_coord(dim, direction)
+        shift_vect = np.zeros(self.dim)
+        shift_vect[dim] = value - curr
+        self.shift(shift_vect)
+        return self
 
     def set_depth(
         self,
