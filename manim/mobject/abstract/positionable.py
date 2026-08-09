@@ -797,7 +797,7 @@ class Positionable:
         return self
 
     def stretch_about_point(self, factor: float, dim: int, point: Point3DLike) -> Self:
-        raise NotImplementedError
+        return self.stretch(factor, dim, about_point=point)
 
     def stretch_to_fit_depth(self, depth: float, **kwargs: Any) -> Self:
         raise NotImplementedError

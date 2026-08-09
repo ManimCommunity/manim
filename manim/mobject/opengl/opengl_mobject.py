@@ -1716,9 +1716,6 @@ class OpenGLMobject(Positionable):
         self.shift((target_point - point_to_align + buff * np_direction) * coor_mask)
         return self
 
-    def stretch_about_point(self, factor: float, dim: int, point: Point3DLike) -> Self:
-        return self.stretch(factor, dim, about_point=point)
-
     def stretch_to_fit_width(self, width: float, **kwargs: Any) -> Self:
         """Stretches the :class:`~.OpenGLMobject` to fit a width, not keeping height/depth proportional.
 
