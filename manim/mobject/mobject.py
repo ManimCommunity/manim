@@ -1718,21 +1718,6 @@ class Mobject(Positionable):
             submob.scale(1.0 / factor)
         return self
 
-    def move_to(
-        self,
-        point_or_mobject: Point3DLike | Mobject,
-        aligned_edge: Vector3DLike = ORIGIN,
-        coor_mask: Vector3DLike = np.array([1, 1, 1]),
-    ) -> Self:
-        """Move center of the :class:`~.Mobject` to certain Point3D."""
-        if isinstance(point_or_mobject, Mobject):
-            target = point_or_mobject.get_critical_point(aligned_edge)
-        else:
-            target = point_or_mobject
-        point_to_align = self.get_critical_point(aligned_edge)
-        self.shift((target - point_to_align) * coor_mask)
-        return self
-
     def replace(
         self, mobject: Mobject, dim_to_match: int = 0, stretch: bool = False
     ) -> Self:

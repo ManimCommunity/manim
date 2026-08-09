@@ -1917,22 +1917,6 @@ class OpenGLMobject(Positionable):
             submob.scale(1.0 / factor)
         return self
 
-    def move_to(
-        self,
-        point_or_mobject: Point3DLike | OpenGLMobject,
-        aligned_edge: Vector3DLike = ORIGIN,
-        coor_mask: Vector3DLike = np.array([1, 1, 1]),
-    ) -> Self:
-        """Move center of the :class:`~.OpenGLMobject` to certain coordinate."""
-        target: Point3DLike
-        if isinstance(point_or_mobject, OpenGLMobject):
-            target = point_or_mobject.get_critical_point(aligned_edge)
-        else:
-            target = point_or_mobject
-        point_to_align = self.get_critical_point(aligned_edge)
-        self.shift((target - point_to_align) * coor_mask)
-        return self
-
     def replace(
         self,
         mobject: OpenGLMobject,
