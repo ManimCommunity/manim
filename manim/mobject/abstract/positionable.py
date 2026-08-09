@@ -322,11 +322,39 @@ class Positionable:
 
     @property
     def height(self) -> float:
-        raise NotImplementedError
+        """The height of the mobject.
+
+        Returns
+        -------
+        :class:`float`
+
+        Examples
+        --------
+        .. manim:: HeightExample
+
+            class HeightExample(Scene):
+                def construct(self):
+                    decimal = DecimalNumber().to_edge(UP)
+                    rect = Rectangle(color=BLUE)
+                    rect_copy = rect.copy().set_stroke(GRAY, opacity=0.5)
+
+                    decimal.add_updater(lambda d: d.set_value(rect.height))
+
+                    self.add(rect_copy, rect, decimal)
+                    self.play(rect.animate.set(height=5))
+                    self.wait()
+
+        See also
+        --------
+        :meth:`length_over_dim`
+
+        """
+        # Get the length across the Y dimension
+        return self.length_over_dim(1)
 
     @height.setter
     def height(self, value: float) -> None:
-        raise NotImplementedError
+        self.scale_to_fit_height(value)
 
     def is_off_screen(self) -> bool:
         raise NotImplementedError
