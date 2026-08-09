@@ -1491,18 +1491,6 @@ class Mobject(Positionable):
         """Stretches the :class:`~.Mobject` to fit a depth, not keeping width/height proportional."""
         return self.rescale_to_fit(depth, 2, stretch=True, **kwargs)
 
-    def set_x(self, x: float, direction: Vector3DLike = ORIGIN) -> Self:
-        """Set x value of the center of the :class:`~.Mobject` (``int`` or ``float``)"""
-        return self.set_coord(x, 0, direction)
-
-    def set_y(self, y: float, direction: Vector3DLike = ORIGIN) -> Self:
-        """Set y value of the center of the :class:`~.Mobject` (``int`` or ``float``)"""
-        return self.set_coord(y, 1, direction)
-
-    def set_z(self, z: float, direction: Vector3DLike = ORIGIN) -> Self:
-        """Set z value of the center of the :class:`~.Mobject` (``int`` or ``float``)"""
-        return self.set_coord(z, 2, direction)
-
     def space_out_submobjects(self, factor: float = 1.5, **kwargs: Any) -> Self:
         self.scale(factor, **kwargs)
         for submob in self.submobjects:

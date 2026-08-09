@@ -733,13 +733,16 @@ class Positionable:
         return self.rescale_to_fit(width, 0, stretch=stretch, **kwargs)
 
     def set_x(self, x: float, direction: Vector3DLike = ORIGIN) -> Self:
-        raise NotImplementedError
+        """Set x value of the center of the :class:`~.Mobject` (``int`` or ``float``)"""
+        return self.set_coord(x, 0, direction)
 
     def set_y(self, y: float, direction: Vector3DLike = ORIGIN) -> Self:
-        raise NotImplementedError
+        """Set y value of the center of the :class:`~.Mobject` (``int`` or ``float``)"""
+        return self.set_coord(y, 1, direction)
 
     def set_z(self, z: float, direction: Vector3DLike = ORIGIN) -> Self:
-        raise NotImplementedError
+        """Set z value of the center of the :class:`~.Mobject` (``int`` or ``float``)"""
+        return self.set_coord(z, 2, direction)
 
     def shift(self, *vectors: Vector3DLike) -> Self:
         raise NotImplementedError
