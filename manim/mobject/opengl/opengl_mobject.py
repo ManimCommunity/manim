@@ -1735,16 +1735,26 @@ class OpenGLMobject:
         """
         return self.rotate(TAU / 2, axis, **kwargs)
 
-    def apply_function(self, function: MappingFunction, **kwargs: Any) -> Self:
+    def apply_function(
+        self,
+        function: MappingFunction,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
         # Default to applying matrix about the origin, not mobjects center
-        if len(kwargs) == 0:
-            kwargs["about_point"] = ORIGIN
+        if about_point is None and about_edge is None:
+            about_point = ORIGIN
 
         def multi_mapping_function(points: Point3D_Array) -> Point3D_Array:
             result: Point3D_Array = np.apply_along_axis(function, 1, points)
             return result
 
-        self.apply_points_function(multi_mapping_function, **kwargs)
+        self.apply_points_function(
+            multi_mapping_function,
+            about_point=about_point,
+            about_edge=about_edge,
+        )
         return self
 
     def apply_function_to_position(self, function: MappingFunction) -> Self:
