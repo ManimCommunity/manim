@@ -631,9 +631,7 @@ class OpenGLMobject:
         self.refresh_bounding_box()
         return self
 
-    def apply_over_attr_arrays(
-        self, func: Callable[[npt.NDArray[_T_np]], npt.NDArray[_T_np]]
-    ) -> Self:
+    def apply_over_attr_arrays(self, func: MultiMappingFunction) -> Self:
         for attr in self.get_array_attrs():
             setattr(self, attr, func(getattr(self, attr)))
         return self
