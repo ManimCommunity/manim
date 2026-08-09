@@ -444,7 +444,7 @@ class Positionable:
         raise NotImplementedError
 
     def point_from_proportion(self, alpha: float) -> Point3D:
-        raise NotImplementedError
+        raise NotImplementedError("Please override in a child class.")
 
     def pose_at_angle(self, **kwargs: Any) -> Self:
         raise NotImplementedError
