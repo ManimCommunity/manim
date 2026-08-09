@@ -2183,10 +2183,6 @@ class Mobject(Positionable):
         """Match the color with the color of another :class:`~.Mobject`."""
         return self.set_color(mobject.get_color())
 
-    def match_dim_size(self, mobject: Mobject, dim: int, **kwargs: Any) -> Self:
-        """Match the specified dimension with the dimension of another :class:`~.Mobject`."""
-        return self.rescale_to_fit(mobject.length_over_dim(dim), dim, **kwargs)
-
     def match_width(self, mobject: Mobject, **kwargs: Any) -> Self:
         """Match the width with the width of another :class:`~.Mobject`."""
         return self.match_dim_size(mobject, 0, **kwargs)
