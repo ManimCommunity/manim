@@ -242,7 +242,8 @@ class Positionable:
         raise NotImplementedError
 
     def get_depth(self) -> float:
-        raise NotImplementedError
+        """Returns the depth of the mobject."""
+        return self.length_over_dim(2)
 
     def get_edge_center(self, direction: Vector3DLike) -> Point3D:
         raise NotImplementedError
