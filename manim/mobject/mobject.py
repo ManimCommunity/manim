@@ -774,42 +774,6 @@ class Mobject(Positionable):
         # Unhandled attribute, therefore error
         raise AttributeError(f"{type(self).__name__} object has no attribute '{attr}'")
 
-    @property
-    def width(self) -> float:
-        """The width of the mobject.
-
-        Returns
-        -------
-        :class:`float`
-
-        Examples
-        --------
-        .. manim:: WidthExample
-
-            class WidthExample(Scene):
-                def construct(self):
-                    decimal = DecimalNumber().to_edge(UP)
-                    rect = Rectangle(color=BLUE)
-                    rect_copy = rect.copy().set_stroke(GRAY, opacity=0.5)
-
-                    decimal.add_updater(lambda d: d.set_value(rect.width))
-
-                    self.add(rect_copy, rect, decimal)
-                    self.play(rect.animate.set(width=7))
-                    self.wait()
-
-        See also
-        --------
-        :meth:`length_over_dim`
-
-        """
-        # Get the length across the X dimension
-        return self.length_over_dim(0)
-
-    @width.setter
-    def width(self, value: float) -> None:
-        self.scale_to_fit_width(value)
-
     # Can't be staticmethod because of point_cloud_mobject.py
     def get_array_attrs(self) -> Iterable[str]:
         return ["points"]

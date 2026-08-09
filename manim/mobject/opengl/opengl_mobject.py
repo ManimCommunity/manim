@@ -520,43 +520,6 @@ class OpenGLMobject(Positionable):
         """
         return _AnimationBuilder(self)
 
-    @property
-    def width(self) -> float:
-        """The width of the mobject.
-
-        Returns
-        -------
-        :class:`float`
-
-        Examples
-        --------
-        .. manim:: WidthExample
-
-            class WidthExample(Scene):
-                def construct(self):
-                    decimal = DecimalNumber().to_edge(UP)
-                    rect = Rectangle(color=BLUE)
-                    rect_copy = rect.copy().set_stroke(GRAY, opacity=0.5)
-
-                    decimal.add_updater(lambda d: d.set_value(rect.width))
-
-                    self.add(rect_copy, rect, decimal)
-                    self.play(rect.animate.set(width=7))
-                    self.wait()
-
-        See also
-        --------
-        :meth:`length_over_dim`
-
-        """
-        # Get the length across the X dimension
-        return self.length_over_dim(0)
-
-    # Only these methods should directly affect points
-    @width.setter
-    def width(self, value: float) -> None:
-        self.rescale_to_fit(value, 0, stretch=False)
-
     def resize_points(
         self,
         new_length: int,
