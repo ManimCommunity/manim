@@ -1200,23 +1200,6 @@ class Mobject(Positionable):
         return self
 
     def shift(self, *vectors: Vector3DLike) -> Self:
-        """Shift by the given vectors.
-
-        Parameters
-        ----------
-        vectors
-            Vectors to shift by. If multiple vectors are given, they are added
-            together.
-
-        Returns
-        -------
-        :class:`Mobject`
-            ``self``
-
-        See also
-        --------
-        :meth:`move_to`
-        """
         total_vector = reduce(op.add, vectors)
         for mob in self.family_members_with_points():
             mob.points = mob.points.astype("float")

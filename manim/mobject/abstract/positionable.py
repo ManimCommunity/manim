@@ -745,6 +745,23 @@ class Positionable:
         return self.set_coord(z, 2, direction)
 
     def shift(self, *vectors: Vector3DLike) -> Self:
+        """Shift by the given vectors.
+
+        Parameters
+        ----------
+        vectors
+            Vectors to shift by. If multiple vectors are given, they are added
+            together.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        See also
+        --------
+        :meth:`move_to`
+        """
         raise NotImplementedError
 
     def shift_onto_screen(self, **kwargs: Any) -> Self:
