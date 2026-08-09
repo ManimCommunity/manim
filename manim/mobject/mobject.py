@@ -1571,6 +1571,7 @@ class Mobject:
         func: MultiMappingFunction,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        works_on_bounding_box: bool = False,
     ) -> Self:
         if about_point is None:
             if about_edge is None:
