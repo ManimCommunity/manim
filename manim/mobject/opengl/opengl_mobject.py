@@ -1652,7 +1652,6 @@ class OpenGLMobject(Positionable):
         about_edge: Vector3DLike | None = None,
         **kwargs: Any,
     ) -> Self:
-        """Rotates the :class:`~.OpenGLMobject` about a certain point."""
         rot_matrix_T = rotation_matrix_transpose(angle, axis)
         self.apply_points_function(
             lambda points: np.dot(points, rot_matrix_T),

@@ -484,6 +484,63 @@ class Positionable:
         about_edge: Vector3DLike | None = None,
         **kwargs: Any,
     ) -> Self:
+        """Rotates the :class:`~.Mobject` around a specified axis and point.
+
+        Parameters
+        ----------
+        angle
+            The angle of rotation in radians. Predefined constants such as ``DEGREES``
+            can also be used to specify the angle in degrees.
+        axis
+            The rotation axis (see :class:`~.Rotating` for more).
+        about_point
+            The point about which the mobject rotates. If ``None``, rotation occurs around
+            the center of the mobject.
+        about_edge
+            The edge about which to apply the scaling.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self`` (for method chaining)
+
+
+        .. note::
+            To animate a rotation, use :class:`~.Rotating` or :class:`~.Rotate`
+            instead of ``.animate.rotate(...)``.
+            The ``.animate.rotate(...)`` syntax only applies a transformation
+            from the initial state to the final rotated state
+            (interpolation between the two states), without showing proper rotational motion
+            based on the angle (from 0 to the given angle).
+
+        Examples
+        --------
+
+        .. manim:: RotateMethodExample
+            :save_last_frame:
+
+            class RotateMethodExample(Scene):
+                def construct(self):
+                    circle = Circle(radius=1, color=BLUE)
+                    line = Line(start=ORIGIN, end=RIGHT)
+                    arrow1 = Arrow(start=ORIGIN, end=RIGHT, buff=0, color=GOLD)
+                    group1 = VGroup(circle, line, arrow1)
+
+                    group2 = group1.copy()
+                    arrow2 = group2[2]
+                    arrow2.rotate(angle=PI / 4, about_point=arrow2.get_start())
+
+                    group3 = group1.copy()
+                    arrow3 = group3[2]
+                    arrow3.rotate(angle=120 * DEGREES, about_point=arrow3.get_start())
+
+                    self.add(VGroup(group1, group2, group3).arrange(RIGHT, buff=1))
+
+        See also
+        --------
+        :class:`~.Rotating`, :class:`~.Rotate`, :attr:`~.Mobject.animate`, :meth:`apply_points_function_about_point`
+
+        """
         raise NotImplementedError
 
     def rotate_about_origin(self, angle: float, axis: Vector3DLike = OUT) -> Self:
