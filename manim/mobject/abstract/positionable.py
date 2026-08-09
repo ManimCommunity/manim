@@ -293,7 +293,8 @@ class Positionable:
         return self.get_edge_center(IN)
 
     def get_right(self) -> Point3D:
-        raise NotImplementedError
+        """Get right Point3Ds of a box bounding the :class:`~.Mobject`"""
+        return self.get_edge_center(RIGHT)
 
     def get_top(self) -> Point3D:
         raise NotImplementedError
