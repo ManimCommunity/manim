@@ -1441,10 +1441,6 @@ class Mobject(Positionable):
         """
         return self.rescale_to_fit(height, 1, stretch=True, **kwargs)
 
-    def stretch_to_fit_depth(self, depth: float, **kwargs: Any) -> Self:
-        """Stretches the :class:`~.Mobject` to fit a depth, not keeping width/height proportional."""
-        return self.rescale_to_fit(depth, 2, stretch=True, **kwargs)
-
     def space_out_submobjects(self, factor: float = 1.5, **kwargs: Any) -> Self:
         self.scale(factor, **kwargs)
         for submob in self.submobjects:

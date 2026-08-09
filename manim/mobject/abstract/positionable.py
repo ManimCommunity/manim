@@ -800,7 +800,8 @@ class Positionable:
         return self.stretch(factor, dim, about_point=point)
 
     def stretch_to_fit_depth(self, depth: float, **kwargs: Any) -> Self:
-        raise NotImplementedError
+        """Stretches the :class:`~.Mobject` to fit a depth, not keeping width/height proportional."""
+        return self.rescale_to_fit(depth, 2, stretch=True, **kwargs)
 
     def stretch_to_fit_height(self, height: float, **kwargs: Any) -> Self:
         raise NotImplementedError
