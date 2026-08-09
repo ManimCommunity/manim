@@ -301,7 +301,8 @@ class Positionable:
         return self.get_edge_center(UP)
 
     def get_width(self) -> float:
-        raise NotImplementedError
+        """Returns the width of the mobject."""
+        return self.length_over_dim(0)
 
     def get_x(self, direction: Vector3DLike = ORIGIN) -> float:
         raise NotImplementedError

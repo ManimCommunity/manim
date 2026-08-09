@@ -2293,10 +2293,6 @@ class OpenGLMobject(Positionable):
         rv: float = abs((bb[2] - bb[0])[dim])
         return rv
 
-    def get_width(self) -> float:
-        """Returns the width of the mobject."""
-        return self.length_over_dim(0)
-
     def get_coord(self, dim: int, direction: Vector3DLike = ORIGIN) -> ManimFloat:
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
         return self.get_critical_point(direction)[dim]
