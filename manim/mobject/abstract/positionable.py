@@ -154,9 +154,6 @@ class Positionable:
     ) -> Self:
         raise NotImplementedError
 
-    def apply_to_family(self, func: Callable[[Mobject], None]) -> Self:
-        raise NotImplementedError
-
     def center(self) -> Self:
         raise NotImplementedError
 
