@@ -847,7 +847,7 @@ class Mobject(Positionable):
         self.scale_to_fit_height(value)
 
     # Can't be staticmethod because of point_cloud_mobject.py
-    def get_array_attrs(self) -> list[str]:
+    def get_array_attrs(self) -> Iterable[str]:
         return ["points"]
 
     # Displaying
