@@ -451,7 +451,7 @@ class Positionable:
         return self
 
     def proportion_from_point(self, point: Point3DLike) -> float:
-        raise NotImplementedError
+        raise NotImplementedError("Please override in a child class.")
 
     def reduce_across_dimension(
         self,

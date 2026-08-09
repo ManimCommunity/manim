@@ -2128,9 +2128,6 @@ class Mobject(Positionable):
         """Returns starting and ending point of a stroke as a ``tuple``."""
         return self.get_start(), self.get_end()
 
-    def proportion_from_point(self, point: Point3DLike) -> float:
-        raise NotImplementedError("Please override in a child class.")
-
     def get_pieces(self, n_pieces: float) -> Group:
         template = self.copy()
         template.submobjects = []
