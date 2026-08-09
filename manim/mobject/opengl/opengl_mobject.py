@@ -1688,12 +1688,24 @@ class OpenGLMobject:
         )
         return self
 
-    def stretch(self, factor: float, dim: int, **kwargs: Any) -> Self:
+    def stretch(
+        self,
+        factor: float,
+        dim: int,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
         def func(points: Point3D_Array) -> Point3D_Array:
             points[:, dim] *= factor
             return points
 
-        self.apply_points_function(func, works_on_bounding_box=True, **kwargs)
+        self.apply_points_function(
+            func,
+            about_point=about_point,
+            about_edge=about_edge,
+            works_on_bounding_box=True,
+        )
         return self
 
     def rotate_about_origin(self, angle: float, axis: Vector3DLike = OUT) -> Self:
