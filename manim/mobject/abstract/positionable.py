@@ -12,6 +12,7 @@ Mobject = Any
 
 class Positionable:
     __slots__ = ()
+    dim: int
 
     def align_on_border(
         self,
@@ -34,10 +35,24 @@ class Positionable:
 
     def align_to(
         self,
-        mobject_or_point: Mobject | Point3DLike,
+        mobject_or_point: "Positionable | Point3DLike",
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
-        raise NotImplementedError
+        """Aligns mobject to another :class:`~.Mobject` in a certain direction.
+
+        Examples:
+        mob1.align_to(mob2, UP) moves mob1 vertically so that its
+        top edge lines ups with mob2's top edge.
+        """
+        if isinstance(mobject_or_point, Positionable):
+            point = mobject_or_point.get_critical_point(direction)
+        else:
+            point = mobject_or_point
+
+        for dim in range(self.dim):
+            if direction[dim] != 0:
+                self.set_coord(point[dim], dim, direction)
+        return self
 
     def apply_complex_function(
         self,

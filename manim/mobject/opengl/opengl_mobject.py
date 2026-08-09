@@ -2587,31 +2587,6 @@ class OpenGLMobject(Positionable):
         """Match z coord. to the x coord. of another :class:`~.OpenGLMobject`."""
         return self.match_coord(mobject, 2, direction)
 
-    def align_to(
-        self,
-        mobject_or_point: OpenGLMobject | Point3DLike,
-        direction: Vector3DLike = ORIGIN,
-    ) -> Self:
-        """
-        Examples:
-        mob1.align_to(mob2, UP) moves mob1 vertically so that its
-        top edge lines ups with mob2's top edge.
-
-        mob1.align_to(mob2, alignment_vect = RIGHT) moves mob1
-        horizontally so that it's center is directly above/below
-        the center of mob2
-        """
-        point: Point3DLike
-        if isinstance(mobject_or_point, OpenGLMobject):
-            point = mobject_or_point.get_critical_point(direction)
-        else:
-            point = mobject_or_point
-
-        for dim in range(self.dim):
-            if direction[dim] != 0:
-                self.set_coord(point[dim], dim, direction)
-        return self
-
     def get_group_class(self) -> type[OpenGLGroup]:
         return OpenGLGroup
 
