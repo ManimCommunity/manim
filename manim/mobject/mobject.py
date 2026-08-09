@@ -1830,7 +1830,12 @@ class Mobject:
         """
         return self.rescale_to_fit(width, 0, stretch=True, **kwargs)
 
-    def scale_to_fit_height(self, height: float, **kwargs: Any) -> Self:
+    def scale_to_fit_height(
+        self,
+        height: float,
+        stretch: bool = False,
+        **kwargs: Any,
+    ) -> Self:
         """Scales the :class:`~.Mobject` to fit a height while keeping width/depth proportional.
 
         Returns
@@ -1853,7 +1858,7 @@ class Mobject:
             >>> sq.width
             np.float64(5.0)
         """
-        return self.rescale_to_fit(height, 1, stretch=False, **kwargs)
+        return self.rescale_to_fit(height, 1, stretch=stretch, **kwargs)
 
     def stretch_to_fit_height(self, height: float, **kwargs: Any) -> Self:
         """Stretches the :class:`~.Mobject` to fit a height, not keeping width/depth proportional.
