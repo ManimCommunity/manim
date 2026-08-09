@@ -11,6 +11,9 @@ Usage:
     # Generate changelog for an upcoming release
     uv run python scripts/release.py changelog --base v0.19.0 --version 0.20.0
 
+    # Include a PR omitted by GitHub's generated release notes
+    uv run python scripts/release.py changelog --base v0.19.0 --version 0.20.0 --include-extra 1234
+
     # Also update CITATION.cff at the same time
     uv run python scripts/release.py changelog --base v0.19.0 --version 0.20.0 --update-citation
 
@@ -27,6 +30,7 @@ Requirements:
 
 from __future__ import annotations
 
+import json
 import re
 import subprocess
 import sys
@@ -102,8 +106,6 @@ def get_release_tags() -> list[str]:
     if result.returncode != 0 or not result.stdout.strip():
         return []
 
-    import json
-
     try:
         data = json.loads(result.stdout)
         return [item["tagName"] for item in data]
@@ -148,6 +150,29 @@ def get_release_date(tag: str) -> str | None:
         return dt.strftime("%B %d, %Y")
     except ValueError:
         return None
+
+
+def get_pull_request_release_note(number: int) -> str:
+    """Return a GitHub-style release-note bullet for a pull request."""
+    result = run_gh(
+        [
+            "pr",
+            "view",
+            str(number),
+            "--repo",
+            REPO,
+            "--json",
+            "title,author,url",
+        ]
+    )
+    try:
+        data = json.loads(result.stdout)
+        title = data["title"]
+        author = data["author"]["login"]
+        url = data["url"]
+    except (json.JSONDecodeError, KeyError, TypeError) as error:
+        raise click.ClickException(f"Could not read pull request #{number}") from error
+    return f"* {title} by @{author} in {url}"
 
 
 def generate_release_notes(head_tag: str, base_tag: str) -> str:
@@ -226,6 +251,52 @@ _CHANGELOG_SECTION_SCOPES = {
     "What's Changed": "changes",
     "New Contributors": "contributors",
 }
+
+
+def include_extra_pull_requests(body: str, numbers: Sequence[int]) -> str:
+    """Add explicitly requested PRs to the generated "Other Changes" category."""
+    existing_numbers = {
+        int(match.group("url"))
+        for match in _PR_REFERENCE.finditer(body)
+        if match.group("url") is not None
+    }
+    entries = [
+        get_pull_request_release_note(number)
+        for number in numbers
+        if number not in existing_numbers
+    ]
+    if not entries:
+        return body
+
+    lines = body.splitlines()
+    category_heading = "### Other Changes"
+    try:
+        category_start = lines.index(category_heading)
+    except ValueError:
+        insertion_point = next(
+            (
+                index
+                for index, line in enumerate(lines)
+                if line == "## New Contributors"
+                or line.startswith("**Full Changelog**:")
+            ),
+            len(lines),
+        )
+        lines[insertion_point:insertion_point] = [category_heading, *entries]
+    else:
+        insertion_point = category_start + 1
+        while insertion_point < len(lines) and not lines[insertion_point].startswith(
+            "#"
+        ):
+            insertion_point += 1
+        while (
+            insertion_point > category_start + 1
+            and not lines[insertion_point - 1].strip()
+        ):
+            insertion_point -= 1
+        lines[insertion_point:insertion_point] = entries
+
+    return "\n".join(lines)
 
 
 def _find_pull_request_blocks(
@@ -439,6 +510,13 @@ def cli(ctx: click.Context, dry_run: bool) -> None:
 @click.option("--head", default="main", help="Head ref for comparison (default: main)")
 @click.option("--title", help="Custom changelog title (default: vX.Y.Z)")
 @click.option(
+    "--include-extra",
+    "extra_prs",
+    type=click.IntRange(min=1),
+    multiple=True,
+    help="Include a PR omitted by GitHub's generated notes; may be repeated",
+)
+@click.option(
     "--update-citation",
     "also_update_citation",
     is_flag=True,
@@ -451,6 +529,7 @@ def changelog(
     version: str,
     head: str,
     title: str | None,
+    extra_prs: tuple[int, ...],
     also_update_citation: bool,
 ) -> None:
     """Generate changelog for an upcoming release.
@@ -465,6 +544,9 @@ def changelog(
     click.echo(f"  Comparing: {base_tag} → {head}")
 
     body = generate_release_notes(head_tag, base_tag)
+    if extra_prs:
+        click.echo(f"  Including extra PRs: {', '.join(f'#{pr}' for pr in extra_prs)}")
+        body = include_extra_pull_requests(body, extra_prs)
     date = datetime.now().strftime("%B %d, %Y")
     content = format_changelog(version, body, date=date, title=title)
     filepath = CHANGELOG_DIR / f"{version}-changelog.md"

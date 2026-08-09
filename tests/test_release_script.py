@@ -1,4 +1,5 @@
-from scripts.release import merge_changelog
+from scripts import release
+from scripts.release import include_extra_pull_requests, merge_changelog
 
 
 def test_merge_changelog_preserves_edits_but_uses_generated_categories():
@@ -60,6 +61,45 @@ def test_merge_changelog_keeps_release_and_contributor_entries_separate():
     assert "Generated release note" not in merged
     assert "Generated welcome" not in merged
     assert merged.count("{pr}`10`") == 2
+
+
+def test_include_extra_pull_requests_adds_other_changes_category(monkeypatch):
+    body = """## What's Changed
+### Bug Fixes
+* Fix a bug by @alice in https://github.com/ManimCommunity/manim/pull/1
+
+## New Contributors
+* @alice made their first contribution in https://github.com/ManimCommunity/manim/pull/1
+
+**Full Changelog**: compare link
+"""
+    monkeypatch.setattr(
+        release,
+        "get_pull_request_release_note",
+        lambda number: (
+            f"* Prepare a release by @bob in "
+            f"https://github.com/ManimCommunity/manim/pull/{number}"
+        ),
+    )
+
+    result = include_extra_pull_requests(body, [99])
+
+    assert "### Other Changes\n* Prepare a release by @bob" in result
+    assert result.index("### Other Changes") < result.index("## New Contributors")
+
+
+def test_include_extra_pull_requests_skips_existing_pr(monkeypatch):
+    body = """## What's Changed
+### Other Changes
+* Existing entry in https://github.com/ManimCommunity/manim/pull/99
+"""
+
+    def fail_if_called(number):
+        raise AssertionError(f"unexpected fetch for #{number}")
+
+    monkeypatch.setattr(release, "get_pull_request_release_note", fail_if_called)
+
+    assert include_extra_pull_requests(body, [99]) == body
 
 
 def test_merge_changelog_without_matching_entries_is_unchanged():
