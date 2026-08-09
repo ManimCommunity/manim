@@ -2167,10 +2167,6 @@ class Mobject(Positionable):
         index = np.argmax(np.dot(all_points, direction))
         return all_points[index]
 
-    def get_top(self) -> Point3D:
-        """Get top Point3Ds of a box bounding the :class:`~.Mobject`"""
-        return self.get_edge_center(UP)
-
     def get_zenith(self) -> Point3D:
         """Get zenith Point3Ds of a box bounding a 3D :class:`~.Mobject`."""
         return self.get_edge_center(OUT)
