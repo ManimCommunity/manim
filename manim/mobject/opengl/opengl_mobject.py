@@ -34,6 +34,7 @@ from typing_extensions import (
 from manim import config, logger
 from manim.constants import *
 from manim.data_structures import MethodWithArgs
+from manim.mobject.abstract.positionable import Positionable
 from manim.renderer.shader_wrapper import get_colormap_code
 from manim.typing import (
     Point3D,
@@ -115,7 +116,7 @@ _ShaderDType: TypeAlias = np.void
 _ShaderData: TypeAlias = npt.NDArray[_ShaderDType]
 
 
-class OpenGLMobject:
+class OpenGLMobject(Positionable):
     """Mathematical Object: base class for objects that can be displayed on screen.
 
     Attributes

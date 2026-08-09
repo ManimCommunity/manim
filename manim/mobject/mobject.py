@@ -22,6 +22,7 @@ from typing import TYPE_CHECKING, Any, cast
 import numpy as np
 
 from manim.data_structures import MethodWithArgs
+from manim.mobject.abstract.positionable import Positionable
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.utils.deprecation import deprecated
 
@@ -70,7 +71,7 @@ _NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
 _Updater: TypeAlias = _NonTimeBasedUpdater | _TimeBasedUpdater
 
 
-class Mobject:
+class Mobject(Positionable):
     """Mathematical Object: base class for objects that can be displayed on screen.
 
     There is a compatibility layer that allows for
