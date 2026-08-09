@@ -1552,18 +1552,6 @@ class Mobject(Positionable):
     def stretch_about_point(self, factor: float, dim: int, point: Point3DLike) -> Self:
         return self.stretch(factor, dim, about_point=point)
 
-    def rescale_to_fit(
-        self, length: float, dim: int, stretch: bool = False, **kwargs: Any
-    ) -> Self:
-        old_length = self.length_over_dim(dim)
-        if old_length == 0:
-            return self
-        if stretch:
-            self.stretch(length / old_length, dim, **kwargs)
-        else:
-            self.scale(length / old_length, **kwargs)
-        return self
-
     def scale_to_fit_width(
         self,
         width: float,

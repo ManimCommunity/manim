@@ -467,7 +467,14 @@ class Positionable:
         stretch: bool = False,
         **kwargs: Any,
     ) -> Self:
-        raise NotImplementedError
+        old_length = self.length_over_dim(dim)
+        if old_length == 0:
+            return self
+        if stretch:
+            self.stretch(length / old_length, dim, **kwargs)
+        else:
+            self.scale(length / old_length, **kwargs)
+        return self
 
     def rotate(
         self,
