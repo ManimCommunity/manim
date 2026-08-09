@@ -1389,33 +1389,6 @@ class Mobject(Positionable):
         )
         return self
 
-    def flip(
-        self,
-        axis: Vector3DLike = UP,
-        *,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-    ) -> Self:
-        """Flips/Mirrors an mobject about its center.
-
-        Examples
-        --------
-
-        .. manim:: FlipExample
-            :save_last_frame:
-
-            class FlipExample(Scene):
-                def construct(self):
-                    s= Line(LEFT, RIGHT+UP).shift(4*LEFT)
-                    self.add(s)
-                    s2= s.copy().flip()
-                    self.add(s2)
-
-        """
-        return self.rotate(
-            TAU / 2, axis, about_point=about_point, about_edge=about_edge
-        )
-
     def stretch(
         self,
         factor: float,
