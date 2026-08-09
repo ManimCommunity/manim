@@ -7,8 +7,6 @@ from manim._config import config
 from manim.constants import *
 from manim.typing import *
 
-Mobject = Any
-
 
 class Positionable:
     __slots__ = ()
@@ -379,7 +377,7 @@ class Positionable:
         raise NotImplementedError
 
     def match_coord(
-        self, mobject: Mobject, dim: int, direction: Vector3DLike = ORIGIN
+        self, mobject: "Positionable", dim: int, direction: Vector3DLike = ORIGIN
     ) -> Self:
         """Match the Point3Ds with the Point3Ds of another :class:`~.Mobject`."""
         return self.set_coord(
@@ -388,37 +386,43 @@ class Positionable:
             direction=direction,
         )
 
-    def match_depth(self, mobject: Mobject, **kwargs: Any) -> Self:
+    def match_depth(self, mobject: "Positionable", **kwargs: Any) -> Self:
         """Match the depth with the depth of another :class:`~.Mobject`."""
         return self.match_dim_size(mobject, 2, **kwargs)
 
-    def match_dim_size(self, mobject: Mobject, dim: int, **kwargs: Any) -> Self:
+    def match_dim_size(self, mobject: "Positionable", dim: int, **kwargs: Any) -> Self:
         """Match the specified dimension with the dimension of another :class:`~.Mobject`."""
         return self.rescale_to_fit(mobject.length_over_dim(dim), dim, **kwargs)
 
-    def match_height(self, mobject: Mobject, **kwargs: Any) -> Self:
+    def match_height(self, mobject: "Positionable", **kwargs: Any) -> Self:
         """Match the height with the height of another :class:`~.Mobject`."""
         return self.match_dim_size(mobject, 1, **kwargs)
 
-    def match_width(self, mobject: Mobject, **kwargs: Any) -> Self:
+    def match_width(self, mobject: "Positionable", **kwargs: Any) -> Self:
         """Match the width with the width of another :class:`~.Mobject`."""
         return self.match_dim_size(mobject, 0, **kwargs)
 
-    def match_x(self, mobject: Mobject, direction: Vector3DLike = ORIGIN) -> Self:
+    def match_x(
+        self, mobject: "Positionable", direction: Vector3DLike = ORIGIN
+    ) -> Self:
         """Match x coord. to the x coord. of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 0, direction)
 
-    def match_y(self, mobject: Mobject, direction: Vector3DLike = ORIGIN) -> Self:
+    def match_y(
+        self, mobject: "Positionable", direction: Vector3DLike = ORIGIN
+    ) -> Self:
         """Match y coord. to the x coord. of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 1, direction)
 
-    def match_z(self, mobject: Mobject, direction: Vector3DLike = ORIGIN) -> Self:
+    def match_z(
+        self, mobject: "Positionable", direction: Vector3DLike = ORIGIN
+    ) -> Self:
         """Match z coord. to the x coord. of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 2, direction)
 
     def move_to(
         self,
-        point_or_mobject: Point3DLike | Mobject,
+        point_or_mobject: "Point3DLike | Positionable",
         aligned_edge: Vector3DLike = ORIGIN,
         coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
@@ -433,11 +437,11 @@ class Positionable:
 
     def next_to(
         self,
-        mobject_or_point: Mobject | Point3DLike,
+        mobject_or_point: "Positionable" | Point3DLike,
         direction: Vector3DLike = RIGHT,
         buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         aligned_edge: Vector3DLike = ORIGIN,
-        submobject_to_align: Mobject | None = None,
+        submobject_to_align: "Positionable | None" = None,
         index_of_submobject_to_align: int | None = None,
         coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:

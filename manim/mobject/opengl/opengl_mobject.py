@@ -1612,11 +1612,11 @@ class OpenGLMobject(Positionable):
 
     def next_to(
         self,
-        mobject_or_point: OpenGLMobject | Point3DLike,
+        mobject_or_point: Positionable | Point3DLike,
         direction: Vector3DLike = RIGHT,
         buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         aligned_edge: Vector3DLike = ORIGIN,
-        submobject_to_align: OpenGLMobject | None = None,
+        submobject_to_align: Positionable | None = None,
         index_of_submobject_to_align: int | None = None,
         coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
