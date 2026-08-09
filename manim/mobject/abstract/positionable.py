@@ -216,7 +216,8 @@ class Positionable:
         return []
 
     def get_bottom(self) -> Point3D:
-        raise NotImplementedError
+        """Get bottom Point3Ds of a box bounding the :class:`~.Mobject`"""
+        return self.get_edge_center(DOWN)
 
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
         raise NotImplementedError

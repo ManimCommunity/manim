@@ -2202,10 +2202,6 @@ class Mobject(Positionable):
         """Get top Point3Ds of a box bounding the :class:`~.Mobject`"""
         return self.get_edge_center(UP)
 
-    def get_bottom(self) -> Point3D:
-        """Get bottom Point3Ds of a box bounding the :class:`~.Mobject`"""
-        return self.get_edge_center(DOWN)
-
     def get_right(self) -> Point3D:
         """Get right Point3Ds of a box bounding the :class:`~.Mobject`"""
         return self.get_edge_center(RIGHT)
