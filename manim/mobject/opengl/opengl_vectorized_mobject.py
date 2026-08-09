@@ -2257,6 +2257,21 @@ class OpenGLDashedVMobject(OpenGLVMobject):
         super().__init__(**kwargs)
         self.dashed_ratio = dashed_ratio
         self.num_dashes = num_dashes
+
+        # Work on a copy to avoid mutating the caller's mobject (e.g. removing tips).
+        base_vmobject = vmobject
+        vmobject = base_vmobject.copy()
+
+        # TipableVMobject instances (Arrow, Vector, etc.) carry tips as submobjects.
+        # When dashing such objects, each subcurve would otherwise include its own
+        # tip, leading to many overlapping arrowheads. Pop tips from the working
+        # copy and re-attach them only once after the dashes are created.
+        tips = None
+        if hasattr(vmobject, "pop_tips"):
+            popped_tips = vmobject.pop_tips()
+            if len(popped_tips.submobjects) > 0:
+                tips = popped_tips
+
         r = self.dashed_ratio
         n = self.num_dashes
 
@@ -2277,7 +2292,10 @@ class OpenGLDashedVMobject(OpenGLVMobject):
 
         # Family is already taken care of by get_subcurve
         # implementation
-        self.match_style(vmobject, recurse=False)
+        self.match_style(base_vmobject, recurse=False)
+
+        if tips is not None:
+            self.add(*tips.submobjects)
 
 
 class VHighlight(OpenGLVGroup):
