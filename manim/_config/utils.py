@@ -1057,7 +1057,7 @@ class ManimConfig(MutableMapping):
         """File format; "png", "gif", "mp4", "webm" or "mov"."""
         return self._d["format"]
 
-    @format.setter
+    @format.setter  # noqa: A003
     def format(self, val: str) -> None:
         self._set_from_list(
             "format",
