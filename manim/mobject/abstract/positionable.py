@@ -258,7 +258,8 @@ class Positionable:
         raise NotImplementedError
 
     def get_height(self) -> float:
-        raise NotImplementedError
+        """Returns the height of the mobject."""
+        return self.length_over_dim(1)
 
     def get_left(self) -> Point3D:
         raise NotImplementedError
