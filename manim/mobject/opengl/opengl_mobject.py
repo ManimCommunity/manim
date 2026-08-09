@@ -1770,37 +1770,6 @@ class OpenGLMobject(Positionable):
         """Stretches the :class:`~.OpenGLMobject` to fit a depth, not keeping width/height proportional."""
         return self.rescale_to_fit(depth, 1, stretch=True, **kwargs)
 
-    def set_width(
-        self,
-        width: float,
-        stretch: bool = False,
-        **kwargs: Any,
-    ) -> Self:
-        """Scales the :class:`~.OpenGLMobject` to fit a width while keeping height/depth proportional.
-
-        Returns
-        -------
-        :class:`OpenGLMobject`
-            ``self``
-
-        Examples
-        --------
-        ::
-
-            >>> from manim import *
-            >>> import numpy as np
-            >>> sq = Square()
-            >>> sq.height
-            np.float64(2.0)
-            >>> sq.scale_to_fit_width(5)
-            Square
-            >>> sq.width
-            np.float64(5.0)
-            >>> sq.height
-            np.float64(5.0)
-        """
-        return self.rescale_to_fit(width, 0, stretch=stretch, **kwargs)
-
     def set_x(self, x: float, direction: Vector3DLike = ORIGIN) -> Self:
         """Set x value of the center of the :class:`~.OpenGLMobject` (``int`` or ``float``)"""
         return self.set_coord(x, 0, direction)

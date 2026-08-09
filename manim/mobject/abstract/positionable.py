@@ -707,7 +707,30 @@ class Positionable:
         stretch: bool = False,
         **kwargs: Any,
     ) -> Self:
-        raise NotImplementedError
+        """Scales the :class:`~.OpenGLMobject` to fit a width while keeping height/depth proportional.
+
+        Returns
+        -------
+        :class:`OpenGLMobject`
+            ``self``
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> import numpy as np
+            >>> sq = Square()
+            >>> sq.height
+            np.float64(2.0)
+            >>> sq.scale_to_fit_width(5)
+            Square
+            >>> sq.width
+            np.float64(5.0)
+            >>> sq.height
+            np.float64(5.0)
+        """
+        return self.rescale_to_fit(width, 0, stretch=stretch, **kwargs)
 
     def set_x(self, x: float, direction: Vector3DLike = ORIGIN) -> Self:
         raise NotImplementedError
