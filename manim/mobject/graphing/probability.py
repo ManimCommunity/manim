@@ -6,7 +6,7 @@ __all__ = ["SampleSpace", "BarChart"]
 
 
 from collections.abc import Iterable, MutableSequence, Sequence
-from typing import Any
+from typing import Any, Self, cast
 
 import numpy as np
 
@@ -75,7 +75,7 @@ class SampleSpace(Rectangle):
 
     def add_title(
         self, title: str = "Sample space", buff: float = MED_SMALL_BUFF
-    ) -> None:
+    ) -> Self:
         # TODO, should this really exist in SampleSpaceScene
         title_mob = Tex(title)
         if title_mob.width > self.width:
@@ -83,9 +83,11 @@ class SampleSpace(Rectangle):
         title_mob.next_to(self, UP, buff=buff)
         self.title = title_mob
         self.add(title_mob)
+        return self
 
-    def add_label(self, label: str) -> None:
+    def add_label(self, label: str) -> Self:
         self.label = label
+        return self
 
     def complete_p_list(self, p_list: float | Iterable[float]) -> list[float]:
         p_list_tuplified: tuple[float] = tuplify(p_list)
@@ -133,13 +135,15 @@ class SampleSpace(Rectangle):
     ) -> VGroup:
         return self.get_division_along_dimension(p_list, 0, colors, vect)
 
-    def divide_horizontally(self, *args: Any, **kwargs: Any) -> None:
+    def divide_horizontally(self, *args: Any, **kwargs: Any) -> Self:
         self.horizontal_parts = self.get_horizontal_division(*args, **kwargs)
         self.add(self.horizontal_parts)
+        return self
 
-    def divide_vertically(self, *args: Any, **kwargs: Any) -> None:
+    def divide_vertically(self, *args: Any, **kwargs: Any) -> Self:
         self.vertical_parts = self.get_vertical_division(*args, **kwargs)
         self.add(self.vertical_parts)
+        return self
 
     def get_subdivision_braces_and_labels(
         self,
@@ -198,7 +202,7 @@ class SampleSpace(Rectangle):
         parts = self.vertical_parts
         return self.get_subdivision_braces_and_labels(parts, labels, DOWN, **kwargs)
 
-    def add_braces_and_labels(self) -> None:
+    def add_braces_and_labels(self) -> Self:
         for attr in "horizontal_parts", "vertical_parts":
             if not hasattr(self, attr):
                 continue
@@ -206,13 +210,14 @@ class SampleSpace(Rectangle):
             for subattr in "braces", "labels":
                 if hasattr(parts, subattr):
                     self.add(getattr(parts, subattr))
+        return self
 
-    def __getitem__(self, index: int) -> VMobject:
+    def __getitem__(self, index: Any) -> VMobject:
         if hasattr(self, "horizontal_parts"):
             return self.horizontal_parts[index]
         elif hasattr(self, "vertical_parts"):
             return self.vertical_parts[index]
-        return self.split()[index]
+        return cast(VMobject, super().__getitem__(index))
 
 
 class BarChart(Axes):
@@ -481,7 +486,7 @@ class BarChart(Axes):
 
     def change_bar_values(
         self, values: Iterable[float], update_colors: bool = True
-    ) -> None:
+    ) -> Self:
         """Updates the height of the bars of the chart.
 
         Parameters
@@ -548,3 +553,4 @@ class BarChart(Axes):
             self._update_colors()
 
         self.values[: len(list(values))] = values
+        return self

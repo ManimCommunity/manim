@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 
 from manim import *
 
@@ -111,7 +111,7 @@ class InteractiveStaticScene(Scene):
 class SceneWithSections(Scene):
     def construct(self):
         # this would be defined in a third party application using the segmented video API
-        class PresentationSectionType(str, Enum):
+        class PresentationSectionType(StrEnum):
             # start, end, wait for continuation by user
             NORMAL = "presentation.normal"
             # start, end, immediately continue to next section

@@ -5,7 +5,7 @@ import re
 import sys
 from typing import TYPE_CHECKING
 
-from cloup import Choice, option, option_group
+from cloup import Choice, IntRange, option, option_group
 
 from manim.constants import QUALITIES, RendererType
 
@@ -164,6 +164,23 @@ render_options = option_group(
         type=float,
         default=None,
         help="Render at this frame rate.",
+    ),
+    option(
+        "--max-inflight-encoders",
+        type=IntRange(min=1),
+        default=None,
+        help="Maximum number of partial movie files being encoded concurrently "
+        "while the scene continues rendering. 1 (the default) encodes each "
+        "animation's file before the next animation starts; values > 1 overlap "
+        "encoding with rendering (4 is a good value on typical hardware).",
+    ),
+    option(
+        "--encoder-queue-size",
+        type=IntRange(min=1),
+        default=None,
+        help="Maximum number of pending frame buffers held by each encoder when "
+        "parallel encoding is enabled. Ignored when --max-inflight-encoders is "
+        "1 (the default). Defaults to 8.",
     ),
     option(
         "--renderer",

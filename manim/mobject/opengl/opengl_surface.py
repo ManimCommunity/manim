@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 import moderngl
 import numpy as np
@@ -124,7 +124,7 @@ class OpenGLSurface(OpenGLMobject):
             return self.passed_uv_func(u, v)
         return (u, v, 0.0)
 
-    def init_points(self):
+    def init_points(self) -> Self:
         dim = self.dim
         nu, nv = self.resolution
         u_range = np.linspace(*self.u_range, nu)
@@ -144,15 +144,16 @@ class OpenGLSurface(OpenGLMobject):
         # can perform all the manipulations they'd like to the surface, and normals
         # are still easily recoverable.
         self.set_points(np.vstack(point_lists))
+        return self
 
-    def compute_triangle_indices(self):
+    def compute_triangle_indices(self) -> Self:
         # TODO, if there is an event which changes
         # the resolution of the surface, make sure
         # this is called.
         nu, nv = self.resolution
         if nu == 0 or nv == 0:
             self.triangle_indices = np.zeros(0, dtype=int)
-            return
+            return self
         index_grid = np.arange(nu * nv).reshape((nu, nv))
         indices = np.zeros(6 * (nu - 1) * (nv - 1), dtype=int)
         indices[0::6] = index_grid[:-1, :-1].flatten()  # Top left
@@ -162,6 +163,7 @@ class OpenGLSurface(OpenGLMobject):
         indices[4::6] = index_grid[+1:, :-1].flatten()  # Bottom left
         indices[5::6] = index_grid[+1:, +1:].flatten()  # Bottom right
         self.triangle_indices = indices
+        return self
 
     def get_triangle_indices(self):
         return self.triangle_indices
@@ -181,7 +183,7 @@ class OpenGLSurface(OpenGLMobject):
         )
         return normalize_along_axis(normals, 1)
 
-    def pointwise_become_partial(self, smobject, a, b, axis=None):
+    def pointwise_become_partial(self, smobject, a, b, axis=None) -> Self:
         assert isinstance(smobject, OpenGLSurface)
         if axis is None:
             axis = self.prefered_creation_axis
@@ -239,7 +241,7 @@ class OpenGLSurface(OpenGLMobject):
             ).reshape(shape)
         return points.reshape((nu * nv, *resolution[2:]))
 
-    def sort_faces_back_to_front(self, vect=OUT):
+    def sort_faces_back_to_front(self, vect=OUT) -> Self:
         tri_is = self.triangle_indices
         indices = list(range(len(tri_is) // 3))
         points = self.points
@@ -359,8 +361,9 @@ class OpenGLSurfaceGroup(OpenGLSurface):
         super().__init__(uv_func=None, **kwargs)
         self.add(*parametric_surfaces)
 
-    def init_points(self):
-        pass  # Needed?
+    def init_points(self) -> Self:
+        # Needed?
+        return self
 
 
 class OpenGLTexturedSurface(OpenGLSurface):
@@ -425,12 +428,13 @@ class OpenGLTexturedSurface(OpenGLSurface):
         image_file = get_full_raster_image_path(image_file)
         return Image.open(image_file).convert(image_mode)
 
-    def init_data(self):
+    def init_data(self) -> Self:
         super().init_data()
         self.im_coords = np.zeros((0, 2))
         self.opacity = np.zeros((0, 1))
+        return self
 
-    def init_points(self):
+    def init_points(self) -> Self:
         nu, nv = self.uv_surface.resolution
         self.set_points(self.uv_surface.points)
         self.im_coords = np.array(
@@ -440,16 +444,18 @@ class OpenGLTexturedSurface(OpenGLSurface):
                 for v in np.linspace(1, 0, nv)  # Reverse y-direction
             ],
         )
+        return self
 
-    def init_colors(self):
+    def init_colors(self) -> Self:
         self.opacity = np.array([self.uv_surface.rgbas[:, 3]])
+        return self
 
-    def set_opacity(self, opacity, recurse=True):
+    def set_opacity(self, opacity, recurse=True) -> Self:
         for mob in self.get_family(recurse):
             mob.opacity = np.array([[o] for o in listify(opacity)])
         return self
 
-    def pointwise_become_partial(self, tsmobject, a, b, axis=1):
+    def pointwise_become_partial(self, tsmobject, a, b, axis=1) -> Self:
         super().pointwise_become_partial(tsmobject, a, b, axis)
         im_coords = self.im_coords
         im_coords[:] = tsmobject.im_coords
