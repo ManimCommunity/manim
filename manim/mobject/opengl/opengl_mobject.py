@@ -2284,10 +2284,6 @@ class OpenGLMobject(Positionable):
         """Match the color with the color of another :class:`~.OpenGLMobject`."""
         return self.set_color(mobject.get_color())
 
-    def match_width(self, mobject: OpenGLMobject, **kwargs: Any) -> Self:
-        """Match the width with the width of another :class:`~.OpenGLMobject`."""
-        return self.match_dim_size(mobject, 0, **kwargs)
-
     def match_x(self, mobject: OpenGLMobject, direction: Vector3DLike = ORIGIN) -> Self:
         """Match x coord. to the x coord. of another :class:`~.OpenGLMobject`."""
         return self.match_coord(mobject, 0, direction)

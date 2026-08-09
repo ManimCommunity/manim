@@ -2183,10 +2183,6 @@ class Mobject(Positionable):
         """Match the color with the color of another :class:`~.Mobject`."""
         return self.set_color(mobject.get_color())
 
-    def match_width(self, mobject: Mobject, **kwargs: Any) -> Self:
-        """Match the width with the width of another :class:`~.Mobject`."""
-        return self.match_dim_size(mobject, 0, **kwargs)
-
     def match_x(self, mobject: Mobject, direction: Vector3DLike = ORIGIN) -> Self:
         """Match x coord. to the x coord. of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 0, direction)

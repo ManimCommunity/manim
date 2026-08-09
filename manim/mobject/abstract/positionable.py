@@ -401,7 +401,8 @@ class Positionable:
         return self.match_dim_size(mobject, 1, **kwargs)
 
     def match_width(self, mobject: Mobject, **kwargs: Any) -> Self:
-        raise NotImplementedError
+        """Match the width with the width of another :class:`~.Mobject`."""
+        return self.match_dim_size(mobject, 0, **kwargs)
 
     def match_x(self, mobject: Mobject, direction: Vector3DLike = ORIGIN) -> Self:
         raise NotImplementedError
