@@ -1812,8 +1812,6 @@ class OpenGLMobject(Positionable):
         """Scales the :class:`~.OpenGLMobject` to fit a height while keeping width/depth proportional."""
         return self.rescale_to_fit(height, 1, stretch=stretch, **kwargs)
 
-    scale_to_fit_height = set_height
-
     def set_depth(
         self,
         depth: float,

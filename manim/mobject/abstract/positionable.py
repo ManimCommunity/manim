@@ -620,7 +620,29 @@ class Positionable:
         stretch: bool = False,
         **kwargs: Any,
     ) -> Self:
-        raise NotImplementedError
+        """Scales the :class:`~.Mobject` to fit a height while keeping width/depth proportional.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> sq = Square()
+            >>> sq.width
+            np.float64(2.0)
+            >>> sq.scale_to_fit_height(5)
+            Square
+            >>> sq.height
+            np.float64(5.0)
+            >>> sq.width
+            np.float64(5.0)
+        """
+        return self.rescale_to_fit(height, 1, stretch=stretch, **kwargs)
 
     def scale_to_fit_width(
         self,
