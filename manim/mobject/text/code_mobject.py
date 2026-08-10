@@ -237,6 +237,12 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         # ascender and a descender to the first and last lines. This normalizes
         # the vertical bounds of code listings independently of their contents.
         alignment_suffix = " pA" + str(line_numbers_from)
+        # Get actual number of glyphs in case it differs from the number of characters
+        alignment_reference = Paragraph(
+            alignment_suffix,
+            **base_paragraph_config,
+        )
+        alignment_length = len(alignment_reference[0])
         boundary_line_indices = sorted({0, len(rendered_code_lines) - 1})
         aligned_code_lines = rendered_code_lines.copy()
         for index in boundary_line_indices:
@@ -302,7 +308,7 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
             *(
                 self.code_lines[index].submobjects.pop()
                 for index in boundary_line_indices
-                for _ in range(len(alignment_suffix))
+                for _ in range(alignment_length)
             )
         ).stretch_to_fit_width(0, about_edge=LEFT)
 
