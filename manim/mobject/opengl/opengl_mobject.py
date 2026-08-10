@@ -3017,11 +3017,19 @@ class OpenGLMobject:
 
     def throw_error_if_no_points(self) -> None:
         if not self.has_points():
-            message = (
-                "Cannot call OpenGLMobject.{} " + "for a OpenGLMobject with no points"
-            )
             caller_name = sys._getframe(1).f_code.co_name
-            raise Exception(message.format(caller_name))
+            cls = type(self).__name__
+            drawn = [m for m in self.submobjects if m.has_points()]
+            hint = ""
+            if drawn:
+                hint = (
+                    f" This {cls} has no points of its own, but "
+                    f"{len(drawn)} of its {len(self.submobjects)} submobjects "
+                    f"do. Did you mean to pass one of them?"
+                )
+            raise ValueError(
+                f"Cannot call {cls}.{caller_name} for a {cls} with no points." + hint,
+            )
 
 
 class OpenGLGroup(OpenGLMobject):
