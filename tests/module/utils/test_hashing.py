@@ -1,19 +1,16 @@
 from __future__ import annotations
 
+import gc
 import json
+import weakref
 from zlib import crc32
 
-import pytest
+import numpy as np
 
 import manim.utils.hashing as hashing
-from manim import Square
+from manim import ImageMobject, Square
 
 ALREADY_PROCESSED_PLACEHOLDER = hashing._Memoizer.ALREADY_PROCESSED_PLACEHOLDER
-
-
-@pytest.fixture(autouse=True)
-def reset_already_processed():
-    hashing._Memoizer.reset_already_processed()
 
 
 def test_JSON_basic():
@@ -115,11 +112,175 @@ def test_JSON_with_circular_references():
 
 
 def test_JSON_with_big_np_array():
-    import numpy as np
-
     a = np.zeros((1000, 1000))
-    o_ser = hashing.get_json(a)
-    assert "TRUNCATED ARRAY" in o_ser
+    serialized = hashing.get_json(a)
+    assert hashing.get_json(a.copy()) == serialized
+
+    a[500, 500] = 1
+    assert hashing.get_json(a) != serialized
+
+
+def test_JSON_with_equivalent_np_array_layouts():
+    logical = np.arange(24, dtype=np.float64).reshape(4, 6) / 3
+    serialized = hashing.get_json(np.array(logical, order="C"))
+
+    for equivalent in [
+        np.array(logical, order="F"),
+        logical.astype(logical.dtype.newbyteorder(">")),
+    ]:
+        assert hashing.get_json(equivalent) == serialized
+
+    backing = np.empty((4, 12), dtype=np.float64)
+    backing[:, ::2] = logical
+    backing[:, 1::2] = -1
+    assert hashing.get_json(backing[:, ::2]) == serialized
+
+
+def test_JSON_with_out_of_order_and_overlapping_structured_arrays():
+    for dtype in [
+        np.dtype(
+            {
+                "names": ["late", "early"],
+                "formats": ["<i4", "<i2"],
+                "offsets": [8, 0],
+                "itemsize": 12,
+            }
+        ),
+        np.dtype(
+            {
+                "names": ["wide", "narrow"],
+                "formats": ["<u4", "<u2"],
+                "offsets": [0, 2],
+                "itemsize": 4,
+            }
+        ),
+    ]:
+        array = np.zeros(8, dtype=dtype)
+        first_field = dtype.names[0]
+        array[first_field] = np.arange(8) + 100
+        serialized = hashing.get_json(array)
+
+        changed = array.copy()
+        changed[first_field][4] += 1
+        assert hashing.get_json(changed) != serialized
+
+
+def test_JSON_preserves_structured_dtype_identity_without_hashing_padding():
+    compact_dtype = np.dtype([("value", "<i4")])
+    padded_dtype = np.dtype(
+        {
+            "names": ["value"],
+            "formats": ["<i4"],
+            "offsets": [0],
+            "itemsize": 12,
+        }
+    )
+    compact = np.zeros(4, dtype=compact_dtype)
+    padded = np.zeros(4, dtype=padded_dtype)
+    compact["value"] = padded["value"] = np.arange(4)
+
+    compact_json = hashing.get_json(compact)
+    assert hashing.get_json(padded) != compact_json
+
+    shifted_dtype = np.dtype(
+        {
+            "names": ["value"],
+            "formats": ["<i4"],
+            "offsets": [4],
+            "itemsize": 12,
+        }
+    )
+    shifted = np.zeros(4, dtype=shifted_dtype)
+    shifted["value"] = np.arange(4)
+    shifted_json = hashing.get_json(shifted)
+    assert shifted_json != hashing.get_json(padded)
+
+    alternate_padding = padded.copy()
+    alternate_padding.view(np.uint8).reshape(4, 12)[:, 4:] = 0xFF
+    padded_json = hashing.get_json(padded)
+    assert hashing.get_json(alternate_padding) == padded_json
+
+    titled = np.zeros(4, dtype=np.dtype([(("title", "value"), "<i4")]))
+    titled["value"] = np.arange(4)
+    assert hashing.get_json(titled) != compact_json
+
+    aligned_dtype = np.dtype([("flag", "u1"), ("value", "<u4")], align=True)
+    unaligned_dtype = np.dtype(
+        {
+            "names": ["flag", "value"],
+            "formats": ["u1", "<u4"],
+            "offsets": [0, 4],
+            "itemsize": 8,
+        },
+        align=False,
+    )
+    aligned = np.zeros(4, dtype=aligned_dtype)
+    unaligned = np.zeros(4, dtype=unaligned_dtype)
+    aligned["value"] = unaligned["value"] = np.arange(4)
+    aligned_json = hashing.get_json(aligned)
+    assert aligned_json != hashing.get_json(unaligned)
+
+    empty_struct_json = hashing.get_json(np.empty(4, dtype=np.dtype([])))
+    assert hashing.get_json(np.empty(4, dtype=np.dtype("V0"))) != empty_struct_json
+
+    empty_padded_dtype = np.dtype({"names": [], "formats": [], "itemsize": 8})
+    empty_padded = np.zeros(4, dtype=empty_padded_dtype)
+    alternate_empty_padding = empty_padded.copy()
+    alternate_empty_padding.view(np.uint8)[:] = 0xFF
+    empty_padded_json = hashing.get_json(empty_padded)
+    assert hashing.get_json(alternate_empty_padding) == empty_padded_json
+    assert hashing.get_json(np.zeros(4, dtype="V8")) != empty_padded_json
+
+    bytes_title = np.zeros(4, dtype=np.dtype([((b"title", "value"), "<i4")]))
+    scalar_title = np.zeros(
+        4,
+        dtype=np.dtype([((np.int64(7), "value"), "<i4")]),
+    )
+    bytes_title["value"] = scalar_title["value"] = np.arange(4)
+    bytes_title_json = hashing.get_json(bytes_title)
+    assert bytes_title_json != hashing.get_json(scalar_title)
+
+
+def test_play_hash_includes_mobject_pixels_but_not_camera_pixels():
+    class HashableObject:
+        def __init__(self, name: str, pixels: np.ndarray) -> None:
+            self.name = name
+            self.pixel_array = pixels
+
+        def __str__(self) -> str:
+            return self.name
+
+    scene = HashableObject("scene", np.arange(8, dtype=np.uint8))
+    camera = HashableObject("camera", np.arange(8, dtype=np.uint8))
+    mobject = ImageMobject(np.zeros((8, 8, 4), dtype=np.uint8))
+
+    original = hashing.get_hash_from_play_call(scene, camera, [], [mobject])
+    mobject.pixel_array[4, 4, 0] ^= 1
+    assert hashing.get_hash_from_play_call(scene, camera, [], [mobject]) != original
+
+    mobject.pixel_array[4, 4, 0] ^= 1
+    camera.pixel_array[0] ^= 1
+    assert hashing.get_hash_from_play_call(scene, camera, [], [mobject]) == original
+
+
+def test_play_hash_keeps_distinct_mobjects_with_equal_python_hashes():
+    class CollidingObject:
+        def __init__(self, name: str) -> None:
+            self.name = name
+
+        def __str__(self) -> str:
+            return self.name
+
+        def __hash__(self) -> int:
+            return 1
+
+    scene = CollidingObject("scene")
+    camera = CollidingObject("camera")
+    mobjects = [CollidingObject("first"), CollidingObject("second")]
+
+    original = hashing.get_hash_from_play_call(scene, camera, [], mobjects)
+    mobjects[1].name = "changed"
+    assert hashing.get_hash_from_play_call(scene, camera, [], mobjects) != original
 
 
 def test_JSON_with_tuple():
@@ -145,9 +306,7 @@ def test_hash_consistency():
         and pytest will display a nice difference summary making it easier to debug.
         """
         json1 = hashing.get_json(obj1)
-        hashing._Memoizer.reset_already_processed()
         json2 = hashing.get_json(obj2)
-        hashing._Memoizer.reset_already_processed()
         hash1 = crc32(repr(json1).encode())
         hash2 = crc32(repr(json2).encode())
         if hash1 != hash2 and debug:
@@ -159,3 +318,117 @@ def test_hash_consistency():
     assert_two_objects_produce_same_hash(Square(), Square())
     s = Square()
     assert_two_objects_produce_same_hash(s, s.copy())
+
+
+def test_memoizer_does_not_confuse_hash_and_id_signatures():
+    """
+    hash() values and id() addresses are recorded in the same set, so a numeric coincidence between the two kinds
+    must not mark a never-processed object as already processed. Whether such a coincidence occurs varies from
+    process to process (str hashes are randomized), so an untagged set makes play hashes unstable across runs.
+    """
+    memoizer = hashing._Memoizer()
+    id_signed = {"a": 1}  # dicts are unhashable, so this is recorded under its id.
+    memoizer.check_already_processed(id_signed)
+
+    class HashCollidingWithRecordedId:
+        def __hash__(self):
+            return id(id_signed)
+
+    collider = HashCollidingWithRecordedId()
+    assert memoizer.check_already_processed(collider) is collider
+
+    # The other direction: an id() address colliding with a recorded hash() value.
+    unhashable = {"b": 2}
+
+    class HashCollidingWithLiveId:
+        def __hash__(self):
+            return id(unhashable)
+
+    memoizer.check_already_processed(HashCollidingWithLiveId())
+    assert memoizer.check_already_processed(unhashable) is unhashable
+
+
+def test_memoizer_does_not_confuse_fresh_objects_with_dead_ones():
+    """
+    A fresh object must never be reported as already processed just because it was allocated at the address of a
+    dead object recorded earlier in the same pass (membership signs are id-derived, and ids are only unique among
+    simultaneously live objects).
+    """
+    memoizer = hashing._Memoizer()
+    transient = {"value": 1}
+    memoizer.check_already_processed(transient)
+    del transient
+    for i in range(10):
+        fresh = {"value": i + 2}
+        assert memoizer.check_already_processed(fresh) is fresh
+        del fresh
+
+
+def test_memoizer_retains_each_distinct_tracked_object_once():
+    memoizer = hashing._Memoizer()
+    hash_tracked = object()
+    memoizer.check_already_processed(hash_tracked)
+    memoizer.check_already_processed(hash_tracked)
+
+    id_tracked = {}
+    memoizer.check_already_processed(id_tracked)
+    memoizer.check_already_processed(id_tracked)
+
+    assert memoizer._keep_alive == {
+        id(hash_tracked): hash_tracked,
+        id(id_tracked): id_tracked,
+    }
+
+
+def test_get_json_does_not_retain_tracked_objects_after_returning():
+    class HashTracked:
+        pass
+
+    class IdTracked:
+        __hash__ = None
+
+    references = []
+    for tracked_type in (HashTracked, IdTracked):
+        obj = tracked_type()
+        references.append(weakref.ref(obj))
+        hashing.get_json(obj)
+        del obj
+
+    gc.collect()
+    assert all(reference() is None for reference in references)
+
+
+def test_get_json_calls_have_independent_memoizers():
+    shared = {}
+    assert hashing.get_json([shared]) == "[{}]"
+    assert hashing.get_json([shared]) == "[{}]"
+
+
+def test_shared_memoizer_spans_component_serializations():
+    shared = {}
+    memoizer = hashing._Memoizer()
+    assert hashing._get_json([shared], memoizer) == "[{}]"
+    assert hashing._get_json([shared], memoizer) == '["AP"]'
+
+
+def test_sibling_closures_are_not_collapsed_to_placeholder():
+    """
+    Serializing many closures in one pass builds a transient closure-vars dict per closure (via inspect.getclosurevars).
+    These share nothing, so none of them may collapse to the already-processed placeholder — yet without the
+    keep-alive fix, dead dicts' reused addresses collapse most of them.
+    """
+
+    def make_closure(k):
+        def closure(x):
+            return x + k
+
+        return closure
+
+    closures = [make_closure(k) for k in range(20)]
+    entries = json.loads(hashing.get_json(closures))
+    assert len(entries) == 20
+    for k, entry in enumerate(entries):
+        assert entry != ALREADY_PROCESSED_PLACEHOLDER
+        assert entry["nonlocals"] == {"k": k}, (
+            f"closure {k} collapsed: {entry['nonlocals']!r}"
+        )

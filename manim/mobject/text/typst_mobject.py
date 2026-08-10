@@ -124,7 +124,7 @@ __all__ = [
 
 import re
 from pathlib import Path
-from typing import Any, cast
+from typing import Any, Self, cast
 from xml.etree import ElementTree as ET
 
 import numpy as np
@@ -297,7 +297,7 @@ class Typst(SVGMobject):
         *,
         about_point: np.ndarray | None = None,
         about_edge: np.ndarray | None = None,
-    ) -> Typst:
+    ) -> Self:
         result = super().scale(
             scale_factor,
             scale_stroke=scale_stroke,
@@ -599,7 +599,7 @@ class Typst(SVGMobject):
 
     # -- color handling ------------------------------------------------------
 
-    def init_colors(self, propagate_colors: bool = True) -> Typst:
+    def init_colors(self, propagate_colors: bool = True) -> Self:
         """Recolor black submobjects to ``self.color``.
 
         Typst renders text in black (``fill="#000000"``) by default.

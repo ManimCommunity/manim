@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from itertools import product
+
 import numpy as np
 import pytest
 
@@ -258,3 +260,152 @@ def test_apply_matrix_about_vertex_view():
     # The first vertex should remain in the same position (within numerical precision)
     transformed_vertices = triangle.get_vertices()
     np.testing.assert_allclose(transformed_vertices[0], first_vertex, atol=1e-6)
+
+
+# Tests for methods which provide Mobject's sequence interface
+
+
+def build_mobject(n=10, has_points=False, mob_cls=Mobject):
+    """Construct a mobject (with/without points) with n submobjects, and return it along with its
+    split() result.
+    """
+    mob = mob_cls()
+    mob.add(*[mob_cls() for _ in range(n)])
+    if has_points:
+        mob.points = np.zeros((3, 3))
+    return mob, mob.split()
+
+
+@pytest.mark.parametrize("has_points", [True, False])
+def test_getitem_single_index(has_points):
+    """Test that indexing a mobject behaves the same as indexing Mobject.split()."""
+    n = 10
+    mob, mob_list = build_mobject(n, has_points=has_points)
+    length = (n + 1) if has_points else n
+    for i in range(-length, length):
+        assert mob[i] == mob_list[i]
+
+    # Check that indexing outside valid range raises IndexError
+    with pytest.raises(IndexError):
+        mob[length]
+    with pytest.raises(IndexError):
+        mob[-length - 1]
+
+
+@pytest.mark.parametrize("has_points", [True, False])
+def test_getitem_single_index_no_submobjects(has_points):
+    """Test that indexing into a mobject with no submobjects behaves correctly."""
+    mob, _ = build_mobject(0, has_points=has_points)
+    if has_points:
+        assert mob[0] == mob
+    else:
+        with pytest.raises(IndexError):
+            mob[0]
+    with pytest.raises(IndexError):
+        mob[1]
+
+
+@pytest.mark.parametrize("has_points", [True, False])
+def test_getitem_slice(has_points):
+    """Test that slicing a mobject behaves the same as slicing Mobject.split()."""
+    n = 10
+    mob, mob_list = build_mobject(n, has_points=has_points)
+    length = (n + 1) if has_points else n
+    for start, stop, step in product(range(-length, length), repeat=3):
+        assert mob[start:stop].submobjects == mob_list[start:stop]
+        if step == 0:
+            with pytest.raises(ValueError):
+                mob[start:stop:step]
+        else:
+            assert mob[start:stop:step].submobjects == mob_list[start:stop:step]
+
+    # Check that slicing with too high stop value is possible
+    too_high_index = length * 2
+    assert mob[1:too_high_index].submobjects == mob[1:].submobjects
+    assert mob[1:too_high_index].submobjects == mob_list[1:too_high_index]
+
+    # Check that slicing with too low start value works
+    too_low_index = -(length * 2)
+    assert mob[too_low_index:1].submobjects == mob[:1].submobjects
+    assert mob[too_low_index:1].submobjects == mob_list[too_low_index:1]
+
+
+@pytest.mark.parametrize("has_points", [True, False])
+@pytest.mark.parametrize("mob_cls", [Mobject, VMobject])
+def test_getitem_slice_group_type(has_points, mob_cls):
+    """Test that the group created from slicing a mobject has the appropriate type
+    for the type of the mobject.
+    """
+    n = 10
+    mob, _ = build_mobject(n, has_points=has_points, mob_cls=mob_cls)
+    group_cls = mob.get_group_class()
+    length = (n + 1) if has_points else n
+    for start, stop, step in product(range(-length, length), repeat=3):
+        if not step:
+            continue
+        assert type(mob[start:stop:step]) is group_cls
+
+
+@pytest.mark.parametrize("has_points", [True, False])
+def test_getitem_slice_no_submobjects(has_points):
+    """Test that slicing a mobject with no submobjects behaves correctly."""
+    mob, _ = build_mobject(0, has_points=has_points)
+    expected = [] if not has_points else [mob]
+    assert mob[:].submobjects == expected
+    assert mob[::].submobjects == expected
+    assert mob[:1].submobjects == expected
+    assert mob[::2].submobjects == expected
+
+
+@pytest.mark.parametrize("has_points", [True, False])
+def test_getitem_index_types(has_points):
+    """Test that __getitem__ accepts anything implementing __index__ and rejects
+    floats, like the list type does.
+    """
+    n = 10
+    mob, mob_list = build_mobject(n, has_points=has_points)
+
+    class Ix:
+        def __index__(self):
+            return 1
+
+    assert mob[0] == mob_list[0]
+    assert mob[True] == mob_list[1]
+    assert mob[np.int64(2)] == mob_list[2]  # e.g. mob[np.argmin(...)]
+    assert mob[Ix()] == mob_list[1]
+    with pytest.raises(TypeError):
+        mob[1.5]
+
+    if not has_points:
+        # Indexing into an empty mobject with an invalid type should throw
+        # a TypeError instead of IndexError
+        with pytest.raises(TypeError):
+            mob[1.5]
+
+
+@pytest.mark.parametrize("has_points", [True, False])
+@pytest.mark.parametrize("n", [0, 10])
+def test_iter_mobject_unpacking(has_points, n):
+    """Test that unpacking a Mobject behaves correctly."""
+    mob, mob_list = build_mobject(n, has_points=has_points)
+    assert list(mob) == mob_list
+    assert [*mob] == mob_list
+
+
+@pytest.mark.parametrize("has_points", [True, False])
+@pytest.mark.parametrize("n", [0, 10])
+def test_iter_mobject_iteration(has_points, n):
+    """Test that iterating over a Mobject behaves the same as iterating over Mobject.split()."""
+    mob, mob_list = build_mobject(n, has_points=has_points)
+    mob_iterator = iter(mob)
+    mob_list_iterator = iter(mob_list)
+    for a, b in zip(mob_iterator, mob_list_iterator, strict=True):
+        assert a == b
+
+
+@pytest.mark.parametrize("has_points", [True, False])
+@pytest.mark.parametrize("n", [0, 10])
+def test_len_mobject(has_points, n):
+    """Test that len(mob) behaves the same as len(mob.split())."""
+    mob, mob_list = build_mobject(n, has_points=has_points)
+    assert len(mob) == len(mob_list)
