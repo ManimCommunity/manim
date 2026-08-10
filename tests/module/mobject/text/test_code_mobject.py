@@ -204,11 +204,14 @@ def test_code_line_mobject_is_independent_of_ordinality(
         paragraph_config={"disable_ligatures": disable_ligatures},
     )
     lines = code_mobject.code_lines
-    for i in range(len(lines)):
-        j = i % len(lines)
-        assert len(lines[i]) == len(lines[j])
-
-        np.testing.assert_allclose(lines[i].width, lines[j].width, atol=1e-6)
+    reference_line = lines[len(lines) // 2]
+    for boundary_line in (lines[0], lines[-1]):
+        assert len(boundary_line) == len(reference_line)
+        np.testing.assert_allclose(
+            boundary_line.width,
+            reference_line.width,
+            atol=1e-6,
+        )
 
 
 def test_code_syntax_highlighting_colors():
