@@ -147,6 +147,15 @@ def test_multiline_tex():
     assert len(multiline_string.submobjects[0]) == 90
 
 
+def test_multiline_tex_remainder_is_not_truncated():
+    match = MathTex("a")._locate_first_match(
+        ["first"],
+        "first line\nsecond line",
+    )
+    assert match is not None
+    assert match.groups() == ("", "first", " line\nsecond line")
+
+
 def test_tex(config):
     Tex("The horse does not eat cucumber salad.")
     assert Path(config.media_dir, "Tex", "5384b41741a246bd.svg").exists()
