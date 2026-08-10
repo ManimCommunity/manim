@@ -4,6 +4,7 @@ Release management tools for Manim.
 
 This script provides commands for preparing and managing Manim releases:
 - Generate changelogs from GitHub's release notes API
+- Export documentation changelogs as GitHub-flavored release notes
 - Update CITATION.cff with new version information
 - Fetch existing release notes for documentation
 
@@ -16,6 +17,9 @@ Usage:
 
     # Also update CITATION.cff at the same time
     uv run python scripts/release.py changelog --base v0.19.0 --version 0.20.0 --update-citation
+
+    # Export an edited changelog for pasting into a GitHub release
+    uv run python scripts/release.py export-changelog 0.20.0
 
     # Update only CITATION.cff
     uv run python scripts/release.py citation --version 0.20.0
@@ -453,6 +457,46 @@ description: Changelog for {title}
 """
 
 
+def convert_to_github(body: str) -> str:
+    """Convert the MyST roles used by changelogs to GitHub Markdown."""
+    body = re.sub(
+        r"\{pr\}`(\d+)`",
+        rf"https://github.com/{REPO}/pull/\1",
+        body,
+    )
+    body = re.sub(
+        r"\{issue\}`(\d+)`",
+        rf"https://github.com/{REPO}/issues/\1",
+        body,
+    )
+    body = re.sub(r"\{user\}`([a-zA-Z0-9_-]+)`", r"@\1", body)
+    body = re.sub(r"\{class\}`\.?(.*?)`", r"`\1`", body)
+    return body
+
+
+def format_github_release_notes(version: str, content: str) -> str:
+    """Create a GitHub release body from a documentation changelog."""
+    content = re.sub(r"\A---\r?\n.*?\r?\n---\r?\n", "", content, flags=re.DOTALL)
+    lines = content.splitlines()
+
+    while lines and not lines[0].strip():
+        lines.pop(0)
+    if lines and lines[0].startswith("# "):
+        lines.pop(0)
+    while lines and not lines[0].strip():
+        lines.pop(0)
+    if len(lines) >= 2 and lines[0] == "Date" and lines[1].startswith(": "):
+        del lines[:2]
+    while lines and not lines[0].strip():
+        lines.pop(0)
+
+    body = convert_to_github("\n".join(lines)).rstrip()
+    changelog_url = (
+        f"https://docs.manim.community/en/stable/changelog/{version}-changelog.html"
+    )
+    return f"See [our rendered changelog]({changelog_url}).\n\n{body}\n"
+
+
 # =============================================================================
 # File Operations
 # =============================================================================
@@ -581,6 +625,24 @@ def changelog(
     click.echo("Next steps:")
     click.echo("  • Review and edit the changelog as needed")
     click.echo("  • Update docs/source/changelog.rst to include the new file")
+
+
+@cli.command("export-changelog")
+@click.argument("version")
+def export_changelog(version: str) -> None:
+    """Export VERSION's changelog as GitHub-flavored release notes.
+
+    The output is written to stdout for pasting or piping to another command.
+    """
+    version = version_from_tag(version)
+    filepath = CHANGELOG_DIR / f"{version}-changelog.md"
+    if not filepath.exists():
+        raise click.ClickException(f"Changelog not found: {filepath}")
+
+    click.echo(
+        format_github_release_notes(version, filepath.read_text()),
+        nl=False,
+    )
 
 
 @cli.command()

@@ -1,5 +1,9 @@
 from scripts import release
-from scripts.release import include_extra_pull_requests, merge_changelog
+from scripts.release import (
+    format_github_release_notes,
+    include_extra_pull_requests,
+    merge_changelog,
+)
 
 
 def test_merge_changelog_preserves_edits_but_uses_generated_categories():
@@ -117,3 +121,36 @@ def test_merge_changelog_without_matching_entries_is_unchanged():
 """
 
     assert merge_changelog(generated, "") == generated
+
+
+def test_format_github_release_notes_removes_docs_metadata_and_converts_roles():
+    changelog = """---
+short-title: v1.2.3
+description: Changelog for v1.2.3
+---
+
+# v1.2.3
+
+Date
+: January 02, 2026
+
+## What's Changed
+* Improve {class}`.Example` by {user}`alice` in {pr}`123`
+* Fix {issue}`456`
+
+**Full Changelog**: [Compare view](https://example.com/compare)
+"""
+
+    result = format_github_release_notes("1.2.3", changelog)
+
+    assert result.startswith(
+        "See [our rendered changelog](https://docs.manim.community/en/stable/"
+        "changelog/1.2.3-changelog.html).\n\n## What's Changed"
+    )
+    assert "frontmatter" not in result
+    assert "# v1.2.3" not in result
+    assert "January 02, 2026" not in result
+    assert "`Example` by @alice" in result
+    assert "https://github.com/manimcommunity/manim/pull/123" in result
+    assert "https://github.com/manimcommunity/manim/issues/456" in result
+    assert result.endswith("\n")
