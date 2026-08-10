@@ -223,7 +223,7 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
             BLACK if default_text_color is None else f"#{default_text_color}"
         )
 
-        from manim.mobject.text.text_mobject import Paragraph, Text
+        from manim.mobject.text.text_mobject import Paragraph
 
         # Paragraph cannot render input consisting entirely of whitespace, but
         # such lines contain no visible glyphs and can safely be represented as empty.
@@ -238,9 +238,11 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         # the vertical bounds of code listings independently of their contents.
         alignment_suffix = " pA" + str(line_numbers_from)
         # Get actual number of glyphs in case it differs from the number of characters
-        alignment_length = len(
-            Text(alignment_suffix, **base_paragraph_config).submobjects
+        alignment_reference = Paragraph(
+            alignment_suffix,
+            **base_paragraph_config,
         )
+        alignment_length = len(alignment_reference[0])
         boundary_line_indices = sorted({0, len(rendered_code_lines) - 1})
         aligned_code_lines = rendered_code_lines.copy()
         for index in boundary_line_indices:
