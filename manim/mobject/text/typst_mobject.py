@@ -137,7 +137,7 @@ from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import BLACK, ParsableManimColor
 from manim.utils.typst_file_writing import typst_to_svg_file
 
-_MANIMGRP_PREAMBLE = "#let manimgrp(lbl, body) = [#box(body) #label(lbl)]"
+_MANIMGRP_TARGET = "__manim_typst_capture_target"
 
 # Pattern for the label part of {{ content : label }}.
 # The label must be a valid Typst label identifier.
@@ -148,6 +148,140 @@ _DUPLICATE_LABEL_SUFFIX = "__manim_typst_dup_"
 # underlines, etc.) visually match the weight of TeX-derived geometry more
 # closely after import into Manim's pixel-based stroke model.
 _TYPST_SVG_STROKE_WIDTH_SCALE = 0.5
+_SVG_LEAF_TAGS = {
+    "circle",
+    "ellipse",
+    "image",
+    "line",
+    "path",
+    "polygon",
+    "polyline",
+    "rect",
+    "text",
+    "use",
+}
+
+
+def _manimgrp_preamble(target: str | None) -> str:
+    """Return a layout-transparent Typst capture helper.
+
+    The final render uses ``none`` as the target and therefore returns every
+    group body unchanged. Probe renders target one label at a time and use
+    Typst's layout-preserving ``hide`` element to remove just that group's SVG
+    leaves.
+    """
+    target_value = "none" if target is None else f'"{target}"'
+    return (
+        f"#let {_MANIMGRP_TARGET} = {target_value}\n"
+        "#let manimgrp(lbl, body) = if "
+        f"lbl == {_MANIMGRP_TARGET} {{ hide(body) }} else {{ body }}"
+    )
+
+
+def _svg_tag_name(element: ET.Element) -> str:
+    """Return an XML element's local tag name."""
+    if not isinstance(element.tag, str):
+        return ""
+    return element.tag.rsplit("}", 1)[-1]
+
+
+def _svg_leaf_signatures(svg_file: Path) -> list[tuple[Any, ...]]:
+    """Return stable signatures for rendered SVG leaves in drawing order."""
+    root = ET.parse(svg_file).getroot()
+    signatures: list[tuple[Any, ...]] = []
+
+    def visit(
+        element: ET.Element,
+        transform: se.Matrix,
+        inside_defs: bool,
+    ) -> None:
+        tag = _svg_tag_name(element)
+        inside_defs = inside_defs or tag == "defs"
+        local_transform = (
+            se.Matrix(element.get("transform"))
+            if element.get("transform") is not None
+            else se.Matrix()
+        )
+        effective_transform = transform * local_transform
+
+        if not inside_defs and tag in _SVG_LEAF_TAGS:
+            attributes = tuple(
+                sorted(
+                    (key, value)
+                    for key, value in element.attrib.items()
+                    if key != "transform"
+                )
+            )
+            matrix = tuple(
+                round(value, 12)
+                for value in (
+                    effective_transform.a,
+                    effective_transform.b,
+                    effective_transform.c,
+                    effective_transform.d,
+                    effective_transform.e,
+                    effective_transform.f,
+                )
+            )
+            signatures.append((tag, attributes, matrix))
+
+        for child in element:
+            visit(child, effective_transform, inside_defs)
+
+    visit(root, se.Matrix(), False)
+    return signatures
+
+
+def _hidden_leaf_indices(
+    visible: list[tuple[Any, ...]],
+    probe: list[tuple[Any, ...]],
+) -> set[int]:
+    """Return visible leaf indices removed from a layout-preserving probe.
+
+    A valid ``hide`` probe is the final SVG leaf sequence with zero or more
+    entries deleted. Longest-common-subsequence matching handles repeated
+    glyphs while retaining their drawing order and effective positions.
+    """
+    visible_count = len(visible)
+    probe_count = len(probe)
+    matches = [[0] * (probe_count + 1) for _ in range(visible_count + 1)]
+
+    for visible_index in range(visible_count - 1, -1, -1):
+        for probe_index in range(probe_count - 1, -1, -1):
+            if visible[visible_index] == probe[probe_index]:
+                matches[visible_index][probe_index] = (
+                    1 + matches[visible_index + 1][probe_index + 1]
+                )
+            else:
+                matches[visible_index][probe_index] = max(
+                    matches[visible_index + 1][probe_index],
+                    matches[visible_index][probe_index + 1],
+                )
+
+    if matches[0][0] != probe_count:
+        raise ValueError(
+            "The MathTypst grouping probe changed visible SVG geometry instead of "
+            "only hiding captured leaves. A custom Typst show rule for `hide` may "
+            "be interfering with subexpression selection."
+        )
+
+    retained: set[int] = set()
+    visible_index = 0
+    probe_index = 0
+    while visible_index < visible_count and probe_index < probe_count:
+        if visible[visible_index] == probe[probe_index]:
+            retained.add(visible_index)
+            visible_index += 1
+            probe_index += 1
+        elif (
+            matches[visible_index + 1][probe_index]
+            >= matches[visible_index][probe_index + 1]
+        ):
+            visible_index += 1
+        else:
+            probe_index += 1
+
+    return set(range(visible_count)) - retained
 
 
 class Typst(SVGMobject):
@@ -240,6 +374,16 @@ class Typst(SVGMobject):
         self._baseline_tracked_submobjects: list[VMobject] = []
         self._stroke_width_tracked_submobjects: list[VMobject] = []
         self._label_aliases: dict[str, list[str]] = {}
+        self._svg_leaf_labels: dict[int, list[str]] = getattr(
+            self,
+            "_svg_leaf_labels",
+            {},
+        )
+        self._known_svg_labels: list[str] = getattr(
+            self,
+            "_known_svg_labels",
+            [],
+        )
 
         file_name = typst_to_svg_file(
             typst_code,
@@ -476,6 +620,8 @@ class Typst(SVGMobject):
             if _DUPLICATE_LABEL_SUFFIX in key:
                 base_label, _, _ = key.partition(_DUPLICATE_LABEL_SUFFIX)
             aliases.setdefault(base_label, []).append(key)
+        for label in self._known_svg_labels:
+            aliases.setdefault(label, [])
         self._label_aliases = aliases
 
     def _select_label(self, label: str) -> VGroup:
@@ -499,36 +645,72 @@ class Typst(SVGMobject):
     # -- SVG post-processing -------------------------------------------------
 
     def modify_xml_tree(self, element_tree: ET.ElementTree) -> ET.ElementTree:
-        """Convert ``data-typst-label`` attributes to ``id`` before parsing.
+        """Add Manim group IDs to Typst SVG elements before parsing.
 
-        Typst's SVG renderer emits ``data-typst-label`` on ``<g>`` elements
-        that carry a label (created via ``#box(body) <label>``).  The
-        ``svgelements`` library propagates custom ``data-*`` attributes from
-        parent groups to all children, making them unusable as unique group
-        keys.  ``id`` attributes, on the other hand, are *not* inherited.
-
-        This method walks the XML tree and promotes every
-        ``data-typst-label`` to ``id`` (on ``<g>`` elements only), so that
-        :meth:`~.SVGMobject.get_mobjects_from` can pick them up via its
-        existing ``id``-based grouping logic.
+        Ordinary Typst labels are promoted from ``data-typst-label`` to ``id``.
+        :class:`MathTypst` capture groups additionally provide a leaf-index to
+        label mapping obtained from layout-preserving ``hide`` probes. Each
+        captured leaf is wrapped in one or more identified SVG groups, allowing
+        nested captures without altering the final Typst layout.
         """
-        # Let the base class inject default style wrappers first.
+        label_counts: dict[str, int] = {}
+
+        if self._svg_leaf_labels:
+            leaf_index = 0
+
+            def wrap_leaves(element: ET.Element, inside_defs: bool = False) -> None:
+                nonlocal leaf_index
+                children: list[ET.Element] = []
+                for child in element:
+                    tag = _svg_tag_name(child)
+                    child_inside_defs = inside_defs or tag == "defs"
+                    if not child_inside_defs and tag in _SVG_LEAF_TAGS:
+                        wrapped = child
+                        for label in reversed(
+                            self._svg_leaf_labels.get(leaf_index, [])
+                        ):
+                            count = label_counts.get(label, 0)
+                            label_counts[label] = count + 1
+                            svg_id = label
+                            if count > 0:
+                                svg_id = f"{label}{_DUPLICATE_LABEL_SUFFIX}{count}"
+                            namespace = (
+                                wrapped.tag.partition("}")[0] + "}"
+                                if "}" in wrapped.tag
+                                else ""
+                            )
+                            group = ET.Element(
+                                f"{namespace}g",
+                                {"id": svg_id},
+                            )
+                            group.append(wrapped)
+                            wrapped = group
+                        children.append(wrapped)
+                        leaf_index += 1
+                    else:
+                        wrap_leaves(child, child_inside_defs)
+                        children.append(child)
+                element[:] = children
+
+            wrap_leaves(element_tree.getroot())
+
+        # Let the base class inject default style wrappers after capture leaves
+        # have been grouped in the original SVG namespace.
         element_tree = super().modify_xml_tree(element_tree)
 
-        # Walk all elements regardless of namespace — ElementTree
-        # qualifies tags with the namespace URI, so a bare ``"g"``
-        # won't match ``{http://www.w3.org/2000/svg}g``.
-        label_counts: dict[str, int] = {}
+        # ElementTree qualifies SVG tags with a namespace URI, so walk all
+        # elements rather than matching a bare ``g`` tag.
         for element in element_tree.iter():
             label = element.get("data-typst-label")
-            if label is not None:
-                count = label_counts.get(label, 0)
-                label_counts[label] = count + 1
-                svg_id = label
-                if count > 0:
-                    svg_id = f"{label}{_DUPLICATE_LABEL_SUFFIX}{count}"
-                element.set("id", svg_id)
-                del element.attrib["data-typst-label"]
+            if label is None:
+                continue
+            count = label_counts.get(label, 0)
+            label_counts[label] = count + 1
+            svg_id = label
+            if count > 0:
+                svg_id = f"{label}{_DUPLICATE_LABEL_SUFFIX}{count}"
+            element.set("id", svg_id)
+            del element.attrib["data-typst-label"]
 
         return element_tree
 
@@ -537,16 +719,15 @@ class Typst(SVGMobject):
     def select(self, key: str | int) -> VGroup:
         """Select a labeled sub-expression.
 
-        Labels are created in the Typst source either manually via the
-        ``manimgrp`` helper or automatically through the ``{{ }}``
-        double-brace notation in :class:`MathTypst`.
+        Labels are created either directly in Typst markup or through the
+        ``{{ }}`` double-brace notation in :class:`MathTypst`.
 
         Parameters
         ----------
         key
-            A label name (``str``) matching a ``data-typst-label`` in the
-            SVG, or an integer index into the auto-numbered ``{{ }}``
-            groups (``_grp-0``, ``_grp-1``, …).
+            A label name (``str``) available in the rendered SVG, or an
+            integer index into the auto-numbered ``{{ }}`` groups
+            (``_grp-0``, ``_grp-1``, …).
 
         Returns
         -------
@@ -591,10 +772,7 @@ class Typst(SVGMobject):
         return self._select_label(key)
 
     def _user_label_keys(self) -> list[str]:
-        """Return the label keys that were created from ``data-typst-label``
-        attributes (filtering out internal Typst group IDs and auto-numbered
-        groups).
-        """
+        """Return user-facing label keys, excluding internal SVG group IDs."""
         return list(self._label_aliases)
 
     # -- color handling ------------------------------------------------------
@@ -625,13 +803,19 @@ class MathTypst(Typst):
     (``$ ... $`` with surrounding spaces).
 
     Supports the ``{{ ... }}`` double-brace notation for grouping
-    sub-expressions.  Each ``{{ content }}`` is wrapped in a labeled
-    ``manimgrp`` call so that the resulting SVG contains identifiable
-    groups accessible via :meth:`~.Typst.select`.
+    sub-expressions. The final expression is rendered without a layout
+    wrapper; additional layout-preserving ``hide`` probes map each capture
+    to SVG leaves accessible via :meth:`~.Typst.select`.
 
     Groups can optionally be given explicit labels:
-    ``{{ content : label }}``.  Without a label, groups are
-    auto-numbered (``_grp-0``, ``_grp-1``, …).
+    ``{{ content : label }}``. Without a label, groups are
+    auto-numbered (``_grp-0``, ``_grp-1``, …). Groups may be nested; an inner
+    group's SVG leaves are then selectable through both labels.
+
+    .. note::
+
+       Custom Typst show rules targeting ``hide`` are not supported together
+       with ``{{ ... }}`` capture groups.
 
     Parameters
     ----------
@@ -668,19 +852,51 @@ class MathTypst(Typst):
     def __init__(self, math_expression: str, **kwargs: Any):
         processed, labels = self._preprocess_groups(math_expression)
         self._group_labels = labels
+        typst_code = f"$ {processed} $"
 
-        # Inject the manimgrp helper when groups are present.
         if labels:
-            preamble = kwargs.get("typst_preamble", "")
-            if _MANIMGRP_PREAMBLE not in preamble:
-                preamble = (
-                    f"{_MANIMGRP_PREAMBLE}\n{preamble}"
-                    if preamble
-                    else _MANIMGRP_PREAMBLE
-                )
-            kwargs["typst_preamble"] = preamble
+            user_preamble = kwargs.get("typst_preamble", "")
+            font_paths = kwargs.get("font_paths")
+            final_preamble = _manimgrp_preamble(None)
+            if user_preamble:
+                final_preamble = f"{final_preamble}\n{user_preamble}"
 
-        super().__init__(f"$ {processed} $", **kwargs)
+            final_svg = typst_to_svg_file(
+                typst_code,
+                preamble=final_preamble,
+                font_paths=font_paths,
+            )
+            visible_leaves = _svg_leaf_signatures(final_svg)
+            distinct_labels = list(dict.fromkeys(labels))
+            leaf_labels: dict[int, list[str]] = {}
+
+            for label in distinct_labels:
+                probe_preamble = _manimgrp_preamble(label)
+                if user_preamble:
+                    probe_preamble = f"{probe_preamble}\n{user_preamble}"
+                probe_svg = typst_to_svg_file(
+                    typst_code,
+                    preamble=probe_preamble,
+                    font_paths=font_paths,
+                )
+                try:
+                    hidden_indices = _hidden_leaf_indices(
+                        visible_leaves,
+                        _svg_leaf_signatures(probe_svg),
+                    )
+                except ValueError as error:
+                    raise ValueError(
+                        f"Could not map MathTypst group {label!r} to SVG leaves. "
+                        f"{error}"
+                    ) from error
+                for leaf_index in sorted(hidden_indices):
+                    leaf_labels.setdefault(leaf_index, []).append(label)
+
+            self._svg_leaf_labels = leaf_labels
+            self._known_svg_labels = distinct_labels
+            kwargs["typst_preamble"] = final_preamble
+
+        super().__init__(typst_code, **kwargs)
 
     # -- double-brace preprocessor -------------------------------------------
 
@@ -698,121 +914,119 @@ class MathTypst(Typst):
         tuple[str, list[str]]
             The processed expression and an ordered list of group labels.
         """
-        result: list[str] = []
         labels: list[str] = []
         auto_index = 0
-        i = 0
-        n = len(math_expr)
-        outer_in_string = False
-        outer_bracket_depth = 0
 
-        while i < n:
-            ch = math_expr[i]
+        def process(expression: str) -> str:
+            nonlocal auto_index
+            result: list[str] = []
+            i = 0
+            n = len(expression)
+            in_string = False
+            bracket_depth = 0
 
-            # Track string literals at the outer level.
-            if outer_in_string:
-                result.append(ch)
-                if ch == "\\" and i + 1 < n:
-                    result.append(math_expr[i + 1])
-                    i += 2
+            while i < n:
+                ch = expression[i]
+
+                if in_string:
+                    result.append(ch)
+                    if ch == "\\" and i + 1 < n:
+                        result.append(expression[i + 1])
+                        i += 2
+                        continue
+                    if ch == '"':
+                        in_string = False
+                    i += 1
                     continue
                 if ch == '"':
-                    outer_in_string = False
-                i += 1
-                continue
-            if ch == '"':
-                outer_in_string = True
-                result.append(ch)
-                i += 1
-                continue
+                    in_string = True
+                    result.append(ch)
+                    i += 1
+                    continue
 
-            # Track [...] content blocks at the outer level.
-            if ch == "[":
-                outer_bracket_depth += 1
-                result.append(ch)
-                i += 1
-                continue
-            if ch == "]" and outer_bracket_depth > 0:
-                outer_bracket_depth -= 1
-                result.append(ch)
-                i += 1
-                continue
-            if outer_bracket_depth > 0:
-                result.append(ch)
-                i += 1
-                continue
+                if ch == "[":
+                    bracket_depth += 1
+                    result.append(ch)
+                    i += 1
+                    continue
+                if ch == "]" and bracket_depth > 0:
+                    bracket_depth -= 1
+                    result.append(ch)
+                    i += 1
+                    continue
+                if bracket_depth > 0:
+                    result.append(ch)
+                    i += 1
+                    continue
 
-            # Look for opening {{ (not a single {)
-            if i + 1 < n and ch == "{" and math_expr[i + 1] == "{":
-                i += 2  # skip {{
+                if i + 1 >= n or ch != "{" or expression[i + 1] != "{":
+                    result.append(ch)
+                    i += 1
+                    continue
+
+                group_start = i
+                i += 2
                 content_start = i
                 depth = 1
-                in_string = False
-                bracket_depth = 0
+                group_in_string = False
+                group_bracket_depth = 0
 
                 while i < n and depth > 0:
-                    ch = math_expr[i]
-
-                    if in_string:
+                    ch = expression[i]
+                    if group_in_string:
                         if ch == "\\" and i + 1 < n:
                             i += 2
                             continue
                         if ch == '"':
-                            in_string = False
+                            group_in_string = False
                         i += 1
                         continue
-
                     if ch == '"':
-                        in_string = True
+                        group_in_string = True
                         i += 1
                         continue
-
                     if ch == "[":
-                        bracket_depth += 1
+                        group_bracket_depth += 1
                         i += 1
                         continue
-                    if ch == "]" and bracket_depth > 0:
-                        bracket_depth -= 1
+                    if ch == "]" and group_bracket_depth > 0:
+                        group_bracket_depth -= 1
                         i += 1
                         continue
-                    if bracket_depth > 0:
+                    if group_bracket_depth > 0:
                         i += 1
                         continue
-
-                    if ch == "{" and i + 1 < n and math_expr[i + 1] == "{":
+                    if ch == "{" and i + 1 < n and expression[i + 1] == "{":
                         depth += 1
                         i += 2
                         continue
-                    if ch == "}" and i + 1 < n and math_expr[i + 1] == "}":
+                    if ch == "}" and i + 1 < n and expression[i + 1] == "}":
                         depth -= 1
                         if depth == 0:
-                            content = math_expr[content_start:i]
-                            i += 2  # skip }}
+                            content = expression[content_start:i]
+                            i += 2
                             break
                         i += 2
                         continue
-
                     i += 1
                 else:
-                    # Unclosed {{ — emit literally and stop.
-                    result.append("{{")
-                    result.append(math_expr[content_start:])
-                    return "".join(result), labels
+                    result.append(expression[group_start:])
+                    return "".join(result)
 
-                # Check for optional `: label` suffix.
-                m = _LABEL_RE.match(content)
-                if m is not None:
-                    body = m.group(1).strip()
-                    label = m.group(2)
+                match = _LABEL_RE.match(content)
+                if match is not None:
+                    body = match.group(1).strip()
+                    label = match.group(2)
                 else:
                     body = content.strip()
                     label = f"_grp-{auto_index}"
                     auto_index += 1
 
+                # Record the outer capture before recursively processing its
+                # body, preserving source opening order for nested groups.
                 labels.append(label)
-                result.append(f'manimgrp("{label}", {body})')
-            else:
-                result.append(math_expr[i])
-                i += 1
+                result.append(f'manimgrp("{label}", {process(body)})')
 
-        return "".join(result), labels
+            return "".join(result)
+
+        return process(math_expr), labels
