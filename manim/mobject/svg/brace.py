@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING, Any, Self
 import numpy as np
 import svgelements as se
 
-from manim._config import config
 from manim.mobject.geometry.arc import Arc
 from manim.mobject.geometry.line import Line
 from manim.mobject.mobject import Mobject
@@ -22,7 +21,6 @@ from ...animation.composition import AnimationGroup
 from ...animation.fading import FadeIn
 from ...animation.growing import GrowFromCenter
 from ...constants import *
-from ...constants import RendererType
 from ...mobject.types.vectorized_mobject import VMobject
 from ...utils.color import BLACK
 from ..svg.svg_mobject import VMobjectFromSVGPath
@@ -124,6 +122,9 @@ class Brace(VMobjectFromSVGPath):
             **kwargs,
         )
         self.flip(RIGHT)
+        self._tip_point_index = np.argmin(
+            np.linalg.norm(self.points - self.get_bottom(), axis=1)
+        )
         self.stretch_to_fit_width(target_width)
         self.shift(left - self.get_corner(UP + LEFT) + self.buff * DOWN)
 
@@ -193,15 +194,7 @@ class Brace(VMobjectFromSVGPath):
 
     def get_tip(self) -> Point3D:
         """Returns the point at the brace tip."""
-        # Returns the tip anchor of the path. Cairo stores 4 points per cubic
-        # curve, putting the tip anchor at index 28. OpenGL stores 3 points
-        # per quadratic curve with anchors duplicated at curve boundaries, so
-        # the tip anchor lands on index 35 (and its duplicate 36); index 34 is
-        # the preceding Bezier handle, not the tip.
-        if config.renderer == RendererType.OPENGL:
-            return self.points[35]
-
-        return self.points[28]  # = 7*4
+        return self.points[self._tip_point_index]
 
     def get_direction(self) -> Vector3D:
         """Returns the direction from the center to the brace tip."""
