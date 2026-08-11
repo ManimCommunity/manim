@@ -630,6 +630,10 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
                 move_pen(end)
 
             def add_line(start: np.ndarray, end: np.ndarray) -> None:
+                if self.long_lines:
+                    midpoint = (start + end) / 2
+                    add_quad(start, (start + midpoint) / 2, midpoint)
+                    start = midpoint
                 add_quad(start, (start + end) / 2, end)
                 move_pen(end)
 

@@ -81,11 +81,13 @@ def test_remove_null_curves_under_opengl(using_opengl_renderer):
     assert len(stripped.points) < len(plain.points)
 
 
-def test_long_lines_forwarded_under_opengl(using_opengl_renderer):
-    # OpenGLVMobject.__init__ takes long_lines as a parameter; the value
-    # passed here must survive construction.
-    mob = VMobjectFromSVGPath(se.Path("M 0 0 L 4 0 Z"), long_lines=True)
-    assert mob.long_lines is True
+def test_long_lines_under_opengl(using_opengl_renderer):
+    plain = VMobjectFromSVGPath(se.Path("M 0 0 L 4 0"))
+    split = VMobjectFromSVGPath(
+        se.Path("M 0 0 L 4 0"),
+        long_lines=True,
+    )
+    assert len(split.points) == 2 * len(plain.points)
 
 
 def test_path_flags_ignored_under_cairo(config):
