@@ -7,6 +7,7 @@ __all__ = ["SceneFileWriter"]
 import json
 import shutil
 import warnings
+from contextlib import suppress
 from fractions import Fraction
 from pathlib import Path
 from queue import Queue
@@ -90,6 +91,110 @@ def convert_audio(
             output_audio.mux(packet)
 
 
+class _PartialMovieEncodeJob:
+    """Encode and write the frames for one partial movie file."""
+
+    def __init__(
+        self,
+        path: StrPath,
+        animation_index: int,
+        container: OutputContainer,
+        stream: Stream,
+        frame_queue_size: int,
+    ) -> None:
+        self.path = path
+        self.animation_index = animation_index
+        self.container = container
+        self.stream = stream
+        # A size of 0 preserves the unbounded queue used by serial encoding.
+        # Parallel encoding uses a bounded queue; at the default capacity, eight
+        # 1080p RGBA frames occupy about 66 MB per job. The worker drains through
+        # the sentinel after an exception, so a bounded queue cannot deadlock.
+        self.queue: Queue[tuple[int, PixelArray | None]] = Queue(
+            maxsize=frame_queue_size,
+        )
+        self._exception: BaseException | None = None
+        self.thread = Thread(
+            target=self._listen_and_write,
+            name=f"partial-movie-encoder-{animation_index}",
+        )
+        self.thread.start()
+
+    def _capture_exception(self, exception: BaseException) -> None:
+        if self._exception is None:
+            self._exception = exception
+
+    @property
+    def failed(self) -> bool:
+        """Whether the worker has captured an exception."""
+        return self._exception is not None
+
+    def _listen_and_write(self) -> None:
+        while True:
+            num_frames, frame_data = self.queue.get()
+            if frame_data is None:
+                break
+            if self._exception is not None:
+                continue
+
+            try:
+                self._encode_and_write_frame(frame_data, num_frames)
+            except BaseException as exception:
+                self._capture_exception(exception)
+
+        try:
+            for packet in self.stream.encode():
+                self.container.mux(packet)
+        except BaseException as exception:
+            self._capture_exception(exception)
+        finally:
+            try:
+                self.container.close()
+            except BaseException as exception:
+                self._capture_exception(exception)
+
+    def _encode_and_write_frame(self, frame: PixelArray, num_frames: int) -> None:
+        for _ in range(num_frames):
+            # Notes: precomputing reusing packets does not work!
+            # I.e., you cannot do `packets = encode(...)`
+            # and reuse it, as it seems that `mux(...)`
+            # consumes the packet.
+            # The same issue applies for `av_frame`,
+            # reusing it renders weird-looking frames.
+            av_frame = av.VideoFrame.from_ndarray(frame, format="rgba")
+            for packet in self.stream.encode(av_frame):
+                self.container.mux(packet)
+
+    def put(self, num_frames: int, frame: PixelArray) -> None:
+        """Add a frame to the encoding queue."""
+        self.queue.put((num_frames, frame))
+
+    def seal(self) -> None:
+        """Signal that no more frames will be added."""
+        self.queue.put((-1, None))
+
+    def join(self) -> None:
+        """Wait for encoding to finish and propagate worker failures."""
+        self.thread.join()
+        if self._exception is not None:
+            # A failed encode may leave a structurally valid but truncated
+            # file behind; remove it so a later run cannot cache-hit it.
+            try:
+                Path(self.path).unlink(missing_ok=True)
+            except OSError as cleanup_error:
+                logger.warning(
+                    "Failed to remove incomplete partial movie file %(path)s: "
+                    "%(error)s",
+                    {"path": f"'{self.path}'", "error": cleanup_error},
+                )
+            raise self._exception
+
+        logger.info(
+            f"Animation {self.animation_index} : Partial movie file written in %(path)s",
+            {"path": f"'{self.path}'"},
+        )
+
+
 class SceneFileWriter:
     """SceneFileWriter is the object that actually writes the animations
     played, into video files, using FFMPEG.
@@ -127,6 +232,9 @@ class SceneFileWriter:
         **kwargs: Any,
     ) -> None:
         self.renderer = renderer
+        self._inflight_encode_jobs: list[_PartialMovieEncodeJob] = []
+        self._inflight_by_path: dict[str, _PartialMovieEncodeJob] = {}
+        self._current_encode_job: _PartialMovieEncodeJob | None = None
         self.init_output_directories(scene_name)
         self.init_audio()
         self.frame_count = 0
@@ -426,30 +534,6 @@ class SceneFileWriter:
         if write_to_movie() and allow_write:
             self.close_partial_movie_stream()
 
-    def listen_and_write(self) -> None:
-        """For internal use only: blocks until new frame is available on the queue."""
-        while True:
-            num_frames, frame_data = self.queue.get()
-            if frame_data is None:
-                break
-
-            self.encode_and_write_frame(frame_data, num_frames)
-
-    def encode_and_write_frame(self, frame: PixelArray, num_frames: int) -> None:
-        """For internal use only: takes a given frame in ``np.ndarray`` format and
-        writes it to the stream
-        """
-        for _ in range(num_frames):
-            # Notes: precomputing reusing packets does not work!
-            # I.e., you cannot do `packets = encode(...)`
-            # and reuse it, as it seems that `mux(...)`
-            # consumes the packet.
-            # The same issue applies for `av_frame`,
-            # reusing it renders weird-looking frames.
-            av_frame = av.VideoFrame.from_ndarray(frame, format="rgba")
-            for packet in self.video_stream.encode(av_frame):
-                self.video_container.mux(packet)
-
     def write_frame(
         self, frame_or_renderer: PixelArray | OpenGLRenderer, num_frames: int = 1
     ) -> None:
@@ -472,8 +556,18 @@ class SceneFileWriter:
                     else frame_or_renderer
                 )
 
-            msg = (num_frames, frame)
-            self.queue.put(msg)
+            job = self._current_encode_job
+            if job is None:
+                # Interactive OpenGL rendering emits frames outside an open
+                # partial movie stream; drop them silently.
+                return
+            if job.failed:
+                # Surface the failure at the first write after it was captured;
+                # join() unlinks the partial and re-raises.
+                job.seal()
+                self._current_encode_job = None
+                job.join()
+            job.put(num_frames, frame)
 
         if is_png_format() and not config["dry_run"]:
             if isinstance(frame_or_renderer, np.ndarray):
@@ -524,9 +618,11 @@ class SceneFileWriter:
         If save_last_frame is True, saves the last frame in the default image directory.
         """
         if write_to_movie():
+            self.join_all_encode_jobs()
             self.combine_to_movie()
             if config.save_sections:
                 self.combine_to_section_videos()
+            # Cache cleanup runs after the in-flight encode jobs have been drained.
             if config["flush_cache"]:
                 self.flush_cache_directory()
             else:
@@ -545,6 +641,14 @@ class SceneFileWriter:
         """
         if file_path is None:
             file_path = self.partial_movie_files[self.renderer.num_plays]
+            if file_path is None:
+                raise RuntimeError(
+                    "open_partial_movie_stream() called for a play that has no "
+                    "partial movie file path.",
+                )
+        path_key = str(file_path)
+        if path_key in self._inflight_by_path:
+            self._join_job_and_drain_on_failure(self._inflight_by_path[path_key])
         self.partial_movie_file_path = file_path
 
         fps = to_av_frame_rate(config.frame_rate)
@@ -576,12 +680,103 @@ class SceneFileWriter:
         stream.width = config.pixel_width
         stream.height = config.pixel_height
 
-        self.video_container: OutputContainer = video_container
-        self.video_stream: Stream = stream
+        frame_queue_size = (
+            0 if config.max_inflight_encoders == 1 else config.encoder_queue_size
+        )
+        self._current_encode_job = _PartialMovieEncodeJob(
+            path=file_path,
+            animation_index=self.renderer.num_plays,
+            container=video_container,
+            stream=stream,
+            frame_queue_size=frame_queue_size,
+        )
 
-        self.queue: Queue[tuple[int, PixelArray | None]] = Queue()
-        self.writer_thread = Thread(target=self.listen_and_write, args=())
-        self.writer_thread.start()
+    def _join_job(self, job: _PartialMovieEncodeJob) -> None:
+        """Remove and join an in-flight partial movie encode job."""
+        if job in self._inflight_encode_jobs:
+            self._inflight_encode_jobs.remove(job)
+        self._inflight_by_path.pop(str(job.path), None)
+        job.join()
+
+    def _join_job_and_drain_on_failure(
+        self,
+        job: _PartialMovieEncodeJob,
+    ) -> None:
+        """Join one job, draining all remaining jobs if it fails."""
+        try:
+            self._join_job(job)
+        except BaseException:
+            # Preserve the failure which triggered the drain.
+            with suppress(BaseException):
+                self.join_all_encode_jobs()
+            raise
+
+    def join_all_encode_jobs(self) -> None:
+        """Join every in-flight encode job, re-raising the first failure."""
+        first_exception: BaseException | None = None
+        for job in list(self._inflight_encode_jobs):
+            try:
+                self._join_job(job)
+            except BaseException as exception:
+                if first_exception is None:
+                    first_exception = exception
+
+        self._inflight_encode_jobs.clear()
+        self._inflight_by_path.clear()
+        if first_exception is not None:
+            raise first_exception
+
+    def abort_encode_jobs(self, reraise_encoder_failures: bool = False) -> None:
+        """Tear down encode jobs after an aborted or rerun render.
+
+        Seals the current job so its worker can exit (a non-daemon thread
+        blocked on the queue would hang the process at exit), then deletes its
+        partial file unconditionally: an aborted partial is structurally valid
+        but truncated, so leaving it behind produces an erroneous cache hit on
+        a later run. Sealed in-flight jobs are then drained. With
+        ``reraise_encoder_failures=False`` (a render exception is already
+        propagating) drain failures are logged, not raised; with ``True``
+        (rerun path -- no primary exception exists) the first drain failure
+        propagates so corrupt completed partials cannot be silently ignored.
+        """
+        current_exception: BaseException | None = None
+        job = self._current_encode_job
+        if job is not None:
+            # Seal before clearing: an interrupt landing between the two
+            # statements must not orphan the worker.
+            job.seal()
+            self._current_encode_job = None
+            job.thread.join()
+            current_exception = job._exception
+            if current_exception is not None:
+                logger.error(
+                    "Encoder for aborted animation %d had also failed",
+                    job.animation_index,
+                    exc_info=current_exception,
+                )
+            try:
+                Path(job.path).unlink(missing_ok=True)
+                logger.info(
+                    "Discarded partial movie file of aborted animation %(index)d",
+                    {"index": job.animation_index},
+                )
+            except OSError as cleanup_error:
+                logger.warning(
+                    "Failed to remove incomplete partial movie file %(path)s: "
+                    "%(error)s",
+                    {"path": f"'{job.path}'", "error": cleanup_error},
+                )
+        if reraise_encoder_failures:
+            self.join_all_encode_jobs()
+            if current_exception is not None:
+                # The rerun path has no primary exception: a failed current
+                # job must not be silently absorbed.
+                raise current_exception
+        else:
+            try:
+                self.join_all_encode_jobs()
+            except BaseException:
+                logger.exception("Encoder failure while aborting render")
 
     def close_partial_movie_stream(self) -> None:
         """Close the currently opened video container.
@@ -590,18 +785,19 @@ class SceneFileWriter:
         in the video stream holding a partial file, and then close
         the corresponding container.
         """
-        self.queue.put((-1, None))
-        self.writer_thread.join()
+        job = self._current_encode_job
+        if job is None:
+            raise RuntimeError(
+                "close_partial_movie_stream() called without an open partial "
+                "movie stream.",
+            )
+        job.seal()
+        self._inflight_encode_jobs.append(job)
+        self._inflight_by_path[str(job.path)] = job
+        self._current_encode_job = None
 
-        for packet in self.video_stream.encode():
-            self.video_container.mux(packet)
-
-        self.video_container.close()
-
-        logger.info(
-            f"Animation {self.renderer.num_plays} : Partial movie file written in %(path)s",
-            {"path": f"'{self.partial_movie_file_path}'"},
-        )
+        while len(self._inflight_encode_jobs) >= config.max_inflight_encoders:
+            self._join_job_and_drain_on_failure(self._inflight_encode_jobs[0])
 
     def is_already_cached(self, hash_invocation: str) -> bool:
         """Will check if a file named with `hash_invocation` exists.
@@ -622,6 +818,9 @@ class SceneFileWriter:
             self.partial_movie_directory
             / f"{hash_invocation}{config['movie_file_extension']}"
         )
+        path_key = str(path)
+        if path_key in self._inflight_by_path:
+            self._join_job_and_drain_on_failure(self._inflight_by_path[path_key])
         return path.exists()
 
     def combine_files(

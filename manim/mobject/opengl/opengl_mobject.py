@@ -358,29 +358,31 @@ class OpenGLMobject:
         else:
             cls.__init__ = cls._original__init__
 
-    def init_data(self) -> None:
+    def init_data(self) -> Self:
         """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
         Subclasses can inherit and overwrite this method to extend `self.data`.
         """
         self.points = np.zeros((0, 3))
         self.bounding_box = np.zeros((3, 3))
         self.rgbas = np.zeros((1, 4))
+        return self
 
-    def init_colors(self) -> None:
+    def init_colors(self) -> Self:
         """Initializes the colors.
 
         Gets called upon creation
         """
         self.set_color(self.color, self.opacity)
+        return self
 
-    def init_points(self) -> None:
+    def init_points(self) -> Self:
         """Initializes :attr:`points` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be implemented by
         subclasses.
         """
         # Typically implemented in subclass, unless purposefully left blank
-        pass
+        return self
 
     def set(self, **kwargs: object) -> Self:
         """Sets attributes.
@@ -1198,7 +1200,7 @@ class OpenGLMobject:
             # make the grid as close to quadratic as possible.
             # choosing cols first can results in cols>rows.
             # This is favored over rows>cols since in general
-            # the sceene is wider than high.
+            # the scene is wider than high.
         if rows is None:
             rows = ceil(len(mobs) / cols)
         if cols is None:
@@ -1423,7 +1425,7 @@ class OpenGLMobject:
 
     # Copying
 
-    def copy(self, shallow: bool = False) -> OpenGLMobject:
+    def copy(self, shallow: bool = False) -> Self:
         """Create and return an identical copy of the :class:`OpenGLMobject` including all
         :attr:`submobjects`.
 
@@ -1481,14 +1483,14 @@ class OpenGLMobject:
             #     setattr(copy_mobject, attr, value.copy())
         return copy_mobject
 
-    def deepcopy(self) -> OpenGLMobject:
+    def deepcopy(self) -> Self:
         parents = self.parents
         self.parents = []
         result = copy.deepcopy(self)
         self.parents = parents
         return result
 
-    def generate_target(self, use_deepcopy: bool = False) -> OpenGLMobject:
+    def generate_target(self, use_deepcopy: bool = False) -> Self:
         self.target: OpenGLMobject | None = None  # Prevent exponential explosion
         if use_deepcopy:
             self.target = self.deepcopy()
@@ -1516,11 +1518,12 @@ class OpenGLMobject:
 
     # Updating
 
-    def init_updaters(self) -> None:
+    def init_updaters(self) -> Self:
         self.time_based_updaters: list["_TimeBasedUpdater"] = []  # noqa: UP037
         self.non_time_updaters: list["_NonTimeBasedUpdater"] = []  # noqa: UP037
         self.has_updaters: bool = False
         self.updating_suspended: bool = False
+        return self
 
     def update(self, dt: float = 0, recurse: bool = True) -> Self:
         if self.has_updaters and not self.updating_suspended:
@@ -2796,7 +2799,7 @@ class OpenGLMobject:
 
     # Locking data
 
-    def lock_data(self, keys: Iterable[str]) -> None:
+    def lock_data(self, keys: Iterable[str]) -> Self:
         """
         To speed up some animations, particularly transformations,
         it can be handy to acknowledge which pieces of data
@@ -2805,10 +2808,11 @@ class OpenGLMobject:
         read into the shader_wrapper objects needlessly
         """
         if self.has_updaters:
-            return
+            return self
         # Be sure shader data has most up to date information
         self.refresh_shader_data()
         self.locked_data_keys = set(keys)
+        return self
 
     def lock_matching_data(
         self, mobject1: OpenGLMobject, mobject2: OpenGLMobject
@@ -2830,9 +2834,10 @@ class OpenGLMobject:
             )
         return self
 
-    def unlock_data(self) -> None:
+    def unlock_data(self) -> Self:
         for mob in self.get_family():
             mob.locked_data_keys = set()
+        return self
 
     # Operations touching shader uniforms
 
@@ -2977,19 +2982,21 @@ class OpenGLMobject:
         shader_data: _ShaderData,  # has structured data type, ex. ("point", np.float32, (3,))
         shader_data_key: str,
         data_key: str,
-    ) -> None:
+    ) -> Self:
         if data_key in self.locked_data_keys:
-            return
+            return self
         self.check_data_alignment(shader_data, data_key)
         shader_data[shader_data_key] = self.data[data_key]
+        return self
 
     def get_shader_data(self) -> _ShaderData:
         shader_data = self.get_resized_shader_data_array(self.get_num_points())
         self.read_data_to_shader(shader_data, "point", "points")
         return shader_data
 
-    def refresh_shader_data(self) -> None:
+    def refresh_shader_data(self) -> Self:
         self.get_shader_data()
+        return self
 
     def get_shader_uniforms(self) -> dict[str, Any]:
         return self.uniforms
@@ -3051,8 +3058,9 @@ class OpenGLPoint(OpenGLMobject):
     def get_bounding_box_point(self, *args: object, **kwargs: Any) -> Point3D:
         return self.get_location()
 
-    def set_location(self, new_loc: Point3DLike) -> None:
+    def set_location(self, new_loc: Point3DLike) -> Self:
         self.set_points(np.array(new_loc, ndmin=2, dtype=float))
+        return self
 
 
 class _AnimationBuilder:
@@ -3091,7 +3099,7 @@ class _AnimationBuilder:
         # NOTE: using `Self` here should not be a problem, because it's equivalent to a `TypeVar` introduced in `__getattr__`.
         #   For this reason, here it's still in scope and can be used (that's why pyright does not flag this as an error).
         #   However, mypy currently does not seem to understand this: hence the `type: ignore` comment.
-        def update_target(*method_args: object, **method_kwargs: object) -> Self:  # type: ignore[type-var, misc]
+        def update_target(*method_args: object, **method_kwargs: object) -> Self:  # type: ignore[type-var]
             if has_overridden_animation:
                 self.overridden_animation = cast(
                     "Callable[..., Animation]", method._override_animate
