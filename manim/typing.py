@@ -946,7 +946,7 @@ ManimTextLabel: TypeAlias = "Text | MathTex | Typst"
 """Text-like label mobjects commonly used across Manim.
 
 This includes :class:`~.Text`, :class:`~.MathTex`, and :class:`~.Typst`.
-Subtype-specific variants like :class:`~.Tex` and :class:`~.TypstMath` are
+Subtype-specific variants like :class:`~.Tex` and :class:`~.MathTypst` are
 covered implicitly through inheritance.
 """
 

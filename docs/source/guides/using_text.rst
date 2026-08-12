@@ -17,7 +17,7 @@ LaTeX rendering is available via :class:`~.Tex` and
 information.
 
 Typst support is available via :class:`~.Typst` and
-:class:`~.TypstMath`. It offers both general markup and mathematical
+:class:`~.MathTypst`. It offers both general markup and mathematical
 typesetting through the Typst compiler without requiring a TeX
 distribution. See :ref:`typst-mobjects` for more information.
 
@@ -304,7 +304,7 @@ Text With Typst
 ***************
 
 Manim also supports rendering text and formulas with Typst via
-:class:`~.Typst` and :class:`~.TypstMath`.
+:class:`~.Typst` and :class:`~.MathTypst`.
 
 .. important::
 
@@ -324,23 +324,23 @@ expressions.
             text = Typst(r"*Hello* from _Typst!_", font_size=96)
             self.add(text)
 
-For mathematical expressions, use :class:`~.TypstMath`:
+For mathematical expressions, use :class:`~.MathTypst`:
 
-.. manim:: HelloTypstMath
+.. manim:: HelloMathTypst
     :save_last_frame:
-    :ref_classes: TypstMath
+    :ref_classes: MathTypst
 
-    class HelloTypstMath(Scene):
+    class HelloMathTypst(Scene):
         def construct(self):
-            equation = TypstMath(r"sum_(k=1)^n k = (n(n + 1)) / 2", font_size=72)
+            equation = MathTypst(r"sum_(k=1)^n k = (n(n + 1)) / 2", font_size=72)
             self.add(equation)
 
 Typst also supports selecting subexpressions via labels in the Typst source,
-or via Manim's ``{{ ... }}`` shorthand in :class:`~.TypstMath`:
+or via Manim's ``{{ ... }}`` shorthand in :class:`~.MathTypst`:
 
 .. code-block:: python
 
-    eq = TypstMath("{{ a + b : lhs }} = {{ c }}")
+    eq = MathTypst("{{ a + b : lhs }} = {{ c }}")
     eq.select("lhs").set_color(BLUE)
     eq.select(0).set_color(YELLOW)
 

@@ -7,10 +7,10 @@ from manim import (
     RIGHT,
     Label,
     MathTex,
+    MathTypst,
     NumberLine,
     Tex,
     Typst,
-    TypstMath,
     Vector,
     VectorScene,
 )
@@ -24,9 +24,9 @@ def test_Typst(config):
     assert len(m.submobjects) > 0
 
 
-def test_TypstMath(config):
-    """TypstMath wraps the expression in math delimiters."""
-    m = TypstMath(r"alpha + beta")
+def test_MathTypst(config):
+    """MathTypst wraps the expression in math delimiters."""
+    m = MathTypst(r"alpha + beta")
     assert m.typst_code == "$ alpha + beta $"
     assert m.height > 0
 
@@ -54,7 +54,7 @@ def test_typst_font_size_property_setter(config):
 
 def test_typst_font_size_scaling_also_scales_svg_strokes(config):
     """Typst-authored stroke widths scale together with font_size."""
-    m = TypstMath("frac(a,b)", font_size=48, use_svg_cache=False)
+    m = MathTypst("frac(a,b)", font_size=48, use_svg_cache=False)
     original_stroke_width = max(submobject.stroke_width for submobject in m.submobjects)
 
     m.font_size = 96
@@ -92,8 +92,8 @@ def test_typst_repr(config):
     m = Typst("hello")
     assert repr(m) == "Typst('hello')"
 
-    m2 = TypstMath("x")
-    assert repr(m2) == "TypstMath('$ x $')"
+    m2 = MathTypst("x")
+    assert repr(m2) == "MathTypst('$ x $')"
 
 
 def test_typst_text_rendering(config):
@@ -138,12 +138,12 @@ def test_typst_text_font_size_matches_tex_closely(config):
     assert np.isclose(typst.width, tex.width, rtol=0.02)
 
 
-def test_typstmath_font_size_matches_mathtex_closely(config):
+def test_mathtypst_font_size_matches_mathtex_closely(config):
     """Typst math is calibrated close to MathTex for the same font_size."""
     mathtex = MathTex(r"\frac{a}{b}", font_size=48)
-    typstmath = TypstMath("frac(a,b)", font_size=48, use_svg_cache=False)
-    assert np.isclose(typstmath.height, mathtex.height, rtol=0.02)
-    assert np.isclose(typstmath.width, mathtex.width, rtol=0.02)
+    mathtypst = MathTypst("frac(a,b)", font_size=48, use_svg_cache=False)
+    assert np.isclose(mathtypst.height, mathtex.height, rtol=0.02)
+    assert np.isclose(mathtypst.width, mathtex.width, rtol=0.02)
 
 
 # -- data-typst-label → id mapping tests ------------------------------------
@@ -257,56 +257,56 @@ def test_typst_select_keyerror_lists_labels_starting_with_g(config):
 # -- {{ }} double-brace preprocessor tests ----------------------------------
 
 
-def test_typstmath_double_brace_auto_numbered(config):
+def test_mathtypst_double_brace_auto_numbered(config):
     """{{ }} groups are auto-numbered and selectable by index."""
-    eq = TypstMath("{{ a + b }} / {{ c - d }} = {{ x }}", use_svg_cache=False)
+    eq = MathTypst("{{ a + b }} / {{ c - d }} = {{ x }}", use_svg_cache=False)
     assert eq._group_labels == ["_grp-0", "_grp-1", "_grp-2"]
     assert len(eq.select(0)) == 3  # a, +, b
     assert len(eq.select(1)) == 3  # c, -, d
     assert len(eq.select(2)) == 1  # x
 
 
-def test_typstmath_double_brace_named(config):
+def test_mathtypst_double_brace_named(config):
     """{{ content : label }} assigns an explicit label."""
-    eq = TypstMath("{{ a + b : numerator }} / {{ c - d : denom }}", use_svg_cache=False)
+    eq = MathTypst("{{ a + b : numerator }} / {{ c - d : denom }}", use_svg_cache=False)
     assert "numerator" in eq._group_labels
     assert "denom" in eq._group_labels
     assert len(eq.select("numerator")) == 3
     assert len(eq.select("denom")) == 3
 
 
-def test_typstmath_double_brace_mixed_named_auto(config):
+def test_mathtypst_double_brace_mixed_named_auto(config):
     """Named and auto-numbered groups can coexist."""
-    eq = TypstMath("{{ a : lhs }} = {{ b }}", use_svg_cache=False)
+    eq = MathTypst("{{ a : lhs }} = {{ b }}", use_svg_cache=False)
     assert eq._group_labels == ["lhs", "_grp-0"]
     assert len(eq.select("lhs")) == 1
     assert len(eq.select(0)) == 1
 
 
-def test_typstmath_no_braces_no_preamble(config):
+def test_mathtypst_no_braces_no_preamble(config):
     """Without {{ }}, the manimgrp preamble is not injected."""
-    eq = TypstMath("a + b", use_svg_cache=False)
+    eq = MathTypst("a + b", use_svg_cache=False)
     assert eq._group_labels == []
     assert "manimgrp" not in eq.typst_preamble
 
 
-def test_typstmath_select_index_error(config):
+def test_mathtypst_select_index_error(config):
     """select(int) raises IndexError for out-of-range index."""
-    eq = TypstMath("{{ a }}", use_svg_cache=False)
+    eq = MathTypst("{{ a }}", use_svg_cache=False)
     with pytest.raises(IndexError, match="out of range"):
         eq.select(1)
 
 
-def test_typstmath_preprocessor_skips_strings():
+def test_mathtypst_preprocessor_skips_strings():
     """{{ }} inside string literals are not processed."""
-    processed, labels = TypstMath._preprocess_groups('x =_("{{ not a group }}") z')
+    processed, labels = MathTypst._preprocess_groups('x =_("{{ not a group }}") z')
     assert labels == []
     assert "manimgrp" not in processed
 
 
-def test_typstmath_preprocessor_skips_content_blocks():
+def test_mathtypst_preprocessor_skips_content_blocks():
     """{{ }} inside [...] content blocks are not processed."""
-    processed, labels = TypstMath._preprocess_groups("[text {{ here }}] {{ real }}")
+    processed, labels = MathTypst._preprocess_groups("[text {{ here }}] {{ real }}")
     assert labels == ["_grp-0"]
     assert processed.count("manimgrp") == 1
 
@@ -321,13 +321,13 @@ def test_label_accepts_typst(config):
     assert label.rendered_label is rendered
 
 
-def test_numberline_add_labels_with_typstmath_constructor_uses_typst(config):
-    """String labels use Typst text mode when label_constructor is TypstMath."""
+def test_numberline_add_labels_with_mathtypst_constructor_uses_typst(config):
+    """String labels use Typst text mode when label_constructor is MathTypst."""
     number_line = NumberLine(x_range=[-1, 1])
-    number_line.add_labels({0: "origin"}, label_constructor=TypstMath)
+    number_line.add_labels({0: "origin"}, label_constructor=MathTypst)
     assert len(number_line.labels) == 1
     assert isinstance(number_line.labels[0], Typst)
-    assert not isinstance(number_line.labels[0], TypstMath)
+    assert not isinstance(number_line.labels[0], MathTypst)
 
 
 def test_vector_scene_get_vector_label_accepts_typst(config):

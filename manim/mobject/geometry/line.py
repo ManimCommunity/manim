@@ -106,13 +106,14 @@ class Line(TipableVMobject):
         self._set_start_and_end_attrs(start, end)
         super().__init__(**kwargs)
 
-    def generate_points(self) -> None:
+    def generate_points(self) -> Self:
         self.set_points_by_ends(
             start=self.start,
             end=self.end,
             buff=self.buff,
             path_arc=self.path_arc,
         )
+        return self
 
     def set_points_by_ends(
         self,
@@ -120,7 +121,7 @@ class Line(TipableVMobject):
         end: Point3DLike | Mobject,
         buff: float = 0,
         path_arc: float = 0,
-    ) -> None:
+    ) -> Self:
         """Sets the points of the line based on its start and end points.
         Unlike :meth:`put_start_and_end_on`, this method respects `self.buff` and
         Mobject bounding boxes.
@@ -144,9 +145,11 @@ class Line(TipableVMobject):
             self.set_points_as_corners(np.asarray([self.start, self.end]))
 
         self._account_for_buff(buff)
+        return self
 
-    def init_points(self) -> None:
+    def init_points(self) -> Self:
         self.generate_points()
+        return self
 
     def _account_for_buff(self, buff: float) -> None:
         if buff <= 0:
@@ -195,9 +198,10 @@ class Line(TipableVMobject):
                 return mob.get_boundary_point(direction)
         return np.array(mob_or_point)
 
-    def set_path_arc(self, new_value: float) -> None:
+    def set_path_arc(self, new_value: float) -> Self:
         self.path_arc = new_value
         self.init_points()
+        return self
 
     def put_start_and_end_on(
         self,
