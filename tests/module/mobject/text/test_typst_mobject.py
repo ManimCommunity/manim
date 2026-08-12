@@ -275,6 +275,16 @@ def test_mathtypst_double_brace_named(config):
     assert len(eq.select("denom")) == 3
 
 
+def test_mathtypst_grouping_preserves_math_layout(config):
+    """Grouping an expression only adds selection metadata."""
+    expression = r"integral_0^infinity e^(-x^2) dif x"
+    plain = MathTypst(expression, use_svg_cache=False)
+    grouped = MathTypst(f"{{{{ {expression} : integral }}}}", use_svg_cache=False)
+
+    assert len(grouped.select("integral")) == len(grouped.submobjects)
+    np.testing.assert_allclose(grouped.get_all_points(), plain.get_all_points())
+
+
 def test_mathtypst_double_brace_mixed_named_auto(config):
     """Named and auto-numbered groups can coexist."""
     eq = MathTypst("{{ a : lhs }} = {{ b }}", use_svg_cache=False)
