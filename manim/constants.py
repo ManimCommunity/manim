@@ -9,7 +9,7 @@ import numpy as np
 from cloup import Context
 from PIL.Image import Resampling
 
-from manim.typing import Vector3D
+from manim.typing import Point3D, Vector3D
 
 __all__ = [
     "SCENE_NOT_FOUND_MESSAGE",
@@ -118,7 +118,7 @@ RESAMPLING_ALGORITHMS = {
 }
 
 # Geometry: directions
-ORIGIN: Vector3D = np.array((0.0, 0.0, 0.0))
+ORIGIN: Point3D = np.array((0.0, 0.0, 0.0))
 """The center of the coordinate system."""
 
 UP: Vector3D = np.array((0.0, 1.0, 0.0))
