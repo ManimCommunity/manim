@@ -914,7 +914,7 @@ class Scene:
         # Go through mobjects from start to end, and
         # as soon as there's one that needs updating of
         # some kind per frame, return the list from that
-        # point forward.
+        # mobject's earliest ancestor.
         # Imported inside the method to avoid cyclic import.
         from ..animation.composition import AnimationGroup
 
@@ -932,17 +932,29 @@ class Scene:
                     )
             return animation_mobjects
 
-        animation_mobjects = _collect_animation_mobjects(animations)
+        animation_mobjects = set(_collect_animation_mobjects(animations))
 
         mobjects = self.get_mobject_family_members()
-        for i, mob in enumerate(mobjects):
-            update_possibilities = [
-                mob in animation_mobjects,
-                len(mob.get_family_updaters()) > 0,
-                mob in self.foreground_mobjects,
-            ]
-            if any(update_possibilities):
-                return mobjects[i:]
+        families: dict[Mobject, set[Mobject]] = {}
+
+        def consider_moving(mob: Mobject) -> bool:
+            return (
+                mob in animation_mobjects
+                or any(len(m.updaters) > 0 for m in families[mob])
+                or mob in self.foreground_mobjects
+            )
+
+        for mob in mobjects:
+            fam = set(mob.get_family())
+            families[mob] = fam
+            if consider_moving(mob):
+                # If this moving mobject is nested, include the earliest ancestor
+                # in the list of mobjects to be rendered. Otherwise, begin from the
+                # mobject itself.
+                first_moving_index = next(
+                    i for i, m in enumerate(mobjects) if mob in families[m]
+                )
+                return mobjects[first_moving_index:]
         return []
 
     def get_moving_and_static_mobjects(
