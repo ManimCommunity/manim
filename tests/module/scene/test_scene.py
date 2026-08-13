@@ -81,10 +81,11 @@ def test_animation_group_moving_mobjects_preserve_z_index_order(dry_run):
 
 
 @pytest.mark.parametrize("parent_cls", [Group, Circle])
-def test_parent_of_moving_submobject_is_marked_moving(dry_run, parent_cls):
+@pytest.mark.parametrize("z_index", [-10, 0, 10])
+def test_parent_of_moving_submobject_is_marked_moving(dry_run, parent_cls, z_index):
     scene = Scene()
     child = Square()
-    parent = parent_cls().add(child)
+    parent = parent_cls().set_z_index(z_index).add(child)
     scene.add(parent)
 
     scene.compile_animation_data(child.animate.shift((1, 0, 0)))
