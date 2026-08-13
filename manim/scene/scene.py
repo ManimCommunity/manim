@@ -935,27 +935,17 @@ class Scene:
         animation_mobjects = set(_collect_animation_mobjects(animations))
 
         mobjects = self.get_mobject_family_members()
-        families: dict[Mobject, set[Mobject]] = {}
 
         def consider_moving(mob: Mobject) -> bool:
             return (
                 mob in animation_mobjects
-                or any(len(m.updaters) > 0 for m in families[mob])
+                or len(mob.updaters) > 0
                 or mob in self.foreground_mobjects
+                or any(consider_moving(m) for m in mob.submobjects)
             )
 
-        for mob in mobjects:
-            fam = set(mob.get_family())
-            families[mob] = fam
-            if consider_moving(mob):
-                # If this moving mobject is nested, include the earliest ancestor
-                # in the list of mobjects to be rendered. Otherwise, begin from the
-                # mobject itself.
-                first_moving_index = next(
-                    i for i, m in enumerate(mobjects) if mob in families[m]
-                )
-                return mobjects[first_moving_index:]
-        return []
+        i = next((i for i, mob in enumerate(mobjects) if consider_moving(mob)), None)
+        return [] if i is None else mobjects[i:]
 
     def get_moving_and_static_mobjects(
         self, animations: Iterable[Animation]
