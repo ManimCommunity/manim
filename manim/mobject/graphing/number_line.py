@@ -25,7 +25,7 @@ from manim.mobject.geometry.line import Line
 from manim.mobject.graphing.scale import LinearBase, _ScaleBase
 from manim.mobject.text.numbers import DecimalNumber
 from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex, Tex
-from manim.mobject.text.typst_mobject import Typst, TypstMath
+from manim.mobject.text.typst_mobject import MathTypst, Typst
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.bezier import interpolate
 from manim.utils.config_ops import merge_dicts_recursively
@@ -613,7 +613,7 @@ class NumberLine(Line):
             if isinstance(label, str):
                 if label_constructor is MathTex:
                     label = Tex(label)
-                elif label_constructor is TypstMath:
+                elif label_constructor is MathTypst:
                     label = Typst(label)
                 else:
                     label = self._create_label_tex(label, label_constructor)

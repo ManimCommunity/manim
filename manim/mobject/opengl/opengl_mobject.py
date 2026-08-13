@@ -1200,7 +1200,7 @@ class OpenGLMobject:
             # make the grid as close to quadratic as possible.
             # choosing cols first can results in cols>rows.
             # This is favored over rows>cols since in general
-            # the sceene is wider than high.
+            # the scene is wider than high.
         if rows is None:
             rows = ceil(len(mobs) / cols)
         if cols is None:
@@ -3099,7 +3099,7 @@ class _AnimationBuilder:
         # NOTE: using `Self` here should not be a problem, because it's equivalent to a `TypeVar` introduced in `__getattr__`.
         #   For this reason, here it's still in scope and can be used (that's why pyright does not flag this as an error).
         #   However, mypy currently does not seem to understand this: hence the `type: ignore` comment.
-        def update_target(*method_args: object, **method_kwargs: object) -> Self:  # type: ignore[type-var, misc]
+        def update_target(*method_args: object, **method_kwargs: object) -> Self:  # type: ignore[type-var]
             if has_overridden_animation:
                 self.overridden_animation = cast(
                     "Callable[..., Animation]", method._override_animate

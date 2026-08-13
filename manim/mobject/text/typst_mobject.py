@@ -10,7 +10,7 @@
 
 Typst mobjects compile Typst markup directly to SVG using the ``typst``
 Python package and then import the result through :class:`~.SVGMobject`.
-Use :class:`~.Typst` for general Typst markup and :class:`~.TypstMath`
+Use :class:`~.Typst` for general Typst markup and :class:`~.MathTypst`
 for display-style math.
 
 Examples
@@ -32,13 +32,13 @@ Basic text and math
             )
             self.add(text)
 
-.. manim:: TypstMathReferenceExample
+.. manim:: MathTypstReferenceExample
     :save_last_frame:
-    :ref_classes: TypstMath
+    :ref_classes: MathTypst
 
-    class TypstMathReferenceExample(Scene):
+    class MathTypstReferenceExample(Scene):
         def construct(self):
-            equation = TypstMath(
+            equation = MathTypst(
                 r"sum_(k=1)^n k = frac(n(n + 1), 2)",
                 font_size=72,
             )
@@ -51,12 +51,12 @@ Typst mobjects expose label-based selection via :meth:`~.Typst.select`.
 There are two common ways to create selectable groups:
 
 - use ordinary Typst labels in :class:`~.Typst`
-- use Manim's ``{{ ... }}`` shorthand in :class:`~.TypstMath`
+- use Manim's ``{{ ... }}`` shorthand in :class:`~.MathTypst`
 
 .. note::
 
    The ``{{ ... }}`` shorthand is currently only supported by
-   :class:`~.TypstMath`. For :class:`~.Typst`, create labels directly in the
+   :class:`~.MathTypst`. For :class:`~.Typst`, create labels directly in the
    Typst source, for example with ``#box[body] <label>``.
 
 .. manim:: TypstLabelSelectionExample
@@ -81,14 +81,14 @@ There are two common ways to create selectable groups:
             text.select("picked").set_color(YELLOW)
             self.add(text)
 
-.. manim:: TypstMathSelectionExample
+.. manim:: MathTypstSelectionExample
     :save_last_frame:
-    :ref_classes: TypstMath
+    :ref_classes: MathTypst
     :ref_methods: Typst.select
 
-    class TypstMathSelectionExample(Scene):
+    class MathTypstSelectionExample(Scene):
         def construct(self):
-            equation = TypstMath(
+            equation = MathTypst(
                 "{{ a^2 + b^2 : lhs }} = {{ c^2 }}",
                 font_size=72,
             )
@@ -109,7 +109,7 @@ query either :attr:`~.Typst.baseline_frames` for all tracked leaf elements or
     text = Typst("Ggf", track_baselines=True)
     orig, right, up = text.baseline_frames[0]
 
-    eq = TypstMath("{{ a^2 + b^2 : lhs }} = c^2", track_baselines=True)
+    eq = MathTypst("{{ a^2 + b^2 : lhs }} = c^2", track_baselines=True)
     for part in eq.select("lhs"):
         orig, right, up = eq.get_baseline_frame(part)
         print(orig, right, up)
@@ -119,7 +119,7 @@ from __future__ import annotations
 
 __all__ = [
     "Typst",
-    "TypstMath",
+    "MathTypst",
 ]
 
 import re
@@ -539,7 +539,7 @@ class Typst(SVGMobject):
 
         Labels are created in the Typst source either manually via the
         ``manimgrp`` helper or automatically through the ``{{ }}``
-        double-brace notation in :class:`TypstMath`.
+        double-brace notation in :class:`MathTypst`.
 
         Parameters
         ----------
@@ -564,12 +564,12 @@ class Typst(SVGMobject):
         --------
         .. manim:: TypstSelectExample
             :save_last_frame:
-            :ref_classes: TypstMath
+            :ref_classes: MathTypst
             :ref_methods: Typst.select
 
             class TypstSelectExample(Scene):
                 def construct(self):
-                    eq = TypstMath(
+                    eq = MathTypst(
                         "{{ a + b : num }} / {{ c : den }} = {{ lambda }} {{ x }}"
                     )
                     eq.select("num").set_color(RED)  # "a + b"
@@ -618,7 +618,7 @@ class Typst(SVGMobject):
         return self
 
 
-class TypstMath(Typst):
+class MathTypst(Typst):
     r"""Convenience wrapper: wraps the input in Typst math delimiters.
 
     The expression is rendered as a display-level equation
@@ -645,21 +645,21 @@ class TypstMath(Typst):
     --------
     .. manim:: DisplayMath
         :save_last_frame:
-        :ref_classes: TypstMath
+        :ref_classes: MathTypst
 
         class DisplayMath(Scene):
             def construct(self):
-                eq = TypstMath(r"sum_(k=0)^n k = (n(n+1)) / 2")
+                eq = MathTypst(r"sum_(k=0)^n k = (n(n+1)) / 2")
                 self.add(eq)
 
     .. manim:: GroupedMath
         :save_last_frame:
-        :ref_classes: TypstMath
+        :ref_classes: MathTypst
         :ref_methods: Typst.select
 
         class GroupedMath(Scene):
             def construct(self):
-                eq = TypstMath("{{ a^2 + b^2 : lhs }} = {{ c^2 }}")
+                eq = MathTypst("{{ a^2 + b^2 : lhs }} = {{ c^2 }}")
                 eq.select("lhs").set_color(RED) # "a^2 + b^2"
                 eq.select(0).set_color(BLUE)    # "c^2" (auto-numbered: "grp-0")
                 self.add(eq)

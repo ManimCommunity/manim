@@ -189,6 +189,31 @@ def test_code_height_is_independent_of_boundary_glyphs(
     np.testing.assert_allclose(background_heights, background_heights[0], atol=1e-6)
 
 
+@pytest.mark.parametrize("disable_ligatures", [True, False])
+@pytest.mark.parametrize("add_line_numbers", [True, False])
+def test_code_line_mobject_is_independent_of_ordinality(
+    disable_ligatures, add_line_numbers
+):
+    """Test that the (sub)mobject structure and width of a line of code does not depend
+    on the line's order in the block.
+    """
+    code_strings = ("Hello World!",) * 5
+    code_mobject = Code(
+        code_string="\n".join(code_strings),
+        add_line_numbers=add_line_numbers,
+        paragraph_config={"disable_ligatures": disable_ligatures},
+    )
+    lines = code_mobject.code_lines
+    reference_line = lines[len(lines) // 2]
+    for boundary_line in (lines[0], lines[-1]):
+        assert len(boundary_line) == len(reference_line)
+        np.testing.assert_allclose(
+            boundary_line.width,
+            reference_line.width,
+            atol=1e-6,
+        )
+
+
 def test_code_syntax_highlighting_colors():
     code_string = "pass\n# comment"
     rendered_code = Code(
