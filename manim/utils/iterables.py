@@ -159,7 +159,8 @@ def list_update(l1: Iterable[T], l2: Iterable[T]) -> list[T]:
         >>> list_update([1, 2, 3], [2, 4, 4])
         [1, 3, 2, 4, 4]
     """
-    return list_difference_update(l1, l2) + list(l2)
+    l2 = list(l2)
+    return list_difference_update(l1, l2) + l2
 
 
 @overload
