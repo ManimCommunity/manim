@@ -351,5 +351,39 @@ class CapStyleType(Enum):
 
 
 class GradientType(Enum):
+    """Collection of available gradient types.
+
+    See the example below for a visual illustration of the different
+    gradient types.
+
+    Examples
+    --------
+
+    .. manim:: GradientVariants
+        :save_last_frame:
+
+        class GradientVariants(Scene):
+            def construct(self):
+                gradient = color_gradient([RED, GREEN, BLUE], 3)
+                circles = VGroup(*[
+                    Circle(
+                        fill_opacity=1,
+                        fill_color=gradient,
+                        stroke_opacity=0,
+                        gradient_type=gradient_type,
+                        sheen_direction=RIGHT
+                    ).scale(2)
+                    for gradient_type in GradientType
+                ])
+                circles.arrange(RIGHT, buff=1)
+                self.add(circles)
+                for circle in circles:
+                    label = Text(
+                        circle.gradient_type.name,
+                        font_size=24
+                    ).next_to(circle, DOWN)
+                    self.add(label)
+    """
+
     LINEAR = 0
     RADIAL = 1

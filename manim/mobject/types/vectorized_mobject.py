@@ -101,6 +101,10 @@ class VMobject(Mobject):
         The line joint type used to connect the curve segments
         of this vectorized mobject. See :class:`.LineJointType`
         for options.
+    gradient_type
+        Indicates the type of gradient to be applied. Options
+        are GradientType.LINEAR and GradientType.RADIAL.
+        See :class:`.GradientType`
     """
 
     sheen_factor = 0.0
