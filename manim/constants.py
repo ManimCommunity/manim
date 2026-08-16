@@ -76,6 +76,7 @@ __all__ = [
     "RendererType",
     "LineJointType",
     "CapStyleType",
+    "GradientType",
 ]
 # Messages
 
@@ -347,3 +348,8 @@ class CapStyleType(Enum):
     ROUND = 1
     BUTT = 2
     SQUARE = 3
+
+
+class GradientType(Enum):
+    LINEAR = 0
+    RADIAL = 1
