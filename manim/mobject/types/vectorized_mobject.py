@@ -128,6 +128,7 @@ class VMobject(Mobject):
         tolerance_for_point_equality: float = 1e-6,
         n_points_per_cubic_curve: int = 4,
         cap_style: CapStyleType = CapStyleType.AUTO,
+        gradient_type: GradientType = GradientType.LINEAR,
         **kwargs: Any,
     ):
         self.fill_opacity = fill_opacity
@@ -159,6 +160,7 @@ class VMobject(Mobject):
             0, 1, n_points_per_cubic_curve
         )
         self.cap_style: CapStyleType = cap_style
+        self.gradient_type = gradient_type
         super().__init__(**kwargs)
         self.submobjects: list[VMobject]
 
