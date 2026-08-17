@@ -1,4 +1,3 @@
-import contextlib
 from collections.abc import Callable, Iterable
 from typing import Any, Self
 
@@ -24,8 +23,6 @@ from manim.typing import (
     Point3D,
     Point3D_Array,
     Point3DLike,
-    Point3DLike_Array,
-    Vector3D,
     Vector3DLike,
 )
 from manim.utils.space_ops import rotation_matrix
@@ -35,23 +32,16 @@ class Positionable:
     # FUNDAMENTALS
     points: Point3D_Array
 
-    def get_points(self) -> Point3D_Array:
-        return self.points
-
-    def set_points(self, points: Point3DLike_Array) -> Self:
-        self.points = np.asarray(points)
-        return self
-
     # METHODS
 
+    # TODO: Add a parameter for the frame?
     def align_on_border(
         self,
         direction: Vector3DLike,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
     ) -> Self:
-        # TODO: Add parameter for this?
         frame = (config.frame_x_radius, config.frame_y_radius, 0)
-        target = np.sign(direction) * frame - buff * np.array(direction)
+        target = np.sign(direction) * frame - buff * np.asarray(direction)
         self.move_to(point_or_mobject=target, aligned_edge=direction)
         return self
 
@@ -75,7 +65,11 @@ class Positionable:
             xy_complex = function(complex(x, y))
             return np.array([xy_complex.real, xy_complex.imag, z])
 
-        return self.apply_function(R3_func, about_point=about_point, about_edge=about_edge)
+        return self.apply_function(
+            function=R3_func,
+            about_point=about_point,
+            about_edge=about_edge,
+        )
 
     def apply_function(
         self,
@@ -88,17 +82,14 @@ class Positionable:
             about_point = ORIGIN
 
         def multi_mapping_function(points: Point3D_Array) -> Point3D_Array:
-            result: Point3D_Array = np.apply_along_axis(function, 1, points)
-            return result
+            return np.apply_along_axis(func1d=function, axis=1, arr=points)
 
-        self.apply_points_function_about_point(
-            multi_mapping_function,
-            about_point,
-            about_edge,
+        return self.apply_points_function_about_point(
+            function=multi_mapping_function,
+            about_point=about_point,
+            about_edge=about_edge,
         )
-        return self
 
-    # TODO: Do we really need this?
     def apply_function_to_position(
         self,
         function: Callable[[Point3D], Point3D],
@@ -108,44 +99,49 @@ class Positionable:
     def apply_matrix(
         self,
         matrix: MatrixMN,
-        *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
         if about_point is None and about_edge is None:
             about_point = ORIGIN
+
         matrix = np.asarray(matrix)
-        full_matrix = np.identity(3)
-        full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
+
+        # Fast path for standard 3x3 matrices
+        if matrix.shape == (3, 3):
+            full_matrix = matrix
+        else:
+            full_matrix = np.identity(3)
+            full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
+
         return self.apply_points_function(
-            lambda points: np.dot(points, full_matrix.T),
+            lambda points: points.dot(full_matrix.T),
             about_point=about_point,
             about_edge=about_edge,
         )
 
     def apply_points_function(
         self,
-        func: Callable[[Point3D], Point3D],
+        function: Callable[[Point3D], Point3D],
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
         if about_point is None:
             about_point = self.get_critical_point(direction=about_edge if about_edge is not None else ORIGIN)
-        points = self.get_points()
-        points -= about_point
-        points = func(points)
-        points += about_point
-        return self.set_points(points)
+        self.points -= about_point
+        self.points = function(self.points)
+        self.points += about_point
+        return self
 
     # @deprecated(message="Use apply_points_function() instead.")
     def apply_points_function_about_point(
         self,
-        func: Callable[[Point3D], Point3D],
+        function: Callable[[Point3D], Point3D],
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
         return self.apply_points_function(
-            func=func,
+            function=function,
             about_point=about_point,
             about_edge=about_edge,
         )
@@ -175,14 +171,12 @@ class Positionable:
 
     # TODO: Should this function be dropped?
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
-        all_points = self.get_points()
-        index = np.argmax(np.dot(all_points, direction))
-        return all_points[index]
+        index = np.argmax(np.dot(self.points, direction))
+        return self.points[index]
 
     def get_bounding_box(self) -> Point3D_Array:
-        points = self.get_points()
-        mins = points.min(axis=0)
-        maxs = points.max(axis=0)
+        mins = self.points.min(axis=0)
+        maxs = self.points.max(axis=0)
         mids = (mins + maxs) / 2
         return np.array([mins, mids, maxs])
 
@@ -190,7 +184,7 @@ class Positionable:
         return self.get_critical_point(ORIGIN)
 
     def get_center_of_mass(self) -> Point3D:
-        return self.get_points().mean(axis=0)
+        return self.points.mean(axis=0)
 
     def get_coord(self, dim: int, direction: Vector3DLike = ORIGIN) -> float:
         return self.get_critical_point(direction=direction)[dim]
@@ -264,8 +258,7 @@ class Positionable:
         raise NotImplementedError
 
     def length_over_dim(self, dim: int) -> float:
-        points = self.get_points()
-        values = points[:, dim]
+        values = self.points[:, dim]
         return values.max() - values.min()
 
     def match_coord(
@@ -290,7 +283,8 @@ class Positionable:
     #    return self.set_height()
 
     def match_points(self, mobject: "Positionable") -> Self:
-        return self.set_points(mobject.get_points())
+        self.points = mobject.points.copy()
+        return self
 
     # def match_width(self) -> Self:
     #    return self.set_width()
@@ -371,14 +365,15 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
-        old_length = self.length_over_dim(dim=dim)
-        if old_length == 0:
-            return self
-        if stretch:
-            self.stretch(length / old_length, dim, **kwargs)
-        else:
-            self.scale(length / old_length, **kwargs)
-        return self
+        raise NotImplementedError
+        # old_length = self.length_over_dim(dim=dim)
+        # if old_length == 0:
+        #    return self
+        # if stretch:
+        #    self.stretch(length / old_length, dim, ...)
+        # else:
+        #    self.scale(length / old_length, ...)
+        # return self
 
     def rotate(
         self,
@@ -446,8 +441,7 @@ class Positionable:
         return self.set_coord(value=z, dim=2, direction=direction)
 
     def shift(self, vector: Vector3DLike) -> Self:
-        points = self.get_points()
-        self.set_points(points + vector)
+        self.points += vector
         return self
 
     def shift_onto_screen(self) -> Self:
@@ -457,16 +451,15 @@ class Positionable:
         self,
         factor: float,
         dim: int,
-        *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
-        def func(points: Point3D_Array) -> Point3D_Array:
+        def function(points: Point3D_Array) -> Point3D_Array:
             points[:, dim] *= factor
             return points
 
         return self.apply_points_function(
-            func=func,
+            function=function,
             about_point=about_point,
             about_edge=about_edge,
         )
@@ -499,144 +492,4 @@ class Positionable:
 
     @property
     def width(self) -> float:
-        return self.length_over_dim(0)
-
-
-def main() -> None:
-    mob_1 = Mobject()
-    mob_2 = Positionable()
-    rng = np.random.default_rng(seed=1)
-
-    def validate_getter(getter: Callable[[Mobject | Positionable], np.typing.ArrayLike]) -> None:
-        expected: np.typing.ArrayLike | None = None
-        with contextlib.suppress(Exception):
-            expected = getter(mob_1)
-        if expected is not None:
-            got = getter(mob_2)
-            assert np.allclose(got, expected), f"'{got}' - '{expected}'\n"
-
-    def validate_setter(setter: Callable[[Mobject | Positionable], Any]):
-        points_1 = np.asarray(mob_1.points).copy()
-        points_2 = np.asarray(mob_2.points).copy()
-        setter(mob_1)
-        setter(mob_2)
-        assert np.allclose(mob_1.points, mob_2.points)
-
-        mob_1.points = points_1
-        mob_2.points = points_2
-
-    def random_number(low: float = -10, high: float = 10) -> float:
-        return rng.uniform(low=low, high=high)
-
-    def random_point(low: float = -10, high: float = 10) -> Point3D:
-        return rng.uniform(low=low, high=high, size=3)
-
-    def random_points(low: float = -10, high: float = 10, size: int = 1) -> np.ndarray:
-        return rng.uniform(low=low, high=high, size=(size, 3))
-
-    def random_vector(low: float = -3, high: float = 3) -> Vector3D:
-        return rng.uniform(low=low, high=high, size=3)
-
-    def create_another[T: Mobject | Positionable](mob: T, points: Point3D_Array) -> T:
-        another = mob.__class__()
-        another.points = points
-        return another
-
-    # Try from 1 to a 100 points
-    point_counts = list(range(1, 101))
-    rng.shuffle(point_counts)
-    for point_count in point_counts:
-        # Validate every point count 100 times
-        for _ in range(100):
-            # Generate random points
-            points = random_points(size=point_count)
-            mob_1.points = mob_2.points = points.copy()
-
-            validate_setter(lambda mob, d=random_vector(), b=random_number(): mob.align_on_border(direction=d, buff=b))
-            validate_setter(lambda mob, p=random_point(), d=random_vector(): mob.align_to(mobject_or_point=p, direction=d))
-            # validate_setter(lambda mob: mob.apply_complex_function(...))
-            # validate_setter(lambda mob: mob.apply_function(...))
-            # validate_setter(lambda mob: mob.apply_function_to_position(...))
-            # validate_setter(lambda mob: mob.apply_matrix(...))
-            # validate_setter(lambda mob: mob.apply_points_function_about_point(...))
-            validate_setter(lambda mob: mob.center())
-            validate_getter(lambda mob: mob.depth)
-            # validate_setter(lambda mob, v=random_number(): setattr(mob, "depth", v))
-            validate_setter(lambda mob, a=random_vector(), p=random_point(), e=random_vector(): mob.flip(axis=a, about_point=p, about_edge=e))
-            validate_getter(lambda mob: mob.get_bottom())
-            validate_getter(lambda mob, d=random_vector(): mob.get_boundary_point(direction=d))
-            validate_getter(lambda mob: mob.get_center())
-            validate_getter(lambda mob: mob.get_center_of_mass())
-            for dim in [0, 1, 2]:
-                validate_getter(lambda mob, d=random_vector(): mob.get_coord(dim=dim, direction=d))
-            validate_getter(lambda mob, d=random_vector(): mob.get_corner(direction=d))
-            validate_getter(lambda mob, d=random_vector(): mob.get_critical_point(direction=d))
-            validate_getter(lambda mob, d=random_vector(): mob.get_edge_center(direction=d))
-            validate_getter(lambda mob: mob.get_end())
-            for dim in [0, 1, 2]:
-                for key in [0, 1, 2]:
-                    validate_getter(lambda mob: mob.get_extremum_along_dim(dim=dim, key=key))
-            validate_getter(lambda mob: mob.get_left())
-            validate_getter(lambda mob: mob.get_nadir())
-            validate_getter(lambda mob: mob.get_right())
-            validate_getter(lambda mob: mob.get_start())
-            validate_getter(lambda mob: mob.get_start_and_end())
-            validate_getter(lambda mob: mob.get_top())
-            validate_getter(lambda mob: mob.get_x())
-            validate_getter(lambda mob: mob.get_y())
-            validate_getter(lambda mob: mob.get_z())
-            validate_getter(lambda mob: mob.get_zenith())
-            validate_getter(lambda mob: mob.height)
-            # validate_setter(lambda mob, h=random_number(): setattr(mob, "height", h))
-            for dim in [0, 1, 2]:
-                validate_getter(lambda mob: mob.length_over_dim(dim=dim))
-
-            points = random_point()
-
-            for dim in [0, 1, 2]:
-                validate_setter(lambda mob, p=random_points(size=int(random_number(1, 100))): mob.match_coord(mobject=create_another(mob=mob, points=p), dim=dim))
-            # validate_setter(lambda mob: mob.match_depth())
-            # validate_setter(lambda mob: mob.match_dim_size())
-            # validate_setter(lambda mob: mob.match_height())
-            validate_setter(lambda mob, p=random_points(size=int(random_number(1, 100))): mob.match_points(mobject=create_another(mob=mob, points=p)))
-            # validate_setter(lambda mob: mob.match_width())
-            validate_setter(lambda mob, p=random_points(size=int(random_number(1, 100))): mob.match_x(mobject=create_another(mob=mob, points=p)))
-            validate_setter(lambda mob, p=random_points(size=int(random_number(1, 100))): mob.match_y(mobject=create_another(mob=mob, points=p)))
-            validate_setter(lambda mob, p=random_points(size=int(random_number(1, 100))): mob.match_z(mobject=create_another(mob=mob, points=p)))
-            validate_setter(lambda mob, p=random_point(), e=random_vector(), m=random_vector(): mob.move_to(point_or_mobject=p, aligned_edge=e, coor_mask=m))
-            validate_setter(
-                lambda mob, p=random_point(), d=random_vector(), b=random_number(), e=random_vector(), m=random_vector(): mob.next_to(
-                    mobject_or_point=p, direction=d, buff=b, aligned_edge=e, coor_mask=m
-                )
-            )
-            # validate_setter(lambda mob: mob.pose_at_angle())
-            # validate_setter(lambda mob: mob.put_start_and_end_on())
-            # validate_getter(lambda mob: mob.reduce_across_dimension())
-            # validate_setter(lambda mob: mob.rescale_to_fit())
-            validate_setter(lambda mob, a=random_number(), ax=random_vector(), e=random_vector(): mob.rotate(angle=a, axis=ax, about_edge=e))
-            # validate_setter(lambda mob, a=random_number(), ax=random_vector(),: mob.rotate_about_origin(angle=a, axis=ax))
-            # validate_setter(lambda mob: mob.scale())
-            # validate_setter(lambda mob: mob.scale_to_fit_depth())
-            # validate_setter(lambda mob: mob.scale_to_fit_height())
-            # validate_setter(lambda mob: mob.scale_to_fit_width())
-            for dim in [0, 1, 2]:
-                validate_setter(lambda mob, v=random_number(), d=random_vector(): mob.set_coord(value=v, dim=dim, direction=d))
-            validate_setter(lambda mob, x=random_number(), d=random_vector(): mob.set_x(x=x, direction=d))
-            validate_setter(lambda mob, y=random_number(), d=random_vector(): mob.set_y(y=y, direction=d))
-            validate_setter(lambda mob, z=random_number(), d=random_vector(): mob.set_z(z=z, direction=d))
-            validate_setter(lambda mob, v=random_vector(): mob.shift(v))
-            # validate_setter(lambda mob, v=random_vector(): mob.shift_onto_screen())
-            for dim in [0, 1, 2]:
-                validate_setter(lambda mob, f=random_number(), p=random_point(), e=random_vector(): mob.stretch(factor=f, dim=dim, about_point=p, about_edge=e))
-            # validate_setter(lambda mob: mob.stretch_about_point())
-            # validate_setter(lambda mob: mob.stretch_to_fit_depth())
-            # validate_setter(lambda mob: mob.stretch_to_fit_height())
-            # validate_setter(lambda mob: mob.stretch_to_fit_width())
-            validate_setter(lambda mob, c=random_vector(), b=random_number(): mob.to_corner(corner=c, buff=b))
-            validate_setter(lambda mob, c=random_vector(), b=random_number(): mob.to_edge(edge=c, buff=b))
-            validate_getter(lambda mob: mob.width)
-            # validate_setter(lambda mob, w=random_number(): setattr(mob, "width", w))
-
-
-if __name__ == "__main__":
-    main()
+        return self.length_over_dim(dim=0)
