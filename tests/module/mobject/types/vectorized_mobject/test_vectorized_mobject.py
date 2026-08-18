@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 from manim import (
+    Arc,
     Circle,
     CurvesAsSubmobjects,
     Line,
@@ -15,7 +16,7 @@ from manim import (
     VGroup,
     VMobject,
 )
-from manim.constants import PI
+from manim.constants import DEGREES, PI
 
 
 def test_vmobject_add():
@@ -735,3 +736,51 @@ def test_pointwise_become_partial_where_vmobject_is_self():
         ]
     )
     np.testing.assert_allclose(sq.points, expected_points)
+
+
+def test_width_height_account_for_curve_interior_extrema():
+    """Handles (control points) must not inflate width/height (#3619)."""
+    c = Circle(radius=3).rotate(30 * DEGREES)
+    assert c.width == pytest.approx(6.0, abs=1e-3)
+    assert c.height == pytest.approx(6.0, abs=1e-3)
+
+
+def test_width_height_include_interior_extrema_of_wild_cubic():
+    # Handles at x=5 and x=-5 with anchors x=0 and x=1: the control-point
+    # bounding box would give width 10, but the curve itself peaks at
+    # x ~= 1.45299 and dips to x ~= -0.98473, so the exact width is ~2.4377.
+    vmob = VMobject().set_points(
+        np.array([[0.0, 0.0, 0.0], [5.0, 3.0, 0.0], [-5.0, 3.0, 0.0], [1.0, 0.0, 0.0]])
+    )
+    assert vmob.width == pytest.approx(2.4377191199218955, abs=1e-4)
+    assert vmob.height == pytest.approx(2.25, abs=1e-4)
+
+
+def test_arc_height_is_not_underestimated():
+    # A 180-degree arc with near-vertical handles: the raw control points
+    # span only ~1x the radius in height, while the rendered arc spans 2x.
+    arc = Arc(radius=2, angle=PI)
+    assert arc.height == pytest.approx(2.0)
+    assert arc.width == pytest.approx(4.0)
+
+
+def test_quadratic_width_height_use_curve_extrema():
+    # Quadratic counterpart: interior extrema must be included too.
+    vmob = VMobject().set_points(
+        np.array([[0.0, 0.0, 0.0], [2.0, 4.0, 0.0], [4.0, 0.0, 0.0]])
+    )
+    assert vmob.width == pytest.approx(4.0)
+    assert vmob.height == pytest.approx(4.0)
+
+
+def test_width_height_setters_round_trip_on_rotated_circle():
+    c = Circle(radius=3).rotate(30 * DEGREES)
+    c.width = 5.0
+    assert c.width == pytest.approx(5.0)
+    assert c.height == pytest.approx(5.0)
+
+
+def test_width_height_of_single_point_vmobject():
+    vmob = VMobject().set_points(np.array([[3.0, 4.0, 0.0]]))
+    assert vmob.width == pytest.approx(0.0)
+    assert vmob.height == pytest.approx(0.0)

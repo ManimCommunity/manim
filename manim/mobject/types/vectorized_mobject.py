@@ -1796,6 +1796,142 @@ class VMobject(Mobject):
             tuple(it.chain(*(sm.get_anchors() for sm in self.get_family())))
         )
 
+    def get_bezier_bounding_box(self) -> Point3D_Array:
+        """Return the exact axis-aligned bounding box of the curves defining
+        this :class:`VMobject`, rather than the bounding box of their control
+        points.
+
+        The points of a Bézier curve other than its anchors act as handles;
+        they generally do not lie on the curve itself. Computing bounds from
+        ``self.points`` directly therefore yields ``width``/``height`` values
+        that can differ from the physical extent of the rendered curve. This
+        method accounts for the interior extrema of every curve and returns
+        the true bounds as ``array([[xmin, ymin, zmin], [xmax, ymax, zmax]])``.
+
+        Returns
+        -------
+        Point3D_Array
+            The lower-left and upper-right corners of the bounding box, or
+            ``None`` if this :class:`VMobject` has no points.
+
+        Examples
+        --------
+        .. manim:: BezierBoundingBoxExample
+            :save_last_frame:
+
+            class BezierBoundingBoxExample(Scene):
+                def construct(self):
+                    c = Circle(radius=3).rotate(30 * DEGREES)
+                    rect = Rectangle(width=c.width, height=c.height).move_to(c).set_stroke(BLUE)
+                    self.add(c, rect)
+        """
+        pts = self.points
+        if len(pts) == 0:
+            return None
+        nppcc = self.n_points_per_cubic_curve
+        if nppcc not in (3, 4) or len(pts) % nppcc != 0:
+            return np.array([pts.min(axis=0), pts.max(axis=0)])
+
+        lower = np.zeros(3)
+        upper = np.zeros(3)
+        for dim in range(3):
+            vals = self._get_curve_extrema(dim, pts, nppcc)
+            lower[dim] = np.min(vals[:, 0])
+            upper[dim] = np.max(vals[:, 1])
+        return np.array([lower, upper])
+
+    def _get_curve_extrema(self, dim: int, pts: Point3D_Array, nppcc: int) -> npt.NDArray[np.float64]:
+        """Return, for every curve in ``pts``, the exact minimum and maximum
+        value of its ``dim``-th coordinate (anchors and interior extrema).
+
+        Returns an array of shape ``(n_curves, 2)``. A single point yields a
+        degenerate curve whose extent in every dimension is that point.
+        """
+        n_curves = len(pts) // nppcc
+        anchors = pts[::nppcc, dim]  # start anchors of every curve
+        if nppcc == 3:
+            # Quadratic Bézier: P'(t) = 2*((p1-p0) + t*(p0-2p1+p2)).
+            p0, p1, p2 = (pts[i::nppcc, dim] for i in range(nppcc))
+            denom = p0 - 2 * p1 + p2
+            t = np.zeros(n_curves)
+            with np.errstate(divide="ignore", invalid="ignore"):
+                t = np.where(np.abs(denom) > 1e-12, (p0 - p1) / denom, np.nan)
+            t_valid = (t > 1e-12) & (t < 1 - 1e-12)
+            starts = pts[::nppcc, dim]
+            ends = pts[nppcc - 1::nppcc, dim]
+            mins = np.minimum(starts, ends).astype(np.float64)
+            maxs = np.maximum(starts, ends).astype(np.float64)
+            if np.any(t_valid):
+                tv = t[t_valid]
+                p0v, p1v, p2v = (pts[i::nppcc, dim][t_valid] for i in range(nppcc))
+                ev = (1 - tv) ** 2 * p0v + 2 * (1 - tv) * tv * p1v + tv**2 * p2v
+                mins[t_valid] = np.minimum(mins[t_valid], ev)
+                maxs[t_valid] = np.maximum(maxs[t_valid], ev)
+            return np.column_stack([mins, maxs])
+
+        # Cubic Bézier: derivative roots of P'(t) = A t^2 + B t + C.
+        p0, p1, p2, p3 = (pts[i::nppcc, dim] for i in range(nppcc))
+        u = p1 - p0
+        v = p2 - p1
+        w = p3 - p2
+        aa = u - 2 * v + w
+        bb = 2 * (v - u)
+        cc = u
+        disc = bb * bb - 4 * aa * cc
+        disc_pos = disc > 1e-24
+        aa_zero = np.abs(aa) < 1e-12
+        t = np.full((n_curves, 2), np.nan)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            sq = np.sqrt(np.maximum(disc, 0))
+            # A == 0: degenerate quadratic, single root -C/B (B != 0).
+            t[:, 0] = np.where(aa_zero & ~np.isclose(bb, 0, atol=1e-12), -cc / bb, (-bb + sq) / (2 * aa))
+            t[:, 1] = np.where(aa_zero, t[:, 0], (-bb - sq) / (2 * aa))
+        start = p0
+        end = p3
+        mins = np.minimum(start, end).astype(np.float64)
+        maxs = np.maximum(start, end).astype(np.float64)
+        for j in range(2):
+            tv = t[:, j]
+            quadratic_root = aa_zero & ~np.isclose(bb, 0, atol=1e-12)
+            valid = (disc_pos & ~aa_zero | quadratic_root) & (tv > 1e-12) & (tv < 1 - 1e-12)
+            if np.any(valid):
+                tvv = tv[valid]
+                omt = 1 - tvv
+                ev = omt**3 * p0[valid] + 3 * omt**2 * tvv * p1[valid] + 3 * omt * tvv**2 * p2[valid] + tvv**3 * p3[valid]
+                mins[valid] = np.minimum(mins[valid], ev)
+                maxs[valid] = np.maximum(maxs[valid], ev)
+        return np.column_stack([mins, maxs])
+
+    def reduce_across_dimension(
+        self, reduce_func: Callable[[Iterable[float]], float], dim: int
+    ) -> float | None:
+        """Find the min or max value from a dimension across all points in
+        this :class:`VMobject` and its submobjects.
+
+        Unlike :class:`~.Mobject.reduce_across_dimension`, the value is
+        computed from the actual Bézier curves (including their interior
+        extrema) rather than from the raw control points, so dimensions such
+        as :attr:`~Mobject.width` and :attr:`~Mobject.height` correspond to
+        the physical extent of the rendered shape.
+        """
+        assert dim >= 0
+        assert dim <= 2
+        if len(self.submobjects) == 0 and len(self.points) == 0:
+            return None
+
+        rv: float | None = None
+        if len(self.points) > 0:
+            bbox = self.get_bezier_bounding_box()
+            if bbox is not None:
+                rv = reduce_func(bbox[:, dim])
+        for mobj in self.submobjects:
+            value = mobj.reduce_across_dimension(reduce_func, dim)
+            if rv is None:
+                rv = value
+            elif value is not None:
+                rv = reduce_func([value, rv])
+        return rv
+
     def get_arc_length(self, sample_points_per_curve: int | None = None) -> float:
         """Return the approximated length of the whole curve.
 
