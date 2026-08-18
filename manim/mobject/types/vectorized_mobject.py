@@ -1902,35 +1902,37 @@ class VMobject(Mobject):
                 maxs[valid] = np.maximum(maxs[valid], ev)
         return np.column_stack([mins, maxs])
 
-    def reduce_across_dimension(
-        self, reduce_func: Callable[[Iterable[float]], float], dim: int
-    ) -> float | None:
-        """Find the min or max value from a dimension across all points in
-        this :class:`VMobject` and its submobjects.
+    def length_over_dim(self, dim: int) -> float:
+        """Find the length of this :class:`VMobject` in a certain direction.
 
-        Unlike :class:`~.Mobject.reduce_across_dimension`, the value is
+        Like :meth:`~.Mobject.length_over_dim`, this covers every point in
+        this :class:`VMobject` and its submobjects, but the length is
         computed from the actual Bézier curves (including their interior
-        extrema) rather than from the raw control points, so dimensions such
-        as :attr:`~Mobject.width` and :attr:`~Mobject.height` correspond to
-        the physical extent of the rendered shape.
+        extrema) rather than from the raw control points.  Dimensions such
+        as :attr:`~Mobject.width` and :attr:`~Mobject.height` therefore
+        correspond to the physical extent of the rendered shape, while
+        critical points such as :meth:`~Mobject.get_left` keep their
+        control-point semantics.
         """
-        assert dim >= 0
-        assert dim <= 2
-        if len(self.submobjects) == 0 and len(self.points) == 0:
-            return None
-
-        rv: float | None = None
-        if len(self.points) > 0:
+        if len(self.submobjects) == 0:
             bbox = self.get_bezier_bounding_box()
-            if bbox is not None:
-                rv = reduce_func(bbox[:, dim])
-        for mobj in self.submobjects:
-            value = mobj.reduce_across_dimension(reduce_func, dim)
-            if rv is None:
-                rv = value
-            elif value is not None:
-                rv = reduce_func([value, rv])
-        return rv
+            if bbox is None:
+                return 0.0
+            return bbox[1][dim] - bbox[0][dim]
+
+        lower = float("inf")
+        upper = float("-inf")
+        for mob in self.get_family():
+            if len(mob.points) == 0:
+                continue
+            bbox = mob.get_bezier_bounding_box()
+            if bbox is None:
+                continue
+            lower = min(lower, bbox[0][dim])
+            upper = max(upper, bbox[1][dim])
+        if upper == float("-inf"):
+            return 0.0
+        return upper - lower
 
     def get_arc_length(self, sample_points_per_curve: int | None = None) -> float:
         """Return the approximated length of the whole curve.
