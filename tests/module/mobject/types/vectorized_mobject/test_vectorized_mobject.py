@@ -790,9 +790,11 @@ def test_critical_points_keep_control_point_semantics():
     # #3619: width/height are exact, but critical points (get_left,
     # get_center, ...) keep their control-point semantics so that existing
     # renderings, which rely on those values for centering, do not change.
+    # get_left/get_right are computed from the anchor points only (the
+    # "boundary points"), so handles outside the anchors must not move them.
     vmob = VMobject().set_points(
         np.array([[0.0, 0.0, 0.0], [5.0, 3.0, 0.0], [-5.0, 3.0, 0.0], [1.0, 0.0, 0.0]])
     )
     assert vmob.width == pytest.approx(2.4377191199218955, abs=1e-4)
-    assert vmob.get_left()[0] == pytest.approx(-5.0)
-    assert vmob.get_right()[0] == pytest.approx(5.0)
+    assert vmob.get_left()[0] == pytest.approx(0.0)
+    assert vmob.get_right()[0] == pytest.approx(1.0)
