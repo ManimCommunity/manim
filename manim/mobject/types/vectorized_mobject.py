@@ -1840,7 +1840,9 @@ class VMobject(Mobject):
             upper[dim] = np.max(vals[:, 1])
         return np.array([lower, upper])
 
-    def _get_curve_extrema(self, dim: int, pts: Point3D_Array, nppcc: int) -> npt.NDArray[np.float64]:
+    def _get_curve_extrema(
+        self, dim: int, pts: Point3D_Array, nppcc: int
+    ) -> npt.NDArray[np.float64]:
         """Return, for every curve in ``pts``, the exact minimum and maximum
         value of its ``dim``-th coordinate (anchors and interior extrema).
 
@@ -1858,7 +1860,7 @@ class VMobject(Mobject):
                 t = np.where(np.abs(denom) > 1e-12, (p0 - p1) / denom, np.nan)
             t_valid = (t > 1e-12) & (t < 1 - 1e-12)
             starts = pts[::nppcc, dim]
-            ends = pts[nppcc - 1::nppcc, dim]
+            ends = pts[nppcc - 1 :: nppcc, dim]
             mins = np.minimum(starts, ends).astype(np.float64)
             maxs = np.maximum(starts, ends).astype(np.float64)
             if np.any(t_valid):
@@ -1884,7 +1886,11 @@ class VMobject(Mobject):
         with np.errstate(divide="ignore", invalid="ignore"):
             sq = np.sqrt(np.maximum(disc, 0))
             # A == 0: degenerate quadratic, single root -C/B (B != 0).
-            t[:, 0] = np.where(aa_zero & ~np.isclose(bb, 0, atol=1e-12), -cc / bb, (-bb + sq) / (2 * aa))
+            t[:, 0] = np.where(
+                aa_zero & ~np.isclose(bb, 0, atol=1e-12),
+                -cc / bb,
+                (-bb + sq) / (2 * aa),
+            )
             t[:, 1] = np.where(aa_zero, t[:, 0], (-bb - sq) / (2 * aa))
         start = p0
         end = p3
@@ -1893,11 +1899,18 @@ class VMobject(Mobject):
         for j in range(2):
             tv = t[:, j]
             quadratic_root = aa_zero & ~np.isclose(bb, 0, atol=1e-12)
-            valid = (disc_pos & ~aa_zero | quadratic_root) & (tv > 1e-12) & (tv < 1 - 1e-12)
+            valid = (
+                (disc_pos & ~aa_zero | quadratic_root) & (tv > 1e-12) & (tv < 1 - 1e-12)
+            )
             if np.any(valid):
                 tvv = tv[valid]
                 omt = 1 - tvv
-                ev = omt**3 * p0[valid] + 3 * omt**2 * tvv * p1[valid] + 3 * omt * tvv**2 * p2[valid] + tvv**3 * p3[valid]
+                ev = (
+                    omt**3 * p0[valid]
+                    + 3 * omt**2 * tvv * p1[valid]
+                    + 3 * omt * tvv**2 * p2[valid]
+                    + tvv**3 * p3[valid]
+                )
                 mins[valid] = np.minimum(mins[valid], ev)
                 maxs[valid] = np.maximum(maxs[valid], ev)
         return np.column_stack([mins, maxs])
