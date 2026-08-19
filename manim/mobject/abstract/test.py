@@ -1,16 +1,20 @@
+"Tests whether the methods of Positionable behave the exact same as the Mobject methods."
+
 import time
 from collections.abc import Callable
-from logging import getLogger
 from typing import Any
 
 import numpy as np
 
 from manim.mobject.abstract.positionable import Positionable
 from manim.mobject.mobject import Mobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.types.vectorized_mobject import VMobject
 from manim.typing import Point3D, Point3D_Array, Vector3D
 
 _RNG = np.random.default_rng()
-POINT_COUNTS = list(range(1, 101))
+POINT_COUNTS = list(range(1, 100 + 1, 1))
 LOOPS_PER_POINT_COUNT: int = 100
 UNTESTED = [
     name
@@ -20,8 +24,6 @@ UNTESTED = [
 
 
 def main() -> None:
-    getLogger("manim").addFilter(lambda x: "deprecated" not in x.getMessage())
-
     validate_setter(
         "align_on_border",
         lambda mob, kwargs: mob.align_on_border(**kwargs),
@@ -539,17 +541,19 @@ def random_number(low: float = -10, high: float = 10) -> float:
     return _RNG.uniform(low=low, high=high)
 
 
-def random_point(low: float = -10, high: float = 10) -> Point3D:
+def random_point(low: float = -25, high: float = 25) -> Point3D:
     return _RNG.uniform(low=low, high=high, size=3)
 
 
-def random_points(low: float = -10, high: float = 10, size: int = 1) -> np.ndarray:
+def random_points(low: float = -25, high: float = 25, size: int = 1) -> np.ndarray:
     return _RNG.uniform(low=low, high=high, size=(size, 3))
 
 
 def random_vector(low: float = -3, high: float = 3) -> Vector3D:
-    dtype = random_choice([int, float])
-    return _RNG.uniform(low=low, high=high, size=3).astype(dtype=dtype)
+    v = _RNG.uniform(low=low, high=high, size=3)
+    if random_number(0, 1) <= 0.5:
+        v = np.round(v)
+    return v
 
 
 def random_choice(a: list[Any]) -> Any:
@@ -563,6 +567,31 @@ def create_another(
     another = type(mob)()
     another.points = points
     return another
+
+
+def dump_attributes() -> None:
+    seen: set[str] = set()
+
+    for cls in [Mobject, VMobject, OpenGLMobject, OpenGLVMobject]:
+        assert isinstance(cls, type)
+        print(cls.__name__)
+        for name, attr in sorted(cls.__dict__.items()):
+            if (
+                name in seen
+                or name.startswith("__")
+                or attr is getattr(cls.__base__, name, None)
+            ):
+                continue
+            print(
+                f"\t{'-+'[getattr(Positionable, name, None) is not getattr(Positionable.__base__, name, None)]} {name}"
+            )
+        seen |= cls.__dict__.keys()
+
+    print(Positionable.__name__)
+    for name, attr in Positionable.__dict__.items():
+        if name.startswith("__") or attr is getattr(Positionable.__base__, name, None):
+            continue
+        print(f"\t* {name}", "(new)" if name not in seen else "")
 
 
 if __name__ == "__main__":

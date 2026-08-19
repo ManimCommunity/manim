@@ -24,23 +24,19 @@ from manim.typing import (
     Point3DLike,
     Vector3DLike,
 )
-from manim.utils.deprecation import deprecated
+
+# from manim.utils.deprecation import deprecated
 from manim.utils.space_ops import rotation_matrix
 
 
 class Positionable:
-    # FUNDAMENTALS
     points: Point3D_Array = np.array([(0.0, 0.0, 0.0)])
 
-    # METHODS
-
-    # TODO: Keep/Remove frame parameter?
-    # TODO: Should the default of the frame parameter be handled inside the method to allow config changes?
     def align_on_border(
         self,
         direction: Vector3DLike,
-        *,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
+        *,
         frame: Point3DLike | None = None,
     ) -> Self:
         if frame is None:
@@ -54,7 +50,6 @@ class Positionable:
     def align_to(
         self,
         mobject_or_point: "Positionable | Point3DLike",
-        *,
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
         source = self.get_critical_point(direction=direction)
@@ -63,10 +58,8 @@ class Positionable:
             if isinstance(mobject_or_point, Positionable)
             else mobject_or_point
         )
-        for i, v in enumerate(np.sign(direction)):
-            if v == 0:
-                target[i] = source[i]
-        return self.move_to(point_or_mobject=target, aligned_edge=direction)
+        target = np.where(direction == 0, source, target)
+        return self.shift(target - source)
 
     def apply_array_function(
         self,
@@ -121,7 +114,7 @@ class Positionable:
             about_edge=about_edge,
         )
 
-    @deprecated(replacement="move_to(function(self.get_center()))")
+    # @deprecated(replacement="move_to(function(self.get_center()))")
     def apply_function_to_position(
         self,
         function: Callable[[Point3D], Point3D],
@@ -153,7 +146,7 @@ class Positionable:
             about_edge=about_edge,
         )
 
-    @deprecated(replacement="apply_array_function")
+    # @deprecated(replacement="apply_array_function")
     def apply_points_function_about_point(
         self,
         func: Callable[[Point3D_Array], Point3D_Array],
@@ -170,12 +163,12 @@ class Positionable:
         return self.move_to(point_or_mobject=ORIGIN)
 
     @property
-    @deprecated(replacement="get_depth")
+    # @deprecated(replacement="get_depth")
     def depth(self) -> float:
         return self.get_depth()
 
     @depth.setter
-    @deprecated(replacement="set_depth")
+    # @deprecated(replacement="set_depth")
     def depth(self, value: float) -> Self:
         return self.set_depth(depth=value, stretch=False)
 
@@ -213,10 +206,16 @@ class Positionable:
         return self.points.mean(axis=0)
 
     def get_coord(self, dim: int, direction: Vector3DLike = ORIGIN) -> float:
-        # TODO: Optimize by only calculating dim
-        return self.get_critical_point(direction=direction)[dim]
+        key = np.sign(direction[dim])
+        return (
+            self.points[:, dim].min()
+            if key == -1
+            else (self.points[:, dim].min() + self.points[:, dim].max()) / 2
+            if key == 0
+            else self.points[:, dim].max()
+        )
 
-    @deprecated(replacement="get_critical_point")
+    # @deprecated(replacement="get_critical_point")
     def get_corner(self, direction: Vector3DLike) -> Point3D:
         return self.get_critical_point(direction=direction)
 
@@ -232,11 +231,11 @@ class Positionable:
         values = self.points[:, dim]
         return values.max() - values.min()
 
-    @deprecated(replacement="get_critical_point")
+    # @deprecated(replacement="get_critical_point")
     def get_edge_center(self, direction: Vector3DLike) -> Point3D:
         return self.get_critical_point(direction=direction)
 
-    @deprecated()
+    # @deprecated()
     def get_extremum_along_dim(
         self,
         dim: int = 0,
@@ -284,25 +283,25 @@ class Positionable:
         return self.get_critical_point(direction=OUT)
 
     @property
-    @deprecated(replacement="get_height")
+    # @deprecated(replacement="get_height")
     def height(self) -> float:
         return self.get_height()
 
     @height.setter
-    @deprecated(replacement="set_height")
+    # @deprecated(replacement="set_height")
     def height(self, value: float) -> Self:
         return self.set_height(height=value, stretch=False)
 
     def is_off_screen(self) -> bool:
-        # TODO: Optimize using the bounding box
+        mins, _, maxs = self.get_bounding_box()
         return (
-            self.get_left()[0] > config["frame_x_radius"]
-            or self.get_right()[0] < -config["frame_x_radius"]
-            or self.get_bottom()[1] > config["frame_y_radius"]
-            or self.get_top()[1] < -config["frame_y_radius"]
+            mins[0] > config.frame_x_radius
+            or maxs[0] < -config.frame_x_radius
+            or mins[1] > config.frame_y_radius
+            or maxs[1] < -config.frame_y_radius
         )
 
-    @deprecated(replacement="get_dim_size")
+    # @deprecated(replacement="get_dim_size")
     def length_over_dim(self, dim: int) -> float:
         return self.get_dim_size(dim=dim)
 
@@ -310,7 +309,6 @@ class Positionable:
         self,
         mobject: "Positionable",
         dim: int,
-        *,
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
         return self.set_coord(
@@ -388,7 +386,6 @@ class Positionable:
     def match_x(
         self,
         mobject: "Positionable",
-        *,
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
         return self.set_x(
@@ -399,7 +396,6 @@ class Positionable:
     def match_y(
         self,
         mobject: "Positionable",
-        *,
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
         return self.set_y(
@@ -410,7 +406,6 @@ class Positionable:
     def match_z(
         self,
         mobject: "Positionable",
-        *,
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
         return self.set_z(
@@ -421,22 +416,22 @@ class Positionable:
     def move_to(
         self,
         point_or_mobject: "Point3DLike | Positionable",
-        *,
         aligned_edge: Vector3DLike = ORIGIN,
         coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
+        if isinstance(point_or_mobject, Positionable):
+            return self.move_to(
+                point_or_mobject.get_critical_point(direction=aligned_edge),
+                aligned_edge=aligned_edge,
+                coor_mask=coor_mask,
+            )
         source = self.get_critical_point(direction=aligned_edge)
-        target = (
-            point_or_mobject.get_critical_point(direction=aligned_edge)
-            if isinstance(point_or_mobject, Positionable)
-            else point_or_mobject
-        )
+        target = point_or_mobject
         return self.shift(vector=(target - source) * coor_mask)
 
     def next_to(
         self,
         mobject_or_point: "Positionable | Point3DLike",
-        *,
         direction: Vector3DLike = RIGHT,
         buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         aligned_edge: Vector3DLike = ORIGIN,
@@ -452,7 +447,7 @@ class Positionable:
         )
         return self.shift((target - source + buff * np_direction) * coor_mask)
 
-    @deprecated()
+    # @deprecated()
     def pose_at_angle(
         self,
         *,
@@ -466,7 +461,7 @@ class Positionable:
             about_edge=about_edge,
         )
 
-    @deprecated()
+    # @deprecated()
     def reduce_across_dimension(
         self,
         reduce_func: Callable[[Iterable[float]], float],
@@ -477,13 +472,13 @@ class Positionable:
 
         return reduce_func(self.points[:, dim])
 
-    @deprecated(replacement="set_dim_size")
+    # @deprecated(replacement="set_dim_size")
     def rescale_to_fit(
         self,
         length: float,
         dim: int,
-        *,
         stretch: bool = False,
+        *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
@@ -511,7 +506,7 @@ class Positionable:
             about_edge=about_edge,
         )
 
-    @deprecated(replacement="rotate")
+    # @deprecated(replacement="rotate")
     def rotate_about_origin(
         self,
         angle: float,
@@ -600,13 +595,11 @@ class Positionable:
         self,
         value: float,
         dim: int,
-        *,
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
-        # TODO: Optimize by only calculating dim and using shift
-        target = self.get_critical_point(direction=direction)
-        target[dim] = value
-        return self.move_to(point_or_mobject=target, aligned_edge=direction)
+        source = self.get_coord(dim, direction=direction)
+        self.points[:, dim] += value - source
+        return self
 
     def set_depth(
         self,
@@ -686,7 +679,6 @@ class Positionable:
     def set_x(
         self,
         x: float,
-        *,
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
         return self.set_coord(value=x, dim=0, direction=direction)
@@ -694,7 +686,6 @@ class Positionable:
     def set_y(
         self,
         y: float,
-        *,
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
         return self.set_coord(value=y, dim=1, direction=direction)
@@ -702,7 +693,6 @@ class Positionable:
     def set_z(
         self,
         z: float,
-        *,
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
         return self.set_coord(value=z, dim=2, direction=direction)
@@ -720,7 +710,7 @@ class Positionable:
         for edge in UP, DOWN, LEFT, RIGHT:
             dim = np.argmax(np.abs(edge))
             max_val = space_lengths[dim] - buff
-            edge_center = self.get_edge_center(direction=edge)
+            edge_center = self.get_critical_point(direction=edge)
             if np.dot(edge_center, edge) > max_val:
                 self.to_edge(edge=edge, buff=buff)
         return self
@@ -739,7 +729,7 @@ class Positionable:
             about_edge=about_edge,
         )
 
-    @deprecated(replacement="stretch")
+    # @deprecated(replacement="stretch")
     def stretch_about_point(
         self,
         factor: float,
@@ -816,7 +806,6 @@ class Positionable:
     def to_corner(
         self,
         corner: Vector3DLike = DL,
-        *,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
     ) -> Self:
         return self.align_on_border(direction=corner, buff=buff)
@@ -824,13 +813,12 @@ class Positionable:
     def to_edge(
         self,
         edge: Vector3DLike = LEFT,
-        *,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
     ) -> Self:
         return self.align_on_border(direction=edge, buff=buff)
 
     @property
-    @deprecated(replacement="get_width")
+    # @deprecated(replacement="get_width")
     def width(self) -> float:
         return self.get_width()
 
