@@ -16,7 +16,7 @@ from manim import (
     VGroup,
     VMobject,
 )
-from manim.constants import DEGREES, PI
+from manim.constants import DEGREES, PI, TAU
 
 
 def test_vmobject_add():
@@ -756,12 +756,22 @@ def test_width_height_include_interior_extrema_of_wild_cubic():
     assert vmob.height == pytest.approx(2.25, abs=1e-4)
 
 
-def test_arc_height_is_not_underestimated():
-    # A 180-degree arc with near-vertical handles: the raw control points
-    # span only ~1x the radius in height, while the rendered arc spans 2x.
-    arc = Arc(radius=2, angle=PI)
-    assert arc.height == pytest.approx(2.0)
-    assert arc.width == pytest.approx(4.0)
+def test_arc_critical_points_agree_with_width_height():
+    # Control points never undershoot the curve: a Bézier curve stays inside
+    # its control hull (de Casteljau convex-hull property), so the old
+    # control-point semantics could only overestimate.  For a full 180-degree
+    # arc the subdivided anchors happen to reach the extrema, which is why the
+    # old test could not distinguish the semantics.  Use a 70% arc instead,
+    # whose interior extrema are not reached by any anchor.
+    arc = Arc(radius=2, start_angle=PI / 5, angle=TAU * 0.7)
+    assert arc.width == pytest.approx(3.618034, abs=1e-4)
+    assert arc.height == pytest.approx(4.0, abs=1e-3)
+    assert arc.get_right()[0] - arc.get_left()[0] == pytest.approx(
+        arc.width, abs=1e-6
+    )
+    assert arc.get_top()[1] - arc.get_bottom()[1] == pytest.approx(
+        arc.height, abs=1e-6
+    )
 
 
 def test_quadratic_width_height_use_curve_extrema():
@@ -786,15 +796,41 @@ def test_width_height_of_single_point_vmobject():
     assert vmob.height == pytest.approx(0.0)
 
 
-def test_critical_points_keep_control_point_semantics():
-    # #3619: width/height are exact, but critical points (get_left,
-    # get_center, ...) keep their control-point semantics so that existing
-    # renderings, which rely on those values for centering, do not change.
-    # get_left/get_right are computed from the anchor points only (the
-    # "boundary points"), so handles outside the anchors must not move them.
+def test_critical_points_agree_with_width_height():
+    # #3619: width/height are exact, and the critical points (get_left,
+    # get_right, get_top, get_bottom, get_center) agree with them: they are
+    # computed from the exact bounding box of the rendered Bézier curves, so
+    # handles outside the anchors no longer move them (previously the
+    # control points could inflate the box, e.g. width 10 here).
     vmob = VMobject().set_points(
         np.array([[0.0, 0.0, 0.0], [5.0, 3.0, 0.0], [-5.0, 3.0, 0.0], [1.0, 0.0, 0.0]])
     )
     assert vmob.width == pytest.approx(2.4377191199218955, abs=1e-4)
-    assert vmob.get_left()[0] == pytest.approx(0.0)
-    assert vmob.get_right()[0] == pytest.approx(1.0)
+    assert vmob.get_left()[0] == pytest.approx(-0.98472845, abs=1e-6)
+    assert vmob.get_right()[0] == pytest.approx(1.45299067, abs=1e-6)
+    assert vmob.get_bottom()[1] == pytest.approx(0.0, abs=1e-6)
+    assert vmob.get_top()[1] == pytest.approx(2.25, abs=1e-6)
+    assert vmob.get_right()[0] - vmob.get_left()[0] == pytest.approx(
+        vmob.width, abs=1e-6
+    )
+    assert vmob.get_top()[1] - vmob.get_bottom()[1] == pytest.approx(
+        vmob.height, abs=1e-6
+    )
+    assert vmob.get_center()[0] == pytest.approx(
+        (vmob.get_left()[0] + vmob.get_right()[0]) / 2, abs=1e-6
+    )
+
+
+def test_depth_and_critical_points_cover_curve_extrema():
+    # Control points along z span [-5, 5], but the rendered curve only
+    # reaches ~[-0.985, 1.453].  depth and the OUT/IN critical points must
+    # agree with each other and stay within the control hull.
+    vmob = VMobject().set_points(
+        np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 5.0], [0.0, 0.0, -5.0], [0.0, 0.0, 1.0]])
+    )
+    assert vmob.depth == pytest.approx(2.437719, abs=1e-4)
+    out = vmob.get_critical_point(np.array([0.0, 0.0, 1.0]))
+    inn = vmob.get_critical_point(np.array([0.0, 0.0, -1.0]))
+    assert out[2] == pytest.approx(1.45299067, abs=1e-6)
+    assert inn[2] == pytest.approx(-0.98472845, abs=1e-6)
+    assert out[2] - inn[2] == pytest.approx(vmob.depth, abs=1e-6)

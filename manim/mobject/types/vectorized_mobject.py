@@ -1913,17 +1913,54 @@ class VMobject(Mobject):
                 maxs[valid] = np.maximum(maxs[valid], ev)
         return np.column_stack([mins, maxs])
 
+    def get_critical_point(self, direction: Vector3DLike) -> Point3D:
+        """Return one of the 9 'critical points' of the bounding box, along the
+        given direction.
+
+        Unlike :meth:`~.Mobject.get_critical_point`, the bounding box is the
+        exact box of the rendered Bézier curves (see
+        :meth:`get_bezier_bounding_box`), not the box of their control points.
+        ``get_left()``, ``get_right()``, ``get_top()``, ``get_bottom()``,
+        ``get_center()`` etc. therefore always agree with ``width``, ``height``
+        and ``depth``.
+
+        See :meth:`~.Mobject.get_critical_point` for details and examples.
+        """
+        result = np.zeros(self.dim)
+        bbox = None
+        for mob in self.get_family():
+            if len(mob.points) == 0:
+                continue
+            mob_bbox = mob.get_bezier_bounding_box()
+            if mob_bbox is None:
+                continue
+            if bbox is None:
+                bbox = mob_bbox
+            else:
+                bbox[0] = np.minimum(bbox[0], mob_bbox[0])
+                bbox[1] = np.maximum(bbox[1], mob_bbox[1])
+        if bbox is None:
+            return result
+        for dim in range(self.dim):
+            key = direction[dim]
+            if key > 0:
+                result[dim] = bbox[1][dim]
+            elif key < 0:
+                result[dim] = bbox[0][dim]
+            else:
+                result[dim] = 0.5 * (bbox[0][dim] + bbox[1][dim])
+        return result
+
     def length_over_dim(self, dim: int) -> float:
         """Find the length of this :class:`VMobject` in a certain direction.
 
         Like :meth:`~.Mobject.length_over_dim`, this covers every point in
-        this :class:`VMobject` and its submobjects, but the length is
+        this :class:`VMobject` and its submobjects, and the length is
         computed from the actual Bézier curves (including their interior
         extrema) rather than from the raw control points.  Dimensions such
         as :attr:`~Mobject.width` and :attr:`~Mobject.height` therefore
-        correspond to the physical extent of the rendered shape, while
-        critical points such as :meth:`~Mobject.get_left` keep their
-        control-point semantics.
+        correspond to the physical extent of the rendered shape, and the
+        critical points (:meth:`~Mobject.get_left` etc.) agree with them.
         """
         if len(self.submobjects) == 0:
             bbox = self.get_bezier_bounding_box()
