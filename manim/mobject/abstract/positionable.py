@@ -1,5 +1,6 @@
 from collections.abc import Callable, Iterable
 from typing import Self
+from warnings import deprecated
 
 import numpy as np
 
@@ -701,6 +702,7 @@ class Positionable:
         self.points += vector
         return self
 
+    # @deprecated()
     def shift_onto_screen(
         self,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
