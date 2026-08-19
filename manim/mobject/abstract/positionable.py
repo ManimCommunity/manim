@@ -388,6 +388,7 @@ class Positionable:
     def match_x(
         self,
         mobject: "Positionable",
+        *,
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
         return self.set_x(
@@ -398,6 +399,7 @@ class Positionable:
     def match_y(
         self,
         mobject: "Positionable",
+        *,
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
         return self.set_y(
@@ -408,6 +410,7 @@ class Positionable:
     def match_z(
         self,
         mobject: "Positionable",
+        *,
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
         return self.set_z(
@@ -449,6 +452,7 @@ class Positionable:
         )
         return self.shift((target - source + buff * np_direction) * coor_mask)
 
+    @deprecated()
     def pose_at_angle(
         self,
         *,
@@ -682,6 +686,7 @@ class Positionable:
     def set_x(
         self,
         x: float,
+        *,
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
         return self.set_coord(value=x, dim=0, direction=direction)
@@ -689,6 +694,7 @@ class Positionable:
     def set_y(
         self,
         y: float,
+        *,
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
         return self.set_coord(value=y, dim=1, direction=direction)
@@ -696,6 +702,7 @@ class Positionable:
     def set_z(
         self,
         z: float,
+        *,
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
         return self.set_coord(value=z, dim=2, direction=direction)
@@ -809,6 +816,7 @@ class Positionable:
     def to_corner(
         self,
         corner: Vector3DLike = DL,
+        *,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
     ) -> Self:
         return self.align_on_border(direction=corner, buff=buff)
@@ -816,6 +824,7 @@ class Positionable:
     def to_edge(
         self,
         edge: Vector3DLike = LEFT,
+        *,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
     ) -> Self:
         return self.align_on_border(direction=edge, buff=buff)
