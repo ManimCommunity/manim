@@ -2,7 +2,7 @@
 
 import time
 from collections.abc import Callable
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 
@@ -494,7 +494,7 @@ def validate_setter(
     name: str,
     function: Callable[[Mobject | Positionable, dict[Any, Any]], Any],
     create_kwargs: Callable[[], Any] = lambda: {},
-):
+) -> None:
     def validate(
         mob_old: Mobject,
         mob_new: Positionable,
@@ -516,7 +516,7 @@ def validate_getter(
     name: str,
     function: Callable[[Mobject | Positionable, dict[Any, Any]], Any],
     create_kwargs: Callable[[], Any] = lambda: {},
-):
+) -> None:
     def validate(
         mob_old: Mobject,
         mob_new: Positionable,
@@ -538,7 +538,7 @@ def optional(value: Any, a: float = 0.9) -> Any | None:
 
 
 def random_number(low: float = -10, high: float = 10) -> float:
-    return _RNG.uniform(low=low, high=high)
+    return cast(float, _RNG.uniform(low=low, high=high))
 
 
 def random_point(low: float = -25, high: float = 25) -> Point3D:
@@ -563,7 +563,7 @@ def random_choice(a: list[Any]) -> Any:
 def create_another(
     mob: Mobject | Positionable,
     points: Point3D_Array,
-) -> Mobject | Positionable:
+) -> Any:
     another = type(mob)()
     another.points = points
     return another

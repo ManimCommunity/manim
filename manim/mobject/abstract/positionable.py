@@ -1,5 +1,5 @@
 from collections.abc import Callable, Iterable
-from typing import Self
+from typing import Self, cast
 
 import numpy as np
 
@@ -207,12 +207,13 @@ class Positionable:
 
     def get_coord(self, dim: int, direction: Vector3DLike = ORIGIN) -> float:
         key = np.sign(direction[dim])
-        return (
+        return cast(
+            float,
             self.points[:, dim].min()
             if key == -1
             else (self.points[:, dim].min() + self.points[:, dim].max()) / 2
             if key == 0
-            else self.points[:, dim].max()
+            else self.points[:, dim].max(),
         )
 
     # @deprecated(replacement="get_critical_point")
@@ -229,7 +230,7 @@ class Positionable:
 
     def get_dim_size(self, dim: int) -> float:
         values = self.points[:, dim]
-        return values.max() - values.min()
+        return cast(float, values.max() - values.min())
 
     # @deprecated(replacement="get_critical_point")
     def get_edge_center(self, direction: Vector3DLike) -> Point3D:
@@ -294,11 +295,12 @@ class Positionable:
 
     def is_off_screen(self) -> bool:
         mins, _, maxs = self.get_bounding_box()
-        return (
+        return cast(
+            bool,
             mins[0] > config.frame_x_radius
             or maxs[0] < -config.frame_x_radius
             or mins[1] > config.frame_y_radius
-            or maxs[1] < -config.frame_y_radius
+            or maxs[1] < -config.frame_y_radius,
         )
 
     # @deprecated(replacement="get_dim_size")
