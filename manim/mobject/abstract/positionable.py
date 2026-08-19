@@ -201,7 +201,8 @@ class Positionable:
         return self.get_critical_point(direction=DOWN)
 
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
-        return self.get_critical_point(direction=direction)
+        index = np.argmax(np.dot(self.points, direction))
+        return self.points[index]
 
     def get_bounding_box(self) -> Point3D_Array:
         mins = self.points.min(axis=0)
@@ -295,13 +296,12 @@ class Positionable:
 
     def is_off_screen(self) -> bool:
         # TODO: Optimize using the bounding box
-        if self.get_left()[0] > config.frame_x_radius:
-            return True
-        if self.get_right()[0] < config.frame_x_radius:
-            return True
-        if self.get_bottom()[1] > config.frame_y_radius:
-            return True
-        return self.get_top()[1] < -config.frame_y_radius
+        return (
+            self.get_left()[0] > config["frame_x_radius"]
+            or self.get_right()[0] < -config["frame_x_radius"]
+            or self.get_bottom()[1] > config["frame_y_radius"]
+            or self.get_top()[1] < -config["frame_y_radius"]
+        )
 
     @deprecated(replacement="get_dim_size")
     def length_over_dim(self, dim: int) -> float:
@@ -323,8 +323,8 @@ class Positionable:
     def match_depth(
         self,
         mobject: "Positionable",
-        stretch: bool,
         *,
+        stretch: bool = False,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
@@ -339,8 +339,8 @@ class Positionable:
         self,
         mobject: "Positionable",
         dim: int,
-        stretch: bool,
         *,
+        stretch: bool = False,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
@@ -355,8 +355,8 @@ class Positionable:
     def match_height(
         self,
         mobject: "Positionable",
-        stretch: bool,
         *,
+        stretch: bool = False,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
@@ -374,8 +374,8 @@ class Positionable:
     def match_width(
         self,
         mobject: "Positionable",
-        stretch: bool,
         *,
+        stretch: bool = False,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
@@ -479,8 +479,8 @@ class Positionable:
         self,
         length: float,
         dim: int,
-        stretch: bool,
         *,
+        stretch: bool = False,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
@@ -513,14 +513,11 @@ class Positionable:
         self,
         angle: float,
         axis: Vector3DLike = OUT,
-        *,
-        about_edge: Vector3DLike | None = None,
     ) -> Self:
         return self.rotate(
             angle=angle,
             axis=axis,
             about_point=ORIGIN,
-            about_edge=about_edge,
         )
 
     def scale(
@@ -611,8 +608,8 @@ class Positionable:
     def set_depth(
         self,
         depth: float,
-        stretch: bool,
         *,
+        stretch: bool = False,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
@@ -628,8 +625,8 @@ class Positionable:
         self,
         size: float,
         dim: int,
-        stretch: bool,
         *,
+        stretch: bool = False,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
@@ -654,8 +651,8 @@ class Positionable:
     def set_height(
         self,
         height: float,
-        stretch: bool,
         *,
+        stretch: bool = False,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
@@ -670,8 +667,8 @@ class Positionable:
     def set_width(
         self,
         width: float,
-        stretch: bool,
         *,
+        stretch: bool = False,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
@@ -742,14 +739,11 @@ class Positionable:
         factor: float,
         dim: int,
         point: Point3DLike,
-        *,
-        about_edge: Vector3DLike | None = None,
     ) -> Self:
         return self.stretch(
             factor=factor,
             dim=dim,
             about_point=point,
-            about_edge=about_edge,
         )
 
     def stretch_to_fit(

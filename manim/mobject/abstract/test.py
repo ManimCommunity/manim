@@ -11,120 +11,12 @@ from manim.typing import Point3D, Point3D_Array, Vector3D
 
 _RNG = np.random.default_rng()
 POINT_COUNTS = list(range(1, 101))
-LOOPS_PER_POINT_COUNT: int = 10
+LOOPS_PER_POINT_COUNT: int = 100
 UNTESTED = [
     name
     for name, attr in Positionable.__dict__.items()
     if not (name.startswith("__") or attr is getattr(Positionable.__base__, name, None))
 ]
-
-
-def optional(value: Any, a: float = 0.9) -> Any | None:
-    return value if _RNG.uniform() < a else None
-
-
-def random_number(low: float = -10, high: float = 10) -> float:
-    return _RNG.uniform(low=low, high=high)
-
-
-def random_point(low: float = -10, high: float = 10) -> Point3D:
-    return _RNG.uniform(low=low, high=high, size=3)
-
-
-def random_points(low: float = -10, high: float = 10, size: int = 1) -> np.ndarray:
-    return _RNG.uniform(low=low, high=high, size=(size, 3))
-
-
-def random_vector(low: float = -3, high: float = 3) -> Vector3D:
-    dtype = random_choice([int, float])
-    return _RNG.uniform(low=low, high=high, size=3).astype(dtype=dtype)
-
-
-def random_choice(a: list[Any]) -> Any:
-    return _RNG.choice(a=a)
-
-
-def create_another(
-    mob: Mobject | Positionable,
-    points: Point3D_Array,
-) -> Mobject | Positionable:
-    another = type(mob)()
-    another.points = points
-    return another
-
-
-def validate_function(
-    name: str,
-    function: Callable[[Mobject | Positionable, dict[Any, Any]], Any],
-    validate: Callable[[Any, Any], None],
-    create_kwargs: Callable[[], dict[Any, Any]],
-) -> None:
-    global POINT_COUNTS, LOOPS_PER_POINT_COUNT
-    time_old, time_new = 0, 0
-
-    for point_count in POINT_COUNTS:
-        for _ in range(LOOPS_PER_POINT_COUNT):
-            points = random_points(size=point_count)
-
-            mob_old = Mobject()
-            mob_old.points = points.copy()
-            mob_new = Positionable()
-            mob_new.points = points.copy()
-
-            kwargs = create_kwargs()
-            kwargs = {key: value for key, value in kwargs.items() if value is not None}
-
-            start = time.perf_counter_ns()
-            result_old = function(mob_old, kwargs)
-            time_old += time.perf_counter_ns() - start
-
-            start = time.perf_counter_ns()
-            result_new = function(mob_new, kwargs)
-            time_new += time.perf_counter_ns() - start
-
-            try:
-                validate(result_old, result_new)
-            except AssertionError as e:
-                raise ValueError(
-                    f"\nPoint Count: {point_count}\nKwargs: {kwargs}\nPoints: {points}\nOld Result: {result_old}\nNew Result: {result_new}"
-                ) from e  # noqa: B904
-
-    print(f"\t{name.ljust(25)}\t{time_old / time_new:1.2f}x".ljust(6))
-    UNTESTED.remove(name)
-
-
-def validate_setter(
-    name: str,
-    function: Callable[[Mobject | Positionable, dict[Any, Any]], Any],
-    create_kwargs: Callable[[], Any] = lambda: {},
-):
-    def validate(result_1: Any, result_2: Any) -> None:
-        assert isinstance(result_1, Positionable | Mobject)
-        assert isinstance(result_2, Positionable | Mobject)
-        assert np.allclose(result_1.points, result_2.points)
-
-    validate_function(
-        name=name,
-        function=function,
-        validate=validate,
-        create_kwargs=create_kwargs,
-    )
-
-
-def validate_getter(
-    name: str,
-    function: Callable[[Mobject | Positionable, dict[Any, Any]], Any],
-    create_kwargs: Callable[[], Any] = lambda: {},
-):
-    def validate(result_1: Any, result_2: Any) -> None:
-        assert np.allclose(result_1, result_2)
-
-    validate_function(
-        name=name,
-        function=function,
-        validate=validate,
-        create_kwargs=create_kwargs,
-    )
 
 
 def main() -> None:
@@ -168,6 +60,11 @@ def main() -> None:
         },
     )
     validate_getter("get_bottom", lambda mob, _: mob.get_bottom())
+    validate_getter(
+        "get_boundary_point",
+        lambda mob, kwargs: mob.get_boundary_point(**kwargs),
+        lambda: {"direction": random_vector()},
+    )
     validate_getter("get_center", lambda mob, _: mob.get_center())
     validate_getter("get_center_of_mass", lambda mob, _: mob.get_center_of_mass())
     validate_getter(
@@ -193,6 +90,14 @@ def main() -> None:
         lambda mob, kwargs: mob.get_edge_center(**kwargs),
         lambda: {"direction": random_vector()},
     )
+    validate_getter(
+        "get_extremum_along_dim",
+        lambda mob, kwargs: mob.get_extremum_along_dim(**kwargs),
+        lambda: {
+            "dim": random_choice([0, 1, 2]),
+            "key": random_choice([0, 1, 2]),
+        },
+    )
     validate_getter("get_left", lambda mob, _: mob.get_left())
     validate_getter("get_nadir", lambda mob, _: mob.get_nadir())
     validate_getter("get_right", lambda mob, _: mob.get_right())
@@ -201,10 +106,118 @@ def main() -> None:
     validate_getter("get_y", lambda mob, _: mob.get_y())
     validate_getter("get_z", lambda mob, _: mob.get_z())
     validate_getter("get_zenith", lambda mob, _: mob.get_zenith())
+    validate_getter("height", lambda mob, _: mob.height)
+    validate_setter(
+        "height",
+        lambda mob, kwargs: setattr(mob, "height", kwargs["value"]),
+        lambda: {
+            "value": random_number(),
+        },
+    )
+    validate_getter("is_off_screen", lambda mob, _: mob.is_off_screen())
     validate_getter(
         "length_over_dim",
         lambda mob, kwargs: mob.length_over_dim(**kwargs),
         lambda: {"dim": random_choice([0, 1, 2])},
+    )
+    validate_setter(
+        "match_coord",
+        lambda mob, kwargs: mob.match_coord(
+            create_another(mob, kwargs.pop("points")), **kwargs
+        ),
+        lambda: {
+            "points": random_points(size=int(random_number(1, 100))),
+            "dim": random_choice([0, 1, 2]),
+            "direction": optional(random_vector()),
+        },
+    )
+    validate_setter(
+        "match_depth",
+        lambda mob, kwargs: mob.match_depth(
+            create_another(mob, kwargs.pop("points")), **kwargs
+        ),
+        lambda: {
+            "points": random_points(size=int(random_number(1, 100))),
+            "stretch": optional(random_choice([True, False])),
+            "about_point": optional(random_point()),
+            "about_edge": optional(random_vector()),
+        },
+    )
+    validate_setter(
+        "match_dim_size",
+        lambda mob, kwargs: mob.match_dim_size(
+            create_another(mob, kwargs.pop("points")), **kwargs
+        ),
+        lambda: {
+            "points": random_points(size=int(random_number(1, 100))),
+            "dim": random_choice([0, 1, 2]),
+            "stretch": optional(random_choice([True, False])),
+            "about_point": optional(random_point()),
+            "about_edge": optional(random_vector()),
+        },
+    )
+    validate_setter(
+        "match_height",
+        lambda mob, kwargs: mob.match_height(
+            create_another(mob, kwargs.pop("points")), **kwargs
+        ),
+        lambda: {
+            "points": random_points(size=int(random_number(1, 100))),
+            "stretch": optional(random_choice([True, False])),
+            "about_point": optional(random_point()),
+            "about_edge": optional(random_vector()),
+        },
+    )
+    validate_setter(
+        "match_points",
+        lambda mob, kwargs: mob.match_points(
+            create_another(mob, kwargs.pop("points")), **kwargs
+        ),
+        lambda: {
+            "points": random_points(size=int(random_number(1, 100))),
+        },
+    )
+    validate_setter(
+        "match_width",
+        lambda mob, kwargs: mob.match_width(
+            create_another(mob, kwargs.pop("points")), **kwargs
+        ),
+        lambda: {
+            "points": random_points(size=int(random_number(1, 100))),
+            "stretch": optional(random_choice([True, False])),
+            "about_point": optional(random_point()),
+            "about_edge": optional(random_vector()),
+        },
+    )
+    validate_setter(
+        "match_x",
+        lambda mob, kwargs: mob.match_x(
+            create_another(mob, kwargs.pop("points")), **kwargs
+        ),
+        lambda: {
+            "points": random_points(size=int(random_number(1, 100))),
+            "direction": optional(random_vector()),
+        },
+    )
+    validate_setter(
+        "match_y",
+        lambda mob, kwargs: mob.match_y(
+            create_another(mob, kwargs.pop("points")), **kwargs
+        ),
+        lambda: {
+            "points": random_points(size=int(random_number(1, 100))),
+            "direction": optional(random_vector()),
+        },
+    )
+    validate_setter(
+        "match_z",
+        lambda mob, kwargs: mob.match_z(
+            create_another(mob, kwargs.pop("points")), **kwargs
+        ),
+        lambda: {
+            "points": random_points(size=int(random_number(1, 100))),
+            "direction": optional(random_vector()),
+        },
     )
     validate_setter(
         "move_to",
@@ -234,6 +247,18 @@ def main() -> None:
             "about_edge": optional(random_vector()),
         },
     )
+    # TODO: reduce_across_dimension
+    validate_setter(
+        "rescale_to_fit",
+        lambda mob, kwargs: mob.rescale_to_fit(**kwargs),
+        lambda: {
+            "length": random_number(),
+            "dim": random_choice([0, 1, 2]),
+            "stretch": optional(random_choice([True, False])),
+            "about_point": optional(random_point()),
+            "about_edge": optional(random_vector()),
+        },
+    )
     validate_setter(
         "rotate",
         lambda mob, kwargs: mob.rotate(**kwargs),
@@ -241,6 +266,14 @@ def main() -> None:
             "angle": random_number(),
             "axis": optional(random_vector()),
             "about_edge": optional(random_vector()),
+        },
+    )
+    validate_setter(
+        "rotate_about_origin",
+        lambda mob, kwargs: mob.rotate_about_origin(**kwargs),
+        lambda: {
+            "angle": random_number(),
+            "axis": optional(random_vector()),
         },
     )
     validate_setter(
@@ -320,6 +353,13 @@ def main() -> None:
         },
     )
     validate_setter(
+        "shift_onto_screen",
+        lambda mob, kwargs: mob.shift_onto_screen(**kwargs),
+        lambda: {
+            "buff": random_number(),
+        },
+    )
+    validate_setter(
         "stretch",
         lambda mob, kwargs: mob.stretch(**kwargs),
         lambda: {
@@ -327,6 +367,15 @@ def main() -> None:
             "dim": random_choice([0, 1, 2]),
             "about_point": optional(random_point()),
             "about_edge": optional(random_vector()),
+        },
+    )
+    validate_setter(
+        "stretch_about_point",
+        lambda mob, kwargs: mob.stretch_about_point(**kwargs),
+        lambda: {
+            "factor": random_number(),
+            "dim": random_choice([0, 1, 2]),
+            "point": random_point(),
         },
     )
     validate_setter(
@@ -373,9 +422,145 @@ def main() -> None:
         },
     )
 
+    validate_getter("width", lambda mob, _: mob.width)
+    validate_setter(
+        "width",
+        lambda mob, kwargs: setattr(mob, "width", kwargs["value"]),
+        lambda: {
+            "value": random_number(),
+        },
+    )
+
     print("Untested")
     for name in UNTESTED:
-        print(f"\t{name}")
+        if hasattr(Mobject, name):
+            print(f"\t{name}")
+
+
+def validate_function(
+    name: str,
+    function: Callable[[Mobject | Positionable, dict[Any, Any]], Any],
+    validate: Callable[[Mobject, Positionable, Any, Any], None],
+    create_kwargs: Callable[[], dict[Any, Any]],
+) -> None:
+    global POINT_COUNTS, LOOPS_PER_POINT_COUNT
+    time_old, time_new = 0, 0
+
+    for point_count in POINT_COUNTS:
+        for _ in range(LOOPS_PER_POINT_COUNT):
+            points = random_points(size=point_count)
+
+            mob_old = Mobject()
+            mob_old.points = points.copy()
+            mob_new = Positionable()
+            mob_new.points = points.copy()
+
+            kwargs = create_kwargs()
+            kwargs = {key: value for key, value in kwargs.items() if value is not None}
+
+            start = time.perf_counter_ns()
+            result_old = function(mob_old, kwargs.copy())
+            time_old += time.perf_counter_ns() - start
+
+            start = time.perf_counter_ns()
+            result_new = function(mob_new, kwargs.copy())
+            time_new += time.perf_counter_ns() - start
+
+            try:
+                validate(mob_old, mob_new, result_old, result_new)
+            except AssertionError as e:
+                raise ValueError(
+                    f"""
+                    Point Count: {point_count}
+                    Kwargs: {kwargs}
+                    Points: {points}
+                    Old Result: {result_old}
+                    New Result: {result_new}
+                    Old Points: {mob_old.points}
+                    New Points: {mob_new.points}
+                    """.replace("                    ", "")
+                ) from e
+
+    print(f"\t{name.ljust(25)}\t{time_old / time_new:1.2f}x\t{time_old / 1e9:.0f}s")
+    if name in UNTESTED:
+        UNTESTED.remove(name)
+
+
+def validate_setter(
+    name: str,
+    function: Callable[[Mobject | Positionable, dict[Any, Any]], Any],
+    create_kwargs: Callable[[], Any] = lambda: {},
+):
+    def validate(
+        mob_old: Mobject,
+        mob_new: Positionable,
+        result_old: Any,
+        result_new: Any,
+    ) -> None:
+        assert (result_old is None) == (result_new is None)
+        assert np.allclose(mob_old.points, mob_new.points)
+
+    validate_function(
+        name=name,
+        function=function,
+        validate=validate,
+        create_kwargs=create_kwargs,
+    )
+
+
+def validate_getter(
+    name: str,
+    function: Callable[[Mobject | Positionable, dict[Any, Any]], Any],
+    create_kwargs: Callable[[], Any] = lambda: {},
+):
+    def validate(
+        mob_old: Mobject,
+        mob_new: Positionable,
+        result_old: Any,
+        result_new: Any,
+    ) -> None:
+        assert np.allclose(result_old, result_new)
+
+    validate_function(
+        name=name,
+        function=function,
+        validate=validate,
+        create_kwargs=create_kwargs,
+    )
+
+
+def optional(value: Any, a: float = 0.9) -> Any | None:
+    return value if _RNG.uniform() < a else None
+
+
+def random_number(low: float = -10, high: float = 10) -> float:
+    return _RNG.uniform(low=low, high=high)
+
+
+def random_point(low: float = -10, high: float = 10) -> Point3D:
+    return _RNG.uniform(low=low, high=high, size=3)
+
+
+def random_points(low: float = -10, high: float = 10, size: int = 1) -> np.ndarray:
+    return _RNG.uniform(low=low, high=high, size=(size, 3))
+
+
+def random_vector(low: float = -3, high: float = 3) -> Vector3D:
+    dtype = random_choice([int, float])
+    return _RNG.uniform(low=low, high=high, size=3).astype(dtype=dtype)
+
+
+def random_choice(a: list[Any]) -> Any:
+    return _RNG.choice(a=a)
+
+
+def create_another(
+    mob: Mobject | Positionable,
+    points: Point3D_Array,
+) -> Mobject | Positionable:
+    another = type(mob)()
+    another.points = points
+    return another
 
 
 if __name__ == "__main__":
