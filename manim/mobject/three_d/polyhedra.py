@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Hashable
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Self
 
 import numpy as np
 
@@ -132,7 +132,7 @@ class Polyhedron(VGroup):
         """Creates list of cyclic pairwise tuples."""
         edges: list[tuple[int, int]] = []
         for face in faces_list:
-            edges += zip(face, face[1:] + face[:1])
+            edges += zip(face, face[1:] + face[:1], strict=True)
         return edges
 
     def create_faces(
@@ -145,18 +145,17 @@ class Polyhedron(VGroup):
             face_group.add(Polygon(*face, **self.faces_config))
         return face_group
 
-    def update_faces(self, m: Mobject) -> None:
+    def update_faces(self, m: Mobject) -> Self:
         face_coords = self.extract_face_coords()
         new_faces = self.create_faces(face_coords)
         self.faces.match_points(new_faces)
+        return self
 
     def extract_face_coords(self) -> Point3DLike_Array:
         """Extracts the coordinates of the vertices in the graph.
         Used for updating faces.
         """
-        new_vertex_coords = []
-        for v in self.graph.vertices:
-            new_vertex_coords.append(self.graph[v].get_center())
+        new_vertex_coords = [self.graph[v].get_center() for v in self.graph.vertices]
         layout = dict(enumerate(new_vertex_coords))
         return [[layout[j] for j in i] for i in self.faces_list]
 

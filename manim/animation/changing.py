@@ -5,9 +5,7 @@ from __future__ import annotations
 __all__ = ["AnimatedBoundary", "TracedPath"]
 
 from collections.abc import Callable, Sequence
-from typing import Any
-
-from typing_extensions import Self
+from typing import Any, Self
 
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
@@ -99,7 +97,7 @@ class AnimatedBoundary(VGroup):
     ) -> Self:
         family1 = mob1.family_members_with_points()
         family2 = mob2.family_members_with_points()
-        for sm1, sm2 in zip(family1, family2):
+        for sm1, sm2 in zip(family1, family2, strict=False):
             sm1.pointwise_become_partial(sm2, a, b)
         return self
 

@@ -609,7 +609,7 @@ def find_intersection(
     # algorithm from https://en.wikipedia.org/wiki/Skew_lines#Nearest_points
     result = []
 
-    for p0, v0, p1, v1 in zip(p0s, v0s, p1s, v1s):
+    for p0, v0, p1, v1 in zip(p0s, v0s, p1s, v1s, strict=True):
         normal = cross(v1, cross(v0, v1))
         denom = max(np.dot(v0, normal), threshold)
         result += [p0 + np.dot(p1 - p0, normal) / denom * v0]
@@ -630,7 +630,7 @@ def get_winding_number(points: Sequence[np.ndarray]) -> float:
     Examples
     --------
 
-    >>> from manim import Square, get_winding_number
+    >>> from manim import Square, UP, get_winding_number
     >>> polygon = Square()
     >>> get_winding_number(polygon.get_vertices())
     np.float64(1.0)
@@ -658,7 +658,7 @@ def shoelace(x_y: Point2D_Array) -> float:
     """
     x = x_y[:, 0]
     y = x_y[:, 1]
-    val: float = np.trapz(y, x)
+    val: float = np.trapezoid(y, x)
     return val
 
 
@@ -736,7 +736,9 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
     # with holes is instead treated as a (very convex)
     # polygon with one edge.  Do this by drawing connections
     # between rings close to each other
-    rings = [list(range(e0, e1)) for e0, e1 in zip([0, *ring_ends], ring_ends)]
+    rings = [
+        list(range(e0, e1)) for e0, e1 in zip([0, *ring_ends], ring_ends, strict=False)
+    ]
     attached_rings = rings[:1]
     detached_rings = rings[1:]
     loop_connections = {}
@@ -771,7 +773,11 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
         # Move the ring which j belongs to from the
         # attached list to the detached list
         new_ring = next(
-            (ring for ring in detached_rings if ring[0] <= j < ring[-1]), None
+            # ring[-1] is the last valid index in the ring so the upper bound needs
+            # to be inclusive. Otherwise, a connection point on a ring's final vertex
+            # doesn't match any ring and triggers "Could not find a ring to attach"
+            (ring for ring in detached_rings if ring[0] <= j <= ring[-1]),
+            None,
         )
         if new_ring is not None:
             detached_rings.remove(new_ring)
@@ -802,22 +808,32 @@ def earclip_triangulation(verts: np.ndarray, ring_ends: list) -> list:
         if i == 0:
             break
 
-    meta_indices = earcut(verts[indices, :2], [len(indices)])
+    meta_indices = earcut(verts[indices, :2], np.array([len(indices)], dtype=np.uint32))
     return [indices[mi] for mi in meta_indices]
 
 
-def cartesian_to_spherical(vec: Sequence[float]) -> np.ndarray:
+def cartesian_to_spherical(vec: Vector3DLike) -> np.ndarray:
     """Returns an array of numbers corresponding to each
-    polar coordinate value (distance, phi, theta).
+    spherical coordinate value ``(r, theta, phi)``.
 
     Parameters
     ----------
     vec
-        A numpy array ``[x, y, z]``.
+        A numpy array or a sequence of floats ``[x, y, z]``.
+
+    Returns
+    -------
+    np.ndarray
+        An array ``[r, theta, phi]`` where:
+
+        - ``r`` is the distance (radius) from the origin,
+        - ``theta`` is the azimuthal angle (angle in the xy-plane
+          from the positive x-axis),
+        - ``phi`` is the polar angle (angle from the positive z-axis).
     """
     norm = np.linalg.norm(vec)
     if norm == 0:
-        return 0, 0, 0
+        return np.zeros(3)
     r = norm
     phi = np.arccos(vec[2] / r)
     theta = np.arctan2(vec[1], vec[0])
@@ -831,13 +847,12 @@ def spherical_to_cartesian(spherical: Sequence[float]) -> np.ndarray:
     Parameters
     ----------
     spherical
-        A list of three floats that correspond to the following:
+        A sequence of three floats ``(r, theta, phi)`` where:
 
-        r - The distance between the point and the origin.
-
-        theta - The azimuthal angle of the point to the positive x-axis.
-
-        phi - The vertical angle of the point to the positive z-axis.
+        - ``r`` is the distance from the origin,
+        - ``theta`` is the azimuthal angle (angle in the xy-plane
+          from the positive x-axis),
+        - ``phi`` is the polar angle (angle from the positive z-axis).
     """
     r, theta, phi = spherical
     return np.array(

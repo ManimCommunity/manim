@@ -33,7 +33,7 @@ except ImportError:
     dearpygui_imported = False
 
 from collections.abc import Callable, Iterable, Sequence
-from typing import TYPE_CHECKING, Any, Union
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from tqdm import tqdm
@@ -62,14 +62,13 @@ from ..utils.module_ops import scene_classes_from_file
 
 if TYPE_CHECKING:
     from types import FrameType
-
-    from typing_extensions import Self, TypeAlias
+    from typing import Self, TypeAlias
 
     from manim.typing import Point3D
 
-    SceneInteractAction: TypeAlias = Union[
-        MethodWithArgs, "SceneInteractContinue", "SceneInteractRerun"
-    ]
+    SceneInteractAction: TypeAlias = (
+        MethodWithArgs | "SceneInteractContinue" | "SceneInteractRerun"
+    )
     """The SceneInteractAction type alias is used for elements in the queue
     used by :meth:`.Scene.interact()`.
 
@@ -178,7 +177,7 @@ class Scene:
     ) -> None:
         self.camera_class = camera_class
         self.always_update_mobjects = always_update_mobjects
-        self.random_seed = random_seed
+        self.random_seed = random_seed if random_seed is not None else config.seed
         self.skip_animations = skip_animations
 
         self.animations: list[Animation] | None = None
@@ -186,7 +185,7 @@ class Scene:
         self.moving_mobjects: list[Mobject] = []
         self.static_mobjects: list[Mobject] = []
         self.time_progression: tqdm[float] | None = None
-        self.duration: float | None = None
+        self.duration: float = 0.0
         self.last_t = 0.0
         self.queue: Queue[SceneInteractAction] = Queue()
         self.skip_animation_preview = False
@@ -220,9 +219,9 @@ class Scene:
         self.mobjects: list[Mobject] = []
         # TODO, remove need for foreground mobjects
         self.foreground_mobjects: list[Mobject] = []
-        if self.random_seed is not None:
-            random.seed(self.random_seed)
-            np.random.seed(self.random_seed)
+
+        random.seed(self.random_seed)
+        np.random.seed(self.random_seed)  # noqa: NPY002 (only way to set seed globally)
 
     @property
     def camera(self) -> Camera | OpenGLCamera:
@@ -265,7 +264,19 @@ class Scene:
             # TODO: The CairoRenderer does not have the method clear_screen()
             self.renderer.clear_screen()  # type: ignore[union-attr]
             self.renderer.num_plays = 0
+            # The rerun replaces the file writer; tear down its encode jobs so
+            # no worker is still writing a partial file the new writer may
+            # reuse. Encoder failures propagate: a rerun must not silently
+            # continue past corrupt output.
+            self.renderer.file_writer.abort_encode_jobs(
+                reraise_encoder_failures=True,
+            )
             return True
+        except BaseException:
+            # A mid-play exception leaves an unsealed encode job whose
+            # non-daemon worker would hang the process at exit.
+            self.renderer.file_writer.abort_encode_jobs()
+            raise
         self.tear_down()
         # We have to reset these settings in case of multiple renders.
         self.renderer.scene_finished(self)
@@ -903,18 +914,38 @@ class Scene:
         # Go through mobjects from start to end, and
         # as soon as there's one that needs updating of
         # some kind per frame, return the list from that
-        # point forward.
-        animation_mobjects = [anim.mobject for anim in animations]
+        # mobject's earliest ancestor.
+        # Imported inside the method to avoid cyclic import.
+        from ..animation.composition import AnimationGroup
+
+        def _collect_animation_mobjects(
+            nested_animations: Iterable[Animation],
+        ) -> list[Mobject | OpenGLMobject]:
+            animation_mobjects: list[Mobject | OpenGLMobject] = []
+            for anim in nested_animations:
+                # Keep composition wrappers as conservative boundaries for the
+                # static frame cache, in addition to their nested animations.
+                animation_mobjects.extend(anim.mobject.get_family())
+                if isinstance(anim, AnimationGroup):
+                    animation_mobjects.extend(
+                        _collect_animation_mobjects(anim.animations),
+                    )
+            return animation_mobjects
+
+        animation_mobjects = set(_collect_animation_mobjects(animations))
+
         mobjects = self.get_mobject_family_members()
-        for i, mob in enumerate(mobjects):
-            update_possibilities = [
-                mob in animation_mobjects,
-                len(mob.get_family_updaters()) > 0,
-                mob in self.foreground_mobjects,
-            ]
-            if any(update_possibilities):
-                return mobjects[i:]
-        return []
+
+        def consider_moving(mob: Mobject) -> bool:
+            return (
+                mob in animation_mobjects
+                or len(mob.updaters) > 0
+                or mob in self.foreground_mobjects
+                or any(consider_moving(m) for m in mob.submobjects)
+            )
+
+        i = next((i for i, mob in enumerate(mobjects) if consider_moving(mob)), None)
+        return [] if i is None else mobjects[i:]
 
     def get_moving_and_static_mobjects(
         self, animations: Iterable[Animation]

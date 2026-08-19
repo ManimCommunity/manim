@@ -6,7 +6,7 @@ __all__ = ["SampleSpace", "BarChart"]
 
 
 from collections.abc import Iterable, MutableSequence, Sequence
-from typing import Any
+from typing import Any, Self, cast
 
 import numpy as np
 
@@ -75,7 +75,7 @@ class SampleSpace(Rectangle):
 
     def add_title(
         self, title: str = "Sample space", buff: float = MED_SMALL_BUFF
-    ) -> None:
+    ) -> Self:
         # TODO, should this really exist in SampleSpaceScene
         title_mob = Tex(title)
         if title_mob.width > self.width:
@@ -83,9 +83,11 @@ class SampleSpace(Rectangle):
         title_mob.next_to(self, UP, buff=buff)
         self.title = title_mob
         self.add(title_mob)
+        return self
 
-    def add_label(self, label: str) -> None:
+    def add_label(self, label: str) -> Self:
         self.label = label
+        return self
 
     def complete_p_list(self, p_list: float | Iterable[float]) -> list[float]:
         p_list_tuplified: tuple[float] = tuplify(p_list)
@@ -107,7 +109,7 @@ class SampleSpace(Rectangle):
 
         last_point = self.get_edge_center(-vect)
         parts = VGroup()
-        for factor, color in zip(p_list_complete, colors_in_gradient):
+        for factor, color in zip(p_list_complete, colors_in_gradient, strict=True):
             part = SampleSpace()
             part.set_fill(color, 1)
             part.replace(self, stretch=True)
@@ -133,13 +135,15 @@ class SampleSpace(Rectangle):
     ) -> VGroup:
         return self.get_division_along_dimension(p_list, 0, colors, vect)
 
-    def divide_horizontally(self, *args: Any, **kwargs: Any) -> None:
+    def divide_horizontally(self, *args: Any, **kwargs: Any) -> Self:
         self.horizontal_parts = self.get_horizontal_division(*args, **kwargs)
         self.add(self.horizontal_parts)
+        return self
 
-    def divide_vertically(self, *args: Any, **kwargs: Any) -> None:
+    def divide_vertically(self, *args: Any, **kwargs: Any) -> Self:
         self.vertical_parts = self.get_vertical_division(*args, **kwargs)
         self.add(self.vertical_parts)
+        return self
 
     def get_subdivision_braces_and_labels(
         self,
@@ -151,7 +155,7 @@ class SampleSpace(Rectangle):
     ) -> VGroup:
         label_mobs = VGroup()
         braces = VGroup()
-        for label, part in zip(labels, parts):
+        for label, part in zip(labels, parts, strict=False):
             brace = Brace(part, direction, min_num_quads=min_num_quads, buff=buff)
             if isinstance(label, (VMobject, OpenGLVMobject)):
                 label_mob = label
@@ -170,7 +174,7 @@ class SampleSpace(Rectangle):
             "direction": direction,
             "buff": buff,
         }
-        return VGroup(parts.braces, parts.labels)  # type: ignore[arg-type]
+        return VGroup(parts.braces, parts.labels)
 
     def get_side_braces_and_labels(
         self,
@@ -198,7 +202,7 @@ class SampleSpace(Rectangle):
         parts = self.vertical_parts
         return self.get_subdivision_braces_and_labels(parts, labels, DOWN, **kwargs)
 
-    def add_braces_and_labels(self) -> None:
+    def add_braces_and_labels(self) -> Self:
         for attr in "horizontal_parts", "vertical_parts":
             if not hasattr(self, attr):
                 continue
@@ -206,15 +210,14 @@ class SampleSpace(Rectangle):
             for subattr in "braces", "labels":
                 if hasattr(parts, subattr):
                     self.add(getattr(parts, subattr))
+        return self
 
-    def __getitem__(self, index: int) -> SampleSpace:
+    def __getitem__(self, index: Any) -> VMobject:
         if hasattr(self, "horizontal_parts"):
-            val: SampleSpace = self.horizontal_parts[index]
-            return val
+            return self.horizontal_parts[index]
         elif hasattr(self, "vertical_parts"):
-            val = self.vertical_parts[index]
-            return val
-        return self.split()[index]
+            return self.vertical_parts[index]
+        return cast(VMobject, super().__getitem__(index))
 
 
 class BarChart(Axes):
@@ -367,11 +370,13 @@ class BarChart(Axes):
 
         labels = VGroup()
 
-        for i, (value, bar_name) in enumerate(zip(val_range, self.bar_names)):
+        for i, (value, bar_name) in enumerate(
+            zip(val_range, self.bar_names, strict=True)
+        ):
             # to accommodate negative bars, the label may need to be
             # below or above the x_axis depending on the value of the bar
             direction = UP if self.values[i] < 0 else DOWN
-            bar_name_label: MathTex = self.x_axis.label_constructor(bar_name)
+            bar_name_label = self.x_axis.label_constructor(bar_name)
 
             bar_name_label.font_size = self.x_axis.font_size
             bar_name_label.next_to(
@@ -463,7 +468,7 @@ class BarChart(Axes):
                     self.add(chart, c_bar_lbls)
         """
         bar_labels = VGroup()
-        for bar, value in zip(self.bars, self.values):
+        for bar, value in zip(self.bars, self.values, strict=False):
             bar_lbl: MathTex = label_constructor(str(value))
 
             if color is None:
@@ -481,7 +486,7 @@ class BarChart(Axes):
 
     def change_bar_values(
         self, values: Iterable[float], update_colors: bool = True
-    ) -> None:
+    ) -> Self:
         """Updates the height of the bars of the chart.
 
         Parameters
@@ -511,7 +516,7 @@ class BarChart(Axes):
                     chart.change_bar_values(list(reversed(values)))
                     self.add(chart.get_bar_labels(font_size=24))
         """
-        for i, (bar, value) in enumerate(zip(self.bars, values)):
+        for i, (bar, value) in enumerate(zip(self.bars, values, strict=False)):
             chart_val = self.values[i]
 
             if chart_val > 0:
@@ -548,3 +553,4 @@ class BarChart(Axes):
             self._update_colors()
 
         self.values[: len(list(values))] = values
+        return self

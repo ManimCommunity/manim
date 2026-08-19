@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from manim import *
 from tests.helpers.path_utils import get_svg_resource
 
@@ -54,6 +56,21 @@ def test_stroke_overrides_color():
         stroke_color=expected_color,
     )
     assert svg.stroke_color.to_hex() == expected_color
+
+
+def test_empty_path_is_ignored(tmp_path: Path):
+    svg_path = tmp_path / "empty_path.svg"
+    svg_path.write_text(
+        '<svg xmlns="http://www.w3.org/2000/svg">'
+        '<path d=""/><path d="M 0 0 L 1 1"/>'
+        "</svg>",
+        encoding="utf-8",
+    )
+
+    svg = SVGMobject(svg_path)
+
+    assert len(svg.submobjects) == 1
+    assert svg.submobjects[0].has_points()
 
 
 def test_single_path_turns_into_sequence_of_points():

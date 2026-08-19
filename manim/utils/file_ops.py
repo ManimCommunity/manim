@@ -153,15 +153,14 @@ def add_version_before_extension(file_name: Path) -> Path:
 
 
 def guarantee_existence(path: Path) -> Path:
-    if not path.exists():
-        path.mkdir(parents=True)
+    path.mkdir(parents=True, exist_ok=True)
     return path.resolve(strict=True)
 
 
 def guarantee_empty_existence(path: Path) -> Path:
     if path.exists():
         shutil.rmtree(str(path))
-    path.mkdir(parents=True)
+    path.mkdir(parents=True, exist_ok=True)
     return path.resolve(strict=True)
 
 
@@ -196,9 +195,12 @@ def modify_atime(file_path: str) -> None:
 def open_file(file_path: Path, in_browser: bool = False) -> None:
     current_os = platform.system()
     if current_os == "Windows":
-        # The method os.startfile is only available in Windows,
-        # ignoring type error caused by this.
-        os.startfile(file_path if not in_browser else file_path.parent)  # type: ignore[attr-defined]
+        # os.startfile is only available on Windows, so use getattr to keep
+        # static analysis platform-independent.
+        startfile = getattr(os, "startfile", None)
+        if startfile is None:
+            raise OSError("os.startfile is unavailable on this Windows system")
+        startfile(file_path if not in_browser else file_path.parent)
     else:
         if current_os == "Linux":
             commands = ["xdg-open"]

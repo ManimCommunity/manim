@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import numpy as np
 import pytest
 
+from manim import PI
+from manim.mobject.opengl.opengl_geometry import OpenGLTriangle
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 
@@ -60,3 +63,26 @@ def test_opengl_mobject_remove(using_opengl_renderer):
     assert len(obj.submobjects) == 10
 
     assert obj.remove(OpenGLMobject()) is obj
+
+
+def test_opengl_rotate_about_vertex_view(using_opengl_renderer):
+    """Test that rotating about a vertex obtained from get_vertices() works correctly.
+
+    This is a regression test for an issue in the non-OpenGL (Cairo) renderer where
+    get_vertices() returns a view of the points array, and using it as about_point
+    in rotate() would cause the view to be mutated. The OpenGL renderer was not affected
+    by this bug due to its different implementation (using `arr - about_point` which
+    creates a temporary array rather than `arr -= about_point` which mutates in-place).
+
+    This test verifies that the OpenGL renderer continues to handle vertex views correctly.
+    """
+    triangle = OpenGLTriangle()
+    original_vertices = triangle.get_vertices().copy()
+    first_vertex = original_vertices[0].copy()
+
+    # This should rotate about the first vertex without corrupting it
+    triangle.rotate(PI / 2, about_point=triangle.get_vertices()[0])
+
+    # The first vertex should remain in the same position (within numerical precision)
+    rotated_vertices = triangle.get_vertices()
+    np.testing.assert_allclose(rotated_vertices[0], first_vertex, atol=1e-6)

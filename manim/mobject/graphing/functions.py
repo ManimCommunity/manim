@@ -17,14 +17,12 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
 
 if TYPE_CHECKING:
-    from typing import Any
-
-    from typing_extensions import Self
+    from typing import Any, Self
 
     from manim.typing import Point3D, Point3DLike
     from manim.utils.color import ParsableManimColor
 
-from manim.utils.color import YELLOW
+from manim.utils.color import PURE_YELLOW
 
 
 class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
@@ -159,7 +157,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         else:
             boundary_times = np.array([self.t_min, self.t_max])
 
-        for t1, t2 in zip(boundary_times[0::2], boundary_times[1::2]):
+        for t1, t2 in zip(boundary_times[0::2], boundary_times[1::2], strict=True):
             t_range = np.array(
                 [
                     *(self.scaling.function(t) for t in np.arange(t1, t2, self.t_step)),
@@ -182,8 +180,9 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
             self.make_smooth()
         return self
 
-    def init_points(self) -> None:
+    def init_points(self) -> Self:
         self.generate_points()
+        return self
 
 
 class FunctionGraph(ParametricFunction):
@@ -219,7 +218,7 @@ class FunctionGraph(ParametricFunction):
         self,
         function: Callable[[float], Any],
         x_range: tuple[float, float] | tuple[float, float, float] | None = None,
-        color: ParsableManimColor = YELLOW,
+        color: ParsableManimColor = PURE_YELLOW,
         **kwargs: Any,
     ) -> None:
         if x_range is None:
@@ -329,5 +328,6 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
             self.make_smooth()
         return self
 
-    def init_points(self) -> None:
+    def init_points(self) -> Self:
         self.generate_points()
+        return self

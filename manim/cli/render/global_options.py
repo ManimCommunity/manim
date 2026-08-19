@@ -144,4 +144,10 @@ global_options = option_group(
         help="The command used to preview the output file (for example vlc for video files)",
         default=None,
     ),
+    option(
+        "--seed",
+        type=int,
+        help="Set the random seed to allow reproducibility.",
+        default=None,
+    ),
 )

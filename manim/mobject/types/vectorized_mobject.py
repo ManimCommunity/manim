@@ -12,9 +12,10 @@ __all__ = [
 ]
 
 import itertools as it
+import math
 import sys
-from collections.abc import Callable, Hashable, Iterable, Mapping, Sequence
-from typing import TYPE_CHECKING, Any, Literal
+from collections.abc import Callable, Hashable, Iterable, Iterator, Mapping, Sequence
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
 from PIL.Image import Image
@@ -47,8 +48,9 @@ from manim.utils.iterables import (
 from manim.utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
+    from typing import Self
+
     import numpy.typing as npt
-    from typing_extensions import Self
 
     from manim.typing import (
         CubicBezierPath,
@@ -102,6 +104,7 @@ class VMobject(Mobject):
     """
 
     sheen_factor = 0.0
+    target: VMobject
 
     def __init__(
         self,
@@ -152,7 +155,7 @@ class VMobject(Mobject):
         self.shade_in_3d: bool = shade_in_3d
         self.tolerance_for_point_equality: float = tolerance_for_point_equality
         self.n_points_per_cubic_curve: int = n_points_per_cubic_curve
-        self._bezier_t_values: npt.NDArray[float] = np.linspace(
+        self._bezier_t_values: npt.NDArray[np.float64] = np.linspace(
             0, 1, n_points_per_cubic_curve
         )
         self.cap_style: CapStyleType = cap_style
@@ -170,6 +173,9 @@ class VMobject(Mobject):
 
     def _assert_valid_submobjects(self, submobjects: Iterable[VMobject]) -> Self:
         return self._assert_valid_submobjects_internal(submobjects, VMobject)
+
+    def __iter__(self) -> Iterator[VMobject]:
+        return cast(Iterator[VMobject], super().__iter__())
 
     # OpenGL compatibility
     @property
@@ -233,7 +239,10 @@ class VMobject(Mobject):
             o if (o is not None) else 0.0 for o in tuplify(opacity)
         ]
         rgbas: FloatRGBA_Array = np.array(
-            [c.to_rgba_with_alpha(o) for c, o in zip(*make_even(colors, opacities))],
+            [
+                c.to_rgba_with_alpha(o)
+                for c, o in zip(*make_even(colors, opacities), strict=True)
+            ],
         )
 
         sheen_factor = self.get_sheen_factor()
@@ -457,7 +466,7 @@ class VMobject(Mobject):
                 return self
             elif len(submobs2) == 0:
                 submobs2 = [vmobject]
-            for sm1, sm2 in zip(*make_even(submobs1, submobs2)):
+            for sm1, sm2 in zip(*make_even(submobs1, submobs2), strict=True):
                 sm1.match_style(sm2)
         return self
 
@@ -472,7 +481,14 @@ class VMobject(Mobject):
         self.set_stroke(opacity=opacity, family=family, background=True)
         return self
 
-    def scale(self, scale_factor: float, scale_stroke: bool = False, **kwargs) -> Self:
+    def scale(
+        self,
+        scale_factor: float,
+        scale_stroke: bool = False,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
         r"""Scale the size by a factor.
 
         Default behavior is to scale about the center of the vmobject.
@@ -484,8 +500,10 @@ class VMobject(Mobject):
             will shrink, and for :math:`|\alpha| > 1` it will grow. Furthermore,
             if :math:`\alpha < 0`, the mobject is also flipped.
         scale_stroke
-            Boolean determining if the object's outline is scaled when the object is scaled.
-            If enabled, and object with 2px outline is scaled by a factor of .5, it will have an outline of 1px.
+            Boolean determining if each submobject's outline is scaled when the object
+            is scaled. If enabled, each submobject keeps its relative stroke width (for
+            example, a submobject with a 2px outline scaled by a factor of .5 will have
+            a 1px outline, while a submobject with 0px stroke remains at 0px).
         kwargs
             Additional keyword arguments passed to
             :meth:`~.Mobject.scale`.
@@ -522,12 +540,18 @@ class VMobject(Mobject):
 
         """
         if scale_stroke:
-            self.set_stroke(width=abs(scale_factor) * self.get_stroke_width())
-            self.set_stroke(
-                width=abs(scale_factor) * self.get_stroke_width(background=True),
-                background=True,
-            )
-        super().scale(scale_factor, **kwargs)
+            for mob in self.get_family():
+                if isinstance(mob, VMobject):
+                    mob.set_stroke(
+                        width=abs(scale_factor) * mob.get_stroke_width(),
+                        family=False,
+                    )
+                    mob.set_stroke(
+                        width=abs(scale_factor) * mob.get_stroke_width(background=True),
+                        background=True,
+                        family=False,
+                    )
+        super().scale(scale_factor, about_point=about_point, about_edge=about_edge)
         return self
 
     def fade(self, darkness: float = 0.5, family: bool = True) -> Self:
@@ -593,7 +617,6 @@ class VMobject(Mobject):
 
     def get_stroke_width(self, background: bool = False) -> float:
         if background:
-            self.background_stroke_width: float
             width = self.background_stroke_width
         else:
             width = self.stroke_width
@@ -619,6 +642,17 @@ class VMobject(Mobject):
         return self.get_fill_color()
 
     color: ManimColor = property(get_color, set_color)
+
+    def nonempty_submobjects(self) -> Sequence[VMobject]:
+        return [
+            submob
+            for submob in self.submobjects
+            if len(submob.submobjects) != 0 or len(submob.points) != 0
+        ]
+
+    def split(self) -> list[VMobject]:
+        result: list[VMobject] = [self] if len(self.points) > 0 else []
+        return result + self.submobjects
 
     def set_sheen_direction(self, direction: Vector3DLike, family: bool = True) -> Self:
         """Sets the direction of the applied sheen.
@@ -818,9 +852,9 @@ class VMobject(Mobject):
             self.points[index::nppcc] = array
         return self
 
-    def clear_points(self) -> None:
-        # TODO: shouldn't this return self instead of None?
+    def clear_points(self) -> Self:
         self.points = np.zeros((0, self.dim))
+        return self
 
     def append_points(self, new_points: Point3DLike_Array) -> Self:
         """Append the given ``new_points`` to the end of
@@ -882,13 +916,15 @@ class VMobject(Mobject):
         handle1: Point3DLike,
         handle2: Point3DLike,
         anchor2: Point3DLike,
-    ) -> None:
+    ) -> Self:
         # TODO, check the len(self.points) % 4 == 0?
         self.append_points([anchor1, handle1, handle2, anchor2])
+        return self
 
     # what type is curves?
-    def add_cubic_bezier_curves(self, curves) -> None:
+    def add_cubic_bezier_curves(self, curves) -> Self:
         self.append_points(curves.flatten())
+        return self
 
     def add_cubic_bezier_curve_to(
         self,
@@ -1025,9 +1061,10 @@ class VMobject(Mobject):
         # TODO use consider_points_equals_2d ?
         return self.consider_points_equals(self.points[0], self.points[-1])
 
-    def close_path(self) -> None:
+    def close_path(self) -> Self:
         if not self.is_closed():
             self.add_line_to(self.get_subpaths()[-1][0])
+        return self
 
     def add_points_as_corners(self, points: Point3DLike_Array) -> Self:
         """Append multiple straight lines at the end of
@@ -1170,14 +1207,21 @@ class VMobject(Mobject):
         self.append_points(points)
         return self
 
-    def append_vectorized_mobject(self, vectorized_mobject: VMobject) -> None:
+    def append_vectorized_mobject(self, vectorized_mobject: VMobject) -> Self:
         if self.has_new_path_started():
             # Remove last point, which is starting
             # a new path
             self.points = self.points[:-1]
         self.append_points(vectorized_mobject.points)
+        return self
 
-    def apply_function(self, function: MappingFunction) -> Self:
+    def apply_function(
+        self,
+        function: MappingFunction,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
         factor = self.pre_function_handle_to_anchor_scale_factor
         self.scale_handle_to_anchor_distances(factor)
         super().apply_function(function)
@@ -1190,11 +1234,12 @@ class VMobject(Mobject):
         self,
         angle: float,
         axis: Vector3DLike = OUT,
+        *,
         about_point: Point3DLike | None = None,
-        **kwargs,
+        about_edge: Vector3DLike | None = None,
     ) -> Self:
         self.rotate_sheen_direction(angle, axis)
-        super().rotate(angle, axis, about_point, **kwargs)
+        super().rotate(angle, axis, about_point=about_point, about_edge=about_edge)
         return self
 
     def scale_handle_to_anchor_distances(self, factor: float) -> Self:
@@ -1235,8 +1280,8 @@ class VMobject(Mobject):
     def consider_points_equals_2d(self, p0: Point2DLike, p1: Point2DLike) -> bool:
         """Determine if two points are close enough to be considered equal.
 
-        This uses the algorithm from np.isclose(), but expanded here for the
-        2D point case. NumPy is overkill for such a small question.
+        This uses the semantics of :func:`numpy.isclose`, but expands the
+        comparison for two coordinates to avoid NumPy's per-call overhead.
         Parameters
         ----------
         p0
@@ -1251,9 +1296,17 @@ class VMobject(Mobject):
         """
         rtol = 1.0e-5  # default from np.isclose()
         atol = self.tolerance_for_point_equality
-        if abs(p0[0] - p1[0]) > atol + rtol * abs(p1[0]):
-            return False
-        return abs(p0[1] - p1[1]) <= atol + rtol * abs(p1[1])
+
+        x0, y0 = p0[0], p0[1]
+        x1, y1 = p1[0], p1[1]
+        if x0 != x1:
+            x_diff = abs(x0 - x1)
+            if not (x_diff <= atol + rtol * abs(x1) and math.isfinite(x_diff)):
+                return False
+        if y0 == y1:
+            return True
+        y_diff = abs(y0 - y1)
+        return bool(y_diff <= atol + rtol * abs(y1) and math.isfinite(y_diff))
 
     # Information about line
     def get_cubic_bezier_tuples_from_points(
@@ -1320,7 +1373,7 @@ class VMobject(Mobject):
         split_indices = [0] + list(filtered) + [len(points)]
         return (
             points[i1:i2]
-            for i1, i2 in zip(split_indices, split_indices[1:])
+            for i1, i2 in zip(split_indices[:-1], split_indices[1:], strict=True)
             if (i2 - i1) >= nppcc
         )
 
@@ -1339,6 +1392,67 @@ class VMobject(Mobject):
             points,
             lambda n: not self.consider_points_equals_2d(points[n - 1], points[n]),
         )
+
+    def get_subpath_split_indices_from_points(
+        self, points: CubicBezierPathLike, n_dims: int = 3
+    ) -> npt.NDArray[np.int_]:
+        """Return the point indices delimiting each subpath in ``points``.
+
+        A subpath is a run of consecutive cubic Bézier curves where every
+        curve's end anchor coincides with the next curve's start anchor; a
+        split is introduced wherever two consecutive anchors differ. This is
+        the vectorized equivalent of the comparison done by
+        :meth:`consider_points_equals` (or :meth:`consider_points_equals_2d`
+        when ``n_dims == 2``), matching their handling of non-finite
+        coordinates (``NaN``/``inf``) as well.
+
+        Parameters
+        ----------
+        points
+            The array of points to split into subpaths.
+        n_dims
+            The number of coordinates to compare when deciding whether two
+            anchors coincide: 3 for the full 3D points, or 2 to consider only
+            their ``x`` and ``y`` coordinates. Default is 3.
+
+        Returns
+        -------
+        np.ndarray
+            A ``(n_subpaths, 2)`` int array whose rows are the ``[start, end]``
+            point index ranges (end-exclusive) of each subpath.
+        """
+        points = np.asarray(points)
+        nppcc = self.n_points_per_cubic_curve
+        n_pts = len(points)
+        if n_pts < nppcc:
+            return np.empty((0, 2), dtype=int)
+
+        # Point indices where each new cubic curve starts.
+        boundary_indices = np.arange(nppcc, n_pts, nppcc)
+        if len(boundary_indices) == 0:
+            # A single cubic curve: no internal boundaries to split on.
+            return np.array([[0, n_pts]])
+
+        # A boundary is a split where the previous curve's end anchor is not
+        # close to the next curve's start anchor. This is an allocation-light
+        # vectorization of np.isclose semantics: NaN is never close, while
+        # infinities compare equal only when they have the same sign.
+        rtol = 1.0e-5  # default from np.isclose()
+        atol = self.tolerance_for_point_equality
+        ends = points[boundary_indices - 1, :n_dims]  # end of previous curve
+        starts = points[boundary_indices, :n_dims]  # start of next curve
+        with np.errstate(invalid="ignore"):
+            diffs = np.abs(ends - starts)
+            thresholds = atol + rtol * np.abs(starts)
+            is_close = diffs <= thresholds
+            finite_diffs = np.isfinite(diffs)
+            if not finite_diffs.all():
+                is_close &= finite_diffs
+                is_close |= ends == starts
+        is_split = ~np.all(is_close, axis=1)
+
+        split_points = np.concatenate([[0], boundary_indices[is_split], [n_pts]])
+        return np.stack([split_points[:-1], split_points[1:]], axis=1)
 
     def get_subpaths(self) -> list[CubicSpline]:
         """Returns subpaths formed by the curves of the VMobject.
@@ -1674,7 +1788,7 @@ class VMobject(Mobject):
 
         s = self.get_start_anchors()
         e = self.get_end_anchors()
-        return list(it.chain.from_iterable(zip(s, e)))
+        return list(it.chain.from_iterable(zip(s, e, strict=True)))
 
     def get_points_defining_boundary(self) -> Point3D_Array:
         # Probably returns all anchors, but this is weird regarding  the name of the method.
@@ -1727,7 +1841,7 @@ class VMobject(Mobject):
         self.align_rgbas(vmobject)
         # TODO: This shortcut can be a bit over eager. What if they have the same length, but different subpath lengths?
         if self.get_num_points() == vmobject.get_num_points():
-            return
+            return self
 
         for mob in self, vmobject:
             # If there are no points, add one to
@@ -1752,7 +1866,9 @@ class VMobject(Mobject):
         def get_nth_subpath(path_list, n):
             if n >= len(path_list):
                 # Create a null path at the very end
-                return [path_list[-1][-1]] * nppcc
+                if len(path_list) == 0:
+                    return np.tile(np.zeros(3), (nppcc, 1))
+                return np.tile(path_list[-1][-1], (nppcc, 1))
             path = path_list[n]
             # Check for useless points at the end of the path and remove them
             # https://github.com/ManimCommunity/manim/issues/1959
@@ -1850,7 +1966,7 @@ class VMobject(Mobject):
 
     def interpolate_color(
         self, mobject1: VMobject, mobject2: VMobject, alpha: float
-    ) -> None:
+    ) -> Self:
         attrs = [
             "fill_rgbas",
             "stroke_rgbas",
@@ -1871,6 +1987,7 @@ class VMobject(Mobject):
                 if isinstance(val, np.ndarray):
                     val = val.copy()
                 setattr(self, attr, val)
+        return self
 
     def pointwise_become_partial(
         self,
@@ -2286,6 +2403,9 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         self._assert_valid_submobjects(tuplify(value))
         self.submobjects[key] = value
 
+    def __getitem__(self, key: int | slice) -> VMobject:
+        return cast(VMobject, super().__getitem__(key))
+
 
 class VDict(VMobject, metaclass=ConvertToOpenGL):
     """A VGroup-like class, also offering submobject access by
@@ -2583,7 +2703,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         submobjects = self.submob_dict.values()
         return submobjects
 
-    def add_key_value_pair(self, key: Hashable, value: VMobject) -> None:
+    def add_key_value_pair(self, key: Hashable, value: VMobject) -> Self:
         """A utility function used by :meth:`add` to add the key-value pair
         to :attr:`submob_dict`. Not really meant to be used externally.
 
@@ -2622,6 +2742,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
 
         self.submob_dict[key] = mob
         super().add(value)
+        return self
 
 
 class VectorizedPoint(VMobject, metaclass=ConvertToOpenGL):
@@ -2658,8 +2779,9 @@ class VectorizedPoint(VMobject, metaclass=ConvertToOpenGL):
     def get_location(self) -> Point3D:
         return np.array(self.points[0])
 
-    def set_location(self, new_loc: Point3D):
+    def set_location(self, new_loc: Point3D) -> Self:
         self.set_points(np.array([new_loc]))
+        return self
 
 
 class CurvesAsSubmobjects(VGroup):
@@ -2819,6 +2941,21 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
         self.dashed_ratio = dashed_ratio
         self.num_dashes = num_dashes
         super().__init__(color=color, **kwargs)
+
+        # Work on a copy to avoid mutating the caller's mobject (e.g. removing tips).
+        base_vmobject = vmobject
+        vmobject = base_vmobject.copy()
+
+        # TipableVMobject instances (Arrow, Vector, etc.) carry tips as submobjects.
+        # When dashing such objects, each subcurve would otherwise include its own
+        # tip, leading to many overlapping arrowheads. Pop tips from the working
+        # copy and re-attach them only once after the dashes are created.
+        tips = None
+        if hasattr(vmobject, "pop_tips"):
+            popped_tips = vmobject.pop_tips()
+            if len(popped_tips.submobjects) > 0:
+                tips = popped_tips
+
         r = self.dashed_ratio
         n = self.num_dashes
         if n > 0:
@@ -2904,6 +3041,9 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
         # Family is already taken care of by get_subcurve
         # implementation
         if config.renderer == RendererType.OPENGL:
-            self.match_style(vmobject, recurse=False)
+            self.match_style(base_vmobject, recurse=False)
         else:
-            self.match_style(vmobject, family=False)
+            self.match_style(base_vmobject, family=False)
+
+        if tips is not None:
+            self.add(*tips.submobjects)

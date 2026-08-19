@@ -10,37 +10,36 @@ import operator as op
 import pathlib
 from collections.abc import Callable, Iterable
 from functools import reduce
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Self
 
 import cairo
 import numpy as np
-import numpy.typing as npt
 from PIL import Image
-from scipy.spatial.distance import pdist
-from typing_extensions import Self
 
-from manim.typing import (
-    FloatRGBA_Array,
-    FloatRGBALike_Array,
-    ManimInt,
-    PixelArray,
-    Point3D,
-    Point3D_Array,
-)
-
-from .. import config, logger
-from ..constants import *
-from ..mobject.mobject import Mobject
-from ..mobject.types.point_cloud_mobject import PMobject
-from ..mobject.types.vectorized_mobject import VMobject
-from ..utils.color import ManimColor, ParsableManimColor, color_to_int_rgba
-from ..utils.family import extract_mobject_family_members
-from ..utils.images import get_full_raster_image_path
-from ..utils.iterables import list_difference_update
-from ..utils.space_ops import angle_of_vector
+from manim._config import config, logger
+from manim.constants import *
+from manim.mobject.mobject import Mobject
+from manim.mobject.types.point_cloud_mobject import PMobject
+from manim.mobject.types.vectorized_mobject import VMobject
+from manim.utils.color import ManimColor, ParsableManimColor, color_to_int_rgba
+from manim.utils.family import extract_mobject_family_members
+from manim.utils.images import get_full_raster_image_path
+from manim.utils.iterables import list_difference_update
+from manim.utils.space_ops import cross2d
 
 if TYPE_CHECKING:
-    from ..mobject.types.image_mobject import AbstractImageMobject
+    import numpy.typing as npt
+
+    from manim.mobject.types.image_mobject import AbstractImageMobject
+    from manim.typing import (
+        FloatRGBA_Array,
+        FloatRGBALike_Array,
+        ManimFloat,
+        ManimInt,
+        PixelArray,
+        Point3D,
+        Point3D_Array,
+    )
 
 
 LINE_JOIN_MAP = {
@@ -320,32 +319,25 @@ class Camera:
             pixel_array = self.pixel_array
         return Image.fromarray(pixel_array, mode=self.image_mode)
 
-    def convert_pixel_array(
-        self, pixel_array: PixelArray | list | tuple, convert_from_floats: bool = False
-    ) -> PixelArray:
-        """Converts a pixel array from values that have floats in then
-        to proper RGB values.
+    def convert_pixel_array(self, pixel_array: PixelArray | list | tuple) -> PixelArray:
+        """Converts a pixel array with float values to proper RGB values.
 
         Parameters
         ----------
         pixel_array
             Pixel array to convert.
-        convert_from_floats
-            Whether or not to convert float values to ints, by default False
 
         Returns
         -------
         np.array
             The new, converted pixel array.
         """
-        retval = np.array(pixel_array)
-        if convert_from_floats:
-            retval = np.apply_along_axis(
-                lambda f: (f * self.rgb_max_val).astype(self.pixel_array_dtype),
-                2,
-                retval,
-            )
-        return retval
+        pixel_array = np.asarray(pixel_array)
+        return np.apply_along_axis(
+            lambda f: (f * self.rgb_max_val).astype(self.pixel_array_dtype),
+            2,
+            pixel_array,
+        )
 
     def set_pixel_array(
         self, pixel_array: PixelArray | list | tuple, convert_from_floats: bool = False
@@ -359,17 +351,19 @@ class Camera:
         convert_from_floats
             Whether or not to convert float values to proper RGB values, by default False
         """
-        converted_array: PixelArray = self.convert_pixel_array(
-            pixel_array, convert_from_floats
+        converted_array: PixelArray = (
+            self.convert_pixel_array(pixel_array)
+            if convert_from_floats
+            else np.asarray(pixel_array)
         )
-        if not (
+        if (
             hasattr(self, "pixel_array")
             and self.pixel_array.shape == converted_array.shape
         ):
-            self.pixel_array: PixelArray = converted_array
-        else:
             # Set in place
-            self.pixel_array[:, :, :] = converted_array[:, :, :]
+            np.copyto(self.pixel_array, converted_array, casting="unsafe")
+        else:
+            self.pixel_array: PixelArray = converted_array.copy()
 
     def set_background(
         self, pixel_array: PixelArray | list | tuple, convert_from_floats: bool = False
@@ -384,7 +378,11 @@ class Camera:
         convert_from_floats
             Whether or not to convert floats values to proper RGB valid ones, by default False
         """
-        self.background = self.convert_pixel_array(pixel_array, convert_from_floats)
+        self.background = (
+            self.convert_pixel_array(pixel_array)
+            if convert_from_floats
+            else np.array(pixel_array)
+        )
 
     # TODO, this should live in utils, not as a method of Camera
     def make_background_from_func(
@@ -411,7 +409,7 @@ class Camera:
         new_background = np.apply_along_axis(coords_to_colors_func, 2, coords)
         logger.info("Ending set_background")
 
-        return self.convert_pixel_array(new_background, convert_from_floats=True)
+        return self.convert_pixel_array(new_background)
 
     def set_background_from_func(
         self, coords_to_colors_func: Callable[[np.ndarray], np.ndarray]
@@ -438,6 +436,7 @@ class Camera:
         Camera
             The camera object after setting the pixel array.
         """
+        assert self.background is not None
         self.set_pixel_array(self.background)
         return self
 
@@ -712,22 +711,59 @@ class Camera:
             Camera object after setting cairo_context_path
         """
         points = self.transform_points_pre_display(vmobject, vmobject.points)
-        # TODO, shouldn't this be handled in transform_points_pre_display?
-        # points = points - self.get_frame_center()
         if len(points) == 0:
             return self
 
+        nppcc = vmobject.n_points_per_cubic_curve  # 4 for cubic bezier
+
         ctx.new_path()
-        subpaths = vmobject.gen_subpaths_from_points_2d(points)
-        for subpath in subpaths:
-            quads = vmobject.gen_cubic_bezier_tuples_from_points(subpath)
-            ctx.new_sub_path()
-            start = subpath[0]
-            ctx.move_to(*start[:2])
-            for _p0, p1, p2, p3 in quads:
-                ctx.curve_to(*p1[:2], *p2[:2], *p3[:2])
-            if vmobject.consider_points_equals_2d(subpath[0], subpath[-1]):
-                ctx.close_path()
+
+        # Subpath boundaries are computed by VMobject; a split occurs wherever
+        # one curve's end anchor is not close to the next curve's start anchor.
+        split_indices = vmobject.get_subpath_split_indices_from_points(points, n_dims=2)
+        if len(split_indices) == 0:
+            return self
+
+        # Precompute flat xy array for fast indexing
+        pts_xy = points[:, :2].ravel()  # [x0, y0, x1, y1, ...]
+
+        # Local references for speed (avoid attribute lookups in loop)
+        _move_to = ctx.move_to
+        _curve_to = ctx.curve_to
+        _new_sub_path = ctx.new_sub_path
+        _close_path = ctx.close_path
+
+        for start_idx, end_idx in split_indices:
+            start_idx = int(start_idx)
+            end_idx = int(end_idx)
+            if end_idx - start_idx < nppcc:
+                continue
+
+            _new_sub_path()
+            # move_to first point
+            base = start_idx * 2
+            _move_to(pts_xy[base], pts_xy[base + 1])
+
+            # Emit all cubic curves in this subpath.
+            # Points are: [anchor, handle1, handle2, anchor, handle1, handle2, anchor, ...]
+            # Each curve uses indices 1,2,3 relative to the start of each group of 4.
+            for i in range(start_idx, end_idx - nppcc + 1, nppcc):
+                b = (i + 1) * 2  # handle1
+                _curve_to(
+                    pts_xy[b],
+                    pts_xy[b + 1],
+                    pts_xy[b + 2],
+                    pts_xy[b + 3],
+                    pts_xy[b + 4],
+                    pts_xy[b + 5],
+                )
+
+            # Close if first and last points are equal.
+            if vmobject.consider_points_equals_2d(
+                points[start_idx], points[end_idx - 1]
+            ):
+                _close_path()
+
         return self
 
     def set_cairo_context_color(
@@ -757,9 +793,8 @@ class Camera:
             points = vmobject.get_gradient_start_and_end_points()
             points = self.transform_points_pre_display(vmobject, points)
             pat = cairo.LinearGradient(*it.chain(*(point[:2] for point in points)))
-            step = 1.0 / (len(rgbas) - 1)
-            offsets = np.arange(0, 1 + step, step)
-            for rgba, offset in zip(rgbas, offsets):
+            offsets = np.linspace(0, 1, len(rgbas))
+            for rgba, offset in zip(rgbas, offsets, strict=True):
                 pat.add_color_stop_rgba(offset, *rgba[2::-1], rgba[3])
             ctx.set_source(pat)
         return self
@@ -999,60 +1034,113 @@ class Camera:
     def display_image_mobject(
         self, image_mobject: AbstractImageMobject, pixel_array: np.ndarray
     ) -> None:
-        """Displays an ImageMobject by changing the pixel_array suitably.
+        """Display an :class:`~.ImageMobject` by changing the ``pixel_array`` suitably.
 
         Parameters
         ----------
         image_mobject
-            The imageMobject to display
+            The :class:`~.ImageMobject` to display.
         pixel_array
-            The Pixel array to put the imagemobject in.
+            The pixel array to put the :class:`~.ImageMobject` in.
         """
-        corner_coords = self.points_to_pixel_coords(image_mobject, image_mobject.points)
-        ul_coords, ur_coords, dl_coords, _ = corner_coords
-        right_vect = ur_coords - ul_coords
-        down_vect = dl_coords - ul_coords
-        center_coords = ul_coords + (right_vect + down_vect) / 2
-
         sub_image = Image.fromarray(image_mobject.get_pixel_array(), mode="RGBA")
+        original_coords = np.array(
+            [
+                [0, 0],
+                [sub_image.width, 0],
+                [0, sub_image.height],
+                [sub_image.width, sub_image.height],
+            ]
+        )
+        target_coords = self.points_to_subpixel_coords(
+            image_mobject, image_mobject.points
+        )
+        int_target_coords = target_coords.astype(np.int64)
 
-        # Reshape
-        pixel_width = max(int(pdist([ul_coords, ur_coords]).item()), 1)
-        pixel_height = max(int(pdist([ul_coords, dl_coords]).item()), 1)
-        sub_image = sub_image.resize(
-            (pixel_width, pixel_height),
+        # Temporarily translate target coords to upper left corner to calculate the
+        # smallest possible size for the target image.
+        shift_vector = np.array(
+            [
+                min(*[x for x, y in int_target_coords]),
+                min(*[y for x, y in int_target_coords]),
+            ]
+        )
+        target_coords -= shift_vector
+        int_target_coords -= shift_vector
+        target_size = (
+            max(*[x for x, y in int_target_coords]),
+            max(*[y for x, y in int_target_coords]),
+        )
+
+        # Check that the quadrilateral of the transformed image can actually contain any
+        # pixels by checking that its height from the longest side is longer than 0.5 pixels.
+        # If it's not, do not render the image. Otherwise, the perspective transform
+        # coefficients below might have broken values due to the extreme distortion (for
+        # example, when the image is perpendicular to the camera).
+        ordered_vertices = [target_coords[i] for i in (0, 1, 3, 2)]
+        sides = [ordered_vertices[(i + 1) % 4] - ordered_vertices[i] for i in range(4)]
+        side_lengths_in_pixels = np.linalg.norm(sides, axis=1)
+
+        longest_side_index = np.argmax(side_lengths_in_pixels)
+        longest_side = sides[longest_side_index]
+        longest_side_length_in_pixels = side_lengths_in_pixels[longest_side_index]
+        if longest_side_length_in_pixels == 0:
+            return
+
+        previous_side = sides[(longest_side_index - 1) % 4]
+        next_side = sides[(longest_side_index - 1) % 4]
+
+        # height = area / base
+        h1 = abs(cross2d(longest_side, previous_side)) / longest_side_length_in_pixels
+        h2 = abs(cross2d(longest_side, next_side)) / longest_side_length_in_pixels
+        height_from_longest_side_in_pixels = max(h1, h2)
+
+        if height_from_longest_side_in_pixels < 0.5:
+            return
+
+        # Use PIL.Image.Image.transform() to apply a perspective transform to the image.
+        # The transform coefficients must be calculated. The following is adapted from:
+        # https://pc-pillow.readthedocs.io/en/latest/Image_class/Image_transform.html#transform-perspective-coefficients
+        # https://stackoverflow.com/questions/14177744/how-does-perspective-transformation-work-in-pil
+        # The derivation can be found here:
+        # https://web.archive.org/web/20150222120106/xenia.media.mit.edu/~cwren/interpolator/
+        homography_matrix = []
+        for (x, y), (X, Y) in zip(target_coords, original_coords, strict=True):
+            homography_matrix.append([x, y, 1, 0, 0, 0, -X * x, -X * y])
+            homography_matrix.append([0, 0, 0, x, y, 1, -Y * x, -Y * y])
+
+        A = np.array(homography_matrix, dtype=np.float64)
+        b = original_coords.reshape(8).astype(np.float64)
+
+        try:
+            transform_coefficients = np.linalg.solve(A, b)
+        except np.linalg.LinAlgError:
+            # The matrix A might be singular if three points are collinear.
+            # In this case, do nothing and return.
+            return
+
+        sub_image = sub_image.transform(
+            size=target_size,  # Use the smallest possible size for speed.
+            method=Image.Transform.PERSPECTIVE,
+            data=transform_coefficients,
             resample=image_mobject.resampling_algorithm,
         )
 
-        # Rotate
-        angle = angle_of_vector(right_vect)
-        adjusted_angle = -int(360 * angle / TAU)
-        if adjusted_angle != 0:
-            sub_image = sub_image.rotate(
-                adjusted_angle,
-                resample=image_mobject.resampling_algorithm,
-                expand=1,
-            )
-
-        # TODO, there is no accounting for a shear...
-
-        # Paste into an image as large as the camera's pixel array
+        # Paste into an image as large as the camera's pixel array.
         full_image = Image.fromarray(
             np.zeros((self.pixel_height, self.pixel_width)),
             mode="RGBA",
         )
-        new_ul_coords = center_coords - np.array(sub_image.size) / 2
-        new_ul_coords = new_ul_coords.astype(int)
         full_image.paste(
             sub_image,
             box=(
-                new_ul_coords[0],
-                new_ul_coords[1],
-                new_ul_coords[0] + sub_image.size[0],
-                new_ul_coords[1] + sub_image.size[1],
+                shift_vector[0],
+                shift_vector[1],
+                shift_vector[0] + target_size[0],
+                shift_vector[1] + target_size[1],
             ),
         )
-        # Paint on top of existing pixel array
+        # Paint on top of existing pixel array.
         self.overlay_PIL_image(pixel_array, full_image)
 
     def overlay_rgba_array(
@@ -1128,11 +1216,13 @@ class Camera:
             points = np.zeros((1, 3))
         return points
 
-    def points_to_pixel_coords(
+    def points_to_subpixel_coords(
         self,
         mobject: Mobject,
         points: Point3D_Array,
-    ) -> npt.NDArray[ManimInt]:  # TODO: Write more detailed docstrings for this method.
+    ) -> npt.NDArray[
+        ManimFloat
+    ]:  # TODO: Write more detailed docstrings for this method.
         points = self.transform_points_pre_display(mobject, points)
         shifted_points = points - self.frame_center
 
@@ -1150,7 +1240,14 @@ class Camera:
 
         result[:, 0] = shifted_points[:, 0] * width_mult + width_add
         result[:, 1] = shifted_points[:, 1] * height_mult + height_add
-        return result.astype("int")
+        return result
+
+    def points_to_pixel_coords(
+        self,
+        mobject: Mobject,
+        points: Point3D_Array,
+    ) -> npt.NDArray[ManimInt]:  # TODO: Write more detailed docstrings for this method.
+        return self.points_to_subpixel_coords(mobject, points).astype(np.int64)
 
     def on_screen_pixels(self, pixel_coords: np.ndarray) -> PixelArray:
         """Returns array of pixels that are on the screen from a given

@@ -64,7 +64,8 @@ def test_angle_of_vector():
 
 
 def test_angle_of_vector_vectorized():
-    vec = np.random.randn(4, 10)
+    rng = np.random.default_rng()
+    vec = rng.standard_normal((4, 10))
     ref = [np.angle(complex(*v[:2])) for v in vec.T]
     np.testing.assert_array_equal(ref, angle_of_vector(vec))
 
@@ -121,3 +122,29 @@ def test_polar_coords():
     np.testing.assert_array_equal(
         np.round(spherical_to_cartesian(b), 4), np.array([0, 2, 0])
     )
+
+
+def test_triangulation_ring_connection():
+    verts = np.array(
+        [
+            # outer ring
+            [-2, -2, 0],
+            [2, -2, 0],
+            [2, 2, 0],
+            [-2, 2, 0],
+            # inner ring (hole)
+            [-0.5, -1.5, 0],
+            [-0.5, -0.5, 0],
+            [-1.5, -0.5, 0],
+            [-1.5, -1.5, 0],
+        ],
+        dtype=float,
+    )
+    ring_ends = [4, 8]
+
+    triangulation = earclip_triangulation(verts, ring_ends)
+
+    assert len(triangulation) > 0
+    assert len(triangulation) % 3 == 0
+    assert min(triangulation) >= 0
+    assert max(triangulation) < len(verts)

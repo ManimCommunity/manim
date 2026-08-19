@@ -6,19 +6,27 @@ import itertools as it
 import random
 import sys
 import types
+import warnings
 from collections.abc import Callable, Iterable, Iterator, Sequence
 from functools import partialmethod, wraps
 from math import ceil
-from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TypeVar, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    ClassVar,
+    Never,
+    Protocol,
+    Self,
+    TypeAlias,
+    TypeVar,
+    cast,
+    overload,
+)
 
 import moderngl
 import numpy as np
 import numpy.typing as npt
 from typing_extensions import (
-    Never,
-    Self,
-    TypeAlias,
-    overload,
     override,
 )
 
@@ -350,29 +358,31 @@ class OpenGLMobject:
         else:
             cls.__init__ = cls._original__init__
 
-    def init_data(self) -> None:
+    def init_data(self) -> Self:
         """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
         Subclasses can inherit and overwrite this method to extend `self.data`.
         """
         self.points = np.zeros((0, 3))
         self.bounding_box = np.zeros((3, 3))
         self.rgbas = np.zeros((1, 4))
+        return self
 
-    def init_colors(self) -> None:
+    def init_colors(self) -> Self:
         """Initializes the colors.
 
         Gets called upon creation
         """
         self.set_color(self.color, self.opacity)
+        return self
 
-    def init_points(self) -> None:
+    def init_points(self) -> Self:
         """Initializes :attr:`points` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be implemented by
         subclasses.
         """
         # Typically implemented in subclass, unless purposefully left blank
-        pass
+        return self
 
     def set(self, **kwargs: object) -> Self:
         """Sets attributes.
@@ -1048,7 +1058,7 @@ class OpenGLMobject:
                     x = OpenGLVGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
                     self.add(x)
         """
-        for m1, m2 in zip(self.submobjects, self.submobjects[1:]):
+        for m1, m2 in zip(self.submobjects[:-1], self.submobjects[1:], strict=True):
             m2.next_to(m1, direction, **kwargs)
         if center:
             self.center()
@@ -1190,7 +1200,7 @@ class OpenGLMobject:
             # make the grid as close to quadratic as possible.
             # choosing cols first can results in cols>rows.
             # This is favored over rows>cols since in general
-            # the sceene is wider than high.
+            # the scene is wider than high.
         if rows is None:
             rows = ceil(len(mobs) / cols)
         if cols is None:
@@ -1215,7 +1225,7 @@ class OpenGLMobject:
         ) -> Sequence[Vector3D]:
             if str_alignments is None:
                 # Use cell_alignment as fallback
-                return [cast(Vector3D, cell_alignment * direction)] * num
+                return [cast("Vector3D", cell_alignment * direction)] * num
             if len(str_alignments) != num:
                 raise ValueError(f"{name}_alignments has a mismatching size.")
             return [mapping[letter] for letter in str_alignments]
@@ -1415,7 +1425,7 @@ class OpenGLMobject:
 
     # Copying
 
-    def copy(self, shallow: bool = False) -> OpenGLMobject:
+    def copy(self, shallow: bool = False) -> Self:
         """Create and return an identical copy of the :class:`OpenGLMobject` including all
         :attr:`submobjects`.
 
@@ -1473,14 +1483,14 @@ class OpenGLMobject:
             #     setattr(copy_mobject, attr, value.copy())
         return copy_mobject
 
-    def deepcopy(self) -> OpenGLMobject:
+    def deepcopy(self) -> Self:
         parents = self.parents
         self.parents = []
         result = copy.deepcopy(self)
         self.parents = parents
         return result
 
-    def generate_target(self, use_deepcopy: bool = False) -> OpenGLMobject:
+    def generate_target(self, use_deepcopy: bool = False) -> Self:
         self.target: OpenGLMobject | None = None  # Prevent exponential explosion
         if use_deepcopy:
             self.target = self.deepcopy()
@@ -1508,19 +1518,19 @@ class OpenGLMobject:
 
     # Updating
 
-    def init_updaters(self) -> None:
+    def init_updaters(self) -> Self:
         self.time_based_updaters: list["_TimeBasedUpdater"] = []  # noqa: UP037
         self.non_time_updaters: list["_NonTimeBasedUpdater"] = []  # noqa: UP037
         self.has_updaters: bool = False
         self.updating_suspended: bool = False
+        return self
 
     def update(self, dt: float = 0, recurse: bool = True) -> Self:
-        if not self.has_updaters or self.updating_suspended:
-            return self
-        for time_based_updater in self.time_based_updaters:
-            time_based_updater(self, dt)
-        for non_time_updater in self.non_time_updaters:
-            non_time_updater(self)
+        if self.has_updaters and not self.updating_suspended:
+            for time_based_updater in self.time_based_updaters:
+                time_based_updater(self, dt)
+            for non_time_updater in self.non_time_updaters:
+                non_time_updater(self)
         if recurse:
             for submob in self.submobjects:
                 submob.update(dt, recurse)
@@ -2128,26 +2138,33 @@ class OpenGLMobject:
         return self
 
     def put_start_and_end_on(self, start: Point3DLike, end: Point3DLike) -> Self:
-        curr_start, curr_end = self.get_start_and_end()
-        curr_vect = curr_end - curr_start
-        if np.all(curr_vect == 0):
-            raise Exception("Cannot position endpoints of closed loop")
-        target_vect = np.array(end) - np.array(start)
+        current_start, current_end = self.get_start_and_end()
+        current_vector = current_end - current_start
+        if np.all(current_vector == 0):
+            warnings.warn(
+                "put_start_and_end_on has been called on a closed loop or zero-length mobject. "
+                f"{type(self).__name__} will be shifted to start point instead.",
+                stacklevel=2,
+            )
+            self.shift(np.asarray(start) - current_start)
+            return self
+
+        target_vector = np.asarray(end) - np.asarray(start)
         axis = (
-            normalize(np.cross(curr_vect, target_vect))
-            if np.linalg.norm(np.cross(curr_vect, target_vect)) != 0
+            normalize(np.cross(current_vector, target_vector))
+            if np.linalg.norm(np.cross(current_vector, target_vector)) != 0
             else OUT
         )
         self.scale(
-            float(np.linalg.norm(target_vect) / np.linalg.norm(curr_vect)),
-            about_point=curr_start,
+            np.linalg.norm(target_vector) / np.linalg.norm(current_vector),
+            about_point=current_start,
         )
         self.rotate(
-            angle_between_vectors(curr_vect, target_vect),
-            about_point=curr_start,
+            angle_between_vectors(current_vector, target_vector),
+            about_point=current_start,
             axis=axis,
         )
-        self.shift(start - curr_start)
+        self.shift(np.asarray(start) - current_start)
         return self
 
     # Color functions
@@ -2184,7 +2201,7 @@ class OpenGLMobject:
         # Color and opacity
         if color is not None and opacity is not None:
             rgbas: FloatRGBA_Array = np.array(
-                [[*rgb, o] for rgb, o in zip(*make_even(rgbs, opacities))]
+                [[*rgb, o] for rgb, o in zip(*make_even(rgbs, opacities), strict=True)]
             )
             for mob in self.get_family(recurse):
                 mob.data[name] = rgbas.copy()
@@ -2260,7 +2277,7 @@ class OpenGLMobject:
         mobs = self.submobjects
         new_colors = color_gradient(colors, len(mobs))
 
-        for mob, color in zip(mobs, new_colors):
+        for mob, color in zip(mobs, new_colors, strict=True):
             mob.set_color(color)
         return self
 
@@ -2475,7 +2492,7 @@ class OpenGLMobject:
         return OpenGLGroup(
             *(
                 template.copy().pointwise_become_partial(self, a1, a2)
-                for a1, a2 in zip(alphas[:-1], alphas[1:])
+                for a1, a2 in zip(alphas[:-1], alphas[1:], strict=True)
             )
         )
 
@@ -2576,7 +2593,7 @@ class OpenGLMobject:
     def align_data(self, mobject: OpenGLMobject) -> Self:
         # In case any data arrays get resized when aligned to shader data
         # self.refresh_shader_data()
-        for mob1, mob2 in zip(self.get_family(), mobject.get_family()):
+        for mob1, mob2 in zip(self.get_family(), mobject.get_family(), strict=False):
             # Separate out how points are treated so that subclasses
             # can handle that case differently if they choose
             mob1.align_points(mob2)
@@ -2606,7 +2623,7 @@ class OpenGLMobject:
             mob1.add_n_more_submobjects(max(0, n2 - n1))
             mob2.add_n_more_submobjects(max(0, n1 - n2))
         # Recurse
-        for sm1, sm2 in zip(mob1.submobjects, mob2.submobjects):
+        for sm1, sm2 in zip(mob1.submobjects, mob2.submobjects, strict=True):
             sm1.align_family(sm2)
         return self
 
@@ -2632,7 +2649,7 @@ class OpenGLMobject:
         repeat_indices = (np.arange(target) * curr) // target
         split_factors = [(repeat_indices == i).sum() for i in range(curr)]
         new_submobs = []
-        for submob, sf in zip(self.submobjects, split_factors):
+        for submob, sf in zip(self.submobjects, split_factors, strict=True):
             new_submobs.append(submob)
             for _ in range(1, sf):
                 new_submob = submob.copy()
@@ -2774,7 +2791,7 @@ class OpenGLMobject:
             mobject.move_to(self.get_center())
 
         self.align_family(mobject)
-        for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
+        for sm1, sm2 in zip(self.get_family(), mobject.get_family(), strict=True):
             sm1.set_data(sm2.data)
             sm1.set_uniforms(sm2.uniforms)
         self.refresh_bounding_box(recurse_down=True)
@@ -2782,7 +2799,7 @@ class OpenGLMobject:
 
     # Locking data
 
-    def lock_data(self, keys: Iterable[str]) -> None:
+    def lock_data(self, keys: Iterable[str]) -> Self:
         """
         To speed up some animations, particularly transformations,
         it can be handy to acknowledge which pieces of data
@@ -2791,10 +2808,11 @@ class OpenGLMobject:
         read into the shader_wrapper objects needlessly
         """
         if self.has_updaters:
-            return
+            return self
         # Be sure shader data has most up to date information
         self.refresh_shader_data()
         self.locked_data_keys = set(keys)
+        return self
 
     def lock_matching_data(
         self, mobject1: OpenGLMobject, mobject2: OpenGLMobject
@@ -2803,6 +2821,7 @@ class OpenGLMobject:
             self.get_family(),
             mobject1.get_family(),
             mobject2.get_family(),
+            strict=False,
         ):
             keys = sm.data.keys() & sm1.data.keys() & sm2.data.keys()
             sm.lock_data(
@@ -2815,9 +2834,10 @@ class OpenGLMobject:
             )
         return self
 
-    def unlock_data(self) -> None:
+    def unlock_data(self) -> Self:
         for mob in self.get_family():
             mob.locked_data_keys = set()
+        return self
 
     # Operations touching shader uniforms
 
@@ -2962,19 +2982,21 @@ class OpenGLMobject:
         shader_data: _ShaderData,  # has structured data type, ex. ("point", np.float32, (3,))
         shader_data_key: str,
         data_key: str,
-    ) -> None:
+    ) -> Self:
         if data_key in self.locked_data_keys:
-            return
+            return self
         self.check_data_alignment(shader_data, data_key)
         shader_data[shader_data_key] = self.data[data_key]
+        return self
 
     def get_shader_data(self) -> _ShaderData:
         shader_data = self.get_resized_shader_data_array(self.get_num_points())
         self.read_data_to_shader(shader_data, "point", "points")
         return shader_data
 
-    def refresh_shader_data(self) -> None:
+    def refresh_shader_data(self) -> Self:
         self.get_shader_data()
+        return self
 
     def get_shader_uniforms(self) -> dict[str, Any]:
         return self.uniforms
@@ -3030,14 +3052,15 @@ class OpenGLPoint(OpenGLMobject):
         return self.artificial_height
 
     def get_location(self) -> Point3D:
-        return cast(Point3D, self.points[0]).copy()
+        return cast("Point3D", self.points[0]).copy()
 
     @override
     def get_bounding_box_point(self, *args: object, **kwargs: Any) -> Point3D:
         return self.get_location()
 
-    def set_location(self, new_loc: Point3DLike) -> None:
+    def set_location(self, new_loc: Point3DLike) -> Self:
         self.set_points(np.array(new_loc, ndmin=2, dtype=float))
+        return self
 
 
 class _AnimationBuilder:
@@ -3076,7 +3099,7 @@ class _AnimationBuilder:
         # NOTE: using `Self` here should not be a problem, because it's equivalent to a `TypeVar` introduced in `__getattr__`.
         #   For this reason, here it's still in scope and can be used (that's why pyright does not flag this as an error).
         #   However, mypy currently does not seem to understand this: hence the `type: ignore` comment.
-        def update_target(*method_args: object, **method_kwargs: object) -> Self:  # type: ignore[type-var, misc]
+        def update_target(*method_args: object, **method_kwargs: object) -> Self:  # type: ignore[type-var]
             if has_overridden_animation:
                 self.overridden_animation = cast(
                     "Callable[..., Animation]", method._override_animate

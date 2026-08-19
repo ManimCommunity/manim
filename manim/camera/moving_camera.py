@@ -10,7 +10,7 @@ from __future__ import annotations
 __all__ = ["MovingCamera"]
 
 from collections.abc import Iterable
-from typing import Any
+from typing import Any, Literal, overload
 
 from cairo import Context
 
@@ -20,7 +20,7 @@ from .. import config
 from ..camera.camera import Camera
 from ..constants import DOWN, LEFT, RIGHT, UP
 from ..mobject.frame import ScreenRectangle
-from ..mobject.mobject import Mobject
+from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..utils.color import WHITE, ManimColor
 
 
@@ -166,13 +166,31 @@ class MovingCamera(Camera):
         """
         return [self.frame]
 
+    @overload
+    def auto_zoom(
+        self,
+        mobjects: Iterable[Mobject],
+        margin: float,
+        only_mobjects_in_frame: bool,
+        animate: Literal[False],
+    ) -> Mobject: ...
+
+    @overload
+    def auto_zoom(
+        self,
+        mobjects: Iterable[Mobject],
+        margin: float,
+        only_mobjects_in_frame: bool,
+        animate: Literal[True],
+    ) -> _AnimationBuilder: ...
+
     def auto_zoom(
         self,
         mobjects: Iterable[Mobject],
         margin: float = 0,
         only_mobjects_in_frame: bool = False,
         animate: bool = True,
-    ) -> Mobject:
+    ) -> _AnimationBuilder | Mobject:
         """Zooms on to a given array of mobjects (or a singular mobject)
         and automatically resizes to frame all the mobjects.
 
