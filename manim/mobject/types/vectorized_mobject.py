@@ -1850,12 +1850,10 @@ class VMobject(Mobject):
         degenerate curve whose extent in every dimension is that point.
         """
         n_curves = len(pts) // nppcc
-        anchors = pts[::nppcc, dim]  # start anchors of every curve
         if nppcc == 3:
             # Quadratic Bézier: P'(t) = 2*((p1-p0) + t*(p0-2p1+p2)).
             p0, p1, p2 = (pts[i::nppcc, dim] for i in range(nppcc))
             denom = p0 - 2 * p1 + p2
-            t = np.zeros(n_curves)
             with np.errstate(divide="ignore", invalid="ignore"):
                 t = np.where(np.abs(denom) > 1e-12, (p0 - p1) / denom, np.nan)
             t_valid = (t > 1e-12) & (t < 1 - 1e-12)
