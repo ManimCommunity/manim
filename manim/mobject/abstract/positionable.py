@@ -216,6 +216,7 @@ class Positionable:
         # TODO: Optimize by only calculating dim
         return self.get_critical_point(direction=direction)[dim]
 
+    @deprecated(replacement="get_critical_point")
     def get_corner(self, direction: Vector3DLike) -> Point3D:
         return self.get_critical_point(direction=direction)
 
@@ -231,9 +232,11 @@ class Positionable:
         values = self.points[:, dim]
         return values.max() - values.min()
 
+    @deprecated(replacement="get_critical_point")
     def get_edge_center(self, direction: Vector3DLike) -> Point3D:
         return self.get_critical_point(direction=direction)
 
+    @deprecated()
     def get_extremum_along_dim(
         self,
         dim: int = 0,

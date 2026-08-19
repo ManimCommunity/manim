@@ -441,7 +441,7 @@ def validate_function(
     name: str,
     function: Callable[[Mobject | Positionable, dict[Any, Any]], Any],
     validate: Callable[[Mobject, Positionable, Any, Any], None],
-    generate_random_parameters: Callable[[], dict[Any, Any]],
+    random_parameters: Callable[[], dict[Any, Any]],
 ) -> None:
     global POINT_COUNTS, LOOPS_PER_POINT_COUNT
     time_old, time_new = 0, 0
@@ -455,7 +455,7 @@ def validate_function(
             mob_new = Positionable()
             mob_new.points = points.copy()
 
-            kwargs = generate_random_parameters()
+            kwargs = random_parameters()
             kwargs = {key: value for key, value in kwargs.items() if value is not None}
 
             start = time.perf_counter_ns()
@@ -481,7 +481,9 @@ def validate_function(
                     """.replace("                    ", "")
                 ) from e
 
-    print(f"\t{name.ljust(25)}\t{time_old / time_new:1.2f}x\t{time_old / 1e9:.0f}s")
+    print(
+        f"\t{name.ljust(25)}\t{time_old / time_new:1.2f}x\t{time_old / 1e9:.2f}s\t{time_new / 1e9:.2f}s"
+    )
     if name in UNTESTED:
         UNTESTED.remove(name)
 
@@ -504,7 +506,7 @@ def validate_setter(
         name=name,
         function=function,
         validate=validate,
-        generate_random_parameters=create_kwargs,
+        random_parameters=create_kwargs,
     )
 
 
@@ -525,7 +527,7 @@ def validate_getter(
         name=name,
         function=function,
         validate=validate,
-        generate_random_parameters=create_kwargs,
+        random_parameters=create_kwargs,
     )
 
 
