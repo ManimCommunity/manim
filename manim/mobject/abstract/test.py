@@ -441,7 +441,7 @@ def validate_function(
     name: str,
     function: Callable[[Mobject | Positionable, dict[Any, Any]], Any],
     validate: Callable[[Mobject, Positionable, Any, Any], None],
-    create_kwargs: Callable[[], dict[Any, Any]],
+    generate_random_parameters: Callable[[], dict[Any, Any]],
 ) -> None:
     global POINT_COUNTS, LOOPS_PER_POINT_COUNT
     time_old, time_new = 0, 0
@@ -455,7 +455,7 @@ def validate_function(
             mob_new = Positionable()
             mob_new.points = points.copy()
 
-            kwargs = create_kwargs()
+            kwargs = generate_random_parameters()
             kwargs = {key: value for key, value in kwargs.items() if value is not None}
 
             start = time.perf_counter_ns()
@@ -504,7 +504,7 @@ def validate_setter(
         name=name,
         function=function,
         validate=validate,
-        create_kwargs=create_kwargs,
+        generate_random_parameters=create_kwargs,
     )
 
 
@@ -525,7 +525,7 @@ def validate_getter(
         name=name,
         function=function,
         validate=validate,
-        create_kwargs=create_kwargs,
+        generate_random_parameters=create_kwargs,
     )
 
 

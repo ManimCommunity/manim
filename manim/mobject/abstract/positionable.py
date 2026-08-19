@@ -17,10 +17,6 @@ from manim.constants import (
     TAU,
     UP,
 )
-from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
-from manim.mobject.types.vectorized_mobject import VMobject
 from manim.typing import (
     MatrixMN,
     Point3D,

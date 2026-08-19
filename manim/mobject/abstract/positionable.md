@@ -29,4 +29,20 @@
 
 # Testing
 
-Tries to ensure that the behavior for mobjects with at least 1 point stays the same through randomized testing.
+Tries to ensure the same behavior for mobjects with at least 1 point by randomized testing.
+Run `python test.py` to run the randomized tests.
+
+## Pseudo Code
+```py
+function = lambda mob, kwargs: mob.some_function(**kwargs)  # function that you want to test
+
+for point_count in (1, 100):                                # tests different point counts
+    for _ in range(100):                                    # test every point count many times
+        points = random_points(point_count)                 # generate points
+        mob_old = Mobject().set_points(points)              # create old implementation
+        mob_new = Positionable().set_points(points)         # create new implementation
+        kwargs = random_parameters()                        # randomize parameters
+        result_old = function(mob_old, kwargs)              # apply old implementation
+        result_new = function(mob_new, kwargs)              # apply new implementation
+        validate(mob_old, mob_new, result_old, result_new)  # compare results
+```
