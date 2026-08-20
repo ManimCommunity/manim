@@ -864,7 +864,9 @@ def test_extrema_scale_invariance():
     # Scaling a curve must not change which roots are treated as interior
     # extrema, so width scales exactly with the overall scale factor.
     true_width = 2.4377191199218955
-    pts = np.array([[0.0, 0.0, 0.0], [5.0, 3.0, 0.0], [-5.0, 3.0, 0.0], [1.0, 0.0, 0.0]])
+    pts = np.array(
+        [[0.0, 0.0, 0.0], [5.0, 3.0, 0.0], [-5.0, 3.0, 0.0], [1.0, 0.0, 0.0]]
+    )
     for scale in (1e-16, 1e-14, 1e-12, 1e-9, 1e-3, 1.0, 1e3, 1e9):
         vmob = VMobject().set_points(pts * scale)
         assert vmob.width == pytest.approx(true_width * scale, rel=1e-9, abs=1e-20)
