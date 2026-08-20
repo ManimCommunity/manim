@@ -757,14 +757,8 @@ def test_width_height_include_interior_extrema_of_wild_cubic():
 
 
 def test_arc_critical_points_agree_with_width_height():
-    # There were two different old bounds: width/height used all control
-    # points, whose box can only overestimate the Bézier extent (convex-hull
-    # property), while get_critical_point used the anchors only and could
-    # underestimate it.  A 180-degree arc is a bad test case because its
-    # extrema happen to land exactly on subdivision anchors, so both
-    # behaviors agree on it.  This 70% arc distinguishes all three: control
-    # points span 3.648879 in x, the exact curve 3.618034, the anchors only
-    # 3.562774.
+    # Choose an arc whose x-extremum lies between subdivision anchors.
+    # Control-point, anchor-only, and exact curve bounds are all different.
     arc = Arc(radius=2, start_angle=PI / 5, angle=TAU * 0.7)
     assert arc.width == pytest.approx(3.618034, abs=1e-4)
     assert arc.height == pytest.approx(4.0, abs=1e-3)
@@ -791,12 +785,6 @@ def test_width_height_depth_setters_round_trip(dim):
     assert getattr(mob, dim) == pytest.approx(5.0)
 
 
-# Note: running the setters for several dimensions in a row on one mobject is
-# not a meaningful round-trip, because setting e.g. height rescales the whole
-# mobject uniformly and thereby also rescales a width set earlier.  Each
-# dimension is therefore verified individually above.
-
-
 def test_width_height_of_single_point_vmobject():
     vmob = VMobject().set_points(np.array([[3.0, 4.0, 0.0]]))
     assert vmob.width == pytest.approx(0.0)
@@ -804,12 +792,7 @@ def test_width_height_of_single_point_vmobject():
 
 
 def test_critical_points_agree_with_width_height():
-    # #3619: width/height are exact, and the critical points (get_left,
-    # get_right, get_top, get_bottom, get_center) agree with them: they are
-    # computed from the exact bounding box of the rendered Bézier curves.
-    # Control handles no longer directly define the critical points; only
-    # the extrema they induce on the rendered curve do (previously the
-    # control points could inflate the box, e.g. width 10 here).
+    # Critical points and dimensions must use the same exact curve bounds.
     vmob = VMobject().set_points(
         np.array([[0.0, 0.0, 0.0], [5.0, 3.0, 0.0], [-5.0, 3.0, 0.0], [1.0, 0.0, 0.0]])
     )

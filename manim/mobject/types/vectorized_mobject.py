@@ -1797,33 +1797,13 @@ class VMobject(Mobject):
         )
 
     def get_bezier_bounding_box(self) -> Point3D_Array | None:
-        """Return the exact axis-aligned bounding box of the curves defining
-        this :class:`VMobject`, rather than the bounding box of their control
-        points.
+        """Return the exact axis-aligned bounding box of this
+        :class:`VMobject`'s Bézier curves.
 
-        The points of a Bézier curve other than its anchors act as handles;
-        they generally do not lie on the curve itself. Computing bounds from
-        ``self.points`` directly therefore yields ``width``/``height`` values
-        that can differ from the physical extent of the rendered curve. This
-        method accounts for the interior extrema of every curve and returns
-        the true bounds as ``array([[xmin, ymin, zmin], [xmax, ymax, zmax]])``.
+        Unlike bounds computed from ``self.points``, this includes only
+        points on the curves, accounting for interior extrema.
 
-        Returns
-        -------
-        Point3D_Array
-            The lower-left and upper-right corners of the bounding box, or
-            ``None`` if this :class:`VMobject` has no points.
-
-        Examples
-        --------
-        .. manim:: BezierBoundingBoxExample
-            :save_last_frame:
-
-            class BezierBoundingBoxExample(Scene):
-                def construct(self):
-                    c = Circle(radius=3).rotate(30 * DEGREES)
-                    rect = Rectangle(width=c.width, height=c.height).move_to(c).set_stroke(BLUE)
-                    self.add(c, rect)
+        Returns ``None`` if the VMobject has no points.
         """
         pts = self.points
         if len(pts) == 0:
