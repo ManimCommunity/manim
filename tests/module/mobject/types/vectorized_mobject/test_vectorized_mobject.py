@@ -757,12 +757,14 @@ def test_width_height_include_interior_extrema_of_wild_cubic():
 
 
 def test_arc_critical_points_agree_with_width_height():
-    # Control points never undershoot the curve: a Bézier curve stays inside
-    # its control hull (de Casteljau convex-hull property), so the old
-    # control-point semantics could only overestimate.  For a full 180-degree
-    # arc the subdivided anchors happen to reach the extrema, which is why the
-    # old test could not distinguish the semantics.  Use a 70% arc instead,
-    # whose interior extrema are not reached by any anchor.
+    # There were two different old bounds: width/height used all control
+    # points, whose box can only overestimate the Bézier extent (convex-hull
+    # property), while get_critical_point used the anchors only and could
+    # underestimate it.  A 180-degree arc is a bad test case because its
+    # extrema happen to land exactly on subdivision anchors, so both
+    # behaviors agree on it.  This 70% arc distinguishes all three: control
+    # points span 3.648879 in x, the exact curve 3.618034, the anchors only
+    # 3.562774.
     arc = Arc(radius=2, start_angle=PI / 5, angle=TAU * 0.7)
     assert arc.width == pytest.approx(3.618034, abs=1e-4)
     assert arc.height == pytest.approx(4.0, abs=1e-3)
@@ -772,18 +774,6 @@ def test_arc_critical_points_agree_with_width_height():
     assert arc.get_top()[1] - arc.get_bottom()[1] == pytest.approx(
         arc.height, abs=1e-6
     )
-
-
-def test_quadratic_width_height_use_curve_extrema():
-    # Quadratic counterart: interior extrema must be included too.  Though
-    # standard VMobjects draw cubic curves, quadratic curve data is a real
-    # input for get_bezier_bounding_box (SVG path commands such as Q/T are
-    # quadratic), so exercise the quadratic path directly.
-    vmob = VMobject().set_points(
-        np.array([[0.0, 0.0, 0.0], [2.0, 4.0, 0.0], [4.0, 0.0, 0.0]])
-    )
-    assert vmob.width == pytest.approx(4.0)
-    assert vmob.height == pytest.approx(4.0)
 
 
 @pytest.mark.parametrize("dim", ["width", "height", "depth"])

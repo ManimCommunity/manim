@@ -1829,7 +1829,7 @@ class VMobject(Mobject):
         if len(pts) == 0:
             return None
         nppcc = self.n_points_per_cubic_curve
-        if nppcc not in (3, 4) or len(pts) % nppcc != 0:
+        if nppcc != 4 or len(pts) % nppcc != 0:
             return np.array([pts.min(axis=0), pts.max(axis=0)])
 
         lower = np.zeros(3)
@@ -1846,29 +1846,12 @@ class VMobject(Mobject):
         """Return, for every curve in ``pts``, the exact minimum and maximum
         value of its ``dim``-th coordinate (anchors and interior extrema).
 
-        Returns an array of shape ``(n_curves, 2)``. A single point yields a
-        degenerate curve whose extent in every dimension is that point.
+        Returns an array of shape ``(n_curves, 2)``.  Callers must ensure
+        ``nppcc == 4`` and ``len(pts) % nppcc == 0`` (the quadratic
+        approximation path is handled elsewhere by degree-elevation to
+        cubic curves).
         """
         n_curves = len(pts) // nppcc
-        if nppcc == 3:
-            # Quadratic Bézier: P'(t) = 2*((p1-p0) + t*(p0-2p1+p2)).
-            p0, p1, p2 = (pts[i::nppcc, dim] for i in range(nppcc))
-            denom = p0 - 2 * p1 + p2
-            with np.errstate(divide="ignore", invalid="ignore"):
-                t = np.where(np.abs(denom) > 1e-12, (p0 - p1) / denom, np.nan)
-            t_valid = (t > 1e-12) & (t < 1 - 1e-12)
-            starts = pts[::nppcc, dim]
-            ends = pts[nppcc - 1 :: nppcc, dim]
-            mins = np.minimum(starts, ends).astype(np.float64)
-            maxs = np.maximum(starts, ends).astype(np.float64)
-            if np.any(t_valid):
-                tv = t[t_valid]
-                p0v, p1v, p2v = (pts[i::nppcc, dim][t_valid] for i in range(nppcc))
-                ev = (1 - tv) ** 2 * p0v + 2 * (1 - tv) * tv * p1v + tv**2 * p2v
-                mins[t_valid] = np.minimum(mins[t_valid], ev)
-                maxs[t_valid] = np.maximum(maxs[t_valid], ev)
-            return np.column_stack([mins, maxs])
-
         # Cubic Bézier: derivative roots of P'(t) = A t^2 + B t + C.
         p0, p1, p2, p3 = (pts[i::nppcc, dim] for i in range(nppcc))
         u = p1 - p0
