@@ -874,3 +874,12 @@ def test_extrema_scale_invariance():
     vmob = VMobject().set_points(pts * 1e-14)
     vmob.width = 1.0
     assert vmob.width == pytest.approx(1.0, abs=1e-9)
+
+
+def test_family_fast_path_aggregates_exact_bounds():
+    left = _wild_cubic().shift(20 * LEFT)
+    right = _wild_cubic().shift(20 * RIGHT)
+    group = VGroup(left, right)
+    assert group.get_left()[0] == pytest.approx(-20.98472845, abs=1e-6)
+    assert group.get_right()[0] == pytest.approx(21.45299067, abs=1e-6)
+    assert group.width == pytest.approx(42.4377191, abs=1e-4)
