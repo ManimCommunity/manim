@@ -16,7 +16,7 @@ from manim import (
     VGroup,
     VMobject,
 )
-from manim.constants import DEGREES, PI, TAU
+from manim.constants import DEGREES, LEFT, PI, RIGHT, TAU
 
 
 def test_vmobject_add():
@@ -825,3 +825,50 @@ def test_depth_and_critical_points_cover_curve_extrema():
     assert out[2] == pytest.approx(1.45299067, abs=1e-6)
     assert inn[2] == pytest.approx(-0.98472845, abs=1e-6)
     assert out[2] - inn[2] == pytest.approx(vmob.depth, abs=1e-6)
+
+
+def _wild_cubic() -> VMobject:
+    return VMobject().set_points(
+        np.array([[0.0, 0.0, 0.0], [5.0, 3.0, 0.0], [-5.0, 3.0, 0.0], [1.0, 0.0, 0.0]])
+    )
+
+
+def test_coord_planning_uses_exact_extrema():
+    # get_x/get_coord/set_coord/align_to must be consistent with the exact
+    # critical points, otherwise set_x and align_to move wrong amounts.
+    vmob = _wild_cubic()
+    assert vmob.get_x() == pytest.approx(vmob.get_center()[0])
+    assert vmob.get_x(RIGHT) == pytest.approx(vmob.get_right()[0])
+    assert vmob.get_x(LEFT) == pytest.approx(vmob.get_left()[0])
+    assert vmob.get_extremum_along_dim(dim=0, key=1) == pytest.approx(
+        vmob.get_right()[0]
+    )
+    assert vmob.get_extremum_along_dim(dim=0, key=-1) == pytest.approx(
+        vmob.get_left()[0]
+    )
+
+    vmob.set_x(0)
+    assert vmob.get_center()[0] == pytest.approx(0, abs=1e-9)
+
+    vmob = _wild_cubic()
+    vmob.set_x(0, RIGHT)
+    assert vmob.get_right()[0] == pytest.approx(0, abs=1e-9)
+
+    rect = Square(side_length=2).shift(3 * RIGHT)
+    vmob = _wild_cubic()
+    vmob.align_to(rect, RIGHT)
+    assert vmob.get_right()[0] == pytest.approx(rect.get_right()[0], abs=1e-9)
+
+
+def test_extrema_scale_invariance():
+    # Scaling a curve must not change which roots are treated as interior
+    # extrema, so width scales exactly with the overall scale factor.
+    true_width = 2.4377191199218955
+    pts = np.array([[0.0, 0.0, 0.0], [5.0, 3.0, 0.0], [-5.0, 3.0, 0.0], [1.0, 0.0, 0.0]])
+    for scale in (1e-16, 1e-14, 1e-12, 1e-9, 1e-3, 1.0, 1e3, 1e9):
+        vmob = VMobject().set_points(pts * scale)
+        assert vmob.width == pytest.approx(true_width * scale, rel=1e-9, abs=1e-20)
+
+    vmob = VMobject().set_points(pts * 1e-14)
+    vmob.width = 1.0
+    assert vmob.width == pytest.approx(1.0, abs=1e-9)

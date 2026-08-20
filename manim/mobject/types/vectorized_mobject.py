@@ -1796,6 +1796,48 @@ class VMobject(Mobject):
             tuple(it.chain(*(sm.get_anchors() for sm in self.get_family())))
         )
 
+    def _get_bezier_family_bounding_box(self) -> Point3D_Array | None:
+        """Return the exact bounding box of the curves of the family.
+
+        Aggregates the boxes of every :class:`~Mobject.get_family` member
+        that carries points.  Members storing curves other than cubics fall
+        back to their raw point bounds.
+        """
+        members = [
+            (m.points, m.n_points_per_cubic_curve)
+            for m in self.get_family()
+            if len(m.points) > 0
+        ]
+        if not members:
+            return None
+
+        if all(n == 4 and len(p) % 4 == 0 for p, n in members):
+            pts = np.concatenate([p for p, _ in members])
+            lower = np.zeros(3)
+            upper = np.zeros(3)
+            for dim in range(3):
+                vals = self._get_curve_extrema(dim, pts, 4)
+                lower[dim] = np.min(vals[:, 0])
+                upper[dim] = np.max(vals[:, 1])
+            return np.array([lower, upper])
+
+        bbox: Point3D_Array | None = None
+        for p, n in members:
+            if n == 4 and len(p) % n == 0:
+                bb = np.zeros((2, 3))
+                for dim in range(3):
+                    vals = self._get_curve_extrema(dim, p, n)
+                    bb[0, dim] = np.min(vals[:, 0])
+                    bb[1, dim] = np.max(vals[:, 1])
+            else:
+                bb = np.array([p.min(axis=0), p.max(axis=0)])
+            if bbox is None:
+                bbox = bb
+            else:
+                bbox[0] = np.minimum(bbox[0], bb[0])
+                bbox[1] = np.maximum(bbox[1], bb[1])
+        return bbox
+
     def get_bezier_bounding_box(self) -> Point3D_Array | None:
         """Return the exact axis-aligned bounding box of this
         :class:`VMobject`'s Bézier curves.
@@ -1840,15 +1882,20 @@ class VMobject(Mobject):
         aa = u - 2 * v + w
         bb = 2 * (v - u)
         cc = u
+        # Tolerances are relative to the coefficient scale so that scaling
+        # the whole curve does not change which roots are classified as
+        # interior extrema.
+        m = np.maximum(np.maximum(np.abs(aa), np.abs(bb)), np.abs(cc))
+        rel = 1e-12 * m
         disc = bb * bb - 4 * aa * cc
-        disc_pos = disc > 1e-24
-        aa_zero = np.abs(aa) < 1e-12
+        disc_pos = disc > rel * rel
+        aa_zero = np.abs(aa) < rel
         t = np.full((n_curves, 2), np.nan)
         with np.errstate(divide="ignore", invalid="ignore"):
             sq = np.sqrt(np.maximum(disc, 0))
             # A == 0: degenerate quadratic, single root -C/B (B != 0).
             t[:, 0] = np.where(
-                aa_zero & ~np.isclose(bb, 0, atol=1e-12),
+                aa_zero & ~np.isclose(bb, 0, atol=rel),
                 -cc / bb,
                 (-bb + sq) / (2 * aa),
             )
@@ -1859,7 +1906,7 @@ class VMobject(Mobject):
         maxs = np.maximum(start, end).astype(np.float64)
         for j in range(2):
             tv = t[:, j]
-            quadratic_root = aa_zero & ~np.isclose(bb, 0, atol=1e-12)
+            quadratic_root = aa_zero & ~np.isclose(bb, 0, atol=rel)
             valid = (
                 (disc_pos & ~aa_zero | quadratic_root) & (tv > 1e-12) & (tv < 1 - 1e-12)
             )
@@ -1876,6 +1923,32 @@ class VMobject(Mobject):
                 maxs[valid] = np.maximum(maxs[valid], ev)
         return np.column_stack([mins, maxs])
 
+    def get_extremum_along_dim(
+        self,
+        points: Point3DLike_Array | None = None,
+        dim: int = 0,
+        key: int = 0,
+    ) -> float:
+        """Extremum of the exact curve bounds of the family along ``dim``.
+
+        When ``points`` are passed explicitly, the request refers to those
+        points and is delegated to
+        :meth:`~Mobject.get_extremum_along_dim`.  Otherwise the exact
+        bounding box of the full family is used, so planning methods such
+        as ``get_coord``, ``set_coord`` and ``align_to`` are consistent
+        with :meth:`get_critical_point` and the width/height/depth setters.
+        """
+        if points is not None:
+            return super().get_extremum_along_dim(points, dim, key)
+        bbox = self._get_bezier_family_bounding_box()
+        if bbox is None:
+            return 0.0
+        if key < 0:
+            return bbox[0, dim]
+        if key > 0:
+            return bbox[1, dim]
+        return 0.5 * (bbox[0, dim] + bbox[1, dim])
+
     def get_critical_point(self, direction: Vector3DLike) -> Point3D:
         """Return one of the 9 'critical points' of the bounding box, along the
         given direction.
@@ -1890,18 +1963,7 @@ class VMobject(Mobject):
         See :meth:`~.Mobject.get_critical_point` for details and examples.
         """
         result = np.zeros(self.dim)
-        bbox = None
-        for mob in self.get_family():
-            if len(mob.points) == 0:
-                continue
-            mob_bbox = mob.get_bezier_bounding_box()
-            if mob_bbox is None:
-                continue
-            if bbox is None:
-                bbox = mob_bbox
-            else:
-                bbox[0] = np.minimum(bbox[0], mob_bbox[0])
-                bbox[1] = np.maximum(bbox[1], mob_bbox[1])
+        bbox = self._get_bezier_family_bounding_box()
         if bbox is None:
             return result
         for dim in range(self.dim):
@@ -1925,25 +1987,10 @@ class VMobject(Mobject):
         correspond to the physical extent of the rendered shape, and the
         critical points (:meth:`~Mobject.get_left` etc.) agree with them.
         """
-        if len(self.submobjects) == 0:
-            bbox = self.get_bezier_bounding_box()
-            if bbox is None:
-                return 0.0
-            return bbox[1][dim] - bbox[0][dim]
-
-        lower = float("inf")
-        upper = float("-inf")
-        for mob in self.get_family():
-            if len(mob.points) == 0:
-                continue
-            bbox = mob.get_bezier_bounding_box()
-            if bbox is None:
-                continue
-            lower = min(lower, bbox[0][dim])
-            upper = max(upper, bbox[1][dim])
-        if upper == float("-inf"):
+        bbox = self._get_bezier_family_bounding_box()
+        if bbox is None:
             return 0.0
-        return upper - lower
+        return bbox[1][dim] - bbox[0][dim]
 
     def get_arc_length(self, sample_points_per_curve: int | None = None) -> float:
         """Return the approximated length of the whole curve.
