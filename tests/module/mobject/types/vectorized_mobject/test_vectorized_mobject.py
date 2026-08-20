@@ -768,12 +768,8 @@ def test_arc_critical_points_agree_with_width_height():
     arc = Arc(radius=2, start_angle=PI / 5, angle=TAU * 0.7)
     assert arc.width == pytest.approx(3.618034, abs=1e-4)
     assert arc.height == pytest.approx(4.0, abs=1e-3)
-    assert arc.get_right()[0] - arc.get_left()[0] == pytest.approx(
-        arc.width, abs=1e-6
-    )
-    assert arc.get_top()[1] - arc.get_bottom()[1] == pytest.approx(
-        arc.height, abs=1e-6
-    )
+    assert arc.get_right()[0] - arc.get_left()[0] == pytest.approx(arc.width, abs=1e-6)
+    assert arc.get_top()[1] - arc.get_bottom()[1] == pytest.approx(arc.height, abs=1e-6)
 
 
 @pytest.mark.parametrize("dim", ["width", "height", "depth"])
