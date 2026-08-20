@@ -806,8 +806,9 @@ def test_width_height_of_single_point_vmobject():
 def test_critical_points_agree_with_width_height():
     # #3619: width/height are exact, and the critical points (get_left,
     # get_right, get_top, get_bottom, get_center) agree with them: they are
-    # computed from the exact bounding box of the rendered Bézier curves, so
-    # handles outside the anchors no longer move them (previously the
+    # computed from the exact bounding box of the rendered Bézier curves.
+    # Control handles no longer directly define the critical points; only
+    # the extrema they induce on the rendered curve do (previously the
     # control points could inflate the box, e.g. width 10 here).
     vmob = VMobject().set_points(
         np.array([[0.0, 0.0, 0.0], [5.0, 3.0, 0.0], [-5.0, 3.0, 0.0], [1.0, 0.0, 0.0]])

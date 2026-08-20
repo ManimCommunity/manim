@@ -1796,7 +1796,7 @@ class VMobject(Mobject):
             tuple(it.chain(*(sm.get_anchors() for sm in self.get_family())))
         )
 
-    def get_bezier_bounding_box(self) -> Point3D_Array:
+    def get_bezier_bounding_box(self) -> Point3D_Array | None:
         """Return the exact axis-aligned bounding box of the curves defining
         this :class:`VMobject`, rather than the bounding box of their control
         points.
@@ -1847,9 +1847,9 @@ class VMobject(Mobject):
         value of its ``dim``-th coordinate (anchors and interior extrema).
 
         Returns an array of shape ``(n_curves, 2)``.  Callers must ensure
-        ``nppcc == 4`` and ``len(pts) % nppcc == 0`` (the quadratic
-        approximation path is handled elsewhere by degree-elevation to
-        cubic curves).
+        ``nppcc == 4`` and ``len(pts) % nppcc == 0`` (standard VMobjects
+        store cubic curves; SVG quadratic segments are degree-elevated
+        before storage).
         """
         n_curves = len(pts) // nppcc
         # Cubic Bézier: derivative roots of P'(t) = A t^2 + B t + C.
