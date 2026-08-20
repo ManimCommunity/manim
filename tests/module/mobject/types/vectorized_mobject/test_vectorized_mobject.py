@@ -775,7 +775,10 @@ def test_arc_critical_points_agree_with_width_height():
 
 
 def test_quadratic_width_height_use_curve_extrema():
-    # Quadratic counterpart: interior extrema must be included too.
+    # Quadratic counterart: interior extrema must be included too.  Though
+    # standard VMobjects draw cubic curves, quadratic curve data is a real
+    # input for get_bezier_bounding_box (SVG path commands such as Q/T are
+    # quadratic), so exercise the quadratic path directly.
     vmob = VMobject().set_points(
         np.array([[0.0, 0.0, 0.0], [2.0, 4.0, 0.0], [4.0, 0.0, 0.0]])
     )
@@ -783,11 +786,29 @@ def test_quadratic_width_height_use_curve_extrema():
     assert vmob.height == pytest.approx(4.0)
 
 
-def test_width_height_setters_round_trip_on_rotated_circle():
-    c = Circle(radius=3).rotate(30 * DEGREES)
-    c.width = 5.0
-    assert c.width == pytest.approx(5.0)
-    assert c.height == pytest.approx(5.0)
+@pytest.mark.parametrize("dim", ["width", "height", "depth"])
+def test_width_height_depth_setters_round_trip(dim):
+    # Setting a dimension must result in exactly that dimension, regardless of
+    # which one is set.  Explicit VMobject so the test does not depend on the
+    # point layout chosen by a specific shape.
+    mob = VMobject().set_points(
+        np.array(
+            [
+                [0.0, 0.0, 0.0],
+                [3.0, 2.0, 1.0],
+                [-2.0, 1.0, -1.0],
+                [1.0, 0.0, 0.0],
+            ]
+        )
+    )
+    setattr(mob, dim, 5.0)
+    assert getattr(mob, dim) == pytest.approx(5.0)
+
+
+# Note: running the setters for several dimensions in a row on one mobject is
+# not a meaningful round-trip, because setting e.g. height rescales the whole
+# mobject uniformly and thereby also rescales a width set earlier.  Each
+# dimension is therefore verified individually above.
 
 
 def test_width_height_of_single_point_vmobject():
