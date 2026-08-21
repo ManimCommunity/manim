@@ -92,7 +92,7 @@ def test_shift_family() -> None:
         np.testing.assert_allclose(positions_before[m] + RIGHT, positions_after[m])
 
 
-def test_family_order() -> None:
+def test_family_cycle() -> None:
     """Check that the order of the family is correct."""
     # Mobject
     #   Circle
@@ -106,4 +106,22 @@ def test_family_order() -> None:
     circle.add(triangle)
     square.add(mobject)  # adds loop
 
-    mobject.get_family()
+    expected = [mobject, square, circle, triangle]
+    assert mobject.get_family() == expected
+
+
+def test_family_order() -> None:
+    """Check that the order of the family is correct."""
+    # Mobject
+    # 	Circle
+    # 		Triangle
+    # 	Square
+    # 		Triangle
+
+    mobject, circle, square, triangle = Mobject(), Mobject(), Mobject(), Mobject()
+    mobject.add(circle, square)
+    circle.add(triangle)
+    square.add(triangle)
+
+    expected = [mobject, circle, square, triangle]
+    assert mobject.get_family() == expected
