@@ -1,12 +1,11 @@
 from collections.abc import Callable, Iterable
-from typing import Self, cast
+from typing import Any, Self
 
 import numpy as np
 
 from manim._config import config
 from manim.constants import (
     DEFAULT_MOBJECT_TO_EDGE_BUFFER,
-    DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
     DL,
     DOWN,
     IN,
@@ -22,60 +21,125 @@ from manim.typing import (
     Point3D,
     Point3D_Array,
     Point3DLike,
+    Point3DLike_Array,
     Vector3DLike,
 )
-
-# from manim.utils.deprecation import deprecated
 from manim.utils.space_ops import rotation_matrix
 
 
 class Positionable:
-    points: Point3D_Array = np.array([(0.0, 0.0, 0.0)])
+    """A positionable object.
 
-    def align_on_border(
-        self,
-        direction: Vector3DLike,
-        buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
-        *,
-        frame: Point3DLike | None = None,
-    ) -> Self:
-        if frame is None:
-            frame = (config.frame_x_radius, config.frame_y_radius, 0)
-        target_point = np.sign(direction) * frame
-        point_to_align = self.get_critical_point(direction=direction)
-        shift_val = target_point - point_to_align - buff * np.asarray(direction)
-        shift_val = shift_val * abs(np.sign(direction))
-        return self.shift(shift_val)
+    ### Applying Functions
+        * get_family
+        * apply_to_family
+        * apply_array_function
+        * apply_function
+        * apply_complex_function
+    ### Transformations
+        * apply_matrix
+        * translate
+        * rotate
+        * scale
+        * stretch
+    ### General
+        * get_bounding_box
+        * (get|set)_position
+            * (get|set)_(center|left|right|bottom|top|nadir|zenith)
+        * (get|set)_coord
+            * (get|set)_(x|y|z)
+        * (get|set)_dim_size
+            * (get|set)_(width|height|depth)
+    ### Specialized
+        * align_on_border
+        * align_to
+        * center
+        * flip
+        * is_off_screen
+        * get_center_of_mass
+        * get_boundary_point
+        * next_to (TODO)
+        * shift_onto_screen
+        * scale_to_fit
+            * scale_to_fit_(width|height|depth)
+        * stretch_to_fit
+            * stretch_to_fit_(width|height|depth)
+        * to_corner
+        * to_edge
+    ### Aliases & Combability
 
-    def align_to(
+    """
+
+    ### FUNDAMENTALS ###
+    points: Point3D_Array = np.array([])
+
+    def get_points(self) -> Point3D_Array:
+        return np.concat([mob.points for mob in self.get_family()])
+
+    def set_points(self, points: "Point3DLike_Array | Positionable") -> Self:
+        if isinstance(points, Positionable):
+            for mob1, mob2 in zip(self.get_family(), points.get_family(), strict=False):
+                mob1.set_points(mob2.points.copy())
+        else:
+            self.points = np.asarray(points)
+        return self
+
+    def get_points_defining_boundary(self) -> Point3D_Array:
+        return self.get_points()
+
+    ### APPLYING FUNCTIONS ###
+
+    def get_family(self) -> Iterable["Positionable"]:
+        yield self
+
+    def apply_to_family(
         self,
-        mobject_or_point: "Positionable | Point3DLike",
-        direction: Vector3DLike = ORIGIN,
+        function: Callable[["Positionable"], Any],
+        only_with_points: bool = True,
     ) -> Self:
-        source = self.get_critical_point(direction=direction)
-        target = np.array(
-            mobject_or_point.get_critical_point(direction=direction)
-            if isinstance(mobject_or_point, Positionable)
-            else mobject_or_point
-        )
-        target = np.where(direction == 0, source, target)
-        return self.shift(target - source)
+        for mob in self.get_family():
+            if only_with_points and len(mob.points) == 0:
+                continue
+            function(mob)
+        return self
 
     def apply_array_function(
         self,
         function: Callable[[Point3D_Array], Point3D_Array],
-        *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
         if about_point is None:
-            about_point = self.get_critical_point(
-                direction=about_edge if about_edge is not None else ORIGIN
-            )
-        self.points -= about_point
-        self.points = function(self.points)
-        self.points += about_point
-        return self
+            if about_edge is None:
+                about_edge = ORIGIN
+            about_point = self.get_position(direction=about_edge)
+
+        about_point = np.array(about_point, copy=True)
+
+        def apply(mob: Positionable) -> None:
+            mob.points -= about_point
+            mob.points = function(mob.points)
+            mob.points += about_point
+
+        return self.apply_to_family(function=apply)
+
+    def apply_function(
+        self,
+        function: Callable[[Point3D], Point3D],
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
+        if about_point is None and about_edge is None:
+            about_point = ORIGIN
+
+        def apply(points: Point3D_Array) -> Point3D_Array:
+            return np.apply_along_axis(func1d=function, axis=1, arr=points)
+
+        return self.apply_array_function(
+            function=apply,
+            about_point=about_point,
+            about_edge=about_edge,
+        )
 
     def apply_complex_function(
         self,
@@ -84,419 +148,48 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
-        def R3_func(point: Point3D) -> Point3D:
+        def apply(point: Point3D) -> Point3D:
             x, y, z = point
             xy_complex = function(complex(x, y))
             return np.array([xy_complex.real, xy_complex.imag, z])
 
         return self.apply_function(
-            function=R3_func,
+            function=apply,
             about_point=about_point,
             about_edge=about_edge,
         )
 
-    def apply_function(
-        self,
-        function: Callable[[Point3D], Point3D],
-        *,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-    ) -> Self:
-        if about_point is None and about_edge is None:
-            about_point = ORIGIN
-
-        def mapping_function(points: Point3D_Array) -> Point3D_Array:
-            return np.apply_along_axis(func1d=function, axis=1, arr=points)
-
-        return self.apply_array_function(
-            function=mapping_function,
-            about_point=about_point,
-            about_edge=about_edge,
-        )
-
-    # @deprecated(replacement="move_to(function(self.get_center()))")
-    def apply_function_to_position(
-        self,
-        function: Callable[[Point3D], Point3D],
-    ) -> Self:
-        return self.move_to(function(self.get_center()))
+    ### TRANSFORMATIONS ###
 
     def apply_matrix(
         self,
         matrix: MatrixMN,
-        *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
         if about_point is None and about_edge is None:
             about_point = ORIGIN
-
         matrix = np.asarray(matrix)
+        full_matrix = np.identity(3)
+        full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
 
-        # Fast path for standard 3x3 matrices
-        if matrix.shape == (3, 3):
-            full_matrix = matrix
-        else:
-            full_matrix = np.identity(3)
-            full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
-
-        return self.apply_array_function(
-            function=lambda points: points.dot(full_matrix.T),
+        self.apply_array_function(
+            function=lambda points: points.dot(full_matrix.T, out=points),
             about_point=about_point,
             about_edge=about_edge,
         )
-
-    # @deprecated(replacement="apply_array_function")
-    def apply_points_function_about_point(
-        self,
-        func: Callable[[Point3D_Array], Point3D_Array],
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-    ) -> Self:
-        return self.apply_array_function(
-            function=func,
-            about_point=about_point,
-            about_edge=about_edge,
-        )
-
-    def center(self) -> Self:
-        return self.move_to(point_or_mobject=ORIGIN)
-
-    @property
-    # @deprecated(replacement="get_depth")
-    def depth(self) -> float:
-        return self.get_depth()
-
-    @depth.setter
-    # @deprecated(replacement="set_depth")
-    def depth(self, value: float) -> Self:
-        return self.set_depth(depth=value, stretch=False)
-
-    def flip(
-        self,
-        axis: Vector3DLike = UP,
-        *,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-    ) -> Self:
-        return self.rotate(
-            angle=TAU / 2,
-            axis=axis,
-            about_point=about_point,
-            about_edge=about_edge,
-        )
-
-    def get_bottom(self) -> Point3D:
-        return self.get_critical_point(direction=DOWN)
-
-    def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
-        index = np.argmax(np.dot(self.points, direction))
-        return self.points[index]
-
-    def get_bounding_box(self) -> Point3D_Array:
-        mins = self.points.min(axis=0)
-        maxs = self.points.max(axis=0)
-        mids = (mins + maxs) / 2
-        return np.array([mins, mids, maxs])
-
-    def get_center(self) -> Point3D:
-        return self.get_critical_point(direction=ORIGIN)
-
-    def get_center_of_mass(self) -> Point3D:
-        return self.points.mean(axis=0)
-
-    def get_coord(self, dim: int, direction: Vector3DLike = ORIGIN) -> float:
-        key = np.sign(direction[dim])
-        return cast(
-            float,
-            self.points[:, dim].min()
-            if key == -1
-            else (self.points[:, dim].min() + self.points[:, dim].max()) / 2
-            if key == 0
-            else self.points[:, dim].max(),
-        )
-
-    # @deprecated(replacement="get_critical_point")
-    def get_corner(self, direction: Vector3DLike) -> Point3D:
-        return self.get_critical_point(direction=direction)
-
-    def get_critical_point(self, direction: Vector3DLike) -> Point3D:
-        direction = np.sign(direction)
-        _, mids, maxs = self.get_bounding_box()
-        return mids + (maxs - mids) * direction
-
-    def get_depth(self) -> float:
-        return self.get_dim_size(dim=2)
-
-    def get_dim_size(self, dim: int) -> float:
-        values = self.points[:, dim]
-        return cast(float, values.max() - values.min())
-
-    # @deprecated(replacement="get_critical_point")
-    def get_edge_center(self, direction: Vector3DLike) -> Point3D:
-        return self.get_critical_point(direction=direction)
-
-    # @deprecated()
-    def get_extremum_along_dim(
-        self,
-        dim: int = 0,
-        key: int = 0,
-    ) -> float:
-        values = self.points[:, dim]
-        if key < 0:
-            rv: float = np.min(values)
-            return rv
-        elif key == 0:
-            rv = (np.min(values) + np.max(values)) / 2
-            return rv
-        else:
-            rv = np.max(values)
-            return rv
-
-    def get_height(self) -> float:
-        return self.get_dim_size(dim=1)
-
-    def get_left(self) -> Point3D:
-        return self.get_critical_point(direction=LEFT)
-
-    def get_nadir(self) -> Point3D:
-        return self.get_critical_point(direction=IN)
-
-    def get_right(self) -> Point3D:
-        return self.get_critical_point(direction=RIGHT)
-
-    def get_top(self) -> Point3D:
-        return self.get_critical_point(UP)
-
-    def get_width(self) -> float:
-        return self.get_dim_size(dim=0)
-
-    def get_x(self, direction: Vector3DLike = ORIGIN) -> float:
-        return self.get_coord(dim=0, direction=direction)
-
-    def get_y(self, direction: Vector3DLike = ORIGIN) -> float:
-        return self.get_coord(dim=1, direction=direction)
-
-    def get_z(self, direction: Vector3DLike = ORIGIN) -> float:
-        return self.get_coord(dim=2, direction=direction)
-
-    def get_zenith(self) -> Point3D:
-        return self.get_critical_point(direction=OUT)
-
-    @property
-    # @deprecated(replacement="get_height")
-    def height(self) -> float:
-        return self.get_height()
-
-    @height.setter
-    # @deprecated(replacement="set_height")
-    def height(self, value: float) -> Self:
-        return self.set_height(height=value, stretch=False)
-
-    def is_off_screen(self) -> bool:
-        mins, _, maxs = self.get_bounding_box()
-        return cast(
-            bool,
-            mins[0] > config.frame_x_radius
-            or maxs[0] < -config.frame_x_radius
-            or mins[1] > config.frame_y_radius
-            or maxs[1] < -config.frame_y_radius,
-        )
-
-    # @deprecated(replacement="get_dim_size")
-    def length_over_dim(self, dim: int) -> float:
-        return self.get_dim_size(dim=dim)
-
-    def match_coord(
-        self,
-        mobject: "Positionable",
-        dim: int,
-        direction: Vector3DLike = ORIGIN,
-    ) -> Self:
-        return self.set_coord(
-            mobject.get_coord(dim=dim, direction=direction),
-            dim=dim,
-            direction=direction,
-        )
-
-    def match_depth(
-        self,
-        mobject: "Positionable",
-        *,
-        stretch: bool = False,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-    ) -> Self:
-        return self.set_depth(
-            mobject.get_depth(),
-            stretch=stretch,
-            about_point=about_point,
-            about_edge=about_edge,
-        )
-
-    def match_dim_size(
-        self,
-        mobject: "Positionable",
-        dim: int,
-        *,
-        stretch: bool = False,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-    ) -> Self:
-        return self.set_dim_size(
-            mobject.get_dim_size(dim=dim),
-            dim=dim,
-            stretch=stretch,
-            about_point=about_point,
-            about_edge=about_edge,
-        )
-
-    def match_height(
-        self,
-        mobject: "Positionable",
-        *,
-        stretch: bool = False,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-    ) -> Self:
-        return self.set_height(
-            mobject.get_height(),
-            stretch=stretch,
-            about_point=about_point,
-            about_edge=about_edge,
-        )
-
-    def match_points(self, mobject: "Positionable") -> Self:
-        self.points = mobject.points.copy()
         return self
 
-    def match_width(
-        self,
-        mobject: "Positionable",
-        *,
-        stretch: bool = False,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-    ) -> Self:
-        return self.set_width(
-            mobject.get_width(),
-            stretch=stretch,
-            about_point=about_point,
-            about_edge=about_edge,
-        )
+    def translate(self, vector: Vector3DLike) -> Self:
+        def function(mob: Positionable) -> None:
+            mob.points += vector
 
-    def match_x(
-        self,
-        mobject: "Positionable",
-        direction: Vector3DLike = ORIGIN,
-    ) -> Self:
-        return self.set_x(
-            mobject.get_x(direction=direction),
-            direction=direction,
-        )
-
-    def match_y(
-        self,
-        mobject: "Positionable",
-        direction: Vector3DLike = ORIGIN,
-    ) -> Self:
-        return self.set_y(
-            mobject.get_y(direction=direction),
-            direction=direction,
-        )
-
-    def match_z(
-        self,
-        mobject: "Positionable",
-        direction: Vector3DLike = ORIGIN,
-    ) -> Self:
-        return self.set_z(
-            mobject.get_z(direction=direction),
-            direction=direction,
-        )
-
-    def move_to(
-        self,
-        point_or_mobject: "Point3DLike | Positionable",
-        aligned_edge: Vector3DLike = ORIGIN,
-        coor_mask: Vector3DLike = np.array([1, 1, 1]),
-    ) -> Self:
-        if isinstance(point_or_mobject, Positionable):
-            return self.move_to(
-                point_or_mobject.get_critical_point(direction=aligned_edge),
-                aligned_edge=aligned_edge,
-                coor_mask=coor_mask,
-            )
-        source = self.get_critical_point(direction=aligned_edge)
-        target = point_or_mobject
-        return self.shift(vector=(target - source) * coor_mask)
-
-    def next_to(
-        self,
-        mobject_or_point: "Positionable | Point3DLike",
-        direction: Vector3DLike = RIGHT,
-        buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
-        aligned_edge: Vector3DLike = ORIGIN,
-        coor_mask: Vector3DLike = np.array([1, 1, 1]),
-    ) -> Self:
-        np_direction = np.asarray(direction)
-        np_aligned_edge = np.asarray(aligned_edge)
-        source = self.get_critical_point(direction=np_aligned_edge - np_direction)
-        target = (
-            mobject_or_point.get_critical_point(np_aligned_edge + np_direction)
-            if isinstance(mobject_or_point, Positionable)
-            else mobject_or_point
-        )
-        return self.shift((target - source + buff * np_direction) * coor_mask)
-
-    # @deprecated()
-    def pose_at_angle(
-        self,
-        *,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-    ) -> Self:
-        return self.rotate(
-            angle=TAU / 14,
-            axis=RIGHT + UP,
-            about_point=about_point,
-            about_edge=about_edge,
-        )
-
-    # @deprecated()
-    def reduce_across_dimension(
-        self,
-        reduce_func: Callable[[Iterable[float]], float],
-        dim: int,
-    ) -> float | None:
-        if len(self.points) == 0:
-            return None
-
-        return reduce_func(self.points[:, dim])
-
-    # @deprecated(replacement="set_dim_size")
-    def rescale_to_fit(
-        self,
-        length: float,
-        dim: int,
-        stretch: bool = False,
-        *,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-    ) -> Self:
-        return self.set_dim_size(
-            size=length,
-            dim=dim,
-            stretch=stretch,
-            about_point=about_point,
-            about_edge=about_edge,
-        )
+        return self.apply_to_family(function=function)
 
     def rotate(
         self,
         angle: float,
         axis: Vector3DLike = OUT,
-        *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
@@ -508,130 +201,208 @@ class Positionable:
             about_edge=about_edge,
         )
 
-    # @deprecated(replacement="rotate")
-    def rotate_about_origin(
-        self,
-        angle: float,
-        axis: Vector3DLike = OUT,
-    ) -> Self:
-        return self.rotate(
-            angle=angle,
-            axis=axis,
-            about_point=ORIGIN,
-        )
-
     def scale(
         self,
-        # TODO: Rename to 'factor'
-        scale_factor: float | Vector3DLike,
+        # TODO: Rename to `factor`
+        scale_factor: float,
+        *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
         return self.apply_array_function(
-            function=lambda points: scale_factor * points,
+            function=lambda points: points.__imul__(scale_factor),
             about_point=about_point,
             about_edge=about_edge,
         )
 
-    def scale_to_fit(
+    def stretch(
         self,
-        length: float,
+        factor: float,
         dim: int,
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
-        actual_length = self.get_dim_size(dim=dim)
-        if actual_length == 0:
-            return self
+        def function(points: Point3D_Array) -> Point3D_Array:
+            points[:, dim] *= factor
+            return points
 
-        return self.scale(
-            scale_factor=length / actual_length,
+        return self.apply_array_function(
+            function=function,
             about_point=about_point,
             about_edge=about_edge,
         )
 
-    def scale_to_fit_depth(
-        self,
-        depth: float,
-        *,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-    ) -> Self:
-        return self.scale_to_fit(
-            length=depth,
-            dim=2,
-            about_point=about_point,
-            about_edge=about_edge,
-        )
+    ### GENERAL ###
 
-    def scale_to_fit_height(
-        self,
-        height: float,
-        *,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-    ) -> Self:
-        return self.scale_to_fit(
-            length=height,
-            dim=1,
-            about_point=about_point,
-            about_edge=about_edge,
-        )
+    def get_bounding_box(self) -> tuple[Point3D, Point3D]:
+        points = self.get_points_defining_boundary()
+        if len(points) == 0:
+            return (np.zeros(3), np.zeros(3))
+        mins = points.min(axis=0)
+        maxs = points.max(axis=0)
+        return (mins, maxs)
 
-    def scale_to_fit_width(
+    def get_position(self, direction: Vector3DLike = ORIGIN) -> Point3D:
+        direction = np.sign(direction)
+        mins, maxs = self.get_bounding_box()
+        mids = (mins + maxs) / 2
+        return mids + (maxs - mids) * direction
+
+    def set_position(
         self,
-        width: float,
-        *,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        point: "Point3DLike | Positionable",
+        aligned_edge: Vector3DLike = ORIGIN,
+        coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
-        return self.scale_to_fit(
-            length=width,
-            dim=0,
-            about_point=about_point,
-            about_edge=about_edge,
+        if isinstance(point, Positionable):
+            point = point.get_position(direction=aligned_edge)
+        current = self.get_position(direction=aligned_edge)
+        vector = (point - current) * coor_mask
+        return self.translate(vector=vector)
+
+    def get_center(self) -> Point3D:
+        return self.get_position(direction=ORIGIN)
+
+    def set_center(
+        self,
+        center: "Point3DLike | Positionable",
+        coor_mask: Vector3DLike = np.array([1, 1, 1]),
+    ) -> Self:
+        return self.set_position(point=center, aligned_edge=ORIGIN, coor_mask=coor_mask)
+
+    def get_left(self) -> Point3D:
+        return self.get_position(direction=LEFT)
+
+    def set_left(
+        self,
+        left: "Point3DLike | Positionable",
+        coor_mask: Vector3DLike = np.array([1, 1, 1]),
+    ) -> Self:
+        return self.set_position(point=left, aligned_edge=LEFT, coor_mask=coor_mask)
+
+    def get_right(self) -> Point3D:
+        return self.get_position(direction=RIGHT)
+
+    def set_right(
+        self,
+        right: "Point3DLike | Positionable",
+        coor_mask: Vector3DLike = np.array([1, 1, 1]),
+    ) -> Self:
+        return self.set_position(point=right, aligned_edge=RIGHT, coor_mask=coor_mask)
+
+    def get_bottom(self) -> Point3D:
+        return self.get_position(direction=DOWN)
+
+    def set_bottom(
+        self,
+        bottom: "Point3DLike | Positionable",
+        coor_mask: Vector3DLike = np.array([1, 1, 1]),
+    ) -> Self:
+        return self.set_position(point=bottom, aligned_edge=DOWN, coor_mask=coor_mask)
+
+    def get_top(self) -> Point3D:
+        return self.get_position(direction=UP)
+
+    def set_top(
+        self,
+        top: "Point3DLike | Positionable",
+        coor_mask: Vector3DLike = np.array([1, 1, 1]),
+    ) -> Self:
+        return self.set_position(point=top, aligned_edge=UP, coor_mask=coor_mask)
+
+    def get_nadir(self) -> Point3D:
+        return self.get_position(direction=IN)
+
+    def set_nadir(
+        self,
+        nadir: "Point3DLike | Positionable",
+        coor_mask: Vector3DLike = np.array([1, 1, 1]),
+    ) -> Self:
+        return self.set_position(point=nadir, aligned_edge=IN, coor_mask=coor_mask)
+
+    def get_zenith(self) -> Point3D:
+        return self.get_position(direction=OUT)
+
+    def set_zenith(
+        self,
+        zenith: "Point3DLike | Positionable",
+        coor_mask: Vector3DLike = np.array([1, 1, 1]),
+    ) -> Self:
+        return self.set_position(point=zenith, aligned_edge=OUT, coor_mask=coor_mask)
+
+    def get_coord(
+        self,
+        dim: int,
+        direction: Vector3DLike = ORIGIN,
+    ) -> float:
+        points = self.get_points()
+        if len(points) == 0:
+            return 0
+
+        key = direction[dim]
+        values = points[:, dim]
+        return (  # type: ignore[no-any-return]
+            values.min()
+            if key < 0
+            else (values.min() + values.max()) / 2
+            if key == 0
+            else values.max()
         )
 
     def set_coord(
         self,
-        value: float,
+        value: "float | Positionable",
         dim: int,
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
-        source = self.get_coord(dim, direction=direction)
-        self.points[:, dim] += value - source
-        return self
+        if isinstance(value, Positionable):
+            value = value.get_coord(dim=dim, direction=direction)
+        current = self.get_coord(dim=dim, direction=direction)
+        vector = np.zeros(3)
+        vector[dim] = value - current
+        return self.translate(vector=vector)
 
-    def set_depth(
-        self,
-        depth: float,
-        *,
-        stretch: bool = False,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-    ) -> Self:
-        return self.set_dim_size(
-            size=depth,
-            dim=2,
-            stretch=stretch,
-            about_point=about_point,
-            about_edge=about_edge,
-        )
+    def get_x(self, direction: Vector3DLike = ORIGIN) -> float:
+        return self.get_coord(dim=0, direction=direction)
+
+    def set_x(self, x: float, direction: Vector3DLike = ORIGIN) -> Self:
+        return self.set_coord(value=x, dim=0, direction=direction)
+
+    def get_y(self, direction: Vector3DLike = ORIGIN) -> float:
+        return self.get_coord(dim=1, direction=direction)
+
+    def set_y(self, y: float, direction: Vector3DLike = ORIGIN) -> Self:
+        return self.set_coord(value=y, dim=1, direction=direction)
+
+    def get_z(self, direction: Vector3DLike = ORIGIN) -> float:
+        return self.get_coord(dim=2, direction=direction)
+
+    def set_z(self, z: float, direction: Vector3DLike = ORIGIN) -> Self:
+        return self.set_coord(value=z, dim=2, direction=direction)
+
+    def get_dim_size(self, dim: int) -> float:
+        points = self.get_points()
+        if len(points) == 0:
+            return 0
+        return np.ptp(points[:, dim])  # type: ignore[no-any-return]
 
     def set_dim_size(
         self,
-        size: float,
+        size: "float | Positionable",
         dim: int,
-        *,
         stretch: bool = False,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
-        old_length = self.get_dim_size(dim=dim)
-        if old_length == 0:
+        if isinstance(size, Positionable):
+            size = size.get_dim_size(dim=dim)
+
+        current_size = self.get_dim_size(dim=dim)
+        if current_size == 0:
             return self
-        factor = size / old_length
+
+        factor = size / current_size
         if stretch:
             return self.stretch(
                 factor=factor,
@@ -646,26 +417,12 @@ class Positionable:
                 about_edge=about_edge,
             )
 
-    def set_height(
-        self,
-        height: float,
-        *,
-        stretch: bool = False,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-    ) -> Self:
-        return self.set_dim_size(
-            size=height,
-            dim=1,
-            stretch=stretch,
-            about_point=about_point,
-            about_edge=about_edge,
-        )
+    def get_width(self) -> float:
+        return self.get_dim_size(dim=0)
 
     def set_width(
         self,
-        width: float,
-        *,
+        width: "float | Positionable",
         stretch: bool = False,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
@@ -678,116 +435,178 @@ class Positionable:
             about_edge=about_edge,
         )
 
-    def set_x(
+    def get_height(self) -> float:
+        return self.get_dim_size(dim=1)
+
+    def set_height(
         self,
-        x: float,
-        direction: Vector3DLike = ORIGIN,
+        height: "float | Positionable",
+        stretch: bool = False,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
     ) -> Self:
-        return self.set_coord(value=x, dim=0, direction=direction)
+        return self.set_dim_size(
+            size=height,
+            dim=1,
+            stretch=stretch,
+            about_point=about_point,
+            about_edge=about_edge,
+        )
 
-    def set_y(
+    def get_depth(self) -> float:
+        return self.get_dim_size(dim=2)
+
+    def set_depth(
         self,
-        y: float,
-        direction: Vector3DLike = ORIGIN,
+        depth: "float | Positionable",
+        stretch: bool = False,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
     ) -> Self:
-        return self.set_coord(value=y, dim=1, direction=direction)
+        return self.set_dim_size(
+            size=depth,
+            dim=2,
+            stretch=stretch,
+            about_point=about_point,
+            about_edge=about_edge,
+        )
 
-    def set_z(
+    ### SPECIALIZED ###
+    def align_on_border(
         self,
-        z: float,
-        direction: Vector3DLike = ORIGIN,
-    ) -> Self:
-        return self.set_coord(value=z, dim=2, direction=direction)
-
-    def shift(self, vector: Vector3DLike) -> Self:
-        self.points += vector
-        return self
-
-    # @deprecated()
-    def shift_onto_screen(
-        self,
+        direction: Vector3DLike,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
     ) -> Self:
-        # TODO: Simplify implementation
+        frame = (config.frame_x_radius, config.frame_y_radius, 0)
+        target_point = np.sign(direction) * frame
+        point_to_align = self.get_critical_point(direction=direction)
+        shift_val = target_point - point_to_align - buff * np.asarray(direction)
+        shift_val = shift_val * abs(np.sign(direction))
+        return self.shift(shift_val)
+
+    def align_to(
+        self,
+        # TODO: Rename to point
+        mobject_or_point: "Positionable | Point3DLike",
+        direction: Vector3DLike = ORIGIN,
+    ) -> Self:
+        if isinstance(mobject_or_point, Positionable):
+            mobject_or_point = mobject_or_point.get_position(direction=direction)
+        source = self.get_critical_point(direction=direction)
+        target = np.where(direction == 0, source, mobject_or_point)
+        return self.shift(target - source)
+
+    def center(self) -> Self:
+        return self.set_center(ORIGIN)
+
+    def flip(
+        self,
+        axis: Vector3DLike = UP,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
+        return self.rotate(
+            TAU / 2,
+            axis,
+            about_point=about_point,
+            about_edge=about_edge,
+        )
+
+    def is_off_screen(self) -> bool:
+        mins, maxs = self.get_bounding_box()
+        return (  # type: ignore[return-value]
+            mins[0] > config.frame_x_radius
+            or maxs[0] < -config.frame_x_radius
+            or mins[1] > config.frame_y_radius
+            or maxs[1] < -config.frame_y_radius,
+        )
+
+    def get_center_of_mass(self) -> Point3D:
+        points = self.get_points()
+        if len(points) == 0:
+            return ORIGIN
+        return points.mean(axis=0)
+
+    def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
+        points = self.get_points_defining_boundary()
+        index = np.argmax(points.dot(direction))
+        return points[index]
+
+    def shift_onto_screen(self, buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER) -> Self:
         space_lengths = [config["frame_x_radius"], config["frame_y_radius"]]
-        for edge in UP, DOWN, LEFT, RIGHT:
-            dim = np.argmax(np.abs(edge))
+        for vect in UP, DOWN, LEFT, RIGHT:
+            dim = np.argmax(np.abs(vect))
             max_val = space_lengths[dim] - buff
-            edge_center = self.get_critical_point(direction=edge)
-            if np.dot(edge_center, edge) > max_val:
-                self.to_edge(edge=edge, buff=buff)
+            edge_center = self.get_edge_center(vect)
+            if np.dot(edge_center, vect) > max_val:
+                self.to_edge(vect, buff=buff)
         return self
 
-    def stretch(
+    def scale_to_fit(
         self,
-        factor: float,
+        size: float,
         dim: int,
-        *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
-        return self.scale(
-            scale_factor=np.array([factor if i == dim else 1.0 for i in range(3)]),
+        return self.set_dim_size(
+            size=size,
+            dim=dim,
+            stretch=False,
             about_point=about_point,
             about_edge=about_edge,
         )
 
-    # @deprecated(replacement="stretch")
-    def stretch_about_point(
+    def scale_to_fit_width(
         self,
-        factor: float,
-        dim: int,
-        point: Point3DLike,
-    ) -> Self:
-        return self.stretch(
-            factor=factor,
-            dim=dim,
-            about_point=point,
-        )
-
-    def stretch_to_fit(
-        self,
-        length: float,
-        dim: int,
-        *,
+        width: float,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
-        actual_length = self.get_dim_size(dim=dim)
-        if actual_length == 0:
-            return self
-
-        return self.stretch(
-            factor=length / actual_length,
-            dim=dim,
+        return self.scale_to_fit(
+            size=width,
+            dim=0,
             about_point=about_point,
             about_edge=about_edge,
         )
 
-    def stretch_to_fit_depth(
+    def scale_to_fit_height(
+        self,
+        height: float,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
+        return self.scale_to_fit(
+            size=height,
+            dim=1,
+            about_point=about_point,
+            about_edge=about_edge,
+        )
+
+    def scale_to_fit_depth(
         self,
         depth: float,
-        *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
-        return self.stretch_to_fit(
-            length=depth,
+        return self.scale_to_fit(
+            size=depth,
             dim=2,
             about_point=about_point,
             about_edge=about_edge,
         )
 
-    def stretch_to_fit_height(
+    def stretch_to_fit(
         self,
-        height: float,
-        *,
+        size: float,
+        dim: int,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
-        return self.stretch_to_fit(
-            length=height,
-            dim=1,
+        return self.set_dim_size(
+            size=size,
+            dim=dim,
+            stretch=True,
             about_point=about_point,
             about_edge=about_edge,
         )
@@ -795,13 +614,38 @@ class Positionable:
     def stretch_to_fit_width(
         self,
         width: float,
-        *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
         return self.stretch_to_fit(
-            length=width,
+            size=width,
             dim=0,
+            about_point=about_point,
+            about_edge=about_edge,
+        )
+
+    def stretch_to_fit_height(
+        self,
+        height: float,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
+        return self.stretch_to_fit(
+            size=height,
+            dim=1,
+            about_point=about_point,
+            about_edge=about_edge,
+        )
+
+    def stretch_to_fit_depth(
+        self,
+        depth: float,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
+        return self.stretch_to_fit(
+            size=depth,
+            dim=2,
             about_point=about_point,
             about_edge=about_edge,
         )
@@ -820,11 +664,133 @@ class Positionable:
     ) -> Self:
         return self.align_on_border(direction=edge, buff=buff)
 
+    ### ALIASES & COMBABILITY ###
+    match_points = set_points
+    apply_points_function_about_point = apply_array_function
+    shift = translate
+    get_critical_point = get_position
+    match_coord = set_coord
+    match_x = set_x
+    match_y = set_y
+    match_z = set_z
+    match_dim_size = set_dim_size
+    match_width = set_width
+    match_height = set_height
+    match_depth = set_depth
+    length_over_dim = get_dim_size
+    get_edge_center = get_position
+    get_corner = get_position
+
+    def move_to(
+        self,
+        point_or_mobject: "Point3DLike | Positionable",
+        aligned_edge: Vector3DLike = ORIGIN,
+        coor_mask: Vector3DLike = np.array([1, 1, 1]),
+    ) -> Self:
+        return self.set_position(
+            point=point_or_mobject,
+            aligned_edge=aligned_edge,
+            coor_mask=coor_mask,
+        )
+
+    def stretch_about_point(self, factor: float, dim: int, point: Point3DLike) -> Self:
+        return self.stretch(factor=factor, dim=dim, about_point=point)
+
+    def rescale_to_fit(
+        self,
+        length: "float | Positionable",
+        dim: int,
+        stretch: bool = False,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
+        return self.set_dim_size(
+            size=length,
+            dim=dim,
+            stretch=stretch,
+            about_point=about_point,
+            about_edge=about_edge,
+        )
+
     @property
-    # @deprecated(replacement="get_width")
     def width(self) -> float:
         return self.get_width()
 
     @width.setter
-    def width(self, value: float) -> Self:
-        return self.set_width(width=value, stretch=False)
+    def width(self, value: float) -> None:
+        self.set_width(width=value)
+
+    @property
+    def height(self) -> float:
+        return self.get_height()
+
+    @height.setter
+    def height(self, value: float) -> None:
+        self.set_height(height=value)
+
+    @property
+    def depth(self) -> float:
+        return self.get_depth()
+
+    @depth.setter
+    def depth(self, value: float) -> None:
+        self.set_depth(depth=value)
+
+    def pose_at_angle(
+        self,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
+        return self.rotate(
+            angle=TAU / 14,
+            axis=RIGHT + UP,
+            about_point=about_point,
+            about_edge=about_edge,
+        )
+
+    def rotate_about_origin(
+        self,
+        angle: float,
+        axis: Vector3DLike = OUT,
+    ) -> Self:
+        return self.rotate(
+            angle=angle,
+            axis=axis,
+            about_point=ORIGIN,
+        )
+
+    def get_extremum_along_dim(
+        self,
+        dim: int = 0,
+        key: int = 0,
+    ) -> float:
+        points = self.get_points()
+        if len(points) == 0:
+            return 0
+        values = points[:, dim]
+        if key < 0:
+            rv: float = np.min(values)
+            return rv
+        elif key == 0:
+            rv = (np.min(values) + np.max(values)) / 2
+            return rv
+        else:
+            rv = np.max(values)
+            return rv
+
+    def apply_function_to_position(
+        self,
+        function: Callable[[Point3D], Point3DLike],
+    ) -> Self:
+        return self.move_to(function(self.get_center()))
+
+    def reduce_across_dimension(
+        self,
+        reduce_func: Callable[[Iterable[float]], float],
+        dim: int,
+    ) -> float | None:
+        points = self.get_points()
+        if len(points) == 0:
+            return None
+
+        return reduce_func(points[:, dim])
