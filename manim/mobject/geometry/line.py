@@ -609,8 +609,8 @@ class Arrow(Line):
 
     def scale(
         self,
-        factor: float,
-        scale_tips: bool = False,
+        scale_factor: float,
+        scale_stroke: bool = False,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
@@ -644,10 +644,10 @@ class Arrow(Line):
         if self.get_length() == 0:
             return self
 
-        if scale_tips:
+        if scale_stroke:
             super().scale(
-                factor,
-                scale_tips,
+                scale_factor,
+                scale_stroke,
                 about_point=about_point,
                 about_edge=about_edge,
             )
@@ -660,8 +660,8 @@ class Arrow(Line):
             old_tips = self.pop_tips()
 
         super().scale(
-            factor,
-            scale_tips,
+            scale_factor,
+            scale_stroke,
             about_point=about_point,
             about_edge=about_edge,
         )
