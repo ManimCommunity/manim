@@ -156,7 +156,7 @@ class ZoomedScene(MovingCameraScene):
         )
         
     def deactivate_zooming(self) -> None:
-        """Do documentation later"""
+        """This method is used to deactivate the zooming for the zoomed_camera."""
         self.remove(
             self.zoomed_camera.frame,
             self.zoomed_display,
