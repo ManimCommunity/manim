@@ -5,7 +5,6 @@ from __future__ import annotations
 __all__ = ["Mobject", "Group", "override_animate"]
 
 
-import builtins
 import copy
 import inspect
 import itertools as it
@@ -2539,7 +2538,7 @@ class Mobject:
     def get_family(
         self,
         recurse: bool = True,
-        already_seen: builtins.set[Mobject] | None = None,
+        remove_redundancies: bool = True,
     ) -> list[Mobject]:
         """Lists all mobjects in the hierarchy (family) of the given mobject,
         including the mobject itself and all its submobjects recursively.
@@ -2570,23 +2569,10 @@ class Mobject:
         :meth:`~.Mobject.family_members_with_points`, :meth:`~.Mobject.align_data`
 
         """
-        if already_seen is None:
-            already_seen = {self}
-        elif self in already_seen:
-            return []
-
-        mobjects: list[Mobject] = [self]
-
-        for mob in reversed(self.submobjects):
-            if mob in already_seen:
-                continue
-            mobjects = [
-                mobjects[0],
-                *mob.get_family(already_seen=already_seen),
-                *mobjects[1:],
-            ]
-            already_seen.add(mob)
-
+        families = [x.get_family(remove_redundancies=False) for x in self.submobjects]
+        mobjects = [self] + list(it.chain(*families))
+        if remove_redundancies:
+            mobjects = remove_list_redundancies(mobjects)
         return mobjects
 
     def family_members_with_points(self) -> list[Mobject]:
