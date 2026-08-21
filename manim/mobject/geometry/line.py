@@ -607,7 +607,7 @@ class Arrow(Line):
         self.add_tip(tip_shape=tip_shape)
         self._set_stroke_width_from_length()
 
-    def scale(  # pyright: ignore[reportIncompatibleMethodOverride]
+    def scale(
         self,
         factor: float,
         scale_tips: bool = False,
