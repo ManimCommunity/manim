@@ -485,7 +485,6 @@ class VMobject(Mobject):
         self,
         scale_factor: float,
         scale_stroke: bool = False,
-        *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
@@ -551,7 +550,9 @@ class VMobject(Mobject):
                         background=True,
                         family=False,
                     )
-        super().scale(scale_factor, about_point=about_point, about_edge=about_edge)
+        super().scale(
+            scale_factor, scale_stroke, about_point=about_point, about_edge=about_edge
+        )
         return self
 
     def fade(self, darkness: float = 0.5, family: bool = True) -> Self:

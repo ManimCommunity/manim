@@ -57,6 +57,8 @@ from __future__ import annotations
 
 from typing import Self
 
+from manim.typing import Point3DLike, Vector3DLike
+
 __all__ = [
     "Table",
     "MathTable",
@@ -996,13 +998,22 @@ class Table(VGroup):
         return AnimationGroup(*animations, lag_ratio=lag_ratio)
 
     def scale(
-        self, scale_factor: float, scale_stroke: bool = False, **kwargs: Any
+        self,
+        scale_factor: float,
+        scale_stroke: bool = False,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
     ) -> Self:
         # h_buff and v_buff must be adjusted so that Table.get_cell
         # can construct an accurate polygon for a cell.
         self.h_buff *= scale_factor
         self.v_buff *= scale_factor
-        super().scale(scale_factor, scale_stroke=scale_stroke, **kwargs)
+        super().scale(
+            scale_factor,
+            scale_stroke=scale_stroke,
+            about_point=about_point,
+            about_edge=about_edge,
+        )
         return self
 
 

@@ -205,6 +205,7 @@ class GrowArrow(GrowFromPoint):
 
     def create_starting_mobject(self) -> Mobject | OpenGLMobject:
         start_arrow = self.mobject.copy()
+        assert isinstance(start_arrow, Arrow)
         start_arrow.scale(0, scale_tips=True, about_point=self.point)
         if self.point_color:
             start_arrow.set_color(self.point_color)

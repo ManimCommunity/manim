@@ -607,7 +607,13 @@ class Arrow(Line):
         self.add_tip(tip_shape=tip_shape)
         self._set_stroke_width_from_length()
 
-    def scale(self, factor: float, scale_tips: bool = False, **kwargs: Any) -> Self:  # type: ignore[override]
+    def scale(  # pyright: ignore[reportIncompatibleMethodOverride]
+        self,
+        factor: float,
+        scale_tips: bool = False,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
         r"""Scale an arrow, but keep stroke width and arrow tip size fixed.
 
 
@@ -639,7 +645,12 @@ class Arrow(Line):
             return self
 
         if scale_tips:
-            super().scale(factor, **kwargs)
+            super().scale(
+                factor,
+                scale_tips,
+                about_point=about_point,
+                about_edge=about_edge,
+            )
             self._set_stroke_width_from_length()
             return self
 
@@ -648,7 +659,12 @@ class Arrow(Line):
         if has_tip or has_start_tip:
             old_tips = self.pop_tips()
 
-        super().scale(factor, **kwargs)
+        super().scale(
+            factor,
+            scale_tips,
+            about_point=about_point,
+            about_edge=about_edge,
+        )
         self._set_stroke_width_from_length()
 
         if has_tip:
