@@ -154,6 +154,13 @@ class ZoomedScene(MovingCameraScene):
             self.zoomed_camera.frame,
             self.zoomed_display,
         )
+        
+    def deactivate_zooming(self) -> None:
+        """Do documentation later"""
+        self.remove(
+            self.zoomed_camera.frame,
+            self.zoomed_display,
+        )
 
     def get_zoom_in_animation(self, run_time: float = 2, **kwargs: Any) -> ApplyMethod:
         """Returns the animation of camera zooming in.
