@@ -1069,7 +1069,7 @@ class OpenGLMobject:
                     x = OpenGLVGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
                     self.add(x)
         """
-        for m1, m2 in zip(self.submobjects[:-1], self.submobjects[1:], strict=True):
+        for m1, m2 in it.pairwise(self.submobjects):
             m2.next_to(m1, direction, **kwargs)
         if center:
             self.center()
@@ -2505,7 +2505,7 @@ class OpenGLMobject:
         return OpenGLGroup(
             *(
                 template.copy().pointwise_become_partial(self, a1, a2)
-                for a1, a2 in zip(alphas[:-1], alphas[1:], strict=True)
+                for a1, a2 in it.pairwise(alphas)
             )
         )
 
