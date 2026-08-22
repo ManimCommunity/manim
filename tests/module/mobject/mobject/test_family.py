@@ -5,7 +5,7 @@ import numpy as np
 from manim import RIGHT, Circle, Mobject
 
 
-def test_family():
+def test_family() -> None:
     """Check that the family is gathered correctly."""
     # Check that an empty mobject's family only contains itself
     mob = Mobject()
@@ -38,7 +38,7 @@ def test_family():
             assert gc in family
 
 
-def test_overlapping_family():
+def test_overlapping_family() -> None:
     """Check that each member of the family is only gathered once."""
     (
         mob,
@@ -59,7 +59,7 @@ def test_overlapping_family():
     assert family.count(gchild_common) == 1
 
 
-def test_shift_family():
+def test_shift_family() -> None:
     """Check that each member of the family is shifted along with the parent.
 
     Importantly, here we add a common grandchild to each of the children.  So
@@ -90,3 +90,39 @@ def test_shift_family():
 
     for m in family:
         np.testing.assert_allclose(positions_before[m] + RIGHT, positions_after[m])
+
+
+# Currently just assumes that no cycles exist
+# def test_family_cycle() -> None:
+#    """Check whether cycles are handled correctly."""
+#    # Mobject
+#    #   Circle
+#    #       Triangle
+#    #   Square          - Non-duplicate
+#    #       Mobject     - Duplicate/Loop
+#    #   Circle          - Duplicate on same level
+#    #       Triangle    - Parent is contained twice
+#    mobject, circle, square, triangle = Mobject(), Mobject(), Mobject(), Mobject()
+#    mobject.add(circle, square, circle)
+#    circle.add(triangle)
+#    square.add(mobject)  # adds loop
+#
+#    expected = [mobject, square, circle, triangle]
+#    assert mobject.get_family() == expected
+
+
+def test_family_order() -> None:
+    """Check that the order of the family is correct."""
+    # Mobject
+    # 	Circle
+    # 		Triangle
+    # 	Square
+    # 		Triangle
+
+    mobject, circle, square, triangle = Mobject(), Mobject(), Mobject(), Mobject()
+    mobject.add(circle, square)
+    circle.add(triangle)
+    square.add(triangle)
+
+    expected = [mobject, circle, square, triangle]
+    assert mobject.get_family() == expected
