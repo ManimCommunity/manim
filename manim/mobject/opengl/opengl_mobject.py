@@ -897,6 +897,15 @@ class OpenGLMobject:
 
         self._assert_valid_submobjects(mobjects)
 
+        if len(mobjects) == 1:
+            mobject = mobjects[0]
+            if mobject not in self.submobjects:
+                self.submobjects.append(mobject)
+                if self not in mobject.parents:
+                    mobject.parents.append(self)
+                self.assemble_family()
+            return self
+
         # dict.fromkeys() removes duplicates while maintaining order
         unique_mobjects = dict.fromkeys(mobjects)
         if len(mobjects) != len(unique_mobjects):
@@ -910,12 +919,13 @@ class OpenGLMobject:
             if mob in unique_mobjects:
                 unique_mobjects.pop(mob)
 
-        self.submobjects.extend(unique_mobjects)
+        if unique_mobjects:
+            self.submobjects.extend(unique_mobjects)
+            for mobject in unique_mobjects:
+                if self not in mobject.parents:
+                    mobject.parents.append(self)
+            self.assemble_family()
 
-        for mobject in unique_mobjects:
-            if self not in mobject.parents:
-                mobject.parents.append(self)
-        self.assemble_family()
         return self
 
     def insert(
@@ -944,11 +954,10 @@ class OpenGLMobject:
 
         if mobject not in self.submobjects:
             self.submobjects.insert(index, mobject)
+            if self not in mobject.parents:
+                mobject.parents.append(self)
+            self.assemble_family()
 
-        if self not in mobject.parents:
-            mobject.parents.append(self)
-
-        self.assemble_family()
         return self
 
     def remove(self, *mobjects: OpenGLMobject, update_parent: bool = False) -> Self:
@@ -977,17 +986,19 @@ class OpenGLMobject:
             assert len(mobjects) == 1, "Can't remove multiple parents."
             mobjects[0].parent = None
 
+        number_of_submobjects = len(self.submobjects)
         if len(mobjects) == 1:
             with suppress(ValueError):
                 self.submobjects.remove(mobjects[0])
         else:
             self._submobjects = list_difference_update(self._submobjects, mobjects)
 
-        with suppress(ValueError):
-            for mobject in mobjects:
-                mobject.parents.remove(self)
+        if len(self.submobjects) != number_of_submobjects:
+            with suppress(ValueError):
+                for mobject in mobjects:
+                    mobject.parents.remove(self)
 
-        self.assemble_family()
+            self.assemble_family()
         return self
 
     def add_to_back(self, *mobjects: OpenGLMobject) -> Self:
