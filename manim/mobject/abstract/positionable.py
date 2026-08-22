@@ -24,7 +24,6 @@ from manim.typing import (
     Point3DLike_Array,
     Vector3DLike,
 )
-from manim.utils.deprecation import deprecated
 from manim.utils.space_ops import rotation_matrix
 
 
@@ -65,6 +64,8 @@ class Positionable:
         - shift_onto_screen
     ### Aliases
         - center = set_center(ORIGIN)
+        - flip
+        - length_over_dim
         - move_to = set_position
         - scale_to_fit = set_dim_size(stretch=False)
             - scale_to_fit_(width|height|depth)
@@ -73,26 +74,24 @@ class Positionable:
         - get_critical_point = get_position
         - get_edge_center = get_position
         - get_corner = get_position
+        - pose_at_angle
         - shift = translate
         - to_corner = align_on_border
         - to_edge = align_on_border
+        - (width|height|depth)
     ### Deprecated
         - apply_points_function_about_point
         - apply_function_to_position
-        - flip
-        - length_over_dim
         - get_extremum_along_dim
         - match_points
         - match_coord
         - match_(x|y|z)
         - match_dim_size
         - match_(width|height|depth)
-        - pose_at_angle
         - reduce_across_dimension
         - rescale_to_fit
         - rotate_about_origin
         - stretch_about_point
-        - (width|height|depth)
 
     """
 
@@ -588,9 +587,24 @@ class Positionable:
     get_critical_point = get_position
     get_edge_center = get_position
     get_corner = get_position
+    length_over_dim = get_dim_size
 
     def center(self) -> Self:
         return self.set_center(ORIGIN)
+
+    def flip(
+        self,
+        axis: Vector3DLike = UP,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
+        return self.rotate(
+            TAU / 2,
+            axis,
+            about_point=about_point,
+            about_edge=about_edge,
+        )
 
     def move_to(
         self,
@@ -602,6 +616,18 @@ class Positionable:
             point=point_or_mobject,
             aligned_edge=aligned_edge,
             coor_mask=coor_mask,
+        )
+
+    def pose_at_angle(
+        self,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
+        return self.rotate(
+            angle=TAU / 14,
+            axis=RIGHT + UP,
+            about_point=about_point,
+            about_edge=about_edge,
         )
 
     def scale_to_fit(
@@ -730,28 +756,52 @@ class Positionable:
     ) -> Self:
         return self.align_on_border(direction=edge, buff=buff)
 
+    @property
+    def width(self) -> float:
+        return self.get_width()
+
+    @width.setter
+    def width(self, value: float) -> None:
+        self.set_width(width=value)
+
+    @property
+    def height(self) -> float:
+        return self.get_height()
+
+    @height.setter
+    def height(self, value: float) -> None:
+        self.set_height(height=value)
+
+    @property
+    def depth(self) -> float:
+        return self.get_depth()
+
+    @depth.setter
+    def depth(self, value: float) -> None:
+        self.set_depth(depth=value)
+
     ### DEPRECATED ###
 
-    apply_points_function_about_point = deprecated(apply_array_function)
-    length_over_dim = deprecated(get_dim_size)
-    match_points = deprecated(set_points, replacement="set_points")
-    match_coord = deprecated(set_coord, message="set_coord")
-    match_x = deprecated(set_x, message="set_x")
-    match_y = deprecated(set_y, message="set_y")
-    match_z = deprecated(set_z, message="set_z")
-    match_dim_size = deprecated(set_dim_size, message="set_dim_size")
-    match_width = deprecated(set_width, message="set_width")
-    match_height = deprecated(set_height, message="set_height")
-    match_depth = deprecated(set_depth, message="set_depth")
+    apply_points_function_about_point = apply_array_function
+    length_over_dim = get_dim_size
+    match_points = set_points
+    match_coord = set_coord
+    match_x = set_x
+    match_y = set_y
+    match_z = set_z
+    match_dim_size = set_dim_size
+    match_width = set_width
+    match_height = set_height
+    match_depth = set_depth
 
-    @deprecated(replacement="move_to(function(self.get_center()))")
+    # @deprecated(replacement="move_to(function(self.get_center()))")
     def apply_function_to_position(
         self,
         function: Callable[[Point3D], Point3DLike],
     ) -> Self:
         return self.move_to(function(self.get_center()))
 
-    @deprecated()
+    # @deprecated()
     def get_extremum_along_dim(
         self,
         dim: int = 0,
@@ -771,7 +821,7 @@ class Positionable:
             rv = np.max(values)
             return rv
 
-    @deprecated()
+    # @deprecated()
     def reduce_across_dimension(
         self,
         reduce_func: Callable[[Iterable[float]], float],
@@ -783,7 +833,7 @@ class Positionable:
 
         return reduce_func(points[:, dim])
 
-    @deprecated(replacement="rotate")
+    # @deprecated(replacement="rotate")
     def rotate_about_origin(
         self,
         angle: float,
@@ -795,50 +845,7 @@ class Positionable:
             about_point=ORIGIN,
         )
 
-    @deprecated(replacement="rotate")
-    def pose_at_angle(
-        self,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-    ) -> Self:
-        return self.rotate(
-            angle=TAU / 14,
-            axis=RIGHT + UP,
-            about_point=about_point,
-            about_edge=about_edge,
-        )
-
-    @property
-    @deprecated(replacement="get_width")
-    def width(self) -> float:
-        return self.get_width()
-
-    @width.setter
-    @deprecated(replacement="set_width")
-    def width(self, value: float) -> None:
-        self.set_width(width=value)
-
-    @property
-    @deprecated(replacement="get_height")
-    def height(self) -> float:
-        return self.get_height()
-
-    @height.setter
-    @deprecated(replacement="set_height")
-    def height(self, value: float) -> None:
-        self.set_height(height=value)
-
-    @property
-    @deprecated(replacement="get_depth")
-    def depth(self) -> float:
-        return self.get_depth()
-
-    @depth.setter
-    @deprecated(replacement="set_depth")
-    def depth(self, value: float) -> None:
-        self.set_depth(depth=value)
-
-    @deprecated(replacement="set_dim_size")
+    # @deprecated(replacement="set_dim_size")
     def rescale_to_fit(
         self,
         length: "float | Positionable",
@@ -855,21 +862,6 @@ class Positionable:
             about_edge=about_edge,
         )
 
-    @deprecated(replacement="rotate")
-    def flip(
-        self,
-        axis: Vector3DLike = UP,
-        *,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-    ) -> Self:
-        return self.rotate(
-            TAU / 2,
-            axis,
-            about_point=about_point,
-            about_edge=about_edge,
-        )
-
-    @deprecated(replacement="stretch")
+    # @deprecated(replacement="stretch")
     def stretch_about_point(self, factor: float, dim: int, point: Point3DLike) -> Self:
         return self.stretch(factor=factor, dim=dim, about_point=point)
