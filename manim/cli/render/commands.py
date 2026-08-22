@@ -32,6 +32,7 @@ from manim.cli.render.global_options import global_options
 from manim.cli.render.output_options import output_options
 from manim.cli.render.render_options import render_options
 from manim.constants import EPILOG, RendererType
+from manim.manager import Manager
 from manim.utils.module_ops import scene_classes_from_file
 
 __all__ = ["render"]
@@ -104,6 +105,8 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
                 for SceneClass in scene_classes_from_file(file):
                     with tempconfig({}):
                         scene = SceneClass(renderer)
+                        # Attach explicitly, but preserve custom Scene.render overrides.
+                        Manager(scene)
                         rerun = scene.render()
                     if rerun or config["write_all"]:
                         renderer.num_plays = 0
@@ -122,6 +125,8 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
             try:
                 with tempconfig({}):
                     scene = SceneClass()
+                    # Attach explicitly, but preserve custom Scene.render overrides.
+                    Manager(scene)
                     scene.render()
             except Exception:
                 error_console.print_exception()
