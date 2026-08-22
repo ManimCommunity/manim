@@ -783,7 +783,6 @@ class Positionable:
     ### DEPRECATED ###
 
     apply_points_function_about_point = apply_array_function
-    length_over_dim = get_dim_size
     match_points = set_points
     match_coord = set_coord
     match_x = set_x
