@@ -24,7 +24,6 @@ from manim.typing import (
     Point3DLike_Array,
     Vector3DLike,
 )
-from manim.utils.deprecation import deprecated
 from manim.utils.space_ops import rotation_matrix
 
 
@@ -783,25 +782,25 @@ class Positionable:
 
     ### DEPRECATED ###
 
-    apply_points_function_about_point = deprecated(apply_array_function)
-    match_points = deprecated(set_points)
-    match_coord = deprecated(set_coord)
-    match_x = deprecated(set_x)
-    match_y = deprecated(set_y)
-    match_z = deprecated(set_z)
-    match_dim_size = deprecated(set_dim_size)
-    match_width = deprecated(set_width)
-    match_height = deprecated(set_height)
-    match_depth = deprecated(set_depth)
+    apply_points_function_about_point = apply_array_function
+    match_points = set_points
+    match_coord = set_coord
+    match_x = set_x
+    match_y = set_y
+    match_z = set_z
+    match_dim_size = set_dim_size
+    match_width = set_width
+    match_height = set_height
+    match_depth = set_depth
 
-    @deprecated(replacement="move_to(function(self.get_center()))")
+    # @deprecated(replacement="move_to(function(self.get_center()))")
     def apply_function_to_position(
         self,
         function: Callable[[Point3D], Point3DLike],
     ) -> Self:
         return self.move_to(function(self.get_center()))
 
-    @deprecated()
+    # @deprecated()
     def get_extremum_along_dim(
         self,
         dim: int = 0,
@@ -821,7 +820,7 @@ class Positionable:
             rv = np.max(values)
             return rv
 
-    @deprecated()
+    # @deprecated()
     def reduce_across_dimension(
         self,
         reduce_func: Callable[[Iterable[float]], float],
@@ -833,7 +832,7 @@ class Positionable:
 
         return reduce_func(points[:, dim])
 
-    @deprecated(replacement="rotate")
+    # @deprecated(replacement="rotate")
     def rotate_about_origin(
         self,
         angle: float,
@@ -845,7 +844,7 @@ class Positionable:
             about_point=ORIGIN,
         )
 
-    @deprecated(replacement="set_dim_size")
+    # @deprecated(replacement="set_dim_size")
     def rescale_to_fit(
         self,
         length: "float | Positionable",
@@ -862,6 +861,6 @@ class Positionable:
             about_edge=about_edge,
         )
 
-    @deprecated(replacement="stretch")
+    # @deprecated(replacement="stretch")
     def stretch_about_point(self, factor: float, dim: int, point: Point3DLike) -> Self:
         return self.stretch(factor=factor, dim=dim, about_point=point)
