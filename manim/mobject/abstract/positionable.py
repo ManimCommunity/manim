@@ -742,6 +742,7 @@ class Positionable:
     def to_corner(
         self,
         corner: Vector3DLike = DL,
+        *,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
     ) -> Self:
         return self.align_on_border(direction=corner, buff=buff)
@@ -749,6 +750,7 @@ class Positionable:
     def to_edge(
         self,
         edge: Vector3DLike = LEFT,
+        *,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
     ) -> Self:
         return self.align_on_border(direction=edge, buff=buff)
