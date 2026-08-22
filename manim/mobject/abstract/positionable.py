@@ -55,12 +55,12 @@ class Positionable:
         - (get|set)_dim_size
             - (get|set)_(width|height|depth)
     ### Specialized
-        - align_on_border
         - align_to
+            - align_on_border
+            - next_to (TODO)
         - is_off_screen
         - get_center_of_mass
         - get_boundary_point
-        - next_to (TODO)
         - shift_onto_screen
     ### Aliases
         - center = set_center(ORIGIN)
@@ -529,11 +529,8 @@ class Positionable:
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
     ) -> Self:
         frame = (config.frame_x_radius, config.frame_y_radius, 0)
-        target_point = np.sign(direction) * frame
-        point_to_align = self.get_critical_point(direction=direction)
-        shift_val = target_point - point_to_align - buff * np.asarray(direction)
-        shift_val = shift_val * abs(np.sign(direction))
-        return self.shift(shift_val)
+        target = np.sign(direction) * frame - buff * np.asarray(direction)
+        return self.align_to(target, direction=direction)
 
     def align_to(
         self,
