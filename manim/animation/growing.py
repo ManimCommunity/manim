@@ -33,12 +33,13 @@ __all__ = [
 
 from typing import TYPE_CHECKING, Any
 
+from manim.mobject.geometry.line import Arrow
+
 from ..animation.transform import Transform
 from ..constants import PI
 from ..utils.paths import spiral_path
 
 if TYPE_CHECKING:
-    from manim.mobject.geometry.line import Arrow
     from manim.mobject.opengl.opengl_mobject import OpenGLMobject
     from manim.typing import Point3DLike, Vector3DLike
     from manim.utils.color import ParsableManimColor
