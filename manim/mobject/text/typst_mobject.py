@@ -137,7 +137,10 @@ from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import BLACK, ParsableManimColor
 from manim.utils.typst_file_writing import typst_to_svg_file
 
-_MANIMGRP_PREAMBLE = "#let manimgrp(lbl, body) = [#box(body) #label(lbl)]"
+_MANIMGRP_LINK_PREFIX = "https://manim.invalid/group/"
+_MANIMGRP_PREAMBLE = (
+    f'#let manimgrp(lbl, body) = link("{_MANIMGRP_LINK_PREFIX}" + lbl, body)'
+)
 
 # Pattern for the label part of {{ content : label }}.
 # The label must be a valid Typst label identifier.
@@ -499,21 +502,29 @@ class Typst(SVGMobject):
     # -- SVG post-processing -------------------------------------------------
 
     def modify_xml_tree(self, element_tree: ET.ElementTree) -> ET.ElementTree:
-        """Convert ``data-typst-label`` attributes to ``id`` before parsing.
+        """Convert Typst selection metadata to ``id`` attributes before parsing.
 
-        Typst's SVG renderer emits ``data-typst-label`` on ``<g>`` elements
-        that carry a label (created via ``#box(body) <label>``).  The
-        ``svgelements`` library propagates custom ``data-*`` attributes from
-        parent groups to all children, making them unusable as unique group
-        keys.  ``id`` attributes, on the other hand, are *not* inherited.
+        Typst's SVG renderer emits an ``<a>`` marker after every visible SVG
+        sibling covered by a link. MathTypst uses links with a private URL
+        prefix so selectable expressions retain their surrounding math context.
+        Replace those markers with labeled wrappers around the corresponding
+        visible siblings, then remove the links before SVG import.
 
-        This method walks the XML tree and promotes every
-        ``data-typst-label`` to ``id`` (on ``<g>`` elements only), so that
-        :meth:`~.SVGMobject.get_mobjects_from` can pick them up via its
-        existing ``id``-based grouping logic.
+        Ordinary Typst labels emit ``data-typst-label`` on ``<g>`` elements.
+        The ``svgelements`` library propagates custom ``data-*`` attributes
+        from parent groups to all children, making them unusable as unique
+        group keys. ``id`` attributes, on the other hand, are *not* inherited.
+
+        This method converts private link markers to ``data-typst-label``
+        wrappers and then promotes every such attribute to ``id``, so that
+        :meth:`~.SVGMobject.get_mobjects_from` can use its existing grouping
+        logic.
         """
         # Let the base class inject default style wrappers first.
         element_tree = super().modify_xml_tree(element_tree)
+        root = element_tree.getroot()
+        if root is not None:
+            self._replace_manimgrp_links(root)
 
         # Walk all elements regardless of namespace — ElementTree
         # qualifies tags with the namespace URI, so a bare ``"g"``
@@ -531,6 +542,43 @@ class Typst(SVGMobject):
                 del element.attrib["data-typst-label"]
 
         return element_tree
+
+    @classmethod
+    def _replace_manimgrp_links(cls, parent: ET.Element) -> None:
+        """Replace private Typst link markers with labeled SVG wrappers."""
+        for child in parent:
+            cls._replace_manimgrp_links(child)
+
+        visible_children: list[ET.Element] = []
+        for child in parent:
+            label = cls._get_manimgrp_link_label(child)
+            if label is None:
+                visible_children.append(child)
+                continue
+
+            if not visible_children:
+                continue
+
+            preceding = visible_children[-1]
+            if preceding.get("data-typst-label") == label:
+                continue
+
+            wrapper = ET.Element("g", {"data-typst-label": label})
+            wrapper.append(preceding)
+            visible_children[-1] = wrapper
+
+        parent[:] = visible_children
+
+    @staticmethod
+    def _get_manimgrp_link_label(element: ET.Element) -> str | None:
+        """Return the label encoded in a private Typst link marker."""
+        if element.tag.rsplit("}", 1)[-1] != "a":
+            return None
+
+        href = element.get("href") or element.get("{http://www.w3.org/1999/xlink}href")
+        if href is None or not href.startswith(_MANIMGRP_LINK_PREFIX):
+            return None
+        return href.removeprefix(_MANIMGRP_LINK_PREFIX)
 
     # -- sub-expression selection --------------------------------------------
 
