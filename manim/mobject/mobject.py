@@ -15,6 +15,7 @@ import sys
 import types
 import warnings
 from collections.abc import Callable, Iterable, Iterator, Sequence
+from contextlib import suppress
 from functools import partialmethod, reduce
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
@@ -556,6 +557,14 @@ class Mobject:
 
         """
         self._assert_valid_submobjects(mobjects)
+
+        if len(mobjects) == 1:
+            mobject = mobjects[0]
+            with suppress(ValueError):
+                self.submobjects.remove(mobject)
+            self.submobjects.append(mobject)
+            return self
+
         unique_mobjects = remove_list_redundancies(mobjects)
         if len(mobjects) != len(unique_mobjects):
             logger.warning(
@@ -663,6 +672,13 @@ class Mobject:
         :meth:`add`
 
         """
+        if not self.submobjects:
+            return self
+
+        if len(mobjects) == 1:
+            with suppress(ValueError):
+                self.submobjects.remove(mobjects[0])
+            return self
         self.submobjects = list_difference_update(self.submobjects, mobjects)
         return self
 

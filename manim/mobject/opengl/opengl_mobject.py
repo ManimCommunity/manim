@@ -977,7 +977,11 @@ class OpenGLMobject:
             assert len(mobjects) == 1, "Can't remove multiple parents."
             mobjects[0].parent = None
 
-        self._submobjects = list_difference_update(self._submobjects, mobjects)
+        if len(mobjects) == 1:
+            with suppress(ValueError):
+                self.submobjects.remove(mobjects[0])
+        else:
+            self._submobjects = list_difference_update(self._submobjects, mobjects)
 
         with suppress(ValueError):
             for mobject in mobjects:
