@@ -3336,8 +3336,17 @@ class Mobject:
     def throw_error_if_no_points(self) -> None:
         if self.has_no_points():
             caller_name = sys._getframe(1).f_code.co_name
-            raise Exception(
-                f"Cannot call Mobject.{caller_name} for a Mobject with no points",
+            cls = type(self).__name__
+            drawn = [m for m in self.submobjects if not m.has_no_points()]
+            hint = ""
+            if drawn:
+                hint = (
+                    f" This {cls} has no points of its own, but "
+                    f"{len(drawn)} of its {len(self.submobjects)} submobjects "
+                    f"do. Did you mean to pass one of them?"
+                )
+            raise ValueError(
+                f"Cannot call {cls}.{caller_name} for a {cls} with no points." + hint,
             )
 
     # About z-index
