@@ -8,6 +8,7 @@ import sys
 import types
 import warnings
 from collections.abc import Callable, Iterable, Iterator, Sequence
+from contextlib import suppress
 from functools import partialmethod, wraps
 from math import ceil
 from typing import (
@@ -54,6 +55,7 @@ from manim.utils.config_ops import _Data, _Uniforms
 # from ..utils.iterables import batch_by_property
 from manim.utils.iterables import (
     batch_by_property,
+    list_difference_update,
     list_update,
     listify,
     make_even,
@@ -895,14 +897,22 @@ class OpenGLMobject:
 
         self._assert_valid_submobjects(mobjects)
 
-        if any(mobjects.count(elem) > 1 for elem in mobjects):
+        # dict.fromkeys() removes duplicates while maintaining order
+        unique_mobjects = dict.fromkeys(mobjects)
+        if len(mobjects) != len(unique_mobjects):
             logger.warning(
                 "Attempted adding some Mobject as a child more than once, "
                 "this is not possible. Repetitions are ignored.",
             )
-        for mobject in mobjects:
-            if mobject not in self.submobjects:
-                self.submobjects.append(mobject)
+
+        # Remove already-present mobjects
+        for mob in self.submobjects:
+            if mob in unique_mobjects:
+                unique_mobjects.pop(mob)
+
+        self.submobjects.extend(unique_mobjects)
+
+        for mobject in unique_mobjects:
             if self not in mobject.parents:
                 mobject.parents.append(self)
         self.assemble_family()
@@ -967,11 +977,12 @@ class OpenGLMobject:
             assert len(mobjects) == 1, "Can't remove multiple parents."
             mobjects[0].parent = None
 
-        for mobject in mobjects:
-            if mobject in self.submobjects:
-                self.submobjects.remove(mobject)
-            if self in mobject.parents:
+        self._submobjects = list_difference_update(self._submobjects, mobjects)
+
+        with suppress(ValueError):
+            for mobject in mobjects:
                 mobject.parents.remove(self)
+
         self.assemble_family()
         return self
 
@@ -1027,7 +1038,7 @@ class OpenGLMobject:
     def replace_submobject(self, index: int, new_submob: OpenGLMobject) -> Self:
         self._assert_valid_submobjects([new_submob])
         old_submob = self.submobjects[index]
-        if self in old_submob.parents:
+        with suppress(ValueError):
             old_submob.parents.remove(self)
         self.submobjects[index] = new_submob
         self.assemble_family()
@@ -1573,10 +1584,12 @@ class OpenGLMobject:
         return self
 
     def remove_updater(self, update_function: _Updater) -> Self:
-        for updater_list in [self.time_based_updaters, self.non_time_updaters]:
-            updater_list = cast("list[_Updater]", updater_list)
-            while update_function in updater_list:
-                updater_list.remove(update_function)
+        self.time_based_updaters = list_difference_update(
+            self.time_based_updaters, [update_function]
+        )
+        self.non_time_updaters = list_difference_update(
+            self.non_time_updaters, [update_function]
+        )
         self.refresh_has_updater_status()
         return self
 

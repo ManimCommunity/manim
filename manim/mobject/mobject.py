@@ -36,7 +36,11 @@ from ..utils.color import (
     interpolate_color,
 )
 from ..utils.exceptions import MultiAnimationOverrideException
-from ..utils.iterables import list_update, remove_list_redundancies
+from ..utils.iterables import (
+    list_difference_update,
+    list_update,
+    remove_list_redundancies,
+)
 from ..utils.paths import straight_path
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
@@ -659,9 +663,7 @@ class Mobject:
         :meth:`add`
 
         """
-        for mobject in mobjects:
-            if mobject in self.submobjects:
-                self.submobjects.remove(mobject)
+        self.submobjects = list_difference_update(self.submobjects, mobjects)
         return self
 
     def __sub__(self, other: Mobject) -> Self:
@@ -1122,8 +1124,7 @@ class Mobject:
         :meth:`get_updaters`
 
         """
-        while update_function in self.updaters:
-            self.updaters.remove(update_function)
+        self.updaters = list_difference_update(self.updaters, [update_function])
         return self
 
     def clear_updaters(self, recursive: bool = True) -> Self:
