@@ -27,14 +27,6 @@ from manim.typing import (
 from manim.utils.deprecation import deprecated
 from manim.utils.space_ops import rotation_matrix
 
-if False:
-    # DISABLES DEPRECATED WARNING FOR TESTING
-    def deprecated(*args: Any, **kwargs: Any) -> Callable[..., Any]:  # type: ignore[no-redef]
-        def wrapper(func: Callable[..., Any]) -> Callable[..., Any]:
-            return func
-
-        return wrapper
-
 
 class Positionable:
     """A positionable object.
