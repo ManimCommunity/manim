@@ -2247,7 +2247,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
     def __str__(self) -> str:
         return (
             f"{self.__class__.__name__} of {len(self.submobjects)} "
-            f"submobject{'s' if len(self.submobjects) > 0 else ''}"
+            f"submobject{'' if len(self.submobjects) == 1 else 's'}"
         )
 
     def add(
