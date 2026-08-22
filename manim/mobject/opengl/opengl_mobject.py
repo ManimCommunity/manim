@@ -1631,6 +1631,7 @@ class OpenGLMobject:
         self,
         scale_factor: float,
         scale_stroke: bool = False,
+        *,
         about_point: Point3DLike | None = None,
         about_edge: Point3DLike | None = ORIGIN,
     ) -> Self:

@@ -294,6 +294,7 @@ class Typst(SVGMobject):
         self,
         scale_factor: float,
         scale_stroke: bool = False,
+        *,
         about_point: np.ndarray | None = None,
         about_edge: np.ndarray | None = None,
     ) -> Self:
