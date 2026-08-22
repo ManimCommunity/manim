@@ -785,8 +785,17 @@ class OpenGLArrow(OpenGLLine):
         self.set_points_by_ends(start, end, buff=0, path_arc=self.path_arc)
         return self
 
-    def scale(self, *args: Any, **kwargs: Any) -> Self:
-        super().scale(*args, **kwargs)
+    def scale(
+        self,
+        scale_factor: float,
+        scale_stroke: bool = False,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Point3DLike | None = ORIGIN,
+    ) -> Self:
+        super().scale(
+            scale_factor, scale_stroke, about_point=about_edge, about_edge=about_edge
+        )
         self.reset_points_around_ends()
         return self
 

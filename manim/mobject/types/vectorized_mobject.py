@@ -551,7 +551,9 @@ class VMobject(Mobject):
                         background=True,
                         family=False,
                     )
-        super().scale(scale_factor, about_point=about_point, about_edge=about_edge)
+        super().scale(
+            scale_factor, scale_stroke, about_point=about_point, about_edge=about_edge
+        )
         return self
 
     def fade(self, darkness: float = 0.5, family: bool = True) -> Self:
@@ -791,10 +793,6 @@ class VMobject(Mobject):
             submob.shade_in_3d = value
             if z_index_as_group:
                 submob.z_index_group = self
-        return self
-
-    def set_points(self, points: Point3DLike_Array) -> Self:
-        self.points: Point3D_Array = np.array(points)
         return self
 
     def resize_points(

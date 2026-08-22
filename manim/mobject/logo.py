@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["ManimBanner"]
 
-from typing import Any, Self
+from typing import Self
 
 import svgelements as se
 
@@ -12,7 +12,7 @@ from manim.animation.updaters.update import UpdateFromAlphaFunc
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square, Triangle
 from manim.mobject.mobject import Mobject
-from manim.typing import Vector3D
+from manim.typing import Point3DLike, Vector3D, Vector3DLike
 
 from .. import constants as cst
 from ..animation.animation import override_animation
@@ -184,7 +184,14 @@ class ManimBanner(VGroup):
         # and thus not yet added to the submobjects of self.
         self.anim = anim
 
-    def scale(self, scale_factor: float, **kwargs: Any) -> Self:
+    def scale(
+        self,
+        scale_factor: float,
+        scale_stroke: bool = False,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
         """Scale the banner by the specified scale factor.
 
         Parameters
@@ -200,8 +207,15 @@ class ManimBanner(VGroup):
         self.scale_factor *= scale_factor
         # Note: self.anim is only added to self after expand()
         if self.anim not in self.submobjects:
-            self.anim.scale(scale_factor, **kwargs)
-        return super().scale(scale_factor, **kwargs)
+            self.anim.scale(
+                scale_factor,
+                scale_stroke,
+                about_point=about_point,
+                about_edge=about_edge,
+            )
+        return super().scale(
+            scale_factor, scale_stroke, about_point=about_point, about_edge=about_edge
+        )
 
     @override_animation(Create)
     def create(self, run_time: float = 2) -> AnimationGroup:

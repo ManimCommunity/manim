@@ -33,12 +33,13 @@ __all__ = [
 
 from typing import TYPE_CHECKING, Any
 
+from manim.mobject.geometry.line import Arrow
+
 from ..animation.transform import Transform
 from ..constants import PI
 from ..utils.paths import spiral_path
 
 if TYPE_CHECKING:
-    from manim.mobject.geometry.line import Arrow
     from manim.mobject.opengl.opengl_mobject import OpenGLMobject
     from manim.typing import Point3DLike, Vector3DLike
     from manim.utils.color import ParsableManimColor
@@ -205,6 +206,7 @@ class GrowArrow(GrowFromPoint):
 
     def create_starting_mobject(self) -> Mobject | OpenGLMobject:
         start_arrow = self.mobject.copy()
+        assert isinstance(start_arrow, Arrow)
         start_arrow.scale(0, scale_tips=True, about_point=self.point)
         if self.point_color:
             start_arrow.set_color(self.point_color)
