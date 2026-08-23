@@ -1947,7 +1947,7 @@ class OpenGLMobject:
     def is_off_screen(self) -> bool:
         if self.get_left()[0] > config.frame_x_radius:
             return True
-        if self.get_right()[0] < config.frame_x_radius:
+        if self.get_right()[0] < -config.frame_x_radius:
             return True
         if self.get_bottom()[1] > config.frame_y_radius:
             return True
