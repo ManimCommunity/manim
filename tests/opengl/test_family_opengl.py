@@ -142,8 +142,7 @@ def test_opengl_mobject_add_updates_parents(using_opengl_renderer):
     another OpenGLMobject.
     """
     parent = OpenGLMobject(name="parent")
-    children = [OpenGLMobject(name=f"child_{i}") for i in range(3)]
-    child = children[0]
+    child, child2, child3 = [OpenGLMobject(name=f"child_{i}") for i in range(3)]
 
     # Initially, the child has no parent.
     assert child.parents == []
@@ -162,14 +161,15 @@ def test_opengl_mobject_add_updates_parents(using_opengl_renderer):
     new_parent.remove(child)
     assert new_parent not in child.parents
 
-    # Add a child multiple times to the same parent; the child's parent should not be duplicated.
+    # Add a child multiple times to the same parent; the child's parent should not
+    # be duplicated.
     parent.remove(*parent.submobjects)
     parent.add(child)
     parent.add(child)
     assert child.parents == [parent]
 
-    # Remove a mix of existing and non-existing children; the child's parent should be updated correctly.
-    child2, child3 = OpenGLMobject(), OpenGLMobject()
+    # Remove a mix of existing and non-existing children; the existing child's parent should be
+    # updated correctly.
     parent.remove(child2, child, child3)
     for c in [child, child2, child3]:
         assert parent not in c.parents
