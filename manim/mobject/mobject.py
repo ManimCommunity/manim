@@ -560,6 +560,9 @@ class Mobject:
 
         if len(mobjects) == 1:
             mobject = mobjects[0]
+            # If the mobject is already the last submobject, we don't need to do anything
+            if self.submobjects and mobject is self.submobjects[-1]:
+                return self
             with suppress(ValueError):
                 self.submobjects.remove(mobject)
             self.submobjects.append(mobject)
