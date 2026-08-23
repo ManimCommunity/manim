@@ -648,9 +648,17 @@ class Mobject:
 
         """
         self._assert_valid_submobjects(mobjects)
-        self.remove(*mobjects)
         # dict.fromkeys() removes duplicates while maintaining order
-        self.submobjects = list(dict.fromkeys(mobjects)) + self.submobjects
+        unique_mobjects = dict.fromkeys(mobjects)
+        if len(mobjects) != len(unique_mobjects):
+            logger.warning(
+                "Attempted adding some Mobject as a child more than once, "
+                "this is not possible. Repetitions are ignored.",
+            )
+        existing_mobs = self.submobjects
+        self.submobjects = list(unique_mobjects)
+        self.submobjects.extend(m for m in existing_mobs if m not in unique_mobjects)
+
         return self
 
     def remove(self, *mobjects: Mobject) -> Self:
