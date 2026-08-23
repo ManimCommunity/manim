@@ -2384,10 +2384,7 @@ class OpenGLMobject:
 
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
         all_points = self.get_all_points()
-        boundary_directions = all_points - self.get_center()
-        norms = np.linalg.norm(boundary_directions, axis=1)
-        boundary_directions /= np.repeat(norms, 3).reshape((len(norms), 3))
-        index = np.argmax(np.dot(boundary_directions, direction))
+        index = np.argmax(np.dot(all_points, direction))
         return all_points[index]
 
     def get_continuous_bounding_box_point(self, direction: Vector3DLike) -> Point3D:
