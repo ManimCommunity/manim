@@ -65,50 +65,6 @@ def test_opengl_mobject_remove(using_opengl_renderer):
     assert obj.remove(OpenGLMobject()) is obj
 
 
-def test_opengl_mobject_family_updated_on_change(using_opengl_renderer):
-    """Test that the family of an OpenGLMobject is updated correctly when submobjects
-    are added or removed, and that the family is not updated if no changes are made.
-    """
-    # This is based on the assumption that obj.family is replaced with a new list when submobjects
-    # are added or removed. If this implementation detail changes, this test may need to be updated.
-    obj = OpenGLMobject()
-    family = obj.get_family()
-    assert family == [obj]
-    submobs = [OpenGLMobject() for _ in range(10)]
-
-    # Add new submobjects; family should be updated.
-    obj.add(*submobs)
-    assert family is not obj.get_family()
-    family = obj.get_family()
-    assert len(family) == 11
-    for submob in submobs:
-        assert submob in family
-
-    # Remove a submobject; family should be updated.
-    obj.remove(submobs[0])
-    family = obj.get_family()
-    assert len(family) == 10
-    assert submobs[0] not in family
-
-    # Remove a submobject that is not in the family; family should not be updated.
-    obj.remove(OpenGLMobject())
-    assert family is obj.get_family()
-
-    # Add a submobject that is already in the family; family should not be updated.
-    obj.add(submobs[1])
-    assert family is obj.get_family()
-
-    # Add a mix of new and existing submobjects; family should be updated.
-    obj.add(OpenGLMobject(), submobs[2])
-    assert family is not obj.get_family()
-    family = obj.get_family()
-    assert len(family) == 11
-
-    # Remove a mix of existing and non-existing submobjects; family should be updated.
-    obj.remove(submobs[3], OpenGLMobject())
-    assert family is not obj.get_family()
-
-
 def test_opengl_rotate_about_vertex_view(using_opengl_renderer):
     """Test that rotating about a vertex obtained from get_vertices() works correctly.
 

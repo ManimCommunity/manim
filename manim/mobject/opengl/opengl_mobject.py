@@ -994,8 +994,8 @@ class OpenGLMobject:
             self._submobjects = list_difference_update(self._submobjects, mobjects)
 
         if len(self.submobjects) != number_of_submobjects:
-            with suppress(ValueError):
-                for mobject in mobjects:
+            for mobject in mobjects:
+                with suppress(ValueError):
                     mobject.parents.remove(self)
 
             self.assemble_family()
