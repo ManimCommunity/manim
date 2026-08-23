@@ -2004,7 +2004,7 @@ class OpenGLMobject:
 
     def stretch_to_fit_depth(self, depth: float, **kwargs: Any) -> Self:
         """Stretches the :class:`~.OpenGLMobject` to fit a depth, not keeping width/height proportional."""
-        return self.rescale_to_fit(depth, 1, stretch=True, **kwargs)
+        return self.rescale_to_fit(depth, 2, stretch=True, **kwargs)
 
     def set_width(
         self,
