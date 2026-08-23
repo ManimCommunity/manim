@@ -986,6 +986,9 @@ class OpenGLMobject:
             assert len(mobjects) == 1, "Can't remove multiple parents."
             mobjects[0].parent = None
 
+        if not self.submobjects:
+            return self
+
         number_of_submobjects = len(self.submobjects)
         if len(mobjects) == 1:
             with suppress(ValueError):
