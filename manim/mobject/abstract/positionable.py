@@ -366,7 +366,7 @@ class Positionable:
         Returns
         -------
         Self
-            _description_
+            The object itself.
         """
         if about_point is None and about_edge is None:
             about_edge = ORIGIN
@@ -935,7 +935,7 @@ class Positionable:
         Returns
         -------
         Self
-            _description_
+            The object itself.
         """
         if isinstance(size, Positionable):
             size = size.get_dim_size(dim=dim)
@@ -1120,7 +1120,6 @@ class Positionable:
 
     def align_to(
         self,
-        # TODO: Rename to point
         point: "Point3DLike | Positionable",
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
@@ -1294,7 +1293,7 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
-        """TODO
+        """Poses at angle.
 
         Parameters
         ----------
@@ -1306,7 +1305,7 @@ class Positionable:
         Returns
         -------
         Self
-            _description_
+            The object itself.
         """
         return self.rotate(
             angle=TAU / 14,
