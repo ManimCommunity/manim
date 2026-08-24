@@ -219,6 +219,32 @@ def test_scene_play_adds_subcaption_with_explicit_duration(dry_run, monkeypatch)
     ]
 
 
+def test_scene_play_preserves_scene_add_subcaption_override(dry_run, monkeypatch):
+    subcaptions: list[tuple[str, float, float]] = []
+
+    class CustomSubcaptionScene(Scene):
+        def add_subcaption(
+            self, content: str, duration: float = 1, offset: float = 0
+        ) -> None:
+            subcaptions.append((content, duration, offset))
+
+    scene = CustomSubcaptionScene()
+    scene.renderer.time = 2.5
+    renderer_play = Mock(
+        side_effect=lambda *args, **kwargs: setattr(scene.renderer, "time", 4.5)
+    )
+    monkeypatch.setattr(scene.renderer, "play", renderer_play)
+
+    scene.play(
+        Wait(),
+        subcaption="Hello",
+        subcaption_duration=1.25,
+        subcaption_offset=0.25,
+    )
+
+    assert subcaptions == [("Hello", 1.25, -1.75)]
+
+
 def test_scene_play_uses_animation_duration_for_default_subcaption_after_skip(
     dry_run, monkeypatch
 ):

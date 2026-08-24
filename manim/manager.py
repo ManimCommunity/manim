@@ -229,7 +229,8 @@ class Manager(Generic[SceneT]):
                 subcaption_duration = run_time
             # The start of the subcaption needs to be offset by the run time
             # because it is added after the animation has already played.
-            self.add_subcaption(
+            # Route through Scene's public API to preserve its customization hook.
+            self.scene.add_subcaption(
                 content=subcaption,
                 duration=subcaption_duration,
                 offset=-run_time + subcaption_offset,
