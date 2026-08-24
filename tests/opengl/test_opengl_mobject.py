@@ -65,6 +65,17 @@ def test_opengl_mobject_remove(using_opengl_renderer):
     assert obj.remove(OpenGLMobject()) is obj
 
 
+def test_opengl_mobject_stretch_to_fit_depth(using_opengl_renderer):
+    """Test that stretch_to_fit_depth changes the depth dimension."""
+    obj = OpenGLMobject().set_points(
+        np.array([[-1.0, -2.0, -3.0], [1.0, 2.0, 3.0]]),
+    )
+
+    obj.stretch_to_fit_depth(12)
+
+    np.testing.assert_allclose([obj.width, obj.height, obj.depth], [2, 4, 12])
+
+
 def test_opengl_rotate_about_vertex_view(using_opengl_renderer):
     """Test that rotating about a vertex obtained from get_vertices() works correctly.
 
