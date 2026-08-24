@@ -28,74 +28,7 @@ from manim.utils.space_ops import rotation_matrix
 
 
 class Positionable:
-    """A positionable object.
-
-    ### Basics
-        - points
-        - (get|set)_points
-        -  get_points_defining_boundary
-    ### Applying Functions
-        - get_family
-        - apply_to_family
-        - apply_array_function
-        - apply_function
-        - apply_complex_function
-    ### Transformations
-        - apply_matrix
-        - translate
-        - rotate
-        - scale
-        - stretch
-    ### General
-        - get_bounding_box
-        - (get|set)_position
-            - (get|set)_(center|left|right|bottom|top|nadir|zenith)
-        - (get|set)_coordinate
-            - (get|set)_(x|y|z)
-        - (get|set)_dim_size
-            - (get|set)_(width|height|depth)
-    ### Specialized
-        - align_to
-            - align_on_border
-            - next_to (TODO)
-        - is_off_screen
-        - get_center_of_mass
-        - get_boundary_point
-        - shift_onto_screen
-    ### Aliases
-        - center = set_center(ORIGIN)
-        - flip
-        - length_over_dim
-        - move_to = set_position
-        - scale_to_fit = set_dim_size(stretch=False)
-            - scale_to_fit_(width|height|depth)
-        - stretch_to_fit = set_dim_size(stretch=True)
-            - stretch_to_fit_(width|height|depth)
-        - get_coord = get_coordinate
-        - get_critical_point = get_position
-        - get_edge_center = get_position
-        - get_corner = get_position
-        - pose_at_angle
-        - set_coordinate = set_coord
-        - shift = translate
-        - to_corner = align_on_border
-        - to_edge = align_on_border
-        - (width|height|depth)
-    ### Deprecated
-        - apply_points_function_about_point
-        - apply_function_to_position
-        - get_extremum_along_dim
-        - match_points
-        - match_coord
-        - match_(x|y|z)
-        - match_dim_size
-        - match_(width|height|depth)
-        - reduce_across_dimension
-        - rescale_to_fit
-        - rotate_about_origin
-        - stretch_about_point
-
-    """
+    """A positionable object."""
 
     ### FUNDAMENTALS ###
     points: Point3D_Array = np.array([])
