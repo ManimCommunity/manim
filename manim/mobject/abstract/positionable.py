@@ -1122,14 +1122,14 @@ class Positionable:
     def align_to(
         self,
         # TODO: Rename to point
-        mobject_or_point: "Positionable | Point3DLike",
+        mobject_or_point: "Point3DLike | Positionable",
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
         """Aligns the object onto a point.
 
         Parameters
         ----------
-        mobject_or_point : Positionable | Point3DLike
+        mobject_or_point : Point3DLike | Positionable
             The point.
         direction : Vector3DLike, optional
             TODO, by default ORIGIN
