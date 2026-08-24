@@ -379,8 +379,6 @@ class Positionable:
     def scale(
         self,
         factor: float,
-        # TODO: Remove this?
-        scale_stroke: bool = False,
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
@@ -1098,6 +1096,7 @@ class Positionable:
         direction: Vector3DLike,
         *,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
+        frame: Point3DLike | None = None,
     ) -> Self:
         """Aligns the object on a border.
 
@@ -1114,7 +1113,8 @@ class Positionable:
             The object itself.
         """
         # TODO: Make frame a parameter?
-        frame = (config.frame_x_radius, config.frame_y_radius, 0)
+        if frame is None:
+            frame = (config.frame_x_radius, config.frame_y_radius, 0)
         target = np.sign(direction) * frame - buff * np.asarray(direction)
         return self.align_to(target, direction=direction)
 
