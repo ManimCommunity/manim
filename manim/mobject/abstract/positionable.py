@@ -378,8 +378,7 @@ class Positionable:
 
     def scale(
         self,
-        # TODO: Rename to `factor`
-        scale_factor: float,
+        factor: float,
         # TODO: Remove this?
         scale_stroke: bool = False,
         *,
@@ -405,7 +404,7 @@ class Positionable:
             The object itself.
         """
         return self.apply_array_function(
-            function=lambda points: points.__imul__(scale_factor),
+            function=lambda points: points.__imul__(factor),
             about_point=about_point,
             about_edge=about_edge,
         )
@@ -955,7 +954,7 @@ class Positionable:
             )
         else:
             return self.scale(
-                scale_factor=factor,
+                factor=factor,
                 about_point=about_point,
                 about_edge=about_edge,
             )
@@ -1122,7 +1121,7 @@ class Positionable:
     def align_to(
         self,
         # TODO: Rename to point
-        mobject_or_point: "Point3DLike | Positionable",
+        point: "Point3DLike | Positionable",
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
         """Aligns the object onto a point.
@@ -1139,10 +1138,10 @@ class Positionable:
         Self
             The object itself.
         """
-        if isinstance(mobject_or_point, Positionable):
-            mobject_or_point = mobject_or_point.get_position(direction=direction)
+        if isinstance(point, Positionable):
+            point = point.get_position(direction=direction)
         source = self.get_critical_point(direction=direction)
-        target = np.where(direction == 0, source, mobject_or_point)
+        target = np.where(direction == 0, source, point)
         return self.shift(target - source)
 
     def is_off_screen(self) -> bool:

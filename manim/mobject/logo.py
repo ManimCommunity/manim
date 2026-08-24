@@ -186,7 +186,7 @@ class ManimBanner(VGroup):
 
     def scale(
         self,
-        scale_factor: float,
+        factor: float,
         scale_stroke: bool = False,
         *,
         about_point: Point3DLike | None = None,
@@ -204,17 +204,17 @@ class ManimBanner(VGroup):
         :class:`~.ManimBanner`
             The scaled banner.
         """
-        self.scale_factor *= scale_factor
+        self.scale_factor *= factor
         # Note: self.anim is only added to self after expand()
         if self.anim not in self.submobjects:
             self.anim.scale(
-                scale_factor,
+                factor,
                 scale_stroke,
                 about_point=about_point,
                 about_edge=about_edge,
             )
         return super().scale(
-            scale_factor, scale_stroke, about_point=about_point, about_edge=about_edge
+            factor, scale_stroke, about_point=about_point, about_edge=about_edge
         )
 
     @override_animation(Create)

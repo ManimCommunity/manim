@@ -292,14 +292,14 @@ class Typst(SVGMobject):
 
     def scale(
         self,
-        scale_factor: float,
+        factor: float,
         scale_stroke: bool = False,
         *,
         about_point: np.ndarray | None = None,
         about_edge: np.ndarray | None = None,
     ) -> Self:
         result = super().scale(
-            scale_factor,
+            factor,
             scale_stroke=scale_stroke,
             about_point=about_point,
             about_edge=about_edge,
