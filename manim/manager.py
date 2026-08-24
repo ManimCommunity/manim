@@ -27,11 +27,41 @@ SceneT = TypeVar("SceneT", bound="Scene")
 
 
 class Manager(Generic[SceneT]):
-    """Coordinate the lifecycle and renderer calls for a single scene.
+    """Coordinate the render lifecycle for a single scene.
 
-    This is deliberately a concrete orchestration object.  Renderer, camera, and
-    output ownership remain on :class:`~manim.scene.scene.Scene` and its renderer
-    for now.
+    A manager is attached to exactly one :class:`~manim.scene.scene.Scene`. It
+    coordinates the scene lifecycle, delegates animation playback to the current
+    renderer, and routes section, subcaption, and audio operations to the current
+    file writer. Calling :meth:`~manim.scene.scene.Scene.render` creates a manager
+    lazily when one has not already been attached.
+
+    Parameters
+    ----------
+    scene
+        The scene coordinated by this manager. A scene that already has a manager
+        cannot be attached to another one.
+
+    Attributes
+    ----------
+    scene
+        The managed scene.
+
+    Notes
+    -----
+    This class is the coordination boundary for an incremental render-flow
+    refactor. Renderer, camera, clock, and output ownership still remain on the
+    scene and renderer for compatibility. The :attr:`renderer`, :attr:`camera`,
+    :attr:`file_writer`, :attr:`time`, :attr:`num_plays`, and
+    :attr:`skip_animations` properties are forwarding views for now.
+
+    Examples
+    --------
+    A scene normally creates its manager when :meth:`~manim.scene.scene.Scene.render`
+    is called. It can also be attached explicitly::
+
+        scene = Scene()
+        manager = Manager(scene)
+        manager.render()
     """
 
     def __init__(self, scene: SceneT) -> None:
@@ -83,10 +113,25 @@ class Manager(Generic[SceneT]):
         self.renderer.skip_animations = value
 
     def render(self, preview: bool = False) -> bool:
-        """Render the manager's scene.
+        """Run the complete render lifecycle for the managed scene.
 
-        Returns ``True`` when an interactive rerun was requested, matching the
-        historical :meth:`Scene.render` return value.
+        The lifecycle invokes :meth:`setup`, :meth:`construct`,
+        :meth:`tear_down`, and :meth:`post_construct`, in that order. Reaching a
+        configured animation boundary ends construction normally. Exceptions
+        raised while constructing the scene abort active encoding jobs before
+        they are propagated.
+
+        Parameters
+        ----------
+        preview
+            Whether the rendered media should be opened after rendering.
+
+        Returns
+        -------
+        bool
+            ``True`` when an interactive rerun was requested; otherwise
+            ``False``. This matches the return value of
+            :meth:`~manim.scene.scene.Scene.render`.
         """
         self.setup()
         try:
@@ -123,17 +168,18 @@ class Manager(Generic[SceneT]):
         return False
 
     def setup(self) -> None:
-        """Run the scene's setup hook."""
+        """Run the managed scene's :meth:`~manim.scene.scene.Scene.setup` hook."""
         self.scene.setup()
 
     def construct(self) -> None:
-        """Run the scene's construct hook."""
+        """Run the managed scene's :meth:`~manim.scene.scene.Scene.construct` hook."""
         self.scene.construct()
 
     def post_construct(self) -> None:
-        """Finalize output after the scene's construction has completed.
+        """Finalize output after scene construction and tear-down.
 
-        This intentionally runs after :meth:`tear_down` to preserve main's
+        This asks the renderer to finish the scene and logs the number of played
+        animations. It intentionally runs after :meth:`tear_down` to preserve the
         established render lifecycle.
         """
         # We have to reset these settings in case of multiple renders.
@@ -146,7 +192,7 @@ class Manager(Generic[SceneT]):
             )
 
     def tear_down(self) -> None:
-        """Run the scene's tear-down hook."""
+        """Run the managed scene's :meth:`~manim.scene.scene.Scene.tear_down` hook."""
         self.scene.tear_down()
 
     def play(
@@ -157,7 +203,23 @@ class Manager(Generic[SceneT]):
         subcaption_offset: float = 0,
         **kwargs: Any,
     ) -> None:
-        """Coordinate an animation request and its optional subcaption."""
+        """Coordinate an animation request and its optional subcaption.
+
+        Parameters
+        ----------
+        args
+            Animations, mobjects, or animation builders passed by
+            :meth:`~manim.scene.scene.Scene.play`.
+        subcaption
+            Content to add to the external subcaption file for this play call.
+        subcaption_duration
+            Duration of the subcaption. When omitted, the elapsed animation time
+            is used.
+        subcaption_offset
+            Offset in seconds from the beginning of the play call.
+        kwargs
+            Additional animation arguments forwarded to the renderer.
+        """
         start_time = self.time
         self.renderer.play(self.scene, *args, **kwargs)
         run_time = self.time - start_time
@@ -179,13 +241,33 @@ class Manager(Generic[SceneT]):
         section_type: str = DefaultSectionType.NORMAL,
         skip_animations: bool = False,
     ) -> None:
-        """Create a new output section."""
+        """Create a new output section.
+
+        Parameters
+        ----------
+        name
+            The section name.
+        section_type
+            The section type stored in the section manifest.
+        skip_animations
+            Whether animation output in this section should be skipped.
+        """
         self.file_writer.next_section(name, section_type, skip_animations)
 
     def add_subcaption(
         self, content: str, duration: float = 1, offset: float = 0
     ) -> None:
-        """Add a subcaption at the current scene time."""
+        """Add a subcaption at the current scene time.
+
+        Parameters
+        ----------
+        content
+            The subcaption text.
+        duration
+            The duration in seconds for which the subcaption is displayed.
+        offset
+            The offset in seconds from the current scene time.
+        """
         subtitle = srt.Subtitle(
             index=len(self.file_writer.subcaptions),
             content=content,
@@ -201,7 +283,22 @@ class Manager(Generic[SceneT]):
         gain: float | None = None,
         **kwargs: Any,
     ) -> None:
-        """Add sound to the scene's output at the current scene time."""
+        """Add sound to the output at the current scene time.
+
+        No sound is added while animations are being skipped.
+
+        Parameters
+        ----------
+        sound_file
+            The path to the sound file.
+        time_offset
+            The offset in seconds from the current scene time.
+        gain
+            The gain adjustment applied to the sound.
+        kwargs
+            Additional arguments forwarded to
+            :meth:`~manim.scene.scene_file_writer.SceneFileWriter.add_sound`.
+        """
         if self.skip_animations:
             return
         self.file_writer.add_sound(sound_file, self.time + time_offset, gain, **kwargs)

@@ -145,9 +145,10 @@ class Scene:
     screen by calling :meth:`Scene.remove`.  All mobjects currently on screen are kept
     in :attr:`Scene.mobjects`.  Animations are played by calling :meth:`Scene.play`.
 
-    A :class:`Scene` is rendered internally by calling :meth:`Scene.render`.  This in
-    turn calls :meth:`Scene.setup`, :meth:`Scene.construct`, and
-    :meth:`Scene.tear_down`, in that order.
+    A :class:`Scene` is rendered internally by calling :meth:`Scene.render`. This
+    delegates the render lifecycle to a :class:`~manim.manager.Manager`, which calls
+    :meth:`Scene.setup`, :meth:`Scene.construct`, and :meth:`Scene.tear_down`, in
+    that order.
 
     It is not recommended to override the ``__init__`` method in user Scenes.  For code
     that should be ran before a Scene is rendered, use :meth:`Scene.setup` instead.
@@ -245,13 +246,20 @@ class Scene:
         return result
 
     def render(self, preview: bool = False) -> bool:
-        """
-        Renders this Scene.
+        """Render this scene through its :class:`~manim.manager.Manager`.
+
+        A manager is created and attached lazily if the scene does not already
+        have one.
 
         Parameters
-        ---------
+        ----------
         preview
-            If true, opens scene in a file viewer.
+            Whether to open the rendered media after rendering.
+
+        Returns
+        -------
+        bool
+            Whether an interactive rerun was requested.
         """
         return self._get_manager().render(preview)
 
