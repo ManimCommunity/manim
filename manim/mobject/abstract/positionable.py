@@ -65,6 +65,19 @@ class Positionable:
         Self
             The object itself.
 
+        Examples
+        --------
+        .. manim:: MatchPointsScene
+
+            class MatchPointsScene(Scene):
+                def construct(self):
+                    circ = Circle(fill_color=RED, fill_opacity=0.8)
+                    square = Square(fill_color=BLUE, fill_opacity=0.2)
+                    self.add(circ)
+                    self.wait(0.5)
+                    self.play(circ.animate.set_points(square))
+                    self.wait(0.5)
+
         See also
         --------
         :meth:`get_points`
@@ -158,6 +171,8 @@ class Positionable:
                 about_edge = ORIGIN
             about_point = self.get_position(direction=about_edge)
 
+        # TODO: Is this necessary?
+        # Make a copy to prevent mutation of the original array if about_point is a view
         about_point = np.array(about_point, copy=True)
 
         def apply(mob: Positionable) -> None:
@@ -228,6 +243,28 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        Example
+        -------
+
+        .. manim:: ApplyFuncExample
+
+            class ApplyFuncExample(Scene):
+                def construct(self):
+                    circ = Circle().scale(1.5)
+                    circ_ref = circ.copy()
+                    circ.apply_complex_function(
+                        lambda x: np.exp(x*1j)
+                    )
+                    t = ValueTracker(0)
+                    circ.add_updater(
+                        lambda x: x.become(circ_ref.copy().apply_complex_function(
+                            lambda x: np.exp(x+t.get_value()*1j)
+                        )).set_color(BLUE)
+                    )
+                    self.add(circ_ref)
+                    self.play(TransformFromCopy(circ_ref, circ))
+                    self.play(t.animate.set_value(TAU), run_time=3)
 
         See also
         --------
@@ -323,6 +360,37 @@ class Positionable:
         about_edge : Vector3DLike | None, optional
             The edge about which to apply the rotation., by default None
 
+        .. note::
+            To animate a rotation, use :class:`~.Rotating` or :class:`~.Rotate`
+            instead of ``.animate.rotate(...)``.
+            The ``.animate.rotate(...)`` syntax only applies a transformation
+            from the initial state to the final rotated state
+            (interpolation between the two states), without showing proper rotational motion
+            based on the angle (from 0 to the given angle).
+
+        Examples
+        --------
+
+        .. manim:: RotateMethodExample
+            :save_last_frame:
+
+            class RotateMethodExample(Scene):
+                def construct(self):
+                    circle = Circle(radius=1, color=BLUE)
+                    line = Line(start=ORIGIN, end=RIGHT)
+                    arrow1 = Arrow(start=ORIGIN, end=RIGHT, buff=0, color=GOLD)
+                    group1 = VGroup(circle, line, arrow1)
+
+                    group2 = group1.copy()
+                    arrow2 = group2[2]
+                    arrow2.rotate(angle=PI / 4, about_point=arrow2.get_start())
+
+                    group3 = group1.copy()
+                    arrow3 = group3[2]
+                    arrow3.rotate(angle=120 * DEGREES, about_point=arrow3.get_start())
+
+                    self.add(VGroup(group1, group2, group3).arrange(RIGHT, buff=1))
+
         Returns
         -------
         Self
@@ -361,6 +429,22 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        Examples
+        --------
+
+        .. manim:: MobjectScaleExample
+            :save_last_frame:
+
+            class MobjectScaleExample(Scene):
+                def construct(self):
+                    f1 = Text("F")
+                    f2 = Text("F").scale(2)
+                    f3 = Text("F").scale(0.5)
+                    f4 = Text("F").scale(-1)
+
+                    vgroup = VGroup(f1, f2, f3, f4).arrange(6 * RIGHT)
+                    self.add(vgroup)
 
         See also
         --------
@@ -1247,6 +1331,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        Examples:
+        mob1.align_to(mob2, UP) moves mob1 vertically so that its
+        top edge lines ups with mob2's top edge.
         """
         if isinstance(point, Positionable):
             point = point.get_position(direction=direction)
@@ -1387,6 +1475,19 @@ class Positionable:
         Self
             The object itself.
 
+        Examples
+        --------
+
+        .. manim:: FlipExample
+            :save_last_frame:
+
+            class FlipExample(Scene):
+                def construct(self):
+                    s= Line(LEFT, RIGHT+UP).shift(4*LEFT)
+                    self.add(s)
+                    s2= s.copy().flip()
+                    self.add(s2)
+
         See also
         --------
         :meth:`rotate`
@@ -1521,6 +1622,21 @@ class Positionable:
         Self
             The object itself.
 
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> sq = Square()
+            >>> sq.height
+            np.float64(2.0)
+            >>> sq.scale_to_fit_width(5)
+            Square
+            >>> sq.width
+            np.float64(5.0)
+            >>> sq.height
+            np.float64(5.0)
+
         See also
         --------
         :meth:`scale_to_fit`, :meth:`scale`, :meth:`set_width`
@@ -1554,6 +1670,21 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> sq = Square()
+            >>> sq.width
+            np.float64(2.0)
+            >>> sq.scale_to_fit_height(5)
+            Square
+            >>> sq.height
+            np.float64(5.0)
+            >>> sq.width
+            np.float64(5.0)
 
         See also
         --------
@@ -1659,6 +1790,21 @@ class Positionable:
         Self
             The object itself.
 
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> sq = Square()
+            >>> sq.height
+            np.float64(2.0)
+            >>> sq.stretch_to_fit_width(5)
+            Square
+            >>> sq.width
+            np.float64(5.0)
+            >>> sq.height
+            np.float64(2.0)
+
         See also
         --------
         :meth:`stretch_to_fit`, :meth:`stretch`, :meth:`set_width`
@@ -1691,6 +1837,21 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        Examples
+        --------
+        ::
+
+            >>> from manim import *
+            >>> sq = Square()
+            >>> sq.width
+            np.float64(2.0)
+            >>> sq.stretch_to_fit_height(5)
+            Square
+            >>> sq.height
+            np.float64(5.0)
+            >>> sq.width
+            np.float64(2.0)
 
         See also
         --------
@@ -1756,6 +1917,22 @@ class Positionable:
         Self
             The object itself.
 
+        Examples
+        --------
+
+        .. manim:: ToCornerExample
+            :save_last_frame:
+
+            class ToCornerExample(Scene):
+                def construct(self):
+                    c = Circle()
+                    c.to_corner(UR)
+                    t = Tex("To the corner!")
+                    t2 = MathTex("x^3").shift(DOWN)
+                    self.add(c,t,t2)
+                    t.to_corner(DL, buff=0)
+                    t2.to_corner(UL, buff=1.5)
+
         See also
         --------
         :meth:`align_on_border`
@@ -1782,6 +1959,22 @@ class Positionable:
         Self
             The object itself.
 
+        Examples
+        --------
+
+        .. manim:: ToEdgeExample
+            :save_last_frame:
+
+            class ToEdgeExample(Scene):
+                def construct(self):
+                    tex_top = Tex("I am at the top!")
+                    tex_top.to_edge(UP)
+                    tex_side = Tex("I am moving to the side!")
+                    c = Circle().shift(2*DOWN)
+                    self.add(tex_top, tex_side, c)
+                    tex_side.to_edge(LEFT)
+                    c.to_edge(RIGHT, buff=0)
+
         See also
         --------
         :meth:`align_on_border`
@@ -1791,6 +1984,22 @@ class Positionable:
     @property
     def width(self) -> float:
         """The width.
+
+        Examples
+        --------
+        .. manim:: WidthExample
+
+            class WidthExample(Scene):
+                def construct(self):
+                    decimal = DecimalNumber().to_edge(UP)
+                    rect = Rectangle(color=BLUE)
+                    rect_copy = rect.copy().set_stroke(GRAY, opacity=0.5)
+
+                    decimal.add_updater(lambda d: d.set_value(rect.width))
+
+                    self.add(rect_copy, rect, decimal)
+                    self.play(rect.animate.set(width=7))
+                    self.wait()
 
         See also
         --------
@@ -1805,6 +2014,22 @@ class Positionable:
     @property
     def height(self) -> float:
         """The height.
+
+        Examples
+        --------
+        .. manim:: HeightExample
+
+            class HeightExample(Scene):
+                def construct(self):
+                    decimal = DecimalNumber().to_edge(UP)
+                    rect = Rectangle(color=BLUE)
+                    rect_copy = rect.copy().set_stroke(GRAY, opacity=0.5)
+
+                    decimal.add_updater(lambda d: d.set_value(rect.height))
+
+                    self.add(rect_copy, rect, decimal)
+                    self.play(rect.animate.set(height=5))
+                    self.wait()
 
         See also
         --------
