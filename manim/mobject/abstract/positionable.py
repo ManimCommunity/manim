@@ -23,6 +23,7 @@ from manim.typing import (
     Point3DLike,
     Point3DLike_Array,
     Vector3DLike,
+    Vector3DLike_Array,
 )
 from manim.utils.space_ops import rotation_matrix
 
@@ -1218,13 +1219,15 @@ class Positionable:
         return self
 
     ### ALIASES ###
-    shift = translate
     get_critical_point = get_position
     get_edge_center = get_position
     get_corner = get_position
     length_over_dim = get_dim_size
     get_coord = get_coordinate
     set_coord = set_coordinate
+
+    def shift(self, *vectors: Vector3DLike_Array) -> Self:
+        return self.translate(np.sum(vectors, axis=0))
 
     def center(self) -> Self:
         return self.set_center(ORIGIN)
