@@ -13,7 +13,7 @@ import svgelements as se
 from manim import config, logger
 from manim.utils.color import ManimColor, ParsableManimColor
 
-from ...constants import RIGHT
+from ...constants import RIGHT, RendererType
 from ...utils.bezier import get_quadratic_approximation_of_cubic
 from ...utils.images import get_full_vector_image_path
 from ...utils.iterables import hash_obj
@@ -543,6 +543,15 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
         self.should_subdivide_sharp_curves = should_subdivide_sharp_curves
         self.should_remove_null_curves = should_remove_null_curves
 
+        if config.renderer == RendererType.OPENGL:
+            # OpenGLVMobject.__init__ takes these as parameters and would
+            # otherwise reset the attributes above to its own defaults.
+            kwargs.update(
+                long_lines=long_lines,
+                should_subdivide_sharp_curves=should_subdivide_sharp_curves,
+                should_remove_null_curves=should_remove_null_curves,
+            )
+
         super().__init__(**kwargs)
 
     def generate_points(self) -> Self:
@@ -550,7 +559,7 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
 
         self.handle_commands()
 
-        if config.renderer == "opengl":
+        if config.renderer == RendererType.OPENGL:
             if self.should_subdivide_sharp_curves:
                 # For a healthy triangulation later
                 self.subdivide_sharp_curves()
@@ -621,6 +630,10 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
                 move_pen(end)
 
             def add_line(start: np.ndarray, end: np.ndarray) -> None:
+                if self.long_lines:
+                    midpoint = (start + end) / 2
+                    add_quad(start, (start + midpoint) / 2, midpoint)
+                    start = midpoint
                 add_quad(start, (start + end) / 2, end)
                 move_pen(end)
 

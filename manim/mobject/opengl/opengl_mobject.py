@@ -1947,7 +1947,7 @@ class OpenGLMobject:
     def is_off_screen(self) -> bool:
         if self.get_left()[0] > config.frame_x_radius:
             return True
-        if self.get_right()[0] < config.frame_x_radius:
+        if self.get_right()[0] < -config.frame_x_radius:
             return True
         if self.get_bottom()[1] > config.frame_y_radius:
             return True
@@ -2004,7 +2004,7 @@ class OpenGLMobject:
 
     def stretch_to_fit_depth(self, depth: float, **kwargs: Any) -> Self:
         """Stretches the :class:`~.OpenGLMobject` to fit a depth, not keeping width/height proportional."""
-        return self.rescale_to_fit(depth, 1, stretch=True, **kwargs)
+        return self.rescale_to_fit(depth, 2, stretch=True, **kwargs)
 
     def set_width(
         self,
@@ -2384,10 +2384,7 @@ class OpenGLMobject:
 
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
         all_points = self.get_all_points()
-        boundary_directions = all_points - self.get_center()
-        norms = np.linalg.norm(boundary_directions, axis=1)
-        boundary_directions /= np.repeat(norms, 3).reshape((len(norms), 3))
-        index = np.argmax(np.dot(boundary_directions, direction))
+        index = np.argmax(np.dot(all_points, direction))
         return all_points[index]
 
     def get_continuous_bounding_box_point(self, direction: Vector3DLike) -> Point3D:

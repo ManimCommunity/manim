@@ -18,6 +18,14 @@ def test_graph_creation():
     assert str(G_directed) == "Directed graph on 4 vertices and 4 edges"
 
 
+@pytest.mark.parametrize("graph_class", [Graph, DiGraph])
+def test_empty_graph_creation(graph_class):
+    graph = graph_class([], [])
+
+    assert graph.vertices == {}
+    assert graph.edges == {}
+
+
 def test_graph_add_vertices():
     G = Graph([1, 2, 3], [(1, 2), (2, 3)])
     G.add_vertices(4)

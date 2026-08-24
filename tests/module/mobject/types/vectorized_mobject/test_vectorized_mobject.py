@@ -469,6 +469,28 @@ def test_vgroup_item_assignment_only_allows_vmobjects():
     )
 
 
+def test_vgroup_str_name():
+    """Test VGroup's string representation correctly includes class name"""
+
+    class VGroupSubclass(VGroup):
+        pass
+
+    for cls, name in (VGroup, "VGroup"), (VGroupSubclass, "VGroupSubclass"):
+        group = cls(VMobject())
+        expected = f"{name} of"
+        actual = str(group)
+        assert actual.startswith(expected), f"'{actual}'.startswith('{expected}')"
+
+
+def test_vgroup_str_pluralization():
+    """Test VGroup's string representation correctly pluralizes 'submobject(s)'"""
+    for i in (0, 1, 2):
+        group = VGroup(VMobject() for _ in range(i))
+        expected = f"of {i} {'submobject' if i == 1 else 'submobjects'}"
+        actual = str(group)
+        assert actual.endswith(expected), f"'{actual}'.endswith('{expected}')"
+
+
 def test_trim_dummy():
     o = VMobject()
     o.start_new_path(np.array([0, 0, 0]))

@@ -397,3 +397,25 @@ def test_vgroup_item_assignment_only_allows_vmobjects(using_opengl_renderer):
         "Only values of type OpenGLVMobject can be added as submobjects of "
         "VGroup, but the value invalid object (at index 0) is of type str."
     )
+
+
+def test_vgroup_str_name(using_opengl_renderer):
+    """Test VGroup's string representation correctly includes class name"""
+
+    class VGroupSubclass(VGroup):
+        pass
+
+    for cls, name in (VGroup, "VGroup"), (VGroupSubclass, "VGroupSubclass"):
+        group = cls(OpenGLVMobject())
+        expected = f"{name} of"
+        actual = str(group)
+        assert actual.startswith(expected), f"'{actual}'.startswith('{expected}')"
+
+
+def test_vgroup_str_pluralization(using_opengl_renderer):
+    """Test VGroup's string representation correctly pluralizes 'submobject(s)'"""
+    for i in (0, 1, 2):
+        group = VGroup(OpenGLVMobject() for _ in range(i))
+        expected = f"of {i} {'submobject' if i == 1 else 'submobjects'}"
+        actual = str(group)
+        assert actual.endswith(expected), f"'{actual}'.endswith('{expected}')"
