@@ -50,7 +50,7 @@ class Positionable:
         - get_bounding_box
         - (get|set)_position
             - (get|set)_(center|left|right|bottom|top|nadir|zenith)
-        - (get|set)_coord
+        - (get|set)_coordinate
             - (get|set)_(x|y|z)
         - (get|set)_dim_size
             - (get|set)_(width|height|depth)
@@ -71,10 +71,12 @@ class Positionable:
             - scale_to_fit_(width|height|depth)
         - stretch_to_fit = set_dim_size(stretch=True)
             - stretch_to_fit_(width|height|depth)
+        - get_coord = get_coordinate
         - get_critical_point = get_position
         - get_edge_center = get_position
         - get_corner = get_position
         - pose_at_angle
+        - set_coordinate = set_coord
         - shift = translate
         - to_corner = align_on_border
         - to_edge = align_on_border
@@ -99,12 +101,33 @@ class Positionable:
     points: Point3D_Array = np.array([])
 
     def get_points(self) -> Point3D_Array:
+        """Returns all points.
+
+        Returns
+        -------
+        Point3D_Array
+            All points.
+        """
         return np.concat([mob.points for mob in self.get_family()])
 
     def set_points(
         self,
         points: "Point3DLike_Array | Positionable",
     ) -> Self:
+        """Sets the points.
+
+        When another object is passed, the points of per family member is matched.
+
+        Parameters
+        ----------
+        points : Point3DLike_Array | Positionable
+            The points.
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         if isinstance(points, Positionable):
             for mob1, mob2 in zip(self.get_family(), points.get_family(), strict=False):
                 mob1.set_points(mob2.points.copy())
@@ -113,11 +136,19 @@ class Positionable:
         return self
 
     def get_points_defining_boundary(self) -> Point3D_Array:
+        """Returns all points defining the boundary.
+
+        Returns
+        -------
+        Point3D_Array
+            The points defining the boundary.
+        """
         return self.get_points()
 
     ### APPLYING FUNCTIONS ###
 
     def get_family(self) -> Iterable["Positionable"]:
+        """Returns all family members recursively."""
         yield self
 
     def apply_to_family(
@@ -126,6 +157,20 @@ class Positionable:
         *,
         only_with_points: bool = True,
     ) -> Self:
+        """Applies a function to every family member.
+
+        Parameters
+        ----------
+        function : Callable[[Positionable], Any]
+            The function to apply.
+        only_with_points : bool, optional
+            Whether to apply the function only to members with points., by default True
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         for mob in self.get_family():
             if only_with_points and len(mob.points) == 0:
                 continue
@@ -139,6 +184,22 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
+        """Applies a function to the points array.
+
+        Parameters
+        ----------
+        function : Callable[[Point3D_Array], Point3D_Array]
+            The function to apply.
+        about_point : Point3DLike | None, optional
+            The point about which to apply the function., by default None
+        about_edge : Vector3DLike | None, optional
+            The edge about which to apply the function., by default None
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         if about_point is None:
             if about_edge is None:
                 about_edge = ORIGIN
@@ -160,6 +221,22 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
+        """Applies a function to every point.
+
+        Parameters
+        ----------
+        function : Callable[[Point3D], Point3D]
+            The function to apply.
+        about_point : Point3DLike | None, optional
+            The point about which to apply the function., by default None
+        about_edge : Vector3DLike | None, optional
+            The edge about which to apply the function., by default None
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         if about_point is None and about_edge is None:
             about_point = ORIGIN
 
@@ -179,6 +256,23 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
+        """Applies a complex function to every point.
+
+        Parameters
+        ----------
+        function : Callable[[complex], complex]
+            The function to apply.
+        about_point : Point3DLike | None, optional
+            The point about which to apply the function., by default None
+        about_edge : Vector3DLike | None, optional
+            The edge about which to apply the function., by default None
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+
         def apply(point: Point3D) -> Point3D:
             x, y, z = point
             xy_complex = function(complex(x, y))
@@ -199,6 +293,22 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
+        """Applies a matrix to every point.
+
+        Parameters
+        ----------
+        matrix : MatrixMN
+            The matrix to apply.
+        about_point : Point3DLike | None, optional
+            The point about which to apply the matrix., by default None
+        about_edge : Vector3DLike | None, optional
+            The edge about which to apply the matrix., by default None
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         if about_point is None and about_edge is None:
             about_point = ORIGIN
         matrix = np.asarray(matrix)
@@ -213,6 +323,19 @@ class Positionable:
         return self
 
     def translate(self, vector: Vector3DLike) -> Self:
+        """Applies a translation.
+
+        Parameters
+        ----------
+        vector : Vector3DLike
+            The vector.
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+
         def function(mob: Positionable) -> None:
             mob.points += vector
 
@@ -226,6 +349,24 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
+        """Applies a rotation.
+
+        Parameters
+        ----------
+        angle : float
+            The angle.
+        axis : Vector3DLike, optional
+            The axis about which to apply the rotation., by default OUT
+        about_point : Point3DLike | None, optional
+            The point about which to apply the rotation., by default None
+        about_edge : Vector3DLike | None, optional
+            The edge about which to apply the rotation., by default None
+
+        Returns
+        -------
+        Self
+            _description_
+        """
         if about_point is None and about_edge is None:
             about_edge = ORIGIN
         return self.apply_matrix(
@@ -238,11 +379,30 @@ class Positionable:
         self,
         # TODO: Rename to `factor`
         scale_factor: float,
+        # TODO: Remove this?
         scale_stroke: bool = False,
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
+        """Applies a uniform scaling.
+
+        Parameters
+        ----------
+        scale_factor : float
+            The factor.
+        scale_stroke : bool, optional
+            Whether to scale the stroke width., by default False
+        about_point : Point3DLike | None, optional
+            The point about which to apply the scaling., by default None
+        about_edge : Vector3DLike | None, optional
+            The edge about which to apply the scaling., by default None
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.apply_array_function(
             function=lambda points: points.__imul__(scale_factor),
             about_point=about_point,
@@ -257,6 +417,25 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
+        """Applies a non-uniform scaling.
+
+        Parameters
+        ----------
+        factor : float
+            The factor.
+        dim : int
+            The dimension to scale.
+        about_point : Point3DLike | None, optional
+            The point about which to apply the stretching., by default None
+        about_edge : Vector3DLike | None, optional
+            The edge about which to apply the stretching., by default None
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+
         def function(points: Point3D_Array) -> Point3D_Array:
             points[:, dim] *= factor
             return points
@@ -270,6 +449,13 @@ class Positionable:
     ### GENERAL ###
 
     def get_bounding_box(self) -> tuple[Point3D, Point3D]:
+        """Returns the bounding box.
+
+        Returns
+        -------
+        tuple[Point3D, Point3D]
+            The bottom-left and top-right points.
+        """
         points = self.get_points_defining_boundary()
         if len(points) == 0:
             return (np.zeros(3), np.zeros(3))
@@ -281,6 +467,18 @@ class Positionable:
         self,
         direction: Vector3DLike = ORIGIN,
     ) -> Point3D:
+        """The position.
+
+        Parameters
+        ----------
+        direction : Vector3DLike, optional
+            TODO, by default ORIGIN
+
+        Returns
+        -------
+        Point3D
+            The position.
+        """
         direction = np.sign(direction)
         mins, maxs = self.get_bounding_box()
         mids = (mins + maxs) / 2
@@ -291,8 +489,25 @@ class Positionable:
         point: "Point3DLike | Positionable",
         *,
         aligned_edge: Vector3DLike = ORIGIN,
+        # TODO: Remove this?
         coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
+        """Sets the position.
+
+        Parameters
+        ----------
+        point : Point3DLike | Positionable
+            The point.
+        aligned_edge : Vector3DLike, optional
+            Which edge to position., by default ORIGIN
+        coor_mask : Vector3DLike, optional
+            TODO, by default [1, 1, 1]
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         if isinstance(point, Positionable):
             point = point.get_position(direction=aligned_edge)
         current = self.get_position(direction=aligned_edge)
@@ -300,6 +515,13 @@ class Positionable:
         return self.translate(vector=vector)
 
     def get_center(self) -> Point3D:
+        """Returns the center position.
+
+        Returns
+        -------
+        Point3D
+            The center position.
+        """
         return self.get_position(direction=ORIGIN)
 
     def set_center(
@@ -308,9 +530,30 @@ class Positionable:
         *,
         coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
+        """Sets the center position.
+
+        Parameters
+        ----------
+        center : Point3DLike | Positionable
+            The center position.
+        coor_mask : Vector3DLike, optional
+            TODO, by default np.array([1, 1, 1])
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.set_position(point=center, aligned_edge=ORIGIN, coor_mask=coor_mask)
 
     def get_left(self) -> Point3D:
+        """Returns the left position.
+
+        Returns
+        -------
+        Point3D
+            The left position.
+        """
         return self.get_position(direction=LEFT)
 
     def set_left(
@@ -319,9 +562,24 @@ class Positionable:
         *,
         coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
+        """Sets the left position.
+
+        Parameters
+        ----------
+        left : Point3DLike | Positionable
+            The left position.
+        coor_mask : Vector3DLike, optional
+            TODO, by default np.array([1, 1, 1])
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.set_position(point=left, aligned_edge=LEFT, coor_mask=coor_mask)
 
     def get_right(self) -> Point3D:
+        """Returns the right position."""
         return self.get_position(direction=RIGHT)
 
     def set_right(
@@ -330,9 +588,30 @@ class Positionable:
         *,
         coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
+        """Sets the right position.
+
+        Parameters
+        ----------
+        right : Point3DLike | Positionable
+            The right position.
+        coor_mask : Vector3DLike, optional
+            TODO, by default np.array([1, 1, 1])
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.set_position(point=right, aligned_edge=RIGHT, coor_mask=coor_mask)
 
     def get_bottom(self) -> Point3D:
+        """Returns the bottom position.
+
+        Returns
+        -------
+        Point3D
+            The bottom position.
+        """
         return self.get_position(direction=DOWN)
 
     def set_bottom(
@@ -341,9 +620,30 @@ class Positionable:
         *,
         coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
+        """Sets the bottom position.
+
+        Parameters
+        ----------
+        bottom : Point3DLike | Positionable
+            The bottom position.
+        coor_mask : Vector3DLike, optional
+            TODO, by default np.array([1, 1, 1])
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.set_position(point=bottom, aligned_edge=DOWN, coor_mask=coor_mask)
 
     def get_top(self) -> Point3D:
+        """Returns the top position.
+
+        Returns
+        -------
+        Point3D
+            The top position.
+        """
         return self.get_position(direction=UP)
 
     def set_top(
@@ -352,9 +652,30 @@ class Positionable:
         *,
         coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
+        """Sets the top position.
+
+        Parameters
+        ----------
+        top : Point3DLike | Positionable
+            The top position.
+        coor_mask : Vector3DLike, optional
+            TODO, by default np.array([1, 1, 1])
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.set_position(point=top, aligned_edge=UP, coor_mask=coor_mask)
 
     def get_nadir(self) -> Point3D:
+        """Returns the nadir position.
+
+        Returns
+        -------
+        Point3D
+            The  nadir position.
+        """
         return self.get_position(direction=IN)
 
     def set_nadir(
@@ -363,9 +684,30 @@ class Positionable:
         *,
         coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
+        """Sets the nadir position.
+
+        Parameters
+        ----------
+        nadir : Point3DLike | Positionable
+            The nadir position.
+        coor_mask : Vector3DLike, optional
+            TODO, by default np.array([1, 1, 1])
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.set_position(point=nadir, aligned_edge=IN, coor_mask=coor_mask)
 
     def get_zenith(self) -> Point3D:
+        """Returns the zenith position.
+
+        Returns
+        -------
+        Point3D
+            The zenith position.
+        """
         return self.get_position(direction=OUT)
 
     def set_zenith(
@@ -374,13 +716,41 @@ class Positionable:
         *,
         coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
+        """Sets the zenith position.
+
+        Parameters
+        ----------
+        zenith : Point3DLike | Positionable
+            The zenith position.
+        coor_mask : Vector3DLike, optional
+            TODO, by default np.array([1, 1, 1])
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.set_position(point=zenith, aligned_edge=OUT, coor_mask=coor_mask)
 
-    def get_coord(
+    def get_coordinate(
         self,
         dim: int,
         direction: Vector3DLike = ORIGIN,
     ) -> float:
+        """Returns the coordinate of a dimension.
+
+        Parameters
+        ----------
+        dim : int
+            The dimension.
+        direction : Vector3DLike, optional
+            TODO, by default ORIGIN
+
+        Returns
+        -------
+        float
+            The coordinate.
+        """
         points = self.get_points()
         if len(points) == 0:
             return 0
@@ -395,38 +765,144 @@ class Positionable:
             else values.max()
         )
 
-    def set_coord(
+    def set_coordinate(
         self,
         value: "float | Positionable",
         dim: int,
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
+        """Sets the coordinate of a dimension.
+
+        Parameters
+        ----------
+        value : float | Positionable
+            The coordinate.
+        dim : int
+            The dimension.
+        direction : Vector3DLike, optional
+            TODO, by default ORIGIN
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         if isinstance(value, Positionable):
-            value = value.get_coord(dim=dim, direction=direction)
-        current = self.get_coord(dim=dim, direction=direction)
+            value = value.get_coordinate(dim=dim, direction=direction)
+        current = self.get_coordinate(dim=dim, direction=direction)
         vector = np.zeros(3)
         vector[dim] = value - current
         return self.translate(vector=vector)
 
     def get_x(self, direction: Vector3DLike = ORIGIN) -> float:
-        return self.get_coord(dim=0, direction=direction)
+        """Returns the x coordinate.
+
+        Parameters
+        ----------
+        direction : Vector3DLike, optional
+            TODO, by default ORIGIN
+
+        Returns
+        -------
+        float
+            The x coordinate.
+        """
+        return self.get_coordinate(dim=0, direction=direction)
 
     def set_x(self, x: float, direction: Vector3DLike = ORIGIN) -> Self:
-        return self.set_coord(value=x, dim=0, direction=direction)
+        """Sets the x coordinate.
+
+        Parameters
+        ----------
+        x : float
+            The x coordinate.
+        direction : Vector3DLike, optional
+            TODO, by default ORIGIN
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+        return self.set_coordinate(value=x, dim=0, direction=direction)
 
     def get_y(self, direction: Vector3DLike = ORIGIN) -> float:
-        return self.get_coord(dim=1, direction=direction)
+        """Returns the y coordinate.
+
+        Parameters
+        ----------
+        direction : Vector3DLike, optional
+            TODO, by default ORIGIN
+
+        Returns
+        -------
+        float
+            The y coordinate.
+        """
+        return self.get_coordinate(dim=1, direction=direction)
 
     def set_y(self, y: float, direction: Vector3DLike = ORIGIN) -> Self:
-        return self.set_coord(value=y, dim=1, direction=direction)
+        """Sets the y coordinate.
+
+        Parameters
+        ----------
+        y : float
+            The y coordinate.
+        direction : Vector3DLike, optional
+            TODO, by default ORIGIN
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+        return self.set_coordinate(value=y, dim=1, direction=direction)
 
     def get_z(self, direction: Vector3DLike = ORIGIN) -> float:
-        return self.get_coord(dim=2, direction=direction)
+        """Returns the z coordinate.
+
+        Parameters
+        ----------
+        direction : Vector3DLike, optional
+            TODO, by default ORIGIN
+
+        Returns
+        -------
+        float
+            The z coordinate.
+        """
+        return self.get_coordinate(dim=2, direction=direction)
 
     def set_z(self, z: float, direction: Vector3DLike = ORIGIN) -> Self:
-        return self.set_coord(value=z, dim=2, direction=direction)
+        """Sets the z coordinate.
+
+        Parameters
+        ----------
+        z : float
+            The z coordinate.
+        direction : Vector3DLike, optional
+            TODO, by default ORIGIN
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+        return self.set_coordinate(value=z, dim=2, direction=direction)
 
     def get_dim_size(self, dim: int) -> float:
+        """Returns the size of a dimension.
+
+        Parameters
+        ----------
+        dim : int
+            The dimension.
+
+        Returns
+        -------
+        float
+            The size of the dimension.
+        """
         points = self.get_points()
         if len(points) == 0:
             return 0
@@ -441,6 +917,26 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
+        """Sets the size of a dimension.
+
+        Parameters
+        ----------
+        size : float | Positionable
+            The size.
+        dim : int
+            The dimension.
+        stretch : bool, optional
+            Whether to use non-uniform or uniform scaling., by default False
+        about_point : Point3DLike | None, optional
+            The point about which the scaling is applied., by default None
+        about_edge : Vector3DLike | None, optional
+            The edge about which the scaling is applied., by default None
+
+        Returns
+        -------
+        Self
+            _description_
+        """
         if isinstance(size, Positionable):
             size = size.get_dim_size(dim=dim)
 
@@ -464,6 +960,13 @@ class Positionable:
             )
 
     def get_width(self) -> float:
+        """Returns the width.
+
+        Returns
+        -------
+        float
+            The width.
+        """
         return self.get_dim_size(dim=0)
 
     def set_width(
@@ -474,6 +977,24 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
+        """Sets the width.
+
+        Parameters
+        ----------
+        width : float | Positionable
+            The width.
+        stretch : bool, optional
+            Whether to use non-uniform or uniform scaling., by default False
+        about_point : Point3DLike | None, optional
+            The point about which the scaling is applied., by default None
+        about_edge : Vector3DLike | None, optional
+            The edge about which the scaling is applied., by default None
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.set_dim_size(
             size=width,
             dim=0,
@@ -483,6 +1004,13 @@ class Positionable:
         )
 
     def get_height(self) -> float:
+        """Returns the height.
+
+        Returns
+        -------
+        float
+            The height.
+        """
         return self.get_dim_size(dim=1)
 
     def set_height(
@@ -493,6 +1021,24 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
+        """Sets the height.
+
+        Parameters
+        ----------
+        height : float | Positionable
+            The height.
+        stretch : bool, optional
+            Whether to use non-uniform or uniform scaling., by default False
+        about_point : Point3DLike | None, optional
+            The point about which the scaling is applied., by default None
+        about_edge : Vector3DLike | None, optional
+            The edge about which the scaling is applied., by default None
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.set_dim_size(
             size=height,
             dim=1,
@@ -502,6 +1048,13 @@ class Positionable:
         )
 
     def get_depth(self) -> float:
+        """Returns the depth.
+
+        Returns
+        -------
+        float
+            The depth.
+        """
         return self.get_dim_size(dim=2)
 
     def set_depth(
@@ -512,6 +1065,24 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
+        """Sets the depth.
+
+        Parameters
+        ----------
+        depth : float | Positionable
+            The depth.
+        stretch : bool, optional
+            Whether to use non-uniform or uniform scaling., by default False
+        about_point : Point3DLike | None, optional
+            The point about which the scaling is applied., by default None
+        about_edge : Vector3DLike | None, optional
+            The edge about which the scaling is applied., by default None
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.set_dim_size(
             size=depth,
             dim=2,
@@ -528,6 +1099,21 @@ class Positionable:
         *,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
     ) -> Self:
+        """Aligns the object on a border.
+
+        Parameters
+        ----------
+        direction : Vector3DLike
+            Which border to align to.
+        buff : float, optional
+            The buff., by default DEFAULT_MOBJECT_TO_EDGE_BUFFER
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+        # TODO: Make frame a parameter?
         frame = (config.frame_x_radius, config.frame_y_radius, 0)
         target = np.sign(direction) * frame - buff * np.asarray(direction)
         return self.align_to(target, direction=direction)
@@ -538,6 +1124,20 @@ class Positionable:
         mobject_or_point: "Positionable | Point3DLike",
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
+        """Aligns the object onto a point.
+
+        Parameters
+        ----------
+        mobject_or_point : Positionable | Point3DLike
+            The point.
+        direction : Vector3DLike, optional
+            TODO, by default ORIGIN
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         if isinstance(mobject_or_point, Positionable):
             mobject_or_point = mobject_or_point.get_position(direction=direction)
         source = self.get_critical_point(direction=direction)
@@ -545,6 +1145,13 @@ class Positionable:
         return self.shift(target - source)
 
     def is_off_screen(self) -> bool:
+        """Returns whether this is off screen.
+
+        Returns
+        -------
+        bool
+            Is off screen.
+        """
         mins, maxs = self.get_bounding_box()
         return (  # type: ignore[return-value]
             mins[0] > config.frame_x_radius
@@ -554,12 +1161,31 @@ class Positionable:
         )
 
     def get_center_of_mass(self) -> Point3D:
+        """Returns the center of mass.
+
+        Returns
+        -------
+        Point3D
+            The center of mass.
+        """
         points = self.get_points()
         if len(points) == 0:
             return ORIGIN
         return points.mean(axis=0)
 
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
+        """Returns a boundary point.
+
+        Parameters
+        ----------
+        direction : Vector3DLike
+            TODO
+
+        Returns
+        -------
+        Point3D
+            The boundary point.
+        """
         points = self.get_points_defining_boundary()
         index = np.argmax(points.dot(direction))
         return points[index]
@@ -569,6 +1195,18 @@ class Positionable:
         *,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
     ) -> Self:
+        """Shifts onto screen.
+
+        Parameters
+        ----------
+        buff : float, optional
+            The buff., by default DEFAULT_MOBJECT_TO_EDGE_BUFFER
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         # TODO: Simplify implementation
         space_lengths = [config.frame_x_radius, config.frame_y_radius]
         for vect in UP, DOWN, LEFT, RIGHT:
@@ -585,6 +1223,8 @@ class Positionable:
     get_edge_center = get_position
     get_corner = get_position
     length_over_dim = get_dim_size
+    get_coord = get_coordinate
+    set_coord = set_coordinate
 
     def center(self) -> Self:
         return self.set_center(ORIGIN)
@@ -596,6 +1236,22 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
+        """Flips.
+
+        Parameters
+        ----------
+        axis : Vector3DLike, optional
+            The axis about which to flip., by default UP
+        about_point : Point3DLike | None, optional
+            The point about which to flip., by default None
+        about_edge : Vector3DLike | None, optional
+            The edge about which to flip., by default None
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.rotate(
             TAU / 2,
             axis,
@@ -609,6 +1265,22 @@ class Positionable:
         aligned_edge: Vector3DLike = ORIGIN,
         coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
+        """Moves to a position.
+
+        Parameters
+        ----------
+        point_or_mobject : Point3DLike | Positionable
+            The point.
+        aligned_edge : Vector3DLike, optional
+            Which edge to position., by default ORIGIN
+        coor_mask : Vector3DLike, optional
+            TODO, by default [1, 1, 1]
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.set_position(
             point=point_or_mobject,
             aligned_edge=aligned_edge,
@@ -620,6 +1292,20 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
+        """TODO
+
+        Parameters
+        ----------
+        about_point : Point3DLike | None, optional
+            The point about which to pose., by default None
+        about_edge : Vector3DLike | None, optional
+            The edge about which to pose., by default None
+
+        Returns
+        -------
+        Self
+            _description_
+        """
         return self.rotate(
             angle=TAU / 14,
             axis=RIGHT + UP,
@@ -635,6 +1321,24 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
+        """Scales to fit a size for a dimension.
+
+        Parameters
+        ----------
+        size : float
+            The size.
+        dim : int
+            The dimension.
+        about_point : Point3DLike | None, optional
+            The point about which to scale., by default None
+        about_edge : Vector3DLike | None, optional
+            The edge about which to scale., by default None
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.set_dim_size(
             size=size,
             dim=dim,
@@ -650,6 +1354,22 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
+        """Scales to fit a width.
+
+        Parameters
+        ----------
+        width : float
+            The width.
+        about_point : Point3DLike | None, optional
+            The point about which scale., by default None
+        about_edge : Vector3DLike | None, optional
+            The point about which to scale., by default None
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.scale_to_fit(
             size=width,
             dim=0,
@@ -664,6 +1384,22 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
+        """Scales to fit a jeight.
+
+        Parameters
+        ----------
+        height : float
+            The height.
+        about_point : Point3DLike | None, optional
+            The point about which scale., by default None
+        about_edge : Vector3DLike | None, optional
+            The point about which to scale., by default None
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.scale_to_fit(
             size=height,
             dim=1,
@@ -678,6 +1414,22 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
+        """Scales to fit a depth.
+
+        Parameters
+        ----------
+        depth : float
+            The depth.
+        about_point : Point3DLike | None, optional
+            The point about which scale., by default None
+        about_edge : Vector3DLike | None, optional
+            The point about which to scale., by default None
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.scale_to_fit(
             size=depth,
             dim=2,
@@ -692,6 +1444,24 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
+        """Stretches to fit the size of a dimension.
+
+        Parameters
+        ----------
+        size : float
+            The size.
+        dim : int
+            The dimension.
+        about_point : Point3DLike | None, optional
+            The point about which to stretch., by default None
+        about_edge : Vector3DLike | None, optional
+            The edge about which to stretch., by default None
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.set_dim_size(
             size=size,
             dim=dim,
@@ -706,6 +1476,22 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
+        """Stretches to fit a width.
+
+        Parameters
+        ----------
+        width : float
+            The width.
+        about_point : Point3DLike | None, optional
+            The point about which to stretch., by default None
+        about_edge : Vector3DLike | None, optional
+            The edge about which to stretch., by default None
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.stretch_to_fit(
             size=width,
             dim=0,
@@ -719,6 +1505,22 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
+        """Stretches to fit a height.
+
+        Parameters
+        ----------
+        height : float
+            The height.
+        about_point : Point3DLike | None, optional
+            The point about which to stretch., by default None
+        about_edge : Vector3DLike | None, optional
+            The edge about which to stretch., by default None
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.stretch_to_fit(
             size=height,
             dim=1,
@@ -732,6 +1534,22 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
+        """Stretches to fit a depth.
+
+        Parameters
+        ----------
+        depth : float
+            The depth.
+        about_point : Point3DLike | None, optional
+            The point about which to stretch., by default None
+        about_edge : Vector3DLike | None, optional
+            The edge about which to stretch., by default None
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.stretch_to_fit(
             size=depth,
             dim=2,
@@ -745,6 +1563,20 @@ class Positionable:
         *,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
     ) -> Self:
+        """Aligns to a corner.
+
+        Parameters
+        ----------
+        corner : Vector3DLike, optional
+            The corner., by default DL
+        buff : float, optional
+            The buff., by default DEFAULT_MOBJECT_TO_EDGE_BUFFER
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.align_on_border(direction=corner, buff=buff)
 
     def to_edge(
@@ -753,37 +1585,57 @@ class Positionable:
         *,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
     ) -> Self:
+        """Aligns to an edge.
+
+        Parameters
+        ----------
+        edge : Vector3DLike, optional
+            The edge., by default LEFT
+        buff : float, optional
+            The buff., by default DEFAULT_MOBJECT_TO_EDGE_BUFFER
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.align_on_border(direction=edge, buff=buff)
 
     @property
     def width(self) -> float:
+        """The width."""
         return self.get_width()
 
     @width.setter
     def width(self, value: float) -> None:
+        """The width."""
         self.set_width(width=value)
 
     @property
     def height(self) -> float:
+        """The height."""
         return self.get_height()
 
     @height.setter
     def height(self, value: float) -> None:
+        """The height."""
         self.set_height(height=value)
 
     @property
     def depth(self) -> float:
+        """The depth."""
         return self.get_depth()
 
     @depth.setter
     def depth(self, value: float) -> None:
+        """The depth."""
         self.set_depth(depth=value)
 
     ### DEPRECATED ###
 
     apply_points_function_about_point = apply_array_function
     match_points = set_points
-    match_coord = set_coord
+    match_coord = set_coordinate
     match_x = set_x
     match_y = set_y
     match_z = set_z
