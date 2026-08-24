@@ -3019,17 +3019,15 @@ class OpenGLMobject:
         if not self.has_points():
             caller_name = sys._getframe(1).f_code.co_name
             cls = type(self).__name__
-            drawn = [m for m in self.submobjects if m.has_points()]
-            hint = ""
-            if drawn:
-                hint = (
-                    f" This {cls} has no points of its own, but "
-                    f"{len(drawn)} of its {len(self.submobjects)} submobjects "
-                    f"do. Did you mean to pass one of them?"
+            message = f"Cannot call {cls}.{caller_name} because {self!r} has no points."
+            pointful_family_members = self.family_members_with_points()
+            if pointful_family_members:
+                count = len(pointful_family_members)
+                message += (
+                    f" Its family contains {count} "
+                    f"mobject{'' if count == 1 else 's'} with points."
                 )
-            raise ValueError(
-                f"Cannot call {cls}.{caller_name} for a {cls} with no points." + hint,
-            )
+            raise ValueError(message)
 
 
 class OpenGLGroup(OpenGLMobject):
