@@ -590,8 +590,6 @@ class Positionable:
     def set_center(
         self,
         center: "Point3DLike | Positionable",
-        *,
-        coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
         """Sets the center position.
 
@@ -599,8 +597,6 @@ class Positionable:
         ----------
         center : Point3DLike | Positionable
             The center position.
-        coor_mask : Vector3DLike, optional
-            TODO, by default np.array([1, 1, 1])
 
         Returns
         -------
@@ -611,7 +607,7 @@ class Positionable:
         --------
         :meth:`get_center`, :meth:`set_position`
         """
-        return self.set_position(point=center, aligned_edge=ORIGIN, coor_mask=coor_mask)
+        return self.set_position(point=center, aligned_edge=ORIGIN)
 
     def get_left(self) -> Point3D:
         """Returns the left position.
@@ -630,8 +626,6 @@ class Positionable:
     def set_left(
         self,
         left: "Point3DLike | Positionable",
-        *,
-        coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
         """Sets the left position.
 
@@ -639,8 +633,6 @@ class Positionable:
         ----------
         left : Point3DLike | Positionable
             The left position.
-        coor_mask : Vector3DLike, optional
-            TODO, by default np.array([1, 1, 1])
 
         Returns
         -------
@@ -651,7 +643,7 @@ class Positionable:
         --------
         :meth:`get_left`, :meth:`set_position`
         """
-        return self.set_position(point=left, aligned_edge=LEFT, coor_mask=coor_mask)
+        return self.set_position(point=left, aligned_edge=LEFT)
 
     def get_right(self) -> Point3D:
         """Returns the right position.
@@ -670,8 +662,6 @@ class Positionable:
     def set_right(
         self,
         right: "Point3DLike | Positionable",
-        *,
-        coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
         """Sets the right position.
 
@@ -679,8 +669,6 @@ class Positionable:
         ----------
         right : Point3DLike | Positionable
             The right position.
-        coor_mask : Vector3DLike, optional
-            TODO, by default np.array([1, 1, 1])
 
         Returns
         -------
@@ -691,7 +679,7 @@ class Positionable:
         --------
         :meth:`get_right`, :meth:`set_position`
         """
-        return self.set_position(point=right, aligned_edge=RIGHT, coor_mask=coor_mask)
+        return self.set_position(point=right, aligned_edge=RIGHT)
 
     def get_bottom(self) -> Point3D:
         """Returns the bottom position.
@@ -710,8 +698,6 @@ class Positionable:
     def set_bottom(
         self,
         bottom: "Point3DLike | Positionable",
-        *,
-        coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
         """Sets the bottom position.
 
@@ -719,8 +705,6 @@ class Positionable:
         ----------
         bottom : Point3DLike | Positionable
             The bottom position.
-        coor_mask : Vector3DLike, optional
-            TODO, by default np.array([1, 1, 1])
 
         Returns
         -------
@@ -731,7 +715,7 @@ class Positionable:
         --------
         :meth:`get_bottom`, :meth:`set_position`
         """
-        return self.set_position(point=bottom, aligned_edge=DOWN, coor_mask=coor_mask)
+        return self.set_position(point=bottom, aligned_edge=DOWN)
 
     def get_top(self) -> Point3D:
         """Returns the top position.
@@ -750,8 +734,6 @@ class Positionable:
     def set_top(
         self,
         top: "Point3DLike | Positionable",
-        *,
-        coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
         """Sets the top position.
 
@@ -759,8 +741,6 @@ class Positionable:
         ----------
         top : Point3DLike | Positionable
             The top position.
-        coor_mask : Vector3DLike, optional
-            TODO, by default np.array([1, 1, 1])
 
         Returns
         -------
@@ -771,7 +751,7 @@ class Positionable:
         --------
         :meth:`get_top`, :meth:`set_position`
         """
-        return self.set_position(point=top, aligned_edge=UP, coor_mask=coor_mask)
+        return self.set_position(point=top, aligned_edge=UP)
 
     def get_nadir(self) -> Point3D:
         """Returns the nadir position.
@@ -790,8 +770,6 @@ class Positionable:
     def set_nadir(
         self,
         nadir: "Point3DLike | Positionable",
-        *,
-        coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
         """Sets the nadir position.
 
@@ -799,8 +777,6 @@ class Positionable:
         ----------
         nadir : Point3DLike | Positionable
             The nadir position.
-        coor_mask : Vector3DLike, optional
-            TODO, by default np.array([1, 1, 1])
 
         Returns
         -------
@@ -811,7 +787,7 @@ class Positionable:
         --------
         :meth:`get_nadir`, :meth:`set_position`
         """
-        return self.set_position(point=nadir, aligned_edge=IN, coor_mask=coor_mask)
+        return self.set_position(point=nadir, aligned_edge=IN)
 
     def get_zenith(self) -> Point3D:
         """Returns the zenith position.
@@ -830,8 +806,6 @@ class Positionable:
     def set_zenith(
         self,
         zenith: "Point3DLike | Positionable",
-        *,
-        coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
         """Sets the zenith position.
 
@@ -839,8 +813,6 @@ class Positionable:
         ----------
         zenith : Point3DLike | Positionable
             The zenith position.
-        coor_mask : Vector3DLike, optional
-            TODO, by default np.array([1, 1, 1])
 
         Returns
         -------
@@ -851,7 +823,7 @@ class Positionable:
         --------
         :meth:`get_zenith`, :meth:`set_position`
         """
-        return self.set_position(point=zenith, aligned_edge=OUT, coor_mask=coor_mask)
+        return self.set_position(point=zenith, aligned_edge=OUT)
 
     def get_coordinate(
         self,
