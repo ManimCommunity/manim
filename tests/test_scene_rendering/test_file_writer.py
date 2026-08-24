@@ -259,3 +259,24 @@ def test_clean_cache_tolerates_vanishing_files(config, tmp_path, monkeypatch):
         writer.clean_cache()
 
         assert not survivor.exists()
+
+
+def test_clean_cache_does_not_evict_for_vanished_file(config, tmp_path, monkeypatch):
+    with tempconfig({"media_dir": tmp_path, "write_to_movie": True}):
+        writer = _new_file_writer("VanishedFileEvictionScene")
+        cache_dir = writer.partial_movie_directory
+
+        survivors = [cache_dir / f"{index:05}.mp4" for index in range(2)]
+        for survivor in survivors:
+            survivor.touch()
+        ghost = cache_dir / "00002.mp4"
+        monkeypatch.setattr(
+            writer,
+            "_cached_partial_movie_files",
+            lambda: [*survivors, ghost],
+        )
+
+        config.max_files_cached = len(survivors)
+        writer.clean_cache()
+
+        assert all(survivor.exists() for survivor in survivors)

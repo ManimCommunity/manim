@@ -1081,11 +1081,11 @@ class SceneFileWriter:
             def access_time(path: Path) -> float:
                 try:
                     return path.stat().st_atime
-                except OSError:
+                except FileNotFoundError:
                     # The file vanished between listing the directory and
-                    # now; sort it last and let unlink(missing_ok=True)
-                    # handle its deletion.
-                    return float("inf")
+                    # now; sort it first and let unlink(missing_ok=True)
+                    # handle its deletion without evicting an existing file.
+                    return float("-inf")
 
             oldest_files_to_delete = sorted(
                 cached_partial_movies,
