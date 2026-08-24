@@ -1113,7 +1113,6 @@ class Positionable:
         Self
             The object itself.
         """
-        # TODO: Make frame a parameter?
         if frame is None:
             frame = (config.frame_x_radius, config.frame_y_radius, 0)
         target = np.sign(direction) * frame - buff * np.asarray(direction)
