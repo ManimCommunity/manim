@@ -1630,7 +1630,6 @@ class OpenGLMobject:
     def scale(
         self,
         scale_factor: float,
-        *,
         about_point: Point3DLike | None = None,
         about_edge: Point3DLike | None = ORIGIN,
         **_kwargs: object,
