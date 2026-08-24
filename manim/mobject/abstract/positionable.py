@@ -1107,6 +1107,8 @@ class Positionable:
             Which border to align to.
         buff : float, optional
             The buff., by default DEFAULT_MOBJECT_TO_EDGE_BUFFER
+        frame : Point3DLike | None, optional
+            The frame., by default None
 
         Returns
         -------
