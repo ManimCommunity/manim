@@ -23,7 +23,6 @@ from manim.typing import (
     Point3DLike,
     Point3DLike_Array,
     Vector3DLike,
-    Vector3DLike_Array,
 )
 from manim.utils.space_ops import rotation_matrix
 
@@ -108,6 +107,10 @@ class Positionable:
         -------
         Point3D_Array
             All points.
+
+        See also
+        --------
+        :meth:`set_points`
         """
         return np.concat([mob.points for mob in self.get_family()])
 
@@ -128,6 +131,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`get_points`
         """
         if isinstance(points, Positionable):
             for mob1, mob2 in zip(self.get_family(), points.get_family(), strict=False):
@@ -143,6 +150,10 @@ class Positionable:
         -------
         Point3D_Array
             The points defining the boundary.
+
+        See also
+        --------
+        :meth:`get_points`
         """
         return self.get_points()
 
@@ -171,6 +182,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`get_family`
         """
         for mob in self.get_family():
             if only_with_points and len(mob.points) == 0:
@@ -200,6 +215,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`apply_to_family`
         """
         if about_point is None:
             if about_edge is None:
@@ -237,6 +256,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`apply_array_function`
         """
         if about_point is None and about_edge is None:
             about_point = ORIGIN
@@ -272,6 +295,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`apply_function`
         """
 
         def apply(point: Point3D) -> Point3D:
@@ -401,6 +428,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`stretch`
         """
         return self.apply_array_function(
             function=lambda points: points.__imul__(factor),
@@ -433,6 +464,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`scale`
         """
 
         def function(points: Point3D_Array) -> Point3D_Array:
@@ -477,6 +512,10 @@ class Positionable:
         -------
         Point3D
             The position.
+
+        See also
+        --------
+        :meth:`set_position`
         """
         direction = np.sign(direction)
         mins, maxs = self.get_bounding_box()
@@ -506,6 +545,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`get_position`
         """
         if isinstance(point, Positionable):
             point = point.get_position(direction=aligned_edge)
@@ -520,6 +563,10 @@ class Positionable:
         -------
         Point3D
             The center position.
+
+        See also
+        --------
+        :meth:`set_center`, :meth:`get_position`
         """
         return self.get_position(direction=ORIGIN)
 
@@ -542,6 +589,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`get_center`, :meth:`set_position`
         """
         return self.set_position(point=center, aligned_edge=ORIGIN, coor_mask=coor_mask)
 
@@ -552,6 +603,10 @@ class Positionable:
         -------
         Point3D
             The left position.
+
+        See also
+        --------
+        :meth:`set_left`, :meth:`get_position`
         """
         return self.get_position(direction=LEFT)
 
@@ -574,11 +629,25 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`get_left`, :meth:`set_position`
         """
         return self.set_position(point=left, aligned_edge=LEFT, coor_mask=coor_mask)
 
     def get_right(self) -> Point3D:
-        """Returns the right position."""
+        """Returns the right position.
+
+        Returns
+        -------
+        Point3D
+            The right position.
+
+        See also
+        --------
+        :meth:`set_right`, :meth:`get_position`
+        """
         return self.get_position(direction=RIGHT)
 
     def set_right(
@@ -600,6 +669,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`get_right`, :meth:`set_position`
         """
         return self.set_position(point=right, aligned_edge=RIGHT, coor_mask=coor_mask)
 
@@ -610,6 +683,10 @@ class Positionable:
         -------
         Point3D
             The bottom position.
+
+        See also
+        --------
+        :meth:`set_bottom`, :meth:`get_position`
         """
         return self.get_position(direction=DOWN)
 
@@ -632,6 +709,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`get_bottom`, :meth:`set_position`
         """
         return self.set_position(point=bottom, aligned_edge=DOWN, coor_mask=coor_mask)
 
@@ -642,6 +723,10 @@ class Positionable:
         -------
         Point3D
             The top position.
+
+        See also
+        --------
+        :meth:`set_top`, :meth:`get_position`
         """
         return self.get_position(direction=UP)
 
@@ -664,6 +749,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`get_top`, :meth:`set_position`
         """
         return self.set_position(point=top, aligned_edge=UP, coor_mask=coor_mask)
 
@@ -674,6 +763,10 @@ class Positionable:
         -------
         Point3D
             The  nadir position.
+
+        See also
+        --------
+        :meth:`set_nadir`, :meth:`get_position`
         """
         return self.get_position(direction=IN)
 
@@ -696,6 +789,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`get_nadir`, :meth:`set_position`
         """
         return self.set_position(point=nadir, aligned_edge=IN, coor_mask=coor_mask)
 
@@ -706,6 +803,10 @@ class Positionable:
         -------
         Point3D
             The zenith position.
+
+        See also
+        --------
+        :meth:`set_zenith`, :meth:`get_position`
         """
         return self.get_position(direction=OUT)
 
@@ -728,6 +829,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`get_zenith`, :meth:`set_position`
         """
         return self.set_position(point=zenith, aligned_edge=OUT, coor_mask=coor_mask)
 
@@ -749,6 +854,10 @@ class Positionable:
         -------
         float
             The coordinate.
+
+        See also
+        --------
+        :meth:`set_coordinate`
         """
         points = self.get_points()
         if len(points) == 0:
@@ -785,6 +894,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`get_coordinate`
         """
         if isinstance(value, Positionable):
             value = value.get_coordinate(dim=dim, direction=direction)
@@ -805,6 +918,10 @@ class Positionable:
         -------
         float
             The x coordinate.
+
+        See also
+        --------
+        :meth:`set_x`, :meth:`get_coordinate`
         """
         return self.get_coordinate(dim=0, direction=direction)
 
@@ -822,6 +939,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`get_x`, :meth:`set_coordinate`
         """
         return self.set_coordinate(value=x, dim=0, direction=direction)
 
@@ -837,6 +958,10 @@ class Positionable:
         -------
         float
             The y coordinate.
+
+        See also
+        --------
+        :meth:`set_y`, :meth:`get_coordinate`
         """
         return self.get_coordinate(dim=1, direction=direction)
 
@@ -854,6 +979,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`get_y`, :meth:`set_coordinate`
         """
         return self.set_coordinate(value=y, dim=1, direction=direction)
 
@@ -869,6 +998,10 @@ class Positionable:
         -------
         float
             The z coordinate.
+
+        See also
+        --------
+        :meth:`set_z`, :meth:`get_coordinate`
         """
         return self.get_coordinate(dim=2, direction=direction)
 
@@ -886,6 +1019,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`get_z`, :meth:`get_coordinate`
         """
         return self.set_coordinate(value=z, dim=2, direction=direction)
 
@@ -901,6 +1038,10 @@ class Positionable:
         -------
         float
             The size of the dimension.
+
+        See also
+        --------
+        :meth:`set_dim_size`
         """
         points = self.get_points()
         if len(points) == 0:
@@ -935,6 +1076,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`get_dim_size`, :meth:`scale`, :meth:`stretch`
         """
         if isinstance(size, Positionable):
             size = size.get_dim_size(dim=dim)
@@ -965,6 +1110,10 @@ class Positionable:
         -------
         float
             The width.
+
+        See also
+        --------
+        :meth:`set_width`, :meth:`get_dim_size`
         """
         return self.get_dim_size(dim=0)
 
@@ -993,6 +1142,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`get_width`, :meth:`set_dim_size`
         """
         return self.set_dim_size(
             size=width,
@@ -1009,6 +1162,10 @@ class Positionable:
         -------
         float
             The height.
+
+        See also
+        --------
+        :meth:`set_height`, :meth:`get_dim_size`
         """
         return self.get_dim_size(dim=1)
 
@@ -1037,6 +1194,11 @@ class Positionable:
         -------
         Self
             The object itself.
+
+
+        See also
+        --------
+        :meth:`get_height`, :meth:`set_dim_size`
         """
         return self.set_dim_size(
             size=height,
@@ -1053,6 +1215,11 @@ class Positionable:
         -------
         float
             The depth.
+
+
+        See also
+        --------
+        :meth:`set_depth`, :meth:`get_dim_size`
         """
         return self.get_dim_size(dim=2)
 
@@ -1081,6 +1248,11 @@ class Positionable:
         -------
         Self
             The object itself.
+
+
+        See also
+        --------
+        :meth:`get_depth`, :meth:`set_dim_size`
         """
         return self.set_dim_size(
             size=depth,
@@ -1114,6 +1286,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`align_to`
         """
         if frame is None:
             frame = (config.frame_x_radius, config.frame_y_radius, 0)
@@ -1226,10 +1402,33 @@ class Positionable:
     get_coord = get_coordinate
     set_coord = set_coordinate
 
-    def shift(self, *vectors: Vector3DLike_Array) -> Self:
+    def shift(self, *vectors: Vector3DLike) -> Self:
+        """_summary_
+
+        Parameters
+        ----------
+        vectors: *Vector3DLike
+            The vectors.
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         return self.translate(np.sum(vectors, axis=0))
 
     def center(self) -> Self:
+        """Moves to the ORIGIN.
+
+        Returns
+        -------
+        Self
+            The object itself.
+
+        See also
+        --------
+        :meth:`set_center`
+        """
         return self.set_center(ORIGIN)
 
     def flip(
@@ -1254,6 +1453,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`rotate`
         """
         return self.rotate(
             TAU / 2,
@@ -1283,6 +1486,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`set_position`
         """
         return self.set_position(
             point=point_or_mobject,
@@ -1308,6 +1515,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`rotate`
         """
         return self.rotate(
             angle=TAU / 14,
@@ -1341,6 +1552,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`set_dim_size`, :meth:`scale`
         """
         return self.set_dim_size(
             size=size,
@@ -1372,6 +1587,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`scale_to_fit`, :meth:`scale`, :meth:`set_width`
         """
         return self.scale_to_fit(
             size=width,
@@ -1402,6 +1621,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`scale_to_fit`, :meth:`scale`, :meth:`set_height`
         """
         return self.scale_to_fit(
             size=height,
@@ -1432,6 +1655,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`scale_to_fit`, :meth:`scale`, :meth:`set_depth`
         """
         return self.scale_to_fit(
             size=depth,
@@ -1464,6 +1691,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`set_dim_size`, :meth:`stretch`
         """
         return self.set_dim_size(
             size=size,
@@ -1494,6 +1725,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`stretch_to_fit`, :meth:`stretch`, :meth:`set_width`
         """
         return self.stretch_to_fit(
             size=width,
@@ -1523,6 +1758,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`stretch_to_fit`, :meth:`stretch`, :meth:`set_height`
         """
         return self.stretch_to_fit(
             size=height,
@@ -1552,6 +1791,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`stretch_to_fit`, :meth:`stretch`, :meth:`set_depth`
         """
         return self.stretch_to_fit(
             size=depth,
@@ -1579,6 +1822,10 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`align_on_border`
         """
         return self.align_on_border(direction=corner, buff=buff)
 
@@ -1601,37 +1848,53 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        See also
+        --------
+        :meth:`align_on_border`
         """
         return self.align_on_border(direction=edge, buff=buff)
 
     @property
     def width(self) -> float:
-        """The width."""
+        """The width.
+
+        See also
+        --------
+        :meth:`get_width`, :meth:`set_width`
+        """
         return self.get_width()
 
     @width.setter
     def width(self, value: float) -> None:
-        """The width."""
         self.set_width(width=value)
 
     @property
     def height(self) -> float:
-        """The height."""
+        """The height.
+
+        See also
+        --------
+        :meth:`get_height`, :meth:`set_height`
+        """
         return self.get_height()
 
     @height.setter
     def height(self, value: float) -> None:
-        """The height."""
         self.set_height(height=value)
 
     @property
     def depth(self) -> float:
-        """The depth."""
+        """The width.
+
+        See also
+        --------
+        :meth:`get_depth`, :meth:`set_depth`
+        """
         return self.get_depth()
 
     @depth.setter
     def depth(self, value: float) -> None:
-        """The depth."""
         self.set_depth(depth=value)
 
     ### DEPRECATED ###
