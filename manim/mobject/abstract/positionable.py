@@ -534,10 +534,13 @@ class Positionable:
         --------
         :meth:`set_position`
         """
-        direction = np.sign(direction)
-        mins, maxs = self.get_bounding_box()
-        mids = (mins + maxs) / 2
-        return mids + (maxs - mids) * direction
+        points = self.get_points()
+        return np.array(
+            [
+                self._get_extremum(values=points[:, dim], key=key)
+                for dim, key in enumerate(direction)
+            ]
+        )
 
     def set_position(
         self,
@@ -1310,9 +1313,40 @@ class Positionable:
         """
         if isinstance(point, Positionable):
             point = point.get_position(direction=direction)
-        source = self.get_critical_point(direction=direction)
+        source = self.get_position(direction=direction)
         target = np.where(direction == 0, source, point)
         return self.shift(target - source)
+
+    def get_extremum_along_dim(
+        self,
+        dim: int = 0,
+        key: int = 0,
+    ) -> float:
+        """Returns the extremum along a dimension.
+
+        Parameters
+        ----------
+        dim, optional
+            The dimension., by default 0
+        key, optional
+            Whether to get the minimum (key<0), center (key=0) or maximum value (key>0)., by default 0
+
+        Returns
+        -------
+            _description_
+        """
+        return self._get_extremum(self.get_points()[:, dim], key=key)
+
+    def _get_extremum(self, values: np.ndarray, key: int) -> float:
+        if len(values) == 0:
+            return 0
+        return (  # type: ignore[no-any-return]
+            values.min()
+            if key < 0
+            else (values.min() + values.max()) / 2
+            if key == 0
+            else values.max()
+        )
 
     def is_off_screen(self) -> bool:
         """Returns whether this is off screen.
@@ -1338,10 +1372,7 @@ class Positionable:
         Point3D
             The center of mass.
         """
-        points = self.get_points()
-        if len(points) == 0:
-            return ORIGIN
-        return points.mean(axis=0)
+        return self.get_points().mean(axis=0)
 
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
         """Returns a boundary point.
@@ -2046,26 +2077,6 @@ class Positionable:
         function: Callable[[Point3D], Point3DLike],
     ) -> Self:
         return self.move_to(function(self.get_center()))
-
-    # @deprecated()
-    def get_extremum_along_dim(
-        self,
-        dim: int = 0,
-        key: int = 0,
-    ) -> float:
-        points = self.get_points()
-        if len(points) == 0:
-            return 0
-        values = points[:, dim]
-        if key < 0:
-            rv: float = np.min(values)
-            return rv
-        elif key == 0:
-            rv = (np.min(values) + np.max(values)) / 2
-            return rv
-        else:
-            rv = np.max(values)
-            return rv
 
     # @deprecated()
     def reduce_across_dimension(
