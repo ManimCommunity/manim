@@ -3014,11 +3014,17 @@ class OpenGLMobject:
 
     def throw_error_if_no_points(self) -> None:
         if not self.has_points():
-            message = (
-                "Cannot call OpenGLMobject.{} " + "for a OpenGLMobject with no points"
-            )
             caller_name = sys._getframe(1).f_code.co_name
-            raise Exception(message.format(caller_name))
+            cls = type(self).__name__
+            message = f"Cannot call {cls}.{caller_name} because {self!r} has no points."
+            pointful_family_members = self.family_members_with_points()
+            if pointful_family_members:
+                count = len(pointful_family_members)
+                message += (
+                    f" Its family contains {count} "
+                    f"mobject{'' if count == 1 else 's'} with points."
+                )
+            raise ValueError(message)
 
 
 class OpenGLGroup(OpenGLMobject):
