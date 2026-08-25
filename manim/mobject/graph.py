@@ -454,6 +454,10 @@ def _determine_graph_layout(
         return layout
     elif layout in _layouts:
         auto_layout = _layouts[layout](nx_graph, scale=layout_scale, **layout_config)
+
+        if not auto_layout:
+            return {}
+
         # NetworkX returns a dictionary of 3D points if the dimension
         # is specified to be 3. Otherwise, it returns a dictionary of
         # 2D points, so adjusting is required.
