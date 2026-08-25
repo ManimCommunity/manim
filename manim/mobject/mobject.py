@@ -5,7 +5,6 @@ from __future__ import annotations
 __all__ = ["Mobject", "Group", "override_animate"]
 
 
-import builtins
 import copy
 import inspect
 import itertools as it
@@ -15,7 +14,7 @@ import random
 import sys
 import types
 import warnings
-from collections.abc import Callable, Iterable, Iterator, Sequence
+from collections.abc import Callable, Iterable, Iterator, MutableSet, Sequence
 from functools import partialmethod, reduce
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
@@ -2568,7 +2567,7 @@ class Mobject:
         """
         return remove_list_redundancies(list(self._iter_family(set())))
 
-    def _iter_family(self, active_path: builtins.set[Mobject]) -> Iterator[Mobject]:
+    def _iter_family(self, active_path: MutableSet[Mobject]) -> Iterator[Mobject]:
         if self in active_path:
             return
 
