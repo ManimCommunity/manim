@@ -139,8 +139,25 @@ def test_vmobject_point_from_proportion():
         obj.point_from_proportion(2)
 
     obj.clear_points()
-    with pytest.raises(Exception, match="with no points"):
+    with pytest.raises(
+        ValueError,
+        match=r"Cannot call VMobject\.point_from_proportion because VMobject has no points\.",
+    ):
         obj.point_from_proportion(0)
+
+
+def test_no_points_error_reports_pointful_family_members():
+    child = VMobject().set_points_as_corners([[0, 0, 0], [1, 0, 0]])
+    group = VGroup(VGroup(child))
+
+    with pytest.raises(ValueError) as error:
+        group.point_from_proportion(0)
+
+    message = str(error.value)
+    assert message.startswith(
+        "Cannot call VGroup.point_from_proportion because VGroup(",
+    )
+    assert message.endswith("Its family contains 1 mobject with points.")
 
 
 def test_curves_as_submobjects_point_from_proportion():
@@ -450,6 +467,28 @@ def test_vgroup_item_assignment_only_allows_vmobjects():
         "Only values of type VMobject can be added as submobjects of VGroup, "
         "but the value invalid object (at index 0) is of type str."
     )
+
+
+def test_vgroup_str_name():
+    """Test VGroup's string representation correctly includes class name"""
+
+    class VGroupSubclass(VGroup):
+        pass
+
+    for cls, name in (VGroup, "VGroup"), (VGroupSubclass, "VGroupSubclass"):
+        group = cls(VMobject())
+        expected = f"{name} of"
+        actual = str(group)
+        assert actual.startswith(expected), f"'{actual}'.startswith('{expected}')"
+
+
+def test_vgroup_str_pluralization():
+    """Test VGroup's string representation correctly pluralizes 'submobject(s)'"""
+    for i in (0, 1, 2):
+        group = VGroup(VMobject() for _ in range(i))
+        expected = f"of {i} {'submobject' if i == 1 else 'submobjects'}"
+        actual = str(group)
+        assert actual.endswith(expected), f"'{actual}'.endswith('{expected}')"
 
 
 def test_trim_dummy():
