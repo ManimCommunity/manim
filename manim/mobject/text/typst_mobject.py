@@ -123,6 +123,7 @@ __all__ = [
 ]
 
 import re
+from collections.abc import Iterator
 from pathlib import Path
 from typing import Any, Self, cast
 from xml.etree import ElementTree as ET
@@ -136,8 +137,6 @@ from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import BLACK, ParsableManimColor
 from manim.utils.typst_file_writing import typst_to_svg_file
-
-_MANIMGRP_TARGET = "__manim_typst_capture_target"
 
 # Pattern for the label part of {{ content : label }}.
 # The label must be a valid Typst label identifier.
@@ -172,9 +171,8 @@ def _manimgrp_preamble(target: str | None) -> str:
     """
     target_value = "none" if target is None else f'"{target}"'
     return (
-        f"#let {_MANIMGRP_TARGET} = {target_value}\n"
-        "#let manimgrp(lbl, body) = if "
-        f"lbl == {_MANIMGRP_TARGET} {{ hide(body) }} else {{ body }}"
+        f"#let manimgrp(lbl, body) = if lbl == {target_value} "
+        "{ hide(body) } else { body }"
     )
 
 
@@ -185,18 +183,18 @@ def _svg_tag_name(element: ET.Element) -> str:
     return element.tag.rsplit("}", 1)[-1]
 
 
-def _svg_leaf_signatures(svg_file: Path) -> list[tuple[Any, ...]]:
-    """Return stable signatures for rendered SVG leaves in drawing order."""
-    root = ET.parse(svg_file).getroot()
-    signatures: list[tuple[Any, ...]] = []
+def _iter_svg_leaves(
+    parent: ET.Element,
+    transform: se.Matrix | None = None,
+    inside_defs: bool = False,
+) -> Iterator[tuple[ET.Element, int, ET.Element, se.Matrix]]:
+    """Yield rendered SVG leaves with their parent and effective transform."""
+    if transform is None:
+        transform = se.Matrix()
 
-    def visit(
-        element: ET.Element,
-        transform: se.Matrix,
-        inside_defs: bool,
-    ) -> None:
+    for index, element in enumerate(parent):
         tag = _svg_tag_name(element)
-        inside_defs = inside_defs or tag == "defs"
+        element_inside_defs = inside_defs or tag == "defs"
         local_transform = (
             se.Matrix(element.get("transform"))
             if element.get("transform") is not None
@@ -204,31 +202,43 @@ def _svg_leaf_signatures(svg_file: Path) -> list[tuple[Any, ...]]:
         )
         effective_transform = transform * local_transform
 
-        if not inside_defs and tag in _SVG_LEAF_TAGS:
-            attributes = tuple(
-                sorted(
-                    (key, value)
-                    for key, value in element.attrib.items()
-                    if key != "transform"
-                )
-            )
-            matrix = tuple(
-                round(value, 12)
-                for value in (
-                    effective_transform.a,
-                    effective_transform.b,
-                    effective_transform.c,
-                    effective_transform.d,
-                    effective_transform.e,
-                    effective_transform.f,
-                )
-            )
-            signatures.append((tag, attributes, matrix))
+        if not element_inside_defs and tag in _SVG_LEAF_TAGS:
+            yield parent, index, element, effective_transform
 
-        for child in element:
-            visit(child, effective_transform, inside_defs)
+        yield from _iter_svg_leaves(
+            element,
+            effective_transform,
+            element_inside_defs,
+        )
 
-    visit(root, se.Matrix(), False)
+
+def _svg_leaf_signatures(svg_file: Path) -> list[tuple[Any, ...]]:
+    """Return stable signatures for rendered SVG leaves in drawing order."""
+    root = ET.parse(svg_file).getroot()
+    signatures: list[tuple[Any, ...]] = []
+
+    for _, _, element, transform in _iter_svg_leaves(root):
+        attributes = tuple(
+            sorted(
+                (key, value)
+                for key, value in element.attrib.items()
+                if key != "transform"
+            )
+        )
+        matrix = tuple(
+            round(value, 12)
+            for value in (
+                transform.a,
+                transform.b,
+                transform.c,
+                transform.d,
+                transform.e,
+                transform.f,
+            )
+        )
+        text = tuple(element.itertext())
+        signatures.append((_svg_tag_name(element), attributes, text, matrix))
+
     return signatures
 
 
@@ -239,49 +249,26 @@ def _hidden_leaf_indices(
     """Return visible leaf indices removed from a layout-preserving probe.
 
     A valid ``hide`` probe is the final SVG leaf sequence with zero or more
-    entries deleted. Longest-common-subsequence matching handles repeated
-    glyphs while retaining their drawing order and effective positions.
+    entries deleted. Matching the probe as a subsequence handles repeated
+    glyphs by retaining their drawing order and effective positions.
     """
-    visible_count = len(visible)
-    probe_count = len(probe)
-    matches = [[0] * (probe_count + 1) for _ in range(visible_count + 1)]
+    hidden: set[int] = set()
+    probe_index = 0
 
-    for visible_index in range(visible_count - 1, -1, -1):
-        for probe_index in range(probe_count - 1, -1, -1):
-            if visible[visible_index] == probe[probe_index]:
-                matches[visible_index][probe_index] = (
-                    1 + matches[visible_index + 1][probe_index + 1]
-                )
-            else:
-                matches[visible_index][probe_index] = max(
-                    matches[visible_index + 1][probe_index],
-                    matches[visible_index][probe_index + 1],
-                )
+    for visible_index, signature in enumerate(visible):
+        if probe_index < len(probe) and signature == probe[probe_index]:
+            probe_index += 1
+        else:
+            hidden.add(visible_index)
 
-    if matches[0][0] != probe_count:
+    if probe_index != len(probe):
         raise ValueError(
             "The MathTypst grouping probe changed visible SVG geometry instead of "
             "only hiding captured leaves. A custom Typst show rule for `hide` may "
             "be interfering with subexpression selection."
         )
 
-    retained: set[int] = set()
-    visible_index = 0
-    probe_index = 0
-    while visible_index < visible_count and probe_index < probe_count:
-        if visible[visible_index] == probe[probe_index]:
-            retained.add(visible_index)
-            visible_index += 1
-            probe_index += 1
-        elif (
-            matches[visible_index + 1][probe_index]
-            >= matches[visible_index][probe_index + 1]
-        ):
-            visible_index += 1
-        else:
-            probe_index += 1
-
-    return set(range(visible_count)) - retained
+    return hidden
 
 
 class Typst(SVGMobject):
@@ -378,11 +365,6 @@ class Typst(SVGMobject):
             self,
             "_svg_leaf_labels",
             {},
-        )
-        self._known_svg_labels: list[str] = getattr(
-            self,
-            "_known_svg_labels",
-            [],
         )
 
         file_name = typst_to_svg_file(
@@ -620,8 +602,6 @@ class Typst(SVGMobject):
             if _DUPLICATE_LABEL_SUFFIX in key:
                 base_label, _, _ = key.partition(_DUPLICATE_LABEL_SUFFIX)
             aliases.setdefault(base_label, []).append(key)
-        for label in self._known_svg_labels:
-            aliases.setdefault(label, [])
         self._label_aliases = aliases
 
     def _select_label(self, label: str) -> VGroup:
@@ -655,44 +635,33 @@ class Typst(SVGMobject):
         """
         label_counts: dict[str, int] = {}
 
+        def next_svg_id(label: str) -> str:
+            count = label_counts.get(label, 0)
+            label_counts[label] = count + 1
+            if count == 0:
+                return label
+            return f"{label}{_DUPLICATE_LABEL_SUFFIX}{count}"
+
         if self._svg_leaf_labels:
-            leaf_index = 0
-
-            def wrap_leaves(element: ET.Element, inside_defs: bool = False) -> None:
-                nonlocal leaf_index
-                children: list[ET.Element] = []
-                for child in element:
-                    tag = _svg_tag_name(child)
-                    child_inside_defs = inside_defs or tag == "defs"
-                    if not child_inside_defs and tag in _SVG_LEAF_TAGS:
-                        wrapped = child
-                        for label in reversed(
-                            self._svg_leaf_labels.get(leaf_index, [])
-                        ):
-                            count = label_counts.get(label, 0)
-                            label_counts[label] = count + 1
-                            svg_id = label
-                            if count > 0:
-                                svg_id = f"{label}{_DUPLICATE_LABEL_SUFFIX}{count}"
-                            namespace = (
-                                wrapped.tag.partition("}")[0] + "}"
-                                if "}" in wrapped.tag
-                                else ""
-                            )
-                            group = ET.Element(
-                                f"{namespace}g",
-                                {"id": svg_id},
-                            )
-                            group.append(wrapped)
-                            wrapped = group
-                        children.append(wrapped)
-                        leaf_index += 1
-                    else:
-                        wrap_leaves(child, child_inside_defs)
-                        children.append(child)
-                element[:] = children
-
-            wrap_leaves(element_tree.getroot())
+            root = element_tree.getroot()
+            assert root is not None
+            for leaf_index, (parent, index, element, _) in enumerate(
+                list(_iter_svg_leaves(root))
+            ):
+                wrapped = element
+                for label in reversed(self._svg_leaf_labels.get(leaf_index, [])):
+                    namespace = (
+                        wrapped.tag.partition("}")[0] + "}"
+                        if "}" in wrapped.tag
+                        else ""
+                    )
+                    group = ET.Element(
+                        f"{namespace}g",
+                        {"id": next_svg_id(label)},
+                    )
+                    group.append(wrapped)
+                    wrapped = group
+                parent[index] = wrapped
 
         # Let the base class inject default style wrappers after capture leaves
         # have been grouped in the original SVG namespace.
@@ -701,15 +670,10 @@ class Typst(SVGMobject):
         # ElementTree qualifies SVG tags with a namespace URI, so walk all
         # elements rather than matching a bare ``g`` tag.
         for element in element_tree.iter():
-            label = element.get("data-typst-label")
-            if label is None:
+            typst_label = element.get("data-typst-label")
+            if typst_label is None:
                 continue
-            count = label_counts.get(label, 0)
-            label_counts[label] = count + 1
-            svg_id = label
-            if count > 0:
-                svg_id = f"{label}{_DUPLICATE_LABEL_SUFFIX}{count}"
-            element.set("id", svg_id)
+            element.set("id", next_svg_id(typst_label))
             del element.attrib["data-typst-label"]
 
         return element_tree
@@ -853,8 +817,9 @@ class MathTypst(Typst):
         processed, labels = self._preprocess_groups(math_expression)
         self._group_labels = labels
         typst_code = f"$ {processed} $"
+        distinct_labels = list(dict.fromkeys(labels))
 
-        if labels:
+        if distinct_labels:
             user_preamble = kwargs.get("typst_preamble", "")
             font_paths = kwargs.get("font_paths")
             final_preamble = _manimgrp_preamble(None)
@@ -867,7 +832,6 @@ class MathTypst(Typst):
                 font_paths=font_paths,
             )
             visible_leaves = _svg_leaf_signatures(final_svg)
-            distinct_labels = list(dict.fromkeys(labels))
             leaf_labels: dict[int, list[str]] = {}
 
             for label in distinct_labels:
@@ -893,10 +857,11 @@ class MathTypst(Typst):
                     leaf_labels.setdefault(leaf_index, []).append(label)
 
             self._svg_leaf_labels = leaf_labels
-            self._known_svg_labels = distinct_labels
             kwargs["typst_preamble"] = final_preamble
 
         super().__init__(typst_code, **kwargs)
+        for label in distinct_labels:
+            self._label_aliases.setdefault(label, [])
 
     # -- double-brace preprocessor -------------------------------------------
 
