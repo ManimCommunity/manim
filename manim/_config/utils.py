@@ -380,7 +380,12 @@ class ManimConfig(MutableMapping):
 
         """
         if isinstance(obj, ManimConfig):
+            renderer = obj.renderer
             self._d.update(obj._d)
+            if renderer is not None:
+                # Apply the renderer through its setter so that the
+                # ConvertToOpenGL class bases stay in sync with the config value.
+                self.renderer = renderer
             if obj.tex_template:
                 self.tex_template = obj.tex_template
 
