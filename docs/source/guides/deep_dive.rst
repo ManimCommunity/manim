@@ -5,10 +5,10 @@ A deep dive into Manim's internals
 
 .. admonition:: Disclaimer
 
-    This guide reflects the state of the library as of version ``v0.16.0``
-    and primarily treats the Cairo renderer. The situation in the latest
-    version of Manim might be different; in case of substantial deviations
-    we will add a note below.
+    This guide was originally written for version ``v0.16.0`` and primarily
+    treats the Cairo renderer. Its high-level lifecycle discussion has been
+    updated for the :class:`.Manager` coordination layer, but some lower-level
+    implementation details may still differ from the latest version of Manim.
 
 Introduction
 ------------
@@ -104,10 +104,12 @@ discussing the contents of the following chapters on a very high level.
   steps through a time line and renders frame by frame. The final part
   does some post-processing and seals the encoding job for a short video segment
   ("partial movie file") before cleaning up for the next call to
-  :meth:`.Scene.play`. Depending on the encoding configuration, the partial movie
-  file can continue encoding while the next animation is rendered. In the end,
-  after all of :meth:`.Scene.construct` has been run, the library waits for any
-  remaining encoding jobs and combines the partial movie files into one video.
+  :meth:`.Scene.play`. The :class:`.Manager` is the coordination layer around
+  these calls, while the renderer still implements most of the per-animation
+  processing described here. Depending on the encoding configuration, the partial
+  movie file can continue encoding while the next animation is rendered. In the
+  end, after all of :meth:`.Scene.construct` has been run, the library waits for
+  any remaining encoding jobs and combines the partial movie files into one video.
 
 And with that, let us get *in medias res*.
 
@@ -220,12 +222,12 @@ dictionary, and upon leaving the context the original version of the
 configuration is restored. TL;DR: it provides a fancy way of temporarily setting
 configuration options.
 
-Inside the context manager, two things happen: an actual ``ToyExample``-scene
-object is instantiated, and the ``render`` method is called. Every way of using
-Manim ultimately does something along of these lines, the library always instantiates
-the scene object and then calls its ``render`` method. To illustrate that this
-really is the case, let us briefly look at the two most common ways of rendering
-scenes:
+Inside the context manager, two things happen: an actual ``ToyExample`` scene
+object is instantiated, and its ``render`` method is called. The render lifecycle
+is coordinated by a :class:`.Manager` attached to that scene. The CLI attaches a
+manager explicitly, while direct calls to :meth:`.Scene.render` create one lazily
+if necessary. To illustrate this, let us briefly look at the two most common ways
+of rendering scenes:
 
 **Command Line Interface.** When using the CLI and running the command
 ``manim -qm -p toy_example.py ToyExample`` in your terminal, the actual
@@ -234,15 +236,16 @@ entry point is Manim's ``__main__.py`` file (located
 Manim uses `Click <https://click.palletsprojects.com/en/8.0.x/>`__ to implement
 the command line interface, and the corresponding code is located in Manim's
 ``cli`` module (https://github.com/ManimCommunity/manim/tree/main/manim/cli).
-The corresponding code creating the scene class and calling its render method
-is located `here <https://github.com/ManimCommunity/manim/blob/ac1ee9a683ce8b92233407351c681f7d71a4f2db/manim/cli/render/commands.py#L139-L141>`__.
+The corresponding code instantiates the scene, attaches a :class:`.Manager`, and
+then calls the scene's render method in the
+`render command <https://github.com/ManimCommunity/manim/blob/main/manim/cli/render/commands.py>`__.
 
 **Jupyter notebooks.** In Jupyter notebooks, the communication with the library
 is handled by the ``%%manim`` magic command, which is implemented in the
 ``manim.utils.ipython_magic`` module. There is
 :meth:`some documentation <.ManimMagic.manim>` available for the magic command,
-and the code creating the scene class and calling its render method is located
-`here <https://github.com/ManimCommunity/manim/blob/ac1ee9a683ce8b92233407351c681f7d71a4f2db/manim/utils/ipython_magic.py#L137-L138>`__.
+The implementation instantiates the requested scene and calls its render method;
+the scene attaches a manager lazily through that entry point.
 
 
 Now that we know that either way, a :class:`.Scene` object is created, let us investigate
@@ -273,29 +276,29 @@ renderer (see the implementation `here <https://github.com/ManimCommunity/manim/
 does some additional setup to enable the realtime rendering preview window, which we do not go
 into detail further here.
 
+After the renderer has been instantiated and initialized its file writer, the scene
+populates further initial attributes (notable mention: the ``mobjects`` attribute
+which keeps track of the mobjects that have been added to the scene). Its ``manager``
+attribute is initially ``None`` unless the caller attaches a manager explicitly.
+
 .. warning::
 
-    Currently, there is a lot of interplay between a scene and its renderer. This is a flaw
-    in Manim's current architecture, and we are working on reducing this interdependency to
-    achieve a less convoluted code flow.
-
-After the renderer has been instantiated and initialized its file writer, the scene populates
-further initial attributes (notable mention: the ``mobjects`` attribute which keeps track
-of the mobjects that have been added to the scene). It is then done with its instantiation
-and ready to be rendered.
+    :class:`.Manager` is an incremental coordination boundary. At this stage the
+    renderer still owns its camera, clock, play count, skip state, and file writer;
+    the manager exposes forwarding views of them. The scene and renderer therefore
+    still have substantial interplay that later refactors aim to remove.
 
 The rest of this article is concerned with the last line in our toy example script::
 
     scene.render()
 
-This is where the actual magic happens.
+This is where the actual magic happens. :meth:`.Scene.render` obtains the scene's
+manager, creating and attaching a :class:`.Manager` if necessary, and delegates to
+:meth:`.Manager.render`. The manager describes the full *render cycle* of a scene
+through four methods: :meth:`.Manager.setup`, :meth:`.Manager.construct`,
+:meth:`.Manager.tear_down`, and :meth:`.Manager.post_construct`.
 
-Inspecting the `implementation of the render method <https://github.com/ManimCommunity/manim/blob/df1a60421ea1119cbbbd143ef288d294851baaac/manim/scene/scene.py#L211>`__
-reveals that there are several hooks that can be used for pre- or postprocessing
-a scene. Unsurprisingly, :meth:`.Scene.render` describes the full *render cycle*
-of a scene. During this life cycle, there are three custom methods whose base
-implementation is empty and that can be overwritten to suit your purposes. In
-the order they are called, these customizable methods are:
+The first three call the corresponding customizable scene hooks:
 
 - :meth:`.Scene.setup`, which is intended for preparing and, well, *setting up*
   the scene for your animation (e.g., adding initial mobjects, assigning custom
@@ -309,19 +312,18 @@ the order they are called, these customizable methods are:
   hook is more relevant for situations where Manim is used within other
   Python scripts).
 
-After these three methods are run, the animations have been fully rendered,
-and Manim calls :meth:`.CairoRenderer.scene_finished` to gracefully
-complete the rendering process. This checks whether any animations have been
-played -- and if so, it tells the :class:`.SceneFileWriter` to finish the output.
-For video output, this first waits for any partial movie files that are still
-being encoded and then combines them into the final movie. If no animations have
-been played, Manim assumes that a static image should be output, which it renders
-using the same strategy by calling the render loop (see below) once.
+After these hooks have run, :meth:`.Manager.post_construct` asks the renderer to
+finish the scene. For Cairo this calls :meth:`.CairoRenderer.scene_finished`,
+which checks whether animations have been played and tells the
+:class:`.SceneFileWriter` to finish the output. For video output, the file writer
+waits for partial movie files that are still being encoded and combines them into
+the final movie. If no animations have been played, Manim assumes that a static
+image should be output.
 
-**Back in our toy example,** the call to :meth:`.Scene.render` first
-triggers :meth:`.Scene.setup` (which only consists of ``pass``), followed by
-a call of :meth:`.Scene.construct`. At this point, our *animation script*
-is run, starting with the initialization of ``orange_square``.
+**Back in our toy example,** the call to :meth:`.Scene.render` creates a manager,
+then :meth:`.Manager.render` triggers :meth:`.Scene.setup` (which only consists of
+``pass``), followed by :meth:`.Scene.construct`. At this point, our *animation
+script* is run, starting with the initialization of ``orange_square``.
 
 
 Mobject Initialization
@@ -699,19 +701,19 @@ walk through the code that is run when :meth:`.Scene.play` is called.
   and lifecycle of mobjects is still more or less the same. There are more
   substantial differences when it comes to the rendering loop.
 
-As you will see when inspecting the method, :meth:`.Scene.play` almost
-immediately passes over to the ``play`` method of the renderer,
-in our case :class:`.CairoRenderer.play`. The one thing :meth:`.Scene.play`
-takes care of is the management of subcaptions that you might have
-passed to it (see the the documentation of :meth:`.Scene.play` and
-:meth:`.Scene.add_subcaption` for more information).
+As you will see when inspecting the method, :meth:`.Scene.play` first handles
+an OpenGL interactive-thread guard and then delegates to :meth:`.Manager.play`.
+The manager records the current renderer time and calls the renderer's ``play``
+method, in our case :meth:`.CairoRenderer.play`. Once the renderer returns, the
+manager uses the elapsed time to schedule an optional subcaption (see
+:meth:`.Scene.play` and :meth:`.Scene.add_subcaption` for more information).
 
 .. warning::
 
-  As has been said before, the communication between scene and renderer
-  is not in a very clean state at this point, so the following paragraphs
-  might be confusing if you don't run a debugger and step through the
-  code yourself a bit.
+  The manager currently coordinates the call but deliberately preserves the
+  existing renderer implementation. Most compilation, caching, frame iteration,
+  and output behavior described in the following paragraphs still belongs to the
+  renderer and scene during this transitional stage.
 
 Inside :meth:`.CairoRenderer.play`, the renderer first checks whether
 it may skip rendering of the current play call. This might happen, for example,
@@ -813,9 +815,9 @@ example and discuss how the generic :meth:`.Scene.play` call
 setup looks like there.
 
 For the call that plays the :class:`.ReplacementTransform`, there
-is no subcaption to be taken care of. The renderer then asks
-the scene to compile the animation data: the passed argument
-already is an animation (no additional preparations needed),
+is no subcaption for the manager to schedule. The manager forwards the call,
+and the renderer then asks the scene to compile the animation data: the passed
+argument already is an animation (no additional preparations needed),
 there is no need for processing any keyword arguments (as
 we did not specify any additional ones to ``play``). The
 mobject bound to the animation, ``orange_square``, is already
@@ -1030,14 +1032,15 @@ remaining :meth:`.Scene.play` and :meth:`.Scene.wait` calls follow the exact sam
 procedure as discussed in the render loop section above; each such call produces
 a corresponding partial movie file.
 
-Once the :meth:`.Scene.construct` method has been fully processed, the scene calls
-its cleanup method :meth:`.Scene.tear_down`, and then asks its renderer to finish
-the scene. The renderer, in turn, asks its scene file writer to wrap things up by
+Once the :meth:`.Scene.construct` method has been fully processed, the manager
+calls the scene's cleanup method :meth:`.Scene.tear_down`, followed by
+:meth:`.Manager.post_construct`. The manager asks the renderer to finish the
+scene, and the renderer in turn asks its scene file writer to wrap things up by
 calling :meth:`.SceneFileWriter.finish`. The file writer first waits for all
 remaining encoding jobs, then combines the completed partial movie files into the
-final product. If rendering aborts during a play instead, the current job is
-sealed and drained, and its incomplete partial movie file is removed so that it
-cannot be mistaken for a valid cached result on a later render.
+final product. If rendering aborts during a play instead, the manager asks the file
+writer to abort its encoding jobs; the incomplete current partial movie file is
+removed so that it cannot be mistaken for a valid cached result on a later render.
 
 And there you go! This is a more or less detailed description of how Manim works
 under the hood. While we did not discuss every single line of code in detail
