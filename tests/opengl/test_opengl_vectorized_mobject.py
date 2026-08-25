@@ -5,7 +5,10 @@ import pytest
 
 from manim import Circle, Line, Square, VDict, VGroup, VMobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVGroup,
+    OpenGLVMobject,
+)
 
 
 def test_opengl_vmobject_add(using_opengl_renderer):
@@ -75,8 +78,30 @@ def test_opengl_vmobject_point_from_proportion(using_opengl_renderer):
         obj.point_from_proportion(2)
 
     obj.clear_points()
-    with pytest.raises(Exception, match="with no points"):
+    with pytest.raises(
+        ValueError,
+        match=(
+            r"Cannot call OpenGLVMobject\.point_from_proportion because "
+            r"OpenGLVMobject has no points\."
+        ),
+    ):
         obj.point_from_proportion(0)
+
+
+def test_opengl_no_points_error_reports_pointful_family_members(
+    using_opengl_renderer,
+):
+    child = OpenGLVMobject().set_points_as_corners([[0, 0, 0], [1, 0, 0]])
+    group = OpenGLVGroup(OpenGLVGroup(child))
+
+    with pytest.raises(ValueError) as error:
+        group.point_from_proportion(0)
+
+    message = str(error.value)
+    assert message.startswith(
+        "Cannot call OpenGLVGroup.point_from_proportion because OpenGLVGroup(",
+    )
+    assert message.endswith("Its family contains 1 mobject with points.")
 
 
 def test_vgroup_init(using_opengl_renderer):
