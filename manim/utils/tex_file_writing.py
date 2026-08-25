@@ -161,6 +161,18 @@ def make_tex_compilation_command(
             f"-output-directory={tex_dir.as_posix()}",
             f"{tex_file.as_posix()}",
         ]
+    elif tex_compiler == "tectonic":
+        if output_format == ".xdv":
+            outflag = ["--outfmt", "xdv"]
+        else:
+            raise ValueError("tectonic output must be xdv")
+        command = [
+            "tectonic",
+            *outflag,
+            "-o",
+            tex_dir.as_posix(),
+            tex_file.as_posix(),
+        ]
     else:
         raise ValueError(f"Tex compiler {tex_compiler} unknown.")
     return command
