@@ -2405,9 +2405,16 @@ class Mobject(Positionable):
     def throw_error_if_no_points(self) -> None:
         if self.has_no_points():
             caller_name = sys._getframe(1).f_code.co_name
-            raise Exception(
-                f"Cannot call Mobject.{caller_name} for a Mobject with no points",
-            )
+            cls = type(self).__name__
+            message = f"Cannot call {cls}.{caller_name} because {self!r} has no points."
+            pointful_family_members = self.family_members_with_points()
+            if pointful_family_members:
+                count = len(pointful_family_members)
+                message += (
+                    f" Its family contains {count} "
+                    f"mobject{'' if count == 1 else 's'} with points."
+                )
+            raise ValueError(message)
 
     # About z-index
     def set_z_index(
