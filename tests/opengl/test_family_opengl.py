@@ -173,3 +173,23 @@ def test_opengl_mobject_add_updates_parents(using_opengl_renderer):
     parent.remove(child2, child, child3)
     for c in [child, child2, child3]:
         assert parent not in c.parents
+
+
+def test_replace_submobject_updates_parents(using_opengl_renderer):
+    """Test that replace_submobject() updates the parents of both the removed
+    and inserted submobjects correctly.
+    """
+    parent = OpenGLMobject()
+    old_submob = OpenGLMobject()
+    new_submob = OpenGLMobject()
+    parent.add(old_submob)
+
+    parent.replace_submobject(0, new_submob)
+
+    assert parent not in old_submob.parents
+    assert new_submob.parents == [parent]
+
+    # Inserting the same mobject again should not affect the parent list
+    parent.add(OpenGLMobject())
+    parent.replace_submobject(1, new_submob)
+    assert new_submob.parents == [parent]

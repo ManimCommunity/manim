@@ -931,12 +931,8 @@ class OpenGLMobject:
     def insert(
         self, index: int, mobject: OpenGLMobject, update_parent: bool = False
     ) -> Self:
-        """Inserts a mobject at a specific position into self.submobjects
-
-        Effectively just calls  ``self.submobjects.insert(index, mobject)``,
-        where ``self.submobjects`` is a list.
-
-        Highly adapted from ``OpenGLMobject.add``.
+        """Inserts a mobject at a specific position into ``self.submobjects``. If the
+        mobject is already a submobject of ``self``, its position does not change.
 
         Parameters
         ----------
@@ -952,10 +948,10 @@ class OpenGLMobject:
 
         self._assert_valid_submobjects([mobject])
 
+        if self not in mobject.parents:
+            mobject.parents.append(self)
         if mobject not in self.submobjects:
             self.submobjects.insert(index, mobject)
-            if self not in mobject.parents:
-                mobject.parents.append(self)
             self.assemble_family()
 
         return self
@@ -1054,11 +1050,33 @@ class OpenGLMobject:
         return self
 
     def replace_submobject(self, index: int, new_submob: OpenGLMobject) -> Self:
+        """Replaces the submobject at the given index with a new submobject.
+        If ``self.submobjects`` already contains the new submobject, it is also removed
+        from its previous position.
+
+        Parameters
+        ----------
+        index
+            The index of the submobject to replace.
+        new_submob
+            The new submobject to insert at the given index.
+        """
         self._assert_valid_submobjects([new_submob])
         old_submob = self.submobjects[index]
+        if old_submob == new_submob:
+            return self
+
+        existing_index = None
+        with suppress(ValueError):
+            existing_index = self.submobjects.index(new_submob)
+        self.submobjects[index] = new_submob
+        if existing_index is not None:
+            self.submobjects.pop(existing_index)
+
         with suppress(ValueError):
             old_submob.parents.remove(self)
-        self.submobjects[index] = new_submob
+        if self not in new_submob.parents:
+            new_submob.parents.append(self)
         self.assemble_family()
         return self
 

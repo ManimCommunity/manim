@@ -579,12 +579,10 @@ class Mobject:
         return self
 
     def insert(self, index: int, mobject: Mobject) -> Self:
-        """Inserts a mobject at a specific position into self.submobjects
+        """Inserts a mobject at a specific position into ``self.submobjects``.
 
-        Effectively just calls  ``self.submobjects.insert(index, mobject)``,
-        where ``self.submobjects`` is a list.
-
-        Highly adapted from ``Mobject.add``.
+        If ``mobject`` is already a submobject of ``self``, it will be moved to the new
+        position.
 
         Parameters
         ----------
@@ -594,7 +592,27 @@ class Mobject:
             The mobject to be inserted.
         """
         self._assert_valid_submobjects([mobject])
-        self.submobjects.insert(index, mobject)
+
+        # Normalize index to match list.insert
+        if index < 0:
+            index = max(0, len(self.submobjects) + index)
+        else:
+            index = min(index, len(self.submobjects))
+
+        try:
+            old_index = self.submobjects.index(mobject)
+        except ValueError:  # mobject isn't already present
+            self.submobjects.insert(index, mobject)
+            return self
+
+        if index in (old_index, old_index + 1):  # Position will remain unchanged
+            return self
+
+        # Compensate for list shifting after popping
+        new_index = index if index < old_index else index - 1
+        self.submobjects.pop(old_index)
+        self.submobjects.insert(new_index, mobject)
+
         return self
 
     def __add__(self, mobject: Mobject) -> Self:

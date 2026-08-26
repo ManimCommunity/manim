@@ -78,6 +78,37 @@ def test_mobject_remove():
     assert obj.remove(Mobject()) is obj
 
 
+def test_mobject_insert():
+    obj = Mobject()
+    m1, m2, m3, m4 = [Mobject(name=f"m{i}") for i in range(1, 5)]
+    # Insert into empty list
+    obj.insert(0, m1)
+    assert obj.submobjects == [m1]
+
+    # Inserting shifts existing mobjects to the right
+    obj.insert(0, m2)
+    assert obj.submobjects == [m2, m1]
+
+    # Inserting with negative index inserts counting from the end like a list
+    obj.insert(-1, m3)
+    assert obj.submobjects == [m2, m3, m1]
+
+    # Inserting with index greater than length appends
+    obj.insert(10, m4)
+    assert obj.submobjects == [m2, m3, m1, m4]
+
+    # Inserting an existing submobject moves it to the new position
+    obj.insert(4, m1)
+    assert obj.submobjects == [m2, m3, m4, m1]
+
+    # Inserting an existing submobject at or immediately next to its current position
+    # does not change the order
+    obj.insert(3, m1)
+    assert obj.submobjects == [m2, m3, m4, m1]
+    obj.insert(3, m4)
+    assert obj.submobjects == [m2, m3, m4, m1]
+
+
 def test_mobject_dimensions_single_mobject():
     # A Mobject with no points and no submobjects has no dimensions
     empty = Mobject()

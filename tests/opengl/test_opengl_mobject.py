@@ -86,3 +86,31 @@ def test_opengl_rotate_about_vertex_view(using_opengl_renderer):
     # The first vertex should remain in the same position (within numerical precision)
     rotated_vertices = triangle.get_vertices()
     np.testing.assert_allclose(rotated_vertices[0], first_vertex, atol=1e-6)
+
+
+def test_replace_submobject(using_opengl_renderer):
+    """Test that replace_submobject() puts the new submobject in the correct
+    place and removes the old one.
+    """
+    parent = OpenGLMobject()
+    old_submobs = [OpenGLMobject() for _ in range(3)]
+    parent.add(*old_submobs)
+    new_submob = OpenGLMobject()
+
+    parent.replace_submobject(1, new_submob)
+
+    assert parent.submobjects == [old_submobs[0], new_submob, old_submobs[2]]
+    assert old_submobs[1] not in parent.submobjects
+
+
+def test_replace_submobject_with_existing_submobject(using_opengl_renderer):
+    """Test that replacing with a submobject that is already present moves it
+    to the new index instead of duplicating it.
+    """
+    parent = OpenGLMobject()
+    submobs = [OpenGLMobject() for _ in range(3)]
+    parent.add(*submobs)
+
+    parent.replace_submobject(0, submobs[2])
+
+    assert parent.submobjects == [submobs[2], submobs[1]]
