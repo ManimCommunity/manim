@@ -129,11 +129,6 @@ with a snippet like
         scene = ToyExample()
         scene.render()
 
-In this example, ``preview=True`` means that the completed artifact is opened
-after rendering. It does not request a live render window; that is configured
-separately with ``live_preview=True`` and requires a renderer that advertises
-live-preview support.
-
 Whether you are rendering this way or from a Jupyter notebook, you are still
 telling your Python interpreter to import the library. The usual pattern used to
 do this is
