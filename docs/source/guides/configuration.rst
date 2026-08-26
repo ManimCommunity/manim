@@ -37,11 +37,20 @@ An example of using the above form is:
 This asks Manim to search for a Scene class called :code:`SceneOne` inside the
 file ``file.py`` and render it with medium quality (specified by the ``-qm`` flag).
 
-Another frequently used flag is ``-p`` ("preview"), which makes manim
-open the rendered video after it's done rendering.
+Another frequently used flag is ``-p`` ("preview"), which makes Manim
+open the rendered artifact after rendering. This behavior is the same for all
+renderers.
 
-.. note:: The ``-p`` flag does not change any properties of the global
-          ``config`` dict.  The ``-p`` flag is only a command-line convenience.
+Renderers may also support a live preview while the scene is evaluated. The
+OpenGL renderer provides this with ``-l`` (or ``--live-preview``):
+
+.. code-block:: bash
+
+   manim --renderer=opengl -l <file.py> SceneName
+
+With ``--format=auto``, live preview does not write a media file, keeping the
+interactive workflow fast. Pass a concrete format, such as ``--format=mp4``,
+to record the scene while displaying the live preview.
 
 Advanced examples
 =================
@@ -361,13 +370,13 @@ A list of all config options
    'log_dir', 'log_to_file', 'max_files_cached', 'max_inflight_encoders',
    'media_dir', 'media_width', 'notify_outdated_version', 'output_file',
    'partial_movie_dir',
-   'pixel_height', 'pixel_width', 'plugins', 'preview',
+   'pixel_height', 'pixel_width', 'plugins', 'preview', 'live_preview',
    'progress_bar', 'quality', 'right_side', 'save_last_frame', 'scene_names',
    'show_in_file_browser', 'sound', 'tex_dir',
    'tex_template', 'tex_template_file', 'text_dir', 'top', 'transparent',
    'upto_animation_number', 'use_opengl_renderer', 'verbosity', 'video_dir',
    'window_position', 'window_monitor', 'window_size', 'write_all',
-   'enable_wireframe', 'force_window']
+   'enable_wireframe']
 
 
 Accessing CLI command options

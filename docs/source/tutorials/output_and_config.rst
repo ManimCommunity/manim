@@ -292,9 +292,14 @@ prototyping and testing. The other options that specify render quality are
 (1920x1080 60FPS), 2k (2560x1440 60FPS) and 4k quality (3840x2160 60FPS),
 respectively.
 
-The ``-p`` flag plays the animation once it is rendered.  If you want to open
-the file browser at the location of the animation instead of playing it, you
-can use the ``-f`` flag.  You can also omit these two flags.
+The ``-p`` flag plays the animation once it is rendered. If you want to open
+the file browser at the location of the animation instead, use
+``--show_in_file_browser``. You can also omit both options.
+
+The separate ``-l`` (or ``--live-preview``) option asks a capable renderer to
+display frames while rendering. The OpenGL renderer supports this mode. Live
+preview with the default ``--format=auto`` does not write a media file; pass a
+concrete format such as ``--format=mp4`` to display and record simultaneously.
 
 Finally, by default manim will output .mp4 files.  If you want your animations
 in .gif format instead, use the ``--format gif`` flag.  The output files will
