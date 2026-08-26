@@ -147,7 +147,7 @@ def list_difference_update(l1: Iterable[T], l2: Iterable[U]) -> list[T]:
     return [e for e in l1 if e not in l2]
 
 
-def list_update(l1: Iterable[T], l2: Iterable[U]) -> list[T]:
+def list_update(l1: Iterable[T], l2: Iterable[U]) -> list[T | U]:
     """Used instead of ``set.update()`` to maintain order,
         making sure duplicates are removed from l1, not l2.
         Removes overlap of l1 and l2 and then concatenates l2 unchanged.
@@ -160,7 +160,7 @@ def list_update(l1: Iterable[T], l2: Iterable[U]) -> list[T]:
         [1, 3, 2, 4, 4]
     """
     l2 = list(l2)
-    return list_difference_update(l1, l2) + cast(list[T], l2)
+    return list_difference_update(l1, l2) + cast(list[T | U], l2)
 
 
 @overload
