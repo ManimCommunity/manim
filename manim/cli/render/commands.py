@@ -76,14 +76,6 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
 
     SCENES is an optional list of scenes in the file.
     """
-    if kwargs["save_as_gif"]:
-        logger.warning("--save_as_gif is deprecated, please use --format=gif instead!")
-        kwargs["format"] = "gif"
-
-    if kwargs["save_pngs"]:
-        logger.warning("--save_pngs is deprecated, please use --format=png instead!")
-        kwargs["format"] = "png"
-
     if kwargs["show_in_file_browser"]:
         logger.warning(
             "The short form of show_in_file_browser is deprecated and will be moved to support --format.",

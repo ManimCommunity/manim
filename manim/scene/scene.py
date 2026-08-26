@@ -1369,13 +1369,9 @@ class Scene:
                 "Disabling interactive embed as 'skip_animation_preview' is enabled",
             )
             return False
-        elif config["write_to_movie"]:
-            logger.warning("Disabling interactive embed as 'write_to_movie' is enabled")
-            return False
-        elif config["format"]:
+        elif self.renderer.file_writer.output_spec.enabled:
             logger.warning(
-                "Disabling interactive embed as '--format' is set as "
-                + config["format"],
+                "Disabling interactive embed while media output is enabled",
             )
             return False
         elif not self.renderer.window:
@@ -1554,7 +1550,7 @@ class Scene:
         if not config["preview"]:
             logger.warning("Called embed() while no preview window is available.")
             return
-        if config["write_to_movie"]:
+        if self.renderer.file_writer.output_spec.enabled:
             logger.warning("embed() is skipped while writing to a file.")
             return
 

@@ -481,7 +481,7 @@ def test_is_already_cached_joins_same_path_inflight_job(config, tmp_path):
     hash_invocation = "same_path_hash"
     path = (
         writer.partial_movie_directory
-        / f"{hash_invocation}{config['movie_file_extension']}"
+        / f"{hash_invocation}{writer.output_spec.segment_extension}"
     )
     job = Mock(path=path)
     writer._inflight_encode_jobs.append(job)
@@ -504,7 +504,7 @@ def test_same_path_join_failure_drains_unrelated_jobs(config, tmp_path):
     hash_invocation = "failing_same_path_hash"
     path = (
         writer.partial_movie_directory
-        / f"{hash_invocation}{config['movie_file_extension']}"
+        / f"{hash_invocation}{writer.output_spec.segment_extension}"
     )
     unrelated_job = Mock(path=tmp_path / "unrelated.mp4")
     same_path_job = Mock(path=path)
@@ -1021,7 +1021,7 @@ def test_is_already_cached_false_after_joining_failed_path(config, tmp_path):
         hash_invocation = "missing_partial_hash"
         path = (
             writer.partial_movie_directory
-            / f"{hash_invocation}{config['movie_file_extension']}"
+            / f"{hash_invocation}{writer.output_spec.segment_extension}"
         )
         job = Mock(path=path)
         writer._inflight_encode_jobs.append(job)
@@ -1041,7 +1041,7 @@ def test_is_already_cached_true_when_partial_exists(config, tmp_path):
         hash_invocation = "present_partial_hash"
         path = (
             writer.partial_movie_directory
-            / f"{hash_invocation}{config['movie_file_extension']}"
+            / f"{hash_invocation}{writer.output_spec.segment_extension}"
         )
         path.write_bytes(b"cached partial")
 
@@ -1076,8 +1076,8 @@ def test_open_partial_movie_stream_without_path_raises(config, tmp_path):
 def test_write_frame_without_open_stream_drops_frame(config, tmp_path):
     """Interactive OpenGL emits frames with no open stream; they are dropped.
 
-    ``write_to_movie()`` is true under the default test config, so the call
-    reaches the drop branch in ``write_frame``.
+    Video output is enabled under the default test config, so the call reaches
+    the drop branch in ``write_frame``.
     """
     from manim.scene.scene_file_writer import SceneFileWriter
 

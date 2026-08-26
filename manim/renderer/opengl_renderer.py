@@ -581,11 +581,11 @@ class OpenGLRenderer:
                 "and may impact performance if used when outputting files",
             )
             return True
+        output = self.file_writer.output_spec
         return (
             config["preview"]
-            and not config["save_last_frame"]
-            and not config["format"]
-            and not config["write_to_movie"]
+            and not output.is_still
+            and not output.enabled
             and not config["dry_run"]
         )
 
@@ -802,6 +802,8 @@ class OpenGLRenderer:
         # there is always at least one section -> no out of bounds here
         if self.file_writer.sections[-1].skip_animations:
             self.skip_animations = True
+        if self.file_writer.output_spec.is_still:
+            self.skip_animations = True
         if (
             config.from_animation_number > 0
             and self.num_plays < config.from_animation_number
@@ -956,31 +958,18 @@ class OpenGLRenderer:
         self.animation_elapsed_time = time.time() - self.animation_start_time
 
     def scene_finished(self, scene: Scene) -> None:
-        """
-        Handle the finalization process after a scene has finished rendering.
-
-        Performs the following actions:
-        - If any plays (animations) have occurred, finalizes the file writing process.
-        - If no plays have occurred but movie writing is enabled, disables
-          movie writing to avoid creating an empty movie file.
-        - If the configuration requires saving the last frame,
-          updates and saves the final image of the scene.
-
-        Parameters
-        ----------
-        scene : Scene
-            The scene that has finished rendering.
-        """
-        # When num_plays is 0, no images have been output, so output a single
-        # image in this case
-        if self.num_plays > 0:
+        """Finalize configured output for the scene."""
+        output = self.file_writer.output_spec
+        if self.num_plays > 0 and (output.is_video or output.is_image_sequence):
             self.file_writer.finish()
-        elif self.num_plays == 0 and config.write_to_movie:
-            config.write_to_movie = False
+        elif self.num_plays == 0:
+            # Keep the framebuffer useful for direct renderer access and
+            # graphical tests even when no media artifact was requested.
+            self.update_frame(scene)
 
         if self.should_save_last_frame():
-            config.save_last_frame = True
-            self.update_frame(scene)
+            if self.num_plays > 0:
+                self.update_frame(scene)
             self.file_writer.save_image(self.get_image())
 
     def should_save_last_frame(self) -> bool:
@@ -991,11 +980,12 @@ class OpenGLRenderer:
         - The scene is not in interactive mode.
         - This is the first play (i.e., num_plays == 0).
         """
-        if config["save_last_frame"]:
+        output = self.file_writer.output_spec
+        if output.is_still:
             return True
         if self.scene.interactive_mode:
             return False
-        return self.num_plays == 0
+        return self.num_plays == 0 and output.is_video
 
     def get_image(self) -> Image.Image:
         """

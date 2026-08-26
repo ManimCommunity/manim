@@ -140,14 +140,15 @@ def test_s_flag_no_animations(tmp_path, manim_cfg_file, simple_scenes_path):
 
 
 @pytest.mark.slow
-def test_s_flag(tmp_path, manim_cfg_file, simple_scenes_path):
+@pytest.mark.parametrize("still_flag", ["-s", "--format=png"])
+def test_s_flag(tmp_path, manim_cfg_file, simple_scenes_path, still_flag):
     scene_name = "SquareToCircle"
     command = [
         sys.executable,
         "-m",
         "manim",
         "-ql",
-        "-s",
+        still_flag,
         "--media_dir",
         str(tmp_path),
         str(simple_scenes_path),

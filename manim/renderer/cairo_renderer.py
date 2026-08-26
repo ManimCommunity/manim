@@ -252,7 +252,7 @@ class CairoRenderer:
         # there is always at least one section -> no out of bounds here
         if self.file_writer.sections[-1].skip_animations:
             self.skip_animations = True
-        if config["save_last_frame"]:
+        if self.file_writer.output_spec.is_still:
             self.skip_animations = True
         if (
             config.from_animation_number > 0
@@ -267,17 +267,17 @@ class CairoRenderer:
             raise EndSceneEarlyException()
 
     def scene_finished(self, scene: Scene) -> None:
-        # If no animations in scene, render an image instead
-        if self.num_plays:
+        output = self.file_writer.output_spec
+        if self.num_plays and (output.is_video or output.is_image_sequence):
             self.file_writer.finish()
-        elif config.write_to_movie:
-            config.save_last_frame = True
-            config.write_to_movie = False
-        else:
+        elif not self.num_plays:
             self.static_image = None
             self.update_frame(scene)
 
-        if config["save_last_frame"]:
-            self.static_image = None
-            self.update_frame(scene)
+        # A video request for a scene with no plays retains the established
+        # behavior of producing a useful still image instead of an empty movie.
+        if output.is_still or (not self.num_plays and output.is_video):
+            if self.num_plays:
+                self.static_image = None
+                self.update_frame(scene)
             self.file_writer.save_image(self.camera.get_image())

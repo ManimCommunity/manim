@@ -5,9 +5,12 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from click.testing import CliRunner
 
 from manim import RIGHT, WHITE, Scene, Square, Tex, Text, Vector, tempconfig
+from manim._config.output import OutputFormat, resolve_output_spec
 from manim._config.utils import ManimConfig
+from manim.cli.render.commands import render
 from manim.constants import RendererType
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.types.vectorized_mobject import VMobject
@@ -57,9 +60,107 @@ def test_tempconfig_restores_renderer_class_bases(config):
         ("gif", ".mp4"),
     ],
 )
-def test_resolve_file_extensions(config, format, expected_file_extension):
+def test_resolve_segment_extensions(config, format, expected_file_extension):
     config.format = format
-    assert config.movie_file_extension == expected_file_extension
+    assert resolve_output_spec(config).segment_extension == expected_file_extension
+
+
+@pytest.mark.parametrize(
+    ("format", "expected_format"),
+    [
+        ("auto", OutputFormat.MP4),
+        ("none", OutputFormat.NONE),
+        ("png", OutputFormat.PNG),
+        ("png-sequence", OutputFormat.PNG_SEQUENCE),
+        ("gif", OutputFormat.GIF),
+    ],
+)
+def test_resolve_output_spec(config, format, expected_format):
+    config.format = format
+
+    assert resolve_output_spec(config).format is expected_format
+
+
+def test_transparent_auto_output_resolves_to_mov(config):
+    config.format = "auto"
+    config.transparent = True
+
+    assert resolve_output_spec(config).format is OutputFormat.MOV
+
+
+def test_explicit_transparent_mp4_is_rejected(config):
+    config.format = "mp4"
+    config.transparent = True
+
+    with pytest.raises(ValueError, match="does not support an alpha channel"):
+        resolve_output_spec(config)
+
+
+def test_dry_run_resolves_no_output_without_mutating_output_request(config):
+    config.format = "gif"
+    config.dry_run = True
+
+    assert resolve_output_spec(config).format is OutputFormat.NONE
+    assert config.format == "gif"
+
+
+def test_save_last_frame_resolves_to_still_output(config):
+    config.format = "auto"
+    config.save_last_frame = True
+
+    assert resolve_output_spec(config).format is OutputFormat.PNG
+
+
+def test_save_last_frame_alias_works_with_tempconfig(config):
+    original_format = config.format
+
+    with tempconfig({"save_last_frame": True}):
+        assert config.format == "png"
+        assert resolve_output_spec(config).is_still
+
+    assert config.format == original_format
+
+
+def test_sections_require_video_output(config):
+    config.format = "png"
+    config.save_sections = True
+
+    with pytest.raises(ValueError, match="Section output requires"):
+        resolve_output_spec(config)
+
+
+def test_format_is_loaded_from_config_file(tmp_path, config):
+    config_file = tmp_path / "output.cfg"
+    config_file.write_text("[CLI]\nformat = png-sequence\n")
+
+    config.digest_file(config_file)
+
+    assert config.format == "png-sequence"
+
+
+def test_absent_cli_output_options_preserve_config_file_values(tmp_path):
+    scene_file = tmp_path / "scene.py"
+    scene_file.write_text("# --jupyter returns before loading this file\n")
+    config_file = tmp_path / "output.cfg"
+    config_file.write_text(
+        "[CLI]\n"
+        "format = webm\n"
+        "output_file = configured-name\n"
+        "background_opacity = 0.5\n",
+    )
+    result = CliRunner().invoke(
+        render,
+        [str(scene_file), "--jupyter"],
+        standalone_mode=False,
+    )
+    assert result.exception is None
+
+    candidate = ManimConfig().digest_file(config_file)
+    candidate.digest_args(result.return_value)
+
+    assert candidate.format == "webm"
+    assert candidate.output_file == "configured-name"
+    assert candidate.transparent is True
 
 
 class MyScene(Scene):
@@ -96,7 +197,6 @@ def test_transparent_by_background_opacity(config, dry_run):
     scene.render()
     frame = scene.renderer.get_frame()
     np.testing.assert_allclose(frame[0, 0], [0, 0, 0, 127])
-    assert config.movie_file_extension == ".mov"
     assert config.transparent is True
 
 
@@ -213,20 +313,17 @@ def test_frame_size(tmp_path, config):
 
 def test_temporary_dry_run(config):
     """Test that tempconfig correctly restores after setting dry_run."""
-    assert config["write_to_movie"]
-    assert not config["save_last_frame"]
+    assert resolve_output_spec(config).is_video
 
     with tempconfig({"dry_run": True}):
-        assert not config["write_to_movie"]
-        assert not config["save_last_frame"]
+        assert not resolve_output_spec(config).enabled
 
-    assert config["write_to_movie"]
-    assert not config["save_last_frame"]
+    assert resolve_output_spec(config).is_video
 
 
 def test_dry_run_with_png_format(config, dry_run):
     """Test that there are no exceptions when running a png without output"""
-    config.write_to_movie = False
+    config.format = "png"
     config.disable_caching = True
     assert config.dry_run is True
     scene = MyScene()
@@ -235,7 +332,7 @@ def test_dry_run_with_png_format(config, dry_run):
 
 def test_dry_run_with_png_format_skipped_animations(config, dry_run):
     """Test that there are no exceptions when running a png without output and skipped animations"""
-    config.write_to_movie = False
+    config.format = "png"
     config.disable_caching = True
     assert config["dry_run"] is True
     scene = MyScene(skip_animations=True)

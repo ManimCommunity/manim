@@ -121,15 +121,30 @@ render_options = option_group(
     ),
     option(
         "--format",
-        type=Choice(["png", "gif", "mp4", "webm", "mov"], case_sensitive=False),
+        type=Choice(
+            [
+                "auto",
+                "none",
+                "png",
+                "png-sequence",
+                "gif",
+                "mp4",
+                "webm",
+                "mov",
+            ],
+            case_sensitive=False,
+        ),
         default=None,
+        help="Primary output format. PNG renders only the final scene state; "
+        "png-sequence writes every rendered frame.",
     ),
     option(
         "-s",
         "--save_last_frame",
         default=None,
         is_flag=True,
-        help="Render and save only the last frame of a scene as a PNG image.",
+        help="Fast-forward animations and save the final scene state as PNG "
+        "(equivalent to --format=png).",
     ),
     option(
         "-q",
@@ -189,21 +204,7 @@ render_options = option_group(
             case_sensitive=False,
         ),
         help="Select a renderer for your Scene.",
-        default="cairo",
-    ),
-    option(
-        "-g",
-        "--save_pngs",
-        is_flag=True,
         default=None,
-        help="Save each frame as png (Deprecated).",
-    ),
-    option(
-        "-i",
-        "--save_as_gif",
-        default=None,
-        is_flag=True,
-        help="Save as a gif (Deprecated).",
     ),
     option(
         "--save_sections",
@@ -215,6 +216,7 @@ render_options = option_group(
         "-t",
         "--transparent",
         is_flag=True,
+        default=None,
         help="Render scenes with alpha channel.",
     ),
     option(

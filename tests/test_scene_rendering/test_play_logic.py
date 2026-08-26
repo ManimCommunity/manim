@@ -112,13 +112,30 @@ def test_t_values_with_cached_data(using_temp_config):
     assert scene.update_to_time.call_count == 10
 
 
-def test_t_values_save_last_frame(config, using_temp_config):
-    """Test that there is only one t value handled when only saving the last frame"""
-    config.save_last_frame = True
+@pytest.mark.parametrize(
+    "still_config",
+    [{"save_last_frame": True}, {"format": "png"}],
+)
+def test_t_values_save_last_frame(config, using_temp_config, still_config):
+    """Still output fast-forwards each play and only evaluates its final state."""
+    config.update(still_config)
     scene = SquareToCircle()
     scene.update_to_time = Mock()
     scene.render()
     scene.update_to_time.assert_called_once_with(1)
+
+
+def test_png_sequence_evaluates_every_frame(config, using_temp_config):
+    config.format = "png-sequence"
+    scene = SquareToCircle()
+    scene.update_to_time = Mock()
+
+    scene.render()
+
+    assert scene.update_to_time.call_count == config.frame_rate
+    assert scene.renderer.file_writer.frame_count == config.frame_rate
+    assert scene.renderer.file_writer.final_file_path.is_dir()
+    assert (scene.renderer.file_writer.final_file_path / "0000.png").is_file()
 
 
 def test_animate_with_changed_custom_attribute(using_temp_config):

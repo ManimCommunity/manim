@@ -9,6 +9,7 @@ import pytest
 import srt
 
 from manim import Manager, Scene, tempconfig
+from manim._config.output import OutputFormat
 from manim.animation.animation import Wait
 from manim.constants import RendererType
 from manim.scene.scene import SceneInteractRerun
@@ -22,6 +23,18 @@ def test_manager_attaches_to_existing_scene(dry_run):
 
     assert manager.scene is scene
     assert scene.manager is manager
+
+
+def test_manager_exposes_the_session_output_snapshot(config):
+    config.dry_run = False
+    config.format = "gif"
+    scene = Scene()
+    manager = Manager(scene)
+
+    config.format = "none"
+
+    assert manager.output_spec.format is OutputFormat.GIF
+    assert manager.output_spec is scene.renderer.file_writer.output_spec
 
 
 def test_manager_rejects_second_attachment(dry_run):

@@ -26,7 +26,7 @@ def test_basic_scene_with_default_values(tmp_path, manim_cfg_file, simple_scenes
         "manim",
         "--renderer",
         "opengl",
-        "--write_to_movie",
+        "--format=mp4",
         "--media_dir",
         str(tmp_path),
         str(simple_scenes_path),
@@ -87,7 +87,7 @@ def test_basic_scene_l_flag(tmp_path, manim_cfg_file, simple_scenes_path):
         "--renderer",
         "opengl",
         "-ql",
-        "--write_to_movie",
+        "--format=mp4",
         "--media_dir",
         str(tmp_path),
         str(simple_scenes_path),
@@ -111,7 +111,7 @@ def test_n_flag(tmp_path, simple_scenes_path):
         "-ql",
         "--renderer",
         "opengl",
-        "--write_to_movie",
+        "--format=mp4",
         "-n 3,6",
         "--media_dir",
         str(tmp_path),
@@ -233,7 +233,7 @@ def test_no_default_image_output_with_non_static_scene(
 
 
 @pytest.mark.slow
-def test_image_output_for_static_scene_with_write_to_movie(
+def test_image_output_for_static_scene_with_video_format(
     tmp_path, manim_cfg_file, simple_scenes_path
 ):
     scene_name = "StaticScene"
@@ -241,7 +241,7 @@ def test_image_output_for_static_scene_with_write_to_movie(
         sys.executable,
         "-m",
         "manim",
-        "--write_to_movie",
+        "--format=mp4",
         "--renderer",
         "opengl",
         "-ql",
@@ -324,7 +324,7 @@ def test_a_flag(tmp_path, manim_cfg_file, infallible_scenes_path):
         "manim",
         "--renderer",
         "opengl",
-        "--write_to_movie",
+        "--format=mp4",
         "-ql",
         "--media_dir",
         str(tmp_path),
@@ -633,7 +633,7 @@ def test_default_format_output_for_transparent_flag(
         "--renderer",
         "opengl",
         "-ql",
-        "--write_to_movie",
+        "--format=auto",
         "--media_dir",
         str(tmp_path),
         "-t",

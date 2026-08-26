@@ -282,11 +282,10 @@ class ManimDirective(Directive):
             "pixel_height": pixel_height,
             "pixel_width": pixel_width,
             "save_last_frame": save_last_frame,
-            "write_to_movie": not save_last_frame,
             "output_file": output_file,
         }
         if save_last_frame:
-            example_config["format"] = None
+            example_config["format"] = "png"
         if save_as_gif:
             example_config["format"] = "gif"
 

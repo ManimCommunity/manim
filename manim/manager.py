@@ -13,6 +13,7 @@ from .utils.exceptions import EndSceneEarlyException, RerunSceneException
 from .utils.file_ops import open_media_file
 
 if TYPE_CHECKING:
+    from ._config.output import OutputSpec
     from .animation.animation import Animation
     from .camera.camera import Camera
     from .mobject.mobject import Mobject, _AnimationBuilder
@@ -84,6 +85,11 @@ class Manager(Generic[SceneT]):
     def file_writer(self) -> SceneFileWriter:
         """Return the current renderer's file writer."""
         return cast("SceneFileWriter", self.renderer.file_writer)
+
+    @property
+    def output_spec(self) -> OutputSpec:
+        """Return the immutable output intent captured for this session."""
+        return self.file_writer.output_spec
 
     @property
     def time(self) -> float:
@@ -186,7 +192,7 @@ class Manager(Generic[SceneT]):
         self.renderer.scene_finished(self.scene)
 
         # Show info only if animations are rendered or to get image.
-        if self.num_plays or config["format"] == "png" or config["save_last_frame"]:
+        if self.num_plays or self.output_spec.enabled:
             logger.info(
                 f"Rendered {str(self.scene)}\nPlayed {self.num_plays} animations",
             )
