@@ -62,6 +62,9 @@ if TYPE_CHECKING:
         Point2DLike,
         Point3D,
         Point3DLike,
+        Point3DLike_Array,
+        PointNDLike,
+        PointNDLike_Array,
         Vector3D,
         Vector3DLike,
     )
@@ -157,16 +160,13 @@ class CoordinateSystem:
 
     def coords_to_point(
         self,
-        *coords: float
-        | Sequence[float]
-        | Sequence[Sequence[float] | np.ndarray]
-        | np.ndarray,
+        *coords: float | PointNDLike | PointNDLike_Array,
     ) -> np.ndarray:
         raise NotImplementedError()
 
     def point_to_coords(
         self,
-        point: Sequence[float] | Sequence[Sequence[float] | np.ndarray] | np.ndarray,
+        point: Point3DLike | Point3DLike_Array,
     ) -> np.ndarray:
         raise NotImplementedError()
 
@@ -219,17 +219,14 @@ class CoordinateSystem:
 
     def c2p(
         self,
-        *coords: float
-        | Sequence[float]
-        | Sequence[Sequence[float] | np.ndarray]
-        | np.ndarray,
+        *coords: float | PointNDLike | PointNDLike_Array,
     ) -> np.ndarray:
         """Abbreviation for :meth:`coords_to_point`"""
         return self.coords_to_point(*coords)
 
     def p2c(
         self,
-        point: Sequence[float] | Sequence[Sequence[float] | np.ndarray] | np.ndarray,
+        point: Point3DLike | Point3DLike_Array,
     ) -> np.ndarray:
         """Abbreviation for :meth:`point_to_coords`"""
         return self.point_to_coords(point)
@@ -1877,10 +1874,7 @@ class CoordinateSystem:
 
     def __matmul__(
         self,
-        coord: Sequence[float]
-        | Sequence[Sequence[float] | np.ndarray]
-        | np.ndarray
-        | Mobject,
+        coord: PointNDLike | PointNDLike_Array | Mobject,
     ) -> np.ndarray:
         if isinstance(coord, Mobject):
             coord = coord.get_center()
@@ -1888,7 +1882,7 @@ class CoordinateSystem:
 
     def __rmatmul__(
         self,
-        point: Sequence[float] | Sequence[Sequence[float] | np.ndarray] | np.ndarray,
+        point: Point3DLike | Point3DLike_Array,
     ) -> np.ndarray:
         return self.point_to_coords(point)
 
@@ -2097,10 +2091,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
     def coords_to_point(
         self,
-        *coords: float
-        | Sequence[float]
-        | Sequence[Sequence[float] | np.ndarray]
-        | np.ndarray,
+        *coords: float | PointNDLike | PointNDLike_Array,
     ) -> np.ndarray:
         """Accepts coordinates from the axes and returns a point with respect to the scene.
         Equivalent to `ax @ (coord1)`
@@ -2219,7 +2210,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
     def point_to_coords(
         self,
-        point: Sequence[float] | Sequence[Sequence[float] | np.ndarray] | np.ndarray,
+        point: Point3DLike | Point3DLike_Array,
     ) -> np.ndarray:
         """Accepts a point from the scene and returns its coordinates with respect to the axes.
 
