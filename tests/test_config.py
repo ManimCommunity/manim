@@ -6,8 +6,11 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from manim import WHITE, Scene, Square, Tex, Text, tempconfig
+from manim import RIGHT, WHITE, Scene, Square, Tex, Text, Vector, tempconfig
 from manim._config.utils import ManimConfig
+from manim.constants import RendererType
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.types.vectorized_mobject import VMobject
 from tests.assert_utils import assert_dir_exists, assert_dir_filled, assert_file_exists
 
 
@@ -32,6 +35,17 @@ def test_tempconfig(config):
             np.testing.assert_allclose(config[k], v)
         else:
             assert config[k] == v
+
+
+def test_tempconfig_restores_renderer_class_bases(config):
+    with tempconfig({"renderer": "opengl"}):
+        assert config.renderer == RendererType.OPENGL
+        assert issubclass(Vector, OpenGLVMobject)
+
+    assert config.renderer == RendererType.CAIRO
+    assert issubclass(Vector, VMobject)
+    assert not issubclass(Vector, OpenGLVMobject)
+    Vector(RIGHT)
 
 
 @pytest.mark.parametrize(
