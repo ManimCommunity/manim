@@ -132,7 +132,10 @@ The corresponding folder structure looks like this:
      └─Tex
 
 Saving the last frame with ``-s`` can be combined with the flags for different
-resolutions, e.g. ``-s -ql``, ``-s -qh``
+resolutions, e.g. ``-s -ql``, ``-s -qh``. The equivalent
+``--format=png`` spelling also selects this fast final-state-only mode. To write
+every rendered frame as a numbered PNG instead, use
+``--format=png-sequence``.
 
 
 

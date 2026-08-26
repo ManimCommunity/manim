@@ -53,6 +53,10 @@ instead of the whole video, you can execute
 
    manim -sqh <file.py> SceneName
 
+The equivalent ``--format=png`` spelling uses the same fast final-state-only
+evaluation. Use ``--format=png-sequence`` when every rendered frame should be
+written as a numbered PNG instead.
+
 The following example specifies the output file name (with the :code:`-o`
 flag), renders only the first ten animations (:code:`-n` flag) with a white
 background (:code:`-c` flag), and saves the animation as a ``.gif`` instead of as a
@@ -161,7 +165,7 @@ and serve the same purpose.  Take, for example, the following config file.
    [CLI]
    # my config file
    output_file = myscene
-   save_as_gif = True
+   format = gif
    background_color = WHITE
 
 Config files are parsed with the standard python library ``configparser``. In
@@ -171,7 +175,7 @@ Now, executing the following command
 
 .. code-block:: bash
 
-   manim -o myscene -i -c WHITE <file.py> SceneName
+   manim -o myscene --format=gif -c WHITE <file.py> SceneName
 
 is equivalent to executing the following command, provided that ``manim.cfg``
 is in the same directory as <file.py>,
@@ -253,7 +257,7 @@ For example, take the following user-wide config file
    # user-wide
    [CLI]
    output_file = myscene
-   save_as_gif = True
+   format = gif
    background_color = WHITE
 
 and the following folder-wide file
@@ -262,7 +266,7 @@ and the following folder-wide file
 
    # folder-wide
    [CLI]
-   save_as_gif = False
+   format = auto
 
 Then, executing :code:`manim <file.py> SceneName` will be equivalent to not
 using any config files and executing
@@ -355,14 +359,14 @@ A list of all config options
    'frame_size', 'frame_width', 'frame_x_radius', 'frame_y_radius',
    'from_animation_number', `fullscreen`, 'images_dir', 'input_file', 'left_side',
    'log_dir', 'log_to_file', 'max_files_cached', 'max_inflight_encoders',
-   'media_dir', 'media_width', 'movie_file_extension', 'notify_outdated_version',
-   'output_file', 'partial_movie_dir',
+   'media_dir', 'media_width', 'notify_outdated_version', 'output_file',
+   'partial_movie_dir',
    'pixel_height', 'pixel_width', 'plugins', 'preview',
-   'progress_bar', 'quality', 'right_side', 'save_as_gif', 'save_last_frame',
-   'save_pngs', 'scene_names', 'show_in_file_browser', 'sound', 'tex_dir',
+   'progress_bar', 'quality', 'right_side', 'save_last_frame', 'scene_names',
+   'show_in_file_browser', 'sound', 'tex_dir',
    'tex_template', 'tex_template_file', 'text_dir', 'top', 'transparent',
    'upto_animation_number', 'use_opengl_renderer', 'verbosity', 'video_dir',
-   'window_position', 'window_monitor', 'window_size', 'write_all', 'write_to_movie',
+   'window_position', 'window_monitor', 'window_size', 'write_all',
    'enable_wireframe', 'force_window']
 
 
