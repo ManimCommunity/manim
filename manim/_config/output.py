@@ -2,11 +2,10 @@
 
 from __future__ import annotations
 
-__all__ = ["OutputFormat", "OutputSpec", "resolve_output_spec"]
+__all__ = ["OutputFormat", "OutputSpec"]
 
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Protocol
 
 
 class OutputFormat(StrEnum):
@@ -107,38 +106,3 @@ class OutputSpec:
         extension = self.artifact_extension
         assert extension is not None
         return extension
-
-
-class _OutputConfigSource(Protocol):
-    format: str | OutputFormat | None
-    save_last_frame: bool
-    save_sections: bool
-    transparent: bool
-    live_preview: bool
-    enable_gui: bool
-    dry_run: bool
-
-
-def resolve_output_spec(config: _OutputConfigSource) -> OutputSpec:
-    """Resolve mutable compatibility configuration into immutable output intent."""
-    if config.dry_run:
-        return OutputSpec(
-            format=OutputFormat.NONE,
-            transparent=config.transparent,
-            save_sections=False,
-        )
-
-    requested = OutputFormat.parse(config.format)
-    if config.save_last_frame:
-        requested = OutputFormat.PNG
-    elif requested is OutputFormat.AUTO:
-        if config.live_preview or config.enable_gui:
-            requested = OutputFormat.NONE
-        else:
-            requested = OutputFormat.MOV if config.transparent else OutputFormat.MP4
-
-    return OutputSpec(
-        format=requested,
-        transparent=config.transparent,
-        save_sections=config.save_sections,
-    )

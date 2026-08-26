@@ -8,6 +8,7 @@ import numpy as np
 import pytest
 
 from manim import DR, Circle, Create, Scene, Star, tempconfig
+from manim._config.output import OutputFormat, OutputSpec
 from manim.scene.scene_file_writer import SceneFileWriter, to_av_frame_rate
 from manim.utils.commands import capture, get_video_metadata
 
@@ -191,7 +192,11 @@ def test_frame_rates():
 def _new_file_writer(scene_name: str) -> SceneFileWriter:
     renderer = Mock()
     renderer.num_plays = 0
-    return SceneFileWriter(renderer, scene_name)
+    return SceneFileWriter(
+        renderer,
+        scene_name,
+        OutputSpec(OutputFormat.MP4, transparent=False, save_sections=False),
+    )
 
 
 def test_clean_cache_ignores_hidden_files(config, tmp_path):

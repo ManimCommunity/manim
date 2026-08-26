@@ -12,5 +12,3 @@ class RendererCapabilities:
     """Optional session features implemented by a renderer."""
 
     live_preview: bool = False
-    live_preview_with_output: bool = False
-    interactive_embed: bool = False

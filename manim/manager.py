@@ -8,13 +8,13 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 import srt
 
 from . import logger
-from ._config.render_session import PresentationSpec, RenderSessionSpec
 from .scene.section import DefaultSectionType
 from .utils.exceptions import EndSceneEarlyException, RerunSceneException
 from .utils.file_ops import open_media_file
 
 if TYPE_CHECKING:
     from ._config.output import OutputSpec
+    from ._config.render_session import RenderSessionSpec
     from .animation.animation import Animation
     from .camera.camera import Camera
     from .mobject.mobject import Mobject, _AnimationBuilder
@@ -90,18 +90,12 @@ class Manager(Generic[SceneT]):
     @property
     def output_spec(self) -> OutputSpec:
         """Return the immutable output intent captured for this session."""
-        return self.file_writer.output_spec
+        return self.session_spec.output
 
     @property
     def session_spec(self) -> RenderSessionSpec:
         """Return the immutable output and presentation intent for this session."""
-        session_spec = getattr(self.renderer, "session_spec", None)
-        if isinstance(session_spec, RenderSessionSpec):
-            return session_spec
-        return RenderSessionSpec(
-            output=self.output_spec,
-            presentation=PresentationSpec(False, False, False),
-        )
+        return self.scene.session_spec
 
     @property
     def time(self) -> float:

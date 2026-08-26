@@ -13,7 +13,7 @@ from typing import Protocol
 
 from manim.renderer.protocol import RendererCapabilities
 
-from .output import OutputFormat, OutputSpec, resolve_output_spec
+from .output import OutputFormat, OutputSpec
 
 
 @dataclass(frozen=True, slots=True)
@@ -35,7 +35,6 @@ class RenderSessionSpec:
 
 class _SessionConfigSource(Protocol):
     format: str | OutputFormat | None
-    save_last_frame: bool
     save_sections: bool
     transparent: bool
     preview: bool
@@ -52,8 +51,26 @@ def resolve_render_session(
     renderer_name: str,
 ) -> RenderSessionSpec:
     """Resolve and validate one renderer-independent session request."""
-    output = resolve_output_spec(config)
     live_preview = config.live_preview or config.enable_gui
+    requested_format = OutputFormat.parse(config.format)
+    if config.dry_run:
+        requested_format = OutputFormat.NONE
+        save_sections = False
+    else:
+        save_sections = config.save_sections
+        if requested_format is OutputFormat.AUTO:
+            if live_preview:
+                requested_format = OutputFormat.NONE
+            else:
+                requested_format = (
+                    OutputFormat.MOV if config.transparent else OutputFormat.MP4
+                )
+
+    output = OutputSpec(
+        format=requested_format,
+        transparent=config.transparent,
+        save_sections=save_sections,
+    )
     presentation = PresentationSpec(
         open_after_render=config.preview,
         live_preview=live_preview,
@@ -70,10 +87,6 @@ def resolve_render_session(
     if live_preview and output.is_still:
         raise ValueError(
             "Live preview cannot be combined with final-state-only PNG output.",
-        )
-    if live_preview and output.enabled and not capabilities.live_preview_with_output:
-        raise ValueError(
-            f"{renderer_name} cannot produce media output while live preview is active.",
         )
     if presentation.open_after_render and not output.enabled:
         raise ValueError(

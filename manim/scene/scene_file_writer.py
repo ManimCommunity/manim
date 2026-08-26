@@ -35,7 +35,7 @@ from manim import __version__
 
 from .. import config, logger
 from .._config.logger_utils import set_file_logger
-from .._config.output import OutputSpec, resolve_output_spec
+from .._config.output import OutputSpec
 from ..constants import RendererType
 from ..utils.file_ops import (
     add_extension_if_not_present,
@@ -225,11 +225,11 @@ class SceneFileWriter:
         self,
         renderer: CairoRenderer | OpenGLRenderer,
         scene_name: str,
-        output_spec: OutputSpec | None = None,
+        output_spec: OutputSpec,
         **kwargs: Any,
     ) -> None:
         self.renderer = renderer
-        self.output_spec = output_spec or resolve_output_spec(config)
+        self.output_spec = output_spec
         self._inflight_encode_jobs: list[_PartialMovieEncodeJob] = []
         self._inflight_by_path: dict[str, _PartialMovieEncodeJob] = {}
         self._current_encode_job: _PartialMovieEncodeJob | None = None

@@ -14,7 +14,6 @@ from PIL import Image
 from typing_extensions import override
 
 from manim import config
-from manim._config.render_session import resolve_render_session
 from manim.mobject.opengl.opengl_mobject import (
     OpenGLMobject,
     OpenGLPoint,
@@ -48,6 +47,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
     from typing import Self
 
+    from manim._config.render_session import RenderSessionSpec
     from manim.animation.animation import Animation
     from manim.mobject.mobject import Mobject, _AnimationBuilder
     from manim.scene.scene import Scene
@@ -486,11 +486,7 @@ class OpenGLRenderer:
         The window used for previewing, if any.
     """
 
-    capabilities = RendererCapabilities(
-        live_preview=True,
-        live_preview_with_output=True,
-        interactive_embed=True,
-    )
+    capabilities = RendererCapabilities(live_preview=True)
 
     def __init__(
         self,
@@ -524,7 +520,7 @@ class OpenGLRenderer:
         self.path_to_texture_id: dict[str, int] = {}
         self.background_color = config["background_color"]
 
-    def init_scene(self, scene: Scene) -> None:
+    def init_scene(self, scene: Scene, session_spec: RenderSessionSpec) -> None:
         """
         Initializes the OpenGL rendering context and related resources
         for the given scene.
@@ -541,20 +537,15 @@ class OpenGLRenderer:
             The scene to be rendered
         """
         self.partial_movie_files: list[str | None] = []
-        self.session_spec = resolve_render_session(
-            config,
-            self.capabilities,
-            renderer_name=type(self).__name__,
-        )
         self.file_writer: SceneFileWriter = self._file_writer_class(
             self,
             scene.__class__.__name__,
-            output_spec=self.session_spec.output,
+            output_spec=session_spec.output,
         )
         self.scene = scene
 
         self.background_color = config["background_color"]
-        if self.should_create_window():
+        if self.should_create_window(session_spec):
             from .opengl_renderer_window import Window
 
             self.window = Window(self)
@@ -580,13 +571,13 @@ class OpenGLRenderer:
             moderngl.ONE,
         )
 
-    def should_create_window(self) -> bool:
+    def should_create_window(self, session_spec: RenderSessionSpec) -> bool:
         """
         Determine whether a window should be created for rendering
         based on the current configuration.
 
         """
-        return self.session_spec.presentation.live_preview
+        return session_spec.presentation.live_preview
 
     def get_pixel_shape(self) -> tuple[int, int] | None:
         """

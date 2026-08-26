@@ -43,6 +43,7 @@ from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLPoint
 
 from .. import config, logger
+from .._config.render_session import resolve_render_session
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
@@ -213,7 +214,12 @@ class Scene:
             )
         else:
             self.renderer = renderer
-        self.renderer.init_scene(self)
+        self.session_spec = resolve_render_session(
+            config,
+            self.renderer.capabilities,
+            renderer_name=type(self.renderer).__name__,
+        )
+        self.renderer.init_scene(self, self.session_spec)
 
         self.mobjects: list[Mobject] = []
         # TODO, remove need for foreground mobjects
@@ -1545,7 +1551,7 @@ class Scene:
 
     def embed(self) -> None:
         assert isinstance(self.renderer, OpenGLRenderer)
-        if not self.renderer.session_spec.presentation.live_preview:
+        if not self.session_spec.presentation.live_preview:
             logger.warning("Called embed() while no live preview window is available.")
             return
         if self.renderer.file_writer.output_spec.enabled:

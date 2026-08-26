@@ -8,7 +8,7 @@ import pytest
 from click.testing import CliRunner
 
 from manim import RIGHT, WHITE, Scene, Square, Tex, Text, Vector, tempconfig
-from manim._config.output import OutputFormat, resolve_output_spec
+from manim._config.output import OutputFormat
 from manim._config.render_session import resolve_render_session
 from manim._config.utils import ManimConfig
 from manim.cli.render.commands import render
@@ -17,6 +17,14 @@ from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.renderer.protocol import RendererCapabilities
 from tests.assert_utils import assert_dir_exists, assert_dir_filled, assert_file_exists
+
+
+def _resolve_output(config):
+    return resolve_render_session(
+        config,
+        RendererCapabilities(live_preview=True),
+        renderer_name="TestRenderer",
+    ).output
 
 
 def test_tempconfig(config):
@@ -64,7 +72,7 @@ def test_tempconfig_restores_renderer_class_bases(config):
 )
 def test_resolve_segment_extensions(config, format, expected_file_extension):
     config.format = format
-    assert resolve_output_spec(config).segment_extension == expected_file_extension
+    assert _resolve_output(config).segment_extension == expected_file_extension
 
 
 @pytest.mark.parametrize(
@@ -77,24 +85,24 @@ def test_resolve_segment_extensions(config, format, expected_file_extension):
         ("gif", OutputFormat.GIF),
     ],
 )
-def test_resolve_output_spec(config, format, expected_format):
+def test_resolve_session_output(config, format, expected_format):
     config.format = format
 
-    assert resolve_output_spec(config).format is expected_format
+    assert _resolve_output(config).format is expected_format
 
 
 def test_transparent_auto_output_resolves_to_mov(config):
     config.format = "auto"
     config.transparent = True
 
-    assert resolve_output_spec(config).format is OutputFormat.MOV
+    assert _resolve_output(config).format is OutputFormat.MOV
 
 
 def test_live_preview_auto_output_resolves_to_none(config):
     config.format = "auto"
     config.live_preview = True
 
-    assert resolve_output_spec(config).format is OutputFormat.NONE
+    assert _resolve_output(config).format is OutputFormat.NONE
 
 
 def test_live_preview_requires_renderer_capability(config):
@@ -120,31 +128,19 @@ def test_preview_requires_output(config):
         )
 
 
-def test_live_preview_with_output_requires_renderer_capability(config):
-    config.format = "mp4"
-    config.live_preview = True
-
-    with pytest.raises(ValueError, match="cannot produce media output"):
-        resolve_render_session(
-            config,
-            RendererCapabilities(live_preview=True),
-            renderer_name="TestRenderer",
-        )
-
-
 def test_explicit_transparent_mp4_is_rejected(config):
     config.format = "mp4"
     config.transparent = True
 
     with pytest.raises(ValueError, match="does not support an alpha channel"):
-        resolve_output_spec(config)
+        _resolve_output(config)
 
 
 def test_dry_run_resolves_no_output_without_mutating_output_request(config):
     config.format = "gif"
     config.dry_run = True
 
-    assert resolve_output_spec(config).format is OutputFormat.NONE
+    assert _resolve_output(config).format is OutputFormat.NONE
     assert config.format == "gif"
 
 
@@ -152,7 +148,7 @@ def test_save_last_frame_resolves_to_still_output(config):
     config.format = "auto"
     config.save_last_frame = True
 
-    assert resolve_output_spec(config).format is OutputFormat.PNG
+    assert _resolve_output(config).format is OutputFormat.PNG
 
 
 def test_save_last_frame_alias_works_with_tempconfig(config):
@@ -160,7 +156,7 @@ def test_save_last_frame_alias_works_with_tempconfig(config):
 
     with tempconfig({"save_last_frame": True}):
         assert config.format == "png"
-        assert resolve_output_spec(config).is_still
+        assert _resolve_output(config).is_still
 
     assert config.format == original_format
 
@@ -170,7 +166,7 @@ def test_sections_require_video_output(config):
     config.save_sections = True
 
     with pytest.raises(ValueError, match="Section output requires"):
-        resolve_output_spec(config)
+        _resolve_output(config)
 
 
 def test_format_is_loaded_from_config_file(tmp_path, config):
@@ -212,7 +208,7 @@ def test_opengl_cli_no_longer_disables_automatic_output(tmp_path, config):
 
     assert config.renderer is RendererType.OPENGL
     assert config.format == "auto"
-    assert resolve_output_spec(config).format is OutputFormat.MP4
+    assert _resolve_output(config).format is OutputFormat.MP4
 
 
 def test_absent_cli_output_options_preserve_config_file_values(tmp_path):
@@ -390,12 +386,12 @@ def test_frame_size(tmp_path, config):
 
 def test_temporary_dry_run(config):
     """Test that tempconfig correctly restores after setting dry_run."""
-    assert resolve_output_spec(config).is_video
+    assert _resolve_output(config).is_video
 
     with tempconfig({"dry_run": True}):
-        assert not resolve_output_spec(config).enabled
+        assert not _resolve_output(config).enabled
 
-    assert resolve_output_spec(config).is_video
+    assert _resolve_output(config).is_video
 
 
 def test_dry_run_with_png_format(config, dry_run):
