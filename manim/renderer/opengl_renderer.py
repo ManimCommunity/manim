@@ -957,7 +957,13 @@ class OpenGLRenderer:
         self.animation_elapsed_time = time.time() - self.animation_start_time
 
     def scene_finished(self, scene: Scene) -> None:
-        """Finalize configured output for the scene."""
+        """Finalize configured output for the scene.
+
+        Parameters
+        ----------
+        scene
+            The scene that has finished rendering.
+        """
         output = self.file_writer.output_spec
         if self.num_plays > 0 and (output.is_video or output.is_image_sequence):
             self.file_writer.finish()

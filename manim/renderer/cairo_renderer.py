@@ -35,7 +35,11 @@ class CairoRenderer:
         Time elapsed since initialisation of scene.
     """
 
-    capabilities = RendererCapabilities()
+    capabilities = RendererCapabilities(
+        live_preview=False,
+        live_preview_with_output=False,
+        interactive_embed=False,
+    )
 
     def __init__(
         self,
