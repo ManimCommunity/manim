@@ -1,4 +1,6 @@
+import operator as op
 from collections.abc import Callable, Iterable
+from functools import reduce
 from typing import Any, Self
 
 import numpy as np
@@ -416,7 +418,7 @@ class Positionable:
 
         Parameters
         ----------
-        scale_factor : float
+        factor : float
             The factor.
         scale_stroke : bool, optional
             Whether to scale the stroke width., by default False
@@ -534,10 +536,14 @@ class Positionable:
         --------
         :meth:`set_position`
         """
-        points = self.get_points()
+        points = self.get_points_defining_boundary()
         return np.array(
             [
-                self._get_extremum(values=points[:, dim], key=key)
+                self.get_extremum_along_dim(
+                    points=points,
+                    dim=dim,
+                    key=key,
+                )
                 for dim, key in enumerate(direction)
             ]
         )
@@ -851,18 +857,10 @@ class Positionable:
         --------
         :meth:`set_coordinate`
         """
-        points = self.get_points()
-        if len(points) == 0:
-            return 0
-
-        key = direction[dim]
-        values = points[:, dim]
-        return (  # type: ignore[no-any-return]
-            values.min()
-            if key < 0
-            else (values.min() + values.max()) / 2
-            if key == 0
-            else values.max()
+        return self.get_extremum_along_dim(
+            points=self.get_points(),
+            dim=dim,
+            key=np.sign(direction[dim]),
         )
 
     def set_coordinate(
@@ -1315,31 +1313,19 @@ class Positionable:
             point = point.get_position(direction=direction)
         source = self.get_position(direction=direction)
         target = np.where(direction == 0, source, point)
-        return self.shift(target - source)
+        return self.translate(target - source)
 
     def get_extremum_along_dim(
         self,
+        points: Point3D_Array | None = None,
         dim: int = 0,
         key: int = 0,
     ) -> float:
-        """Returns the extremum along a dimension.
-
-        Parameters
-        ----------
-        dim, optional
-            The dimension., by default 0
-        key, optional
-            Whether to get the minimum (key<0), center (key=0) or maximum value (key>0)., by default 0
-
-        Returns
-        -------
-            _description_
-        """
-        return self._get_extremum(self.get_points()[:, dim], key=key)
-
-    def _get_extremum(self, values: np.ndarray, key: int) -> float:
-        if len(values) == 0:
+        if points is None:
+            points = self.get_points()
+        if len(points) == 0:
             return 0
+        values = points[:, dim]
         return (  # type: ignore[no-any-return]
             values.min()
             if key < 0
@@ -1372,7 +1358,10 @@ class Positionable:
         Point3D
             The center of mass.
         """
-        return self.get_points().mean(axis=0)
+        points = self.get_points()
+        if len(points) == 0:
+            return ORIGIN
+        return points.mean(axis=0)
 
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
         """Returns a boundary point.
@@ -1439,7 +1428,8 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.translate(np.sum(vectors, axis=0))
+        vector = reduce(op.add, vectors)
+        return self.translate(vector=vector)
 
     def center(self) -> Self:
         """Moves to the ORIGIN.
