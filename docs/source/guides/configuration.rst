@@ -357,26 +357,17 @@ highest precedence is:
 5. any programmatic changes made after the config system is set.
 
 
-A list of all config options
-****************************
+Inspecting available config options
+***********************************
 
-.. code::
+Run ``manim cfg show`` to inspect the currently resolved configuration and
+``manim render --help`` for the authoritative list of render CLI options. The
+attributes available for programmatic configuration are documented on
+:class:`.ManimConfig`.
 
-   ['aspect_ratio', 'assets_dir', 'background_color', 'background_opacity',
-   'bottom', 'custom_folders', 'disable_caching', 'dry_run',
-   'encoder_queue_size', 'ffmpeg_loglevel', 'flush_cache', 'frame_height', 'frame_rate',
-   'frame_size', 'frame_width', 'frame_x_radius', 'frame_y_radius',
-   'from_animation_number', `fullscreen`, 'images_dir', 'input_file', 'left_side',
-   'log_dir', 'log_to_file', 'max_files_cached', 'max_inflight_encoders',
-   'media_dir', 'media_width', 'notify_outdated_version', 'output_file',
-   'partial_movie_dir',
-   'pixel_height', 'pixel_width', 'plugins', 'preview', 'live_preview',
-   'progress_bar', 'quality', 'right_side', 'save_last_frame', 'scene_names',
-   'show_in_file_browser', 'sound', 'tex_dir',
-   'tex_template', 'tex_template_file', 'text_dir', 'top', 'transparent',
-   'upto_animation_number', 'use_opengl_renderer', 'verbosity', 'video_dir',
-   'window_position', 'window_monitor', 'window_size', 'write_all',
-   'enable_wireframe']
+Some CLI conveniences intentionally map to a canonical configuration value. In
+particular, ``-s`` / ``--save_last_frame`` sets ``format = png``; configuration
+files should use the canonical ``format`` option directly.
 
 
 Accessing CLI command options

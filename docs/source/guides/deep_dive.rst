@@ -119,10 +119,9 @@ Preliminaries
 Importing the library
 ^^^^^^^^^^^^^^^^^^^^^
 
-Independent of how exactly you are telling your system
-to render the scene, i.e., whether you run ``manim -qm -p file_name.py ToyExample``, or
-whether you are rendering the scene directly from the Python script via a snippet
-like
+You can ask Manim to render in several ways. For example, you can run
+``manim -qm -p file_name.py ToyExample`` or render directly from a Python script
+with a snippet like
 
 ::
 
@@ -130,8 +129,14 @@ like
         scene = ToyExample()
         scene.render()
 
-or whether you are rendering the code in a Jupyter notebook, you are still telling your
-python interpreter to import the library. The usual pattern used to do this is
+In this example, ``preview=True`` means that the completed artifact is opened
+after rendering. It does not request a live render window; that is configured
+separately with ``live_preview=True`` and requires a renderer that advertises
+live-preview support.
+
+Whether you are rendering this way or from a Jupyter notebook, you are still
+telling your Python interpreter to import the library. The usual pattern used to
+do this is
 
 ::
 
@@ -243,7 +248,7 @@ then calls the scene's render method in the
 **Jupyter notebooks.** In Jupyter notebooks, the communication with the library
 is handled by the ``%%manim`` magic command, which is implemented in the
 ``manim.utils.ipython_magic`` module. There is
-:meth:`some documentation <.ManimMagic.manim>` available for the magic command,
+:meth:`some documentation <.ManimMagic.manim>` available for the magic command.
 The implementation instantiates the requested scene and calls its render method;
 the scene attaches a manager lazily through that entry point.
 
@@ -263,18 +268,36 @@ depend on any configuration options set in ``config``. Then the scene inspects t
 ``config.renderer``, and based on its value, either instantiates a ``CairoRenderer`` or an
 ``OpenGLRenderer`` object and assigns it to its ``renderer`` attribute.
 
-The scene then asks its renderer to initialize the scene by calling
+After selecting the renderer, the scene resolves the mutable configuration into
+one immutable render-session specification. In abbreviated form, initialization
+continues as follows:
 
 ::
 
-    self.renderer.init_scene(self)
+    self.session_spec = resolve_render_session(
+        config,
+        self.renderer.capabilities,
+        renderer_name=type(self.renderer).__name__,
+    )
+    self.renderer.init_scene(self, self.session_spec)
 
-Inspecting both the default Cairo renderer and the OpenGL renderer shows that the ``init_scene``
-method effectively makes the renderer instantiate a :class:`.SceneFileWriter` object, which
-basically is Manim's interface to ``libav`` (FFMPEG) and actually writes the movie file. The Cairo
-renderer (see the implementation `here <https://github.com/ManimCommunity/manim/blob/main/manim/renderer/cairo_renderer.py>`__) does not require any further initialization. The OpenGL renderer
-does some additional setup to enable the realtime rendering preview window, which we do not go
-into detail further here.
+The session specification separates primary artifact intent (an ``OutputSpec``)
+from presentation requests such as opening the completed artifact or displaying
+a live preview. Resolution also validates requests against the selected
+renderer's capabilities. For example, Cairo rejects live preview, while OpenGL
+advertises support for it. With ``format = auto``, requesting live preview
+selects no file output; a concrete format records the render as well.
+
+Inspecting the initialization methods of both renderers shows that they
+instantiate a :class:`.SceneFileWriter`. The writer must receive the already
+resolved ``OutputSpec``; it does not reinterpret the global configuration to
+decide whether or what to write. It remains Manim's interface to ``libav`` for
+encoding media. The Cairo renderer (see the implementation `here
+<https://github.com/ManimCommunity/manim/blob/main/manim/renderer/cairo_renderer.py>`__)
+does not require further renderer-specific initialization. OpenGL creates a
+window only when the resolved presentation specification requests live preview.
+The ``-p`` / ``--preview`` option does not create this window; it opens the
+completed artifact after rendering.
 
 After the renderer has been instantiated and initialized its file writer, the scene
 populates further initial attributes (notable mention: the ``mobjects`` attribute
@@ -284,9 +307,11 @@ attribute is initially ``None`` unless the caller attaches a manager explicitly.
 .. warning::
 
     :class:`.Manager` is an incremental coordination boundary. At this stage the
-    renderer still owns its camera, clock, play count, skip state, and file writer;
-    the manager exposes forwarding views of them. The scene and renderer therefore
-    still have substantial interplay that later refactors aim to remove.
+    scene captures the immutable session specification before renderer
+    initialization, while the renderer still owns its camera, clock, play count,
+    skip state, and file writer. The manager exposes the session and forwarding
+    views of renderer state. The scene and renderer therefore still have
+    substantial interplay that later refactors aim to remove.
 
 The rest of this article is concerned with the last line in our toy example script::
 
@@ -314,11 +339,15 @@ The first three call the corresponding customizable scene hooks:
 
 After these hooks have run, :meth:`.Manager.post_construct` asks the renderer to
 finish the scene. For Cairo this calls :meth:`.CairoRenderer.scene_finished`,
-which checks whether animations have been played and tells the
-:class:`.SceneFileWriter` to finish the output. For video output, the file writer
-waits for partial movie files that are still being encoded and combines them into
-the final movie. If no animations have been played, Manim assumes that a static
-image should be output.
+which checks the resolved output intent and tells the :class:`.SceneFileWriter`
+to finish time-based output. For video output, the file writer waits for partial
+movie files that are still being encoded and combines them into the final movie.
+Final-state PNG output skips intermediate animation frames. A video request for
+a scene without any play calls produces a useful still image instead of an empty
+movie. The writer records the completed artifact as ``final_file_path`` without
+replacing the configured ``output_file`` value. After finalization, the manager
+uses the presentation specification to open the artifact or reveal it in the
+file browser when requested.
 
 **Back in our toy example,** the call to :meth:`.Scene.render` creates a manager,
 then :meth:`.Manager.render` triggers :meth:`.Scene.setup` (which only consists of
@@ -1038,9 +1067,11 @@ calls the scene's cleanup method :meth:`.Scene.tear_down`, followed by
 scene, and the renderer in turn asks its scene file writer to wrap things up by
 calling :meth:`.SceneFileWriter.finish`. The file writer first waits for all
 remaining encoding jobs, then combines the completed partial movie files into the
-final product. If rendering aborts during a play instead, the manager asks the file
-writer to abort its encoding jobs; the incomplete current partial movie file is
-removed so that it cannot be mistaken for a valid cached result on a later render.
+final product and records its path. If rendering aborts during a play instead, the
+manager asks the file writer to abort its encoding jobs; the incomplete current
+partial movie file is removed so that it cannot be mistaken for a valid cached
+result on a later render. Once output is finalized, the manager carries out any
+post-render presentation request from the immutable session specification.
 
 And there you go! This is a more or less detailed description of how Manim works
 under the hood. While we did not discuss every single line of code in detail

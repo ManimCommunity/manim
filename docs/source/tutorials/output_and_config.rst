@@ -37,7 +37,8 @@ files and the project folder will look as follows.
      |     └─480p15
      |        ├─SquareToCircle.mp4
      |        └─partial_movie_files
-     ├─text
+     |           └─SquareToCircle
+     ├─texts
      └─Tex
 
 
@@ -45,12 +46,13 @@ There are quite a few new files.  The main output is in
 ``media/videos/scene/480p15/SquareToCircle.mp4``.  By default, the ``media``
 folder will contain all of manim's output files.  The ``media/videos``
 subfolder contains the rendered videos.  Inside of it, you will find one folder
-for each different video quality.  In our case, since we used the ``-l`` flag,
+for each different video quality. In our case, since we used the ``-ql`` flag,
 the video was generated at 480 resolution at 15 frames per second from the
 ``scene.py`` file.  Therefore, the output can be found inside
 ``media/videos/scene/480p15``.  The additional folders
-``media/videos/scene/480p15/partial_movie_files`` as well as ``media/text`` and
-``media/Tex`` contain files that are used by manim internally.
+``media/videos/scene/480p15/partial_movie_files/SquareToCircle`` as well as
+``media/texts`` and ``media/Tex`` contain files that are used by Manim
+internally.
 
 You can see how manim makes use of the generated folder structure by executing
 the following command,
@@ -93,16 +95,18 @@ And the folder structure should look as follows.
      |   ├─480p15
      |   | ├─SquareToCircle.mp4
      |   | └─partial_movie_files
+     |   |   └─SquareToCircle
      |   └─1080p60
      |     ├─SquareToCircle.mp4
      |     └─partial_movie_files
-     ├─text
+     |       └─SquareToCircle
+     ├─texts
      └─Tex
 
 Manim has created a new folder ``media/videos/1080p60``, which corresponds to
-the high resolution and the 60 frames per second.  Inside of it, you can find
+the high resolution and the 60 frames per second. Inside of it, you can find
 the new ``SquareToCircle.mp4``, as well as the corresponding
-``partial_movie_files``.
+``partial_movie_files/SquareToCircle`` directory.
 
 When working on a project with multiple scenes, and trying out multiple
 resolutions, the structure of the output directories will keep all your videos
@@ -119,25 +123,54 @@ The corresponding folder structure looks like this:
    └─media
      ├─images
      | └─scene
-     |   ├─SquareToCircle.png
+     |   ├─SquareToCircle_ManimCE_vX.Y.Z.png
      ├─videos
      | └─scene
      |   ├─480p15
      |   | ├─SquareToCircle.mp4
      |   | └─partial_movie_files
+     |   |   └─SquareToCircle
      |   └─1080p60
      |     ├─SquareToCircle.mp4
      |     └─partial_movie_files
-     ├─text
+     |       └─SquareToCircle
+     ├─texts
      └─Tex
 
 Saving the last frame with ``-s`` can be combined with the flags for different
 resolutions, e.g. ``-s -ql``, ``-s -qh``. The equivalent
 ``--format=png`` spelling also selects this fast final-state-only mode. To write
 every rendered frame as a numbered PNG instead, use
-``--format=png-sequence``.
+``--format=png-sequence``. The sequence is stored in a scene-specific directory,
+for example ``media/images/scene/SquareToCircle/0000.png``.
 
+Output formats
+**************
 
+The ``--format`` option selects one primary artifact:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Value
+     - Behavior
+   * - ``auto``
+     - The default. Produces MP4 for opaque output and MOV for transparent
+       output. When live preview is requested, it produces no file unless a
+       concrete format is given.
+   * - ``mp4``, ``mov``, ``webm`` or ``gif``
+     - Produces the selected video format. Transparent MP4 is rejected because
+       that container does not support the required alpha channel.
+   * - ``png``
+     - Fast-forwards animations and writes only the final scene state. This is
+       equivalent to ``-s``.
+   * - ``png-sequence``
+     - Evaluates the full frame progression and writes every frame as PNG.
+   * - ``none``
+     - Evaluates the scene without producing a primary media artifact.
+
+``--dry_run`` also suppresses media output, but remains a separate execution
+request rather than modifying the configured format.
 
 
 Sections
@@ -301,10 +334,10 @@ display frames while rendering. The OpenGL renderer supports this mode. Live
 preview with the default ``--format=auto`` does not write a media file; pass a
 concrete format such as ``--format=mp4`` to display and record simultaneously.
 
-Finally, by default manim will output .mp4 files.  If you want your animations
-in .gif format instead, use the ``--format gif`` flag.  The output files will
-be in the same folder as the .mp4 files, and with the same name, but a
-different file extension.
+Finally, by default Manim outputs ``.mp4`` files. To request GIF output instead,
+use ``--format=gif``. GIF and final-frame PNG names include the installed Manim
+version when no explicit ``--output_file`` is supplied; ``X.Y.Z`` in the example
+above stands for that version.
 
 This was a quick review of some of the most frequent command-line flags.
 For a thorough review of all flags available, see the :doc:`thematic guide on

@@ -292,10 +292,10 @@ Note the fixtures here:
 You have to generate a ``.json`` file first to be able to test your video. To
 do that, use ``helpers.save_control_data_from_video``.
 
-For instance, a test that will check if the l flag works properly will first
-require rendering a video using the -l flag from a scene. Then we will test
-(in this case, SquareToCircle), that lives in
-``test_scene_rendering/simple_scene.py``. Change directories to ``tests/``,
+For instance, a test that checks low-quality rendering first requires rendering
+a video from a scene with the ``-ql`` flag. The example below tests
+``SquareToCircle``, which lives in ``test_scene_rendering/simple_scene.py``.
+Change directories to ``tests/``,
 create a file (e.g. ``create\_data.py``) that you will remove as soon as
 you're done. Then run:
 
