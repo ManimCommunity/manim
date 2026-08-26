@@ -76,11 +76,6 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
 
     SCENES is an optional list of scenes in the file.
     """
-    if kwargs["show_in_file_browser"]:
-        logger.warning(
-            "The short form of show_in_file_browser is deprecated and will be moved to support --format.",
-        )
-
     click_args = ClickArgs(kwargs)
     if kwargs["jupyter"]:
         return click_args

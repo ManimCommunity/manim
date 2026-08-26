@@ -122,7 +122,12 @@ def open_file(file_path: Path, in_browser: bool = False) -> None:
         sp.run(commands)
 
 
-def open_media_file(file_writer: SceneFileWriter) -> None:
+def open_media_file(
+    file_writer: SceneFileWriter,
+    *,
+    preview: bool,
+    show_in_file_browser: bool,
+) -> None:
     final_file_path = getattr(file_writer, "final_file_path", None)
     if final_file_path is None:
         logger.warning("No media artifact is available to open.")
@@ -130,9 +135,9 @@ def open_media_file(file_writer: SceneFileWriter) -> None:
     file_paths = [final_file_path]
 
     for file_path in file_paths:
-        if config["show_in_file_browser"]:
+        if show_in_file_browser:
             open_file(file_path, True)
-        if config["preview"]:
+        if preview:
             open_file(file_path, False)
 
             logger.info(f"Previewed File at: '{file_path}'")

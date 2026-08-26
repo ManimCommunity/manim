@@ -294,6 +294,7 @@ class ManimConfig(MutableMapping):
         "pixel_width",
         "plugins",
         "preview",
+        "live_preview",
         "progress_bar",
         "quality",
         "save_sections",
@@ -319,7 +320,6 @@ class ManimConfig(MutableMapping):
         "window_monitor",
         "write_all",
         "zero_pad",
-        "force_window",
         "no_latex_cleanup",
         "preview_command",
     }
@@ -584,6 +584,7 @@ class ManimConfig(MutableMapping):
             "write_all",
             "save_sections",
             "preview",
+            "live_preview",
             "show_in_file_browser",
             "log_to_file",
             "disable_caching",
@@ -595,7 +596,6 @@ class ManimConfig(MutableMapping):
             "use_projection_fill_shaders",
             "use_projection_stroke_shaders",
             "enable_wireframe",
-            "force_window",
             "no_latex_cleanup",
             "dry_run",
         ]:
@@ -754,6 +754,7 @@ class ManimConfig(MutableMapping):
         for key in [
             "notify_outdated_version",
             "preview",
+            "live_preview",
             "show_in_file_browser",
             "save_last_frame",
             "save_sections",
@@ -773,7 +774,6 @@ class ManimConfig(MutableMapping):
             "use_projection_stroke_shaders",
             "zero_pad",
             "enable_wireframe",
-            "force_window",
             "dry_run",
             "no_latex_cleanup",
             "preview_command",
@@ -845,15 +845,6 @@ class ManimConfig(MutableMapping):
         if args.tex_template:
             self.tex_template = TexTemplate.from_file(args.tex_template)
 
-        # Preserve OpenGL's existing opt-in file-output behavior until live
-        # preview and post-render preview become separate session requests.
-        if (
-            self.renderer == RendererType.OPENGL
-            and args.format is None
-            and OutputFormat.parse(self.format) is OutputFormat.AUTO
-        ):
-            self.format = OutputFormat.NONE
-
         # Handle --gui_location flag.
         if args.gui_location is not None:
             self.gui_location = args.gui_location
@@ -904,12 +895,21 @@ class ManimConfig(MutableMapping):
 
     @property
     def preview(self) -> bool:
-        """Whether to play the rendered movie (-p)."""
-        return self._d["preview"] or self._d["enable_gui"]
+        """Whether to open the completed artifact after rendering (-p)."""
+        return self._d["preview"]
 
     @preview.setter
     def preview(self, value: bool) -> None:
         self._set_boolean("preview", value)
+
+    @property
+    def live_preview(self) -> bool:
+        """Whether to display frames in a renderer-provided live preview (-l)."""
+        return self._d["live_preview"]
+
+    @live_preview.setter
+    def live_preview(self, value: bool) -> None:
+        self._set_boolean("live_preview", value)
 
     @property
     def show_in_file_browser(self) -> bool:
@@ -987,15 +987,6 @@ class ManimConfig(MutableMapping):
     @enable_wireframe.setter
     def enable_wireframe(self, value: bool) -> None:
         self._set_boolean("enable_wireframe", value)
-
-    @property
-    def force_window(self) -> bool:
-        """Whether to force window when using the opengl renderer."""
-        return self._d["force_window"]
-
-    @force_window.setter
-    def force_window(self, value: bool) -> None:
-        self._set_boolean("force_window", value)
 
     @property
     def no_latex_cleanup(self) -> bool:

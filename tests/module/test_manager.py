@@ -28,13 +28,23 @@ def test_manager_attaches_to_existing_scene(dry_run):
 def test_manager_exposes_the_session_output_snapshot(config):
     config.dry_run = False
     config.format = "gif"
+    config.preview = True
     scene = Scene()
     manager = Manager(scene)
 
     config.format = "none"
+    config.preview = False
 
     assert manager.output_spec.format is OutputFormat.GIF
     assert manager.output_spec is scene.renderer.file_writer.output_spec
+    assert manager.session_spec.presentation.open_after_render is True
+
+
+def test_post_render_preview_requires_an_artifact(dry_run):
+    scene = Scene()
+
+    with pytest.raises(ValueError, match="requires a media artifact"):
+        Manager(scene).render(preview=True)
 
 
 def test_manager_rejects_second_attachment(dry_run):

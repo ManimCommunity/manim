@@ -114,6 +114,8 @@ class _OutputConfigSource(Protocol):
     save_last_frame: bool
     save_sections: bool
     transparent: bool
+    live_preview: bool
+    enable_gui: bool
     dry_run: bool
 
 
@@ -130,7 +132,10 @@ def resolve_output_spec(config: _OutputConfigSource) -> OutputSpec:
     if config.save_last_frame:
         requested = OutputFormat.PNG
     elif requested is OutputFormat.AUTO:
-        requested = OutputFormat.MOV if config.transparent else OutputFormat.MP4
+        if config.live_preview or config.enable_gui:
+            requested = OutputFormat.NONE
+        else:
+            requested = OutputFormat.MOV if config.transparent else OutputFormat.MP4
 
     return OutputSpec(
         format=requested,

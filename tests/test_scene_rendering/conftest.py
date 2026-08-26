@@ -43,12 +43,12 @@ def infallible_scenes_path():
 
 
 @pytest.fixture
-def force_window_config_movie(config):
-    config.force_window = True
+def live_preview_config_movie(config):
+    config.live_preview = True
     config.format = "mp4"
 
 
 @pytest.fixture
-def force_window_config_pngs(config):
-    config.force_window = True
+def live_preview_config_pngs(config):
+    config.live_preview = True
     config.format = "png-sequence"

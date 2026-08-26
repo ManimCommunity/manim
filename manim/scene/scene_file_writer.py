@@ -225,10 +225,11 @@ class SceneFileWriter:
         self,
         renderer: CairoRenderer | OpenGLRenderer,
         scene_name: str,
+        output_spec: OutputSpec | None = None,
         **kwargs: Any,
     ) -> None:
         self.renderer = renderer
-        self.output_spec: OutputSpec = resolve_output_spec(config)
+        self.output_spec = output_spec or resolve_output_spec(config)
         self._inflight_encode_jobs: list[_PartialMovieEncodeJob] = []
         self._inflight_by_path: dict[str, _PartialMovieEncodeJob] = {}
         self._current_encode_job: _PartialMovieEncodeJob | None = None

@@ -13,7 +13,8 @@ from moderngl import Framebuffer
 from PIL import Image
 from typing_extensions import override
 
-from manim import config, logger
+from manim import config
+from manim._config.render_session import resolve_render_session
 from manim.mobject.opengl.opengl_mobject import (
     OpenGLMobject,
     OpenGLPoint,
@@ -36,6 +37,7 @@ from ..utils.space_ops import (
     rotation_matrix_transpose,
     rotation_matrix_transpose_from_quaternion,
 )
+from .protocol import RendererCapabilities
 from .shader import Mesh, Shader
 from .vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_fill,
@@ -484,6 +486,12 @@ class OpenGLRenderer:
         The window used for previewing, if any.
     """
 
+    capabilities = RendererCapabilities(
+        live_preview=True,
+        live_preview_with_output=True,
+        interactive_embed=True,
+    )
+
     def __init__(
         self,
         file_writer_class: type[SceneFileWriter] = SceneFileWriter,
@@ -533,9 +541,15 @@ class OpenGLRenderer:
             The scene to be rendered
         """
         self.partial_movie_files: list[str | None] = []
+        self.session_spec = resolve_render_session(
+            config,
+            self.capabilities,
+            renderer_name=type(self).__name__,
+        )
         self.file_writer: SceneFileWriter = self._file_writer_class(
             self,
             scene.__class__.__name__,
+            output_spec=self.session_spec.output,
         )
         self.scene = scene
 
@@ -571,23 +585,8 @@ class OpenGLRenderer:
         Determine whether a window should be created for rendering
         based on the current configuration.
 
-        Notes
-        -----
-        A windows is always created if the 'force_window' configuration is enabled.
         """
-        if config["force_window"]:
-            logger.warning(
-                "'--force_window' is enabled, this is intended for debugging purposes "
-                "and may impact performance if used when outputting files",
-            )
-            return True
-        output = self.file_writer.output_spec
-        return (
-            config["preview"]
-            and not output.is_still
-            and not output.enabled
-            and not config["dry_run"]
-        )
+        return self.session_spec.presentation.live_preview
 
     def get_pixel_shape(self) -> tuple[int, int] | None:
         """

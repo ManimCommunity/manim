@@ -9,11 +9,13 @@ from click.testing import CliRunner
 
 from manim import RIGHT, WHITE, Scene, Square, Tex, Text, Vector, tempconfig
 from manim._config.output import OutputFormat, resolve_output_spec
+from manim._config.render_session import resolve_render_session
 from manim._config.utils import ManimConfig
 from manim.cli.render.commands import render
 from manim.constants import RendererType
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.types.vectorized_mobject import VMobject
+from manim.renderer.protocol import RendererCapabilities
 from tests.assert_utils import assert_dir_exists, assert_dir_filled, assert_file_exists
 
 
@@ -88,6 +90,48 @@ def test_transparent_auto_output_resolves_to_mov(config):
     assert resolve_output_spec(config).format is OutputFormat.MOV
 
 
+def test_live_preview_auto_output_resolves_to_none(config):
+    config.format = "auto"
+    config.live_preview = True
+
+    assert resolve_output_spec(config).format is OutputFormat.NONE
+
+
+def test_live_preview_requires_renderer_capability(config):
+    config.live_preview = True
+
+    with pytest.raises(ValueError, match="does not support live preview"):
+        resolve_render_session(
+            config,
+            RendererCapabilities(),
+            renderer_name="TestRenderer",
+        )
+
+
+def test_preview_requires_output(config):
+    config.format = "none"
+    config.preview = True
+
+    with pytest.raises(ValueError, match="requires a media artifact"):
+        resolve_render_session(
+            config,
+            RendererCapabilities(),
+            renderer_name="TestRenderer",
+        )
+
+
+def test_live_preview_with_output_requires_renderer_capability(config):
+    config.format = "mp4"
+    config.live_preview = True
+
+    with pytest.raises(ValueError, match="cannot produce media output"):
+        resolve_render_session(
+            config,
+            RendererCapabilities(live_preview=True),
+            renderer_name="TestRenderer",
+        )
+
+
 def test_explicit_transparent_mp4_is_rejected(config):
     config.format = "mp4"
     config.transparent = True
@@ -136,6 +180,39 @@ def test_format_is_loaded_from_config_file(tmp_path, config):
     config.digest_file(config_file)
 
     assert config.format == "png-sequence"
+
+
+def test_cli_distinguishes_preview_from_live_preview(tmp_path):
+    scene_file = tmp_path / "scene.py"
+    scene_file.write_text("# --jupyter returns before loading this file\n")
+
+    result = CliRunner().invoke(
+        render,
+        [str(scene_file), "--jupyter", "--preview", "--live-preview"],
+        standalone_mode=False,
+    )
+
+    assert result.exception is None
+    assert result.return_value.preview is True
+    assert result.return_value.live_preview is True
+
+
+def test_opengl_cli_no_longer_disables_automatic_output(tmp_path, config):
+    scene_file = tmp_path / "scene.py"
+    scene_file.write_text("# --jupyter returns before loading this file\n")
+    result = CliRunner().invoke(
+        render,
+        [str(scene_file), "--jupyter", "--renderer=opengl"],
+        standalone_mode=False,
+    )
+    assert result.exception is None
+
+    config.format = "auto"
+    config.digest_args(result.return_value)
+
+    assert config.renderer is RendererType.OPENGL
+    assert config.format == "auto"
+    assert resolve_output_spec(config).format is OutputFormat.MP4
 
 
 def test_absent_cli_output_options_preserve_config_file_values(tmp_path):

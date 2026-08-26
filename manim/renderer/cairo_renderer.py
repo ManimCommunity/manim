@@ -6,11 +6,13 @@ from typing import TYPE_CHECKING, Any
 from manim.utils.hashing import get_hash_from_play_call
 
 from .. import config, logger
+from .._config.render_session import resolve_render_session
 from ..camera.camera import Camera
 from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.iterables import list_update
+from .protocol import RendererCapabilities
 
 if TYPE_CHECKING:
     from manim.animation.animation import Animation
@@ -33,6 +35,8 @@ class CairoRenderer:
         Time elapsed since initialisation of scene.
     """
 
+    capabilities = RendererCapabilities()
+
     def __init__(
         self,
         file_writer_class: type[SceneFileWriter] = SceneFileWriter,
@@ -54,9 +58,15 @@ class CairoRenderer:
         self.static_image: PixelArray | None = None
 
     def init_scene(self, scene: Scene) -> None:
+        self.session_spec = resolve_render_session(
+            config,
+            self.capabilities,
+            renderer_name=type(self).__name__,
+        )
         self.file_writer: Any = self._file_writer_class(
             self,
             scene.__class__.__name__,
+            output_spec=self.session_spec.output,
         )
 
     def play(

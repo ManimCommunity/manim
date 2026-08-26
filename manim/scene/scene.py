@@ -1362,8 +1362,6 @@ class Scene:
 
     def check_interactive_embed_is_valid(self) -> bool:
         assert isinstance(self.renderer, OpenGLRenderer)
-        if config["force_window"]:
-            return True
         if self.skip_animation_preview:
             logger.warning(
                 "Disabling interactive embed as 'skip_animation_preview' is enabled",
@@ -1547,8 +1545,8 @@ class Scene:
 
     def embed(self) -> None:
         assert isinstance(self.renderer, OpenGLRenderer)
-        if not config["preview"]:
-            logger.warning("Called embed() while no preview window is available.")
+        if not self.renderer.session_spec.presentation.live_preview:
+            logger.warning("Called embed() while no live preview window is available.")
             return
         if self.renderer.file_writer.output_spec.enabled:
             logger.warning("embed() is skipped while writing to a file.")
