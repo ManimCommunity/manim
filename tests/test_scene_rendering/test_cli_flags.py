@@ -491,12 +491,12 @@ def test_videos_not_created_when_png_format_set(
 
 
 @pytest.mark.slow
-def test_images_are_created_when_png_format_set(
+def test_images_are_created_when_png_sequence_format_set(
     tmp_path,
     manim_cfg_file,
     simple_scenes_path,
 ):
-    """Test images are created in media directory when --format png is set"""
+    """Test images are created when --format png-sequence is set."""
     scene_name = "SquareToCircle"
     command = [
         sys.executable,
@@ -506,24 +506,26 @@ def test_images_are_created_when_png_format_set(
         "--media_dir",
         str(tmp_path),
         "--format",
-        "png",
+        "png-sequence",
         str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
 
-    expected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle0000.png"
+    expected_png_path = (
+        tmp_path / "images" / "simple_scenes" / "SquareToCircle" / "0000.png"
+    )
     assert expected_png_path.exists(), "png file not found at " + str(expected_png_path)
 
 
 @pytest.mark.slow
-def test_images_are_created_when_png_format_set_for_opengl(
+def test_images_are_created_when_png_sequence_format_set_for_opengl(
     tmp_path,
     manim_cfg_file,
     simple_scenes_path,
 ):
-    """Test images are created in media directory when --format png is set for opengl"""
+    """Test OpenGL images are created when --format png-sequence is set."""
     scene_name = "SquareToCircle"
     command = [
         sys.executable,
@@ -535,24 +537,26 @@ def test_images_are_created_when_png_format_set_for_opengl(
         "--media_dir",
         str(tmp_path),
         "--format",
-        "png",
+        "png-sequence",
         str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
 
-    expected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle0000.png"
+    expected_png_path = (
+        tmp_path / "images" / "simple_scenes" / "SquareToCircle" / "0000.png"
+    )
     assert expected_png_path.exists(), "png file not found at " + str(expected_png_path)
 
 
 @pytest.mark.slow
-def test_images_are_zero_padded_when_zero_pad_set(
+def test_png_sequence_images_are_zero_padded(
     tmp_path,
     manim_cfg_file,
     simple_scenes_path,
 ):
-    """Test images are zero padded when --format png and --zero_pad n are set"""
+    """Test PNG-sequence images respect --zero_pad."""
     scene_name = "SquareToCircle"
     command = [
         sys.executable,
@@ -562,7 +566,7 @@ def test_images_are_zero_padded_when_zero_pad_set(
         "--media_dir",
         str(tmp_path),
         "--format",
-        "png",
+        "png-sequence",
         "--zero_pad",
         "3",
         str(simple_scenes_path),
@@ -571,22 +575,23 @@ def test_images_are_zero_padded_when_zero_pad_set(
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
 
-    unexpected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle0.png"
+    sequence_dir = tmp_path / "images" / "simple_scenes" / "SquareToCircle"
+    unexpected_png_path = sequence_dir / "0.png"
     assert not unexpected_png_path.exists(), "non zero padded png file found at " + str(
         unexpected_png_path,
     )
 
-    expected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle000.png"
+    expected_png_path = sequence_dir / "000.png"
     assert expected_png_path.exists(), "png file not found at " + str(expected_png_path)
 
 
 @pytest.mark.slow
-def test_images_are_zero_padded_when_zero_pad_set_for_opengl(
+def test_opengl_png_sequence_images_are_zero_padded(
     tmp_path,
     manim_cfg_file,
     simple_scenes_path,
 ):
-    """Test images are zero padded when --format png and --zero_pad n are set with the opengl renderer"""
+    """Test OpenGL PNG-sequence images respect --zero_pad."""
     scene_name = "SquareToCircle"
     command = [
         sys.executable,
@@ -598,7 +603,7 @@ def test_images_are_zero_padded_when_zero_pad_set_for_opengl(
         "--media_dir",
         str(tmp_path),
         "--format",
-        "png",
+        "png-sequence",
         "--zero_pad",
         "3",
         str(simple_scenes_path),
@@ -607,12 +612,13 @@ def test_images_are_zero_padded_when_zero_pad_set_for_opengl(
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
 
-    unexpected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle0.png"
+    sequence_dir = tmp_path / "images" / "simple_scenes" / "SquareToCircle"
+    unexpected_png_path = sequence_dir / "0.png"
     assert not unexpected_png_path.exists(), "non zero padded png file found at " + str(
         unexpected_png_path,
     )
 
-    expected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle000.png"
+    expected_png_path = sequence_dir / "000.png"
     assert expected_png_path.exists(), "png file not found at " + str(expected_png_path)
 
 
