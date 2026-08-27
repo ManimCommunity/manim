@@ -63,38 +63,47 @@ except ImportError as exc:
 # rendercanvas key strings → pyglet-compatible integer codes.
 # Printable single chars use ord() directly (see _key_to_int below).
 _SPECIAL_KEY_MAP: dict[str, int] = {
-    "ArrowLeft":   65361,
-    "ArrowRight":  65363,
-    "ArrowUp":     65362,
-    "ArrowDown":   65364,
-    "Escape":      65307,
-    "Enter":       65293,
-    "Backspace":   65288,
-    "Tab":         65289,
-    "Delete":      65535,
-    "Home":        65360,
-    "End":         65367,
-    "PageUp":      65365,
-    "PageDown":    65366,
-    "Insert":      65379,
-    "F1":  65470, "F2":  65471, "F3":  65472, "F4":  65473,
-    "F5":  65474, "F6":  65475, "F7":  65476, "F8":  65477,
-    "F9":  65478, "F10": 65479, "F11": 65480, "F12": 65481,
-    "Shift":      65505,  # SHIFT_VALUE in manim/constants.py
-    "Control":    65507,
-    "Alt":        65513,
-    "Meta":       65511,
-    "CapsLock":   65509,
-    "NumLock":    65407,
+    "ArrowLeft": 65361,
+    "ArrowRight": 65363,
+    "ArrowUp": 65362,
+    "ArrowDown": 65364,
+    "Escape": 65307,
+    "Enter": 65293,
+    "Backspace": 65288,
+    "Tab": 65289,
+    "Delete": 65535,
+    "Home": 65360,
+    "End": 65367,
+    "PageUp": 65365,
+    "PageDown": 65366,
+    "Insert": 65379,
+    "F1": 65470,
+    "F2": 65471,
+    "F3": 65472,
+    "F4": 65473,
+    "F5": 65474,
+    "F6": 65475,
+    "F7": 65476,
+    "F8": 65477,
+    "F9": 65478,
+    "F10": 65479,
+    "F11": 65480,
+    "F12": 65481,
+    "Shift": 65505,  # SHIFT_VALUE in manim/constants.py
+    "Control": 65507,
+    "Alt": 65513,
+    "Meta": 65511,
+    "CapsLock": 65509,
+    "NumLock": 65407,
     "ScrollLock": 65300,
 }
 
 # rendercanvas modifier strings → pyglet modifier bitmask bits
 _MODIFIER_BITS: dict[str, int] = {
-    "Shift":   1,
+    "Shift": 1,
     "Control": 4,
-    "Alt":     8,
-    "Meta":    16,
+    "Alt": 8,
+    "Meta": 16,
 }
 
 
@@ -120,6 +129,7 @@ def _modifiers_to_int(modifiers: tuple | list) -> int:
 # ---------------------------------------------------------------------------
 # Window configuration helpers
 # ---------------------------------------------------------------------------
+
 
 def _compute_window_size() -> tuple[int, int]:
     """Return the initial canvas size in logical pixels.
@@ -160,9 +170,9 @@ def _resolve_window_position(
     win_w, win_h:
         Current canvas logical width / height in pixels.
     """
-    mx: int = monitor.x       # type: ignore[attr-defined]
-    my: int = monitor.y       # type: ignore[attr-defined]
-    mw: int = monitor.width   # type: ignore[attr-defined]
+    mx: int = monitor.x  # type: ignore[attr-defined]
+    my: int = monitor.y  # type: ignore[attr-defined]
+    mw: int = monitor.width  # type: ignore[attr-defined]
     mh: int = monitor.height  # type: ignore[attr-defined]
 
     # Numeric "x,y" or "x;y" coordinate pair
@@ -171,21 +181,21 @@ def _resolve_window_position(
         return int(m.group(1)), int(m.group(2))
 
     pos_u = pos.strip().upper()
-    right    = mx + mw - win_w
-    bottom   = my + mh - win_h
+    right = mx + mw - win_w
+    bottom = my + mh - win_h
     h_center = mx + (mw - win_w) // 2
     v_center = my + (mh - win_h) // 2
 
     return {
-        "UL":     (mx,       my),
-        "UR":     (right,    my),
-        "DL":     (mx,       bottom),
-        "DR":     (right,    bottom),
+        "UL": (mx, my),
+        "UR": (right, my),
+        "DL": (mx, bottom),
+        "DR": (right, bottom),
         "ORIGIN": (h_center, v_center),
-        "LEFT":   (mx,       v_center),
-        "RIGHT":  (right,    v_center),
-        "UP":     (h_center, my),
-        "DOWN":   (h_center, bottom),
+        "LEFT": (mx, v_center),
+        "RIGHT": (right, v_center),
+        "UP": (h_center, my),
+        "DOWN": (h_center, bottom),
     }.get(pos_u, (h_center, v_center))
 
 
@@ -208,6 +218,7 @@ def _apply_window_config(canvas) -> None:
     # ── Monitor list ─────────────────────────────────────────────────────
     try:
         import screeninfo
+
         monitors = screeninfo.get_monitors()
     except Exception:
         monitors = []
@@ -242,14 +253,17 @@ def _apply_glfw_placement(canvas, glfw_window, monitor, mon_idx: int) -> None:
         if not glfw_monitors:
             return
         glfw_mon = (
-            glfw_monitors[mon_idx]
-            if mon_idx < len(glfw_monitors)
-            else glfw_monitors[0]
+            glfw_monitors[mon_idx] if mon_idx < len(glfw_monitors) else glfw_monitors[0]
         )
         mode = glfw.get_video_mode(glfw_mon)
         glfw.set_window_monitor(
-            glfw_window, glfw_mon,
-            0, 0, mode.size.width, mode.size.height, mode.refresh_rate,
+            glfw_window,
+            glfw_mon,
+            0,
+            0,
+            mode.size.width,
+            mode.size.height,
+            mode.refresh_rate,
         )
         return
 
@@ -310,6 +324,7 @@ _CLICK_THRESHOLD_PX: float = 4.0
 # Window class
 # ---------------------------------------------------------------------------
 
+
 class WebGPUWindow:
     """Preview window wrapping a ``rendercanvas.RenderCanvas``.
 
@@ -368,17 +383,18 @@ class WebGPUWindow:
 
         class MyWindow(WebGPUWindow):
             def on_mouse_drag(self, x, y, dx, dy, button):
-                if button == 3:        # right-drag → orbit
+                if button == 3:  # right-drag → orbit
                     self.orbit(dx, dy)
-                elif button == 1:      # left-drag → pan
+                elif button == 1:  # left-drag → pan
                     self.pan(dx, dy)
                 else:
                     return
                 self._render_from_window()
 
             def on_scroll(self, x, y, dy):
-                self.zoom(dy * 2)      # 2× sensitivity
+                self.zoom(dy * 2)  # 2× sensitivity
                 self._render_from_window()
+
 
         renderer = WebGPURenderer(window_class=MyWindow)
     """
@@ -436,12 +452,12 @@ class WebGPUWindow:
         )
 
         # Register event handlers.
-        self._canvas.add_event_handler(self._on_key_down,     "key_down")
-        self._canvas.add_event_handler(self._on_key_up,       "key_up")
+        self._canvas.add_event_handler(self._on_key_down, "key_down")
+        self._canvas.add_event_handler(self._on_key_up, "key_up")
         self._canvas.add_event_handler(self._on_pointer_move, "pointer_move")
         self._canvas.add_event_handler(self._on_pointer_down, "pointer_down")
-        self._canvas.add_event_handler(self._on_pointer_up,   "pointer_up")
-        self._canvas.add_event_handler(self._on_wheel,        "wheel")
+        self._canvas.add_event_handler(self._on_pointer_up, "pointer_up")
+        self._canvas.add_event_handler(self._on_wheel, "wheel")
 
         # Apply window configuration: size, position, monitor, fullscreen.
         _apply_window_config(self._canvas)
@@ -579,8 +595,8 @@ class WebGPUWindow:
         if renderer._render_texture is None or renderer._device is None:
             return
 
-        device       = renderer._device
-        surface_tex  = self._context.get_current_texture()
+        device = renderer._device
+        surface_tex = self._context.get_current_texture()
         surface_view = surface_tex.create_view()
 
         render_tex_view = renderer._render_texture.create_view()
@@ -596,16 +612,16 @@ class WebGPUWindow:
         rp = encoder.begin_render_pass(
             color_attachments=[
                 {
-                    "view":        surface_view,
-                    "load_op":     "clear",
-                    "store_op":    "store",
+                    "view": surface_view,
+                    "load_op": "clear",
+                    "store_op": "store",
                     "clear_value": (0.0, 0.0, 0.0, 1.0),
                 }
             ]
         )
         rp.set_pipeline(self._blit_pipeline)
         rp.set_bind_group(0, bind_group)
-        rp.draw(4)   # 4 vertices → one triangle-strip quad
+        rp.draw(4)  # 4 vertices → one triangle-strip quad
         rp.end()
 
         device.queue.submit([encoder.finish()])
@@ -663,10 +679,10 @@ class WebGPUWindow:
           * Drag down  (dy > 0) → scene tilts down            → phi decreases.
         """
         cam = self._renderer.camera
-        pw = max(config.pixel_width,  1)
+        pw = max(config.pixel_width, 1)
         ph = max(config.pixel_height, 1)
-        dtheta =  dx * (2.0 * math.pi / pw)
-        dphi   = -dy * (math.pi       / ph)
+        dtheta = dx * (2.0 * math.pi / pw)
+        dphi = -dy * (math.pi / ph)
         cam.increment_theta(dtheta)
         cam.increment_phi(dphi)
 
@@ -686,7 +702,7 @@ class WebGPUWindow:
           * Drag down  (dy > 0) → scene moves down  → _pan_y decreases.
         """
         fw, fh = self._renderer.camera.frame_shape
-        pw = max(config.pixel_width,  1)
+        pw = max(config.pixel_width, 1)
         ph = max(config.pixel_height, 1)
         self._pan_x += dx * (fw / pw)
         self._pan_y -= dy * (fh / ph)
@@ -713,18 +729,22 @@ class WebGPUWindow:
             new_fh = max(fh * factor, 0.01)
             cam.frame_shape = (new_fw, new_fh)
         else:
-            new_fd = float(np.clip(
-                cam.focal_distance * factor,
-                _ZOOM_MIN_FD,
-                _ZOOM_MAX_FD,
-            ))
+            new_fd = float(
+                np.clip(
+                    cam.focal_distance * factor,
+                    _ZOOM_MIN_FD,
+                    _ZOOM_MAX_FD,
+                )
+            )
             cam.set_focal_distance(new_fd)
 
     # ------------------------------------------------------------------
     # Overridable interaction hooks
     # ------------------------------------------------------------------
 
-    def on_mouse_drag(self, x: float, y: float, dx: float, dy: float, button: int) -> None:
+    def on_mouse_drag(
+        self, x: float, y: float, dx: float, dy: float, button: int
+    ) -> None:
         """Called on every pointer-move event while a mouse button is held.
 
         Override to customise drag behaviour.  The default implementation

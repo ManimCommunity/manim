@@ -78,7 +78,6 @@ def interactive_embed(
     from manim import config, logger
     from manim.data_structures import MethodWithArgs
     from manim.scene.scene import SceneInteractContinue, SceneInteractRerun
-    from manim.utils.exceptions import RerunSceneException
 
     window = renderer.window
 
@@ -106,9 +105,7 @@ def interactive_embed(
                 scene.queue.put(SceneInteractRerun("file"))
 
         file_observer = Observer()
-        file_observer.schedule(
-            _FileHandler(), config["input_file"], recursive=True
-        )
+        file_observer.schedule(_FileHandler(), config["input_file"], recursive=True)
         file_observer.start()
     except Exception:
         logger.debug("watchdog not available — file-watching disabled.")

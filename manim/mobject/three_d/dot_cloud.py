@@ -52,7 +52,11 @@ class DotCloud3D(Mobject):
         **kwargs: Any,
     ) -> None:
         super().__init__(**kwargs)
-        pts = np.zeros((0, 3), dtype=np.float32) if points is None else np.asarray(points, dtype=np.float32)
+        pts = (
+            np.zeros((0, 3), dtype=np.float32)
+            if points is None
+            else np.asarray(points, dtype=np.float32)
+        )
         if pts.ndim == 1:
             pts = pts.reshape(1, 3)
         self._cloud_points: np.ndarray = pts.astype(np.float32)
@@ -74,7 +78,7 @@ class DotCloud3D(Mobject):
         """Return the (N, 3) float32 array of dot centres."""
         return self._cloud_points
 
-    def set_cloud_points(self, points: np.ndarray) -> "DotCloud3D":
+    def set_cloud_points(self, points: np.ndarray) -> DotCloud3D:
         pts = np.asarray(points, dtype=np.float32)
         if pts.ndim == 1:
             pts = pts.reshape(1, 3)
@@ -87,11 +91,11 @@ class DotCloud3D(Mobject):
         """Return the (N, 4) float32 RGBA array for all dots."""
         return self._rgbas
 
-    def set_rgbas(self, rgbas: np.ndarray) -> "DotCloud3D":
+    def set_rgbas(self, rgbas: np.ndarray) -> DotCloud3D:
         self._rgbas = np.asarray(rgbas, dtype=np.float32)
         return self
 
-    def set_color(self, color: ParsableManimColor, family: bool = True) -> "DotCloud3D":  # type: ignore[override]
+    def set_color(self, color: ParsableManimColor, family: bool = True) -> DotCloud3D:  # type: ignore[override]
         rgba = np.asarray(color_to_rgba(color), dtype=np.float32)
         self._rgbas = np.tile(rgba, (max(len(self._cloud_points), 1), 1))
         if family:
@@ -100,7 +104,7 @@ class DotCloud3D(Mobject):
                     sub.set_color(color, family=False)
         return self
 
-    def set_opacity(self, opacity: float, family: bool = True) -> "DotCloud3D":  # type: ignore[override]
+    def set_opacity(self, opacity: float, family: bool = True) -> DotCloud3D:  # type: ignore[override]
         self._rgbas[:, 3] = float(opacity)
         if family:
             for sub in self.submobjects:
@@ -131,9 +135,9 @@ class DotCloud3D(Mobject):
         """Linearly interpolate _rgbas between *mobject1* and *mobject2*."""
         if not isinstance(mobject1, DotCloud3D) or not isinstance(mobject2, DotCloud3D):
             return
-        self._rgbas = (
-            (1 - alpha) * mobject1._rgbas + alpha * mobject2._rgbas
-        ).astype(np.float32)
+        self._rgbas = ((1 - alpha) * mobject1._rgbas + alpha * mobject2._rgbas).astype(
+            np.float32
+        )
 
     def interpolate(
         self,
@@ -141,9 +145,10 @@ class DotCloud3D(Mobject):
         mobject2: Mobject,
         alpha: float,
         path_func: Any = None,
-    ) -> "DotCloud3D":
+    ) -> DotCloud3D:
         """Interpolate position and colour; keep _cloud_points in sync with points."""
         from manim.utils.bezier import interpolate as lerp
+
         if path_func is None:
             path_func = lerp
         super().interpolate(mobject1, mobject2, alpha, path_func)

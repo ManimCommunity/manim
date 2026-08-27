@@ -31,11 +31,14 @@ import numpy as np
 from PIL import Image
 
 from manim import config, logger
-from manim.constants import IN, OUT, PI, RIGHT, DOWN, LEFT
+from manim.constants import OUT, PI, RIGHT
 from manim.mobject.mobject import Mobject
 from manim.mobject.three_d.light_source import LightSource
 from manim.mobject.three_d.three_dimensions import Surface
-from manim.mobject.types.image_mobject import AbstractImageMobject, ImageMobjectFromCamera
+from manim.mobject.types.image_mobject import (
+    AbstractImageMobject,
+    ImageMobjectFromCamera,
+)
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.scene.scene_file_writer import SceneFileWriter
 from manim.utils.color import color_to_rgba
@@ -54,7 +57,6 @@ from .webgpu_vmobject_rendering import (
     SURFACE_COMBINED_VERTEX_LAYOUT,
     TRUE_DOT_VERTEX_LAYOUT,
     DotCloud3D,
-    _FrameData,
     build_true_dot_vbo,
     collect_frame_data,
     draw_frame_data,
@@ -65,6 +67,7 @@ if TYPE_CHECKING:
     import wgpu as wgpu_t
 
     from manim.scene.scene import Scene
+
     from .webgpu_renderer_window import WebGPUWindow
 
 try:
@@ -216,9 +219,7 @@ class WebGPUCamera(Mobject):
         Mirrors ``MultiCamera.get_mobjects_indicating_movement`` so that
         :class:`~.ZoomedScene` works with the WebGPU renderer.
         """
-        return [
-            imfc.camera.frame for imfc in self.image_mobjects_from_cameras
-        ]
+        return [imfc.camera.frame for imfc in self.image_mobjects_from_cameras]
 
     # ------------------------------------------------------------------
     # Frame geometry helpers (mirrors OpenGLCamera)
@@ -340,7 +341,9 @@ class WebGPUCamera(Mobject):
             logger.warning(
                 "WebGPUCamera.set_focal_distance: value %.4g clamped to %.4g "
                 "(must be in (0, far=%.4g))",
-                focal_distance, clamped, self._PERSPECTIVE_FAR,
+                focal_distance,
+                clamped,
+                self._PERSPECTIVE_FAR,
             )
         self.focal_distance = clamped
         # Keep the virtual camera position (frame_center z) in sync so that
@@ -423,14 +426,14 @@ class WebGPUCamera(Mobject):
         near, far = self.near, self.far
         return np.array(
             [
-                [2.0 / fw, 0.0,      0.0,                  0.0],
-                [0.0,      2.0 / fh, 0.0,                  0.0],
-                [0.0,      0.0,     -1.0 / (far - near),   far / (far - near)],
-                [0.0,      0.0,      0.0,                  1.0],
+                [2.0 / fw, 0.0, 0.0, 0.0],
+                [0.0, 2.0 / fh, 0.0, 0.0],
+                [0.0, 0.0, -1.0 / (far - near), far / (far - near)],
+                [0.0, 0.0, 0.0, 1.0],
             ],
             dtype=np.float32,
         )
-        
+
     # ------------------------------------------------------------------
     # Projection matrix (used by the shader uniform upload)
     # ------------------------------------------------------------------
@@ -463,14 +466,13 @@ class WebGPUCamera(Mobject):
             w, h = fw / 6.0, fh / 6.0
             return np.array(
                 [
-                    [2.0 * n / w, 0.0,         0.0,            0.0],
-                    [0.0,         2.0 * n / h, 0.0,            0.0],
-                    [0.0,         0.0,         f / (n - f),    n * f / (n - f)],
-                    [0.0,         0.0,        -1.0,            0.0],
+                    [2.0 * n / w, 0.0, 0.0, 0.0],
+                    [0.0, 2.0 * n / h, 0.0, 0.0],
+                    [0.0, 0.0, f / (n - f), n * f / (n - f)],
+                    [0.0, 0.0, -1.0, 0.0],
                 ],
                 dtype=np.float32,
             )
-
 
     # ------------------------------------------------------------------
     # Fixed-mobject registry (used by ThreeDScene)
@@ -516,7 +518,8 @@ class WebGPUCamera(Mobject):
 
     def remove_image_mobject_from_camera(self, image_mob_from_camera: Any) -> None:
         """Unregister an ImageMobjectFromCamera previously added via
-        ``add_image_mobject_from_camera``."""
+        ``add_image_mobject_from_camera``.
+        """
         if image_mob_from_camera in self.image_mobjects_from_cameras:
             self.image_mobjects_from_cameras.remove(image_mob_from_camera)
 
@@ -683,8 +686,12 @@ class WebGPURenderer:
         self._fill_stroke_bgl: wgpu_t.GPUBindGroupLayout | None = None
         # Main pipelines — multisample count matches self._msaa_samples.
         # Used in Pass 1 (the MSAA main-render pass).
-        self._fill_stroke_pipeline: wgpu_t.GPURenderPipeline | None = None     # 2-D, no depth write
-        self._fill_stroke_3d_pipeline: wgpu_t.GPURenderPipeline | None = None  # 3-D, depth write
+        self._fill_stroke_pipeline: wgpu_t.GPURenderPipeline | None = (
+            None  # 2-D, no depth write
+        )
+        self._fill_stroke_3d_pipeline: wgpu_t.GPURenderPipeline | None = (
+            None  # 3-D, depth write
+        )
         # Overlay pipelines — always count=1.
         # Used in Pass 4 (fixed-in-frame overlay, renders to _render_texture_view
         # at sample_count=1 after the MSAA resolve has already completed).
@@ -753,9 +760,9 @@ class WebGPURenderer:
         # the oldest in-flight slot; by the time N frames have been submitted
         # the GPU has had N frame-times to finish and sync_wait() returns
         # instantly with no pipeline stall.
-        _READBACK_POOL = 3          # triple-buffering
+        _READBACK_POOL = 3  # triple-buffering
         self._READBACK_POOL: int = _READBACK_POOL
-        self._readback_pool: list[Any] = []        # GPUBuffer × _READBACK_POOL
+        self._readback_pool: list[Any] = []  # GPUBuffer × _READBACK_POOL
         # FIFO of slot indices submitted but not yet read.
         self._readback_queue: collections.deque = collections.deque()
         # Ring write pointer: next pool slot for update_frame to fill.
@@ -845,7 +852,7 @@ class WebGPURenderer:
             usage=(
                 wgpu.TextureUsage.RENDER_ATTACHMENT
                 | wgpu.TextureUsage.COPY_SRC
-                | wgpu.TextureUsage.COPY_DST        # receives blit from _static_texture
+                | wgpu.TextureUsage.COPY_DST  # receives blit from _static_texture
                 | wgpu.TextureUsage.TEXTURE_BINDING  # read by compact-readback compute shader
             ),
         )
@@ -898,38 +905,49 @@ class WebGPURenderer:
         # floating-point depth jitter on flat/low-slope surface regions where
         # depth_bias_slope_scale alone contributes nearly zero.
         self._surface_pipeline = self._create_surface_pipeline(
-            self._proj_bgl, cull_mode="none", depth_write=True,
+            self._proj_bgl,
+            cull_mode="none",
+            depth_write=True,
             msaa_samples=self._msaa_samples,
         )
 
         # Combined fill+stroke pipeline (replaces separate slug + stroke pipelines).
-        self._fill_stroke_bgl, self._fill_stroke_pipeline = \
-            self._create_fill_stroke_pipeline(depth_test=False, msaa_samples=self._msaa_samples)
-        _, self._fill_stroke_3d_pipeline = \
-            self._create_fill_stroke_pipeline(depth_test=True, msaa_samples=self._msaa_samples)
+        self._fill_stroke_bgl, self._fill_stroke_pipeline = (
+            self._create_fill_stroke_pipeline(
+                depth_test=False, msaa_samples=self._msaa_samples
+            )
+        )
+        _, self._fill_stroke_3d_pipeline = self._create_fill_stroke_pipeline(
+            depth_test=True, msaa_samples=self._msaa_samples
+        )
 
         # Overlay pipelines — always count=1.  Used in Pass 4 (fixed-in-frame)
         # which renders directly into _render_texture_view after the MSAA resolve.
         if self._msaa_samples > 1:
-            _, self._fill_stroke_pipeline_1x = \
-                self._create_fill_stroke_pipeline(depth_test=False, msaa_samples=1)
-            _, self._fill_stroke_3d_pipeline_1x = \
-                self._create_fill_stroke_pipeline(depth_test=True, msaa_samples=1)
+            _, self._fill_stroke_pipeline_1x = self._create_fill_stroke_pipeline(
+                depth_test=False, msaa_samples=1
+            )
+            _, self._fill_stroke_3d_pipeline_1x = self._create_fill_stroke_pipeline(
+                depth_test=True, msaa_samples=1
+            )
         else:
             # When MSAA is off the overlay pipelines are the same objects.
             self._fill_stroke_pipeline_1x = self._fill_stroke_pipeline
             self._fill_stroke_3d_pipeline_1x = self._fill_stroke_3d_pipeline
 
         # GPU compute: cubic → quadratic conversion.
-        self._compute_bgl, self._cubic_to_quads_pipeline = \
+        self._compute_bgl, self._cubic_to_quads_pipeline = (
             self._create_cubic_to_quads_pipeline()
+        )
 
         self._create_oit_resources(width, height)
         self._create_readback_pipeline(width, height)
-        self._image_tex_bgl, self._image_tint_bgl, self._image_pipeline = \
+        self._image_tex_bgl, self._image_tint_bgl, self._image_pipeline = (
             self._create_image_pipeline(msaa_samples=self._msaa_samples)
+        )
         self._true_dot_pipeline = self._create_true_dot_pipeline(
-            self._proj_bgl, msaa_samples=self._msaa_samples,
+            self._proj_bgl,
+            msaa_samples=self._msaa_samples,
         )
 
         # Sub-camera pipelines (rgba8unorm target) for ZoomedScene support.
@@ -942,8 +960,11 @@ class WebGPURenderer:
             depth_test=True, target_format="rgba8unorm", msaa_samples=1
         )
         self._sub_cam_surface_pipeline = self._create_surface_pipeline(
-            self._proj_bgl, cull_mode="none", depth_write=True,
-            target_format="rgba8unorm", msaa_samples=1,
+            self._proj_bgl,
+            cull_mode="none",
+            depth_write=True,
+            target_format="rgba8unorm",
+            msaa_samples=1,
         )
 
         # Persistent camera uniform buffers — created once, updated each frame via
@@ -971,15 +992,23 @@ class WebGPURenderer:
         def _make_persistent_bg(buf: wgpu_t.GPUBuffer) -> wgpu_t.GPUBindGroup:
             return self._device.create_bind_group(
                 layout=self._proj_bgl,
-                entries=[{"binding": 0, "resource": {"buffer": buf, "offset": 0, "size": _UBO_SIZE}}],
+                entries=[
+                    {
+                        "binding": 0,
+                        "resource": {"buffer": buf, "offset": 0, "size": _UBO_SIZE},
+                    }
+                ],
             )
 
-        self.camera_bind_group      = _make_persistent_bg(self._camera_uniform_buf)
-        self.fixed_camera_bind_group = _make_persistent_bg(self._fixed_orient_uniform_buf)
-        self.fixed_frame_bind_group  = _make_persistent_bg(self._fixed_frame_uniform_buf)
+        self.camera_bind_group = _make_persistent_bg(self._camera_uniform_buf)
+        self.fixed_camera_bind_group = _make_persistent_bg(
+            self._fixed_orient_uniform_buf
+        )
+        self.fixed_frame_bind_group = _make_persistent_bg(self._fixed_frame_uniform_buf)
 
         if self.should_create_window():
             from .webgpu_renderer_window import WebGPUWindow
+
             wclass = self._window_class or WebGPUWindow
             self.window = wclass(self)
 
@@ -1008,7 +1037,6 @@ class WebGPURenderer:
             ]
         )
 
-
     def _create_fill_stroke_pipeline(
         self,
         depth_test: bool = False,
@@ -1025,7 +1053,7 @@ class WebGPURenderer:
         depth_test=True  — 3-D objects: depth-write + depth-test.
         """
         assert self._device is not None
-        shader_path   = Path(__file__).parent / "shaders" / "vmobject_fill_stroke.wgsl"
+        shader_path = Path(__file__).parent / "shaders" / "vmobject_fill_stroke.wgsl"
         shader_module = self._device.create_shader_module(
             code=shader_path.read_text(encoding="utf-8")
         )
@@ -1040,7 +1068,10 @@ class WebGPURenderer:
                 {
                     "binding": 1,
                     "visibility": wgpu.ShaderStage.FRAGMENT,
-                    "buffer": {"type": "read-only-storage", "has_dynamic_offset": False},
+                    "buffer": {
+                        "type": "read-only-storage",
+                        "has_dynamic_offset": False,
+                    },
                 },
             ]
         )
@@ -1068,19 +1099,38 @@ class WebGPURenderer:
             fragment={
                 "module": shader_module,
                 "entry_point": "fs_main",
-                "targets": [{"format": getattr(wgpu.TextureFormat, target_format), "blend": _blend}],
+                "targets": [
+                    {
+                        "format": getattr(wgpu.TextureFormat, target_format),
+                        "blend": _blend,
+                    }
+                ],
             },
             primitive={"topology": "triangle-list", "cull_mode": "none"},
             depth_stencil={
                 "format": wgpu.TextureFormat.depth24plus,
                 "depth_write_enabled": depth_test,
                 "depth_compare": "less",
-                "stencil_front": {"compare": "always", "fail_op": "keep", "depth_fail_op": "keep", "pass_op": "keep"},
-                "stencil_back":  {"compare": "always", "fail_op": "keep", "depth_fail_op": "keep", "pass_op": "keep"},
+                "stencil_front": {
+                    "compare": "always",
+                    "fail_op": "keep",
+                    "depth_fail_op": "keep",
+                    "pass_op": "keep",
+                },
+                "stencil_back": {
+                    "compare": "always",
+                    "fail_op": "keep",
+                    "depth_fail_op": "keep",
+                    "pass_op": "keep",
+                },
                 "stencil_read_mask": 0,
                 "stencil_write_mask": 0,
             },
-            multisample={"count": msaa_samples, "mask": 0xFFFF_FFFF, "alpha_to_coverage_enabled": False},
+            multisample={
+                "count": msaa_samples,
+                "mask": 0xFFFF_FFFF,
+                "alpha_to_coverage_enabled": False,
+            },
         )
         return bgl, pipeline
 
@@ -1097,7 +1147,7 @@ class WebGPURenderer:
         Dispatch: ceil(n_cubics / 64) × 1 × 1 workgroups.
         """
         assert self._device is not None
-        shader_path   = Path(__file__).parent / "shaders" / "cubic_to_quads.wgsl"
+        shader_path = Path(__file__).parent / "shaders" / "cubic_to_quads.wgsl"
         shader_module = self._device.create_shader_module(
             code=shader_path.read_text(encoding="utf-8")
         )
@@ -1166,9 +1216,7 @@ class WebGPURenderer:
             },
         }
         return self._device.create_render_pipeline(
-            layout=self._device.create_pipeline_layout(
-                bind_group_layouts=[proj_bgl]
-            ),
+            layout=self._device.create_pipeline_layout(bind_group_layouts=[proj_bgl]),
             vertex={
                 "module": shader_module,
                 "entry_point": "vs_main",
@@ -1177,15 +1225,30 @@ class WebGPURenderer:
             fragment={
                 "module": shader_module,
                 "entry_point": "fs_main",
-                "targets": [{"format": getattr(wgpu.TextureFormat, target_format), "blend": _blend}],
+                "targets": [
+                    {
+                        "format": getattr(wgpu.TextureFormat, target_format),
+                        "blend": _blend,
+                    }
+                ],
             },
             primitive={"topology": "triangle-list", "cull_mode": cull_mode},
             depth_stencil={
                 "format": wgpu.TextureFormat.depth24plus,
                 "depth_write_enabled": depth_write,
                 "depth_compare": "less",
-                "stencil_front": {"compare": "always", "fail_op": "keep", "depth_fail_op": "keep", "pass_op": "keep"},
-                "stencil_back":  {"compare": "always", "fail_op": "keep", "depth_fail_op": "keep", "pass_op": "keep"},
+                "stencil_front": {
+                    "compare": "always",
+                    "fail_op": "keep",
+                    "depth_fail_op": "keep",
+                    "pass_op": "keep",
+                },
+                "stencil_back": {
+                    "compare": "always",
+                    "fail_op": "keep",
+                    "depth_fail_op": "keep",
+                    "pass_op": "keep",
+                },
                 "stencil_read_mask": 0,
                 "stencil_write_mask": 0,
             },
@@ -1241,18 +1304,34 @@ class WebGPURenderer:
                 "format": wgpu.TextureFormat.depth24plus,
                 "depth_write_enabled": True,
                 "depth_compare": "less",
-                "stencil_front": {"compare": "always", "fail_op": "keep", "depth_fail_op": "keep", "pass_op": "keep"},
-                "stencil_back":  {"compare": "always", "fail_op": "keep", "depth_fail_op": "keep", "pass_op": "keep"},
+                "stencil_front": {
+                    "compare": "always",
+                    "fail_op": "keep",
+                    "depth_fail_op": "keep",
+                    "pass_op": "keep",
+                },
+                "stencil_back": {
+                    "compare": "always",
+                    "fail_op": "keep",
+                    "depth_fail_op": "keep",
+                    "pass_op": "keep",
+                },
                 "stencil_read_mask": 0,
                 "stencil_write_mask": 0,
             },
-            multisample={"count": msaa_samples, "mask": 0xFFFF_FFFF, "alpha_to_coverage_enabled": False},
+            multisample={
+                "count": msaa_samples,
+                "mask": 0xFFFF_FFFF,
+                "alpha_to_coverage_enabled": False,
+            },
         )
 
     def _create_image_pipeline(
         self,
         msaa_samples: int = 1,
-    ) -> tuple[wgpu_t.GPUBindGroupLayout, wgpu_t.GPUBindGroupLayout, wgpu_t.GPURenderPipeline]:
+    ) -> tuple[
+        wgpu_t.GPUBindGroupLayout, wgpu_t.GPUBindGroupLayout, wgpu_t.GPURenderPipeline
+    ]:
         """Create the render pipeline for ImageMobject textured quads.
 
         Layout
@@ -1331,7 +1410,7 @@ class WebGPURenderer:
                         "array_stride": 20,  # 3+2 floats × 4 B
                         "step_mode": "vertex",
                         "attributes": [
-                            {"format": "float32x3", "offset":  0, "shader_location": 0},
+                            {"format": "float32x3", "offset": 0, "shader_location": 0},
                             {"format": "float32x2", "offset": 12, "shader_location": 1},
                         ],
                     }
@@ -1354,12 +1433,26 @@ class WebGPURenderer:
                 "format": wgpu.TextureFormat.depth24plus,
                 "depth_write_enabled": False,
                 "depth_compare": "always",
-                "stencil_front": {"compare": "always", "fail_op": "keep", "depth_fail_op": "keep", "pass_op": "keep"},
-                "stencil_back":  {"compare": "always", "fail_op": "keep", "depth_fail_op": "keep", "pass_op": "keep"},
+                "stencil_front": {
+                    "compare": "always",
+                    "fail_op": "keep",
+                    "depth_fail_op": "keep",
+                    "pass_op": "keep",
+                },
+                "stencil_back": {
+                    "compare": "always",
+                    "fail_op": "keep",
+                    "depth_fail_op": "keep",
+                    "pass_op": "keep",
+                },
                 "stencil_read_mask": 0,
                 "stencil_write_mask": 0,
             },
-            multisample={"count": msaa_samples, "mask": 0xFFFF_FFFF, "alpha_to_coverage_enabled": False},
+            multisample={
+                "count": msaa_samples,
+                "mask": 0xFFFF_FFFF,
+                "alpha_to_coverage_enabled": False,
+            },
         )
 
         return tex_bgl, tint_bgl, pipeline
@@ -1411,7 +1504,8 @@ class WebGPURenderer:
             data = pixel_array.tobytes()
         else:
             rows = [
-                pixel_array[r].ravel().tobytes() + b"\x00" * (aligned_bpr - bytes_per_row)
+                pixel_array[r].ravel().tobytes()
+                + b"\x00" * (aligned_bpr - bytes_per_row)
                 for r in range(h)
             ]
             data = b"".join(rows)
@@ -1525,7 +1619,9 @@ class WebGPURenderer:
         )
         bg = self._device.create_bind_group(
             layout=self._image_tint_bgl,
-            entries=[{"binding": 0, "resource": {"buffer": buf, "offset": 0, "size": 16}}],
+            entries=[
+                {"binding": 0, "resource": {"buffer": buf, "offset": 0, "size": 16}}
+            ],
         )
         self._image_tint_cache[mob] = (fp, buf, bg)
         return bg
@@ -1536,7 +1632,9 @@ class WebGPURenderer:
         assert self._proj_bgl is not None
 
         # ── Accumulation textures ──────────────────────────────────────────
-        oit_usage = wgpu.TextureUsage.RENDER_ATTACHMENT | wgpu.TextureUsage.TEXTURE_BINDING
+        oit_usage = (
+            wgpu.TextureUsage.RENDER_ATTACHMENT | wgpu.TextureUsage.TEXTURE_BINDING
+        )
         self._oit_accum_texture = self._device.create_texture(
             size=(width, height, 1),
             format=wgpu.TextureFormat.rgba16float,
@@ -1561,8 +1659,12 @@ class WebGPURenderer:
             "alpha": {"src_factor": "one", "dst_factor": "one", "operation": "add"},
         }
         _reveal_blend = {
-            "color": {"src_factor": "zero", "dst_factor": "one-minus-src-alpha", "operation": "add"},
-            "alpha": {"src_factor": "zero", "dst_factor": "one",                 "operation": "add"},
+            "color": {
+                "src_factor": "zero",
+                "dst_factor": "one-minus-src-alpha",
+                "operation": "add",
+            },
+            "alpha": {"src_factor": "zero", "dst_factor": "one", "operation": "add"},
         }
         self._surface_oit_pipeline = self._device.create_render_pipeline(
             layout=self._device.create_pipeline_layout(
@@ -1586,12 +1688,26 @@ class WebGPURenderer:
                 "format": wgpu.TextureFormat.depth24plus,
                 "depth_write_enabled": False,
                 "depth_compare": "less",
-                "stencil_front": {"compare": "always", "fail_op": "keep", "depth_fail_op": "keep", "pass_op": "keep"},
-                "stencil_back":  {"compare": "always", "fail_op": "keep", "depth_fail_op": "keep", "pass_op": "keep"},
+                "stencil_front": {
+                    "compare": "always",
+                    "fail_op": "keep",
+                    "depth_fail_op": "keep",
+                    "pass_op": "keep",
+                },
+                "stencil_back": {
+                    "compare": "always",
+                    "fail_op": "keep",
+                    "depth_fail_op": "keep",
+                    "pass_op": "keep",
+                },
                 "stencil_read_mask": 0,
                 "stencil_write_mask": 0,
             },
-            multisample={"count": 1, "mask": 0xFFFF_FFFF, "alpha_to_coverage_enabled": False},
+            multisample={
+                "count": 1,
+                "mask": 0xFFFF_FFFF,
+                "alpha_to_coverage_enabled": False,
+            },
         )
 
         # ── OIT composition pipeline ───────────────────────────────────────
@@ -1622,8 +1738,12 @@ class WebGPURenderer:
             ]
         )
         _compose_blend = {
-            "color": {"src_factor": "src-alpha", "dst_factor": "one-minus-src-alpha", "operation": "add"},
-            "alpha": {"src_factor": "one",       "dst_factor": "one",                 "operation": "add"},
+            "color": {
+                "src_factor": "src-alpha",
+                "dst_factor": "one-minus-src-alpha",
+                "operation": "add",
+            },
+            "alpha": {"src_factor": "one", "dst_factor": "one", "operation": "add"},
         }
         self._oit_compose_pipeline = self._device.create_render_pipeline(
             layout=self._device.create_pipeline_layout(
@@ -1633,10 +1753,16 @@ class WebGPURenderer:
             fragment={
                 "module": compose_shader,
                 "entry_point": "fs_main",
-                "targets": [{"format": wgpu.TextureFormat.bgra8unorm, "blend": _compose_blend}],
+                "targets": [
+                    {"format": wgpu.TextureFormat.bgra8unorm, "blend": _compose_blend}
+                ],
             },
             primitive={"topology": "triangle-list", "cull_mode": "none"},
-            multisample={"count": 1, "mask": 0xFFFF_FFFF, "alpha_to_coverage_enabled": False},
+            multisample={
+                "count": 1,
+                "mask": 0xFFFF_FFFF,
+                "alpha_to_coverage_enabled": False,
+            },
         )
         self._oit_compose_bind_group = self._device.create_bind_group(
             layout=self._oit_compose_bgl,
@@ -1701,15 +1827,17 @@ class WebGPURenderer:
     # Sub-camera rendering (ZoomedScene / ImageMobjectFromCamera)
     # ------------------------------------------------------------------
 
-    def _sub_camera_proj_view(self, sub_cam_frame: Any) -> tuple[np.ndarray, np.ndarray]:
+    def _sub_camera_proj_view(
+        self, sub_cam_frame: Any
+    ) -> tuple[np.ndarray, np.ndarray]:
         """Return (proj, view) matrices for a MovingCamera's frame viewport.
 
         The sub-camera is always orthographic.  Its viewport is defined by the
         ``frame`` mobject's current center and size.
         """
-        fw   = float(sub_cam_frame.get_width())
-        fh   = float(sub_cam_frame.get_height())
-        cen  = sub_cam_frame.get_center()
+        fw = float(sub_cam_frame.get_width())
+        fh = float(sub_cam_frame.get_height())
+        cen = sub_cam_frame.get_center()
         cx, cy = float(cen[0]), float(cen[1])
         near, far = -100.0, 100.0
 
@@ -1717,10 +1845,10 @@ class WebGPURenderer:
         # (centered at origin — the view matrix handles the translation).
         proj = np.array(
             [
-                [2.0 / fw, 0.0,       0.0,                  0.0],
-                [0.0,      2.0 / fh,  0.0,                  0.0],
-                [0.0,      0.0,      -1.0 / (far - near),   far / (far - near)],
-                [0.0,      0.0,       0.0,                  1.0],
+                [2.0 / fw, 0.0, 0.0, 0.0],
+                [0.0, 2.0 / fh, 0.0, 0.0],
+                [0.0, 0.0, -1.0 / (far - near), far / (far - near)],
+                [0.0, 0.0, 0.0, 1.0],
             ],
             dtype=np.float32,
         )
@@ -1783,7 +1911,12 @@ class WebGPURenderer:
         )
         cam_bg = self._device.create_bind_group(
             layout=self._proj_bgl,
-            entries=[{"binding": 0, "resource": {"buffer": uniform_buf, "offset": 0, "size": _UBO_SIZE}}],
+            entries=[
+                {
+                    "binding": 0,
+                    "resource": {"buffer": uniform_buf, "offset": 0, "size": _UBO_SIZE},
+                }
+            ],
         )
 
         sampler = self._device.create_sampler(
@@ -1808,14 +1941,14 @@ class WebGPURenderer:
         )
 
         resources = {
-            "render_tex":          render_tex,
-            "render_view":         render_view,
-            "depth_tex":           depth_tex,
-            "depth_view":          depth_view,
-            "uniform_buf":         uniform_buf,
-            "cam_bg":              cam_bg,
-            "tex_bg":              tex_bg,
-            "staging_buf":         staging_buf,
+            "render_tex": render_tex,
+            "render_view": render_view,
+            "depth_tex": depth_tex,
+            "depth_view": depth_view,
+            "uniform_buf": uniform_buf,
+            "cam_bg": cam_bg,
+            "tex_bg": tex_bg,
+            "staging_buf": staging_buf,
             "staging_aligned_bpr": aligned_bpr,
         }
         self._sub_cam_resources[mob_id] = resources
@@ -1853,7 +1986,7 @@ class WebGPURenderer:
 
         sub_cam_frame = mob.camera.frame
         proj, view = self._sub_camera_proj_view(sub_cam_frame)
-        ubo_bytes   = self._pack_camera_uniforms_bytes(proj, view)
+        ubo_bytes = self._pack_camera_uniforms_bytes(proj, view)
 
         res = self._get_sub_cam_resources(mob)
         self._device.queue.write_buffer(res["uniform_buf"], 0, ubo_bytes)
@@ -1863,17 +1996,17 @@ class WebGPURenderer:
         sub_pass = encoder.begin_render_pass(
             color_attachments=[
                 {
-                    "view":        res["render_view"],
-                    "load_op":     "clear",
-                    "store_op":    "store",
+                    "view": res["render_view"],
+                    "load_op": "clear",
+                    "store_op": "store",
                     "clear_value": tuple(float(c) for c in bg),
                 }
             ],
             depth_stencil_attachment={
-                "view":              res["depth_view"],
+                "view": res["depth_view"],
                 "depth_clear_value": 1.0,
-                "depth_load_op":     "clear",
-                "depth_store_op":    "store",
+                "depth_load_op": "clear",
+                "depth_store_op": "store",
             },
         )
 
@@ -1888,8 +2021,22 @@ class WebGPURenderer:
                 sub_fill_render_bg = self._device.create_bind_group(
                     layout=self._fill_stroke_bgl,
                     entries=[
-                        {"binding": 0, "resource": {"buffer": res["uniform_buf"], "offset": 0, "size": res["uniform_buf"].size}},
-                        {"binding": 1, "resource": {"buffer": fd.quads_out_buf,   "offset": 0, "size": fd.quads_out_buf.size}},
+                        {
+                            "binding": 0,
+                            "resource": {
+                                "buffer": res["uniform_buf"],
+                                "offset": 0,
+                                "size": res["uniform_buf"].size,
+                            },
+                        },
+                        {
+                            "binding": 1,
+                            "resource": {
+                                "buffer": fd.quads_out_buf,
+                                "offset": 0,
+                                "size": fd.quads_out_buf.size,
+                            },
+                        },
                     ],
                 )
             else:
@@ -1908,7 +2055,9 @@ class WebGPURenderer:
         sub_pass.end()
 
     # Keep the old name as a shim so any external callers don't break.
-    def _pack_camera_uniforms(self, proj: np.ndarray, view: np.ndarray) -> wgpu_t.GPUBuffer:
+    def _pack_camera_uniforms(
+        self, proj: np.ndarray, view: np.ndarray
+    ) -> wgpu_t.GPUBuffer:
         """Create a throw-away 656-byte uniform buffer (legacy path, rarely used)."""
         assert self._device is not None
         buf = self._device.create_buffer_with_data(
@@ -1947,16 +2096,23 @@ class WebGPURenderer:
         fixed_view = self.camera.fixed_view_matrix
 
         self._device.queue.write_buffer(
-            self._camera_uniform_buf, 0,
-            self._pack_camera_uniforms_bytes(self.camera.projection_matrix, self.camera.view_matrix),
+            self._camera_uniform_buf,
+            0,
+            self._pack_camera_uniforms_bytes(
+                self.camera.projection_matrix, self.camera.view_matrix
+            ),
         )
         self._device.queue.write_buffer(
-            self._fixed_orient_uniform_buf, 0,
+            self._fixed_orient_uniform_buf,
+            0,
             self._pack_camera_uniforms_bytes(self.camera.projection_matrix, fixed_view),
         )
         self._device.queue.write_buffer(
-            self._fixed_frame_uniform_buf, 0,
-            self._pack_camera_uniforms_bytes(self.camera.ortho_projection_matrix, fixed_view),
+            self._fixed_frame_uniform_buf,
+            0,
+            self._pack_camera_uniforms_bytes(
+                self.camera.ortho_projection_matrix, fixed_view
+            ),
         )
 
         # Return the persistent normal bind group (unchanged object).
@@ -1974,13 +2130,17 @@ class WebGPURenderer:
     @property
     def fill_stroke_pipeline(self) -> wgpu_t.GPURenderPipeline:
         """Combined fill+stroke pipeline — 2-D (no depth write)."""
-        assert self._fill_stroke_pipeline is not None, "init_scene() has not been called"
+        assert self._fill_stroke_pipeline is not None, (
+            "init_scene() has not been called"
+        )
         return self._fill_stroke_pipeline
 
     @property
     def fill_stroke_3d_pipeline(self) -> wgpu_t.GPURenderPipeline:
         """Combined fill+stroke pipeline — 3-D (depth write + test)."""
-        assert self._fill_stroke_3d_pipeline is not None, "init_scene() has not been called"
+        assert self._fill_stroke_3d_pipeline is not None, (
+            "init_scene() has not been called"
+        )
         return self._fill_stroke_3d_pipeline
 
     @property
@@ -1990,7 +2150,9 @@ class WebGPURenderer:
         Used for the fixed-in-frame overlay pass (Pass 4) which renders directly
         into ``_render_texture_view`` after the MSAA resolve has completed.
         """
-        assert self._fill_stroke_pipeline_1x is not None, "init_scene() has not been called"
+        assert self._fill_stroke_pipeline_1x is not None, (
+            "init_scene() has not been called"
+        )
         return self._fill_stroke_pipeline_1x
 
     @property
@@ -2000,7 +2162,9 @@ class WebGPURenderer:
         Used for the fixed-in-frame overlay pass (Pass 4) which renders directly
         into ``_render_texture_view`` after the MSAA resolve has completed.
         """
-        assert self._fill_stroke_3d_pipeline_1x is not None, "init_scene() has not been called"
+        assert self._fill_stroke_3d_pipeline_1x is not None, (
+            "init_scene() has not been called"
+        )
         return self._fill_stroke_3d_pipeline_1x
 
     @property
@@ -2011,7 +2175,9 @@ class WebGPURenderer:
 
     @property
     def surface_oit_pipeline(self) -> wgpu_t.GPURenderPipeline:
-        assert self._surface_oit_pipeline is not None, "init_scene() has not been called"
+        assert self._surface_oit_pipeline is not None, (
+            "init_scene() has not been called"
+        )
         return self._surface_oit_pipeline
 
     # ------------------------------------------------------------------
@@ -2071,10 +2237,10 @@ class WebGPURenderer:
         self.frame_vbos = []
 
         # ── Partition and z-sort mobjects ────────────────────────────────
-        cam            = self.camera
+        cam = self.camera
         fixed_in_frame = cam.fixed_in_frame_mobjects
-        fixed_orient   = cam.fixed_orientation_mobjects
-        fixed_view     = self.camera.fixed_view_matrix
+        fixed_orient = cam.fixed_orientation_mobjects
+        fixed_view = self.camera.fixed_view_matrix
 
         assert self._camera_uniform_buf is not None
         assert self._fixed_orient_uniform_buf is not None
@@ -2093,7 +2259,9 @@ class WebGPURenderer:
             #   key[1] = z_index
             # This ensures foreground mobs always draw last (on top) even when
             # they share z_index=0 with regular mobs (Bug 3).
-            all_mobs = list_update(list(scene.mobjects), list(scene.foreground_mobjects))
+            all_mobs = list_update(
+                list(scene.mobjects), list(scene.foreground_mobjects)
+            )
             if self.camera.use_z_index:
                 foreground_ids = {id(m) for m in scene.foreground_mobjects}
                 source = sorted(
@@ -2129,7 +2297,9 @@ class WebGPURenderer:
         def _flush_runs() -> None:
             if _run_normal:
                 fd = collect_frame_data(
-                    self, list(_run_normal), self._camera_uniform_buf,
+                    self,
+                    list(_run_normal),
+                    self._camera_uniform_buf,
                     cache_slot="normal",
                 )
                 if fd is not None:
@@ -2137,7 +2307,9 @@ class WebGPURenderer:
                 _run_normal.clear()
             if _run_orient:
                 fd = collect_frame_data(
-                    self, list(_run_orient), self._fixed_orient_uniform_buf,
+                    self,
+                    list(_run_orient),
+                    self._fixed_orient_uniform_buf,
                     view_matrix_override=fixed_view,
                     center_view_matrix=self.camera.view_matrix,
                     cache_slot="orient",
@@ -2217,7 +2389,11 @@ class WebGPURenderer:
                         resolved_queue.append(("image", vbo, tex_bg, tint_bg))
                 else:
                     resources = self._get_image_gpu_resources(mob)
-                    if vbo is not None and resources is not None and tint_bg is not None:
+                    if (
+                        vbo is not None
+                        and resources is not None
+                        and tint_bg is not None
+                    ):
                         resolved_queue.append(("image", vbo, resources[1], tint_bg))
             elif item[0] == "truedot":
                 mob = item[1]
@@ -2234,9 +2410,11 @@ class WebGPURenderer:
 
         # Fixed-in-frame: always last, separate overlay pass.
         fixed_frame_mobs = [
-            m for m in _seen
+            m
+            for m in _seen
             if False  # placeholder — rebuilt below from source flatten
         ]
+
         # Re-flatten source to get all VMobjects (including those inside containers)
         # and filter to the fixed_in_frame set.
         def _flatten_vmobjects(src: list) -> list:
@@ -2261,7 +2439,9 @@ class WebGPURenderer:
             m for m in _flatten_vmobjects(source) if m in fixed_in_frame
         ]
         fixed_frame_fd = collect_frame_data(
-            self, fixed_frame_mobs, self._fixed_frame_uniform_buf,
+            self,
+            fixed_frame_mobs,
+            self._fixed_frame_uniform_buf,
             view_matrix_override=fixed_view,
             proj_matrix_override=self.camera.ortho_projection_matrix,
             cache_slot="frame",
@@ -2269,8 +2449,9 @@ class WebGPURenderer:
 
         # OIT surfaces come from all normal VMobject batches in the queue.
         all_normal_fds = [
-            item[1] for item in resolved_queue if item[0] == "vmobs"
-            and item[2] is self.camera_bind_group
+            item[1]
+            for item in resolved_queue
+            if item[0] == "vmobs" and item[2] is self.camera_bind_group
         ]
 
         encoder = self._device.create_command_encoder()
@@ -2304,9 +2485,9 @@ class WebGPURenderer:
         # ready by the time the fragment shader reads it in Pass 1.
         cp = encoder.begin_compute_pass()
         cp.set_pipeline(self._cubic_to_quads_pipeline)
-        all_fds = [
-            item[1] for item in resolved_queue if item[0] == "vmobs"
-        ] + ([fixed_frame_fd] if fixed_frame_fd is not None else [])
+        all_fds = [item[1] for item in resolved_queue if item[0] == "vmobs"] + (
+            [fixed_frame_fd] if fixed_frame_fd is not None else []
+        )
         for fd in all_fds:
             if fd.n_cubics_total > 0 and fd.compute_bg is not None:
                 cp.set_bind_group(0, fd.compute_bg, [], 0, 0)
@@ -2337,9 +2518,9 @@ class WebGPURenderer:
                 encoder.copy_texture_to_buffer(
                     {"texture": res["render_tex"], "mip_level": 0, "origin": (0, 0, 0)},
                     {
-                        "buffer":         res["staging_buf"],
-                        "offset":         0,
-                        "bytes_per_row":  aligned_bpr,
+                        "buffer": res["staging_buf"],
+                        "offset": 0,
+                        "bytes_per_row": aligned_bpr,
                         "rows_per_image": h,
                     },
                     (w, h, 1),
@@ -2470,8 +2651,10 @@ class WebGPURenderer:
                 for idx in oit_fd.oit_indices:
                     arr = oit_fd.surface_parts[idx]
                     oit_pass.set_vertex_buffer(
-                        0, oit_fd.surface_buf,
-                        oit_fd.surface_byte_offsets[idx], arr.nbytes,
+                        0,
+                        oit_fd.surface_buf,
+                        oit_fd.surface_byte_offsets[idx],
+                        arr.nbytes,
                     )
                     oit_pass.draw(len(arr), 1, 0, 0)
             oit_pass.end()
@@ -2479,7 +2662,11 @@ class WebGPURenderer:
             # ── Pass 3: OIT composition ──────────────────────────────────
             compose_pass = encoder.begin_render_pass(
                 color_attachments=[
-                    {"view": self._render_texture_view, "load_op": "load", "store_op": "store"}
+                    {
+                        "view": self._render_texture_view,
+                        "load_op": "load",
+                        "store_op": "store",
+                    }
                 ],
             )
             compose_pass.set_pipeline(self._oit_compose_pipeline)
@@ -2504,7 +2691,11 @@ class WebGPURenderer:
         if fixed_frame_fd is not None:
             fixed_pass = encoder.begin_render_pass(
                 color_attachments=[
-                    {"view": self._render_texture_view, "load_op": "load", "store_op": "store"}
+                    {
+                        "view": self._render_texture_view,
+                        "load_op": "load",
+                        "store_op": "store",
+                    }
                 ],
                 depth_stencil_attachment={
                     "view": self._depth_texture_view,
@@ -2519,11 +2710,11 @@ class WebGPURenderer:
                 # records compatible draw calls for this count=1 pass.
                 _saved_2d = self._fill_stroke_pipeline
                 _saved_3d = self._fill_stroke_3d_pipeline
-                self._fill_stroke_pipeline    = self._fill_stroke_pipeline_1x
+                self._fill_stroke_pipeline = self._fill_stroke_pipeline_1x
                 self._fill_stroke_3d_pipeline = self._fill_stroke_3d_pipeline_1x
             draw_frame_data(self, fixed_frame_fd, self.fixed_frame_bind_group)
             if self._msaa_samples > 1:
-                self._fill_stroke_pipeline    = _saved_2d
+                self._fill_stroke_pipeline = _saved_2d
                 self._fill_stroke_3d_pipeline = _saved_3d
             fixed_pass.end()
 
@@ -2556,7 +2747,7 @@ class WebGPURenderer:
             and self._readback_pool
             and len(self._readback_queue) < self._READBACK_POOL
         ):
-            width  = config.pixel_width
+            width = config.pixel_width
             height = config.pixel_height
             packed_size = width * height * 4
             slot = self._readback_write_slot
@@ -2568,8 +2759,10 @@ class WebGPURenderer:
             cp.end()
 
             encoder.copy_buffer_to_buffer(
-                self._readback_storage_buf, 0,
-                self._readback_pool[slot],  0,
+                self._readback_storage_buf,
+                0,
+                self._readback_pool[slot],
+                0,
                 packed_size,
             )
 
@@ -2601,10 +2794,13 @@ class WebGPURenderer:
                 else:
                     # Strip row padding before reshaping.
                     rows = [
-                        raw[r * aligned_bpr : r * aligned_bpr + w * 4]
-                        for r in range(h)
+                        raw[r * aligned_bpr : r * aligned_bpr + w * 4] for r in range(h)
                     ]
-                    arr = np.frombuffer(b"".join(rows), dtype=np.uint8).reshape(h, w, 4).copy()
+                    arr = (
+                        np.frombuffer(b"".join(rows), dtype=np.uint8)
+                        .reshape(h, w, 4)
+                        .copy()
+                    )
                 # Write into the Cairo sub-camera's pixel_array so that
                 # ImageMobjectFromCamera.get_pixel_array() returns current data.
                 try:
@@ -2731,7 +2927,7 @@ class WebGPURenderer:
         if self._readback_cache is not None:
             return self._readback_cache
 
-        width  = config.pixel_width
+        width = config.pixel_width
         height = config.pixel_height
         packed_size = width * height * 4
 
@@ -2742,12 +2938,12 @@ class WebGPURenderer:
             # and waits; since the GPU work is already done, only the driver's
             # buffer-mapping overhead remains (typically < 1 ms).
             slot = self._readback_queue.popleft()
-            buf  = self._readback_pool[slot]
+            buf = self._readback_pool[slot]
             buf.map_sync(wgpu.MapMode.READ)
         else:
             # ── Fallback path: submit now, block ─────────────────────────
             slot = self._readback_write_slot
-            buf  = self._readback_pool[slot]
+            buf = self._readback_pool[slot]
 
             encoder = self._device.create_command_encoder()
 
@@ -2758,8 +2954,10 @@ class WebGPURenderer:
             cp.end()
 
             encoder.copy_buffer_to_buffer(
-                self._readback_storage_buf, 0,
-                buf,                         0,
+                self._readback_storage_buf,
+                0,
+                buf,
+                0,
                 packed_size,
             )
 
@@ -2833,7 +3031,7 @@ class WebGPURenderer:
             When True (the default for ``rendercanvas``), the origin is
             at the top-left corner; y increases downward.
         """
-        pixel_width  = config.pixel_width
+        pixel_width = config.pixel_width
         pixel_height = config.pixel_height
         frame_height = config.frame_height
         frame_center = self.camera.get_center()
@@ -2843,12 +3041,8 @@ class WebGPURenderer:
 
         scale = frame_height / pixel_height
         y_direction = -1 if top_left else 1
-        return (
-            frame_center
-            + scale
-            * np.array(
-                [(px - pixel_width / 2), y_direction * (py - pixel_height / 2), 0.0]
-            )
+        return frame_center + scale * np.array(
+            [(px - pixel_width / 2), y_direction * (py - pixel_height / 2), 0.0]
         )
 
     # ------------------------------------------------------------------
@@ -2880,7 +3074,9 @@ class WebGPURenderer:
                     self.window = None
                     break
                 if self._has_static_frame:
-                    self.update_frame(scene, mob_list=list(moving_mobjects), blit_static=True)
+                    self.update_frame(
+                        scene, mob_list=list(moving_mobjects), blit_static=True
+                    )
                 else:
                     self.update_frame(scene)
                 self.window.present()
@@ -3008,7 +3204,9 @@ class WebGPURenderer:
         # enqueue a readback pool slot, because save_static_frame_data is not
         # writing a movie frame and a stale slot in the pool would cause the next
         # write_frame() call to read wrong pixel data.
-        self.update_frame(scene, mob_list=static_list, blit_static=False, _readback=False)
+        self.update_frame(
+            scene, mob_list=static_list, blit_static=False, _readback=False
+        )
 
         # Copy _render_texture → _static_texture for later per-frame blits.
         encoder = self._device.create_command_encoder()

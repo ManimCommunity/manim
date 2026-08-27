@@ -40,7 +40,7 @@ from __future__ import annotations
 
 import struct
 import weakref
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -73,15 +73,15 @@ if TYPE_CHECKING:
 
 _SURFACE_COMBINED_DTYPE = np.dtype(
     [
-        ("in_vert",            np.float32, (3,)),
-        ("in_normal",          np.float32, (3,)),
-        ("in_fill_color",      np.float32, (4,)),
-        ("in_stroke_color",    np.float32, (4,)),
-        ("in_bary",            np.float32, (3,)),
-        ("stroke_half_px",     np.float32),
-        ("diffuse_strength",   np.float32),
-        ("specular_strength",  np.float32),
-        ("specular_exponent",  np.float32),
+        ("in_vert", np.float32, (3,)),
+        ("in_normal", np.float32, (3,)),
+        ("in_fill_color", np.float32, (4,)),
+        ("in_stroke_color", np.float32, (4,)),
+        ("in_bary", np.float32, (3,)),
+        ("stroke_half_px", np.float32),
+        ("diffuse_strength", np.float32),
+        ("specular_strength", np.float32),
+        ("specular_exponent", np.float32),
     ]
 )
 _SURFACE_COMBINED_STRIDE: int = _SURFACE_COMBINED_DTYPE.itemsize  # 84 bytes
@@ -95,15 +95,51 @@ SURFACE_COMBINED_VERTEX_LAYOUT: dict = {
     "array_stride": _SURFACE_COMBINED_STRIDE,
     "step_mode": "vertex",
     "attributes": [
-        {"format": "float32x3", "offset": _SURFACE_COMBINED_OFFSETS["in_vert"],            "shader_location": 0},
-        {"format": "float32x3", "offset": _SURFACE_COMBINED_OFFSETS["in_normal"],          "shader_location": 1},
-        {"format": "float32x4", "offset": _SURFACE_COMBINED_OFFSETS["in_fill_color"],      "shader_location": 2},
-        {"format": "float32x4", "offset": _SURFACE_COMBINED_OFFSETS["in_stroke_color"],    "shader_location": 3},
-        {"format": "float32x3", "offset": _SURFACE_COMBINED_OFFSETS["in_bary"],            "shader_location": 4},
-        {"format": "float32",   "offset": _SURFACE_COMBINED_OFFSETS["stroke_half_px"],     "shader_location": 5},
-        {"format": "float32",   "offset": _SURFACE_COMBINED_OFFSETS["diffuse_strength"],   "shader_location": 6},
-        {"format": "float32",   "offset": _SURFACE_COMBINED_OFFSETS["specular_strength"],  "shader_location": 7},
-        {"format": "float32",   "offset": _SURFACE_COMBINED_OFFSETS["specular_exponent"],  "shader_location": 8},
+        {
+            "format": "float32x3",
+            "offset": _SURFACE_COMBINED_OFFSETS["in_vert"],
+            "shader_location": 0,
+        },
+        {
+            "format": "float32x3",
+            "offset": _SURFACE_COMBINED_OFFSETS["in_normal"],
+            "shader_location": 1,
+        },
+        {
+            "format": "float32x4",
+            "offset": _SURFACE_COMBINED_OFFSETS["in_fill_color"],
+            "shader_location": 2,
+        },
+        {
+            "format": "float32x4",
+            "offset": _SURFACE_COMBINED_OFFSETS["in_stroke_color"],
+            "shader_location": 3,
+        },
+        {
+            "format": "float32x3",
+            "offset": _SURFACE_COMBINED_OFFSETS["in_bary"],
+            "shader_location": 4,
+        },
+        {
+            "format": "float32",
+            "offset": _SURFACE_COMBINED_OFFSETS["stroke_half_px"],
+            "shader_location": 5,
+        },
+        {
+            "format": "float32",
+            "offset": _SURFACE_COMBINED_OFFSETS["diffuse_strength"],
+            "shader_location": 6,
+        },
+        {
+            "format": "float32",
+            "offset": _SURFACE_COMBINED_OFFSETS["specular_strength"],
+            "shader_location": 7,
+        },
+        {
+            "format": "float32",
+            "offset": _SURFACE_COMBINED_OFFSETS["specular_exponent"],
+            "shader_location": 8,
+        },
     ],
 }
 
@@ -125,15 +161,15 @@ SURFACE_COMBINED_VERTEX_LAYOUT: dict = {
 
 _FILL_STROKE_DTYPE = np.dtype(
     [
-        ("in_pos",             np.float32, (3,)),
-        ("in_fill_color",      np.float32, (4,)),
-        ("in_stroke_color",    np.float32, (4,)),
-        ("stroke_half_ndc",    np.float32),
-        ("fill_curve_start",   np.uint32),
-        ("n_fill_curves",      np.uint32),
+        ("in_pos", np.float32, (3,)),
+        ("in_fill_color", np.float32, (4,)),
+        ("in_stroke_color", np.float32, (4,)),
+        ("stroke_half_ndc", np.float32),
+        ("fill_curve_start", np.uint32),
+        ("n_fill_curves", np.uint32),
         ("stroke_curve_start", np.uint32),
-        ("n_stroke_curves",    np.uint32),
-        ("fill_rule",          np.uint32),
+        ("n_stroke_curves", np.uint32),
+        ("fill_rule", np.uint32),
     ]
 )
 _FILL_STROKE_STRIDE: int = _FILL_STROKE_DTYPE.itemsize  # 64 bytes
@@ -147,15 +183,51 @@ FILL_STROKE_VERTEX_LAYOUT: dict = {
     "array_stride": _FILL_STROKE_STRIDE,
     "step_mode": "vertex",
     "attributes": [
-        {"format": "float32x3", "offset": _FILL_STROKE_OFFSETS["in_pos"],             "shader_location": 0},
-        {"format": "float32x4", "offset": _FILL_STROKE_OFFSETS["in_fill_color"],      "shader_location": 1},
-        {"format": "float32x4", "offset": _FILL_STROKE_OFFSETS["in_stroke_color"],    "shader_location": 2},
-        {"format": "float32",   "offset": _FILL_STROKE_OFFSETS["stroke_half_ndc"],    "shader_location": 3},
-        {"format": "uint32",    "offset": _FILL_STROKE_OFFSETS["fill_curve_start"],   "shader_location": 4},
-        {"format": "uint32",    "offset": _FILL_STROKE_OFFSETS["n_fill_curves"],      "shader_location": 5},
-        {"format": "uint32",    "offset": _FILL_STROKE_OFFSETS["stroke_curve_start"], "shader_location": 6},
-        {"format": "uint32",    "offset": _FILL_STROKE_OFFSETS["n_stroke_curves"],    "shader_location": 7},
-        {"format": "uint32",    "offset": _FILL_STROKE_OFFSETS["fill_rule"],          "shader_location": 8},
+        {
+            "format": "float32x3",
+            "offset": _FILL_STROKE_OFFSETS["in_pos"],
+            "shader_location": 0,
+        },
+        {
+            "format": "float32x4",
+            "offset": _FILL_STROKE_OFFSETS["in_fill_color"],
+            "shader_location": 1,
+        },
+        {
+            "format": "float32x4",
+            "offset": _FILL_STROKE_OFFSETS["in_stroke_color"],
+            "shader_location": 2,
+        },
+        {
+            "format": "float32",
+            "offset": _FILL_STROKE_OFFSETS["stroke_half_ndc"],
+            "shader_location": 3,
+        },
+        {
+            "format": "uint32",
+            "offset": _FILL_STROKE_OFFSETS["fill_curve_start"],
+            "shader_location": 4,
+        },
+        {
+            "format": "uint32",
+            "offset": _FILL_STROKE_OFFSETS["n_fill_curves"],
+            "shader_location": 5,
+        },
+        {
+            "format": "uint32",
+            "offset": _FILL_STROKE_OFFSETS["stroke_curve_start"],
+            "shader_location": 6,
+        },
+        {
+            "format": "uint32",
+            "offset": _FILL_STROKE_OFFSETS["n_stroke_curves"],
+            "shader_location": 7,
+        },
+        {
+            "format": "uint32",
+            "offset": _FILL_STROKE_OFFSETS["fill_rule"],
+            "shader_location": 8,
+        },
     ],
 }
 
@@ -175,10 +247,10 @@ FILL_STROKE_VERTEX_LAYOUT: dict = {
 _TRUE_DOT_DTYPE = np.dtype(
     [
         ("center", np.float32, (3,)),
-        ("color",  np.float32, (4,)),
-        ("uv",     np.float32, (2,)),
+        ("color", np.float32, (4,)),
+        ("uv", np.float32, (2,)),
         ("radius", np.float32),
-        ("gloss",  np.float32),
+        ("gloss", np.float32),
         ("shadow", np.float32),
     ]
 )
@@ -193,12 +265,36 @@ TRUE_DOT_VERTEX_LAYOUT: dict = {
     "array_stride": _TRUE_DOT_STRIDE,
     "step_mode": "vertex",
     "attributes": [
-        {"format": "float32x3", "offset": _TRUE_DOT_OFFSETS["center"], "shader_location": 0},
-        {"format": "float32x4", "offset": _TRUE_DOT_OFFSETS["color"],  "shader_location": 1},
-        {"format": "float32x2", "offset": _TRUE_DOT_OFFSETS["uv"],     "shader_location": 2},
-        {"format": "float32",   "offset": _TRUE_DOT_OFFSETS["radius"], "shader_location": 3},
-        {"format": "float32",   "offset": _TRUE_DOT_OFFSETS["gloss"],  "shader_location": 4},
-        {"format": "float32",   "offset": _TRUE_DOT_OFFSETS["shadow"], "shader_location": 5},
+        {
+            "format": "float32x3",
+            "offset": _TRUE_DOT_OFFSETS["center"],
+            "shader_location": 0,
+        },
+        {
+            "format": "float32x4",
+            "offset": _TRUE_DOT_OFFSETS["color"],
+            "shader_location": 1,
+        },
+        {
+            "format": "float32x2",
+            "offset": _TRUE_DOT_OFFSETS["uv"],
+            "shader_location": 2,
+        },
+        {
+            "format": "float32",
+            "offset": _TRUE_DOT_OFFSETS["radius"],
+            "shader_location": 3,
+        },
+        {
+            "format": "float32",
+            "offset": _TRUE_DOT_OFFSETS["gloss"],
+            "shader_location": 4,
+        },
+        {
+            "format": "float32",
+            "offset": _TRUE_DOT_OFFSETS["shadow"],
+            "shader_location": 5,
+        },
     ],
 }
 
@@ -209,14 +305,15 @@ TRUE_DOT_VERTEX_LAYOUT: dict = {
 _QUAD_UVS = np.array(
     [
         [-1.0, -1.0],  # BL (0)
-        [ 1.0, -1.0],  # BR (1)
-        [-1.0,  1.0],  # TL (2)
-        [ 1.0, -1.0],  # BR (1)  ← repeated for 2nd triangle
-        [ 1.0,  1.0],  # TR (3)
-        [-1.0,  1.0],  # TL (2)  ← repeated
+        [1.0, -1.0],  # BR (1)
+        [-1.0, 1.0],  # TL (2)
+        [1.0, -1.0],  # BR (1)  ← repeated for 2nd triangle
+        [1.0, 1.0],  # TR (3)
+        [-1.0, 1.0],  # TL (2)  ← repeated
     ],
     dtype=np.float32,
 )  # shape (6, 2)
+
 
 def build_true_dot_vbo(
     mob: DotCloud3D,
@@ -228,10 +325,10 @@ def build_true_dot_vbo(
 
     Returns ``None`` if the mob has no renderable points.
     """
-    pts   = mob.get_cloud_points()
+    pts = mob.get_cloud_points()
     rgbas = mob.get_rgbas()
     radius = mob.dot_radius
-    gloss  = mob.gloss
+    gloss = mob.gloss
     shadow = mob.shadow
 
     pts = np.asarray(pts, dtype=np.float32)  # (N, 3)
@@ -254,16 +351,16 @@ def build_true_dot_vbo(
             rgba = rgbas[:N]
 
     # Expand N points → N×6 vertices.
-    pts_rep  = np.repeat(pts,  6, axis=0)   # (N*6, 3)
-    rgba_rep = np.repeat(rgba, 6, axis=0)   # (N*6, 4)
-    uvs      = np.tile(_QUAD_UVS, (N, 1))   # (N*6, 2)
+    pts_rep = np.repeat(pts, 6, axis=0)  # (N*6, 3)
+    rgba_rep = np.repeat(rgba, 6, axis=0)  # (N*6, 4)
+    uvs = np.tile(_QUAD_UVS, (N, 1))  # (N*6, 2)
 
     arr = np.zeros(N * 6, dtype=_TRUE_DOT_DTYPE)
     arr["center"] = pts_rep
-    arr["color"]  = rgba_rep
-    arr["uv"]     = uvs
+    arr["color"] = rgba_rep
+    arr["uv"] = uvs
     arr["radius"] = radius
-    arr["gloss"]  = gloss
+    arr["gloss"] = gloss
     arr["shadow"] = shadow
     return arr
 
@@ -282,16 +379,16 @@ class _FrameData:
     """
 
     # VMobject fill+stroke via combined pipeline
-    fs_parts: list[np.ndarray]       # _FILL_STROKE_DTYPE arrays, one per draw call
+    fs_parts: list[np.ndarray]  # _FILL_STROKE_DTYPE arrays, one per draw call
     fs_buf: wgpu_t.GPUBuffer | None  # concatenated vertex buffer
-    fs_byte_offsets: list[int]       # byte offset of each part in fs_buf
+    fs_byte_offsets: list[int]  # byte offset of each part in fs_buf
 
     # GPU compute: cubic → quadratic conversion
-    cubics_buf: wgpu_t.GPUBuffer | None    # input (12 floats/cubic), all objects
-    quads_out_buf: wgpu_t.GPUBuffer | None # output (36 floats/cubic = 4 quads × 9)
+    cubics_buf: wgpu_t.GPUBuffer | None  # input (12 floats/cubic), all objects
+    quads_out_buf: wgpu_t.GPUBuffer | None  # output (36 floats/cubic = 4 quads × 9)
     n_cubics_total: int
     compute_bg: wgpu_t.GPUBindGroup | None  # compute pass bind group
-    render_bg: wgpu_t.GPUBindGroup | None   # fragment bind group (camera + quads)
+    render_bg: wgpu_t.GPUBindGroup | None  # fragment bind group (camera + quads)
 
     # Parametric surfaces (combined fill + barycentric wireframe pipeline)
     surface_parts: list[np.ndarray]
@@ -377,9 +474,9 @@ _surface_geom_hash_memo: weakref.WeakKeyDictionary = weakref.WeakKeyDictionary()
 
 
 def _surface_hash_pair(
-    mob: "Surface",
+    mob: Surface,
     submobs: list | None = None,
-) -> "tuple[bytes, bytes]":
+) -> tuple[bytes, bytes]:
     """Return ``(geom_hash, color_hash)`` for *mob*.
 
     ``geom_hash``  covers patch point positions + material params (diffuse,
@@ -402,11 +499,11 @@ def _surface_hash_pair(
     if submobs is None:
         submobs = mob.family_members_with_points()
 
-    fast_geom_id  = 0
+    fast_geom_id = 0
     fast_color_id = 0
     for s in submobs:
-        fast_geom_id  ^= id(s.points)
-        fast_color_id ^= id(getattr(s, "fill_rgbas",   None))
+        fast_geom_id ^= id(s.points)
+        fast_color_id ^= id(getattr(s, "fill_rgbas", None))
         fast_color_id ^= id(getattr(s, "stroke_rgbas", None))
 
     memo = _surface_geom_hash_memo.get(mob)
@@ -422,7 +519,12 @@ def _surface_hash_pair(
             # applies the per-vertex update, so we skip the second O(N_submobs)
             # iteration entirely.
             new_ch = struct.pack("<q", fast_color_id)
-            _surface_geom_hash_memo[mob] = (fast_geom_id, fast_color_id, cached_gh, new_ch)
+            _surface_geom_hash_memo[mob] = (
+                fast_geom_id,
+                fast_color_id,
+                cached_gh,
+                new_ch,
+            )
             # Invalidate stale color arrays so collect_frame_data reads fresh data.
             _surface_color_memo.pop(mob, None)
             return cached_gh, new_ch
@@ -430,13 +532,16 @@ def _surface_hash_pair(
     # Full recompute (first call or geometry change).
     geom_parts: list[bytes] = []
     for submob in submobs:
-        phash       = _points_hash(submob)
+        phash = _points_hash(submob)
         geom_parts.append(phash.to_bytes(8, "little", signed=True))
-        geom_parts.append(struct.pack("<fff",
-            float(getattr(submob, "diffuse_strength",  0.8)),
-            float(getattr(submob, "specular_strength", 0.9)),
-            float(getattr(submob, "specular_exponent", 16.0)),
-        ))
+        geom_parts.append(
+            struct.pack(
+                "<fff",
+                float(getattr(submob, "diffuse_strength", 0.8)),
+                float(getattr(submob, "specular_strength", 0.9)),
+                float(getattr(submob, "specular_exponent", 16.0)),
+            )
+        )
     gh = b"".join(geom_parts)
     ch = struct.pack("<q", fast_color_id)
     _surface_geom_hash_memo[mob] = (fast_geom_id, fast_color_id, gh, ch)
@@ -476,14 +581,14 @@ def _fd_fingerprint(
     for mob in mobjects:
         for submob in mob.family_members_with_points():
             phash = _points_hash(submob)
-            fill_rgba   = submob.get_fill_rgbas()
+            fill_rgba = submob.get_fill_rgbas()
             stroke_rgba = submob.get_stroke_rgbas()
             sw = float(submob.get_stroke_width()) if stroke_rgba.shape[0] > 0 else 0.0
-            parts.append(struct.pack('<q', phash))
+            parts.append(struct.pack("<q", phash))
             parts.append(fill_rgba.tobytes())
             parts.append(stroke_rgba.tobytes())
-            parts.append(struct.pack('<f', sw))
-    return b''.join(parts)
+            parts.append(struct.pack("<f", sw))
+    return b"".join(parts)
 
 
 def collect_frame_data(
@@ -545,9 +650,8 @@ def collect_frame_data(
     # camera rotates) and disable _FrameData caching for this call — the
     # surface GPU buffer must be regenerated each frame to update
     # stroke_half_px.  Non-surface or mixed calls still use _fd_fingerprint.
-    _all_surface_call: bool = (
-        bool(mobjects)
-        and all(isinstance(m, Surface) for m in mobjects if isinstance(m, VMobject))
+    _all_surface_call: bool = bool(mobjects) and all(
+        isinstance(m, Surface) for m in mobjects if isinstance(m, VMobject)
     )
     fp: bytes = b""  # populated below on non-surface-only paths
     if cache_slot is not None and mobjects and not _all_surface_call:
@@ -564,10 +668,10 @@ def collect_frame_data(
     # Per-draw-call data collected across all mobjects.
     fs_parts: list[np.ndarray] = []
     # Cubics: fill first (all objects), then stroke (all objects).
-    all_fill_cubics:   list[np.ndarray] = []  # (Ni, 4, 3) per draw call
+    all_fill_cubics: list[np.ndarray] = []  # (Ni, 4, 3) per draw call
     all_stroke_cubics: list[np.ndarray] = []  # (Mi, 4, 3) per draw call
-    n_fill_cubics_per:   list[int] = []       # Ni per draw call
-    n_stroke_cubics_per: list[int] = []       # Mi per draw call
+    n_fill_cubics_per: list[int] = []  # Ni per draw call
+    n_stroke_cubics_per: list[int] = []  # Mi per draw call
 
     surface_parts: list[np.ndarray] = []
     draw_plan: list[tuple[str, int]] = []
@@ -599,7 +703,7 @@ def collect_frame_data(
             # submobject patch may override them individually by carrying its
             # own diffuse_strength / specular_strength / specular_exponent
             # instance attribute (set via set_*_by_func or direct assignment).
-            surf_diffuse  = float(getattr(mob, "diffuse_strength",  0.8))
+            surf_diffuse = float(getattr(mob, "diffuse_strength", 0.8))
             surf_specular = float(getattr(mob, "specular_strength", 0.9))
             surf_spec_exp = float(getattr(mob, "specular_exponent", 16.0))
 
@@ -617,8 +721,17 @@ def collect_frame_data(
                 # cached_entry = (geom_hash, color_hash, big_template,
                 #                 seg_starts, seg_ends,
                 #                 sw_arr, sa_arr, has_sw, draw_cmds)
-                (_, cached_color_hash, big_template, seg_starts, seg_ends,
-                 sw_arr, sa_arr, has_sw, draw_cmds) = cached_entry
+                (
+                    _,
+                    cached_color_hash,
+                    big_template,
+                    seg_starts,
+                    seg_ends,
+                    sw_arr,
+                    sa_arr,
+                    has_sw,
+                    draw_cmds,
+                ) = cached_entry
 
                 if cached_color_hash != color_hash:
                     # ── Color-only miss (FadeIn / set_fill / set_stroke) ──
@@ -626,14 +739,14 @@ def collect_frame_data(
                     # attribute access (avoids method call overhead).  Build
                     # per-part color arrays then write them in a single
                     # vectorized np.repeat call instead of N_parts slice writes.
-                    fill_list:   list[np.ndarray] = []
+                    fill_list: list[np.ndarray] = []
                     stroke_list: list[np.ndarray] = []
-                    sw_list:     list[float] = []
-                    sa_list:     list[float] = []
+                    sw_list: list[float] = []
+                    sa_list: list[float] = []
                     for submob in surface_submobs:
                         if id(submob) in _seen_submobs:
                             continue
-                        f_rgba = getattr(submob, "fill_rgbas",   None)
+                        f_rgba = getattr(submob, "fill_rgbas", None)
                         s_rgba = getattr(submob, "stroke_rgbas", None)
                         if f_rgba is None or f_rgba.shape[0] == 0:
                             continue
@@ -642,32 +755,46 @@ def collect_frame_data(
                         has_stroke = s_rgba is not None and s_rgba.shape[0] > 0
                         fill_list.append(f_rgba[0].astype(np.float32))
                         stroke_list.append(
-                            s_rgba[0].astype(np.float32) if has_stroke
+                            s_rgba[0].astype(np.float32)
+                            if has_stroke
                             else np.zeros(4, dtype=np.float32)
                         )
-                        sw_list.append(float(submob.stroke_width) if has_stroke else 0.0)
+                        sw_list.append(
+                            float(submob.stroke_width) if has_stroke else 0.0
+                        )
                         sa_list.append(float(s_rgba[0, 3]) if has_stroke else 0.0)
 
                     if len(fill_list) == len(draw_cmds):
-                        fill_cols   = np.array(fill_list,   dtype=np.float32)
+                        fill_cols = np.array(fill_list, dtype=np.float32)
                         stroke_cols = np.array(stroke_list, dtype=np.float32)
-                        sw_arr  = np.array(sw_list,  dtype=np.float32)
-                        sa_arr  = np.array(sa_list,  dtype=np.float32)
-                        has_sw  = (sw_arr > 0.0) & (sa_arr > 0.001)
+                        sw_arr = np.array(sw_list, dtype=np.float32)
+                        sa_arr = np.array(sa_list, dtype=np.float32)
+                        has_sw = (sw_arr > 0.0) & (sa_arr > 0.001)
                         draw_cmds = [
-                            "surface_opaque" if float(fill_cols[i, 3]) >= 0.99
+                            "surface_opaque"
+                            if float(fill_cols[i, 3]) >= 0.99
                             else "surface_oit"
                             for i in range(len(draw_cmds))
                         ]
                         # Vectorized color write: expand per-part colors to
                         # per-vertex with repeat counts, then assign in one op.
                         rep_counts = (seg_ends - seg_starts).astype(np.intp)
-                        big_template["in_fill_color"]   = np.repeat(fill_cols,   rep_counts, axis=0)
-                        big_template["in_stroke_color"] = np.repeat(stroke_cols, rep_counts, axis=0)
+                        big_template["in_fill_color"] = np.repeat(
+                            fill_cols, rep_counts, axis=0
+                        )
+                        big_template["in_stroke_color"] = np.repeat(
+                            stroke_cols, rep_counts, axis=0
+                        )
                         _surface_mob_cache[mob] = (
-                            geom_hash, color_hash, big_template,
-                            seg_starts, seg_ends,
-                            sw_arr, sa_arr, has_sw, draw_cmds,
+                            geom_hash,
+                            color_hash,
+                            big_template,
+                            seg_starts,
+                            seg_ends,
+                            sw_arr,
+                            sa_arr,
+                            has_sw,
+                            draw_cmds,
                         )
                     else:
                         # Part count changed — treat as full miss.
@@ -675,25 +802,26 @@ def collect_frame_data(
 
             if cached_entry is not None and cached_entry[0] == geom_hash:
                 # ── Full HIT: copy template and recompute stroke_half_px ──
-                big_copy  = big_template.copy()
-                vm        = view_matrix.astype(np.float32)
-                pm        = proj_matrix.astype(np.float32)
-                R, t      = vm[:3, :3], vm[:3, 3]
+                big_copy = big_template.copy()
+                vm = view_matrix.astype(np.float32)
+                pm = proj_matrix.astype(np.float32)
+                R, t = vm[:3, :3], vm[:3, 3]
                 from manim import config as _cfg
-                px_half  = _cfg.pixel_width * 0.5
-                pm_00    = abs(float(pm[0, 0]))
-                pm_32    = float(pm[3, 2])
-                pm_33    = float(pm[3, 3])
+
+                px_half = _cfg.pixel_width * 0.5
+                pm_00 = abs(float(pm[0, 0]))
+                pm_32 = float(pm[3, 2])
+                pm_33 = float(pm[3, 3])
 
                 # Vectorized stroke_half_px: one matrix multiply + reduceat
                 # instead of per-part Python slice+mean inside a loop.
-                z_vals     = ((R @ big_copy["in_vert"].T).T + t)[:, 2]
+                z_vals = ((R @ big_copy["in_vert"].T).T + t)[:, 2]
                 part_sizes = (seg_ends - seg_starts).astype(np.float32)
 
                 # Per-part average view-space z via reduceat sum / count.
                 z_sums = np.add.reduceat(z_vals, seg_starts)
-                avg_z  = z_sums / part_sizes              # (n_parts,)
-                clip_w = pm_32 * avg_z + pm_33            # (n_parts,)
+                avg_z = z_sums / part_sizes  # (n_parts,)
+                clip_w = pm_32 * avg_z + pm_33  # (n_parts,)
                 clip_w = np.where(np.abs(clip_w) < 1e-8, 1.0, clip_w)
 
                 shp = np.where(
@@ -704,12 +832,12 @@ def collect_frame_data(
 
                 # Write per-part stroke_half_px into the copy using index ranges.
                 for i in range(len(draw_cmds)):
-                    big_copy["stroke_half_px"][seg_starts[i]:seg_ends[i]] = shp[i]
+                    big_copy["stroke_half_px"][seg_starts[i] : seg_ends[i]] = shp[i]
 
                 # Slice views for draw_plan / surface_parts.
                 for i, cmd in enumerate(draw_cmds):
                     draw_plan.append((cmd, len(surface_parts)))
-                    surface_parts.append(big_copy[seg_starts[i]:seg_ends[i]])
+                    surface_parts.append(big_copy[seg_starts[i] : seg_ends[i]])
 
                 # Mark submobs as seen so they aren't re-processed as VMobjects.
                 for submob in surface_submobs:
@@ -719,7 +847,7 @@ def collect_frame_data(
             # ── Full MISS: tessellation + smoothing (original path) ───────
             # Collect (stroke_width, stroke_color_alpha) per part so we can
             # recompute stroke_half_px on future cache hits.
-            new_parts_start  = len(surface_parts)
+            new_parts_start = len(surface_parts)
             stroke_per_part_new: list[tuple[float, float]] = []
 
             for submob in surface_submobs:
@@ -738,10 +866,18 @@ def collect_frame_data(
                     else 0.0
                 )
                 data = _collect_surface_geometry(
-                    submob, view_matrix, proj_matrix,
-                    diffuse_strength  = float(getattr(submob, "diffuse_strength",  surf_diffuse)),
-                    specular_strength = float(getattr(submob, "specular_strength", surf_specular)),
-                    specular_exponent = float(getattr(submob, "specular_exponent", surf_spec_exp)),
+                    submob,
+                    view_matrix,
+                    proj_matrix,
+                    diffuse_strength=float(
+                        getattr(submob, "diffuse_strength", surf_diffuse)
+                    ),
+                    specular_strength=float(
+                        getattr(submob, "specular_strength", surf_specular)
+                    ),
+                    specular_exponent=float(
+                        getattr(submob, "specular_exponent", surf_spec_exp)
+                    ),
                 )
                 if data is not None:
                     cls = _surface_opacity_class(data)
@@ -752,8 +888,14 @@ def collect_frame_data(
 
             # Record this mob so we can cache its smoothed parts later.
             _new_surface_mobs.append(
-                (mob, geom_hash, color_hash, new_parts_start, len(surface_parts),
-                 stroke_per_part_new)
+                (
+                    mob,
+                    geom_hash,
+                    color_hash,
+                    new_parts_start,
+                    len(surface_parts),
+                    stroke_per_part_new,
+                )
             )
             continue
 
@@ -765,7 +907,7 @@ def collect_frame_data(
             if id(submob) in _seen_submobs:
                 continue
             _seen_submobs.add(id(submob))
-            phash  = _points_hash(submob)
+            phash = _points_hash(submob)
             cached = _fill_stroke_cache.get(submob)
             if cached is None or cached[0] != phash:
                 result = _collect_cubics(submob)
@@ -800,25 +942,31 @@ def collect_frame_data(
             if center_view_matrix is not None:
                 R_full = center_view_matrix[:3, :3].astype(np.float32)
                 c_w = submob.get_center().astype(np.float32)
-                offset = R_full @ c_w - c_w          # shape (3,)
-                fill_cubics   = fill_cubics   + offset  # broadcast (N,4,3)+(3,)
+                offset = R_full @ c_w - c_w  # shape (3,)
+                fill_cubics = fill_cubics + offset  # broadcast (N,4,3)+(3,)
                 stroke_cubics = stroke_cubics + offset
 
             # Fetch current colors every frame (they change during animations).
-            fill_rgba   = submob.get_fill_rgbas()
+            fill_rgba = submob.get_fill_rgbas()
             stroke_rgba = submob.get_stroke_rgbas()
-            fill_color   = (fill_rgba[0].astype(np.float32)
-                            if fill_rgba.shape[0] > 0
-                            else np.zeros(4, dtype=np.float32))
-            stroke_color = (stroke_rgba[0].astype(np.float32)
-                            if stroke_rgba.shape[0] > 0
-                            else np.zeros(4, dtype=np.float32))
-            stroke_width = (float(submob.get_stroke_width())
-                            if stroke_rgba.shape[0] > 0
-                            else 0.0)
+            fill_color = (
+                fill_rgba[0].astype(np.float32)
+                if fill_rgba.shape[0] > 0
+                else np.zeros(4, dtype=np.float32)
+            )
+            stroke_color = (
+                stroke_rgba[0].astype(np.float32)
+                if stroke_rgba.shape[0] > 0
+                else np.zeros(4, dtype=np.float32)
+            )
+            stroke_width = (
+                float(submob.get_stroke_width()) if stroke_rgba.shape[0] > 0 else 0.0
+            )
 
             # Skip entirely invisible objects (both fill and stroke transparent).
-            if fill_color[3] < 0.001 and (stroke_color[3] < 0.001 or stroke_width < 0.001):
+            if fill_color[3] < 0.001 and (
+                stroke_color[3] < 0.001 or stroke_width < 0.001
+            ):
                 continue
 
             # 0 = nonzero (default), 1 = evenodd (set by SVG parser)
@@ -851,7 +999,7 @@ def collect_frame_data(
                 fill_color=fill_color,
                 stroke_color=stroke_color,
                 stroke_width=stroke_width,
-                fill_curve_start=0,    # assigned below after all objects are collected
+                fill_curve_start=0,  # assigned below after all objects are collected
                 stroke_curve_start=0,  # assigned below
                 view_matrix=view_matrix,
                 proj_matrix=proj_matrix,
@@ -867,8 +1015,9 @@ def collect_frame_data(
                 continue
 
             is_3d = getattr(submob, "shade_in_3d", False)
-            draw_plan.append(("fill_stroke_3d" if is_3d else "fill_stroke_2d",
-                              len(fs_parts)))
+            draw_plan.append(
+                ("fill_stroke_3d" if is_3d else "fill_stroke_2d", len(fs_parts))
+            )
             fs_parts.append(quad_verts)
             all_fill_cubics.append(fill_cubics)
             all_stroke_cubics.append(stroke_cubics)
@@ -885,19 +1034,19 @@ def collect_frame_data(
     #                        stroke_cubics_obj0, stroke_cubics_obj1, ...]
     # Quads output layout:  [fill_quads_obj0, fill_quads_obj1, ...,
     #                        stroke_quads_obj0, stroke_quads_obj1, ...]
-    total_fill_cubics   = sum(n_fill_cubics_per)
+    total_fill_cubics = sum(n_fill_cubics_per)
     total_stroke_cubics = sum(n_stroke_cubics_per)
-    n_cubics_total      = total_fill_cubics + total_stroke_cubics
+    n_cubics_total = total_fill_cubics + total_stroke_cubics
 
-    fill_global   = 0               # running fill cubic index
+    fill_global = 0  # running fill cubic index
     stroke_global = total_fill_cubics  # stroke cubics follow all fill cubics
 
     for i, part in enumerate(fs_parts):
-        part["fill_curve_start"]   = fill_global * 4
-        part["n_fill_curves"]      = n_fill_cubics_per[i] * 4
+        part["fill_curve_start"] = fill_global * 4
+        part["n_fill_curves"] = n_fill_cubics_per[i] * 4
         part["stroke_curve_start"] = stroke_global * 4
-        part["n_stroke_curves"]    = n_stroke_cubics_per[i] * 4
-        fill_global   += n_fill_cubics_per[i]
+        part["n_stroke_curves"] = n_stroke_cubics_per[i] * 4
+        fill_global += n_fill_cubics_per[i]
         stroke_global += n_stroke_cubics_per[i]
 
     # ── Upload vertex data ───────────────────────────────────────────────
@@ -911,11 +1060,11 @@ def collect_frame_data(
 
     if n_cubics_total > 0:
         # Build flat float32 array: [all fill cubics..., all stroke cubics...]
-        fill_arrays   = [c for c in all_fill_cubics   if len(c) > 0]
+        fill_arrays = [c for c in all_fill_cubics if len(c) > 0]
         stroke_arrays = [c for c in all_stroke_cubics if len(c) > 0]
-        all_arrays    = fill_arrays + stroke_arrays
-        all_cubics    = np.concatenate(all_arrays, axis=0)  # (N, 4, 3)
-        cubics_flat   = all_cubics.astype(np.float32).ravel()  # N*12 floats
+        all_arrays = fill_arrays + stroke_arrays
+        all_cubics = np.concatenate(all_arrays, axis=0)  # (N, 4, 3)
+        cubics_flat = all_cubics.astype(np.float32).ravel()  # N*12 floats
 
         cubics_buf = device.create_buffer_with_data(
             data=cubics_flat.tobytes(),
@@ -923,7 +1072,7 @@ def collect_frame_data(
         )
         renderer.frame_vbos.append(cubics_buf)
 
-        quads_size    = n_cubics_total * 36 * 4  # 4 quads × 9 floats × 4 bytes
+        quads_size = n_cubics_total * 36 * 4  # 4 quads × 9 floats × 4 bytes
         quads_out_buf = device.create_buffer(
             size=max(quads_size, 16),  # WebGPU minimum binding size
             usage=wgpu.BufferUsage.STORAGE,
@@ -932,7 +1081,7 @@ def collect_frame_data(
 
         # Params uniform (n_cubics, padded to 16 bytes for WebGPU alignment).
         params_bytes = struct.pack("<4I", n_cubics_total, 0, 0, 0)
-        params_buf   = device.create_buffer_with_data(
+        params_buf = device.create_buffer_with_data(
             data=params_bytes,
             usage=wgpu.BufferUsage.UNIFORM,
         )
@@ -941,17 +1090,48 @@ def collect_frame_data(
         compute_bg = device.create_bind_group(
             layout=renderer._compute_bgl,
             entries=[
-                {"binding": 0, "resource": {"buffer": cubics_buf,    "offset": 0, "size": cubics_buf.size}},
-                {"binding": 1, "resource": {"buffer": quads_out_buf, "offset": 0, "size": quads_out_buf.size}},
-                {"binding": 2, "resource": {"buffer": params_buf,    "offset": 0, "size": 16}},
+                {
+                    "binding": 0,
+                    "resource": {
+                        "buffer": cubics_buf,
+                        "offset": 0,
+                        "size": cubics_buf.size,
+                    },
+                },
+                {
+                    "binding": 1,
+                    "resource": {
+                        "buffer": quads_out_buf,
+                        "offset": 0,
+                        "size": quads_out_buf.size,
+                    },
+                },
+                {
+                    "binding": 2,
+                    "resource": {"buffer": params_buf, "offset": 0, "size": 16},
+                },
             ],
         )
 
         render_bg = device.create_bind_group(
             layout=renderer._fill_stroke_bgl,
             entries=[
-                {"binding": 0, "resource": {"buffer": camera_uniform_buf, "offset": 0, "size": camera_uniform_buf.size}},
-                {"binding": 1, "resource": {"buffer": quads_out_buf,      "offset": 0, "size": quads_out_buf.size}},
+                {
+                    "binding": 0,
+                    "resource": {
+                        "buffer": camera_uniform_buf,
+                        "offset": 0,
+                        "size": camera_uniform_buf.size,
+                    },
+                },
+                {
+                    "binding": 1,
+                    "resource": {
+                        "buffer": quads_out_buf,
+                        "offset": 0,
+                        "size": quads_out_buf.size,
+                    },
+                },
             ],
         )
 
@@ -970,7 +1150,14 @@ def collect_frame_data(
             _smooth_surface_normals(new_slices)
 
             # Cache each newly-tessellated mob's smoothed parts.
-            for mob, geom_hash, color_hash, start, end, stroke_per_part_new in _new_surface_mobs:
+            for (
+                mob,
+                geom_hash,
+                color_hash,
+                start,
+                end,
+                stroke_per_part_new,
+            ) in _new_surface_mobs:
                 parts_for_mob = surface_parts[start:end]
                 if not parts_for_mob:
                     continue
@@ -981,9 +1168,9 @@ def collect_frame_data(
                 # so index-range-only filtering incorrectly includes VMobject entries
                 # whose fs_parts index happens to fall inside [start, end).
                 draw_cmds_for_mob = [
-                    cmd for cmd, idx in draw_plan
-                    if start <= idx < end
-                    and cmd in ("surface_opaque", "surface_oit")
+                    cmd
+                    for cmd, idx in draw_plan
+                    if start <= idx < end and cmd in ("surface_opaque", "surface_oit")
                 ]
                 # Cache as a SINGLE concatenated array so a hit can copy the
                 # whole mob's geometry in one numpy operation.  stroke_half_px
@@ -993,20 +1180,26 @@ def collect_frame_data(
                 big_template = np.concatenate(parts_for_mob, axis=0)
                 big_template["stroke_half_px"] = 0.0
                 # Part boundary offsets as numpy arrays (avoid Python list ops on hit).
-                sizes  = np.array([len(p) for p in parts_for_mob], dtype=np.intp)
+                sizes = np.array([len(p) for p in parts_for_mob], dtype=np.intp)
                 starts = np.concatenate([[0], np.cumsum(sizes[:-1])]).astype(np.intp)
-                ends   = starts + sizes
+                ends = starts + sizes
                 # Precompute stroke metadata as numpy arrays for vectorised hit path.
-                sw_arr_c  = np.array([sw    for sw, _  in stroke_per_part_new],
-                                     dtype=np.float32)
-                sa_arr_c  = np.array([alpha for _, alpha in stroke_per_part_new],
-                                     dtype=np.float32)
-                has_sw_c  = (sw_arr_c > 0.0) & (sa_arr_c > 0.001)
+                sw_arr_c = np.array(
+                    [sw for sw, _ in stroke_per_part_new], dtype=np.float32
+                )
+                sa_arr_c = np.array(
+                    [alpha for _, alpha in stroke_per_part_new], dtype=np.float32
+                )
+                has_sw_c = (sw_arr_c > 0.0) & (sa_arr_c > 0.001)
                 _surface_mob_cache[mob] = (
-                    geom_hash, color_hash,
+                    geom_hash,
+                    color_hash,
                     big_template,
-                    starts, ends,
-                    sw_arr_c, sa_arr_c, has_sw_c,
+                    starts,
+                    ends,
+                    sw_arr_c,
+                    sa_arr_c,
+                    has_sw_c,
                     draw_cmds_for_mob,
                 )
 
@@ -1094,9 +1287,9 @@ def draw_frame_data(
                     run_first_vertex = -1
                 continue
 
-            arr         = fd.fs_parts[idx]
+            arr = fd.fs_parts[idx]
             byte_offset = fd.fs_byte_offsets[idx]
-            first_vert  = byte_offset // _FILL_STROKE_STRIDE
+            first_vert = byte_offset // _FILL_STROKE_STRIDE
 
             if run_first_vertex < 0:
                 # Start a new run.
@@ -1134,9 +1327,9 @@ def draw_frame_data(
                     run_first_vertex = -1
                 continue
 
-            arr         = fd.fs_parts[idx]
+            arr = fd.fs_parts[idx]
             byte_offset = fd.fs_byte_offsets[idx]
-            first_vert  = byte_offset // _FILL_STROKE_STRIDE
+            first_vert = byte_offset // _FILL_STROKE_STRIDE
 
             if run_first_vertex < 0:
                 run_first_vertex = first_vert
@@ -1168,9 +1361,9 @@ def draw_frame_data(
                     run_first_vertex = -1
                 continue
 
-            arr         = fd.surface_parts[idx]
+            arr = fd.surface_parts[idx]
             byte_offset = fd.surface_byte_offsets[idx]
-            first_vert  = byte_offset // _SURFACE_COMBINED_STRIDE
+            first_vert = byte_offset // _SURFACE_COMBINED_STRIDE
 
             if run_first_vertex < 0:
                 run_first_vertex = first_vert
@@ -1232,9 +1425,9 @@ def draw_frame_data_subcam(
                     run_vertex_count = 0
                     run_first_vertex = -1
                 continue
-            arr         = fd.fs_parts[idx]
+            arr = fd.fs_parts[idx]
             byte_offset = fd.fs_byte_offsets[idx]
-            first_vert  = byte_offset // _FILL_STROKE_STRIDE
+            first_vert = byte_offset // _FILL_STROKE_STRIDE
             if run_first_vertex < 0:
                 run_first_vertex = first_vert
                 run_vertex_count = len(arr)
@@ -1262,9 +1455,9 @@ def draw_frame_data_subcam(
                     run_vertex_count = 0
                     run_first_vertex = -1
                 continue
-            arr         = fd.fs_parts[idx]
+            arr = fd.fs_parts[idx]
             byte_offset = fd.fs_byte_offsets[idx]
-            first_vert  = byte_offset // _FILL_STROKE_STRIDE
+            first_vert = byte_offset // _FILL_STROKE_STRIDE
             if run_first_vertex < 0:
                 run_first_vertex = first_vert
                 run_vertex_count = len(arr)
@@ -1292,9 +1485,9 @@ def draw_frame_data_subcam(
                     run_vertex_count = 0
                     run_first_vertex = -1
                 continue
-            arr         = fd.surface_parts[idx]
+            arr = fd.surface_parts[idx]
             byte_offset = fd.surface_byte_offsets[idx]
-            first_vert  = byte_offset // _SURFACE_COMBINED_STRIDE
+            first_vert = byte_offset // _SURFACE_COMBINED_STRIDE
             if run_first_vertex < 0:
                 run_first_vertex = first_vert
                 run_vertex_count = len(arr)
@@ -1360,7 +1553,7 @@ def _collect_cubics(
     """
     nppcc = vmobject.n_points_per_cubic_curve
 
-    fill_cubics_list:   list[np.ndarray] = []
+    fill_cubics_list: list[np.ndarray] = []
     stroke_cubics_list: list[np.ndarray] = []
 
     for subpath in vmobject.get_subpaths():
@@ -1382,7 +1575,7 @@ def _collect_cubics(
         #   b0 = last, b1 = last + (first-last)/3,
         #   b2 = last + 2*(first-last)/3, b3 = first.
         first = b0s[0]
-        last  = b3s[-1]
+        last = b3s[-1]
         if not np.allclose(first, last, atol=1e-6):
             diff = first - last
             closing = np.array(
@@ -1394,12 +1587,16 @@ def _collect_cubics(
     if not fill_cubics_list and not stroke_cubics_list:
         return None
 
-    fill_cubics = (np.concatenate(fill_cubics_list,   axis=0)
-                   if fill_cubics_list
-                   else np.empty((0, 4, 3), dtype=np.float32))
-    stroke_cubics = (np.concatenate(stroke_cubics_list, axis=0)
-                     if stroke_cubics_list
-                     else np.empty((0, 4, 3), dtype=np.float32))
+    fill_cubics = (
+        np.concatenate(fill_cubics_list, axis=0)
+        if fill_cubics_list
+        else np.empty((0, 4, 3), dtype=np.float32)
+    )
+    stroke_cubics = (
+        np.concatenate(stroke_cubics_list, axis=0)
+        if stroke_cubics_list
+        else np.empty((0, 4, 3), dtype=np.float32)
+    )
     return fill_cubics, stroke_cubics
 
 
@@ -1460,17 +1657,17 @@ def _build_fill_stroke_quad(
     pm = proj_matrix.astype(np.float32)
     R, t = vm[:3, :3], vm[:3, 3]
 
-    pts_v   = (R @ anchors.T).T + t    # (N, 3) view space
+    pts_v = (R @ anchors.T).T + t  # (N, 3) view space
     avg_z_v = float(pts_v[:, 2].mean())
 
     # Perspective divide → NDC.
-    ones  = np.ones((len(pts_v), 1), dtype=np.float32)
-    clips = (pm @ np.hstack([pts_v, ones]).T).T          # (N, 4)
-    w     = clips[:, 3:4]
-    w_s   = np.where(np.abs(w) > 1e-8, w, np.sign(w + 1e-38) * 1e-8)
-    ndcs  = clips[:, :2] / w_s                           # (N, 2) NDC
+    ones = np.ones((len(pts_v), 1), dtype=np.float32)
+    clips = (pm @ np.hstack([pts_v, ones]).T).T  # (N, 4)
+    w = clips[:, 3:4]
+    w_s = np.where(np.abs(w) > 1e-8, w, np.sign(w + 1e-38) * 1e-8)
+    ndcs = clips[:, :2] / w_s  # (N, 2) NDC
 
-    PAD     = 0.05
+    PAD = 0.05
     ndc_min = ndcs.min(axis=0) - PAD
     ndc_max = ndcs.max(axis=0) + PAD
 
@@ -1496,14 +1693,18 @@ def _build_fill_stroke_quad(
     y1_v = (float(ndc_max[1]) * avg_clip_w - float(pm[1, 3])) * inv_py
 
     corners_v = np.array(
-        [[x0_v, y0_v, avg_z_v], [x1_v, y0_v, avg_z_v],
-         [x0_v, y1_v, avg_z_v], [x1_v, y1_v, avg_z_v]],
+        [
+            [x0_v, y0_v, avg_z_v],
+            [x1_v, y0_v, avg_z_v],
+            [x0_v, y1_v, avg_z_v],
+            [x1_v, y1_v, avg_z_v],
+        ],
         dtype=np.float32,
     )
-    R_inv    = R.T
-    t_inv    = -(R_inv @ t)
+    R_inv = R.T
+    t_inv = -(R_inv @ t)
     corners_w = (R_inv @ corners_v.T).T + t_inv  # (4, 3) world space
-    quad_pos  = corners_w[[0, 1, 2, 1, 3, 2]]    # (6, 3) two CCW triangles
+    quad_pos = corners_w[[0, 1, 2, 1, 3, 2]]  # (6, 3) two CCW triangles
 
     # ── Per-vertex fill colours (gradient support) ────────────────────────────
     # If fill_rgbas has >1 colour row, interpolate along the gradient axis.
@@ -1515,7 +1716,7 @@ def _build_fill_stroke_quad(
         and gradient_end is not None
     ):
         gs = np.asarray(gradient_start, dtype=np.float32)
-        ge = np.asarray(gradient_end,   dtype=np.float32)
+        ge = np.asarray(gradient_end, dtype=np.float32)
         axis = ge - gs
         axis_len2 = float(np.dot(axis, axis))
         if axis_len2 > 1e-12:
@@ -1525,10 +1726,10 @@ def _build_fill_stroke_quad(
             )  # (4,)
             n_stops = fill_rgbas.shape[0]
             # Interpolate: t_corners maps to colour stop indices.
-            idx_f  = t_corners * (n_stops - 1)          # float indices
+            idx_f = t_corners * (n_stops - 1)  # float indices
             idx_lo = np.floor(idx_f).astype(int).clip(0, n_stops - 2)
             idx_hi = idx_lo + 1
-            frac   = (idx_f - idx_lo)[:, None]           # (4, 1)
+            frac = (idx_f - idx_lo)[:, None]  # (4, 1)
             corner_colors = (
                 fill_rgbas[idx_lo].astype(np.float32) * (1.0 - frac)
                 + fill_rgbas[idx_hi].astype(np.float32) * frac
@@ -1548,7 +1749,7 @@ def _build_fill_stroke_quad(
         and stroke_gradient_end is not None
     ):
         sgs = np.asarray(stroke_gradient_start, dtype=np.float32)
-        sge = np.asarray(stroke_gradient_end,   dtype=np.float32)
+        sge = np.asarray(stroke_gradient_end, dtype=np.float32)
         s_axis = sge - sgs
         s_axis_len2 = float(np.dot(s_axis, s_axis))
         if s_axis_len2 > 1e-12:
@@ -1556,10 +1757,10 @@ def _build_fill_stroke_quad(
                 np.dot(corners_w - sgs, s_axis) / s_axis_len2, 0.0, 1.0
             )  # (4,)
             n_stops = stroke_rgbas.shape[0]
-            idx_f  = t_corners * (n_stops - 1)
+            idx_f = t_corners * (n_stops - 1)
             idx_lo = np.floor(idx_f).astype(int).clip(0, n_stops - 2)
             idx_hi = idx_lo + 1
-            frac   = (idx_f - idx_lo)[:, None]
+            frac = (idx_f - idx_lo)[:, None]
             corner_colors = (
                 stroke_rgbas[idx_lo].astype(np.float32) * (1.0 - frac)
                 + stroke_rgbas[idx_hi].astype(np.float32) * frac
@@ -1570,19 +1771,19 @@ def _build_fill_stroke_quad(
     else:
         per_vertex_stroke = np.broadcast_to(stroke_color, (6, 4)).copy()
 
-    n_fill_quads   = len(fill_cubics)   * 4  # 4 quadratics per cubic
+    n_fill_quads = len(fill_cubics) * 4  # 4 quadratics per cubic
     n_stroke_quads = len(stroke_cubics) * 4
 
     verts = np.empty(6, dtype=_FILL_STROKE_DTYPE)
-    verts["in_pos"]             = quad_pos
-    verts["in_fill_color"]      = per_vertex_fill
-    verts["in_stroke_color"]    = per_vertex_stroke
-    verts["stroke_half_ndc"]    = stroke_half_ndc
-    verts["fill_curve_start"]   = fill_curve_start
-    verts["n_fill_curves"]      = n_fill_quads
+    verts["in_pos"] = quad_pos
+    verts["in_fill_color"] = per_vertex_fill
+    verts["in_stroke_color"] = per_vertex_stroke
+    verts["stroke_half_ndc"] = stroke_half_ndc
+    verts["fill_curve_start"] = fill_curve_start
+    verts["n_fill_curves"] = n_fill_quads
     verts["stroke_curve_start"] = stroke_curve_start
-    verts["n_stroke_curves"]    = n_stroke_quads
-    verts["fill_rule"]          = fill_rule
+    verts["n_stroke_curves"] = n_stroke_quads
+    verts["fill_rule"] = fill_rule
     return verts
 
 
@@ -1626,25 +1827,29 @@ def _collect_surface_geometry(
     if fill_rgba.shape[0] == 0 or fill_rgba[0, 3] == 0:
         return None
 
-    fill_color   = fill_rgba[0].astype(np.float32)
-    stroke_rgba  = vmobject.get_stroke_rgbas()
-    stroke_color = (stroke_rgba[0].astype(np.float32)
-                    if stroke_rgba.shape[0] > 0
-                    else np.zeros(4, dtype=np.float32))
-    stroke_width = float(vmobject.get_stroke_width()) if stroke_rgba.shape[0] > 0 else 0.0
+    fill_color = fill_rgba[0].astype(np.float32)
+    stroke_rgba = vmobject.get_stroke_rgbas()
+    stroke_color = (
+        stroke_rgba[0].astype(np.float32)
+        if stroke_rgba.shape[0] > 0
+        else np.zeros(4, dtype=np.float32)
+    )
+    stroke_width = (
+        float(vmobject.get_stroke_width()) if stroke_rgba.shape[0] > 0 else 0.0
+    )
 
     nppcc = vmobject.n_points_per_cubic_curve
 
-    all_verts:   list[np.ndarray] = []
+    all_verts: list[np.ndarray] = []
     all_normals: list[np.ndarray] = []
-    all_bary:    list[np.ndarray] = []
+    all_bary: list[np.ndarray] = []
 
     for subpath in vmobject.get_subpaths():
         n_curves = len(subpath) // nppcc
         if n_curves < 2:
             continue
         anchors = subpath[0::nppcc]
-        last    = subpath[n_curves * nppcc - 1 : n_curves * nppcc]
+        last = subpath[n_curves * nppcc - 1 : n_curves * nppcc]
         if len(last) and not np.allclose(anchors[-1], last[0], atol=1e-6):
             anchors = np.vstack([anchors, last])
 
@@ -1656,8 +1861,8 @@ def _collect_surface_geometry(
         v0 = anchors[0] - centroid
         v1 = anchors[1] - centroid
         raw_normal = np.cross(v1, v0).astype(np.float64)
-        norm_len   = np.linalg.norm(raw_normal)
-        normal     = (
+        norm_len = np.linalg.norm(raw_normal)
+        normal = (
             (raw_normal / norm_len).astype(np.float32)
             if norm_len > 1e-9
             else np.array([0.0, 0.0, 1.0], dtype=np.float32)
@@ -1682,9 +1887,9 @@ def _collect_surface_geometry(
     if not all_verts:
         return None
 
-    verts   = np.concatenate(all_verts,   axis=0)
+    verts = np.concatenate(all_verts, axis=0)
     normals = np.concatenate(all_normals, axis=0)
-    bary    = np.concatenate(all_bary,    axis=0)
+    bary = np.concatenate(all_bary, axis=0)
     n_total = len(verts)
 
     # Compute stroke_half_px: half the wireframe line width in screen pixels.
@@ -1695,23 +1900,23 @@ def _collect_surface_geometry(
         pm = proj_matrix.astype(np.float32)
         vm = view_matrix.astype(np.float32)
         R, t = vm[:3, :3], vm[:3, 3]
-        pts_v = (R @ verts.T).T + t         # (N, 3) view space
+        pts_v = (R @ verts.T).T + t  # (N, 3) view space
         avg_z_v = float(pts_v[:, 2].mean())
         avg_clip_w = float(pm[3, 2] * avg_z_v + pm[3, 3])
         avg_clip_w = avg_clip_w if abs(avg_clip_w) > 1e-8 else 1.0
         stroke_half_ndc = float(0.004 * stroke_width * abs(pm[0, 0]) / abs(avg_clip_w))
-        stroke_half_px  = stroke_half_ndc * config.pixel_width * 0.5
+        stroke_half_px = stroke_half_ndc * config.pixel_width * 0.5
 
     attrs = np.empty(n_total, dtype=_SURFACE_COMBINED_DTYPE)
-    attrs["in_vert"]            = verts
-    attrs["in_normal"]          = normals
-    attrs["in_fill_color"]      = fill_color
-    attrs["in_stroke_color"]    = stroke_color
-    attrs["in_bary"]            = bary
-    attrs["stroke_half_px"]     = stroke_half_px
-    attrs["diffuse_strength"]   = float(diffuse_strength)
-    attrs["specular_strength"]  = float(specular_strength)
-    attrs["specular_exponent"]  = float(specular_exponent)
+    attrs["in_vert"] = verts
+    attrs["in_normal"] = normals
+    attrs["in_fill_color"] = fill_color
+    attrs["in_stroke_color"] = stroke_color
+    attrs["in_bary"] = bary
+    attrs["stroke_half_px"] = stroke_half_px
+    attrs["diffuse_strength"] = float(diffuse_strength)
+    attrs["specular_strength"] = float(specular_strength)
+    attrs["specular_exponent"] = float(specular_exponent)
     return attrs
 
 
@@ -1720,25 +1925,23 @@ def _smooth_surface_normals(surface_parts: list[np.ndarray]) -> None:
     if not surface_parts:
         return
 
-    all_verts = np.concatenate([p["in_vert"]    for p in surface_parts], axis=0)
-    all_norms = np.concatenate([p["in_normal"]  for p in surface_parts], axis=0)
+    all_verts = np.concatenate([p["in_vert"] for p in surface_parts], axis=0)
+    all_norms = np.concatenate([p["in_normal"] for p in surface_parts], axis=0)
 
     PREC = 1e-5
     quantized = np.round(all_verts.astype(np.float64) / PREC).astype(np.int64)
     _, inverse = np.unique(quantized, axis=0, return_inverse=True)
 
     n_unique = int(inverse.max()) + 1
-    smooth   = np.zeros((n_unique, 3), dtype=np.float64)
+    smooth = np.zeros((n_unique, 3), dtype=np.float64)
     np.add.at(smooth, inverse, all_norms.astype(np.float64))
 
     lengths = np.linalg.norm(smooth, axis=1, keepdims=True)
     lengths = np.where(lengths < 1e-9, 1.0, lengths)
-    smooth  = (smooth / lengths).astype(np.float32)
+    smooth = (smooth / lengths).astype(np.float32)
 
     idx = 0
     for part in surface_parts:
         n = len(part)
         part["in_normal"] = smooth[inverse[idx : idx + n]]
         idx += n
-
-

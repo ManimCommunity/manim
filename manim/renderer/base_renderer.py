@@ -7,10 +7,9 @@ without any inheritance changes.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, runtime_checkable
+from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 import numpy as np
-from typing import Protocol
 
 if TYPE_CHECKING:
     from PIL import Image
@@ -66,7 +65,9 @@ class ThreeDCameraProtocol(Protocol):
     def get_value_trackers(self) -> list[ValueTracker]: ...
 
     # ── fixed-orientation / fixed-in-frame helpers (Cairo) ──────────────────
-    def add_fixed_orientation_mobjects(self, *mobjects: Mobject, **kwargs: Any) -> None: ...
+    def add_fixed_orientation_mobjects(
+        self, *mobjects: Mobject, **kwargs: Any
+    ) -> None: ...
     def remove_fixed_orientation_mobjects(self, *mobjects: Mobject) -> None: ...
     def add_fixed_in_frame_mobjects(self, *mobjects: Mobject) -> None: ...
     def remove_fixed_in_frame_mobjects(self, *mobjects: Mobject) -> None: ...
@@ -87,12 +88,12 @@ class RendererProtocol(Protocol):
     """
 
     # ── core attributes ──────────────────────────────────────────────────────
-    camera: Any          # ThreeDCameraProtocol for 3D renderers; Any for 2D
+    camera: Any  # ThreeDCameraProtocol for 3D renderers; Any for 2D
     skip_animations: bool
     num_plays: int
     time: float
     file_writer: Any
-    window: Any          # WebGPUWindow | pyglet window | None
+    window: Any  # WebGPUWindow | pyglet window | None
     animation_start_time: float
     static_image: Any
 

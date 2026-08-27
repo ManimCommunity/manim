@@ -53,8 +53,8 @@ if TYPE_CHECKING:
     from av.stream import Stream
 
     from manim.renderer.cairo_renderer import CairoRenderer
-    from manim.renderer.webgpu.webgpu_renderer import WebGPURenderer
     from manim.renderer.opengl_renderer import OpenGLRenderer
+    from manim.renderer.webgpu.webgpu_renderer import WebGPURenderer
     from manim.typing import PixelArray, StrPath
 
 

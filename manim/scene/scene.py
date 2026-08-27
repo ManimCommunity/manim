@@ -48,9 +48,9 @@ from ..camera.camera import Camera
 from ..constants import *
 from ..manager import Manager
 from ..renderer.cairo_renderer import CairoRenderer
-from ..renderer.webgpu.webgpu_renderer import WebGPURenderer
 from ..renderer.opengl_renderer import OpenGLCamera, OpenGLMobject, OpenGLRenderer
 from ..renderer.shader import Object3D
+from ..renderer.webgpu.webgpu_renderer import WebGPURenderer
 from ..utils import opengl, space_ops
 from ..utils.exceptions import RerunSceneException
 from ..utils.family import extract_mobject_family_members
@@ -212,12 +212,12 @@ class Scene:
         elif config.renderer == RendererType.CAIRO:
             if renderer is None:
                 renderer = CairoRenderer(
-                # TODO: Is it a suitable approach to make an instance of
-                # the self.camera_class here?
-                camera_class=self.camera_class,
-                skip_animations=self.skip_animations,
-            )
-    
+                    # TODO: Is it a suitable approach to make an instance of
+                    # the self.camera_class here?
+                    camera_class=self.camera_class,
+                    skip_animations=self.skip_animations,
+                )
+
         self.renderer: CairoRenderer | OpenGLRenderer | WebGPURenderer = renderer
         self.renderer.init_scene(self)
 
@@ -1364,7 +1364,9 @@ class Scene:
         self.time_progression.close()
 
     def check_interactive_embed_is_valid(self) -> bool:
-        assert isinstance(self.renderer, OpenGLRenderer) or isinstance(self.renderer, WebGPURenderer) 
+        assert isinstance(self.renderer, OpenGLRenderer) or isinstance(
+            self.renderer, WebGPURenderer
+        )
         if config["force_window"]:
             return True
         if self.skip_animation_preview:
@@ -1418,6 +1420,7 @@ class Scene:
             from manim.renderer.webgpu.webgpu_interactive import (
                 interactive_embed as _webgpu_embed,
             )
+
             currentframe: FrameType = inspect.currentframe()  # type: ignore[assignment]
             local_namespace = currentframe.f_back.f_locals  # type: ignore[union-attr]
             rerun = _webgpu_embed(self, self.renderer, local_namespace)

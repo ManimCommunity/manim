@@ -39,16 +39,15 @@ from typing import Any
 
 import numpy as np
 
-from manim.constants import OUT
 from manim.mobject.mobject import Mobject
 from manim.typing import Point3DLike, Vector3D
 from manim.utils.color import WHITE, ParsableManimColor, color_to_rgb
 
 # ── Light kind constants (must match WGSL shader) ─────────────────────────────
-_KIND_AMBIENT     = 0
+_KIND_AMBIENT = 0
 _KIND_DIRECTIONAL = 1
-_KIND_POINT       = 2
-_KIND_SPOT        = 3
+_KIND_POINT = 2
+_KIND_SPOT = 3
 
 
 class LightSource(Mobject):
@@ -105,13 +104,13 @@ class LightSource(Mobject):
             offset 52  _pad0-2    f32×3      12 B  (alignment padding)
         """
         buf = np.zeros(16, dtype=np.float32)  # 16 × 4 B = 64 B
-        buf[0:3]  = self._get_position()
-        buf[3]    = np.float32(self._kind).view(np.float32)
-        buf[4:7]  = self._get_direction()
-        buf[7]    = self.intensity
+        buf[0:3] = self._get_position()
+        buf[3] = np.float32(self._kind).view(np.float32)
+        buf[4:7] = self._get_direction()
+        buf[7] = self.intensity
         buf[8:11] = self.light_color
-        buf[11]   = self._get_cone_angle()
-        buf[12]   = self._get_penumbra()
+        buf[11] = self._get_cone_angle()
+        buf[12] = self._get_penumbra()
         # buf[13], buf[14], buf[15] remain zero (padding)
 
         # Reinterpret index 3 as u32 so we get exact integer bit pattern.
@@ -194,7 +193,9 @@ class DirectionalLight(LightSource):
         super().__init__(color=color, intensity=intensity, **kwargs)
         d = np.asarray(direction, dtype=np.float32)
         norm = np.linalg.norm(d)
-        self._direction: np.ndarray = (d / norm) if norm > 1e-8 else np.array([0.0, 0.0, -1.0], dtype=np.float32)
+        self._direction: np.ndarray = (
+            (d / norm) if norm > 1e-8 else np.array([0.0, 0.0, -1.0], dtype=np.float32)
+        )
 
     def _get_direction(self) -> np.ndarray:
         return self._direction
@@ -278,12 +279,14 @@ class SpotLight(LightSource):
         **kwargs: Any,
     ) -> None:
         super().__init__(color=color, intensity=intensity, **kwargs)
-        self._position: np.ndarray  = np.asarray(position, dtype=np.float32)
+        self._position: np.ndarray = np.asarray(position, dtype=np.float32)
         d = np.asarray(direction, dtype=np.float32)
         norm = np.linalg.norm(d)
-        self._direction: np.ndarray = (d / norm) if norm > 1e-8 else np.array([0.0, 0.0, -1.0], dtype=np.float32)
+        self._direction: np.ndarray = (
+            (d / norm) if norm > 1e-8 else np.array([0.0, 0.0, -1.0], dtype=np.float32)
+        )
         self._cone_angle: float = float(cone_angle)
-        self._penumbra: float   = float(penumbra)
+        self._penumbra: float = float(penumbra)
 
     def _get_position(self) -> np.ndarray:
         return self._position

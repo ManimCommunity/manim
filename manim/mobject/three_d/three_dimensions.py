@@ -195,7 +195,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
     # Material setters (WebGPU renderer only)
     # ------------------------------------------------------------------
 
-    def set_diffuse_strength(self, value: float) -> "Surface":
+    def set_diffuse_strength(self, value: float) -> Surface:
         """Set the Lambertian diffuse strength in [0, 1].
 
         .. warning:: **WebGPU renderer only** — ignored by Cairo and OpenGL.
@@ -203,7 +203,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         self.diffuse_strength = float(value)
         return self
 
-    def set_specular_strength(self, value: float) -> "Surface":
+    def set_specular_strength(self, value: float) -> Surface:
         """Set the Phong specular highlight strength.
 
         .. warning:: **WebGPU renderer only** — ignored by Cairo and OpenGL.
@@ -211,7 +211,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         self.specular_strength = float(value)
         return self
 
-    def set_specular_exponent(self, value: float) -> "Surface":
+    def set_specular_exponent(self, value: float) -> Surface:
         """Set the Phong shininess exponent.
 
         Higher values give a tighter highlight; lower values give a broad,
@@ -227,7 +227,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         diffuse_strength: float | None = None,
         specular_strength: float | None = None,
         specular_exponent: float | None = None,
-    ) -> "Surface":
+    ) -> Surface:
         """Set material parameters uniformly across the whole surface.
 
         Any parameter left as ``None`` is unchanged.  Per-patch overrides
@@ -248,9 +248,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
     # Per-patch material — function-based assignment
     # ------------------------------------------------------------------
 
-    def set_diffuse_by_func(
-        self, func: "Callable[[float, float], float]"
-    ) -> "Surface":
+    def set_diffuse_by_func(self, func: Callable[[float, float], float]) -> Surface:
         """Assign a per-patch diffuse strength using a ``(u, v)`` function.
 
         *func* is called with the centre ``(u, v)`` coordinates of each
@@ -266,9 +264,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             face.diffuse_strength = float(func(face.u_center, face.v_center))
         return self
 
-    def set_specular_by_func(
-        self, func: "Callable[[float, float], float]"
-    ) -> "Surface":
+    def set_specular_by_func(self, func: Callable[[float, float], float]) -> Surface:
         """Assign a per-patch specular strength using a ``(u, v)`` function.
 
         *func* is called with the centre ``(u, v)`` coordinates of each
@@ -281,8 +277,8 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         return self
 
     def set_specular_exponent_by_func(
-        self, func: "Callable[[float, float], float]"
-    ) -> "Surface":
+        self, func: Callable[[float, float], float]
+    ) -> Surface:
         """Assign a per-patch specular exponent (shininess) using a ``(u, v)``
         function.
 
@@ -295,9 +291,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
             face.specular_exponent = float(func(face.u_center, face.v_center))
         return self
 
-    def set_material_by_func(
-        self, func: "Callable[[float, float], dict]"
-    ) -> "Surface":
+    def set_material_by_func(self, func: Callable[[float, float], dict]) -> Surface:
         """Assign per-patch material parameters using a ``(u, v)`` function.
 
         *func* is called with the centre ``(u, v)`` of each patch and must
@@ -309,9 +303,12 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         Example — shinier at the equator, matte at the poles::
 
             def mat(u, v):
-                t = abs(np.sin(u))           # 0 at poles, 1 at equator
-                return {"specular_exponent": 8 + 120 * t,
-                        "specular_strength": 0.2 + 0.8 * t}
+                t = abs(np.sin(u))  # 0 at poles, 1 at equator
+                return {
+                    "specular_exponent": 8 + 120 * t,
+                    "specular_strength": 0.2 + 0.8 * t,
+                }
+
 
             sphere.set_material_by_func(mat)
 
@@ -357,12 +354,12 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                     ],
                 )
                 faces.add(face)
-                face.u_index  = i
-                face.v_index  = j
-                face.u1       = u1
-                face.u2       = u2
-                face.v1       = v1
-                face.v2       = v2
+                face.u_index = i
+                face.v_index = j
+                face.u1 = u1
+                face.u2 = u2
+                face.v1 = v1
+                face.v2 = v2
                 face.u_center = float(u1 + u2) * 0.5
                 face.v_center = float(v1 + v2) * 0.5
                 self.list_of_faces.append(face)
@@ -513,7 +510,10 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                         if config.renderer == RendererType.OPENGL:
                             assert isinstance(mob, OpenGLMobject)
                             mob.set_color(mob_color, recurse=False)
-                        elif config.renderer in {RendererType.CAIRO, RendererType.WEBGPU}:
+                        elif config.renderer in {
+                            RendererType.CAIRO,
+                            RendererType.WEBGPU,
+                        }:
                             mob.set_color(mob_color, family=False)
                         break
 

@@ -8,13 +8,12 @@ __all__ = ["ThreeDScene", "SpecialThreeDScene"]
 import warnings
 from collections.abc import Iterable, Sequence
 
-from manim.mobject.three_d.light_source import AmbientLight, LightSource
-
 import numpy as np
 
 from manim.mobject.geometry.line import Line
 from manim.mobject.graphing.coordinate_systems import ThreeDAxes
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.three_d.light_source import AmbientLight, LightSource
 from manim.mobject.three_d.three_dimensions import Sphere
 from manim.mobject.value_tracker import ValueTracker
 
@@ -76,9 +75,9 @@ class ThreeDScene(Scene):
                     for old in existing:
                         super().remove(old)
                     self._ambient_light = mob
-        else:   # do not allow LightSource to be added for Cairo or OpenGL renderer
+        else:  # do not allow LightSource to be added for Cairo or OpenGL renderer
             mobjects = [mob for mob in mobjects if not isinstance(mob, LightSource)]
-                
+
         return super().add(*mobjects)
 
     def set_camera_orientation(
@@ -386,10 +385,14 @@ class ThreeDScene(Scene):
 
             if focal_distance is not None:
                 start_fd = cam.focal_distance
-                anims.append(UpdateFromAlphaFunc(
-                    cam,
-                    lambda m, a, _s=start_fd: setattr(m, "focal_distance", _s + a * (focal_distance - _s)),
-                ))
+                anims.append(
+                    UpdateFromAlphaFunc(
+                        cam,
+                        lambda m, a, _s=start_fd: setattr(
+                            m, "focal_distance", _s + a * (focal_distance - _s)
+                        ),
+                    )
+                )
 
         self.play(*anims + added_anims, **kwargs)
 
