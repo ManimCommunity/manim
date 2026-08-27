@@ -35,7 +35,7 @@ class Positionable:
     ### FUNDAMENTALS ###
     points: Point3D_Array = np.array([])
 
-    def get_points(self) -> Point3D_Array:
+    def get_all_points(self) -> Point3D_Array:
         """Returns all points.
 
         Returns
@@ -103,7 +103,7 @@ class Positionable:
         --------
         :meth:`get_points`
         """
-        return self.get_points()
+        return self.get_all_points()
 
     ### APPLYING FUNCTIONS ###
 
@@ -335,11 +335,16 @@ class Positionable:
         Self
             The object itself.
         """
+        return self.apply_array_function(
+            function=lambda points: points.__iadd__(vector)
+        )
 
-        def function(mob: Positionable) -> None:
-            mob.points += vector
+    def translate_dim(self, length: float, dim: int) -> Self:
+        def function(points: Point3D_Array) -> Point3D_Array:
+            points[:, dim] += length
+            return points
 
-        return self.apply_to_family(function=function)
+        return self.apply_array_function(function=function)
 
     def rotate(
         self,
@@ -501,21 +506,6 @@ class Positionable:
 
     ### GENERAL ###
 
-    def get_bounding_box(self) -> tuple[Point3D, Point3D]:
-        """Returns the bounding box.
-
-        Returns
-        -------
-        tuple[Point3D, Point3D]
-            The bottom-left and top-right points.
-        """
-        points = self.get_points_defining_boundary()
-        if len(points) == 0:
-            return (np.zeros(3), np.zeros(3))
-        mins = points.min(axis=0)
-        maxs = points.max(axis=0)
-        return (mins, maxs)
-
     def get_position(
         self,
         direction: Vector3DLike = ORIGIN,
@@ -539,7 +529,7 @@ class Positionable:
         points = self.get_points_defining_boundary()
         return np.array(
             [
-                self.get_extremum_along_dim(
+                self._get_extremum_along_dim(
                     points=points,
                     dim=dim,
                     key=key,
@@ -553,8 +543,6 @@ class Positionable:
         point: "Point3DLike | Positionable",
         *,
         aligned_edge: Vector3DLike = ORIGIN,
-        # TODO: Remove this?
-        coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
         """Sets the position.
 
@@ -564,8 +552,6 @@ class Positionable:
             The point.
         aligned_edge : Vector3DLike, optional
             Which edge to position., by default ORIGIN
-        coor_mask : Vector3DLike, optional
-            TODO, by default [1, 1, 1]
 
         Returns
         -------
@@ -579,7 +565,7 @@ class Positionable:
         if isinstance(point, Positionable):
             point = point.get_position(direction=aligned_edge)
         current = self.get_position(direction=aligned_edge)
-        vector = (point - current) * coor_mask
+        vector = point - current
         return self.translate(vector=vector)
 
     def get_center(self) -> Point3D:
@@ -857,8 +843,8 @@ class Positionable:
         --------
         :meth:`set_coordinate`
         """
-        return self.get_extremum_along_dim(
-            points=self.get_points(),
+        return self._get_extremum_along_dim(
+            points=self.get_points_defining_boundary(),
             dim=dim,
             key=np.sign(direction[dim]),
         )
@@ -892,9 +878,8 @@ class Positionable:
         if isinstance(value, Positionable):
             value = value.get_coordinate(dim=dim, direction=direction)
         current = self.get_coordinate(dim=dim, direction=direction)
-        vector = np.zeros(3)
-        vector[dim] = value - current
-        return self.translate(vector=vector)
+        vector = value - current
+        return self.translate_dim(length=vector, dim=dim)
 
     def get_x(self, direction: Vector3DLike = ORIGIN) -> float:
         """Returns the x coordinate.
@@ -1033,7 +1018,7 @@ class Positionable:
         --------
         :meth:`set_dim_size`
         """
-        points = self.get_points()
+        points = self.get_all_points()
         if len(points) == 0:
             return 0
         return np.ptp(points[:, dim])  # type: ignore[no-any-return]
@@ -1315,14 +1300,34 @@ class Positionable:
         target = np.where(direction == 0, source, point)
         return self.translate(target - source)
 
+    def get_bounding_box(self) -> tuple[Point3D, Point3D]:
+        """Returns the bounding box.
+
+        Returns
+        -------
+        tuple[Point3D, Point3D]
+            The bottom-left and top-right points.
+        """
+        points = self.get_points_defining_boundary()
+        if len(points) == 0:
+            return (np.zeros(3), np.zeros(3))
+        mins = points.min(axis=0)
+        maxs = points.max(axis=0)
+        return (mins, maxs)
+
     def get_extremum_along_dim(
         self,
-        points: Point3D_Array | None = None,
         dim: int = 0,
         key: int = 0,
     ) -> float:
-        if points is None:
-            points = self.get_points()
+        return self._get_extremum_along_dim(self.get_all_points(), dim=dim, key=key)
+
+    def _get_extremum_along_dim(
+        self,
+        points: Point3D_Array,
+        dim: int = 0,
+        key: int = 0,
+    ) -> float:
         if len(points) == 0:
             return 0
         values = points[:, dim]
@@ -1334,22 +1339,6 @@ class Positionable:
             else values.max()
         )
 
-    def is_off_screen(self) -> bool:
-        """Returns whether this is off screen.
-
-        Returns
-        -------
-        bool
-            Is off screen.
-        """
-        mins, maxs = self.get_bounding_box()
-        return (  # type: ignore[return-value]
-            mins[0] > config.frame_x_radius
-            or maxs[0] < -config.frame_x_radius
-            or mins[1] > config.frame_y_radius
-            or maxs[1] < -config.frame_y_radius,
-        )
-
     def get_center_of_mass(self) -> Point3D:
         """Returns the center of mass.
 
@@ -1358,7 +1347,7 @@ class Positionable:
         Point3D
             The center of mass.
         """
-        points = self.get_points()
+        points = self.get_all_points()
         if len(points) == 0:
             return ORIGIN
         return points.mean(axis=0)
@@ -1380,6 +1369,22 @@ class Positionable:
         index = np.argmax(points.dot(direction))
         return points[index]
 
+    def is_off_screen(self) -> bool:
+        """Returns whether this is off screen.
+
+        Returns
+        -------
+        bool
+            Is off screen.
+        """
+        mins, maxs = self.get_bounding_box()
+        return (  # type: ignore[return-value]
+            mins[0] > config.frame_x_radius
+            or maxs[0] < -config.frame_x_radius
+            or mins[1] > config.frame_y_radius
+            or maxs[1] < -config.frame_y_radius,
+        )
+
     def shift_onto_screen(
         self,
         *,
@@ -1397,12 +1402,12 @@ class Positionable:
         Self
             The object itself.
         """
-        # TODO: Simplify implementation
+        # TODO: Simplify/Optimize implementation
         space_lengths = [config.frame_x_radius, config.frame_y_radius]
         for vect in UP, DOWN, LEFT, RIGHT:
             dim = np.argmax(np.abs(vect))
             max_val = space_lengths[dim] - buff
-            edge_center = self.get_edge_center(vect)
+            edge_center = self.get_position(vect)
             if np.dot(edge_center, vect) > max_val:
                 self.to_edge(vect, buff=buff)
         return self
@@ -1496,7 +1501,6 @@ class Positionable:
         self,
         point_or_mobject: "Point3DLike | Positionable",
         aligned_edge: Vector3DLike = ORIGIN,
-        coor_mask: Vector3DLike = np.array([1, 1, 1]),
     ) -> Self:
         """Moves to a position.
 
@@ -1506,8 +1510,6 @@ class Positionable:
             The point.
         aligned_edge : Vector3DLike, optional
             Which edge to position., by default ORIGIN
-        coor_mask : Vector3DLike, optional
-            TODO, by default [1, 1, 1]
 
         Returns
         -------
@@ -1521,7 +1523,6 @@ class Positionable:
         return self.set_position(
             point=point_or_mobject,
             aligned_edge=aligned_edge,
-            coor_mask=coor_mask,
         )
 
     def pose_at_angle(
@@ -2074,7 +2075,7 @@ class Positionable:
         reduce_func: Callable[[Iterable[float]], float],
         dim: int,
     ) -> float | None:
-        points = self.get_points()
+        points = self.get_all_points()
         if len(points) == 0:
             return None
 
