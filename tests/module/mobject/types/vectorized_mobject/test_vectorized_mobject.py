@@ -96,6 +96,29 @@ def test_vmobject_add_points_as_corners():
     np.testing.assert_allclose(obj1.points, obj3.points)
 
 
+def test_add_points_as_corners_single_point_connects_to_existing_path():
+    """Regression test for #4218 / fix f6cdb547 (PR #4219).
+
+    When ``add_points_as_corners`` is called with a single new point on a
+    VMobject whose last subpath is complete (so ``has_new_path_started()``
+    returns False), the buggy version silently dropped the new point — the
+    ``else`` branch computed ``start_corners = points[:-1]`` which is empty
+    for a one-point input. The fix unifies the two branches so the existing
+    path's last point is always used as the start corner.
+    """
+    v = VMobject()
+    v.start_new_path(np.array([0.0, 0.0, 0.0]))
+    v.add_line_to(np.array([1.0, 0.0, 0.0]))
+    assert not v.has_new_path_started()
+    n_before = len(v.points)
+
+    v.add_points_as_corners([[2.0, 0.0, 0.0]])
+
+    # Post-fix: a cubic from [1, 0, 0] to [2, 0, 0] is appended.
+    assert len(v.points) > n_before
+    np.testing.assert_array_equal(v.points[-1], [2.0, 0.0, 0.0])
+
+
 def test_vmobject_point_from_proportion():
     obj = VMobject()
 
@@ -116,8 +139,25 @@ def test_vmobject_point_from_proportion():
         obj.point_from_proportion(2)
 
     obj.clear_points()
-    with pytest.raises(Exception, match="with no points"):
+    with pytest.raises(
+        ValueError,
+        match=r"Cannot call VMobject\.point_from_proportion because VMobject has no points\.",
+    ):
         obj.point_from_proportion(0)
+
+
+def test_no_points_error_reports_pointful_family_members():
+    child = VMobject().set_points_as_corners([[0, 0, 0], [1, 0, 0]])
+    group = VGroup(VGroup(child))
+
+    with pytest.raises(ValueError) as error:
+        group.point_from_proportion(0)
+
+    message = str(error.value)
+    assert message.startswith(
+        "Cannot call VGroup.point_from_proportion because VGroup(",
+    )
+    assert message.endswith("Its family contains 1 mobject with points.")
 
 
 def test_curves_as_submobjects_point_from_proportion():
@@ -429,6 +469,28 @@ def test_vgroup_item_assignment_only_allows_vmobjects():
     )
 
 
+def test_vgroup_str_name():
+    """Test VGroup's string representation correctly includes class name"""
+
+    class VGroupSubclass(VGroup):
+        pass
+
+    for cls, name in (VGroup, "VGroup"), (VGroupSubclass, "VGroupSubclass"):
+        group = cls(VMobject())
+        expected = f"{name} of"
+        actual = str(group)
+        assert actual.startswith(expected), f"'{actual}'.startswith('{expected}')"
+
+
+def test_vgroup_str_pluralization():
+    """Test VGroup's string representation correctly pluralizes 'submobject(s)'"""
+    for i in (0, 1, 2):
+        group = VGroup(VMobject() for _ in range(i))
+        expected = f"of {i} {'submobject' if i == 1 else 'submobjects'}"
+        actual = str(group)
+        assert actual.endswith(expected), f"'{actual}'.endswith('{expected}')"
+
+
 def test_trim_dummy():
     o = VMobject()
     o.start_new_path(np.array([0, 0, 0]))
@@ -455,6 +517,113 @@ def test_trim_dummy():
 
     assert tuple(map(path_length, o.get_subpaths())) == (2, 2)
     assert tuple(map(path_length, o2.get_subpaths())) == (2, 2)
+
+
+def test_get_subpath_split_indices_from_points():
+    # A VMobject made of three subpaths of differing lengths.
+    o = VMobject()
+    o.start_new_path(np.array([0.0, 0, 0]))
+    o.add_line_to(np.array([1.0, 0, 0]))
+    o.add_line_to(np.array([2.0, 0, 0]))
+    o.start_new_path(np.array([0.0, 1, 0]))
+    o.add_line_to(np.array([1.0, 2, 0]))
+    o.start_new_path(np.array([3.0, 3, 0]))
+    o.add_line_to(np.array([4.0, 4, 0]))
+
+    for mob in (o, Circle(), Square(), RegularPolygon(n=5)):
+        points = mob.points
+        nppcc = mob.n_points_per_cubic_curve
+        # n_dims=3 mirrors get_subpaths_from_points; n_dims=2 mirrors
+        # gen_subpaths_from_points_2d. The new method must agree with both.
+        for n_dims, reference in (
+            (3, mob.get_subpaths_from_points(points)),
+            (2, list(mob.gen_subpaths_from_points_2d(points))),
+        ):
+            split_indices = mob.get_subpath_split_indices_from_points(
+                points, n_dims=n_dims
+            )
+            assert split_indices.ndim == 2
+            assert split_indices.shape[1] == 2
+            # Rebuild subpaths, dropping incomplete trailing runs the way the
+            # reference getters do, then compare element-for-element.
+            rebuilt = [
+                points[start:end]
+                for start, end in split_indices
+                if end - start >= nppcc
+            ]
+            assert len(rebuilt) == len(reference)
+            for got, expected in zip(rebuilt, reference, strict=True):
+                np.testing.assert_array_equal(got, expected)
+
+
+def test_get_subpath_split_indices_from_points_edge_cases():
+    v = VMobject()
+    nppcc = v.n_points_per_cubic_curve
+    # No points -> no subpaths.
+    assert v.get_subpath_split_indices_from_points(np.zeros((0, 3))).shape == (0, 2)
+    # Fewer points than a single curve -> no subpaths.
+    too_few = v.get_subpath_split_indices_from_points(np.zeros((nppcc - 1, 3)))
+    assert too_few.shape == (0, 2)
+    # Exactly one curve -> a single [0, nppcc] range.
+    one_curve = v.get_subpath_split_indices_from_points(np.zeros((nppcc, 3)))
+    np.testing.assert_array_equal(one_curve, [[0, nppcc]])
+
+
+@pytest.mark.parametrize(
+    ("p0", "p1", "expected"),
+    [
+        ([np.nan, 0], [np.nan, 0], False),
+        ([np.inf, 0], [np.inf, 0], True),
+        ([-np.inf, 0], [-np.inf, 0], True),
+        ([np.inf, 0], [-np.inf, 0], False),
+        ([np.inf, 0], [0, 0], False),
+        ([0, np.nan], [0, np.nan], False),
+        ([0, np.inf], [0, np.inf], True),
+        ([0, np.inf], [0, -np.inf], False),
+    ],
+)
+def test_consider_points_equals_2d_non_finite(p0, p1, expected):
+    assert VMobject().consider_points_equals_2d(p0, p1) is expected
+
+
+def test_get_subpath_split_indices_from_points_non_finite():
+    """Non-finite anchors (NaN/inf) must be split consistently by the scalar
+    and vectorized implementations, even when a projection produces them.
+    """
+    v = VMobject()
+    nppcc = v.n_points_per_cubic_curve
+
+    for bad in (np.nan, np.inf, -np.inf):
+        for coord in (0, 1, 2):
+            points = np.array(
+                [
+                    [0.0, 0, 0],
+                    [0.3, 0, 0],
+                    [0.6, 0, 0],
+                    [1.0, 0, 0],  # curve 1
+                    [1.0, 0, 0],
+                    [1.3, 0, 0],
+                    [1.6, 0, 0],
+                    [2.0, 0, 0],  # curve 2 (joint coincides with curve 1 end)
+                ]
+            )
+            points[nppcc, coord] = bad  # contaminate the joint anchor
+
+            # n_dims=2 must agree with gen_subpaths_from_points_2d, and
+            # n_dims=3 with get_subpaths_from_points, for every non-finite case.
+            for n_dims, reference in (
+                (2, list(v.gen_subpaths_from_points_2d(points))),
+                (3, v.get_subpaths_from_points(points)),
+            ):
+                split_indices = v.get_subpath_split_indices_from_points(
+                    points, n_dims=n_dims
+                )
+                rebuilt = [end - start >= nppcc for start, end in split_indices].count(
+                    True
+                )
+                assert rebuilt == len(reference), (
+                    f"bad={bad} coord={coord} n_dims={n_dims}"
+                )
 
 
 def test_bounded_become():
@@ -526,6 +695,63 @@ def test_proportion_from_point():
     abc.scale(0.8)
     props = [abc.proportion_from_point(p) for p in abc.get_vertices()]
     np.testing.assert_allclose(props, [0, 1 / 3, 2 / 3])
+
+
+def test_align_points_handles_vmobject_with_no_complete_cubic_curves():
+    """Regression test for #3569 / #4629 (fix 21cf9998 / PR #4630).
+
+    When ``align_points`` encounters a VMobject whose points array is
+    non-empty but holds fewer than ``n_points_per_cubic_curve`` points,
+    ``get_subpaths()`` returns ``[]`` while ``has_no_points()`` returns
+    ``False`` — so the pre-loop sanitization that would normally add a
+    null curve is skipped. The buggy ``get_nth_subpath`` closure then
+    indexed ``path_list[-1]`` on the empty list and raised
+    ``IndexError: list index out of range``.
+
+    The fix returns a zero-valued null path in that case and ensures the
+    closure always returns a NumPy array (the previous list return type
+    broke downstream ``reshape`` calls).
+    """
+    target = VMobject()
+    target.set_points(
+        np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [2.0, 0.0, 0.0], [3.0, 0.0, 0.0]])
+    )
+
+    sub_cubic = VMobject()
+    sub_cubic.set_points(np.array([[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [2.0, 0.0, 0.0]]))
+    assert sub_cubic.get_subpaths() == []
+    assert not sub_cubic.has_no_points()
+
+    # Pre-fix: raises IndexError. Post-fix: completes; points are ndarray.
+    target.align_points(sub_cubic)
+    assert isinstance(target.points, np.ndarray)
+    assert isinstance(sub_cubic.points, np.ndarray)
+
+
+def test_pointwise_become_partial_preserves_target_when_source_has_no_curves():
+    """Regression test for #4255 / fix 3d029c12 (PR #4320).
+
+    When ``pointwise_become_partial`` is called with a source ``VMobject`` that
+    has zero cubic curves (e.g. an empty ``VMobject`` or a ``VectorizedPoint``
+    holding a single point), the buggy version called ``self.clear_points()``
+    on the *target*, zeroing out its data. The fix removes that call.
+
+    This bug surfaced as ``Arrow3D.get_start()`` / ``get_end()`` returning
+    ``[0, 0, 0]`` after a ``Create`` animation, because the arrow's
+    ``end_point`` sub-mobject has 1 point but no cubic curves.
+    """
+    target = VMobject()
+    original_points = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
+    target.set_points(original_points)
+
+    empty_source = VMobject()
+    assert empty_source.get_num_curves() == 0
+
+    # Choose a, b so the `(a <= 0 and b >= 1)` early-return is skipped
+    # and the `num_curves == 0` branch is exercised.
+    target.pointwise_become_partial(empty_source, 0.0, 0.5)
+
+    np.testing.assert_array_equal(target.points, original_points)
 
 
 def test_pointwise_become_partial_where_vmobject_is_self():

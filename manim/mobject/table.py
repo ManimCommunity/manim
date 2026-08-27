@@ -55,6 +55,8 @@ Examples
 
 from __future__ import annotations
 
+from typing import Self
+
 __all__ = [
     "Table",
     "MathTable",
@@ -66,6 +68,7 @@ __all__ = [
 
 import itertools as it
 from collections.abc import Callable, Iterable, Sequence
+from typing import Any
 
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Polygon
@@ -89,12 +92,12 @@ class Table(VGroup):
     Parameters
     ----------
     table
-        A 2D array or list of lists. Content of the table has to be a valid input
-        for the callable set in ``element_to_mobject``.
+        A non-empty, finite iterable of equally sized iterables. The content has
+        to be valid input for the callable set in ``element_to_mobject``.
     row_labels
-        List of :class:`~.VMobject` representing the labels of each row.
+        An iterable of :class:`~.VMobject` representing the labels of each row.
     col_labels
-        List of :class:`~.VMobject` representing the labels of each column.
+        An iterable of :class:`~.VMobject` representing the labels of each column.
     top_left_entry
         The top-left entry of the table, can only be specified if row and
         column labels are given.
@@ -104,6 +107,8 @@ class Table(VGroup):
         Horizontal buffer passed to :meth:`~.Mobject.arrange_in_grid`, by default 1.3.
     include_outer_lines
         ``True`` if the table should include outer lines, by default False.
+    include_inner_lines
+        ``True`` if the table should include inner lines, by default True.
     add_background_rectangles_to_entries
         ``True`` if background rectangles should be added to entries, by default ``False``.
     entries_background_color
@@ -193,27 +198,41 @@ class Table(VGroup):
         v_buff: float = 0.8,
         h_buff: float = 1.3,
         include_outer_lines: bool = False,
+        include_inner_lines: bool = True,
         add_background_rectangles_to_entries: bool = False,
         entries_background_color: ParsableManimColor = BLACK,
         include_background_rectangle: bool = False,
         background_rectangle_color: ParsableManimColor = BLACK,
         element_to_mobject: Callable[
+            [float | str],
+            VMobject,
+        ]
+        | Callable[
+            [VMobject],
+            VMobject,
+        ]
+        | Callable[
             [float | str | VMobject],
             VMobject,
-        ] = Paragraph,
+        ]
+        | type[VMobject] = Paragraph,
         element_to_mobject_config: dict = {},
         arrange_in_grid_config: dict = {},
         line_config: dict = {},
-        **kwargs,
+        **kwargs: Any,
     ):
-        self.row_labels = row_labels
-        self.col_labels = col_labels
+        table_data = [list(row) for row in table]
+        row_label_data = list(row_labels) if row_labels is not None else []
+        col_label_data = list(col_labels) if col_labels is not None else []
+        self.row_labels = row_label_data or None
+        self.col_labels = col_label_data or None
         self.top_left_entry = top_left_entry
-        self.row_dim = len(table)
-        self.col_dim = len(table[0])
+        self.row_dim = len(table_data)
+        self.col_dim = len(table_data[0])
         self.v_buff = v_buff
         self.h_buff = h_buff
         self.include_outer_lines = include_outer_lines
+        self.include_inner_lines = include_inner_lines
         self.add_background_rectangles_to_entries = add_background_rectangles_to_entries
         self.entries_background_color = ManimColor(entries_background_color)
         self.include_background_rectangle = include_background_rectangle
@@ -223,14 +242,14 @@ class Table(VGroup):
         self.arrange_in_grid_config = arrange_in_grid_config
         self.line_config = line_config
 
-        for row in table:
-            if len(row) == len(table[0]):
+        for row in table_data:
+            if len(row) == len(table_data[0]):
                 pass
             else:
                 raise ValueError("Not all rows in table have the same length.")
 
         super().__init__(**kwargs)
-        mob_table = self._table_to_mob_table(table)
+        mob_table: list[list[VMobject]] = self._table_to_mob_table(table_data)
         self.elements_without_labels = VGroup(*it.chain(*mob_table))
         mob_table = self._add_labels(mob_table)
         self._organize_mob_table(mob_table)
@@ -252,14 +271,14 @@ class Table(VGroup):
     def _table_to_mob_table(
         self,
         table: Iterable[Iterable[float | str | VMobject]],
-    ) -> list:
+    ) -> list[list[VMobject]]:
         """Initializes the entries of ``table`` as :class:`~.VMobject`.
 
         Parameters
         ----------
         table
-            A 2D array or list of lists. Content of the table has to be a valid input
-            for the callable set in ``element_to_mobject``.
+            A non-empty, finite iterable of equally sized iterables. The content
+            has to be valid input for the callable set in ``element_to_mobject``.
 
         Returns
         --------
@@ -268,13 +287,15 @@ class Table(VGroup):
         """
         return [
             [
-                self.element_to_mobject(item, **self.element_to_mobject_config)
+                # error: Argument 1 has incompatible type "float | str | VMobject"; expected "float | str"  [arg-type]
+                # error: Argument 1 has incompatible type "float | str | VMobject"; expected "VMobject"  [arg-type]
+                self.element_to_mobject(item, **self.element_to_mobject_config)  # type: ignore[arg-type]
                 for item in row
             ]
             for row in table
         ]
 
-    def _organize_mob_table(self, table: Iterable[Iterable[VMobject]]) -> VGroup:
+    def _organize_mob_table(self, table: Sequence[Sequence[VMobject]]) -> VGroup:
         """Arranges the :class:`~.VMobject` of ``table`` in a grid.
 
         Parameters
@@ -300,7 +321,7 @@ class Table(VGroup):
         )
         return help_table
 
-    def _add_labels(self, mob_table: VGroup) -> VGroup:
+    def _add_labels(self, mob_table: list[list[VMobject]]) -> list[list[VMobject]]:
         """Adds labels to an in a grid arranged :class:`~.VGroup`.
 
         Parameters
@@ -349,15 +370,19 @@ class Table(VGroup):
             )
             line_group.add(line)
             self.add(line)
-        for k in range(len(self.mob_table) - 1):
-            anchor = self.get_rows()[k + 1].get_top()[1] + 0.5 * (
-                self.get_rows()[k].get_bottom()[1] - self.get_rows()[k + 1].get_top()[1]
-            )
-            line = Line(
-                [anchor_left, anchor, 0], [anchor_right, anchor, 0], **self.line_config
-            )
-            line_group.add(line)
-            self.add(line)
+        if self.include_inner_lines:
+            for k in range(len(self.mob_table) - 1):
+                anchor = self.get_rows()[k + 1].get_top()[1] + 0.5 * (
+                    self.get_rows()[k].get_bottom()[1]
+                    - self.get_rows()[k + 1].get_top()[1]
+                )
+                line = Line(
+                    [anchor_left, anchor, 0],
+                    [anchor_right, anchor, 0],
+                    **self.line_config,
+                )
+                line_group.add(line)
+                self.add(line)
         self.horizontal_lines = line_group
         return self
 
@@ -379,16 +404,19 @@ class Table(VGroup):
             )
             line_group.add(line)
             self.add(line)
-        for k in range(len(self.mob_table[0]) - 1):
-            anchor = self.get_columns()[k + 1].get_left()[0] + 0.5 * (
-                self.get_columns()[k].get_right()[0]
-                - self.get_columns()[k + 1].get_left()[0]
-            )
-            line = Line(
-                [anchor, anchor_bottom, 0], [anchor, anchor_top, 0], **self.line_config
-            )
-            line_group.add(line)
-            self.add(line)
+        if self.include_inner_lines:
+            for k in range(len(self.mob_table[0]) - 1):
+                anchor = self.get_columns()[k + 1].get_left()[0] + 0.5 * (
+                    self.get_columns()[k].get_right()[0]
+                    - self.get_columns()[k + 1].get_left()[0]
+                )
+                line = Line(
+                    [anchor, anchor_bottom, 0],
+                    [anchor, anchor_top, 0],
+                    **self.line_config,
+                )
+                line_group.add(line)
+                self.add(line)
         self.vertical_lines = line_group
         return self
 
@@ -501,7 +529,7 @@ class Table(VGroup):
         """
         return VGroup(*(VGroup(*row) for row in self.mob_table))
 
-    def set_column_colors(self, *colors: Iterable[ParsableManimColor]) -> Table:
+    def set_column_colors(self, *colors: Iterable[ParsableManimColor]) -> Self:
         """Set individual colors for each column of the table.
 
         Parameters
@@ -530,7 +558,7 @@ class Table(VGroup):
             column.set_color(color)
         return self
 
-    def set_row_colors(self, *colors: Iterable[ParsableManimColor]) -> Table:
+    def set_row_colors(self, *colors: Iterable[ParsableManimColor]) -> Self:
         """Set individual colors for each row of the table.
 
         Parameters
@@ -682,7 +710,9 @@ class Table(VGroup):
                         item.set_color(random_bright_color())
                     self.add(table)
         """
-        return VGroup(*self.row_labels)
+        if self.row_labels is not None:
+            return VGroup(*self.row_labels)
+        return VGroup()
 
     def get_col_labels(self) -> VGroup:
         """Return the column labels of the table.
@@ -710,7 +740,9 @@ class Table(VGroup):
                         item.set_color(random_bright_color())
                     self.add(table)
         """
-        return VGroup(*self.col_labels)
+        if self.col_labels is not None:
+            return VGroup(*self.col_labels)
+        return VGroup()
 
     def get_labels(self) -> VGroup:
         """Returns the labels of the table.
@@ -747,13 +779,13 @@ class Table(VGroup):
                 label_group.add(*label)
         return label_group
 
-    def add_background_to_entries(self, color: ParsableManimColor = BLACK) -> Table:
+    def add_background_to_entries(self, color: ParsableManimColor = BLACK) -> Self:
         """Adds a black :class:`~.BackgroundRectangle` to each entry of the table."""
         for mob in self.get_entries():
             mob.add_background_rectangle(color=ManimColor(color))
         return self
 
-    def get_cell(self, pos: Sequence[int] = (1, 1), **kwargs) -> Polygon:
+    def get_cell(self, pos: Sequence[int] = (1, 1), **kwargs: Any) -> Polygon:
         """Returns one specific cell as a rectangular :class:`~.Polygon` without the entry.
 
         Parameters
@@ -814,7 +846,7 @@ class Table(VGroup):
         self,
         pos: Sequence[int] = (1, 1),
         color: ParsableManimColor = PURE_YELLOW,
-        **kwargs,
+        **kwargs: Any,
     ) -> BackgroundRectangle:
         """Returns a :class:`~.BackgroundRectangle` of the cell at the given position.
 
@@ -853,8 +885,8 @@ class Table(VGroup):
         self,
         pos: Sequence[int] = (1, 1),
         color: ParsableManimColor = PURE_YELLOW,
-        **kwargs,
-    ) -> Table:
+        **kwargs: Any,
+    ) -> Self:
         """Highlights one cell at a specific position on the table by adding a :class:`~.BackgroundRectangle`.
 
         Parameters
@@ -896,7 +928,7 @@ class Table(VGroup):
         label_animation: Callable[[VMobject | VGroup], Animation] = Write,
         element_animation: Callable[[VMobject | VGroup], Animation] = Create,
         entry_animation: Callable[[VMobject | VGroup], Animation] = FadeIn,
-        **kwargs,
+        **kwargs: Any,
     ) -> AnimationGroup:
         """Customized create-type function for tables.
 
@@ -936,7 +968,7 @@ class Table(VGroup):
                     self.play(table.create())
                     self.wait()
         """
-        animations: Sequence[Animation] = [
+        animations: list[Animation] = [
             line_animation(
                 VGroup(self.vertical_lines, self.horizontal_lines),
                 **kwargs,
@@ -963,12 +995,14 @@ class Table(VGroup):
 
         return AnimationGroup(*animations, lag_ratio=lag_ratio)
 
-    def scale(self, scale_factor: float, **kwargs):
+    def scale(
+        self, scale_factor: float, scale_stroke: bool = False, **kwargs: Any
+    ) -> Self:
         # h_buff and v_buff must be adjusted so that Table.get_cell
         # can construct an accurate polygon for a cell.
         self.h_buff *= scale_factor
         self.v_buff *= scale_factor
-        super().scale(scale_factor, **kwargs)
+        super().scale(scale_factor, scale_stroke=scale_stroke, **kwargs)
         return self
 
 
@@ -995,8 +1029,9 @@ class MathTable(Table):
     def __init__(
         self,
         table: Iterable[Iterable[float | str]],
-        element_to_mobject: Callable[[float | str], VMobject] = MathTex,
-        **kwargs,
+        element_to_mobject: Callable[[float | str], VMobject]
+        | type[VMobject] = MathTex,
+        **kwargs: Any,
     ):
         """
         Special case of :class:`~.Table` with `element_to_mobject` set to :class:`~.MathTex`.
@@ -1005,8 +1040,8 @@ class MathTable(Table):
         Parameters
         ----------
         table
-            A 2d array or list of lists. Content of the table have to be valid input
-            for :class:`~.MathTex`.
+            A non-empty, finite iterable of equally sized iterables. The content
+            has to be valid input for :class:`~.MathTex`.
         element_to_mobject
             The :class:`~.Mobject` class applied to the table entries. Set as :class:`~.MathTex`.
         kwargs
@@ -1050,8 +1085,9 @@ class MobjectTable(Table):
     def __init__(
         self,
         table: Iterable[Iterable[VMobject]],
-        element_to_mobject: Callable[[VMobject], VMobject] = lambda m: m,
-        **kwargs,
+        element_to_mobject: Callable[[VMobject], VMobject]
+        | type[VMobject] = lambda m: m,
+        **kwargs: Any,
     ):
         """
         Special case of :class:`~.Table` with ``element_to_mobject`` set to an identity function.
@@ -1060,7 +1096,8 @@ class MobjectTable(Table):
         Parameters
         ----------
         table
-            A 2D array or list of lists. Content of the table must be of type :class:`~.Mobject`.
+            A non-empty, finite iterable of equally sized iterables containing
+            objects of type :class:`~.Mobject`.
         element_to_mobject
             The :class:`~.Mobject` class applied to the table entries. Set as ``lambda m : m`` to return itself.
         kwargs
@@ -1098,8 +1135,9 @@ class IntegerTable(Table):
     def __init__(
         self,
         table: Iterable[Iterable[float | str]],
-        element_to_mobject: Callable[[float | str], VMobject] = Integer,
-        **kwargs,
+        element_to_mobject: Callable[[float | str], VMobject]
+        | type[VMobject] = Integer,
+        **kwargs: Any,
     ):
         """
         Special case of :class:`~.Table` with `element_to_mobject` set to :class:`~.Integer`.
@@ -1108,8 +1146,8 @@ class IntegerTable(Table):
         Parameters
         ----------
         table
-            A 2d array or list of lists. Content of the table has to be valid input
-            for :class:`~.Integer`.
+            A non-empty, finite iterable of equally sized iterables. The content
+            has to be valid input for :class:`~.Integer`.
         element_to_mobject
             The :class:`~.Mobject` class applied to the table entries. Set as :class:`~.Integer`.
         kwargs
@@ -1142,9 +1180,10 @@ class DecimalTable(Table):
     def __init__(
         self,
         table: Iterable[Iterable[float | str]],
-        element_to_mobject: Callable[[float | str], VMobject] = DecimalNumber,
+        element_to_mobject: Callable[[float | str], VMobject]
+        | type[VMobject] = DecimalNumber,
         element_to_mobject_config: dict = {"num_decimal_places": 1},
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         Special case of :class:`~.Table` with ``element_to_mobject`` set to :class:`~.DecimalNumber`.
@@ -1154,8 +1193,8 @@ class DecimalTable(Table):
         Parameters
         ----------
         table
-            A 2D array, or a list of lists. Content of the table must be valid input
-            for :class:`~.DecimalNumber`.
+            A non-empty, finite iterable of equally sized iterables. The content
+            has to be valid input for :class:`~.DecimalNumber`.
         element_to_mobject
             The :class:`~.Mobject` class applied to the table entries. Set as :class:`~.DecimalNumber`.
         element_to_mobject_config
