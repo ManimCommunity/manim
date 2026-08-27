@@ -1129,9 +1129,14 @@ class OpenGLVMobject(OpenGLMobject):
             The length of the :class:`OpenGLVMobject`.
         """
         return np.sum(
-            length
-            for _, length in self.get_curve_functions_with_lengths(
-                sample_points=sample_points_per_curve,
+            np.fromiter(
+                (
+                    length
+                    for _, length in self.get_curve_functions_with_lengths(
+                        sample_points=sample_points_per_curve,
+                    )
+                ),
+                dtype=np.float64,
             )
         )
 
