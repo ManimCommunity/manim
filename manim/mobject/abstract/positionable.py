@@ -1021,6 +1021,7 @@ class Positionable:
         --------
         :meth:`set_dim_size`
         """
+        # TODO: Changing this to `get_boundary_points` breaks the `test_img_and_svg.py`` tests
         points = self.get_all_points()
         if len(points) == 0:
             return 0
@@ -1323,7 +1324,11 @@ class Positionable:
         dim: int = 0,
         key: int = 0,
     ) -> float:
-        return self._get_extremum_along_dim(self.get_all_points(), dim=dim, key=key)
+        return self._get_extremum_along_dim(
+            self.get_points_defining_boundary(),
+            dim=dim,
+            key=key,
+        )
 
     def _get_extremum_along_dim(
         self,
@@ -2093,7 +2098,7 @@ class Positionable:
         reduce_func: Callable[[Iterable[float]], float],
         dim: int,
     ) -> float | None:
-        points = self.get_all_points()
+        points = self.get_points_defining_boundary()
         if len(points) == 0:
             return None
 
