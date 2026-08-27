@@ -177,10 +177,16 @@ class Positionable:
         # Make a copy to prevent mutation of the original array if about_point is a view
         about_point = np.array(about_point, copy=True)
 
-        def apply(mob: Positionable) -> None:
-            mob.points -= about_point
-            mob.points = function(mob.points)
-            mob.points += about_point
+        if (about_point == ORIGIN).all():
+
+            def apply(mob: Positionable) -> None:
+                mob.points = function(mob.points)
+        else:
+
+            def apply(mob: Positionable) -> None:
+                mob.points -= about_point
+                mob.points = function(mob.points)
+                mob.points += about_point
 
         return self.apply_to_family(function=apply)
 
@@ -335,16 +341,7 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.apply_array_function(
-            function=lambda points: points.__iadd__(vector)
-        )
-
-    def translate_dim(self, length: float, dim: int) -> Self:
-        def function(points: Point3D_Array) -> Point3D_Array:
-            points[:, dim] += length
-            return points
-
-        return self.apply_array_function(function=function)
+        return self.apply_to_family(function=lambda mob: mob.points.__iadd__(vector))
 
     def rotate(
         self,
@@ -878,8 +875,9 @@ class Positionable:
         if isinstance(value, Positionable):
             value = value.get_coordinate(dim=dim, direction=direction)
         current = self.get_coordinate(dim=dim, direction=direction)
-        vector = value - current
-        return self.translate_dim(length=vector, dim=dim)
+        vector = np.zeros(3)
+        vector[dim] = value - current
+        return self.translate(vector=vector)
 
     def get_x(self, direction: Vector3DLike = ORIGIN) -> float:
         """Returns the x coordinate.
