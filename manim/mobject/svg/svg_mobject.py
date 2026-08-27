@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Any
+from typing import Any, Self
 from xml.etree import ElementTree as ET
 
 import numpy as np
@@ -13,7 +13,7 @@ import svgelements as se
 from manim import config, logger
 from manim.utils.color import ManimColor, ParsableManimColor
 
-from ...constants import RIGHT
+from ...constants import RIGHT, RendererType
 from ...utils.bezier import get_quadratic_approximation_of_cubic
 from ...utils.images import get_full_vector_image_path
 from ...utils.iterables import hash_obj
@@ -158,7 +158,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         )
         self.move_into_position()
 
-    def init_svg_mobject(self, use_svg_cache: bool) -> None:
+    def init_svg_mobject(self, use_svg_cache: bool) -> Self:
         """Checks whether the SVG has already been imported and
         generates it if not.
 
@@ -172,11 +172,12 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
                 mob = SVG_HASH_TO_MOB_MAP[hash_val].copy()
                 self.add(*mob)
                 self.id_to_vgroup_dict = mob.id_to_vgroup_dict
-                return
+                return self
 
         self.generate_mobject()
         if use_svg_cache:
             SVG_HASH_TO_MOB_MAP[hash_val] = self.copy()
+        return self
 
     @property
     def hash_seed(self) -> tuple:
@@ -193,7 +194,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             config.renderer,
         )
 
-    def generate_mobject(self) -> None:
+    def generate_mobject(self) -> Self:
         """Parse the SVG and translate its elements to submobjects."""
         file_path = self.get_file_path()
         element_tree = ET.parse(file_path)
@@ -209,6 +210,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         self.add(*mobjects)
         self.id_to_vgroup_dict = mobject_dict
         self.flip(RIGHT)  # Flip y
+        return self
 
     def get_file_path(self) -> Path:
         """Search for an existing file based on the specified file name."""
@@ -338,7 +340,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             logger.warning(f"Unsupported element type: {type(shape)}")
             mob = None
         if mob is None or not mob.has_points():
-            return mob
+            return None
         self.apply_style_to_mobject(mob, shape)
         if isinstance(shape, se.Transformable) and shape.apply:
             self.handle_transform(mob, shape.transform)
@@ -490,7 +492,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         logger.warning(f"Unsupported element type: {type(text)}")
         return  # type: ignore[return-value]
 
-    def move_into_position(self) -> None:
+    def move_into_position(self) -> Self:
         """Scale and move the generated mobject into position."""
         if self.should_center:
             self.center()
@@ -498,6 +500,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             self.set(height=self.svg_height)
         if self.svg_width is not None:
             self.set(width=self.svg_width)
+        return self
 
 
 class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
@@ -543,25 +546,36 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
         self.should_subdivide_sharp_curves = should_subdivide_sharp_curves
         self.should_remove_null_curves = should_remove_null_curves
 
+        if config.renderer == RendererType.OPENGL:
+            # OpenGLVMobject.__init__ takes these as parameters and would
+            # otherwise reset the attributes above to its own defaults.
+            kwargs.update(
+                long_lines=long_lines,
+                should_subdivide_sharp_curves=should_subdivide_sharp_curves,
+                should_remove_null_curves=should_remove_null_curves,
+            )
+
         super().__init__(**kwargs)
 
-    def generate_points(self) -> None:
+    def generate_points(self) -> Self:
         # TODO: cache mobject in a re-importable way
 
         self.handle_commands()
 
-        if config.renderer == "opengl":
+        if config.renderer == RendererType.OPENGL:
             if self.should_subdivide_sharp_curves:
                 # For a healthy triangulation later
                 self.subdivide_sharp_curves()
             if self.should_remove_null_curves:
                 # Get rid of any null curves
                 self.set_points(self.get_points_without_null_curves())
+        return self
 
-    def init_points(self) -> None:
+    def init_points(self) -> Self:
         self.generate_points()
+        return self
 
-    def handle_commands(self) -> None:
+    def handle_commands(self) -> Self:
         all_points: list[np.ndarray] = []
         last_move: np.ndarray = None
         curve_start = None
@@ -619,6 +633,10 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
                 move_pen(end)
 
             def add_line(start: np.ndarray, end: np.ndarray) -> None:
+                if self.long_lines:
+                    midpoint = (start + end) / 2
+                    add_quad(start, (start + midpoint) / 2, midpoint)
+                    start = midpoint
                 add_quad(start, (start + end) / 2, end)
                 move_pen(end)
 
@@ -657,3 +675,5 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
         # add or remove points correctly.
         if len(all_points) == 0:
             self.points = np.reshape(self.points, (0, 3))
+
+        return self

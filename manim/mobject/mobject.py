@@ -14,7 +14,7 @@ import random
 import sys
 import types
 import warnings
-from collections.abc import Callable, Iterable, Iterator, Sequence
+from collections.abc import Callable, Iterable, Iterator, MutableSet, Sequence
 from functools import partialmethod, reduce
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
@@ -458,19 +458,21 @@ class Mobject:
         self.points = np.zeros((0, self.dim))
         return self
 
-    def init_colors(self, propagate_colors: bool = True) -> object:
+    def init_colors(self, propagate_colors: bool = True) -> Self:
         """Initializes the colors.
 
         Gets called upon creation. This is an empty method that can be implemented by
         subclasses.
         """
+        return self
 
-    def generate_points(self) -> object:
+    def generate_points(self) -> Self:
         """Initializes :attr:`points` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be implemented by
         subclasses.
         """
+        return self
 
     def add(self, *mobjects: Mobject) -> Self:
         """Add mobjects as submobjects.
@@ -560,7 +562,7 @@ class Mobject:
         self.submobjects = list_update(self.submobjects, unique_mobjects)
         return self
 
-    def insert(self, index: int, mobject: Mobject) -> None:
+    def insert(self, index: int, mobject: Mobject) -> Self:
         """Inserts a mobject at a specific position into self.submobjects
 
         Effectively just calls  ``self.submobjects.insert(index, mobject)``,
@@ -577,6 +579,7 @@ class Mobject:
         """
         self._assert_valid_submobjects([mobject])
         self.submobjects.insert(index, mobject)
+        return self
 
     def __add__(self, mobject: Mobject) -> Self:
         raise NotImplementedError
@@ -1232,7 +1235,7 @@ class Mobject:
 
     # Transforming operations
 
-    def apply_to_family(self, func: Callable[[Mobject], None]) -> None:
+    def apply_to_family(self, func: Callable[[Mobject], None]) -> Self:
         """Apply a function to ``self`` and every submobject with points recursively.
 
         Parameters
@@ -1253,6 +1256,8 @@ class Mobject:
         """
         for mob in self.family_members_with_points():
             func(mob)
+
+        return self
 
     def shift(self, *vectors: Vector3DLike) -> Self:
         """Shift by the given vectors.
@@ -1941,30 +1946,33 @@ class Mobject:
         return self
 
     def put_start_and_end_on(self, start: Point3DLike, end: Point3DLike) -> Self:
-        curr_start, curr_end = self.get_start_and_end()
-        curr_vect = curr_end - curr_start
-        if np.all(curr_vect == 0):
-            # TODO: this looks broken. It makes self.points a Point3D instead
-            # of a Point3D_Array. However, modifying this breaks some tests
-            # where this is currently expected.
-            self.points = np.array(start)
+        current_start, current_end = self.get_start_and_end()
+        current_vector = current_end - current_start
+        if np.all(current_vector == 0):
+            warnings.warn(
+                "put_start_and_end_on has been called on a closed loop or zero-length mobject. "
+                f"{type(self).__name__} will be shifted to start point instead.",
+                stacklevel=2,
+            )
+            self.shift(np.asarray(start) - current_start)
             return self
-        target_vect = np.asarray(end) - np.asarray(start)
+
+        target_vector = np.asarray(end) - np.asarray(start)
         axis = (
-            normalize(np.cross(curr_vect, target_vect))
-            if np.linalg.norm(np.cross(curr_vect, target_vect)) != 0
+            normalize(np.cross(current_vector, target_vector))
+            if np.linalg.norm(np.cross(current_vector, target_vector)) != 0
             else OUT
         )
         self.scale(
-            np.linalg.norm(target_vect) / np.linalg.norm(curr_vect),
-            about_point=curr_start,
+            np.linalg.norm(target_vector) / np.linalg.norm(current_vector),
+            about_point=current_start,
         )
         self.rotate(
-            angle_between_vectors(curr_vect, target_vect),
-            about_point=curr_start,
+            angle_between_vectors(current_vector, target_vector),
+            about_point=current_start,
             axis=axis,
         )
-        self.shift(start - curr_start)
+        self.shift(np.asarray(start) - current_start)
         return self
 
     # Background rectangle
@@ -2159,13 +2167,31 @@ class Mobject:
 
     def reduce_across_dimension(
         self, reduce_func: Callable[[Iterable[float]], float], dim: int
-    ) -> float:
-        """Find the min or max value from a dimension across all points in this and submobjects."""
+    ) -> float | None:
+        """Find the min or max value from a dimension across all points in this Mobject and its
+        submobjects. This allows for using :meth:`~.length_over_dim` to calculate its length over
+        a dimension, i.e. its height, width or depth. If this Mobject is empty, return ``None``,
+        since this Mobject should not be taken into account when calculating lengths.
+
+        Parameters
+        ----------
+        reduce_func
+            The reducer function to use in order to calculate a value over a dimension.
+        dim
+            The dimension to use. It should be 0, 1 or 2, representing the X, Y or Z coordinate,
+            respectively.
+
+        Returns
+        -------
+        float | None
+            The min or max value over the dimension specified by ``dim``, or ``None`` if this
+            Mobject is empty.
+        """
         assert dim >= 0
         assert dim <= 2
         if len(self.submobjects) == 0 and len(self.points) == 0:
-            # If we have no points and no submobjects, return 0 (e.g. center)
-            return 0
+            # If we have no points and no submobjects, return None
+            return None
 
         # If we do not have points (but do have submobjects)
         # use only the points from those.
@@ -2178,8 +2204,10 @@ class Mobject:
         # smallest dimension they have and compare it to the return value.
         for mobj in self.submobjects:
             value = mobj.reduce_across_dimension(reduce_func, dim)
-            rv = value if rv is None else reduce_func([value, rv])
-        assert rv is not None
+            if rv is None:
+                rv = value
+            elif value is not None:
+                rv = reduce_func([value, rv])
         return rv
 
     def nonempty_submobjects(self) -> Sequence[Mobject]:
@@ -2333,11 +2361,10 @@ class Mobject:
 
     def length_over_dim(self, dim: int) -> float:
         """Measure the length of an :class:`~.Mobject` in a certain direction."""
-        max_coord: float = self.reduce_across_dimension(
-            max,
-            dim,
-        )
-        min_coord: float = self.reduce_across_dimension(min, dim)
+        max_coord = self.reduce_across_dimension(max, dim)
+        min_coord = self.reduce_across_dimension(min, dim)
+        if max_coord is None or min_coord is None:
+            return 0
         return max_coord - min_coord
 
     def get_coord(self, dim: int, direction: Vector3DLike = ORIGIN) -> float:
@@ -2467,19 +2494,34 @@ class Mobject:
 
     # Family matters
 
-    def __getitem__(self, value: Any) -> Mobject | Group:
-        self_list = self.split()
+    def __getitem__(self, value: Any) -> Mobject:
         if isinstance(value, slice):
             GroupClass = self.get_group_class()
-            return GroupClass(*self_list.__getitem__(value))
-        rv: Mobject | Group = self_list.__getitem__(value)
-        return rv
+
+            if self.has_no_points():
+                return GroupClass(*self.submobjects[value])
+
+            r = range(*value.indices(len(self)))
+            if not r:  # If slice is empty
+                return GroupClass()
+            if 0 not in r:
+                # If self is not included in the slice, we can gain a small speed boost
+                # by indexing directly into the submobjects list.
+                stop = r.stop - 1 if (r.step > 0 or r.stop > 0) else None
+                return GroupClass(*self.submobjects[r.start - 1 : stop : r.step])
+
+            return GroupClass(*[self.submobjects[i - 1] if i != 0 else self for i in r])
+
+        index: int = range(len(self))[value]  # Normalize the index
+        if self.has_no_points():
+            return self.submobjects[index]
+        return self if index == 0 else self.submobjects[index - 1]
 
     def __iter__(self) -> Iterator[Mobject]:
-        return iter(self.split())
+        return it.chain([self] if self.has_points() else [], self.submobjects)
 
     def __len__(self) -> int:
-        return len(self.split())
+        return len(self.submobjects) + (1 if self.has_points() else 0)
 
     def get_group_class(self) -> type[Group]:
         return Group
@@ -2523,9 +2565,19 @@ class Mobject:
         :meth:`~.Mobject.family_members_with_points`, :meth:`~.Mobject.align_data`
 
         """
-        sub_families = [x.get_family() for x in self.submobjects]
-        all_mobjects = [self] + list(it.chain(*sub_families))
-        return remove_list_redundancies(all_mobjects)
+        return remove_list_redundancies(list(self._iter_family(set())))
+
+    def _iter_family(self, active_path: MutableSet[Mobject]) -> Iterator[Mobject]:
+        if self in active_path:
+            return
+
+        active_path.add(self)
+        try:
+            yield self
+            for submobject in self.submobjects:
+                yield from submobject._iter_family(active_path)
+        finally:
+            active_path.remove(self)
 
     def family_members_with_points(self) -> list[Mobject]:
         """Filters the list of family members (generated by :meth:`.get_family`) to include only mobjects with points.
@@ -2852,14 +2904,15 @@ class Mobject:
         self.submobjects.sort(key=submob_func)
         return self
 
-    def shuffle(self, recursive: bool = False) -> None:
+    def shuffle(self, recursive: bool = False) -> Self:
         """Shuffles the list of :attr:`submobjects`."""
         if recursive:
             for submob in self.submobjects:
                 submob.shuffle(recursive=True)
         random.shuffle(self.submobjects)
+        return self
 
-    def invert(self, recursive: bool = False) -> None:
+    def invert(self, recursive: bool = False) -> Self:
         """Inverts the list of :attr:`submobjects`.
 
         Parameters
@@ -2884,6 +2937,7 @@ class Mobject:
             for submob in self.submobjects:
                 submob.invert(recursive=True)
         self.submobjects.reverse()
+        return self
 
     # Just here to keep from breaking old scenes.
     def arrange_submobjects(self, *args: Any, **kwargs: Any) -> Self:
@@ -2911,7 +2965,7 @@ class Mobject:
         """Sort the :attr:`submobjects`"""
         return self.sort(*args, **kwargs)
 
-    def shuffle_submobjects(self, *args: Any, **kwargs: Any) -> None:
+    def shuffle_submobjects(self, *args: Any, **kwargs: Any) -> Self:
         """Shuffles the order of :attr:`submobjects`
 
         Examples
@@ -2930,7 +2984,7 @@ class Mobject:
         return self.shuffle(*args, **kwargs)
 
     # Alignment
-    def align_data(self, mobject: Mobject, skip_point_alignment: bool = False) -> None:
+    def align_data(self, mobject: Mobject, skip_point_alignment: bool = False) -> Self:
         """Aligns the family structure and data of this mobject with another mobject.
 
         Afterwards, the two mobjects will have the same number of submobjects
@@ -2961,6 +3015,7 @@ class Mobject:
             >>> rect = Rectangle(width=4.0, height=2.0, grid_xstep=1.0, grid_ystep=0.5)
             >>> line = Line(start=ORIGIN,end=RIGHT)
             >>> line.align_data(rect)
+            Line
             >>> len(line.get_family()) == len(rect.get_family())
             True
             >>> line.get_num_points() == rect.get_num_points()
@@ -2978,6 +3033,7 @@ class Mobject:
         # Recurse
         for m1, m2 in zip(self.submobjects, mobject.submobjects, strict=True):
             m1.align_data(m2)
+        return self
 
     def get_point_mobject(self, center: Point3DLike | None = None) -> Point:
         """The simplest :class:`~.Mobject` to be transformed to or from self.
@@ -2995,7 +3051,7 @@ class Mobject:
             mobject.align_points_with_larger(self)
         return self
 
-    def align_points_with_larger(self, larger_mobject: Mobject) -> None:
+    def align_points_with_larger(self, larger_mobject: Mobject) -> Self:
         raise NotImplementedError("Please override in a child class.")
 
     def align_submobjects(self, mobject: Mobject) -> Self:
@@ -3130,7 +3186,7 @@ class Mobject:
 
     def interpolate_color(
         self, mobject1: Mobject, mobject2: Mobject, alpha: float
-    ) -> None:
+    ) -> Self:
         raise NotImplementedError("Please override in a child class.")
 
     def become(
@@ -3290,9 +3346,16 @@ class Mobject:
     def throw_error_if_no_points(self) -> None:
         if self.has_no_points():
             caller_name = sys._getframe(1).f_code.co_name
-            raise Exception(
-                f"Cannot call Mobject.{caller_name} for a Mobject with no points",
-            )
+            cls = type(self).__name__
+            message = f"Cannot call {cls}.{caller_name} because {self!r} has no points."
+            pointful_family_members = self.family_members_with_points()
+            if pointful_family_members:
+                count = len(pointful_family_members)
+                message += (
+                    f" Its family contains {count} "
+                    f"mobject{'' if count == 1 else 's'} with points."
+                )
+            raise ValueError(message)
 
     # About z-index
     def set_z_index(

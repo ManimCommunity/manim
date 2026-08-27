@@ -208,12 +208,13 @@ class OpenGLCamera(OpenGLMobject):
     def unformatted_view_matrix(self) -> MatrixMN:
         return typing.cast(MatrixMN, np.linalg.inv(self.model_matrix))
 
-    def init_points(self) -> None:
+    def init_points(self) -> Self:
         """Initialize the camera's points based on frame shape and center point."""
         self.set_points([ORIGIN, LEFT, RIGHT, DOWN, UP])
         self.set_width(self.frame_shape[0], stretch=True)
         self.set_height(self.frame_shape[1], stretch=True)
         self.move_to(self.center_point)
+        return self
 
     def to_default_state(self) -> Self:
         """Reset the camera to its default state
@@ -226,7 +227,7 @@ class OpenGLCamera(OpenGLMobject):
         self.model_matrix = self.default_model_matrix
         return self
 
-    def refresh_rotation_matrix(self) -> None:
+    def refresh_rotation_matrix(self) -> Self:
         """Refresh the camera's inverse rotation matrix based on its Euler angles."""
         # Rotate based on camera orientation
         theta, phi, gamma = self.euler_angles
@@ -238,6 +239,7 @@ class OpenGLCamera(OpenGLMobject):
         self.inverse_rotation_matrix = rotation_matrix_transpose_from_quaternion(
             np.asarray(quat, dtype=float)
         )
+        return self
 
     @override
     def rotate(
