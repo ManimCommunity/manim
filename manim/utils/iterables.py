@@ -143,6 +143,7 @@ def list_difference_update(l1: Iterable[T], l2: Iterable[T]) -> list[T]:
         >>> list_difference_update([1, 2, 3, 4], [2, 4])
         [1, 3]
     """
+    l2 = set(l2)
     return [e for e in l1 if e not in l2]
 
 
@@ -158,7 +159,8 @@ def list_update(l1: Iterable[T], l2: Iterable[T]) -> list[T]:
         >>> list_update([1, 2, 3], [2, 4, 4])
         [1, 3, 2, 4, 4]
     """
-    return [e for e in l1 if e not in l2] + list(l2)
+    l2 = list(l2)
+    return list_difference_update(l1, l2) + l2
 
 
 @overload

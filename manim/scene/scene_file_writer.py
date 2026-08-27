@@ -1053,23 +1053,46 @@ class SceneFileWriter:
         with (self.sections_output_dir / f"{self.output_name}.json").open("w") as file:
             json.dump(sections_index, file, indent=4)
 
+    def _cached_partial_movie_files(self) -> list[Path]:
+        """Return the partial movie files currently contained in the cache.
+
+        The partial movie file list is excluded (matching by file name: a
+        ``Path`` never compares equal to its ``str`` name). Hidden files are
+        excluded as well: on macOS, Finder leaves resource forks (``._*.mp4``)
+        and ``.DS_Store`` files in the directory which must not count against
+        ``max_files_cached`` and may vanish again before they could be
+        deleted.
+        """
+        return [
+            self.partial_movie_directory / file_name
+            for file_name in self.partial_movie_directory.iterdir()
+            if file_name.name != "partial_movie_file_list.txt"
+            and not file_name.name.startswith(".")
+        ]
+
     def clean_cache(self) -> None:
         """Will clean the cache by removing the oldest partial_movie_files."""
-        cached_partial_movies = [
-            (self.partial_movie_directory / file_name)
-            for file_name in self.partial_movie_directory.iterdir()
-            if file_name != "partial_movie_file_list.txt"
-        ]
+        cached_partial_movies = self._cached_partial_movie_files()
         if len(cached_partial_movies) > config["max_files_cached"]:
             number_files_to_delete = (
                 len(cached_partial_movies) - config["max_files_cached"]
             )
+
+            def access_time(path: Path) -> float:
+                try:
+                    return path.stat().st_atime
+                except FileNotFoundError:
+                    # The file vanished between listing the directory and
+                    # now; sort it first and let unlink(missing_ok=True)
+                    # handle its deletion without evicting an existing file.
+                    return float("-inf")
+
             oldest_files_to_delete = sorted(
                 cached_partial_movies,
-                key=lambda path: path.stat().st_atime,
+                key=access_time,
             )[:number_files_to_delete]
             for file_to_delete in oldest_files_to_delete:
-                file_to_delete.unlink()
+                file_to_delete.unlink(missing_ok=True)
             logger.info(
                 f"The partial movie directory is full (> {config['max_files_cached']} files). Therefore, manim has removed the {number_files_to_delete} oldest file(s)."
                 " You can change this behaviour by changing max_files_cached in config.",
@@ -1077,13 +1100,9 @@ class SceneFileWriter:
 
     def flush_cache_directory(self) -> None:
         """Delete all the cached partial movie files"""
-        cached_partial_movies = [
-            self.partial_movie_directory / file_name
-            for file_name in self.partial_movie_directory.iterdir()
-            if file_name != "partial_movie_file_list.txt"
-        ]
+        cached_partial_movies = self._cached_partial_movie_files()
         for f in cached_partial_movies:
-            f.unlink()
+            f.unlink(missing_ok=True)
         logger.info(
             f"Cache flushed. {len(cached_partial_movies)} file(s) deleted in %(par_dir)s.",
             {"par_dir": self.partial_movie_directory},

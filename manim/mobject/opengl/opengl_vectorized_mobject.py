@@ -1129,9 +1129,14 @@ class OpenGLVMobject(OpenGLMobject):
             The length of the :class:`OpenGLVMobject`.
         """
         return np.sum(
-            length
-            for _, length in self.get_curve_functions_with_lengths(
-                sample_points=sample_points_per_curve,
+            np.fromiter(
+                (
+                    length
+                    for _, length in self.get_curve_functions_with_lengths(
+                        sample_points=sample_points_per_curve,
+                    )
+                ),
+                dtype=np.float64,
             )
         )
 
@@ -1704,10 +1709,10 @@ class OpenGLVGroup(OpenGLVMobject):
             + ")"
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             f"{self.__class__.__name__} of {len(self.submobjects)} "
-            f"submobject{'s' if len(self.submobjects) > 0 else ''}"
+            f"submobject{'' if len(self.submobjects) == 1 else 's'}"
         )
 
     def add(self, *vmobjects: OpenGLVMobject) -> Self:
