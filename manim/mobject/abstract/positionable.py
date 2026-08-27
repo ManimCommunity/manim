@@ -47,7 +47,13 @@ class Positionable:
         --------
         :meth:`set_points`
         """
-        return np.concat([mob.points for mob in self.get_family()])
+        result = self.points
+        for mob in self.get_family():
+            if mob is self:
+                continue
+            if len(mob.points) > 0:
+                result = np.append(result, mob.points, axis=0)
+        return result
 
     def set_points(
         self,
@@ -321,12 +327,11 @@ class Positionable:
         full_matrix = np.identity(3)
         full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
 
-        self.apply_array_function(
+        return self.apply_array_function(
             function=lambda points: points.dot(full_matrix.T, out=points),
             about_point=about_point,
             about_edge=about_edge,
         )
-        return self
 
     def translate(self, vector: Vector3DLike) -> Self:
         """Applies a translation.
@@ -1375,12 +1380,28 @@ class Positionable:
         bool
             Is off screen.
         """
-        mins, maxs = self.get_bounding_box()
-        return (  # type: ignore[return-value]
-            mins[0] > config.frame_x_radius
-            or maxs[0] < -config.frame_x_radius
-            or mins[1] > config.frame_y_radius
-            or maxs[1] < -config.frame_y_radius,
+        points = self.get_points_defining_boundary()
+        return (
+            # left is too right
+            (
+                self._get_extremum_along_dim(points=points, dim=0, key=-1)
+                > config.frame_x_radius
+            )
+            # right is too left
+            or (
+                self._get_extremum_along_dim(points=points, dim=0, key=1)
+                < -config.frame_x_radius
+            )
+            # bottom is too high
+            or (
+                self._get_extremum_along_dim(points=points, dim=1, key=-1)
+                > config.frame_y_radius
+            )
+            # top is too low
+            or (
+                self._get_extremum_along_dim(points=points, dim=1, key=1)
+                < -config.frame_y_radius
+            )
         )
 
     def shift_onto_screen(
@@ -1431,8 +1452,7 @@ class Positionable:
         Self
             The object itself.
         """
-        vector = reduce(op.add, vectors)
-        return self.translate(vector=vector)
+        return self.translate(vector=reduce(op.add, vectors))
 
     def center(self) -> Self:
         """Moves to the ORIGIN.
