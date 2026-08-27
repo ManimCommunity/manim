@@ -897,15 +897,6 @@ class OpenGLMobject:
 
         self._assert_valid_submobjects(mobjects)
 
-        if len(mobjects) == 1:
-            mobject = mobjects[0]
-            if mobject not in self.submobjects:
-                self.submobjects.append(mobject)
-                if self not in mobject.parents:
-                    mobject.parents.append(self)
-                self.assemble_family()
-            return self
-
         # dict.fromkeys() removes duplicates while maintaining order
         unique_mobjects = dict.fromkeys(mobjects)
         if len(mobjects) != len(unique_mobjects):
@@ -913,6 +904,15 @@ class OpenGLMobject:
                 "Attempted adding some Mobject as a child more than once, "
                 "this is not possible. Repetitions are ignored.",
             )
+
+        if len(unique_mobjects) == 1:
+            mobject = unique_mobjects.popitem()[0]
+            if mobject not in self.submobjects:
+                self.submobjects.append(mobject)
+                if self not in mobject.parents:
+                    mobject.parents.append(self)
+                self.assemble_family()
+            return self
 
         # Remove already-present mobjects
         for mob in self.submobjects:

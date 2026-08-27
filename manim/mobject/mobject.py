@@ -39,10 +39,10 @@ from ..utils.color import (
 from ..utils.exceptions import MultiAnimationOverrideException
 from ..utils.iterables import (
     list_difference_update,
-    list_update,
     remove_list_redundancies,
 )
 from ..utils.paths import straight_path
+from ..utils.simple_functions import clip
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 if TYPE_CHECKING:
@@ -556,27 +556,7 @@ class Mobject:
             [child]
 
         """
-        self._assert_valid_submobjects(mobjects)
-
-        if len(mobjects) == 1:
-            mobject = mobjects[0]
-            # If the mobject is already the last submobject, we don't need to do anything
-            if self.submobjects and mobject is self.submobjects[-1]:
-                return self
-            with suppress(ValueError):
-                self.submobjects.remove(mobject)
-            self.submobjects.append(mobject)
-            return self
-
-        unique_mobjects = remove_list_redundancies(mobjects)
-        if len(mobjects) != len(unique_mobjects):
-            logger.warning(
-                "Attempted adding some Mobject as a child more than once, "
-                "this is not possible. Repetitions are ignored.",
-            )
-
-        self.submobjects = list_update(self.submobjects, unique_mobjects)
-        return self
+        return self._insert_submobjects(len(self.submobjects), mobjects)
 
     def insert(self, index: int, mobject: Mobject) -> Self:
         """Inserts a mobject at a specific position into ``self.submobjects``.
@@ -591,28 +571,69 @@ class Mobject:
         mobject
             The mobject to be inserted.
         """
-        self._assert_valid_submobjects([mobject])
+        return self._insert_submobjects(index, (mobject,))
 
-        # Normalize index to match list.insert
-        if index < 0:
-            index = max(0, len(self.submobjects) + index)
-        else:
-            index = min(index, len(self.submobjects))
+    def _insert_submobjects(self, index: int, mobjects: Sequence[Mobject]) -> Self:
+        """Common backing implementation for :meth:`add`, :meth:`add_to_back`, and
+        :meth:`insert`.
 
-        try:
-            old_index = self.submobjects.index(mobject)
-        except ValueError:  # mobject isn't already present
-            self.submobjects.insert(index, mobject)
+        Inserts ``mobjects`` into :attr:`submobjects` such that they end up starting
+        at ``index`` (following the semantics of :meth:`list.insert`). Mobjects that
+        are already present are moved to the new position instead of being duplicated.
+        """
+        self._assert_valid_submobjects(mobjects)
+
+        if not mobjects:
             return self
 
-        if index in (old_index, old_index + 1):  # Position will remain unchanged
+        unique_mobjects = remove_list_redundancies(mobjects)
+        if len(mobjects) != len(unique_mobjects):
+            logger.warning(
+                "Attempted adding some Mobject as a child more than once, "
+                "this is not possible. Repetitions are ignored.",
+            )
+
+        if not self.submobjects:
+            self.submobjects = unique_mobjects
             return self
 
-        # Compensate for list shifting after popping
-        new_index = index if index < old_index else index - 1
-        self.submobjects.pop(old_index)
-        self.submobjects.insert(new_index, mobject)
+        n = len(self.submobjects)
 
+        # Normalize the index to be in the range [0, n] following the semantics of list.insert
+        norm_index = clip(index if index >= 0 else n + index, 0, n)
+
+        # Shortcut for the common case of adding a single mobject
+        if len(unique_mobjects) == 1:
+            mobject = unique_mobjects[0]
+            # If the mobject is already present at or next to the provided index, we
+            # don't need to do anything
+            if any(
+                self.submobjects[j] is mobject
+                for j in (norm_index - 1, norm_index)
+                if 0 <= j < n
+            ):
+                return self
+
+            try:
+                old_index = self.submobjects.index(mobject)
+            except ValueError:  # mobject isn't already present
+                self.submobjects.insert(norm_index, mobject)
+                return self
+
+            # Compensate for list shifting after popping
+            new_index = norm_index if norm_index < old_index else norm_index - 1
+            self.submobjects.pop(old_index)
+            self.submobjects.insert(new_index, mobject)
+            return self
+
+        head = list_difference_update(
+            it.islice(self.submobjects, norm_index), unique_mobjects
+        )
+        tail = list_difference_update(
+            it.islice(self.submobjects, norm_index, None), unique_mobjects
+        )
+
+        self.submobjects = [*head, *unique_mobjects, *tail]
         return self
 
     def __add__(self, mobject: Mobject) -> Self:
@@ -665,19 +686,7 @@ class Mobject:
         :meth:`add`
 
         """
-        self._assert_valid_submobjects(mobjects)
-        # dict.fromkeys() removes duplicates while maintaining order
-        unique_mobjects = dict.fromkeys(mobjects)
-        if len(mobjects) != len(unique_mobjects):
-            logger.warning(
-                "Attempted adding some Mobject as a child more than once, "
-                "this is not possible. Repetitions are ignored.",
-            )
-        existing_mobs = self.submobjects
-        self.submobjects = list(unique_mobjects)
-        self.submobjects.extend(m for m in existing_mobs if m not in unique_mobjects)
-
-        return self
+        return self._insert_submobjects(0, mobjects)
 
     def remove(self, *mobjects: Mobject) -> Self:
         """Remove :attr:`submobjects`.

@@ -108,6 +108,55 @@ def test_mobject_insert():
     obj.insert(3, m4)
     assert obj.submobjects == [m2, m3, m4, m1]
 
+    # can only insert Mobjects
+    with pytest.raises(TypeError) as add_str_info:
+        obj.insert(1, "foo")
+    assert str(add_str_info.value) == (
+        "Only values of type Mobject can be added as submobjects of Mobject, "
+        "but the value foo (at index 0) is of type str."
+    )
+
+
+def test_mobject_add_to_back():
+    obj = Mobject()
+    m1, m2, m3, m4 = [Mobject(name=f"m{i}") for i in range(1, 5)]
+
+    # Adding to empty list is the same as adding normally
+    obj.add_to_back(m1)
+    assert obj.submobjects == [m1]
+
+    # Adding a new submobject adds it to the back
+    obj.add_to_back(m2)
+    assert obj.submobjects == [m2, m1]
+
+    # Adding existing submobjects that are already at the back does not change the order
+    obj.add_to_back(m1)
+    assert obj.submobjects == [m1, m2]
+    obj.add_to_back(m1, m2)
+    assert obj.submobjects == [m1, m2]
+
+    # Adding an existing submobject moves it to the back
+    obj.add_to_back(m2)
+    assert obj.submobjects == [m2, m1]
+
+    # In case of duplicates, the last occurrence of a submobject is kept
+    obj.add_to_back(m3, m1, m3)
+    assert obj.submobjects == [m1, m3, m2]
+
+    # The order of the non-prepended submobjects is preserved
+    obj.remove(*obj.submobjects)
+    obj.add(m1, m2, m3, m4)
+    obj.add_to_back(m2, m4)
+    assert obj.submobjects == [m2, m4, m1, m3]
+
+    # can only add Mobjects
+    with pytest.raises(TypeError) as add_str_info:
+        obj.add_to_back("foo")
+    assert str(add_str_info.value) == (
+        "Only values of type Mobject can be added as submobjects of Mobject, "
+        "but the value foo (at index 0) is of type str."
+    )
+
 
 def test_mobject_dimensions_single_mobject():
     # A Mobject with no points and no submobjects has no dimensions
