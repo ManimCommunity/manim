@@ -152,7 +152,7 @@ def test_resolve_no_output_plan_without_layout_directories(tmp_path):
     [
         ("movie", "movie.mp4"),
         ("movie.mp4", "movie.mp4"),
-        ("movie.mov", "movie.mp4"),
+        ("movie.mov", "movie.mov.mp4"),
     ],
 )
 def test_resolved_format_controls_custom_output_suffix(
@@ -184,8 +184,8 @@ def test_absolute_output_name_only_relocates_primary_and_fallback(tmp_path):
         requested_output_name=requested,
     )
 
-    assert plan.primary_artifact == tmp_path / "exports" / "movie.mp4"
-    assert plan.fallback_image == tmp_path / "exports" / "movie.png"
+    assert plan.primary_artifact == tmp_path / "exports" / "movie.mov.mp4"
+    assert plan.fallback_image == tmp_path / "exports" / "movie.mov.png"
     assert plan.section_index == layout.sections_dir / "movie.json"
     assert plan.section_path(0, "intro") == (
         layout.sections_dir / "movie_0000_intro.mp4"

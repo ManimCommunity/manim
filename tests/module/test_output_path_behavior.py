@@ -138,7 +138,7 @@ def test_png_sequence_path_and_zero_padding(config, tmp_path):
     assert (expected_dir / "000.png").is_file()
 
 
-def test_resolved_output_suffix_is_applied_once(config, tmp_path):
+def test_resolved_output_suffix_preserves_a_different_suffix(config, tmp_path):
     matching = _make_writer(
         config,
         tmp_path,
@@ -153,7 +153,7 @@ def test_resolved_output_suffix_is_applied_once(config, tmp_path):
         OutputFormat.MP4,
         output_file="movie.mov",
     )
-    assert differing.movie_file_path.name == "movie.mp4"
+    assert differing.movie_file_path.name == "movie.mov.mp4"
 
 
 def test_sections_use_configured_directory_for_simple_output_name(config, tmp_path):

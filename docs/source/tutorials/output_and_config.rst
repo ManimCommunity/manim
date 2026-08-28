@@ -165,24 +165,6 @@ refer to one another; for example:
    partial_movie_dir = {video_dir}/partial_movie_files/{scene_name}
    log_dir = {media_dir}/logs
 
-The former ``--custom_folders`` switch and ``[custom_folders]`` preset have been
-removed. To reproduce that preset, configure its directory values explicitly:
-
-.. code-block:: ini
-
-   [CLI]
-   media_dir = videos
-   video_dir = {media_dir}
-   sections_dir = {media_dir}
-   images_dir = {media_dir}
-   text_dir = {media_dir}/temp_files
-   tex_dir = {media_dir}/temp_files
-   log_dir = {media_dir}/temp_files
-   partial_movie_dir = {media_dir}/partial_movie_files/{scene_name}
-
-This retains the same layout while keeping one explicit directory configuration
-model. Passing the removed ``--custom_folders`` option is an error.
-
 Output formats
 **************
 
@@ -218,15 +200,11 @@ choice of output format. This allows Manim to function as if it were rendering a
 normal scene, but without producing any artifact.
 
 ``-o`` / ``--output_file`` names the primary artifact for a single selected scene;
-it does not select the format. Manim applies the resolved format suffix exactly
-once, so ``-o movie.mp4 --format=mp4`` produces ``movie.mp4`` while
-``-o movie.mov --format=mp4`` also produces ``movie.mp4``. A single output name is
-ambiguous for a multi-scene render, so ``-o`` cannot be combined with
-``--write_all`` or with several selected scene names.
-
-A nested or absolute output name can relocate the primary artifact. Cache and section
-outputs still use their independently configured directories. In particular, section
-filenames use the normalized output stem but always remain under ``sections_dir``.
+it does not select the format. Manim appends the resolved format suffix unless the
+name already ends with it. For example, ``-o movie.mp4 --format=mp4`` produces
+``movie.mp4``, while ``-o movie.mov --format=mp4`` produces ``movie.mov.mp4``. A
+single output name is ambiguous for a multi-scene render, so ``-o`` cannot be
+combined with ``--write_all`` or with several selected scene names.
 
 
 Sections

@@ -198,10 +198,10 @@ def resolve_media_layout(
     )
 
 
-def _with_artifact_extension(path: Path, extension: str) -> Path:
+def _add_artifact_extension(path: Path, extension: str) -> Path:
     if path.suffix == extension:
         return path
-    return path.with_suffix(extension)
+    return path.with_suffix(path.suffix + extension)
 
 
 def _versioned(path: Path) -> Path:
@@ -209,7 +209,7 @@ def _versioned(path: Path) -> Path:
 
 
 def _output_path(root: Path, name: Path, extension: str) -> Path:
-    return root / _with_artifact_extension(name, extension)
+    return root / _add_artifact_extension(name, extension)
 
 
 def resolve_output_plan(

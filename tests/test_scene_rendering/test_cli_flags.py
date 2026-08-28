@@ -347,7 +347,7 @@ def test_custom_output_name_gif(tmp_path, simple_scenes_path):
 def test_custom_output_name_mp4(tmp_path, simple_scenes_path):
     scene_name = "SquareToCircle"
     requested_name = "custom_name.mov"
-    expected_name = "custom_name"
+    expected_name = requested_name
     command = [
         sys.executable,
         "-m",
