@@ -298,15 +298,21 @@ class ManimDirective(Directive):
         code = [
             "from manim import *",
             *user_code,
-            f"{clsname}().render()",
+            f"_manim_rendered_scene = {clsname}()",
+            "_manim_rendered_scene.render()",
         ]
+        render_namespace = globals()
 
         try:
             with tempconfig(example_config):
-                run_time = timeit(lambda: exec("\n".join(code), globals()), number=1)
-                video_dir = config.get_dir("video_dir")
-                images_dir = config.get_dir("images_dir")
+                run_time = timeit(
+                    lambda: exec("\n".join(code), render_namespace),
+                    number=1,
+                )
+                rendered_scene = render_namespace.pop("_manim_rendered_scene")
+                filesrc = rendered_scene.renderer.file_writer.final_file_path
         except Exception as e:
+            render_namespace.pop("_manim_rendered_scene", None)
             raise RuntimeError(f"Error while rendering example {clsname}") from e
 
         _write_rendering_stats(
@@ -317,16 +323,11 @@ class ManimDirective(Directive):
 
         # copy video file to output directory
         if not (save_as_gif or save_last_frame):
-            filename = f"{output_file}.mp4"
-            filesrc = video_dir / filename
+            filename = filesrc.name
             destfile = Path(dest_dir, filename)
             shutil.copyfile(filesrc, destfile)
-        elif save_as_gif:
-            filename = f"{output_file}.gif"
-            filesrc = video_dir / filename
-        elif save_last_frame:
-            filename = f"{output_file}.png"
-            filesrc = images_dir / filename
+        elif save_as_gif or save_last_frame:
+            filename = filesrc.name
         else:
             raise ValueError("Invalid combination of render flags received.")
         rendered_template = jinja2.Template(TEMPLATE).render(

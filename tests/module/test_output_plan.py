@@ -320,6 +320,7 @@ def test_scene_and_writer_share_immutable_output_plan(config, tmp_path):
     scene = Scene()
     plan = scene.output_plan
 
+    assert not initial_media_dir.exists()
     config.media_dir = tmp_path / "changed"
     config.output_file = "changed-name"
 

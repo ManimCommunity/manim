@@ -134,9 +134,7 @@ def test_png_sequence_path_and_zero_padding(config, tmp_path):
     expected_dir = tmp_path / "images" / "example.scene" / "ExampleScene"
     assert writer.image_sequence_directory == expected_dir
 
-    writer.output_image(
-        Image.new("RGBA", (1, 1)), expected_dir, ".png", config.zero_pad
-    )
+    writer.output_image(Image.new("RGBA", (1, 1)))
     assert (expected_dir / "000.png").is_file()
 
 

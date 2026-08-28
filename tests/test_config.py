@@ -16,7 +16,7 @@ from manim.constants import RendererType
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.renderer.protocol import RendererCapabilities
-from tests.assert_utils import assert_dir_exists, assert_dir_filled, assert_file_exists
+from tests.assert_utils import assert_dir_filled, assert_file_exists
 
 
 def _resolve_session(config):
@@ -379,8 +379,7 @@ def test_custom_dirs(tmp_path, config):
     assert_dir_filled(tmp_path / "test_partial_movie_dir")
     assert_file_exists(tmp_path / "test_partial_movie_dir/partial_movie_file_list.txt")
 
-    # TODO: another example with image output would be nice
-    assert_dir_exists(tmp_path / "test_images")
+    assert not (tmp_path / "test_images").exists()
 
     assert_dir_filled(tmp_path / "test_text")
     assert_dir_filled(tmp_path / "test_tex")

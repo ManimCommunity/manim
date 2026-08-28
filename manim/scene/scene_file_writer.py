@@ -37,10 +37,7 @@ from .. import config, logger
 from .._config.output import OutputSpec
 from .._config.output_plan import OutputPlan
 from ..constants import RendererType
-from ..utils.file_ops import (
-    guarantee_existence,
-    modify_atime,
-)
+from ..utils.file_ops import modify_atime
 from ..utils.sounds import get_full_sound_file_path
 from .section import DefaultSectionType, Section
 
@@ -256,10 +253,9 @@ class SceneFileWriter:
         elif self.output_spec.is_image_sequence:
             sequence_dir = plan.image_sequence_dir
             assert sequence_dir is not None
-            self.image_sequence_directory = guarantee_existence(sequence_dir)
+            self.image_sequence_directory = sequence_dir
             image_path = sequence_dir.with_suffix(".png")
         assert image_path is not None
-        guarantee_existence(image_path.parent)
         self.image_file_path = image_path
 
         if self.output_spec.is_video:
@@ -267,18 +263,15 @@ class SceneFileWriter:
             partial_movie_directory = plan.segment_cache_dir
             assert primary_artifact is not None
             assert partial_movie_directory is not None
-            guarantee_existence(primary_artifact.parent)
             self.movie_file_path = primary_artifact
             if self.output_spec.is_gif:
                 self.gif_file_path = primary_artifact
 
             self.sections_output_dir = Path("")
             if plan.sections_dir is not None:
-                self.sections_output_dir = guarantee_existence(plan.sections_dir)
+                self.sections_output_dir = plan.sections_dir
 
-            self.partial_movie_directory = guarantee_existence(
-                partial_movie_directory,
-            )
+            self.partial_movie_directory = partial_movie_directory
 
     def finish_last_section(self) -> None:
         """Delete current section if it is empty."""
@@ -293,8 +286,12 @@ class SceneFileWriter:
         section_video: str | None = None
         # don't save when None
         if self.output_spec.save_sections and not skip_animations:
-            # relative to index file
-            section_video = f"{self.output_name}_{len(self.sections):04}_{name}{self.output_spec.segment_extension}"
+            section_path = self.output_plan.section_path(len(self.sections), name)
+            assert self.output_plan.sections_dir is not None
+            # Section stores paths relative to its index file.
+            section_video = section_path.relative_to(
+                self.output_plan.sections_dir,
+            ).as_posix()
 
         self.sections.append(
             Section(
@@ -329,10 +326,7 @@ class SceneFileWriter:
             self.partial_movie_files.append(None)
             self.sections[-1].partial_movie_files.append(None)
         else:
-            new_partial_movie_file = str(
-                self.partial_movie_directory
-                / f"{hash_animation}{self.output_spec.segment_extension}"
-            )
+            new_partial_movie_file = str(self.output_plan.segment_path(hash_animation))
             self.partial_movie_files.append(new_partial_movie_file)
             self.sections[-1].partial_movie_files.append(new_partial_movie_file)
 
@@ -532,20 +526,12 @@ class SceneFileWriter:
                     if config.renderer == RendererType.OPENGL
                     else Image.fromarray(frame_or_renderer)
                 )
-            target_dir = self.image_sequence_directory
-            extension = self.image_file_path.suffix
-            self.output_image(
-                image,
-                target_dir,
-                extension,
-                config["zero_pad"],
-            )
+            self.output_image(image)
 
-    def output_image(
-        self, image: Image.Image, target_dir: StrPath, ext: str, zero_pad: int
-    ) -> None:
-        file_name = f"{self.frame_count:0{zero_pad}d}{ext}"
-        image.save(Path(target_dir) / file_name)
+    def output_image(self, image: Image.Image) -> None:
+        file_path = self.output_plan.image_frame_path(self.frame_count)
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        image.save(file_path)
         self.frame_count += 1
 
     def save_image(self, image: Image.Image) -> None:
@@ -558,6 +544,7 @@ class SceneFileWriter:
         """
         if not self.output_spec.enabled:
             return
+        self.image_file_path.parent.mkdir(parents=True, exist_ok=True)
         image.save(self.image_file_path)
         self.print_file_ready_message(self.image_file_path)
 
@@ -596,6 +583,8 @@ class SceneFileWriter:
                     "open_partial_movie_stream() called for a play that has no "
                     "partial movie file path.",
                 )
+        file_path = Path(file_path)
+        file_path.parent.mkdir(parents=True, exist_ok=True)
         path_key = str(file_path)
         if path_key in self._inflight_by_path:
             self._join_job_and_drain_on_failure(self._inflight_by_path[path_key])
@@ -767,10 +756,7 @@ class SceneFileWriter:
             or not self.output_spec.is_video
         ):
             return False
-        path = (
-            self.partial_movie_directory
-            / f"{hash_invocation}{self.output_spec.segment_extension}"
-        )
+        path = self.output_plan.segment_path(hash_invocation)
         path_key = str(path)
         if path_key in self._inflight_by_path:
             self._join_job_and_drain_on_failure(self._inflight_by_path[path_key])
@@ -783,7 +769,10 @@ class SceneFileWriter:
         create_gif: bool = False,
         includes_sound: bool = False,
     ) -> None:
-        file_list = self.partial_movie_directory / "partial_movie_file_list.txt"
+        file_list = self.output_plan.concat_manifest
+        assert file_list is not None
+        file_list.parent.mkdir(parents=True, exist_ok=True)
+        output_file.parent.mkdir(parents=True, exist_ok=True)
         logger.debug(
             f"Partial movie files to combine ({len(input_files)} files): %(p)s",
             {"p": input_files[:5]},
@@ -1001,12 +990,16 @@ class SceneFileWriter:
             # only if section does want to be saved
             if section.video is not None:
                 logger.info(f"Combining partial files for section '{section.name}'")
+                section_path = self.sections_output_dir / section.video
                 self.combine_files(
                     section.get_clean_partial_movie_files(),
-                    self.sections_output_dir / section.video,
+                    section_path,
                 )
                 sections_index.append(section.get_dict(self.sections_output_dir))
-        with (self.sections_output_dir / f"{self.output_name}.json").open("w") as file:
+        section_index = self.output_plan.section_index
+        assert section_index is not None
+        section_index.parent.mkdir(parents=True, exist_ok=True)
+        with section_index.open("w") as file:
             json.dump(sections_index, file, indent=4)
 
     def _cached_partial_movie_files(self) -> list[Path]:
@@ -1019,6 +1012,8 @@ class SceneFileWriter:
         ``max_files_cached`` and may vanish again before they could be
         deleted.
         """
+        if not self.partial_movie_directory.exists():
+            return []
         return [
             self.partial_movie_directory / file_name
             for file_name in self.partial_movie_directory.iterdir()
@@ -1068,10 +1063,9 @@ class SceneFileWriter:
         """Writes the subcaption file next to the primary video artifact."""
         if not self.output_spec.is_video:
             return
-        media_path = (
-            self.gif_file_path if self.output_spec.is_gif else self.movie_file_path
-        )
-        subcaption_file = Path(media_path).with_suffix(".srt")
+        subcaption_file = self.output_plan.subcaption_file
+        assert subcaption_file is not None
+        subcaption_file.parent.mkdir(parents=True, exist_ok=True)
         subcaption_file.write_text(srt.compose(self.subcaptions), encoding="utf-8")
         logger.info(f"Subcaption file has been written as {subcaption_file}")
 

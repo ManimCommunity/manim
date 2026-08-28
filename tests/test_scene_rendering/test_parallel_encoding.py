@@ -1140,6 +1140,7 @@ def test_is_already_cached_true_when_partial_exists(config, tmp_path):
             writer.partial_movie_directory
             / f"{hash_invocation}{writer.output_spec.segment_extension}"
         )
+        path.parent.mkdir(parents=True)
         path.write_bytes(b"cached partial")
 
         assert writer.is_already_cached(hash_invocation) is True

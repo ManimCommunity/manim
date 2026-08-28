@@ -229,6 +229,7 @@ def test_clean_cache_ignores_hidden_files(config, tmp_path):
     with tempconfig({"media_dir": tmp_path, "format": "mp4"}):
         writer = _new_file_writer("CacheCleaningScene")
         cache_dir = writer.partial_movie_directory
+        cache_dir.mkdir(parents=True)
 
         for name in ["00001.mp4", ".DS_Store", "._00001.mp4"]:
             (cache_dir / name).touch()
@@ -254,6 +255,7 @@ def test_flush_cache_directory_ignores_hidden_files(config, tmp_path):
     with tempconfig({"media_dir": tmp_path, "format": "mp4"}):
         writer = _new_file_writer("CacheFlushingScene")
         cache_dir = writer.partial_movie_directory
+        cache_dir.mkdir(parents=True)
 
         for name in ["00001.mp4", "00002.mp4", ".DS_Store", "._00001.mp4"]:
             (cache_dir / name).touch()
@@ -275,6 +277,7 @@ def test_clean_cache_tolerates_vanishing_files(config, tmp_path, monkeypatch):
     with tempconfig({"media_dir": tmp_path, "format": "mp4"}):
         writer = _new_file_writer("VanishingFileScene")
         cache_dir = writer.partial_movie_directory
+        cache_dir.mkdir(parents=True)
 
         survivor = cache_dir / "00001.mp4"
         survivor.touch()
@@ -293,6 +296,7 @@ def test_clean_cache_does_not_evict_for_vanished_file(config, tmp_path, monkeypa
     with tempconfig({"media_dir": tmp_path, "format": "mp4"}):
         writer = _new_file_writer("VanishedFileEvictionScene")
         cache_dir = writer.partial_movie_directory
+        cache_dir.mkdir(parents=True)
 
         survivors = [cache_dir / f"{index:05}.mp4" for index in range(2)]
         for survivor in survivors:
