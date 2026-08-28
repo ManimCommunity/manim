@@ -1248,7 +1248,6 @@ class Positionable:
         direction: Vector3DLike,
         *,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
-        frame: Point3DLike | None = None,
     ) -> Self:
         """Aligns the object on a border.
 
@@ -1270,8 +1269,7 @@ class Positionable:
         --------
         :meth:`align_to`
         """
-        if frame is None:
-            frame = (config.frame_x_radius, config.frame_y_radius, 0)
+        frame = (config.frame_x_radius, config.frame_y_radius, 0)
         target = np.sign(direction) * frame - buff * np.asarray(direction)
         return self.align_to(target, direction=direction)
 
@@ -1427,13 +1425,13 @@ class Positionable:
             The object itself.
         """
         # TODO: Simplify/Optimize implementation
-        space_lengths = [config.frame_x_radius, config.frame_y_radius]
-        for vect in UP, DOWN, LEFT, RIGHT:
-            dim = np.argmax(np.abs(vect))
-            max_val = space_lengths[dim] - buff
-            edge_center = self.get_position(vect)
-            if np.dot(edge_center, vect) > max_val:
-                self.to_edge(vect, buff=buff)
+        frame = (config.frame_x_radius, config.frame_y_radius)
+        for edge in UP, DOWN, LEFT, RIGHT:
+            dim = np.argmax(np.abs(edge))
+            max_val = frame[dim] - buff
+            edge_center = self.get_position(edge)
+            if np.dot(edge_center, edge) > max_val:
+                self.to_edge(edge, buff=buff)
         return self
 
     ### ALIASES ###
@@ -1471,7 +1469,7 @@ class Positionable:
         --------
         :meth:`set_center`
         """
-        return self.set_center(ORIGIN)
+        return self.set_center(center=ORIGIN)
 
     def flip(
         self,
@@ -1522,7 +1520,7 @@ class Positionable:
 
     def move_to(
         self,
-        point_or_mobject: "Point3DLike | Positionable",
+        point: "Point3DLike | Positionable",
         aligned_edge: Vector3DLike = ORIGIN,
     ) -> Self:
         """Moves to a position.
@@ -1544,12 +1542,13 @@ class Positionable:
         :meth:`set_position`
         """
         return self.set_position(
-            point=point_or_mobject,
+            point=point,
             aligned_edge=aligned_edge,
         )
 
     def pose_at_angle(
         self,
+        *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
@@ -1788,6 +1787,7 @@ class Positionable:
     def stretch_to_fit_width(
         self,
         width: float,
+        *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
@@ -1836,6 +1836,7 @@ class Positionable:
     def stretch_to_fit_height(
         self,
         height: float,
+        *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
@@ -1884,6 +1885,7 @@ class Positionable:
     def stretch_to_fit_depth(
         self,
         depth: float,
+        *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
@@ -2095,14 +2097,14 @@ class Positionable:
     # @deprecated()
     def reduce_across_dimension(
         self,
-        reduce_func: Callable[[Iterable[float]], float],
+        function: Callable[[Iterable[float]], float],
         dim: int,
     ) -> float | None:
         points = self.get_points_defining_boundary()
         if len(points) == 0:
             return None
 
-        return reduce_func(points[:, dim])
+        return function(points[:, dim])
 
     # @deprecated(replacement="rotate")
     def rotate_about_origin(
@@ -2121,6 +2123,7 @@ class Positionable:
         self,
         length: "float | Positionable",
         dim: int,
+        *,
         stretch: bool = False,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
