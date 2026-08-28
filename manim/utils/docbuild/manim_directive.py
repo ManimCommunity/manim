@@ -326,10 +326,6 @@ class ManimDirective(Directive):
             filename = filesrc.name
             destfile = Path(dest_dir, filename)
             shutil.copyfile(filesrc, destfile)
-        elif save_as_gif or save_last_frame:
-            filename = filesrc.name
-        else:
-            raise ValueError("Invalid combination of render flags received.")
         rendered_template = jinja2.Template(TEMPLATE).render(
             clsname=clsname,
             clsname_lowercase=clsname.lower(),
