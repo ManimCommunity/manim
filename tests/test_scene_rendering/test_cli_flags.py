@@ -253,29 +253,16 @@ def test_a_flag(tmp_path, manim_cfg_file, infallible_scenes_path):
     )
 
 
-@pytest.mark.slow
-def test_custom_folders(tmp_path, manim_cfg_file, simple_scenes_path):
-    scene_name = "SquareToCircle"
-    command = [
-        sys.executable,
-        "-m",
-        "manim",
-        "-ql",
-        "-s",
-        "--media_dir",
-        str(tmp_path),
-        "--custom_folders",
-        str(simple_scenes_path),
-        scene_name,
-    ]
-    out, err, exit_code = capture(command)
-    assert exit_code == 0, err
+def test_custom_folders_option_was_removed(simple_scenes_path):
+    runner = CliRunner()
 
-    exists = (tmp_path / "videos").exists()
-    assert not exists, "--custom_folders produced a 'videos/' dir"
+    result = runner.invoke(
+        main,
+        ["--custom_folders", str(simple_scenes_path), "SquareToCircle"],
+    )
 
-    exists = add_version_before_extension(tmp_path / "SquareToCircle.png").exists()
-    assert exists, "--custom_folders did not produce the output file"
+    assert result.exit_code == 2
+    assert "No such option: --custom_folders" in result.output
 
 
 @pytest.mark.slow

@@ -362,33 +362,6 @@ def test_a_flag(tmp_path, manim_cfg_file, infallible_scenes_path):
 
 
 @pytest.mark.slow
-def test_custom_folders(tmp_path, manim_cfg_file, simple_scenes_path):
-    scene_name = "SquareToCircle"
-    command = [
-        sys.executable,
-        "-m",
-        "manim",
-        "--renderer",
-        "opengl",
-        "-ql",
-        "-s",
-        "--media_dir",
-        str(tmp_path),
-        "--custom_folders",
-        str(simple_scenes_path),
-        scene_name,
-    ]
-    out, err, exit_code = capture(command)
-    assert exit_code == 0, err
-
-    exists = (tmp_path / "videos").exists()
-    assert not exists, "--custom_folders produced a 'videos/' dir"
-
-    exists = add_version_before_extension(tmp_path / "SquareToCircle.png").exists()
-    assert exists, "--custom_folders did not produce the output file"
-
-
-@pytest.mark.slow
 def test_dash_as_filename(tmp_path):
     code = (
         "class Test(Scene):\n"

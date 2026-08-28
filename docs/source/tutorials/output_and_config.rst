@@ -148,6 +148,41 @@ To write every rendered frame as a numbered PNG instead, use
 ``--format=png-sequence``. The sequence is stored in a scene-specific directory,
 for example ``media/images/scene/SquareToCircle/0000.png``.
 
+Customizing output directories
+******************************
+
+The canonical layout can be customized through the ordinary directory options in
+the ``[CLI]`` section of ``manim.cfg``. These options support placeholders and may
+refer to one another; for example:
+
+.. code-block:: ini
+
+   [CLI]
+   media_dir = project-media
+   video_dir = {media_dir}/renders/{module_name}/{quality}
+   images_dir = {media_dir}/stills/{module_name}
+   sections_dir = {video_dir}/sections
+   partial_movie_dir = {video_dir}/partial_movie_files/{scene_name}
+   log_dir = {media_dir}/logs
+
+The former ``--custom_folders`` switch and ``[custom_folders]`` preset have been
+removed. To reproduce that preset, configure its directory values explicitly:
+
+.. code-block:: ini
+
+   [CLI]
+   media_dir = videos
+   video_dir = {media_dir}
+   sections_dir = {media_dir}
+   images_dir = {media_dir}
+   text_dir = {media_dir}/temp_files
+   tex_dir = {media_dir}/temp_files
+   log_dir = {media_dir}/temp_files
+   partial_movie_dir = {media_dir}/partial_movie_files/{scene_name}
+
+This retains the same layout while keeping one explicit directory configuration
+model. Passing the removed ``--custom_folders`` option is an error.
+
 Output formats
 **************
 
