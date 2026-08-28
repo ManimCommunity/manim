@@ -217,6 +217,17 @@ preview, but it counts as a separate execution request rather than modifying the
 choice of output format. This allows Manim to function as if it were rendering a
 normal scene, but without producing any artifact.
 
+``-o`` / ``--output_file`` names the primary artifact for a single selected scene;
+it does not select the format. Manim applies the resolved format suffix exactly
+once, so ``-o movie.mp4 --format=mp4`` produces ``movie.mp4`` while
+``-o movie.mov --format=mp4`` also produces ``movie.mp4``. A single output name is
+ambiguous for a multi-scene render, so ``-o`` cannot be combined with
+``--write_all`` or with several selected scene names.
+
+A nested or absolute output name can relocate the primary artifact. Cache and section
+outputs still use their independently configured directories. In particular, section
+filenames use the normalized output stem but always remain under ``sections_dir``.
+
 
 Sections
 ********

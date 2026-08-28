@@ -228,7 +228,6 @@ class SceneFileWriter:
         self._inflight_encode_jobs: list[_PartialMovieEncodeJob] = []
         self._inflight_by_path: dict[str, _PartialMovieEncodeJob] = {}
         self._current_encode_job: _PartialMovieEncodeJob | None = None
-        self.init_output_directories(scene_name)
         self.init_audio()
         self.frame_count = 0
         self.partial_movie_files: list[str | None] = []
@@ -240,38 +239,59 @@ class SceneFileWriter:
             name="autocreated", type_=DefaultSectionType.NORMAL, skip_animations=False
         )
 
-    def init_output_directories(self, scene_name: str) -> None:
-        """Initialize compatibility path attributes from the resolved plan."""
-        plan = self.output_plan
-        self.output_name = Path(plan.output_stem)
-        if not self.output_spec.enabled:
-            return
+    @property
+    def output_name(self) -> Path:
+        """Return the planned logical output stem as a compatibility view."""
+        return Path(self.output_plan.output_stem)
 
-        image_path = plan.fallback_image
-        if self.output_spec.is_still:
-            image_path = plan.primary_artifact
-        elif self.output_spec.is_image_sequence:
-            sequence_dir = plan.image_sequence_dir
-            assert sequence_dir is not None
-            self.image_sequence_directory = sequence_dir
-            image_path = sequence_dir.with_suffix(".png")
-        assert image_path is not None
-        self.image_file_path = image_path
+    @property
+    def image_file_path(self) -> Path:
+        """Return the planned still or video-fallback image path."""
+        if self.output_spec.is_image_sequence:
+            return self.image_sequence_directory.with_suffix(".png")
+        path = (
+            self.output_plan.primary_artifact
+            if self.output_spec.is_still
+            else self.output_plan.fallback_image
+        )
+        if path is None:
+            raise AttributeError("This output plan does not contain an image path.")
+        return path
 
-        if self.output_spec.is_video:
-            primary_artifact = plan.primary_artifact
-            partial_movie_directory = plan.segment_cache_dir
-            assert primary_artifact is not None
-            assert partial_movie_directory is not None
-            self.movie_file_path = primary_artifact
-            if self.output_spec.is_gif:
-                self.gif_file_path = primary_artifact
+    @property
+    def image_sequence_directory(self) -> Path:
+        """Return the planned PNG-sequence directory."""
+        path = self.output_plan.image_sequence_dir
+        if path is None:
+            raise AttributeError("This output plan does not contain an image sequence.")
+        return path
 
-            self.sections_output_dir = Path("")
-            if plan.sections_dir is not None:
-                self.sections_output_dir = plan.sections_dir
+    @property
+    def movie_file_path(self) -> Path:
+        """Return the planned primary video artifact path."""
+        if not self.output_spec.is_video or self.output_plan.primary_artifact is None:
+            raise AttributeError("This output plan does not contain a video artifact.")
+        return self.output_plan.primary_artifact
 
-            self.partial_movie_directory = partial_movie_directory
+    @property
+    def gif_file_path(self) -> Path:
+        """Return the planned GIF artifact path."""
+        if not self.output_spec.is_gif:
+            raise AttributeError("This output plan does not contain a GIF artifact.")
+        return self.movie_file_path
+
+    @property
+    def sections_output_dir(self) -> Path:
+        """Return the planned sections directory, or the legacy empty path."""
+        return self.output_plan.sections_dir or Path("")
+
+    @property
+    def partial_movie_directory(self) -> Path:
+        """Return the planned silent-segment cache directory."""
+        path = self.output_plan.segment_cache_dir
+        if path is None:
+            raise AttributeError("This output plan does not contain video segments.")
+        return path
 
     def finish_last_section(self) -> None:
         """Delete current section if it is empty."""
@@ -329,37 +349,6 @@ class SceneFileWriter:
             new_partial_movie_file = str(self.output_plan.segment_path(hash_animation))
             self.partial_movie_files.append(new_partial_movie_file)
             self.sections[-1].partial_movie_files.append(new_partial_movie_file)
-
-    def get_resolution_directory(self) -> str:
-        """Get the name of the resolution directory directly containing
-        the video file.
-
-        This method gets the name of the directory that immediately contains the
-        video file. This name is ``<height_in_pixels_of_video>p<frame_rate>``.
-        For example, if you are rendering an 854x480 px animation at 15fps,
-        the name of the directory that immediately contains the video,  file
-        will be ``480p15``.
-
-        The file structure should look something like::
-
-            MEDIA_DIR
-                |--Tex
-                |--texts
-                |--videos
-                    |--<name_of_file_containing_scene>
-                        |--<height_in_pixels_of_video>p<frame_rate>
-                            |--partial_movie_files
-                            |--<scene_name>.mp4
-                            |--<scene_name>.srt
-
-        Returns
-        -------
-        :class:`str`
-            The name of the directory.
-        """
-        pixel_height = config["pixel_height"]
-        frame_rate = config["frame_rate"]
-        return f"{pixel_height}p{frame_rate}"
 
     # Sound
     def init_audio(self) -> None:

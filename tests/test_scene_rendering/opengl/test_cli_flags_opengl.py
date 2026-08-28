@@ -209,8 +209,9 @@ def test_no_image_output_with_interactive_embed(
         "running an interactive static scene rendered a video"
     )
 
-    is_empty = not any((tmp_path / "images" / "simple_scenes").iterdir())
-    assert is_empty, "running an interactive static scene rendered an image"
+    assert not (tmp_path / "images").exists(), (
+        "running an interactive static scene rendered an image"
+    )
 
 
 @pytest.mark.slow
@@ -240,8 +241,9 @@ def test_default_video_output_with_non_static_scene(
         "default output did not render the non-static scene as a video"
     )
 
-    is_empty = not any((tmp_path / "images" / "simple_scenes").iterdir())
-    assert is_empty, "default video output unexpectedly rendered an image"
+    assert not (tmp_path / "images").exists(), (
+        "default video output unexpectedly rendered an image"
+    )
 
 
 @pytest.mark.slow

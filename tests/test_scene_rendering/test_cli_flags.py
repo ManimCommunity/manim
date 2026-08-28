@@ -253,6 +253,41 @@ def test_a_flag(tmp_path, manim_cfg_file, infallible_scenes_path):
     )
 
 
+@pytest.mark.parametrize(
+    "scene_selection",
+    [
+        ("-a",),
+        ("Wait1", "Wait3"),
+    ],
+)
+def test_output_file_rejects_multi_scene_render(
+    tmp_path,
+    infallible_scenes_path,
+    scene_selection,
+):
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "--media_dir",
+        str(tmp_path),
+        "-o",
+        "shared-name",
+    ]
+    if scene_selection == ("-a",):
+        command.extend(["-a", str(infallible_scenes_path)])
+    else:
+        command.extend([str(infallible_scenes_path), *scene_selection])
+
+    out, err, exit_code = capture(command)
+
+    assert exit_code == 1
+    assert "--output_file can only be used when rendering exactly one scene" in (
+        err or out
+    )
+    assert not tmp_path.exists() or not any(tmp_path.iterdir())
+
+
 def test_custom_folders_option_was_removed(simple_scenes_path):
     runner = CliRunner()
 
@@ -311,7 +346,8 @@ def test_custom_output_name_gif(tmp_path, simple_scenes_path):
 @pytest.mark.slow
 def test_custom_output_name_mp4(tmp_path, simple_scenes_path):
     scene_name = "SquareToCircle"
-    custom_name = "custom_name"
+    requested_name = "custom_name.mov"
+    expected_name = "custom_name"
     command = [
         sys.executable,
         "-m",
@@ -320,7 +356,7 @@ def test_custom_output_name_mp4(tmp_path, simple_scenes_path):
         "--media_dir",
         str(tmp_path),
         "-o",
-        custom_name,
+        requested_name,
         str(simple_scenes_path),
         scene_name,
     ]
@@ -332,18 +368,18 @@ def test_custom_output_name_mp4(tmp_path, simple_scenes_path):
     )
 
     assert not wrong_mp4_path.exists(), (
-        "The mp4 file does not respect the custom name: " + custom_name + ".mp4"
+        "The mp4 file does not respect the custom name: " + expected_name + ".mp4"
     )
 
     unexpected_gif_path = add_version_before_extension(
-        tmp_path / "videos" / "simple_scenes" / "480p15" / f"{custom_name}.gif"
+        tmp_path / "videos" / "simple_scenes" / "480p15" / f"{expected_name}.gif"
     )
     assert not unexpected_gif_path.exists(), "Found an unexpected gif file at " + str(
         unexpected_gif_path
     )
 
     expected_mp4_path = (
-        tmp_path / "videos" / "simple_scenes" / "480p15" / str(custom_name + ".mp4")
+        tmp_path / "videos" / "simple_scenes" / "480p15" / str(expected_name + ".mp4")
     )
 
     assert expected_mp4_path.exists(), "mp4 file not found at " + str(expected_mp4_path)
