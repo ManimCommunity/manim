@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from manim import __version__
+from manim import Scene, __version__
 from manim._config.output import OutputFormat, OutputSpec
 from manim._config.output_plan import (
     MediaLayoutSpec,
@@ -15,6 +15,7 @@ from manim._config.output_plan import (
     resolve_output_plan,
     resolve_requested_output_name,
 )
+from manim.cli.render.commands import _validate_scene_batch_output_name
 
 
 def _layout(tmp_path: Path, *, sections: bool = False) -> MediaLayoutSpec:
@@ -308,6 +309,37 @@ def test_config_adapter_skips_unused_output_directories(config, tmp_path):
     )
 
     assert layout == MediaLayoutSpec(None, None, None, None, None, zero_pad=4)
+
+
+def test_scene_and_writer_share_immutable_output_plan(config, tmp_path):
+    initial_media_dir = tmp_path / "initial"
+    config.media_dir = initial_media_dir
+    config.input_file = tmp_path / "example.py"
+    config.format = "mp4"
+
+    scene = Scene()
+    plan = scene.output_plan
+
+    config.media_dir = tmp_path / "changed"
+    config.output_file = "changed-name"
+
+    assert scene.renderer.file_writer.output_plan is plan
+    assert plan.primary_artifact == (
+        initial_media_dir / "videos" / "example" / "1080p60" / "Scene.mp4"
+    )
+
+
+def test_cli_batch_output_name_validation(config):
+    config.output_file = "movie"
+    config.write_all = False
+
+    _validate_scene_batch_output_name([object])
+    with pytest.raises(ValueError, match="exactly one scene"):
+        _validate_scene_batch_output_name([object, object])
+
+    config.write_all = True
+    with pytest.raises(ValueError, match="exactly one scene"):
+        _validate_scene_batch_output_name([object])
 
 
 def test_requested_name_and_log_path_resolution(config, tmp_path):

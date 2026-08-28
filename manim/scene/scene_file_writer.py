@@ -34,12 +34,10 @@ with warnings.catch_warnings():
 from manim import __version__
 
 from .. import config, logger
-from .._config.logger_utils import set_file_logger
 from .._config.output import OutputSpec
+from .._config.output_plan import OutputPlan
 from ..constants import RendererType
 from ..utils.file_ops import (
-    add_extension_if_not_present,
-    add_version_before_extension,
     guarantee_existence,
     modify_atime,
 )
@@ -219,17 +217,17 @@ class SceneFileWriter:
 
     """
 
-    force_output_as_scene_name = False
-
     def __init__(
         self,
         renderer: CairoRenderer | OpenGLRenderer,
         scene_name: str,
         output_spec: OutputSpec,
+        output_plan: OutputPlan,
         **kwargs: Any,
     ) -> None:
         self.renderer = renderer
         self.output_spec = output_spec
+        self.output_plan = output_plan
         self._inflight_encode_jobs: list[_PartialMovieEncodeJob] = []
         self._inflight_by_path: dict[str, _PartialMovieEncodeJob] = {}
         self._current_encode_job: _PartialMovieEncodeJob | None = None
@@ -246,85 +244,41 @@ class SceneFileWriter:
         )
 
     def init_output_directories(self, scene_name: str) -> None:
-        """Initialise output directories.
-
-        Notes
-        -----
-        The directories are read from ``config``, for example
-        ``config['media_dir']``.  If the target directories don't already
-        exist, they will be created.
-
-        """
+        """Initialize compatibility path attributes from the resolved plan."""
+        plan = self.output_plan
+        self.output_name = Path(plan.output_stem)
         if not self.output_spec.enabled:
             return
 
-        module_name = config.get_dir("input_file").stem if config["input_file"] else ""
-
-        if SceneFileWriter.force_output_as_scene_name:
-            self.output_name = Path(scene_name)
-        elif config["output_file"] and not config["write_all"]:
-            self.output_name = config.get_dir("output_file")
-        else:
-            self.output_name = Path(scene_name)
-
-        if config["media_dir"]:
-            image_dir = guarantee_existence(
-                config.get_dir(
-                    "images_dir", module_name=module_name, scene_name=scene_name
-                ),
-            )
-            self.image_file_path = image_dir / add_extension_if_not_present(
-                self.output_name, ".png"
-            )
-            if self.output_spec.is_image_sequence:
-                self.image_sequence_directory = guarantee_existence(
-                    self.image_file_path.with_suffix(""),
-                )
+        image_path = plan.fallback_image
+        if self.output_spec.is_still:
+            image_path = plan.primary_artifact
+        elif self.output_spec.is_image_sequence:
+            sequence_dir = plan.image_sequence_dir
+            assert sequence_dir is not None
+            self.image_sequence_directory = guarantee_existence(sequence_dir)
+            image_path = sequence_dir.with_suffix(".png")
+        assert image_path is not None
+        guarantee_existence(image_path.parent)
+        self.image_file_path = image_path
 
         if self.output_spec.is_video:
-            movie_dir = guarantee_existence(
-                config.get_dir(
-                    "video_dir", module_name=module_name, scene_name=scene_name
-                ),
-            )
-            self.movie_file_path = movie_dir / add_extension_if_not_present(
-                self.output_name, self.output_spec.segment_extension
-            )
-
-            # TODO: /dev/null would be good in case sections_output_dir is used without being set (doesn't work on Windows), everyone likes defensive programming, right?
-            self.sections_output_dir = Path("")
-            if self.output_spec.save_sections:
-                self.sections_output_dir = guarantee_existence(
-                    config.get_dir(
-                        "sections_dir", module_name=module_name, scene_name=scene_name
-                    )
-                )
-
+            primary_artifact = plan.primary_artifact
+            partial_movie_directory = plan.segment_cache_dir
+            assert primary_artifact is not None
+            assert partial_movie_directory is not None
+            guarantee_existence(primary_artifact.parent)
+            self.movie_file_path = primary_artifact
             if self.output_spec.is_gif:
-                self.gif_file_path = add_extension_if_not_present(
-                    self.output_name, ".gif"
-                )
+                self.gif_file_path = primary_artifact
 
-                if not config["output_file"]:
-                    self.gif_file_path = add_version_before_extension(
-                        self.gif_file_path
-                    )
-
-                self.gif_file_path = movie_dir / self.gif_file_path
+            self.sections_output_dir = Path("")
+            if plan.sections_dir is not None:
+                self.sections_output_dir = guarantee_existence(plan.sections_dir)
 
             self.partial_movie_directory = guarantee_existence(
-                config.get_dir(
-                    "partial_movie_dir",
-                    scene_name=scene_name,
-                    module_name=module_name,
-                ),
+                partial_movie_directory,
             )
-
-            if config["log_to_file"]:
-                log_dir = guarantee_existence(config.get_dir("log_dir"))
-                set_file_logger(
-                    scene_name=scene_name, module_name=module_name, log_dir=log_dir
-                )
 
     def finish_last_section(self) -> None:
         """Delete current section if it is empty."""
@@ -604,9 +558,6 @@ class SceneFileWriter:
         """
         if not self.output_spec.enabled:
             return
-        if not config["output_file"]:
-            self.image_file_path = add_version_before_extension(self.image_file_path)
-
         image.save(self.image_file_path)
         self.print_file_ready_message(self.image_file_path)
 

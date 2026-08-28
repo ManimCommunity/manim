@@ -16,6 +16,12 @@ from click.testing import CliRunner
 from manim import FadeIn, Scene, Square, capture, tempconfig
 from manim._config import config
 from manim._config.output import OutputFormat, OutputSpec
+from manim._config.output_plan import (
+    resolve_media_layout,
+    resolve_module_name,
+    resolve_output_plan,
+    resolve_requested_output_name,
+)
 from manim.cli.render.commands import render
 from manim.utils.exceptions import RerunSceneException
 
@@ -34,6 +40,24 @@ _NO_OUTPUT = OutputSpec(
 )
 _UNIQUE_PLAYS = 6
 _TOTAL_PLAYS = _UNIQUE_PLAYS + 2
+
+
+def _plan_for(scene_name: str, output: OutputSpec):
+    module_name = resolve_module_name(config)
+    layout = resolve_media_layout(
+        config,
+        output,
+        module_name=module_name,
+        scene_name=scene_name,
+        working_directory=Path.cwd(),
+    )
+    return resolve_output_plan(
+        layout,
+        output,
+        scene_name=scene_name,
+        requested_output_name=resolve_requested_output_name(config),
+    )
+
 
 _SCENE_NAME = "ParallelEncodingCacheScene"
 _SCENE_SOURCE = textwrap.dedent(
@@ -356,7 +380,12 @@ def test_write_frame_fails_fast_after_encoder_failure(
     config.media_dir = str(tmp_path)
     renderer = Mock()
     renderer.num_plays = 0
-    writer = SceneFileWriter(renderer, "FailFastScene", _VIDEO_OUTPUT)
+    writer = SceneFileWriter(
+        renderer,
+        "FailFastScene",
+        _VIDEO_OUTPUT,
+        _plan_for("FailFastScene", _VIDEO_OUTPUT),
+    )
     job = _new_encode_job(tmp_path, monkeypatch, "fail_fast", stream, container)
     job.path.write_bytes(b"stale")
     writer._current_encode_job = job
@@ -402,7 +431,12 @@ def test_frame_queue_configuration(
     config.encoder_queue_size = encoder_queue_size
     renderer = Mock()
     renderer.num_plays = 0
-    writer = SceneFileWriter(renderer, "FrameQueueSizeScene", _VIDEO_OUTPUT)
+    writer = SceneFileWriter(
+        renderer,
+        "FrameQueueSizeScene",
+        _VIDEO_OUTPUT,
+        _plan_for("FrameQueueSizeScene", _VIDEO_OUTPUT),
+    )
 
     writer.open_partial_movie_stream(tmp_path / "partial.mp4")
     job = writer._current_encode_job
@@ -425,7 +459,12 @@ def test_close_partial_movie_stream_respects_cap_and_joins_fifo(
     config.max_inflight_encoders = max_inflight_encoders
     renderer = Mock()
     renderer.num_plays = 0
-    writer = SceneFileWriter(renderer, "EncoderCapScene", _VIDEO_OUTPUT)
+    writer = SceneFileWriter(
+        renderer,
+        "EncoderCapScene",
+        _VIDEO_OUTPUT,
+        _plan_for("EncoderCapScene", _VIDEO_OUTPUT),
+    )
     jobs = [Mock(path=tmp_path / f"partial_{index}.mp4") for index in range(3)]
 
     for index, job in enumerate(jobs):
@@ -463,7 +502,12 @@ def test_cap_join_failure_drains_all_inflight_jobs(config, tmp_path):
     config.max_inflight_encoders = 3
     renderer = Mock()
     renderer.num_plays = 0
-    writer = SceneFileWriter(renderer, "EncoderCapFailureScene", _VIDEO_OUTPUT)
+    writer = SceneFileWriter(
+        renderer,
+        "EncoderCapFailureScene",
+        _VIDEO_OUTPUT,
+        _plan_for("EncoderCapFailureScene", _VIDEO_OUTPUT),
+    )
     jobs = [Mock(path=tmp_path / f"partial_{index}.mp4") for index in range(3)]
     jobs[0].join.side_effect = primary_exception
     jobs[1].join.side_effect = secondary_exception
@@ -490,7 +534,12 @@ def test_is_already_cached_joins_same_path_inflight_job(config, tmp_path):
 
     renderer = Mock()
     renderer.num_plays = 0
-    writer = SceneFileWriter(renderer, "CachedInflightScene", _VIDEO_OUTPUT)
+    writer = SceneFileWriter(
+        renderer,
+        "CachedInflightScene",
+        _VIDEO_OUTPUT,
+        _plan_for("CachedInflightScene", _VIDEO_OUTPUT),
+    )
     hash_invocation = "same_path_hash"
     path = (
         writer.partial_movie_directory
@@ -513,7 +562,12 @@ def test_same_path_join_failure_drains_unrelated_jobs(config, tmp_path):
     expected_exception = RuntimeError("same-path join failed")
     renderer = Mock()
     renderer.num_plays = 0
-    writer = SceneFileWriter(renderer, "CachedInflightFailureScene", _VIDEO_OUTPUT)
+    writer = SceneFileWriter(
+        renderer,
+        "CachedInflightFailureScene",
+        _VIDEO_OUTPUT,
+        _plan_for("CachedInflightFailureScene", _VIDEO_OUTPUT),
+    )
     hash_invocation = "failing_same_path_hash"
     path = (
         writer.partial_movie_directory
@@ -541,7 +595,12 @@ def test_open_partial_movie_stream_joins_same_path_inflight_job(config, tmp_path
 
     renderer = Mock()
     renderer.num_plays = 0
-    writer = SceneFileWriter(renderer, "OpenInflightScene", _VIDEO_OUTPUT)
+    writer = SceneFileWriter(
+        renderer,
+        "OpenInflightScene",
+        _VIDEO_OUTPUT,
+        _plan_for("OpenInflightScene", _VIDEO_OUTPUT),
+    )
     path = tmp_path / "same_path.mp4"
     inflight_job = Mock(path=path)
     writer._inflight_encode_jobs.append(inflight_job)
@@ -572,7 +631,12 @@ def test_finish_propagates_join_failure_and_clears_inflight_state(
     expected_exception = RuntimeError("join failed")
     renderer = Mock()
     renderer.num_plays = 0
-    writer = SceneFileWriter(renderer, "JoinFailureScene", _VIDEO_OUTPUT)
+    writer = SceneFileWriter(
+        renderer,
+        "JoinFailureScene",
+        _VIDEO_OUTPUT,
+        _plan_for("JoinFailureScene", _VIDEO_OUTPUT),
+    )
     failing_job = Mock(path=tmp_path / "failing.mp4")
     failing_job.join.side_effect = expected_exception
     succeeding_job = Mock(path=tmp_path / "succeeding.mp4")
@@ -599,7 +663,12 @@ def _new_writer(config, tmp_path, scene_name):
     config.media_dir = str(tmp_path)
     renderer = Mock()
     renderer.num_plays = 0
-    return SceneFileWriter(renderer, scene_name, _VIDEO_OUTPUT)
+    return SceneFileWriter(
+        renderer,
+        scene_name,
+        _VIDEO_OUTPUT,
+        _plan_for(scene_name, _VIDEO_OUTPUT),
+    )
 
 
 def _healthy_current_job(tmp_path, monkeypatch, name):
@@ -689,7 +758,12 @@ def test_abort_encode_jobs_noop_on_dry_run_writer(config):
     with tempconfig({"dry_run": True}):
         renderer = Mock()
         renderer.num_plays = 0
-        writer = SceneFileWriter(renderer, "DryRunAbortScene", _NO_OUTPUT)
+        writer = SceneFileWriter(
+            renderer,
+            "DryRunAbortScene",
+            _NO_OUTPUT,
+            _plan_for("DryRunAbortScene", _NO_OUTPUT),
+        )
 
         writer.abort_encode_jobs()
         writer.abort_encode_jobs(reraise_encoder_failures=True)
@@ -1030,7 +1104,12 @@ def test_is_already_cached_false_after_joining_failed_path(config, tmp_path):
     with tempconfig({"media_dir": str(tmp_path)}):
         renderer = Mock()
         renderer.num_plays = 0
-        writer = SceneFileWriter(renderer, "CachedReturnScene", _VIDEO_OUTPUT)
+        writer = SceneFileWriter(
+            renderer,
+            "CachedReturnScene",
+            _VIDEO_OUTPUT,
+            _plan_for("CachedReturnScene", _VIDEO_OUTPUT),
+        )
         hash_invocation = "missing_partial_hash"
         path = (
             writer.partial_movie_directory
@@ -1050,7 +1129,12 @@ def test_is_already_cached_true_when_partial_exists(config, tmp_path):
     with tempconfig({"media_dir": str(tmp_path)}):
         renderer = Mock()
         renderer.num_plays = 0
-        writer = SceneFileWriter(renderer, "CachedReturnScene", _VIDEO_OUTPUT)
+        writer = SceneFileWriter(
+            renderer,
+            "CachedReturnScene",
+            _VIDEO_OUTPUT,
+            _plan_for("CachedReturnScene", _VIDEO_OUTPUT),
+        )
         hash_invocation = "present_partial_hash"
         path = (
             writer.partial_movie_directory
@@ -1067,7 +1151,12 @@ def test_close_partial_movie_stream_without_open_stream_raises(config, tmp_path)
     with tempconfig({"media_dir": str(tmp_path)}):
         renderer = Mock()
         renderer.num_plays = 0
-        writer = SceneFileWriter(renderer, "GuardScene", _VIDEO_OUTPUT)
+        writer = SceneFileWriter(
+            renderer,
+            "GuardScene",
+            _VIDEO_OUTPUT,
+            _plan_for("GuardScene", _VIDEO_OUTPUT),
+        )
 
         with pytest.raises(RuntimeError, match="without an open partial"):
             writer.close_partial_movie_stream()
@@ -1079,7 +1168,12 @@ def test_open_partial_movie_stream_without_path_raises(config, tmp_path):
     with tempconfig({"media_dir": str(tmp_path)}):
         renderer = Mock()
         renderer.num_plays = 0
-        writer = SceneFileWriter(renderer, "GuardScene", _VIDEO_OUTPUT)
+        writer = SceneFileWriter(
+            renderer,
+            "GuardScene",
+            _VIDEO_OUTPUT,
+            _plan_for("GuardScene", _VIDEO_OUTPUT),
+        )
         writer.partial_movie_files = [None]
 
         with pytest.raises(RuntimeError, match="partial movie file path"):
@@ -1097,7 +1191,12 @@ def test_write_frame_without_open_stream_drops_frame(config, tmp_path):
     with tempconfig({"media_dir": str(tmp_path)}):
         renderer = Mock()
         renderer.num_plays = 0
-        writer = SceneFileWriter(renderer, "DropFrameScene", _VIDEO_OUTPUT)
+        writer = SceneFileWriter(
+            renderer,
+            "DropFrameScene",
+            _VIDEO_OUTPUT,
+            _plan_for("DropFrameScene", _VIDEO_OUTPUT),
+        )
         assert writer._current_encode_job is None
 
         # Must not raise and must not create a job.

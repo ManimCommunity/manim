@@ -8,6 +8,12 @@ from PIL import Image
 
 from manim import __version__
 from manim._config.output import OutputFormat, OutputSpec
+from manim._config.output_plan import (
+    resolve_media_layout,
+    resolve_module_name,
+    resolve_output_plan,
+    resolve_requested_output_name,
+)
 from manim.scene.scene_file_writer import SceneFileWriter
 
 
@@ -19,21 +25,35 @@ def _make_writer(
     transparent: bool = False,
     save_sections: bool = False,
     output_file: str | Path = "",
-    write_all: bool = False,
 ) -> SceneFileWriter:
     config.media_dir = tmp_path
     config.input_file = tmp_path / "nested" / "example.scene.py"
     config.pixel_height = 480
     config.frame_rate = 15
     config.output_file = output_file
-    config.write_all = write_all
 
+    output = OutputSpec(output_format, transparent, save_sections)
+    module_name = resolve_module_name(config)
+    layout = resolve_media_layout(
+        config,
+        output,
+        module_name=module_name,
+        scene_name="ExampleScene",
+        working_directory=Path.cwd(),
+    )
+    output_plan = resolve_output_plan(
+        layout,
+        output,
+        scene_name="ExampleScene",
+        requested_output_name=resolve_requested_output_name(config),
+    )
     renderer = Mock()
     renderer.num_plays = 0
     return SceneFileWriter(
         renderer,
         "ExampleScene",
-        OutputSpec(output_format, transparent, save_sections),
+        output,
+        output_plan,
     )
 
 
@@ -73,7 +93,9 @@ def test_gif_primary_and_segment_paths(
     )
     quality_dir = tmp_path / "videos" / "example.scene" / "480p15"
 
-    assert writer.movie_file_path == quality_dir / f"ExampleScene{segment_extension}"
+    assert writer.movie_file_path == (
+        quality_dir / f"ExampleScene_ManimCE_v{__version__}.gif"
+    )
     assert writer.gif_file_path == (
         quality_dir / f"ExampleScene_ManimCE_v{__version__}.gif"
     )
@@ -118,7 +140,7 @@ def test_png_sequence_path_and_zero_padding(config, tmp_path):
     assert (expected_dir / "000.png").is_file()
 
 
-def test_output_suffixes_are_currently_appended_when_they_differ(config, tmp_path):
+def test_resolved_output_suffix_is_applied_once(config, tmp_path):
     matching = _make_writer(
         config,
         tmp_path,
@@ -133,20 +155,7 @@ def test_output_suffixes_are_currently_appended_when_they_differ(config, tmp_pat
         OutputFormat.MP4,
         output_file="movie.mov",
     )
-    assert differing.movie_file_path.name == "movie.mov.mp4"
-
-
-def test_write_all_ignores_requested_output_name(config, tmp_path):
-    writer = _make_writer(
-        config,
-        tmp_path,
-        OutputFormat.MP4,
-        output_file="shared-name",
-        write_all=True,
-    )
-
-    assert writer.output_name == Path("ExampleScene")
-    assert writer.movie_file_path.name == "ExampleScene.mp4"
+    assert differing.movie_file_path.name == "movie.mp4"
 
 
 def test_sections_use_configured_directory_for_simple_output_name(config, tmp_path):
@@ -169,7 +178,7 @@ def test_sections_use_configured_directory_for_simple_output_name(config, tmp_pa
     )
 
 
-def test_nested_and_absolute_output_names_leak_into_current_section_paths(
+def test_nested_and_absolute_output_names_do_not_relocate_sections(
     config,
     tmp_path,
 ):
@@ -182,7 +191,7 @@ def test_nested_and_absolute_output_names_leak_into_current_section_paths(
     )
     nested.next_section("intro", skip_animations=False, type_="default.normal")
     assert nested.sections_output_dir / nested.sections[-1].video == (
-        nested.sections_output_dir / "exports" / "movie_0000_intro.mp4"
+        nested.sections_output_dir / "movie_0000_intro.mp4"
     )
 
     absolute_name = tmp_path / "exports" / "movie"
@@ -194,9 +203,9 @@ def test_nested_and_absolute_output_names_leak_into_current_section_paths(
         output_file=absolute_name,
     )
     absolute.next_section("intro", skip_animations=False, type_="default.normal")
-    assert Path(absolute.sections[-1].video).is_absolute()
+    assert not Path(absolute.sections[-1].video).is_absolute()
     assert absolute.sections_output_dir / absolute.sections[-1].video == (
-        tmp_path / "exports" / "movie_0000_intro.mp4"
+        absolute.sections_output_dir / "movie_0000_intro.mp4"
     )
 
 
