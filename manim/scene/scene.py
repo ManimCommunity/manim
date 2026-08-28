@@ -9,7 +9,6 @@ from ..mobject.mobject import _AnimationBuilder
 __all__ = ["Scene"]
 
 import copy
-import datetime
 import inspect
 import platform
 import random
@@ -18,8 +17,6 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 from queue import Queue
-
-import srt
 
 from manim.scene.section import DefaultSectionType
 
@@ -49,14 +46,14 @@ from .. import config, logger
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
+from ..manager import Manager
 from ..renderer.cairo_renderer import CairoRenderer
 from ..renderer.opengl_renderer import OpenGLCamera, OpenGLMobject, OpenGLRenderer
 from ..renderer.shader import Object3D
 from ..utils import opengl, space_ops
-from ..utils.exceptions import EndSceneEarlyException, RerunSceneException
+from ..utils.exceptions import RerunSceneException
 from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
-from ..utils.file_ops import open_media_file
 from ..utils.iterables import list_difference_update, list_update
 from ..utils.module_ops import scene_classes_from_file
 
@@ -148,9 +145,10 @@ class Scene:
     screen by calling :meth:`Scene.remove`.  All mobjects currently on screen are kept
     in :attr:`Scene.mobjects`.  Animations are played by calling :meth:`Scene.play`.
 
-    A :class:`Scene` is rendered internally by calling :meth:`Scene.render`.  This in
-    turn calls :meth:`Scene.setup`, :meth:`Scene.construct`, and
-    :meth:`Scene.tear_down`, in that order.
+    A :class:`Scene` is rendered internally by calling :meth:`Scene.render`. This
+    delegates the render lifecycle to a :class:`~manim.manager.Manager`, which calls
+    :meth:`Scene.setup`, :meth:`Scene.construct`, and :meth:`Scene.tear_down`, in
+    that order.
 
     It is not recommended to override the ``__init__`` method in user Scenes.  For code
     that should be ran before a Scene is rendered, use :meth:`Scene.setup` instead.
@@ -197,6 +195,7 @@ class Scene:
         self.key_to_function_map: dict[str, Callable[[], None]] = {}
         self.mouse_press_callbacks: list[Callable[[], None]] = []
         self.interactive_mode = False
+        self.manager: Manager[Self] | None = None
 
         if config.renderer == RendererType.OPENGL:
             # Items associated with interaction
@@ -237,68 +236,39 @@ class Scene:
         result = cls.__new__(cls)
         clone_from_id[id(self)] = result
         for k, v in self.__dict__.items():
-            if k in ["renderer", "time_progression"]:
+            if k in ["manager", "renderer", "time_progression"]:
                 continue
             if k == "camera_class":
                 setattr(result, k, v)
             setattr(result, k, copy.deepcopy(v, clone_from_id))
+        result.manager = None
 
         return result
 
     def render(self, preview: bool = False) -> bool:
-        """
-        Renders this Scene.
+        """Render this scene through its :class:`~manim.manager.Manager`.
+
+        A manager is created and attached lazily if the scene does not already
+        have one.
 
         Parameters
-        ---------
+        ----------
         preview
-            If true, opens scene in a file viewer.
+            Whether to open the rendered media after rendering.
+
+        Returns
+        -------
+        bool
+            Whether an interactive rerun was requested.
         """
-        self.setup()
-        try:
-            self.construct()
-        except EndSceneEarlyException:
-            pass
-        except RerunSceneException:
-            self.remove(*self.mobjects)
-            # TODO: The CairoRenderer does not have the method clear_screen()
-            self.renderer.clear_screen()  # type: ignore[union-attr]
-            self.renderer.num_plays = 0
-            # The rerun replaces the file writer; tear down its encode jobs so
-            # no worker is still writing a partial file the new writer may
-            # reuse. Encoder failures propagate: a rerun must not silently
-            # continue past corrupt output.
-            self.renderer.file_writer.abort_encode_jobs(
-                reraise_encoder_failures=True,
-            )
-            return True
-        except BaseException:
-            # A mid-play exception leaves an unsealed encode job whose
-            # non-daemon worker would hang the process at exit.
-            self.renderer.file_writer.abort_encode_jobs()
-            raise
-        self.tear_down()
-        # We have to reset these settings in case of multiple renders.
-        self.renderer.scene_finished(self)
+        return self._get_manager().render(preview)
 
-        # Show info only if animations are rendered or to get image
-        if (
-            self.renderer.num_plays
-            or config["format"] == "png"
-            or config["save_last_frame"]
-        ):
-            logger.info(
-                f"Rendered {str(self)}\nPlayed {self.renderer.num_plays} animations",
-            )
-
-        # If preview open up the render after rendering.
-        if preview:
-            config["preview"] = True
-
-        if config["preview"] or config["show_in_file_browser"]:
-            open_media_file(self.renderer.file_writer)
-
-        return False
+    def _get_manager(self) -> Manager[Self]:
+        """Return this scene's manager, creating it for legacy entry points."""
+        manager = self.manager
+        if manager is None:
+            manager = Manager(self)
+        return manager
 
     def setup(self) -> None:
         """
@@ -359,7 +329,7 @@ class Scene:
         ``skip_animations`` skips the rendering of all animations in this section.
         Refer to :doc:`the documentation</tutorials/output_and_config>` on how to use sections.
         """
-        self.renderer.file_writer.next_section(name, section_type, skip_animations)
+        self._get_manager().next_section(name, section_type, skip_animations)
 
     def __str__(self) -> str:
         return self.__class__.__name__
@@ -1205,21 +1175,13 @@ class Scene:
             self.queue.put(SceneInteractRerun("play", **kwargs))
             return
 
-        start_time = self.time
-        self.renderer.play(self, *args, **kwargs)
-        run_time = self.time - start_time
-        if subcaption:
-            if subcaption_duration is None:
-                subcaption_duration = run_time
-            # The start of the subcaption needs to be offset by the
-            # run_time of the animation because it is added after
-            # the animation has already been played (and Scene.time
-            # has already been updated).
-            self.add_subcaption(
-                content=subcaption,
-                duration=subcaption_duration,
-                offset=-run_time + subcaption_offset,
-            )
+        self._get_manager().play(
+            *args,
+            subcaption=subcaption,
+            subcaption_duration=subcaption_duration,
+            subcaption_offset=subcaption_offset,
+            **kwargs,
+        )
 
     def wait(
         self,
@@ -1751,13 +1713,7 @@ class Scene:
                     )
 
         """
-        subtitle = srt.Subtitle(
-            index=len(self.renderer.file_writer.subcaptions),
-            content=content,
-            start=datetime.timedelta(seconds=float(self.time + offset)),
-            end=datetime.timedelta(seconds=float(self.time + offset + duration)),
-        )
-        self.renderer.file_writer.subcaptions.append(subtitle)
+        self._get_manager().add_subcaption(content, duration, offset)
 
     def add_sound(
         self,
@@ -1801,10 +1757,7 @@ class Scene:
 
         Download the resource for the previous example `here <https://github.com/ManimCommunity/manim/blob/main/docs/source/_static/click.wav>`_ .
         """
-        if self.renderer.skip_animations:
-            return
-        time = self.time + time_offset
-        self.renderer.file_writer.add_sound(sound_file, time, gain, **kwargs)
+        self._get_manager().add_sound(sound_file, time_offset, gain, **kwargs)
 
     def on_mouse_motion(self, point: Point3D, d_point: Point3D) -> None:
         assert isinstance(self.camera, OpenGLCamera)
