@@ -96,7 +96,7 @@ class Positionable:
             for mob1, mob2 in zip(self.get_family(), points.get_family(), strict=False):
                 mob1.set_points(mob2.points.copy())
         else:
-            self.points = np.asarray(points)
+            self.points = np.asarray(points, dtype=float)
         return self
 
     def get_points_defining_boundary(self) -> Point3D_Array:
