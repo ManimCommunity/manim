@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import operator as op
 from collections.abc import Callable, Iterable
 from functools import reduce
@@ -57,7 +59,7 @@ class Positionable:
 
     def set_points(
         self,
-        points: "Point3DLike_Array | Positionable",
+        points: Point3DLike_Array | Positionable,
     ) -> Self:
         """Sets the points.
 
@@ -113,13 +115,13 @@ class Positionable:
 
     ### APPLYING FUNCTIONS ###
 
-    def get_family(self) -> Iterable["Positionable"]:
+    def get_family(self) -> Iterable[Positionable]:
         """Returns all family members recursively."""
         yield self
 
     def apply_to_family(
         self,
-        function: Callable[["Positionable"], Any],
+        function: Callable[[Positionable], Any],
         *,
         only_with_points: bool = True,
     ) -> Self:
@@ -542,7 +544,7 @@ class Positionable:
 
     def set_position(
         self,
-        point: "Point3DLike | Positionable",
+        point: Point3DLike | Positionable,
         *,
         aligned_edge: Vector3DLike = ORIGIN,
     ) -> Self:
@@ -586,7 +588,7 @@ class Positionable:
 
     def set_center(
         self,
-        center: "Point3DLike | Positionable",
+        center: Point3DLike | Positionable,
     ) -> Self:
         """Sets the center position.
 
@@ -622,7 +624,7 @@ class Positionable:
 
     def set_left(
         self,
-        left: "Point3DLike | Positionable",
+        left: Point3DLike | Positionable,
     ) -> Self:
         """Sets the left position.
 
@@ -658,7 +660,7 @@ class Positionable:
 
     def set_right(
         self,
-        right: "Point3DLike | Positionable",
+        right: Point3DLike | Positionable,
     ) -> Self:
         """Sets the right position.
 
@@ -694,7 +696,7 @@ class Positionable:
 
     def set_bottom(
         self,
-        bottom: "Point3DLike | Positionable",
+        bottom: Point3DLike | Positionable,
     ) -> Self:
         """Sets the bottom position.
 
@@ -730,7 +732,7 @@ class Positionable:
 
     def set_top(
         self,
-        top: "Point3DLike | Positionable",
+        top: Point3DLike | Positionable,
     ) -> Self:
         """Sets the top position.
 
@@ -756,7 +758,7 @@ class Positionable:
         Returns
         -------
         Point3D
-            The  nadir position.
+            The nadir position.
 
         See also
         --------
@@ -766,7 +768,7 @@ class Positionable:
 
     def set_nadir(
         self,
-        nadir: "Point3DLike | Positionable",
+        nadir: Point3DLike | Positionable,
     ) -> Self:
         """Sets the nadir position.
 
@@ -802,7 +804,7 @@ class Positionable:
 
     def set_zenith(
         self,
-        zenith: "Point3DLike | Positionable",
+        zenith: Point3DLike | Positionable,
     ) -> Self:
         """Sets the zenith position.
 
@@ -853,7 +855,7 @@ class Positionable:
 
     def set_coordinate(
         self,
-        value: "float | Positionable",
+        value: float | Positionable,
         dim: int,
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
@@ -1029,7 +1031,7 @@ class Positionable:
 
     def set_dim_size(
         self,
-        size: "float | Positionable",
+        size: float | Positionable,
         dim: int,
         *,
         stretch: bool = False,
@@ -1098,7 +1100,7 @@ class Positionable:
 
     def set_width(
         self,
-        width: "float | Positionable",
+        width: float | Positionable,
         *,
         stretch: bool = False,
         about_point: Point3DLike | None = None,
@@ -1150,7 +1152,7 @@ class Positionable:
 
     def set_height(
         self,
-        height: "float | Positionable",
+        height: float | Positionable,
         *,
         stretch: bool = False,
         about_point: Point3DLike | None = None,
@@ -1204,7 +1206,7 @@ class Positionable:
 
     def set_depth(
         self,
-        depth: "float | Positionable",
+        depth: float | Positionable,
         *,
         stretch: bool = False,
         about_point: Point3DLike | None = None,
@@ -1275,7 +1277,7 @@ class Positionable:
 
     def align_to(
         self,
-        point: "Point3DLike | Positionable",
+        point: Point3DLike | Positionable,
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
         """Aligns the object onto a point.
@@ -1520,7 +1522,7 @@ class Positionable:
 
     def move_to(
         self,
-        point: "Point3DLike | Positionable",
+        point: Point3DLike | Positionable,
         aligned_edge: Vector3DLike = ORIGIN,
     ) -> Self:
         """Moves to a position.
@@ -2121,7 +2123,7 @@ class Positionable:
     # @deprecated(replacement="set_dim_size")
     def rescale_to_fit(
         self,
-        length: "float | Positionable",
+        length: float | Positionable,
         dim: int,
         *,
         stretch: bool = False,
