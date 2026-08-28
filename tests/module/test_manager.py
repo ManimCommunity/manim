@@ -34,10 +34,24 @@ def test_manager_exposes_the_session_output_snapshot(config):
 
     config.format = "none"
     config.preview = False
+    config.dry_run = True
 
     assert manager.output_spec.format is OutputFormat.GIF
     assert manager.output_spec is scene.renderer.file_writer.output_spec
     assert manager.session_spec.presentation.open_after_render is True
+    assert manager.session_spec.dry_run is False
+
+
+def test_manager_exposes_dry_run_session_intent(config):
+    config.format = "gif"
+    config.dry_run = True
+    scene = Scene()
+    manager = Manager(scene)
+
+    config.dry_run = False
+
+    assert manager.output_spec.format is OutputFormat.NONE
+    assert manager.session_spec.dry_run is True
 
 
 def test_post_render_preview_requires_an_artifact(dry_run):

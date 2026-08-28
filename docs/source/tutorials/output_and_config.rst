@@ -167,10 +167,16 @@ The ``--format`` option selects one primary artifact:
    * - ``png-sequence``
      - Evaluates the full frame progression and writes every frame as PNG.
    * - ``none``
-     - Evaluates the scene without producing a primary media artifact.
+     - Evaluates the scene without producing a primary media artifact. This
+       controls artifact persistence only: live preview, for example, still
+       rasterizes and presents frames while the resolved format is ``none``.
 
-``--dry_run`` also suppresses media output, but remains a separate execution
-request rather than modifying the configured format.
+``--dry_run`` also suppresses media output and cannot be combined with live
+preview, but remains a separate execution request rather than modifying the
+configured format. The immutable render-session specification preserves this
+reason explicitly, so execution coordination does not need to reread mutable
+global configuration to distinguish a dry run from another artifact-less
+session.
 
 
 Sections

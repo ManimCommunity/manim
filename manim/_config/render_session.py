@@ -27,10 +27,11 @@ class PresentationSpec:
 
 @dataclass(frozen=True, slots=True)
 class RenderSessionSpec:
-    """Validated output and presentation intent for one render session."""
+    """Validated artifact, presentation, and execution intent for one session."""
 
     output: OutputSpec
     presentation: PresentationSpec
+    dry_run: bool
 
 
 class _SessionConfigSource(Protocol):
@@ -52,8 +53,9 @@ def resolve_render_session(
 ) -> RenderSessionSpec:
     """Resolve and validate one renderer-independent session request."""
     live_preview = config.live_preview or config.enable_gui
+    dry_run = config.dry_run
     requested_format = OutputFormat.parse(config.format)
-    if config.dry_run:
+    if dry_run:
         requested_format = OutputFormat.NONE
         save_sections = False
     else:
@@ -82,7 +84,7 @@ def resolve_render_session(
             f"{renderer_name} does not support live preview. "
             "Select a renderer with live-preview support or remove --live-preview.",
         )
-    if live_preview and config.dry_run:
+    if live_preview and dry_run:
         raise ValueError("--live-preview cannot be combined with --dry_run.")
     if live_preview and output.is_still:
         raise ValueError(
@@ -96,4 +98,8 @@ def resolve_render_session(
     if presentation.show_in_file_browser and not output.enabled:
         raise ValueError("--show_in_file_browser requires a media artifact.")
 
-    return RenderSessionSpec(output=output, presentation=presentation)
+    return RenderSessionSpec(
+        output=output,
+        presentation=presentation,
+        dry_run=dry_run,
+    )

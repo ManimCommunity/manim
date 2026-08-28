@@ -278,10 +278,13 @@ continues as follows:
 
 The session specification separates primary artifact intent (an ``OutputSpec``)
 from presentation requests such as opening the completed artifact or displaying
-a live preview. Resolution also validates requests against the selected
-renderer's capabilities. For example, Cairo rejects live preview, while OpenGL
-advertises support for it. With ``format = auto``, requesting live preview
-selects no file output; a concrete format records the render as well.
+a live preview. It also preserves whether dry-run execution was requested. A dry
+run and an artifact-less render both have an effective output format of ``none``,
+but the reason remains available without rereading mutable global configuration.
+Resolution also validates requests against the selected renderer's capabilities.
+For example, Cairo rejects live preview, while OpenGL advertises support for it.
+With ``format = auto``, requesting live preview selects no file output; a
+concrete format records the render as well.
 
 Inspecting the initialization methods of both renderers shows that they
 instantiate a :class:`.SceneFileWriter`. The writer must receive the already

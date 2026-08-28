@@ -19,12 +19,16 @@ from manim.renderer.protocol import RendererCapabilities
 from tests.assert_utils import assert_dir_exists, assert_dir_filled, assert_file_exists
 
 
-def _resolve_output(config):
+def _resolve_session(config):
     return resolve_render_session(
         config,
         RendererCapabilities(live_preview=True),
         renderer_name="TestRenderer",
-    ).output
+    )
+
+
+def _resolve_output(config):
+    return _resolve_session(config).output
 
 
 def test_tempconfig(config):
@@ -98,11 +102,24 @@ def test_transparent_auto_output_resolves_to_mov(config):
     assert _resolve_output(config).format is OutputFormat.MOV
 
 
+def test_explicit_no_output_is_not_dry_run(config):
+    config.format = "none"
+
+    session = _resolve_session(config)
+
+    assert session.output.format is OutputFormat.NONE
+    assert session.dry_run is False
+
+
 def test_live_preview_auto_output_resolves_to_none(config):
     config.format = "auto"
     config.live_preview = True
 
-    assert _resolve_output(config).format is OutputFormat.NONE
+    session = _resolve_session(config)
+
+    assert session.output.format is OutputFormat.NONE
+    assert session.presentation.live_preview is True
+    assert session.dry_run is False
 
 
 def test_live_preview_requires_renderer_capability(config):
@@ -138,10 +155,16 @@ def test_explicit_transparent_mp4_is_rejected(config):
 
 def test_dry_run_resolves_no_output_without_mutating_output_request(config):
     config.format = "gif"
+    config.save_sections = True
     config.dry_run = True
 
-    assert _resolve_output(config).format is OutputFormat.NONE
+    session = _resolve_session(config)
+
+    assert session.output.format is OutputFormat.NONE
+    assert session.output.save_sections is False
+    assert session.dry_run is True
     assert config.format == "gif"
+    assert config.save_sections is True
 
 
 def test_save_last_frame_resolves_to_still_output(config):

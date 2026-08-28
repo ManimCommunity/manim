@@ -94,7 +94,7 @@ class Manager(Generic[SceneT]):
 
     @property
     def session_spec(self) -> RenderSessionSpec:
-        """Return the immutable output and presentation intent for this session."""
+        """Return the immutable artifact, presentation, and execution intent."""
         return self.scene.session_spec
 
     @property
