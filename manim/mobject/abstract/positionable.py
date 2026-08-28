@@ -1358,9 +1358,6 @@ class Positionable:
         points = self.get_all_points()
         if len(points) == 0:
             return ORIGIN
-        # TODO: Performs better with over ~2.5k points
-        # return np.apply_along_axis(func1d=np.mean, axis=0, arr=points)
-        # TODO: Performs better with under ~2.5k points
         return points.mean(axis=0)
 
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
