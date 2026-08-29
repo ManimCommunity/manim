@@ -6,8 +6,9 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from manim import RIGHT, WHITE, Scene, Square, Tex, Text, Vector, tempconfig
-from manim._config.utils import ManimConfig
+from manim import BLUE, RED, RIGHT, WHITE, Scene, Square, Tex, Text, Vector, tempconfig
+from manim._config.utils import ManimConfig, make_config_parser
+from manim.cli.render.commands import ClickArgs, render
 from manim.constants import RendererType
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.types.vectorized_mobject import VMobject
@@ -131,6 +132,55 @@ def test_digest_file(tmp_path, config):
     assert config.get_dir("sections_dir", scene_name="test") == Path(
         "this_is_my_favorite_path/test/prepare_for_unforeseen_consequences"
     )
+
+
+def test_digest_args_uses_config_next_to_input_file(tmp_path, monkeypatch):
+    working_dir = tmp_path / "working"
+    scene_dir = tmp_path / "scenes"
+    working_dir.mkdir()
+    scene_dir.mkdir()
+
+    scene_file = scene_dir / "example.py"
+    scene_file.write_text("")
+    (working_dir / "manim.cfg").write_text(
+        "[CLI]\nbackground_color = BLUE\nframe_rate = 17\n"
+    )
+    scene_config_file = scene_dir / "manim.cfg"
+    scene_config_file.write_text("[CLI]\nbackground_color = RED\n")
+    monkeypatch.chdir(working_dir)
+
+    with render.make_context("manim render", [str(scene_file)]) as context:
+        args = ClickArgs(context.params)
+
+    parsed_config = ManimConfig().digest_parser(make_config_parser())
+    expected_config = ManimConfig().digest_parser(make_config_parser(scene_config_file))
+    assert parsed_config.background_color == BLUE
+    assert parsed_config.frame_rate == 17
+
+    parsed_config.digest_args(args)
+
+    assert parsed_config.background_color == RED
+    assert parsed_config.background_color == expected_config.background_color
+    assert parsed_config.frame_rate == expected_config.frame_rate
+
+
+def test_digest_args_accepts_directory_with_input_file_config(tmp_path, monkeypatch):
+    working_dir = tmp_path / "working"
+    project_dir = tmp_path / "project"
+    working_dir.mkdir()
+    project_dir.mkdir()
+    scene_file = project_dir / "example.py"
+    scene_file.write_text("")
+    (project_dir / "manim.cfg").write_text(f"[CLI]\ninput_file = {scene_file}\n")
+    monkeypatch.chdir(working_dir)
+
+    with render.make_context("manim render", [str(project_dir)]) as context:
+        args = ClickArgs(context.params)
+
+    parsed_config = ManimConfig().digest_parser(make_config_parser())
+    parsed_config.digest_args(args)
+
+    assert Path(parsed_config.input_file) == scene_file
 
 
 def test_custom_dirs(tmp_path, config):
