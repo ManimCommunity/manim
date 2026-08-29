@@ -262,7 +262,7 @@ def test_set_coordinate_x() -> None:
             (+1, +2, +3),
         ]
     )
-    p.set_coordinate(value=4, dim=0)
+    p.set_coordinate(coordinate=4, dim=0)
     np.testing.assert_allclose(
         p.points,
         [
@@ -291,7 +291,7 @@ def test_set_coordinate_y() -> None:
             (+1, +2, +3),
         ]
     )
-    p.set_coordinate(value=5, dim=1)
+    p.set_coordinate(coordinate=5, dim=1)
     np.testing.assert_allclose(
         p.points,
         [
@@ -320,7 +320,7 @@ def test_set_coordinate_z() -> None:
             (+1, +2, +3),
         ]
     )
-    p.set_coordinate(value=6, dim=2)
+    p.set_coordinate(coordinate=6, dim=2)
     np.testing.assert_allclose(
         p.points,
         [
