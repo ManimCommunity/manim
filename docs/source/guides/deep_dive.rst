@@ -288,12 +288,11 @@ concrete format records the render as well.
 
 Inspecting the initialization methods of both renderers shows that they
 instantiate a :class:`.SceneFileWriter`. The writer must receive the already
-resolved ``OutputSpec``; it does not reinterpret the global configuration to
-decide whether or what to write. It remains Manim's interface to ``libav`` for
+resolved ``OutputSpec``. It remains Manim's interface to ``libav`` for
 encoding media. The Cairo renderer (see the implementation `here
 <https://github.com/ManimCommunity/manim/blob/main/manim/renderer/cairo_renderer.py>`__)
 does not require further renderer-specific initialization. OpenGL creates a
-window only when the resolved presentation specification requests live preview.
+window only when the resolved presentation specification requests a live preview.
 The ``-p`` / ``--preview`` option does not create this window; it opens the
 completed artifact after rendering.
 
@@ -338,14 +337,14 @@ The first three call the corresponding customizable scene hooks:
 After these hooks have run, :meth:`.Manager.post_construct` asks the renderer to
 finish the scene. For Cairo this calls :meth:`.CairoRenderer.scene_finished`,
 which checks the resolved output intent and tells the :class:`.SceneFileWriter`
-to finish time-based output. For video output, the file writer waits for partial
-movie files that are still being encoded and combines them into the final movie.
-Final-state PNG output skips intermediate animation frames. A video request for
-a scene without any play calls produces a useful still image instead of an empty
-movie. The writer records the completed artifact as ``final_file_path`` without
-replacing the configured ``output_file`` value. After finalization, the manager
-uses the presentation specification to open the artifact or reveal it in the
-file browser when requested.
+to finish any time-based output. For video output, the file writer waits for
+partial movie files that are still being encoded and combines them into the
+final movie. Single-PNG output skips any remaining animation frames and renders
+a single image. A video request for a scene without any play calls produces a
+useful still image instead of an empty movie. The writer records the completed
+artifact as ``final_file_path``. After finalization, the manager uses the
+presentation specification to open the artifact or reveal it in the file
+browser.
 
 **Back in our toy example,** the call to :meth:`.Scene.render` creates a manager,
 then :meth:`.Manager.render` triggers :meth:`.Scene.setup` (which only consists of

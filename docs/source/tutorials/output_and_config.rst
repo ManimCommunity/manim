@@ -160,7 +160,7 @@ The ``--format`` option selects one primary artifact:
        concrete format is given.
    * - ``mp4``, ``mov``, ``webm`` or ``gif``
      - Produces the selected video format. Transparent MP4 is rejected because
-       that container does not support the required alpha channel.
+       that container does not support alpha transparency.
    * - ``png``
      - Fast-forwards animations and writes only the final scene state. This is
        equivalent to ``-s``.
@@ -172,11 +172,9 @@ The ``--format`` option selects one primary artifact:
        rasterizes and presents frames while the resolved format is ``none``.
 
 ``--dry_run`` also suppresses media output and cannot be combined with live
-preview, but remains a separate execution request rather than modifying the
-configured format. The immutable render-session specification preserves this
-reason explicitly, so execution coordination does not need to reread mutable
-global configuration to distinguish a dry run from another artifact-less
-session.
+preview, but it counts as a separate execution request rather than modifying the
+choice of output format. This allows Manim to function as if it were rendering a
+normal scene, but without producing any artifact.
 
 
 Sections
@@ -337,8 +335,9 @@ the file browser at the location of the animation instead, use
 
 The separate ``-l`` (or ``--live-preview``) option asks a capable renderer to
 display frames while rendering. The OpenGL renderer supports this mode. Live
-preview with the default ``--format=auto`` does not write a media file; pass a
-concrete format such as ``--format=mp4`` to display and record simultaneously.
+preview with the default ``--format=auto`` does not produce a media file; you
+must pass a concrete format such as ``--format=mp4`` to display and record
+simultaneously.
 
 Finally, by default Manim outputs ``.mp4`` files. To request GIF output instead,
 use ``--format=gif``. GIF and final-frame PNG names include the installed Manim
