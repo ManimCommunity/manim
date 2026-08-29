@@ -300,41 +300,6 @@ class Positionable:
 
     ### TRANSFORMATIONS ###
 
-    def apply_matrix(
-        self,
-        matrix: MatrixMN,
-        *,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-    ) -> Self:
-        """Applies a matrix to every point.
-
-        Parameters
-        ----------
-        matrix : MatrixMN
-            The matrix to apply.
-        about_point : Point3DLike | None, optional
-            The point about which to apply the matrix., by default None
-        about_edge : Vector3DLike | None, optional
-            The edge about which to apply the matrix., by default None
-
-        Returns
-        -------
-        Self
-            The object itself.
-        """
-        if about_point is None and about_edge is None:
-            about_point = ORIGIN
-        matrix = np.asarray(matrix)
-        full_matrix = np.identity(3)
-        full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
-
-        return self.apply_array_function(
-            function=lambda points: points.dot(full_matrix.T, out=points),
-            about_point=about_point,
-            about_edge=about_edge,
-        )
-
     def translate(self, vector: Vector3DLike) -> Self:
         """Applies a translation.
 
@@ -504,6 +469,41 @@ class Positionable:
 
         return self.apply_array_function(
             function=function,
+            about_point=about_point,
+            about_edge=about_edge,
+        )
+
+    def apply_matrix(
+        self,
+        matrix: MatrixMN,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
+        """Applies a matrix to every point.
+
+        Parameters
+        ----------
+        matrix : MatrixMN
+            The matrix to apply.
+        about_point : Point3DLike | None, optional
+            The point about which to apply the matrix., by default None
+        about_edge : Vector3DLike | None, optional
+            The edge about which to apply the matrix., by default None
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+        if about_point is None and about_edge is None:
+            about_point = ORIGIN
+        matrix = np.asarray(matrix)
+        full_matrix = np.identity(3)
+        full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
+
+        return self.apply_array_function(
+            function=lambda points: points.dot(full_matrix.T, out=points),
             about_point=about_point,
             about_edge=about_edge,
         )
