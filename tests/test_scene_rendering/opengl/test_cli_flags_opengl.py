@@ -332,7 +332,6 @@ def test_a_flag(tmp_path, manim_cfg_file, infallible_scenes_path):
         "manim",
         "--renderer",
         "opengl",
-        "--format=mp4",
         "-ql",
         "--media_dir",
         str(tmp_path),
