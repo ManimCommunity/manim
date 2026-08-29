@@ -22,6 +22,26 @@ def test_render(using_temp_config, disabling_caching):
     assert config.output_file == ""
 
 
+def test_automatic_output_uses_still_for_static_scene(using_temp_config):
+    scene = StaticScene()
+
+    scene.render()
+
+    assert scene.renderer.file_writer.output_spec.fallback_to_still is True
+    assert scene.renderer.file_writer.final_file_path.suffix == ".png"
+    assert_file_exists(scene.renderer.file_writer.final_file_path)
+
+
+def test_explicit_video_output_for_static_scene_fails(using_temp_config):
+    config.format = "mp4"
+    scene = StaticScene()
+
+    with pytest.raises(RuntimeError, match="explicitly requested MP4"):
+        scene.render()
+
+    assert not hasattr(scene.renderer.file_writer, "final_file_path")
+
+
 def test_skipping_status_with_from_to_and_up_to(using_temp_config, disabling_caching):
     """Test if skip_animations is well updated when -n flag is passed"""
     config.from_animation_number = 2

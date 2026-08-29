@@ -3,7 +3,7 @@ from __future__ import annotations
 import copy
 import datetime
 import threading
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 import srt
@@ -12,6 +12,7 @@ from manim import Manager, Scene, tempconfig
 from manim._config.output import OutputFormat
 from manim.animation.animation import Wait
 from manim.constants import RendererType
+from manim.renderer.protocol import RendererCapabilities
 from manim.scene.scene import SceneInteractRerun
 from manim.utils.exceptions import EndSceneEarlyException, RerunSceneException
 
@@ -59,6 +60,46 @@ def test_post_render_preview_requires_an_artifact(dry_run):
 
     with pytest.raises(ValueError, match="requires a media artifact"):
         Manager(scene).render(preview=True)
+
+
+@pytest.mark.parametrize("output_format", ["mp4", "mov", "webm", "gif"])
+def test_manager_rejects_explicit_video_for_scene_without_play_calls(
+    config,
+    output_format,
+):
+    config.format = output_format
+    renderer = Mock()
+    renderer.capabilities = RendererCapabilities()
+    renderer.num_plays = 0
+    scene = Scene(renderer)
+    manager = Manager(scene)
+
+    with pytest.raises(
+        RuntimeError,
+        match=f"explicitly requested {output_format.upper()}",
+    ):
+        manager.post_construct()
+
+    renderer.scene_finished.assert_not_called()
+
+
+def test_manager_warns_when_automatic_video_falls_back_to_still(config):
+    config.format = "auto"
+    renderer = Mock()
+    renderer.capabilities = RendererCapabilities()
+    renderer.num_plays = 0
+    scene = Scene(renderer)
+    renderer.file_writer.final_file_path = "scene.png"
+    manager = Manager(scene)
+
+    with patch("manim.manager.logger.warning") as warning:
+        manager.post_construct()
+
+    renderer.scene_finished.assert_called_once_with(scene)
+    warning.assert_called_once_with(
+        f"{scene} has no play calls. Automatic video output has been saved as a "
+        "PNG instead.",
+    )
 
 
 def test_manager_rejects_second_attachment(dry_run):

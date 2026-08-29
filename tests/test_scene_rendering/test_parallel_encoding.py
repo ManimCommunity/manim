@@ -24,11 +24,13 @@ _VIDEO_OUTPUT = OutputSpec(
     OutputFormat.MP4,
     transparent=False,
     save_sections=False,
+    fallback_to_still=False,
 )
 _NO_OUTPUT = OutputSpec(
     OutputFormat.NONE,
     transparent=False,
     save_sections=False,
+    fallback_to_still=False,
 )
 _UNIQUE_PLAYS = 6
 _TOTAL_PLAYS = _UNIQUE_PLAYS + 2

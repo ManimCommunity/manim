@@ -245,9 +245,7 @@ def test_default_video_output_with_non_static_scene(
 
 
 @pytest.mark.slow
-def test_image_output_for_static_scene_with_video_format(
-    tmp_path, manim_cfg_file, simple_scenes_path
-):
+def test_explicit_video_output_for_static_scene_fails(tmp_path, simple_scenes_path):
     scene_name = "StaticScene"
     command = [
         sys.executable,
@@ -262,14 +260,12 @@ def test_image_output_for_static_scene_with_video_format(
         str(simple_scenes_path),
         scene_name,
     ]
-    out, err, exit_code = capture(command)
-    assert exit_code == 0, err
+    _, err, exit_code = capture(command)
 
-    is_empty = not any((tmp_path / "videos").iterdir())
-    assert not is_empty, "running manim with static scene rendered a video"
-
-    is_empty = not any((tmp_path / "images" / "simple_scenes").iterdir())
-    assert not is_empty, "running manim without animations did not render an image"
+    assert exit_code == 1
+    assert "explicitly requested MP4" in err
+    assert not list(tmp_path.rglob("*.mp4"))
+    assert not list(tmp_path.rglob("*.png"))
 
 
 @pytest.mark.slow

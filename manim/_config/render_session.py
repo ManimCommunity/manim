@@ -55,6 +55,7 @@ def resolve_render_session(
     live_preview = config.live_preview or config.enable_gui
     dry_run = config.dry_run
     requested_format = OutputFormat.parse(config.format)
+    fallback_to_still = False
     if dry_run:
         requested_format = OutputFormat.NONE
         save_sections = False
@@ -67,11 +68,13 @@ def resolve_render_session(
                 requested_format = (
                     OutputFormat.MOV if config.transparent else OutputFormat.MP4
                 )
+                fallback_to_still = True
 
     output = OutputSpec(
         format=requested_format,
         transparent=config.transparent,
         save_sections=save_sections,
+        fallback_to_still=fallback_to_still,
     )
     presentation = PresentationSpec(
         open_after_render=config.preview,

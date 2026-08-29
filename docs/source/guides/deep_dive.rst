@@ -337,14 +337,17 @@ The first three call the corresponding customizable scene hooks:
   hook is more relevant for situations where Manim is used within other
   Python scripts).
 
-After these hooks have run, :meth:`.Manager.post_construct` asks the renderer to
-finish the scene. For Cairo this calls :meth:`.CairoRenderer.scene_finished`,
-which checks the resolved output intent and tells the :class:`.SceneFileWriter`
-to finish any time-based output. For video output, the file writer waits for
-partial movie files that are still being encoded and combines them into the
-final movie. Last-frame PNG output fast-forwards animations and renders a single
-image. A video request for a scene without any play calls produces a useful still
-image instead of an empty movie. The writer records the completed artifact as
+After these hooks have run, :meth:`.Manager.post_construct` checks whether the
+resolved output can be finalized. An explicit video format for a scene without
+play calls raises an error instead of silently changing the requested artifact.
+Otherwise, the manager asks the renderer to finish the scene. For Cairo this
+calls :meth:`.CairoRenderer.scene_finished`, which tells the
+:class:`.SceneFileWriter` to finish any time-based output. For video output, the
+file writer waits for partial movie files that are still being encoded and
+combines them into the final movie. Last-frame PNG output fast-forwards
+animations and renders a single image. When automatic output selected a video
+for a scene without play calls, the writer saves that image as a fallback PNG and
+the manager logs a warning. The writer records the completed artifact as
 ``final_file_path``. After finalization, the manager uses the presentation
 specification to open the artifact or reveal it in the file browser.
 

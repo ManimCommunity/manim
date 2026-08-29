@@ -8,7 +8,7 @@ import pytest
 from click.testing import CliRunner
 
 from manim import RIGHT, WHITE, Scene, Square, Tex, Text, Vector, tempconfig
-from manim._config.output import OutputFormat
+from manim._config.output import OutputFormat, OutputSpec
 from manim._config.render_session import resolve_render_session
 from manim._config.utils import ManimConfig
 from manim.cli.render.commands import render
@@ -99,7 +99,28 @@ def test_transparent_auto_output_resolves_to_mov(config):
     config.format = "auto"
     config.transparent = True
 
-    assert _resolve_output(config).format is OutputFormat.MOV
+    output = _resolve_output(config)
+
+    assert output.format is OutputFormat.MOV
+    assert output.fallback_to_still is True
+
+
+def test_only_automatic_video_output_allows_still_fallback(config):
+    config.format = "auto"
+    assert _resolve_output(config).fallback_to_still is True
+
+    config.format = "mp4"
+    assert _resolve_output(config).fallback_to_still is False
+
+
+def test_still_fallback_requires_video_output():
+    with pytest.raises(ValueError, match="requires a video output format"):
+        OutputSpec(
+            OutputFormat.PNG,
+            transparent=False,
+            save_sections=False,
+            fallback_to_still=True,
+        )
 
 
 def test_explicit_no_output_is_not_dry_run(config):
@@ -118,6 +139,7 @@ def test_live_preview_auto_output_resolves_to_none(config):
     session = _resolve_session(config)
 
     assert session.output.format is OutputFormat.NONE
+    assert session.output.fallback_to_still is False
     assert session.presentation.live_preview is True
     assert session.dry_run is False
 
@@ -162,6 +184,7 @@ def test_dry_run_resolves_no_output_without_mutating_output_request(config):
 
     assert session.output.format is OutputFormat.NONE
     assert session.output.save_sections is False
+    assert session.output.fallback_to_still is False
     assert session.dry_run is True
     assert config.format == "gif"
     assert config.save_sections is True

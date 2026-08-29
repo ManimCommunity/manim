@@ -135,7 +135,7 @@ render_options = option_group(
             case_sensitive=False,
         ),
         default=None,
-        help="Primary output format. PNG renders only the final scene state; "
+        help="Primary output format. PNG renders only the last frame; "
         "png-sequence writes every rendered frame.",
     ),
     option(
@@ -143,7 +143,7 @@ render_options = option_group(
         "--save_last_frame",
         default=None,
         is_flag=True,
-        help="Fast-forward animations and save the final scene state as PNG "
+        help="Fast-forward animations and save the last frame as PNG "
         "(equivalent to --format=png).",
     ),
     option(

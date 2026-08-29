@@ -970,18 +970,18 @@ class OpenGLRenderer:
 
     def should_save_last_frame(self) -> bool:
         """
-        Determine whether the last frame of the scene should be saved,
-        i.e. if one of the following conditions is met:
-        - The configuration option 'save_last_frame' is enabled.
-        - The scene is not in interactive mode.
-        - This is the first play (i.e., num_plays == 0).
+        Determine whether the last frame of the scene should be saved.
+
+        This is true for explicit last-frame PNG output and for automatic video
+        output when the scene has no play calls. Interactive scenes do not use
+        the automatic fallback.
         """
         output = self.file_writer.output_spec
         if output.is_still:
             return True
         if self.scene.interactive_mode:
             return False
-        return self.num_plays == 0 and output.is_video
+        return self.num_plays == 0 and output.fallback_to_still
 
     def get_image(self) -> Image.Image:
         """

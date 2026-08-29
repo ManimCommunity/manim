@@ -160,11 +160,13 @@ The ``--format`` option selects one primary artifact:
      - Behavior
    * - ``auto``
      - The default. Produces MP4 for opaque output and MOV for transparent
-       output. When live preview is requested, it produces no file unless a
-       concrete format is given.
+       output. A scene without play or wait calls produces a last-frame PNG
+       instead and logs a warning. When live preview is requested, it produces
+       no file unless a concrete format is given.
    * - ``mp4``, ``mov``, ``webm`` or ``gif``
-     - Produces the selected video format. Transparent MP4 is rejected because
-       that container does not support alpha transparency.
+     - Produces the selected video format. A scene without play or wait calls
+       cannot produce an explicitly requested video. Transparent MP4 is rejected
+       because that container does not support alpha transparency.
    * - ``png``
      - Fast-forwards animations and writes only the last frame of the scene.
        This is equivalent to ``-s``.
@@ -333,9 +335,9 @@ prototyping and testing. The other options that specify render quality are
 (1920x1080 60FPS), 2k (2560x1440 60FPS) and 4k quality (3840x2160 60FPS),
 respectively.
 
-The ``-p`` flag plays the animation once it is rendered. If you want to open
-the file browser at the location of the animation instead, use
-``--show_in_file_browser``. You can also omit both options.
+The ``-p`` flag opens the animation once it is rendered.
+``--show_in_file_browser`` reveals the artifact in the file browser. The options
+can be combined; Manim reveals the artifact first and then opens it for preview.
 
 The separate ``-l`` (or ``--live-preview``) option asks a capable renderer to
 display frames while rendering. The OpenGL renderer supports this mode. Live

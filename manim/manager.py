@@ -195,15 +195,34 @@ class Manager(Generic[SceneT]):
     def post_construct(self) -> None:
         """Finalize output after scene construction and tear-down.
 
-        This asks the renderer to finish the scene and logs the number of played
-        animations. It intentionally runs after :meth:`tear_down` to preserve the
-        established render lifecycle.
+        This validates empty video output, asks the renderer to finish the scene,
+        and logs the number of played animations. It intentionally runs after
+        :meth:`tear_down` to preserve the established render lifecycle.
         """
+        output = self.output_spec
+        empty_video_output = self.num_plays == 0 and output.is_video
+        if empty_video_output and not output.fallback_to_still:
+            raise RuntimeError(
+                f"{self.scene} has no play calls, so the explicitly requested "
+                f"{output.format.value.upper()} output cannot be produced. "
+                "Use --format=png to save its last frame.",
+            )
+
         # We have to reset these settings in case of multiple renders.
         self.renderer.scene_finished(self.scene)
 
+        if (
+            empty_video_output
+            and output.fallback_to_still
+            and getattr(self.file_writer, "final_file_path", None) is not None
+        ):
+            logger.warning(
+                f"{self.scene} has no play calls. Automatic video output has "
+                "been saved as a PNG instead.",
+            )
+
         # Show info only if animations are rendered or to get image.
-        if self.num_plays or self.output_spec.enabled:
+        if self.num_plays or output.enabled:
             logger.info(
                 f"Rendered {str(self.scene)}\nPlayed {self.num_plays} animations",
             )

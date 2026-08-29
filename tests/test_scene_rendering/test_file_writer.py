@@ -195,7 +195,12 @@ def _new_file_writer(scene_name: str) -> SceneFileWriter:
     return SceneFileWriter(
         renderer,
         scene_name,
-        OutputSpec(OutputFormat.MP4, transparent=False, save_sections=False),
+        OutputSpec(
+            OutputFormat.MP4,
+            transparent=False,
+            save_sections=False,
+            fallback_to_still=False,
+        ),
     )
 
 

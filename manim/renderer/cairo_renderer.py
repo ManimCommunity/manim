@@ -279,9 +279,9 @@ class CairoRenderer:
             self.static_image = None
             self.update_frame(scene)
 
-        # A video request for a scene with no plays retains the established
-        # behavior of producing a useful still image instead of an empty movie.
-        if output.is_still or (not self.num_plays and output.is_video):
+        # Automatically selected video output falls back to a last-frame PNG
+        # when a scene has no play calls.
+        if output.is_still or (not self.num_plays and output.fallback_to_still):
             if self.num_plays:
                 self.static_image = None
                 self.update_frame(scene)

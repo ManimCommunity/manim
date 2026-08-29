@@ -43,18 +43,23 @@ class OutputSpec:
     """Immutable, validated output intent for one render session.
 
     ``format`` is concrete: ``AUTO`` is resolved before this object is created.
-    The extension of cached video segments is deliberately separate from the
-    extension of the final artifact; GIF output, for example, uses encoded video
-    segments before final GIF assembly.
+    ``fallback_to_still`` allows an automatically selected video format to
+    produce a last-frame PNG when a scene has no play calls. The extension of
+    cached video segments is deliberately separate from the extension of the
+    final artifact; GIF output, for example, uses encoded video segments before
+    final GIF assembly.
     """
 
     format: OutputFormat
     transparent: bool
     save_sections: bool
+    fallback_to_still: bool
 
     def __post_init__(self) -> None:
         if self.format is OutputFormat.AUTO:
             raise ValueError("OutputSpec requires a concrete output format.")
+        if self.fallback_to_still and not self.is_video:
+            raise ValueError("Still-image fallback requires a video output format.")
         if self.transparent and self.format is OutputFormat.MP4:
             raise ValueError(
                 "MP4 output does not support an alpha channel. Use --format=mov "
