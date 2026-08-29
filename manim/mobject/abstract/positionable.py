@@ -2152,7 +2152,7 @@ class Positionable:
         self,
         value: float | Positionable,
         dim: int,
-        direction: Vector3DLike,
+        direction: Vector3DLike = ORIGIN,
     ) -> Self:
         return self.set_coordinate(coordinate=value, dim=dim, direction=direction)
 
