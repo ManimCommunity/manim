@@ -75,7 +75,7 @@ class OutputSpec:
 
     @property
     def is_still(self) -> bool:
-        """Whether only the evaluated final scene state is written as PNG."""
+        """Whether only the last frame of the scene is written as PNG."""
         return self.format is OutputFormat.PNG
 
     @property

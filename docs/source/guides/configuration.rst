@@ -62,9 +62,9 @@ instead of the whole video, you can execute
 
    manim -sqh <file.py> SceneName
 
-The equivalent ``--format=png`` spelling uses the same fast final-state-only
-evaluation. Use ``--format=png-sequence`` when every rendered frame should be
-written as a numbered PNG instead.
+The equivalent ``--format=png`` spelling uses the same fast mode that saves only
+the last frame. Use ``--format=png-sequence`` when every rendered frame should
+be written as a numbered PNG instead.
 
 The following example specifies the output file name (with the :code:`-o`
 flag), renders only the first ten animations (:code:`-n` flag) with a white

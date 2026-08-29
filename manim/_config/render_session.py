@@ -88,7 +88,7 @@ def resolve_render_session(
         raise ValueError("--live-preview cannot be combined with --dry_run.")
     if live_preview and output.is_still:
         raise ValueError(
-            "Live preview cannot be combined with final-state-only PNG output.",
+            "Live preview cannot be combined with last-frame PNG output.",
         )
     if presentation.open_after_render and not output.enabled:
         raise ValueError(

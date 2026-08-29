@@ -278,13 +278,19 @@ continues as follows:
 
 The session specification separates primary artifact intent (an ``OutputSpec``)
 from presentation requests such as opening the completed artifact or displaying
-a live preview. It also preserves whether dry-run execution was requested. A dry
-run and an artifact-less render both have an effective output format of ``none``,
-but the reason remains available without rereading mutable global configuration.
-Resolution also validates requests against the selected renderer's capabilities.
-For example, Cairo rejects live preview, while OpenGL advertises support for it.
-With ``format = auto``, requesting live preview selects no file output; a
-concrete format records the render as well.
+a live preview. It also records dry-run execution separately from artifact
+selection. A dry run requests semantic scene evaluation without rasterizing
+frames or using media and cache resources. In contrast, ``format = none`` only
+suppresses the primary artifact; an OpenGL live preview with automatic output
+still rasterizes and displays frames without writing a file. Both requests have
+an effective output format of ``none``, so the session's ``dry_run`` field
+preserves the intended execution behavior.
+
+The current renderer loops do not yet enforce no-raster dry runs; the session
+field preserves that request for Manager-owned execution. Resolution also
+validates requests against the selected renderer's capabilities. For example,
+Cairo rejects live preview, while OpenGL advertises support for it. A concrete
+format records the live preview as well.
 
 Inspecting the initialization methods of both renderers shows that they
 instantiate a :class:`.SceneFileWriter`. The writer must receive the already
@@ -303,12 +309,9 @@ attribute is initially ``None`` unless the caller attaches a manager explicitly.
 
 .. warning::
 
-    :class:`.Manager` is an incremental coordination boundary. At this stage the
-    scene captures the immutable session specification before renderer
-    initialization, while the renderer still owns its camera, clock, play count,
-    skip state, and file writer. The manager exposes the session and forwarding
-    views of renderer state. The scene and renderer therefore still have
-    substantial interplay that later refactors aim to remove.
+    The manager coordinates the scene lifecycle, while the renderer still owns
+    its camera, clock, play count, skip state, and file writer. The manager
+    currently exposes these through forwarding properties.
 
 The rest of this article is concerned with the last line in our toy example script::
 
@@ -339,12 +342,11 @@ finish the scene. For Cairo this calls :meth:`.CairoRenderer.scene_finished`,
 which checks the resolved output intent and tells the :class:`.SceneFileWriter`
 to finish any time-based output. For video output, the file writer waits for
 partial movie files that are still being encoded and combines them into the
-final movie. Single-PNG output skips any remaining animation frames and renders
-a single image. A video request for a scene without any play calls produces a
-useful still image instead of an empty movie. The writer records the completed
-artifact as ``final_file_path``. After finalization, the manager uses the
-presentation specification to open the artifact or reveal it in the file
-browser.
+final movie. Last-frame PNG output fast-forwards animations and renders a single
+image. A video request for a scene without any play calls produces a useful still
+image instead of an empty movie. The writer records the completed artifact as
+``final_file_path``. After finalization, the manager uses the presentation
+specification to open the artifact or reveal it in the file browser.
 
 **Back in our toy example,** the call to :meth:`.Scene.render` creates a manager,
 then :meth:`.Manager.render` triggers :meth:`.Scene.setup` (which only consists of

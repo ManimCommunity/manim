@@ -949,7 +949,7 @@ class ManimConfig(MutableMapping):
 
     @property
     def save_last_frame(self) -> bool:
-        """Whether to use final-state-only PNG output (-s)."""
+        """Whether to save the last frame of the scene as a PNG (-s)."""
         return OutputFormat.parse(self.format) is OutputFormat.PNG
 
     @save_last_frame.setter
@@ -1023,7 +1023,7 @@ class ManimConfig(MutableMapping):
     def format(self) -> str | None:
         """Primary output format.
 
-        ``png`` writes only the evaluated final scene state;
+        ``png`` writes only the last frame of the scene;
         ``png-sequence`` writes every rendered frame. ``auto`` selects MP4 for
         opaque output and MOV for transparent output, while ``none`` disables
         media output.

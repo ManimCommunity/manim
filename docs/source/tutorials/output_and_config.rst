@@ -137,10 +137,14 @@ The corresponding folder structure looks like this:
      ├─texts
      └─Tex
 
+``X.Y.Z`` in the PNG filename stands for the installed Manim version. Manim
+adds this version suffix to GIF names and PNG files produced with ``-s`` when no
+explicit ``--output_file`` is supplied.
+
 Saving the last frame with ``-s`` can be combined with the flags for different
 resolutions, e.g. ``-s -ql``, ``-s -qh``. The equivalent
-``--format=png`` spelling also selects this fast final-state-only mode. To write
-every rendered frame as a numbered PNG instead, use
+``--format=png`` spelling uses the same fast mode that saves only the last frame.
+To write every rendered frame as a numbered PNG instead, use
 ``--format=png-sequence``. The sequence is stored in a scene-specific directory,
 for example ``media/images/scene/SquareToCircle/0000.png``.
 
@@ -162,8 +166,8 @@ The ``--format`` option selects one primary artifact:
      - Produces the selected video format. Transparent MP4 is rejected because
        that container does not support alpha transparency.
    * - ``png``
-     - Fast-forwards animations and writes only the final scene state. This is
-       equivalent to ``-s``.
+     - Fast-forwards animations and writes only the last frame of the scene.
+       This is equivalent to ``-s``.
    * - ``png-sequence``
      - Evaluates the full frame progression and writes every frame as PNG.
    * - ``none``
@@ -338,11 +342,6 @@ display frames while rendering. The OpenGL renderer supports this mode. Live
 preview with the default ``--format=auto`` does not produce a media file; you
 must pass a concrete format such as ``--format=mp4`` to display and record
 simultaneously.
-
-Finally, by default Manim outputs ``.mp4`` files. To request GIF output instead,
-use ``--format=gif``. GIF and final-frame PNG names include the installed Manim
-version when no explicit ``--output_file`` is supplied; ``X.Y.Z`` in the example
-above stands for that version.
 
 This was a quick review of some of the most frequent command-line flags.
 For a thorough review of all flags available, see the :doc:`thematic guide on
