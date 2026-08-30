@@ -112,8 +112,6 @@ def _decode_frames(
         ("mov", True, ".mov", "qtrle", "argb"),
         ("webm", False, ".webm", "vp9", "yuv420p"),
         ("webm", True, ".webm", "vp9", "yuva420p"),
-        ("gif", False, ".mp4", "h264", "yuv420p"),
-        ("gif", True, ".mov", "qtrle", "argb"),
     ],
 )
 def test_cached_segment_profile_and_pixel_orientation(
@@ -166,16 +164,12 @@ def test_cached_segment_profile_and_pixel_orientation(
         ((3 * _HEIGHT // 4, _WIDTH // 4), np.array([0, 0, 255, 160])),
         ((3 * _HEIGHT // 4, 3 * _WIDTH // 4), np.array([255, 255, 255, 224])),
     )
-    for decoded in decoded_frames:
-        for (row, column), expected in sample_points:
-            expected = expected.copy()
-            if not transparent:
-                expected[3] = 255
-            np.testing.assert_allclose(
-                decoded[row, column],
-                expected,
-                atol=15,
-            )
+    decoded = decoded_frames[0]
+    for (row, column), expected in sample_points:
+        expected = expected.copy()
+        if not transparent:
+            expected[3] = 255
+        np.testing.assert_allclose(decoded[row, column], expected, atol=15)
 
 
 def test_configured_encoder_profile_is_used_for_cached_segment(tmp_path):

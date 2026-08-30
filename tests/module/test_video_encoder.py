@@ -23,6 +23,28 @@ def _output(format: OutputFormat, *, transparent: bool = False) -> OutputSpec:
     )
 
 
+def _resolve(
+    format=OutputFormat.MP4,
+    *,
+    transparent=False,
+    width=1920,
+    height=1080,
+    frame_rate=30,
+    codec="auto",
+    pixel_format="auto",
+    options=None,
+):
+    return resolve_video_encoder(
+        _output(format, transparent=transparent),
+        width=width,
+        height=height,
+        frame_rate=frame_rate,
+        codec=codec,
+        pixel_format=pixel_format,
+        options=options,
+    )
+
+
 @pytest.mark.parametrize(
     (
         "format",
@@ -64,12 +86,7 @@ def test_default_video_encoder_profiles(
     pixel_format,
     options,
 ):
-    spec = resolve_video_encoder(
-        _output(format, transparent=transparent),
-        width=1920,
-        height=1080,
-        frame_rate=60,
-    )
+    spec = _resolve(format, transparent=transparent, frame_rate=60)
 
     assert spec == VideoEncoderSpec(
         container_format=container,
@@ -87,15 +104,7 @@ def test_default_video_encoder_profiles(
     [OutputFormat.NONE, OutputFormat.PNG, OutputFormat.PNG_SEQUENCE],
 )
 def test_non_video_output_has_no_encoder(format):
-    assert (
-        resolve_video_encoder(
-            _output(format),
-            width=0,
-            height=0,
-            frame_rate=0,
-        )
-        is None
-    )
+    assert _resolve(format, width=0, height=0, frame_rate=0) is None
 
 
 @pytest.mark.parametrize(
@@ -125,20 +134,11 @@ def test_invalid_frame_rates(value):
 )
 def test_invalid_video_geometry(width, height):
     with pytest.raises(ValueError, match="dimensions"):
-        resolve_video_encoder(
-            _output(OutputFormat.MP4),
-            width=width,
-            height=height,
-            frame_rate=30,
-        )
+        _resolve(width=width, height=height)
 
 
 def test_custom_options_overlay_defaults_and_are_sorted():
-    spec = resolve_video_encoder(
-        _output(OutputFormat.MP4),
-        width=1920,
-        height=1080,
-        frame_rate=30,
+    spec = _resolve(
         codec="libx264",
         options={"preset": "slow", "crf": "18"},
     )
@@ -148,14 +148,7 @@ def test_custom_options_overlay_defaults_and_are_sorted():
 
 
 def test_different_explicit_codec_does_not_inherit_default_options():
-    spec = resolve_video_encoder(
-        _output(OutputFormat.MP4),
-        width=1920,
-        height=1080,
-        frame_rate=30,
-        codec="qtrle",
-        pixel_format="argb",
-    )
+    spec = _resolve(codec="qtrle", pixel_format="argb")
 
     assert spec is not None
     assert spec.options == ()
@@ -164,47 +157,22 @@ def test_different_explicit_codec_does_not_inherit_default_options():
 @pytest.mark.parametrize("option", ["codec", "pixel_format", "width", "rate"])
 def test_stream_fields_cannot_be_supplied_as_codec_options(option):
     with pytest.raises(ValueError, match="explicit stream settings"):
-        resolve_video_encoder(
-            _output(OutputFormat.MP4),
-            width=1920,
-            height=1080,
-            frame_rate=30,
-            options={option: "value"},
-        )
+        _resolve(options={option: "value"})
 
 
 def test_encoder_options_must_be_strings():
     with pytest.raises(TypeError, match="keys and values must be strings"):
-        resolve_video_encoder(
-            _output(OutputFormat.MP4),
-            width=1920,
-            height=1080,
-            frame_rate=30,
-            options={"crf": 18},  # type: ignore[dict-item]
-        )
+        _resolve(options={"crf": 18})
 
 
 def test_unknown_encoder_is_rejected():
     with pytest.raises(ValueError, match="Unknown video encoder"):
-        resolve_video_encoder(
-            _output(OutputFormat.MP4),
-            width=1920,
-            height=1080,
-            frame_rate=30,
-            codec="not-a-codec",
-        )
+        _resolve(codec="not-a-codec")
 
 
 def test_encoder_pixel_format_mismatch_is_rejected():
     with pytest.raises(ValueError, match="not supported"):
-        resolve_video_encoder(
-            _output(OutputFormat.MP4),
-            width=1920,
-            height=1080,
-            frame_rate=30,
-            codec="qtrle",
-            pixel_format="yuv420p",
-        )
+        _resolve(codec="qtrle", pixel_format="yuv420p")
 
 
 def test_video_encoder_fingerprint_is_canonical_and_byte_sensitive():
@@ -242,10 +210,8 @@ def test_video_encoder_fingerprint_is_canonical_and_byte_sensitive():
 
 def test_transparent_output_requires_alpha_pixel_format():
     with pytest.raises(ValueError, match="alpha-bearing"):
-        resolve_video_encoder(
-            _output(OutputFormat.WEBM, transparent=True),
-            width=1920,
-            height=1080,
-            frame_rate=30,
+        _resolve(
+            OutputFormat.WEBM,
+            transparent=True,
             pixel_format="yuv420p",
         )

@@ -18,6 +18,10 @@ _CACHE_IDENTITY = {
 }
 
 
+def _play_hash(*args):
+    return hashing.get_hash_from_play_call(*args, **_CACHE_IDENTITY)
+
+
 def test_JSON_basic():
     o = {"test": 1, 2: 4, 3: 2.0}
     o_serialized = hashing.get_json(o)
@@ -259,37 +263,13 @@ def test_play_hash_includes_mobject_pixels_but_not_camera_pixels():
     camera = HashableObject("camera", np.arange(8, dtype=np.uint8))
     mobject = ImageMobject(np.zeros((8, 8, 4), dtype=np.uint8))
 
-    original = hashing.get_hash_from_play_call(
-        scene,
-        camera,
-        [],
-        [mobject],
-        **_CACHE_IDENTITY,
-    )
+    original = _play_hash(scene, camera, [], [mobject])
     mobject.pixel_array[4, 4, 0] ^= 1
-    assert (
-        hashing.get_hash_from_play_call(
-            scene,
-            camera,
-            [],
-            [mobject],
-            **_CACHE_IDENTITY,
-        )
-        != original
-    )
+    assert _play_hash(scene, camera, [], [mobject]) != original
 
     mobject.pixel_array[4, 4, 0] ^= 1
     camera.pixel_array[0] ^= 1
-    assert (
-        hashing.get_hash_from_play_call(
-            scene,
-            camera,
-            [],
-            [mobject],
-            **_CACHE_IDENTITY,
-        )
-        == original
-    )
+    assert _play_hash(scene, camera, [], [mobject]) == original
 
 
 def test_play_hash_keeps_distinct_mobjects_with_equal_python_hashes():
@@ -307,24 +287,9 @@ def test_play_hash_keeps_distinct_mobjects_with_equal_python_hashes():
     camera = CollidingObject("camera")
     mobjects = [CollidingObject("first"), CollidingObject("second")]
 
-    original = hashing.get_hash_from_play_call(
-        scene,
-        camera,
-        [],
-        mobjects,
-        **_CACHE_IDENTITY,
-    )
+    original = _play_hash(scene, camera, [], mobjects)
     mobjects[1].name = "changed"
-    assert (
-        hashing.get_hash_from_play_call(
-            scene,
-            camera,
-            [],
-            mobjects,
-            **_CACHE_IDENTITY,
-        )
-        != original
-    )
+    assert _play_hash(scene, camera, [], mobjects) != original
 
 
 def test_play_hash_includes_backend_encoder_and_renderer_state():
@@ -334,75 +299,39 @@ def test_play_hash_includes_backend_encoder_and_renderer_state():
 
     scene = HashableObject("scene")
     camera = HashableObject("camera")
+
+    def cache_key(*, backend="cairo", encoder="encoder", **renderer_state):
+        return hashing.get_hash_from_play_call(
+            scene,
+            camera,
+            [],
+            [],
+            backend=backend,
+            encoder_fingerprint=encoder,
+            renderer_state=renderer_state,
+        )
+
     renderer_state = {
         "meshes": [HashableObject("mesh")],
         "background_color": np.array([0.0, 0.0, 0.0, 1.0]),
         "anti_alias_width": 1.5,
     }
+    original = cache_key(**renderer_state)
+    changed_inputs = [
+        cache_key(backend="opengl", **renderer_state),
+        cache_key(encoder="other", **renderer_state),
+        cache_key(**{**renderer_state, "meshes": [HashableObject("changed")]}),
+        cache_key(
+            **{
+                **renderer_state,
+                "background_color": np.array([1.0, 0.0, 0.0, 1.0]),
+            },
+        ),
+        cache_key(**{**renderer_state, "anti_alias_width": 2.0}),
+    ]
 
-    original = hashing.get_hash_from_play_call(
-        scene,
-        camera,
-        [],
-        [],
-        backend="cairo",
-        encoder_fingerprint="first-encoder",
-        renderer_state=renderer_state,
-    )
-    assert original.startswith("v2_cairo_")
-    assert original != hashing.get_hash_from_play_call(
-        scene,
-        camera,
-        [],
-        [],
-        backend="opengl",
-        encoder_fingerprint="first-encoder",
-        renderer_state=renderer_state,
-    )
-    assert original != hashing.get_hash_from_play_call(
-        scene,
-        camera,
-        [],
-        [],
-        backend="cairo",
-        encoder_fingerprint="second-encoder",
-        renderer_state=renderer_state,
-    )
-
-    renderer_state["meshes"][0].value = "changed"
-    assert original != hashing.get_hash_from_play_call(
-        scene,
-        camera,
-        [],
-        [],
-        backend="cairo",
-        encoder_fingerprint="first-encoder",
-        renderer_state=renderer_state,
-    )
-
-    renderer_state["meshes"][0].value = "mesh"
-    renderer_state["background_color"][0] = 1.0
-    assert original != hashing.get_hash_from_play_call(
-        scene,
-        camera,
-        [],
-        [],
-        backend="cairo",
-        encoder_fingerprint="first-encoder",
-        renderer_state=renderer_state,
-    )
-
-    renderer_state["background_color"][0] = 0.0
-    renderer_state["anti_alias_width"] = 2.0
-    assert original != hashing.get_hash_from_play_call(
-        scene,
-        camera,
-        [],
-        [],
-        backend="cairo",
-        encoder_fingerprint="first-encoder",
-        renderer_state=renderer_state,
-    )
+    assert len(original) == 64
+    assert all(changed != original for changed in changed_inputs)
 
 
 def test_JSON_with_tuple():

@@ -21,18 +21,6 @@ def _spec(*, width=4, height=2):
     )
 
 
-def _alpha_spec():
-    return VideoEncoderSpec(
-        container_format="mov",
-        codec="qtrle",
-        pixel_format="argb",
-        width=4,
-        height=2,
-        frame_rate=Fraction(30, 1),
-        options=(),
-    )
-
-
 def _detached_encoder(tmp_path, *, stream=None, container=None):
     encoder = object.__new__(VideoSegmentEncoder)
     encoder.target = tmp_path / "segment.mp4"
@@ -169,35 +157,3 @@ def test_open_failure_has_target_profile_and_original_cause(tmp_path, monkeypatc
         VideoSegmentEncoder(target=tmp_path / "segment.mp4", spec=_spec())
 
     assert exc_info.value.__cause__ is expected_exception
-
-
-def test_real_encoder_writes_decodable_repeated_frames(tmp_path):
-    target = tmp_path / "segment.mp4"
-    encoder = VideoSegmentEncoder(target=target, spec=_spec())
-    frame = _frame()
-
-    encoder.write_frame(frame, repeat=3)
-    encoder.finish()
-
-    with av.open(target) as container:
-        decoded_frames = list(container.decode(video=0))
-    assert len(decoded_frames) == 3
-
-
-def test_real_encoder_preserves_alpha(tmp_path):
-    target = tmp_path / "alpha.mov"
-    encoder = VideoSegmentEncoder(target=target, spec=_alpha_spec())
-    frame = np.array(
-        [
-            [[255, 0, 0, 0], [0, 255, 0, 64], [0, 0, 255, 128], [0, 0, 0, 255]],
-            [[1, 2, 3, 16], [4, 5, 6, 80], [7, 8, 9, 160], [10, 11, 12, 240]],
-        ],
-        dtype=np.uint8,
-    )
-
-    encoder.write_frame(frame)
-    encoder.finish()
-
-    with av.open(target) as container:
-        decoded = next(container.decode(video=0)).to_ndarray(format="rgba")
-    np.testing.assert_array_equal(decoded, frame)

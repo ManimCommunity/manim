@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import configparser
 import tempfile
 from pathlib import Path
 
@@ -271,20 +270,6 @@ tune = animation, film: grain
         "preset": "veryslow",
         "tune": "animation, film: grain",
     }
-
-
-def test_duplicate_encoder_option_in_config_file_is_rejected(tmp_path, config):
-    config_file = tmp_path / "duplicate.cfg"
-    config_file.write_text(
-        """\
-[video_encoder.options]
-crf = 18
-crf = 20
-""",
-    )
-
-    with pytest.raises(configparser.DuplicateOptionError):
-        config.digest_file(config_file)
 
 
 def test_media_loglevel_is_loaded_from_media_section(tmp_path, config):

@@ -1,12 +1,10 @@
 from __future__ import annotations
 
 import os
-from fractions import Fraction
 from unittest.mock import Mock
 
 import numpy as np
 
-from manim._config.video_encoder import VideoEncoderSpec, video_encoder_fingerprint
 from manim.utils import caching
 from manim.utils.caching import (
     clear_segment_cache,
@@ -113,16 +111,10 @@ def test_clear_segment_cache_accepts_missing_directory(tmp_path):
 
 
 def test_opengl_cache_path_supplies_backend_encoder_and_raster_state(monkeypatch):
-    encoder = VideoEncoderSpec(
-        container_format="webm",
-        codec="libvpx-vp9",
-        pixel_format="yuv420p",
-        width=1920,
-        height=1080,
-        frame_rate=Fraction(60, 1),
-        options=(("crf", "23"),),
-    )
+    encoder = object()
+    fingerprint = Mock(return_value="encoder-token")
     hash_play = Mock(return_value="cache-key")
+    monkeypatch.setattr(caching, "video_encoder_fingerprint", fingerprint)
     monkeypatch.setattr(caching, "get_hash_from_play_call", hash_play)
 
     class FakeScene:
@@ -160,10 +152,11 @@ def test_opengl_cache_path_supplies_backend_encoder_and_raster_state(monkeypatch
 
     renderer.play(scene)
 
+    fingerprint.assert_called_once_with(encoder)
     hash_play.assert_called_once()
     assert hash_play.call_args.kwargs == {
         "backend": "opengl",
-        "encoder_fingerprint": video_encoder_fingerprint(encoder),
+        "encoder_fingerprint": "encoder-token",
         "renderer_state": {
             "meshes": scene.meshes,
             "background_color": renderer.background_color,
