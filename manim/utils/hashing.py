@@ -418,8 +418,12 @@ def get_hash_from_play_call(
     camera_object: Camera | OpenGLCamera,
     animations_list: Iterable[Animation],
     current_mobjects_list: Iterable[Mobject],
+    *,
+    backend: str,
+    encoder_fingerprint: str,
+    renderer_state: Any,
 ) -> str:
-    """Take the list of animations and a list of mobjects and output their hashes. This is meant to be used for `scene.play` function.
+    """Return the visual-segment cache key for one compiled play call.
 
     Parameters
     -----------
@@ -434,12 +438,23 @@ def get_hash_from_play_call(
 
     current_mobjects_list
         The list of mobjects.
+    backend
+        Stable identity of the renderer producing the segment.
+    encoder_fingerprint
+        Stable identity of the resolved segment encoder settings.
+    renderer_state
+        Additional renderer-specific state which affects segment pixels.
 
     Returns
     -------
     :class:`str`
-        A string concatenation of the respective hashes of `camera_object`, `animations_list` and `current_mobjects_list`, separated by `_`.
+        A versioned filename-safe cache key.
     """
+    if backend not in {"cairo", "opengl"}:
+        raise ValueError(f"Unsupported cache backend: {backend}")
+    if not encoder_fingerprint:
+        raise ValueError("An encoder fingerprint is required for cache identity.")
+
     logger.debug("Hashing ...")
     t_start = perf_counter()
     memoizer = _Memoizer()
@@ -453,11 +468,23 @@ def get_hash_from_play_call(
         _get_json(mobject, memoizer, include_pixel_array=True)
         for mobject in current_mobjects_list
     ]
+    renderer_state_json = _get_json(
+        renderer_state,
+        memoizer,
+        include_pixel_array=True,
+    )
     hash_camera, hash_animations, hash_current_mobjects = (
         zlib.crc32(repr(json_val).encode())
-        for json_val in [camera_json, animations_list_json, current_mobjects_list_json]
+        for json_val in [
+            camera_json,
+            animations_list_json,
+            [current_mobjects_list_json, renderer_state_json],
+        ]
     )
-    hash_complete = f"{hash_camera}_{hash_animations}_{hash_current_mobjects}"
+    hash_complete = (
+        f"v2_{backend}_{hash_camera}_{hash_animations}_{hash_current_mobjects}_"
+        f"{encoder_fingerprint}"
+    )
     t_end = perf_counter()
     logger.debug("Hashing done in %(time)s s.", {"time": str(t_end - t_start)[:8]})
     logger.debug("Hash generated :  %(h)s", {"h": hash_complete})

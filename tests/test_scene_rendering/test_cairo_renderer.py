@@ -105,3 +105,5 @@ def test_hash_logic_is_called_when_caching_is_enabled(using_temp_config):
         scene = SquareToCircle()
         scene.render()
         mocked.assert_called_once()
+        assert mocked.call_args.kwargs["backend"] == "cairo"
+        assert mocked.call_args.kwargs["encoder_fingerprint"] != "none"

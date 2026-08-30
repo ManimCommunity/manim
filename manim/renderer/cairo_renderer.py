@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 from manim.utils.hashing import get_hash_from_play_call
 
 from .. import config, logger
+from .._config.video_encoder import video_encoder_fingerprint
 from ..camera.camera import Camera
 from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..scene.scene_file_writer import SceneFileWriter
@@ -94,6 +95,11 @@ class CairoRenderer:
                     self.camera,
                     scene.animations,
                     scene.mobjects,
+                    backend="cairo",
+                    encoder_fingerprint=video_encoder_fingerprint(
+                        self.file_writer.video_encoder,
+                    ),
+                    renderer_state=(),
                 )
                 if self.file_writer.is_already_cached(hash_current_animation):
                     logger.info(

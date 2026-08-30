@@ -11,6 +11,11 @@ import manim.utils.hashing as hashing
 from manim import ImageMobject, Square
 
 ALREADY_PROCESSED_PLACEHOLDER = hashing._Memoizer.ALREADY_PROCESSED_PLACEHOLDER
+_CACHE_IDENTITY = {
+    "backend": "cairo",
+    "encoder_fingerprint": "encoder-token",
+    "renderer_state": (),
+}
 
 
 def test_JSON_basic():
@@ -254,13 +259,37 @@ def test_play_hash_includes_mobject_pixels_but_not_camera_pixels():
     camera = HashableObject("camera", np.arange(8, dtype=np.uint8))
     mobject = ImageMobject(np.zeros((8, 8, 4), dtype=np.uint8))
 
-    original = hashing.get_hash_from_play_call(scene, camera, [], [mobject])
+    original = hashing.get_hash_from_play_call(
+        scene,
+        camera,
+        [],
+        [mobject],
+        **_CACHE_IDENTITY,
+    )
     mobject.pixel_array[4, 4, 0] ^= 1
-    assert hashing.get_hash_from_play_call(scene, camera, [], [mobject]) != original
+    assert (
+        hashing.get_hash_from_play_call(
+            scene,
+            camera,
+            [],
+            [mobject],
+            **_CACHE_IDENTITY,
+        )
+        != original
+    )
 
     mobject.pixel_array[4, 4, 0] ^= 1
     camera.pixel_array[0] ^= 1
-    assert hashing.get_hash_from_play_call(scene, camera, [], [mobject]) == original
+    assert (
+        hashing.get_hash_from_play_call(
+            scene,
+            camera,
+            [],
+            [mobject],
+            **_CACHE_IDENTITY,
+        )
+        == original
+    )
 
 
 def test_play_hash_keeps_distinct_mobjects_with_equal_python_hashes():
@@ -278,9 +307,102 @@ def test_play_hash_keeps_distinct_mobjects_with_equal_python_hashes():
     camera = CollidingObject("camera")
     mobjects = [CollidingObject("first"), CollidingObject("second")]
 
-    original = hashing.get_hash_from_play_call(scene, camera, [], mobjects)
+    original = hashing.get_hash_from_play_call(
+        scene,
+        camera,
+        [],
+        mobjects,
+        **_CACHE_IDENTITY,
+    )
     mobjects[1].name = "changed"
-    assert hashing.get_hash_from_play_call(scene, camera, [], mobjects) != original
+    assert (
+        hashing.get_hash_from_play_call(
+            scene,
+            camera,
+            [],
+            mobjects,
+            **_CACHE_IDENTITY,
+        )
+        != original
+    )
+
+
+def test_play_hash_includes_backend_encoder_and_renderer_state():
+    class HashableObject:
+        def __init__(self, value):
+            self.value = value
+
+    scene = HashableObject("scene")
+    camera = HashableObject("camera")
+    renderer_state = {
+        "meshes": [HashableObject("mesh")],
+        "background_color": np.array([0.0, 0.0, 0.0, 1.0]),
+        "anti_alias_width": 1.5,
+    }
+
+    original = hashing.get_hash_from_play_call(
+        scene,
+        camera,
+        [],
+        [],
+        backend="cairo",
+        encoder_fingerprint="first-encoder",
+        renderer_state=renderer_state,
+    )
+    assert original.startswith("v2_cairo_")
+    assert original != hashing.get_hash_from_play_call(
+        scene,
+        camera,
+        [],
+        [],
+        backend="opengl",
+        encoder_fingerprint="first-encoder",
+        renderer_state=renderer_state,
+    )
+    assert original != hashing.get_hash_from_play_call(
+        scene,
+        camera,
+        [],
+        [],
+        backend="cairo",
+        encoder_fingerprint="second-encoder",
+        renderer_state=renderer_state,
+    )
+
+    renderer_state["meshes"][0].value = "changed"
+    assert original != hashing.get_hash_from_play_call(
+        scene,
+        camera,
+        [],
+        [],
+        backend="cairo",
+        encoder_fingerprint="first-encoder",
+        renderer_state=renderer_state,
+    )
+
+    renderer_state["meshes"][0].value = "mesh"
+    renderer_state["background_color"][0] = 1.0
+    assert original != hashing.get_hash_from_play_call(
+        scene,
+        camera,
+        [],
+        [],
+        backend="cairo",
+        encoder_fingerprint="first-encoder",
+        renderer_state=renderer_state,
+    )
+
+    renderer_state["background_color"][0] = 0.0
+    renderer_state["anti_alias_width"] = 2.0
+    assert original != hashing.get_hash_from_play_call(
+        scene,
+        camera,
+        [],
+        [],
+        backend="cairo",
+        encoder_fingerprint="first-encoder",
+        renderer_state=renderer_state,
+    )
 
 
 def test_JSON_with_tuple():

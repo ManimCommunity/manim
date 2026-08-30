@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from fractions import Fraction
 
 import pytest
@@ -9,6 +10,7 @@ from manim._config.video_encoder import (
     VideoEncoderSpec,
     resolve_video_encoder,
     to_av_frame_rate,
+    video_encoder_fingerprint,
 )
 
 
@@ -203,6 +205,39 @@ def test_encoder_pixel_format_mismatch_is_rejected():
             codec="qtrle",
             pixel_format="yuv420p",
         )
+
+
+def test_video_encoder_fingerprint_is_canonical_and_byte_sensitive():
+    spec = VideoEncoderSpec(
+        container_format="mp4",
+        codec="libx264",
+        pixel_format="yuv420p",
+        width=1920,
+        height=1080,
+        frame_rate=Fraction(30, 1),
+        options=(("preset", "slow"), ("crf", "18")),
+    )
+    token = video_encoder_fingerprint(spec)
+
+    assert len(token) == 16
+    assert (
+        video_encoder_fingerprint(
+            replace(spec, options=tuple(reversed(spec.options))),
+        )
+        == token
+    )
+
+    changed_specs = [
+        replace(spec, container_format="mov"),
+        replace(spec, codec="libx265"),
+        replace(spec, pixel_format="yuv444p"),
+        replace(spec, width=1280),
+        replace(spec, height=720),
+        replace(spec, frame_rate=Fraction(60, 1)),
+        replace(spec, options=(("crf", "19"), ("preset", "slow"))),
+    ]
+    assert all(video_encoder_fingerprint(changed) != token for changed in changed_specs)
+    assert video_encoder_fingerprint(None) == "none"
 
 
 def test_transparent_output_requires_alpha_pixel_format():

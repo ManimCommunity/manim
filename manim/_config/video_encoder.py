@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 import math
 from collections.abc import Mapping
 from dataclasses import dataclass
@@ -15,6 +17,7 @@ __all__ = [
     "VideoEncoderSpec",
     "resolve_video_encoder",
     "to_av_frame_rate",
+    "video_encoder_fingerprint",
 ]
 
 _CONFLICTING_OPTION_KEYS = frozenset(
@@ -48,6 +51,34 @@ class VideoEncoderSpec:
     height: int
     frame_rate: Fraction
     options: tuple[tuple[str, str], ...]
+
+
+def video_encoder_fingerprint(spec: VideoEncoderSpec | None) -> str:
+    """Return the stable cache-identity token for resolved encoder settings."""
+    if spec is None:
+        return "none"
+    payload = {
+        "schema": "manim-video-segment-v1",
+        "container_format": spec.container_format,
+        "codec": spec.codec,
+        "pixel_format": spec.pixel_format,
+        "width": spec.width,
+        "height": spec.height,
+        "frame_rate": {
+            "numerator": spec.frame_rate.numerator,
+            "denominator": spec.frame_rate.denominator,
+        },
+        "options": [
+            {"name": name, "value": value} for name, value in sorted(spec.options)
+        ],
+    }
+    serialized = json.dumps(
+        payload,
+        ensure_ascii=False,
+        separators=(",", ":"),
+        sort_keys=True,
+    )
+    return hashlib.sha256(serialized.encode("utf-8")).hexdigest()[:16]
 
 
 def to_av_frame_rate(frame_rate: int | float | Fraction) -> Fraction:

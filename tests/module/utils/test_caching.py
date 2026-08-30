@@ -1,9 +1,18 @@
 from __future__ import annotations
 
 import os
+from fractions import Fraction
+from unittest.mock import Mock
 
+import numpy as np
+
+from manim._config.video_encoder import VideoEncoderSpec, video_encoder_fingerprint
 from manim.utils import caching
-from manim.utils.caching import clear_segment_cache, prune_segment_cache
+from manim.utils.caching import (
+    clear_segment_cache,
+    handle_caching_play,
+    prune_segment_cache,
+)
 
 
 def test_prune_segment_cache_ignores_non_segments_and_hidden_files(tmp_path):
@@ -101,3 +110,63 @@ def test_clear_segment_cache_removes_only_recognized_segments(tmp_path):
 
 def test_clear_segment_cache_accepts_missing_directory(tmp_path):
     assert clear_segment_cache(tmp_path / "missing") == 0
+
+
+def test_opengl_cache_path_supplies_backend_encoder_and_raster_state(monkeypatch):
+    encoder = VideoEncoderSpec(
+        container_format="webm",
+        codec="libvpx-vp9",
+        pixel_format="yuv420p",
+        width=1920,
+        height=1080,
+        frame_rate=Fraction(60, 1),
+        options=(("crf", "23"),),
+    )
+    hash_play = Mock(return_value="cache-key")
+    monkeypatch.setattr(caching, "get_hash_from_play_call", hash_play)
+
+    class FakeScene:
+        def __init__(self):
+            self.mobjects = [object()]
+            self.meshes = [object()]
+
+        def compile_animations(self, *args, **kwargs):
+            return []
+
+        def add_mobjects_from_animations(self, animations):
+            pass
+
+    class FakeRenderer:
+        _original_skipping_status = False
+        skip_animations = False
+        num_plays = 0
+        animations_hashes = []
+        camera = object()
+        background_color = np.array([0.1, 0.2, 0.3, 1.0])
+        anti_alias_width = 1.5
+        file_writer = Mock(video_encoder=encoder)
+
+        def update_skipping_status(self):
+            pass
+
+        @handle_caching_play
+        def play(self, scene, *args, **kwargs):
+            pass
+
+    scene = FakeScene()
+    renderer = FakeRenderer()
+    renderer.file_writer.is_already_cached.return_value = False
+
+    renderer.play(scene)
+
+    hash_play.assert_called_once()
+    assert hash_play.call_args.kwargs == {
+        "backend": "opengl",
+        "encoder_fingerprint": video_encoder_fingerprint(encoder),
+        "renderer_state": {
+            "meshes": scene.meshes,
+            "background_color": renderer.background_color,
+            "anti_alias_width": renderer.anti_alias_width,
+        },
+    }
+    renderer.file_writer.add_partial_movie_file.assert_called_once_with("cache-key")

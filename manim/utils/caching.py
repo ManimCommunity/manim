@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from .. import config, logger
+from .._config.video_encoder import video_encoder_fingerprint
 from ..utils.hashing import get_hash_from_play_call
 
 __all__ = [
@@ -124,6 +125,15 @@ def handle_caching_play(func: Callable[..., None]) -> Callable[..., None]:
                 self.camera,
                 animations,
                 mobjects_on_scene,
+                backend="opengl",
+                encoder_fingerprint=video_encoder_fingerprint(
+                    self.file_writer.video_encoder,
+                ),
+                renderer_state={
+                    "meshes": scene.meshes,
+                    "background_color": self.background_color,
+                    "anti_alias_width": self.anti_alias_width,
+                },
             )
             if self.file_writer.is_already_cached(hash_play):
                 logger.info(
