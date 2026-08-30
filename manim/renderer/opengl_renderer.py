@@ -542,6 +542,7 @@ class OpenGLRenderer:
             scene.__class__.__name__,
             output_spec=session_spec.output,
             output_plan=scene.output_plan,
+            video_encoder=session_spec.video_encoder,
         )
         self.scene = scene
 

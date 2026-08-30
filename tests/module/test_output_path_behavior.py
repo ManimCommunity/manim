@@ -14,6 +14,7 @@ from manim._config.output_plan import (
     resolve_output_plan,
     resolve_requested_output_name,
 )
+from manim._config.video_encoder import resolve_video_encoder
 from manim.scene.scene_file_writer import SceneFileWriter
 
 
@@ -60,6 +61,12 @@ def _make_writer(
         "ExampleScene",
         output,
         output_plan,
+        resolve_video_encoder(
+            output,
+            width=config.pixel_width,
+            height=config.pixel_height,
+            frame_rate=config.frame_rate,
+        ),
     )
 
 

@@ -22,6 +22,7 @@ from manim._config.output_plan import (
     resolve_output_plan,
     resolve_requested_output_name,
 )
+from manim._config.video_encoder import resolve_video_encoder
 from manim.cli.render.commands import render
 from manim.scene.scene_file_writer import SceneFileWriter
 from manim.utils.exceptions import RerunSceneException
@@ -62,7 +63,13 @@ def _make_writer(
         requested_output_name=resolve_requested_output_name(config),
     )
     renderer = Mock(num_plays=0)
-    return SceneFileWriter(renderer, scene_name, output, plan)
+    video_encoder = resolve_video_encoder(
+        output,
+        width=config.pixel_width,
+        height=config.pixel_height,
+        frame_rate=config.frame_rate,
+    )
+    return SceneFileWriter(renderer, scene_name, output, plan, video_encoder)
 
 
 _SCENE_NAME = "ParallelEncodingCacheScene"

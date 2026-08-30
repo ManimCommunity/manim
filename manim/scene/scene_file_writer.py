@@ -8,7 +8,6 @@ import json
 import shutil
 import warnings
 from contextlib import suppress
-from fractions import Fraction
 from pathlib import Path
 from queue import Queue
 from tempfile import NamedTemporaryFile, _TemporaryFileWrapper
@@ -36,6 +35,7 @@ from manim import __version__
 from .. import config, logger
 from .._config.output import OutputSpec
 from .._config.output_plan import OutputPlan
+from .._config.video_encoder import VideoEncoderSpec
 from ..constants import RendererType
 from ..utils.caching import prune_segment_cache
 from ..utils.file_ops import modify_atime
@@ -49,23 +49,6 @@ if TYPE_CHECKING:
     from manim.renderer.cairo_renderer import CairoRenderer
     from manim.renderer.opengl_renderer import OpenGLRenderer
     from manim.typing import PixelArray, StrPath
-
-
-def to_av_frame_rate(fps: float) -> Fraction:
-    epsilon1 = 1e-4
-    epsilon2 = 0.02
-
-    if isinstance(fps, int):
-        (num, denom) = (fps, 1)
-    elif abs(fps - round(fps)) < epsilon1:
-        (num, denom) = (round(fps), 1)
-    else:
-        denom = 1001
-        num = round(fps * denom / 1000) * 1000
-        if abs(fps - num / denom) >= epsilon2:
-            raise ValueError("invalid frame rate")
-
-    return Fraction(num, denom)
 
 
 def convert_audio(
@@ -221,11 +204,17 @@ class SceneFileWriter:
         scene_name: str,
         output_spec: OutputSpec,
         output_plan: OutputPlan,
+        video_encoder: VideoEncoderSpec | None,
         **kwargs: Any,
     ) -> None:
+        if output_spec.is_video != (video_encoder is not None):
+            raise ValueError(
+                "Video output and resolved video encoder settings must be provided together.",
+            )
         self.renderer = renderer
         self.output_spec = output_spec
         self.output_plan = output_plan
+        self.video_encoder = video_encoder
         self._inflight_encode_jobs: list[_PartialMovieEncodeJob] = []
         self._inflight_by_path: dict[str, _PartialMovieEncodeJob] = {}
         self._current_encode_job: _PartialMovieEncodeJob | None = None
@@ -580,34 +569,23 @@ class SceneFileWriter:
             self._join_job_and_drain_on_failure(self._inflight_by_path[path_key])
         self.partial_movie_file_path = file_path
 
-        fps = to_av_frame_rate(config.frame_rate)
+        encoder = self.video_encoder
+        if encoder is None:
+            raise RuntimeError("Video segment encoding requires resolved settings.")
 
-        partial_movie_file_codec = "libx264"
-        partial_movie_file_pix_fmt = "yuv420p"
-        av_options = {
-            "an": "1",  # ffmpeg: -an, no audio
-            "crf": "23",  # ffmpeg: -crf, constant rate factor (improved bitrate)
-        }
-
-        if self.output_spec.segment_extension == ".webm":
-            partial_movie_file_codec = "libvpx-vp9"
-            av_options["-auto-alt-ref"] = "1"
-            if self.output_spec.transparent:
-                partial_movie_file_pix_fmt = "yuva420p"
-
-        elif self.output_spec.transparent:
-            partial_movie_file_codec = "qtrle"
-            partial_movie_file_pix_fmt = "argb"
-
-        video_container = av.open(file_path, mode="w")
-        stream = video_container.add_stream(
-            partial_movie_file_codec,
-            rate=fps,
-            options=av_options,
+        video_container = av.open(
+            file_path,
+            mode="w",
+            format=encoder.container_format,
         )
-        stream.pix_fmt = partial_movie_file_pix_fmt
-        stream.width = config.pixel_width
-        stream.height = config.pixel_height
+        stream = video_container.add_stream(
+            encoder.codec,
+            rate=encoder.frame_rate,
+            options=dict(encoder.options),
+        )
+        stream.pix_fmt = encoder.pixel_format
+        stream.width = encoder.width
+        stream.height = encoder.height
 
         frame_queue_size = (
             0 if config.max_inflight_encoders == 1 else config.encoder_queue_size
@@ -800,9 +778,11 @@ class SceneFileWriter:
             output_stream.pix_fmt = "rgb8"
             if self.output_spec.transparent:
                 output_stream.pix_fmt = "pal8"
-            output_stream.width = config.pixel_width
-            output_stream.height = config.pixel_height
-            output_stream.rate = to_av_frame_rate(config.frame_rate)
+            encoder = self.video_encoder
+            assert encoder is not None
+            output_stream.width = encoder.width
+            output_stream.height = encoder.height
+            output_stream.rate = encoder.frame_rate
             graph = av.filter.Graph()
             input_buffer = graph.add_buffer(template=partial_movies_stream)
             split = graph.add("split")
