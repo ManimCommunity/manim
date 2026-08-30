@@ -1,0 +1,161 @@
+from __future__ import annotations
+
+from fractions import Fraction
+from pathlib import Path
+from unittest.mock import Mock
+
+import av
+import numpy as np
+import pytest
+from av.codec.context import CodecContext
+
+from manim import tempconfig
+from manim._config import config
+from manim._config.output import OutputFormat, OutputSpec
+from manim._config.output_plan import resolve_media_layout, resolve_output_plan
+from manim.scene.scene_file_writer import SceneFileWriter
+
+_WIDTH = 16
+_HEIGHT = 12
+_FRAME_RATE = 5
+_FRAME_COUNT = 3
+
+
+def _output(format: str, transparent: bool) -> OutputSpec:
+    return OutputSpec(
+        format=OutputFormat(format),
+        transparent=transparent,
+        save_sections=False,
+        fallback_to_still=False,
+    )
+
+
+def _writer(output: OutputSpec) -> SceneFileWriter:
+    layout = resolve_media_layout(
+        config,
+        output,
+        module_name="segment_profiles",
+        scene_name="SegmentProfileScene",
+        working_directory=Path.cwd(),
+    )
+    plan = resolve_output_plan(
+        layout,
+        output,
+        scene_name="SegmentProfileScene",
+        requested_output_name=None,
+    )
+    return SceneFileWriter(Mock(num_plays=0), "SegmentProfileScene", output, plan)
+
+
+def _asymmetric_rgba_frame() -> np.ndarray:
+    frame = np.empty((_HEIGHT, _WIDTH, 4), dtype=np.uint8)
+    frame[: _HEIGHT // 2, : _WIDTH // 2] = [255, 0, 0, 32]
+    frame[: _HEIGHT // 2, _WIDTH // 2 :] = [0, 255, 0, 96]
+    frame[_HEIGHT // 2 :, : _WIDTH // 2] = [0, 0, 255, 160]
+    frame[_HEIGHT // 2 :, _WIDTH // 2 :] = [255, 255, 255, 224]
+    return frame
+
+
+def _decode_frames(
+    path: Path,
+    *,
+    transparent_vp9: bool,
+) -> tuple[str, str, Fraction | None, list[np.ndarray], int]:
+    with av.open(path) as container:
+        stream = container.streams.video[0]
+        codec = stream.codec_context.name
+        pixel_format = stream.codec_context.format.name
+        rate = stream.average_rate
+        audio_streams = len(container.streams.audio)
+
+        if transparent_vp9:
+            decoder = CodecContext.create("libvpx-vp9", "r")
+            decoded = []
+            for packet in container.demux(video=0):
+                decoded.extend(decoder.decode(packet))
+            pixel_format = decoded[0].format.name
+        else:
+            decoded = list(container.decode(video=0))
+
+        frames = [frame.to_ndarray(format="rgba") for frame in decoded]
+    return codec, pixel_format, rate, frames, audio_streams
+
+
+@pytest.mark.parametrize(
+    (
+        "format",
+        "transparent",
+        "segment_extension",
+        "codec",
+        "pixel_format",
+    ),
+    [
+        ("mp4", False, ".mp4", "h264", "yuv420p"),
+        ("mov", False, ".mov", "h264", "yuv420p"),
+        ("mov", True, ".mov", "qtrle", "argb"),
+        ("webm", False, ".webm", "vp9", "yuv420p"),
+        ("webm", True, ".webm", "vp9", "yuva420p"),
+        ("gif", False, ".mp4", "h264", "yuv420p"),
+        ("gif", True, ".mov", "qtrle", "argb"),
+    ],
+)
+def test_cached_segment_profile_and_pixel_orientation(
+    tmp_path,
+    format,
+    transparent,
+    segment_extension,
+    codec,
+    pixel_format,
+):
+    output = _output(format, transparent)
+    target = tmp_path / f"segment{segment_extension}"
+    source = _asymmetric_rgba_frame()
+
+    with tempconfig(
+        {
+            "media_dir": tmp_path,
+            "pixel_width": _WIDTH,
+            "pixel_height": _HEIGHT,
+            "frame_rate": _FRAME_RATE,
+        },
+    ):
+        writer = _writer(output)
+        writer.open_partial_movie_stream(target)
+        writer.write_frame(source, num_frames=_FRAME_COUNT)
+        writer.close_partial_movie_stream()
+        writer.join_all_encode_jobs()
+
+    (
+        actual_codec,
+        actual_pixel_format,
+        actual_rate,
+        decoded_frames,
+        audio_streams,
+    ) = _decode_frames(
+        target,
+        transparent_vp9=format == "webm" and transparent,
+    )
+
+    assert output.segment_extension == segment_extension
+    assert actual_codec == codec
+    assert actual_pixel_format == pixel_format
+    assert actual_rate == Fraction(_FRAME_RATE, 1)
+    assert len(decoded_frames) == _FRAME_COUNT
+    assert audio_streams == 0
+
+    sample_points = (
+        ((_HEIGHT // 4, _WIDTH // 4), np.array([255, 0, 0, 32])),
+        ((_HEIGHT // 4, 3 * _WIDTH // 4), np.array([0, 255, 0, 96])),
+        ((3 * _HEIGHT // 4, _WIDTH // 4), np.array([0, 0, 255, 160])),
+        ((3 * _HEIGHT // 4, 3 * _WIDTH // 4), np.array([255, 255, 255, 224])),
+    )
+    for decoded in decoded_frames:
+        for (row, column), expected in sample_points:
+            expected = expected.copy()
+            if not transparent:
+                expected[3] = 255
+            np.testing.assert_allclose(
+                decoded[row, column],
+                expected,
+                atol=15,
+            )
