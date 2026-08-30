@@ -3,7 +3,7 @@ from __future__ import annotations
 import operator as op
 from collections.abc import Callable, Iterable
 from functools import reduce
-from typing import Any, Self, TypeVar
+from typing import Any, Self
 
 import numpy as np
 
@@ -29,8 +29,6 @@ from manim.typing import (
     Vector3DLike,
 )
 from manim.utils.space_ops import rotation_matrix
-
-T = TypeVar("T")
 
 
 class Positionable:
@@ -300,43 +298,6 @@ class Positionable:
             about_edge=about_edge,
         )
 
-    def reduce_points(
-        self,
-        function: Callable[[Point3D_Array], T],
-        aggregator: Callable[[Iterable[T]], T],
-        *,
-        default: T | None = None,
-        only_with_points: bool = True,
-    ) -> T:
-        """Reduces the points to a value.
-
-        Parameters
-        ----------
-        function
-            The reduce function.
-        aggregator
-            The aggregator function.
-        default, optional
-            The default value., by default None
-        only_with_points, optional
-            Whether to only use members with points., by default True
-
-        Returns
-        -------
-            The value.
-        """
-        if only_with_points:
-            values = [
-                function(mob.points) for mob in self.get_family() if len(mob.points) > 0
-            ]
-        else:
-            values = [function(mob.points) for mob in self.get_family()]
-
-        if len(values) == 0 and default is not None:
-            return default
-
-        return aggregator(values)
-
     ### TRANSFORMATIONS ###
 
     def translate(self, vector: Vector3DLike) -> Self:
@@ -569,9 +530,11 @@ class Positionable:
         --------
         :meth:`set_position`
         """
+        points = self.get_points_defining_boundary()
         return np.array(
             [
-                self.get_extremum_along_dim(
+                self._get_extremum_along_dim(
+                    points=points,
                     dim=dim,
                     key=key,
                 )
@@ -884,7 +847,11 @@ class Positionable:
         --------
         :meth:`set_coordinate`
         """
-        return self.get_extremum_along_dim(dim=dim, key=np.sign(direction[dim]))
+        return self._get_extremum_along_dim(
+            points=self.get_points_defining_boundary(),
+            dim=dim,
+            key=np.sign(direction[dim]),
+        )
 
     def set_coordinate(
         self,
@@ -1461,23 +1428,28 @@ class Positionable:
         -------
             The value.
         """
+        return self._get_extremum_along_dim(
+            self.get_points_defining_boundary(),
+            dim=dim,
+            key=key,
+        )
 
-        def reduce(values: np.ndarray) -> float:
-            return (  # type: ignore[no-any-return]
-                values.min()
-                if key < 0
-                else (values.min() + values.max()) / 2
-                if key == 0
-                else values.max()
-            )
-
-        def function(points: Point3D_Array) -> float:
-            return reduce(points[:, dim])
-
-        def aggregator(values: Iterable[float]) -> float:
-            return reduce(np.array(values))
-
-        return self.reduce_points(function=function, aggregator=aggregator, default=0.0)
+    def _get_extremum_along_dim(
+        self,
+        points: Point3D_Array,
+        dim: int = 0,
+        key: int = 0,
+    ) -> float:
+        if len(points) == 0:
+            return 0
+        values = points[:, dim]
+        return (  # type: ignore[no-any-return]
+            values.min()
+            if key < 0
+            else (values.min() + values.max()) / 2
+            if key == 0
+            else values.max()
+        )
 
     def is_off_screen(self) -> bool:
         """Returns whether this is off screen.
@@ -1487,15 +1459,28 @@ class Positionable:
         bool
             Is off screen.
         """
+        points = self.get_points_defining_boundary()
         return (
             # left is too right
-            (self.get_extremum_along_dim(dim=0, key=-1) > config.frame_x_radius)
+            (
+                self._get_extremum_along_dim(points=points, dim=0, key=-1)
+                > config.frame_x_radius
+            )
             # right is too left
-            or (self.get_extremum_along_dim(dim=0, key=1) < -config.frame_x_radius)
+            or (
+                self._get_extremum_along_dim(points=points, dim=0, key=1)
+                < -config.frame_x_radius
+            )
             # bottom is too high
-            or (self.get_extremum_along_dim(dim=1, key=-1) > config.frame_y_radius)
+            or (
+                self._get_extremum_along_dim(points=points, dim=1, key=-1)
+                > config.frame_y_radius
+            )
             # top is too low
-            or (self.get_extremum_along_dim(dim=1, key=1) < -config.frame_y_radius)
+            or (
+                self._get_extremum_along_dim(points=points, dim=1, key=1)
+                < -config.frame_y_radius
+            )
         )
 
     def pose_at_angle(
