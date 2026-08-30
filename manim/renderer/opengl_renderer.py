@@ -51,6 +51,7 @@ if TYPE_CHECKING:
     from manim.animation.animation import Animation
     from manim.mobject.mobject import Mobject, _AnimationBuilder
     from manim.scene.scene import Scene
+    from manim.scene.scene_file_writer import SceneFileWriterSettings
     from manim.typing import (
         FloatRGBA,
         PathFuncType,
@@ -520,7 +521,12 @@ class OpenGLRenderer:
         self.path_to_texture_id: dict[str, int] = {}
         self.background_color = config["background_color"]
 
-    def init_scene(self, scene: Scene, session_spec: RenderSessionSpec) -> None:
+    def init_scene(
+        self,
+        scene: Scene,
+        session_spec: RenderSessionSpec,
+        file_writer_settings: SceneFileWriterSettings,
+    ) -> None:
         """
         Initializes the OpenGL rendering context and related resources
         for the given scene.
@@ -539,10 +545,7 @@ class OpenGLRenderer:
         self.partial_movie_files: list[str | None] = []
         self.file_writer: SceneFileWriter = self._file_writer_class(
             self,
-            scene.__class__.__name__,
-            output_spec=session_spec.output,
-            output_plan=scene.output_plan,
-            video_encoder=session_spec.video_encoder,
+            file_writer_settings,
         )
         self.scene = scene
 

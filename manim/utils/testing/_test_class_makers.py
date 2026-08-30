@@ -6,7 +6,7 @@ from typing import Any
 from manim.renderer.cairo_renderer import CairoRenderer
 from manim.renderer.opengl_renderer import OpenGLRenderer
 from manim.scene.scene import Scene
-from manim.scene.scene_file_writer import SceneFileWriter
+from manim.scene.scene_file_writer import SceneFileWriter, SceneFileWriterSettings
 from manim.typing import PixelArray, StrPath
 
 from ._frames_testers import _FramesTester
@@ -47,10 +47,9 @@ class DummySceneFileWriter(SceneFileWriter):
     def __init__(
         self,
         renderer: CairoRenderer | OpenGLRenderer,
-        scene_name: str,
-        **kwargs: Any,
+        settings: SceneFileWriterSettings,
     ) -> None:
-        super().__init__(renderer, scene_name, **kwargs)
+        super().__init__(renderer, settings)
         self.i = 0
 
     def add_partial_movie_file(self, hash_animation: str | None) -> None:

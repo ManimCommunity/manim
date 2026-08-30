@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from manim._config.render_session import RenderSessionSpec
     from manim.animation.animation import Animation
     from manim.scene.scene import Scene
+    from manim.scene.scene_file_writer import SceneFileWriterSettings
 
     from ..typing import PixelArray
 
@@ -58,13 +59,15 @@ class CairoRenderer:
         self.time = 0.0
         self.static_image: PixelArray | None = None
 
-    def init_scene(self, scene: Scene, session_spec: RenderSessionSpec) -> None:
+    def init_scene(
+        self,
+        scene: Scene,
+        session_spec: RenderSessionSpec,
+        file_writer_settings: SceneFileWriterSettings,
+    ) -> None:
         self.file_writer: Any = self._file_writer_class(
             self,
-            scene.__class__.__name__,
-            output_spec=session_spec.output,
-            output_plan=scene.output_plan,
-            video_encoder=session_spec.video_encoder,
+            file_writer_settings,
         )
 
     def play(

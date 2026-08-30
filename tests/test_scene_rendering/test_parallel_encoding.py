@@ -24,7 +24,7 @@ from manim._config.output_plan import (
 )
 from manim._config.video_encoder import resolve_video_encoder
 from manim.cli.render.commands import render
-from manim.scene.scene_file_writer import SceneFileWriter
+from manim.scene.scene_file_writer import SceneFileWriter, SceneFileWriterSettings
 from manim.utils.exceptions import RerunSceneException
 
 _ENCODER_THREAD_PREFIX = "partial-movie-encoder-"
@@ -63,13 +63,21 @@ def _make_writer(
         requested_output_name=resolve_requested_output_name(config),
     )
     renderer = Mock(num_plays=0)
-    video_encoder = resolve_video_encoder(
-        output,
-        width=config.pixel_width,
-        height=config.pixel_height,
-        frame_rate=config.frame_rate,
+    settings = SceneFileWriterSettings(
+        output=output,
+        plan=plan,
+        video_encoder=resolve_video_encoder(
+            output,
+            width=config.pixel_width,
+            height=config.pixel_height,
+            frame_rate=config.frame_rate,
+        ),
+        max_inflight_encoders=config.max_inflight_encoders,
+        encoder_queue_size=config.encoder_queue_size,
+        max_files_cached=config.max_files_cached,
+        assets_dir=Path.cwd(),
     )
-    return SceneFileWriter(renderer, scene_name, output, plan, video_encoder)
+    return SceneFileWriter(renderer, settings)
 
 
 _SCENE_NAME = "ParallelEncodingCacheScene"
@@ -338,6 +346,40 @@ def test_frame_queue_configuration(
     writer.close_partial_movie_stream()
     writer.join_all_encode_jobs()
     assert not _alive_encoder_threads()
+
+
+def test_pool_settings_are_not_read_from_mutated_config(config, tmp_path):
+    config.max_inflight_encoders = 2
+    config.encoder_queue_size = 3
+    writer = _make_writer("CapturedPoolSettingsScene")
+    config.max_inflight_encoders = 1
+    config.encoder_queue_size = 9
+
+    writer.open_partial_movie_stream(tmp_path / "partial.mp4")
+    job = writer._current_encode_job
+    assert job is not None
+    assert job.queue.maxsize == 3
+
+    writer.close_partial_movie_stream()
+    assert writer._inflight_encode_jobs == [job]
+    writer.join_all_encode_jobs()
+    assert not _alive_encoder_threads()
+
+
+def test_cache_limit_is_not_read_from_mutated_config(config, monkeypatch):
+    config.max_files_cached = -1
+    writer = _make_writer("CapturedCacheLimitScene")
+    config.max_files_cached = 0
+    writer.combine_to_movie = Mock()
+    prune = Mock()
+    monkeypatch.setattr(
+        "manim.scene.scene_file_writer.prune_segment_cache",
+        prune,
+    )
+
+    writer.finish()
+
+    prune.assert_called_once_with(writer.partial_movie_directory, -1)
 
 
 @pytest.mark.parametrize("max_inflight_encoders", [1, 2, 3])

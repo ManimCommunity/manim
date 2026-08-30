@@ -14,7 +14,7 @@ from manim._config import config
 from manim._config.output import OutputFormat, OutputSpec
 from manim._config.output_plan import resolve_media_layout, resolve_output_plan
 from manim._config.video_encoder import resolve_video_encoder
-from manim.scene.scene_file_writer import SceneFileWriter
+from manim.scene.scene_file_writer import SceneFileWriter, SceneFileWriterSettings
 
 _WIDTH = 16
 _HEIGHT = 12
@@ -54,13 +54,16 @@ def _writer(output: OutputSpec) -> SceneFileWriter:
         pixel_format=config.pixel_format,
         options=config.video_encoder_options,
     )
-    return SceneFileWriter(
-        Mock(num_plays=0),
-        "SegmentProfileScene",
-        output,
-        plan,
-        video_encoder,
+    settings = SceneFileWriterSettings(
+        output=output,
+        plan=plan,
+        video_encoder=video_encoder,
+        max_inflight_encoders=config.max_inflight_encoders,
+        encoder_queue_size=config.encoder_queue_size,
+        max_files_cached=config.max_files_cached,
+        assets_dir=Path.cwd(),
     )
+    return SceneFileWriter(Mock(num_plays=0), settings)
 
 
 def _asymmetric_rgba_frame() -> np.ndarray:

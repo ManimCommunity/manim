@@ -15,7 +15,7 @@ from manim._config.output_plan import (
     resolve_requested_output_name,
 )
 from manim._config.video_encoder import resolve_video_encoder
-from manim.scene.scene_file_writer import SceneFileWriter
+from manim.scene.scene_file_writer import SceneFileWriter, SceneFileWriterSettings
 
 
 def _make_writer(
@@ -56,18 +56,21 @@ def _make_writer(
     )
     renderer = Mock()
     renderer.num_plays = 0
-    return SceneFileWriter(
-        renderer,
-        "ExampleScene",
-        output,
-        output_plan,
-        resolve_video_encoder(
+    settings = SceneFileWriterSettings(
+        output=output,
+        plan=output_plan,
+        video_encoder=resolve_video_encoder(
             output,
             width=config.pixel_width,
             height=config.pixel_height,
             frame_rate=config.frame_rate,
         ),
+        max_inflight_encoders=config.max_inflight_encoders,
+        encoder_queue_size=config.encoder_queue_size,
+        max_files_cached=config.max_files_cached,
+        assets_dir=Path.cwd(),
     )
+    return SceneFileWriter(renderer, settings)
 
 
 @pytest.mark.parametrize(

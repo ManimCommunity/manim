@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
-__all__ = ["SceneFileWriter"]
+__all__ = ["SceneFileWriter", "SceneFileWriterSettings"]
 
 import json
 import shutil
 import warnings
 from contextlib import suppress
+from dataclasses import dataclass
 from pathlib import Path
 from queue import Queue
 from tempfile import NamedTemporaryFile, _TemporaryFileWrapper
@@ -32,11 +33,10 @@ with warnings.catch_warnings():
 
 from manim import __version__
 
-from .. import config, logger
+from .. import logger
 from .._config.output import OutputSpec
 from .._config.output_plan import OutputPlan
 from .._config.video_encoder import VideoEncoderSpec
-from ..constants import RendererType
 from ..utils.caching import prune_segment_cache
 from ..utils.file_ops import modify_atime
 from ..utils.sounds import get_full_sound_file_path
@@ -164,6 +164,33 @@ class _PartialMovieEncodeJob:
             )
 
 
+@dataclass(frozen=True, slots=True)
+class SceneFileWriterSettings:
+    """Immutable output, encoding, and maintenance inputs for one scene writer."""
+
+    output: OutputSpec
+    plan: OutputPlan
+    video_encoder: VideoEncoderSpec | None
+    max_inflight_encoders: int
+    encoder_queue_size: int
+    max_files_cached: int
+    assets_dir: Path
+
+    def __post_init__(self) -> None:
+        if self.output.is_video != (self.video_encoder is not None):
+            raise ValueError(
+                "Video output and resolved video encoder settings must be provided together.",
+            )
+        if self.max_inflight_encoders <= 0:
+            raise ValueError("max_inflight_encoders must be positive.")
+        if self.encoder_queue_size <= 0:
+            raise ValueError("encoder_queue_size must be positive.")
+        if self.max_files_cached < -1:
+            raise ValueError("max_files_cached must be non-negative or -1.")
+        if not self.assets_dir.is_absolute():
+            raise ValueError("assets_dir must be absolute.")
+
+
 class SceneFileWriter:
     """SceneFileWriter is the object that actually writes the animations
     played, into video files, using FFMPEG.
@@ -193,20 +220,13 @@ class SceneFileWriter:
     def __init__(
         self,
         renderer: CairoRenderer | OpenGLRenderer,
-        scene_name: str,
-        output_spec: OutputSpec,
-        output_plan: OutputPlan,
-        video_encoder: VideoEncoderSpec | None,
-        **kwargs: Any,
+        settings: SceneFileWriterSettings,
     ) -> None:
-        if output_spec.is_video != (video_encoder is not None):
-            raise ValueError(
-                "Video output and resolved video encoder settings must be provided together.",
-            )
         self.renderer = renderer
-        self.output_spec = output_spec
-        self.output_plan = output_plan
-        self.video_encoder = video_encoder
+        self.settings = settings
+        self.output_spec = settings.output
+        self.output_plan = settings.plan
+        self.video_encoder = settings.video_encoder
         self._inflight_encode_jobs: list[_PartialMovieEncodeJob] = []
         self._inflight_by_path: dict[str, _PartialMovieEncodeJob] = {}
         self._current_encode_job: _PartialMovieEncodeJob | None = None
@@ -409,7 +429,7 @@ class SceneFileWriter:
             used there can be referenced here.
 
         """
-        file_path = get_full_sound_file_path(sound_file)
+        file_path = get_full_sound_file_path(sound_file, self.settings.assets_dir)
         # we assume files with .wav / .raw suffix are actually
         # .wav and .raw files, respectively.
         if file_path.suffix not in (".wav", ".raw"):
@@ -469,11 +489,7 @@ class SceneFileWriter:
             if isinstance(frame_or_renderer, np.ndarray):
                 frame = frame_or_renderer
             else:
-                frame = (
-                    frame_or_renderer.get_frame()
-                    if config.renderer == RendererType.OPENGL
-                    else frame_or_renderer
-                )
+                frame = frame_or_renderer.get_frame()
 
             job = self._current_encode_job
             if job is None:
@@ -492,11 +508,7 @@ class SceneFileWriter:
             if isinstance(frame_or_renderer, np.ndarray):
                 image = Image.fromarray(frame_or_renderer)
             else:
-                image = (
-                    frame_or_renderer.get_image()
-                    if config.renderer == RendererType.OPENGL
-                    else Image.fromarray(frame_or_renderer)
-                )
+                image = frame_or_renderer.get_image()
             self.output_image(image)
 
     def output_image(self, image: Image.Image) -> None:
@@ -532,7 +544,7 @@ class SceneFileWriter:
             # Cache cleanup runs after the in-flight encode jobs have been drained.
             prune_segment_cache(
                 self.partial_movie_directory,
-                config.max_files_cached,
+                self.settings.max_files_cached,
             )
         elif self.output_spec.is_image_sequence:
             target_dir = self.image_sequence_directory
@@ -569,7 +581,9 @@ class SceneFileWriter:
 
         segment_encoder = self._create_segment_encoder(file_path)
         frame_queue_size = (
-            0 if config.max_inflight_encoders == 1 else config.encoder_queue_size
+            0
+            if self.settings.max_inflight_encoders == 1
+            else self.settings.encoder_queue_size
         )
         self._current_encode_job = _PartialMovieEncodeJob(
             animation_index=self.renderer.num_plays,
@@ -669,7 +683,7 @@ class SceneFileWriter:
         self._inflight_by_path[str(job.path)] = job
         self._current_encode_job = None
 
-        while len(self._inflight_encode_jobs) >= config.max_inflight_encoders:
+        while len(self._inflight_encode_jobs) >= self.settings.max_inflight_encoders:
             self._join_job_and_drain_on_failure(self._inflight_encode_jobs[0])
 
     def is_already_cached(self, hash_invocation: str) -> bool:
