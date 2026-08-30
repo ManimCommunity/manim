@@ -41,11 +41,9 @@ from ..utils.caching import prune_segment_cache
 from ..utils.file_ops import modify_atime
 from ..utils.sounds import get_full_sound_file_path
 from .section import DefaultSectionType, Section
+from .video_segment_encoder import VideoSegmentEncoder
 
 if TYPE_CHECKING:
-    from av.container.output import OutputContainer
-    from av.stream import Stream
-
     from manim.renderer.cairo_renderer import CairoRenderer
     from manim.renderer.opengl_renderer import OpenGLRenderer
     from manim.typing import PixelArray, StrPath
@@ -69,20 +67,18 @@ def convert_audio(
 
 
 class _PartialMovieEncodeJob:
-    """Encode and write the frames for one partial movie file."""
+    """Run one segment encoder on a dedicated worker thread."""
 
     def __init__(
         self,
-        path: StrPath,
+        *,
         animation_index: int,
-        container: OutputContainer,
-        stream: Stream,
+        encoder: VideoSegmentEncoder,
         frame_queue_size: int,
     ) -> None:
-        self.path = path
+        self.path = encoder.target
         self.animation_index = animation_index
-        self.container = container
-        self.stream = stream
+        self.encoder = encoder
         # A size of 0 preserves the unbounded queue used by serial encoding.
         # Parallel encoding uses a bounded queue; at the default capacity, eight
         # 1080p RGBA frames occupy about 66 MB per job. The worker drains through
@@ -91,6 +87,8 @@ class _PartialMovieEncodeJob:
             maxsize=frame_queue_size,
         )
         self._exception: BaseException | None = None
+        self._sealed = False
+        self._abort_requested = False
         self.thread = Thread(
             target=self._listen_and_write,
             name=f"partial-movie-encoder-{animation_index}",
@@ -106,70 +104,64 @@ class _PartialMovieEncodeJob:
         """Whether the worker has captured an exception."""
         return self._exception is not None
 
+    def _abort_encoder(self) -> None:
+        try:
+            self.encoder.abort()
+        except BaseException as exception:
+            logger.warning(
+                "Failed to clean up incomplete segment %(path)s: %(error)s",
+                {"path": f"'{self.path}'", "error": exception},
+            )
+            self._capture_exception(exception)
+
     def _listen_and_write(self) -> None:
         while True:
-            num_frames, frame_data = self.queue.get()
+            repeat, frame_data = self.queue.get()
             if frame_data is None:
                 break
             if self._exception is not None:
                 continue
 
             try:
-                self._encode_and_write_frame(frame_data, num_frames)
+                self.encoder.write_frame(frame_data, repeat=repeat)
             except BaseException as exception:
                 self._capture_exception(exception)
+
+        if self._abort_requested or self._exception is not None:
+            self._abort_encoder()
+            return
 
         try:
-            for packet in self.stream.encode():
-                self.container.mux(packet)
+            self.encoder.finish()
         except BaseException as exception:
             self._capture_exception(exception)
-        finally:
-            try:
-                self.container.close()
-            except BaseException as exception:
-                self._capture_exception(exception)
+            self._abort_encoder()
 
-    def _encode_and_write_frame(self, frame: PixelArray, num_frames: int) -> None:
-        for _ in range(num_frames):
-            # Notes: precomputing reusing packets does not work!
-            # I.e., you cannot do `packets = encode(...)`
-            # and reuse it, as it seems that `mux(...)`
-            # consumes the packet.
-            # The same issue applies for `av_frame`,
-            # reusing it renders weird-looking frames.
-            av_frame = av.VideoFrame.from_ndarray(frame, format="rgba")
-            for packet in self.stream.encode(av_frame):
-                self.container.mux(packet)
-
-    def put(self, num_frames: int, frame: PixelArray) -> None:
+    def put(self, repeat: int, frame: PixelArray) -> None:
         """Add a frame to the encoding queue."""
-        self.queue.put((num_frames, frame))
+        self.queue.put((repeat, frame))
 
     def seal(self) -> None:
         """Signal that no more frames will be added."""
-        self.queue.put((-1, None))
+        if not self._sealed:
+            self._sealed = True
+            self.queue.put((-1, None))
+
+    def abort(self) -> None:
+        """Signal that the segment must be discarded."""
+        self._abort_requested = True
+        self.seal()
 
     def join(self) -> None:
         """Wait for encoding to finish and propagate worker failures."""
         self.thread.join()
         if self._exception is not None:
-            # A failed encode may leave a structurally valid but truncated
-            # file behind; remove it so a later run cannot cache-hit it.
-            try:
-                Path(self.path).unlink(missing_ok=True)
-            except OSError as cleanup_error:
-                logger.warning(
-                    "Failed to remove incomplete partial movie file %(path)s: "
-                    "%(error)s",
-                    {"path": f"'{self.path}'", "error": cleanup_error},
-                )
             raise self._exception
-
-        logger.info(
-            f"Animation {self.animation_index} : Partial movie file written in %(path)s",
-            {"path": f"'{self.path}'"},
-        )
+        if not self._abort_requested:
+            logger.info(
+                f"Animation {self.animation_index} : Partial movie file written in %(path)s",
+                {"path": f"'{self.path}'"},
+            )
 
 
 class SceneFileWriter:
@@ -490,7 +482,7 @@ class SceneFileWriter:
                 return
             if job.failed:
                 # Surface the failure at the first write after it was captured;
-                # join() unlinks the partial and re-raises.
+                # the worker discards the partial before join() re-raises.
                 job.seal()
                 self._current_encode_job = None
                 job.join()
@@ -549,6 +541,12 @@ class SceneFileWriter:
         if self.subcaptions:
             self.write_subcaption_file()
 
+    def _create_segment_encoder(self, target: Path) -> VideoSegmentEncoder:
+        encoder = self.video_encoder
+        if encoder is None:
+            raise RuntimeError("Video segment encoding requires resolved settings.")
+        return VideoSegmentEncoder(target=target, spec=encoder)
+
     def open_partial_movie_stream(self, file_path: StrPath | None = None) -> None:
         """Open a container holding a video stream.
 
@@ -569,32 +567,13 @@ class SceneFileWriter:
             self._join_job_and_drain_on_failure(self._inflight_by_path[path_key])
         self.partial_movie_file_path = file_path
 
-        encoder = self.video_encoder
-        if encoder is None:
-            raise RuntimeError("Video segment encoding requires resolved settings.")
-
-        video_container = av.open(
-            file_path,
-            mode="w",
-            format=encoder.container_format,
-        )
-        stream = video_container.add_stream(
-            encoder.codec,
-            rate=encoder.frame_rate,
-            options=dict(encoder.options),
-        )
-        stream.pix_fmt = encoder.pixel_format
-        stream.width = encoder.width
-        stream.height = encoder.height
-
+        segment_encoder = self._create_segment_encoder(file_path)
         frame_queue_size = (
             0 if config.max_inflight_encoders == 1 else config.encoder_queue_size
         )
         self._current_encode_job = _PartialMovieEncodeJob(
-            path=file_path,
             animation_index=self.renderer.num_plays,
-            container=video_container,
-            stream=stream,
+            encoder=segment_encoder,
             frame_queue_size=frame_queue_size,
         )
 
@@ -634,24 +613,18 @@ class SceneFileWriter:
             raise first_exception
 
     def abort_encode_jobs(self, reraise_encoder_failures: bool = False) -> None:
-        """Tear down encode jobs after an aborted or rerun render.
+        """Discard the current segment and drain completed encode jobs.
 
-        Seals the current job so its worker can exit (a non-daemon thread
-        blocked on the queue would hang the process at exit), then deletes its
-        partial file unconditionally: an aborted partial is structurally valid
-        but truncated, so leaving it behind produces an erroneous cache hit on
-        a later run. Sealed in-flight jobs are then drained. With
-        ``reraise_encoder_failures=False`` (a render exception is already
-        propagating) drain failures are logged, not raised; with ``True``
-        (rerun path -- no primary exception exists) the first drain failure
-        propagates so corrupt completed partials cannot be silently ignored.
+        When ``reraise_encoder_failures`` is true, the first encoder failure is
+        propagated. Otherwise failures are logged so an active render exception
+        remains primary.
         """
         current_exception: BaseException | None = None
         job = self._current_encode_job
         if job is not None:
-            # Seal before clearing: an interrupt landing between the two
-            # statements must not orphan the worker.
-            job.seal()
+            # Request abort before clearing: an interrupt between these
+            # statements must not orphan a worker blocked on its queue.
+            job.abort()
             self._current_encode_job = None
             job.thread.join()
             current_exception = job._exception
@@ -661,17 +634,10 @@ class SceneFileWriter:
                     job.animation_index,
                     exc_info=current_exception,
                 )
-            try:
-                Path(job.path).unlink(missing_ok=True)
+            else:
                 logger.info(
                     "Discarded partial movie file of aborted animation %(index)d",
                     {"index": job.animation_index},
-                )
-            except OSError as cleanup_error:
-                logger.warning(
-                    "Failed to remove incomplete partial movie file %(path)s: "
-                    "%(error)s",
-                    {"path": f"'{job.path}'", "error": cleanup_error},
                 )
         if reraise_encoder_failures:
             self.join_all_encode_jobs()
