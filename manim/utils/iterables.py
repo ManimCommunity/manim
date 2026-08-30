@@ -28,7 +28,7 @@ from collections.abc import (
     Reversible,
     Sequence,
 )
-from typing import TYPE_CHECKING, TypeVar, overload
+from typing import TYPE_CHECKING, TypeVar, cast, overload
 
 import numpy as np
 
@@ -36,6 +36,7 @@ T = TypeVar("T")
 U = TypeVar("U")
 F = TypeVar("F", np.float64, np.int_)
 H = TypeVar("H", bound=Hashable)
+J = TypeVar("J", bound=Hashable)
 
 
 if TYPE_CHECKING:
@@ -133,21 +134,23 @@ def concatenate_lists(*list_of_lists: Iterable[T]) -> list[T]:
     return [item for lst in list_of_lists for item in lst]
 
 
-def list_difference_update(l1: Iterable[T], l2: Iterable[T]) -> list[T]:
+def list_difference_update(l1: Iterable[H], l2: Iterable[J]) -> list[H]:
     """Returns a list containing all the elements of l1 not in l2.
 
     Examples
     --------
     .. code-block:: pycon
 
-        >>> list_difference_update([1, 2, 3, 4], [2, 4])
-        [1, 3]
+        >>> list_difference_update([1, 2, 3, 4, 1], [2, 4])
+        [1, 3, 1]
     """
-    l2 = set(l2)
+    if not isinstance(l2, (set, dict, frozenset)):
+        # l2 is not a set-like object, so convert it to a set for faster lookups
+        l2 = set(l2)
     return [e for e in l1 if e not in l2]
 
 
-def list_update(l1: Iterable[T], l2: Iterable[T]) -> list[T]:
+def list_update(l1: Iterable[H], l2: Iterable[J]) -> list[H | J]:
     """Used instead of ``set.update()`` to maintain order,
         making sure duplicates are removed from l1, not l2.
         Removes overlap of l1 and l2 and then concatenates l2 unchanged.
@@ -159,8 +162,9 @@ def list_update(l1: Iterable[T], l2: Iterable[T]) -> list[T]:
         >>> list_update([1, 2, 3], [2, 4, 4])
         [1, 3, 2, 4, 4]
     """
-    l2 = list(l2)
-    return list_difference_update(l1, l2) + l2
+    if not isinstance(l2, list):
+        l2 = list(l2)
+    return list_difference_update(l1, l2) + cast(list[H | J], l2)
 
 
 @overload
