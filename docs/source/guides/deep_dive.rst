@@ -280,12 +280,27 @@ continues as follows:
         scene_name=type(self).__name__,
         requested_output_name=...,
     )
-    self.renderer.init_scene(self, self.session_spec)
+    self.file_writer_settings = SceneFileWriterSettings(
+        output=self.session_spec.output,
+        plan=self.output_plan,
+        video_encoder=self.session_spec.video_encoder,
+        max_inflight_encoders=config.max_inflight_encoders,
+        encoder_queue_size=config.encoder_queue_size,
+        max_files_cached=config.max_files_cached,
+        assets_dir=...,
+    )
+    self.renderer.init_scene(
+        self,
+        self.session_spec,
+        self.file_writer_settings,
+    )
 
 The session specification separates primary artifact intent (an ``OutputSpec``)
 from presentation requests such as opening the completed artifact or displaying
-a live preview. It also records dry-run execution separately from artifact
-selection. A dry run requests semantic scene evaluation without rasterizing
+a live preview. For video output it also contains the resolved segment profile:
+container, codec, pixel format, dimensions, exact frame rate, and codec options.
+It records dry-run execution separately from artifact selection. A dry run
+requests semantic scene evaluation without rasterizing
 frames or using media and cache resources. In contrast, ``format = none`` only
 suppresses the primary artifact; an OpenGL live preview with automatic output
 still rasterizes and displays frames without writing a file. Both requests have
@@ -304,12 +319,14 @@ and cache paths. Planning performs no file I/O and creates no directories. The
 resolved format determines the artifact suffix; ``output_file`` supplies only a
 name and cannot change the format.
 
-Inspecting the initialization methods of both renderers shows that they
-instantiate a :class:`.SceneFileWriter`. The writer must receive the already
-resolved ``OutputSpec`` and output plan; it does not reinterpret global
-configuration to decide what or where to write. Directories are created lazily
-when their owning operation first writes. The writer remains Manim's interface
-to ``libav`` for encoding media. The Cairo renderer (see the implementation `here
+The scene combines the output plan and segment profile with the encoder-pool,
+cache-maintenance, and sound-asset inputs in immutable
+``SceneFileWriterSettings``. Both renderers instantiate a
+:class:`.SceneFileWriter` from these settings. The writer does not retain a
+renderer reference or read mutable global configuration. Directories are created
+lazily when their owning operation first writes. The writer remains Manim's
+interface to ``libav`` for media assembly. The Cairo renderer (see the
+implementation `here
 <https://github.com/ManimCommunity/manim/blob/main/manim/renderer/cairo_renderer.py>`__)
 does not require further renderer-specific initialization. OpenGL creates a
 window only when the resolved presentation specification requests a live preview.
@@ -813,13 +830,15 @@ to learn more, the :func:`.get_hash_from_play_call` function in the
 :mod:`.utils.hashing` module is essentially the entry point to the caching
 mechanism.
 
-In the event that the animation has to be rendered, the renderer asks
-its :class:`.SceneFileWriter` to open a partial movie stream. The file writer
-uses ``libav`` to create a container and video stream, then wraps them in a
-``_PartialMovieEncodeJob``. Each encoding job owns its container, stream, frame
-queue, and worker thread. During the render loop, rendered raw frames are added
-to this queue and encoded by the worker. With the writing process in place, the
-renderer then asks the scene to "begin" the animations.
+In the event that the animation has to be rendered, the renderer gives its
+:class:`.SceneFileWriter` the current animation index and asks it to start a
+segment job. The writer creates a ``VideoSegmentEncoder`` from the resolved
+profile and wraps it in a ``_PartialMovieEncodeJob``. The synchronous segment
+encoder owns its container, video stream, sequential presentation timestamps,
+and target cleanup. The job owns only the frame queue and worker thread. During
+the render loop, concrete top-left-origin ``uint8`` RGBA arrays are added to the
+queue and encoded by the worker. With the writing process in place, the renderer
+then asks the scene to "begin" the animations.
 
 By default, Manim finishes encoding each partial movie file before rendering the
 next animation. If ``max_inflight_encoders`` is set to a value greater than 1,
@@ -872,9 +891,8 @@ time is extracted (3 seconds long) and stored in
 ``Scene.duration``. The renderer then checks whether it should
 skip (it should not), then whether the animation is already
 cached (it is not). The corresponding animation hash value is
-determined and passed to the file writer, which then also calls
-``libav`` to start the writing process which waits for rendered
-frames from the library.
+determined and passed to the file writer. The writer resolves the segment target
+from that key and starts its queued encoder, which waits for rendered frames.
 
 The scene then ``begin``\ s the animation: for the
 :class:`.ReplacementTransform` this means that the animation populates
@@ -1014,8 +1032,10 @@ camera is asked to capture the scene:
 
 After all batches have been processed, the camera has an image representation
 of the Scene at the current time stamp in form of a NumPy array stored in its
-``pixel_array`` attribute. The renderer then takes this array and passes it to
-its :class:`.SceneFileWriter`. This concludes one iteration of the render loop,
+``pixel_array`` attribute. The renderer passes a top-left-origin,
+C-contiguous ``uint8`` RGBA array to its :class:`.SceneFileWriter`. OpenGL uses
+the same array contract and performs GPU readback at this renderer boundary only
+when file output needs a frame. This concludes one iteration of the render loop,
 and once the time progression has been processed completely, a final bit
 of cleanup is performed before the :meth:`.Scene.play_internal` call is completed.
 

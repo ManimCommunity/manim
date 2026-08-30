@@ -1,4 +1,4 @@
-"""The interface between scenes and ffmpeg."""
+"""Scene output coordination and media-artifact assembly."""
 
 from __future__ import annotations
 
@@ -164,7 +164,11 @@ class _PartialMovieEncodeJob:
 
 @dataclass(frozen=True, slots=True)
 class SceneFileWriterSettings:
-    """Immutable output, encoding, and maintenance inputs for one scene writer."""
+    """Immutable inputs consumed by one :class:`SceneFileWriter`.
+
+    The settings contain resolved output paths and segment encoding, bounded
+    encoder-pool limits, cache maintenance, and the sound-asset search root.
+    """
 
     output: OutputSpec
     plan: OutputPlan
@@ -190,29 +194,25 @@ class SceneFileWriterSettings:
 
 
 class SceneFileWriter:
-    """SceneFileWriter is the object that actually writes the animations
-    played, into video files, using FFMPEG.
-    This is mostly for Manim's internal use. You will rarely, if ever,
-    have to use the methods for this class, unless tinkering with the very
-    fabric of Manim's reality.
+    """Coordinate segment jobs and assemble one scene's media artifacts.
+
+    The writer receives immutable :class:`SceneFileWriterSettings` and concrete
+    top-left-origin RGBA arrays. For video output it coordinates queued
+    :class:`.VideoSegmentEncoder` jobs, then assembles their silent cached
+    segments with optional audio, sections, and subcaptions. It also writes
+    still images and PNG sequences described by the output plan.
+
+    Parameters
+    ----------
+    settings
+        Resolved output, encoding, pool, cache, and asset-search settings.
 
     Attributes
     ----------
-        sections : list of :class:`.Section`
-            used to segment scene
-
-        sections_output_dir : :class:`pathlib.Path`
-            where are section videos stored
-
-        output_name : str
-            name of movie without extension and basis for section video names
-
-    Some useful attributes are:
-        ``output_spec``
-            The immutable primary output intent for this render session.
-        ``partial_movie_files``
-            List of all the partial-movie files.
-
+    sections
+        Ordered section metadata for the scene.
+    partial_movie_files
+        Segment paths in animation order, including ``None`` for skipped plays.
     """
 
     def __init__(self, settings: SceneFileWriterSettings) -> None:
@@ -318,25 +318,20 @@ class SceneFileWriter:
         )
 
     def add_partial_movie_file(self, hash_animation: str | None) -> None:
-        """Adds a new partial movie file path to ``scene.partial_movie_files``
-        and current section from a hash.
+        """Append a planned segment path to the writer and current section.
 
-        This method will compute the path from the hash. In addition to that it
-        adds the new animation to the current section.
+        The list retains one entry per animation so explicit animation indices
+        select the corresponding segment.
 
         Parameters
         ----------
         hash_animation
             Hash of the animation.
         """
-        if (
-            not hasattr(self, "partial_movie_directory")
-            or not self.output_spec.is_video
-        ):
+        if not self.output_spec.is_video:
             return
 
-        # None has to be added to partial_movie_files to keep the right index with scene.num_plays.
-        # i.e if an animation is skipped, scene.num_plays is still incremented and we add an element to partial_movie_file be even with num_plays.
+        # Skipped animations retain a placeholder to preserve index alignment.
         if hash_animation is None:
             self.partial_movie_files.append(None)
             self.sections[-1].partial_movie_files.append(None)
@@ -448,13 +443,16 @@ class SceneFileWriter:
         animation_index: int,
         file_path: StrPath | None = None,
     ) -> None:
-        """Used internally by manim to stream the animation to FFMPEG for
-        displaying or writing to a file.
+        """Start a segment job for one animation when video writing is enabled.
 
         Parameters
         ----------
         allow_write
-            Whether or not to write to a video file.
+            Whether this animation needs a new segment.
+        animation_index
+            Scene-local animation index used to select and label the segment.
+        file_path
+            Explicit segment target, or ``None`` to use the planned cache path.
         """
         if self.output_spec.is_video and allow_write:
             self.open_partial_movie_stream(
@@ -463,12 +461,12 @@ class SceneFileWriter:
             )
 
     def end_animation(self, allow_write: bool = False) -> None:
-        """Internally used by Manim to stop streaming to FFMPEG gracefully.
+        """Seal the current segment job when video writing is enabled.
 
         Parameters
         ----------
         allow_write
-            Whether or not to write to a video file.
+            Whether the current animation has an open segment job.
         """
         if self.output_spec.is_video and allow_write:
             self.close_partial_movie_stream()
@@ -483,8 +481,8 @@ class SceneFileWriter:
         if self.output_spec.is_video:
             job = self._current_encode_job
             if job is None:
-                # Interactive OpenGL rendering emits frames outside an open
-                # partial movie stream; drop them silently.
+                # Presentation rendering can emit frames outside an open
+                # segment; such frames do not belong to file output.
                 return
             if job.failed:
                 # Surface the failure at the first write after it was captured;
@@ -512,10 +510,7 @@ class SceneFileWriter:
         self.print_file_ready_message(self.image_file_path)
 
     def finish(self) -> None:
-        """Finishes writing to the FFMPEG buffer or writing images to output directory.
-        Combines the partial movie files into the whole scene.
-        If save_last_frame is True, saves the last frame in the default image directory.
-        """
+        """Drain segment jobs and assemble the configured time-based output."""
         if self.output_spec.is_video:
             self.join_all_encode_jobs()
             self.combine_to_movie()
@@ -545,11 +540,7 @@ class SceneFileWriter:
         animation_index: int,
         file_path: StrPath | None = None,
     ) -> None:
-        """Open a container holding a video stream.
-
-        This is used internally by Manim initialize the container holding
-        the video stream of a partial movie file.
-        """
+        """Create a queued encoder job for one planned video segment."""
         if file_path is None:
             file_path = self.partial_movie_files[animation_index]
             if file_path is None:
@@ -562,8 +553,6 @@ class SceneFileWriter:
         path_key = str(file_path)
         if path_key in self._inflight_by_path:
             self._join_job_and_drain_on_failure(self._inflight_by_path[path_key])
-        self.partial_movie_file_path = file_path
-
         segment_encoder = self._create_segment_encoder(file_path)
         frame_queue_size = (
             0
@@ -651,12 +640,7 @@ class SceneFileWriter:
                 logger.exception("Encoder failure while aborting render")
 
     def close_partial_movie_stream(self) -> None:
-        """Close the currently opened video container.
-
-        Used internally by Manim to first flush the remaining packages
-        in the video stream holding a partial file, and then close
-        the corresponding container.
-        """
+        """Seal the current segment and enforce the in-flight job limit."""
         job = self._current_encode_job
         if job is None:
             raise RuntimeError(
@@ -684,10 +668,7 @@ class SceneFileWriter:
         :class:`bool`
             Whether the file exists.
         """
-        if (
-            not hasattr(self, "partial_movie_directory")
-            or not self.output_spec.is_video
-        ):
+        if not self.output_spec.is_video:
             return False
         path = self.output_plan.segment_path(hash_invocation)
         path_key = str(path)

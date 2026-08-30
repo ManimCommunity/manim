@@ -129,6 +129,7 @@ def test_opengl_cache_path_supplies_backend_encoder_and_raster_state(monkeypatch
         def __init__(self):
             self.mobjects = [object()]
             self.meshes = [object()]
+            self.session_spec = Mock(video_encoder=encoder)
 
         def compile_animations(self, *args, **kwargs):
             return []
@@ -144,7 +145,7 @@ def test_opengl_cache_path_supplies_backend_encoder_and_raster_state(monkeypatch
         camera = object()
         background_color = np.array([0.1, 0.2, 0.3, 1.0])
         anti_alias_width = 1.5
-        file_writer = Mock(video_encoder=encoder)
+        file_writer = Mock()
 
         def update_skipping_status(self):
             pass

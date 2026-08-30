@@ -127,7 +127,7 @@ def handle_caching_play(func: Callable[..., None]) -> Callable[..., None]:
                 mobjects_on_scene,
                 backend="opengl",
                 encoder_fingerprint=video_encoder_fingerprint(
-                    self.file_writer.video_encoder,
+                    scene.session_spec.video_encoder,
                 ),
                 renderer_state={
                     "meshes": scene.meshes,

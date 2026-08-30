@@ -97,7 +97,7 @@ class CairoRenderer:
                     scene.mobjects,
                     backend="cairo",
                     encoder_fingerprint=video_encoder_fingerprint(
-                        self.file_writer.video_encoder,
+                        scene.session_spec.video_encoder,
                     ),
                     renderer_state=(),
                 )

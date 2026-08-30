@@ -11,11 +11,27 @@ msgid "scene\\_file\\_writer"
 msgstr ""
 
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer:1
-msgid "The interface between scenes and ffmpeg."
+msgid "Scene output coordination and media-artifact assembly."
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene_file_writer.rst:15
 msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.rst:28:<autosummary>:1
+msgid "Coordinate segment jobs and assemble one scene's media artifacts."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.rst:28:<autosummary>:1
+msgid "Immutable inputs consumed by one :class:`SceneFileWriter`."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.rst:31
+msgid "Functions"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.rst:0
+msgid "Parameters"
 msgstr ""
 
 

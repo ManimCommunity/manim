@@ -1,0 +1,37 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriterSettings.rst:2
+msgid "SceneFileWriterSettings"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriterSettings.rst:4
+msgid "Qualified name: ``manim.scene.scene\\_file\\_writer.SceneFileWriterSettings``"
+msgstr ""
+
+#: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriterSettings:1
+msgid "Bases: :py:class:`object`"
+msgstr ""
+
+#: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriterSettings:1
+msgid "Immutable inputs consumed by one :class:`SceneFileWriter`."
+msgstr ""
+
+#: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriterSettings:3
+msgid "The settings contain resolved output paths and segment encoding, bounded encoder-pool limits, cache maintenance, and the sound-asset search root."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriterSettings.rst:16
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriterSettings.rst:23
+msgid "Attributes"
+msgstr ""
+
+
