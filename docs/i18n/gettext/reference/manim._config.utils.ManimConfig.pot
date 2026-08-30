@@ -211,11 +211,6 @@ msgid "Verbosity level of ffmpeg (no flag)."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.flush_cache:1
-msgid "Whether to delete all the cached partial movie files."
-msgstr ""
-
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.force_window:1
 msgid "Set to force window when using the opengl renderer"
 msgstr ""

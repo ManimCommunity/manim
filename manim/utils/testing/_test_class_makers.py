@@ -70,9 +70,6 @@ class DummySceneFileWriter(SceneFileWriter):
     def combine_to_section_videos(self) -> None:
         pass
 
-    def clean_cache(self) -> None:
-        pass
-
     def write_frame(
         self, frame_or_renderer: PixelArray | OpenGLRenderer, num_frames: int = 1
     ) -> None:

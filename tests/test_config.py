@@ -54,6 +54,14 @@ def test_tempconfig(config):
             assert config[k] == v
 
 
+def test_max_files_cached_uses_minus_one_for_unlimited(config):
+    config.max_files_cached = -1
+    assert config.max_files_cached == -1
+
+    with pytest.raises(ValueError, match="non-negative integer or -1"):
+        config.max_files_cached = float("inf")
+
+
 def test_tempconfig_restores_renderer_class_bases(config):
     with tempconfig({"renderer": "opengl"}):
         assert config.renderer == RendererType.OPENGL

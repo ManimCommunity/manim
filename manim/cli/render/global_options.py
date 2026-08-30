@@ -67,12 +67,6 @@ global_options = option_group(
         default=None,
         help="Disable the use of the cache (still generates cache files).",
     ),
-    option(
-        "--flush_cache",
-        is_flag=True,
-        help="Remove cached partial movie files.",
-        default=None,
-    ),
     option("--tex_template", help="Specify a custom TeX template file.", default=None),
     option(
         "-v",

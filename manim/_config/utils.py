@@ -270,7 +270,6 @@ class ManimConfig(MutableMapping):
         "enable_wireframe",
         "ffmpeg_loglevel",
         "format",
-        "flush_cache",
         "frame_height",
         "frame_rate",
         "frame_width",
@@ -588,7 +587,6 @@ class ManimConfig(MutableMapping):
             "log_to_file",
             "disable_caching",
             "disable_caching_warning",
-            "flush_cache",
             "enable_gui",
             "fullscreen",
             "use_projection_fill_shaders",
@@ -759,7 +757,6 @@ class ManimConfig(MutableMapping):
             "write_all",
             "disable_caching",
             "format",
-            "flush_cache",
             "progress_bar",
             "transparent",
             "scene_names",
@@ -1181,7 +1178,12 @@ class ManimConfig(MutableMapping):
 
     @max_files_cached.setter
     def max_files_cached(self, value: int) -> None:
-        self._set_pos_number("max_files_cached", value, True)
+        if isinstance(value, int) and value >= -1:
+            self._d["max_files_cached"] = value
+        else:
+            raise ValueError(
+                "max_files_cached must be a non-negative integer or -1 for unlimited",
+            )
 
     @property
     def max_inflight_encoders(self) -> int:
@@ -1222,15 +1224,6 @@ class ManimConfig(MutableMapping):
     @window_monitor.setter
     def window_monitor(self, value: int) -> None:
         self._set_pos_number("window_monitor", value, True)
-
-    @property
-    def flush_cache(self) -> bool:
-        """Whether to delete all the cached partial movie files."""
-        return self._d["flush_cache"]
-
-    @flush_cache.setter
-    def flush_cache(self, value: bool) -> None:
-        self._set_boolean("flush_cache", value)
 
     @property
     def disable_caching(self) -> bool:

@@ -121,6 +121,23 @@ def _required_dir(
     return _absolute_lexical(path, working_directory)
 
 
+def resolve_segment_cache_directory(
+    config: _LayoutConfigSource,
+    *,
+    module_name: str,
+    scene_name: str,
+    working_directory: Path,
+) -> Path:
+    """Resolve the segment-cache directory for one scene."""
+    return _required_dir(
+        config,
+        "partial_movie_dir",
+        working_directory=working_directory,
+        module_name=module_name,
+        scene_name=scene_name,
+    )
+
+
 def resolve_module_name(config: _LayoutConfigSource) -> str:
     """Resolve the source module name used by configured directory templates."""
     if not config.input_file:
@@ -173,9 +190,8 @@ def resolve_media_layout(
             module_name=module_name,
             scene_name=scene_name,
         )
-        partial_movie_dir = _required_dir(
+        partial_movie_dir = resolve_segment_cache_directory(
             config,
-            "partial_movie_dir",
             working_directory=working_directory,
             module_name=module_name,
             scene_name=scene_name,

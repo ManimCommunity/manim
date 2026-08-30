@@ -101,11 +101,6 @@ msgid "Used internally by manim to stream the animation to FFMPEG for displaying
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
-#: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.clean_cache:1
-msgid "Will clean the cache by removing the oldest partial_movie_files."
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.close_movie_pipe:1
 msgid "Used internally by Manim to gracefully stop writing to FFMPEG's input buffer"
 msgstr ""
@@ -137,11 +132,6 @@ msgstr ""
 #: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
 #: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.finish_last_section:1
 msgid "Delete current section if it is empty."
-msgstr ""
-
-#: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
-#: ../../../manim/scene/scene_file_writer.py:docstring of manim.scene.scene_file_writer.SceneFileWriter.flush_cache_directory:1
-msgid "Delete all the cached partial movie files"
 msgstr ""
 
 #: ../../source/reference/manim.scene.scene_file_writer.SceneFileWriter.rst:46:<autosummary>:1
