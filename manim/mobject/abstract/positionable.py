@@ -3,7 +3,7 @@ from __future__ import annotations
 import operator as op
 from collections.abc import Callable, Iterable
 from functools import reduce
-from typing import Any, Literal, Self, TypeVar
+from typing import Any, Self, TypeVar
 
 import numpy as np
 
@@ -31,7 +31,6 @@ from manim.typing import (
 from manim.utils.space_ops import rotation_matrix
 
 T = TypeVar("T")
-R = TypeVar("R")
 
 
 class Positionable:
@@ -52,17 +51,13 @@ class Positionable:
         --------
         :meth:`set_points`
         """
-
-        def aggregate(values: Iterable[Point3D_Array]) -> Point3D_Array:
-            values = list(values)
-            if len(values) == 1:
-                return values[0]
-            return np.concat(values, axis=0)
-
-        return self.reduce_points(
-            function=lambda points: points,
-            aggregate=aggregate,
-        )
+        result = self.points
+        for mob in self.get_family():
+            if mob is self:
+                continue
+            if len(mob.points) > 0:
+                result = np.append(result, mob.points, axis=0)
+        return result
 
     def set_points(
         self,
@@ -119,9 +114,6 @@ class Positionable:
         :meth:`get_points`
         """
         return self.get_all_points()
-
-    def get_anchors(self) -> Iterable[Point3D]:
-        return self.points  # type: ignore[no-any-return]
 
     ### APPLYING FUNCTIONS ###
 
@@ -311,12 +303,11 @@ class Positionable:
     def reduce_points(
         self,
         function: Callable[[Point3D_Array], T],
-        aggregate: Callable[[Iterable[T]], R],
+        aggregator: Callable[[Iterable[T]], T],
         *,
-        default: R | None = None,
+        default: T | None = None,
         only_with_points: bool = True,
-        which_points: Literal["all", "boundary", "anchors", "points"] = "points",
-    ) -> R:
+    ) -> T:
         """Reduces the points to a value.
 
         Parameters
@@ -329,39 +320,22 @@ class Positionable:
             The default value., by default None
         only_with_points, optional
             Whether to only use members with points., by default True
-        which_points, optional
-            Which points to use., by default "anchors"
+
+        Returns
+        -------
+            The value.
         """
-        if which_points == "all" or which_points == "boundary":
-            points = (
-                self.get_all_points()
-                if which_points == "all"
-                else self.get_points_defining_boundary()
-            )
-            if len(points) == 0 and default is not None:
-                return default
-            return aggregate([function(points)])
-
-        def get_points(mob: Positionable) -> Point3D_Array | None:
-            match which_points:
-                case "anchors":
-                    return np.array(mob.get_anchors())
-                case "points":
-                    return mob.points
-
-            return None
-
-        values = [
-            function(points)
-            for mob in self.get_family()
-            if (points := get_points(mob)) is not None
-            and (not only_with_points or len(points) > 0)
-        ]
+        if only_with_points:
+            values = [
+                function(mob.points) for mob in self.get_family() if len(mob.points) > 0
+            ]
+        else:
+            values = [function(mob.points) for mob in self.get_family()]
 
         if len(values) == 0 and default is not None:
             return default
 
-        return aggregate(values)
+        return aggregator(values)
 
     ### TRANSFORMATIONS ###
 
@@ -1082,18 +1056,11 @@ class Positionable:
         --------
         :meth:`set_dim_size`
         """
-        # FIXME: Changing which_points to `anchors` causes some of the `tests/test_graphical_units/test_img_and_svg.py` tests to fail
-        low = self.reduce_points(
-            function=lambda points: points[:, dim].min(),
-            aggregate=min,
-            default=0.0,
-        )
-        high = self.reduce_points(
-            function=lambda points: points[:, dim].max(),
-            aggregate=max,
-            default=0.0,
-        )
-        return high - low
+        # TODO: Changing this to `get_boundary_points` breaks the `test_img_and_svg.py`` tests
+        points = self.get_all_points()
+        if len(points) == 0:
+            return 0
+        return np.ptp(points[:, dim])  # type: ignore[no-any-return]
 
     def set_dim_size(
         self,
@@ -1439,18 +1406,11 @@ class Positionable:
         tuple[Point3D, Point3D]
             The bottom-left and top-right points.
         """
-        mins = self.reduce_points(
-            function=lambda points: points.min(),
-            aggregate=lambda values: np.array(values).min(),
-            default=np.zeros(3),
-            which_points="anchors",
-        )
-        maxs = self.reduce_points(
-            function=lambda points: points.min(),
-            aggregate=lambda values: np.array(values).min(),
-            default=np.zeros(3),
-            which_points="anchors",
-        )
+        points = self.get_points_defining_boundary()
+        if len(points) == 0:
+            return (np.zeros(3), np.zeros(3))
+        mins = points.min(axis=0)
+        maxs = points.max(axis=0)
         return (mins, maxs)
 
     def get_center_of_mass(self) -> Point3D:
@@ -1461,20 +1421,10 @@ class Positionable:
         Point3D
             The center of mass.
         """
-
-        def function(points: Point3D_Array) -> tuple[int, Point3D]:
-            return len(points), points.mean(axis=0)
-
-        def aggregate(values: Iterable[tuple[int, Point3D]]) -> Point3D:
-            counts = np.array([n for n, _ in values])
-            points = np.array([p for _, p in values])
-            return counts / counts.sum() * points
-
-        return self.reduce_points(
-            function=function,
-            aggregate=aggregate,
-            default=ORIGIN,
-        )
+        points = self.get_all_points()
+        if len(points) == 0:
+            return ORIGIN
+        return points.mean(axis=0)
 
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
         """Returns a boundary point.
@@ -1489,18 +1439,9 @@ class Positionable:
         Point3D
             The boundary point.
         """
-
-        def function(points: Point3D_Array) -> Point3D:
-            return points[np.argmax(points.dot(direction))]
-
-        def aggregate(values: Iterable[Point3D]) -> Point3D:
-            return function(np.array(values))
-
-        return self.reduce_points(
-            function=function,
-            aggregate=aggregate,
-            default=ORIGIN,
-        )
+        points = self.get_points_defining_boundary()
+        index = np.argmax(points.dot(direction))
+        return points[index]
 
     def get_extremum_along_dim(
         self,
@@ -1520,34 +1461,23 @@ class Positionable:
         -------
             The value.
         """
-        if key < 0:
-            return self.reduce_points(
-                function=lambda points: points[:, dim].min(),
-                aggregate=min,
-                default=0.0,
-                which_points="anchors",
+
+        def reduce(values: np.ndarray) -> float:
+            return (  # type: ignore[no-any-return]
+                values.min()
+                if key < 0
+                else (values.min() + values.max()) / 2
+                if key == 0
+                else values.max()
             )
-        elif key > 0:
-            return self.reduce_points(
-                function=lambda points: points[:, dim].max(),
-                aggregate=max,
-                default=0.0,
-                which_points="anchors",
-            )
-        else:
-            low = self.reduce_points(
-                function=lambda points: points[:, dim].min(),
-                aggregate=min,
-                default=0.0,
-                which_points="anchors",
-            )
-            high = self.reduce_points(
-                function=lambda points: points[:, dim].max(),
-                aggregate=max,
-                default=0.0,
-                which_points="anchors",
-            )
-            return (low + high) / 2
+
+        def function(points: Point3D_Array) -> float:
+            return reduce(points[:, dim])
+
+        def aggregator(values: Iterable[float]) -> float:
+            return reduce(np.array(values))
+
+        return self.reduce_points(function=function, aggregator=aggregator, default=0.0)
 
     def is_off_screen(self) -> bool:
         """Returns whether this is off screen.
@@ -1604,17 +1534,11 @@ class Positionable:
         function: Callable[[Iterable[float]], float],
         dim: int,
     ) -> float | None:
-        def aggregate(values: Iterable[float]) -> float | None:
-            values = list(values)
-            if len(values) == 0:
-                return None
+        points = self.get_points_defining_boundary()
+        if len(points) == 0:
+            return None
 
-            return function(values)
-
-        return self.reduce_points(
-            function=lambda points: function(points[:, dim]),
-            aggregate=aggregate,
-        )
+        return function(points[:, dim])
 
     def shift_onto_screen(
         self,
