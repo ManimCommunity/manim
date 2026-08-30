@@ -50,6 +50,9 @@ def _writer(output: OutputSpec) -> SceneFileWriter:
         width=config.pixel_width,
         height=config.pixel_height,
         frame_rate=config.frame_rate,
+        codec=config.video_codec,
+        pixel_format=config.pixel_format,
+        options=config.video_encoder_options,
     )
     return SceneFileWriter(
         Mock(num_plays=0),
@@ -172,3 +175,35 @@ def test_cached_segment_profile_and_pixel_orientation(
                 expected,
                 atol=15,
             )
+
+
+def test_configured_encoder_profile_is_used_for_cached_segment(tmp_path):
+    output = _output("mov", transparent=False)
+    target = tmp_path / "custom.mov"
+
+    with tempconfig(
+        {
+            "media_dir": tmp_path,
+            "pixel_width": _WIDTH,
+            "pixel_height": _HEIGHT,
+            "frame_rate": _FRAME_RATE,
+            "video_codec": "qtrle",
+            "pixel_format": "argb",
+            "video_encoder_options": {},
+        },
+    ):
+        writer = _writer(output)
+        writer.open_partial_movie_stream(target)
+        writer.write_frame(_asymmetric_rgba_frame())
+        writer.close_partial_movie_stream()
+        writer.join_all_encode_jobs()
+
+    codec, pixel_format, rate, frames, audio_streams = _decode_frames(
+        target,
+        transparent_vp9=False,
+    )
+    assert codec == "qtrle"
+    assert pixel_format == "argb"
+    assert rate == Fraction(_FRAME_RATE, 1)
+    assert len(frames) == 1
+    assert audio_streams == 0

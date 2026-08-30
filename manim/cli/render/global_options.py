@@ -75,7 +75,7 @@ global_options = option_group(
             ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
             case_sensitive=False,
         ),
-        help="Verbosity of CLI output. Changes ffmpeg log level unless 5+.",
+        help="Verbosity of CLI output. Changes media log level unless 5+.",
         default=None,
     ),
     option(

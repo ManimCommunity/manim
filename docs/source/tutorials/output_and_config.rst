@@ -199,6 +199,12 @@ preview, but it counts as a separate execution request rather than modifying the
 choice of output format. This allows Manim to function as if it were rendering a
 normal scene, but without producing any artifact.
 
+Video output is assembled from silent cached segments. Manim selects their codec
+and pixel format automatically; ``--video-codec``, ``--pixel-format``, and
+repeatable ``--encoder-option KEY=VALUE`` provide explicit control when needed.
+These settings are part of segment cache identity, so changing one rerenders the
+affected segments. Audio is mixed into the final artifact separately.
+
 ``-o`` / ``--output_file`` names the primary artifact for a single selected scene;
 it does not select the format. Manim appends the resolved format suffix unless the
 name already ends with it. For example, ``-o movie.mp4 --format=mp4`` produces

@@ -48,6 +48,9 @@ class _SessionConfigSource(Protocol):
     pixel_width: int
     pixel_height: int
     frame_rate: float
+    video_codec: str
+    pixel_format: str
+    video_encoder_options: dict[str, str]
 
 
 def resolve_render_session(
@@ -111,6 +114,9 @@ def resolve_render_session(
         width=config.pixel_width,
         height=config.pixel_height,
         frame_rate=config.frame_rate,
+        codec=config.video_codec,
+        pixel_format=config.pixel_format,
+        options=config.video_encoder_options,
     )
     return RenderSessionSpec(
         output=output,

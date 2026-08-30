@@ -268,7 +268,6 @@ class ManimConfig(MutableMapping):
         "dry_run",
         "encoder_queue_size",
         "enable_wireframe",
-        "ffmpeg_loglevel",
         "format",
         "frame_height",
         "frame_rate",
@@ -279,6 +278,7 @@ class ManimConfig(MutableMapping):
         "images_dir",
         "input_file",
         "media_embed",
+        "media_loglevel",
         "media_width",
         "log_dir",
         "log_to_file",
@@ -288,6 +288,7 @@ class ManimConfig(MutableMapping):
         "notify_outdated_version",
         "output_file",
         "partial_movie_dir",
+        "pixel_format",
         "pixel_height",
         "pixel_width",
         "plugins",
@@ -310,7 +311,9 @@ class ManimConfig(MutableMapping):
         "use_projection_fill_shaders",
         "use_projection_stroke_shaders",
         "verbosity",
+        "video_codec",
         "video_dir",
+        "video_encoder_options",
         "sections_dir",
         "fullscreen",
         "window_position",
@@ -575,6 +578,19 @@ class ManimConfig(MutableMapping):
         self._parser = parser
 
         self.format = parser["CLI"].get("format", fallback="auto", raw=True)
+        self.video_codec = parser["video_encoder"].get(
+            "codec",
+            fallback="auto",
+            raw=True,
+        )
+        self.pixel_format = parser["video_encoder"].get(
+            "pixel_format",
+            fallback="auto",
+            raw=True,
+        )
+        self.video_encoder_options = dict(
+            parser.items("video_encoder.options", raw=True),
+        )
 
         # boolean keys
         for key in [
@@ -680,9 +696,9 @@ class ManimConfig(MutableMapping):
         if progress_bar:
             self.progress_bar = progress_bar
 
-        ffmpeg_loglevel = parser["ffmpeg"].get("loglevel")
-        if ffmpeg_loglevel:
-            self.ffmpeg_loglevel = ffmpeg_loglevel
+        media_loglevel = parser["media"].get("loglevel")
+        if media_loglevel:
+            self.media_loglevel = media_loglevel
 
         try:
             media_embed = parser["jupyter"].getboolean("media_embed")
@@ -775,6 +791,9 @@ class ManimConfig(MutableMapping):
             "seed",
             "max_inflight_encoders",
             "encoder_queue_size",
+            "video_codec",
+            "pixel_format",
+            "video_encoder_options",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -1018,18 +1037,54 @@ class ManimConfig(MutableMapping):
             )
 
     @property
-    def ffmpeg_loglevel(self) -> str:
-        """Verbosity level of ffmpeg (no flag)."""
-        return self._d["ffmpeg_loglevel"]
+    def video_codec(self) -> str:
+        """Video encoder used for cached segments."""
+        return self._d["video_codec"]
 
-    @ffmpeg_loglevel.setter
-    def ffmpeg_loglevel(self, val: str) -> None:
+    @video_codec.setter
+    def video_codec(self, value: str) -> None:
+        if not isinstance(value, str) or not value:
+            raise ValueError("video_codec must be a non-empty string")
+        self._d["video_codec"] = value
+
+    @property
+    def pixel_format(self) -> str:
+        """Pixel format used for cached video segments."""
+        return self._d["pixel_format"]
+
+    @pixel_format.setter
+    def pixel_format(self, value: str) -> None:
+        if not isinstance(value, str) or not value:
+            raise ValueError("pixel_format must be a non-empty string")
+        self._d["pixel_format"] = value
+
+    @property
+    def video_encoder_options(self) -> dict[str, str]:
+        """Codec options used for cached video segments."""
+        return dict(self._d["video_encoder_options"])
+
+    @video_encoder_options.setter
+    def video_encoder_options(self, value: Mapping[str, str]) -> None:
+        if not isinstance(value, Mapping) or any(
+            not isinstance(key, str) or not isinstance(option, str)
+            for key, option in value.items()
+        ):
+            raise TypeError("video_encoder_options must map strings to strings")
+        self._d["video_encoder_options"] = dict(value)
+
+    @property
+    def media_loglevel(self) -> str:
+        """Logging level for media operations."""
+        return self._d["media_loglevel"]
+
+    @media_loglevel.setter
+    def media_loglevel(self, value: str) -> None:
         self._set_from_list(
-            "ffmpeg_loglevel",
-            val,
+            "media_loglevel",
+            value,
             ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         )
-        logging.getLogger("libav").setLevel(self.ffmpeg_loglevel)
+        logging.getLogger("libav").setLevel(self.media_loglevel)
 
     @property
     def media_embed(self) -> bool | None:
