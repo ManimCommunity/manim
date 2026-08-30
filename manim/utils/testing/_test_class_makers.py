@@ -6,7 +6,7 @@ from typing import Any
 from manim.renderer.cairo_renderer import CairoRenderer
 from manim.renderer.opengl_renderer import OpenGLRenderer
 from manim.scene.scene import Scene
-from manim.scene.scene_file_writer import SceneFileWriter, SceneFileWriterSettings
+from manim.scene.scene_file_writer import SceneFileWriter, _SceneFileWriterSettings
 from manim.typing import PixelArray, StrPath
 
 from ._frames_testers import _FramesTester
@@ -44,7 +44,7 @@ def _make_test_renderer_class(from_renderer: type) -> Any:
 class DummySceneFileWriter(SceneFileWriter):
     """Delegate of SceneFileWriter used to test the frames."""
 
-    def __init__(self, settings: SceneFileWriterSettings) -> None:
+    def __init__(self, settings: _SceneFileWriterSettings) -> None:
         super().__init__(settings)
         self.i = 0
 

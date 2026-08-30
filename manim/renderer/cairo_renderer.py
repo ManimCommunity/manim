@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from manim._config.render_session import RenderSessionSpec
     from manim.animation.animation import Animation
     from manim.scene.scene import Scene
-    from manim.scene.scene_file_writer import SceneFileWriterSettings
+    from manim.scene.scene_file_writer import _SceneFileWriterSettings
 
     from ..typing import PixelArray
 
@@ -63,7 +63,7 @@ class CairoRenderer:
         self,
         scene: Scene,
         session_spec: RenderSessionSpec,
-        file_writer_settings: SceneFileWriterSettings,
+        file_writer_settings: _SceneFileWriterSettings,
     ) -> None:
         self.file_writer: Any = self._file_writer_class(file_writer_settings)
 

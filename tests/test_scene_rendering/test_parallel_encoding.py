@@ -24,7 +24,7 @@ from manim._config.output_plan import (
 )
 from manim._config.video_encoder import resolve_video_encoder
 from manim.cli.render.commands import render
-from manim.scene.scene_file_writer import SceneFileWriter, SceneFileWriterSettings
+from manim.scene.scene_file_writer import SceneFileWriter, _SceneFileWriterSettings
 from manim.utils.exceptions import RerunSceneException
 
 _ENCODER_THREAD_PREFIX = "partial-movie-encoder-"
@@ -62,8 +62,7 @@ def _make_writer(
         scene_name=scene_name,
         requested_output_name=resolve_requested_output_name(config),
     )
-    settings = SceneFileWriterSettings(
-        output=output,
+    settings = _SceneFileWriterSettings(
         plan=plan,
         video_encoder=resolve_video_encoder(
             output,
@@ -987,12 +986,20 @@ def test_open_partial_movie_stream_without_path_raises(config, tmp_path):
             writer.open_partial_movie_stream(animation_index=0)
 
 
-def test_write_frame_without_open_stream_drops_frame(config, tmp_path):
-    """Interactive OpenGL emits frames with no open stream; they are dropped.
+def test_open_partial_movie_stream_rejects_nested_current_segment(config, tmp_path):
+    with tempconfig({"media_dir": str(tmp_path)}):
+        writer = _make_writer("GuardScene")
+        writer._current_encode_job = Mock()
 
-    Video output is enabled under the default test config, so the call reaches
-    the drop branch in ``write_frame``.
-    """
+        with pytest.raises(RuntimeError, match="another segment is still open"):
+            writer.open_partial_movie_stream(
+                animation_index=1,
+                file_path=tmp_path / "nested.mp4",
+            )
+
+
+def test_write_frame_without_open_stream_drops_frame(config, tmp_path):
+    """Frames outside an open segment are ignored by the transitional scheduler."""
     with tempconfig({"media_dir": str(tmp_path)}):
         writer = _make_writer("DropFrameScene")
         assert writer._current_encode_job is None

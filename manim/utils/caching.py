@@ -15,7 +15,6 @@ __all__ = [
 ]
 
 _SEGMENT_EXTENSIONS = frozenset({".mov", ".mp4", ".webm"})
-_SEGMENT_MANIFEST = "partial_movie_file_list.txt"
 
 
 def _segment_cache_files(directory: Path) -> list[Path]:
@@ -26,7 +25,6 @@ def _segment_cache_files(directory: Path) -> list[Path]:
             entry
             for entry in entries
             if not entry.name.startswith(".")
-            and entry.name != _SEGMENT_MANIFEST
             and entry.suffix.lower() in _SEGMENT_EXTENSIONS
             and entry.is_file()
         ]

@@ -13,7 +13,7 @@ from manim._config import config
 from manim._config.output import OutputFormat, OutputSpec
 from manim._config.output_plan import resolve_media_layout, resolve_output_plan
 from manim._config.video_encoder import resolve_video_encoder
-from manim.scene.scene_file_writer import SceneFileWriter, SceneFileWriterSettings
+from manim.scene.scene_file_writer import SceneFileWriter, _SceneFileWriterSettings
 
 _WIDTH = 16
 _HEIGHT = 12
@@ -53,8 +53,7 @@ def _writer(output: OutputSpec) -> SceneFileWriter:
         pixel_format=config.pixel_format,
         options=config.video_encoder_options,
     )
-    settings = SceneFileWriterSettings(
-        output=output,
+    settings = _SceneFileWriterSettings(
         plan=plan,
         video_encoder=video_encoder,
         max_inflight_encoders=config.max_inflight_encoders,

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from unittest.mock import Mock
 
 import numpy as np
 import pytest
@@ -14,7 +15,7 @@ from manim._config.output_plan import (
     resolve_requested_output_name,
 )
 from manim._config.video_encoder import resolve_video_encoder
-from manim.scene.scene_file_writer import SceneFileWriter, SceneFileWriterSettings
+from manim.scene.scene_file_writer import SceneFileWriter, _SceneFileWriterSettings
 
 
 def _make_writer(
@@ -53,8 +54,7 @@ def _make_writer(
         scene_name="ExampleScene",
         requested_output_name=resolve_requested_output_name(config),
     )
-    settings = SceneFileWriterSettings(
-        output=output,
+    settings = _SceneFileWriterSettings(
         plan=output_plan,
         video_encoder=resolve_video_encoder(
             output,
@@ -226,6 +226,53 @@ def test_nested_and_absolute_output_names_do_not_relocate_sections(
     assert absolute.sections_output_dir / absolute.sections[-1].video == (
         absolute.sections_output_dir / "movie_0000_intro.mp4"
     )
+
+
+def test_diagnostic_concat_manifest_records_the_full_scene_only(
+    config,
+    tmp_path,
+    monkeypatch,
+):
+    writer = _make_writer(
+        config,
+        tmp_path,
+        OutputFormat.MP4,
+        save_sections=True,
+    )
+    partial_directory = writer.partial_movie_directory
+    partial_directory.mkdir(parents=True)
+    first = partial_directory / "first.mp4"
+    second = partial_directory / "second.mp4"
+    first.touch()
+    second.touch()
+    writer.partial_movie_files = [str(first), None, str(second)]
+
+    manifest_path = writer.output_plan.concat_manifest
+    assert manifest_path is not None
+    manifest_path.write_text("stale")
+    combine_files = Mock()
+    monkeypatch.setattr(writer, "combine_files", combine_files)
+
+    writer.combine_to_movie()
+
+    expected_manifest = (
+        "# This file records the segment order used by Manim.\n"
+        f"file 'file:{first.as_posix()}'\n"
+        f"file 'file:{second.as_posix()}'\n"
+    )
+    assert manifest_path.read_text() == expected_manifest
+    assert not list(partial_directory.glob(".partial_movie_file_list.txt.*.tmp"))
+
+    section = writer.sections[-1]
+    section.partial_movie_files = [str(second)]
+    monkeypatch.setattr(
+        section,
+        "get_dict",
+        Mock(return_value={"name": section.name}),
+    )
+    writer.combine_to_section_videos()
+
+    assert manifest_path.read_text() == expected_manifest
 
 
 def test_no_output_plans_no_media_directories(config, tmp_path):

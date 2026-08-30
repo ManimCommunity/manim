@@ -50,8 +50,16 @@ class MediaLayoutSpec:
 
 @dataclass(frozen=True, slots=True)
 class OutputPlan:
-    """Exact paths and dynamic child-name policy for one scene output."""
+    """Exact paths and dynamic child-name policy for one scene output.
 
+    The plan retains the immutable :class:`OutputSpec` from which it was
+    resolved. ``fallback_image`` is present only when automatic video output may
+    fall back to a last-frame PNG for a scene without play calls. For video output,
+    ``concat_manifest`` is the persistent diagnostic snapshot of the main scene's
+    segment order; assembly does not consume it.
+    """
+
+    output: OutputSpec
     primary_artifact: Path | None
     fallback_image: Path | None
     image_sequence_dir: Path | None
@@ -257,6 +265,7 @@ def resolve_output_plan(
 
     if output.format is OutputFormat.NONE:
         return OutputPlan(
+            output=output,
             primary_artifact=None,
             fallback_image=None,
             image_sequence_dir=None,
@@ -283,6 +292,7 @@ def resolve_output_plan(
     if output.is_still:
         assert versioned_png is not None
         return OutputPlan(
+            output=output,
             primary_artifact=versioned_png,
             fallback_image=None,
             image_sequence_dir=None,
@@ -300,6 +310,7 @@ def resolve_output_plan(
         assert normalized_png is not None
         sequence_dir = normalized_png.with_suffix("")
         return OutputPlan(
+            output=output,
             primary_artifact=sequence_dir,
             fallback_image=None,
             image_sequence_dir=sequence_dir,
@@ -336,6 +347,7 @@ def resolve_output_plan(
     )
 
     return OutputPlan(
+        output=output,
         primary_artifact=primary_artifact,
         fallback_image=versioned_png if output.fallback_to_still else None,
         image_sequence_dir=None,

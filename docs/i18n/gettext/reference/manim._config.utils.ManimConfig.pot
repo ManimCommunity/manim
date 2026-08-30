@@ -206,8 +206,13 @@ msgid "Manually specify the path to the ffmpeg executable"
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
-#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.media_loglevel:1
-msgid "Logging level for media operations."
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.ffmpeg_loglevel:1
+msgid "Verbosity level of ffmpeg (no flag)."
+msgstr ""
+
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1
+#: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.flush_cache:1
+msgid "Whether to delete all the cached partial movie files."
 msgstr ""
 
 #: ../../../manim/_config/utils.py:docstring of manim._config.utils.ManimConfig.aspect_ratio:1:<autosummary>:1

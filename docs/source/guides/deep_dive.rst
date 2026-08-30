@@ -280,8 +280,7 @@ continues as follows:
         scene_name=type(self).__name__,
         requested_output_name=...,
     )
-    self.file_writer_settings = SceneFileWriterSettings(
-        output=self.session_spec.output,
+    self.file_writer_settings = _SceneFileWriterSettings(
         plan=self.output_plan,
         video_encoder=self.session_spec.video_encoder,
         max_inflight_encoders=config.max_inflight_encoders,
@@ -321,7 +320,7 @@ name and cannot change the format.
 
 The scene combines the output plan and segment profile with the encoder-pool,
 cache-maintenance, and sound-asset inputs in immutable
-``SceneFileWriterSettings``. Both renderers instantiate a
+``_SceneFileWriterSettings``. Both renderers instantiate a
 :class:`.SceneFileWriter` from these settings. The writer does not retain a
 renderer reference or read mutable global configuration. Directories are created
 lazily when their owning operation first writes. The writer remains Manim's

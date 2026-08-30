@@ -2,13 +2,14 @@
 
 from __future__ import annotations
 
-__all__ = ["SceneFileWriter", "SceneFileWriterSettings"]
+__all__ = ["SceneFileWriter"]
 
 import json
 import shutil
 import warnings
 from contextlib import suppress
 from dataclasses import dataclass
+from io import BytesIO
 from pathlib import Path
 from queue import Queue
 from tempfile import NamedTemporaryFile, _TemporaryFileWrapper
@@ -34,7 +35,6 @@ with warnings.catch_warnings():
 from manim import __version__
 
 from .. import logger
-from .._config.output import OutputSpec
 from .._config.output_plan import OutputPlan
 from .._config.video_encoder import VideoEncoderSpec
 from ..utils.caching import prune_segment_cache
@@ -163,14 +163,13 @@ class _PartialMovieEncodeJob:
 
 
 @dataclass(frozen=True, slots=True)
-class SceneFileWriterSettings:
+class _SceneFileWriterSettings:
     """Immutable inputs consumed by one :class:`SceneFileWriter`.
 
     The settings contain resolved output paths and segment encoding, bounded
     encoder-pool limits, cache maintenance, and the sound-asset search root.
     """
 
-    output: OutputSpec
     plan: OutputPlan
     video_encoder: VideoEncoderSpec | None
     max_inflight_encoders: int
@@ -179,9 +178,24 @@ class SceneFileWriterSettings:
     assets_dir: Path
 
     def __post_init__(self) -> None:
-        if self.output.is_video != (self.video_encoder is not None):
+        output = self.plan.output
+        if output.is_video != (self.video_encoder is not None):
             raise ValueError(
                 "Video output and resolved video encoder settings must be provided together.",
+            )
+        expected_segment_extension = (
+            output.segment_extension if output.is_video else None
+        )
+        if self.plan.segment_extension != expected_segment_extension:
+            raise ValueError(
+                "The output plan segment extension does not match its output specification.",
+            )
+        if (
+            self.video_encoder is not None
+            and f".{self.video_encoder.container_format}" != expected_segment_extension
+        ):
+            raise ValueError(
+                "The video encoder container does not match the output plan.",
             )
         if self.max_inflight_encoders <= 0:
             raise ValueError("max_inflight_encoders must be positive.")
@@ -196,8 +210,10 @@ class SceneFileWriterSettings:
 class SceneFileWriter:
     """Coordinate segment jobs and assemble one scene's media artifacts.
 
-    The writer receives immutable :class:`SceneFileWriterSettings` and concrete
-    top-left-origin RGBA arrays. For video output it coordinates queued
+    The writer receives immutable resolved settings and concrete top-left-origin
+    RGBA arrays. Ownership of each array passed to
+    :meth:`write_frame` transfers to the writer; callers must not mutate or reuse
+    it afterward. For video output the writer coordinates queued
     :class:`.VideoSegmentEncoder` jobs, then assembles their silent cached
     segments with optional audio, sections, and subcaptions. It also writes
     still images and PNG sequences described by the output plan.
@@ -215,9 +231,9 @@ class SceneFileWriter:
         Segment paths in animation order, including ``None`` for skipped plays.
     """
 
-    def __init__(self, settings: SceneFileWriterSettings) -> None:
+    def __init__(self, settings: _SceneFileWriterSettings) -> None:
         self.settings = settings
-        self.output_spec = settings.output
+        self.output_spec = settings.plan.output
         self.output_plan = settings.plan
         self.video_encoder = settings.video_encoder
         self._inflight_encode_jobs: list[_PartialMovieEncodeJob] = []
@@ -477,7 +493,11 @@ class SceneFileWriter:
         *,
         repeat: int = 1,
     ) -> None:
-        """Write a top-left-origin C-contiguous ``uint8`` RGBA frame."""
+        """Take ownership of one top-left C-contiguous ``uint8`` RGBA frame.
+
+        The caller must not mutate or reuse ``pixels`` after this method returns
+        because video encoding can consume the array asynchronously.
+        """
         if self.output_spec.is_video:
             job = self._current_encode_job
             if job is None:
@@ -541,6 +561,10 @@ class SceneFileWriter:
         file_path: StrPath | None = None,
     ) -> None:
         """Create a queued encoder job for one planned video segment."""
+        if self._current_encode_job is not None:
+            raise RuntimeError(
+                "Cannot open a video segment while another segment is still open.",
+            )
         if file_path is None:
             file_path = self.partial_movie_files[animation_index]
             if file_path is None:
@@ -676,6 +700,41 @@ class SceneFileWriter:
             self._join_job_and_drain_on_failure(self._inflight_by_path[path_key])
         return path.exists()
 
+    @staticmethod
+    def _concat_manifest_bytes(input_files: list[str]) -> bytes:
+        """Return a complete FFmpeg concat manifest for ``input_files``."""
+        manifest_text = (
+            "# This file records the segment order used by Manim.\n"
+            + "".join(
+                f"file 'file:{Path(file_path).as_posix()}'\n"
+                for file_path in input_files
+            )
+        )
+        return manifest_text.encode("utf-8")
+
+    def _write_concat_manifest(self, input_files: list[str]) -> None:
+        """Atomically persist the complete scene segment order for diagnostics."""
+        manifest_path = self.output_plan.concat_manifest
+        assert manifest_path is not None
+        manifest_path.parent.mkdir(parents=True, exist_ok=True)
+        temporary_path: Path | None = None
+        try:
+            with NamedTemporaryFile(
+                mode="wb",
+                dir=manifest_path.parent,
+                prefix=f".{manifest_path.name}.",
+                suffix=".tmp",
+                delete=False,
+            ) as temporary_file:
+                temporary_path = Path(temporary_file.name)
+                temporary_file.write(self._concat_manifest_bytes(input_files))
+            temporary_path.replace(manifest_path)
+        except BaseException:
+            if temporary_path is not None:
+                with suppress(OSError):
+                    temporary_path.unlink(missing_ok=True)
+            raise
+
     def combine_files(
         self,
         input_files: list[str],
@@ -683,19 +742,12 @@ class SceneFileWriter:
         create_gif: bool = False,
         includes_sound: bool = False,
     ) -> None:
-        file_list = self.output_plan.concat_manifest
-        assert file_list is not None
-        file_list.parent.mkdir(parents=True, exist_ok=True)
         output_file.parent.mkdir(parents=True, exist_ok=True)
         logger.debug(
             f"Partial movie files to combine ({len(input_files)} files): %(p)s",
             {"p": input_files[:5]},
         )
-        with file_list.open("w", encoding="utf-8") as fp:
-            fp.write("# This file is used internally by FFMPEG.\n")
-            for pf_path in input_files:
-                pf_path = Path(pf_path).as_posix()
-                fp.write(f"file 'file:{pf_path}'\n")
+        manifest = BytesIO(self._concat_manifest_bytes(input_files))
 
         av_options = {
             "safe": "0",  # needed to read files
@@ -705,7 +757,9 @@ class SceneFileWriter:
             av_options["an"] = "1"
 
         partial_movies_input = av.open(
-            str(file_list), options=av_options, format="concat"
+            manifest,
+            options=av_options,
+            format="concat",
         )
         partial_movies_stream = partial_movies_input.streams.video[0]
         output_container = av.open(str(output_file), mode="w")
@@ -789,6 +843,7 @@ class SceneFileWriter:
 
         partial_movies_input.close()
         output_container.close()
+        manifest.close()
 
     def combine_to_movie(self) -> None:
         """Used internally by Manim to combine the separate
@@ -811,6 +866,7 @@ class SceneFileWriter:
             return
 
         logger.info("Combining to Movie file.")
+        self._write_concat_manifest(partial_movie_files)
         self.combine_files(
             partial_movie_files,
             movie_file_path,

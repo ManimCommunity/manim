@@ -51,7 +51,7 @@ if TYPE_CHECKING:
     from manim.animation.animation import Animation
     from manim.mobject.mobject import Mobject, _AnimationBuilder
     from manim.scene.scene import Scene
-    from manim.scene.scene_file_writer import SceneFileWriterSettings
+    from manim.scene.scene_file_writer import _SceneFileWriterSettings
     from manim.typing import (
         FloatRGBA,
         PathFuncType,
@@ -525,7 +525,7 @@ class OpenGLRenderer:
         self,
         scene: Scene,
         session_spec: RenderSessionSpec,
-        file_writer_settings: SceneFileWriterSettings,
+        file_writer_settings: _SceneFileWriterSettings,
     ) -> None:
         """
         Initializes the OpenGL rendering context and related resources

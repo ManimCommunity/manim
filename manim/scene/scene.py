@@ -59,7 +59,7 @@ from ..manager import Manager
 from ..renderer.cairo_renderer import CairoRenderer
 from ..renderer.opengl_renderer import OpenGLCamera, OpenGLMobject, OpenGLRenderer
 from ..renderer.shader import Object3D
-from ..scene.scene_file_writer import SceneFileWriterSettings
+from ..scene.scene_file_writer import _SceneFileWriterSettings
 from ..utils import opengl, space_ops
 from ..utils.exceptions import RerunSceneException
 from ..utils.family import extract_mobject_family_members
@@ -249,8 +249,7 @@ class Scene:
             assets_dir = working_directory
         elif not assets_dir.is_absolute():
             assets_dir = working_directory / assets_dir
-        self.file_writer_settings = SceneFileWriterSettings(
-            output=self.session_spec.output,
+        self.file_writer_settings = _SceneFileWriterSettings(
             plan=self.output_plan,
             video_encoder=self.session_spec.video_encoder,
             max_inflight_encoders=config.max_inflight_encoders,
