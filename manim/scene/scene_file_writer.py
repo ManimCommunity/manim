@@ -44,9 +44,7 @@ from .section import DefaultSectionType, Section
 from .video_segment_encoder import VideoSegmentEncoder
 
 if TYPE_CHECKING:
-    from manim.renderer.cairo_renderer import CairoRenderer
-    from manim.renderer.opengl_renderer import OpenGLRenderer
-    from manim.typing import PixelArray, StrPath
+    from manim.typing import RGBAPixelArray, StrPath
 
 
 def convert_audio(
@@ -83,7 +81,7 @@ class _PartialMovieEncodeJob:
         # Parallel encoding uses a bounded queue; at the default capacity, eight
         # 1080p RGBA frames occupy about 66 MB per job. The worker drains through
         # the sentinel after an exception, so a bounded queue cannot deadlock.
-        self.queue: Queue[tuple[int, PixelArray | None]] = Queue(
+        self.queue: Queue[tuple[int, RGBAPixelArray | None]] = Queue(
             maxsize=frame_queue_size,
         )
         self._exception: BaseException | None = None
@@ -137,7 +135,7 @@ class _PartialMovieEncodeJob:
             self._capture_exception(exception)
             self._abort_encoder()
 
-    def put(self, repeat: int, frame: PixelArray) -> None:
+    def put(self, repeat: int, frame: RGBAPixelArray) -> None:
         """Add a frame to the encoding queue."""
         self.queue.put((repeat, frame))
 
@@ -217,12 +215,7 @@ class SceneFileWriter:
 
     """
 
-    def __init__(
-        self,
-        renderer: CairoRenderer | OpenGLRenderer,
-        settings: SceneFileWriterSettings,
-    ) -> None:
-        self.renderer = renderer
+    def __init__(self, settings: SceneFileWriterSettings) -> None:
         self.settings = settings
         self.output_spec = settings.output
         self.output_plan = settings.plan
@@ -449,7 +442,11 @@ class SceneFileWriter:
 
     # Writers
     def begin_animation(
-        self, allow_write: bool = False, file_path: StrPath | None = None
+        self,
+        allow_write: bool = False,
+        *,
+        animation_index: int,
+        file_path: StrPath | None = None,
     ) -> None:
         """Used internally by manim to stream the animation to FFMPEG for
         displaying or writing to a file.
@@ -460,7 +457,10 @@ class SceneFileWriter:
             Whether or not to write to a video file.
         """
         if self.output_spec.is_video and allow_write:
-            self.open_partial_movie_stream(file_path=file_path)
+            self.open_partial_movie_stream(
+                animation_index=animation_index,
+                file_path=file_path,
+            )
 
     def end_animation(self, allow_write: bool = False) -> None:
         """Internally used by Manim to stop streaming to FFMPEG gracefully.
@@ -474,23 +474,13 @@ class SceneFileWriter:
             self.close_partial_movie_stream()
 
     def write_frame(
-        self, frame_or_renderer: PixelArray | OpenGLRenderer, num_frames: int = 1
+        self,
+        pixels: RGBAPixelArray,
+        *,
+        repeat: int = 1,
     ) -> None:
-        """Used internally by Manim to write a frame to the FFMPEG input buffer.
-
-        Parameters
-        ----------
-        frame_or_renderer
-            Pixel array of the frame.
-        num_frames
-            The number of times to write frame.
-        """
+        """Write a top-left-origin C-contiguous ``uint8`` RGBA frame."""
         if self.output_spec.is_video:
-            if isinstance(frame_or_renderer, np.ndarray):
-                frame = frame_or_renderer
-            else:
-                frame = frame_or_renderer.get_frame()
-
             job = self._current_encode_job
             if job is None:
                 # Interactive OpenGL rendering emits frames outside an open
@@ -502,14 +492,10 @@ class SceneFileWriter:
                 job.seal()
                 self._current_encode_job = None
                 job.join()
-            job.put(num_frames, frame)
+            job.put(repeat, pixels)
 
         if self.output_spec.is_image_sequence:
-            if isinstance(frame_or_renderer, np.ndarray):
-                image = Image.fromarray(frame_or_renderer)
-            else:
-                image = frame_or_renderer.get_image()
-            self.output_image(image)
+            self.output_image(Image.fromarray(pixels))
 
     def output_image(self, image: Image.Image) -> None:
         file_path = self.output_plan.image_frame_path(self.frame_count)
@@ -517,18 +503,12 @@ class SceneFileWriter:
         image.save(file_path)
         self.frame_count += 1
 
-    def save_image(self, image: Image.Image) -> None:
-        """This method saves the image passed to it in the default image directory.
-
-        Parameters
-        ----------
-        image
-            The pixel array of the image to save.
-        """
+    def save_image(self, pixels: RGBAPixelArray) -> None:
+        """Save one RGBA frame to the planned still-image path."""
         if not self.output_spec.enabled:
             return
         self.image_file_path.parent.mkdir(parents=True, exist_ok=True)
-        image.save(self.image_file_path)
+        Image.fromarray(pixels).save(self.image_file_path)
         self.print_file_ready_message(self.image_file_path)
 
     def finish(self) -> None:
@@ -559,14 +539,19 @@ class SceneFileWriter:
             raise RuntimeError("Video segment encoding requires resolved settings.")
         return VideoSegmentEncoder(target=target, spec=encoder)
 
-    def open_partial_movie_stream(self, file_path: StrPath | None = None) -> None:
+    def open_partial_movie_stream(
+        self,
+        *,
+        animation_index: int,
+        file_path: StrPath | None = None,
+    ) -> None:
         """Open a container holding a video stream.
 
         This is used internally by Manim initialize the container holding
         the video stream of a partial movie file.
         """
         if file_path is None:
-            file_path = self.partial_movie_files[self.renderer.num_plays]
+            file_path = self.partial_movie_files[animation_index]
             if file_path is None:
                 raise RuntimeError(
                     "open_partial_movie_stream() called for a play that has no "
@@ -586,7 +571,7 @@ class SceneFileWriter:
             else self.settings.encoder_queue_size
         )
         self._current_encode_job = _PartialMovieEncodeJob(
-            animation_index=self.renderer.num_plays,
+            animation_index=animation_index,
             encoder=segment_encoder,
             frame_queue_size=frame_queue_size,
         )

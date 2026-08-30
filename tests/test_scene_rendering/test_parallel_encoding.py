@@ -62,7 +62,6 @@ def _make_writer(
         scene_name=scene_name,
         requested_output_name=resolve_requested_output_name(config),
     )
-    renderer = Mock(num_plays=0)
     settings = SceneFileWriterSettings(
         output=output,
         plan=plan,
@@ -77,7 +76,7 @@ def _make_writer(
         max_files_cached=config.max_files_cached,
         assets_dir=Path.cwd(),
     )
-    return SceneFileWriter(renderer, settings)
+    return SceneFileWriter(settings)
 
 
 _SCENE_NAME = "ParallelEncodingCacheScene"
@@ -338,7 +337,10 @@ def test_frame_queue_configuration(
     config.encoder_queue_size = encoder_queue_size
     writer = _make_writer("FrameQueueSizeScene")
 
-    writer.open_partial_movie_stream(tmp_path / "partial.mp4")
+    writer.open_partial_movie_stream(
+        animation_index=0,
+        file_path=tmp_path / "partial.mp4",
+    )
     job = writer._current_encode_job
     assert job is not None
     assert job.queue.maxsize == expected_queue_size
@@ -355,7 +357,10 @@ def test_pool_settings_are_not_read_from_mutated_config(config, tmp_path):
     config.max_inflight_encoders = 1
     config.encoder_queue_size = 9
 
-    writer.open_partial_movie_stream(tmp_path / "partial.mp4")
+    writer.open_partial_movie_stream(
+        animation_index=0,
+        file_path=tmp_path / "partial.mp4",
+    )
     job = writer._current_encode_job
     assert job is not None
     assert job.queue.maxsize == 3
@@ -495,7 +500,7 @@ def test_open_partial_movie_stream_joins_same_path_inflight_job(config, tmp_path
     writer._inflight_encode_jobs.append(inflight_job)
     writer._inflight_by_path[str(path)] = inflight_job
 
-    writer.open_partial_movie_stream(file_path=path)
+    writer.open_partial_movie_stream(animation_index=0, file_path=path)
     current_job = writer._current_encode_job
     assert current_job is not None
     try:
@@ -979,7 +984,7 @@ def test_open_partial_movie_stream_without_path_raises(config, tmp_path):
         writer.partial_movie_files = [None]
 
         with pytest.raises(RuntimeError, match="partial movie file path"):
-            writer.open_partial_movie_stream()
+            writer.open_partial_movie_stream(animation_index=0)
 
 
 def test_write_frame_without_open_stream_drops_frame(config, tmp_path):

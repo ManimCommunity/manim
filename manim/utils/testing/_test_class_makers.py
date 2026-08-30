@@ -44,19 +44,19 @@ def _make_test_renderer_class(from_renderer: type) -> Any:
 class DummySceneFileWriter(SceneFileWriter):
     """Delegate of SceneFileWriter used to test the frames."""
 
-    def __init__(
-        self,
-        renderer: CairoRenderer | OpenGLRenderer,
-        settings: SceneFileWriterSettings,
-    ) -> None:
-        super().__init__(renderer, settings)
+    def __init__(self, settings: SceneFileWriterSettings) -> None:
+        super().__init__(settings)
         self.i = 0
 
     def add_partial_movie_file(self, hash_animation: str | None) -> None:
         pass
 
     def begin_animation(
-        self, allow_write: bool = True, file_path: StrPath | None = None
+        self,
+        allow_write: bool = True,
+        *,
+        animation_index: int,
+        file_path: StrPath | None = None,
     ) -> Any:
         pass
 
@@ -69,18 +69,14 @@ class DummySceneFileWriter(SceneFileWriter):
     def combine_to_section_videos(self) -> None:
         pass
 
-    def write_frame(
-        self, frame_or_renderer: PixelArray | OpenGLRenderer, num_frames: int = 1
-    ) -> None:
+    def write_frame(self, pixels: PixelArray, *, repeat: int = 1) -> None:
         self.i += 1
 
 
 def _make_scene_file_writer_class(tester: _FramesTester) -> type[SceneFileWriter]:
     class TestSceneFileWriter(DummySceneFileWriter):
-        def write_frame(
-            self, frame_or_renderer: PixelArray | OpenGLRenderer, num_frames: int = 1
-        ) -> None:
-            tester.check_frame(self.i, frame_or_renderer)
-            super().write_frame(frame_or_renderer, num_frames=num_frames)
+        def write_frame(self, pixels: PixelArray, *, repeat: int = 1) -> None:
+            tester.check_frame(self.i, pixels)
+            super().write_frame(pixels, repeat=repeat)
 
     return TestSceneFileWriter

@@ -72,6 +72,8 @@ def test_get_frame_with_live_preview_disabled(config, using_opengl_renderer):
     # height and width are flipped
     assert renderer.get_pixel_shape()[0] == frame.shape[1]
     assert renderer.get_pixel_shape()[1] == frame.shape[0]
+    assert frame.dtype == np.uint8
+    assert frame.flags.c_contiguous
 
 
 @pytest.mark.slow
@@ -92,7 +94,24 @@ def test_get_frame_with_live_preview_enabled(config, using_opengl_renderer):
     # height and width are flipped
     assert renderer.get_pixel_shape()[0] == frame.shape[1]
     assert renderer.get_pixel_shape()[1] == frame.shape[0]
+    assert frame.dtype == np.uint8
+    assert frame.flags.c_contiguous
     renderer.window.close()
+
+
+def test_render_without_frame_output_skips_gpu_readback(
+    config,
+    using_opengl_renderer,
+):
+    config.format = "none"
+    config.live_preview = False
+    scene = SquareToCircle()
+    renderer = scene.renderer
+    renderer.get_frame = Mock(wraps=renderer.get_frame)
+
+    renderer.render(scene, 0, [])
+
+    renderer.get_frame.assert_not_called()
 
 
 def test_pixel_coords_to_space_coords(config, using_opengl_renderer):

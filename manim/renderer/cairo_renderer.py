@@ -65,10 +65,7 @@ class CairoRenderer:
         session_spec: RenderSessionSpec,
         file_writer_settings: SceneFileWriterSettings,
     ) -> None:
-        self.file_writer: Any = self._file_writer_class(
-            self,
-            file_writer_settings,
-        )
+        self.file_writer: Any = self._file_writer_class(file_writer_settings)
 
     def play(
         self,
@@ -119,7 +116,10 @@ class CairoRenderer:
             {"h": str(self.animations_hashes[:5])},
         )
 
-        self.file_writer.begin_animation(not self.skip_animations)
+        self.file_writer.begin_animation(
+            not self.skip_animations,
+            animation_index=self.num_plays,
+        )
         scene.begin_animations()
 
         # Save a static image, to avoid rendering non moving objects.
@@ -208,7 +208,7 @@ class CairoRenderer:
         if self.skip_animations:
             return
         self.time += num_frames * dt
-        self.file_writer.write_frame(frame, num_frames=num_frames)
+        self.file_writer.write_frame(frame, repeat=num_frames)
 
     def freeze_current_frame(self, duration: float) -> None:
         """Adds a static frame to the movie for a given duration. The static frame is the current frame.
@@ -296,4 +296,4 @@ class CairoRenderer:
             if self.num_plays:
                 self.static_image = None
                 self.update_frame(scene)
-            self.file_writer.save_image(self.camera.get_image())
+            self.file_writer.save_image(self.get_frame())

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from fractions import Fraction
 from pathlib import Path
-from unittest.mock import Mock
 
 import av
 import numpy as np
@@ -63,7 +62,7 @@ def _writer(output: OutputSpec) -> SceneFileWriter:
         max_files_cached=config.max_files_cached,
         assets_dir=Path.cwd(),
     )
-    return SceneFileWriter(Mock(num_plays=0), settings)
+    return SceneFileWriter(settings)
 
 
 def _asymmetric_rgba_frame() -> np.ndarray:
@@ -139,8 +138,8 @@ def test_cached_segment_profile_and_pixel_orientation(
         },
     ):
         writer = _writer(output)
-        writer.open_partial_movie_stream(target)
-        writer.write_frame(source, num_frames=_FRAME_COUNT)
+        writer.open_partial_movie_stream(animation_index=0, file_path=target)
+        writer.write_frame(source, repeat=_FRAME_COUNT)
         writer.close_partial_movie_stream()
         writer.join_all_encode_jobs()
 
@@ -196,7 +195,7 @@ def test_configured_encoder_profile_is_used_for_cached_segment(tmp_path):
         },
     ):
         writer = _writer(output)
-        writer.open_partial_movie_stream(target)
+        writer.open_partial_movie_stream(animation_index=0, file_path=target)
         writer.write_frame(_asymmetric_rgba_frame())
         writer.close_partial_movie_stream()
         writer.join_all_encode_jobs()

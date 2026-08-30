@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 from pathlib import Path
-from unittest.mock import Mock
 
+import numpy as np
 import pytest
-from PIL import Image
 
 from manim import __version__
 from manim._config.output import OutputFormat, OutputSpec
@@ -54,8 +53,6 @@ def _make_writer(
         scene_name="ExampleScene",
         requested_output_name=resolve_requested_output_name(config),
     )
-    renderer = Mock()
-    renderer.num_plays = 0
     settings = SceneFileWriterSettings(
         output=output,
         plan=output_plan,
@@ -70,7 +67,7 @@ def _make_writer(
         max_files_cached=config.max_files_cached,
         assets_dir=Path.cwd(),
     )
-    return SceneFileWriter(renderer, settings)
+    return SceneFileWriter(settings)
 
 
 @pytest.mark.parametrize(
@@ -135,7 +132,7 @@ def test_default_png_and_automatic_video_fallback_paths(config, tmp_path):
         / f"ExampleScene_ManimCE_v{__version__}.png"
     )
 
-    png_writer.save_image(Image.new("RGBA", (1, 1)))
+    png_writer.save_image(np.zeros((1, 1, 4), dtype=np.uint8))
     assert png_writer.final_file_path == expected
 
     video_writer = _make_writer(
@@ -144,7 +141,7 @@ def test_default_png_and_automatic_video_fallback_paths(config, tmp_path):
         OutputFormat.MP4,
         fallback_to_still=True,
     )
-    video_writer.save_image(Image.new("RGBA", (1, 1)))
+    video_writer.save_image(np.zeros((1, 1, 4), dtype=np.uint8))
     assert video_writer.final_file_path == expected
 
 
@@ -155,7 +152,10 @@ def test_png_sequence_path_and_zero_padding(config, tmp_path):
     expected_dir = tmp_path / "images" / "example.scene" / "ExampleScene"
     assert writer.image_sequence_directory == expected_dir
 
-    writer.output_image(Image.new("RGBA", (1, 1)))
+    pixels = np.zeros((1, 1, 4), dtype=np.uint8)
+    writer.write_frame(pixels)
+
+    assert not hasattr(writer, "renderer")
     assert (expected_dir / "000.png").is_file()
 
 
