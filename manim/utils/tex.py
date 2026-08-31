@@ -35,7 +35,7 @@ class TexTemplate:
     _body: str = field(default="", init=False)
     """A custom body, can be set from a file."""
 
-    tex_compiler: str | list[str] | TexCompiler | list[TexCompiler] = TexCompiler.LATEX
+    tex_compiler: TexCompiler | list[TexCompiler] = TexCompiler.LATEX
     """The TeX compiler(s) to be used. Can be a single compiler (e.g. ``"latex"``,
     ``"pdflatex"``, ``"lualatex"``) or a list of compilers to compile in order
     (e.g. ``["lualatex", "pdflatex"]``)."""
@@ -43,7 +43,7 @@ class TexTemplate:
     description: str = ""
     """A description of the template"""
 
-    output_format: str | TexOutputFormat = TexOutputFormat.DVI
+    output_format: TexOutputFormat = TexOutputFormat.DVI
     """The output format resulting from compilation, e.g. ``.dvi`` or ``.pdf``."""
 
     documentclass: str = r"\documentclass[preview]{standalone}"
@@ -57,6 +57,14 @@ class TexTemplate:
 
     post_doc_commands: str = ""
     r"""Text (definitions, commands) to be inserted at right after ``\begin{document}``, e.g. ``\boldmath``."""
+
+    def __post_init__(self) -> None:
+        if isinstance(self.tex_compiler, list):
+            self.tex_compiler = [TexCompiler(compiler) for compiler in self.tex_compiler]
+        else:
+            self.tex_compiler = TexCompiler(self.tex_compiler)
+
+        self.output_format = TexOutputFormat(self.output_format)
 
     @property
     def body(self) -> str:

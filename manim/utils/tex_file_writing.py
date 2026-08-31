@@ -193,7 +193,7 @@ def insight_package_not_found_error(matching: Match[str]) -> Generator[str]:
 def compile_tex(
     tex_file: Path,
     tex_compiler: TexCompiler | list[TexCompiler],
-    output_format: TexOutputFormat | None = TexOutputFormat.DVI,
+    output_format: TexOutputFormat = TexOutputFormat.DVI,
 ) -> Path:
     """Compiles a tex_file into a .dvi or a .xdv or a .pdf
 
@@ -212,7 +212,7 @@ def compile_tex(
     :class:`Path`
         Path to generated output file in desired format (DVI, XDV or PDF).
     """
-    result = tex_file.with_suffix(output_format)
+    result = tex_file.with_suffix(str(output_format))
     tex_dir = config.get_dir("tex_dir")
     tex_compilers = [tex_compiler] if isinstance(tex_compiler, str) else tex_compiler
     if not result.exists():

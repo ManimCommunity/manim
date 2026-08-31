@@ -289,7 +289,7 @@ class TexCompiler(StrEnum):
     TECTONIC = "tectonic"
 
     @property
-    def output_formats(self):
+    def output_formats(self) -> list[TexOutputFormat]:
         if self in (TexCompiler.XELATEX, TexCompiler.TECTONIC):
             return [TexOutputFormat.PDF, TexOutputFormat.XDV]
         else:
