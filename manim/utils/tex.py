@@ -13,6 +13,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from manim.constants import TexCompiler, TexOutputFormat
+
 if TYPE_CHECKING:
     from typing import Self
 
@@ -33,7 +35,7 @@ class TexTemplate:
     _body: str = field(default="", init=False)
     """A custom body, can be set from a file."""
 
-    tex_compiler: str | list[str] = "latex"
+    tex_compiler: str | list[str] | TexCompiler | list[TexCompiler] = TexCompiler.LATEX
     """The TeX compiler(s) to be used. Can be a single compiler (e.g. ``"latex"``,
     ``"pdflatex"``, ``"lualatex"``) or a list of compilers to compile in order
     (e.g. ``["lualatex", "pdflatex"]``)."""
@@ -41,7 +43,7 @@ class TexTemplate:
     description: str = ""
     """A description of the template"""
 
-    output_format: str = ".dvi"
+    output_format: str | TexOutputFormat = TexOutputFormat.DVI
     """The output format resulting from compilation, e.g. ``.dvi`` or ``.pdf``."""
 
     documentclass: str = r"\documentclass[preview]{standalone}"
