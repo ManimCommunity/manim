@@ -142,7 +142,9 @@ def make_tex_compilation_command(
         Compilation command according to given parameters
     """
     if output_format not in tex_compiler.output_formats:
-        raise ValueError(f"{tex_compiler} does not support output format {output_format}")
+        raise ValueError(
+            f"{tex_compiler} does not support output format {output_format}"
+        )
     if tex_compiler in {TexCompiler.LATEX, TexCompiler.PDFLATEX, TexCompiler.LUALATEX}:
         command = [
             tex_compiler,
@@ -235,7 +237,9 @@ def compile_tex(
     return result
 
 
-def convert_to_svg(dvi_file: Path, output_format: TexOutputFormat, page: int = 1) -> Path:
+def convert_to_svg(
+    dvi_file: Path, output_format: TexOutputFormat, page: int = 1
+) -> Path:
     """Converts a .dvi, .xdv, or .pdf file into an svg using dvisvgm.
 
     Parameters
