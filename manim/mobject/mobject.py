@@ -482,7 +482,8 @@ class Mobject:
     def add(self, *mobjects: Mobject) -> Self:
         """Add mobjects as submobjects.
 
-        The mobjects are added to :attr:`submobjects`.
+        The mobjects are added to :attr:`submobjects`. If a mobject to be added is
+        already a submobject of ``self``, it will be moved to its new position.
 
         Subclasses of mobject may implement ``+`` and ``+=`` dunder methods.
 
@@ -503,18 +504,21 @@ class Mobject:
         :class:`TypeError`
             When trying to add an object that is not an instance of :class:`Mobject`.
 
-
         Notes
         -----
         A mobject cannot contain itself, and it cannot contain a submobject
-        more than once.  If the parent mobject is displayed, the newly-added
+        more than once. The ``mobjects`` list will be deduplicated before its contents
+        are added; the last (rightmost) occurrence of a duplicate mobject will be the
+        one that is kept.
+        If the parent mobject is displayed, the newly-added
         submobjects will also be displayed (i.e. they are automatically added
         to the parent Scene).
 
         See Also
         --------
-        :meth:`remove`
         :meth:`add_to_back`
+        :meth:`insert`
+        :meth:`remove`
 
         Examples
         --------
@@ -559,7 +563,7 @@ class Mobject:
         return self._insert_submobjects(len(self.submobjects), mobjects)
 
     def insert(self, index: int, mobject: Mobject) -> Self:
-        """Inserts a mobject at a specific position into ``self.submobjects``.
+        """Inserts a mobject at a specific position into the submobjects list.
 
         If ``mobject`` is already a submobject of ``self``, it will be moved to the new
         position.
@@ -570,6 +574,39 @@ class Mobject:
             The index at which
         mobject
             The mobject to be inserted.
+
+
+        .. note::
+            ``mobject`` will be inserted at position ``index``, but there is no
+            guarantee that this will be its final position in :attr:`submobjects`, since
+            the list will shift if ``mobject`` was already present at a lower index than
+            ``index``.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Raises
+        ------
+        :class:`ValueError`
+            When a mobject tries to add itself.
+        :class:`TypeError`
+            When trying to add an object that is not an instance of :class:`Mobject`.
+
+        Notes
+        -----
+        A mobject cannot contain itself, and it cannot contain a submobject
+        more than once.
+        If the parent mobject is displayed, the newly-added
+        submobject will also be displayed (i.e. it is automatically added
+        to the parent Scene).
+
+        See Also
+        --------
+        :meth:`add`
+        :meth:`add_to_back`
+        :meth:`remove`
         """
         return self._insert_submobjects(index, (mobject,))
 
@@ -645,7 +682,7 @@ class Mobject:
     def add_to_back(self, *mobjects: Mobject) -> Self:
         """Add all passed mobjects to the back of the submobjects.
 
-        If :attr:`submobjects` already contains the given mobjects, they just get moved
+        If :attr:`submobjects` already contains any of the given mobjects, they just get moved
         to the back instead.
 
         Parameters
@@ -676,20 +713,24 @@ class Mobject:
         Notes
         -----
         A mobject cannot contain itself, and it cannot contain a submobject
-        more than once.  If the parent mobject is displayed, the newly-added
+        more than once. The ``mobjects`` list will be deduplicated before its contents
+        are added; the last (rightmost) occurrence of a duplicate mobject will be the
+        one that is kept.
+        If the parent mobject is displayed, the newly-added
         submobjects will also be displayed (i.e. they are automatically added
         to the parent Scene).
 
         See Also
         --------
-        :meth:`remove`
         :meth:`add`
+        :meth:`insert`
+        :meth:`remove`
 
         """
         return self._insert_submobjects(0, mobjects)
 
     def remove(self, *mobjects: Mobject) -> Self:
-        """Remove :attr:`submobjects`.
+        """Remove submobjects.
 
         The mobjects are removed from :attr:`submobjects`, if they exist.
 
