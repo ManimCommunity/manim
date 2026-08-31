@@ -8,6 +8,7 @@ __all__ = [
 ]
 
 from manim.constants import TexCompiler, TexOutputFormat
+
 from .tex import *
 
 # This file makes TexTemplateLibrary and TexFontTemplates available for use in manim Tex and MathTex objects.
@@ -69,9 +70,9 @@ class TexTemplateLibrary:
     """ An instance of the default TeX template used by 3b1b """
 
     ctex = TexTemplate(
-        tex_compiler = TexCompiler.XELATEX,
-        output_format = TexOutputFormat.XDV,
-        preamble = _3b1b_preamble.replace(
+        tex_compiler=TexCompiler.XELATEX,
+        output_format=TexOutputFormat.XDV,
+        preamble=_3b1b_preamble.replace(
             r"\DisableLigatures{encoding = *, family = * }",
             r"\usepackage[UTF8]{ctex}",
         ),
