@@ -63,12 +63,16 @@ def tex_to_svg_file(
     if svg_file.exists():
         return svg_file
 
+    # convert to TexCompiler and TexOutputFormat
+    tex_compiler = TexCompiler(str(tex_template.tex_compiler))
+    output_format = TexOutputFormat(str(tex_template.output_format))
+
     dvi_file = compile_tex(
         tex_file,
-        tex_template.tex_compiler,
-        tex_template.output_format,
+        tex_compiler,
+        output_format,
     )
-    svg_file = convert_to_svg(dvi_file, tex_template.output_format)
+    svg_file = convert_to_svg(dvi_file, output_format)
     if not config["no_latex_cleanup"]:
         delete_nonsvg_files()
     return svg_file
