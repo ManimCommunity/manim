@@ -50,6 +50,76 @@ def test_opengl_mobject_add(using_opengl_renderer):
     assert len(obj.submobjects) == 0
 
 
+def test_opengl_mobject_insert(using_opengl_renderer):
+    obj = OpenGLMobject()
+    m1, m2, m3, m4 = [OpenGLMobject(name=f"m{i}") for i in range(1, 5)]
+    # Insert into empty list
+    obj.insert(0, m1)
+    assert obj.submobjects == [m1]
+
+    # Inserting shifts existing submobjects to the right
+    obj.insert(0, m2)
+    assert obj.submobjects == [m2, m1]
+
+    # Inserting with negative index inserts counting from the end like a list
+    obj.insert(-1, m3)
+    assert obj.submobjects == [m2, m3, m1]
+
+    # Inserting with index greater than length appends
+    obj.insert(10, m4)
+    assert obj.submobjects == [m2, m3, m1, m4]
+
+    # Inserting an existing submobject does nothing
+    for i in range(len(obj.submobjects) + 1):
+        obj.insert(i, m3)
+        assert obj.submobjects == [m2, m3, m1, m4]
+
+    # obj cannot insert itself
+    with pytest.raises(ValueError) as insert_self_info:
+        obj.insert(0, obj)
+    assert str(insert_self_info.value) == (
+        "Cannot add OpenGLMobject as a submobject of itself (at index 0)."
+    )
+
+    # can only add Mobjects
+    with pytest.raises(TypeError) as insert_str_info:
+        obj.insert(0, "foo")
+    assert str(insert_str_info.value) == (
+        "Only values of type OpenGLMobject can be added as submobjects of "
+        "OpenGLMobject, but the value foo (at index 0) is of type str."
+    )
+
+
+def test_opengl_mobject_add_to_back(using_opengl_renderer):
+    obj = OpenGLMobject()
+    m1, m2, m3, m4 = [OpenGLMobject(name=f"m{i}") for i in range(1, 5)]
+
+    # Adding to empty list is the same as adding normally
+    obj.add_to_back(m1)
+    assert obj.submobjects == [m1]
+
+    # Adding a new submobject adds it to the back
+    obj.add_to_back(m2)
+    assert obj.submobjects == [m2, m1]
+
+    # In case of duplicate input, the first occurrence of a submobject is kept
+    obj.add_to_back(m3, m4, m3)
+    assert obj.submobjects == [m3, m4, m2, m1]
+
+    # Adding an existing submobject does nothing
+    for mob in obj.submobjects:
+        obj.add_to_back(mob)
+        assert obj.submobjects == [m3, m4, m2, m1]
+
+    # can only add Mobjects
+    with pytest.raises(TypeError) as add_str_info:
+        obj.add_to_back("foo")
+    assert str(add_str_info.value) == (
+        "Only values of type OpenGLMobject can be added as submobjects of "
+        "OpenGLMobject, but the value foo (at index 0) is of type str."
+    )
+
+
 def test_opengl_mobject_remove(using_opengl_renderer):
     """Test OpenGLMobject.remove()."""
     obj = OpenGLMobject()

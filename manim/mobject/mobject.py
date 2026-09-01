@@ -479,6 +479,81 @@ class Mobject:
         """
         return self
 
+    def _insert_submobjects(self, index: int, mobjects: Sequence[Mobject]) -> Self:
+        """Common backing implementation for :meth:`add`, :meth:`add_to_back`, and
+        :meth:`insert`.
+
+        Inserts ``mobjects`` into :attr:`submobjects` such that they end up starting
+        at ``index`` (following the semantics of :meth:`list.insert`). Mobjects that
+        are already present are moved to the new position instead of being duplicated.
+        """
+        # TODO: The logic of adding/inserting submobjects is inconsistent with that of
+        # OpenGLMobjects. Mobjects *do* move already-present submobjects if they are
+        # reinserted, and input is deduplicated by keeping the *last* (rightmost)
+        # occurrence of an element, while OpenGLMobjects *don't* move already-present
+        # submobjects and they deduplicate input by keeping the *first* occurrence.
+        # This behavior should be made consistent when technically possible.
+
+        self._assert_valid_submobjects(mobjects)
+
+        if not mobjects:
+            return self
+
+        unique_mobjects = remove_list_redundancies(mobjects)
+        if len(mobjects) != len(unique_mobjects):
+            logger.warning(
+                "Attempted adding some Mobject as a child more than once, "
+                "this is not possible. Repetitions are ignored.",
+            )
+
+        if not self.submobjects:
+            self.submobjects = unique_mobjects
+            return self
+
+        n = len(self.submobjects)
+
+        # Normalize the index to be in the range [0, n] following the semantics of list.insert
+        norm_index = clip(index if index >= 0 else n + index, 0, n)
+
+        # Shortcut for the common case of adding a single mobject
+        if len(unique_mobjects) == 1:
+            mobject = unique_mobjects[0]
+            # If the mobject is already present at or next to the provided index, we
+            # don't need to do anything
+            if any(
+                self.submobjects[j] is mobject
+                for j in (norm_index - 1, norm_index)
+                if 0 <= j < n
+            ):
+                return self
+
+            try:
+                old_index = self.submobjects.index(mobject)
+            except ValueError:  # mobject isn't already present
+                self.submobjects.insert(norm_index, mobject)
+                return self
+
+            # Compensate for list shifting after popping
+            new_index = norm_index if norm_index < old_index else norm_index - 1
+            self.submobjects.pop(old_index)
+            self.submobjects.insert(new_index, mobject)
+            return self
+
+        if norm_index >= len(self.submobjects):
+            # If we can just extend with the new mobjects, that is much faster than
+            # concatenating.
+            self.submobjects.extend(unique_mobjects)
+        else:
+            head = list_difference_update(
+                it.islice(self.submobjects, norm_index), unique_mobjects
+            )
+            tail = list_difference_update(
+                it.islice(self.submobjects, norm_index, None), unique_mobjects
+            )
+
+            self.submobjects = [*head, *unique_mobjects, *tail]
+        return self
+
     def add(self, *mobjects: Mobject) -> Self:
         """Add mobjects as submobjects.
 
@@ -609,69 +684,6 @@ class Mobject:
         :meth:`remove`
         """
         return self._insert_submobjects(index, (mobject,))
-
-    def _insert_submobjects(self, index: int, mobjects: Sequence[Mobject]) -> Self:
-        """Common backing implementation for :meth:`add`, :meth:`add_to_back`, and
-        :meth:`insert`.
-
-        Inserts ``mobjects`` into :attr:`submobjects` such that they end up starting
-        at ``index`` (following the semantics of :meth:`list.insert`). Mobjects that
-        are already present are moved to the new position instead of being duplicated.
-        """
-        self._assert_valid_submobjects(mobjects)
-
-        if not mobjects:
-            return self
-
-        unique_mobjects = remove_list_redundancies(mobjects)
-        if len(mobjects) != len(unique_mobjects):
-            logger.warning(
-                "Attempted adding some Mobject as a child more than once, "
-                "this is not possible. Repetitions are ignored.",
-            )
-
-        if not self.submobjects:
-            self.submobjects = unique_mobjects
-            return self
-
-        n = len(self.submobjects)
-
-        # Normalize the index to be in the range [0, n] following the semantics of list.insert
-        norm_index = clip(index if index >= 0 else n + index, 0, n)
-
-        # Shortcut for the common case of adding a single mobject
-        if len(unique_mobjects) == 1:
-            mobject = unique_mobjects[0]
-            # If the mobject is already present at or next to the provided index, we
-            # don't need to do anything
-            if any(
-                self.submobjects[j] is mobject
-                for j in (norm_index - 1, norm_index)
-                if 0 <= j < n
-            ):
-                return self
-
-            try:
-                old_index = self.submobjects.index(mobject)
-            except ValueError:  # mobject isn't already present
-                self.submobjects.insert(norm_index, mobject)
-                return self
-
-            # Compensate for list shifting after popping
-            new_index = norm_index if norm_index < old_index else norm_index - 1
-            self.submobjects.pop(old_index)
-            self.submobjects.insert(new_index, mobject)
-            return self
-
-        head = list_difference_update(
-            it.islice(self.submobjects, norm_index), unique_mobjects
-        )
-        tail = list_difference_update(
-            it.islice(self.submobjects, norm_index, None), unique_mobjects
-        )
-
-        self.submobjects = [*head, *unique_mobjects, *tail]
-        return self
 
     def __add__(self, mobject: Mobject) -> Self:
         raise NotImplementedError
