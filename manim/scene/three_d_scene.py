@@ -23,7 +23,7 @@ from ..camera.three_d_camera import ThreeDCamera
 from ..constants import DEGREES, RendererType
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
-from ..renderer.opengl_renderer import OpenGLCamera
+from ..renderer.opengl import OpenGLCamera
 from ..scene.scene import Scene
 from ..utils.config_ops import merge_dicts_recursively
 

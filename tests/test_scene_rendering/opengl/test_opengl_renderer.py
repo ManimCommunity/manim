@@ -6,9 +6,15 @@ from unittest.mock import Mock
 import numpy as np
 import pytest
 
-from manim.renderer.opengl_renderer import OpenGLRenderer
+from manim.renderer.opengl import OpenGLRenderer
 from tests.assert_utils import assert_file_exists
 from tests.test_scene_rendering.simple_scenes import *
+
+
+def test_opengl_renderer_import_compatibility():
+    from manim.renderer.opengl_renderer import OpenGLRenderer as LegacyOpenGLRenderer
+
+    assert OpenGLRenderer is LegacyOpenGLRenderer
 
 
 def test_file_output_disables_window(
