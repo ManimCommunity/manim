@@ -479,6 +479,9 @@ class Mobject:
         """
         return self
 
+    # TODO: In a future breaking change, Mobject.insert should adopt the logic of
+    # _insert_submobjects and receive the signature insert(self, *mobjects).
+
     def _insert_submobjects(self, index: int, mobjects: Sequence[Mobject]) -> Self:
         """Common backing implementation for :meth:`add`, :meth:`add_to_back`, and
         :meth:`insert`.

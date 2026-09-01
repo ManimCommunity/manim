@@ -831,6 +831,9 @@ class OpenGLMobject:
         self.assemble_family()
         return self
 
+    # TODO: In a future breaking change, OpenGLMobject.insert should adopt the logic of
+    # _insert_submobjects and receive the signature insert(self, *mobjects).
+
     def _insert_submobjects(
         self,
         index: int,
