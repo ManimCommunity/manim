@@ -997,10 +997,16 @@ class Mobject:
 
     # Displaying
     def get_image(self, camera: Camera | None = None) -> Image.Image:
-        if camera is None:
-            camera = Camera()
-        camera.capture_mobject(self)
-        return camera.get_image()
+        """Render this mobject with an explicit temporary Cairo renderer."""
+        from manim.camera.camera import Camera
+        from manim.renderer.cairo import CairoRenderer
+
+        renderer = CairoRenderer(camera=Camera() if camera is None else camera)
+        try:
+            renderer.render_mobjects([self])
+            return renderer.get_image()
+        finally:
+            renderer.close()
 
     def show(self, camera: Camera | None = None) -> None:
         self.get_image(camera=camera).show()

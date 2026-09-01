@@ -5,7 +5,7 @@ from __future__ import annotations
 __all__ = ["ThreeDCamera"]
 
 
-from collections.abc import Callable, Iterable
+from collections.abc import Callable
 from typing import Any
 
 import numpy as np
@@ -27,7 +27,6 @@ from manim.typing import (
     Point3DLike,
 )
 
-from .. import config
 from ..camera.camera import Camera
 from ..constants import *
 from ..mobject.types.point_cloud_mobject import Point
@@ -58,7 +57,6 @@ class ThreeDCamera(Camera):
         *kwargs
             Any keyword argument of Camera.
         """
-        self._frame_center = Point(kwargs.get("frame_center", ORIGIN), stroke_width=0)
         super().__init__(**kwargs)
         self.focal_distance = focal_distance
         self.phi = phi
@@ -71,7 +69,6 @@ class ThreeDCamera(Camera):
         self.light_source = Point(self.light_source_start_point)
         self.should_apply_shading = should_apply_shading
         self.exponential_projection = exponential_projection
-        self.max_allowable_norm = 3 * config["frame_width"]
         self.phi_tracker = ValueTracker(self.phi)
         self.theta_tracker = ValueTracker(self.theta)
         self.focal_distance_tracker = ValueTracker(self.focal_distance)
@@ -81,17 +78,15 @@ class ThreeDCamera(Camera):
         self.fixed_in_frame_mobjects: set[Mobject] = set()
         self.reset_rotation_matrix()
 
-    @property
-    def frame_center(self) -> Point3D:
-        return self._frame_center.points[0]
-
-    @frame_center.setter
-    def frame_center(self, point: Point3DLike) -> None:
-        self._frame_center.move_to(point)
-
-    def capture_mobjects(self, mobjects: Iterable[Mobject], **kwargs: Any) -> None:
+    def _prepare_for_render(self) -> None:
         self.reset_rotation_matrix()
-        super().capture_mobjects(mobjects, **kwargs)
+
+    def get_view_transform_center(self) -> Point3D:
+        # project_points() already translates by frame_center.
+        return ORIGIN.copy()
+
+    def get_mobjects_indicating_movement(self) -> list[Mobject]:
+        return [self.frame, self.light_source, *self.get_value_trackers()]
 
     def get_value_trackers(self) -> list[ValueTracker]:
         """A list of :class:`ValueTrackers <.ValueTracker>` of phi, theta, focal_distance,
