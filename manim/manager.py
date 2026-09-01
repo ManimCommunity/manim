@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from .animation.animation import Animation
     from .camera.camera import Camera
     from .mobject.mobject import Mobject, _AnimationBuilder
-    from .renderer.cairo_renderer import CairoRenderer
+    from .renderer.cairo import CairoRenderer
     from .renderer.opengl import OpenGLCamera, OpenGLRenderer
     from .scene.scene import Scene
     from .scene.scene_file_writer import SceneFileWriter

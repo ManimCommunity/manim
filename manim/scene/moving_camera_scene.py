@@ -1,4 +1,4 @@
-"""A scene whose camera can be moved around.
+"""Scene variant configured with :class:`MovingCamera`.
 
 .. SEEALSO::
 
@@ -10,7 +10,7 @@ Examples
 
 .. manim:: ChangingCameraWidthAndRestore
 
-    class ChangingCameraWidthAndRestore(MovingCameraScene):
+    class ChangingCameraWidthAndRestore(Scene):
         def construct(self):
             text = Text("Hello World").set_color(BLUE)
             self.add(text)
@@ -22,7 +22,7 @@ Examples
 
 .. manim:: MovingCameraCenter
 
-    class MovingCameraCenter(MovingCameraScene):
+    class MovingCameraCenter(Scene):
         def construct(self):
             s = Square(color=RED, fill_opacity=0.5).move_to(2 * LEFT)
             t = Triangle(color=GREEN, fill_opacity=0.5).move_to(2 * RIGHT)
@@ -35,7 +35,7 @@ Examples
 
 .. manim:: MovingAndZoomingCamera
 
-    class MovingAndZoomingCamera(MovingCameraScene):
+    class MovingAndZoomingCamera(Scene):
         def construct(self):
             s = Square(color=BLUE, fill_opacity=0.5).move_to(2 * LEFT)
             t = Triangle(color=YELLOW, fill_opacity=0.5).move_to(2 * RIGHT)
@@ -48,7 +48,7 @@ Examples
 
 .. manim:: MovingCameraOnGraph
 
-    class MovingCameraOnGraph(MovingCameraScene):
+    class MovingCameraOnGraph(Scene):
         def construct(self):
             self.camera.frame.save_state()
 
@@ -66,7 +66,7 @@ Examples
 
 .. manim:: SlidingMultipleFrames
 
-    class SlidingMultipleFrames(MovingCameraScene):
+    class SlidingMultipleFrames(Scene):
         def construct(self):
             def create_frame(number):
                 frame = Rectangle(width=16, height=9)
@@ -91,51 +91,18 @@ __all__ = ["MovingCameraScene"]
 
 from typing import Any
 
-from manim.animation.animation import Animation
-from manim.mobject.mobject import Mobject
-
 from ..camera.camera import Camera
 from ..camera.moving_camera import MovingCamera
 from ..scene.scene import Scene
-from ..utils.family import extract_mobject_family_members
-from ..utils.iterables import list_update
 
 
 class MovingCameraScene(Scene):
-    """
-    This is a Scene, with special configurations and properties that
-    make it suitable for cases where the camera must be moved around.
+    """A scene whose default camera class is :class:`MovingCamera`.
 
-    Note: Examples are included in the moving_camera_scene module
-    documentation, see below in the 'see also' section.
-
-    .. SEEALSO::
-
-        :mod:`.moving_camera_scene`
-        :class:`.MovingCamera`
+    Its camera exposes the standard animatable frame and auto-zoom behavior.
     """
 
     def __init__(
         self, camera_class: type[Camera] = MovingCamera, **kwargs: Any
     ) -> None:
         super().__init__(camera_class=camera_class, **kwargs)
-
-    def get_moving_mobjects(self, *animations: Animation) -> list[Mobject]:
-        """
-        This method returns a list of all of the Mobjects in the Scene that
-        are moving, that are also in the animations passed.
-
-        Parameters
-        ----------
-        *animations
-            The Animations whose mobjects will be checked.
-        """
-        moving_mobjects = super().get_moving_mobjects(*animations)
-        all_moving_mobjects = extract_mobject_family_members(moving_mobjects)
-        movement_indicators = self.renderer.camera.get_mobjects_indicating_movement()  # type: ignore[union-attr]
-        for movement_indicator in movement_indicators:
-            if movement_indicator in all_moving_mobjects:
-                # When one of these is moving, the camera should
-                # consider all mobjects to be moving
-                return list_update(self.mobjects, moving_mobjects)
-        return moving_mobjects

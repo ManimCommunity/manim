@@ -56,7 +56,7 @@ from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
 from ..manager import Manager
-from ..renderer.cairo_renderer import CairoRenderer
+from ..renderer.cairo import CairoRenderer
 from ..renderer.opengl import OpenGLCamera, OpenGLRenderer
 from ..renderer.opengl.shader import Object3D
 from ..scene.scene_file_writer import _SceneFileWriterSettings
@@ -970,8 +970,21 @@ class Scene:
                 or any(consider_moving(m) for m in mob.submobjects)
             )
 
+        if self.always_update_mobjects or self.updaters:
+            return list(self.mobjects)
+
         i = next((i for i, mob in enumerate(mobjects) if consider_moving(mob)), None)
-        return [] if i is None else mobjects[i:]
+        moving_mobjects = [] if i is None else mobjects[i:]
+        movement_indicators: list[Mobject] = getattr(
+            self.camera,
+            "get_mobjects_indicating_movement",
+            lambda: [],
+        )()
+        moving_family = extract_mobject_family_members(moving_mobjects)
+        if any(indicator in moving_family for indicator in movement_indicators):
+            # A camera control changes the projection of all scene mobjects.
+            return list_update(self.mobjects, moving_mobjects)
+        return moving_mobjects
 
     def get_moving_and_static_mobjects(
         self, animations: Iterable[Animation]

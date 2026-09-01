@@ -83,7 +83,7 @@ from .mobject.types.point_cloud_mobject import *
 from .mobject.types.vectorized_mobject import *
 from .mobject.value_tracker import *
 from .mobject.vector_field import *
-from .renderer.cairo_renderer import *
+from .renderer.cairo import *
 from .scene.moving_camera_scene import *
 from .scene.scene import *
 from .scene.scene_file_writer import *
