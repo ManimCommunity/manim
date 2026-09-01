@@ -4,7 +4,7 @@ from collections.abc import Callable
 from typing import Any
 
 from manim.renderer.cairo_renderer import CairoRenderer
-from manim.renderer.opengl_renderer import OpenGLRenderer
+from manim.renderer.opengl import OpenGLRenderer
 from manim.scene.scene import Scene
 from manim.scene.scene_file_writer import SceneFileWriter, _SceneFileWriterSettings
 from manim.typing import PixelArray, StrPath

@@ -13,7 +13,7 @@ import numpy as np
 import numpy.typing as npt
 
 if TYPE_CHECKING:
-    from manim.renderer.opengl_renderer import OpenGLRenderer
+    from manim.renderer.opengl.renderer import OpenGLRenderer
 
     MeshTimeBasedUpdater: TypeAlias = Callable[["Object3D", float], None]
     MeshNonTimeBasedUpdater: TypeAlias = Callable[["Object3D"], None]
@@ -21,8 +21,8 @@ if TYPE_CHECKING:
 
 from manim.typing import MatrixMN, Point3D
 
-from .. import config
-from ..utils import opengl
+from ... import config
+from ...utils import opengl
 
 SHADER_FOLDER = Path(__file__).parent / "shaders"
 shader_program_cache: dict[str, moderngl.Program] = {}
