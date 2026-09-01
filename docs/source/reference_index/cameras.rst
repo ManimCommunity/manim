@@ -6,7 +6,5 @@ Cameras
 .. autosummary::
    :toctree: ../reference
 
-   ~camera.camera
-   ~camera.moving_camera
-   ~camera.multi_camera
-   ~camera.three_d_camera
+   ~renderer.cairo.camera
+   ~renderer.opengl.camera

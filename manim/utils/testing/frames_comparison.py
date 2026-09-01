@@ -13,8 +13,8 @@ from _pytest.fixtures import FixtureRequest
 from manim import Scene
 from manim._config import tempconfig
 from manim._config.utils import ManimConfig
-from manim.camera.three_d_camera import ThreeDCamera
 from manim.renderer.cairo import CairoRenderer
+from manim.renderer.cairo.camera import ThreeDCamera
 from manim.renderer.opengl import OpenGLRenderer
 from manim.scene.three_d_scene import ThreeDScene
 from manim.typing import StrPath

@@ -53,11 +53,12 @@ from .._config.output_plan import (
 )
 from .._config.render_session import resolve_render_session
 from ..animation.animation import Animation, Wait, prepare_animation
-from ..camera.camera import Camera
 from ..constants import *
 from ..manager import Manager
 from ..renderer.cairo import CairoRenderer
-from ..renderer.opengl import OpenGLCamera, OpenGLRenderer
+from ..renderer.cairo.camera import Camera
+from ..renderer.opengl.camera import OpenGLCamera
+from ..renderer.opengl.renderer import OpenGLRenderer
 from ..renderer.opengl.shader import Object3D
 from ..scene.scene_file_writer import _SceneFileWriterSettings
 from ..utils import opengl, space_ops

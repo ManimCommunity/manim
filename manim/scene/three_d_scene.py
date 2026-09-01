@@ -19,11 +19,11 @@ from manim.mobject.value_tracker import ValueTracker
 from .. import config
 from ..animation.animation import Animation
 from ..animation.transform import Transform
-from ..camera.three_d_camera import ThreeDCamera
 from ..constants import DEGREES
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
-from ..renderer.opengl import OpenGLCamera
+from ..renderer.cairo.camera import ThreeDCamera
+from ..renderer.opengl.camera import OpenGLCamera
 from ..scene.scene import Scene
 from ..utils.config_ops import merge_dicts_recursively
 

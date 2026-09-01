@@ -14,8 +14,9 @@ from manim.utils.color import color_to_int_rgba
 from manim.utils.images import get_full_raster_image_path
 
 if TYPE_CHECKING:
-    from manim.camera.camera import Camera
     from manim.typing import RGBAPixelArray
+
+    from .camera import Camera
 
 
 @dataclass(frozen=True, slots=True)
