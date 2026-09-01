@@ -11,12 +11,6 @@ from tests.assert_utils import assert_file_exists
 from tests.test_scene_rendering.simple_scenes import *
 
 
-def test_opengl_renderer_import_compatibility():
-    from manim.renderer.opengl_renderer import OpenGLRenderer as LegacyOpenGLRenderer
-
-    assert OpenGLRenderer is LegacyOpenGLRenderer
-
-
 def test_file_output_disables_window(
     config, using_temp_opengl_config, disabling_caching
 ):

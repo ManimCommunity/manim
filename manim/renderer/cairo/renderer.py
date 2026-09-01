@@ -9,14 +9,13 @@ from manim.utils.hashing import get_hash_from_play_call
 
 from ... import config, logger
 from ..._config.video_encoder import video_encoder_fingerprint
-from ...camera.camera import Camera
-from ...camera.multi_camera import MultiCamera
 from ...mobject.mobject import Mobject, _AnimationBuilder
 from ...mobject.types.image_mobject import ImageMobjectFromCamera
 from ...scene.scene_file_writer import SceneFileWriter
 from ...utils.exceptions import EndSceneEarlyException
 from ...utils.iterables import list_update
 from ..protocol import RendererCapabilities
+from .camera import Camera, MultiCamera
 from .rendering import _CairoDrawingContext
 from .target import _CairoRasterSettings, _CairoRenderTarget
 
@@ -26,7 +25,7 @@ if TYPE_CHECKING:
     from manim.scene.scene import Scene
     from manim.scene.scene_file_writer import _SceneFileWriterSettings
 
-    from ..typing import RGBAPixelArray
+    from ...typing import RGBAPixelArray
 
 __all__ = ["CairoRenderer"]
 

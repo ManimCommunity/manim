@@ -52,12 +52,10 @@ __all__ = ["ZoomedScene"]
 from typing import TYPE_CHECKING, Any
 
 from ..animation.transform import ApplyMethod
-from ..camera.camera import Camera
-from ..camera.moving_camera import MovingCamera
-from ..camera.multi_camera import MultiCamera
 from ..constants import *
 from ..mobject.types.image_mobject import ImageMobjectFromCamera
-from ..renderer.opengl import OpenGLCamera
+from ..renderer.cairo.camera import Camera, MovingCamera, MultiCamera
+from ..renderer.opengl.camera import OpenGLCamera
 from ..scene.moving_camera_scene import MovingCameraScene
 
 if TYPE_CHECKING:
