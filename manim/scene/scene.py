@@ -40,7 +40,7 @@ from watchdog.observers import Observer
 from manim import __version__
 from manim.data_structures import MethodWithArgs
 from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_mobject import OpenGLPoint
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 
 from .. import config, logger
 from .._config.logger_utils import set_file_logger
@@ -57,8 +57,8 @@ from ..camera.camera import Camera
 from ..constants import *
 from ..manager import Manager
 from ..renderer.cairo_renderer import CairoRenderer
-from ..renderer.opengl_renderer import OpenGLCamera, OpenGLMobject, OpenGLRenderer
-from ..renderer.shader import Object3D
+from ..renderer.opengl import OpenGLCamera, OpenGLRenderer
+from ..renderer.opengl.shader import Object3D
 from ..scene.scene_file_writer import _SceneFileWriterSettings
 from ..utils import opengl, space_ops
 from ..utils.exceptions import RerunSceneException
