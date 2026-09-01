@@ -7,10 +7,10 @@ from moderngl_window.context.pyglet.window import Window as PygletWindow
 from moderngl_window.timers.clock import Timer
 from screeninfo import Monitor, get_monitors
 
-from .. import __version__, config
+from ... import __version__, config
 
 if TYPE_CHECKING:
-    from .opengl_renderer import OpenGLRenderer
+    from .renderer import OpenGLRenderer
 
 __all__ = ["Window"]
 

@@ -12,7 +12,7 @@ import numpy as np
 from manim import config
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
-from manim.renderer.shader_wrapper import ShaderWrapper
+from manim.renderer.opengl.shader_wrapper import ShaderWrapper
 from manim.typing import Point3D, Point3DLike, Point3DLike_Array
 from manim.utils.bezier import (
     bezier,
