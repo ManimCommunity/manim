@@ -66,7 +66,7 @@ if TYPE_CHECKING:
     )
 
     from ..animation.animation import Animation
-    from ..camera.camera import Camera
+    from ..renderer.cairo.camera import Camera
 
 
 _TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
@@ -998,8 +998,8 @@ class Mobject:
     # Displaying
     def get_image(self, camera: Camera | None = None) -> Image.Image:
         """Render this mobject with an explicit temporary Cairo renderer."""
-        from manim.camera.camera import Camera
         from manim.renderer.cairo import CairoRenderer
+        from manim.renderer.cairo.camera import Camera
 
         renderer = CairoRenderer(camera=Camera() if camera is None else camera)
         try:

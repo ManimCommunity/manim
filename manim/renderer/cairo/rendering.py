@@ -25,13 +25,14 @@ from manim.utils.space_ops import cross2d
 from .target import _CairoRenderTarget
 
 if TYPE_CHECKING:
-    from manim.camera.camera import Camera
     from manim.typing import (
         FloatRGBA_Array,
         FloatRGBALike_Array,
         Point3D_Array,
         RGBAPixelArray,
     )
+
+    from .camera import Camera
 
 _LINE_JOIN_MAP = {
     LineJointType.AUTO: None,

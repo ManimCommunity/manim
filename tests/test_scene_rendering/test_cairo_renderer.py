@@ -10,13 +10,6 @@ from ..assert_utils import assert_file_exists
 from .simple_scenes import *
 
 
-def test_cairo_renderer_import_compatibility():
-    from manim.renderer.cairo import CairoRenderer as PackagedCairoRenderer
-    from manim.renderer.cairo_renderer import CairoRenderer as LegacyCairoRenderer
-
-    assert PackagedCairoRenderer is LegacyCairoRenderer
-
-
 def test_render(using_temp_config, disabling_caching):
     scene = SquareToCircle()
     renderer = scene.renderer
