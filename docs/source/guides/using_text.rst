@@ -309,7 +309,9 @@ Manim also supports rendering text and formulas with Typst via
 .. important::
 
     Typst support requires the optional ``typst`` dependency. Install it with
-    ``pip install manim[typst]``.
+    ``uv add "manim[typst]"`` or ``pip install "manim[typst]"``. The optional
+    dependency includes the Typst compiler; no separate system installation is
+    required.
 
 Typst mobjects compile Typst markup directly to SVG and import the result as
 vector graphics. This works both for general markup and for mathematical

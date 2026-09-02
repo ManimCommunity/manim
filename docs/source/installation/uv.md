@@ -135,6 +135,27 @@ setspace standalone tipa wasy wasysym xcolor xetex xkeyval
 ```
 :::
 
+### Step 2 (optional): Installing Typst support
+
+Manim can render text and mathematical expressions with [Typst](https://typst.app/).
+The Typst compiler is provided by the optional `typst` Python dependency, so no
+separate system-level Typst installation is required.
+
+If you plan to use the `Typst` or `MathTypst` mobjects,
+include the optional dependency when adding Manim to your project:
+
+```bash
+uv add "manim[typst]"
+```
+
+If you installed Manim with `pip` instead, use:
+
+```bash
+pip install "manim[typst]"
+```
+
+See the :ref:`Typst text guide <rendering-with-typst>` for examples.
+
 ### Step 3: Installing Manim
 
 These steps again differ slightly between different operating systems. Make
