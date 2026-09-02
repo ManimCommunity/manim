@@ -155,7 +155,7 @@ to anything you like.
 
 :::{tip}
 If `uv add manim` reports that Microsoft Visual C++ is required, install the
-[Microsoft C++ Build Tools](https://learn.microsoft.com/en-us/cpp/overview/acquire-msvc?view=msvc-170).
+[Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
 In the Visual Studio Installer, select the **Desktop development with C++**
 workload. After the installation finishes, open a new terminal and run
 `uv add manim` again.
