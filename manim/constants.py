@@ -273,6 +273,7 @@ class RendererType(Enum):
 
     CAIRO = "cairo"  #: A renderer based on the cairo backend.
     OPENGL = "opengl"  #: An OpenGL-based renderer.
+    WEBGPU = "webgpu"  #: A WebGPU-based renderer (wgpu-py).
 
 
 class LineJointType(Enum):

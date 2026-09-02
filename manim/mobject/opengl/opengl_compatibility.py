@@ -4,10 +4,6 @@ from abc import ABCMeta
 from typing import Any
 
 from manim import config
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.opengl.opengl_point_cloud_mobject import OpenGLPMobject
-from manim.mobject.opengl.opengl_three_dimensions import OpenGLSurface
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
 from ...constants import RendererType
 
@@ -26,6 +22,11 @@ class ConvertToOpenGL(ABCMeta):
         mcls, name: str, bases: tuple[type, ...], namespace: dict[str, Any]
     ) -> type:
         if config.renderer == RendererType.OPENGL:
+            from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+            from manim.mobject.opengl.opengl_point_cloud_mobject import OpenGLPMobject
+            from manim.mobject.opengl.opengl_three_dimensions import OpenGLSurface
+            from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+
             # Must check class names to prevent
             # cyclic importing.
             base_names_to_opengl: dict[str, type] = {

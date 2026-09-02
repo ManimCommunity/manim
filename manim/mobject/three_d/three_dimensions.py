@@ -88,6 +88,27 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
     should_make_jagged
         Changes the anchor mode of the Bézier curves from smooth to jagged.
         Defaults to ``False``.
+    diffuse_strength
+        Strength of the diffuse (Lambertian) lighting component, in [0, 1].
+        Defaults to 0.8.
+    specular_strength
+        Strength of the specular (Phong) highlight, in [0, ∞].
+        Defaults to 0.9.
+    specular_exponent
+        Phong shininess exponent — higher values produce a tighter, sharper
+        specular highlight; lower values produce a broad, soft one.
+        Defaults to 16.0.
+
+    .. warning::
+
+        The ``diffuse_strength``, ``specular_strength``, and
+        ``specular_exponent`` parameters — and all material setter methods
+        (:meth:`set_diffuse_strength`, :meth:`set_specular_strength`,
+        :meth:`set_specular_exponent`, :meth:`set_material`,
+        :meth:`set_diffuse_by_func`, :meth:`set_specular_by_func`,
+        :meth:`set_specular_exponent_by_func`, :meth:`set_material_by_func`)
+        — are **WebGPU renderer only**.  They are silently ignored by the
+        Cairo and OpenGL renderers.
 
     Examples
     --------
@@ -127,10 +148,21 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         stroke_width: float = 0.5,
         should_make_jagged: bool = False,
         pre_function_handle_to_anchor_scale_factor: float = 0.00001,
+        diffuse_strength: float = 0.8,
+        specular_strength: float = 0.9,
+        specular_exponent: float = 16.0,
         **kwargs: Any,
     ) -> None:
+        # If `color` is explicitly passed, use it as fill_color and disable
+        # checkerboard so the explicit color isn't silently overridden.
+        if "color" in kwargs:
+            fill_color = kwargs.pop("color")
+            checkerboard_colors = False
         self.u_range = u_range
         self.v_range = v_range
+        self.diffuse_strength = float(diffuse_strength)
+        self.specular_strength = float(specular_strength)
+        self.specular_exponent = float(specular_exponent)
         super().__init__(
             fill_color=fill_color,
             fill_opacity=fill_opacity,
@@ -158,6 +190,139 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
 
     def func(self, u: float, v: float) -> np.ndarray:
         return self._func(u, v)
+
+    # ------------------------------------------------------------------
+    # Material setters (WebGPU renderer only)
+    # ------------------------------------------------------------------
+
+    def set_diffuse_strength(self, value: float) -> Surface:
+        """Set the Lambertian diffuse strength in [0, 1].
+
+        .. warning:: **WebGPU renderer only** — ignored by Cairo and OpenGL.
+        """
+        self.diffuse_strength = float(value)
+        return self
+
+    def set_specular_strength(self, value: float) -> Surface:
+        """Set the Phong specular highlight strength.
+
+        .. warning:: **WebGPU renderer only** — ignored by Cairo and OpenGL.
+        """
+        self.specular_strength = float(value)
+        return self
+
+    def set_specular_exponent(self, value: float) -> Surface:
+        """Set the Phong shininess exponent.
+
+        Higher values give a tighter highlight; lower values give a broad,
+        soft one.  Typical range: 4 (very soft) to 128 (mirror-like).
+
+        .. warning:: **WebGPU renderer only** — ignored by Cairo and OpenGL.
+        """
+        self.specular_exponent = float(value)
+        return self
+
+    def set_material(
+        self,
+        diffuse_strength: float | None = None,
+        specular_strength: float | None = None,
+        specular_exponent: float | None = None,
+    ) -> Surface:
+        """Set material parameters uniformly across the whole surface.
+
+        Any parameter left as ``None`` is unchanged.  Per-patch overrides
+        set via :meth:`set_diffuse_by_func` etc. take precedence at render
+        time.
+
+        .. warning:: **WebGPU renderer only** — ignored by Cairo and OpenGL.
+        """
+        if diffuse_strength is not None:
+            self.diffuse_strength = float(diffuse_strength)
+        if specular_strength is not None:
+            self.specular_strength = float(specular_strength)
+        if specular_exponent is not None:
+            self.specular_exponent = float(specular_exponent)
+        return self
+
+    # ------------------------------------------------------------------
+    # Per-patch material — function-based assignment
+    # ------------------------------------------------------------------
+
+    def set_diffuse_by_func(self, func: Callable[[float, float], float]) -> Surface:
+        """Assign a per-patch diffuse strength using a ``(u, v)`` function.
+
+        *func* is called with the centre ``(u, v)`` coordinates of each
+        patch and must return a float in [0, 1].
+
+        Example — gradient from matte at the bottom to reflective at top::
+
+            surface.set_diffuse_by_func(lambda u, v: v / v_max)
+
+        .. warning:: **WebGPU renderer only** — ignored by Cairo and OpenGL.
+        """
+        for face in self.list_of_faces:
+            face.diffuse_strength = float(func(face.u_center, face.v_center))
+        return self
+
+    def set_specular_by_func(self, func: Callable[[float, float], float]) -> Surface:
+        """Assign a per-patch specular strength using a ``(u, v)`` function.
+
+        *func* is called with the centre ``(u, v)`` coordinates of each
+        patch and must return a float.
+
+        .. warning:: **WebGPU renderer only** — ignored by Cairo and OpenGL.
+        """
+        for face in self.list_of_faces:
+            face.specular_strength = float(func(face.u_center, face.v_center))
+        return self
+
+    def set_specular_exponent_by_func(
+        self, func: Callable[[float, float], float]
+    ) -> Surface:
+        """Assign a per-patch specular exponent (shininess) using a ``(u, v)``
+        function.
+
+        *func* is called with the centre ``(u, v)`` coordinates of each
+        patch and must return a float (typical range: 4 to 128).
+
+        .. warning:: **WebGPU renderer only** — ignored by Cairo and OpenGL.
+        """
+        for face in self.list_of_faces:
+            face.specular_exponent = float(func(face.u_center, face.v_center))
+        return self
+
+    def set_material_by_func(self, func: Callable[[float, float], dict]) -> Surface:
+        """Assign per-patch material parameters using a ``(u, v)`` function.
+
+        *func* is called with the centre ``(u, v)`` of each patch and must
+        return a :class:`dict` with any subset of the keys
+        ``"diffuse_strength"``, ``"specular_strength"``,
+        ``"specular_exponent"``.  Missing keys leave the corresponding
+        attribute unchanged on that patch.
+
+        Example — shinier at the equator, matte at the poles::
+
+            def mat(u, v):
+                t = abs(np.sin(u))  # 0 at poles, 1 at equator
+                return {
+                    "specular_exponent": 8 + 120 * t,
+                    "specular_strength": 0.2 + 0.8 * t,
+                }
+
+
+            sphere.set_material_by_func(mat)
+
+        .. warning:: **WebGPU renderer only** — ignored by Cairo and OpenGL.
+        """
+        for face in self.list_of_faces:
+            params = func(face.u_center, face.v_center)
+            if "diffuse_strength" in params:
+                face.diffuse_strength = float(params["diffuse_strength"])
+            if "specular_strength" in params:
+                face.specular_strength = float(params["specular_strength"])
+            if "specular_exponent" in params:
+                face.specular_exponent = float(params["specular_exponent"])
+        return self
 
     def _get_u_values_and_v_values(self) -> tuple[np.ndarray, np.ndarray]:
         if isinstance(self.resolution, int):
@@ -195,6 +360,8 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                 face.u2 = u2
                 face.v1 = v1
                 face.v2 = v2
+                face.u_center = float(u1 + u2) * 0.5
+                face.v_center = float(v1 + v2) * 0.5
                 self.list_of_faces.append(face)
         faces.set_fill(color=self.fill_color, opacity=self.fill_opacity)
         faces.set_stroke(
@@ -343,7 +510,10 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                         if config.renderer == RendererType.OPENGL:
                             assert isinstance(mob, OpenGLMobject)
                             mob.set_color(mob_color, recurse=False)
-                        elif config.renderer == RendererType.CAIRO:
+                        elif config.renderer in {
+                            RendererType.CAIRO,
+                            RendererType.WEBGPU,
+                        }:
                             mob.set_color(mob_color, family=False)
                         break
 
@@ -452,7 +622,7 @@ class Sphere(Surface):
     ) -> None:
         if config.renderer == RendererType.OPENGL:
             res_value = (101, 51)
-        elif config.renderer == RendererType.CAIRO:
+        elif config.renderer in {RendererType.CAIRO, RendererType.WEBGPU}:
             res_value = (24, 12)
         else:
             raise Exception("Unknown renderer")
@@ -886,7 +1056,7 @@ class Cylinder(Surface):
             assert isinstance(self, OpenGLMobject)
             color = self.color
             opacity = self.opacity
-        elif config.renderer == RendererType.CAIRO:
+        elif config.renderer in {RendererType.CAIRO, RendererType.WEBGPU}:
             color = self.fill_color
             opacity = self.fill_opacity
 
@@ -1323,7 +1493,7 @@ class Torus(Surface):
     ) -> None:
         if config.renderer == RendererType.OPENGL:
             res_value = (101, 101)
-        elif config.renderer == RendererType.CAIRO:
+        elif config.renderer in {RendererType.CAIRO, RendererType.WEBGPU}:
             res_value = (24, 24)
 
         resolution = resolution if resolution is not None else res_value

@@ -382,6 +382,9 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             fill_color=shape.fill.hexrgb,
             fill_opacity=shape.fill.opacity,
         )
+        # Extract fill-rule for WebGPU renderer (0=nonzero, 1=evenodd).
+        fill_rule_str = shape.values.get("fill-rule", "nonzero")
+        mob.fill_rule = 1 if fill_rule_str == "evenodd" else 0
         return mob
 
     def path_to_mobject(self, path: se.Path) -> VMobjectFromSVGPath:

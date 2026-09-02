@@ -49,6 +49,9 @@ dependencies = [
     "tqdm>=4.21.0",
     "typing-extensions>=4.12.0",
     "watchdog>=2.0.0",
+    "wgpu>=0.31.0",
+    "rendercanvas>=2.6.3",
+    "glfw>=2.9.0",
 ]
 
 

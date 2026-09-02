@@ -857,7 +857,10 @@ class ManimConfig(MutableMapping):
         if args.tex_template:
             self.tex_template = TexTemplate.from_file(args.tex_template)
 
-        if self.renderer == RendererType.OPENGL and args.write_to_movie is None:
+        if (
+            self.renderer in (RendererType.OPENGL, RendererType.WEBGPU)
+            and args.write_to_movie is None
+        ):
             # --write_to_movie was not passed on the command line, so don't generate video.
             self["write_to_movie"] = False
 

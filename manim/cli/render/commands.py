@@ -120,6 +120,18 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
         except Exception:
             error_console.print_exception()
             sys.exit(1)
+    elif config.renderer == RendererType.WEBGPU:
+        from manim.renderer.webgpu.webgpu_renderer import WebGPURenderer
+
+        renderer = WebGPURenderer()
+        for SceneClass in scene_classes_from_file(file):
+            try:
+                with tempconfig({}):
+                    scene = SceneClass(renderer)
+                    scene.render()
+            except Exception:
+                error_console.print_exception()
+                sys.exit(1)
     else:
         for SceneClass in scene_classes_from_file(file):
             try:
