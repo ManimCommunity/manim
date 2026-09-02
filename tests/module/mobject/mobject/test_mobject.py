@@ -26,11 +26,13 @@ def test_mobject_add():
     """Call this function with a Container instance to test its add() method."""
     # check that obj.submobjects is updated correctly
     obj = Mobject()
-    assert len(obj.submobjects) == 0
-    obj.add(Mobject())
-    assert len(obj.submobjects) == 1
-    obj.add(*(Mobject() for _ in range(10)))
-    assert len(obj.submobjects) == 11
+    assert obj.submobjects == []
+    child = Mobject()
+    obj.add(child)
+    assert obj.submobjects == [child]
+    new_mobjects = [Mobject() for _ in range(10)]
+    obj.add(*new_mobjects)
+    assert obj.submobjects == [child] + new_mobjects
 
     # check that adding a mobject twice does not actually add it twice
     repeated = Mobject()
@@ -39,9 +41,19 @@ def test_mobject_add():
     obj.add(repeated)
     assert len(obj.submobjects) == 12
 
+    # check that adding already existing mobjects moves them to the end of the list
+    obj.add(*reversed(new_mobjects))
+    assert obj.submobjects == [child, repeated] + list(reversed(new_mobjects))
+
     # check that Mobject.add() returns the Mobject (for chained calls)
     assert obj.add(Mobject()) is obj
     assert len(obj.submobjects) == 13
+
+    obj = Mobject()
+    # check that inserting duplicate mobjects keeps the last occurrence
+    m1, m2 = Mobject(), Mobject()
+    obj.add(m1, m2, m1)
+    assert obj.submobjects == [m2, m1]
 
     obj = Mobject()
 

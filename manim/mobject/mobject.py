@@ -540,9 +540,11 @@ class Mobject:
             return self
 
         if norm_index >= len(self.submobjects):
-            # If we can just extend with the new mobjects, that is much faster than
-            # concatenating.
-            self.submobjects.extend(unique_mobjects)
+            # Skip one list difference since we're just extending the list
+            self.submobjects = [
+                *list_difference_update(self.submobjects, unique_mobjects),
+                *unique_mobjects,
+            ]
         else:
             head = list_difference_update(
                 it.islice(self.submobjects, norm_index), unique_mobjects

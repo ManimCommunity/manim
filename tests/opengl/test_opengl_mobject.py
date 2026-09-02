@@ -13,11 +13,13 @@ def test_opengl_mobject_add(using_opengl_renderer):
     """Call this function with a Container instance to test its add() method."""
     # check that obj.submobjects is updated correctly
     obj = OpenGLMobject()
-    assert len(obj.submobjects) == 0
-    obj.add(OpenGLMobject())
-    assert len(obj.submobjects) == 1
-    obj.add(*(OpenGLMobject() for _ in range(10)))
-    assert len(obj.submobjects) == 11
+    assert obj.submobjects == []
+    child = OpenGLMobject()
+    obj.add(child)
+    assert obj.submobjects == [child]
+    new_mobjects = [OpenGLMobject() for _ in range(10)]
+    obj.add(*new_mobjects)
+    assert obj.submobjects == [child] + new_mobjects
 
     # check that adding a OpenGLMobject twice does not actually add it twice
     repeated = OpenGLMobject()
@@ -26,9 +28,19 @@ def test_opengl_mobject_add(using_opengl_renderer):
     obj.add(repeated)
     assert len(obj.submobjects) == 12
 
+    # check that adding already existing mobjects doesn't affect order
+    obj.add(*reversed(new_mobjects))
+    assert obj.submobjects == [child] + new_mobjects + [repeated]
+
     # check that OpenGLMobject.add() returns the OpenGLMobject (for chained calls)
     assert obj.add(OpenGLMobject()) is obj
     assert len(obj.submobjects) == 13
+
+    obj = OpenGLMobject()
+    # check that inserting duplicate mobjects keeps the first occurrence
+    m1, m2 = OpenGLMobject(), OpenGLMobject()
+    obj.add(m1, m2, m1)
+    assert obj.submobjects == [m1, m2]
 
     obj = OpenGLMobject()
 
