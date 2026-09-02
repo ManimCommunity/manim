@@ -831,9 +831,6 @@ class OpenGLMobject:
         self.assemble_family()
         return self
 
-    # TODO: In a future breaking change, OpenGLMobject.insert should adopt the logic of
-    # _insert_submobjects and receive the signature insert(self, *mobjects).
-
     def _insert_submobjects(
         self,
         index: int,
@@ -975,6 +972,17 @@ class OpenGLMobject:
 
         """
         return self._insert_submobjects(len(self.submobjects), mobjects, update_parent)
+
+    # TODO: Since the addition of the private _insert_submobjects method, it has been
+    # possible to insert multiple mobjects into the submobjects list at once. In the
+    # future, the signature of `insert` should be changed to:
+    #   def insert(
+    #       self, index: int, *mobjects: OpenGLMobject, update_parent: bool = False
+    #   ) -> Self:
+    # This can either be done as part of a larger breaking change or as a gradual
+    # change with a period of supporting both argument names and appropriate deprecation
+    # warnings for use of the singular "mobject" keyword.
+    # The same should be done for Mobject.insert.
 
     def insert(
         self, index: int, mobject: OpenGLMobject, update_parent: bool = False

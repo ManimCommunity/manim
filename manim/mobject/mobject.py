@@ -479,9 +479,6 @@ class Mobject:
         """
         return self
 
-    # TODO: In a future breaking change, Mobject.insert should adopt the logic of
-    # _insert_submobjects and receive the signature insert(self, *mobjects).
-
     def _insert_submobjects(self, index: int, mobjects: Sequence[Mobject]) -> Self:
         """Common backing implementation for :meth:`add`, :meth:`add_to_back`, and
         :meth:`insert`.
@@ -639,6 +636,16 @@ class Mobject:
 
         """
         return self._insert_submobjects(len(self.submobjects), mobjects)
+
+    # TODO: Since the addition of the private _insert_submobjects method, it has been
+    # possible to insert multiple mobjects into the submobjects list at once. In the
+    # future, the signature of `insert` should be changed to:
+    #   def insert(
+    #       self, index: int, *mobjects: Mobject
+    #   ) -> Self:
+    # This can either be done as part of a larger breaking change or as a gradual
+    # change with a period of supporting both argument names and appropriate deprecation
+    # warnings for use of the singular "mobject" keyword.
 
     def insert(self, index: int, mobject: Mobject) -> Self:
         """Inserts a mobject at a specific position into the submobjects list.
