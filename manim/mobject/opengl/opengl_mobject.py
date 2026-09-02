@@ -8,6 +8,7 @@ import sys
 import types
 import warnings
 from collections.abc import Callable, Iterable, Iterator, Sequence
+from contextlib import suppress
 from functools import partialmethod, wraps
 from math import ceil
 from typing import (
@@ -54,7 +55,7 @@ from manim.utils.config_ops import _Data, _Uniforms
 # from ..utils.iterables import batch_by_property
 from manim.utils.iterables import (
     batch_by_property,
-    list_update,
+    list_difference_update,
     listify,
     make_even,
     resize_array,
@@ -823,10 +824,90 @@ class OpenGLMobject:
     def family_members_with_points(self) -> Sequence[OpenGLMobject]:
         return [m for m in self.get_family() if m.has_points()]
 
+    def _update_new_children(self, mobjects: Iterable[OpenGLMobject]) -> Self:
+        for mob in mobjects:
+            if self not in mob.parents:
+                mob.parents.append(self)
+        self.assemble_family()
+        return self
+
+    def _insert_submobjects(
+        self,
+        index: int,
+        mobjects: Sequence[OpenGLMobject],
+        update_parent: bool,
+    ) -> Self:
+        """Common backing implementation for :meth:`add`, :meth:`add_to_back`, and
+        :meth:`insert`.
+
+        Inserts ``mobjects`` into :attr:`submobjects` such that they end up starting
+        at ``index`` (following the semantics of :meth:`list.insert`). Mobjects which
+        are already present in :attr:`submobjects` will be ignored and therefore keep
+        their current position.
+        """
+        # TODO: The logic of adding/inserting submobjects is inconsistent with that of
+        # Mobjects. OpenGLMobjects *do not* move already-present submobjects if they are
+        # reinserted, and input is deduplicated by keeping the *first* (leftmost)
+        # occurrence of an element, while Mobjects *do* move already-present submobjects
+        # and they deduplicate input by keeping the *last* occurrence.
+        # This behavior should be made consistent when technically possible.
+
+        if update_parent:
+            assert len(mobjects) == 1, "Can't set multiple parents."
+            mobjects[0].parent = self
+
+        self._assert_valid_submobjects(mobjects)
+
+        unique_mobjects = dict.fromkeys(mobjects)
+        if len(mobjects) != len(unique_mobjects):
+            logger.warning(
+                "Attempted adding some Mobject as a child more than once, "
+                "this is not possible. Repetitions are ignored.",
+            )
+
+        if not self._submobjects:
+            self._submobjects = list(unique_mobjects)
+            self._update_new_children(self._submobjects)
+            return self
+
+        # Shortcut for the common case of adding a single mobject
+        if len(unique_mobjects) == 1:
+            mob = unique_mobjects.popitem()[0]
+            if mob not in self._submobjects:
+                if index >= len(self._submobjects):
+                    self._submobjects.append(mob)
+                else:
+                    self._submobjects.insert(index, mob)
+                self._update_new_children([mob])
+            return self
+
+        # Remove already-present submobjects from input
+        for mob in self._submobjects:
+            if not unique_mobjects:
+                break
+            if mob in unique_mobjects:
+                unique_mobjects.pop(mob)
+
+        if not unique_mobjects:  # No new mobjects to add
+            return self
+
+        if index >= len(self._submobjects):
+            # If we can just extend with the new mobjects, that is much faster than
+            # concatenating.
+            self._submobjects.extend(unique_mobjects)
+        else:
+            head = it.islice(self._submobjects, index)
+            tail = it.islice(self._submobjects, index, None)
+            # Skip the setter of self.submobjects
+            self._submobjects = [*head, *unique_mobjects, *tail]
+        self._update_new_children(unique_mobjects)
+        return self
+
     def add(self, *mobjects: OpenGLMobject, update_parent: bool = False) -> Self:
         """Add mobjects as submobjects.
 
-        The mobjects are added to :attr:`submobjects`.
+        The mobjects are added to :attr:`submobjects`. Any mobject in ``mobjects`` which
+        is already present in :attr:`submobjects` will keep its current position.
 
         Subclasses of mobject may implement ``+`` and ``+=`` dunder methods.
 
@@ -851,14 +932,15 @@ class OpenGLMobject:
         Notes
         -----
         A mobject cannot contain itself, and it cannot contain a submobject
-        more than once.  If the parent mobject is displayed, the newly-added
-        submobjects will also be displayed (i.e. they are automatically added
-        to the parent Scene).
+        more than once. The ``mobjects`` list will be deduplicated before its contents
+        are added; the first (leftmost) occurrence of a duplicate mobject will be the
+        one that is kept.
 
         See Also
         --------
-        :meth:`remove`
         :meth:`add_to_back`
+        :meth:`insert`
+        :meth:`remove`
 
         Examples
         --------
@@ -889,34 +971,24 @@ class OpenGLMobject:
             ValueError: Cannot add OpenGLMobject as a submobject of itself (at index 0).
 
         """
-        if update_parent:
-            assert len(mobjects) == 1, "Can't set multiple parents."
-            mobjects[0].parent = self
+        return self._insert_submobjects(len(self.submobjects), mobjects, update_parent)
 
-        self._assert_valid_submobjects(mobjects)
-
-        if any(mobjects.count(elem) > 1 for elem in mobjects):
-            logger.warning(
-                "Attempted adding some Mobject as a child more than once, "
-                "this is not possible. Repetitions are ignored.",
-            )
-        for mobject in mobjects:
-            if mobject not in self.submobjects:
-                self.submobjects.append(mobject)
-            if self not in mobject.parents:
-                mobject.parents.append(self)
-        self.assemble_family()
-        return self
+    # TODO: Since the addition of the private _insert_submobjects method, it has been
+    # possible to insert multiple mobjects into the submobjects list at once. In the
+    # future, the signature of `insert` should be changed to:
+    #   def insert(
+    #       self, index: int, *mobjects: OpenGLMobject, update_parent: bool = False
+    #   ) -> Self:
+    # This can either be done as part of a larger breaking change or as a gradual
+    # change with a period of supporting both argument names and appropriate deprecation
+    # warnings for use of the singular "mobject" keyword.
+    # The same should be done for Mobject.insert.
 
     def insert(
         self, index: int, mobject: OpenGLMobject, update_parent: bool = False
     ) -> Self:
-        """Inserts a mobject at a specific position into self.submobjects
-
-        Effectively just calls  ``self.submobjects.insert(index, mobject)``,
-        where ``self.submobjects`` is a list.
-
-        Highly adapted from ``OpenGLMobject.add``.
+        """Inserts a mobject at a specific position into ``self.submobjects``. If the
+        mobject is already a submobject of ``self``, its position does not change.
 
         Parameters
         ----------
@@ -927,19 +999,7 @@ class OpenGLMobject:
         update_parent
             Whether or not to set ``mobject.parent`` to ``self``.
         """
-        if update_parent:
-            mobject.parent = self
-
-        self._assert_valid_submobjects([mobject])
-
-        if mobject not in self.submobjects:
-            self.submobjects.insert(index, mobject)
-
-        if self not in mobject.parents:
-            mobject.parents.append(self)
-
-        self.assemble_family()
-        return self
+        return self._insert_submobjects(index, [mobject], update_parent)
 
     def remove(self, *mobjects: OpenGLMobject, update_parent: bool = False) -> Self:
         """Remove :attr:`submobjects`.
@@ -967,20 +1027,29 @@ class OpenGLMobject:
             assert len(mobjects) == 1, "Can't remove multiple parents."
             mobjects[0].parent = None
 
-        for mobject in mobjects:
-            if mobject in self.submobjects:
-                self.submobjects.remove(mobject)
-            if self in mobject.parents:
-                mobject.parents.remove(self)
-        self.assemble_family()
+        if not self.submobjects:
+            return self
+
+        n = len(self.submobjects)
+        if len(mobjects) == 1:
+            with suppress(ValueError):
+                self.submobjects.remove(mobjects[0])
+        else:
+            self._submobjects = list_difference_update(self._submobjects, mobjects)
+
+        if len(self.submobjects) != n:
+            for mobject in mobjects:
+                with suppress(ValueError):
+                    mobject.parents.remove(self)
+
+            self.assemble_family()
         return self
 
     def add_to_back(self, *mobjects: OpenGLMobject) -> Self:
-        # NOTE: is the note true OpenGLMobjects?
         """Add all passed mobjects to the back of the submobjects.
 
-        If :attr:`submobjects` already contains the given mobjects, they just get moved
-        to the back instead.
+        Any mobject in ``mobject`` which is already present in :attr:`submobjects`
+        is not moved.
 
         Parameters
         ----------
@@ -995,7 +1064,7 @@ class OpenGLMobject:
 
         .. note::
 
-            Technically, this is done by adding (or moving) the mobjects to
+            Technically, this is done by adding the mobjects to
             the head of :attr:`submobjects`. The head of this list is rendered
             first, which places the corresponding mobjects behind the
             subsequent list members.
@@ -1010,26 +1079,46 @@ class OpenGLMobject:
         Notes
         -----
         A mobject cannot contain itself, and it cannot contain a submobject
-        more than once.  If the parent mobject is displayed, the newly-added
-        submobjects will also be displayed (i.e. they are automatically added
-        to the parent Scene).
+        more than once. The ``mobjects`` list will be deduplicated before its contents
+        are added; the first (leftmost) occurrence of a duplicate mobject will be the
+        one that is kept.
 
         See Also
         --------
-        :meth:`remove`
         :meth:`add`
+        :meth:`insert`
+        :meth:`remove`
 
         """
-        self._assert_valid_submobjects(mobjects)
-        self.submobjects = list_update(mobjects, self.submobjects)
-        return self
+        return self._insert_submobjects(0, mobjects, update_parent=False)
 
     def replace_submobject(self, index: int, new_submob: OpenGLMobject) -> Self:
+        """Replaces the submobject at the given index with a new submobject.
+        If ``self.submobjects`` already contains the new submobject, it is also removed
+        from its previous position.
+
+        Parameters
+        ----------
+        index
+            The index of the submobject to replace.
+        new_submob
+            The new submobject to insert at the given index.
+        """
         self._assert_valid_submobjects([new_submob])
         old_submob = self.submobjects[index]
-        if self in old_submob.parents:
-            old_submob.parents.remove(self)
+        if old_submob == new_submob:
+            return self
+
+        existing_index = None
+        with suppress(ValueError):
+            existing_index = self.submobjects.index(new_submob)
         self.submobjects[index] = new_submob
+        if existing_index is not None:
+            self.submobjects.pop(existing_index)
+
+        with suppress(ValueError):
+            old_submob.parents.remove(self)
+        self._update_new_children([new_submob])
         self.assemble_family()
         return self
 
@@ -1058,7 +1147,7 @@ class OpenGLMobject:
                     x = OpenGLVGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
                     self.add(x)
         """
-        for m1, m2 in zip(self.submobjects[:-1], self.submobjects[1:], strict=True):
+        for m1, m2 in it.pairwise(self.submobjects):
             m2.next_to(m1, direction, **kwargs)
         if center:
             self.center()
@@ -1573,10 +1662,12 @@ class OpenGLMobject:
         return self
 
     def remove_updater(self, update_function: _Updater) -> Self:
-        for updater_list in [self.time_based_updaters, self.non_time_updaters]:
-            updater_list = cast("list[_Updater]", updater_list)
-            while update_function in updater_list:
-                updater_list.remove(update_function)
+        self.time_based_updaters = list_difference_update(
+            self.time_based_updaters, [update_function]
+        )
+        self.non_time_updaters = list_difference_update(
+            self.non_time_updaters, [update_function]
+        )
         self.refresh_has_updater_status()
         return self
 
@@ -2489,7 +2580,7 @@ class OpenGLMobject:
         return OpenGLGroup(
             *(
                 template.copy().pointwise_become_partial(self, a1, a2)
-                for a1, a2 in zip(alphas[:-1], alphas[1:], strict=True)
+                for a1, a2 in it.pairwise(alphas)
             )
         )
 
