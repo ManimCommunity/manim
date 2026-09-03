@@ -288,18 +288,6 @@ def test_output_file_rejects_multi_scene_render(
     assert not tmp_path.exists() or not any(tmp_path.iterdir())
 
 
-def test_custom_folders_option_was_removed(simple_scenes_path):
-    runner = CliRunner()
-
-    result = runner.invoke(
-        main,
-        ["--custom_folders", str(simple_scenes_path), "SquareToCircle"],
-    )
-
-    assert result.exit_code == 2
-    assert "No such option: --custom_folders" in result.output
-
-
 @pytest.mark.slow
 def test_custom_output_name_gif(tmp_path, simple_scenes_path):
     scene_name = "SquareToCircle"

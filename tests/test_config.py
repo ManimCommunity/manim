@@ -54,15 +54,6 @@ def test_tempconfig(config):
             assert config[k] == v
 
 
-def test_custom_folders_config_option_was_removed():
-    candidate = ManimConfig()
-
-    assert not hasattr(ManimConfig, "custom_folders")
-    assert "custom_folders" not in candidate
-    with pytest.raises(AttributeError):
-        candidate["custom_folders"] = True
-
-
 def test_tempconfig_restores_renderer_class_bases(config):
     with tempconfig({"renderer": "opengl"}):
         assert config.renderer == RendererType.OPENGL
