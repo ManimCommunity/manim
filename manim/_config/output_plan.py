@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import os
+import re
+import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
@@ -84,9 +86,18 @@ class OutputPlan:
             raise ValueError("This output plan does not contain section output.")
         if index < 0:
             raise ValueError("Section indices must be non-negative.")
+        section_slug = _slugify_section_name(name)
         return self.sections_dir / (
-            f"{self.output_stem}_{index:04}_{name}{self.segment_extension}"
+            f"{self.output_stem}_{index:04}_{section_slug}{self.segment_extension}"
         )
+
+
+def _slugify_section_name(name: str) -> str:
+    """Return a safe filename component while preserving Unicode words."""
+    if not isinstance(name, str):
+        raise TypeError("Section names must be strings.")
+    normalized = unicodedata.normalize("NFKC", name)
+    return re.sub(r"[^\w]+", "-", normalized).strip("-_") or "section"
 
 
 def _absolute_lexical(path: Path, working_directory: Path) -> Path:
@@ -306,7 +317,7 @@ def resolve_output_plan(
 
     return OutputPlan(
         primary_artifact=primary_artifact,
-        fallback_image=versioned_png,
+        fallback_image=versioned_png if output.fallback_to_still else None,
         image_sequence_dir=None,
         segment_cache_dir=layout.partial_movie_dir,
         sections_dir=sections_dir,

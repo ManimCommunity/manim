@@ -24,6 +24,7 @@ def _make_writer(
     *,
     transparent: bool = False,
     save_sections: bool = False,
+    fallback_to_still: bool = False,
     output_file: str | Path = "",
 ) -> SceneFileWriter:
     config.media_dir = tmp_path
@@ -32,7 +33,12 @@ def _make_writer(
     config.frame_rate = 15
     config.output_file = output_file
 
-    output = OutputSpec(output_format, transparent, save_sections)
+    output = OutputSpec(
+        output_format,
+        transparent,
+        save_sections,
+        fallback_to_still,
+    )
     module_name = resolve_module_name(config)
     layout = resolve_media_layout(
         config,
@@ -110,7 +116,7 @@ def test_gif_primary_and_segment_paths(
     ]
 
 
-def test_default_png_and_video_fallback_paths(config, tmp_path):
+def test_default_png_and_automatic_video_fallback_paths(config, tmp_path):
     png_writer = _make_writer(config, tmp_path, OutputFormat.PNG)
     expected = (
         tmp_path
@@ -122,7 +128,12 @@ def test_default_png_and_video_fallback_paths(config, tmp_path):
     png_writer.save_image(Image.new("RGBA", (1, 1)))
     assert png_writer.final_file_path == expected
 
-    video_writer = _make_writer(config, tmp_path, OutputFormat.MP4)
+    video_writer = _make_writer(
+        config,
+        tmp_path,
+        OutputFormat.MP4,
+        fallback_to_still=True,
+    )
     video_writer.save_image(Image.new("RGBA", (1, 1)))
     assert video_writer.final_file_path == expected
 

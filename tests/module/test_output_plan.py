@@ -35,8 +35,14 @@ def _output(
     *,
     transparent: bool = False,
     save_sections: bool = False,
+    fallback_to_still: bool = False,
 ) -> OutputSpec:
-    return OutputSpec(output_format, transparent, save_sections)
+    return OutputSpec(
+        output_format,
+        transparent,
+        save_sections,
+        fallback_to_still,
+    )
 
 
 @pytest.mark.parametrize(
@@ -58,9 +64,7 @@ def test_resolve_video_plan(tmp_path, output_format, extension):
     )
 
     assert plan.primary_artifact == layout.video_dir / f"ExampleScene{extension}"
-    assert plan.fallback_image == (
-        layout.images_dir / f"ExampleScene_ManimCE_v{__version__}.png"
-    )
+    assert plan.fallback_image is None
     assert plan.segment_cache_dir == layout.partial_movie_dir
     assert plan.segment_path("cache-key") == (
         layout.partial_movie_dir / f"cache-key{extension}"
@@ -91,6 +95,22 @@ def test_resolve_gif_plan(tmp_path, transparent, segment_extension):
     assert plan.segment_extension == segment_extension
     assert plan.segment_path("hash") == layout.partial_movie_dir / (
         f"hash{segment_extension}"
+    )
+
+
+def test_resolve_automatic_video_plan_with_fallback(tmp_path):
+    layout = _layout(tmp_path)
+
+    plan = resolve_output_plan(
+        layout,
+        _output(OutputFormat.MP4, fallback_to_still=True),
+        scene_name="ExampleScene",
+        requested_output_name=None,
+    )
+
+    assert plan.primary_artifact == layout.video_dir / "ExampleScene.mp4"
+    assert plan.fallback_image == (
+        layout.images_dir / f"ExampleScene_ManimCE_v{__version__}.png"
     )
 
 
@@ -179,7 +199,11 @@ def test_absolute_output_name_only_relocates_primary_and_fallback(tmp_path):
 
     plan = resolve_output_plan(
         layout,
-        _output(OutputFormat.MP4, save_sections=True),
+        _output(
+            OutputFormat.MP4,
+            save_sections=True,
+            fallback_to_still=True,
+        ),
         scene_name="ExampleScene",
         requested_output_name=requested,
     )
@@ -263,6 +287,50 @@ def test_dynamic_path_methods_validate_inputs(tmp_path):
         plan.segment_path("../escape")
     with pytest.raises(ValueError, match="non-negative"):
         plan.section_path(-1, "intro")
+    with pytest.raises(TypeError, match="strings"):
+        plan.section_path(0, 1)  # type: ignore[arg-type]
+
+
+@pytest.mark.parametrize(
+    ("name", "slug"),
+    [
+        ("1", "1"),
+        ("create square", "create-square"),
+        ("Chapter 1: Why/How?", "Chapter-1-Why-How"),
+        ("../../../escape", "escape"),
+        ("Überblick № 2", "Überblick-No-2"),
+        ("!!!", "section"),
+    ],
+)
+def test_section_paths_use_safe_human_readable_slugs(tmp_path, name, slug):
+    layout = _layout(tmp_path, sections=True)
+    plan = resolve_output_plan(
+        layout,
+        _output(OutputFormat.MP4, save_sections=True),
+        scene_name="ExampleScene",
+        requested_output_name=None,
+    )
+
+    assert plan.section_path(3, name) == (
+        layout.sections_dir / f"ExampleScene_0003_{slug}.mp4"
+    )
+
+
+def test_section_ordinal_keeps_duplicate_slugs_unique(tmp_path):
+    layout = _layout(tmp_path, sections=True)
+    plan = resolve_output_plan(
+        layout,
+        _output(OutputFormat.MP4, save_sections=True),
+        scene_name="ExampleScene",
+        requested_output_name=None,
+    )
+
+    first = plan.section_path(1, "intro!")
+    second = plan.section_path(2, "intro?")
+
+    assert first.name == "ExampleScene_0001_intro.mp4"
+    assert second.name == "ExampleScene_0002_intro.mp4"
+    assert first != second
 
 
 def test_config_adapter_captures_exact_required_directories(config, tmp_path):
