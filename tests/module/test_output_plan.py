@@ -340,7 +340,11 @@ def test_config_adapter_captures_exact_required_directories(config, tmp_path):
     config.frame_rate = 15
     config.zero_pad = 3
     config.log_to_file = True
-    output = _output(OutputFormat.MP4, save_sections=True)
+    output = _output(
+        OutputFormat.MP4,
+        save_sections=True,
+        fallback_to_still=True,
+    )
 
     module_name = resolve_module_name(config)
     layout = resolve_media_layout(
@@ -362,6 +366,30 @@ def test_config_adapter_captures_exact_required_directories(config, tmp_path):
     assert layout.log_dir == tmp_path / "relative-media" / "logs"
     assert layout.zero_pad == 3
     assert not (tmp_path / "relative-media").exists()
+
+
+def test_explicit_video_skips_the_unused_fallback_directory(config, tmp_path):
+    config.media_dir = "explicit-video"
+    config.images_dir = "{unused_placeholder}"
+    output = _output(OutputFormat.MP4)
+
+    layout = resolve_media_layout(
+        config,
+        output,
+        module_name="example",
+        scene_name="ExampleScene",
+        working_directory=tmp_path,
+    )
+    plan = resolve_output_plan(
+        layout,
+        output,
+        scene_name="ExampleScene",
+        requested_output_name=None,
+    )
+
+    assert layout.images_dir is None
+    assert layout.video_dir is not None
+    assert plan.fallback_image is None
 
 
 def test_config_adapter_skips_unused_output_directories(config, tmp_path):

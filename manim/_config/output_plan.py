@@ -157,7 +157,7 @@ def resolve_media_layout(
     sections_dir = None
     partial_movie_dir = None
 
-    if output.enabled:
+    if output.is_still or output.is_image_sequence or output.fallback_to_still:
         images_dir = _required_dir(
             config,
             "images_dir",
@@ -254,15 +254,18 @@ def resolve_output_plan(
             zero_pad=layout.zero_pad,
         )
 
-    images_dir = layout.images_dir
-    if images_dir is None:
-        raise ValueError("Image output requires an images directory.")
-
     default_name = requested_output_name is None
-    normalized_png = _output_path(images_dir, output_name, ".png")
-    versioned_png = _versioned(normalized_png) if default_name else normalized_png
+    normalized_png = None
+    versioned_png = None
+    if output.is_still or output.is_image_sequence or output.fallback_to_still:
+        images_dir = layout.images_dir
+        if images_dir is None:
+            raise ValueError("Image output requires an images directory.")
+        normalized_png = _output_path(images_dir, output_name, ".png")
+        versioned_png = _versioned(normalized_png) if default_name else normalized_png
 
     if output.is_still:
+        assert versioned_png is not None
         return OutputPlan(
             primary_artifact=versioned_png,
             fallback_image=None,
@@ -278,6 +281,7 @@ def resolve_output_plan(
         )
 
     if output.is_image_sequence:
+        assert normalized_png is not None
         sequence_dir = normalized_png.with_suffix("")
         return OutputPlan(
             primary_artifact=sequence_dir,
