@@ -8,7 +8,14 @@ import numpy as np
 import pytest
 
 from manim import DR, Circle, Create, Scene, Star, tempconfig
+from manim._config import config
 from manim._config.output import OutputFormat, OutputSpec
+from manim._config.output_plan import (
+    resolve_media_layout,
+    resolve_module_name,
+    resolve_output_plan,
+    resolve_requested_output_name,
+)
 from manim.scene.scene_file_writer import SceneFileWriter, to_av_frame_rate
 from manim.utils.commands import capture, get_video_metadata
 
@@ -192,16 +199,27 @@ def test_frame_rates():
 def _new_file_writer(scene_name: str) -> SceneFileWriter:
     renderer = Mock()
     renderer.num_plays = 0
-    return SceneFileWriter(
-        renderer,
-        scene_name,
-        OutputSpec(
-            OutputFormat.MP4,
-            transparent=False,
-            save_sections=False,
-            fallback_to_still=False,
-        ),
+    output = OutputSpec(
+        OutputFormat.MP4,
+        transparent=False,
+        save_sections=False,
+        fallback_to_still=False,
     )
+    module_name = resolve_module_name(config)
+    layout = resolve_media_layout(
+        config,
+        output,
+        module_name=module_name,
+        scene_name=scene_name,
+        working_directory=Path.cwd(),
+    )
+    plan = resolve_output_plan(
+        layout,
+        output,
+        scene_name=scene_name,
+        requested_output_name=resolve_requested_output_name(config),
+    )
+    return SceneFileWriter(renderer, scene_name, output, plan)
 
 
 def test_clean_cache_ignores_hidden_files(config, tmp_path):
@@ -211,6 +229,7 @@ def test_clean_cache_ignores_hidden_files(config, tmp_path):
     with tempconfig({"media_dir": tmp_path, "format": "mp4"}):
         writer = _new_file_writer("CacheCleaningScene")
         cache_dir = writer.partial_movie_directory
+        cache_dir.mkdir(parents=True)
 
         for name in ["00001.mp4", ".DS_Store", "._00001.mp4"]:
             (cache_dir / name).touch()
@@ -236,6 +255,7 @@ def test_flush_cache_directory_ignores_hidden_files(config, tmp_path):
     with tempconfig({"media_dir": tmp_path, "format": "mp4"}):
         writer = _new_file_writer("CacheFlushingScene")
         cache_dir = writer.partial_movie_directory
+        cache_dir.mkdir(parents=True)
 
         for name in ["00001.mp4", "00002.mp4", ".DS_Store", "._00001.mp4"]:
             (cache_dir / name).touch()
@@ -257,6 +277,7 @@ def test_clean_cache_tolerates_vanishing_files(config, tmp_path, monkeypatch):
     with tempconfig({"media_dir": tmp_path, "format": "mp4"}):
         writer = _new_file_writer("VanishingFileScene")
         cache_dir = writer.partial_movie_directory
+        cache_dir.mkdir(parents=True)
 
         survivor = cache_dir / "00001.mp4"
         survivor.touch()
@@ -275,6 +296,7 @@ def test_clean_cache_does_not_evict_for_vanished_file(config, tmp_path, monkeypa
     with tempconfig({"media_dir": tmp_path, "format": "mp4"}):
         writer = _new_file_writer("VanishedFileEvictionScene")
         cache_dir = writer.partial_movie_directory
+        cache_dir.mkdir(parents=True)
 
         survivors = [cache_dir / f"{index:05}.mp4" for index in range(2)]
         for survivor in survivors:

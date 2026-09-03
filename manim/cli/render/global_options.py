@@ -62,13 +62,6 @@ global_options = option_group(
         default=None,
     ),
     option(
-        "--custom_folders",
-        is_flag=True,
-        default=None,
-        help="Use the folders defined in the [custom_folders] section of the "
-        "config file to define the output folder structure.",
-    ),
-    option(
         "--disable_caching",
         is_flag=True,
         default=None,

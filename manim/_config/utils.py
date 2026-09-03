@@ -263,7 +263,6 @@ class ManimConfig(MutableMapping):
         "assets_dir",
         "background_color",
         "background_opacity",
-        "custom_folders",
         "disable_caching",
         "disable_caching_warning",
         "dry_run",
@@ -590,7 +589,6 @@ class ManimConfig(MutableMapping):
             "disable_caching",
             "disable_caching_warning",
             "flush_cache",
-            "custom_folders",
             "enable_gui",
             "fullscreen",
             "use_projection_fill_shaders",
@@ -823,23 +821,6 @@ class ManimConfig(MutableMapping):
         fps = args.frame_rate
         if fps:
             self.frame_rate = float(fps)
-
-        # Handle --custom_folders
-        if args.custom_folders:
-            for opt in [
-                "media_dir",
-                "video_dir",
-                "sections_dir",
-                "images_dir",
-                "text_dir",
-                "tex_dir",
-                "log_dir",
-                "partial_movie_dir",
-            ]:
-                self[opt] = self._parser["custom_folders"].get(opt, raw=True)
-            # --media_dir overrides the default.cfg file
-            if hasattr(args, "media_dir") and args.media_dir:
-                self.media_dir = args.media_dir
 
         # Handle --tex_template
         if args.tex_template:
@@ -1707,15 +1688,6 @@ class ManimConfig(MutableMapping):
     @partial_movie_dir.setter
     def partial_movie_dir(self, value: str | Path) -> None:
         self._set_dir("partial_movie_dir", value)
-
-    @property
-    def custom_folders(self) -> str:
-        """Whether to use custom folder output."""
-        return self._d["custom_folders"]
-
-    @custom_folders.setter
-    def custom_folders(self, value: str | Path) -> None:
-        self._set_dir("custom_folders", value)
 
     @property
     def input_file(self) -> str | Path:

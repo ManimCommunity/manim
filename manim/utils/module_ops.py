@@ -16,7 +16,6 @@ from manim.constants import (
     NO_SCENE_MESSAGE,
     SCENE_NOT_FOUND_MESSAGE,
 )
-from manim.scene.scene_file_writer import SceneFileWriter
 
 if TYPE_CHECKING:
     from manim.scene.scene import Scene
@@ -112,7 +111,6 @@ def get_scenes_to_render(scene_classes: list[type[Scene]]) -> list[type[Scene]]:
 
 def prompt_user_for_choice(scene_classes: list[type[Scene]]) -> list[type[Scene]]:
     num_to_class = {}
-    SceneFileWriter.force_output_as_scene_name = True
     for count, scene_class in enumerate(scene_classes, 1):
         name = scene_class.__name__
         console.print(f"{count}: {name}", style="logging.level.info")

@@ -274,6 +274,12 @@ continues as follows:
         self.renderer.capabilities,
         renderer_name=type(self.renderer).__name__,
     )
+    self.output_plan = resolve_output_plan(
+        resolve_media_layout(...),
+        self.session_spec.output,
+        scene_name=type(self).__name__,
+        requested_output_name=...,
+    )
     self.renderer.init_scene(self, self.session_spec)
 
 The session specification separates primary artifact intent (an ``OutputSpec``)
@@ -292,10 +298,18 @@ validates requests against the selected renderer's capabilities. For example,
 Cairo rejects live preview, while OpenGL advertises support for it. A concrete
 format records the live preview as well.
 
+The scene then resolves existing directory templates once into an immutable
+output plan containing exact scene-specific artifact, section, image-sequence,
+and cache paths. Planning performs no file I/O and creates no directories. The
+resolved format determines the artifact suffix; ``output_file`` supplies only a
+name and cannot change the format.
+
 Inspecting the initialization methods of both renderers shows that they
 instantiate a :class:`.SceneFileWriter`. The writer must receive the already
-resolved ``OutputSpec``. It remains Manim's interface to ``libav`` for
-encoding media. The Cairo renderer (see the implementation `here
+resolved ``OutputSpec`` and output plan; it does not reinterpret global
+configuration to decide what or where to write. Directories are created lazily
+when their owning operation first writes. The writer remains Manim's interface
+to ``libav`` for encoding media. The Cairo renderer (see the implementation `here
 <https://github.com/ManimCommunity/manim/blob/main/manim/renderer/cairo_renderer.py>`__)
 does not require further renderer-specific initialization. OpenGL creates a
 window only when the resolved presentation specification requests a live preview.
@@ -309,9 +323,10 @@ attribute is initially ``None`` unless the caller attaches a manager explicitly.
 
 .. warning::
 
-    The manager coordinates the scene lifecycle, while the renderer still owns
-    its camera, clock, play count, skip state, and file writer. The manager
-    currently exposes these through forwarding properties.
+    The scene captures the immutable session specification and output plan before
+    renderer initialization. The manager coordinates the scene lifecycle, while
+    the renderer still owns its camera, clock, play count, skip state, and file
+    writer. The manager exposes these through forwarding properties.
 
 The rest of this article is concerned with the last line in our toy example script::
 

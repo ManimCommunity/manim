@@ -209,8 +209,9 @@ def test_no_image_output_with_interactive_embed(
         "running an interactive static scene rendered a video"
     )
 
-    is_empty = not any((tmp_path / "images" / "simple_scenes").iterdir())
-    assert is_empty, "running an interactive static scene rendered an image"
+    assert not (tmp_path / "images").exists(), (
+        "running an interactive static scene rendered an image"
+    )
 
 
 @pytest.mark.slow
@@ -240,8 +241,9 @@ def test_default_video_output_with_non_static_scene(
         "default output did not render the non-static scene as a video"
     )
 
-    is_empty = not any((tmp_path / "images" / "simple_scenes").iterdir())
-    assert is_empty, "default video output unexpectedly rendered an image"
+    assert not (tmp_path / "images").exists(), (
+        "default video output unexpectedly rendered an image"
+    )
 
 
 @pytest.mark.slow
@@ -359,33 +361,6 @@ def test_a_flag(tmp_path, manim_cfg_file, infallible_scenes_path):
     assert three_is_not_empty, (
         "running manim with -a flag did not render the second scene"
     )
-
-
-@pytest.mark.slow
-def test_custom_folders(tmp_path, manim_cfg_file, simple_scenes_path):
-    scene_name = "SquareToCircle"
-    command = [
-        sys.executable,
-        "-m",
-        "manim",
-        "--renderer",
-        "opengl",
-        "-ql",
-        "-s",
-        "--media_dir",
-        str(tmp_path),
-        "--custom_folders",
-        str(simple_scenes_path),
-        scene_name,
-    ]
-    out, err, exit_code = capture(command)
-    assert exit_code == 0, err
-
-    exists = (tmp_path / "videos").exists()
-    assert not exists, "--custom_folders produced a 'videos/' dir"
-
-    exists = add_version_before_extension(tmp_path / "SquareToCircle.png").exists()
-    assert exists, "--custom_folders did not produce the output file"
 
 
 @pytest.mark.slow

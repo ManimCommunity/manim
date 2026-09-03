@@ -148,6 +148,23 @@ To write every rendered frame as a numbered PNG instead, use
 ``--format=png-sequence``. The sequence is stored in a scene-specific directory,
 for example ``media/images/scene/SquareToCircle/0000.png``.
 
+Customizing output directories
+******************************
+
+The canonical layout can be customized through the ordinary directory options in
+the ``[CLI]`` section of ``manim.cfg``. These options support placeholders and may
+refer to one another; for example:
+
+.. code-block:: ini
+
+   [CLI]
+   media_dir = project-media
+   video_dir = {media_dir}/renders/{module_name}/{quality}
+   images_dir = {media_dir}/stills/{module_name}
+   sections_dir = {video_dir}/sections
+   partial_movie_dir = {video_dir}/partial_movie_files/{scene_name}
+   log_dir = {media_dir}/logs
+
 Output formats
 **************
 
@@ -181,6 +198,13 @@ The ``--format`` option selects one primary artifact:
 preview, but it counts as a separate execution request rather than modifying the
 choice of output format. This allows Manim to function as if it were rendering a
 normal scene, but without producing any artifact.
+
+``-o`` / ``--output_file`` names the primary artifact for a single selected scene;
+it does not select the format. Manim appends the resolved format suffix unless the
+name already ends with it. For example, ``-o movie.mp4 --format=mp4`` produces
+``movie.mp4``, while ``-o movie.mov --format=mp4`` produces ``movie.mov.mp4``. A
+single output name is ambiguous for a multi-scene render, so ``-o`` cannot be
+combined with ``--write_all`` or with several selected scene names.
 
 
 Sections
@@ -252,13 +276,15 @@ If you do this, the ``media`` folder will look like this:
                 │       ├── 3163782288_524160878_1793580042.mp4
                 │       └── partial_movie_file_list.txt
                 └── sections
-                    ├── ElaborateSceneWithSections_0000.mp4
-                    ├── ElaborateSceneWithSections_0001.mp4
-                    ├── ElaborateSceneWithSections_0002.mp4
+                    ├── ElaborateSceneWithSections_0000_create-square.mp4
+                    ├── ElaborateSceneWithSections_0001_transform-to-circle.mp4
+                    ├── ElaborateSceneWithSections_0003_fade-out.mp4
                     └── ElaborateSceneWithSections.json
 
 As you can see each section receives their own output video in the ``sections`` directory.
-The JSON file in here contains some useful information for each section:
+Section names are normalized into safe filename components, while the original names
+are retained in the JSON index. The JSON file contains some useful information for
+each section:
 
 .. code-block:: json
 
@@ -266,7 +292,7 @@ The JSON file in here contains some useful information for each section:
         {
             "name": "create square",
             "type": "default.normal",
-            "video": "ElaborateSceneWithSections_0000.mp4",
+            "video": "ElaborateSceneWithSections_0000_create-square.mp4",
             "codec_name": "h264",
             "width": 854,
             "height": 480,
@@ -277,7 +303,7 @@ The JSON file in here contains some useful information for each section:
         {
             "name": "transform to circle",
             "type": "default.normal",
-            "video": "ElaborateSceneWithSections_0001.mp4",
+            "video": "ElaborateSceneWithSections_0001_transform-to-circle.mp4",
             "codec_name": "h264",
             "width": 854,
             "height": 480,
@@ -288,7 +314,7 @@ The JSON file in here contains some useful information for each section:
         {
             "name": "fade out",
             "type": "default.normal",
-            "video": "ElaborateSceneWithSections_0002.mp4",
+            "video": "ElaborateSceneWithSections_0003_fade-out.mp4",
             "codec_name": "h264",
             "width": 854,
             "height": 480,

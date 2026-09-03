@@ -34,15 +34,10 @@ with warnings.catch_warnings():
 from manim import __version__
 
 from .. import config, logger
-from .._config.logger_utils import set_file_logger
 from .._config.output import OutputSpec
+from .._config.output_plan import OutputPlan
 from ..constants import RendererType
-from ..utils.file_ops import (
-    add_extension_if_not_present,
-    add_version_before_extension,
-    guarantee_existence,
-    modify_atime,
-)
+from ..utils.file_ops import modify_atime
 from ..utils.sounds import get_full_sound_file_path
 from .section import DefaultSectionType, Section
 
@@ -219,21 +214,20 @@ class SceneFileWriter:
 
     """
 
-    force_output_as_scene_name = False
-
     def __init__(
         self,
         renderer: CairoRenderer | OpenGLRenderer,
         scene_name: str,
         output_spec: OutputSpec,
+        output_plan: OutputPlan,
         **kwargs: Any,
     ) -> None:
         self.renderer = renderer
         self.output_spec = output_spec
+        self.output_plan = output_plan
         self._inflight_encode_jobs: list[_PartialMovieEncodeJob] = []
         self._inflight_by_path: dict[str, _PartialMovieEncodeJob] = {}
         self._current_encode_job: _PartialMovieEncodeJob | None = None
-        self.init_output_directories(scene_name)
         self.init_audio()
         self.frame_count = 0
         self.partial_movie_files: list[str | None] = []
@@ -245,86 +239,59 @@ class SceneFileWriter:
             name="autocreated", type_=DefaultSectionType.NORMAL, skip_animations=False
         )
 
-    def init_output_directories(self, scene_name: str) -> None:
-        """Initialise output directories.
+    @property
+    def output_name(self) -> Path:
+        """Return the planned logical output stem as a compatibility view."""
+        return Path(self.output_plan.output_stem)
 
-        Notes
-        -----
-        The directories are read from ``config``, for example
-        ``config['media_dir']``.  If the target directories don't already
-        exist, they will be created.
+    @property
+    def image_file_path(self) -> Path:
+        """Return the planned still or video-fallback image path."""
+        if self.output_spec.is_image_sequence:
+            return self.image_sequence_directory.with_suffix(".png")
+        path = (
+            self.output_plan.primary_artifact
+            if self.output_spec.is_still
+            else self.output_plan.fallback_image
+        )
+        if path is None:
+            raise AttributeError("This output plan does not contain an image path.")
+        return path
 
-        """
-        if not self.output_spec.enabled:
-            return
+    @property
+    def image_sequence_directory(self) -> Path:
+        """Return the planned PNG-sequence directory."""
+        path = self.output_plan.image_sequence_dir
+        if path is None:
+            raise AttributeError("This output plan does not contain an image sequence.")
+        return path
 
-        module_name = config.get_dir("input_file").stem if config["input_file"] else ""
+    @property
+    def movie_file_path(self) -> Path:
+        """Return the planned primary video artifact path."""
+        if not self.output_spec.is_video or self.output_plan.primary_artifact is None:
+            raise AttributeError("This output plan does not contain a video artifact.")
+        return self.output_plan.primary_artifact
 
-        if SceneFileWriter.force_output_as_scene_name:
-            self.output_name = Path(scene_name)
-        elif config["output_file"] and not config["write_all"]:
-            self.output_name = config.get_dir("output_file")
-        else:
-            self.output_name = Path(scene_name)
+    @property
+    def gif_file_path(self) -> Path:
+        """Return the planned GIF artifact path."""
+        if not self.output_spec.is_gif:
+            raise AttributeError("This output plan does not contain a GIF artifact.")
+        return self.movie_file_path
 
-        if config["media_dir"]:
-            image_dir = guarantee_existence(
-                config.get_dir(
-                    "images_dir", module_name=module_name, scene_name=scene_name
-                ),
-            )
-            self.image_file_path = image_dir / add_extension_if_not_present(
-                self.output_name, ".png"
-            )
-            if self.output_spec.is_image_sequence:
-                self.image_sequence_directory = guarantee_existence(
-                    self.image_file_path.with_suffix(""),
-                )
+    @property
+    def sections_output_dir(self) -> Path:
+        """Return the planned sections directory, or the legacy empty path."""
+        return self.output_plan.sections_dir or Path("")
 
-        if self.output_spec.is_video:
-            movie_dir = guarantee_existence(
-                config.get_dir(
-                    "video_dir", module_name=module_name, scene_name=scene_name
-                ),
-            )
-            self.movie_file_path = movie_dir / add_extension_if_not_present(
-                self.output_name, self.output_spec.segment_extension
-            )
-
-            # TODO: /dev/null would be good in case sections_output_dir is used without being set (doesn't work on Windows), everyone likes defensive programming, right?
-            self.sections_output_dir = Path("")
-            if self.output_spec.save_sections:
-                self.sections_output_dir = guarantee_existence(
-                    config.get_dir(
-                        "sections_dir", module_name=module_name, scene_name=scene_name
-                    )
-                )
-
-            if self.output_spec.is_gif:
-                self.gif_file_path = add_extension_if_not_present(
-                    self.output_name, ".gif"
-                )
-
-                if not config["output_file"]:
-                    self.gif_file_path = add_version_before_extension(
-                        self.gif_file_path
-                    )
-
-                self.gif_file_path = movie_dir / self.gif_file_path
-
-            self.partial_movie_directory = guarantee_existence(
-                config.get_dir(
-                    "partial_movie_dir",
-                    scene_name=scene_name,
-                    module_name=module_name,
-                ),
-            )
-
-            if config["log_to_file"]:
-                log_dir = guarantee_existence(config.get_dir("log_dir"))
-                set_file_logger(
-                    scene_name=scene_name, module_name=module_name, log_dir=log_dir
-                )
+    @property
+    def partial_movie_directory(self) -> Path:
+        """Return the planned silent-segment cache directory."""
+        path = self.output_plan.segment_cache_dir
+        if path is None:
+            raise AttributeError("This output plan does not contain video segments.")
+        return path
 
     def finish_last_section(self) -> None:
         """Delete current section if it is empty."""
@@ -339,8 +306,12 @@ class SceneFileWriter:
         section_video: str | None = None
         # don't save when None
         if self.output_spec.save_sections and not skip_animations:
-            # relative to index file
-            section_video = f"{self.output_name}_{len(self.sections):04}_{name}{self.output_spec.segment_extension}"
+            section_path = self.output_plan.section_path(len(self.sections), name)
+            assert self.output_plan.sections_dir is not None
+            # Section stores paths relative to its index file.
+            section_video = section_path.relative_to(
+                self.output_plan.sections_dir,
+            ).as_posix()
 
         self.sections.append(
             Section(
@@ -375,43 +346,9 @@ class SceneFileWriter:
             self.partial_movie_files.append(None)
             self.sections[-1].partial_movie_files.append(None)
         else:
-            new_partial_movie_file = str(
-                self.partial_movie_directory
-                / f"{hash_animation}{self.output_spec.segment_extension}"
-            )
+            new_partial_movie_file = str(self.output_plan.segment_path(hash_animation))
             self.partial_movie_files.append(new_partial_movie_file)
             self.sections[-1].partial_movie_files.append(new_partial_movie_file)
-
-    def get_resolution_directory(self) -> str:
-        """Get the name of the resolution directory directly containing
-        the video file.
-
-        This method gets the name of the directory that immediately contains the
-        video file. This name is ``<height_in_pixels_of_video>p<frame_rate>``.
-        For example, if you are rendering an 854x480 px animation at 15fps,
-        the name of the directory that immediately contains the video,  file
-        will be ``480p15``.
-
-        The file structure should look something like::
-
-            MEDIA_DIR
-                |--Tex
-                |--texts
-                |--videos
-                    |--<name_of_file_containing_scene>
-                        |--<height_in_pixels_of_video>p<frame_rate>
-                            |--partial_movie_files
-                            |--<scene_name>.mp4
-                            |--<scene_name>.srt
-
-        Returns
-        -------
-        :class:`str`
-            The name of the directory.
-        """
-        pixel_height = config["pixel_height"]
-        frame_rate = config["frame_rate"]
-        return f"{pixel_height}p{frame_rate}"
 
     # Sound
     def init_audio(self) -> None:
@@ -578,20 +515,12 @@ class SceneFileWriter:
                     if config.renderer == RendererType.OPENGL
                     else Image.fromarray(frame_or_renderer)
                 )
-            target_dir = self.image_sequence_directory
-            extension = self.image_file_path.suffix
-            self.output_image(
-                image,
-                target_dir,
-                extension,
-                config["zero_pad"],
-            )
+            self.output_image(image)
 
-    def output_image(
-        self, image: Image.Image, target_dir: StrPath, ext: str, zero_pad: int
-    ) -> None:
-        file_name = f"{self.frame_count:0{zero_pad}d}{ext}"
-        image.save(Path(target_dir) / file_name)
+    def output_image(self, image: Image.Image) -> None:
+        file_path = self.output_plan.image_frame_path(self.frame_count)
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        image.save(file_path)
         self.frame_count += 1
 
     def save_image(self, image: Image.Image) -> None:
@@ -604,9 +533,7 @@ class SceneFileWriter:
         """
         if not self.output_spec.enabled:
             return
-        if not config["output_file"]:
-            self.image_file_path = add_version_before_extension(self.image_file_path)
-
+        self.image_file_path.parent.mkdir(parents=True, exist_ok=True)
         image.save(self.image_file_path)
         self.print_file_ready_message(self.image_file_path)
 
@@ -645,6 +572,8 @@ class SceneFileWriter:
                     "open_partial_movie_stream() called for a play that has no "
                     "partial movie file path.",
                 )
+        file_path = Path(file_path)
+        file_path.parent.mkdir(parents=True, exist_ok=True)
         path_key = str(file_path)
         if path_key in self._inflight_by_path:
             self._join_job_and_drain_on_failure(self._inflight_by_path[path_key])
@@ -816,10 +745,7 @@ class SceneFileWriter:
             or not self.output_spec.is_video
         ):
             return False
-        path = (
-            self.partial_movie_directory
-            / f"{hash_invocation}{self.output_spec.segment_extension}"
-        )
+        path = self.output_plan.segment_path(hash_invocation)
         path_key = str(path)
         if path_key in self._inflight_by_path:
             self._join_job_and_drain_on_failure(self._inflight_by_path[path_key])
@@ -832,7 +758,10 @@ class SceneFileWriter:
         create_gif: bool = False,
         includes_sound: bool = False,
     ) -> None:
-        file_list = self.partial_movie_directory / "partial_movie_file_list.txt"
+        file_list = self.output_plan.concat_manifest
+        assert file_list is not None
+        file_list.parent.mkdir(parents=True, exist_ok=True)
+        output_file.parent.mkdir(parents=True, exist_ok=True)
         logger.debug(
             f"Partial movie files to combine ({len(input_files)} files): %(p)s",
             {"p": input_files[:5]},
@@ -1050,12 +979,16 @@ class SceneFileWriter:
             # only if section does want to be saved
             if section.video is not None:
                 logger.info(f"Combining partial files for section '{section.name}'")
+                section_path = self.sections_output_dir / section.video
                 self.combine_files(
                     section.get_clean_partial_movie_files(),
-                    self.sections_output_dir / section.video,
+                    section_path,
                 )
                 sections_index.append(section.get_dict(self.sections_output_dir))
-        with (self.sections_output_dir / f"{self.output_name}.json").open("w") as file:
+        section_index = self.output_plan.section_index
+        assert section_index is not None
+        section_index.parent.mkdir(parents=True, exist_ok=True)
+        with section_index.open("w") as file:
             json.dump(sections_index, file, indent=4)
 
     def _cached_partial_movie_files(self) -> list[Path]:
@@ -1068,6 +1001,8 @@ class SceneFileWriter:
         ``max_files_cached`` and may vanish again before they could be
         deleted.
         """
+        if not self.partial_movie_directory.exists():
+            return []
         return [
             self.partial_movie_directory / file_name
             for file_name in self.partial_movie_directory.iterdir()
@@ -1117,10 +1052,9 @@ class SceneFileWriter:
         """Writes the subcaption file next to the primary video artifact."""
         if not self.output_spec.is_video:
             return
-        media_path = (
-            self.gif_file_path if self.output_spec.is_gif else self.movie_file_path
-        )
-        subcaption_file = Path(media_path).with_suffix(".srt")
+        subcaption_file = self.output_plan.subcaption_file
+        assert subcaption_file is not None
+        subcaption_file.parent.mkdir(parents=True, exist_ok=True)
         subcaption_file.write_text(srt.compose(self.subcaptions), encoding="utf-8")
         logger.info(f"Subcaption file has been written as {subcaption_file}")
 

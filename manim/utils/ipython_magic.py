@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Any
 
 from manim import config, logger, tempconfig
-from manim.__main__ import main
 from manim.renderer.shader import shader_program_cache
 
 from ..constants import RendererType
@@ -119,6 +118,10 @@ else:
             """
             if cell:
                 exec(cell, local_ns)
+
+            # Import lazily to keep package initialization independent of the CLI
+            # entry point and avoid a manim -> IPython magic -> CLI import cycle.
+            from manim.__main__ import main
 
             args = line.split()
             if not len(args) or "-h" in args or "--help" in args or "--version" in args:

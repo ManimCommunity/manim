@@ -58,6 +58,14 @@ class ClickArgs(Namespace):
         return str(self.__dict__)
 
 
+def _validate_scene_batch_output_name(scene_classes: list[type]) -> None:
+    if config.output_file and (config.write_all or len(scene_classes) != 1):
+        raise ValueError(
+            "--output_file can only be used when rendering exactly one scene. "
+            "Remove --write_all or select a single scene.",
+        )
+
+
 @cloup.command(
     context_settings=None,
     no_args_is_help=True,
@@ -82,14 +90,17 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
 
     config.digest_args(click_args)
     file = Path(config.input_file)
-    if config.renderer == RendererType.OPENGL:
-        from manim.renderer.opengl_renderer import OpenGLRenderer
+    try:
+        scene_classes = scene_classes_from_file(file)
+        _validate_scene_batch_output_name(scene_classes)
 
-        try:
+        if config.renderer == RendererType.OPENGL:
+            from manim.renderer.opengl_renderer import OpenGLRenderer
+
             renderer = OpenGLRenderer()
             keep_running = True
             while keep_running:
-                for SceneClass in scene_classes_from_file(file):
+                for SceneClass in scene_classes:
                     with tempconfig({}):
                         scene = SceneClass(renderer)
                         # Attach explicitly, but preserve custom Scene.render overrides.
@@ -98,26 +109,20 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
                     if rerun or config["write_all"]:
                         renderer.num_plays = 0
                         continue
-                    else:
-                        keep_running = False
-                        break
+                    keep_running = False
+                    break
                 if config["write_all"]:
                     keep_running = False
-
-        except Exception:
-            error_console.print_exception()
-            sys.exit(1)
-    else:
-        for SceneClass in scene_classes_from_file(file):
-            try:
+        else:
+            for SceneClass in scene_classes:
                 with tempconfig({}):
                     scene = SceneClass()
                     # Attach explicitly, but preserve custom Scene.render overrides.
                     Manager(scene)
                     scene.render()
-            except Exception:
-                error_console.print_exception()
-                sys.exit(1)
+    except Exception:
+        error_console.print_exception()
+        sys.exit(1)
 
     if config.notify_outdated_version:
         manim_info_url = "https://pypi.org/pypi/manim/json"

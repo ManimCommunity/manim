@@ -62,6 +62,7 @@ class CairoRenderer:
             self,
             scene.__class__.__name__,
             output_spec=session_spec.output,
+            output_plan=scene.output_plan,
         )
 
     def play(

@@ -43,6 +43,14 @@ from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLPoint
 
 from .. import config, logger
+from .._config.logger_utils import set_file_logger
+from .._config.output_plan import (
+    resolve_file_log_path,
+    resolve_media_layout,
+    resolve_module_name,
+    resolve_output_plan,
+    resolve_requested_output_name,
+)
 from .._config.render_session import resolve_render_session
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
@@ -219,6 +227,29 @@ class Scene:
             self.renderer.capabilities,
             renderer_name=type(self.renderer).__name__,
         )
+        scene_name = type(self).__name__
+        module_name = resolve_module_name(config)
+        media_layout = resolve_media_layout(
+            config,
+            self.session_spec.output,
+            module_name=module_name,
+            scene_name=scene_name,
+            working_directory=Path.cwd(),
+        )
+        self.output_plan = resolve_output_plan(
+            media_layout,
+            self.session_spec.output,
+            scene_name=scene_name,
+            requested_output_name=resolve_requested_output_name(config),
+        )
+        self._log_file_path = resolve_file_log_path(
+            media_layout,
+            module_name=module_name,
+            scene_name=scene_name,
+        )
+        if self._log_file_path is not None:
+            self._log_file_path.parent.mkdir(parents=True, exist_ok=True)
+            set_file_logger(self._log_file_path)
         self.renderer.init_scene(self, self.session_spec)
 
         self.mobjects: list[Mobject] = []

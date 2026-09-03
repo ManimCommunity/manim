@@ -53,9 +53,6 @@ class DummySceneFileWriter(SceneFileWriter):
         super().__init__(renderer, scene_name, **kwargs)
         self.i = 0
 
-    def init_output_directories(self, scene_name: str) -> None:
-        pass
-
     def add_partial_movie_file(self, hash_animation: str | None) -> None:
         pass
 
