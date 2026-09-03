@@ -11,8 +11,10 @@ from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.iterables import list_update
+from .protocol import RendererCapabilities
 
 if TYPE_CHECKING:
+    from manim._config.render_session import RenderSessionSpec
     from manim.animation.animation import Animation
     from manim.scene.scene import Scene
 
@@ -32,6 +34,8 @@ class CairoRenderer:
     time : float
         Time elapsed since initialisation of scene.
     """
+
+    capabilities = RendererCapabilities(live_preview=False)
 
     def __init__(
         self,
@@ -53,10 +57,11 @@ class CairoRenderer:
         self.time = 0.0
         self.static_image: PixelArray | None = None
 
-    def init_scene(self, scene: Scene) -> None:
+    def init_scene(self, scene: Scene, session_spec: RenderSessionSpec) -> None:
         self.file_writer: Any = self._file_writer_class(
             self,
             scene.__class__.__name__,
+            output_spec=session_spec.output,
         )
 
     def play(
@@ -252,7 +257,7 @@ class CairoRenderer:
         # there is always at least one section -> no out of bounds here
         if self.file_writer.sections[-1].skip_animations:
             self.skip_animations = True
-        if config["save_last_frame"]:
+        if self.file_writer.output_spec.is_still:
             self.skip_animations = True
         if (
             config.from_animation_number > 0
@@ -267,17 +272,17 @@ class CairoRenderer:
             raise EndSceneEarlyException()
 
     def scene_finished(self, scene: Scene) -> None:
-        # If no animations in scene, render an image instead
-        if self.num_plays:
+        output = self.file_writer.output_spec
+        if self.num_plays and (output.is_video or output.is_image_sequence):
             self.file_writer.finish()
-        elif config.write_to_movie:
-            config.save_last_frame = True
-            config.write_to_movie = False
-        else:
+        elif not self.num_plays:
             self.static_image = None
             self.update_frame(scene)
 
-        if config["save_last_frame"]:
-            self.static_image = None
-            self.update_frame(scene)
+        # Automatically selected video output falls back to a last-frame PNG
+        # when a scene has no play calls.
+        if output.is_still or (not self.num_plays and output.fallback_to_still):
+            if self.num_plays:
+                self.static_image = None
+                self.update_frame(scene)
             self.file_writer.save_image(self.camera.get_image())

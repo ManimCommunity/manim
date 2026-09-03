@@ -8,6 +8,7 @@ import numpy as np
 import pytest
 
 from manim import DR, Circle, Create, Scene, Star, tempconfig
+from manim._config.output import OutputFormat, OutputSpec
 from manim.scene.scene_file_writer import SceneFileWriter, to_av_frame_rate
 from manim.utils.commands import capture, get_video_metadata
 
@@ -191,14 +192,23 @@ def test_frame_rates():
 def _new_file_writer(scene_name: str) -> SceneFileWriter:
     renderer = Mock()
     renderer.num_plays = 0
-    return SceneFileWriter(renderer, scene_name)
+    return SceneFileWriter(
+        renderer,
+        scene_name,
+        OutputSpec(
+            OutputFormat.MP4,
+            transparent=False,
+            save_sections=False,
+            fallback_to_still=False,
+        ),
+    )
 
 
 def test_clean_cache_ignores_hidden_files(config, tmp_path):
     # macOS leaves resource forks (._*.mp4) and .DS_Store files in the
     # partial movie directory; they must not be counted against
     # max_files_cached nor be deleted, see issue #3234.
-    with tempconfig({"media_dir": tmp_path, "write_to_movie": True}):
+    with tempconfig({"media_dir": tmp_path, "format": "mp4"}):
         writer = _new_file_writer("CacheCleaningScene")
         cache_dir = writer.partial_movie_directory
 
@@ -223,7 +233,7 @@ def test_clean_cache_ignores_hidden_files(config, tmp_path):
 
 
 def test_flush_cache_directory_ignores_hidden_files(config, tmp_path):
-    with tempconfig({"media_dir": tmp_path, "write_to_movie": True}):
+    with tempconfig({"media_dir": tmp_path, "format": "mp4"}):
         writer = _new_file_writer("CacheFlushingScene")
         cache_dir = writer.partial_movie_directory
 
@@ -244,7 +254,7 @@ def test_clean_cache_tolerates_vanishing_files(config, tmp_path, monkeypatch):
     # A file can disappear between listing the directory and unlinking it
     # (e.g. Finder removing a transient resource fork); clean_cache must
     # not raise FileNotFoundError in that case.
-    with tempconfig({"media_dir": tmp_path, "write_to_movie": True}):
+    with tempconfig({"media_dir": tmp_path, "format": "mp4"}):
         writer = _new_file_writer("VanishingFileScene")
         cache_dir = writer.partial_movie_directory
 
@@ -262,7 +272,7 @@ def test_clean_cache_tolerates_vanishing_files(config, tmp_path, monkeypatch):
 
 
 def test_clean_cache_does_not_evict_for_vanished_file(config, tmp_path, monkeypatch):
-    with tempconfig({"media_dir": tmp_path, "write_to_movie": True}):
+    with tempconfig({"media_dir": tmp_path, "format": "mp4"}):
         writer = _new_file_writer("VanishedFileEvictionScene")
         cache_dir = writer.partial_movie_directory
 

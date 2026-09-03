@@ -11,44 +11,44 @@ from tests.assert_utils import assert_file_exists
 from tests.test_scene_rendering.simple_scenes import *
 
 
-def test_write_to_movie_disables_window(
+def test_file_output_disables_window(
     config, using_temp_opengl_config, disabling_caching
 ):
-    """write_to_movie should disable window by default"""
+    """File output should disable the window by default."""
     scene = SquareToCircle()
     renderer = scene.renderer
     renderer.update_frame = Mock(wraps=renderer.update_frame)
     scene.render()
     assert renderer.window is None
-    assert_file_exists(config.output_file)
+    assert_file_exists(renderer.file_writer.final_file_path)
 
 
 @pytest.mark.skip(reason="Temporarily skip due to failing in Windows CI")
-def test_force_window_opengl_render_with_movies(
+def test_live_preview_opengl_render_with_movies(
     config,
     using_temp_opengl_config,
-    force_window_config_write_to_movie,
+    live_preview_config_movie,
     disabling_caching,
 ):
-    """force_window creates window when write_to_movie is set"""
+    """Live preview can be displayed while movie output is enabled."""
     scene = SquareToCircle()
     renderer = scene.renderer
     renderer.update_frame = Mock(wraps=renderer.update_frame)
     scene.render()
     assert renderer.window is not None
-    assert_file_exists(config["output_file"])
+    assert_file_exists(renderer.file_writer.final_file_path)
     renderer.window.close()
 
 
 @pytest.mark.skipif(
     platform.processor() == "aarch64", reason="Fails on Linux-ARM runners"
 )
-def test_force_window_opengl_render_with_format(
+def test_live_preview_opengl_render_with_image_sequence(
     using_temp_opengl_config,
-    force_window_config_pngs,
+    live_preview_config_pngs,
     disabling_caching,
 ):
-    """force_window creates window when format is set"""
+    """Live preview can be displayed while an image sequence is written."""
     scene = SquareToCircle()
     renderer = scene.renderer
     renderer.update_frame = Mock(wraps=renderer.update_frame)
@@ -57,13 +57,13 @@ def test_force_window_opengl_render_with_format(
     renderer.window.close()
 
 
-def test_get_frame_with_preview_disabled(config, using_opengl_renderer):
-    """Get frame is able to fetch frame with the correct dimensions when preview is disabled"""
-    config.preview = False
+def test_get_frame_with_live_preview_disabled(config, using_opengl_renderer):
+    """Get frame has the correct dimensions without a live preview."""
+    config.live_preview = False
 
     scene = SquareToCircle()
     assert isinstance(scene.renderer, OpenGLRenderer)
-    assert not config.preview
+    assert not config.live_preview
 
     renderer = scene.renderer
     renderer.update_frame(scene)
@@ -75,25 +75,28 @@ def test_get_frame_with_preview_disabled(config, using_opengl_renderer):
 
 
 @pytest.mark.slow
-def test_get_frame_with_preview_enabled(config, using_opengl_renderer):
-    """Get frame is able to fetch frame with the correct dimensions when preview is enabled"""
-    config.preview = True
+def test_get_frame_with_live_preview_enabled(config, using_opengl_renderer):
+    """Get frame has the correct dimensions with a live preview."""
+    config.live_preview = True
 
     scene = SquareToCircle()
     assert isinstance(scene.renderer, OpenGLRenderer)
-    assert config.preview is True
+    assert config.live_preview is True
 
     renderer = scene.renderer
+    assert renderer.window is not None
+    assert not renderer.file_writer.output_spec.enabled
     renderer.update_frame(scene)
     frame = renderer.get_frame()
 
     # height and width are flipped
     assert renderer.get_pixel_shape()[0] == frame.shape[1]
     assert renderer.get_pixel_shape()[1] == frame.shape[0]
+    renderer.window.close()
 
 
 def test_pixel_coords_to_space_coords(config, using_opengl_renderer):
-    config.preview = True
+    config.live_preview = False
 
     scene = SquareToCircle()
     assert isinstance(scene.renderer, OpenGLRenderer)

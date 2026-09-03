@@ -26,7 +26,7 @@ def test_basic_scene_with_default_values(tmp_path, manim_cfg_file, simple_scenes
         "manim",
         "--renderer",
         "opengl",
-        "--write_to_movie",
+        "--format=mp4",
         "--media_dir",
         str(tmp_path),
         str(simple_scenes_path),
@@ -87,7 +87,7 @@ def test_basic_scene_l_flag(tmp_path, manim_cfg_file, simple_scenes_path):
         "--renderer",
         "opengl",
         "-ql",
-        "--write_to_movie",
+        "--format=mp4",
         "--media_dir",
         str(tmp_path),
         str(simple_scenes_path),
@@ -111,7 +111,7 @@ def test_n_flag(tmp_path, simple_scenes_path):
         "-ql",
         "--renderer",
         "opengl",
-        "--write_to_movie",
+        "--format=mp4",
         "-n 3,6",
         "--media_dir",
         str(tmp_path),
@@ -166,11 +166,19 @@ def test_image_output_for_static_scene(tmp_path, manim_cfg_file, simple_scenes_p
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
 
-    exists = (tmp_path / "videos").exists()
-    assert not exists, "running manim with static scene rendered a video"
+    unexpected_movie_path = (
+        tmp_path / "videos" / "simple_scenes" / "480p15" / "StaticScene.mp4"
+    )
+    assert not unexpected_movie_path.exists(), (
+        "running manim with a static scene rendered a video"
+    )
 
-    is_empty = not any((tmp_path / "images" / "simple_scenes").iterdir())
-    assert not is_empty, "running manim without animations did not render an image"
+    expected_image_path = add_version_before_extension(
+        tmp_path / "images" / "simple_scenes" / "StaticScene.png",
+    )
+    assert expected_image_path.exists(), (
+        "running manim without animations did not render an image"
+    )
 
 
 @pytest.mark.slow
@@ -194,17 +202,19 @@ def test_no_image_output_with_interactive_embed(
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
 
-    exists = (tmp_path / "videos").exists()
-    assert not exists, "running manim with static scene rendered a video"
+    unexpected_movie_path = (
+        tmp_path / "videos" / "simple_scenes" / "480p15" / "InteractiveStaticScene.mp4"
+    )
+    assert not unexpected_movie_path.exists(), (
+        "running an interactive static scene rendered a video"
+    )
 
     is_empty = not any((tmp_path / "images" / "simple_scenes").iterdir())
-    assert is_empty, (
-        "running manim static scene with interactive embed rendered an image"
-    )
+    assert is_empty, "running an interactive static scene rendered an image"
 
 
 @pytest.mark.slow
-def test_no_default_image_output_with_non_static_scene(
+def test_default_video_output_with_non_static_scene(
     tmp_path, manim_cfg_file, simple_scenes_path
 ):
     scene_name = "SceneWithNonStaticWait"
@@ -223,25 +233,25 @@ def test_no_default_image_output_with_non_static_scene(
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
 
-    exists = (tmp_path / "videos").exists()
-    assert not exists, "running manim with static scene rendered a video"
+    expected_movie_path = (
+        tmp_path / "videos" / "simple_scenes" / "480p15" / "SceneWithNonStaticWait.mp4"
+    )
+    assert expected_movie_path.exists(), (
+        "default output did not render the non-static scene as a video"
+    )
 
     is_empty = not any((tmp_path / "images" / "simple_scenes").iterdir())
-    assert is_empty, (
-        "running manim static scene with interactive embed rendered an image"
-    )
+    assert is_empty, "default video output unexpectedly rendered an image"
 
 
 @pytest.mark.slow
-def test_image_output_for_static_scene_with_write_to_movie(
-    tmp_path, manim_cfg_file, simple_scenes_path
-):
+def test_explicit_video_output_for_static_scene_fails(tmp_path, simple_scenes_path):
     scene_name = "StaticScene"
     command = [
         sys.executable,
         "-m",
         "manim",
-        "--write_to_movie",
+        "--format=mp4",
         "--renderer",
         "opengl",
         "-ql",
@@ -250,14 +260,12 @@ def test_image_output_for_static_scene_with_write_to_movie(
         str(simple_scenes_path),
         scene_name,
     ]
-    out, err, exit_code = capture(command)
-    assert exit_code == 0, err
+    _, err, exit_code = capture(command)
 
-    is_empty = not any((tmp_path / "videos").iterdir())
-    assert not is_empty, "running manim with static scene rendered a video"
-
-    is_empty = not any((tmp_path / "images" / "simple_scenes").iterdir())
-    assert not is_empty, "running manim without animations did not render an image"
+    assert exit_code == 1
+    assert "explicitly requested MP4" in err
+    assert not list(tmp_path.rglob("*.mp4"))
+    assert not list(tmp_path.rglob("*.png"))
 
 
 @pytest.mark.slow
@@ -324,7 +332,6 @@ def test_a_flag(tmp_path, manim_cfg_file, infallible_scenes_path):
         "manim",
         "--renderer",
         "opengl",
-        "--write_to_movie",
         "-ql",
         "--media_dir",
         str(tmp_path),
@@ -518,12 +525,12 @@ def test_videos_not_created_when_png_format_set(
 
 
 @pytest.mark.slow
-def test_images_are_created_when_png_format_set(
+def test_images_are_created_when_png_sequence_format_set(
     tmp_path,
     manim_cfg_file,
     simple_scenes_path,
 ):
-    """Test images are created in media directory when --format png is set"""
+    """Test OpenGL images are created when --format png-sequence is set."""
     scene_name = "SquareToCircle"
     command = [
         sys.executable,
@@ -535,24 +542,26 @@ def test_images_are_created_when_png_format_set(
         "--media_dir",
         str(tmp_path),
         "--format",
-        "png",
+        "png-sequence",
         str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
 
-    expected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle0000.png"
+    expected_png_path = (
+        tmp_path / "images" / "simple_scenes" / "SquareToCircle" / "0000.png"
+    )
     assert expected_png_path.exists(), "png file not found at " + str(expected_png_path)
 
 
 @pytest.mark.slow
-def test_images_are_zero_padded_when_zero_pad_set(
+def test_png_sequence_images_are_zero_padded(
     tmp_path,
     manim_cfg_file,
     simple_scenes_path,
 ):
-    """Test images are zero padded when --format png and --zero_pad n are set"""
+    """Test OpenGL PNG-sequence images respect --zero_pad."""
     scene_name = "SquareToCircle"
     command = [
         sys.executable,
@@ -564,7 +573,7 @@ def test_images_are_zero_padded_when_zero_pad_set(
         "--media_dir",
         str(tmp_path),
         "--format",
-        "png",
+        "png-sequence",
         "--zero_pad",
         "3",
         str(simple_scenes_path),
@@ -573,12 +582,13 @@ def test_images_are_zero_padded_when_zero_pad_set(
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
 
-    unexpected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle0.png"
+    sequence_dir = tmp_path / "images" / "simple_scenes" / "SquareToCircle"
+    unexpected_png_path = sequence_dir / "0.png"
     assert not unexpected_png_path.exists(), "non zero padded png file found at " + str(
         unexpected_png_path,
     )
 
-    expected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle000.png"
+    expected_png_path = sequence_dir / "000.png"
     assert expected_png_path.exists(), "png file not found at " + str(expected_png_path)
 
 
@@ -633,7 +643,7 @@ def test_default_format_output_for_transparent_flag(
         "--renderer",
         "opengl",
         "-ql",
-        "--write_to_movie",
+        "--format=auto",
         "--media_dir",
         str(tmp_path),
         "-t",

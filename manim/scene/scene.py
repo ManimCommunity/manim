@@ -43,6 +43,7 @@ from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLPoint
 
 from .. import config, logger
+from .._config.render_session import resolve_render_session
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..camera.camera import Camera
 from ..constants import *
@@ -213,7 +214,12 @@ class Scene:
             )
         else:
             self.renderer = renderer
-        self.renderer.init_scene(self)
+        self.session_spec = resolve_render_session(
+            config,
+            self.renderer.capabilities,
+            renderer_name=type(self.renderer).__name__,
+        )
+        self.renderer.init_scene(self, self.session_spec)
 
         self.mobjects: list[Mobject] = []
         # TODO, remove need for foreground mobjects
@@ -1362,20 +1368,14 @@ class Scene:
 
     def check_interactive_embed_is_valid(self) -> bool:
         assert isinstance(self.renderer, OpenGLRenderer)
-        if config["force_window"]:
-            return True
         if self.skip_animation_preview:
             logger.warning(
                 "Disabling interactive embed as 'skip_animation_preview' is enabled",
             )
             return False
-        elif config["write_to_movie"]:
-            logger.warning("Disabling interactive embed as 'write_to_movie' is enabled")
-            return False
-        elif config["format"]:
+        elif self.renderer.file_writer.output_spec.enabled:
             logger.warning(
-                "Disabling interactive embed as '--format' is set as "
-                + config["format"],
+                "Disabling interactive embed while media output is enabled",
             )
             return False
         elif not self.renderer.window:
@@ -1551,10 +1551,10 @@ class Scene:
 
     def embed(self) -> None:
         assert isinstance(self.renderer, OpenGLRenderer)
-        if not config["preview"]:
-            logger.warning("Called embed() while no preview window is available.")
+        if not self.session_spec.presentation.live_preview:
+            logger.warning("Called embed() while no live preview window is available.")
             return
-        if config["write_to_movie"]:
+        if self.renderer.file_writer.output_spec.enabled:
             logger.warning("embed() is skipped while writing to a file.")
             return
 
