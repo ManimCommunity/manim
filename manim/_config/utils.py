@@ -735,6 +735,9 @@ class ManimConfig(MutableMapping):
         contents of said file with :meth:`~ManimConfig.digest_file` before
         digesting any other CLI arguments.
 
+        Otherwise, when rendering from a file, Manim looks for ``manim.cfg`` in
+        the input file's directory before digesting the CLI arguments.
+
         """
         # if the input file is a config file, parse it properly
         if args.file.suffix == ".cfg":
@@ -749,6 +752,11 @@ class ManimConfig(MutableMapping):
         # flags supersede it
         if args.config_file:
             self.digest_file(args.config_file)
+        elif str(args.file) != "-" and not getattr(args, "jupyter", False):
+            input_path = Path(args.file).absolute()
+            config_dir = input_path if input_path.is_dir() else input_path.parent
+            scene_config_file = config_dir / "manim.cfg"
+            self.digest_parser(make_config_parser(scene_config_file))
 
         # read input_file from the args if it wasn't set by the config file
         if not self.input_file:
