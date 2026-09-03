@@ -276,13 +276,15 @@ If you do this, the ``media`` folder will look like this:
                 │       ├── 3163782288_524160878_1793580042.mp4
                 │       └── partial_movie_file_list.txt
                 └── sections
-                    ├── ElaborateSceneWithSections_0000.mp4
-                    ├── ElaborateSceneWithSections_0001.mp4
-                    ├── ElaborateSceneWithSections_0002.mp4
+                    ├── ElaborateSceneWithSections_0000_create-square.mp4
+                    ├── ElaborateSceneWithSections_0001_transform-to-circle.mp4
+                    ├── ElaborateSceneWithSections_0003_fade-out.mp4
                     └── ElaborateSceneWithSections.json
 
 As you can see each section receives their own output video in the ``sections`` directory.
-The JSON file in here contains some useful information for each section:
+Section names are normalized into safe filename components, while the original names
+are retained in the JSON index. The JSON file contains some useful information for
+each section:
 
 .. code-block:: json
 
@@ -290,7 +292,7 @@ The JSON file in here contains some useful information for each section:
         {
             "name": "create square",
             "type": "default.normal",
-            "video": "ElaborateSceneWithSections_0000.mp4",
+            "video": "ElaborateSceneWithSections_0000_create-square.mp4",
             "codec_name": "h264",
             "width": 854,
             "height": 480,
@@ -301,7 +303,7 @@ The JSON file in here contains some useful information for each section:
         {
             "name": "transform to circle",
             "type": "default.normal",
-            "video": "ElaborateSceneWithSections_0001.mp4",
+            "video": "ElaborateSceneWithSections_0001_transform-to-circle.mp4",
             "codec_name": "h264",
             "width": 854,
             "height": 480,
@@ -312,7 +314,7 @@ The JSON file in here contains some useful information for each section:
         {
             "name": "fade out",
             "type": "default.normal",
-            "video": "ElaborateSceneWithSections_0002.mp4",
+            "video": "ElaborateSceneWithSections_0003_fade-out.mp4",
             "codec_name": "h264",
             "width": 854,
             "height": 480,
