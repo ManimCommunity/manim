@@ -78,7 +78,7 @@ def video_encoder_fingerprint(spec: VideoEncoderSpec | None) -> str:
         separators=(",", ":"),
         sort_keys=True,
     )
-    return hashlib.sha256(serialized.encode("utf-8")).hexdigest()[:16]
+    return hashlib.sha256(serialized.encode("utf-8")).hexdigest()
 
 
 def to_av_frame_rate(frame_rate: int | float | Fraction) -> Fraction:

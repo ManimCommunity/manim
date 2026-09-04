@@ -136,6 +136,18 @@ def test_finish_preserves_flush_failure_when_close_also_fails(tmp_path):
     container.close.assert_called_once_with()
 
 
+def test_finish_closes_before_propagating_control_flow_exception(tmp_path):
+    stream = Mock()
+    stream.encode.side_effect = KeyboardInterrupt
+    container = Mock()
+    encoder = _detached_encoder(tmp_path, stream=stream, container=container)
+
+    with pytest.raises(KeyboardInterrupt):
+        encoder.finish()
+
+    container.close.assert_called_once_with()
+
+
 def test_abort_closes_removes_target_and_is_idempotent(tmp_path):
     encoder = _detached_encoder(tmp_path)
     encoder.target.write_bytes(b"incomplete")
@@ -144,6 +156,18 @@ def test_abort_closes_removes_target_and_is_idempotent(tmp_path):
     encoder.abort()
 
     encoder._container.close.assert_called_once_with()
+    assert not encoder.target.exists()
+
+
+def test_abort_removes_target_before_propagating_control_flow_exception(tmp_path):
+    container = Mock()
+    container.close.side_effect = KeyboardInterrupt
+    encoder = _detached_encoder(tmp_path, container=container)
+    encoder.target.write_bytes(b"incomplete")
+
+    with pytest.raises(KeyboardInterrupt):
+        encoder.abort()
+
     assert not encoder.target.exists()
 
 

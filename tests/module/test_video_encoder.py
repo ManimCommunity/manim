@@ -187,7 +187,7 @@ def test_video_encoder_fingerprint_is_canonical_and_byte_sensitive():
     )
     token = video_encoder_fingerprint(spec)
 
-    assert len(token) == 16
+    assert len(token) == 64
     assert (
         video_encoder_fingerprint(
             replace(spec, options=tuple(reversed(spec.options))),

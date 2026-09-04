@@ -105,7 +105,7 @@ class _PartialMovieEncodeJob:
     def _abort_encoder(self) -> None:
         try:
             self.encoder.abort()
-        except BaseException as exception:
+        except Exception as exception:
             logger.warning(
                 "Failed to clean up incomplete segment %(path)s: %(error)s",
                 {"path": f"'{self.path}'", "error": exception},

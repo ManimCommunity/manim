@@ -107,33 +107,37 @@ class VideoSegmentEncoder:
         if self._closed:
             return
         self._closed = True
-        first_error: BaseException | None = None
+        first_error: Exception | None = None
         try:
-            for packet in self._stream.encode():
-                self._container.mux(packet)
-        except BaseException as error:
-            first_error = error
-        try:
-            self._container.close()
-        except BaseException as error:
-            if first_error is None:
+            try:
+                for packet in self._stream.encode():
+                    self._container.mux(packet)
+            except Exception as error:
                 first_error = error
+        finally:
+            try:
+                self._container.close()
+            except Exception as error:
+                if first_error is None:
+                    first_error = error
         if first_error is not None:
             raise self._operation_error("finish", first_error) from first_error
 
     def abort(self) -> None:
         """Close resources and remove the incomplete target."""
-        first_error: BaseException | None = None
-        if not self._closed:
-            self._closed = True
-            try:
-                self._container.close()
-            except BaseException as error:
-                first_error = error
+        first_error: Exception | None = None
         try:
-            self.target.unlink(missing_ok=True)
-        except BaseException as error:
-            if first_error is None:
-                first_error = error
+            if not self._closed:
+                self._closed = True
+                try:
+                    self._container.close()
+                except Exception as error:
+                    first_error = error
+        finally:
+            try:
+                self.target.unlink(missing_ok=True)
+            except Exception as error:
+                if first_error is None:
+                    first_error = error
         if first_error is not None:
             raise self._operation_error("abort", first_error) from first_error
