@@ -23,6 +23,7 @@ from typing import TYPE_CHECKING, Any, cast
 import numpy as np
 
 from manim.data_structures import MethodWithArgs
+from manim.mobject import _fit
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
 from .. import config, logger
@@ -1877,13 +1878,7 @@ class Mobject:
     def rescale_to_fit(
         self, length: float, dim: int, stretch: bool = False, **kwargs: Any
     ) -> Self:
-        old_length = self.length_over_dim(dim)
-        if old_length == 0:
-            return self
-        if stretch:
-            self.stretch(length / old_length, dim, **kwargs)
-        else:
-            self.scale(length / old_length, **kwargs)
+        _fit.rescale_to_fit(self, length, dim, stretch=stretch, **kwargs)
         return self
 
     def scale_to_fit_width(self, width: float, **kwargs: Any) -> Self:
@@ -1909,7 +1904,8 @@ class Mobject:
             >>> sq.height
             np.float64(5.0)
         """
-        return self.rescale_to_fit(width, 0, stretch=False, **kwargs)
+        _fit.scale_to_fit_width(self, width, **kwargs)
+        return self
 
     def stretch_to_fit_width(self, width: float, **kwargs: Any) -> Self:
         """Stretches the :class:`~.Mobject` to fit a width, not keeping height/depth proportional.
@@ -1934,7 +1930,8 @@ class Mobject:
             >>> sq.height
             np.float64(2.0)
         """
-        return self.rescale_to_fit(width, 0, stretch=True, **kwargs)
+        _fit.stretch_to_fit_width(self, width, **kwargs)
+        return self
 
     def scale_to_fit_height(self, height: float, **kwargs: Any) -> Self:
         """Scales the :class:`~.Mobject` to fit a height while keeping width/depth proportional.
@@ -1959,7 +1956,8 @@ class Mobject:
             >>> sq.width
             np.float64(5.0)
         """
-        return self.rescale_to_fit(height, 1, stretch=False, **kwargs)
+        _fit.scale_to_fit_height(self, height, **kwargs)
+        return self
 
     def stretch_to_fit_height(self, height: float, **kwargs: Any) -> Self:
         """Stretches the :class:`~.Mobject` to fit a height, not keeping width/depth proportional.
@@ -1984,15 +1982,18 @@ class Mobject:
             >>> sq.width
             np.float64(2.0)
         """
-        return self.rescale_to_fit(height, 1, stretch=True, **kwargs)
+        _fit.stretch_to_fit_height(self, height, **kwargs)
+        return self
 
     def scale_to_fit_depth(self, depth: float, **kwargs: Any) -> Self:
         """Scales the :class:`~.Mobject` to fit a depth while keeping width/height proportional."""
-        return self.rescale_to_fit(depth, 2, stretch=False, **kwargs)
+        _fit.scale_to_fit_depth(self, depth, **kwargs)
+        return self
 
     def stretch_to_fit_depth(self, depth: float, **kwargs: Any) -> Self:
         """Stretches the :class:`~.Mobject` to fit a depth, not keeping width/height proportional."""
-        return self.rescale_to_fit(depth, 2, stretch=True, **kwargs)
+        _fit.stretch_to_fit_depth(self, depth, **kwargs)
+        return self
 
     def set_coord(
         self, value: float, dim: int, direction: Vector3DLike = ORIGIN
