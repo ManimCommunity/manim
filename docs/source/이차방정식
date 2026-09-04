@@ -1,0 +1,49 @@
+from manim import *
+
+class MathAnimation(Scene):
+    def construct(self):
+        # 1. 수식 표시 (Equation)
+        title = MathTex(r"f(x) = x^2", color=BLUE).scale(1.2)
+        title.to_edge(UP)
+        self.play(Write(title))
+        self.wait(0.5)
+
+        # 2. 좌표평면 생성 (Axes)
+        axes = Axes(
+            x_range=[-3, 3, 1],
+            y_range=[-1, 9, 2],
+            axis_config={"color": WHITE},
+        ).scale(0.8).next_to(title, DOWN, buff=0.5)
+        
+        labels = axes.get_axis_labels(x_label="x", y_label="f(x)")
+        self.play(Create(axes), Write(labels))
+
+        # 3. 그래프 그리기 (Graph)
+        graph = axes.get_graph(lambda x: x**2, color=YELLOW, x_range=[-2.8, 2.8])
+        graph_label = axes.get_graph_label(graph, label="y=x^2", x_val=2, direction=UR)
+        
+        self.play(Create(graph), FadeIn(graph_label))
+        self.wait(1)
+
+        # 4. 특정 점에서의 접선 연출 (Tangent Line)
+        dot = Dot(color=RED)
+        dot.move_to(axes.c2p(1, 1)) # x=1, y=1 (좌표평면 위 실제 위치로 변환)
+        
+        # x=1에서의 접선 구하기
+        tangent_line = axes.get_tangent_line(x_val=1, graph=graph, length=4, color=RED)
+        
+        self.play(FadeIn(dot))
+        self.play(Create(tangent_line))
+        self.wait(1)
+
+        # 5. 점과 접선의 이동 (Animation of Tangent)
+        # x가 1에서 2로 이동할 때의 변화 연출
+        target_dot = Dot(color=RED).move_to(axes.c2p(2, 4))
+        target_tangent = axes.get_tangent_line(x_val=2, graph=graph, length=4, color=RED)
+
+        self.play(
+            Transform(dot, target_dot),
+            Transform(tangent_line, target_tangent),
+            run_time=2
+        )
+        self.wait(2)
