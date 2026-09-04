@@ -59,6 +59,7 @@ from ..manager import Manager
 from ..renderer.cairo_renderer import CairoRenderer
 from ..renderer.opengl_renderer import OpenGLCamera, OpenGLMobject, OpenGLRenderer
 from ..renderer.shader import Object3D
+from ..scene.scene_file_writer import _SceneFileWriterSettings
 from ..utils import opengl, space_ops
 from ..utils.exceptions import RerunSceneException
 from ..utils.family import extract_mobject_family_members
@@ -229,18 +230,32 @@ class Scene:
         )
         scene_name = type(self).__name__
         module_name = resolve_module_name(config)
+        working_directory = Path.cwd()
         media_layout = resolve_media_layout(
             config,
             self.session_spec.output,
             module_name=module_name,
             scene_name=scene_name,
-            working_directory=Path.cwd(),
+            working_directory=working_directory,
         )
         self.output_plan = resolve_output_plan(
             media_layout,
             self.session_spec.output,
             scene_name=scene_name,
             requested_output_name=resolve_requested_output_name(config),
+        )
+        assets_dir = config.get_dir("assets_dir")
+        if assets_dir is None:
+            assets_dir = working_directory
+        elif not assets_dir.is_absolute():
+            assets_dir = working_directory / assets_dir
+        self.file_writer_settings = _SceneFileWriterSettings(
+            plan=self.output_plan,
+            video_encoder=self.session_spec.video_encoder,
+            max_inflight_encoders=config.max_inflight_encoders,
+            encoder_queue_size=config.encoder_queue_size,
+            max_files_cached=config.max_files_cached,
+            assets_dir=assets_dir.absolute(),
         )
         self._log_file_path = resolve_file_log_path(
             media_layout,
@@ -250,7 +265,11 @@ class Scene:
         if self._log_file_path is not None:
             self._log_file_path.parent.mkdir(parents=True, exist_ok=True)
             set_file_logger(self._log_file_path)
-        self.renderer.init_scene(self, self.session_spec)
+        self.renderer.init_scene(
+            self,
+            self.session_spec,
+            self.file_writer_settings,
+        )
 
         self.mobjects: list[Mobject] = []
         # TODO, remove need for foreground mobjects

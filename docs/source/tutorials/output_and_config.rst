@@ -199,6 +199,21 @@ preview, but it counts as a separate execution request rather than modifying the
 choice of output format. This allows Manim to function as if it were rendering a
 normal scene, but without producing any artifact.
 
+Video output is assembled from silent cached segments. Manim selects their codec
+and pixel format automatically; ``--video-codec``, ``--pixel-format``, and
+repeatable ``--encoder-option KEY=VALUE`` provide explicit control when needed.
+These settings are part of segment cache identity, so changing one rerenders the
+affected segments. Audio is mixed into the final artifact separately.
+
+Cached segments for named scenes can be removed without starting a render:
+
+.. code-block:: bash
+
+   manim cache clear scene.py SceneName AnotherScene
+
+The command accepts path-affecting options such as ``--config-file``,
+``--media-dir``, ``--quality``, ``--resolution``, and ``--frame-rate``.
+
 ``-o`` / ``--output_file`` names the primary artifact for a single selected scene;
 it does not select the format. Manim appends the resolved format suffix unless the
 name already ends with it. For example, ``-o movie.mp4 --format=mp4`` produces
@@ -226,6 +241,7 @@ its own output video. The cuts between two sections can be set like this:
 
 All the animations between two of these cuts get concatenated into a single output
 video file.
+
 Be aware that you need at least one animation in each section. For example this wouldn't create an output video:
 
 .. code-block:: python
@@ -280,6 +296,10 @@ If you do this, the ``media`` folder will look like this:
                     ├── ElaborateSceneWithSections_0001_transform-to-circle.mp4
                     ├── ElaborateSceneWithSections_0003_fade-out.mp4
                     └── ElaborateSceneWithSections.json
+
+The ``partial_movie_file_list.txt`` file records the complete segment order used for
+main movie assembly and can help diagnose concatenation problems. Section assembly
+does not overwrite this diagnostic list.
 
 As you can see each section receives their own output video in the ``sections`` directory.
 Section names are normalized into safe filename components, while the original names

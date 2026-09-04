@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 from manim.utils.hashing import get_hash_from_play_call
 
 from .. import config, logger
+from .._config.video_encoder import video_encoder_fingerprint
 from ..camera.camera import Camera
 from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..scene.scene_file_writer import SceneFileWriter
@@ -17,6 +18,7 @@ if TYPE_CHECKING:
     from manim._config.render_session import RenderSessionSpec
     from manim.animation.animation import Animation
     from manim.scene.scene import Scene
+    from manim.scene.scene_file_writer import _SceneFileWriterSettings
 
     from ..typing import PixelArray
 
@@ -57,13 +59,13 @@ class CairoRenderer:
         self.time = 0.0
         self.static_image: PixelArray | None = None
 
-    def init_scene(self, scene: Scene, session_spec: RenderSessionSpec) -> None:
-        self.file_writer: Any = self._file_writer_class(
-            self,
-            scene.__class__.__name__,
-            output_spec=session_spec.output,
-            output_plan=scene.output_plan,
-        )
+    def init_scene(
+        self,
+        scene: Scene,
+        session_spec: RenderSessionSpec,
+        file_writer_settings: _SceneFileWriterSettings,
+    ) -> None:
+        self.file_writer: Any = self._file_writer_class(file_writer_settings)
 
     def play(
         self,
@@ -93,6 +95,11 @@ class CairoRenderer:
                     self.camera,
                     scene.animations,
                     scene.mobjects,
+                    backend="cairo",
+                    encoder_fingerprint=video_encoder_fingerprint(
+                        scene.session_spec.video_encoder,
+                    ),
+                    renderer_state=(),
                 )
                 if self.file_writer.is_already_cached(hash_current_animation):
                     logger.info(
@@ -109,7 +116,10 @@ class CairoRenderer:
             {"h": str(self.animations_hashes[:5])},
         )
 
-        self.file_writer.begin_animation(not self.skip_animations)
+        self.file_writer.begin_animation(
+            not self.skip_animations,
+            animation_index=self.num_plays,
+        )
         scene.begin_animations()
 
         # Save a static image, to avoid rendering non moving objects.
@@ -198,7 +208,7 @@ class CairoRenderer:
         if self.skip_animations:
             return
         self.time += num_frames * dt
-        self.file_writer.write_frame(frame, num_frames=num_frames)
+        self.file_writer.write_frame(frame, repeat=num_frames)
 
     def freeze_current_frame(self, duration: float) -> None:
         """Adds a static frame to the movie for a given duration. The static frame is the current frame.
@@ -286,4 +296,4 @@ class CairoRenderer:
             if self.num_plays:
                 self.static_image = None
                 self.update_frame(scene)
-            self.file_writer.save_image(self.camera.get_image())
+            self.file_writer.save_image(self.get_frame())

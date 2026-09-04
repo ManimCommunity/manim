@@ -14,6 +14,7 @@ from typing import Protocol
 from manim.renderer.protocol import RendererCapabilities
 
 from .output import OutputFormat, OutputSpec
+from .video_encoder import VideoEncoderSpec, resolve_video_encoder
 
 
 @dataclass(frozen=True, slots=True)
@@ -32,6 +33,7 @@ class RenderSessionSpec:
     output: OutputSpec
     presentation: PresentationSpec
     dry_run: bool
+    video_encoder: VideoEncoderSpec | None
 
 
 class _SessionConfigSource(Protocol):
@@ -43,6 +45,12 @@ class _SessionConfigSource(Protocol):
     show_in_file_browser: bool
     enable_gui: bool
     dry_run: bool
+    pixel_width: int
+    pixel_height: int
+    frame_rate: float
+    video_codec: str
+    pixel_format: str
+    video_encoder_options: dict[str, str]
 
 
 def resolve_render_session(
@@ -101,8 +109,18 @@ def resolve_render_session(
     if presentation.show_in_file_browser and not output.enabled:
         raise ValueError("--show_in_file_browser requires a media artifact.")
 
+    video_encoder = resolve_video_encoder(
+        output,
+        width=config.pixel_width,
+        height=config.pixel_height,
+        frame_rate=config.frame_rate,
+        codec=config.video_codec,
+        pixel_format=config.pixel_format,
+        options=config.video_encoder_options,
+    )
     return RenderSessionSpec(
         output=output,
         presentation=presentation,
         dry_run=dry_run,
+        video_encoder=video_encoder,
     )

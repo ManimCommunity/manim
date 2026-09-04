@@ -6,7 +6,7 @@ import textwrap
 import threading
 import time
 from pathlib import Path
-from unittest.mock import ANY, Mock, call
+from unittest.mock import ANY, Mock
 
 import av
 import numpy as np
@@ -22,8 +22,9 @@ from manim._config.output_plan import (
     resolve_output_plan,
     resolve_requested_output_name,
 )
+from manim._config.video_encoder import resolve_video_encoder
 from manim.cli.render.commands import render
-from manim.scene.scene_file_writer import SceneFileWriter
+from manim.scene.scene_file_writer import SceneFileWriter, _SceneFileWriterSettings
 from manim.utils.exceptions import RerunSceneException
 
 _ENCODER_THREAD_PREFIX = "partial-movie-encoder-"
@@ -61,8 +62,20 @@ def _make_writer(
         scene_name=scene_name,
         requested_output_name=resolve_requested_output_name(config),
     )
-    renderer = Mock(num_plays=0)
-    return SceneFileWriter(renderer, scene_name, output, plan)
+    settings = _SceneFileWriterSettings(
+        plan=plan,
+        video_encoder=resolve_video_encoder(
+            output,
+            width=config.pixel_width,
+            height=config.pixel_height,
+            frame_rate=config.frame_rate,
+        ),
+        max_inflight_encoders=config.max_inflight_encoders,
+        encoder_queue_size=config.encoder_queue_size,
+        max_files_cached=config.max_files_cached,
+        assets_dir=Path.cwd(),
+    )
+    return SceneFileWriter(settings)
 
 
 _SCENE_NAME = "ParallelEncodingCacheScene"
@@ -144,6 +157,39 @@ def test_parallel_encoding_cache_behavior(tmp_path):
 
 
 @pytest.mark.slow
+def test_disable_caching_is_evaluated_per_play(config, tmp_path):
+    class DynamicCachePolicyScene(Scene):
+        def construct(self):
+            self.play(FadeIn(Square()), run_time=0.1)
+            self.clear()
+            with tempconfig({"disable_caching": True}):
+                self.play(FadeIn(Square()), run_time=0.1)
+            self.clear()
+            self.play(FadeIn(Square()), run_time=0.1)
+            self.clear()
+            self.play(FadeIn(Square()), run_time=0.1)
+
+    with tempconfig(
+        {
+            "format": "mp4",
+            "media_dir": tmp_path,
+            "quality": "low_quality",
+            "disable_caching": False,
+        },
+    ):
+        scene = DynamicCachePolicyScene()
+        scene.render()
+
+    initial_hash, uncached_hash, restored_hash, cached_hash = (
+        scene.renderer.animations_hashes
+    )
+    assert initial_hash is not None
+    assert uncached_hash == "uncached_00001"
+    assert restored_hash is not None
+    assert cached_hash == restored_hash
+
+
+@pytest.mark.slow
 def test_no_encoder_threads_survive_render(config, tmp_path):
     class ThreadSweepScene(Scene):
         def construct(self):
@@ -170,26 +216,23 @@ def _frame():
     return np.zeros((4, 4, 4), dtype=np.uint8)
 
 
-def _new_encode_job(
-    tmp_path,
-    monkeypatch,
-    name,
-    stream,
-    container,
-    frame_queue_size=8,
-):
+def _fake_segment_encoder(tmp_path, name):
+    target = tmp_path / f"{name}.mp4"
+    encoder = Mock(target=target)
+    encoder.abort.side_effect = lambda: target.unlink(missing_ok=True)
+    return encoder
+
+
+def _new_encode_job(tmp_path, name, encoder=None, frame_queue_size=8):
     from manim.scene.scene_file_writer import _PartialMovieEncodeJob
 
-    job = _PartialMovieEncodeJob(
-        path=tmp_path / f"{name}.mp4",
+    if encoder is None:
+        encoder = _fake_segment_encoder(tmp_path, name)
+    return _PartialMovieEncodeJob(
         animation_index=0,
-        stream=Mock(),
-        container=Mock(),
+        encoder=encoder,
         frame_queue_size=frame_queue_size,
     )
-    monkeypatch.setattr(job, "stream", stream)
-    monkeypatch.setattr(job, "container", container)
-    return job
 
 
 def _assert_failed_join(job, expected_exception):
@@ -205,22 +248,18 @@ def _assert_failed_join(job, expected_exception):
 
 def test_encode_failure_propagates_and_drains_bounded_queue(
     tmp_path,
-    monkeypatch,
     manim_caplog,
 ):
     expected_exception = RuntimeError("encode failed")
     encode_failed = threading.Event()
-    stream = Mock()
-    container = Mock()
+    encoder = _fake_segment_encoder(tmp_path, "encode_failure")
 
-    def encode(*args):
-        if args:
-            encode_failed.set()
-            raise expected_exception
-        return []
+    def fail_write(*args, **kwargs):
+        encode_failed.set()
+        raise expected_exception
 
-    stream.encode.side_effect = encode
-    job = _new_encode_job(tmp_path, monkeypatch, "encode_failure", stream, container)
+    encoder.write_frame.side_effect = fail_write
+    job = _new_encode_job(tmp_path, "encode_failure", encoder)
     job.put(1, _frame())
     assert encode_failed.wait(timeout=2), "Encode failure was not triggered"
 
@@ -235,155 +274,61 @@ def test_encode_failure_propagates_and_drains_bounded_queue(
     assert not producer.is_alive(), "Producer deadlocked on the bounded queue"
 
     _assert_failed_join(job, expected_exception)
-    container.close.assert_called_once_with()
+    encoder.abort.assert_called_once_with()
     assert "Partial movie file written" not in manim_caplog.text
 
 
-def test_flush_failure_propagates_and_closes_container(
-    tmp_path,
-    monkeypatch,
-    manim_caplog,
-):
-    expected_exception = RuntimeError("flush failed")
-    stream = Mock()
-    container = Mock()
-
-    def encode(*args):
-        if args:
-            return []
-        raise expected_exception
-
-    stream.encode.side_effect = encode
-    job = _new_encode_job(tmp_path, monkeypatch, "flush_failure", stream, container)
+def test_finish_failure_aborts_segment(tmp_path, manim_caplog):
+    expected_exception = RuntimeError("finish failed")
+    encoder = _fake_segment_encoder(tmp_path, "finish_failure")
+    encoder.finish.side_effect = expected_exception
+    job = _new_encode_job(tmp_path, "finish_failure", encoder)
     job.put(1, _frame())
     job.seal()
 
     _assert_failed_join(job, expected_exception)
-    container.close.assert_called_once_with()
+    encoder.abort.assert_called_once_with()
     assert "Partial movie file written" not in manim_caplog.text
 
 
-def test_close_failure_propagates_after_close_attempt(
-    tmp_path,
-    monkeypatch,
-    manim_caplog,
-):
-    expected_exception = RuntimeError("close failed")
-    stream = Mock()
-    stream.encode.return_value = []
-    container = Mock()
-    container.close.side_effect = expected_exception
-    job = _new_encode_job(tmp_path, monkeypatch, "close_failure", stream, container)
-    job.put(1, _frame())
-    job.seal()
-
-    _assert_failed_join(job, expected_exception)
-    container.close.assert_called_once_with()
-    assert "Partial movie file written" not in manim_caplog.text
-
-
-def test_encode_failure_precedes_close_failure_and_removes_partial(
-    tmp_path,
-    monkeypatch,
-    manim_caplog,
-):
+def test_encode_failure_precedes_abort_failure(tmp_path, manim_caplog):
     expected_exception = RuntimeError("encode failed")
-    close_exception = RuntimeError("close failed")
-    stream = Mock()
-    container = Mock()
-
-    def encode(*args):
-        if args:
-            raise expected_exception
-        return []
-
-    stream.encode.side_effect = encode
-    container.close.side_effect = close_exception
-    job = _new_encode_job(
-        tmp_path,
-        monkeypatch,
-        "encode_and_close_failure",
-        stream,
-        container,
-    )
-    job.path.write_bytes(b"stale")
+    abort_exception = RuntimeError("abort failed")
+    encoder = _fake_segment_encoder(tmp_path, "encode_and_abort_failure")
+    encoder.write_frame.side_effect = expected_exception
+    encoder.abort.side_effect = abort_exception
+    job = _new_encode_job(tmp_path, "encode_and_abort_failure", encoder)
     job.put(1, _frame())
     job.seal()
 
     _assert_failed_join(job, expected_exception)
-    container.close.assert_called_once_with()
-    assert not job.path.exists()
+    assert "Failed to clean up incomplete segment" in manim_caplog.text
+    assert "abort failed" in manim_caplog.text
     assert "Partial movie file written" not in manim_caplog.text
 
 
-def test_partial_cleanup_failure_does_not_mask_encode_failure(
-    tmp_path,
-    monkeypatch,
-    manim_caplog,
-):
-    expected_exception = RuntimeError("encode failed")
-    cleanup_exception = PermissionError("cannot remove partial")
-    stream = Mock()
-    container = Mock()
-
-    def encode(*args):
-        if args:
-            raise expected_exception
-        return []
-
-    stream.encode.side_effect = encode
-    job = _new_encode_job(tmp_path, monkeypatch, "cleanup_failure", stream, container)
-    job.path.write_bytes(b"stale")
-    job.put(1, _frame())
-    job.seal()
-    unlink = Mock(side_effect=cleanup_exception)
-    monkeypatch.setattr(Path, "unlink", unlink)
-
-    _assert_failed_join(job, expected_exception)
-
-    unlink.assert_called_once_with(missing_ok=True)
-    assert "Failed to remove incomplete partial movie file" in manim_caplog.text
-    assert "cannot remove partial" in manim_caplog.text
-    assert "Partial movie file written" not in manim_caplog.text
-
-
-def test_successful_encode_job_logs_partial_movie_written(
-    tmp_path,
-    monkeypatch,
-    manim_caplog,
-):
-    stream = Mock()
-    stream.encode.return_value = []
-    container = Mock()
-    job = _new_encode_job(tmp_path, monkeypatch, "encode_success", stream, container)
+def test_successful_encode_job_logs_partial_movie_written(tmp_path, manim_caplog):
+    encoder = _fake_segment_encoder(tmp_path, "encode_success")
+    job = _new_encode_job(tmp_path, "encode_success", encoder)
     job.put(1, _frame())
     job.seal()
 
     job.join()
 
-    container.close.assert_called_once_with()
+    encoder.write_frame.assert_called_once_with(ANY, repeat=1)
+    encoder.finish.assert_called_once_with()
+    encoder.abort.assert_not_called()
     assert "Partial movie file written" in manim_caplog.text
     assert not _alive_encoder_threads()
 
 
-def test_write_frame_fails_fast_after_encoder_failure(
-    config,
-    tmp_path,
-    monkeypatch,
-):
+def test_write_frame_fails_fast_after_encoder_failure(config, tmp_path):
     expected_exception = RuntimeError("encode failed")
-    stream = Mock()
-    container = Mock()
-
-    def encode(*args):
-        if args:
-            raise expected_exception
-        return []
-
-    stream.encode.side_effect = encode
+    encoder = _fake_segment_encoder(tmp_path, "fail_fast")
+    encoder.write_frame.side_effect = expected_exception
     config.media_dir = str(tmp_path)
     writer = _make_writer("FailFastScene")
-    job = _new_encode_job(tmp_path, monkeypatch, "fail_fast", stream, container)
+    job = _new_encode_job(tmp_path, "fail_fast", encoder)
     job.path.write_bytes(b"stale")
     writer._current_encode_job = job
 
@@ -403,10 +348,8 @@ def test_write_frame_fails_fast_after_encoder_failure(
         assert not job.path.exists()
         assert not _alive_encoder_threads()
     finally:
-        # An assertion failure above must not leave an unsealed non-daemon
-        # worker behind: it would hang pytest at exit.
         if writer._current_encode_job is not None:
-            job.seal()
+            job.abort()
             writer._current_encode_job = None
         job.thread.join(timeout=5)
 
@@ -426,7 +369,10 @@ def test_frame_queue_configuration(
     config.encoder_queue_size = encoder_queue_size
     writer = _make_writer("FrameQueueSizeScene")
 
-    writer.open_partial_movie_stream(tmp_path / "partial.mp4")
+    writer.open_partial_movie_stream(
+        animation_index=0,
+        file_path=tmp_path / "partial.mp4",
+    )
     job = writer._current_encode_job
     assert job is not None
     assert job.queue.maxsize == expected_queue_size
@@ -434,6 +380,43 @@ def test_frame_queue_configuration(
     writer.close_partial_movie_stream()
     writer.join_all_encode_jobs()
     assert not _alive_encoder_threads()
+
+
+def test_pool_settings_are_not_read_from_mutated_config(config, tmp_path):
+    config.max_inflight_encoders = 2
+    config.encoder_queue_size = 3
+    writer = _make_writer("CapturedPoolSettingsScene")
+    config.max_inflight_encoders = 1
+    config.encoder_queue_size = 9
+
+    writer.open_partial_movie_stream(
+        animation_index=0,
+        file_path=tmp_path / "partial.mp4",
+    )
+    job = writer._current_encode_job
+    assert job is not None
+    assert job.queue.maxsize == 3
+
+    writer.close_partial_movie_stream()
+    assert writer._inflight_encode_jobs == [job]
+    writer.join_all_encode_jobs()
+    assert not _alive_encoder_threads()
+
+
+def test_cache_limit_is_not_read_from_mutated_config(config, monkeypatch):
+    config.max_files_cached = -1
+    writer = _make_writer("CapturedCacheLimitScene")
+    config.max_files_cached = 0
+    writer.combine_to_movie = Mock()
+    prune = Mock()
+    monkeypatch.setattr(
+        "manim.scene.scene_file_writer.prune_segment_cache",
+        prune,
+    )
+
+    writer.finish()
+
+    prune.assert_called_once_with(writer.partial_movie_directory, -1)
 
 
 @pytest.mark.parametrize("max_inflight_encoders", [1, 2, 3])
@@ -549,7 +532,7 @@ def test_open_partial_movie_stream_joins_same_path_inflight_job(config, tmp_path
     writer._inflight_encode_jobs.append(inflight_job)
     writer._inflight_by_path[str(path)] = inflight_job
 
-    writer.open_partial_movie_stream(file_path=path)
+    writer.open_partial_movie_stream(animation_index=0, file_path=path)
     current_job = writer._current_encode_job
     assert current_job is not None
     try:
@@ -596,10 +579,8 @@ def _new_writer(config, tmp_path, scene_name):
     return _make_writer(scene_name)
 
 
-def _healthy_current_job(tmp_path, monkeypatch, name):
-    stream = Mock()
-    stream.encode.return_value = []
-    job = _new_encode_job(tmp_path, monkeypatch, name, stream, Mock())
+def _healthy_current_job(tmp_path, name):
+    job = _new_encode_job(tmp_path, name)
     job.path.write_bytes(b"stale")
     return job
 
@@ -612,11 +593,10 @@ def _add_inflight_job(writer, job):
 def test_abort_encode_jobs_unlinks_current_and_drains_inflight(
     config,
     tmp_path,
-    monkeypatch,
     manim_caplog,
 ):
     writer = _new_writer(config, tmp_path, "AbortScene")
-    job = _healthy_current_job(tmp_path, monkeypatch, "abort_current")
+    job = _healthy_current_job(tmp_path, "abort_current")
     writer._current_encode_job = job
     failing_inflight = Mock(path=tmp_path / "inflight.mp4")
     failing_inflight.join.side_effect = RuntimeError("in-flight join failed")
@@ -662,7 +642,7 @@ def test_abort_encode_jobs_cleanup_failure_logs_warning(
     manim_caplog,
 ):
     writer = _new_writer(config, tmp_path, "AbortCleanupFailureScene")
-    job = _healthy_current_job(tmp_path, monkeypatch, "abort_cleanup_failure")
+    job = _healthy_current_job(tmp_path, "abort_cleanup_failure")
     writer._current_encode_job = job
     unlink = Mock(side_effect=PermissionError("cannot remove partial"))
     monkeypatch.setattr(Path, "unlink", unlink)
@@ -671,7 +651,7 @@ def test_abort_encode_jobs_cleanup_failure_logs_warning(
 
     assert writer._current_encode_job is None
     unlink.assert_called_once_with(missing_ok=True)
-    assert "Failed to remove incomplete partial movie file" in manim_caplog.text
+    assert "Failed to clean up incomplete segment" in manim_caplog.text
     assert "cannot remove partial" in manim_caplog.text
     assert "Discarded partial movie file" not in manim_caplog.text
     assert not _alive_encoder_threads()
@@ -723,18 +703,12 @@ def test_rerun_propagates_encoder_failure(config, tmp_path):
     assert writer._inflight_by_path == {}
 
 
-def test_rerun_propagates_failed_current_job(config, tmp_path, monkeypatch):
+def test_rerun_propagates_failed_current_job(config, tmp_path):
     expected_exception = RuntimeError("encode failed")
-    stream = Mock()
-
-    def encode(*args):
-        if args:
-            raise expected_exception
-        return []
-
-    stream.encode.side_effect = encode
+    encoder = _fake_segment_encoder(tmp_path, "rerun_current")
+    encoder.write_frame.side_effect = expected_exception
     writer = _new_writer(config, tmp_path, "RerunCurrentFailureScene")
-    job = _new_encode_job(tmp_path, monkeypatch, "rerun_current", stream, Mock())
+    job = _new_encode_job(tmp_path, "rerun_current", encoder)
     job.path.write_bytes(b"stale")
     writer._current_encode_job = job
     job.put(1, _frame())
@@ -765,7 +739,7 @@ def test_rerun_propagates_failed_current_job(config, tmp_path, monkeypatch):
         # An assertion failure above must not leave an unsealed non-daemon
         # worker behind: it would hang pytest at exit.
         if writer._current_encode_job is not None:
-            job.seal()
+            job.abort()
             writer._current_encode_job = None
         job.thread.join(timeout=5)
 
@@ -980,33 +954,17 @@ def test_parallel_encoding_output_matches_serial(tmp_path):
         )
 
 
-def test_encode_job_repeats_frame_num_frames_times(tmp_path):
-    """``put(n, frame)`` must encode the frame n times and mux every packet.
+def test_encode_job_forwards_frame_repeat(tmp_path):
+    encoder = _fake_segment_encoder(tmp_path, "freeze_frame")
+    job = _new_encode_job(tmp_path, "freeze_frame", encoder)
 
-    Every other test in this module uses ``num_frames=1``, leaving the
-    repetition loop in ``_encode_and_write_frame`` uncovered.
-    """
-    from manim.scene.scene_file_writer import _PartialMovieEncodeJob
-
-    packet = object()
-    stream = Mock()
-    stream.encode.side_effect = lambda *args: [packet] if args else []
-    container = Mock()
-
-    job = _PartialMovieEncodeJob(
-        path=tmp_path / "freeze_frame.mp4",
-        animation_index=0,
-        container=container,
-        stream=stream,
-        frame_queue_size=8,
-    )
-    job.put(3, _frame())
+    frame = _frame()
+    job.put(3, frame)
     job.seal()
     job.join()
 
-    # Three encode calls with a frame, then the argless flush.
-    assert stream.encode.call_args_list == [call(ANY)] * 3 + [call()]
-    assert container.mux.call_args_list == [call(packet)] * 3
+    encoder.write_frame.assert_called_once_with(frame, repeat=3)
+    encoder.finish.assert_called_once_with()
 
 
 def test_is_already_cached_false_after_joining_failed_path(config, tmp_path):
@@ -1058,15 +1016,23 @@ def test_open_partial_movie_stream_without_path_raises(config, tmp_path):
         writer.partial_movie_files = [None]
 
         with pytest.raises(RuntimeError, match="partial movie file path"):
-            writer.open_partial_movie_stream()
+            writer.open_partial_movie_stream(animation_index=0)
+
+
+def test_open_partial_movie_stream_rejects_nested_current_segment(config, tmp_path):
+    with tempconfig({"media_dir": str(tmp_path)}):
+        writer = _make_writer("GuardScene")
+        writer._current_encode_job = Mock()
+
+        with pytest.raises(RuntimeError, match="another segment is still open"):
+            writer.open_partial_movie_stream(
+                animation_index=1,
+                file_path=tmp_path / "nested.mp4",
+            )
 
 
 def test_write_frame_without_open_stream_drops_frame(config, tmp_path):
-    """Interactive OpenGL emits frames with no open stream; they are dropped.
-
-    Video output is enabled under the default test config, so the call reaches
-    the drop branch in ``write_frame``.
-    """
+    """Frames outside an open segment are ignored by the transitional scheduler."""
     with tempconfig({"media_dir": str(tmp_path)}):
         writer = _make_writer("DropFrameScene")
         assert writer._current_encode_job is None
