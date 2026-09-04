@@ -7,6 +7,8 @@ __all__ = [
     "TexFontTemplates",
 ]
 
+from manim.constants import TexCompiler, TexOutputFormat
+
 from .tex import *
 
 # This file makes TexTemplateLibrary and TexFontTemplates available for use in manim Tex and MathTex objects.
@@ -68,8 +70,8 @@ class TexTemplateLibrary:
     """ An instance of the default TeX template used by 3b1b """
 
     ctex = TexTemplate(
-        tex_compiler="xelatex",
-        output_format=".xdv",
+        tex_compiler=TexCompiler.XELATEX,
+        output_format=TexOutputFormat.XDV,
         preamble=_3b1b_preamble.replace(
             r"\DisableLigatures{encoding = *, family = * }",
             r"\usepackage[UTF8]{ctex}",
@@ -315,8 +317,8 @@ americantypewriter.add_to_preamble(
 \usepackage[defaultmathsizes]{mathastext}
 """,
 )
-americantypewriter.tex_compiler = "xelatex"
-americantypewriter.output_format = ".xdv"
+americantypewriter.tex_compiler = TexCompiler.XELATEX
+americantypewriter.output_format = TexOutputFormat.XDV
 
 # Minion Pro and Myriad Pro (and TX fonts symbols)
 mpmptx = _new_ams_template()
@@ -333,8 +335,8 @@ mpmptx.add_to_preamble(
 \renewcommand\familydefault\rmdefault
 """,
 )
-mpmptx.tex_compiler = "xelatex"
-mpmptx.output_format = ".xdv"
+mpmptx.tex_compiler = TexCompiler.XELATEX
+mpmptx.output_format = TexOutputFormat.XDV
 
 
 # New Century Schoolbook (Symbol Greek, PX math symbols)
@@ -436,8 +438,8 @@ applechancery.add_to_preamble(
 \usepackage[defaultmathsizes]{mathastext}
 """,
 )
-applechancery.tex_compiler = "xelatex"
-applechancery.output_format = ".xdv"
+applechancery.tex_compiler = TexCompiler.XELATEX
+applechancery.output_format = TexOutputFormat.XDV
 
 
 # Zapf Chancery
@@ -467,8 +469,8 @@ italicverdana.add_to_preamble(
 \usepackage[defaultmathsizes,italic]{mathastext}
 """,
 )
-italicverdana.tex_compiler = "xelatex"
-italicverdana.output_format = ".xdv"
+italicverdana.tex_compiler = TexCompiler.XELATEX
+italicverdana.output_format = TexOutputFormat.XDV
 
 
 # URW Zapf Chancery (CM Greek)
@@ -504,8 +506,8 @@ comicsansms.add_to_preamble(
 \usepackage[defaultmathsizes]{mathastext}
 """,
 )
-comicsansms.tex_compiler = "xelatex"
-comicsansms.output_format = ".xdv"
+comicsansms.tex_compiler = TexCompiler.XELATEX
+comicsansms.output_format = TexOutputFormat.XDV
 
 
 # GFS Didot (Italic)
@@ -531,8 +533,8 @@ chalkduster.add_to_preamble(
 \usepackage[defaultmathsizes]{mathastext}
 """,
 )
-chalkduster.tex_compiler = "lualatex"
-chalkduster.output_format = ".pdf"
+chalkduster.tex_compiler = TexCompiler.LUALATEX
+chalkduster.output_format = TexOutputFormat.PDF
 
 
 # Minion Pro (and TX fonts symbols)
@@ -546,8 +548,8 @@ mptx.add_to_preamble(
 \usepackage[defaultmathsizes]{mathastext}
 """,
 )
-mptx.tex_compiler = "xelatex"
-mptx.output_format = ".xdv"
+mptx.tex_compiler = TexCompiler.XELATEX
+mptx.output_format = TexOutputFormat.XDV
 
 
 # GNU FreeSerif and FreeSans
@@ -575,8 +577,8 @@ gnufsfs.add_to_preamble(
 \renewcommand{\familydefault}{\rmdefault}
 """,
 )
-gnufsfs.tex_compiler = "xelatex"
-gnufsfs.output_format = ".xdv"
+gnufsfs.tex_compiler = TexCompiler.XELATEX
+gnufsfs.output_format = TexOutputFormat.XDV
 
 # GFS NeoHellenic
 gfsneohellenic = _new_ams_template()
@@ -631,8 +633,8 @@ italicbaskerville.add_to_preamble(
 \usepackage[defaultmathsizes,italic]{mathastext}
 """,
 )
-italicbaskerville.tex_compiler = "xelatex"
-italicbaskerville.output_format = ".xdv"
+italicbaskerville.tex_compiler = TexCompiler.XELATEX
+italicbaskerville.output_format = TexOutputFormat.XDV
 
 
 # ECF JD (with TX fonts)
@@ -676,8 +678,8 @@ papyrus.add_to_preamble(
 \usepackage[defaultmathsizes]{mathastext}
 """,
 )
-papyrus.tex_compiler = "xelatex"
-papyrus.output_format = ".xdv"
+papyrus.tex_compiler = TexCompiler.XELATEX
+papyrus.output_format = TexOutputFormat.XDV
 
 
 # GNU FreeSerif (and TX fonts symbols)
@@ -695,8 +697,8 @@ gnufstx.add_to_preamble(
 \usepackage[defaultmathsizes]{mathastext}
 """,
 )
-gnufstx.tex_compiler = "xelatex"
-gnufstx.output_format = ".pdf"
+gnufstx.tex_compiler = TexCompiler.XELATEX
+gnufstx.output_format = TexOutputFormat.PDF
 
 
 # ECF Skeetch (CM Greek)
@@ -790,8 +792,8 @@ chalkboardse.add_to_preamble(
 \usepackage[defaultmathsizes]{mathastext}
 """,
 )
-chalkboardse.tex_compiler = "xelatex"
-chalkboardse.output_format = ".xdv"
+chalkboardse.tex_compiler = TexCompiler.XELATEX
+chalkboardse.output_format = TexOutputFormat.XDV
 
 
 # Noteworthy Light
@@ -878,8 +880,8 @@ brushscriptxpx.add_to_document(
     r"""\boldmath
 """,
 )
-brushscriptxpx.tex_compiler = "xelatex"
-brushscriptxpx.output_format = ".xdv"
+brushscriptxpx.tex_compiler = TexCompiler.XELATEX
+brushscriptxpx.output_format = TexOutputFormat.XDV
 
 
 # URW Avant Garde (Symbol Greek)
