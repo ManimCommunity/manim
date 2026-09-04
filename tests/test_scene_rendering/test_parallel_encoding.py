@@ -157,6 +157,39 @@ def test_parallel_encoding_cache_behavior(tmp_path):
 
 
 @pytest.mark.slow
+def test_disable_caching_is_evaluated_per_play(config, tmp_path):
+    class DynamicCachePolicyScene(Scene):
+        def construct(self):
+            self.play(FadeIn(Square()), run_time=0.1)
+            self.clear()
+            with tempconfig({"disable_caching": True}):
+                self.play(FadeIn(Square()), run_time=0.1)
+            self.clear()
+            self.play(FadeIn(Square()), run_time=0.1)
+            self.clear()
+            self.play(FadeIn(Square()), run_time=0.1)
+
+    with tempconfig(
+        {
+            "format": "mp4",
+            "media_dir": tmp_path,
+            "quality": "low_quality",
+            "disable_caching": False,
+        },
+    ):
+        scene = DynamicCachePolicyScene()
+        scene.render()
+
+    initial_hash, uncached_hash, restored_hash, cached_hash = (
+        scene.renderer.animations_hashes
+    )
+    assert initial_hash is not None
+    assert uncached_hash == "uncached_00001"
+    assert restored_hash is not None
+    assert cached_hash == restored_hash
+
+
+@pytest.mark.slow
 def test_no_encoder_threads_survive_render(config, tmp_path):
     class ThreadSweepScene(Scene):
         def construct(self):

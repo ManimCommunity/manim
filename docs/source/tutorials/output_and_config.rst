@@ -205,6 +205,15 @@ repeatable ``--encoder-option KEY=VALUE`` provide explicit control when needed.
 These settings are part of segment cache identity, so changing one rerenders the
 affected segments. Audio is mixed into the final artifact separately.
 
+Cached segments for named scenes can be removed without starting a render:
+
+.. code-block:: bash
+
+   manim cache clear scene.py SceneName AnotherScene
+
+The command accepts path-affecting options such as ``--config-file``,
+``--media-dir``, ``--quality``, ``--resolution``, and ``--frame-rate``.
+
 ``-o`` / ``--output_file`` names the primary artifact for a single selected scene;
 it does not select the format. Manim appends the resolved format suffix unless the
 name already ends with it. For example, ``-o movie.mp4 --format=mp4`` produces
@@ -231,9 +240,7 @@ its own output video. The cuts between two sections can be set like this:
         self.next_section("this is a section without any animations, it will be removed")
 
 All the animations between two of these cuts get concatenated into a single output
-video file. The original section name is retained in the section metadata. Its output
-filename uses a safe slug, so a name such as ``"create square"`` appears as
-``create-square`` in the filename.
+video file.
 
 Be aware that you need at least one animation in each section. For example this wouldn't create an output video:
 
