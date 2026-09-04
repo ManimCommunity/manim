@@ -283,6 +283,51 @@ def test_mathtypst_double_brace_mixed_named_auto(config):
     assert len(eq.select(0)) == 1
 
 
+def test_mathtypst_groups_preserve_math_layout(config):
+    """Capture groups do not alter display math styling or spacing."""
+    expression = r"integral_0^infinity e^(-x^2) dif x = sqrt(pi)/2"
+    plain = MathTypst(expression, use_svg_cache=False)
+    grouped = MathTypst(
+        r"{{ integral_0^infinity e^(-x^2) dif x : integral }}"
+        r" = {{ sqrt(pi)/2 : result }}",
+        use_svg_cache=False,
+    )
+
+    assert len(plain) == len(grouped) == 15
+    assert np.isclose(plain.width, grouped.width)
+    assert np.isclose(plain.height, grouped.height)
+    assert all(
+        np.allclose(plain_part.points, grouped_part.points)
+        for plain_part, grouped_part in zip(plain, grouped, strict=True)
+    )
+    assert len(grouped.select("integral")) == 9
+    assert len(grouped.select("result")) == 5
+
+
+def test_mathtypst_nested_double_brace_groups(config):
+    """Nested captures select both the inner and containing expressions."""
+    eq = MathTypst(
+        "{{ a + {{ b : inner }} + c : outer }}",
+        use_svg_cache=False,
+    )
+
+    assert eq._group_labels == ["outer", "inner"]
+    assert len(eq.select("outer")) == 5
+    assert len(eq.select("inner")) == 1
+    assert eq.select("inner")[0] in eq.select("outer")
+
+
+def test_mathtypst_duplicate_capture_labels(config):
+    """Disjoint captures with one label are selected as a union."""
+    eq = MathTypst(
+        "{{ a : picked }} + a + {{ a : picked }}",
+        use_svg_cache=False,
+    )
+
+    assert len(eq.select("picked")) == 2
+    assert eq.select("picked")[0] is not eq.select("picked")[1]
+
+
 def test_mathtypst_no_braces_no_preamble(config):
     """Without {{ }}, the manimgrp preamble is not injected."""
     eq = MathTypst("a + b", use_svg_cache=False)
@@ -309,6 +354,16 @@ def test_mathtypst_preprocessor_skips_content_blocks():
     processed, labels = MathTypst._preprocess_groups("[text {{ here }}] {{ real }}")
     assert labels == ["_grp-0"]
     assert processed.count("manimgrp") == 1
+
+
+def test_mathtypst_preprocessor_processes_nested_groups():
+    """Nested {{ }} groups are recursively converted in source order."""
+    processed, labels = MathTypst._preprocess_groups(
+        "{{ a + {{ b : inner }} + c : outer }}"
+    )
+
+    assert labels == ["outer", "inner"]
+    assert processed == ('manimgrp("outer", a + manimgrp("inner", b) + c)')
 
 
 # -- integration tests for existing APIs ------------------------------------
