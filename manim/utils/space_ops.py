@@ -151,12 +151,16 @@ def angle_axis_from_quaternion(quaternion: Sequence[float]) -> Sequence[float]:
     Returns
     -------
     Sequence[float]
-        Gives the angle and axis
+        The angle, in the range ``[0, PI]``, and the axis it is measured about.
     """
     axis = normalize(quaternion[1:], fall_back=np.array([1, 0, 0]))
     angle = 2 * np.arccos(quaternion[0])
     if angle > TAU / 2:
+        # A rotation by ``angle`` about ``axis`` is a rotation by
+        # ``TAU - angle`` about ``-axis``, so the axis has to be flipped
+        # along with the angle.
         angle = TAU - angle
+        axis = -axis
     return angle, axis
 
 
