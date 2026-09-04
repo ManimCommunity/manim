@@ -27,9 +27,15 @@ def test_list_difference_update_with_key_none_uses_default_equality():
     assert list_difference_update([1, 2, 3], [2], key=None) == [1, 3]
 
 
-def test_list_difference_update_uses_key_function():
-    result = list_difference_update(["a", "b", "A", "C"], ["A", "D"], key=str.lower)
-    assert result == ["b", "C"]
+@pytest.mark.parametrize(
+    ("l1", "l2", "key", "expected"),
+    [
+        (["a", "b", "A", "C"], ["A", "D"], str.lower, ["b", "C"]),
+        ([1, [1], 2, 3, [3]], [[1], 3], str, [1, 2, [3]]),
+    ],
+)
+def test_list_difference_update_uses_key_function(l1, l2, key, expected):
+    assert list_difference_update(l1, l2, key=key) == expected
 
 
 @pytest.mark.parametrize(
@@ -48,6 +54,12 @@ def test_list_update_with_key_none_uses_default_equality():
     assert list_update([1, 2, 3], [2, 4], key=None) == [1, 3, 2, 4]
 
 
-def test_list_update_uses_key_function():
-    result = list_update(["a", "b", "c", "A", "B", "C"], ["A", "b", "D"], key=str.lower)
-    assert result == ["c", "C", "A", "b", "D"]
+@pytest.mark.parametrize(
+    ("l1", "l2", "key", "expected"),
+    [
+        (["a", "b", "A", "C"], ["A", "B", "D"], str.lower, ["C", "A", "B", "D"]),
+        ([1, [1], 2, 3, [3]], [[1], 3], str, [1, 2, [3], [1], 3]),
+    ],
+)
+def test_list_update_uses_key_function(l1, l2, key, expected):
+    assert list_update(l1, l2, key=key) == expected
