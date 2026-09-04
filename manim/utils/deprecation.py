@@ -81,7 +81,7 @@ def deprecated(
     until: str | None = None,
     replacement: str | None = None,
     message: str | None = "",
-) -> Callable[P, T]: ...
+) -> Callable[..., T]: ...
 
 
 @overload
@@ -91,7 +91,7 @@ def deprecated(
     until: str | None = None,
     replacement: str | None = None,
     message: str | None = "",
-) -> Callable[[Callable[P, T]], Callable[P, T]]: ...
+) -> Callable[[Callable[..., T]], Callable[..., T]]: ...
 
 
 def deprecated(
