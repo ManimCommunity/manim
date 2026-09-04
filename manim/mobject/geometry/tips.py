@@ -218,8 +218,8 @@ class StealthTip(ArrowTip):
         **kwargs: Any,
     ):
         self.start_angle = start_angle
-        VMobject.__init__(
-            self, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
+        super(ArrowTip, self).__init__(
+            fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
         )
         self.set_points_as_corners(
             np.array(
