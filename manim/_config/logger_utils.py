@@ -148,20 +148,35 @@ def parse_theme(parser: configparser.SectionProxy) -> Theme | None:
     return custom_theme
 
 
-def set_file_logger(log_file_path: Path) -> None:
+def set_file_logger(log_file_path: Path) -> logging.FileHandler:
     """Add a file handler for one exact, already resolved log path.
 
     Parameters
     ----------
     log_file_path
         Exact path of the log file for this scene.
+
+    Returns
+    -------
+    logging.FileHandler
+        The attached handler. Its caller owns removal and closure.
     """
     file_handler = logging.FileHandler(log_file_path, mode="w")
-    file_handler.setFormatter(JSONFormatter())
-
     logger = logging.getLogger("manim")
-    logger.addHandler(file_handler)
-    logger.info("Log file will be saved in %(logpath)s", {"logpath": log_file_path})
+    try:
+        file_handler.setFormatter(JSONFormatter())
+        logger.addHandler(file_handler)
+        logger.info("Log file will be saved in %(logpath)s", {"logpath": log_file_path})
+    except BaseException as error:
+        logger.removeHandler(file_handler)
+        try:
+            file_handler.close()
+        except BaseException as cleanup_error:
+            error.add_note(
+                f"Closing the new log handler also failed: {cleanup_error!r}"
+            )
+        raise
+    return file_handler
 
 
 class JSONFormatter(logging.Formatter):

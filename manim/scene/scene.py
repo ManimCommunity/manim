@@ -43,7 +43,6 @@ from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 
 from .. import config, logger
-from .._config.logger_utils import set_file_logger
 from .._config.output_plan import (
     resolve_file_log_path,
     resolve_media_layout,
@@ -265,9 +264,6 @@ class Scene:
             module_name=module_name,
             scene_name=scene_name,
         )
-        if self._log_file_path is not None:
-            self._log_file_path.parent.mkdir(parents=True, exist_ok=True)
-            set_file_logger(self._log_file_path)
         self.renderer.init_scene(
             self,
             self.session_spec,
