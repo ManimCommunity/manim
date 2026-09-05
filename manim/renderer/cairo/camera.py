@@ -45,7 +45,10 @@ class Camera:
 
     Camera owns an animatable frame, semantic background settings, display ordering,
     and pure point transformations. Raster targets, pixel dimensions, image buffers,
-    and backend contexts belong to renderers.
+    and backend contexts belong to renderers. With no explicit frame dimensions,
+    the configured logical width is preserved and height follows the configured
+    output aspect ratio. Supplying one dimension derives the other from that ratio;
+    supplying both dimensions or a custom frame preserves the requested geometry.
     """
 
     def __init__(
@@ -65,11 +68,18 @@ class Camera:
         self.use_z_index = use_z_index
 
         if frame is None:
+            if frame_width is None:
+                resolved_width = (
+                    float(config["frame_width"])
+                    if frame_height is None
+                    else frame_height * config.aspect_ratio
+                )
+            else:
+                resolved_width = frame_width
             resolved_height = (
-                float(config["frame_height"]) if frame_height is None else frame_height
-            )
-            resolved_width = (
-                float(config["frame_width"]) if frame_width is None else frame_width
+                resolved_width / config.aspect_ratio
+                if frame_height is None
+                else frame_height
             )
             if resolved_height <= 0 or resolved_width <= 0:
                 raise ValueError("Camera frame dimensions must be positive.")
