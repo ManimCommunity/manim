@@ -12,7 +12,7 @@ import numpy as np
 from moderngl import Framebuffer
 from PIL import Image
 
-from manim import config
+from manim import config, logger
 from manim.mobject.opengl.opengl_mobject import (
     OpenGLMobject,
 )
@@ -146,33 +146,52 @@ class OpenGLRenderer:
         self.scene = scene
 
         self.background_color = config["background_color"]
-        if self.should_create_window(session_spec):
-            from .window import Window
+        resources = contextlib.ExitStack()
+        try:
+            window = None
+            if self.should_create_window(session_spec):
+                from .window import Window
 
-            self.window = Window(self)
-            self.context = self.window.ctx
-            self.frame_buffer_object = self.context.detect_framebuffer()
-        else:
-            # self.window = None
+                window = Window(self)
+                resources.callback(window.close)
+                # The window owns its native context and default framebuffer.
+                context = window.ctx
+                frame = context.detect_framebuffer()
+            else:
+                try:
+                    context = moderngl.create_context(standalone=True)
+                except Exception:
+                    context = moderngl.create_context(standalone=True, backend="egl")
+                resources.callback(context.release)
+                frame = self.get_frame_buffer_object(context, 0)
+                for color in frame.color_attachments:
+                    resources.callback(color.release)
+                if frame.depth_attachment is not None:
+                    resources.callback(frame.depth_attachment.release)
+                resources.callback(frame.release)
+                frame.use()
+            context.enable(moderngl.BLEND)
+            context.wireframe = config["enable_wireframe"]
+            context.blend_func = (
+                moderngl.SRC_ALPHA,
+                moderngl.ONE_MINUS_SRC_ALPHA,
+                moderngl.ONE,
+                moderngl.ONE,
+            )
+        except BaseException:
             try:
-                self.context = moderngl.create_context(standalone=True)
-            except Exception:
-                self.context = moderngl.create_context(
-                    standalone=True,
-                    backend="egl",
-                )
-            self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
-            self.frame_buffer_object.use()
+                resources.close()
+            except BaseException:
+                logger.exception("Failed to roll back OpenGL initialization")
+            raise
+        # Publish only a fully configured context/target. Normal lifetime and
+        # initialization timing remain unchanged until the Manager cutover.
+        self.window = window
+        self.context = context
+        self.frame_buffer_object = frame
         self._context_thread = threading.get_ident()
         self._capturing_image = False
-        self.context.enable(moderngl.BLEND)
-        self.context.wireframe = config["enable_wireframe"]
-        self.context.blend_func = (
-            moderngl.SRC_ALPHA,
-            moderngl.ONE_MINUS_SRC_ALPHA,
-            moderngl.ONE,
-            moderngl.ONE,
-        )
+        resources.pop_all()
 
     def should_create_window(self, session_spec: RenderSessionSpec) -> bool:
         """
@@ -709,17 +728,25 @@ class OpenGLRenderer:
         pixel_width = config["pixel_width"]
         pixel_height = config["pixel_height"]
         num_channels = 4
-        return context.framebuffer(
-            color_attachments=context.texture(
-                (pixel_width, pixel_height),
-                components=num_channels,
-                samples=samples,
-            ),
-            depth_attachment=context.depth_renderbuffer(
-                (pixel_width, pixel_height),
-                samples=samples,
-            ),
-        )
+        resources = contextlib.ExitStack()
+        try:
+            color = context.texture(
+                (pixel_width, pixel_height), components=num_channels, samples=samples
+            )
+            resources.callback(color.release)
+            depth = context.depth_renderbuffer(
+                (pixel_width, pixel_height), samples=samples
+            )
+            resources.callback(depth.release)
+            frame = context.framebuffer(color_attachments=color, depth_attachment=depth)
+        except BaseException:
+            try:
+                resources.close()
+            except BaseException:
+                logger.exception("Failed to roll back OpenGL framebuffer allocation")
+            raise
+        resources.pop_all()
+        return frame
 
     def get_raw_frame_buffer_object_data(self, dtype: str = "f1") -> bytes:
         """
