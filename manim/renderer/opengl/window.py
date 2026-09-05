@@ -25,9 +25,11 @@ class Window(PygletWindow):
     def __init__(
         self,
         renderer: OpenGLRenderer,
-        window_size: str | tuple[int, ...] = config.window_size,
+        window_size: str | tuple[int, ...] | None = None,
         **kwargs: Any,
     ) -> None:
+        if window_size is None:
+            window_size = config.window_size
         monitors = get_monitors()
         mon_index = config.window_monitor
         monitor = monitors[min(mon_index, len(monitors) - 1)]
