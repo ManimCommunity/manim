@@ -25,7 +25,6 @@ def test_cairo_renderer_shell_does_not_allocate_targets(monkeypatch):
         renderer.close()
 
 
-@pytest.mark.xfail(strict=True, reason="3B1: Scene construction still creates a writer")
 def test_scene_construction_does_not_create_writer(dry_run, monkeypatch):
     calls = []
     original = SceneFileWriter.__init__

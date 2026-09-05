@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import datetime
-from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 import srt
 
@@ -54,10 +54,10 @@ class Manager(Generic[SceneT]):
     Notes
     -----
     This class is the coordination boundary for an incremental render-flow
-    refactor. Renderer, camera, clock, and output ownership still remain on the
-    scene and renderer for compatibility. The :attr:`renderer`, :attr:`camera`,
-    :attr:`file_writer`, :attr:`time`, :attr:`num_plays`, and
-    :attr:`skip_animations` properties are forwarding views for now.
+    refactor. The Manager creates and owns the file writer on first output demand.
+    Renderers retain a compatibility view for their legacy schedulers. Renderer,
+    camera, and clock ownership remain unchanged; output settings are still
+    resolved during Scene construction.
 
     Examples
     --------
@@ -73,6 +73,8 @@ class Manager(Generic[SceneT]):
         if scene.manager is not None:
             raise ValueError("A manager is already attached to this scene.")
         self.scene = scene
+        self._file_writer: SceneFileWriter | None = None
+        self._creating_file_writer = False
         scene.manager = self
 
     @property
@@ -87,8 +89,22 @@ class Manager(Generic[SceneT]):
 
     @property
     def file_writer(self) -> SceneFileWriter:
-        """Return the current renderer's file writer."""
-        return cast("SceneFileWriter", self.renderer.file_writer)
+        """Return the owned writer, creating it on first output demand.
+
+        Image inspection does not request a writer. Explicit legacy access through
+        ``renderer.file_writer`` does, and attaches a Manager if necessary.
+        """
+        if self._file_writer is None:
+            if self._creating_file_writer:
+                raise RuntimeError("Recursive file writer creation is not supported.")
+            self._creating_file_writer = True
+            try:
+                self._file_writer = self.renderer._file_writer_class(
+                    self.scene.file_writer_settings
+                )
+            finally:
+                self._creating_file_writer = False
+        return self._file_writer
 
     @property
     def output_spec(self) -> OutputSpec:
@@ -154,6 +170,9 @@ class Manager(Generic[SceneT]):
             if open_after_render and not self.output_spec.enabled:
                 raise ValueError("Previewing after render requires a media artifact.")
 
+            # Preserve writer availability in user setup without opening it
+            # during Scene construction or non-output image inspection.
+            _ = self.file_writer
             self.setup()
             try:
                 self.construct()
@@ -183,12 +202,13 @@ class Manager(Generic[SceneT]):
         except BaseException:
             # Even setup or teardown can leave a non-daemon encoder waiting for
             # frames. Cleanup must not replace the exception that brought us here.
-            try:
-                self.file_writer.abort_encode_jobs()
-            except BaseException:
-                logger.exception(
-                    "Failed to clean up encoding jobs after a render failure"
-                )
+            if self._file_writer is not None:
+                try:
+                    self._file_writer.abort_encode_jobs()
+                except BaseException:
+                    logger.exception(
+                        "Failed to clean up encoding jobs after a render failure"
+                    )
             raise
 
     def get_image(self) -> Image:

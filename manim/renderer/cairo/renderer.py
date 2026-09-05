@@ -23,7 +23,6 @@ if TYPE_CHECKING:
     from manim._config.render_session import RenderSessionSpec
     from manim.animation.animation import Animation
     from manim.scene.scene import Scene
-    from manim.scene.scene_file_writer import _SceneFileWriterSettings
 
     from ...typing import RGBAPixelArray
 
@@ -88,10 +87,19 @@ class CairoRenderer:
         self,
         scene: Scene,
         session_spec: RenderSessionSpec,
-        file_writer_settings: _SceneFileWriterSettings,
     ) -> None:
         self._ensure_open()
-        self.file_writer: Any = self._file_writer_class(file_writer_settings)
+        self._scene = scene
+
+    @property
+    def file_writer(self) -> SceneFileWriter:
+        """Compatibility view of the bound scene Manager's lazily owned writer."""
+        return self._scene._get_manager().file_writer
+
+    @file_writer.setter
+    def file_writer(self, writer: SceneFileWriter) -> None:
+        # Retain legacy injection without a second, synchronized writer field.
+        self._scene._get_manager()._file_writer = writer
 
     def play(
         self,
