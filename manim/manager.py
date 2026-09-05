@@ -132,9 +132,9 @@ class Manager(Generic[SceneT]):
 
         The lifecycle invokes :meth:`setup`, :meth:`construct`,
         :meth:`tear_down`, and :meth:`post_construct`, in that order. Reaching a
-        configured animation boundary ends construction normally. Exceptions
-        raised while constructing the scene abort active encoding jobs before
-        they are propagated.
+        configured animation boundary ends construction normally. Failures during
+        setup, construction, teardown, finalization, or preview opening abort
+        encoding jobs before the original exception is propagated.
 
         Parameters
         ----------
@@ -148,44 +148,48 @@ class Manager(Generic[SceneT]):
             ``False``. This matches the return value of
             :meth:`~manim.scene.scene.Scene.render`.
         """
-        presentation = self.session_spec.presentation
-        open_after_render = preview or presentation.open_after_render
-        if open_after_render and not self.output_spec.enabled:
-            raise ValueError("Previewing after render requires a media artifact.")
-
-        self.setup()
         try:
-            self.construct()
-        except EndSceneEarlyException:
-            # Reaching the configured animation boundary ends the scene normally.
-            pass
-        except RerunSceneException:
-            self.scene.remove(*self.scene.mobjects)
-            # TODO: The CairoRenderer does not have the method clear_screen().
-            self.renderer.clear_screen()  # type: ignore[union-attr]
-            self.num_plays = 0
-            # The rerun replaces the file writer; tear down its encode jobs so
-            # no worker is still writing a partial file the new writer may
-            # reuse. Encoder failures propagate: a rerun must not silently
-            # continue past corrupt output.
-            self.file_writer.abort_encode_jobs(reraise_encoder_failures=True)
-            return True
+            presentation = self.session_spec.presentation
+            open_after_render = preview or presentation.open_after_render
+            if open_after_render and not self.output_spec.enabled:
+                raise ValueError("Previewing after render requires a media artifact.")
+
+            self.setup()
+            try:
+                self.construct()
+            except EndSceneEarlyException:
+                # Only a construction boundary is a normal early scene end.
+                pass
+            except RerunSceneException:
+                self.scene.remove(*self.scene.mobjects)
+                # TODO: The CairoRenderer does not have the method clear_screen().
+                self.renderer.clear_screen()  # type: ignore[union-attr]
+                self.num_plays = 0
+                # A rerun has no primary failure to preserve: encoder failures
+                # must prevent reuse of an incomplete/corrupt output session.
+                self.file_writer.abort_encode_jobs(reraise_encoder_failures=True)
+                return True
+            self.tear_down()
+            self.post_construct()
+
+            if open_after_render or presentation.show_in_file_browser:
+                open_media_file(
+                    self.file_writer,
+                    preview=open_after_render,
+                    show_in_file_browser=presentation.show_in_file_browser,
+                )
+
+            return False
         except BaseException:
-            # A mid-play exception leaves an unsealed encode job whose
-            # non-daemon worker would hang the process at exit.
-            self.file_writer.abort_encode_jobs()
+            # Even setup or teardown can leave a non-daemon encoder waiting for
+            # frames. Cleanup must not replace the exception that brought us here.
+            try:
+                self.file_writer.abort_encode_jobs()
+            except BaseException:
+                logger.exception(
+                    "Failed to clean up encoding jobs after a render failure"
+                )
             raise
-        self.tear_down()
-        self.post_construct()
-
-        if open_after_render or presentation.show_in_file_browser:
-            open_media_file(
-                self.file_writer,
-                preview=open_after_render,
-                show_in_file_browser=presentation.show_in_file_browser,
-            )
-
-        return False
 
     def get_image(self) -> Image:
         """Materialize current state without entering a timed/output transaction."""
