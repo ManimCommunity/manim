@@ -161,6 +161,14 @@ uv add manim
 
 Manim is now installed in your local project environment!
 
+:::{tip}
+If `uv add manim` reports that Microsoft Visual C++ is required, install the
+[Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
+In the Visual Studio Installer, select the **Desktop development with C++**
+workload. After the installation finishes, open a new terminal and run
+`uv add manim` again.
+:::
+
 :::::
 
 :::::{tab-item} MacOS
