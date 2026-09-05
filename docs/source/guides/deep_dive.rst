@@ -291,7 +291,6 @@ continues as follows:
     self.renderer.init_scene(
         self,
         self.session_spec,
-        self.file_writer_settings,
     )
 
 The session specification separates primary artifact intent (an ``OutputSpec``)
@@ -320,29 +319,36 @@ name and cannot change the format.
 
 The scene combines the output plan and segment profile with the encoder-pool,
 cache-maintenance, and sound-asset inputs in immutable
-``_SceneFileWriterSettings``. Both renderers instantiate a
-:class:`.SceneFileWriter` from these settings. The writer does not retain a
+``_SceneFileWriterSettings``. These settings are still captured during scene
+construction, but neither renderer constructs a writer. The :class:`.Manager`
+creates and owns the :class:`.SceneFileWriter` on first output demand: before
+``setup()`` during rendering, or on an explicit legacy ``renderer.file_writer``
+access. Image inspection does not request a writer. The writer does not retain a
 renderer reference or read mutable global configuration. Directories are created
 lazily when their owning operation first writes. The writer remains Manim's
 interface to ``libav`` for media assembly. The Cairo renderer (see the
 implementation `here
 <https://github.com/ManimCommunity/manim/blob/main/manim/renderer/cairo/renderer.py>`__)
-does not require further renderer-specific initialization. OpenGL creates a
+allocates its raster target only when drawing or readback needs it. OpenGL creates a
 window only when the resolved presentation specification requests a live preview.
 The ``-p`` / ``--preview`` option does not create this window; it opens the
 completed artifact after rendering.
 
-After the renderer has been instantiated and initialized its file writer, the scene
+After the renderer has been instantiated and bound to the scene, the scene
 populates further initial attributes (notable mention: the ``mobjects`` attribute
 which keeps track of the mobjects that have been added to the scene). Its ``manager``
-attribute is initially ``None`` unless the caller attaches a manager explicitly.
+attribute is initially ``None``. Explicit requests such as ``get_image()`` or
+``renderer.file_writer`` attach a manager if necessary; reuse ``scene.manager``
+when one is already attached.
 
 .. warning::
 
     The scene captures the immutable session specification and output plan before
     renderer initialization. The manager coordinates the scene lifecycle, while
-    the renderer still owns its camera, clock, play count, skip state, and file
-    writer. The manager exposes these through forwarding properties.
+    the renderer still owns its camera, clock, play count, and skip state. The
+    manager exposes those through forwarding properties. The writer has one
+    owner, the manager; ``renderer.file_writer`` is a compatibility view used
+    by the existing renderer schedulers.
 
 The rest of this article is concerned with the last line in our toy example script::
 
