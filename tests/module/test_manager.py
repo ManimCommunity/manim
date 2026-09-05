@@ -381,9 +381,10 @@ def test_scene_play_queues_interactive_calls_without_attaching_manager(
     }
 
 
-def test_manager_views_follow_the_scene_renderer(dry_run):
+def test_manager_backend_views_follow_renderer_but_writer_is_owned(dry_run):
     scene = Scene()
     manager = Manager(scene)
+    writer = manager.file_writer
     replacement_renderer = Mock()
     replacement_renderer.camera = Mock()
     replacement_renderer.file_writer = Mock()
@@ -395,7 +396,7 @@ def test_manager_views_follow_the_scene_renderer(dry_run):
 
     assert manager.renderer is replacement_renderer
     assert manager.camera is replacement_renderer.camera
-    assert manager.file_writer is replacement_renderer.file_writer
+    assert manager.file_writer is writer
     assert manager.time == 1.5
     assert manager.num_plays == 2
     assert manager.skip_animations is False
