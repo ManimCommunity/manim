@@ -23,6 +23,21 @@ def test_list_difference_update_preserves_l1_order_and_duplicates():
     assert list_difference_update([3, 1, 3, 2, 1], [1]) == [3, 3, 2]
 
 
+def test_list_difference_update_with_key_none_uses_default_equality():
+    assert list_difference_update([1, 2, 3], [2], key=None) == [1, 3]
+
+
+@pytest.mark.parametrize(
+    ("l1", "l2", "key", "expected"),
+    [
+        (["a", "b", "A", "C"], ["A", "D"], str.lower, ["b", "C"]),
+        ([1, [1], 2, 3, [3]], [[1], 3], str, [1, 2, [3]]),
+    ],
+)
+def test_list_difference_update_uses_key_function(l1, l2, key, expected):
+    assert list_difference_update(l1, l2, key=key) == expected
+
+
 @pytest.mark.parametrize(
     ("l1", "l2", "expected"),
     [([1, 2, 3], [2, 4], [1, 3, 2, 4]), ([], [1, 2], [1, 2])],
@@ -33,3 +48,18 @@ def test_list_update_removes_overlap_and_appends_l2(l1, l2, expected):
 
 def test_list_update_preserves_duplicates_in_l2():
     assert list_update([1, 2, 3], [2, 4, 4]) == [1, 3, 2, 4, 4]
+
+
+def test_list_update_with_key_none_uses_default_equality():
+    assert list_update([1, 2, 3], [2, 4], key=None) == [1, 3, 2, 4]
+
+
+@pytest.mark.parametrize(
+    ("l1", "l2", "key", "expected"),
+    [
+        (["a", "b", "A", "C"], ["A", "B", "D"], str.lower, ["C", "A", "B", "D"]),
+        ([1, [1], 2, 3, [3]], [[1], 3], str, [1, 2, [3], [1], 3]),
+    ],
+)
+def test_list_update_uses_key_function(l1, l2, key, expected):
+    assert list_update(l1, l2, key=key) == expected
