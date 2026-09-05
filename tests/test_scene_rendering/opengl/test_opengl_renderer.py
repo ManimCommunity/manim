@@ -87,6 +87,8 @@ def test_get_frame_with_live_preview_enabled(config, using_opengl_renderer):
     assert config.live_preview is True
 
     renderer = scene.renderer
+    assert renderer.window is None
+    renderer.open()
     assert renderer.window is not None
     assert not renderer.file_writer.output_spec.enabled
     renderer.update_frame(scene)

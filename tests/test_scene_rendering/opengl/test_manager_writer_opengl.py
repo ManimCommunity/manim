@@ -29,4 +29,4 @@ def test_opengl_writer_demand_is_separate_from_context_and_snapshot(
     finally:
         if scene.manager is not None and scene.manager._file_writer is not None:
             scene.manager._file_writer.abort_encode_jobs()
-        renderer.context.release()
+        renderer.close()

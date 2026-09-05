@@ -164,12 +164,16 @@ class Manager(Generic[SceneT]):
             ``False``. This matches the return value of
             :meth:`~manim.scene.scene.Scene.render`.
         """
+        from .renderer.opengl.renderer import OpenGLRenderer
+
         try:
             presentation = self.session_spec.presentation
             open_after_render = preview or presentation.open_after_render
             if open_after_render and not self.output_spec.enabled:
                 raise ValueError("Previewing after render requires a media artifact.")
 
+            if isinstance(self.renderer, OpenGLRenderer):
+                self.renderer.open()
             # Preserve writer availability in user setup without opening it
             # during Scene construction or non-output image inspection.
             _ = self.file_writer
