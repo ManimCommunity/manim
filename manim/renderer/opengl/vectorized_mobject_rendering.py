@@ -7,14 +7,13 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 if TYPE_CHECKING:
-    from manim.renderer.opengl_renderer import (
-        OpenGLRenderer,
-        OpenGLVMobject,
-    )
+    from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
     from manim.typing import MatrixMN
 
-from ..utils import opengl
-from ..utils.space_ops import cross2d, earclip_triangulation
+    from .renderer import OpenGLRenderer
+
+from ...utils import opengl
+from ...utils.space_ops import cross2d, earclip_triangulation
 from .shader import Shader
 
 __all__ = [

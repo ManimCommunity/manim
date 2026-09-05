@@ -40,7 +40,7 @@ from watchdog.observers import Observer
 from manim import __version__
 from manim.data_structures import MethodWithArgs
 from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_mobject import OpenGLPoint
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 
 from .. import config, logger
 from .._config.logger_utils import set_file_logger
@@ -53,12 +53,13 @@ from .._config.output_plan import (
 )
 from .._config.render_session import resolve_render_session
 from ..animation.animation import Animation, Wait, prepare_animation
-from ..camera.camera import Camera
 from ..constants import *
 from ..manager import Manager
-from ..renderer.cairo_renderer import CairoRenderer
-from ..renderer.opengl_renderer import OpenGLCamera, OpenGLMobject, OpenGLRenderer
-from ..renderer.shader import Object3D
+from ..renderer.cairo import CairoRenderer
+from ..renderer.cairo.camera import Camera
+from ..renderer.opengl.camera import OpenGLCamera
+from ..renderer.opengl.renderer import OpenGLRenderer
+from ..renderer.opengl.shader import Object3D
 from ..scene.scene_file_writer import _SceneFileWriterSettings
 from ..utils import opengl, space_ops
 from ..utils.exceptions import RerunSceneException
@@ -70,6 +71,8 @@ from ..utils.module_ops import scene_classes_from_file
 if TYPE_CHECKING:
     from types import FrameType
     from typing import Self, TypeAlias
+
+    from PIL.Image import Image
 
     from manim.typing import Point3D
 
@@ -318,6 +321,29 @@ class Scene:
             Whether an interactive rerun was requested.
         """
         return self._get_manager().render(preview)
+
+    def get_image(self) -> Image:
+        """Draw the current scene and return an independent PIL image.
+
+        Uses the scene's camera and renderer dimensions, including manual changes
+        made since the last animation. Does not run updaters, advance time, execute
+        construction, or append a movie frame. Saving or displaying is explicit::
+
+            self.add(Square())
+            self.get_image().save("checkpoint.png")
+
+        Call between animations or at an idle prompt. OpenGL requests must run on
+        the render/context thread. This is current-state inspection, not seeking
+        to an earlier animation sample or reading the last movie frame.
+        """
+        return self._get_manager().get_image()
+
+    def show(self) -> None:
+        """Draw current state and open it with PIL's external image viewer.
+
+        In a notebook, display :meth:`get_image`'s result directly instead.
+        """
+        self.get_image().show()
 
     def _get_manager(self) -> Manager[Self]:
         """Return this scene's manager, creating it for legacy entry points."""
@@ -970,8 +996,21 @@ class Scene:
                 or any(consider_moving(m) for m in mob.submobjects)
             )
 
+        if self.always_update_mobjects or self.updaters:
+            return list(self.mobjects)
+
         i = next((i for i, mob in enumerate(mobjects) if consider_moving(mob)), None)
-        return [] if i is None else mobjects[i:]
+        moving_mobjects = [] if i is None else mobjects[i:]
+        movement_indicators: list[Mobject] = getattr(
+            self.camera,
+            "get_mobjects_indicating_movement",
+            lambda: [],
+        )()
+        moving_family = extract_mobject_family_members(moving_mobjects)
+        if any(indicator in moving_family for indicator in movement_indicators):
+            # A camera control changes the projection of all scene mobjects.
+            return list_update(self.mobjects, moving_mobjects)
+        return moving_mobjects
 
     def get_moving_and_static_mobjects(
         self, animations: Iterable[Animation]
