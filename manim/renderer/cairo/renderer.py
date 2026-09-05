@@ -46,6 +46,8 @@ class CairoRenderer:
         camera_class: type[Camera] | None = None,
         camera: Camera | None = None,
         skip_animations: bool = False,
+        *,
+        _raster_settings: _CairoRasterSettings | None = None,
     ) -> None:
         if camera is not None and camera_class is not None:
             raise ValueError("Pass either camera or camera_class, not both.")
@@ -58,7 +60,7 @@ class CairoRenderer:
         self.num_plays = 0
         self.time = 0.0
         self._frame_rate = float(config["frame_rate"])
-        settings = _CairoRasterSettings(
+        settings = _raster_settings or _CairoRasterSettings(
             pixel_width=int(config["pixel_width"]),
             pixel_height=int(config["pixel_height"]),
             base_pixel_width=int(config["pixel_width"]),
@@ -317,6 +319,19 @@ class CairoRenderer:
     def get_frame(self) -> RGBAPixelArray:
         """Return a fresh owned top-left-origin RGBA frame."""
         return self._target.read_pixels()
+
+    def _get_scene_image(self, scene: Scene) -> Image.Image:
+        """Draw current state in an independent scope, even after raster cleanup."""
+        renderer = CairoRenderer(
+            camera=self.camera, _raster_settings=self._target.settings
+        )
+        try:
+            renderer.render_mobjects(
+                list_update(scene.mobjects, scene.foreground_mobjects)
+            )
+            return renderer.get_image()
+        finally:
+            renderer.close()
 
     def get_image(self) -> Image.Image:
         """Return the current target as a PIL image."""

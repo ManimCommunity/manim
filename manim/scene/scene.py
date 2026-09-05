@@ -72,6 +72,8 @@ if TYPE_CHECKING:
     from types import FrameType
     from typing import Self, TypeAlias
 
+    from PIL.Image import Image
+
     from manim.typing import Point3D
 
     SceneInteractAction: TypeAlias = (
@@ -319,6 +321,29 @@ class Scene:
             Whether an interactive rerun was requested.
         """
         return self._get_manager().render(preview)
+
+    def get_image(self) -> Image:
+        """Draw the current scene and return an independent PIL image.
+
+        Uses the scene's camera and renderer dimensions, including manual changes
+        made since the last animation. Does not run updaters, advance time, execute
+        construction, or append a movie frame. Saving or displaying is explicit::
+
+            self.add(Square())
+            self.get_image().save("checkpoint.png")
+
+        Call between animations or at an idle prompt. OpenGL requests must run on
+        the render/context thread. This is current-state inspection, not seeking
+        to an earlier animation sample or reading the last movie frame.
+        """
+        return self._get_manager().get_image()
+
+    def show(self) -> None:
+        """Draw current state and open it with PIL's external image viewer.
+
+        In a notebook, display :meth:`get_image`'s result directly instead.
+        """
+        self.get_image().show()
 
     def _get_manager(self) -> Manager[Self]:
         """Return this scene's manager, creating it for legacy entry points."""
