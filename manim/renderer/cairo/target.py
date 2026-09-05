@@ -68,10 +68,13 @@ class _CairoRenderTarget:
         self.background_image_cache: dict[str, RGBAPixelArray] = {}
         self._closed = False
 
-    @property
-    def pixels(self) -> RGBAPixelArray:
+    def _ensure_open(self) -> None:
         if self._closed:
             raise RuntimeError("The Cairo render target is closed.")
+
+    @property
+    def pixels(self) -> RGBAPixelArray:
+        self._ensure_open()
         return self._pixels
 
     def _camera_background_key(self, camera: Camera) -> tuple[object, ...]:
@@ -102,6 +105,7 @@ class _CairoRenderTarget:
             return np.asarray(image, dtype=np.uint8).copy()
 
     def reset(self, camera: Camera) -> None:
+        self._ensure_open()
         key = self._camera_background_key(camera)
         if key != self._background_key:
             self._background = self._load_background(camera)
@@ -114,13 +118,13 @@ class _CairoRenderTarget:
 
     def get_scratch_target(self) -> _CairoRenderTarget:
         """Return a reusable same-sized target for intermediate composition."""
-        if self._closed:
-            raise RuntimeError("The Cairo render target is closed.")
+        self._ensure_open()
         if self._scratch_target is None:
             self._scratch_target = _CairoRenderTarget(self.settings)
         return self._scratch_target
 
     def set_pixels(self, pixels: RGBAPixelArray) -> None:
+        self._ensure_open()
         if pixels.shape != self._pixels.shape:
             raise ValueError(
                 f"Cairo target pixels must have shape {self._pixels.shape}; "
@@ -131,6 +135,7 @@ class _CairoRenderTarget:
         np.copyto(self._pixels, pixels)
 
     def get_context(self, camera: Camera) -> cairo.Context:
+        self._ensure_open()
         settings = self.settings
         center = camera.get_view_transform_center()
         view_key = (
@@ -167,6 +172,7 @@ class _CairoRenderTarget:
         return context
 
     def get_background_image(self, image: Image.Image | Path | str) -> RGBAPixelArray:
+        self._ensure_open()
         image_key = str(image)
         cached = self.background_image_cache.get(image_key)
         if cached is not None:
@@ -197,7 +203,11 @@ class _CairoRenderTarget:
             return
         self._closed = True
         self._context = None
+        self._context_key = None
         if self._scratch_target is not None:
             self._scratch_target.close()
             self._scratch_target = None
         self.background_image_cache.clear()
+        self._background_key = None
+        self._pixels = np.empty((0, 0, 4), dtype=np.uint8)
+        self._background = self._pixels

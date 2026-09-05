@@ -72,18 +72,8 @@ class _CairoDrawingContext:
         include_submobjects: bool = True,
         excluded_mobjects: list[Mobject] | None = None,
     ) -> None:
-        self.camera._prepare_for_render()
-        to_display = self.camera.get_mobjects_to_display(
-            mobjects,
-            include_submobjects=include_submobjects,
-            excluded_mobjects=excluded_mobjects,
-        )
-        for group_type, group in it.groupby(to_display, self._type_or_raise):
-            self._display_funcs[group_type](list(group))
-
-    @property
-    def _display_funcs(self) -> dict[type[Mobject], Callable[[list[Any]], None]]:
-        return {
+        self.target._ensure_open()
+        display_funcs: dict[type[Mobject], Callable[[list[Any]], None]] = {
             VMobject: self._display_vectorized_mobjects,
             PMobject: self._display_point_cloud_mobjects,
             ImageMobjectFromCamera: self._display_image_mobjects,
@@ -91,13 +81,22 @@ class _CairoDrawingContext:
             Mobject: lambda batch: None,
         }
 
-    def _type_or_raise(self, mobject: Mobject) -> type[Mobject]:
-        for mobject_type in self._display_funcs:
-            if isinstance(mobject, mobject_type):
-                return mobject_type
-        raise TypeError(
-            f"Displaying an object of class {type(mobject).__name__} is not supported",
+        def type_or_raise(mobject: Mobject) -> type[Mobject]:
+            for mobject_type in display_funcs:
+                if isinstance(mobject, mobject_type):
+                    return mobject_type
+            raise TypeError(
+                f"Displaying an object of class {type(mobject).__name__} is not supported",
+            )
+
+        self.camera._prepare_for_render()
+        to_display = self.camera.get_mobjects_to_display(
+            mobjects,
+            include_submobjects=include_submobjects,
+            excluded_mobjects=excluded_mobjects,
         )
+        for group_type, group in it.groupby(to_display, type_or_raise):
+            display_funcs[group_type](list(group))
 
     def _display_vectorized_mobjects(self, vmobjects: list[VMobject]) -> None:
         if not vmobjects:
