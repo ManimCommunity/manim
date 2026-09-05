@@ -35,7 +35,8 @@ class CairoRenderer:
 
     Cameras supplied to this renderer contain semantic view/projection state only.
     CairoRenderer owns all pixel arrays, PyCairo contexts, nested targets, drawing,
-    static raster reuse, and readback.
+    static raster reuse, and readback. Construction captures raster settings but
+    allocates no target; drawing or explicit readback acquires it on demand.
     """
 
     capabilities = RendererCapabilities(live_preview=False)
@@ -61,7 +62,7 @@ class CairoRenderer:
         self.num_plays = 0
         self.time = 0.0
         self._frame_rate = config.frame_rate
-        settings = _raster_settings or _CairoRasterSettings(
+        self._raster_settings = _raster_settings or _CairoRasterSettings(
             pixel_width=config.pixel_width,
             pixel_height=config.pixel_height,
             base_pixel_width=config.pixel_width,
@@ -69,7 +70,7 @@ class CairoRenderer:
         )
         # Image files read for this renderer, shared by all its targets.
         self._image_files = _ImageFiles()
-        self._target = _CairoRenderTarget(settings, self._image_files)
+        self._target: _CairoRenderTarget | None = None
         self._sub_targets: dict[int, _CairoRenderTarget] = {}
         self._camera_view_pixels: dict[int, RGBAPixelArray] = {}
         self.static_image: RGBAPixelArray | None = None
@@ -79,6 +80,12 @@ class CairoRenderer:
     def _ensure_open(self) -> None:
         if self._closed:
             raise RuntimeError("The Cairo renderer is closed.")
+
+    def _get_target(self) -> _CairoRenderTarget:
+        self._ensure_open()
+        if self._target is None:
+            self._target = _CairoRenderTarget(self._raster_settings, self._image_files)
+        return self._target
 
     def init_scene(
         self,
@@ -268,7 +275,7 @@ class CairoRenderer:
         try:
             self._render_camera(
                 camera=camera,
-                target=self._target,
+                target=self._get_target(),
                 mobjects=mobjects,
                 include_submobjects=include_submobjects,
                 excluded_mobjects=excluded_mobjects,
@@ -299,10 +306,11 @@ class CairoRenderer:
             return
         if not mobjects:
             mobjects = list_update(scene.mobjects, scene.foreground_mobjects)
+        target = self._get_target()
         if self.static_image is not None:
-            self._target.set_pixels(self.static_image)
+            target.set_pixels(self.static_image)
         else:
-            self._target.reset(self.camera)
+            target.reset(self.camera)
 
         self._draw_frame(
             camera=self.camera,
@@ -320,7 +328,7 @@ class CairoRenderer:
         """Render explicit mobjects for direct image materialization."""
         self._ensure_open()
         render_camera = self.camera if camera is None else camera
-        self._target.reset(render_camera)
+        self._get_target().reset(render_camera)
         self._draw_frame(camera=render_camera, mobjects=mobjects)
 
     def render(
@@ -336,12 +344,12 @@ class CairoRenderer:
 
     def get_frame(self) -> RGBAPixelArray:
         """Return a fresh owned top-left-origin RGBA frame."""
-        return self._target.read_pixels()
+        return self._get_target().read_pixels()
 
     def _get_scene_image(self, scene: Scene) -> Image.Image:
         """Draw current state in an independent scope, even after raster cleanup."""
         with CairoRenderer(
-            camera=self.camera, _raster_settings=self._target.settings
+            camera=self.camera, _raster_settings=self._raster_settings
         ) as renderer:
             renderer.render_mobjects(
                 list_update(scene.mobjects, scene.foreground_mobjects)
@@ -433,7 +441,8 @@ class CairoRenderer:
         if self._closed:
             return
         self._closed = True
-        self._target.close()
+        if self._target is not None:
+            self._target.close()
         for target in self._sub_targets.values():
             target.close()
         self._sub_targets.clear()
