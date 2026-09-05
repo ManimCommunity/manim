@@ -7,7 +7,7 @@ from moderngl_window.context.pyglet.window import Window as PygletWindow
 from moderngl_window.timers.clock import Timer
 from screeninfo import Monitor, get_monitors
 
-from ... import __version__, config
+from ... import __version__, config, logger
 
 if TYPE_CHECKING:
     from .renderer import OpenGLRenderer
@@ -59,21 +59,33 @@ class Window(PygletWindow):
         else:
             raise ValueError(invalid_window_size_error_message)
 
-        super().__init__(size=size)
+        try:
+            super().__init__(size=size)
 
-        self.title = f"Manim Community {__version__}"
-        self.size = size
-        self.renderer = renderer
+            self.title = f"Manim Community {__version__}"
+            self.size = size
+            self.renderer = renderer
 
-        mglw.activate_context(window=self)
-        self.timer = Timer()
-        self.config = mglw.WindowConfig(ctx=self.ctx, wnd=self, timer=self.timer)
-        self.timer.start()
+            mglw.activate_context(window=self)
+            self.timer = Timer()
+            self.config = mglw.WindowConfig(ctx=self.ctx, wnd=self, timer=self.timer)
+            self.timer.start()
 
-        self.swap_buffers()
+            self.swap_buffers()
 
-        initial_position = self.find_initial_position(size, monitor)
-        self.position = initial_position
+            initial_position = self.find_initial_position(size, monitor)
+            self.position = initial_position
+        except BaseException:
+            # Pyglet may have acquired the native window before context setup
+            # failed. No caller can close an object whose constructor raised.
+            if getattr(self, "_window", None) is not None:
+                try:
+                    self.close()
+                except BaseException:
+                    logger.exception(
+                        "Failed to close an incompletely initialized window"
+                    )
+            raise
 
     # Delegate event handling to scene.
     def on_mouse_motion(self, x: int, y: int, dx: int, dy: int) -> None:
