@@ -4,7 +4,9 @@ from unittest.mock import Mock
 
 import pytest
 
+from manim import config, tempconfig
 from manim.renderer.opengl import OpenGLRenderer
+from manim.renderer.opengl.window_settings import _WindowSettings
 
 
 @pytest.fixture
@@ -12,6 +14,29 @@ def window_renderer():
     # Native windows can receive real input during these tests. Supply the event
     # delegation surface without starting an unrelated rendering session.
     return Mock(spec=OpenGLRenderer, pressed_keys=set(), scene=Mock())
+
+
+def test_native_window_uses_supplied_settings(
+    using_temp_opengl_config, window_renderer
+):
+    from manim.renderer.opengl.window import Window
+
+    with tempconfig({"window_size": (96, 64)}):
+        settings = _WindowSettings.from_config(config)
+    with tempconfig({"window_size": (128, 96)}):
+        # Compare with the legacy explicit request, not an assumed pixel size:
+        # the native backend may scale dimensions on a HiDPI display.
+        control = Window(window_renderer, window_size=(96, 64))
+        try:
+            expected_size = control.size
+        finally:
+            control.close()
+        window = Window(window_renderer, _settings=settings)
+        try:
+            assert window.size == expected_size
+            assert window._settings is settings
+        finally:
+            window.close()
 
 
 @pytest.mark.parametrize("stage", ["context", "position"])
