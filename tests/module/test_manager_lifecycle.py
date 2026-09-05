@@ -15,9 +15,6 @@ from manim.scene.scene_file_writer import SceneFileWriter
 from manim.utils.exceptions import EndSceneEarlyException, RerunSceneException
 
 
-@pytest.mark.xfail(
-    strict=True, reason="3B1: Cairo renderer construction still allocates targets"
-)
 def test_cairo_renderer_shell_does_not_allocate_targets(monkeypatch):
     target = Mock(wraps=cairo_module._CairoRenderTarget)
     monkeypatch.setattr(cairo_module, "_CairoRenderTarget", target)
