@@ -1,8 +1,5 @@
 from __future__ import annotations
 
-from contextlib import redirect_stdout
-from io import StringIO
-
 import pytest
 
 from manim.mobject.text.text_mobject import MarkupText, Text
@@ -19,13 +16,13 @@ def test_font_size():
     assert round(markuptext_string.font_size, 5) == 14.4
 
 
-def test_font_warnings():
+def test_font_warnings(manim_caplog):
     def warning_printed(font: str, **kwargs) -> bool:
-        io = StringIO()
-        with redirect_stdout(io):
-            Text("hi!", font=font, **kwargs)
-        txt = io.getvalue()
-        return "Font" in txt and "not in" in txt
+        # Inspect the log records rather than rendered console output: the
+        # latter is wrapped to the terminal width, which can split the message.
+        manim_caplog.clear()
+        Text("hi!", font=font, **kwargs)
+        return any("not in" in record.getMessage() for record in manim_caplog.records)
 
     # check for normal fonts (no warning)
     assert not warning_printed("System-ui", warn_missing_font=True)

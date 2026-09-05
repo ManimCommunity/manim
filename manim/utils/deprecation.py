@@ -245,7 +245,7 @@ def deprecated(
             The return value of the given callable when being passed the given
             arguments.
         """
-        logger.warning(warning_msg())
+        logger.warning(warning_msg(), stacklevel=3)
         return func(*args, **kwargs)
 
     if type(func).__name__ != "function":
@@ -529,7 +529,7 @@ def deprecated_params(
         used = [param for param in params if param in kwargs]
 
         if len(used) > 0:
-            logger.warning(warning_msg(func, used))
+            logger.warning(warning_msg(func, used), stacklevel=3)
             redirect_params(kwargs, used)
         return func(*args, **kwargs)
 

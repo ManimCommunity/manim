@@ -504,6 +504,7 @@ class Mobject:
             logger.warning(
                 "Attempted adding some Mobject as a child more than once, "
                 "this is not possible. Repetitions are ignored.",
+                stacklevel=3,
             )
 
         if not self.submobjects:

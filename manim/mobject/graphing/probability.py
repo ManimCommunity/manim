@@ -292,7 +292,8 @@ class BarChart(Axes):
     ):
         if isinstance(bar_colors, str):
             logger.warning(
-                "Passing a string to `bar_colors` has been deprecated since v0.15.2 and will be removed after v0.17.0, the parameter must be a list.  "
+                "Passing a string to `bar_colors` has been deprecated since v0.15.2 and will be removed after v0.17.0, the parameter must be a list.  ",
+                stacklevel=2,
             )
             bar_colors = list(bar_colors)
 

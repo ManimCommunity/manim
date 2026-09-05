@@ -1160,7 +1160,8 @@ class Scene:
                 f"The original {parameter_name} of {method_name}, "
                 f"{run_time:g} seconds, is too short for the current frame "
                 f"rate of {fps:g} FPS. Rendering with the shortest possible "
-                f"{parameter_name} of {seconds_per_frame:g} seconds instead."
+                f"{parameter_name} of {seconds_per_frame:g} seconds instead.",
+                stacklevel=3,
             )
             run_time = seconds_per_frame
 
@@ -1602,10 +1603,13 @@ class Scene:
     def embed(self) -> None:
         assert isinstance(self.renderer, OpenGLRenderer)
         if not self.session_spec.presentation.live_preview:
-            logger.warning("Called embed() while no live preview window is available.")
+            logger.warning(
+                "Called embed() while no live preview window is available.",
+                stacklevel=2,
+            )
             return
         if self.renderer.file_writer.output_spec.enabled:
-            logger.warning("embed() is skipped while writing to a file.")
+            logger.warning("embed() is skipped while writing to a file.", stacklevel=2)
             return
 
         self.renderer.animation_start_time = 0
