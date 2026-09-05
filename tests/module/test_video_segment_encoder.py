@@ -171,6 +171,103 @@ def test_abort_removes_target_before_propagating_control_flow_exception(tmp_path
     assert not encoder.target.exists()
 
 
+@pytest.mark.parametrize("failure_type", [KeyboardInterrupt, SystemExit])
+@pytest.mark.parametrize("stage", ["open", "add_stream"])
+def test_open_preserves_interrupt_identity_and_removes_partial_target(
+    tmp_path, monkeypatch, failure_type, stage
+):
+    failure = failure_type("interrupted")
+    target = tmp_path / "segment.mp4"
+    container = Mock()
+    container.add_stream.side_effect = failure
+
+    def open_container(*args, **kwargs):
+        target.write_bytes(b"partial")
+        if stage == "open":
+            raise failure
+        return container
+
+    monkeypatch.setattr(av, "open", open_container)
+    with pytest.raises(failure_type) as caught:
+        VideoSegmentEncoder(target=target, spec=_spec())
+    assert caught.value is failure
+    assert not target.exists()
+    assert container.close.call_count == (stage == "add_stream")
+
+
+@pytest.mark.parametrize("failure_type", [KeyboardInterrupt, SystemExit])
+@pytest.mark.parametrize("stage", ["encode", "mux"])
+def test_write_preserves_interrupt_identity(tmp_path, failure_type, stage):
+    failure = failure_type("interrupted")
+    encoder = _detached_encoder(tmp_path)
+    encoder._stream.encode.return_value = [object()]
+    failing_call = (
+        encoder._stream.encode if stage == "encode" else encoder._container.mux
+    )
+    failing_call.side_effect = failure
+    with pytest.raises(failure_type) as caught:
+        encoder.write_frame(_frame())
+    assert caught.value is failure
+    # The owning job/session still owns abort after a write failure.
+    encoder.abort()
+    encoder._container.close.assert_called_once_with()
+
+
+@pytest.mark.parametrize("failure_type", [ValueError, KeyboardInterrupt])
+def test_finish_preserves_primary_failure_when_close_is_interrupted(
+    tmp_path, failure_type
+):
+    failure = failure_type("flush failed")
+    encoder = _detached_encoder(tmp_path)
+    encoder._stream.encode.side_effect = failure
+    encoder._container.close.side_effect = SystemExit("close interrupted")
+    expected = RuntimeError if isinstance(failure, Exception) else failure_type
+    with pytest.raises(expected) as caught:
+        encoder.finish()
+    assert (
+        caught.value.__cause__ if isinstance(failure, Exception) else caught.value
+    ) is failure
+    encoder._container.close.assert_called_once_with()
+
+
+@pytest.mark.parametrize("failure_type", [ValueError, KeyboardInterrupt])
+def test_abort_preserves_close_failure_when_unlink_is_interrupted(
+    tmp_path, monkeypatch, failure_type
+):
+    failure = failure_type("close failed")
+    encoder = _detached_encoder(tmp_path)
+    encoder._container.close.side_effect = failure
+    unlink = Mock(side_effect=SystemExit("unlink interrupted"))
+    expected = RuntimeError if isinstance(failure, Exception) else failure_type
+    with monkeypatch.context() as patcher:
+        patcher.setattr(type(encoder.target), "unlink", unlink)
+        with pytest.raises(expected) as caught:
+            encoder.abort()
+    assert (
+        caught.value.__cause__ if isinstance(failure, Exception) else caught.value
+    ) is failure
+    unlink.assert_called_once_with(missing_ok=True)
+
+
+def test_open_preserves_primary_failure_when_cleanup_is_interrupted(
+    tmp_path, monkeypatch
+):
+    failure = KeyboardInterrupt("open interrupted")
+    container = Mock()
+    container.add_stream.side_effect = failure
+    container.close.side_effect = SystemExit("close interrupted")
+    target = tmp_path / "segment.mp4"
+    monkeypatch.setattr(av, "open", Mock(return_value=container))
+    unlink = Mock(side_effect=SystemExit("unlink interrupted"))
+    with monkeypatch.context() as patcher:
+        patcher.setattr(type(target), "unlink", unlink)
+        with pytest.raises(KeyboardInterrupt) as caught:
+            VideoSegmentEncoder(target=target, spec=_spec())
+    assert caught.value is failure
+    container.close.assert_called_once_with()
+    unlink.assert_called_once_with(missing_ok=True)
+
+
 def test_open_failure_has_target_profile_and_original_cause(tmp_path, monkeypatch):
     expected_exception = RuntimeError("open failed")
     monkeypatch.setattr(av, "open", Mock(side_effect=expected_exception))
