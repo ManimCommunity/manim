@@ -1,7 +1,7 @@
 """Acquisition failures must not strand OpenGL contexts or attachments."""
 
 from types import SimpleNamespace
-from unittest.mock import Mock
+from unittest.mock import MagicMock, Mock
 
 import pytest
 
@@ -14,11 +14,13 @@ def initialize(renderer, *, live_preview=False):
         Mock(),
         SimpleNamespace(presentation=SimpleNamespace(live_preview=live_preview)),
     )
+    renderer.open()
 
 
 @pytest.fixture
 def resources(monkeypatch):
-    context, color, depth, frame = (Mock() for _ in range(4))
+    context = MagicMock()
+    color, depth, frame = (Mock() for _ in range(3))
     context.texture.return_value = color
     context.depth_renderbuffer.return_value = depth
     context.framebuffer.return_value = frame
@@ -47,8 +49,8 @@ def test_standalone_initialization_rolls_back(resources, stage, failure_type):
     assert depth.release.call_count == (stage not in ["texture", "depth_renderbuffer"])
     assert frame.release.call_count == (stage in ["use", "enable"])
     assert renderer.window is None
-    assert not hasattr(renderer, "context")
-    assert not hasattr(renderer, "frame_buffer_object")
+    assert renderer._context is None
+    assert renderer._frame_buffer_object is None
 
 
 def test_cleanup_failure_does_not_mask_initialization_or_skip_other_releases(resources):

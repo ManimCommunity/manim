@@ -22,10 +22,7 @@ def image_scene(request):
     ):
         scene = Scene()
         yield scene
-        if request.param == "cairo":
-            scene.renderer.close()
-        else:
-            scene.renderer.context.release()
+        scene.renderer.close()
 
 
 def test_fresh_image_without_evaluation(image_scene, monkeypatch):
@@ -176,6 +173,7 @@ def test_opengl_snapshot_includes_meshes(image_scene):
 
 @pytest.mark.parametrize("image_scene", ["opengl"], indirect=True)
 def test_opengl_snapshot_requires_owner_thread(image_scene):
+    image_scene.renderer.open()
     with ThreadPoolExecutor(1) as pool:
         future = pool.submit(image_scene.get_image)
         with pytest.raises(RuntimeError, match="render thread"):

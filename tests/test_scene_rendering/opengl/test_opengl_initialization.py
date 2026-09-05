@@ -34,7 +34,7 @@ def test_native_standalone_resources_are_released(
     monkeypatch.setattr(moderngl, "create_context", create)
     try:
         with pytest.raises(failure_type) as caught:
-            Scene()
+            Scene().renderer.open()
         assert caught.value is failure
         assert len(acquired) == 4
         # These are real driver-backed objects, not just release-call spies.
