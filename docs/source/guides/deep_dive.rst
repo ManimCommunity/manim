@@ -329,10 +329,12 @@ lazily when their owning operation first writes. The writer remains Manim's
 interface to ``libav`` for media assembly. The Cairo renderer (see the
 implementation `here
 <https://github.com/ManimCommunity/manim/blob/main/manim/renderer/cairo/renderer.py>`__)
-allocates its raster target only when drawing or readback needs it. OpenGL creates a
-window only when the resolved presentation specification requests a live preview.
-The ``-p`` / ``--preview`` option does not create this window; it opens the
-completed artifact after rendering.
+allocates its raster target only when drawing or readback needs it. OpenGL also
+constructs a resource-free shell: Manager opens the captured context/target before
+``setup()``, or explicit GPU access opens it sooner. A native window is created only
+for a resolved live-preview request. Cold image inspection instead uses a temporary
+headless context. The ``-p`` / ``--preview`` option does not create a preview window;
+it opens the completed artifact after rendering.
 
 After the renderer has been instantiated and bound to the scene, the scene
 populates further initial attributes (notable mention: the ``mobjects`` attribute
@@ -359,6 +361,23 @@ manager, creating and attaching a :class:`.Manager` if necessary, and delegates 
 :meth:`.Manager.render`. The manager describes the full *render cycle* of a scene
 through four methods: :meth:`.Manager.setup`, :meth:`.Manager.construct`,
 :meth:`.Manager.tear_down`, and :meth:`.Manager.post_construct`.
+
+File logging starts at execution, not construction. The manager removes and closes
+only its own file handler when rendering ends. Propagated rendering failures drain
+output and retire the bound backend without replacing the primary exception.
+
+Successful rendering currently retains the backend for legacy raw frame readback.
+To give that inspection lifetime an explicit end, use a Manager scope::
+
+    scene = MyScene()
+    manager = scene.manager or Manager(scene)
+    with manager:
+        manager.render()
+        last_sample = manager.renderer.get_frame()
+
+Scope exit drains output and closes the backend. Ordinary scene image inspection
+can still use a fresh raster scope afterward. Raw OpenGL GPU meshes, unlike ordinary
+CPU-backed mobjects, require their original live context for inspection.
 
 The first three call the corresponding customizable scene hooks:
 
