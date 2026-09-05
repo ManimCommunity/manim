@@ -13,6 +13,8 @@ from .utils.exceptions import EndSceneEarlyException, RerunSceneException
 from .utils.file_ops import open_media_file
 
 if TYPE_CHECKING:
+    from PIL.Image import Image
+
     from ._config.output import OutputSpec
     from ._config.render_session import RenderSessionSpec
     from .animation.animation import Animation
@@ -184,6 +186,10 @@ class Manager(Generic[SceneT]):
             )
 
         return False
+
+    def get_image(self) -> Image:
+        """Materialize current state without entering a timed/output transaction."""
+        return self.renderer._get_scene_image(self.scene)
 
     def setup(self) -> None:
         """Run the managed scene's :meth:`~manim.scene.scene.Scene.setup` hook."""
