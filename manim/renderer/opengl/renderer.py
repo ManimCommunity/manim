@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import itertools as it
+import threading
 import time
 import typing
 from typing import TYPE_CHECKING, Any
@@ -162,6 +163,8 @@ class OpenGLRenderer:
                 )
             self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
             self.frame_buffer_object.use()
+        self._context_thread = threading.get_ident()
+        self._capturing_image = False
         self.context.enable(moderngl.BLEND)
         self.context.wireframe = config["enable_wireframe"]
         self.context.blend_func = (
@@ -533,6 +536,11 @@ class OpenGLRenderer:
         scene : Scene
             The scene to render the frame for.
         """
+        self._draw_scene(scene)
+        self.animation_elapsed_time = time.time() - self.animation_start_time
+
+    def _draw_scene(self, scene: Scene) -> None:
+        """Draw current objects and meshes without updating animation timing."""
         self.frame_buffer_object.clear(*self.background_color)
 
         # TODO: make the type of 'camera' generic in the 'Scene' class
@@ -554,7 +562,38 @@ class OpenGLRenderer:
                 mesh.set_uniforms(self)
                 mesh.render()
 
-        self.animation_elapsed_time = time.time() - self.animation_start_time
+    def _get_scene_image(self, scene: Scene) -> Image.Image:
+        """Capture on the context's owning thread without touching its live target."""
+        if threading.get_ident() != self._context_thread:
+            raise RuntimeError(
+                "OpenGL scene images must be requested on the render thread."
+            )
+        if self._capturing_image:
+            raise RuntimeError("Recursive OpenGL scene image capture is not supported.")
+        target = self.frame_buffer_object
+        bound = self.context.fbo
+        viewport = self.context.viewport
+        size = target.size
+        self._capturing_image = True
+        try:
+            with contextlib.ExitStack() as resources:
+                color = self.context.texture(size, components=4)
+                resources.callback(color.release)
+                depth = self.context.depth_renderbuffer(size)
+                resources.callback(depth.release)
+                frame = self.context.framebuffer(color, depth)
+                resources.callback(frame.release)
+                try:
+                    self.frame_buffer_object = frame
+                    frame.use()
+                    self._draw_scene(scene)
+                    return Image.fromarray(self.get_frame())
+                finally:
+                    self.frame_buffer_object = target
+                    (target if bound is None else bound).use()
+                    self.context.viewport = viewport
+        finally:
+            self._capturing_image = False
 
     def scene_finished(self, scene: Scene) -> None:
         """Finalize configured output for the scene.
