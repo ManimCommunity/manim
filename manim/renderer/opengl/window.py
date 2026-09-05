@@ -8,6 +8,7 @@ from moderngl_window.timers.clock import Timer
 from screeninfo import Monitor, get_monitors
 
 from ... import __version__, config, logger
+from .window_settings import _WindowSettings
 
 if TYPE_CHECKING:
     from .renderer import OpenGLRenderer
@@ -26,12 +27,17 @@ class Window(PygletWindow):
         self,
         renderer: OpenGLRenderer,
         window_size: str | tuple[int, ...] | None = None,
+        *,
+        _settings: _WindowSettings | None = None,
         **kwargs: Any,
     ) -> None:
+        self._settings = (
+            _WindowSettings.from_config(config) if _settings is None else _settings
+        )
         if window_size is None:
-            window_size = config.window_size
+            window_size = self._settings.size
         monitors = get_monitors()
-        mon_index = config.window_monitor
+        mon_index = self._settings.monitor
         monitor = monitors[min(mon_index, len(monitors) - 1)]
 
         invalid_window_size_error_message = (
@@ -47,12 +53,14 @@ class Window(PygletWindow):
             # make window_width half the width of the monitor
             # but make it full screen if --fullscreen
             window_width = monitor.width
-            if not config.fullscreen:
+            if not self._settings.fullscreen:
                 window_width //= 2
 
             #  by default window_height = 9/16 * window_width
             window_height = int(
-                window_width * config.frame_height // config.frame_width,
+                window_width
+                * self._settings.frame_height
+                // self._settings.frame_width,
             )
             size = (window_width, window_height)
         elif len(window_size.split(",")) == 2:
@@ -129,7 +137,7 @@ class Window(PygletWindow):
     def find_initial_position(
         self, size: tuple[int, int], monitor: Monitor
     ) -> tuple[int, int]:
-        custom_position = config.window_position
+        custom_position = self._settings.position
         window_width, window_height = size
         # Position might be specified with a string of the form x,y for integers x and y
         if len(custom_position) == 1:
