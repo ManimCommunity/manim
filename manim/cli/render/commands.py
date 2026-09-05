@@ -103,8 +103,9 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
                 for SceneClass in scene_classes:
                     with tempconfig({}):
                         scene = SceneClass(renderer)
-                        # Attach explicitly, but preserve custom Scene.render overrides.
-                        Manager(scene)
+                        # Construction may already have requested a writer or image.
+                        if scene.manager is None:
+                            Manager(scene)
                         rerun = scene.render()
                     if rerun or config["write_all"]:
                         renderer.num_plays = 0
@@ -117,8 +118,9 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
             for SceneClass in scene_classes:
                 with tempconfig({}):
                     scene = SceneClass()
-                    # Attach explicitly, but preserve custom Scene.render overrides.
-                    Manager(scene)
+                    # Preserve custom Scene.render overrides and existing managers.
+                    if scene.manager is None:
+                        Manager(scene)
                     scene.render()
     except Exception:
         error_console.print_exception()
