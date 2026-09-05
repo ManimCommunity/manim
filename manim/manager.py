@@ -8,11 +8,16 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar
 import srt
 
 from . import logger
+from ._config.logger_utils import set_file_logger
 from .scene.section import DefaultSectionType
 from .utils.exceptions import EndSceneEarlyException, RerunSceneException
 from .utils.file_ops import open_media_file
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+    from logging import FileHandler
+    from types import TracebackType
+
     from PIL.Image import Image
 
     from ._config.output import OutputSpec
@@ -75,7 +80,80 @@ class Manager(Generic[SceneT]):
         self.scene = scene
         self._file_writer: SceneFileWriter | None = None
         self._creating_file_writer = False
+        self._log_handler: FileHandler | None = None
+        self._closed = False
+        self._closing = False
         scene.manager = self
+
+    def __enter__(self) -> Manager[SceneT]:
+        if self._closed or self._closing:
+            raise RuntimeError("The Manager is closed or closing.")
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        if exc is None:
+            self.close()
+        else:
+            self._cleanup_after_failure()
+
+    def _open_log_handler(self) -> None:
+        if self._log_handler is not None:
+            return
+        path = self.scene._log_file_path
+        if path is not None:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            self._log_handler = set_file_logger(path)
+
+    def _close_log_handler(self) -> None:
+        handler = self._log_handler
+        if handler is not None:
+            logger.removeHandler(handler)
+            handler.close()
+            self._log_handler = None
+
+    def close(self) -> None:
+        """Drain output, retire the backend, and detach only this Manager's log.
+
+        Successful render currently retains backend readback for compatibility;
+        use this method or a Manager context scope to retire that inspection host.
+        """
+        if self._closed:
+            return
+        self._closing = True
+        failures: list[BaseException] = []
+
+        def cleanup(callback: Callable[[], Any]) -> None:
+            try:
+                callback()
+            except BaseException as error:
+                failures.append(error)
+
+        if self._file_writer is not None:
+            cleanup(self._file_writer.abort_encode_jobs)
+
+        def close_backend() -> None:
+            # A legacy rebind transfers the backend to another Scene, not its writer.
+            if self.renderer._is_bound_to(self.scene):
+                self.renderer.close()
+
+        cleanup(close_backend)
+        cleanup(self._close_log_handler)
+        if failures:
+            for secondary in failures[1:]:
+                logger.error("Additional Manager cleanup failure", exc_info=secondary)
+            raise failures[0]
+        self._closed = True
+
+    def _cleanup_after_failure(self) -> None:
+        try:
+            self.close()
+        except BaseException:
+            logger.exception("Failed to clean up resources after a render failure")
 
     @property
     def renderer(self) -> CairoRenderer | OpenGLRenderer:
@@ -95,6 +173,10 @@ class Manager(Generic[SceneT]):
         ``renderer.file_writer`` does, and attaches a Manager if necessary.
         """
         if self._file_writer is None:
+            if self._closed or self._closing:
+                raise RuntimeError(
+                    "Cannot create output resources on a closed Manager."
+                )
             if self._creating_file_writer:
                 raise RuntimeError("Recursive file writer creation is not supported.")
             self._creating_file_writer = True
@@ -105,6 +187,18 @@ class Manager(Generic[SceneT]):
             finally:
                 self._creating_file_writer = False
         return self._file_writer
+
+    def _replace_file_writer(self, writer: SceneFileWriter) -> None:
+        if self._closed or self._closing or self._creating_file_writer:
+            raise RuntimeError(
+                "Cannot replace output resources in this lifecycle state."
+            )
+        previous = self._file_writer
+        if previous is writer:
+            return
+        if previous is not None:
+            previous.abort_encode_jobs(reraise_encoder_failures=True)
+        self._file_writer = writer
 
     @property
     def output_spec(self) -> OutputSpec:
@@ -166,12 +260,17 @@ class Manager(Generic[SceneT]):
         """
         from .renderer.opengl.renderer import OpenGLRenderer
 
+        if self._closed or self._closing:
+            raise RuntimeError("The Manager is closed or closing.")
+        started = False
         try:
             presentation = self.session_spec.presentation
             open_after_render = preview or presentation.open_after_render
             if open_after_render and not self.output_spec.enabled:
                 raise ValueError("Previewing after render requires a media artifact.")
 
+            started = True
+            self._open_log_handler()
             if isinstance(self.renderer, OpenGLRenderer):
                 self.renderer.open()
             # Preserve writer availability in user setup without opening it
@@ -191,6 +290,7 @@ class Manager(Generic[SceneT]):
                 # A rerun has no primary failure to preserve: encoder failures
                 # must prevent reuse of an incomplete/corrupt output session.
                 self.file_writer.abort_encode_jobs(reraise_encoder_failures=True)
+                self._close_log_handler()
                 return True
             self.tear_down()
             self.post_construct()
@@ -202,17 +302,13 @@ class Manager(Generic[SceneT]):
                     show_in_file_browser=presentation.show_in_file_browser,
                 )
 
+            self._close_log_handler()
             return False
         except BaseException:
             # Even setup or teardown can leave a non-daemon encoder waiting for
             # frames. Cleanup must not replace the exception that brought us here.
-            if self._file_writer is not None:
-                try:
-                    self._file_writer.abort_encode_jobs()
-                except BaseException:
-                    logger.exception(
-                        "Failed to clean up encoding jobs after a render failure"
-                    )
+            if started or self._file_writer is not None:
+                self._cleanup_after_failure()
             raise
 
     def get_image(self) -> Image:
@@ -291,6 +387,9 @@ class Manager(Generic[SceneT]):
         kwargs
             Additional animation arguments forwarded to the renderer.
         """
+        if self._closed or self._closing:
+            raise RuntimeError("The Manager is closed or closing.")
+        self._open_log_handler()
         start_time = self.time
         self.renderer.play(self.scene, *args, **kwargs)
         run_time = self.time - start_time
