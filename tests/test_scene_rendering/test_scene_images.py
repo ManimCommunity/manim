@@ -102,7 +102,8 @@ def test_cairo_image_after_close_and_with_static_cache():
         renderer.close()
         np.testing.assert_array_equal(image, scene.get_image())
         assert renderer._closed
-        assert renderer._target._pixels.size == 0
+        # Snapshots only opened temporary targets, not the scene's primary one.
+        assert renderer._target is None
 
 
 @pytest.mark.parametrize("scene_class", [Scene, ThreeDScene, ZoomedScene])
