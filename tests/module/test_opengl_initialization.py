@@ -13,7 +13,6 @@ def initialize(renderer, *, live_preview=False):
     renderer.init_scene(
         Mock(),
         SimpleNamespace(presentation=SimpleNamespace(live_preview=live_preview)),
-        Mock(),
     )
 
 

@@ -271,7 +271,6 @@ class Scene:
         self.renderer.init_scene(
             self,
             self.session_spec,
-            self.file_writer_settings,
         )
 
         self.mobjects: list[Mobject] = []

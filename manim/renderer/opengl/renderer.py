@@ -38,7 +38,6 @@ if TYPE_CHECKING:
     from manim.animation.animation import Animation
     from manim.mobject.mobject import Mobject, _AnimationBuilder
     from manim.scene.scene import Scene
-    from manim.scene.scene_file_writer import _SceneFileWriterSettings
     from manim.typing import (
         FloatRGBA,
         RGBAPixelArray,
@@ -122,14 +121,12 @@ class OpenGLRenderer:
         self,
         scene: Scene,
         session_spec: RenderSessionSpec,
-        file_writer_settings: _SceneFileWriterSettings,
     ) -> None:
         """
         Initializes the OpenGL rendering context and related resources
         for the given scene.
 
         Set up:
-        - the file writer
         - the background color
         - the OpenGL context
         - the window (if needed)
@@ -140,9 +137,6 @@ class OpenGLRenderer:
             The scene to be rendered
         """
         self.partial_movie_files: list[str | None] = []
-        self.file_writer: SceneFileWriter = self._file_writer_class(
-            file_writer_settings,
-        )
         self.scene = scene
 
         self.background_color = config["background_color"]
@@ -192,6 +186,16 @@ class OpenGLRenderer:
         self._context_thread = threading.get_ident()
         self._capturing_image = False
         resources.pop_all()
+
+    @property
+    def file_writer(self) -> SceneFileWriter:
+        """Compatibility view of the bound scene Manager's lazily owned writer."""
+        return self.scene._get_manager().file_writer
+
+    @file_writer.setter
+    def file_writer(self, writer: SceneFileWriter) -> None:
+        # Retain legacy injection without a second, synchronized writer field.
+        self.scene._get_manager()._file_writer = writer
 
     def should_create_window(self, session_spec: RenderSessionSpec) -> bool:
         """

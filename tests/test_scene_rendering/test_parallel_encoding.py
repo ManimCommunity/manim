@@ -706,6 +706,7 @@ def test_abort_encode_jobs_noop_on_dry_run_writer(config):
 
 def test_keyboard_interrupt_aborts_encode_jobs_and_reraises(config):
     scene = Scene(renderer=Mock())
+    writer = scene._get_manager().file_writer
 
     def construct():
         raise KeyboardInterrupt
@@ -715,7 +716,7 @@ def test_keyboard_interrupt_aborts_encode_jobs_and_reraises(config):
     with pytest.raises(KeyboardInterrupt):
         scene.render()
 
-    scene.renderer.file_writer.abort_encode_jobs.assert_called_once_with()
+    writer.abort_encode_jobs.assert_called_once_with()
 
 
 def test_rerun_propagates_encoder_failure(config, tmp_path):
@@ -725,7 +726,7 @@ def test_rerun_propagates_encoder_failure(config, tmp_path):
     failing_inflight.join.side_effect = expected_exception
     _add_inflight_job(writer, failing_inflight)
     scene = Scene(renderer=Mock())
-    scene.renderer.file_writer = writer
+    scene._get_manager()._file_writer = writer
 
     def construct():
         raise RerunSceneException
@@ -755,7 +756,7 @@ def test_rerun_propagates_failed_current_job(config, tmp_path):
         time.sleep(0.01)
 
     scene = Scene(renderer=Mock())
-    scene.renderer.file_writer = writer
+    scene._get_manager()._file_writer = writer
 
     def construct():
         raise RerunSceneException
