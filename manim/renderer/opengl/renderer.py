@@ -377,7 +377,7 @@ class OpenGLRenderer:
     @file_writer.setter
     def file_writer(self, writer: SceneFileWriter) -> None:
         # Retain legacy injection without a second, synchronized writer field.
-        self.scene._get_manager()._file_writer = writer
+        self.scene._get_manager()._replace_file_writer(writer)
 
     def should_create_window(self, session_spec: RenderSessionSpec) -> bool:
         """

@@ -3,6 +3,7 @@
 from pathlib import Path
 from unittest.mock import Mock
 
+import numpy as np
 import pytest
 
 from manim import CairoRenderer, Manager, Scene, Wait, tempconfig
@@ -141,6 +142,25 @@ def test_recursive_creation_fails_clearly_and_leaves_retry_possible(writer_scene
     factory.side_effect = None
     assert isinstance(manager.file_writer, SceneFileWriter)
     assert factory.call_count == 2
+
+
+@pytest.mark.parametrize("writer_scene", ["mp4"], indirect=True)
+def test_replacement_retires_previous_unsealed_segment(writer_scene, tmp_path):
+    scene, _ = writer_scene
+    writer = scene.renderer.file_writer
+    path = tmp_path / "replaced.mp4"
+    writer.open_partial_movie_stream(animation_index=0, file_path=path)
+    job = writer._current_encode_job
+    writer.write_frame(np.zeros((32, 64, 4), dtype=np.uint8))
+    replacement = Mock()
+    try:
+        scene.renderer.file_writer = replacement
+        assert not job.thread.is_alive()
+        assert writer._current_encode_job is None
+        assert not path.exists()
+        assert scene.manager.file_writer is replacement
+    finally:
+        writer.abort_encode_jobs()
 
 
 @pytest.mark.parametrize("writer_scene", ["mp4"], indirect=True)

@@ -91,6 +91,9 @@ class CairoRenderer:
         self._ensure_open()
         self._scene = scene
 
+    def _is_bound_to(self, scene: Scene) -> bool:
+        return self._scene is scene
+
     @property
     def file_writer(self) -> SceneFileWriter:
         """Compatibility view of the bound scene Manager's lazily owned writer."""
@@ -99,7 +102,7 @@ class CairoRenderer:
     @file_writer.setter
     def file_writer(self, writer: SceneFileWriter) -> None:
         # Retain legacy injection without a second, synchronized writer field.
-        self._scene._get_manager()._file_writer = writer
+        self._scene._get_manager()._replace_file_writer(writer)
 
     def play(
         self,
