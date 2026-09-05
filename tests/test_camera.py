@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import gc
+import weakref
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -113,6 +115,11 @@ def test_camera_resolves_only_unspecified_dimensions(
 def test_camera_rejects_removed_raster_settings(removed_setting):
     with pytest.raises(TypeError, match="unexpected keyword argument"):
         Camera(**removed_setting)
+
+
+def test_renderer_rejects_unknown_constructor_settings():
+    with pytest.raises(TypeError, match="unexpected keyword argument"):
+        CairoRenderer(pixel_width=100)
 
 
 def test_default_scene_camera_auto_zoom():
@@ -293,6 +300,93 @@ def test_nested_view_preserves_square_geometry(pixel_shape):
             rows, columns = np.where(pixels[:, :, 0] > 128)
             assert len(rows) > 0
             assert np.ptp(columns) == pytest.approx(np.ptp(rows), abs=1)
+        finally:
+            renderer.close()
+
+
+def test_removed_nested_views_release_their_target_subtree():
+    with tempconfig({"pixel_width": 64, "pixel_height": 32}):
+        leaf = ImageMobjectFromCamera(Camera())
+        branch = ImageMobjectFromCamera(MultiCamera([leaf]))
+        retained = ImageMobjectFromCamera(Camera())
+        camera = MultiCamera([branch, retained])
+        renderer = CairoRenderer(camera=camera)
+        try:
+            renderer.render_mobjects([branch, retained])
+            branch_target = renderer._sub_targets[id(branch)]
+            leaf_target = renderer._sub_targets[id(leaf)]
+            retained_target = renderer._sub_targets[id(retained)]
+
+            camera.image_mobjects_from_cameras.remove(branch)
+            renderer.render_mobjects([retained])
+
+            assert renderer._sub_targets == {id(retained): retained_target}
+            for retired in (branch_target, leaf_target):
+                with pytest.raises(RuntimeError, match="closed"):
+                    _ = retired.pixels
+            assert retained_target.pixels.size > 0
+        finally:
+            renderer.close()
+
+
+def test_failed_nested_draw_releases_unfinished_target():
+    with tempconfig({"pixel_width": 64, "pixel_height": 32}):
+        view = ImageMobjectFromCamera(Camera())
+        renderer = CairoRenderer(camera=MultiCamera([view]))
+        try:
+            renderer.render_mobjects([view])
+            target = renderer._sub_targets[id(view)]
+            with (
+                patch.object(
+                    _CairoDrawingContext, "draw", side_effect=ValueError("draw failed")
+                ),
+                pytest.raises(ValueError, match="draw failed"),
+            ):
+                renderer.render_mobjects([view])
+
+            assert renderer._sub_targets == {}
+            with pytest.raises(RuntimeError, match="closed"):
+                _ = target.pixels
+            renderer.render_mobjects([view])
+            assert renderer._sub_targets[id(view)].pixels.size > 0
+        finally:
+            renderer.close()
+
+
+@pytest.mark.parametrize(
+    "operation",
+    [
+        lambda renderer: renderer.render_mobjects([]),
+        lambda renderer: renderer.update_frame(None),
+        lambda renderer: renderer.update_frame(None, ignore_skipping=False),
+        lambda renderer: renderer.get_frame(),
+        lambda renderer: renderer.get_image(),
+        lambda renderer: renderer.save_static_frame_data(
+            SimpleNamespace(moving_mobjects=[]), []
+        ),
+    ],
+    ids=["draw", "update", "skipped-update", "pixels", "image", "static-frame"],
+)
+def test_closed_renderer_rejects_drawing(operation):
+    with tempconfig({"pixel_width": 8, "pixel_height": 4}):
+        renderer = CairoRenderer(skip_animations=True)
+        renderer.close()
+        with pytest.raises(RuntimeError, match="closed"):
+            operation(renderer)
+
+
+def test_renderer_close_releases_static_pixels():
+    with tempconfig({"pixel_width": 32, "pixel_height": 18}):
+        renderer = CairoRenderer()
+        try:
+            renderer.save_static_frame_data(
+                SimpleNamespace(moving_mobjects=[]), [Square()]
+            )
+            snapshot = weakref.ref(renderer.static_image)
+            renderer.close()
+            gc.collect()
+            assert renderer.static_image is None
+            assert snapshot() is None
         finally:
             renderer.close()
 

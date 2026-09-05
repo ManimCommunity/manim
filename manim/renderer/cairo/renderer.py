@@ -46,7 +46,6 @@ class CairoRenderer:
         camera_class: type[Camera] | None = None,
         camera: Camera | None = None,
         skip_animations: bool = False,
-        **kwargs: Any,
     ) -> None:
         if camera is not None and camera_class is not None:
             raise ValueError("Pass either camera or camera_class, not both.")
@@ -70,6 +69,11 @@ class CairoRenderer:
         self._camera_view_pixels: dict[int, RGBAPixelArray] = {}
         self.static_image: RGBAPixelArray | None = None
         self._render_all_mobjects = False
+        self._closed = False
+
+    def _ensure_open(self) -> None:
+        if self._closed:
+            raise RuntimeError("The Cairo renderer is closed.")
 
     def init_scene(
         self,
@@ -77,6 +81,7 @@ class CairoRenderer:
         session_spec: RenderSessionSpec,
         file_writer_settings: _SceneFileWriterSettings,
     ) -> None:
+        self._ensure_open()
         self.file_writer: Any = self._file_writer_class(file_writer_settings)
 
     def play(
@@ -85,6 +90,7 @@ class CairoRenderer:
         *args: Animation | Mobject | _AnimationBuilder,
         **kwargs: Any,
     ) -> None:
+        self._ensure_open()
         self.skip_animations = self._original_skipping_status
         self.update_skipping_status()
         scene.compile_animation_data(*args, **kwargs)
@@ -234,6 +240,31 @@ class CairoRenderer:
             excluded_mobjects=excluded_mobjects,
         )
 
+    def _draw_frame(
+        self,
+        *,
+        camera: Camera,
+        mobjects: Iterable[Mobject],
+        include_submobjects: bool = True,
+        excluded_mobjects: list[Mobject] | None = None,
+    ) -> None:
+        self._camera_view_pixels.clear()
+        try:
+            self._render_camera(
+                camera=camera,
+                target=self._target,
+                mobjects=mobjects,
+                include_submobjects=include_submobjects,
+                excluded_mobjects=excluded_mobjects,
+                camera_stack=(),
+            )
+        finally:
+            # Only completed views lend pixels to this frame. Retire targets for
+            # removed views and any view whose drawing failed before completion.
+            unused = self._sub_targets.keys() - self._camera_view_pixels.keys()
+            for key in unused:
+                self._sub_targets.pop(key).close()
+
     def update_frame(
         self,
         scene: Scene,
@@ -243,6 +274,7 @@ class CairoRenderer:
         **kwargs: Any,
     ) -> None:
         """Render one scene state into the owned Cairo target."""
+        self._ensure_open()
         if self.skip_animations and not ignore_skipping:
             return
         if not mobjects:
@@ -252,14 +284,11 @@ class CairoRenderer:
         else:
             self._target.reset(self.camera)
 
-        self._camera_view_pixels.clear()
-        self._render_camera(
+        self._draw_frame(
             camera=self.camera,
-            target=self._target,
             mobjects=mobjects,
             include_submobjects=include_submobjects,
             excluded_mobjects=kwargs.get("excluded_mobjects"),
-            camera_stack=(),
         )
 
     def render_mobjects(
@@ -269,17 +298,10 @@ class CairoRenderer:
         camera: Camera | None = None,
     ) -> None:
         """Render explicit mobjects for direct image materialization."""
+        self._ensure_open()
         render_camera = self.camera if camera is None else camera
         self._target.reset(render_camera)
-        self._camera_view_pixels.clear()
-        self._render_camera(
-            camera=render_camera,
-            target=self._target,
-            mobjects=mobjects,
-            include_submobjects=True,
-            excluded_mobjects=None,
-            camera_stack=(),
-        )
+        self._draw_frame(camera=render_camera, mobjects=mobjects)
 
     def render(
         self,
@@ -301,6 +323,7 @@ class CairoRenderer:
         return Image.fromarray(self.get_frame())
 
     def add_frame(self, frame: RGBAPixelArray, num_frames: int = 1) -> None:
+        self._ensure_open()
         if self.skip_animations:
             return
         self.time += num_frames / self._frame_rate
@@ -321,6 +344,7 @@ class CairoRenderer:
         scene: Scene,
         static_mobjects: Iterable[Mobject],
     ) -> RGBAPixelArray | None:
+        self._ensure_open()
         self.static_image = None
         # A nested view can contain any dynamic scene mobject regardless of the
         # view's position in the primary draw order. Keep all primary inputs
@@ -352,6 +376,7 @@ class CairoRenderer:
             raise EndSceneEarlyException()
 
     def scene_finished(self, scene: Scene) -> None:
+        self._ensure_open()
         output = self.file_writer.output_spec
         if self.num_plays and (output.is_video or output.is_image_sequence):
             self.file_writer.finish()
@@ -366,9 +391,14 @@ class CairoRenderer:
             self.file_writer.save_image(self.get_frame())
 
     def close(self) -> None:
-        """Release all renderer-owned Cairo targets."""
+        """Release all Cairo targets and static pixels; subsequent drawing fails."""
+        if self._closed:
+            return
+        self._closed = True
         self._target.close()
         for target in self._sub_targets.values():
             target.close()
         self._sub_targets.clear()
         self._camera_view_pixels.clear()
+        self.static_image = None
+        self._render_all_mobjects = False
