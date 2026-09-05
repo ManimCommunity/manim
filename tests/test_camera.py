@@ -19,6 +19,7 @@ from manim import (
     Scene,
     Square,
     ThreeDCamera,
+    config,
     tempconfig,
 )
 from manim.renderer.cairo import CairoRenderer
@@ -56,6 +57,48 @@ def test_camera_frame_geometry_is_semantic_and_explicit():
     assert custom_camera.frame_width == 3
     assert custom_camera.frame_height == 3
     np.testing.assert_array_equal(custom_camera.frame_center, [2, 1, 0])
+
+
+@pytest.mark.parametrize(
+    "camera_class", [Camera, MovingCamera, MultiCamera, ThreeDCamera]
+)
+@pytest.mark.parametrize("pixel_shape", [(128, 128), (96, 160), (192, 96)])
+def test_default_camera_preserves_square_geometry(camera_class, pixel_shape):
+    width, height = pixel_shape
+    with tempconfig({"pixel_width": width, "pixel_height": height}):
+        camera = camera_class()
+        assert camera.frame_width == pytest.approx(config.frame_width)
+        assert camera.frame_width / camera.frame_height == pytest.approx(width / height)
+        frame_points = camera.frame.points.copy()
+        renderer = CairoRenderer(camera=camera)
+        try:
+            renderer.render_mobjects(
+                [Square(fill_color="#ffffff", fill_opacity=1, stroke_width=0)],
+            )
+            pixels = renderer.get_frame()
+            rows, columns = np.where(pixels[:, :, 0] > 128)
+            assert len(rows) > 0
+            assert np.ptp(columns) == pytest.approx(np.ptp(rows), abs=1)
+            np.testing.assert_array_equal(camera.frame.points, frame_points)
+        finally:
+            renderer.close()
+
+
+@pytest.mark.parametrize(
+    ("dimensions", "expected_width", "expected_height"),
+    [
+        ({"frame_width": 6}, 6, 12),
+        ({"frame_height": 6}, 3, 6),
+        ({"frame_width": 6, "frame_height": 3}, 6, 3),
+    ],
+)
+def test_camera_resolves_only_unspecified_dimensions(
+    dimensions, expected_width, expected_height
+):
+    with tempconfig({"pixel_width": 60, "pixel_height": 120}):
+        camera = Camera(**dimensions)
+        assert camera.frame_width == pytest.approx(expected_width)
+        assert camera.frame_height == pytest.approx(expected_height)
 
 
 @pytest.mark.parametrize(
@@ -233,6 +276,25 @@ def test_nested_target_size_tracks_display_size_and_closes():
             _ = main_target.pixels
         with pytest.raises(RuntimeError, match="closed"):
             _ = second_target.pixels
+
+
+@pytest.mark.parametrize("pixel_shape", [(128, 128), (96, 160)])
+def test_nested_view_preserves_square_geometry(pixel_shape):
+    width, height = pixel_shape
+    with tempconfig({"pixel_width": width, "pixel_height": height}):
+        view = ImageMobjectFromCamera(Camera())
+        view.set(width=8)
+        renderer = CairoRenderer(camera=MultiCamera([view]))
+        try:
+            renderer.render_mobjects(
+                [Square(fill_color="#ffffff", fill_opacity=1, stroke_width=0), view]
+            )
+            pixels = renderer._sub_targets[id(view)].read_pixels()
+            rows, columns = np.where(pixels[:, :, 0] > 128)
+            assert len(rows) > 0
+            assert np.ptp(columns) == pytest.approx(np.ptp(rows), abs=1)
+        finally:
+            renderer.close()
 
 
 def test_nested_views_disable_unsafe_static_reuse():
