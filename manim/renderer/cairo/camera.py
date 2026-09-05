@@ -40,6 +40,29 @@ if TYPE_CHECKING:
     )
 
 
+class _CameraFrame(ScreenRectangle):
+    """Default frame with a direct bounding-box center query, not a cached center."""
+
+    def get_points_defining_boundary(self) -> Point3D_Array:
+        if self.submobjects or len(self.points) <= 1:
+            return super().get_points_defining_boundary()
+        # Same start/end anchors as VMobject, without family/list assembly for
+        # the ordinary childless frame. Do not assume it remains rectangular.
+        curves = self.points.reshape(
+            -1, self.n_points_per_cubic_curve, self.points.shape[1]
+        )
+        return curves[:, [0, -1], :].reshape(-1, self.points.shape[1])
+
+    def get_center(self) -> Point3D:
+        points = self.get_points_defining_boundary()
+        if len(points) == 0:
+            return np.zeros(self.dim)
+        # Projecting many small mobjects asks for this center repeatedly. Reduce
+        # all axes together instead of the generic per-axis critical-point path.
+        points = points[:, : self.dim]
+        return ((points.min(axis=0) + points.max(axis=0)) / 2).astype(float, copy=False)
+
+
 class Camera:
     """Describe the logical view used by a rendering backend.
 
@@ -83,7 +106,7 @@ class Camera:
             )
             if resolved_height <= 0 or resolved_width <= 0:
                 raise ValueError("Camera frame dimensions must be positive.")
-            frame = ScreenRectangle(
+            frame = _CameraFrame(
                 aspect_ratio=resolved_width / resolved_height,
                 height=resolved_height,
             )
@@ -631,19 +654,18 @@ class ThreeDCamera(Camera):
         points = points - frame_center
         points = np.dot(points, rot_matrix.T)
         zs = points[:, 2]
+        if self.exponential_projection:
+            # Proper projection would involve multiplying x and y by d / (d-z).
+            # The exponential avoids artifacts for high positive z values.
+            factor = np.exp(zs / focal_distance)
+            lt0 = zs < 0
+            factor[lt0] = focal_distance / (focal_distance - zs[lt0])
+        else:
+            factor = focal_distance / (focal_distance - zs)
+            factor[(focal_distance - zs) < 0] = 10**6
+        scale = factor * zoom
         for i in 0, 1:
-            if self.exponential_projection:
-                # Proper projection would involve multiplying
-                # x and y by d / (d-z).  But for points with high
-                # z value that causes weird artifacts, and applying
-                # the exponential helps smooth it out.
-                factor = np.exp(zs / focal_distance)
-                lt0 = zs < 0
-                factor[lt0] = focal_distance / (focal_distance - zs[lt0])
-            else:
-                factor = focal_distance / (focal_distance - zs)
-                factor[(focal_distance - zs) < 0] = 10**6
-            points[:, i] *= factor * zoom
+            points[:, i] *= scale
         return points
 
     def project_point(self, point: Point3D) -> Point3D:
