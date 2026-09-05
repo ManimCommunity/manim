@@ -1,4 +1,4 @@
-"""The interface between scenes and ffmpeg."""
+"""Scene output coordination and media-artifact assembly."""
 
 from __future__ import annotations
 
@@ -8,7 +8,8 @@ import json
 import shutil
 import warnings
 from contextlib import suppress
-from fractions import Fraction
+from dataclasses import dataclass
+from io import BytesIO
 from pathlib import Path
 from queue import Queue
 from tempfile import NamedTemporaryFile, _TemporaryFileWrapper
@@ -33,45 +34,17 @@ with warnings.catch_warnings():
 
 from manim import __version__
 
-from .. import config, logger
-from .._config.logger_utils import set_file_logger
-from ..constants import RendererType
-from ..utils.file_ops import (
-    add_extension_if_not_present,
-    add_version_before_extension,
-    guarantee_existence,
-    is_gif_format,
-    is_png_format,
-    modify_atime,
-    write_to_movie,
-)
+from .. import logger
+from .._config.output_plan import OutputPlan
+from .._config.video_encoder import VideoEncoderSpec
+from ..utils.caching import prune_segment_cache
+from ..utils.file_ops import modify_atime
 from ..utils.sounds import get_full_sound_file_path
 from .section import DefaultSectionType, Section
+from .video_segment_encoder import VideoSegmentEncoder
 
 if TYPE_CHECKING:
-    from av.container.output import OutputContainer
-    from av.stream import Stream
-
-    from manim.renderer.cairo_renderer import CairoRenderer
-    from manim.renderer.opengl_renderer import OpenGLRenderer
-    from manim.typing import PixelArray, StrPath
-
-
-def to_av_frame_rate(fps: float) -> Fraction:
-    epsilon1 = 1e-4
-    epsilon2 = 0.02
-
-    if isinstance(fps, int):
-        (num, denom) = (fps, 1)
-    elif abs(fps - round(fps)) < epsilon1:
-        (num, denom) = (round(fps), 1)
-    else:
-        denom = 1001
-        num = round(fps * denom / 1000) * 1000
-        if abs(fps - num / denom) >= epsilon2:
-            raise ValueError("invalid frame rate")
-
-    return Fraction(num, denom)
+    from manim.typing import RGBAPixelArray, StrPath
 
 
 def convert_audio(
@@ -92,28 +65,28 @@ def convert_audio(
 
 
 class _PartialMovieEncodeJob:
-    """Encode and write the frames for one partial movie file."""
+    """Run one segment encoder on a dedicated worker thread."""
 
     def __init__(
         self,
-        path: StrPath,
+        *,
         animation_index: int,
-        container: OutputContainer,
-        stream: Stream,
+        encoder: VideoSegmentEncoder,
         frame_queue_size: int,
     ) -> None:
-        self.path = path
+        self.path = encoder.target
         self.animation_index = animation_index
-        self.container = container
-        self.stream = stream
+        self.encoder = encoder
         # A size of 0 preserves the unbounded queue used by serial encoding.
         # Parallel encoding uses a bounded queue; at the default capacity, eight
         # 1080p RGBA frames occupy about 66 MB per job. The worker drains through
         # the sentinel after an exception, so a bounded queue cannot deadlock.
-        self.queue: Queue[tuple[int, PixelArray | None]] = Queue(
+        self.queue: Queue[tuple[int, RGBAPixelArray | None]] = Queue(
             maxsize=frame_queue_size,
         )
         self._exception: BaseException | None = None
+        self._sealed = False
+        self._abort_requested = False
         self.thread = Thread(
             target=self._listen_and_write,
             name=f"partial-movie-encoder-{animation_index}",
@@ -129,113 +102,143 @@ class _PartialMovieEncodeJob:
         """Whether the worker has captured an exception."""
         return self._exception is not None
 
+    def _abort_encoder(self) -> None:
+        try:
+            self.encoder.abort()
+        except Exception as exception:
+            logger.warning(
+                "Failed to clean up incomplete segment %(path)s: %(error)s",
+                {"path": f"'{self.path}'", "error": exception},
+            )
+            self._capture_exception(exception)
+
     def _listen_and_write(self) -> None:
         while True:
-            num_frames, frame_data = self.queue.get()
+            repeat, frame_data = self.queue.get()
             if frame_data is None:
                 break
             if self._exception is not None:
                 continue
 
             try:
-                self._encode_and_write_frame(frame_data, num_frames)
+                self.encoder.write_frame(frame_data, repeat=repeat)
             except BaseException as exception:
                 self._capture_exception(exception)
+
+        if self._abort_requested or self._exception is not None:
+            self._abort_encoder()
+            return
 
         try:
-            for packet in self.stream.encode():
-                self.container.mux(packet)
+            self.encoder.finish()
         except BaseException as exception:
             self._capture_exception(exception)
-        finally:
-            try:
-                self.container.close()
-            except BaseException as exception:
-                self._capture_exception(exception)
+            self._abort_encoder()
 
-    def _encode_and_write_frame(self, frame: PixelArray, num_frames: int) -> None:
-        for _ in range(num_frames):
-            # Notes: precomputing reusing packets does not work!
-            # I.e., you cannot do `packets = encode(...)`
-            # and reuse it, as it seems that `mux(...)`
-            # consumes the packet.
-            # The same issue applies for `av_frame`,
-            # reusing it renders weird-looking frames.
-            av_frame = av.VideoFrame.from_ndarray(frame, format="rgba")
-            for packet in self.stream.encode(av_frame):
-                self.container.mux(packet)
-
-    def put(self, num_frames: int, frame: PixelArray) -> None:
+    def put(self, repeat: int, frame: RGBAPixelArray) -> None:
         """Add a frame to the encoding queue."""
-        self.queue.put((num_frames, frame))
+        self.queue.put((repeat, frame))
 
     def seal(self) -> None:
         """Signal that no more frames will be added."""
-        self.queue.put((-1, None))
+        if not self._sealed:
+            self._sealed = True
+            self.queue.put((-1, None))
+
+    def abort(self) -> None:
+        """Signal that the segment must be discarded."""
+        self._abort_requested = True
+        self.seal()
 
     def join(self) -> None:
         """Wait for encoding to finish and propagate worker failures."""
         self.thread.join()
         if self._exception is not None:
-            # A failed encode may leave a structurally valid but truncated
-            # file behind; remove it so a later run cannot cache-hit it.
-            try:
-                Path(self.path).unlink(missing_ok=True)
-            except OSError as cleanup_error:
-                logger.warning(
-                    "Failed to remove incomplete partial movie file %(path)s: "
-                    "%(error)s",
-                    {"path": f"'{self.path}'", "error": cleanup_error},
-                )
             raise self._exception
+        if not self._abort_requested:
+            logger.info(
+                f"Animation {self.animation_index} : Partial movie file written in %(path)s",
+                {"path": f"'{self.path}'"},
+            )
 
-        logger.info(
-            f"Animation {self.animation_index} : Partial movie file written in %(path)s",
-            {"path": f"'{self.path}'"},
+
+@dataclass(frozen=True, slots=True)
+class _SceneFileWriterSettings:
+    """Immutable inputs consumed by one :class:`SceneFileWriter`.
+
+    The settings contain resolved output paths and segment encoding, bounded
+    encoder-pool limits, cache maintenance, and the sound-asset search root.
+    """
+
+    plan: OutputPlan
+    video_encoder: VideoEncoderSpec | None
+    max_inflight_encoders: int
+    encoder_queue_size: int
+    max_files_cached: int
+    assets_dir: Path
+
+    def __post_init__(self) -> None:
+        output = self.plan.output
+        if output.is_video != (self.video_encoder is not None):
+            raise ValueError(
+                "Video output and resolved video encoder settings must be provided together.",
+            )
+        expected_segment_extension = (
+            output.segment_extension if output.is_video else None
         )
+        if self.plan.segment_extension != expected_segment_extension:
+            raise ValueError(
+                "The output plan segment extension does not match its output specification.",
+            )
+        if (
+            self.video_encoder is not None
+            and f".{self.video_encoder.container_format}" != expected_segment_extension
+        ):
+            raise ValueError(
+                "The video encoder container does not match the output plan.",
+            )
+        if self.max_inflight_encoders <= 0:
+            raise ValueError("max_inflight_encoders must be positive.")
+        if self.encoder_queue_size <= 0:
+            raise ValueError("encoder_queue_size must be positive.")
+        if self.max_files_cached < -1:
+            raise ValueError("max_files_cached must be non-negative or -1.")
+        if not self.assets_dir.is_absolute():
+            raise ValueError("assets_dir must be absolute.")
 
 
 class SceneFileWriter:
-    """SceneFileWriter is the object that actually writes the animations
-    played, into video files, using FFMPEG.
-    This is mostly for Manim's internal use. You will rarely, if ever,
-    have to use the methods for this class, unless tinkering with the very
-    fabric of Manim's reality.
+    """Coordinate segment jobs and assemble one scene's media artifacts.
+
+    The writer receives immutable resolved settings and concrete top-left-origin
+    RGBA arrays. Ownership of each array passed to
+    :meth:`write_frame` transfers to the writer; callers must not mutate or reuse
+    it afterward. For video output the writer coordinates queued
+    :class:`.VideoSegmentEncoder` jobs, then assembles their silent cached
+    segments with optional audio, sections, and subcaptions. It also writes
+    still images and PNG sequences described by the output plan.
+
+    Parameters
+    ----------
+    settings
+        Resolved output, encoding, pool, cache, and asset-search settings.
 
     Attributes
     ----------
-        sections : list of :class:`.Section`
-            used to segment scene
-
-        sections_output_dir : :class:`pathlib.Path`
-            where are section videos stored
-
-        output_name : str
-            name of movie without extension and basis for section video names
-
-    Some useful attributes are:
-        "write_to_movie" (bool=False)
-            Whether or not to write the animations into a video file.
-        "movie_file_extension" (str=".mp4")
-            The file-type extension of the outputted video.
-        "partial_movie_files"
-            List of all the partial-movie files.
-
+    sections
+        Ordered section metadata for the scene.
+    partial_movie_files
+        Segment paths in animation order, including ``None`` for skipped plays.
     """
 
-    force_output_as_scene_name = False
-
-    def __init__(
-        self,
-        renderer: CairoRenderer | OpenGLRenderer,
-        scene_name: str,
-        **kwargs: Any,
-    ) -> None:
-        self.renderer = renderer
+    def __init__(self, settings: _SceneFileWriterSettings) -> None:
+        self.settings = settings
+        self.output_spec = settings.plan.output
+        self.output_plan = settings.plan
+        self.video_encoder = settings.video_encoder
         self._inflight_encode_jobs: list[_PartialMovieEncodeJob] = []
         self._inflight_by_path: dict[str, _PartialMovieEncodeJob] = {}
         self._current_encode_job: _PartialMovieEncodeJob | None = None
-        self.init_output_directories(scene_name)
         self.init_audio()
         self.frame_count = 0
         self.partial_movie_files: list[str | None] = []
@@ -247,82 +250,59 @@ class SceneFileWriter:
             name="autocreated", type_=DefaultSectionType.NORMAL, skip_animations=False
         )
 
-    def init_output_directories(self, scene_name: str) -> None:
-        """Initialise output directories.
+    @property
+    def output_name(self) -> Path:
+        """Return the planned logical output stem as a compatibility view."""
+        return Path(self.output_plan.output_stem)
 
-        Notes
-        -----
-        The directories are read from ``config``, for example
-        ``config['media_dir']``.  If the target directories don't already
-        exist, they will be created.
+    @property
+    def image_file_path(self) -> Path:
+        """Return the planned still or video-fallback image path."""
+        if self.output_spec.is_image_sequence:
+            return self.image_sequence_directory.with_suffix(".png")
+        path = (
+            self.output_plan.primary_artifact
+            if self.output_spec.is_still
+            else self.output_plan.fallback_image
+        )
+        if path is None:
+            raise AttributeError("This output plan does not contain an image path.")
+        return path
 
-        """
-        if config["dry_run"]:  # in dry-run mode there is no output
-            return
+    @property
+    def image_sequence_directory(self) -> Path:
+        """Return the planned PNG-sequence directory."""
+        path = self.output_plan.image_sequence_dir
+        if path is None:
+            raise AttributeError("This output plan does not contain an image sequence.")
+        return path
 
-        module_name = config.get_dir("input_file").stem if config["input_file"] else ""
+    @property
+    def movie_file_path(self) -> Path:
+        """Return the planned primary video artifact path."""
+        if not self.output_spec.is_video or self.output_plan.primary_artifact is None:
+            raise AttributeError("This output plan does not contain a video artifact.")
+        return self.output_plan.primary_artifact
 
-        if SceneFileWriter.force_output_as_scene_name:
-            self.output_name = Path(scene_name)
-        elif config["output_file"] and not config["write_all"]:
-            self.output_name = config.get_dir("output_file")
-        else:
-            self.output_name = Path(scene_name)
+    @property
+    def gif_file_path(self) -> Path:
+        """Return the planned GIF artifact path."""
+        if not self.output_spec.is_gif:
+            raise AttributeError("This output plan does not contain a GIF artifact.")
+        return self.movie_file_path
 
-        if config["media_dir"]:
-            image_dir = guarantee_existence(
-                config.get_dir(
-                    "images_dir", module_name=module_name, scene_name=scene_name
-                ),
-            )
-            self.image_file_path = image_dir / add_extension_if_not_present(
-                self.output_name, ".png"
-            )
+    @property
+    def sections_output_dir(self) -> Path:
+        """Return the planned sections directory, or the legacy empty path."""
+        return self.output_plan.sections_dir or Path("")
 
-        if write_to_movie():
-            movie_dir = guarantee_existence(
-                config.get_dir(
-                    "video_dir", module_name=module_name, scene_name=scene_name
-                ),
-            )
-            self.movie_file_path = movie_dir / add_extension_if_not_present(
-                self.output_name, config["movie_file_extension"]
-            )
-
-            # TODO: /dev/null would be good in case sections_output_dir is used without being set (doesn't work on Windows), everyone likes defensive programming, right?
-            self.sections_output_dir = Path("")
-            if config.save_sections:
-                self.sections_output_dir = guarantee_existence(
-                    config.get_dir(
-                        "sections_dir", module_name=module_name, scene_name=scene_name
-                    )
-                )
-
-            if is_gif_format():
-                self.gif_file_path = add_extension_if_not_present(
-                    self.output_name, ".gif"
-                )
-
-                if not config["output_file"]:
-                    self.gif_file_path = add_version_before_extension(
-                        self.gif_file_path
-                    )
-
-                self.gif_file_path = movie_dir / self.gif_file_path
-
-            self.partial_movie_directory = guarantee_existence(
-                config.get_dir(
-                    "partial_movie_dir",
-                    scene_name=scene_name,
-                    module_name=module_name,
-                ),
-            )
-
-            if config["log_to_file"]:
-                log_dir = guarantee_existence(config.get_dir("log_dir"))
-                set_file_logger(
-                    scene_name=scene_name, module_name=module_name, log_dir=log_dir
-                )
+    @property
+    def partial_movie_directory(self) -> Path:
+        """Return the planned silent-segment cache directory."""
+        path = self.output_plan.segment_cache_dir
+        if path is None:
+            raise AttributeError("This output plan does not contain video segments.")
+        return path
 
     def finish_last_section(self) -> None:
         """Delete current section if it is empty."""
@@ -336,14 +316,13 @@ class SceneFileWriter:
         # images don't support sections
         section_video: str | None = None
         # don't save when None
-        if (
-            not config.dry_run
-            and write_to_movie()
-            and config.save_sections
-            and not skip_animations
-        ):
-            # relative to index file
-            section_video = f"{self.output_name}_{len(self.sections):04}_{name}{config.movie_file_extension}"
+        if self.output_spec.save_sections and not skip_animations:
+            section_path = self.output_plan.section_path(len(self.sections), name)
+            assert self.output_plan.sections_dir is not None
+            # Section stores paths relative to its index file.
+            section_video = section_path.relative_to(
+                self.output_plan.sections_dir,
+            ).as_posix()
 
         self.sections.append(
             Section(
@@ -355,63 +334,27 @@ class SceneFileWriter:
         )
 
     def add_partial_movie_file(self, hash_animation: str | None) -> None:
-        """Adds a new partial movie file path to ``scene.partial_movie_files``
-        and current section from a hash.
+        """Append a planned segment path to the writer and current section.
 
-        This method will compute the path from the hash. In addition to that it
-        adds the new animation to the current section.
+        The list retains one entry per animation so explicit animation indices
+        select the corresponding segment.
 
         Parameters
         ----------
         hash_animation
             Hash of the animation.
         """
-        if not hasattr(self, "partial_movie_directory") or not write_to_movie():
+        if not self.output_spec.is_video:
             return
 
-        # None has to be added to partial_movie_files to keep the right index with scene.num_plays.
-        # i.e if an animation is skipped, scene.num_plays is still incremented and we add an element to partial_movie_file be even with num_plays.
+        # Skipped animations retain a placeholder to preserve index alignment.
         if hash_animation is None:
             self.partial_movie_files.append(None)
             self.sections[-1].partial_movie_files.append(None)
         else:
-            new_partial_movie_file = str(
-                self.partial_movie_directory
-                / f"{hash_animation}{config['movie_file_extension']}"
-            )
+            new_partial_movie_file = str(self.output_plan.segment_path(hash_animation))
             self.partial_movie_files.append(new_partial_movie_file)
             self.sections[-1].partial_movie_files.append(new_partial_movie_file)
-
-    def get_resolution_directory(self) -> str:
-        """Get the name of the resolution directory directly containing
-        the video file.
-
-        This method gets the name of the directory that immediately contains the
-        video file. This name is ``<height_in_pixels_of_video>p<frame_rate>``.
-        For example, if you are rendering an 854x480 px animation at 15fps,
-        the name of the directory that immediately contains the video,  file
-        will be ``480p15``.
-
-        The file structure should look something like::
-
-            MEDIA_DIR
-                |--Tex
-                |--texts
-                |--videos
-                    |--<name_of_file_containing_scene>
-                        |--<height_in_pixels_of_video>p<frame_rate>
-                            |--partial_movie_files
-                            |--<scene_name>.mp4
-                            |--<scene_name>.srt
-
-        Returns
-        -------
-        :class:`str`
-            The name of the directory.
-        """
-        pixel_height = config["pixel_height"]
-        frame_rate = config["frame_rate"]
-        return f"{pixel_height}p{frame_rate}"
 
     # Sound
     def init_audio(self) -> None:
@@ -490,7 +433,7 @@ class SceneFileWriter:
             used there can be referenced here.
 
         """
-        file_path = get_full_sound_file_path(sound_file)
+        file_path = get_full_sound_file_path(sound_file, self.settings.assets_dir)
         # we assume files with .wav / .raw suffix are actually
         # .wav and .raw files, respectively.
         if file_path.suffix not in (".wav", ".raw"):
@@ -510,184 +453,139 @@ class SceneFileWriter:
 
     # Writers
     def begin_animation(
-        self, allow_write: bool = False, file_path: StrPath | None = None
+        self,
+        allow_write: bool = False,
+        *,
+        animation_index: int,
+        file_path: StrPath | None = None,
     ) -> None:
-        """Used internally by manim to stream the animation to FFMPEG for
-        displaying or writing to a file.
+        """Start a segment job for one animation when video writing is enabled.
 
         Parameters
         ----------
         allow_write
-            Whether or not to write to a video file.
+            Whether this animation needs a new segment.
+        animation_index
+            Scene-local animation index used to select and label the segment.
+        file_path
+            Explicit segment target, or ``None`` to use the planned cache path.
         """
-        if write_to_movie() and allow_write:
-            self.open_partial_movie_stream(file_path=file_path)
+        if self.output_spec.is_video and allow_write:
+            self.open_partial_movie_stream(
+                animation_index=animation_index,
+                file_path=file_path,
+            )
 
     def end_animation(self, allow_write: bool = False) -> None:
-        """Internally used by Manim to stop streaming to FFMPEG gracefully.
+        """Seal the current segment job when video writing is enabled.
 
         Parameters
         ----------
         allow_write
-            Whether or not to write to a video file.
+            Whether the current animation has an open segment job.
         """
-        if write_to_movie() and allow_write:
+        if self.output_spec.is_video and allow_write:
             self.close_partial_movie_stream()
 
     def write_frame(
-        self, frame_or_renderer: PixelArray | OpenGLRenderer, num_frames: int = 1
+        self,
+        pixels: RGBAPixelArray,
+        *,
+        repeat: int = 1,
     ) -> None:
-        """Used internally by Manim to write a frame to the FFMPEG input buffer.
+        """Take ownership of one top-left C-contiguous ``uint8`` RGBA frame.
 
-        Parameters
-        ----------
-        frame_or_renderer
-            Pixel array of the frame.
-        num_frames
-            The number of times to write frame.
+        The caller must not mutate or reuse ``pixels`` after this method returns
+        because video encoding can consume the array asynchronously.
         """
-        if write_to_movie():
-            if isinstance(frame_or_renderer, np.ndarray):
-                frame = frame_or_renderer
-            else:
-                frame = (
-                    frame_or_renderer.get_frame()
-                    if config.renderer == RendererType.OPENGL
-                    else frame_or_renderer
-                )
-
+        if self.output_spec.is_video:
             job = self._current_encode_job
             if job is None:
-                # Interactive OpenGL rendering emits frames outside an open
-                # partial movie stream; drop them silently.
+                # Presentation rendering can emit frames outside an open
+                # segment; such frames do not belong to file output.
                 return
             if job.failed:
                 # Surface the failure at the first write after it was captured;
-                # join() unlinks the partial and re-raises.
+                # the worker discards the partial before join() re-raises.
                 job.seal()
                 self._current_encode_job = None
                 job.join()
-            job.put(num_frames, frame)
+            job.put(repeat, pixels)
 
-        if is_png_format() and not config["dry_run"]:
-            if isinstance(frame_or_renderer, np.ndarray):
-                image = Image.fromarray(frame_or_renderer)
-            else:
-                image = (
-                    frame_or_renderer.get_image()
-                    if config.renderer == RendererType.OPENGL
-                    else Image.fromarray(frame_or_renderer)
-                )
-            target_dir = self.image_file_path.parent / self.image_file_path.stem
-            extension = self.image_file_path.suffix
-            self.output_image(
-                image,
-                target_dir,
-                extension,
-                config["zero_pad"],
-            )
+        if self.output_spec.is_image_sequence:
+            self.output_image(Image.fromarray(pixels))
 
-    def output_image(
-        self, image: Image.Image, target_dir: StrPath, ext: str, zero_pad: int
-    ) -> None:
-        if zero_pad:
-            image.save(f"{target_dir}{str(self.frame_count).zfill(zero_pad)}{ext}")
-        else:
-            image.save(f"{target_dir}{self.frame_count}{ext}")
+    def output_image(self, image: Image.Image) -> None:
+        file_path = self.output_plan.image_frame_path(self.frame_count)
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        image.save(file_path)
         self.frame_count += 1
 
-    def save_image(self, image: Image.Image) -> None:
-        """This method saves the image passed to it in the default image directory.
-
-        Parameters
-        ----------
-        image
-            The pixel array of the image to save.
-        """
-        if config["dry_run"]:
+    def save_image(self, pixels: RGBAPixelArray) -> None:
+        """Save one RGBA frame to the planned still-image path."""
+        if not self.output_spec.enabled:
             return
-        if not config["output_file"]:
-            self.image_file_path = add_version_before_extension(self.image_file_path)
-
-        image.save(self.image_file_path)
+        self.image_file_path.parent.mkdir(parents=True, exist_ok=True)
+        Image.fromarray(pixels).save(self.image_file_path)
         self.print_file_ready_message(self.image_file_path)
 
     def finish(self) -> None:
-        """Finishes writing to the FFMPEG buffer or writing images to output directory.
-        Combines the partial movie files into the whole scene.
-        If save_last_frame is True, saves the last frame in the default image directory.
-        """
-        if write_to_movie():
+        """Drain segment jobs and assemble the configured time-based output."""
+        if self.output_spec.is_video:
             self.join_all_encode_jobs()
             self.combine_to_movie()
-            if config.save_sections:
+            if self.output_spec.save_sections:
                 self.combine_to_section_videos()
             # Cache cleanup runs after the in-flight encode jobs have been drained.
-            if config["flush_cache"]:
-                self.flush_cache_directory()
-            else:
-                self.clean_cache()
-        elif is_png_format() and not config["dry_run"]:
-            target_dir = self.image_file_path.parent / self.image_file_path.stem
+            prune_segment_cache(
+                self.partial_movie_directory,
+                self.settings.max_files_cached,
+            )
+        elif self.output_spec.is_image_sequence:
+            target_dir = self.image_sequence_directory
+            self.final_file_path = target_dir
             logger.info("\n%i images ready at %s\n", self.frame_count, str(target_dir))
         if self.subcaptions:
             self.write_subcaption_file()
 
-    def open_partial_movie_stream(self, file_path: StrPath | None = None) -> None:
-        """Open a container holding a video stream.
+    def _create_segment_encoder(self, target: Path) -> VideoSegmentEncoder:
+        encoder = self.video_encoder
+        if encoder is None:
+            raise RuntimeError("Video segment encoding requires resolved settings.")
+        return VideoSegmentEncoder(target=target, spec=encoder)
 
-        This is used internally by Manim initialize the container holding
-        the video stream of a partial movie file.
-        """
+    def open_partial_movie_stream(
+        self,
+        *,
+        animation_index: int,
+        file_path: StrPath | None = None,
+    ) -> None:
+        """Create a queued encoder job for one planned video segment."""
+        if self._current_encode_job is not None:
+            raise RuntimeError(
+                "Cannot open a video segment while another segment is still open.",
+            )
         if file_path is None:
-            file_path = self.partial_movie_files[self.renderer.num_plays]
+            file_path = self.partial_movie_files[animation_index]
             if file_path is None:
                 raise RuntimeError(
                     "open_partial_movie_stream() called for a play that has no "
                     "partial movie file path.",
                 )
+        file_path = Path(file_path)
+        file_path.parent.mkdir(parents=True, exist_ok=True)
         path_key = str(file_path)
         if path_key in self._inflight_by_path:
             self._join_job_and_drain_on_failure(self._inflight_by_path[path_key])
-        self.partial_movie_file_path = file_path
-
-        fps = to_av_frame_rate(config.frame_rate)
-
-        partial_movie_file_codec = "libx264"
-        partial_movie_file_pix_fmt = "yuv420p"
-        av_options = {
-            "an": "1",  # ffmpeg: -an, no audio
-            "crf": "23",  # ffmpeg: -crf, constant rate factor (improved bitrate)
-        }
-
-        if config.movie_file_extension == ".webm":
-            partial_movie_file_codec = "libvpx-vp9"
-            av_options["-auto-alt-ref"] = "1"
-            if config.transparent:
-                partial_movie_file_pix_fmt = "yuva420p"
-
-        elif config.transparent:
-            partial_movie_file_codec = "qtrle"
-            partial_movie_file_pix_fmt = "argb"
-
-        video_container = av.open(file_path, mode="w")
-        stream = video_container.add_stream(
-            partial_movie_file_codec,
-            rate=fps,
-            options=av_options,
-        )
-        stream.pix_fmt = partial_movie_file_pix_fmt
-        stream.width = config.pixel_width
-        stream.height = config.pixel_height
-
+        segment_encoder = self._create_segment_encoder(file_path)
         frame_queue_size = (
-            0 if config.max_inflight_encoders == 1 else config.encoder_queue_size
+            0
+            if self.settings.max_inflight_encoders == 1
+            else self.settings.encoder_queue_size
         )
         self._current_encode_job = _PartialMovieEncodeJob(
-            path=file_path,
-            animation_index=self.renderer.num_plays,
-            container=video_container,
-            stream=stream,
+            animation_index=animation_index,
+            encoder=segment_encoder,
             frame_queue_size=frame_queue_size,
         )
 
@@ -727,24 +625,18 @@ class SceneFileWriter:
             raise first_exception
 
     def abort_encode_jobs(self, reraise_encoder_failures: bool = False) -> None:
-        """Tear down encode jobs after an aborted or rerun render.
+        """Discard the current segment and drain completed encode jobs.
 
-        Seals the current job so its worker can exit (a non-daemon thread
-        blocked on the queue would hang the process at exit), then deletes its
-        partial file unconditionally: an aborted partial is structurally valid
-        but truncated, so leaving it behind produces an erroneous cache hit on
-        a later run. Sealed in-flight jobs are then drained. With
-        ``reraise_encoder_failures=False`` (a render exception is already
-        propagating) drain failures are logged, not raised; with ``True``
-        (rerun path -- no primary exception exists) the first drain failure
-        propagates so corrupt completed partials cannot be silently ignored.
+        When ``reraise_encoder_failures`` is true, the first encoder failure is
+        propagated. Otherwise failures are logged so an active render exception
+        remains primary.
         """
         current_exception: BaseException | None = None
         job = self._current_encode_job
         if job is not None:
-            # Seal before clearing: an interrupt landing between the two
-            # statements must not orphan the worker.
-            job.seal()
+            # Request abort before clearing: an interrupt between these
+            # statements must not orphan a worker blocked on its queue.
+            job.abort()
             self._current_encode_job = None
             job.thread.join()
             current_exception = job._exception
@@ -754,17 +646,10 @@ class SceneFileWriter:
                     job.animation_index,
                     exc_info=current_exception,
                 )
-            try:
-                Path(job.path).unlink(missing_ok=True)
+            else:
                 logger.info(
                     "Discarded partial movie file of aborted animation %(index)d",
                     {"index": job.animation_index},
-                )
-            except OSError as cleanup_error:
-                logger.warning(
-                    "Failed to remove incomplete partial movie file %(path)s: "
-                    "%(error)s",
-                    {"path": f"'{job.path}'", "error": cleanup_error},
                 )
         if reraise_encoder_failures:
             self.join_all_encode_jobs()
@@ -779,12 +664,7 @@ class SceneFileWriter:
                 logger.exception("Encoder failure while aborting render")
 
     def close_partial_movie_stream(self) -> None:
-        """Close the currently opened video container.
-
-        Used internally by Manim to first flush the remaining packages
-        in the video stream holding a partial file, and then close
-        the corresponding container.
-        """
+        """Seal the current segment and enforce the in-flight job limit."""
         job = self._current_encode_job
         if job is None:
             raise RuntimeError(
@@ -796,7 +676,7 @@ class SceneFileWriter:
         self._inflight_by_path[str(job.path)] = job
         self._current_encode_job = None
 
-        while len(self._inflight_encode_jobs) >= config.max_inflight_encoders:
+        while len(self._inflight_encode_jobs) >= self.settings.max_inflight_encoders:
             self._join_job_and_drain_on_failure(self._inflight_encode_jobs[0])
 
     def is_already_cached(self, hash_invocation: str) -> bool:
@@ -812,16 +692,48 @@ class SceneFileWriter:
         :class:`bool`
             Whether the file exists.
         """
-        if not hasattr(self, "partial_movie_directory") or not write_to_movie():
+        if not self.output_spec.is_video:
             return False
-        path = (
-            self.partial_movie_directory
-            / f"{hash_invocation}{config['movie_file_extension']}"
-        )
+        path = self.output_plan.segment_path(hash_invocation)
         path_key = str(path)
         if path_key in self._inflight_by_path:
             self._join_job_and_drain_on_failure(self._inflight_by_path[path_key])
         return path.exists()
+
+    @staticmethod
+    def _concat_manifest_bytes(input_files: list[str]) -> bytes:
+        """Return a complete FFmpeg concat manifest for ``input_files``."""
+        manifest_text = (
+            "# This file records the segment order used by Manim.\n"
+            + "".join(
+                f"file 'file:{Path(file_path).as_posix()}'\n"
+                for file_path in input_files
+            )
+        )
+        return manifest_text.encode("utf-8")
+
+    def _write_concat_manifest(self, input_files: list[str]) -> None:
+        """Atomically persist the complete scene segment order for diagnostics."""
+        manifest_path = self.output_plan.concat_manifest
+        assert manifest_path is not None
+        manifest_path.parent.mkdir(parents=True, exist_ok=True)
+        temporary_path: Path | None = None
+        try:
+            with NamedTemporaryFile(
+                mode="wb",
+                dir=manifest_path.parent,
+                prefix=f".{manifest_path.name}.",
+                suffix=".tmp",
+                delete=False,
+            ) as temporary_file:
+                temporary_path = Path(temporary_file.name)
+                temporary_file.write(self._concat_manifest_bytes(input_files))
+            temporary_path.replace(manifest_path)
+        except BaseException:
+            if temporary_path is not None:
+                with suppress(OSError):
+                    temporary_path.unlink(missing_ok=True)
+            raise
 
     def combine_files(
         self,
@@ -830,16 +742,12 @@ class SceneFileWriter:
         create_gif: bool = False,
         includes_sound: bool = False,
     ) -> None:
-        file_list = self.partial_movie_directory / "partial_movie_file_list.txt"
+        output_file.parent.mkdir(parents=True, exist_ok=True)
         logger.debug(
             f"Partial movie files to combine ({len(input_files)} files): %(p)s",
             {"p": input_files[:5]},
         )
-        with file_list.open("w", encoding="utf-8") as fp:
-            fp.write("# This file is used internally by FFMPEG.\n")
-            for pf_path in input_files:
-                pf_path = Path(pf_path).as_posix()
-                fp.write(f"file 'file:{pf_path}'\n")
+        manifest = BytesIO(self._concat_manifest_bytes(input_files))
 
         av_options = {
             "safe": "0",  # needed to read files
@@ -849,7 +757,9 @@ class SceneFileWriter:
             av_options["an"] = "1"
 
         partial_movies_input = av.open(
-            str(file_list), options=av_options, format="concat"
+            manifest,
+            options=av_options,
+            format="concat",
         )
         partial_movies_stream = partial_movies_input.streams.video[0]
         output_container = av.open(str(output_file), mode="w")
@@ -866,11 +776,13 @@ class SceneFileWriter:
                 codec_name="gif",
             )
             output_stream.pix_fmt = "rgb8"
-            if config.transparent:
+            if self.output_spec.transparent:
                 output_stream.pix_fmt = "pal8"
-            output_stream.width = config.pixel_width
-            output_stream.height = config.pixel_height
-            output_stream.rate = to_av_frame_rate(config.frame_rate)
+            encoder = self.video_encoder
+            assert encoder is not None
+            output_stream.width = encoder.width
+            output_stream.height = encoder.height
+            output_stream.rate = encoder.frame_rate
             graph = av.filter.Graph()
             input_buffer = graph.add_buffer(template=partial_movies_stream)
             split = graph.add("split")
@@ -912,7 +824,10 @@ class SceneFileWriter:
             output_stream = output_container.add_stream_from_template(
                 template=partial_movies_stream,
             )
-            if config.transparent and config.movie_file_extension == ".webm":
+            if (
+                self.output_spec.transparent
+                and self.output_spec.segment_extension == ".webm"
+            ):
                 output_stream.pix_fmt = "yuva420p"
             for packet in partial_movies_input.demux(partial_movies_stream):
                 # We need to skip the "flushing" packets that `demux` generates.
@@ -928,6 +843,7 @@ class SceneFileWriter:
 
         partial_movies_input.close()
         output_container.close()
+        manifest.close()
 
     def combine_to_movie(self) -> None:
         """Used internally by Manim to combine the separate
@@ -942,7 +858,7 @@ class SceneFileWriter:
 
         # determine output path
         movie_file_path = self.movie_file_path
-        if is_gif_format():
+        if self.output_spec.is_gif:
             movie_file_path = self.gif_file_path
 
         if len(partial_movie_files) == 0:  # Prevent calling concat on empty list
@@ -950,15 +866,16 @@ class SceneFileWriter:
             return
 
         logger.info("Combining to Movie file.")
+        self._write_concat_manifest(partial_movie_files)
         self.combine_files(
             partial_movie_files,
             movie_file_path,
-            is_gif_format(),
+            self.output_spec.is_gif,
             self.includes_sound,
         )
 
         # handle sound
-        if self.includes_sound and config.format != "gif":
+        if self.includes_sound and not self.output_spec.is_gif:
             sound_file_path = movie_file_path.with_suffix(".wav")
             # Makes sure sound file length will match video file
             self.add_audio_segment(AudioSegment.silent(0))
@@ -973,11 +890,11 @@ class SceneFileWriter:
             # but tries to call ffmpeg via its CLI -- which we want
             # to avoid. This is why we need to do the conversion
             # manually.
-            if config.movie_file_extension == ".webm":
+            if self.output_spec.segment_extension == ".webm":
                 ogg_sound_file_path = sound_file_path.with_suffix(".ogg")
                 convert_audio(sound_file_path, ogg_sound_file_path, "libvorbis")
                 sound_file_path = ogg_sound_file_path
-            elif config.movie_file_extension == ".mp4":
+            elif self.output_spec.segment_extension == ".mp4":
                 # Similarly, pyav may reject wav audio in an .mp4 file;
                 # convert to AAC.
                 aac_sound_file_path = sound_file_path.with_suffix(".aac")
@@ -1032,7 +949,7 @@ class SceneFileWriter:
             sound_file_path.unlink()
 
         self.print_file_ready_message(str(movie_file_path))
-        if write_to_movie():
+        if self.output_spec.is_video:
             for file_path in partial_movie_files:
                 # We have to modify the accessed time so if we have to clean the cache we remove the one used the longest.
                 modify_atime(file_path)
@@ -1045,78 +962,29 @@ class SceneFileWriter:
             # only if section does want to be saved
             if section.video is not None:
                 logger.info(f"Combining partial files for section '{section.name}'")
+                section_path = self.sections_output_dir / section.video
                 self.combine_files(
                     section.get_clean_partial_movie_files(),
-                    self.sections_output_dir / section.video,
+                    section_path,
                 )
                 sections_index.append(section.get_dict(self.sections_output_dir))
-        with (self.sections_output_dir / f"{self.output_name}.json").open("w") as file:
+        section_index = self.output_plan.section_index
+        assert section_index is not None
+        section_index.parent.mkdir(parents=True, exist_ok=True)
+        with section_index.open("w") as file:
             json.dump(sections_index, file, indent=4)
 
-    def _cached_partial_movie_files(self) -> list[Path]:
-        """Return the partial movie files currently contained in the cache.
-
-        The partial movie file list is excluded (matching by file name: a
-        ``Path`` never compares equal to its ``str`` name). Hidden files are
-        excluded as well: on macOS, Finder leaves resource forks (``._*.mp4``)
-        and ``.DS_Store`` files in the directory which must not count against
-        ``max_files_cached`` and may vanish again before they could be
-        deleted.
-        """
-        return [
-            self.partial_movie_directory / file_name
-            for file_name in self.partial_movie_directory.iterdir()
-            if file_name.name != "partial_movie_file_list.txt"
-            and not file_name.name.startswith(".")
-        ]
-
-    def clean_cache(self) -> None:
-        """Will clean the cache by removing the oldest partial_movie_files."""
-        cached_partial_movies = self._cached_partial_movie_files()
-        if len(cached_partial_movies) > config["max_files_cached"]:
-            number_files_to_delete = (
-                len(cached_partial_movies) - config["max_files_cached"]
-            )
-
-            def access_time(path: Path) -> float:
-                try:
-                    return path.stat().st_atime
-                except FileNotFoundError:
-                    # The file vanished between listing the directory and
-                    # now; sort it first and let unlink(missing_ok=True)
-                    # handle its deletion without evicting an existing file.
-                    return float("-inf")
-
-            oldest_files_to_delete = sorted(
-                cached_partial_movies,
-                key=access_time,
-            )[:number_files_to_delete]
-            for file_to_delete in oldest_files_to_delete:
-                file_to_delete.unlink(missing_ok=True)
-            logger.info(
-                f"The partial movie directory is full (> {config['max_files_cached']} files). Therefore, manim has removed the {number_files_to_delete} oldest file(s)."
-                " You can change this behaviour by changing max_files_cached in config.",
-            )
-
-    def flush_cache_directory(self) -> None:
-        """Delete all the cached partial movie files"""
-        cached_partial_movies = self._cached_partial_movie_files()
-        for f in cached_partial_movies:
-            f.unlink(missing_ok=True)
-        logger.info(
-            f"Cache flushed. {len(cached_partial_movies)} file(s) deleted in %(par_dir)s.",
-            {"par_dir": self.partial_movie_directory},
-        )
-
     def write_subcaption_file(self) -> None:
-        """Writes the subcaption file."""
-        if config.output_file is None:
+        """Writes the subcaption file next to the primary video artifact."""
+        if not self.output_spec.is_video:
             return
-        subcaption_file = Path(config.output_file).with_suffix(".srt")
+        subcaption_file = self.output_plan.subcaption_file
+        assert subcaption_file is not None
+        subcaption_file.parent.mkdir(parents=True, exist_ok=True)
         subcaption_file.write_text(srt.compose(self.subcaptions), encoding="utf-8")
         logger.info(f"Subcaption file has been written as {subcaption_file}")
 
     def print_file_ready_message(self, file_path: StrPath) -> None:
-        """Prints the "File Ready" message to STDOUT."""
-        config["output_file"] = file_path
+        """Record and report a completed primary artifact."""
+        self.final_file_path = Path(file_path)
         logger.info("\nFile ready at %(file_path)s\n", {"file_path": f"'{file_path}'"})

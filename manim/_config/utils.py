@@ -27,6 +27,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, NoReturn
 import numpy as np
 
 from manim import constants
+from manim._config.output import OutputFormat
 from manim.constants import RendererType
 from manim.utils.color import ManimColor
 from manim.utils.tex import TexTemplate
@@ -262,15 +263,12 @@ class ManimConfig(MutableMapping):
         "assets_dir",
         "background_color",
         "background_opacity",
-        "custom_folders",
         "disable_caching",
         "disable_caching_warning",
         "dry_run",
         "encoder_queue_size",
         "enable_wireframe",
-        "ffmpeg_loglevel",
         "format",
-        "flush_cache",
         "frame_height",
         "frame_rate",
         "frame_width",
@@ -280,26 +278,25 @@ class ManimConfig(MutableMapping):
         "images_dir",
         "input_file",
         "media_embed",
+        "media_loglevel",
         "media_width",
         "log_dir",
         "log_to_file",
         "max_files_cached",
         "max_inflight_encoders",
         "media_dir",
-        "movie_file_extension",
         "notify_outdated_version",
         "output_file",
         "partial_movie_dir",
+        "pixel_format",
         "pixel_height",
         "pixel_width",
         "plugins",
         "preview",
+        "live_preview",
         "progress_bar",
         "quality",
-        "save_as_gif",
         "save_sections",
-        "save_last_frame",
-        "save_pngs",
         "scene_names",
         "seed",
         "show_in_file_browser",
@@ -314,16 +311,16 @@ class ManimConfig(MutableMapping):
         "use_projection_fill_shaders",
         "use_projection_stroke_shaders",
         "verbosity",
+        "video_codec",
         "video_dir",
+        "video_encoder_options",
         "sections_dir",
         "fullscreen",
         "window_position",
         "window_size",
         "window_monitor",
         "write_all",
-        "write_to_movie",
         "zero_pad",
-        "force_window",
         "no_latex_cleanup",
         "preview_command",
     }
@@ -580,28 +577,37 @@ class ManimConfig(MutableMapping):
         """
         self._parser = parser
 
+        self.format = parser["CLI"].get("format", fallback="auto", raw=True)
+        self.video_codec = parser["video_encoder"].get(
+            "codec",
+            fallback="auto",
+            raw=True,
+        )
+        self.pixel_format = parser["video_encoder"].get(
+            "pixel_format",
+            fallback="auto",
+            raw=True,
+        )
+        self.video_encoder_options = dict(
+            parser.items("video_encoder.options", raw=True),
+        )
+
         # boolean keys
         for key in [
             "notify_outdated_version",
-            "write_to_movie",
-            "save_last_frame",
             "write_all",
-            "save_pngs",
-            "save_as_gif",
             "save_sections",
             "preview",
+            "live_preview",
             "show_in_file_browser",
             "log_to_file",
             "disable_caching",
             "disable_caching_warning",
-            "flush_cache",
-            "custom_folders",
             "enable_gui",
             "fullscreen",
             "use_projection_fill_shaders",
             "use_projection_stroke_shaders",
             "enable_wireframe",
-            "force_window",
             "no_latex_cleanup",
             "dry_run",
         ]:
@@ -637,7 +643,6 @@ class ManimConfig(MutableMapping):
             "partial_movie_dir",
             "input_file",
             "output_file",
-            "movie_file_extension",
             "background_color",
             "renderer",
             "window_position",
@@ -691,9 +696,9 @@ class ManimConfig(MutableMapping):
         if progress_bar:
             self.progress_bar = progress_bar
 
-        ffmpeg_loglevel = parser["ffmpeg"].get("loglevel")
-        if ffmpeg_loglevel:
-            self.ffmpeg_loglevel = ffmpeg_loglevel
+        media_loglevel = parser["media"].get("loglevel")
+        if media_loglevel:
+            self.media_loglevel = media_loglevel
 
         try:
             media_embed = parser["jupyter"].getboolean("media_embed")
@@ -755,21 +760,19 @@ class ManimConfig(MutableMapping):
             self.input_file = Path(args.file).absolute()
 
         self.scene_names = args.scene_names if args.scene_names is not None else []
-        self.output_file = args.output_file
+        if args.output_file is not None:
+            self.output_file = args.output_file
 
         for key in [
             "notify_outdated_version",
             "preview",
+            "live_preview",
             "show_in_file_browser",
-            "write_to_movie",
             "save_last_frame",
-            "save_pngs",
-            "save_as_gif",
             "save_sections",
             "write_all",
             "disable_caching",
             "format",
-            "flush_cache",
             "progress_bar",
             "transparent",
             "scene_names",
@@ -782,13 +785,15 @@ class ManimConfig(MutableMapping):
             "use_projection_stroke_shaders",
             "zero_pad",
             "enable_wireframe",
-            "force_window",
             "dry_run",
             "no_latex_cleanup",
             "preview_command",
             "seed",
             "max_inflight_encoders",
             "encoder_queue_size",
+            "video_codec",
+            "pixel_format",
+            "video_encoder_options",
         ]:
             if hasattr(args, key):
                 attr = getattr(args, key)
@@ -808,9 +813,6 @@ class ManimConfig(MutableMapping):
                 # not change the current config
                 if attr is not None:
                     self[key] = attr
-
-        if self["save_last_frame"]:
-            self["write_to_movie"] = False
 
         # Handle the -n flag.
         nflag = args.from_animation_number
@@ -836,30 +838,9 @@ class ManimConfig(MutableMapping):
         if fps:
             self.frame_rate = float(fps)
 
-        # Handle --custom_folders
-        if args.custom_folders:
-            for opt in [
-                "media_dir",
-                "video_dir",
-                "sections_dir",
-                "images_dir",
-                "text_dir",
-                "tex_dir",
-                "log_dir",
-                "partial_movie_dir",
-            ]:
-                self[opt] = self._parser["custom_folders"].get(opt, raw=True)
-            # --media_dir overrides the default.cfg file
-            if hasattr(args, "media_dir") and args.media_dir:
-                self.media_dir = args.media_dir
-
         # Handle --tex_template
         if args.tex_template:
             self.tex_template = TexTemplate.from_file(args.tex_template)
-
-        if self.renderer == RendererType.OPENGL and args.write_to_movie is None:
-            # --write_to_movie was not passed on the command line, so don't generate video.
-            self["write_to_movie"] = False
 
         # Handle --gui_location flag.
         if args.gui_location is not None:
@@ -911,12 +892,21 @@ class ManimConfig(MutableMapping):
 
     @property
     def preview(self) -> bool:
-        """Whether to play the rendered movie (-p)."""
-        return self._d["preview"] or self._d["enable_gui"]
+        """Whether to open the completed artifact after rendering (-p)."""
+        return self._d["preview"]
 
     @preview.setter
     def preview(self, value: bool) -> None:
         self._set_boolean("preview", value)
+
+    @property
+    def live_preview(self) -> bool:
+        """Whether to display frames in a renderer-provided live preview (-l)."""
+        return self._d["live_preview"]
+
+    @live_preview.setter
+    def live_preview(self, value: bool) -> None:
+        self._set_boolean("live_preview", value)
 
     @property
     def show_in_file_browser(self) -> bool:
@@ -955,22 +945,18 @@ class ManimConfig(MutableMapping):
         self._set_boolean("notify_outdated_version", value)
 
     @property
-    def write_to_movie(self) -> bool:
-        """Whether to render the scene to a movie file (-w)."""
-        return self._d["write_to_movie"]
-
-    @write_to_movie.setter
-    def write_to_movie(self, value: bool) -> None:
-        self._set_boolean("write_to_movie", value)
-
-    @property
     def save_last_frame(self) -> bool:
-        """Whether to save the last frame of the scene as an image file (-s)."""
-        return self._d["save_last_frame"]
+        """Whether to save the last frame of the scene as a PNG (-s)."""
+        return OutputFormat.parse(self.format) is OutputFormat.PNG
 
     @save_last_frame.setter
     def save_last_frame(self, value: bool) -> None:
-        self._set_boolean("save_last_frame", value)
+        if not isinstance(value, bool):
+            raise ValueError("save_last_frame must be boolean")
+        if value:
+            self.format = OutputFormat.PNG
+        elif self.save_last_frame:
+            self.format = OutputFormat.AUTO
 
     @property
     def write_all(self) -> bool:
@@ -980,24 +966,6 @@ class ManimConfig(MutableMapping):
     @write_all.setter
     def write_all(self, value: bool) -> None:
         self._set_boolean("write_all", value)
-
-    @property
-    def save_pngs(self) -> bool:
-        """Whether to save all frames in the scene as images files (-g)."""
-        return self._d["save_pngs"]
-
-    @save_pngs.setter
-    def save_pngs(self, value: bool) -> None:
-        self._set_boolean("save_pngs", value)
-
-    @property
-    def save_as_gif(self) -> bool:
-        """Whether to save the rendered scene in .gif format (-i)."""
-        return self._d["save_as_gif"]
-
-    @save_as_gif.setter
-    def save_as_gif(self, value: bool) -> None:
-        self._set_boolean("save_as_gif", value)
 
     @property
     def save_sections(self) -> bool:
@@ -1016,15 +984,6 @@ class ManimConfig(MutableMapping):
     @enable_wireframe.setter
     def enable_wireframe(self, value: bool) -> None:
         self._set_boolean("enable_wireframe", value)
-
-    @property
-    def force_window(self) -> bool:
-        """Whether to force window when using the opengl renderer."""
-        return self._d["force_window"]
-
-    @force_window.setter
-    def force_window(self, value: bool) -> None:
-        self._set_boolean("force_window", value)
 
     @property
     def no_latex_cleanup(self) -> bool:
@@ -1059,35 +1018,73 @@ class ManimConfig(MutableMapping):
 
     @property
     def format(self) -> str | None:
-        """File format; "png", "gif", "mp4", "webm" or "mov"."""
+        """Primary output format.
+
+        ``png`` writes only the last frame of the scene;
+        ``png-sequence`` writes every rendered frame. ``auto`` selects MP4 for
+        opaque output and MOV for transparent output, while ``none`` disables
+        media output.
+        """
         return self._d["format"]
 
     @format.setter  # noqa: A003
-    def format(self, val: str) -> None:
-        self._set_from_list(
-            "format",
-            val,
-            [None, "png", "gif", "mp4", "mov", "webm"],
-        )
-        self.resolve_movie_file_extension(self.transparent)
-        if self.format == "webm":
+    def format(self, val: str | OutputFormat | None) -> None:
+        output_format = OutputFormat.parse(val)
+        self._d["format"] = output_format.value
+        if output_format is OutputFormat.WEBM:
             logger.warning(
                 "Output format set as webm, this can be slower than other formats",
             )
 
     @property
-    def ffmpeg_loglevel(self) -> str:
-        """Verbosity level of ffmpeg (no flag)."""
-        return self._d["ffmpeg_loglevel"]
+    def video_codec(self) -> str:
+        """Video encoder used for cached segments."""
+        return self._d["video_codec"]
 
-    @ffmpeg_loglevel.setter
-    def ffmpeg_loglevel(self, val: str) -> None:
+    @video_codec.setter
+    def video_codec(self, value: str) -> None:
+        if not isinstance(value, str) or not value:
+            raise ValueError("video_codec must be a non-empty string")
+        self._d["video_codec"] = value
+
+    @property
+    def pixel_format(self) -> str:
+        """Pixel format used for cached video segments."""
+        return self._d["pixel_format"]
+
+    @pixel_format.setter
+    def pixel_format(self, value: str) -> None:
+        if not isinstance(value, str) or not value:
+            raise ValueError("pixel_format must be a non-empty string")
+        self._d["pixel_format"] = value
+
+    @property
+    def video_encoder_options(self) -> dict[str, str]:
+        """Codec options used for cached video segments."""
+        return dict(self._d["video_encoder_options"])
+
+    @video_encoder_options.setter
+    def video_encoder_options(self, value: Mapping[str, str]) -> None:
+        if not isinstance(value, Mapping) or any(
+            not isinstance(key, str) or not isinstance(option, str)
+            for key, option in value.items()
+        ):
+            raise TypeError("video_encoder_options must map strings to strings")
+        self._d["video_encoder_options"] = dict(value)
+
+    @property
+    def media_loglevel(self) -> str:
+        """Logging level for media operations."""
+        return self._d["media_loglevel"]
+
+    @media_loglevel.setter
+    def media_loglevel(self, value: str) -> None:
         self._set_from_list(
-            "ffmpeg_loglevel",
-            val,
+            "media_loglevel",
+            value,
             ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
         )
-        logging.getLogger("libav").setLevel(self.ffmpeg_loglevel)
+        logging.getLogger("libav").setLevel(self.media_loglevel)
 
     @property
     def media_embed(self) -> bool | None:
@@ -1236,7 +1233,12 @@ class ManimConfig(MutableMapping):
 
     @max_files_cached.setter
     def max_files_cached(self, value: int) -> None:
-        self._set_pos_number("max_files_cached", value, True)
+        if isinstance(value, int) and value >= -1:
+            self._d["max_files_cached"] = value
+        else:
+            raise ValueError(
+                "max_files_cached must be a non-negative integer or -1 for unlimited",
+            )
 
     @property
     def max_inflight_encoders(self) -> int:
@@ -1279,15 +1281,6 @@ class ManimConfig(MutableMapping):
         self._set_pos_number("window_monitor", value, True)
 
     @property
-    def flush_cache(self) -> bool:
-        """Whether to delete all the cached partial movie files."""
-        return self._d["flush_cache"]
-
-    @flush_cache.setter
-    def flush_cache(self, value: bool) -> None:
-        self._set_boolean("flush_cache", value)
-
-    @property
     def disable_caching(self) -> bool:
         """Whether to use scene caching."""
         return self._d["disable_caching"]
@@ -1306,15 +1299,6 @@ class ManimConfig(MutableMapping):
         self._set_boolean("disable_caching_warning", value)
 
     @property
-    def movie_file_extension(self) -> str:
-        """Either .mp4, .webm or .mov."""
-        return self._d["movie_file_extension"]
-
-    @movie_file_extension.setter
-    def movie_file_extension(self, value: str) -> None:
-        self._set_from_list("movie_file_extension", value, [".mp4", ".mov", ".webm"])
-
-    @property
     def background_opacity(self) -> float:
         """A number between 0.0 (fully transparent) and 1.0 (fully opaque)."""
         return self._d["background_opacity"]
@@ -1322,8 +1306,6 @@ class ManimConfig(MutableMapping):
     @background_opacity.setter
     def background_opacity(self, value: float) -> None:
         self._set_between("background_opacity", value, 0, 1)
-        if self.background_opacity < 1:
-            self.resolve_movie_file_extension(is_transparent=True)
 
     @property
     def frame_size(self) -> tuple[int, int]:
@@ -1365,7 +1347,6 @@ class ManimConfig(MutableMapping):
     @transparent.setter
     def transparent(self, value: bool) -> None:
         self._d["background_opacity"] = float(not value)
-        self.resolve_movie_file_extension(value)
 
     @property
     def dry_run(self) -> bool:
@@ -1374,12 +1355,7 @@ class ManimConfig(MutableMapping):
 
     @dry_run.setter
     def dry_run(self, val: bool) -> None:
-        self._d["dry_run"] = val
-        if val:
-            self.write_to_movie = False
-            self.write_all = False
-            self.save_last_frame = False
-            self.format = None
+        self._set_boolean("dry_run", val)
 
     @property
     def renderer(self) -> RendererType:
@@ -1476,22 +1452,6 @@ class ManimConfig(MutableMapping):
     @window_size.setter
     def window_size(self, value: str | tuple[int, ...]) -> None:
         self._d.__setitem__("window_size", value)
-
-    def resolve_movie_file_extension(self, is_transparent: bool) -> None:
-        prev_file_extension = self.movie_file_extension
-        if is_transparent:
-            self.movie_file_extension = ".webm" if self.format == "webm" else ".mov"
-        elif self.format == "webm":
-            self.movie_file_extension = ".webm"
-        elif self.format == "mov":
-            self.movie_file_extension = ".mov"
-        else:
-            self.movie_file_extension = ".mp4"
-        if self.movie_file_extension != prev_file_extension:
-            logger.warning(
-                f"Output format changed to '{self.movie_file_extension}' "
-                "to support transparency",
-            )
 
     @property
     def enable_gui(self) -> bool:
@@ -1776,15 +1736,6 @@ class ManimConfig(MutableMapping):
     @partial_movie_dir.setter
     def partial_movie_dir(self, value: str | Path) -> None:
         self._set_dir("partial_movie_dir", value)
-
-    @property
-    def custom_folders(self) -> str:
-        """Whether to use custom folder output."""
-        return self._d["custom_folders"]
-
-    @custom_folders.setter
-    def custom_folders(self, value: str | Path) -> None:
-        self._set_dir("custom_folders", value)
 
     @property
     def input_file(self) -> str | Path:

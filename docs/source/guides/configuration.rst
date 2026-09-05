@@ -37,11 +37,20 @@ An example of using the above form is:
 This asks Manim to search for a Scene class called :code:`SceneOne` inside the
 file ``file.py`` and render it with medium quality (specified by the ``-qm`` flag).
 
-Another frequently used flag is ``-p`` ("preview"), which makes manim
-open the rendered video after it's done rendering.
+Another frequently used flag is ``-p`` ("preview"), which makes Manim
+open the rendered artifact after rendering. This behavior is the same for all
+renderers.
 
-.. note:: The ``-p`` flag does not change any properties of the global
-          ``config`` dict.  The ``-p`` flag is only a command-line convenience.
+Renderers may also support a live preview while the scene is evaluated. The
+OpenGL renderer provides this with ``-l`` (or ``--live-preview``):
+
+.. code-block:: bash
+
+   manim --renderer=opengl -l <file.py> SceneName
+
+With ``--format=auto``, live preview does not write a media file, keeping the
+interactive workflow fast. Pass a concrete format, such as ``--format=mp4``,
+to record the scene while displaying the live preview.
 
 Advanced examples
 =================
@@ -52,6 +61,10 @@ instead of the whole video, you can execute
 .. code-block:: bash
 
    manim -sqh <file.py> SceneName
+
+The equivalent ``--format=png`` spelling uses the same fast mode that saves only
+the last frame. Use ``--format=png-sequence`` when every rendered frame should
+be written as a numbered PNG instead.
 
 The following example specifies the output file name (with the :code:`-o`
 flag), renders only the first ten animations (:code:`-n` flag) with a white
@@ -161,17 +174,36 @@ and serve the same purpose.  Take, for example, the following config file.
    [CLI]
    # my config file
    output_file = myscene
-   save_as_gif = True
+   format = gif
    background_color = WHITE
 
 Config files are parsed with the standard python library ``configparser``. In
 particular, they will ignore any line that starts with a pound symbol ``#``.
 
+Video encoder profiles use dedicated sections because codec options are arbitrary
+key/value pairs:
+
+.. code-block:: ini
+
+   [video_encoder]
+   codec = libx264
+   pixel_format = yuv420p
+
+   [video_encoder.options]
+   crf = 18
+   preset = slow
+
+``codec`` and ``pixel_format`` default to ``auto``. Manim resolves them from the
+output format and whether alpha is required. The equivalent CLI options are
+``--video-codec``, ``--pixel-format``, and repeatable
+``--encoder-option KEY=VALUE``. If any ``--encoder-option`` is supplied, the CLI
+option map replaces the complete ``[video_encoder.options]`` map.
+
 Now, executing the following command
 
 .. code-block:: bash
 
-   manim -o myscene -i -c WHITE <file.py> SceneName
+   manim -o myscene --format=gif -c WHITE <file.py> SceneName
 
 is equivalent to executing the following command, provided that ``manim.cfg``
 is in the same directory as <file.py>,
@@ -253,7 +285,7 @@ For example, take the following user-wide config file
    # user-wide
    [CLI]
    output_file = myscene
-   save_as_gif = True
+   format = gif
    background_color = WHITE
 
 and the following folder-wide file
@@ -262,7 +294,7 @@ and the following folder-wide file
 
    # folder-wide
    [CLI]
-   save_as_gif = False
+   format = auto
 
 Then, executing :code:`manim <file.py> SceneName` will be equivalent to not
 using any config files and executing
@@ -344,26 +376,17 @@ highest precedence is:
 5. any programmatic changes made after the config system is set.
 
 
-A list of all config options
-****************************
+Inspecting available config options
+***********************************
 
-.. code::
+Run ``manim cfg show`` to inspect the currently resolved configuration and
+``manim render --help`` for the authoritative list of render CLI options. The
+attributes available for programmatic configuration are documented on
+:class:`.ManimConfig`.
 
-   ['aspect_ratio', 'assets_dir', 'background_color', 'background_opacity',
-   'bottom', 'custom_folders', 'disable_caching', 'dry_run',
-   'encoder_queue_size', 'ffmpeg_loglevel', 'flush_cache', 'frame_height', 'frame_rate',
-   'frame_size', 'frame_width', 'frame_x_radius', 'frame_y_radius',
-   'from_animation_number', `fullscreen`, 'images_dir', 'input_file', 'left_side',
-   'log_dir', 'log_to_file', 'max_files_cached', 'max_inflight_encoders',
-   'media_dir', 'media_width', 'movie_file_extension', 'notify_outdated_version',
-   'output_file', 'partial_movie_dir',
-   'pixel_height', 'pixel_width', 'plugins', 'preview',
-   'progress_bar', 'quality', 'right_side', 'save_as_gif', 'save_last_frame',
-   'save_pngs', 'scene_names', 'show_in_file_browser', 'sound', 'tex_dir',
-   'tex_template', 'tex_template_file', 'text_dir', 'top', 'transparent',
-   'upto_animation_number', 'use_opengl_renderer', 'verbosity', 'video_dir',
-   'window_position', 'window_monitor', 'window_size', 'write_all', 'write_to_movie',
-   'enable_wireframe', 'force_window']
+Some CLI conveniences intentionally map to a canonical configuration value. In
+particular, ``-s`` / ``--save_last_frame`` sets ``format = png``; configuration
+files should use the canonical ``format`` option directly.
 
 
 Accessing CLI command options
