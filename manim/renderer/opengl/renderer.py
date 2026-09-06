@@ -19,12 +19,11 @@ from manim.mobject.opengl.opengl_mobject import (
 )
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.typing import Point3D
-from manim.utils.caching import handle_caching_play
 from manim.utils.color import color_to_rgba
-from manim.utils.exceptions import EndSceneEarlyException
 
 from ...constants import *
 from ...scene.scene_file_writer import SceneFileWriter
+from .._execution import _RendererExecutionView
 from ..protocol import RendererCapabilities
 from .shader import Mesh, Shader, shader_program_cache
 from .vectorized_mobject_rendering import (
@@ -56,7 +55,7 @@ __all__ = ["OpenGLRenderer"]
 _active_context = threading.local()
 
 
-class OpenGLRenderer:
+class OpenGLRenderer(_RendererExecutionView):
     """
     An OpenGL-based renderer.
 
@@ -108,13 +107,9 @@ class OpenGLRenderer:
         self.anti_alias_width = 1.5
         self._file_writer_class = file_writer_class
 
-        self._original_skipping_status = skip_animations
-        self.skip_animations = skip_animations
+        self._initialize_execution(skip_animations)
         self.animation_start_time = 0.0
         self.animation_elapsed_time = 0.0
-        self.time = 0.0
-        self.animations_hashes: list[str | None] = []
-        self.num_plays = 0
 
         self.camera = OpenGLCamera()
         self.pressed_keys: set[int] = set()
@@ -591,24 +586,8 @@ class OpenGLRenderer:
         EndSceneEarlyException
             If the number of played animations exceeds the configured upper bound.
         """
-        # there is always at least one section -> no out of bounds here
-        if self.file_writer.sections[-1].skip_animations:
-            self.skip_animations = True
-        if self.file_writer.output_spec.is_still:
-            self.skip_animations = True
-        if (
-            config.from_animation_number > 0
-            and self.num_plays < config.from_animation_number
-        ):
-            self.skip_animations = True
-        if (
-            config.upto_animation_number >= 0
-            and self.num_plays > config.upto_animation_number
-        ):
-            self.skip_animations = True
-            raise EndSceneEarlyException()
+        self.scene._get_manager()._update_skipping_status()
 
-    @handle_caching_play
     def play(
         self,
         scene: Scene,
@@ -616,11 +595,10 @@ class OpenGLRenderer:
         **kwargs: Any,
     ) -> None:
         """
-        Plays the given animations or mobjects in the specified scene.
+        Compatibility entrypoint for Manager-owned OpenGL playback.
 
-        "Playing" here refers to the process of compiling animation data,
-        beginning the animations, updating frames, and finalizing the animation
-        in the context of the renderer.
+        Compilation, selection, state advancement and output orchestration now
+        belong to Manager; this method delegates to its legacy-compatible path.
 
         Parameters
         ----------
@@ -631,40 +609,7 @@ class OpenGLRenderer:
         **kwargs Any
             Additional keyword arguments to pass to the animation compilation.
         """
-        self.open()
-        # TODO: Handle data locking / unlocking.
-        self.animation_start_time = time.time()
-        self.file_writer.begin_animation(
-            not self.skip_animations,
-            animation_index=self.num_plays,
-        )
-
-        scene.compile_animation_data(*animations, **kwargs)
-        scene.begin_animations()
-        if scene.is_current_animation_frozen_frame():
-            self.update_frame(scene)
-
-            output = self.file_writer.output_spec
-            if not self.skip_animations and (
-                output.is_video or output.is_image_sequence
-            ):
-                self.file_writer.write_frame(
-                    self.get_frame(),
-                    repeat=int(config.frame_rate * scene.duration),
-                )
-
-            if self.window is not None:
-                self.window.swap_buffers()
-                while time.time() - self.animation_start_time < scene.duration:
-                    pass
-            self.animation_elapsed_time = scene.duration
-
-        else:
-            scene.play_internal()
-
-        self.file_writer.end_animation(not self.skip_animations)
-        self.time += scene.duration
-        self.num_plays += 1
+        scene._get_manager()._play_opengl(*animations, **kwargs)
 
     def clear_screen(self) -> None:
         """
@@ -699,21 +644,14 @@ class OpenGLRenderer:
 
         Notes
         -----
-        - Updates the frame for the scene.
-        - If animations are skipped, the method returns early.
-        - Writes the current frame using the file writer.
-        - If a window is present, swaps buffers and continues
-          updating frames until the animation elapsed time reaches the frame offset.
+        Draws the current scene. Manager owns output delivery and invokes legacy
+        native presentation separately after securing any requested frame pixels.
+        Drawing does not advance the semantic clock.
         """
         self.update_frame(scene)
 
-        if self.skip_animations:
-            return
-
-        output = self.file_writer.output_spec
-        if output.is_video or output.is_image_sequence:
-            self.file_writer.write_frame(self.get_frame())
-
+    def _present_frame(self, scene: Scene, frame_offset: float) -> None:
+        """Legacy native pacing, invoked after Manager has secured output pixels."""
         if self.window is not None:
             self.window.swap_buffers()
             while self.animation_elapsed_time < frame_offset:

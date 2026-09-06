@@ -356,9 +356,9 @@ first time a call is made which requires a manager, such as ``render()`` or
 **One renderer per scene.** A scene keeps the renderer selected at construction;
 ``scene.renderer`` is read-only. Successive plays reuse that renderer and its
 writer. For another scene, create a new renderer or let the scene create its
-default. The renderer stores the camera, animation clock, play count, and skip
-state; the manager has corresponding properties which are used to read and
-update those values.
+default. The renderer stores the camera and drawing resources. The manager stores
+the animation clock, play count, and skip state; the renderer's corresponding
+properties read and update those values.
 
 The CLI creates a fresh scene for each selected class and each interactive rerun,
 on both Cairo and OpenGL. It closes the previous run's resources before creating
@@ -811,27 +811,28 @@ walk through the code that is run when :meth:`.Scene.play` is called.
 
 As you will see when inspecting the method, :meth:`.Scene.play` first handles
 an OpenGL interactive-thread guard and then delegates to :meth:`.Manager.play`.
-The manager records the current renderer time and calls the renderer's ``play``
-method, in our case :meth:`.CairoRenderer.play`. Once the renderer returns, the
-manager uses the elapsed time to schedule an optional subcaption (see
+The manager records its current time and executes the animation request through
+its private backend-compatibility path. After playback, the manager uses elapsed
+time to schedule an optional subcaption (see
 :meth:`.Scene.play` and :meth:`.Scene.add_subcaption` for more information).
 
 .. warning::
 
-  The manager currently coordinates the call but deliberately preserves the
-  existing renderer implementation. Most compilation, caching, frame iteration,
-  and output behavior described in the following paragraphs still belongs to the
-  renderer and scene during this transitional stage.
+  Manager owns orchestration and state, but this transitional move preserves
+  the existing backend-specific timing conventions. It does not introduce a new
+  schedule or no-raster execution mode. Scene's compilation/mutation helpers
+  remain useful; its playback wrapper delegates the sample loop to Manager.
 
-Inside :meth:`.CairoRenderer.play`, the renderer first checks whether
+In the Cairo playback path, Manager first checks whether
 it may skip rendering of the current play call. This might happen, for example,
 when ``-s`` is passed to the CLI (i.e., only the last frame should be rendered),
 or when the ``-n`` flag is passed and the current play call is outside of the
 specified render bounds. The "skipping status" is updated in form of the
-call to :meth:`.CairoRenderer.update_skipping_status`.
+manager's selection check; :meth:`.CairoRenderer.update_skipping_status` remains
+a compatibility entrypoint.
 
-Next, the renderer asks the scene to process the animations in the play
-call so that renderer obtains all of the information it needs. To
+Next, Manager asks the scene to process the animations in the play
+call so that execution obtains all of the information it needs. To
 be more concrete, :meth:`.Scene.compile_animation_data` is called,
 which then takes care of several things:
 
@@ -843,7 +844,7 @@ which then takes care of several things:
   any animation-related keyword arguments (like ``run_time``,
   or ``rate_func``) passed to :class:`.Scene.play` to each individual
   animation. The processed animations are then stored in the ``animations``
-  attribute of the scene (which the renderer later reads...).
+  attribute of the scene (which Manager's execution path later reads).
 - It adds all mobjects to which the animations that are played are
   bound to to the scene (provided the animation is not an mobject-introducing
   animation -- for these, the addition to the scene happens later).
@@ -862,10 +863,10 @@ After the animation data has been compiled by the scene, the renderer
 continues to prepare for entering the render loop. It now checks the
 skipping status which has been determined before. If the renderer can
 skip this play call, it does so: it sets the current play call hash (which
-we will get back to in a moment) to ``None`` and increases the time of the
-renderer by the determined animation run time.
+we will get back to in a moment) to ``None`` and increases Manager's execution
+time by the determined animation run time.
 
-Otherwise, the renderer checks whether or not Manim's caching system should
+Otherwise, Manager checks whether or not Manim's caching system should
 be used. The idea of the caching system is simple: for every play call, a
 hash value is computed, which is then stored and upon re-rendering the scene,
 the hash is generated again and checked against the stored value. If it is the
@@ -875,14 +876,14 @@ to learn more, the :func:`.get_hash_from_play_call` function in the
 :mod:`.utils.hashing` module is essentially the entry point to the caching
 mechanism.
 
-In the event that the animation has to be rendered, the renderer gives its
+In the event that the animation has to be rendered, Manager gives its
 :class:`.SceneFileWriter` the current animation index and asks it to start a
 segment job. The writer creates a ``VideoSegmentEncoder`` from the resolved
 profile and wraps it in a ``_PartialMovieEncodeJob``. The synchronous segment
 encoder owns its container, video stream, sequential presentation timestamps,
 and target cleanup. The job owns only the frame queue and worker thread. During
 the render loop, concrete top-left-origin ``uint8`` RGBA arrays are added to the
-queue and encoded by the worker. With the writing process in place, the renderer
+queue and encoded by the worker. With the writing process in place, Manager
 then asks the scene to "begin" the animations.
 
 By default, Manim finishes encoding each partial movie file before rendering the
@@ -964,7 +965,7 @@ it partially renders a scene (to produce a background image), and then
 when iterating through the time progression of the animation only the
 "moving mobjects" are re-painted on top of the static background.
 
-The renderer calls :meth:`.CairoRenderer.save_static_frame_data`, which
+Manager calls :meth:`.CairoRenderer.save_static_frame_data`, which
 first checks whether there are currently any static mobjects, and if there
 are, it updates the frame (only with the static mobjects; more about how
 exactly this works in a moment) and then saves a NumPy array representing
@@ -972,7 +973,7 @@ the rendered frame in the ``static_image`` attribute. In our toy example,
 there are no static mobjects, and so the ``static_image`` attribute is
 simply set to ``None``.
 
-Next, the renderer asks the scene whether the current animation is
+Next, Manager asks the scene whether the current animation is
 a "frozen frame" animation, which would mean that the renderer actually
 does not have to repaint the moving mobjects in every frame of the time
 progression. It can then just take the latest static frame, and display it
@@ -986,13 +987,12 @@ throughout the animation.
   implementation of :meth:`.Scene.should_update_mobjects` for
   more details.
 
-If this is not the case (just as in our toy example), the renderer
-then calls the :meth:`.Scene.play_internal` method, which is the
-integral part of the render loop (in which the library steps through
-the time progression of the animation and renders the corresponding
-frames).
+If this is not the case (just as in our toy example), Manager calls
+:meth:`.Scene.play_internal`, preserving the Scene customization seam. Its default
+implementation delegates back to Manager's sample loop, which steps through the
+time progression and requests corresponding frames.
 
-Within :meth:`.Scene.play_internal`, the following steps are performed:
+Within that loop, the following steps are performed:
 
 - The scene determines the run time of the animations by calling
   :meth:`.Scene.get_run_time`. This method basically takes the maximum
@@ -1007,7 +1007,7 @@ Within :meth:`.Scene.play_internal`, the following steps are performed:
   current animations, so starting at 0 and ending at the total animation run time,
   with the step size determined by the render frame rate) of the timeline where
   a new animation frame should be rendered.
-- Then the scene iterates over the time progression: for each time stamp ``t``,
+- Then Manager iterates over the time progression: for each time stamp ``t``,
   :meth:`.Scene.update_to_time` is called, which ...
 
   - ... first computes the time passed since the last update (which might be 0,
@@ -1038,7 +1038,7 @@ then it is now time to *take a picture*!
   with skipped rendering), updater functions still run correctly, and the state
   of the first frame that *is* rendered is kept consistent.
 
-To render an image, the scene calls the corresponding method of its renderer,
+To render an image, Manager calls the corresponding method of its renderer,
 :meth:`.CairoRenderer.render` and passes just the list of *moving mobjects* (remember,
 the *static mobjects* are assumed to have already been painted statically to
 the background of the scene). All of the hard work then happens when the renderer
@@ -1066,8 +1066,9 @@ the implementation -- but the drawing process can be summarized as follows:
   primary view.
 
 After all batches have been processed, :meth:`.CairoRenderer.get_frame` copies the
-rendered image into a top-left-origin, C-contiguous ``uint8`` RGBA array. The renderer
-passes this array to :class:`.SceneFileWriter`. This concludes one iteration of the
+rendered image into a top-left-origin, C-contiguous ``uint8`` RGBA array. The manager
+advances its Cairo sample clock and delivers this array to :class:`.SceneFileWriter`.
+Drawing and readback do not advance time. This concludes one iteration of the
 render loop, and once the time progression has been processed completely, a final bit
 of cleanup is performed before the :meth:`.Scene.play_internal` call is completed.
 
@@ -1082,10 +1083,10 @@ A TL;DR for the render loop, in the context of our toy example, reads as follows
   state of the transformation animation to the desired time stamp (for example,
   at time stamp ``t = 45/30``, the animation is completed to a rate of
   ``alpha = 0.5``).
-- Then the scene asks the renderer to do its job. The only mobject that needs to
+- Then Manager asks the renderer to do its job. The only mobject that needs to
   be processed at this point is the main mobject attached to the transformation.
   The camera supplies its view transform, while Cairo drawing helpers draw the
-  transformed square into the renderer's image buffer. The renderer passes a copy
+  transformed square into the renderer's image buffer. The manager passes a copy
   of that buffer's RGBA pixels to the file writer.
 - At the end of the loop, 90 frames have been passed to the file writer.
 
@@ -1110,7 +1111,7 @@ and :meth:`.Animation.clean_up_from_scene` methods are called.
 
 In the end, the time progression is closed (which completes the displayed progress bar)
 in the terminal. With the closing of the time progression, the
-:meth:`.Scene.play_internal` call is completed, and we return to the renderer,
+:meth:`.Scene.play_internal` wrapper returns to Manager's orchestration,
 which now orders the :class:`.SceneFileWriter` to close the partial movie stream.
 This seals the corresponding encoding job so that it accepts no more frames. With
 the default ``max_inflight_encoders = 1``, the file writer immediately waits for

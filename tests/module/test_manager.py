@@ -12,6 +12,7 @@ from manim import Manager, Scene, tempconfig
 from manim._config.output import OutputFormat
 from manim.animation.animation import Wait
 from manim.constants import RendererType
+from manim.renderer._execution import _ExecutionState
 from manim.renderer.protocol import RendererCapabilities
 from manim.scene.scene import SceneInteractRerun
 from manim.utils.exceptions import EndSceneEarlyException, RerunSceneException
@@ -69,6 +70,7 @@ def test_manager_rejects_explicit_video_for_scene_without_play_calls(
 ):
     config.format = output_format
     renderer = Mock()
+    renderer._claim_execution.return_value = _ExecutionState()
     renderer.capabilities = RendererCapabilities()
     renderer.num_plays = 0
     scene = Scene(renderer)
@@ -86,6 +88,7 @@ def test_manager_rejects_explicit_video_for_scene_without_play_calls(
 def test_manager_warns_when_automatic_video_falls_back_to_still(config):
     config.format = "auto"
     renderer = Mock()
+    renderer._claim_execution.return_value = _ExecutionState()
     renderer.capabilities = RendererCapabilities()
     renderer.num_plays = 0
     scene = Scene(renderer)
@@ -259,7 +262,7 @@ def test_scene_play_adds_subcaption_with_explicit_duration(dry_run, monkeypatch)
     renderer_play = Mock(
         side_effect=lambda *args, **kwargs: setattr(scene.renderer, "time", 4.5)
     )
-    monkeypatch.setattr(scene.renderer, "play", renderer_play)
+    monkeypatch.setattr(scene._get_manager(), "_play", renderer_play)
     animation = Wait()
 
     scene.play(
@@ -294,7 +297,7 @@ def test_scene_play_preserves_scene_add_subcaption_override(dry_run, monkeypatch
     renderer_play = Mock(
         side_effect=lambda *args, **kwargs: setattr(scene.renderer, "time", 4.5)
     )
-    monkeypatch.setattr(scene.renderer, "play", renderer_play)
+    monkeypatch.setattr(scene._get_manager(), "_play", renderer_play)
 
     scene.play(
         Wait(),
@@ -316,7 +319,7 @@ def test_scene_play_uses_animation_duration_for_default_subcaption_after_skip(
     renderer_play = Mock(
         side_effect=lambda *args, **kwargs: setattr(scene.renderer, "time", 3.5)
     )
-    monkeypatch.setattr(scene.renderer, "play", renderer_play)
+    monkeypatch.setattr(scene._get_manager(), "_play", renderer_play)
 
     scene.play(Wait(), subcaption="Hello")
 

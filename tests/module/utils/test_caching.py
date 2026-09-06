@@ -5,11 +5,12 @@ from unittest.mock import Mock, call
 
 import numpy as np
 
-from manim import tempconfig
+import manim.manager as manager_module
+from manim import Manager, tempconfig
+from manim.renderer._execution import _RendererExecutionView
 from manim.utils import caching
 from manim.utils.caching import (
     clear_segment_cache,
-    handle_caching_play,
     prune_segment_cache,
 )
 
@@ -115,14 +116,20 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
     encoder = object()
     fingerprint = Mock(return_value="encoder-token")
     hash_play = Mock(return_value="cache-key")
-    monkeypatch.setattr(caching, "video_encoder_fingerprint", fingerprint)
-    monkeypatch.setattr(caching, "get_hash_from_play_call", hash_play)
+    monkeypatch.setattr(manager_module, "video_encoder_fingerprint", fingerprint)
+    monkeypatch.setattr(manager_module, "get_hash_from_play_call", hash_play)
 
     class FakeScene:
         def __init__(self):
             self.mobjects = [object()]
             self.meshes = [object()]
-            self.session_spec = Mock(video_encoder=encoder)
+            self.session_spec = Mock(video_encoder=encoder, output=Mock(is_still=False))
+            self.manager = None
+            self.duration = 1
+            self.compile_animation_data = Mock()
+            self.begin_animations = Mock()
+            self.play_internal = Mock()
+            self.is_current_animation_frozen_frame = Mock(return_value=False)
 
         def compile_animations(self, *args, **kwargs):
             return []
@@ -130,33 +137,31 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
         def add_mobjects_from_animations(self, animations):
             pass
 
-    class FakeRenderer:
-        _original_skipping_status = False
-        skip_animations = False
-        num_plays = 0
-        animations_hashes = []
+    class FakeRenderer(_RendererExecutionView):
+        def __init__(self):
+            self._initialize_execution(False)
+
         camera = object()
         background_color = np.array([0.1, 0.2, 0.3, 1.0])
         anti_alias_width = 1.5
-        file_writer = Mock()
-
-        def update_skipping_status(self):
-            pass
-
-        @handle_caching_play
-        def play(self, scene, *args, **kwargs):
-            self.num_plays += 1
+        file_writer = Mock(
+            sections=[Mock(skip_animations=False)], output_spec=Mock(is_still=False)
+        )
+        open = Mock()
 
     scene = FakeScene()
     renderer = FakeRenderer()
     renderer.animations_hashes = []
     renderer.file_writer.is_already_cached.side_effect = [False, True]
+    scene.renderer = renderer
+    manager = Manager(scene)
+    manager._file_writer = renderer.file_writer
 
     with tempconfig({"disable_caching": False}):
-        renderer.play(scene)
+        manager._play_opengl()
         with tempconfig({"disable_caching": True}):
-            renderer.play(scene)
-        renderer.play(scene)
+            manager._play_opengl()
+        manager._play_opengl()
 
     assert fingerprint.call_args_list == [call(encoder), call(encoder)]
     assert hash_play.call_count == 2

@@ -3,15 +3,18 @@
 from __future__ import annotations
 
 import datetime
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+import time
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 import srt
 
-from . import logger
+from . import config, logger
 from ._config.logger_utils import set_file_logger
+from ._config.video_encoder import video_encoder_fingerprint
 from .scene.section import DefaultSectionType
 from .utils.exceptions import EndSceneEarlyException, RerunSceneException
 from .utils.file_ops import open_media_file
+from .utils.hashing import get_hash_from_play_call
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -30,6 +33,7 @@ if TYPE_CHECKING:
     from .renderer.opengl.renderer import OpenGLRenderer
     from .scene.scene import Scene
     from .scene.scene_file_writer import SceneFileWriter
+    from .typing import RGBAPixelArray
 
 __all__ = ["Manager"]
 
@@ -40,10 +44,10 @@ class Manager(Generic[SceneT]):
     """Run a scene's rendering steps and clean up its resources.
 
     Each manager works with one :class:`~manim.scene.scene.Scene`. It calls the
-    scene's setup, construct, and tear-down hooks, delegates animation playback to
-    the renderer, and uses a file writer for sections, subcaptions, and audio.
-    Calling :meth:`~manim.scene.scene.Scene.render` creates a manager if needed
-    and stores it in ``scene.manager``.
+    scene's setup, construct, and tear-down hooks, runs animation playback, and
+    uses the renderer for drawing. A file writer handles sections, subcaptions,
+    and audio. Calling :meth:`~manim.scene.scene.Scene.render` creates a manager
+    if needed and stores it in ``scene.manager``.
 
     Parameters
     ----------
@@ -81,6 +85,7 @@ class Manager(Generic[SceneT]):
         if scene.manager is not None:
             raise ValueError("A manager is already attached to this scene.")
         self.scene = scene
+        self._execution = scene.renderer._claim_execution(self)
         self._file_writer: SceneFileWriter | None = None
         self._creating_file_writer = False
         self._log_handler: FileHandler | None = None
@@ -207,30 +212,30 @@ class Manager(Generic[SceneT]):
 
     @property
     def time(self) -> float:
-        """Return the current renderer time."""
-        return self.renderer.time
+        """Return the managed execution time."""
+        return self._execution.time
 
     @time.setter
     def time(self, value: float) -> None:
-        self.renderer.time = value
+        self._execution.time = value
 
     @property
     def num_plays(self) -> int:
-        """Return the current renderer's play count."""
-        return self.renderer.num_plays
+        """Return the managed execution's play count."""
+        return self._execution.num_plays
 
     @num_plays.setter
     def num_plays(self, value: int) -> None:
-        self.renderer.num_plays = value
+        self._execution.num_plays = value
 
     @property
     def skip_animations(self) -> bool:
-        """Return the current renderer's animation skip state."""
-        return self.renderer.skip_animations
+        """Return the managed execution's animation skip state."""
+        return self._execution.skip_animations
 
     @skip_animations.setter
     def skip_animations(self, value: bool) -> None:
-        self.renderer.skip_animations = value
+        self._execution.skip_animations = value
 
     def render(self, preview: bool = False) -> bool:
         """Run the complete render lifecycle for the managed scene.
@@ -384,14 +389,14 @@ class Manager(Generic[SceneT]):
         subcaption_offset
             Offset in seconds from the beginning of the play call.
         kwargs
-            Additional animation arguments forwarded to the renderer.
+            Additional animation arguments passed to Scene's compilation helpers.
         """
         if self._closed or self._closing:
             raise RuntimeError("The Manager is closed or closing.")
         try:
             self._open_log_handler()
             start_time = self.time
-            self.renderer.play(self.scene, *args, **kwargs)
+            self._play(*args, **kwargs)
             run_time = self.time - start_time
 
             if subcaption:
@@ -411,6 +416,239 @@ class Manager(Generic[SceneT]):
             # A direct play() can fail outside render(), so it needs cleanup here too.
             self._cleanup_after_failure()
             raise
+
+    def _play(
+        self, *args: Animation | Mobject | _AnimationBuilder, **kwargs: Any
+    ) -> None:
+        from .renderer.opengl.renderer import OpenGLRenderer
+
+        if isinstance(self.renderer, OpenGLRenderer):
+            self._play_opengl(*args, **kwargs)
+        else:
+            self._play_cairo(*args, **kwargs)
+
+    def _update_skipping_status(self) -> None:
+        if (
+            self.file_writer.sections[-1].skip_animations
+            or self.file_writer.output_spec.is_still
+        ):
+            self.skip_animations = True
+        if (
+            config.from_animation_number > 0
+            and self.num_plays < config.from_animation_number
+        ):
+            self.skip_animations = True
+        if (
+            config.upto_animation_number >= 0
+            and self.num_plays > config.upto_animation_number
+        ):
+            self.skip_animations = True
+            raise EndSceneEarlyException()
+
+    def _play_cairo(
+        self, *args: Animation | Mobject | _AnimationBuilder, **kwargs: Any
+    ) -> None:
+        """Preserve Cairo's existing order while moving its orchestration owner."""
+        scene = self.scene
+        renderer = cast("CairoRenderer", self.renderer)
+        renderer._ensure_open()
+        self.skip_animations = renderer._original_skipping_status
+        self._update_skipping_status()
+        scene.compile_animation_data(*args, **kwargs)
+
+        if self.skip_animations:
+            logger.debug(f"Skipping animation {self.num_plays}")
+            hash_current_animation = None
+            self.time += scene.duration
+        else:
+            if config["disable_caching"]:
+                logger.info("Caching disabled.")
+                hash_current_animation = f"uncached_{self.num_plays:05}"
+            else:
+                assert scene.animations is not None
+                hash_current_animation = get_hash_from_play_call(
+                    scene,
+                    self.camera,
+                    scene.animations,
+                    scene.mobjects,
+                    backend="cairo",
+                    encoder_fingerprint=video_encoder_fingerprint(
+                        self.session_spec.video_encoder
+                    ),
+                    renderer_state=(),
+                )
+                if self.file_writer.is_already_cached(hash_current_animation):
+                    logger.info(
+                        f"Animation {self.num_plays} : Using cached data (hash : %(hash_current_animation)s)",
+                        {"hash_current_animation": hash_current_animation},
+                    )
+                    self.skip_animations = True
+                    self.time += scene.duration
+        self.file_writer.add_partial_movie_file(hash_current_animation)
+        renderer.animations_hashes.append(hash_current_animation)
+        logger.debug(
+            "List of the first few animation hashes of the scene: %(h)s",
+            {"h": str(renderer.animations_hashes[:5])},
+        )
+        self.file_writer.begin_animation(
+            not self.skip_animations, animation_index=self.num_plays
+        )
+        scene.begin_animations()
+        renderer.save_static_frame_data(scene, scene.static_mobjects)
+        if scene.is_current_animation_frozen_frame():
+            renderer.update_frame(scene, mobjects=scene.moving_mobjects)
+            frame = renderer.get_frame()
+            repeats = int(scene.duration * renderer._frame_rate)
+            if not self.skip_animations:
+                self.time += repeats / renderer._frame_rate
+                self.file_writer.write_frame(frame, repeat=repeats)
+        else:
+            scene.play_internal()
+        self.file_writer.end_animation(not self.skip_animations)
+        self.num_plays += 1
+
+    def _play_opengl(
+        self, *args: Animation | Mobject | _AnimationBuilder, **kwargs: Any
+    ) -> None:
+        """Keep the former decorator/body ordering, including double compilation."""
+        scene = self.scene
+        renderer = cast("OpenGLRenderer", self.renderer)
+        self.skip_animations = renderer._original_skipping_status
+        self._update_skipping_status()
+        animations = scene.compile_animations(*args, **kwargs)
+        scene.add_mobjects_from_animations(animations)
+        skipped_at_entry = self.skip_animations
+        if skipped_at_entry:
+            logger.debug(f"Skipping animation {self.num_plays}")
+        else:
+            if not config["disable_caching"]:
+                hash_play = get_hash_from_play_call(
+                    scene,
+                    self.camera,
+                    animations,
+                    scene.mobjects,
+                    backend="opengl",
+                    encoder_fingerprint=video_encoder_fingerprint(
+                        self.session_spec.video_encoder
+                    ),
+                    renderer_state={
+                        "meshes": scene.meshes,
+                        "background_color": renderer.background_color,
+                        "anti_alias_width": renderer.anti_alias_width,
+                    },
+                )
+                if self.file_writer.is_already_cached(hash_play):
+                    logger.info(
+                        f"Animation {self.num_plays} : Using cached data (hash : %(hash_play)s)",
+                        {"hash_play": hash_play},
+                    )
+                    self.skip_animations = True
+            else:
+                hash_play = f"uncached_{self.num_plays:05}"
+            renderer.animations_hashes.append(hash_play)
+            self.file_writer.add_partial_movie_file(hash_play)
+            logger.debug(
+                "List of the first few animation hashes of the scene: %(h)s",
+                {"h": str(renderer.animations_hashes[:5])},
+            )
+
+        renderer.open()
+        renderer.animation_start_time = time.time()
+        self.file_writer.begin_animation(
+            not self.skip_animations, animation_index=self.num_plays
+        )
+        scene.compile_animation_data(*args, **kwargs)
+        scene.begin_animations()
+        if scene.is_current_animation_frozen_frame():
+            renderer.update_frame(scene)
+            output = self.file_writer.output_spec
+            if not self.skip_animations and (
+                output.is_video or output.is_image_sequence
+            ):
+                self.file_writer.write_frame(
+                    renderer.get_frame(),
+                    repeat=int(config.frame_rate * scene.duration),
+                )
+            if renderer.window is not None:
+                renderer.window.swap_buffers()
+                while time.time() - renderer.animation_start_time < scene.duration:
+                    pass
+            renderer.animation_elapsed_time = scene.duration
+        else:
+            scene.play_internal()
+        self.file_writer.end_animation(not self.skip_animations)
+        self.time += scene.duration
+        self.num_plays += 1
+        if skipped_at_entry:
+            renderer.animations_hashes.append(None)
+            self.file_writer.add_partial_movie_file(None)
+
+    def _play_internal(self, skip_rendering: bool = False) -> None:
+        """Own the existing sample loop without changing its callback order."""
+        from .renderer.cairo.renderer import CairoRenderer
+
+        scene = self.scene
+        assert scene.animations is not None
+        scene.duration = scene.get_run_time(scene.animations)
+        scene.time_progression = scene._get_animation_time_progression(
+            scene.animations,
+            scene.duration,
+        )
+        for t in scene.time_progression:
+            scene.update_to_time(t)
+            draw = not skip_rendering and not scene.skip_animation_preview
+            frame = self._draw_animation_frame(t) if draw else None
+            # Preserve the characterized backend timing in this ownership move.
+            # Cairo advances per sample; OpenGL's legacy event-end advance is in
+            # _play_opengl. Neither advance is owned by pixel delivery anymore.
+            if isinstance(self.renderer, CairoRenderer) and not self.skip_animations:
+                self.time += 1 / self.renderer._frame_rate
+            if draw:
+                self._deliver_animation_frame(frame, t)
+            if scene.stop_condition is not None and scene.stop_condition():
+                scene.time_progression.close()
+                break
+        for animation in scene.animations:
+            animation.finish()
+            animation.clean_up_from_scene(scene)
+        if not self.skip_animations:
+            scene.update_mobjects(0)
+        self.renderer.static_image = None  # type: ignore[union-attr]
+        scene.time_progression.close()
+
+    def _draw_animation_frame(self, frame_offset: float) -> RGBAPixelArray | None:
+        from .renderer.cairo.renderer import CairoRenderer
+
+        self.renderer.render(self.scene, frame_offset, self.scene.moving_mobjects)
+        if isinstance(self.renderer, CairoRenderer) or (
+            not self.skip_animations
+            and (
+                self.file_writer.output_spec.is_video
+                or self.file_writer.output_spec.is_image_sequence
+            )
+        ):
+            return self.renderer.get_frame()
+        return None
+
+    def _deliver_animation_frame(
+        self, frame: RGBAPixelArray | None, frame_offset: float
+    ) -> None:
+        from .renderer.opengl.renderer import OpenGLRenderer
+
+        if self.skip_animations:
+            return
+        if frame is not None:
+            self.file_writer.write_frame(frame)
+        if isinstance(self.renderer, OpenGLRenderer):
+            self.renderer._present_frame(self.scene, frame_offset)
+
+    def _legacy_add_frame(self, frame: RGBAPixelArray, num_frames: int = 1) -> None:
+        """Compatibility for explicit Cairo add_frame calls, not evaluation."""
+        renderer = cast("CairoRenderer", self.renderer)
+        renderer._ensure_open()
+        if not self.skip_animations:
+            self.time += num_frames / renderer._frame_rate
+            self.file_writer.write_frame(frame, repeat=num_frames)
 
     def next_section(
         self,

@@ -291,7 +291,9 @@ class Scene:
 
     @property
     def time(self) -> float:
-        """The time since the start of the scene."""
+        """The time since the start of the managed execution."""
+        if self.manager is not None:
+            return self.manager.time
         return self.renderer.time
 
     def __deepcopy__(self, clone_from_id: dict[int, Any]) -> Scene:
@@ -1442,29 +1444,7 @@ class Scene:
         skip_rendering
             Whether the rendering should be skipped, by default False
         """
-        assert self.animations is not None
-        self.duration = self.get_run_time(self.animations)
-        self.time_progression = self._get_animation_time_progression(
-            self.animations,
-            self.duration,
-        )
-        for t in self.time_progression:
-            self.update_to_time(t)
-            if not skip_rendering and not self.skip_animation_preview:
-                self.renderer.render(self, t, self.moving_mobjects)
-            if self.stop_condition is not None and self.stop_condition():
-                self.time_progression.close()
-                break
-
-        for animation in self.animations:
-            animation.finish()
-            animation.clean_up_from_scene(self)
-        if not self.renderer.skip_animations:
-            self.update_mobjects(0)
-        # TODO: The OpenGLRenderer does not have the property static.image.
-        self.renderer.static_image = None  # type: ignore[union-attr]
-        # Closing the progress bar at the end of the play.
-        self.time_progression.close()
+        self._get_manager()._play_internal(skip_rendering=skip_rendering)
 
     def check_interactive_embed_is_valid(self) -> bool:
         assert isinstance(self.renderer, OpenGLRenderer)
