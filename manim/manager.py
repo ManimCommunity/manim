@@ -83,11 +83,13 @@ class Manager(Generic[SceneT]):
         self._log_handler: FileHandler | None = None
         self._closed = False
         self._closing = False
+        self._scope_depth = 0
         scene.manager = self
 
     def __enter__(self) -> Manager[SceneT]:
         if self._closed or self._closing:
             raise RuntimeError("The Manager is closed or closing.")
+        self._scope_depth += 1
         return self
 
     def __exit__(
@@ -96,10 +98,11 @@ class Manager(Generic[SceneT]):
         exc: BaseException | None,
         traceback: TracebackType | None,
     ) -> None:
-        if exc is None:
-            self.close()
-        else:
+        self._scope_depth -= 1
+        if exc is not None:
             self._cleanup_after_failure()
+        elif self._scope_depth == 0:
+            self.close()
 
     def _open_log_handler(self) -> None:
         if self._log_handler is not None:
@@ -119,8 +122,8 @@ class Manager(Generic[SceneT]):
     def close(self) -> None:
         """Drain output, retire the backend, and detach only this Manager's log.
 
-        Successful render currently retains backend readback for compatibility;
-        use this method or a Manager context scope to retire that inspection host.
+        Successful render retires resources automatically unless an explicit
+        Manager context scope extends their lifetime for inspection.
         """
         if self._closed:
             return
@@ -244,7 +247,9 @@ class Manager(Generic[SceneT]):
         :meth:`tear_down`, and :meth:`post_construct`, in that order. Reaching a
         configured animation boundary ends construction normally. Failures during
         setup, construction, teardown, finalization, or preview opening abort
-        encoding jobs before the original exception is propagated.
+        encoding jobs before the original exception is propagated. Successful
+        execution retires resources before returning, unless an explicit Manager
+        context scope extends the backend's inspection lifetime to scope exit.
 
         Parameters
         ----------
@@ -290,7 +295,7 @@ class Manager(Generic[SceneT]):
                 # A rerun has no primary failure to preserve: encoder failures
                 # must prevent reuse of an incomplete/corrupt output session.
                 self.file_writer.abort_encode_jobs(reraise_encoder_failures=True)
-                self._close_log_handler()
+                self._finish_resource_scope()
                 return True
             self.tear_down()
             self.post_construct()
@@ -302,7 +307,7 @@ class Manager(Generic[SceneT]):
                     show_in_file_browser=presentation.show_in_file_browser,
                 )
 
-            self._close_log_handler()
+            self._finish_resource_scope()
             return False
         except BaseException:
             # Even setup or teardown can leave a non-daemon encoder waiting for
@@ -310,6 +315,11 @@ class Manager(Generic[SceneT]):
             if started or self._file_writer is not None:
                 self._cleanup_after_failure()
             raise
+
+    def _finish_resource_scope(self) -> None:
+        self._close_log_handler()
+        if self._scope_depth == 0:
+            self.close()
 
     def get_image(self) -> Image:
         """Materialize current state without entering a timed/output transaction."""

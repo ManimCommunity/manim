@@ -66,28 +66,28 @@ def test_render_opens_before_setup_and_close_retires_real_objects(
         assert scene.manager._file_writer is not None
 
     monkeypatch.setattr(scene, "setup", setup)
-    scene.render()
-    image_path = tmp_path / "texture.png"
-    Image.new("RGBA", (4, 4), "red").save(image_path)
-    renderer.get_texture_id(str(image_path))
-    context = renderer.context
-    frame = renderer.frame_buffer_object
-    program = context.program(
-        vertex_shader="#version 330\nvoid main(){gl_Position=vec4(0);}",
-        fragment_shader="#version 330\nout vec4 color;void main(){color=vec4(1);}",
-    )
-    monkeypatch.setitem(shader_program_cache, "lifecycle-owned", program)
-    unrelated = Mock(ctx=object())
-    monkeypatch.setitem(shader_program_cache, "lifecycle-unrelated", unrelated)
-    resources = [
-        context,
-        frame,
-        *frame.color_attachments,
-        frame.depth_attachment,
-        program,
-        *renderer._textures,
-    ]
-    renderer.close()
+    with scene._get_manager():
+        scene.render()
+        image_path = tmp_path / "texture.png"
+        Image.new("RGBA", (4, 4), "red").save(image_path)
+        renderer.get_texture_id(str(image_path))
+        context = renderer.context
+        frame = renderer.frame_buffer_object
+        program = context.program(
+            vertex_shader="#version 330\nvoid main(){gl_Position=vec4(0);}",
+            fragment_shader="#version 330\nout vec4 color;void main(){color=vec4(1);}",
+        )
+        monkeypatch.setitem(shader_program_cache, "lifecycle-owned", program)
+        unrelated = Mock(ctx=object())
+        monkeypatch.setitem(shader_program_cache, "lifecycle-unrelated", unrelated)
+        resources = [
+            context,
+            frame,
+            *frame.color_attachments,
+            frame.depth_attachment,
+            program,
+            *renderer._textures,
+        ]
     assert all(
         isinstance(resource.mglo, moderngl.InvalidObject) for resource in resources
     )
