@@ -1,0 +1,12 @@
+{
+  "reps": 500,
+  "unit": "microseconds",
+  "results": {
+    "np.min + np.max [float64]": 38.094,
+    "numpy_minmax.minmax [float64]": 46.554,
+    "np.min + np.max [float32]": 37.176,
+    "numpy_minmax.minmax [float32]": 35.869,
+    "np.min(axis=0) + np.max(axis=0) [float32]": 637.808,
+    "np.min(axis=0) + np.max(axis=0) [float64]": 523.096
+  }
+}
