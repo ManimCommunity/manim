@@ -1,4 +1,5 @@
-"""What every renderer declares: its features and where it is in its life."""
+"""What every renderer declares: its features, where it is in its life, and the
+narrow animation drawing boundary."""
 
 from __future__ import annotations
 
@@ -6,7 +7,12 @@ __all__ = ["Renderer", "RendererCapabilities", "RendererState"]
 
 import enum
 from dataclasses import dataclass
-from typing import ClassVar, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Any, ClassVar, Protocol, runtime_checkable
+
+if TYPE_CHECKING:
+    from manim.mobject.mobject import Mobject
+    from manim.scene.scene import Scene
+    from manim.typing import RGBAPixelArray
 
 
 class RendererState(enum.Enum):
@@ -66,3 +72,27 @@ class Renderer(Protocol):
     def close(self) -> None:
         """Release the drawing resources; the renderer does not draw afterwards."""
         ...
+
+
+class _AnimationRenderer(Protocol):
+    """Drawing/presentation operations, never compilation, selection or clock ticks.
+
+    Kept private during the render-flow migration. The native backend owns wall
+    pacing; Manager owns when these operations are requested and any output delivery.
+    """
+
+    def _animation_cache_identity(self, scene: Scene) -> tuple[str, Any]: ...
+
+    def _start_animation(self) -> None: ...
+
+    def _prepare_animation(self, scene: Scene) -> None: ...
+
+    def render(
+        self, scene: Scene, frame_offset: float, moving_mobjects: list[Mobject], /
+    ) -> None: ...
+
+    def get_frame(self) -> RGBAPixelArray: ...
+
+    def _present_frame(self, scene: Scene, frame_offset: float) -> None: ...
+
+    def _present_frozen_frame(self, scene: Scene, duration: float) -> None: ...
