@@ -30,6 +30,7 @@ except ImportError:
     dearpygui_imported = False
 
 from collections.abc import Callable, Iterable, Sequence
+from types import FrameType
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -68,7 +69,6 @@ from ..utils.iterables import list_difference_update, list_update
 from ..utils.module_ops import scene_classes_from_file
 
 if TYPE_CHECKING:
-    from types import FrameType
     from typing import Self, TypeAlias
 
     from PIL.Image import Image
@@ -1607,7 +1607,7 @@ class Scene:
                 self.renderer.animation_start_time = 0
                 dt = time.time() - last_time
                 last_time = time.time()
-                self.renderer.render(self, dt, self.moving_mobjects)
+                self._get_manager()._render_preview_frame(dt)
                 self.update_mobjects(dt)
                 self.update_meshes(dt)
                 self.update_self(dt)
@@ -1639,7 +1639,7 @@ class Scene:
             return
 
         self.renderer.animation_start_time = 0
-        self.renderer.render(self, -1, self.moving_mobjects)
+        self._get_manager()._render_preview_frame(-1)
 
         # Configure IPython shell.
         from IPython.terminal.embed import InteractiveShellEmbed
@@ -1649,7 +1649,7 @@ class Scene:
         # Have the frame update after each command
         shell.events.register(
             "post_run_cell",
-            lambda *a, **kw: self.renderer.render(self, -1, self.moving_mobjects),
+            lambda *a, **kw: self._get_manager()._render_preview_frame(-1),
         )
 
         # Use the locals of the caller as the local namespace
