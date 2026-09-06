@@ -234,7 +234,7 @@ def test_manager_render_retires_rerun_without_finishing_scene(dry_run, monkeypat
 
 def test_manager_render_finalizes_after_early_scene_end(dry_run):
     lifecycle: list[str] = []
-    renderer = Mock()
+    renderer = Mock(_closed=False, _retiring=False)
     renderer.num_plays = 0
     renderer.scene_finished.side_effect = lambda scene: lifecycle.append(
         "post_construct"

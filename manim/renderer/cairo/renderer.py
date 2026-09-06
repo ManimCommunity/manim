@@ -52,7 +52,6 @@ class CairoRenderer(_RendererExecutionView):
         camera_cls = camera_class if camera_class is not None else Camera
         self.camera = camera if camera is not None else camera_cls()
         self._initialize_execution(skip_animations)
-        self._frame_rate = float(config["frame_rate"])
         self._raster_settings = _raster_settings or _CairoRasterSettings(
             pixel_width=int(config["pixel_width"]),
             pixel_height=int(config["pixel_height"]),
@@ -98,7 +97,22 @@ class CairoRenderer(_RendererExecutionView):
         **kwargs: Any,
     ) -> None:
         """Compatibility entrypoint; Manager owns animation orchestration."""
-        scene._get_manager()._play_cairo(*args, **kwargs)
+        scene._get_manager()._play(*args, **kwargs)
+
+    def _animation_cache_identity(self, scene: Scene) -> tuple[str, Any]:
+        return "cairo", ()
+
+    def _start_animation(self) -> None:
+        self._ensure_open()
+
+    def _prepare_animation(self, scene: Scene) -> None:
+        self.save_static_frame_data(scene, scene.static_mobjects)
+
+    def _present_frame(self, scene: Scene, frame_offset: float) -> None:
+        pass
+
+    def _present_frozen_frame(self, scene: Scene, duration: float) -> None:
+        pass
 
     def _sub_target_for(
         self,
@@ -298,7 +312,7 @@ class CairoRenderer(_RendererExecutionView):
     def freeze_current_frame(self, duration: float) -> None:
         self.add_frame(
             self.get_frame(),
-            num_frames=int(duration * self._frame_rate),
+            num_frames=int(duration * self._scene.session_spec.frame_rate),
         )
 
     def show_frame(self, scene: Scene) -> None:
