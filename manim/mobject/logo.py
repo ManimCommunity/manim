@@ -184,7 +184,7 @@ class ManimBanner(VGroup):
         # and thus not yet added to the submobjects of self.
         self.anim = anim
 
-    def scale(self, scale_factor: float, **kwargs: Any) -> Self:
+    def scale(self, scale_factor: float, **kwargs: Any) -> Self:  # type: ignore[override]
         """Scale the banner by the specified scale factor.
 
         Parameters

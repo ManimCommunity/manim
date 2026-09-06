@@ -657,7 +657,7 @@ class Circle(Arc):
             **kwargs,
         )
 
-    def surround(
+    def surround(  # type: ignore[override]
         self,
         mobject: Mobject,
         dim_to_match: int = 0,
