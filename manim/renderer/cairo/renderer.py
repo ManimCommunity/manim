@@ -292,6 +292,7 @@ class CairoRenderer(_RendererExecutionView):
         return Image.fromarray(self.get_frame())
 
     def add_frame(self, frame: RGBAPixelArray, num_frames: int = 1) -> None:
+        self._ensure_open()
         self._scene._get_manager()._legacy_add_frame(frame, num_frames)
 
     def freeze_current_frame(self, duration: float) -> None:
