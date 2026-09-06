@@ -123,12 +123,15 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
         def __init__(self):
             self.mobjects = [object()]
             self.meshes = [object()]
-            self.session_spec = Mock(video_encoder=encoder, output=Mock(is_still=False))
+            self.session_spec = Mock(
+                video_encoder=encoder, output=Mock(is_still=False), frame_rate=60.0
+            )
+            self.stop_condition = None
+            self.animations = []
             self.manager = None
             self.duration = 1
             self.compile_animation_data = Mock()
             self.begin_animations = Mock()
-            self.play_internal = Mock()
             self.is_current_animation_frozen_frame = Mock(return_value=False)
 
         def compile_animations(self, *args, **kwargs):
@@ -147,7 +150,17 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
         file_writer = Mock(
             sections=[Mock(skip_animations=False)], output_spec=Mock(is_still=False)
         )
-        open = Mock()
+        _closed = False
+        _start_animation = Mock()
+        _prepare_animation = Mock()
+        _is_bound_to = Mock(return_value=True)
+
+        def _animation_cache_identity(self, scene):
+            return "opengl", {
+                "meshes": scene.meshes,
+                "background_color": self.background_color,
+                "anti_alias_width": self.anti_alias_width,
+            }
 
     scene = FakeScene()
     renderer = FakeRenderer()
@@ -156,12 +169,13 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
     scene.renderer = renderer
     manager = Manager(scene)
     manager._file_writer = renderer.file_writer
+    manager._play_internal = Mock()
 
-    with tempconfig({"disable_caching": False}):
-        manager._play_opengl()
+    with tempconfig({"disable_caching": False, "frame_rate": 60}):
+        manager._play()
         with tempconfig({"disable_caching": True}):
-            manager._play_opengl()
-        manager._play_opengl()
+            manager._play()
+        manager._play()
 
     assert fingerprint.call_args_list == [call(encoder), call(encoder)]
     assert hash_play.call_count == 2
@@ -169,10 +183,17 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
         "backend": "opengl",
         "encoder_fingerprint": "encoder-token",
         "renderer_state": {
-            "meshes": scene.meshes,
-            "background_color": renderer.background_color,
-            "anti_alias_width": renderer.anti_alias_width,
-            "execution_clock": "sample-v1",
+            "drawing": {
+                "meshes": scene.meshes,
+                "background_color": renderer.background_color,
+                "anti_alias_width": renderer.anti_alias_width,
+            },
+            "execution": {
+                "clock": "sample-v2",
+                "time": 0,
+                "play_index": 2,
+                "frame_rate": 60.0,
+            },
         },
     }
     assert renderer.animations_hashes == [

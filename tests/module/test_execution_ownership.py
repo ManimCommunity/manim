@@ -51,9 +51,41 @@ def test_manager_does_not_delegate_play_or_selection_to_backend(scene, monkeypat
     rejected = Mock(side_effect=AssertionError("backend executed policy"))
     monkeypatch.setattr(scene.renderer, "play", rejected)
     monkeypatch.setattr(scene.renderer, "update_skipping_status", rejected)
+    # Even an old subclass method with this name is no longer the execution seam.
+    monkeypatch.setattr(scene, "play_internal", rejected, raising=False)
     scene.play(Wait(1, frozen_frame=False))
     assert scene.manager.num_plays == 1
     rejected.assert_not_called()
+
+
+def test_late_manager_cannot_claim_a_rebound_renderers_state(scene):
+    old = Scene()
+    current = Scene(renderer=old.renderer)
+    try:
+        with pytest.raises(RuntimeError, match="renderer was rebound"):
+            Manager(old)
+        assert old.manager is None
+        with current._get_manager() as manager:
+            assert manager.time == 0
+    finally:
+        current.renderer.close()
+
+
+def test_closed_backend_rejected_before_output_startup(scene):
+    manager = scene._get_manager()
+    scene.renderer.close()
+    with pytest.raises(RuntimeError, match="closed"):
+        scene.play(Wait(1, frozen_frame=False))
+    assert manager._file_writer is None
+
+
+def test_shared_play_compiles_once(scene, monkeypatch):
+    compile_data = Mock(wraps=scene.compile_animation_data)
+    compile_animations = Mock(wraps=scene.compile_animations)
+    monkeypatch.setattr(scene, "compile_animation_data", compile_data)
+    monkeypatch.setattr(scene, "compile_animations", compile_animations)
+    scene.play(Wait(1, frozen_frame=False))
+    assert compile_data.call_count == compile_animations.call_count == 1
 
 
 def test_clock_advances_when_drawing_and_delivery_are_stubbed(scene, monkeypatch):
@@ -114,8 +146,8 @@ def test_cached_play_advances_once_before_begin(scene, monkeypatch):
     monkeypatch.setattr(manager.file_writer, "is_already_cached", lambda _: True)
     with tempconfig({"disable_caching": False}):
         scene.play(Probe(Square(), run_time=0.3))
-    assert observed == [("begin", 2.3), ("finish", 2.3)]
-    assert manager.time == 2.3
+    assert observed == [("begin", 2.5), ("finish", 2.5)]
+    assert manager.time == 2.5
 
 
 def test_frozen_clock_does_not_depend_on_output_delivery(scene, monkeypatch):
@@ -128,12 +160,14 @@ def test_frozen_clock_does_not_depend_on_output_delivery(scene, monkeypatch):
     assert manager.time == 0.5
 
 
-def test_sample_clock_uses_progression_rate_not_raster_rate(scene):
-    # Progression already resolves the current config at play time. A stale
-    # Cairo raster rate must not make a 1s/8-sample play consume 2 semantic seconds.
+def test_changed_rate_is_rejected_before_execution(scene):
     with tempconfig({"frame_rate": 8}):
-        scene.wait(1, frozen_frame=False)
-    assert scene.time == 1
+        with pytest.raises(ValueError, match="frame_rate changed"):
+            scene.wait(1, frozen_frame=False)
+        with pytest.raises(ValueError, match="frame_rate changed"):
+            scene.render()
+    assert scene.time == 0
+    assert scene.manager._file_writer is None
 
 
 def test_skipped_stop_wait_keeps_legacy_nominal_span(scene):

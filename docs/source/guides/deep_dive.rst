@@ -812,7 +812,7 @@ walk through the code that is run when :meth:`.Scene.play` is called.
 As you will see when inspecting the method, :meth:`.Scene.play` first handles
 an OpenGL interactive-thread guard and then delegates to :meth:`.Manager.play`.
 The manager records its current time and executes the animation request through
-its private backend-compatibility path. After playback, the manager uses elapsed
+its shared execution path. After playback, the manager uses elapsed
 time to schedule an optional subcaption (see
 :meth:`.Scene.play` and :meth:`.Scene.add_subcaption` for more information).
 
@@ -820,8 +820,8 @@ time to schedule an optional subcaption (see
 
   Manager owns orchestration and state. Both backends now advance execution time
   once per evaluated sample, independently of output delivery. Scene's compilation
-  and mutation helpers remain useful; its playback wrapper delegates the sample
-  loop to Manager. This does not introduce a no-raster execution mode.
+  and mutation helpers remain useful; its public play method submits requests to
+  Manager. This does not introduce a no-raster execution mode.
 
 For normal playback, interpolation and updaters see the start of each sample interval;
 after drawing, the clock advances by ``1 / frame_rate`` before delivery and stop checks.
@@ -829,17 +829,32 @@ Finish and cleanup observe the consumed span, including when a stop condition en
 wait early. A fractional non-frozen duration uses the existing sample grid (so, at
 4 fps, 0.3 seconds consumes two samples and advances 0.5 seconds). Frozen waits retain
 the existing whole-frame repeat count (one frame and 0.25 seconds for that example).
-The clock uses the same current configuration rate as the sample progression, rather
-than a renderer's raster-target rate.
+The requested frame rate is captured with the scene's session settings. Changing it
+between construction and execution raises an error: construct the Scene inside the
+configuration context you intend to use. This prevents mixing a new sampling rate
+with an already-resolved encoder profile. Sample time is calculated from the event
+start and sample index, rather than accumulating floating-point additions.
 
-Skipped and cached plays retain their existing evaluation shortcuts and advance the
-nominal duration before animation begin. They are not equivalent to normal sampling,
-including for waits with stop conditions. OpenGL previously exposed event-start time
-throughout normal playback and advanced nominal duration at event end; it now uses the
-common clock. Its visual cache identity has changed so old time-dependent pixels are
-not reused.
+Explicitly skipped plays retain their evaluation shortcuts and advance nominal
+duration before animation begin. Cache hits instead advance the frame-rounded span
+of normal playback, so subsequent events retain the same clock positions. Cached
+Python state updates are still shortcuts, not a replay guarantee. Events with stop
+conditions are evaluated rather than reused, because cached pixels do not record
+when their stop condition fired.
 
-In the Cairo playback path, Manager first checks whether
+Cache identity includes execution time, play index and requested frame rate alongside
+visual inputs. Equal starting geometry at different timeline positions therefore no
+longer shares a segment. Repeated renders of the same timeline can still reuse their
+segments. This invalidates earlier cache identities on both backends; it does not
+claim to capture arbitrary external Python state.
+
+Both backends use one Manager playback path, compiling animations once. A private
+renderer protocol supplies cache drawing inputs, static preparation, drawing/readback
+and presentation; it does not compile, choose cache hits, or advance semantic time.
+OpenGL previously exposed event-start time throughout playback; it now uses the common
+sample clock.
+
+In that shared playback path, Manager first checks whether
 it may skip rendering of the current play call. This might happen, for example,
 when ``-s`` is passed to the CLI (i.e., only the last frame should be rendered),
 or when the ``-n`` flag is passed and the current play call is outside of the
@@ -1003,10 +1018,9 @@ throughout the animation.
   implementation of :meth:`.Scene.should_update_mobjects` for
   more details.
 
-If this is not the case (just as in our toy example), Manager calls
-:meth:`.Scene.play_internal`, preserving the Scene customization seam. Its default
-implementation delegates back to Manager's sample loop, which steps through the
-time progression and requests corresponding frames.
+If this is not the case (just as in our toy example), Manager enters its own private
+sample loop directly. It steps through the time progression and requests corresponding
+frames. Scene supplies compilation and graph-mutation helpers, not an execution loop.
 
 Within that loop, the following steps are performed:
 
@@ -1047,12 +1061,10 @@ then it is now time to *take a picture*!
 
 .. NOTE::
 
-  The update of the internal state (iteration over the time progression) happens
-  *always* once :meth:`.Scene.play_internal` is entered. This ensures that even
-  if frames do not need to be rendered (because, e.g., the ``-n`` CLI flag has
-  been passed, something has been cached, or because we might be in a *Section*
-  with skipped rendering), updater functions still run correctly, and the state
-  of the first frame that *is* rendered is kept consistent.
+  State updates still happen when Manager's sample loop is entered without
+  pixel delivery. However, legacy cache and skip policies may use endpoint-only
+  updates rather than the normal sample sequence. Stateful updaters are not
+  guaranteed to produce identical Python state under those shortcuts.
 
 To render an image, Manager calls the corresponding method of its renderer,
 :meth:`.CairoRenderer.render` and passes just the list of *moving mobjects* (remember,
@@ -1086,7 +1098,7 @@ rendered image into a top-left-origin, C-contiguous ``uint8`` RGBA array. The ma
 advances its sample clock and delivers this array to :class:`.SceneFileWriter`.
 Drawing and readback do not advance time. This concludes one iteration of the
 render loop, and once the time progression has been processed completely, a final bit
-of cleanup is performed before the :meth:`.Scene.play_internal` call is completed.
+of cleanup is performed before Manager's sample loop is completed.
 
 A TL;DR for the render loop, in the context of our toy example, reads as follows:
 
@@ -1109,7 +1121,7 @@ A TL;DR for the render loop, in the context of our toy example, reads as follows
 Completing the render loop
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The last few steps in the :meth:`.Scene.play_internal` call are not too
+The last few steps in Manager's sample loop are not too
 exciting: for every animation, the corresponding :meth:`.Animation.finish`
 and :meth:`.Animation.clean_up_from_scene` methods are called.
 
@@ -1127,7 +1139,7 @@ and :meth:`.Animation.clean_up_from_scene` methods are called.
 
 In the end, the time progression is closed (which completes the displayed progress bar)
 in the terminal. With the closing of the time progression, the
-:meth:`.Scene.play_internal` wrapper returns to Manager's orchestration,
+sample loop returns to Manager's event orchestration,
 which now orders the :class:`.SceneFileWriter` to close the partial movie stream.
 This seals the corresponding encoding job so that it accepts no more frames. With
 the default ``max_inflight_encoders = 1``, the file writer immediately waits for
