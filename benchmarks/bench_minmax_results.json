@@ -2,7 +2,8 @@
   "reps": 500,
   "unit": "microseconds",
   "results": {
-    "np.min + np.max": 21.954,
-    "np.min(axis=0) + np.max(axis=0)": 634.654
+    "np.min + np.max": 20.909,
+    "numpy_minmax.minmax": 33.596,
+    "np.min(axis=0) + np.max(axis=0)": 481.701
   }
 }

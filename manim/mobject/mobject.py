@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
+import numpy_minmax
 
 from manim.data_structures import MethodWithArgs
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
@@ -2373,14 +2374,15 @@ class Mobject:
             else np.asarray(points)
         )
         values = np_points[:, dim]
+        _min, _max = numpy_minmax.minmax(values.astype(np.float32, copy=False))
         if key < 0:
-            rv: float = np.min(values)
+            rv: float = float(_min)
             return rv
         elif key == 0:
-            rv = (np.min(values) + np.max(values)) / 2
+            rv = (_min + _max) / 2
             return rv
         else:
-            rv = np.max(values)
+            rv = float(_max)
             return rv
 
     def get_critical_point(self, direction: Vector3DLike) -> Point3D:
