@@ -2374,7 +2374,7 @@ class Mobject:
             else np.asarray(points)
         )
         values = np_points[:, dim]
-        _min, _max = numpy_minmax.minmax(values.astype(np.float32, copy=False))
+        _min, _max = numpy_minmax.minmax(values)
         if key < 0:
             rv: float = float(_min)
             return rv
