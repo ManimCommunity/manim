@@ -1433,19 +1433,6 @@ class Scene:
             and self.animations[0].is_static_wait
         )
 
-    def play_internal(self, skip_rendering: bool = False) -> None:
-        """
-        This method is used to prep the animations for rendering,
-        apply the arguments and parameters required to them,
-        render them, and write them to the video file.
-
-        Parameters
-        ----------
-        skip_rendering
-            Whether the rendering should be skipped, by default False
-        """
-        self._get_manager()._play_internal(skip_rendering=skip_rendering)
-
     def check_interactive_embed_is_valid(self) -> bool:
         assert isinstance(self.renderer, OpenGLRenderer)
         if self.skip_animation_preview:

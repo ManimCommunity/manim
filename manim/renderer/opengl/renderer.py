@@ -609,7 +609,28 @@ class OpenGLRenderer(_RendererExecutionView):
         **kwargs Any
             Additional keyword arguments to pass to the animation compilation.
         """
-        scene._get_manager()._play_opengl(*animations, **kwargs)
+        scene._get_manager()._play(*animations, **kwargs)
+
+    def _animation_cache_identity(self, scene: Scene) -> tuple[str, Any]:
+        return "opengl", {
+            "meshes": scene.meshes,
+            "background_color": self.background_color,
+            "anti_alias_width": self.anti_alias_width,
+        }
+
+    def _start_animation(self) -> None:
+        self.open()
+        self.animation_start_time = time.time()
+
+    def _prepare_animation(self, scene: Scene) -> None:
+        pass
+
+    def _present_frozen_frame(self, scene: Scene, duration: float) -> None:
+        if self.window is not None:
+            self.window.swap_buffers()
+            while time.time() - self.animation_start_time < duration:
+                pass
+        self.animation_elapsed_time = duration
 
     def clear_screen(self) -> None:
         """
