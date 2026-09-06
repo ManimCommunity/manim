@@ -66,6 +66,9 @@ class Manager(Generic[SceneT]):
     the file writer when first requested and makes it available before
     :meth:`~manim.scene.scene.Scene.setup` runs.
 
+    Both backends use the same animation clock and sampling rules. Cached and
+    skipped animations follow a separate fast-forward path.
+
     Rendering normally closes the renderer before returning. Use a
     ``with manager:`` block to keep its resources available after a successful
     render, for example to read the last-rendered frame. The block closes them
@@ -498,9 +501,10 @@ class Manager(Generic[SceneT]):
         if scene.is_current_animation_frozen_frame():
             renderer.update_frame(scene, mobjects=scene.moving_mobjects)
             frame = renderer.get_frame()
-            repeats = int(scene.duration * renderer._frame_rate)
+            frame_rate = float(config.frame_rate)
+            repeats = int(scene.duration * frame_rate)
             if not self.skip_animations:
-                self.time += repeats / renderer._frame_rate
+                self.time += repeats / frame_rate
                 self.file_writer.write_frame(frame, repeat=repeats)
         else:
             scene.play_internal()
@@ -535,6 +539,9 @@ class Manager(Generic[SceneT]):
                         "meshes": scene.meshes,
                         "background_color": renderer.background_color,
                         "anti_alias_width": renderer.anti_alias_width,
+                        # Time-dependent user code now sees sample time instead
+                        # of the old event-start time: old pixels are not reusable.
+                        "execution_clock": "sample-v1",
                     },
                 )
                 if self.file_writer.is_already_cached(hash_play):
@@ -558,17 +565,24 @@ class Manager(Generic[SceneT]):
             not self.skip_animations, animation_index=self.num_plays
         )
         scene.compile_animation_data(*args, **kwargs)
+        if self.skip_animations:
+            self.time += scene.duration
         scene.begin_animations()
         if scene.is_current_animation_frozen_frame():
             renderer.update_frame(scene)
             output = self.file_writer.output_spec
-            if not self.skip_animations and (
-                output.is_video or output.is_image_sequence
-            ):
-                self.file_writer.write_frame(
-                    renderer.get_frame(),
-                    repeat=int(config.frame_rate * scene.duration),
-                )
+            frame_rate = float(config.frame_rate)
+            repeats = int(scene.duration * frame_rate)
+            frame = (
+                renderer.get_frame()
+                if not self.skip_animations
+                and (output.is_video or output.is_image_sequence)
+                else None
+            )
+            if not self.skip_animations:
+                self.time += repeats / frame_rate
+                if frame is not None:
+                    self.file_writer.write_frame(frame, repeat=repeats)
             if renderer.window is not None:
                 renderer.window.swap_buffers()
                 while time.time() - renderer.animation_start_time < scene.duration:
@@ -577,17 +591,17 @@ class Manager(Generic[SceneT]):
         else:
             scene.play_internal()
         self.file_writer.end_animation(not self.skip_animations)
-        self.time += scene.duration
         self.num_plays += 1
         if skipped_at_entry:
             renderer.animations_hashes.append(None)
             self.file_writer.add_partial_movie_file(None)
 
     def _play_internal(self, skip_rendering: bool = False) -> None:
-        """Own the existing sample loop without changing its callback order."""
-        from .renderer.cairo.renderer import CairoRenderer
-
+        """Evaluate samples on the common clock, independently of pixel delivery."""
         scene = self.scene
+        # Use the same rate as Scene.get_time_progression, not a backend's
+        # raster-target settings. Resolution timing and sample rounding stay put.
+        sample_step = 1 / config.frame_rate
         assert scene.animations is not None
         scene.duration = scene.get_run_time(scene.animations)
         scene.time_progression = scene._get_animation_time_progression(
@@ -598,11 +612,10 @@ class Manager(Generic[SceneT]):
             scene.update_to_time(t)
             draw = not skip_rendering and not scene.skip_animation_preview
             frame = self._draw_animation_frame(t) if draw else None
-            # Preserve the characterized backend timing in this ownership move.
-            # Cairo advances per sample; OpenGL's legacy event-end advance is in
-            # _play_opengl. Neither advance is owned by pixel delivery anymore.
-            if isinstance(self.renderer, CairoRenderer) and not self.skip_animations:
-                self.time += 1 / self.renderer._frame_rate
+            # The sample represents one interval, including the initial t=0
+            # sample. Stop conditions and finish observe the consumed span.
+            if not self.skip_animations:
+                self.time += sample_step
             if draw:
                 self._deliver_animation_frame(frame, t)
             if scene.stop_condition is not None and scene.stop_condition():
