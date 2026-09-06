@@ -655,6 +655,11 @@ class Manager(Generic[SceneT]):
         if isinstance(self.renderer, OpenGLRenderer):
             self.renderer._present_frame(self.scene, frame_offset)
 
+    def _render_preview_frame(self, frame_offset: float) -> None:
+        """Preserve interactive redraw/delivery without advancing execution time."""
+        frame = self._draw_animation_frame(frame_offset)
+        self._deliver_animation_frame(frame, frame_offset)
+
     def _legacy_add_frame(self, frame: RGBAPixelArray, num_frames: int = 1) -> None:
         """Compatibility for explicit Cairo add_frame calls, not evaluation."""
         renderer = cast("CairoRenderer", self.renderer)
