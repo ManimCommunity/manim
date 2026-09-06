@@ -66,6 +66,7 @@ class CairoRenderer(_RendererExecutionView):
         self._closed = False
 
     def _ensure_open(self) -> None:
+        self._ensure_raster_allowed()
         if self._closed:
             raise RuntimeError("The Cairo renderer is closed.")
 
@@ -290,6 +291,7 @@ class CairoRenderer(_RendererExecutionView):
 
     def _get_scene_image(self, scene: Scene) -> Image.Image:
         """Draw a snapshot with a temporary renderer at the existing resolution."""
+        self._ensure_raster_allowed()
         renderer = CairoRenderer(
             camera=self.camera, _raster_settings=self._raster_settings
         )
