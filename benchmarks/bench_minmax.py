@@ -1,10 +1,17 @@
 """Benchmark: np.min+np.max vs numpy_minmax for arrays used in Manim."""
 
 import json
+import platform
 import time
 from pathlib import Path
 
 import numpy as np
+
+print("Python:", platform.python_version())
+print("NumPy:", np.__version__)
+print("Platform:", platform.platform())
+print("Processor:", platform.processor())
+
 
 try:
     import numpy_minmax
