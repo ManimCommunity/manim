@@ -1,0 +1,8 @@
+{
+  "reps": 500,
+  "unit": "microseconds",
+  "results": {
+    "np.min + np.max": 21.954,
+    "np.min(axis=0) + np.max(axis=0)": 634.654
+  }
+}
