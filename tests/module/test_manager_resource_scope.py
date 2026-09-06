@@ -42,6 +42,58 @@ def test_constructor_and_image_request_do_not_open_log(managed_scene):
     assert scene.manager._log_handler is None
 
 
+def test_success_retires_without_forcing_readback(managed_scene, monkeypatch):
+    scene = managed_scene
+    readback = Mock(wraps=scene.renderer.get_frame)
+    monkeypatch.setattr(scene.renderer, "get_frame", readback)
+    scene.render()
+    readback.assert_not_called()
+    assert scene.manager._closed
+    assert scene.renderer._closed
+    output = scene.manager.output_spec
+    assert not output.enabled
+    with pytest.raises(RuntimeError, match="closed"):
+        scene.renderer.get_frame()
+    assert scene.get_image().size == (64, 32)
+    assert scene.manager.output_spec is output
+    assert scene.renderer._closed
+
+
+def test_nested_inspection_scopes_retire_only_at_outer_exit(managed_scene):
+    scene = managed_scene
+    manager = Manager(scene)
+    with manager:
+        with manager:
+            scene.render()
+        assert not scene.renderer._closed
+        assert scene.renderer.get_frame().shape == (32, 64, 4)
+    assert scene.renderer._closed
+    assert manager._scope_depth == 0
+
+
+def test_success_cleanup_failure_is_reported_and_backend_still_retires(
+    managed_scene, monkeypatch
+):
+    scene = managed_scene
+    manager = Manager(scene)
+    original = manager._close_log_handler
+    failure = RuntimeError("log retirement failed")
+    calls = []
+
+    def close_log():
+        original()
+        calls.append(True)
+        if len(calls) == 1:
+            raise failure
+
+    monkeypatch.setattr(manager, "_close_log_handler", close_log)
+    with pytest.raises(RuntimeError) as caught:
+        manager.render()
+    assert caught.value is failure
+    assert scene.renderer._closed
+    assert manager._closed
+
+
 def test_render_log_is_scoped_and_context_exit_retires_backend(
     managed_scene, monkeypatch
 ):

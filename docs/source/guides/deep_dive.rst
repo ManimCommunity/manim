@@ -366,8 +366,8 @@ File logging starts at execution, not construction. The manager removes and clos
 only its own file handler when rendering ends. Propagated rendering failures drain
 output and retire the bound backend without replacing the primary exception.
 
-Successful rendering currently retains the backend for legacy raw frame readback.
-To give that inspection lifetime an explicit end, use a Manager scope::
+Successful rendering also retires the backend before returning. To inspect the raw
+last-rendered frame, extend that resource lifetime with an explicit Manager scope::
 
     scene = MyScene()
     manager = scene.manager or Manager(scene)
