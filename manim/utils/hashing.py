@@ -290,7 +290,17 @@ class _CustomEncoder(json.JSONEncoder):
                 return repr(obj)
             return _hash_ndarray(obj)
         elif hasattr(obj, "__dict__"):
+            from manim.renderer.cairo.camera import ThreeDCamera
+
             temp = obj.__dict__
+            if isinstance(obj, ThreeDCamera):
+                # Projection caches are derived solely from the camera trackers.
+                # Queries and drawing must not alter visual identity.
+                temp = {
+                    key: value
+                    for key, value in temp.items()
+                    if key not in {"_rotation_matrix", "_rotation_matrix_key"}
+                }
             # MappingProxy is scene-caching nightmare. It contains all of the object methods and attributes. We skip it as the mechanism will at some point process the object, but instantiated.
             # Indeed, there is certainly no case where scene-caching will receive only a non instancied object, as this is never used in the library or encouraged to be used user-side.
             if isinstance(temp, MappingProxyType):
