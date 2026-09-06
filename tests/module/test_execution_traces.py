@@ -1,4 +1,4 @@
-"""Characterize legacy execution before moving its owner (not a new schedule)."""
+"""Common Manager clock contract; legacy traces are preserved in 30a72b67."""
 
 import pytest
 
@@ -8,7 +8,7 @@ from manim import Animation, Scene, Square, tempconfig
 @pytest.mark.parametrize("backend", ["cairo", "opengl"])
 @pytest.mark.parametrize("duration", [1, 0.3])
 @pytest.mark.parametrize("skip", [False, True])
-def test_legacy_animation_clock_trace(backend, duration, skip):
+def test_animation_clock_trace(backend, duration, skip):
     trace = []
     with tempconfig(
         {
@@ -50,26 +50,23 @@ def test_legacy_animation_clock_trace(backend, duration, skip):
             plays = scene.renderer.num_plays
 
     count = 4 if duration == 1 else 2
-    start = duration if skip and backend == "cairo" else 0
+    start = duration if skip else 0
     assert trace[:2] == [("begin", start), ("interpolate", start, 0)]
     updates = [item for item in trace if item[0] == "update"]
     if skip:
         assert updates == [("update", start, duration)]
     else:
-        expected = [
-            ("update", i / 4 if backend == "cairo" else 0, 0 if i == 0 else 0.25)
-            for i in range(count)
-        ]
+        expected = [("update", i / 4, 0 if i == 0 else 0.25) for i in range(count)]
         assert updates == expected
-    finish_time = (duration if skip else count / 4) if backend == "cairo" else 0
+    finish_time = duration if skip else count / 4
     assert ("finish", finish_time) in trace
     assert ("cleanup", finish_time) in trace
-    assert final_time == (count / 4 if backend == "cairo" and not skip else duration)
+    assert final_time == (duration if skip else count / 4)
     assert plays == 1
 
 
 @pytest.mark.parametrize("backend", ["cairo", "opengl"])
-def test_legacy_frozen_wait_clock_trace(backend):
+def test_frozen_wait_clock_trace(backend):
     with tempconfig(
         {
             "renderer": backend,
@@ -85,12 +82,12 @@ def test_legacy_frozen_wait_clock_trace(backend):
         scene = Scene()
         with scene._get_manager():
             scene.wait(0.3, frozen_frame=True)
-            assert scene.time == (0.25 if backend == "cairo" else 0.3)
+            assert scene.time == 0.25
             assert scene.renderer.num_plays == 1
 
 
 @pytest.mark.parametrize("backend", ["cairo", "opengl"])
-def test_legacy_stop_condition_observes_backend_time(backend):
+def test_stop_condition_observes_consumed_time(backend):
     stops = []
     updates = []
     with tempconfig(
@@ -114,8 +111,6 @@ def test_legacy_stop_condition_observes_backend_time(backend):
 
         with scene._get_manager():
             scene.wait(1, stop_condition=stop)
-            assert scene.time == (0.5 if backend == "cairo" else 1)
-    assert stops == ([0.25, 0.5] if backend == "cairo" else [0, 0])
-    assert updates == (
-        [(0, 0), (0.25, 0.25)] if backend == "cairo" else [(0, 0), (0, 0.25)]
-    )
+            assert scene.time == 0.5
+    assert stops == [0.25, 0.5]
+    assert updates == [(0, 0), (0.25, 0.25)]

@@ -172,6 +172,7 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
             "meshes": scene.meshes,
             "background_color": renderer.background_color,
             "anti_alias_width": renderer.anti_alias_width,
+            "execution_clock": "sample-v1",
         },
     }
     assert renderer.animations_hashes == [
