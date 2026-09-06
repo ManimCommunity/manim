@@ -8,6 +8,7 @@ Thematic Guides
 
    configuration
    cameras
+   evaluation
    deep_dive
    using_text
    add_voiceovers

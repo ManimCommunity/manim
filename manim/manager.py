@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import contextlib
 import datetime
 import math
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
@@ -96,6 +97,12 @@ class Manager(Generic[SceneT]):
         self._closed = False
         self._closing = False
         self._scope_depth = 0
+        self._evaluating = False
+        self._evaluation_sections: list[tuple[float, str, str, bool]] = []
+        self._evaluation_subcaptions: list[srt.Subtitle] = []
+        self._evaluation_sounds: list[
+            tuple[float, str, float | None, dict[str, Any]]
+        ] = []
         scene.manager = self
 
     def __enter__(self) -> Manager[SceneT]:
@@ -117,6 +124,8 @@ class Manager(Generic[SceneT]):
             self.close()
 
     def _open_log_handler(self) -> None:
+        if self._evaluating:
+            return
         if self._log_handler is not None:
             return
         path = self.scene._log_file_path
@@ -188,6 +197,10 @@ class Manager(Generic[SceneT]):
         returns the same writer. Both properties are read-only. To choose a custom
         writer class, pass ``file_writer_class`` when constructing the renderer.
         """
+        if self._evaluating:
+            raise RuntimeError(
+                "Media output is unavailable during no-raster evaluation."
+            )
         if self._file_writer is None:
             if self._closed or self._closing:
                 raise RuntimeError(
@@ -280,6 +293,8 @@ class Manager(Generic[SceneT]):
         """
         from .renderer.opengl.renderer import OpenGLRenderer
 
+        if self._evaluating:
+            raise RuntimeError("Cannot render during no-raster evaluation.")
         self._validate_execution()
         started = False
         try:
@@ -325,6 +340,50 @@ class Manager(Generic[SceneT]):
                 self._cleanup_after_failure()
             raise
 
+    def evaluate(self) -> None:
+        """Run setup, construction and teardown without engine pixels or media.
+
+        Uses normal interpolation/updaters/stop conditions and the same clock as
+        uncached rendering. Cache, skip and range selection are ignored. Explicit
+        bound-scene image/GPU/output requests are rejected. Arbitrary user code is
+        still executed: this is not a sandbox or a guarantee of zero user I/O.
+
+        Start with an unused, cold Scene. Time and scene state remain inspectable;
+        no file writer, encoder, native host or execution log is implicitly opened.
+        """
+        self._validate_execution()
+        if self._evaluating:
+            raise RuntimeError("Recursive evaluation is not supported.")
+        if (
+            self._file_writer is not None
+            or self.num_plays
+            or getattr(self.renderer, "_target", None) is not None
+            or getattr(self.renderer, "_context", None) is not None
+        ):
+            raise RuntimeError("No-raster evaluation requires a cold, unused Scene.")
+        self._evaluating = True
+        self.skip_animations = False
+        try:
+            self._check_evaluation_scene()
+            self.setup()
+            self._check_evaluation_scene()
+            with contextlib.suppress(EndSceneEarlyException):
+                self.construct()
+            self.tear_down()
+            self._check_evaluation_scene()
+            self._finish_resource_scope()
+        except BaseException:
+            self._cleanup_after_failure()
+            raise
+        finally:
+            self._evaluating = False
+
+    def _check_evaluation_scene(self) -> None:
+        if self._evaluating and self.scene.meshes:
+            raise RuntimeError(
+                "GPU-backed meshes are unsupported in no-raster evaluation."
+            )
+
     def _finish_resource_scope(self) -> None:
         self._close_log_handler()
         if self._scope_depth == 0:
@@ -332,6 +391,10 @@ class Manager(Generic[SceneT]):
 
     def get_image(self) -> Image:
         """Draw a fresh scene image; see :meth:`.Scene.get_image` for snapshot behavior."""
+        if self._evaluating:
+            raise RuntimeError(
+                "Image requests are unavailable during no-raster evaluation."
+            )
         return self.renderer._get_scene_image(self.scene)
 
     def setup(self) -> None:
@@ -456,10 +519,38 @@ class Manager(Generic[SceneT]):
         self._validate_execution()
         scene = self.scene
         renderer: _AnimationRenderer = self.renderer
-        self.skip_animations = self._execution.original_skipping_status
-        self._update_skipping_status()
+        self._check_evaluation_scene()
+        self.skip_animations = (
+            False if self._evaluating else self._execution.original_skipping_status
+        )
+        if not self._evaluating:
+            self._update_skipping_status()
         scene.compile_animation_data(*args, **kwargs)
+        if not self._evaluating:
+            self._begin_animation_output()
+        scene.begin_animations()
+        self._check_evaluation_scene()
+        if not self._evaluating:
+            renderer._prepare_animation(scene)
+        if scene.is_current_animation_frozen_frame():
+            frame = None if self._evaluating else self._draw_animation_frame(0)
+            frame_rate = self.session_spec.frame_rate
+            repeats = int(scene.duration * frame_rate)
+            if not self.skip_animations:
+                self.time += repeats / frame_rate
+                if frame is not None:
+                    self.file_writer.write_frame(frame, repeat=repeats)
+            if not self._evaluating:
+                renderer._present_frozen_frame(scene, scene.duration)
+        else:
+            self._play_internal()
+        if not self._evaluating:
+            self.file_writer.end_animation(not self.skip_animations)
+        self.num_plays += 1
 
+    def _begin_animation_output(self) -> None:
+        scene = self.scene
+        renderer: _AnimationRenderer = self.renderer
         if self.skip_animations:
             logger.debug(f"Skipping animation {self.num_plays}")
             hash_current_animation = None
@@ -513,21 +604,6 @@ class Manager(Generic[SceneT]):
         self.file_writer.begin_animation(
             not self.skip_animations, animation_index=self.num_plays
         )
-        scene.begin_animations()
-        renderer._prepare_animation(scene)
-        if scene.is_current_animation_frozen_frame():
-            frame = self._draw_animation_frame(0)
-            frame_rate = self.session_spec.frame_rate
-            repeats = int(scene.duration * frame_rate)
-            if not self.skip_animations:
-                self.time += repeats / frame_rate
-                if frame is not None:
-                    self.file_writer.write_frame(frame, repeat=repeats)
-            renderer._present_frozen_frame(scene, scene.duration)
-        else:
-            self._play_internal()
-        self.file_writer.end_animation(not self.skip_animations)
-        self.num_plays += 1
 
     def _sampled_duration(self, duration: float, frozen: bool) -> float:
         """Return the duration of the frames a normal render would produce."""
@@ -554,7 +630,12 @@ class Manager(Generic[SceneT]):
         )
         for sample_index, t in enumerate(scene.time_progression):
             scene.update_to_time(t)
-            draw = not skip_rendering and not scene.skip_animation_preview
+            self._check_evaluation_scene()
+            draw = (
+                not self._evaluating
+                and not skip_rendering
+                and not scene.skip_animation_preview
+            )
             frame = self._draw_animation_frame(t) if draw else None
             # Count the interval displayed by this frame, including the t=0 frame.
             # Stop conditions and finish() see the time at the end of that interval.
@@ -626,6 +707,11 @@ class Manager(Generic[SceneT]):
         skip_animations
             Whether animation output in this section should be skipped.
         """
+        if self._evaluating:
+            self._evaluation_sections.append(
+                (self.time, name, section_type, skip_animations)
+            )
+            return
         self.file_writer.next_section(name, section_type, skip_animations)
 
     def add_subcaption(
@@ -642,13 +728,18 @@ class Manager(Generic[SceneT]):
         offset
             The offset in seconds from the current scene time.
         """
+        subcaptions = (
+            self._evaluation_subcaptions
+            if self._evaluating
+            else self.file_writer.subcaptions
+        )
         subtitle = srt.Subtitle(
-            index=len(self.file_writer.subcaptions),
+            index=len(subcaptions),
             content=content,
             start=datetime.timedelta(seconds=float(self.time + offset)),
             end=datetime.timedelta(seconds=float(self.time + offset + duration)),
         )
-        self.file_writer.subcaptions.append(subtitle)
+        subcaptions.append(subtitle)
 
     def add_sound(
         self,
@@ -674,5 +765,10 @@ class Manager(Generic[SceneT]):
             :meth:`~manim.scene.scene_file_writer.SceneFileWriter.add_sound`.
         """
         if self.skip_animations:
+            return
+        if self._evaluating:
+            self._evaluation_sounds.append(
+                (self.time + time_offset, sound_file, gain, dict(kwargs))
+            )
             return
         self.file_writer.add_sound(sound_file, self.time + time_offset, gain, **kwargs)
