@@ -14,6 +14,7 @@ import sys
 import urllib.error
 import urllib.request
 from argparse import Namespace
+from contextlib import ExitStack
 from pathlib import Path
 from typing import Any, cast
 
@@ -98,30 +99,40 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
             from manim.renderer.opengl import OpenGLRenderer
 
             renderer = OpenGLRenderer()
-            keep_running = True
-            while keep_running:
-                for SceneClass in scene_classes:
-                    with tempconfig({}):
-                        scene = SceneClass(renderer)
-                        # Construction may already have requested a writer or image.
-                        if scene.manager is None:
-                            Manager(scene)
-                        rerun = scene.render()
-                    if rerun or config["write_all"]:
-                        renderer.num_plays = 0
-                        continue
-                    keep_running = False
-                    break
-                if config["write_all"]:
-                    keep_running = False
+            # Preserve the legacy shared renderer/camera and outer rerun loop.
+            # Rebinding retires each preceding GPU host; scope exit retires the last.
+            with ExitStack() as managers:
+                keep_running = True
+                while keep_running:
+                    for SceneClass in scene_classes:
+                        # Keep only the current Scene alive. Once rebinding has
+                        # transferred the backend, retire the preceding Manager.
+                        with managers.pop_all(), tempconfig({}):
+                            try:
+                                scene = SceneClass(renderer)
+                            except BaseException:
+                                # Explicit constructor-time GPU/output requests may
+                                # have attached a new binding before construction failed.
+                                if hasattr(renderer, "scene"):
+                                    renderer.scene._get_manager()._cleanup_after_failure()
+                                raise
+                            manager = scene.manager or Manager(scene)
+                            managers.enter_context(manager)
+                            rerun = scene.render()
+                        if rerun or config["write_all"]:
+                            renderer.num_plays = 0
+                            continue
+                        keep_running = False
+                        break
+                    if config["write_all"]:
+                        keep_running = False
         else:
             for SceneClass in scene_classes:
                 with tempconfig({}):
                     scene = SceneClass()
                     # Preserve custom Scene.render overrides and existing managers.
-                    if scene.manager is None:
-                        Manager(scene)
-                    scene.render()
+                    with scene.manager or Manager(scene):
+                        scene.render()
     except Exception:
         error_console.print_exception()
         sys.exit(1)

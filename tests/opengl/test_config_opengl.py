@@ -53,8 +53,9 @@ def test_background_color(config, using_opengl_renderer, dry_run):
     config.verbose = "ERROR"
 
     scene = MyScene()
-    scene.render()
-    frame = scene.renderer.get_frame()
+    with scene._get_manager():
+        scene.render()
+        frame = scene.renderer.get_frame()
     np.testing.assert_allclose(frame[0, 0], [255, 255, 255, 255])
 
 
