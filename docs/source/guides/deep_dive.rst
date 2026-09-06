@@ -818,10 +818,26 @@ time to schedule an optional subcaption (see
 
 .. warning::
 
-  Manager owns orchestration and state, but this transitional move preserves
-  the existing backend-specific timing conventions. It does not introduce a new
-  schedule or no-raster execution mode. Scene's compilation/mutation helpers
-  remain useful; its playback wrapper delegates the sample loop to Manager.
+  Manager owns orchestration and state. Both backends now advance execution time
+  once per evaluated sample, independently of output delivery. Scene's compilation
+  and mutation helpers remain useful; its playback wrapper delegates the sample
+  loop to Manager. This does not introduce a no-raster execution mode.
+
+For normal playback, interpolation and updaters see the start of each sample interval;
+after drawing, the clock advances by ``1 / frame_rate`` before delivery and stop checks.
+Finish and cleanup observe the consumed span, including when a stop condition ends a
+wait early. A fractional non-frozen duration uses the existing sample grid (so, at
+4 fps, 0.3 seconds consumes two samples and advances 0.5 seconds). Frozen waits retain
+the existing whole-frame repeat count (one frame and 0.25 seconds for that example).
+The clock uses the same current configuration rate as the sample progression, rather
+than a renderer's raster-target rate.
+
+Skipped and cached plays retain their existing evaluation shortcuts and advance the
+nominal duration before animation begin. They are not equivalent to normal sampling,
+including for waits with stop conditions. OpenGL previously exposed event-start time
+throughout normal playback and advanced nominal duration at event end; it now uses the
+common clock. Its visual cache identity has changed so old time-dependent pixels are
+not reused.
 
 In the Cairo playback path, Manager first checks whether
 it may skip rendering of the current play call. This might happen, for example,
@@ -1067,7 +1083,7 @@ the implementation -- but the drawing process can be summarized as follows:
 
 After all batches have been processed, :meth:`.CairoRenderer.get_frame` copies the
 rendered image into a top-left-origin, C-contiguous ``uint8`` RGBA array. The manager
-advances its Cairo sample clock and delivers this array to :class:`.SceneFileWriter`.
+advances its sample clock and delivers this array to :class:`.SceneFileWriter`.
 Drawing and readback do not advance time. This concludes one iteration of the
 render loop, and once the time progression has been processed completely, a final bit
 of cleanup is performed before the :meth:`.Scene.play_internal` call is completed.
