@@ -505,7 +505,7 @@ class Mobject:
                 "Attempted adding some Mobject as a child more than once, "
                 "this is not possible. Repetitions are ignored.",
                 stack_info=True,
-                stacklevel=3
+                stacklevel=3,
             )
 
         if not self.submobjects:

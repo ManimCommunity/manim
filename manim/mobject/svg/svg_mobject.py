@@ -340,7 +340,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             logger.warning(
                 f"Unsupported element type: {type(shape)}",
                 stack_info=True,
-                stacklevel=3
+                stacklevel=3,
             )
             mob = None
         if mob is None or not mob.has_points():
@@ -491,9 +491,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             The parsed SVG text.
         """
         logger.warning(
-            f"Unsupported element type: {type(text)}",
-            stack_info=True,
-            stacklevel=3
+            f"Unsupported element type: {type(text)}", stack_info=True, stacklevel=3
         )
         return  # type: ignore[return-value]
 

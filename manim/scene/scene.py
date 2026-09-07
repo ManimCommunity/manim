@@ -1162,7 +1162,7 @@ class Scene:
                 f"rate of {fps:g} FPS. Rendering with the shortest possible "
                 f"{parameter_name} of {seconds_per_frame:g} seconds instead.",
                 stack_info=True,
-                stacklevel=3
+                stacklevel=3,
             )
             run_time = seconds_per_frame
 
@@ -1605,16 +1605,16 @@ class Scene:
         assert isinstance(self.renderer, OpenGLRenderer)
         if not self.session_spec.presentation.live_preview:
             logger.warning(
-                "Called embed() while no live preview window is available.", 
+                "Called embed() while no live preview window is available.",
                 stack_info=True,
-                stacklevel=3
+                stacklevel=3,
             )
             return
         if self.renderer.file_writer.output_spec.enabled:
             logger.warning(
                 "embed() is skipped while writing to a file.",
                 stack_info=True,
-                stacklevel=3
+                stacklevel=3,
             )
             return
 

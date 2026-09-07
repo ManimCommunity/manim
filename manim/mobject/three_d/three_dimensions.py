@@ -297,7 +297,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                 "The value passed to the colorscale keyword argument was None, "
                 "the surface fill color has not been changed",
                 stack_info=True,
-                stacklevel = 3
+                stacklevel=3,
             )
             return self
         colorscale_list = list(colorscale)
