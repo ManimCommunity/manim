@@ -23,7 +23,8 @@ if TYPE_CHECKING:
 __all__ = ["scene_classes_from_file"]
 
 
-def get_module(file_name: Path) -> types.ModuleType:
+def get_module(file_name: Path, *, source: bytes | None = None) -> types.ModuleType:
+    """Load a scene module, optionally compiling exact captured primary bytes."""
     if str(file_name) == "-":
         module = types.ModuleType("input_scenes")
         logger.info(
@@ -61,7 +62,17 @@ def get_module(file_name: Path) -> types.ModuleType:
                 sys.modules[module_name] = module
                 sys.path.insert(0, str(file_name.parent.absolute()))
                 assert spec.loader
-                spec.loader.exec_module(module)
+                if source is None:
+                    spec.loader.exec_module(module)
+                else:
+                    # Metadata provenance must not describe new disk bytes while
+                    # a timestamp/size-valid .pyc executes older primary code.
+                    exec(
+                        compile(
+                            source, str(file_name.resolve()), "exec", dont_inherit=True
+                        ),
+                        module.__dict__,
+                    )
                 return module
             raise FileNotFoundError(f"{file_name} not found")
         else:
