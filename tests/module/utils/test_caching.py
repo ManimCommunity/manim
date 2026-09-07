@@ -153,7 +153,6 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
         _closed = False
         _start_animation = Mock()
         _prepare_animation = Mock()
-        _is_bound_to = Mock(return_value=True)
 
         def _animation_cache_identity(self, scene):
             return "opengl", {
