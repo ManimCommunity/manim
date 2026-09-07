@@ -183,6 +183,13 @@ def test_inspection_after_evaluation_is_explicit_and_untimed(settings):
     assert manager._file_writer is None
 
 
+def test_retained_static_scope_cannot_be_evaluated_twice(settings):
+    with Manager(Scene()) as manager:
+        manager.evaluate()
+        with pytest.raises(RuntimeError, match="cold, unused"):
+            manager.evaluate()
+
+
 def test_existing_writer_scope_cannot_be_evaluated(settings):
     scene = Scene()
     with Manager(scene) as manager:

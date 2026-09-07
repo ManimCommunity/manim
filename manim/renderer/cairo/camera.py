@@ -607,6 +607,7 @@ class ThreeDCamera(Camera):
         """
         self._rotation_matrix_key = (self.get_phi(), self.get_theta(), self.get_gamma())
         self._rotation_matrix = self.generate_rotation_matrix()
+        self._rotation_matrix.flags.writeable = False
 
     def get_rotation_matrix(self) -> MatrixMN:
         """Returns the matrix corresponding to the current position of the camera.
