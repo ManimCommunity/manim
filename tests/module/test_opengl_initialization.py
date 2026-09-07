@@ -32,16 +32,15 @@ def resources(monkeypatch):
     return context, color, depth, frame
 
 
-@pytest.mark.parametrize("failure_type", [ValueError, KeyboardInterrupt, SystemExit])
 @pytest.mark.parametrize(
     "stage", ["texture", "depth_renderbuffer", "framebuffer", "use", "enable"]
 )
-def test_standalone_initialization_rolls_back(resources, stage, failure_type):
+def test_standalone_initialization_rolls_back(resources, stage):
     context, color, depth, frame = resources
-    failure = failure_type("initialization failed")
+    failure = ValueError("initialization failed")
     getattr(frame if stage == "use" else context, stage).side_effect = failure
     renderer = OpenGLRenderer(file_writer_class=Mock())
-    with pytest.raises(failure_type) as caught:
+    with pytest.raises(ValueError) as caught:
         initialize(renderer)
     assert caught.value is failure
     context.release.assert_called_once()

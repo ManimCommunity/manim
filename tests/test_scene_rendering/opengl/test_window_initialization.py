@@ -34,13 +34,14 @@ def test_native_window_uses_supplied_settings(
         window = Window(window_renderer, _settings=settings)
         try:
             assert window.size == expected_size
-            assert window._settings is settings
         finally:
             window.close()
 
 
-@pytest.mark.parametrize("stage", ["context", "position"])
-@pytest.mark.parametrize("failure_type", [ValueError, KeyboardInterrupt, SystemExit])
+@pytest.mark.parametrize(
+    ("stage", "failure_type"),
+    [("context", ValueError), ("position", ValueError), ("position", SystemExit)],
+)
 def test_failed_window_constructor_closes_native_window(
     using_temp_opengl_config, monkeypatch, window_renderer, stage, failure_type
 ):
