@@ -10,3 +10,4 @@ Thematic Guides
    deep_dive
    using_text
    add_voiceovers
+   frame_sequences
