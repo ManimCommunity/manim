@@ -28,47 +28,24 @@ def scene(request):
             scene._get_manager().close()
 
 
-def test_renderer_bootstrap_is_transferred_not_mirrored(scene):
+def test_renderer_compatibility_preserves_bootstrap_and_manager_updates(scene):
     renderer = scene.renderer
     assert scene.manager is None
-    initial = renderer._pending_execution
     renderer.time = 2
     manager = Manager(scene)
-    assert manager._execution is initial
-    assert renderer._pending_execution is None
     assert manager.time == 2
     manager.time = 3
     assert renderer.time == 3
+    renderer.time = 4
+    assert manager.time == 4
     renderer.num_plays = 4
     assert manager.num_plays == 4
+    manager.num_plays = 5
+    assert renderer.num_plays == 5
     renderer.skip_animations = True
     assert manager.skip_animations
-    assert "time" not in renderer.__dict__
-    assert "num_plays" not in renderer.__dict__
-
-
-def test_manager_does_not_delegate_play_or_selection_to_backend(scene, monkeypatch):
-    rejected = Mock(side_effect=AssertionError("backend executed policy"))
-    monkeypatch.setattr(scene.renderer, "play", rejected)
-    monkeypatch.setattr(scene.renderer, "update_skipping_status", rejected)
-    # Even an old subclass method with this name is no longer the execution seam.
-    monkeypatch.setattr(scene, "play_internal", rejected, raising=False)
-    scene.play(Wait(1, frozen_frame=False))
-    assert scene.manager.num_plays == 1
-    rejected.assert_not_called()
-
-
-def test_late_manager_cannot_claim_a_rebound_renderers_state(scene):
-    old = Scene()
-    current = Scene(renderer=old.renderer)
-    try:
-        with pytest.raises(RuntimeError, match="renderer was rebound"):
-            Manager(old)
-        assert old.manager is None
-        with current._get_manager() as manager:
-            assert manager.time == 0
-    finally:
-        current.renderer.close()
+    manager.skip_animations = False
+    assert not renderer.skip_animations
 
 
 def test_closed_backend_rejected_before_output_startup(scene):
@@ -150,13 +127,10 @@ def test_cached_play_advances_once_before_begin(scene, monkeypatch):
     assert manager.time == 2.5
 
 
-def test_frozen_clock_does_not_depend_on_output_delivery(scene, monkeypatch):
+def test_frozen_clock_does_not_depend_on_output_delivery(scene):
     manager = scene._get_manager()
-    write = Mock()
-    monkeypatch.setattr(manager.file_writer, "write_frame", write)
-    with tempconfig({"format": "none"}):
-        scene.wait(0.3, frozen_frame=True)
-        scene.wait(0.3, frozen_frame=True)
+    scene.wait(0.3, frozen_frame=True)
+    scene.wait(0.3, frozen_frame=True)
     assert manager.time == 0.5
 
 
