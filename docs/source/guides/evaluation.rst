@@ -43,9 +43,10 @@ flags, including those set by sections. All play calls reached by the scene's
 Python code are evaluated.
 
 Calls to ``next_section()``, ``add_subcaption()`` and ``add_sound()`` are allowed
-but have no output effect in this mode. They are not stored in a report, and
-sound files are neither checked nor decoded. A successful evaluation therefore
-does not tell you whether the same scene's audio files can be rendered.
+but have no media output effect in this mode. To record these calls and the
+animation steps in a report, opt into :doc:`timeline` capture. Sound files are
+neither checked nor decoded. A successful evaluation therefore does not tell
+you whether the same scene's audio files can be rendered.
 
 The manager does not finalize output or capture a last-frame image. It creates
 no file writer, encoder, Cairo image buffer, OpenGL context, or preview window,
