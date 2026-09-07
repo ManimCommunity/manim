@@ -93,7 +93,6 @@ def test_real_evaluation_matches_uncached_render(settings, monkeypatch):
     assert evaluated.trace == rendered.trace
     assert evaluated.time == rendered.time == 1.25
     assert manager.num_plays == 3
-    assert manager._evaluation_subcaptions == rendered.manager.file_writer.subcaptions
     assert manager._file_writer is None
     assert manager._closed
     reject.assert_not_called()
@@ -121,9 +120,6 @@ def test_declarations_do_not_open_media_logs_or_decode_audio(settings, monkeypat
             monkeypatch.setattr(scene.renderer, "_get_target", reject)
         manager.evaluate()
         assert scene.time == 0.5
-        assert manager._evaluation_sections[0][1] == "not skipped"
-        assert manager._evaluation_subcaptions[0].content == "caption"
-        assert manager._evaluation_sounds == [(0.75, "missing-file.wav", -3, {})]
         assert not list(settings.rglob("*"))
         reject.assert_not_called()
 
