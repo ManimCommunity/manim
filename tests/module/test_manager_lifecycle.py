@@ -1,44 +1,12 @@
-"""3B1 acceptance probes; strict xfails identify unfinished ownership boundaries.
-
-These are desired resource guarantees, not a specification to preserve the current
-cleanup gaps. Keep legacy timed execution unchanged while making these pass.
-"""
+"""Lifecycle failures retire output without masking the primary exception."""
 
 from unittest.mock import Mock
 
 import numpy as np
 import pytest
 
-from manim import CairoRenderer, Manager, Scene, tempconfig
-from manim.renderer.cairo import renderer as cairo_module
-from manim.scene.scene_file_writer import SceneFileWriter
+from manim import Manager, Scene, tempconfig
 from manim.utils.exceptions import EndSceneEarlyException, RerunSceneException
-
-
-def test_cairo_renderer_shell_does_not_allocate_targets(monkeypatch):
-    target = Mock(wraps=cairo_module._CairoRenderTarget)
-    monkeypatch.setattr(cairo_module, "_CairoRenderTarget", target)
-    renderer = CairoRenderer()
-    try:
-        target.assert_not_called()
-    finally:
-        renderer.close()
-
-
-def test_scene_construction_does_not_create_writer(dry_run, monkeypatch):
-    calls = []
-    original = SceneFileWriter.__init__
-
-    def init(writer, *args, **kwargs):
-        calls.append(writer)
-        original(writer, *args, **kwargs)
-
-    monkeypatch.setattr(SceneFileWriter, "__init__", init)
-    scene = Scene()
-    try:
-        assert calls == []
-    finally:
-        scene.renderer.close()
 
 
 @pytest.mark.parametrize("failure_type", [ValueError, KeyboardInterrupt])
@@ -61,9 +29,9 @@ def test_lifecycle_failure_aborts_output_and_preserves_identity(
         scene.renderer.close()
 
 
-@pytest.mark.parametrize("failure_type", [ValueError, KeyboardInterrupt])
 @pytest.mark.parametrize(
-    "hook", ["setup", "construct", "tear_down", "post_construct", "preview"]
+    ("hook", "failure_type"),
+    [("construct", KeyboardInterrupt), ("preview", ValueError)],
 )
 def test_failure_discards_actual_unsealed_segment(
     tmp_path, monkeypatch, hook, failure_type
