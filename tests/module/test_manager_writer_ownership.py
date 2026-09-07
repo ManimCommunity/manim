@@ -81,7 +81,7 @@ def test_writer_uses_construction_time_settings_until_resolution_moves(
     settings = scene.file_writer_settings
     with tempconfig({"format": "mp4", "media_dir": str(tmp_path / "later")}):
         writer = scene.renderer.file_writer
-    assert writer.settings is settings
+    assert writer.settings == settings
     assert writer.output_spec.is_still
     factory.assert_called_once_with(settings)
 
@@ -99,8 +99,12 @@ def test_owned_writer_survives_backend_rebinding(writer_scene):
         assert scene.manager.file_writer is writer
         assert second.manager.file_writer is second_writer
         assert second_writer is not writer
-        assert writer.output_plan is scene.output_plan
-        assert second_writer.output_plan is second.output_plan
+        assert writer.output_plan == scene.output_plan
+        assert second_writer.output_plan == second.output_plan
+        assert (
+            writer.output_plan.primary_artifact
+            != second_writer.output_plan.primary_artifact
+        )
         assert factory.call_count == 2
     finally:
         second_writer.abort_encode_jobs()
