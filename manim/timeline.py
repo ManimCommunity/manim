@@ -6,9 +6,10 @@ import contextlib
 import hashlib
 import inspect
 import json
+import math
 import os
 import tempfile
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, cast
 
@@ -99,6 +100,7 @@ class _SourceSnapshot:
     path: Path | None
     digest: str | None
     provenance: str
+    content: bytes | None = field(default=None, repr=False)
 
     @classmethod
     def capture(cls, path: str | Path | None, provenance: str) -> _SourceSnapshot:
@@ -106,10 +108,11 @@ class _SourceSnapshot:
             return cls(None, None, provenance)
         path = Path(path).resolve()
         try:
-            digest = hashlib.sha256(path.read_bytes()).hexdigest()
+            content = path.read_bytes()
+            digest = hashlib.sha256(content).hexdigest()
         except OSError:
             return cls(None, None, provenance)
-        return cls(path, digest, provenance)
+        return cls(path, digest, provenance, content)
 
     def unchanged(self) -> bool:
         if self.path is None:
@@ -141,6 +144,8 @@ class _TimelineRecorder:
         self.backend = type(scene.renderer).__name__
         self.rate = frame_rate
         self.start = start
+        self.last_time = float(start)
+        self.failed = False
         self.events: list[dict[str, Any]] = []
         self.declarations: list[dict[str, Any]] = []
         self.active: dict[str, Any] | None = None
@@ -204,8 +209,19 @@ class _TimelineRecorder:
         finally:
             del frame
 
-    def enter(self) -> None:
+    def observe_time(self, time: float) -> None:
+        """Validate reached clock values, including between events and at teardown."""
+        if not math.isfinite(time) or time < self.last_time:
+            self.failed = True
+            raise ValueError(
+                "Timeline capture does not support non-finite or backwards time."
+            )
+        self.last_time = float(time)
+
+    def enter(self, time: float) -> None:
+        self.observe_time(time)
         if self.active is not None or self.compiling:
+            self.failed = True
             raise RuntimeError(
                 "Recursive timed calls are unsupported during timeline capture."
             )
@@ -220,7 +236,6 @@ class _TimelineRecorder:
             raise RuntimeError(
                 "Recursive timed calls are unsupported during timeline capture."
             )
-        self.compiling = False
         animations = scene.animations or []
         kind = (
             "wait"
@@ -250,25 +265,37 @@ class _TimelineRecorder:
         }
         self.events.append(event)
         self.active = event
+        self.compiling = False
 
-    def sample(self) -> None:
-        if self.active is not None:
-            self.active["samples"] += 1
+    def sample(self, time: float) -> None:
+        self.observe_time(time)
+        if self.active is None:
+            self.failed = True
+            raise RuntimeError("Timeline sample outside a timed event.")
+        self.active["samples"] += 1
 
-    def hold(self, count: int) -> None:
-        if self.active is not None:
-            self.active["hold_intervals"] = count
+    def hold(self, count: int, time: float) -> None:
+        self.observe_time(time)
+        if self.active is None:
+            self.failed = True
+            raise RuntimeError("Timeline hold outside a timed event.")
+        self.active["hold_intervals"] = count
 
     def end(self, time: float) -> None:
         assert self.active is not None
-        if time < self.active["start"]:
-            raise ValueError("Timeline capture does not support moving time backwards.")
+        self.observe_time(time)
         self.active["end"] = float(time)
         self.active = None
 
     def declare(self, kind: str, time: float, boundary: int, **values: Any) -> None:
+        self.observe_time(time)
         # Freeze reached arguments now; don't observe subsequent user mutations.
-        values = json.loads(_canonical(values))
+        # A caller catching serialization failure must not publish an omitted request.
+        try:
+            values = json.loads(_canonical(values))
+        except BaseException:
+            self.failed = True
+            raise
         self.declarations.append(
             {
                 "kind": kind,
@@ -289,10 +316,13 @@ class _TimelineRecorder:
         self.order += 1
 
     def finish(self, time: float) -> Timeline:
+        if self.failed:
+            raise RuntimeError(
+                "Timeline capture is incomplete after an observation failure."
+            )
+        self.observe_time(time)
         if self.active is not None or self.compiling:
             raise RuntimeError("Timeline contains an unfinished event.")
-        if time < self.start:
-            raise ValueError("Timeline capture does not support moving time backwards.")
         if not self.source.unchanged():
             raise RuntimeError("Primary source changed during timeline capture.")
         data = {

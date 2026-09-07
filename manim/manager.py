@@ -574,7 +574,7 @@ class Manager(Generic[SceneT]):
         event_start = self.time
         event_ordinal = self.num_plays
         if self._timeline_recorder is not None:
-            self._timeline_recorder.enter()
+            self._timeline_recorder.enter(event_start)
         scene.compile_animation_data(*args, **kwargs)
         if self._timeline_recorder is not None:
             self._timeline_recorder.begin(scene, event_start, event_ordinal)
@@ -591,7 +591,7 @@ class Manager(Generic[SceneT]):
             if not self.skip_animations:
                 self.time += repeats / frame_rate
                 if self._timeline_recorder is not None:
-                    self._timeline_recorder.hold(repeats)
+                    self._timeline_recorder.hold(repeats, self.time)
                 if frame is not None:
                     self.file_writer.write_frame(frame, repeat=repeats)
             if not self._evaluating:
@@ -698,7 +698,7 @@ class Manager(Generic[SceneT]):
             if not self.skip_animations:
                 self.time = event_start + (sample_index + 1) / frame_rate
                 if self._timeline_recorder is not None:
-                    self._timeline_recorder.sample()
+                    self._timeline_recorder.sample(self.time)
             if draw:
                 self._deliver_animation_frame(frame, t)
             if scene.stop_condition is not None and scene.stop_condition():

@@ -44,6 +44,11 @@ def source_status(data, root):
         return "source unavailable"
     if hashlib.sha256(path.read_bytes()).hexdigest() != source["sha256"]:
         return "source STALE"
+    if (
+        source.get("provenance")
+        == "captured-before-loading-primary-bytes-compiled-directly"
+    ):
+        return "source matches captured bytes (primary compiled directly; dependencies unverified)"
     return "source matches captured bytes (loaded-code identity not proven)"
 
 
