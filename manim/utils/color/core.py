@@ -955,9 +955,7 @@ class ManimColor:
             return cls._from_internal(ManimColor(color, alpha)._internal_value)
 
     @staticmethod
-    def gradient(
-        colors: list[ManimColor], length: int
-    ) -> list[ManimColor]:
+    def gradient(colors: list[ManimColor], length: int) -> list[ManimColor]:
         """Create a list of colors interpolated between the input colors.
 
         Parameters
