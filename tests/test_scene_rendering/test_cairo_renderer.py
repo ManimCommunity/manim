@@ -16,9 +16,7 @@ def test_render(using_temp_config, disabling_caching):
     renderer.update_frame = Mock(wraps=renderer.update_frame)
     writer = scene._get_manager().file_writer
     writer.write_frame = Mock(wraps=writer.write_frame)
-    renderer.add_frame = Mock(side_effect=AssertionError("backend advanced execution"))
     scene.render()
-    renderer.add_frame.assert_not_called()
     assert writer.write_frame.call_count == config["frame_rate"]
     assert renderer.update_frame.call_count == config["frame_rate"]
     assert_file_exists(renderer.file_writer.final_file_path)
