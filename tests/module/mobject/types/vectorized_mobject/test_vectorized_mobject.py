@@ -192,6 +192,28 @@ def test_curves_as_submobjects_point_from_proportion():
     np.testing.assert_array_equal(obj.point_from_proportion(0.5), np.array([3, 0, 0]))
 
 
+def test_curves_as_submobjects_error_messages_use_the_actual_class_name():
+    class DerivedCurves(CurvesAsSubmobjects):
+        pass
+
+    obj = DerivedCurves(VGroup())
+
+    with pytest.raises(
+        Exception,
+        match=r"Cannot call DerivedCurves\.point_from_proportion for a "
+        r"DerivedCurves with no submobjects",
+    ):
+        obj.point_from_proportion(0)
+
+    obj.add(VMobject())
+    with pytest.raises(
+        Exception,
+        match=r"Cannot call DerivedCurves\.point_from_proportion for a "
+        r"DerivedCurves whose submobjects have no points",
+    ):
+        obj.point_from_proportion(0)
+
+
 def test_vgroup_init():
     """Test the VGroup instantiation."""
     VGroup()
