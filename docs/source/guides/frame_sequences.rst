@@ -98,7 +98,7 @@ must call ``self.rate_func`` itself. Getting this wrong plays the footage on the
 wrong curve rather than raising an error.
 
 :class:`~.ImageMobject` records ``orig_alpha_pixel_array`` from the image it was
-built with, and :meth:`~.Mobject.set_opacity` reads that cached array. Assigning a
+built with, and :meth:`~.ImageMobject.set_opacity` reads that cached array. Assigning a
 new ``pixel_array`` leaves the cache describing the previous frame, so fading a
 rolling filmstrip may not fade as expected. Refresh the cache alongside the swap if
 the footage needs to fade.
