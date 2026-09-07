@@ -55,7 +55,7 @@ def test_success_retires_without_forcing_readback(managed_scene, monkeypatch):
     with pytest.raises(RuntimeError, match="closed"):
         scene.renderer.get_frame()
     assert scene.get_image().size == (64, 32)
-    assert scene.manager.output_spec is output
+    assert scene.manager.output_spec == output
     assert scene.renderer._closed
 
 
