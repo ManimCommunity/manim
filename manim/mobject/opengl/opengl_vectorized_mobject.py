@@ -588,7 +588,7 @@ class OpenGLVMobject(OpenGLMobject):
                     new_points.extend(
                         [
                             partial_bezier_points(tup, a1, a2)
-                            for a1, a2 in zip(alphas[:-1], alphas[1:], strict=True)
+                            for a1, a2 in it.pairwise(alphas)
                         ],
                     )
                 else:
@@ -776,9 +776,7 @@ class OpenGLVMobject(OpenGLMobject):
         # )
         split_indices = [0, *split_indices, len(points)]
         return [
-            points[i1:i2]
-            for i1, i2 in zip(split_indices[:-1], split_indices[1:], strict=True)
-            if (i2 - i1) >= nppc
+            points[i1:i2] for i1, i2 in it.pairwise(split_indices) if (i2 - i1) >= nppc
         ]
 
     def get_subpaths(self):
@@ -1129,9 +1127,14 @@ class OpenGLVMobject(OpenGLMobject):
             The length of the :class:`OpenGLVMobject`.
         """
         return np.sum(
-            length
-            for _, length in self.get_curve_functions_with_lengths(
-                sample_points=sample_points_per_curve,
+            np.fromiter(
+                (
+                    length
+                    for _, length in self.get_curve_functions_with_lengths(
+                        sample_points=sample_points_per_curve,
+                    )
+                ),
+                dtype=np.float64,
             )
         )
 

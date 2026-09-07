@@ -7,4 +7,4 @@
 {"levelname": "INFO", "module": "scene_file_writer", "message": "Combining to Movie file."}
 {"levelname": "DEBUG", "module": "scene_file_writer", "message": "Partial movie files to combine (1 files): <>"}
 {"levelname": "INFO", "module": "scene_file_writer", "message": "\nFile ready at <>\n"}
-{"levelname": "INFO", "module": "scene", "message": "Rendered SquareToCircle\nPlayed 1 animations"}
+{"levelname": "INFO", "module": "manager", "message": "Rendered SquareToCircle\nPlayed 1 animations"}

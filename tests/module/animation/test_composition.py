@@ -208,6 +208,24 @@ def test_laggedstartmap_only_passes_kwargs_to_subanimations():
     )
 
 
+def test_laggedstartmap_default_arg_creator_keeps_submobject_whole():
+    inner1 = VGroup(Square(), Square())
+    inner2 = VGroup(Circle(), Circle())
+    outer = VGroup(inner1, inner2)
+
+    received_args = []
+
+    class RecordingAnimation(Animation):
+        def __init__(self, *args, **kwargs):
+            received_args.append(args)
+            super().__init__(args[0], **kwargs)
+
+    LaggedStartMap(RecordingAnimation, outer)
+
+    assert all(len(args) == 1 for args in received_args)
+    assert [args[0] for args in received_args] == [inner1, inner2]
+
+
 def test_empty_animation_group_fails():
     with pytest.raises(ValueError, match="Please add at least one subanimation."):
         AnimationGroup().begin()
