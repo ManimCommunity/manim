@@ -39,52 +39,17 @@ __all__ = ["Positionable"]
 
 class Positionable:
     """
-    A positionable object.
 
-    Operations
+    An abstract positionable object.
+
+    Attributes
     ----------
-    - Points
-        - points, get_all_points
-        - set_points, reset_points, reverse_points, repeat
-        - get_num_points, has_points, has_no_points
-    - Applying Functions
-        - get_family
-        - apply_(to_family|points_function|function|complex_function)
-    - Transformations
-        - translate, scale, stretch, rotate, apply_matrix
-    - Position
-        - (get|set)_position
-            - (get|set)_(center|top|bottom|right|left|zenith|nadir)
-                - center
-        - (get|set)_coordinate
-            - (get|set)_(x|y|z)
-        - align_on_border, align_to
-            - shift_onto_screen
-        - apply_function_to_position, is_off_screen, get_center_of_mass, get_boundary_point
-    - Size
-        - (get|set)_dim_size
-            - (get|set)_(width|height|depth)
-            - (scale|stretch)_to_fit_dim
-                - (scale|stretch)_to_fit_(width|height|depth)
-    - Misc
-        - flip, pose_at_angle, replace, surround
-    - Aliases
-        - shift -> translate
-        - length_over_dim -> get_dim_size
-        - get_critical_point, get_edge_center, get_corner -> get_position
-        - move_to -> set_position
-        - (get|set)_coord -> (get|set)_coordinate
-        - to_corner, to_edge -> align_on_border
-        - (width|height|depth) -> (get|set)_(width|height|depth)
-    - Deprecated
-        - apply_points_function_about_point -> apply_points_function
-        - rescale_to_fit -> set_dim_size
-        - stretch_about_point -> stretch
-        - get_extremum_along_dim -> get_coordinate
-        - match_* -> set_* (all setters allow passing an object)
-        - rotate_about_origin -> rotate
-        - reduce_across_dimension
-        - get_points_defining_boundary
+    points: :class:`Point3D_Array`
+
+
+    See Also
+    --------
+    :class:`~manim.Mobject`
     """
 
     # =============
@@ -94,7 +59,7 @@ class Positionable:
     points: Point3D_Array = np.zeros((0, 3))
 
     def get_all_points(self) -> Point3D_Array:
-        """Returns the points of all family members.
+        """Returns all points.
 
         Returns
         -------
@@ -110,6 +75,9 @@ class Positionable:
 
     def set_points(self, points: Point3DLike_Array | Positionable) -> Self:
         """Sets the points.
+
+        If an array is passed, set's the points of this object.
+        If another object is passed, matches the points of corresponding family members in order.
 
         Parameters
         ----------
@@ -129,7 +97,9 @@ class Positionable:
         return self
 
     def reset_points(self) -> Self:
-        """Resets the points of this object.
+        """Resets the points.
+
+        Does not affect family members.
 
         Returns
         -------
@@ -139,7 +109,7 @@ class Positionable:
         return self.set_points(np.zeros((0, 3)))
 
     def reverse_points(self) -> Self:
-        """Reverses the points of each family member.
+        """Reverses the points.
 
         Returns
         -------
@@ -153,7 +123,7 @@ class Positionable:
         return self.apply_to_family(func=apply)
 
     def repeat(self, count: int) -> Self:
-        """Repeats the points of each family member.
+        """Repeats the points.
 
         Parameters
         ----------
@@ -172,7 +142,9 @@ class Positionable:
         return self.apply_to_family(apply)
 
     def get_num_points(self) -> int:
-        """The number of points of this object.
+        """The number of points.
+
+        Does not take family members into account.
 
         Returns
         -------
@@ -182,9 +154,27 @@ class Positionable:
         return len(self.points)
 
     def has_no_points(self) -> bool:
+        """Whether this has no points.
+
+        Does not take family members into account.
+
+        Returns
+        -------
+        bool
+            Has no points.
+        """
         return len(self.points) == 0
 
     def has_points(self) -> bool:
+        """Whether this has points.
+
+        Does not take family members into account.
+
+        Returns
+        -------
+        bool
+            Has points.
+        """
         return len(self.points) != 0
 
     # =========
@@ -197,6 +187,8 @@ class Positionable:
 
     def get_family(self) -> list[Positionable]:
         """Returns the family.
+
+        Each member is only included once.
 
         Returns
         -------
@@ -212,14 +204,14 @@ class Positionable:
         *,
         should_skip: Callable[[Positionable], bool] = lambda mob: mob.has_no_points(),
     ) -> Self:
-        """Applies a function to each family member.
+        """Applies a function.
 
         Parameters
         ----------
         func : Callable[[Positionable], Any]
             The function.
         should_skip : Callable -> bool, optional
-            Whether a member should be skipped., by default `has_no_points()`
+            Whether a family member should be skipped., by default `has_no_points()`
 
         Returns
         -------
@@ -240,7 +232,7 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
-        """Applies a points function to each family member.
+        """Applies a points function.
 
         Parameters
         ----------
@@ -280,7 +272,7 @@ class Positionable:
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
     ) -> Self:
-        """Applies a point function to each family member.
+        """Applies a point function.
 
         Parameters
         ----------
@@ -554,22 +546,22 @@ class Positionable:
         return self.translate(vector=vector)
 
     def get_center(self) -> Point3D:
-        """Returns the center.
+        """Returns the center position.
 
         Returns
         -------
         Point3D
-            The center.
+            The center position.
         """
         return self.get_position(direction=ORIGIN)
 
     def set_center(self, center: Point3DLike | Positionable) -> Self:
-        """Sets the center.
+        """Sets the center position.
 
         Parameters
         ----------
         center : Point3DLike | Positionable
-            The center.
+            The center position.
 
         Returns
         -------
@@ -579,7 +571,7 @@ class Positionable:
         return self.set_position(position=center, direction=ORIGIN)
 
     def center(self) -> Self:
-        """Centers the object.
+        """Sets the position to the origin.
 
         Returns
         -------
@@ -589,22 +581,22 @@ class Positionable:
         return self.set_center(center=ORIGIN)
 
     def get_top(self) -> Point3D:
-        """Returns the top.
+        """Returns the top position.
 
         Returns
         -------
         Point3D
-            The top.
+            The top position.
         """
         return self.get_position(direction=UP)
 
     def set_top(self, top: Point3DLike | Positionable) -> Self:
-        """Sets the top.
+        """Sets the top position.
 
         Parameters
         ----------
         top : Point3DLike | Positionable
-            The top.
+            The top position.
 
         Returns
         -------
@@ -614,12 +606,12 @@ class Positionable:
         return self.set_position(position=top, direction=UP)
 
     def get_bottom(self) -> Point3D:
-        """Returns the bottom.
+        """Returns the bottom position.
 
         Returns
         -------
         Point3D
-            The bottom.
+            The bottom position.
         """
         return self.get_position(direction=DOWN)
 
@@ -629,7 +621,7 @@ class Positionable:
         Parameters
         ----------
         bottom : Point3DLike | Positionable
-            The bottom.
+            The bottom position.
 
         Returns
         -------
@@ -644,17 +636,17 @@ class Positionable:
         Returns
         -------
         Point3D
-            The right.
+            The right position.
         """
         return self.get_position(direction=RIGHT)
 
     def set_right(self, right: Point3DLike | Positionable) -> Self:
-        """Sets the right.
+        """Sets the right position.
 
         Parameters
         ----------
         right : Point3DLike | Positionable
-            The right.
+            The right position.
 
         Returns
         -------
@@ -664,22 +656,22 @@ class Positionable:
         return self.set_position(position=right, direction=RIGHT)
 
     def get_left(self) -> Point3D:
-        """Returns the left.
+        """Returns the left position.
 
         Returns
         -------
         Point3D
-            The left.
+            The left position.
         """
         return self.get_position(direction=LEFT)
 
     def set_left(self, left: Point3DLike | Positionable) -> Self:
-        """Sets the left.
+        """Sets the left position.
 
         Parameters
         ----------
         left : Point3DLike | Positionable
-            The left.
+            The left position.
 
         Returns
         -------
@@ -689,22 +681,22 @@ class Positionable:
         return self.set_position(position=left, direction=LEFT)
 
     def get_zenith(self) -> Point3D:
-        """Returns the zenith.
+        """Returns the zenith position.
 
         Returns
         -------
         Point3D
-            The zenith.
+            The zenith position.
         """
         return self.get_position(direction=OUT)
 
     def set_zenith(self, zenith: Point3DLike | Positionable) -> Self:
-        """Sets the zenith.
+        """Sets the zenith position.
 
         Parameters
         ----------
         zenith : Point3DLike | Positionable
-            The zenith.
+            The zenith position.
 
         Returns
         -------
@@ -714,22 +706,22 @@ class Positionable:
         return self.set_position(position=zenith, direction=OUT)
 
     def get_nadir(self) -> Point3D:
-        """Returns the nadir.
+        """Returns the nadir position.
 
         Returns
         -------
         Point3D
-            The nadir.
+            The nadir position.
         """
         return self.get_position(direction=IN)
 
     def set_nadir(self, nadir: Point3DLike | Positionable) -> Self:
-        """Sets the nadir.
+        """Sets the nadir position.
 
         Parameters
         ----------
         nadir : Point3DLike | Positionable
-            The nadir.
+            The nadir position.
 
         Returns
         -------
@@ -808,7 +800,7 @@ class Positionable:
         Parameters
         ----------
         x : float | Positionable
-            The x.
+            The x coordinate.
         direction : Vector3DLike, optional
             The direction., by default ORIGIN
 
@@ -840,7 +832,7 @@ class Positionable:
         Parameters
         ----------
         y : float | Positionable
-            The y.
+            The y coordinate.
         direction : Vector3DLike, optional
             The direction., by default ORIGIN
 
@@ -872,7 +864,7 @@ class Positionable:
         Parameters
         ----------
         z : float | Positionable
-            The z.
+            The z coordinate.
         direction : Vector3DLike, optional
             The direction., by default ORIGIN
 
@@ -889,7 +881,7 @@ class Positionable:
         *,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
     ) -> Self:
-        """Aligns the object on the border.
+        """Aligns itself on the border.
 
         Parameters
         ----------
@@ -916,12 +908,12 @@ class Positionable:
         mobject_or_point: Point3DLike | Positionable,
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
-        """Aligns the object to something.
+        """Aligns itself to a point.
 
         Parameters
         ----------
         mobject_or_point : Point3DLike | Positionable
-            The mobject_or_point.
+            The point.
         direction : Vector3DLike, optional
             The direction., by default ORIGIN
 
@@ -946,7 +938,7 @@ class Positionable:
         *,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
     ) -> Self:
-        """Shifts the object onto the screen.
+        """Shifts itself onto the screen.
 
         Parameters
         ----------
@@ -986,7 +978,7 @@ class Positionable:
         return self.set_position(function(self.get_center()))
 
     def is_off_screen(self) -> bool:
-        """Whether the object is off screen.
+        """Whether this is off screen.
 
         Returns
         -------
@@ -1002,7 +994,7 @@ class Positionable:
         )
 
     def get_center_of_mass(self) -> Point3D:
-        """Returns the center_of_mass.
+        """Returns the center of mass.
 
         Returns
         -------
@@ -1639,6 +1631,10 @@ class Positionable:
     def shift(self, *vectors: Vector3DLike) -> Self:
         """Applies a translation.
 
+        Note
+        ----
+        An alias for the :meth:`translate` method.
+
         Returns
         -------
         Self
@@ -1656,6 +1652,10 @@ class Positionable:
     def length_over_dim(self, dim: int) -> float:
         """Returns the size of a dimension.
 
+        Note
+        ----
+        An alias for the :meth:`get_dim_size` method.
+
         Parameters
         ----------
         dim : int
@@ -1671,6 +1671,10 @@ class Positionable:
     def get_critical_point(self, direction: Vector3DLike = ORIGIN) -> Point3D:
         """Returns a critical point.
 
+        Note
+        ----
+        An alias for the :meth:`get_position` method.
+
         Parameters
         ----------
         direction : Vector3DLike, optional
@@ -1684,7 +1688,11 @@ class Positionable:
         return self.get_position(direction=direction)
 
     def get_edge_center(self, direction: Vector3DLike) -> Point3D:
-        """Returns a edge center position.
+        """Returns an edge position.
+
+        Note
+        ----
+        An alias for the :meth:`get_position` method.
 
         Parameters
         ----------
@@ -1694,12 +1702,16 @@ class Positionable:
         Returns
         -------
         Point3D
-            The edge center position.
+            The edge position.
         """
         return self.get_position(direction=direction)
 
     def get_corner(self, direction: Vector3DLike) -> Point3D:
         """Returns a corner position.
+
+        Note
+        ----
+        An alias for the :meth:`get_position` method.
 
         Parameters
         ----------
@@ -1721,6 +1733,10 @@ class Positionable:
     ) -> Self:
         """Sets the position.
 
+        Note
+        ----
+        An alias for the :meth:`set_position` method.
+
         Parameters
         ----------
         point_or_mobject : Point3DLike | Positionable
@@ -1739,7 +1755,11 @@ class Positionable:
         )
 
     def get_coord(self, dim: int, direction: Vector3DLike = ORIGIN) -> float:
-        """Returns a coordinate of a dimension.
+        """Returns the coordinate of a dimension.
+
+        Note
+        ----
+        An alias for the :meth:`get_coordinate` method.
 
         Parameters
         ----------
@@ -1762,6 +1782,10 @@ class Positionable:
         direction: Vector3DLike = ORIGIN,
     ) -> Self:
         """Sets the coordinate of a dimension.
+
+        Note
+        ----
+        An alias for the :meth:`set_coordinate` method.
 
         Parameters
         ----------
@@ -1786,6 +1810,10 @@ class Positionable:
     ) -> Self:
         """Moves to a corner.
 
+        Note
+        ----
+        An alias for the :meth:`align_on_border` method.
+
         Parameters
         ----------
         corner : Vector3DLike, optional
@@ -1807,6 +1835,10 @@ class Positionable:
     ) -> Self:
         """Moves to an edge.
 
+        Note
+        ----
+        An alias for the :meth:`align_on_border` method.
+
         Parameters
         ----------
         edge : Vector3DLike, optional
@@ -1823,32 +1855,38 @@ class Positionable:
 
     @property
     def width(self) -> float:
-        """The width."""
+        """The width.
+
+        A property for the :meth:`get_width` and :meth:`set_width` methods.
+        """
         return self.get_width()
 
     @width.setter
     def width(self, value: float) -> None:
-        """The width."""
         self.set_width(width=value)
 
     @property
     def height(self) -> float:
-        """The height."""
+        """The height.
+
+        A property for the :meth:`get_height` and :meth:`set_height` methods.
+        """
         return self.get_height()
 
     @height.setter
     def height(self, value: float) -> None:
-        """The height"""
         self.set_height(height=value)
 
     @property
     def depth(self) -> float:
-        """The depth."""
+        """The depth.
+
+        A property for the :meth:`get_depth` and :meth:`set_depth` methods.
+        """
         return self.get_depth()
 
     @depth.setter
     def depth(self, value: float) -> None:
-        """The depth."""
         self.set_depth(depth=value)
 
     ################################
