@@ -42,8 +42,8 @@ Its evaluation ignores rendered-segment caching and animation skip/range flags, 
 ``Manager.evaluate()`` does. Scene loading and construction still execute user code.
 Do not treat this as a sandbox or a replacement for process isolation.
 
-The explicit JSON path is replaced atomically only after successful evaluation and
-scope cleanup. Failure or cancellation leaves a previous JSON file intact. That file
+The explicit JSON path is anchored to the invocation directory before user code runs,
+and is replaced atomically only after successful evaluation and scope cleanup. Failure or cancellation leaves a previous JSON file intact. That file
 is then an older observation, not evidence that the latest evaluation succeeded.
 
 Read without Manim
@@ -92,12 +92,17 @@ a promise that arbitrary Python runs deterministically.
   redacted to a display basename and are not navigation identities. Absolute checkout
   paths, object representations and wall-clock timestamps are not generated in identity.
 * Coverage is **primary-file-only**, not a fingerprint of imported helpers, assets,
-  environment or dependencies. CLI captures source bytes before loading; Python
-  captures disk bytes before evaluation and does not verify them against already-loaded
-  code. Neither claim is a full executed-code provenance guarantee. Changing the primary
-  file during capture rejects successful publication.
-* Recursive timed calls and backwards event time are unsupported. A failed timed event
-  cannot be hidden by returning a partial-looking successful report. Arbitrary custom
+  environment or dependencies. CLI compiles its captured primary-file bytes directly,
+  bypassing potentially stale primary-module bytecode caches; this does not verify
+  imported helpers or later dynamic code changes. Python captures disk bytes before
+  evaluation and does not verify them against already-loaded code. Neither claim is a
+  full executed-code provenance guarantee. Changing the primary file through CLI
+  resource cleanup rejects successful publication.
+* Recursive timed calls and backwards observed time are unsupported. Clock checks
+  cover samples, declarations, event boundaries and completion, not arbitrary transient
+  private-state mutations between observations. A failed timed event or captured
+  declaration cannot be hidden by catching its error and publishing a partial-looking
+  successful report. Arbitrary custom
   execution schedules and external Python state are not made replayable by capture.
 
 The underlying :doc:`evaluation` resource restrictions still apply. User geometry,

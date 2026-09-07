@@ -94,6 +94,9 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
     SCENES is an optional list of scenes in the file.
     """
     timeline_output = kwargs.pop("timeline_output", None)
+    if timeline_output is not None:
+        # User module/setup/construct code may change the process working directory.
+        timeline_output = timeline_output.absolute()
     if timeline_output is not None and kwargs["jupyter"]:
         raise cloup.UsageError("Use Manager.evaluate(capture_timeline=True) in Python.")
     click_args = ClickArgs(kwargs)
@@ -104,6 +107,10 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
     file = Path(config.input_file)
     try:
         if timeline_output is not None:
+            if str(file) == "-":
+                raise ValueError(
+                    "--timeline-output requires a primary source file, not stdin."
+                )
             if timeline_output.resolve() == file.resolve():
                 raise ValueError(
                     "Timeline output must not replace the input source file."
@@ -113,12 +120,21 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
                     "--timeline-output requires exactly one selected scene without --write_all."
                 )
         source = (
-            _SourceSnapshot.capture(file, "disk-before-loading-primary-file-only")
+            _SourceSnapshot.capture(
+                file, "captured-before-loading-primary-bytes-compiled-directly"
+            )
             if timeline_output is not None
             else None
         )
         if timeline_output is not None:
-            scene_classes = get_scene_classes_from_module(get_module(file))
+            assert source is not None
+            if source.content is None:
+                raise ValueError(
+                    "--timeline-output requires a readable primary source file."
+                )
+            scene_classes = get_scene_classes_from_module(
+                get_module(file, source=source.content)
+            )
             requested = config.scene_names
             if requested:
                 scene_classes = [
@@ -142,6 +158,10 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
                 with manager:
                     manager._timeline_source = source
                     manager.evaluate(capture_timeline=True)
+                if not source.unchanged():
+                    raise RuntimeError(
+                        "Primary source changed during timeline resource cleanup."
+                    )
                 manager.timeline.write(timeline_output)
             return kwargs
 
