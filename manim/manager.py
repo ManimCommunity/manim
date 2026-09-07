@@ -40,8 +40,8 @@ class Manager(Generic[SceneT]):
     """Coordinate the render lifecycle for a single scene.
 
     A manager is attached to exactly one :class:`~manim.scene.scene.Scene`. It
-    coordinates the scene lifecycle, delegates animation playback to the current
-    renderer, and routes section, subcaption, and audio operations to the current
+    coordinates the scene lifecycle, delegates animation playback to its bound
+    renderer, and routes section, subcaption, and audio operations to its owned
     file writer. Calling :meth:`~manim.scene.scene.Scene.render` creates a manager
     lazily when one has not already been attached.
 
@@ -60,7 +60,7 @@ class Manager(Generic[SceneT]):
     -----
     This class is the coordination boundary for an incremental render-flow
     refactor. The Manager creates and owns the file writer on first output demand.
-    Renderers retain a compatibility view for their legacy schedulers. Renderer,
+    Renderers retain a read-only compatibility view for their legacy schedulers. Renderer,
     camera, and clock ownership remain unchanged; output settings are still
     resolved during Scene construction.
 
@@ -139,12 +139,7 @@ class Manager(Generic[SceneT]):
         if self._file_writer is not None:
             cleanup(self._file_writer.abort_encode_jobs)
 
-        def close_backend() -> None:
-            # A legacy rebind transfers the backend to another Scene, not its writer.
-            if self.renderer._is_bound_to(self.scene):
-                self.renderer.close()
-
-        cleanup(close_backend)
+        cleanup(self.renderer.close)
         cleanup(self._close_log_handler)
         if failures:
             for secondary in failures[1:]:
@@ -160,7 +155,7 @@ class Manager(Generic[SceneT]):
 
     @property
     def renderer(self) -> CairoRenderer | OpenGLRenderer:
-        """Return the scene's current renderer."""
+        """Return the renderer bound to this scene."""
         return self.scene.renderer
 
     @property
@@ -174,6 +169,8 @@ class Manager(Generic[SceneT]):
 
         Image inspection does not request a writer. Explicit legacy access through
         ``renderer.file_writer`` does, and attaches a Manager if necessary.
+        Select the writer with the renderer's ``file_writer_class`` constructor
+        argument; an owned writer cannot be replaced.
         """
         if self._file_writer is None:
             if self._closed or self._closing:
@@ -190,18 +187,6 @@ class Manager(Generic[SceneT]):
             finally:
                 self._creating_file_writer = False
         return self._file_writer
-
-    def _replace_file_writer(self, writer: SceneFileWriter) -> None:
-        if self._closed or self._closing or self._creating_file_writer:
-            raise RuntimeError(
-                "Cannot replace output resources in this lifecycle state."
-            )
-        previous = self._file_writer
-        if previous is writer:
-            return
-        if previous is not None:
-            previous.abort_encode_jobs(reraise_encoder_failures=True)
-        self._file_writer = writer
 
     @property
     def output_spec(self) -> OutputSpec:
@@ -288,12 +273,8 @@ class Manager(Generic[SceneT]):
                 # Only a construction boundary is a normal early scene end.
                 pass
             except RerunSceneException:
-                self.scene.remove(*self.scene.mobjects)
-                # TODO: The CairoRenderer does not have the method clear_screen().
-                self.renderer.clear_screen()  # type: ignore[union-attr]
-                self.num_plays = 0
-                # A rerun has no primary failure to preserve: encoder failures
-                # must prevent reuse of an incomplete/corrupt output session.
+                # The caller starts a fresh Scene, not a reset of this renderer.
+                # A rerun has no primary failure to mask an encoder error.
                 self.file_writer.abort_encode_jobs(reraise_encoder_failures=True)
                 self._finish_resource_scope()
                 return True
@@ -349,7 +330,6 @@ class Manager(Generic[SceneT]):
                 "Use --format=png to save its last frame.",
             )
 
-        # We have to reset these settings in case of multiple renders.
         self.renderer.scene_finished(self.scene)
 
         if (
@@ -399,22 +379,30 @@ class Manager(Generic[SceneT]):
         """
         if self._closed or self._closing:
             raise RuntimeError("The Manager is closed or closing.")
-        self._open_log_handler()
-        start_time = self.time
-        self.renderer.play(self.scene, *args, **kwargs)
-        run_time = self.time - start_time
+        try:
+            self._open_log_handler()
+            start_time = self.time
+            self.renderer.play(self.scene, *args, **kwargs)
+            run_time = self.time - start_time
 
-        if subcaption:
-            if subcaption_duration is None:
-                subcaption_duration = run_time
-            # The start of the subcaption needs to be offset by the run time
-            # because it is added after the animation has already played.
-            # Route through Scene's public API to preserve its customization hook.
-            self.scene.add_subcaption(
-                content=subcaption,
-                duration=subcaption_duration,
-                offset=-run_time + subcaption_offset,
-            )
+            if subcaption:
+                if subcaption_duration is None:
+                    subcaption_duration = run_time
+                # Place the caption relative to the start of this play, through
+                # Scene's public API so its customization hook is preserved.
+                self.scene.add_subcaption(
+                    content=subcaption,
+                    duration=subcaption_duration,
+                    offset=-run_time + subcaption_offset,
+                )
+        except (EndSceneEarlyException, RerunSceneException):
+            # Normal render control flow is handled by the enclosing construct scope.
+            raise
+        except BaseException:
+            # Direct play (including in a user constructor) may have no enclosing
+            # render scope to abort a worker waiting for more frames.
+            self._cleanup_after_failure()
+            raise
 
     def next_section(
         self,

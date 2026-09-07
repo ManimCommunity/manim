@@ -113,26 +113,18 @@ def test_cold_snapshot_never_opens_preview_and_restores_previous_host(
     with tempconfig({"live_preview": True}):
         second = scene_factory()
     second.add(Square(fill_color=BLUE, fill_opacity=1))
+    second.renderer.close()
     window = Mock(side_effect=AssertionError("inspection opened a preview"))
     monkeypatch.setattr(window_module, "Window", window)
     pixels = np.asarray(second.get_image())
     assert pixels.shape == (32, 64, 4)
     assert second.renderer._context is None
+    assert second.renderer._closed
     assert second.renderer.window is None
     assert second.manager._file_writer is None
     window.assert_not_called()
     # Read directly, without renderer access that could hide a missing restore.
     assert target.read(components=4) == before
-
-
-def test_closed_ordinary_scene_can_use_new_snapshot_scope(scene_factory):
-    scene = scene_factory()
-    scene.add(Square(fill_opacity=1))
-    before = np.asarray(scene.get_image())
-    scene.renderer.close()
-    np.testing.assert_array_equal(scene.get_image(), before)
-    assert scene.renderer._context is None
-    assert scene.renderer._closed
 
 
 def test_thread_affinity_starts_at_resource_open_not_scene_construction(scene_factory):
@@ -180,17 +172,3 @@ def test_failed_host_retirement_can_be_retried(scene_factory, monkeypatch):
     renderer.close()
     assert renderer._closed
     assert isinstance(context.mglo, moderngl.InvalidObject)
-
-
-def test_rebinding_uses_new_resources_without_changing_legacy_clock(scene_factory):
-    first = scene_factory()
-    renderer = first.renderer
-    renderer.open()
-    old_context = renderer.context
-    renderer.time = 2.5
-    second = Scene(renderer=renderer)
-    assert isinstance(old_context.mglo, moderngl.InvalidObject)
-    assert renderer._context is None
-    assert renderer.time == 2.5
-    renderer.update_frame(second)
-    assert renderer.context is not old_context
