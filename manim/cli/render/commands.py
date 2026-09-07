@@ -32,7 +32,12 @@ from manim.cli.render.global_options import global_options
 from manim.cli.render.output_options import output_options
 from manim.cli.render.render_options import render_options
 from manim.constants import EPILOG
-from manim.utils.module_ops import scene_classes_from_file
+from manim.timeline import _SourceSnapshot
+from manim.utils.module_ops import (
+    get_module,
+    get_scene_classes_from_module,
+    scene_classes_from_file,
+)
 
 __all__ = ["render"]
 
@@ -72,6 +77,11 @@ def _validate_scene_batch_output_name(scene_classes: list[type]) -> None:
 )
 @cloup.argument("file", type=cloup.Path(path_type=Path), required=True)
 @cloup.argument("scene_names", required=False, nargs=-1)
+@cloup.option(
+    "--timeline-output",
+    type=cloup.Path(path_type=Path, dir_okay=False),
+    help="Evaluate one scene without rendering and atomically save timeline JSON.",
+)
 @global_options
 @output_options
 @render_options
@@ -83,6 +93,9 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
 
     SCENES is an optional list of scenes in the file.
     """
+    timeline_output = kwargs.pop("timeline_output", None)
+    if timeline_output is not None and kwargs["jupyter"]:
+        raise cloup.UsageError("Use Manager.evaluate(capture_timeline=True) in Python.")
     click_args = ClickArgs(kwargs)
     if kwargs["jupyter"]:
         return click_args
@@ -90,8 +103,47 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
     config.digest_args(click_args)
     file = Path(config.input_file)
     try:
-        scene_classes = scene_classes_from_file(file)
+        if timeline_output is not None:
+            if timeline_output.resolve() == file.resolve():
+                raise ValueError(
+                    "Timeline output must not replace the input source file."
+                )
+            if config.write_all or len(config.scene_names) > 1:
+                raise ValueError(
+                    "--timeline-output requires exactly one selected scene without --write_all."
+                )
+        source = (
+            _SourceSnapshot.capture(file, "disk-before-loading-primary-file-only")
+            if timeline_output is not None
+            else None
+        )
+        if timeline_output is not None:
+            scene_classes = get_scene_classes_from_module(get_module(file))
+            requested = config.scene_names
+            if requested:
+                scene_classes = [
+                    cls for cls in scene_classes if cls.__name__ == requested[0]
+                ]
+        else:
+            scene_classes = scene_classes_from_file(file)
         _validate_scene_batch_output_name(scene_classes)
+
+        if timeline_output is not None:
+            if len(scene_classes) != 1 or config.write_all:
+                raise ValueError(
+                    "--timeline-output requires exactly one selected scene without --write_all."
+                )
+            assert source is not None
+            if not source.unchanged():
+                raise RuntimeError("Primary source changed while loading scenes.")
+            with tempconfig({}):
+                scene = scene_classes[0]()
+                manager = scene._get_manager()
+                with manager:
+                    manager._timeline_source = source
+                    manager.evaluate(capture_timeline=True)
+                manager.timeline.write(timeline_output)
+            return kwargs
 
         for SceneClass in scene_classes:
             while True:

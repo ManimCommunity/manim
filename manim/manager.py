@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import contextlib
 import datetime
 import math
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
@@ -35,6 +34,7 @@ if TYPE_CHECKING:
     from .renderer.protocol import _AnimationRenderer
     from .scene.scene import Scene
     from .scene.scene_file_writer import SceneFileWriter
+    from .timeline import Timeline, _SourceSnapshot, _TimelineRecorder
     from .typing import RGBAPixelArray
 
 __all__ = ["Manager"]
@@ -100,6 +100,9 @@ class Manager(Generic[SceneT]):
         self._scope_depth = 0
         self._evaluating = False
         self._evaluation_started = False
+        self._timeline: Timeline | None = None
+        self._timeline_recorder: _TimelineRecorder | None = None
+        self._timeline_source: _SourceSnapshot | None = None
         scene.manager = self
 
     def __enter__(self) -> Manager[SceneT]:
@@ -338,13 +341,27 @@ class Manager(Generic[SceneT]):
                 self._cleanup_after_failure()
             raise
 
-    def evaluate(self) -> None:
+    @property
+    def timeline(self) -> Timeline:
+        """The immutable snapshot after successful requested timeline capture."""
+        if self._timeline is None:
+            raise RuntimeError("No completed timeline capture is available.")
+        return self._timeline
+
+    def evaluate(self, *, capture_timeline: bool = False) -> None:
         """Run the scene's animations without drawing frames or producing media.
 
         Calls ``setup()``, ``construct()`` and ``tear_down()``, using the same
         animation steps and clock as uncached, unskipped rendering. Movie caches,
         animation ranges, and skip flags are ignored. Section, subcaption, and
-        sound calls produce no output or report; sound files are not checked.
+        sound calls produce no media output; sound files are not checked. Optional
+        timeline capture records these calls along with the animation steps.
+
+        Parameters
+        ----------
+        capture_timeline
+            Store a completed :attr:`timeline` after successful evaluation.
+            This does not write JSON or create an output directory.
 
         Notes
         -----
@@ -378,19 +395,34 @@ class Manager(Generic[SceneT]):
         self._evaluating = True
         self.skip_animations = False
         try:
+            if capture_timeline:
+                from .timeline import _TimelineRecorder
+
+                self._timeline_recorder = _TimelineRecorder(
+                    self.scene,
+                    self.session_spec.frame_rate,
+                    self.time,
+                    self._timeline_source,
+                )
             self._check_evaluation_scene()
             self.setup()
             self._check_evaluation_scene()
-            with contextlib.suppress(EndSceneEarlyException):
+            try:
                 self.construct()
+            except EndSceneEarlyException:
+                if self._timeline_recorder is not None:
+                    self._timeline_recorder.termination = "scene-end-request"
             self.tear_down()
             self._check_evaluation_scene()
             self._finish_resource_scope()
+            if self._timeline_recorder is not None:
+                self._timeline = self._timeline_recorder.finish(self.time)
         except BaseException:
             self._cleanup_after_failure()
             raise
         finally:
             self._evaluating = False
+            self._timeline_recorder = None
 
     def _check_evaluation_scene(self) -> None:
         if self._evaluating and self.scene.meshes:
@@ -539,7 +571,13 @@ class Manager(Generic[SceneT]):
         )
         if not self._evaluating:
             self._update_skipping_status()
+        event_start = self.time
+        event_ordinal = self.num_plays
+        if self._timeline_recorder is not None:
+            self._timeline_recorder.enter()
         scene.compile_animation_data(*args, **kwargs)
+        if self._timeline_recorder is not None:
+            self._timeline_recorder.begin(scene, event_start, event_ordinal)
         if not self._evaluating:
             self._begin_animation_output()
         scene.begin_animations()
@@ -552,6 +590,8 @@ class Manager(Generic[SceneT]):
             repeats = int(scene.duration * frame_rate)
             if not self.skip_animations:
                 self.time += repeats / frame_rate
+                if self._timeline_recorder is not None:
+                    self._timeline_recorder.hold(repeats)
                 if frame is not None:
                     self.file_writer.write_frame(frame, repeat=repeats)
             if not self._evaluating:
@@ -561,6 +601,8 @@ class Manager(Generic[SceneT]):
         if not self._evaluating:
             self.file_writer.end_animation(not self.skip_animations)
         self.num_plays += 1
+        if self._timeline_recorder is not None:
+            self._timeline_recorder.end(self.time)
 
     def _begin_animation_output(self) -> None:
         scene = self.scene
@@ -655,6 +697,8 @@ class Manager(Generic[SceneT]):
             # Stop conditions and finish() see the time at the end of that interval.
             if not self.skip_animations:
                 self.time = event_start + (sample_index + 1) / frame_rate
+                if self._timeline_recorder is not None:
+                    self._timeline_recorder.sample()
             if draw:
                 self._deliver_animation_frame(frame, t)
             if scene.stop_condition is not None and scene.stop_condition():
@@ -712,7 +756,8 @@ class Manager(Generic[SceneT]):
     ) -> None:
         """Create a new output section.
 
-        During :meth:`evaluate`, this call has no effect.
+        During :meth:`evaluate`, this call produces no output. When timeline
+        capture is enabled, it is recorded in the timeline instead.
 
         Parameters
         ----------
@@ -724,6 +769,15 @@ class Manager(Generic[SceneT]):
             Whether animation output in this section should be skipped.
         """
         if self._evaluating:
+            if self._timeline_recorder is not None:
+                self._timeline_recorder.declare(
+                    "section",
+                    self.time,
+                    self.num_plays,
+                    name=name,
+                    type=section_type,
+                    skip_requested=skip_animations,
+                )
             return
         self.file_writer.next_section(name, section_type, skip_animations)
 
@@ -732,7 +786,8 @@ class Manager(Generic[SceneT]):
     ) -> None:
         """Add a subcaption at the current scene time.
 
-        During :meth:`evaluate`, this call produces no output and stores no caption.
+        During :meth:`evaluate`, this call produces no output. When timeline
+        capture is enabled, the caption is recorded in the timeline instead.
 
         Parameters
         ----------
@@ -743,16 +798,26 @@ class Manager(Generic[SceneT]):
         offset
             The offset in seconds from the current scene time.
         """
-        if self._evaluating:
+        if self._evaluating and self._timeline_recorder is None:
             return
-        subcaptions = self.file_writer.subcaptions
-        subtitle = srt.Subtitle(
-            index=len(subcaptions),
-            content=content,
-            start=datetime.timedelta(seconds=float(self.time + offset)),
-            end=datetime.timedelta(seconds=float(self.time + offset + duration)),
-        )
-        subcaptions.append(subtitle)
+        start = datetime.timedelta(seconds=float(self.time + offset))
+        end = datetime.timedelta(seconds=float(self.time + offset + duration))
+        if not self._evaluating:
+            subcaptions = self.file_writer.subcaptions
+            subcaptions.append(
+                srt.Subtitle(
+                    index=len(subcaptions), content=content, start=start, end=end
+                )
+            )
+        if self._timeline_recorder is not None:
+            self._timeline_recorder.declare(
+                "caption",
+                self.time,
+                self.num_plays,
+                content=content,
+                start=start.total_seconds(),
+                end=end.total_seconds(),
+            )
 
     def add_sound(
         self,
@@ -765,7 +830,8 @@ class Manager(Generic[SceneT]):
 
         No sound is added while animations are being skipped. During
         :meth:`evaluate`, this call also produces no output; the sound file is
-        neither checked nor decoded.
+        neither checked nor decoded. When timeline capture is enabled, the sound
+        request is recorded in the timeline instead.
 
         Parameters
         ----------
@@ -782,5 +848,16 @@ class Manager(Generic[SceneT]):
         if self.skip_animations:
             return
         if self._evaluating:
+            if self._timeline_recorder is not None:
+                self._timeline_recorder.declare(
+                    "sound",
+                    self.time,
+                    self.num_plays,
+                    asset=self._timeline_recorder.asset_hint(sound_file),
+                    start=self.time + time_offset,
+                    gain=gain,
+                    options=dict(kwargs),
+                    duration=None,
+                )
             return
         self.file_writer.add_sound(sound_file, self.time + time_offset, gain, **kwargs)
