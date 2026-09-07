@@ -50,6 +50,7 @@ Mobjects
 ********
 
 .. inheritance-diagram::
+   manim.mobject.abstract.positionable
    manim.mobject.frame
    manim.mobject.geometry.arc
    manim.mobject.geometry.boolean_ops
@@ -82,7 +83,7 @@ Mobjects
    manim.mobject.value_tracker
    manim.mobject.vector_field
    :parts: 1
-   :top-classes: manim.mobject.mobject.Mobject
+   :top-classes: manim.mobject.abstract.positionable.Positionable
 
 Scenes
 ******
