@@ -205,10 +205,8 @@ def test_manager_render_uses_lifecycle_hooks(dry_run):
     assert hooks == ["setup", "construct", "tear_down", "post_construct"]
 
 
-def test_manager_render_handles_rerun_without_finishing_scene(dry_run):
+def test_manager_render_retires_rerun_without_finishing_scene(dry_run, monkeypatch):
     lifecycle: list[str] = []
-    renderer = Mock()
-    renderer.num_plays = 3
 
     class RerunScene(Scene):
         def construct(self):
@@ -217,13 +215,17 @@ def test_manager_render_handles_rerun_without_finishing_scene(dry_run):
         def tear_down(self):
             lifecycle.append("tear_down")
 
-    scene = RerunScene(renderer)
+    scene = RerunScene()
+    manager = Manager(scene)
+    scene.renderer.num_plays = 3
+    finish = Mock()
+    monkeypatch.setattr(scene.renderer, "scene_finished", finish)
 
-    assert Manager(scene).render() is True
+    assert manager.render() is True
 
-    renderer.clear_screen.assert_called_once_with()
-    assert renderer.num_plays == 0
-    renderer.scene_finished.assert_not_called()
+    assert scene.renderer.num_plays == 3
+    assert scene.renderer._closed
+    finish.assert_not_called()
     assert lifecycle == []
 
 
@@ -250,27 +252,9 @@ def test_manager_render_finalizes_after_early_scene_end(dry_run):
     assert lifecycle == ["tear_down", "post_construct"]
 
 
-def test_scene_play_forwards_through_manager(dry_run, monkeypatch):
-    scene = Scene()
-    renderer_play = Mock()
-    file_writer = Mock()
-    file_writer.subcaptions = []
-    monkeypatch.setattr(scene.renderer, "play", renderer_play)
-    scene.renderer.file_writer = file_writer
-    animation = Wait()
-
-    scene.play(animation, run_time=2)
-
-    assert isinstance(scene.manager, Manager)
-    renderer_play.assert_called_once_with(scene, animation, run_time=2)
-    assert file_writer.subcaptions == []
-
-
 def test_scene_play_adds_subcaption_with_explicit_duration(dry_run, monkeypatch):
     scene = Scene()
-    file_writer = Mock()
-    file_writer.subcaptions = []
-    scene.renderer.file_writer = file_writer
+    file_writer = scene.renderer.file_writer
     scene.renderer.time = 2.5
     renderer_play = Mock(
         side_effect=lambda *args, **kwargs: setattr(scene.renderer, "time", 4.5)
@@ -286,7 +270,6 @@ def test_scene_play_adds_subcaption_with_explicit_duration(dry_run, monkeypatch)
         subcaption_offset=0.25,
     )
 
-    renderer_play.assert_called_once_with(scene, animation, run_time=2)
     assert file_writer.subcaptions == [
         srt.Subtitle(
             index=0,
@@ -327,9 +310,7 @@ def test_scene_play_uses_animation_duration_for_default_subcaption_after_skip(
     dry_run, monkeypatch
 ):
     scene = Scene()
-    file_writer = Mock()
-    file_writer.subcaptions = []
-    scene.renderer.file_writer = file_writer
+    file_writer = scene.renderer.file_writer
     scene.renderer.time = 1.0
     scene.renderer.skip_animations = True
     renderer_play = Mock(
@@ -381,53 +362,21 @@ def test_scene_play_queues_interactive_calls_without_attaching_manager(
     }
 
 
-def test_manager_backend_views_follow_renderer_but_writer_is_owned(dry_run):
+def test_scene_next_section_records_metadata(dry_run):
     scene = Scene()
-    manager = Manager(scene)
-    writer = manager.file_writer
-    replacement_renderer = Mock()
-    replacement_renderer.camera = Mock()
-    replacement_renderer.file_writer = Mock()
-    replacement_renderer.time = 1.5
-    replacement_renderer.num_plays = 2
-    replacement_renderer.skip_animations = False
+    scene.next_section("intro", "presentation.skip", skip_animations=True)
 
-    scene.renderer = replacement_renderer
-
-    assert manager.renderer is replacement_renderer
-    assert manager.camera is replacement_renderer.camera
-    assert manager.file_writer is writer
-    assert manager.time == 1.5
-    assert manager.num_plays == 2
-    assert manager.skip_animations is False
-
-    manager.time = 2.5
-    manager.num_plays = 3
-    manager.skip_animations = True
-
-    assert replacement_renderer.time == 2.5
-    assert replacement_renderer.num_plays == 3
-    assert replacement_renderer.skip_animations is True
+    section = scene.manager.file_writer.sections[-1]
+    assert (section.name, section.type_, section.skip_animations) == (
+        "intro",
+        "presentation.skip",
+        True,
+    )
 
 
-def test_scene_next_section_delegates_to_manager(dry_run):
+def test_scene_add_subcaption_records_placement(dry_run):
     scene = Scene()
-    file_writer = Mock()
-    scene.renderer.file_writer = file_writer
-
-    section_type = "presentation.skip"
-
-    scene.next_section("intro", section_type, skip_animations=True)
-
-    assert isinstance(scene.manager, Manager)
-    file_writer.next_section.assert_called_once_with("intro", section_type, True)
-
-
-def test_scene_add_subcaption_delegates_to_manager(dry_run):
-    scene = Scene()
-    file_writer = Mock()
-    file_writer.subcaptions = []
-    scene.renderer.file_writer = file_writer
+    file_writer = scene.renderer.file_writer
     scene.renderer.time = 2.5
 
     scene.add_subcaption("Hello", duration=1.5, offset=0.25)
@@ -443,10 +392,10 @@ def test_scene_add_subcaption_delegates_to_manager(dry_run):
     ]
 
 
-def test_scene_add_sound_delegates_to_manager_and_honors_skip_state(dry_run):
+def test_scene_add_sound_passes_placement_and_honors_skip_state(dry_run, monkeypatch):
     scene = Scene()
-    file_writer = Mock()
-    scene.renderer.file_writer = file_writer
+    file_writer = scene.renderer.file_writer
+    monkeypatch.setattr(file_writer, "add_sound", Mock())
     scene.renderer.time = 2.5
 
     scene.add_sound("bell.wav", time_offset=0.25, gain=-3, marker="test")

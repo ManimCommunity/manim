@@ -148,8 +148,8 @@ class OpenGLRenderer:
             The scene to be rendered
         """
         self._ensure_not_closed()
-        if self._context is not None:
-            self._release_context()
+        if hasattr(self, "scene"):
+            raise RuntimeError("This renderer is already bound to a Scene.")
         self.partial_movie_files: list[str | None] = []
         self.scene = scene
 
@@ -225,8 +225,7 @@ class OpenGLRenderer:
             except BaseException:
                 logger.exception("Failed to restore the previous OpenGL context")
             raise
-        # Publish only a fully configured context/target. Normal lifetime and
-        # initialization timing remain unchanged until the Manager cutover.
+        # Publish only a fully configured context/target.
         self.window = window
         self._context = context
         self._frame_buffer_object = frame
@@ -269,14 +268,6 @@ class OpenGLRenderer:
         """
         if self._closed:
             return
-        try:
-            self._release_context()
-        finally:
-            if self._context is None and not self._capturing_image:
-                self._closed = True
-
-    def _release_context(self) -> None:
-        """Retire the current binding, including an explicit legacy scene rebind."""
         if self._capturing_image:
             raise RuntimeError("Cannot close OpenGL resources during image capture.")
         if self._context is not None and self._context_thread != threading.get_ident():
@@ -284,6 +275,7 @@ class OpenGLRenderer:
                 "OpenGL resources must be closed on their owning thread."
             )
         if self._context is None:
+            self._closed = True
             return
         current = getattr(_active_context, "renderer", None)
         previous = (
@@ -344,6 +336,7 @@ class OpenGLRenderer:
             self._context_thread = None
             self.window = None
             self._retiring = False
+            self._closed = True
         _active_context.renderer = None
         release(lambda: self._restore_renderer(previous))
         if failures:
@@ -366,18 +359,10 @@ class OpenGLRenderer:
         ):
             prior.open()
 
-    def _is_bound_to(self, scene: Scene) -> bool:
-        return self.scene is scene
-
     @property
     def file_writer(self) -> SceneFileWriter:
         """Compatibility view of the bound scene Manager's lazily owned writer."""
         return self.scene._get_manager().file_writer
-
-    @file_writer.setter
-    def file_writer(self, writer: SceneFileWriter) -> None:
-        # Retain legacy injection without a second, synchronized writer field.
-        self.scene._get_manager()._replace_file_writer(writer)
 
     def should_create_window(self, session_spec: RenderSessionSpec) -> bool:
         """

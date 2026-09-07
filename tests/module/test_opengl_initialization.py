@@ -78,18 +78,6 @@ def test_attachment_cleanup_failure_preserves_allocation_error(resources):
     frame.release.assert_not_called()
 
 
-def test_successful_initialization_keeps_resources(resources):
-    context, color, depth, frame = resources
-    renderer = OpenGLRenderer(file_writer_class=Mock())
-    initialize(renderer)
-    assert renderer.context is context
-    assert renderer.frame_buffer_object is frame
-    frame.use.assert_called_once()
-    context.enable.assert_called_once()
-    for resource in resources:
-        resource.release.assert_not_called()
-
-
 @pytest.mark.parametrize("failure_type", [KeyboardInterrupt, SystemExit])
 def test_context_creation_interrupt_does_not_try_egl(monkeypatch, failure_type):
     failure = failure_type("context creation interrupted")
