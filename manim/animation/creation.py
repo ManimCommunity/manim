@@ -631,7 +631,18 @@ class RemoveTextLetterByLetter(AddTextLetterByLetter):
 
 
 class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
-    """Show one submobject at a time, removing all previously displayed ones from screen."""
+    """Show one submobject at a time, removing all previously displayed ones from screen.
+
+    .. note::
+
+        Every submobject stays in the scene for the whole animation, and the
+        renderer does per-mobject work on each frame of output, so the cost grows
+        with the size of the group rather than staying constant. This matters most
+        for :class:`~.ImageMobject`, which is resampled once per output frame
+        whether it is visible or not. To play video footage as a frame sequence,
+        see :doc:`/guides/frame_sequences`, which keeps a single mobject in the
+        scene.
+    """
 
     def __init__(
         self,
