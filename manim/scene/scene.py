@@ -217,14 +217,14 @@ class Scene:
                 renderer = OpenGLRenderer()
 
         if renderer is None:
-            self.renderer: CairoRenderer | OpenGLRenderer = CairoRenderer(
+            self._renderer: CairoRenderer | OpenGLRenderer = CairoRenderer(
                 # TODO: Is it a suitable approach to make an instance of
                 # the self.camera_class here?
                 camera_class=self.camera_class,
                 skip_animations=self.skip_animations,
             )
         else:
-            self.renderer = renderer
+            self._renderer = renderer
         self.session_spec = resolve_render_session(
             config,
             self.renderer.capabilities,
@@ -277,6 +277,11 @@ class Scene:
         np.random.seed(self.random_seed)  # noqa: NPY002 (only way to set seed globally)
 
     @property
+    def renderer(self) -> CairoRenderer | OpenGLRenderer:
+        """The renderer bound to this scene; create a new Scene to change it."""
+        return self._renderer
+
+    @property
     def camera(self) -> Camera | OpenGLCamera:
         return self.renderer.camera
 
@@ -290,7 +295,7 @@ class Scene:
         result = cls.__new__(cls)
         clone_from_id[id(self)] = result
         for k, v in self.__dict__.items():
-            if k in ["manager", "renderer", "time_progression"]:
+            if k in ["manager", "_renderer", "time_progression"]:
                 continue
             if k == "camera_class":
                 setattr(result, k, v)

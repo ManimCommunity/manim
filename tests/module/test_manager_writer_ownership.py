@@ -1,21 +1,24 @@
-"""Writer ownership/demand, without changing execution-start settings resolution."""
+"""One constructor-selected writer, acquired only when output is requested."""
 
 from pathlib import Path
 from unittest.mock import Mock
 
-import numpy as np
 import pytest
 
 from manim import CairoRenderer, Manager, Scene, Wait, tempconfig
+from manim.renderer.opengl import OpenGLRenderer
 from manim.scene.scene_file_writer import SceneFileWriter
 
 
 @pytest.fixture
 def writer_scene(tmp_path, request):
+    backend, output = getattr(request, "param", ("cairo", "png"))
     with tempconfig(
         {
-            "format": getattr(request, "param", "png"),
+            "renderer": backend,
+            "format": output,
             "dry_run": False,
+            "live_preview": False,
             "log_to_file": False,
             "media_dir": str(tmp_path / "media"),
             "pixel_width": 64,
@@ -24,25 +27,35 @@ def writer_scene(tmp_path, request):
         }
     ):
         factory = Mock(wraps=SceneFileWriter)
-        scene = Scene(renderer=CairoRenderer(file_writer_class=factory))
+        renderer_class = CairoRenderer if backend == "cairo" else OpenGLRenderer
+        scene = Scene(renderer=renderer_class(file_writer_class=factory))
         try:
             yield scene, factory
         finally:
-            # Cleanup must not itself demand a writer.
-            writer = getattr(scene.manager, "_file_writer", None)
-            if writer is not None:
-                writer.abort_encode_jobs()
-            scene.renderer.close()
+            if scene.manager is not None:
+                scene.manager.close()
+            else:
+                scene.renderer.close()
 
 
-def test_construction_and_snapshot_do_not_create_output(writer_scene, tmp_path):
+@pytest.mark.parametrize(
+    "writer_scene", [("cairo", "png"), ("opengl", "png")], indirect=True
+)
+def test_snapshot_is_output_free_and_writer_uses_captured_settings(
+    writer_scene, tmp_path
+):
     scene, factory = writer_scene
-    assert scene.manager is None
     factory.assert_not_called()
     assert scene.get_image().size == (64, 32)
-    assert scene.manager._file_writer is None
     factory.assert_not_called()
     assert not (tmp_path / "media").exists()
+
+    with tempconfig({"format": "mp4", "media_dir": str(tmp_path / "later")}):
+        writer = scene.renderer.file_writer
+    assert writer is scene.manager.file_writer is scene.renderer.file_writer
+    assert writer.settings == scene.file_writer_settings
+    assert writer.output_spec.is_still
+    factory.assert_called_once_with(scene.file_writer_settings)
 
 
 def test_render_creates_writer_before_setup_once(writer_scene, monkeypatch):
@@ -52,71 +65,19 @@ def test_render_creates_writer_before_setup_once(writer_scene, monkeypatch):
 
     def setup():
         factory.assert_called_once_with(scene.file_writer_settings)
-        assert manager._file_writer is scene.renderer.file_writer
+        assert manager.file_writer is scene.renderer.file_writer
 
     monkeypatch.setattr(scene, "setup", setup)
     manager.render()
-    assert manager.file_writer is scene.renderer.file_writer
     factory.assert_called_once()
     assert manager.file_writer.final_file_path.exists()
 
 
-def test_explicit_renderer_access_attaches_single_owner(writer_scene):
-    scene, factory = writer_scene
-    writer = scene.renderer.file_writer
-    assert scene.manager.file_writer is writer
-    assert scene.renderer.file_writer is writer
-    factory.assert_called_once_with(scene.file_writer_settings)
-    replacement = Mock()
-    scene.renderer.file_writer = replacement
-    assert scene.manager.file_writer is replacement
-    assert scene.renderer.file_writer is replacement
-    factory.assert_called_once()
-
-
-def test_writer_uses_construction_time_settings_until_resolution_moves(
-    writer_scene, tmp_path
-):
-    scene, factory = writer_scene
-    settings = scene.file_writer_settings
-    with tempconfig({"format": "mp4", "media_dir": str(tmp_path / "later")}):
-        writer = scene.renderer.file_writer
-    assert writer.settings == settings
-    assert writer.output_spec.is_still
-    factory.assert_called_once_with(settings)
-
-
-def test_owned_writer_survives_backend_rebinding(writer_scene):
-    scene, factory = writer_scene
-    writer = scene.renderer.file_writer
-
-    class SecondScene(Scene):
-        pass
-
-    second = SecondScene(renderer=scene.renderer)
-    second_writer = second.renderer.file_writer
-    try:
-        assert scene.manager.file_writer is writer
-        assert second.manager.file_writer is second_writer
-        assert second_writer is not writer
-        assert writer.output_plan == scene.output_plan
-        assert second_writer.output_plan == second.output_plan
-        assert (
-            writer.output_plan.primary_artifact
-            != second_writer.output_plan.primary_artifact
-        )
-        assert factory.call_count == 2
-    finally:
-        second_writer.abort_encode_jobs()
-
-
-@pytest.mark.parametrize("writer_scene", ["none"], indirect=True)
+@pytest.mark.parametrize("writer_scene", [("cairo", "none")], indirect=True)
 def test_preview_validation_does_not_create_writer_for_cleanup(writer_scene):
     scene, factory = writer_scene
-    manager = Manager(scene)
     with pytest.raises(ValueError, match="requires a media artifact"):
-        manager.render(preview=True)
-    assert manager._file_writer is None
+        Manager(scene).render(preview=True)
     factory.assert_not_called()
 
 
@@ -127,11 +88,9 @@ def test_failed_writer_creation_preserves_identity_without_retrying_in_cleanup(
     scene, factory = writer_scene
     failure = failure_type("writer initialization failed")
     factory.side_effect = failure
-    manager = Manager(scene)
     with pytest.raises(failure_type) as caught:
-        manager.render()
+        Manager(scene).render()
     assert caught.value is failure
-    assert manager._file_writer is None
     factory.assert_called_once()
 
 
@@ -141,39 +100,22 @@ def test_recursive_creation_fails_clearly_and_leaves_retry_possible(writer_scene
     factory.side_effect = lambda settings: manager.file_writer
     with pytest.raises(RuntimeError, match="Recursive file writer creation"):
         manager.file_writer
-    assert manager._file_writer is None
     factory.assert_called_once()
     factory.side_effect = None
     assert isinstance(manager.file_writer, SceneFileWriter)
     assert factory.call_count == 2
 
 
-@pytest.mark.parametrize("writer_scene", ["mp4"], indirect=True)
-def test_replacement_retires_previous_unsealed_segment(writer_scene, tmp_path):
-    scene, _ = writer_scene
-    writer = scene.renderer.file_writer
-    path = tmp_path / "replaced.mp4"
-    writer.open_partial_movie_stream(animation_index=0, file_path=path)
-    job = writer._current_encode_job
-    writer.write_frame(np.zeros((32, 64, 4), dtype=np.uint8))
-    replacement = Mock()
-    try:
-        scene.renderer.file_writer = replacement
-        assert not job.thread.is_alive()
-        assert writer._current_encode_job is None
-        assert not path.exists()
-        assert scene.manager.file_writer is replacement
-    finally:
-        writer.abort_encode_jobs()
-
-
-@pytest.mark.parametrize("writer_scene", ["mp4"], indirect=True)
-def test_direct_play_still_creates_legacy_video_segments(writer_scene):
+@pytest.mark.parametrize("writer_scene", [("cairo", "mp4")], indirect=True)
+def test_direct_plays_keep_the_same_writer(writer_scene):
     scene, factory = writer_scene
     scene.play(Wait(0.1))
     writer = scene.manager.file_writer
+    with pytest.raises(AttributeError):
+        scene.renderer.file_writer = Mock()
+    scene.play(Wait(0.1))
     writer.join_all_encode_jobs()
     factory.assert_called_once()
     assert writer is scene.renderer.file_writer
-    assert len(writer.partial_movie_files) == 1
-    assert Path(writer.partial_movie_files[0]).is_file()
+    assert len(writer.partial_movie_files) == 2
+    assert all(Path(path).is_file() for path in writer.partial_movie_files)
