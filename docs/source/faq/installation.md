@@ -120,6 +120,35 @@ of [ManimPango's README](https://github.com/ManimCommunity/ManimPango).
 
 ---
 
+(msvc-build-tools)=
+## I am using Windows and the installation fails with `Microsoft Visual C++ 14.0 or greater is required`
+
+This error is raised by `pip`, not by Manim: it means that no pre-built wheel
+matched your platform for one of Manim's dependencies, so `pip` fell back to
+compiling that dependency from source -- and Windows ships no C compiler by
+default.
+
+Our dependencies do publish Windows wheels, so installing a compiler is usually
+not the fix you need. By far the most common cause is running a Python version
+that is newer than the wheels published for it; Manim supports Python 3.11 up to
+3.14, and the newest release of that range is the one most likely to still be
+missing wheels. Creating the environment with a slightly older supported Python
+version is normally enough:
+
+```powershell
+uv venv --python 3.13
+uv pip install manim
+```
+
+If you genuinely do need to build from source, install the
+[Build Tools for Visual Studio](https://visualstudio.microsoft.com/downloads/),
+tick the **Desktop development with C++** workload in the installer, then open a
+new terminal so that the compiler is on your `PATH` and retry the installation.
+Note that the full Visual Studio IDE is not required -- the standalone build
+tools are sufficient.
+
+---
+
 (not-on-path)=
 ## I am using Windows and get the error `X is not recognized as an internal or external command, operable program or batch file`
 
