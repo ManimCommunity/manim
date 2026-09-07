@@ -1,6 +1,7 @@
 """Semantic camera queries and identity do not depend on drawing caches."""
 
 import numpy as np
+import pytest
 
 from manim import ThreeDCamera
 from manim.utils.hashing import get_json
@@ -12,6 +13,8 @@ def test_projection_and_identity_do_not_depend_on_drawing():
     point = np.array([1.0, 0.0, 0.0])
     identity = get_json(camera)
     before = camera.project_point(point)
+    with pytest.raises(ValueError, match="read-only"):
+        camera.rotation_matrix[0, 0] = 5
     np.testing.assert_allclose(before, [0, -1, 0], atol=1e-12)
     camera._prepare_for_render()
     np.testing.assert_array_equal(before, camera.project_point(point))

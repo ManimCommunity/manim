@@ -98,6 +98,7 @@ class Manager(Generic[SceneT]):
         self._closing = False
         self._scope_depth = 0
         self._evaluating = False
+        self._evaluation_started = False
         self._evaluation_sections: list[tuple[float, str, str, bool]] = []
         self._evaluation_subcaptions: list[srt.Subtitle] = []
         self._evaluation_sounds: list[
@@ -355,12 +356,14 @@ class Manager(Generic[SceneT]):
         if self._evaluating:
             raise RuntimeError("Recursive evaluation is not supported.")
         if (
-            self._file_writer is not None
+            self._evaluation_started
+            or self._file_writer is not None
             or self.num_plays
             or getattr(self.renderer, "_target", None) is not None
             or getattr(self.renderer, "_context", None) is not None
         ):
             raise RuntimeError("No-raster evaluation requires a cold, unused Scene.")
+        self._evaluation_started = True
         self._evaluating = True
         self.skip_animations = False
         try:
