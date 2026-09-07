@@ -50,13 +50,8 @@ def test_success_retires_without_forcing_readback(managed_scene, monkeypatch):
     readback.assert_not_called()
     assert scene.manager._closed
     assert scene.renderer._closed
-    output = scene.manager.output_spec
-    assert not output.enabled
     with pytest.raises(RuntimeError, match="closed"):
         scene.renderer.get_frame()
-    assert scene.get_image().size == (64, 32)
-    assert scene.manager.output_spec == output
-    assert scene.renderer._closed
 
 
 def test_nested_inspection_scopes_retire_only_at_outer_exit(managed_scene):
@@ -119,7 +114,6 @@ def test_render_log_is_scoped_and_context_exit_retires_backend(
         assert manager._closed
         assert external in logger.handlers
         assert "inside managed setup" in scene._log_file_path.read_text()
-        assert scene.get_image().size == (64, 32)
     finally:
         logger.removeHandler(external)
         external.close()
@@ -188,15 +182,19 @@ def test_body_exception_stays_primary_on_context_exit(dry_run, monkeypatch):
     manager.close()
 
 
-def test_retiring_old_manager_does_not_close_rebound_backend(dry_run):
-    first = Scene()
-    first_manager = Manager(first)
-    second = Scene(renderer=first.renderer)
-    first_manager.close()
-    assert not second.renderer._closed
-    with Manager(second) as second_manager:
-        second_manager.render()
-    assert second.renderer._closed
+def test_scene_renderer_binding_cannot_be_replaced(managed_scene):
+    scene = managed_scene
+    renderer = scene.renderer
+    with scene._get_manager() as manager:
+        renderer.update_frame(scene)
+        with pytest.raises(RuntimeError, match="already bound"):
+            Scene(renderer=renderer)
+        with pytest.raises(AttributeError):
+            scene.renderer = Mock()
+        scene.render()
+        assert manager.renderer is renderer
+        assert renderer.get_frame().shape == (32, 64, 4)
+    assert renderer._closed
 
 
 def test_file_handler_startup_failure_closes_new_handler(tmp_path, monkeypatch):

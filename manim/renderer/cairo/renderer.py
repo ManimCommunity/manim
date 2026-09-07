@@ -89,20 +89,14 @@ class CairoRenderer:
         session_spec: RenderSessionSpec,
     ) -> None:
         self._ensure_open()
+        if hasattr(self, "_scene"):
+            raise RuntimeError("This renderer is already bound to a Scene.")
         self._scene = scene
-
-    def _is_bound_to(self, scene: Scene) -> bool:
-        return self._scene is scene
 
     @property
     def file_writer(self) -> SceneFileWriter:
         """Compatibility view of the bound scene Manager's lazily owned writer."""
         return self._scene._get_manager().file_writer
-
-    @file_writer.setter
-    def file_writer(self, writer: SceneFileWriter) -> None:
-        # Retain legacy injection without a second, synchronized writer field.
-        self._scene._get_manager()._replace_file_writer(writer)
 
     def play(
         self,

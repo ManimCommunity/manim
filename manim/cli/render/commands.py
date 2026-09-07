@@ -14,7 +14,6 @@ import sys
 import urllib.error
 import urllib.request
 from argparse import Namespace
-from contextlib import ExitStack
 from pathlib import Path
 from typing import Any, cast
 
@@ -32,8 +31,7 @@ from manim.cli.render.ease_of_access_options import ease_of_access_options
 from manim.cli.render.global_options import global_options
 from manim.cli.render.output_options import output_options
 from manim.cli.render.render_options import render_options
-from manim.constants import EPILOG, RendererType
-from manim.manager import Manager
+from manim.constants import EPILOG
 from manim.utils.module_ops import scene_classes_from_file
 
 __all__ = ["render"]
@@ -95,44 +93,16 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
         scene_classes = scene_classes_from_file(file)
         _validate_scene_batch_output_name(scene_classes)
 
-        if config.renderer == RendererType.OPENGL:
-            from manim.renderer.opengl import OpenGLRenderer
-
-            renderer = OpenGLRenderer()
-            # Preserve the legacy shared renderer/camera and outer rerun loop.
-            # Rebinding retires each preceding GPU host; scope exit retires the last.
-            with ExitStack() as managers:
-                keep_running = True
-                while keep_running:
-                    for SceneClass in scene_classes:
-                        # Keep only the current Scene alive. Once rebinding has
-                        # transferred the backend, retire the preceding Manager.
-                        with managers.pop_all(), tempconfig({}):
-                            try:
-                                scene = SceneClass(renderer)
-                            except BaseException:
-                                # Explicit constructor-time GPU/output requests may
-                                # have attached a new binding before construction failed.
-                                if hasattr(renderer, "scene"):
-                                    renderer.scene._get_manager()._cleanup_after_failure()
-                                raise
-                            manager = scene.manager or Manager(scene)
-                            managers.enter_context(manager)
-                            rerun = scene.render()
-                        if rerun or config["write_all"]:
-                            renderer.num_plays = 0
-                            continue
-                        keep_running = False
-                        break
-                    if config["write_all"]:
-                        keep_running = False
-        else:
-            for SceneClass in scene_classes:
+        for SceneClass in scene_classes:
+            while True:
                 with tempconfig({}):
                     scene = SceneClass()
-                    # Preserve custom Scene.render overrides and existing managers.
-                    with scene.manager or Manager(scene):
-                        scene.render()
+                    # Scope custom render overrides too, and reuse a Manager
+                    # already attached by an explicit constructor-time request.
+                    with scene._get_manager():
+                        rerun = scene.render()
+                if not rerun:
+                    break
     except Exception:
         error_console.print_exception()
         sys.exit(1)

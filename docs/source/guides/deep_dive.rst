@@ -261,7 +261,7 @@ method. Inspecting the corresponding code (see
 reveals that ``Scene.__init__`` first sets several attributes of the scene objects that do not
 depend on any configuration options set in ``config``. Then the scene inspects the value of
 ``config.renderer``, and based on its value, either instantiates a ``CairoRenderer`` or an
-``OpenGLRenderer`` object and assigns it to its ``renderer`` attribute.
+``OpenGLRenderer`` object, exposed by its read-only ``renderer`` property.
 
 After selecting the renderer, the scene resolves the mutable configuration into
 one immutable render-session specification. In abbreviated form, initialization
@@ -349,8 +349,20 @@ when one is already attached.
     renderer initialization. The manager coordinates the scene lifecycle, while
     the renderer still owns its camera, clock, play count, and skip state. The
     manager exposes those through forwarding properties. The writer has one
-    owner, the manager; ``renderer.file_writer`` is a compatibility view used
-    by the existing renderer schedulers.
+    owner, the manager; ``renderer.file_writer`` is a read-only compatibility view
+    used by the existing renderer schedulers. Choose a custom writer through the
+    renderer's ``file_writer_class`` constructor argument, not by replacing an
+    existing writer.
+
+A renderer binds to one Scene only. To render another Scene, create a new renderer
+(or let the Scene create its default renderer). Neither rebinding a renderer nor
+assigning a different renderer to an existing Scene is supported. Successive plays
+within the same Scene still use that Scene's renderer and writer.
+
+The CLI follows the same ownership model on Cairo and OpenGL. Each selected scene
+and each interactive rerun starts with a fresh Scene, Manager, renderer, camera and
+writer. The preceding run is retired before the next is constructed; camera state
+and the renderer clock do not implicitly carry between runs.
 
 The rest of this article is concerned with the last line in our toy example script::
 
@@ -365,6 +377,9 @@ through four methods: :meth:`.Manager.setup`, :meth:`.Manager.construct`,
 File logging starts at execution, not construction. The manager removes and closes
 only its own file handler when rendering ends. Propagated rendering failures drain
 output and retire the bound backend without replacing the primary exception.
+A failed public ``play()`` also aborts its resources when called outside ``render()``.
+Prefer ``setup()`` and ``construct()`` over timed work in user constructors; this is
+not a guarantee to clean up arbitrary low-level I/O performed by a constructor.
 
 Successful rendering also retires the backend before returning. To inspect the raw
 last-rendered frame, extend that resource lifetime with an explicit Manager scope::
