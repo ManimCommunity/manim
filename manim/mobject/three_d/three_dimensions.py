@@ -295,7 +295,9 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         if colorscale is None:
             logger.warning(
                 "The value passed to the colorscale keyword argument was None, "
-                "the surface fill color has not been changed"
+                "the surface fill color has not been changed",
+                stack_info=True,
+                stacklevel = 3
             )
             return self
         colorscale_list = list(colorscale)

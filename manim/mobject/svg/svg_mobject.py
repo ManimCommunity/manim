@@ -337,7 +337,11 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         elif isinstance(shape, se.Text):
             mob = self.text_to_mobject(shape)
         else:
-            logger.warning(f"Unsupported element type: {type(shape)}")
+            logger.warning(
+                f"Unsupported element type: {type(shape)}",
+                stack_info=True,
+                stacklevel=3
+            )
             mob = None
         if mob is None or not mob.has_points():
             return None
@@ -486,7 +490,11 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         text
             The parsed SVG text.
         """
-        logger.warning(f"Unsupported element type: {type(text)}")
+        logger.warning(
+            f"Unsupported element type: {type(text)}",
+            stack_info=True,
+            stacklevel=3
+        )
         return  # type: ignore[return-value]
 
     def move_into_position(self) -> Self:
