@@ -99,11 +99,6 @@ class Manager(Generic[SceneT]):
         self._scope_depth = 0
         self._evaluating = False
         self._evaluation_started = False
-        self._evaluation_sections: list[tuple[float, str, str, bool]] = []
-        self._evaluation_subcaptions: list[srt.Subtitle] = []
-        self._evaluation_sounds: list[
-            tuple[float, str, float | None, dict[str, Any]]
-        ] = []
         scene.manager = self
 
     def __enter__(self) -> Manager[SceneT]:
@@ -711,9 +706,6 @@ class Manager(Generic[SceneT]):
             Whether animation output in this section should be skipped.
         """
         if self._evaluating:
-            self._evaluation_sections.append(
-                (self.time, name, section_type, skip_animations)
-            )
             return
         self.file_writer.next_section(name, section_type, skip_animations)
 
@@ -731,11 +723,9 @@ class Manager(Generic[SceneT]):
         offset
             The offset in seconds from the current scene time.
         """
-        subcaptions = (
-            self._evaluation_subcaptions
-            if self._evaluating
-            else self.file_writer.subcaptions
-        )
+        if self._evaluating:
+            return
+        subcaptions = self.file_writer.subcaptions
         subtitle = srt.Subtitle(
             index=len(subcaptions),
             content=content,
@@ -770,8 +760,5 @@ class Manager(Generic[SceneT]):
         if self.skip_animations:
             return
         if self._evaluating:
-            self._evaluation_sounds.append(
-                (self.time + time_offset, sound_file, gain, dict(kwargs))
-            )
             return
         self.file_writer.add_sound(sound_file, self.time + time_offset, gain, **kwargs)
