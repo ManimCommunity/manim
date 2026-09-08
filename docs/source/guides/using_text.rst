@@ -19,7 +19,7 @@ information.
 Typst support is available via :class:`~.Typst` and
 :class:`~.MathTypst`. It offers both general markup and mathematical
 typesetting through the Typst compiler without requiring a TeX
-distribution. See :ref:`typst-mobjects` for more information.
+distribution. See :mod:`~.typst_mobject` for more information.
 
 .. _using-text-objects:
 
@@ -344,7 +344,7 @@ or via Manim's ``{{ ... }}`` shorthand in :class:`~.MathTypst`:
     eq.select("lhs").set_color(BLUE)
     eq.select(0).set_color(YELLOW)
 
-See :ref:`typst-mobjects` for more details and additional examples.
+See :mod:`~.typst_mobject` for more details and additional examples.
 
 .. _rendering-with-latex:
 
