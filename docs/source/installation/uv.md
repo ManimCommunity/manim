@@ -154,7 +154,7 @@ If you installed Manim with `pip` instead, use:
 pip install "manim[typst]"
 ```
 
-See the :ref:`Typst text guide <rendering-with-typst>` for examples.
+See the :ref:`Typst section in the text guide <rendering-with-typst>` for examples.
 
 ### Step 3: Installing Manim
 
