@@ -86,8 +86,8 @@ class Window(PygletWindow):
             initial_position = self.find_initial_position(size, monitor)
             self.position = initial_position
         except BaseException:
-            # Pyglet may have acquired the native window before context setup
-            # failed. No caller can close an object whose constructor raised.
+            # Pyglet may have opened the window before setup failed. Close it
+            # here, since the caller will receive an exception instead of a Window.
             if getattr(self, "_window", None) is not None:
                 try:
                     self.close()

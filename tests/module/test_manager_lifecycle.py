@@ -1,4 +1,4 @@
-"""Lifecycle failures retire output without masking the primary exception."""
+"""Rendering errors stop encoding jobs and preserve the original exception."""
 
 from unittest.mock import Mock
 

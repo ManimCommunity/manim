@@ -1,4 +1,4 @@
-"""Manager owns cleanup, including its exact file-log handler."""
+"""Manager closes rendering resources and removes the log handler it created."""
 
 import logging
 from unittest.mock import Mock
