@@ -294,8 +294,8 @@ class _CustomEncoder(json.JSONEncoder):
 
             temp = obj.__dict__
             if isinstance(obj, ThreeDCamera):
-                # Projection caches are derived solely from the camera trackers.
-                # Queries and drawing must not alter visual identity.
+                # The angle trackers already determine the rotation. Recomputing
+                # its cached matrix must not change the movie-cache key.
                 temp = {
                     key: value
                     for key, value in temp.items()

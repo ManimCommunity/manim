@@ -1,4 +1,4 @@
-"""The real no-raster entrypoint shares evaluation, not legacy skipped playback."""
+"""Evaluation runs normal animation steps without drawing or writing media."""
 
 from unittest.mock import Mock
 
@@ -80,7 +80,7 @@ def test_real_evaluation_matches_uncached_render(settings, monkeypatch):
     monkeypatch.setattr(manager, "_draw_animation_frame", reject)
     monkeypatch.setattr(manager, "_deliver_animation_frame", reject)
     monkeypatch.setattr("manim.manager.get_hash_from_play_call", reject)
-    # Deliberately hostile ordinary output/selection policies are ignored.
+    # Evaluation still runs every animation with caching and range skipping enabled.
     with tempconfig(
         {
             "disable_caching": False,
