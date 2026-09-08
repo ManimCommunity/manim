@@ -64,9 +64,10 @@ class Manager(Generic[SceneT]):
 
     Notes
     -----
-    Output settings are saved during scene construction. The manager creates
-    the file writer when first requested and makes it available before
-    :meth:`~manim.scene.scene.Scene.setup` runs.
+    Output settings are saved during scene construction. During rendering, the
+    manager creates the file writer when first requested and makes it available
+    before :meth:`~manim.scene.scene.Scene.setup` runs. :meth:`evaluate` runs the
+    scene without creating a writer or drawing frames.
 
     Both backends use the same animation clock and sampling rules. Cached and
     skipped animations follow a separate fast-forward path.
@@ -192,6 +193,7 @@ class Manager(Generic[SceneT]):
         this property before calling :meth:`setup`; ``renderer.file_writer``
         returns the same writer. Both properties are read-only. To choose a custom
         writer class, pass ``file_writer_class`` when constructing the renderer.
+        Accessing this property during :meth:`evaluate` raises ``RuntimeError``.
         """
         if self._evaluating:
             raise RuntimeError(
@@ -337,15 +339,29 @@ class Manager(Generic[SceneT]):
             raise
 
     def evaluate(self) -> None:
-        """Run setup, construction and teardown without engine pixels or media.
+        """Run the scene's animations without drawing frames or producing media.
 
-        Uses normal interpolation/updaters/stop conditions and the same clock as
-        uncached rendering. Cache, skip and range selection are ignored. Explicit
-        bound-scene image/GPU/output requests are rejected. Arbitrary user code is
-        still executed: this is not a sandbox or a guarantee of zero user I/O.
+        Calls ``setup()``, ``construct()`` and ``tear_down()``, using the same
+        animation steps and clock as uncached, unskipped rendering. Movie caches,
+        animation ranges, and skip flags are ignored. Section, subcaption, and
+        sound calls produce no output or report; sound files are not checked.
 
-        Start with an unused, cold Scene. Time and scene state remain inspectable;
-        no file writer, encoder, native host or execution log is implicitly opened.
+        Notes
+        -----
+        Start with a fresh scene, before playing animations or opening its
+        renderer's drawing resources or file writer. Each scene can be evaluated
+        once. Keep the frame-rate configuration used to construct it.
+
+        Afterward, inspect ``scene.time`` and the scene's mobjects. An explicit
+        ``scene.get_image()`` call can then draw the resulting state. Image,
+        renderer GPU, writer, and interactive-preview requests during evaluation
+        raise an error instead.
+
+        The manager closes on success, or at the end of an enclosing
+        ``with manager:`` block. Failures trigger cleanup and preserve the original
+        exception. No file writer, encoder, preview window, or file log is opened
+        by evaluation. User code still runs and can perform its own I/O: this is
+        not a sandbox.
         """
         self._validate_execution()
         if self._evaluating:
@@ -513,7 +529,7 @@ class Manager(Generic[SceneT]):
     def _play(
         self, *args: Animation | Mobject | _AnimationBuilder, **kwargs: Any
     ) -> None:
-        """Prepare and play animations, reusing cached frames when available."""
+        """Prepare and play animations, checking the movie cache only when rendering."""
         self._validate_execution()
         scene = self.scene
         renderer: _AnimationRenderer = self.renderer
@@ -635,7 +651,7 @@ class Manager(Generic[SceneT]):
                 and not scene.skip_animation_preview
             )
             frame = self._draw_animation_frame(t) if draw else None
-            # Count the interval displayed by this frame, including the t=0 frame.
+            # Count this step's frame interval even when evaluation draws no frame.
             # Stop conditions and finish() see the time at the end of that interval.
             if not self.skip_animations:
                 self.time = event_start + (sample_index + 1) / frame_rate
@@ -696,6 +712,8 @@ class Manager(Generic[SceneT]):
     ) -> None:
         """Create a new output section.
 
+        During :meth:`evaluate`, this call has no effect.
+
         Parameters
         ----------
         name
@@ -713,6 +731,8 @@ class Manager(Generic[SceneT]):
         self, content: str, duration: float = 1, offset: float = 0
     ) -> None:
         """Add a subcaption at the current scene time.
+
+        During :meth:`evaluate`, this call produces no output and stores no caption.
 
         Parameters
         ----------
@@ -743,7 +763,9 @@ class Manager(Generic[SceneT]):
     ) -> None:
         """Add sound to the output at the current scene time.
 
-        No sound is added while animations are being skipped.
+        No sound is added while animations are being skipped. During
+        :meth:`evaluate`, this call also produces no output; the sound file is
+        neither checked nor decoded.
 
         Parameters
         ----------

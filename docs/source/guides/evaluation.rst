@@ -1,8 +1,9 @@
 Evaluate a scene without rendering
 ==================================
 
-Use :meth:`.Manager.evaluate` to run a scene's Python animation logic without
-producing pixels or media:
+Use :meth:`.Manager.evaluate` to inspect a scene's animation time and mobject
+state without rendering a movie. It runs the scene's animation steps, but skips
+frame drawing, encoding, and preview:
 
 .. code-block:: python
 
@@ -17,70 +18,93 @@ producing pixels or media:
 
     with tempconfig({"frame_rate": 30}):
         scene = Motion()
-        manager = Manager(scene)
+        manager = scene.manager or Manager(scene)
         manager.evaluate()
-        print(scene.time)
-        print(scene.square.get_center())
+        print(scene.time)                 # 1.5
+        print(scene.square.get_center())  # [1. 0. 0.]
 
-Construct and evaluate under the same frame-rate configuration. Start with an unused
-scene whose primary drawing resources and file writer have not been opened.
+Create and evaluate the scene under the same frame-rate configuration. Start
+with a fresh scene: do not play animations or open its renderer's drawing
+resources or file writer before evaluating it. Each scene can be evaluated once;
+create another instance for another evaluation or a separate render.
 
 What runs
 ---------
 
-Evaluation invokes ``setup()``, ``construct()`` and ``tear_down()``. It uses the same
-Manager play path, interpolation, updaters, stop checks, animation finish/cleanup and
-clock as ordinary uncached, unskipped rendering. Frozen waits retain their ordinary
-whole-frame logical span. Evaluation is not summing animation durations or jumping
-directly to every animation endpoint.
+Evaluation calls ``setup()``, ``construct()`` and ``tear_down()``. Play and wait
+calls use the same animation loop as rendering with caching and skipping turned
+off: interpolation, updaters, stop conditions, and animation finish/cleanup run
+as usual. The clock follows the same frame-rate sampling and frozen-wait rounding
+rules described in :doc:`deep_dive`. Time comes from running those steps, not
+from adding up the requested animation durations.
 
-Rendered-segment cache, animation-range selection and skip flags (including section skip flags)
-are ignored. ``next_section()``, ``add_subcaption()`` and ``add_sound()`` requests are
-accepted without constructing a writer or decoding audio. This does not validate sound
-files or produce a public timeline report; structured export is a separate feature.
+The manager ignores cached movie segments, animation-range selection, and skip
+flags, including those set by sections. All play calls reached by the scene's
+Python code are evaluated.
 
-Output finalization is not run: there is no final-frame capture, partial movie,
-encoder, assembly, media preview, or newly opened execution file log. No primary
-Cairo raster target or OpenGL context/window is acquired by evaluation.
+Calls to ``next_section()``, ``add_subcaption()`` and ``add_sound()`` are allowed
+but have no output effect in this mode. They are not stored in a report, and
+sound files are neither checked nor decoded. A successful evaluation therefore
+does not tell you whether the same scene's audio files can be rendered.
+
+The manager does not finalize output or capture a last-frame image. It creates
+no file writer, encoder, Cairo image buffer, OpenGL context, or preview window,
+and opens no file log of its own.
 
 Inspection and failures
 -----------------------
 
-Time and Python scene state remain readable after evaluation. As with rendering,
-success closes the Manager unless an explicit Manager context scope retains it;
-failures retire the scope and preserve the original exception.
+After evaluation, read ``scene.time`` and inspect the mobjects or values saved
+by your scene. The manager closes automatically unless it is inside a
+``with manager:`` block, in which case it closes when the block ends. Keeping
+the manager open does not allow a second evaluation of the same scene.
 
-An image is a separate, explicit operation *after* evaluation:
+If evaluation fails, the manager attempts cleanup and raises the original
+exception. Changes already made to your scene are not rolled back.
+
+To see an image of the resulting state, request it *after* evaluation:
 
 .. code-block:: python
 
     with tempconfig({"frame_rate": 30}):
         scene = Motion()
-        Manager(scene).evaluate()
-        image = scene.get_image()  # This request DOES rasterize the final state.
+        manager = scene.manager or Manager(scene)
+        manager.evaluate()
+        image = scene.get_image()  # Draws the current mobjects without advancing time.
 
-You can instead attach ``Manager(scene)`` explicitly, as in the first example, or
-reuse ``scene.manager`` when a Manager is already attached.
+This separate request creates the drawing resources it needs, even though
+evaluation did not. It produces an image of the current state, including changes
+made by animation cleanup and ``tear_down()``, not a previously rendered frame.
 
 Limits
 ------
 
-* Requests for images, bound-renderer pixels/GPU resources, output writers or
-  interactive preview during evaluation raise an error rather than secretly opening
-  rendering resources. Raw GPU-backed meshes are unsupported.
-* Ordinary CPU-backed Cairo and OpenGL mobjects can be evaluated. This is not a promise
-  that every shader-specific effect has a CPU equivalent.
-* Geometry construction, text/layout tools, image loading and arbitrary user code still
-  run. This is **not a sandbox**, a zero-user-I/O guarantee, or instant execution.
-  External code that opens files, creates its own GPU context or launches another
-  scene is not isolated by this API. Use separate processes for independent jobs
-  and appropriate OS sandboxing for untrusted code.
-* Existing Scene-construction configuration validation still applies. Evaluation does
-  not introduce late configuration preparation or remove renderer-dependent mobject
-  classes.
+* During evaluation, calls such as ``scene.get_image()``,
+  ``scene.renderer.get_frame()`` and ``scene.renderer.file_writer`` raise an error.
+  Opening that renderer's GPU context, starting a nested render of the same scene,
+  or entering interactive preview also raises an error.
+* Ordinary Cairo and OpenGL mobjects whose state is computed in Python can be
+  evaluated. Raw GPU-backed meshes are unsupported, and shader-only visual effects
+  cannot be inspected through Python mobject state.
+* Constructing geometry, typesetting text, loading images, and running updaters
+  still take time. Evaluation does not make expensive Python code instantaneous.
+* **This is not a sandbox.** Your code can still read or write files, start
+  processes, or create an independent renderer or scene. Those operations are not
+  blocked by evaluation. Use separate processes for independent jobs and OS-level
+  sandboxing for untrusted code.
+* Choose the renderer and frame rate before constructing the scene. Normal
+  configuration validation and renderer-specific mobject classes still apply.
 
-Three-dimensional Cairo projection queries now derive their rotation from current
-camera trackers, whether or not drawing has occurred. Derived rotation-cache contents
-do not participate in the camera's visual cache identity. ``rotation_matrix`` is a
-derived read-only property; change camera trackers (or customize
-``generate_rotation_matrix()``) rather than assigning that cache directly.
+Cairo 3D camera queries
+-----------------------
+
+Calls such as ``camera.project_point()`` use the camera's current angle trackers,
+even when no frame has been drawn. Reading the rotation matrix does not change
+the camera's movie-cache key: the matrix is computed from the trackers, not a
+separate camera setting.
+
+``rotation_matrix`` is read-only. To rotate the camera, change its angle trackers
+or use setters such as ``set_theta()``. Subclasses can customize
+``generate_rotation_matrix()`` rather than assigning a matrix to the property.
+If that customization depends on state beyond the angle trackers, call
+``reset_rotation_matrix()`` when those extra inputs change.
