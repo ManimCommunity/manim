@@ -37,19 +37,19 @@ SceneT = TypeVar("SceneT", bound="Scene")
 
 
 class Manager(Generic[SceneT]):
-    """Coordinate the render lifecycle for a single scene.
+    """Run a scene's rendering steps and clean up its resources.
 
-    A manager is attached to exactly one :class:`~manim.scene.scene.Scene`. It
-    coordinates the scene lifecycle, delegates animation playback to its bound
-    renderer, and routes section, subcaption, and audio operations to its owned
-    file writer. Calling :meth:`~manim.scene.scene.Scene.render` creates a manager
-    lazily when one has not already been attached.
+    Each manager works with one :class:`~manim.scene.scene.Scene`. It calls the
+    scene's setup, construct, and tear-down hooks, delegates animation playback to
+    the renderer, and uses a file writer for sections, subcaptions, and audio.
+    Calling :meth:`~manim.scene.scene.Scene.render` creates a manager if needed
+    and stores it in ``scene.manager``.
 
     Parameters
     ----------
     scene
-        The scene coordinated by this manager. A scene that already has a manager
-        cannot be attached to another one.
+        The scene to render. Reuse ``scene.manager`` if a manager is already
+        attached.
 
     Attributes
     ----------
@@ -58,11 +58,14 @@ class Manager(Generic[SceneT]):
 
     Notes
     -----
-    This class is the coordination boundary for an incremental render-flow
-    refactor. The Manager creates and owns the file writer on first output demand.
-    Renderers retain a read-only compatibility view for their legacy schedulers. Renderer,
-    camera, and clock ownership remain unchanged; output settings are still
-    resolved during Scene construction.
+    Output settings are saved during scene construction. The manager creates
+    the file writer when first requested and makes it available before
+    :meth:`~manim.scene.scene.Scene.setup` runs.
+
+    Rendering normally closes the renderer before returning. Use a
+    ``with manager:`` block to keep its resources available after a successful
+    render, for example to read the last-rendered frame. The block closes them
+    when it ends.
 
     Examples
     --------
@@ -70,7 +73,7 @@ class Manager(Generic[SceneT]):
     is called. It can also be attached explicitly::
 
         scene = Scene()
-        manager = Manager(scene)
+        manager = scene.manager or Manager(scene)
         manager.render()
     """
 
@@ -120,10 +123,12 @@ class Manager(Generic[SceneT]):
             self._log_handler = None
 
     def close(self) -> None:
-        """Drain output, retire the backend, and detach only this Manager's log.
+        """Stop encoding jobs, close the renderer, and close the scene's log file.
 
-        Successful render retires resources automatically unless an explicit
-        Manager context scope extends their lifetime for inspection.
+        This discards any unfinished segment and waits for queued encoding jobs.
+        It removes the log handler created by this manager, leaving other handlers
+        in place. Rendering calls this automatically, or at the end of an enclosing
+        ``with manager:`` block after a successful render.
         """
         if self._closed:
             return
@@ -155,7 +160,7 @@ class Manager(Generic[SceneT]):
 
     @property
     def renderer(self) -> CairoRenderer | OpenGLRenderer:
-        """Return the renderer bound to this scene."""
+        """Return the renderer selected when the scene was created."""
         return self.scene.renderer
 
     @property
@@ -165,12 +170,12 @@ class Manager(Generic[SceneT]):
 
     @property
     def file_writer(self) -> SceneFileWriter:
-        """Return the owned writer, creating it on first output demand.
+        """Return the scene's file writer, creating it on first access.
 
-        Image inspection does not request a writer. Explicit legacy access through
-        ``renderer.file_writer`` does, and attaches a Manager if necessary.
-        Select the writer with the renderer's ``file_writer_class`` constructor
-        argument; an owned writer cannot be replaced.
+        The writer uses ``scene.file_writer_settings``. :meth:`render` accesses
+        this property before calling :meth:`setup`; ``renderer.file_writer``
+        returns the same writer. Both properties are read-only. To choose a custom
+        writer class, pass ``file_writer_class`` when constructing the renderer.
         """
         if self._file_writer is None:
             if self._closed or self._closing:
@@ -190,12 +195,12 @@ class Manager(Generic[SceneT]):
 
     @property
     def output_spec(self) -> OutputSpec:
-        """Return the immutable output intent captured for this session."""
+        """Return the output format and options saved for this scene."""
         return self.session_spec.output
 
     @property
     def session_spec(self) -> RenderSessionSpec:
-        """Return the immutable artifact, presentation, and execution intent."""
+        """Return the scene's saved output, preview, and execution settings."""
         return self.scene.session_spec
 
     @property
@@ -230,11 +235,14 @@ class Manager(Generic[SceneT]):
 
         The lifecycle invokes :meth:`setup`, :meth:`construct`,
         :meth:`tear_down`, and :meth:`post_construct`, in that order. Reaching a
-        configured animation boundary ends construction normally. Failures during
-        setup, construction, teardown, finalization, or preview opening abort
-        encoding jobs before the original exception is propagated. Successful
-        execution retires resources before returning, unless an explicit Manager
-        context scope extends the backend's inspection lifetime to scope exit.
+        configured animation boundary ends construction normally. After a
+        successful render, the renderer closes before this method returns, or
+        when an enclosing ``with manager:`` block ends.
+
+        If setup, animation, output finalization, or opening the preview fails,
+        the manager stops encoding jobs and closes the renderer before raising
+        the original exception. This cleanup also applies to errors in
+        :meth:`tear_down`.
 
         Parameters
         ----------
@@ -263,8 +271,7 @@ class Manager(Generic[SceneT]):
             self._open_log_handler()
             if isinstance(self.renderer, OpenGLRenderer):
                 self.renderer.open()
-            # Preserve writer availability in user setup without opening it
-            # during Scene construction or non-output image inspection.
+            # Make the writer available to user setup() code.
             _ = self.file_writer
             self.setup()
             try:
@@ -273,8 +280,8 @@ class Manager(Generic[SceneT]):
                 # Only a construction boundary is a normal early scene end.
                 pass
             except RerunSceneException:
-                # The caller starts a fresh Scene, not a reset of this renderer.
-                # A rerun has no primary failure to mask an encoder error.
+                # The caller will create a fresh Scene for the rerun.
+                # Report any encoder errors before allowing that restart.
                 self.file_writer.abort_encode_jobs(reraise_encoder_failures=True)
                 self._finish_resource_scope()
                 return True
@@ -291,8 +298,8 @@ class Manager(Generic[SceneT]):
             self._finish_resource_scope()
             return False
         except BaseException:
-            # Even setup or teardown can leave a non-daemon encoder waiting for
-            # frames. Cleanup must not replace the exception that brought us here.
+            # An encoder waiting for more frames can prevent Python from exiting.
+            # Stop it while preserving the original rendering error.
             if started or self._file_writer is not None:
                 self._cleanup_after_failure()
             raise
@@ -303,7 +310,7 @@ class Manager(Generic[SceneT]):
             self.close()
 
     def get_image(self) -> Image:
-        """Materialize current state without entering a timed/output transaction."""
+        """Draw a fresh scene image; see :meth:`.Scene.get_image` for snapshot behavior."""
         return self.renderer._get_scene_image(self.scene)
 
     def setup(self) -> None:
@@ -318,8 +325,8 @@ class Manager(Generic[SceneT]):
         """Finalize output after scene construction and tear-down.
 
         This validates empty video output, asks the renderer to finish the scene,
-        and logs the number of played animations. It intentionally runs after
-        :meth:`tear_down` to preserve the established render lifecycle.
+        and logs the number of played animations. :meth:`tear_down` runs first,
+        so its changes to the scene are included in last-frame image output.
         """
         output = self.output_spec
         empty_video_output = self.num_plays == 0 and output.is_video
@@ -396,11 +403,10 @@ class Manager(Generic[SceneT]):
                     offset=-run_time + subcaption_offset,
                 )
         except (EndSceneEarlyException, RerunSceneException):
-            # Normal render control flow is handled by the enclosing construct scope.
+            # Leave early scene endings and rerun requests for the caller to handle.
             raise
         except BaseException:
-            # Direct play (including in a user constructor) may have no enclosing
-            # render scope to abort a worker waiting for more frames.
+            # A direct play() can fail outside render(), so it needs cleanup here too.
             self._cleanup_after_failure()
             raise
 
