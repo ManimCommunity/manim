@@ -149,7 +149,7 @@ def parse_theme(parser: configparser.SectionProxy) -> Theme | None:
 
 
 def set_file_logger(log_file_path: Path) -> logging.FileHandler:
-    """Add a file handler for one exact, already resolved log path.
+    """Add a file handler to Manim's logger at the given path.
 
     Parameters
     ----------
@@ -159,7 +159,8 @@ def set_file_logger(log_file_path: Path) -> logging.FileHandler:
     Returns
     -------
     logging.FileHandler
-        The attached handler. Its caller owns removal and closure.
+        The attached handler. Remove it from the logger and close it when
+        logging for this scene ends.
     """
     file_handler = logging.FileHandler(log_file_path, mode="w")
     logger = logging.getLogger("manim")

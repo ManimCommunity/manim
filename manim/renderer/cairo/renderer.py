@@ -32,10 +32,10 @@ __all__ = ["CairoRenderer"]
 class CairoRenderer:
     """A renderer using Cairo.
 
-    Cameras supplied to this renderer contain semantic view/projection state only.
-    CairoRenderer owns all pixel arrays, PyCairo contexts, nested targets, drawing,
-    static raster reuse, and readback. Construction captures raster settings but
-    allocates no target; drawing or explicit readback acquires it on demand.
+    The renderer draws the camera's view, including inset views, into image
+    buffers. It manages the PyCairo drawing contexts and caches images of
+    stationary mobjects. Construction saves the pixel dimensions; the buffers
+    are allocated on the first draw or request for pixels.
     """
 
     capabilities = RendererCapabilities(live_preview=False)
@@ -95,7 +95,7 @@ class CairoRenderer:
 
     @property
     def file_writer(self) -> SceneFileWriter:
-        """Compatibility view of the bound scene Manager's lazily owned writer."""
+        """Return the scene manager's file writer, creating it if needed."""
         return self._scene._get_manager().file_writer
 
     def play(
@@ -287,7 +287,7 @@ class CairoRenderer:
         ignore_skipping: bool = True,
         **kwargs: Any,
     ) -> None:
-        """Render one scene state into the owned Cairo target."""
+        """Draw the scene's current state into the renderer's image buffer."""
         self._ensure_open()
         if self.skip_animations and not ignore_skipping:
             return
@@ -312,7 +312,7 @@ class CairoRenderer:
         *,
         camera: Camera | None = None,
     ) -> None:
-        """Render explicit mobjects for direct image materialization."""
+        """Draw the supplied mobjects into the renderer's image buffer."""
         self._ensure_open()
         render_camera = self.camera if camera is None else camera
         self._get_target().reset(render_camera)
@@ -330,11 +330,11 @@ class CairoRenderer:
         self.add_frame(self.get_frame())
 
     def get_frame(self) -> RGBAPixelArray:
-        """Return a fresh owned top-left-origin RGBA frame."""
+        """Copy the current image to an RGBA array, with row zero at the top."""
         return self._get_target().read_pixels()
 
     def _get_scene_image(self, scene: Scene) -> Image.Image:
-        """Draw current state in an independent scope, even after raster cleanup."""
+        """Draw a snapshot with a temporary renderer at the existing resolution."""
         renderer = CairoRenderer(
             camera=self.camera, _raster_settings=self._raster_settings
         )
@@ -419,7 +419,7 @@ class CairoRenderer:
             self.file_writer.save_image(self.get_frame())
 
     def close(self) -> None:
-        """Release all Cairo targets and static pixels; subsequent drawing fails."""
+        """Close the renderer and release its image buffers and drawing contexts."""
         if self._closed:
             return
         self._closed = True

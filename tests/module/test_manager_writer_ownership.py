@@ -1,4 +1,4 @@
-"""One constructor-selected writer, acquired only when output is requested."""
+"""The selected writer is created on first use and reused for the scene."""
 
 from pathlib import Path
 from unittest.mock import Mock

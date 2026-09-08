@@ -1,4 +1,4 @@
-"""Deferred OpenGL opening, native retirement, and cold inspection."""
+"""OpenGL resources open on demand, close after use, and support fresh snapshots."""
 
 from concurrent.futures import ThreadPoolExecutor
 from unittest.mock import Mock

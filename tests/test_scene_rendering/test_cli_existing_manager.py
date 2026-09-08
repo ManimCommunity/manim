@@ -1,4 +1,4 @@
-"""CLI runs use independent owners, including reruns and constructor-time requests."""
+"""Each CLI run has a fresh Scene and reuses that scene's manager."""
 
 import subprocess
 import sys

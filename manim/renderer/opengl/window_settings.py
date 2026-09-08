@@ -1,4 +1,4 @@
-"""Concrete native-window inputs, independent of resource acquisition."""
+"""Saved configuration for an OpenGL preview window."""
 
 from __future__ import annotations
 
@@ -13,10 +13,9 @@ if TYPE_CHECKING:
 class _WindowSettings:
     """Values needed to size and place one native preview window.
 
-    Capture performs no monitor queries or native imports. The caller chooses
-    when to resolve these inputs; Window currently does so at construction.
-    Size is a window sizing request, not an output-raster pixel contract; native
-    framebuffer dimensions may differ on HiDPI displays.
+    These values are copied from configuration. Window creation uses them when
+    selecting a monitor and setting the window's size and position. The native
+    backend may use different framebuffer pixel dimensions on HiDPI displays.
     """
 
     size: str | tuple[int, ...]
