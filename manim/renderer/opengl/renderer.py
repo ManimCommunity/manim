@@ -573,13 +573,7 @@ class OpenGLRenderer(_RendererExecutionView):
         return tid
 
     def update_skipping_status(self) -> None:
-        """
-        Check and update the skipping status for the current animation
-        (self.skip_animations flag) based on the configuration settings.
-
-        Parameters
-        ----------
-        None
+        """Ask the scene's manager whether this play should be fast-forwarded.
 
         Raises
         ------
@@ -594,20 +588,19 @@ class OpenGLRenderer(_RendererExecutionView):
         *animations: Animation | Mobject | _AnimationBuilder,
         **kwargs: Any,
     ) -> None:
-        """
-        Compatibility entrypoint for Manager-owned OpenGL playback.
+        """Delegate animation playback to the scene's manager.
 
-        Compilation, selection, state advancement and output orchestration now
-        belong to Manager; this method delegates to its legacy-compatible path.
+        Prefer :meth:`.Scene.play` for new code; it also handles subcaptions and
+        calls made from another thread during OpenGL interaction.
 
         Parameters
         ----------
-        scene Scene
+        scene
             The scene in which to play the animations.
-        *animations Animation | Mobject | _AnimationBuilder
+        animations
             The animations, mobjects, or animation builders to play.
-        **kwargs Any
-            Additional keyword arguments to pass to the animation compilation.
+        kwargs
+            Animation options such as ``run_time`` and ``rate_func``.
         """
         scene._get_manager()._play(*animations, **kwargs)
 
@@ -648,31 +641,29 @@ class OpenGLRenderer(_RendererExecutionView):
     def render(
         self, scene: Scene, frame_offset: float, moving_mobjects: list[Mobject]
     ) -> None:
-        """
-        Renders a single frame of the given scene using OpenGL.
+        """Draw a single frame of the scene's current state using OpenGL.
 
         Parameters
         ----------
-        scene : Scene
-            The scene to render.
-        frame_offset : float
-            The time offset for the current frame in seconds. If no window is present,
-            this parameter is ignored, and a frame is a true snapshot of
-            the scene at the current time.
-        moving_mobjects : list[Mobject]
-            List of mobjects that are currently moving and need to be updated.
-            Not used at all, kept for compatibility with other renderers.
+        scene
+            The scene to draw.
+        frame_offset
+            Animation-relative time in seconds. Accepted for the common renderer
+            interface; drawing itself does not use this value.
+        moving_mobjects
+            Accepted for the common renderer interface. OpenGL draws the full
+            scene rather than using Cairo's moving/static split.
 
         Notes
         -----
-        Draws the current scene. Manager owns output delivery and invokes legacy
-        native presentation separately after securing any requested frame pixels.
-        Drawing does not advance the semantic clock.
+        This method draws into the framebuffer. The manager reads any pixels
+        needed for output and displays the preview window separately. Drawing
+        alone neither writes frames nor advances ``Scene.time``.
         """
         self.update_frame(scene)
 
     def _present_frame(self, scene: Scene, frame_offset: float) -> None:
-        """Legacy native pacing, invoked after Manager has secured output pixels."""
+        """Refresh the preview window until wall-clock time reaches the frame offset."""
         if self.window is not None:
             self.window.swap_buffers()
             while self.animation_elapsed_time < frame_offset:
@@ -688,7 +679,7 @@ class OpenGLRenderer(_RendererExecutionView):
         2. Refresh camera perspective uniforms for rendering.
         3. Iterate through all mobjects in the scene, rendering those marked for display.
         4. Iterate through all mesh objects in the scene, setting their uniforms and rendering them.
-        5. Update the elapsed animation time.
+        5. Update the wall-clock time used to pace the preview window.
 
         Parameters
         ----------

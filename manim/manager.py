@@ -216,7 +216,7 @@ class Manager(Generic[SceneT]):
 
     @property
     def time(self) -> float:
-        """Return the managed execution time."""
+        """Return elapsed animation time in seconds."""
         return self._execution.time
 
     @time.setter
@@ -225,7 +225,7 @@ class Manager(Generic[SceneT]):
 
     @property
     def num_plays(self) -> int:
-        """Return the managed execution's play count."""
+        """Return the number of completed play or wait calls."""
         return self._execution.num_plays
 
     @num_plays.setter
@@ -234,7 +234,7 @@ class Manager(Generic[SceneT]):
 
     @property
     def skip_animations(self) -> bool:
-        """Return the managed execution's animation skip state."""
+        """Return whether the current play is being fast-forwarded."""
         return self._execution.skip_animations
 
     @skip_animations.setter
@@ -388,7 +388,7 @@ class Manager(Generic[SceneT]):
         subcaption_offset: float = 0,
         **kwargs: Any,
     ) -> None:
-        """Coordinate an animation request and its optional subcaption.
+        """Play animations and add an optional subcaption.
 
         Parameters
         ----------
@@ -403,7 +403,8 @@ class Manager(Generic[SceneT]):
         subcaption_offset
             Offset in seconds from the beginning of the play call.
         kwargs
-            Additional animation arguments passed to Scene's compilation helpers.
+            Animation options such as ``run_time`` and ``rate_func``, applied
+            by :meth:`.Scene.compile_animations`.
         """
         self._validate_execution()
         try:
@@ -451,7 +452,7 @@ class Manager(Generic[SceneT]):
     def _play(
         self, *args: Animation | Mobject | _AnimationBuilder, **kwargs: Any
     ) -> None:
-        """Compile, select and execute one event through shared backend operations."""
+        """Prepare and play animations, reusing cached frames when available."""
         self._validate_execution()
         scene = self.scene
         renderer: _AnimationRenderer = self.renderer
@@ -489,8 +490,8 @@ class Manager(Generic[SceneT]):
                         },
                     },
                 )
-                # Cached pixels cannot tell us when an arbitrary stop condition
-                # fired. Evaluate these events rather than inventing their span.
+                # Cached movies do not record when a stop condition became true.
+                # Run these waits again to determine when they end.
                 if scene.stop_condition is None and self.file_writer.is_already_cached(
                     hash_current_animation
                 ):
@@ -529,7 +530,7 @@ class Manager(Generic[SceneT]):
         self.num_plays += 1
 
     def _sampled_duration(self, duration: float, frozen: bool) -> float:
-        """The ordinary event span, also used on a visual cache hit."""
+        """Return the duration of the frames a normal render would produce."""
         frame_rate = self.session_spec.frame_rate
         count = (
             int(duration * frame_rate)
@@ -539,11 +540,10 @@ class Manager(Generic[SceneT]):
         return count / frame_rate
 
     def _play_internal(self, skip_rendering: bool = False) -> None:
-        """Evaluate samples on the common clock, independently of pixel delivery."""
+        """Step through animations, advancing time even when frames are not written."""
         self._validate_execution()
         scene = self.scene
-        # Use the same rate as Scene.get_time_progression, not a backend's
-        # raster-target settings. Resolution timing and sample rounding stay put.
+        # Match Scene.get_time_progression and the scene's saved encoder settings.
         frame_rate = self.session_spec.frame_rate
         event_start = self.time
         assert scene.animations is not None
@@ -556,8 +556,8 @@ class Manager(Generic[SceneT]):
             scene.update_to_time(t)
             draw = not skip_rendering and not scene.skip_animation_preview
             frame = self._draw_animation_frame(t) if draw else None
-            # The sample represents one interval, including the initial t=0
-            # sample. Stop conditions and finish observe the consumed span.
+            # Count the interval displayed by this frame, including the t=0 frame.
+            # Stop conditions and finish() see the time at the end of that interval.
             if not self.skip_animations:
                 self.time = event_start + (sample_index + 1) / frame_rate
             if draw:
@@ -597,13 +597,13 @@ class Manager(Generic[SceneT]):
         self.renderer._present_frame(self.scene, frame_offset)
 
     def _render_preview_frame(self, frame_offset: float) -> None:
-        """Preserve interactive redraw/delivery without advancing execution time."""
+        """Redraw and display an interactive frame without advancing animation time."""
         self._validate_execution()
         frame = self._draw_animation_frame(frame_offset)
         self._deliver_animation_frame(frame, frame_offset)
 
     def _legacy_add_frame(self, frame: RGBAPixelArray, num_frames: int = 1) -> None:
-        """Compatibility for explicit Cairo add_frame calls, not evaluation."""
+        """Write frames and advance time for callers of CairoRenderer.add_frame."""
         self._validate_execution()
         if not self.skip_animations:
             self.time += num_frames / self.session_spec.frame_rate

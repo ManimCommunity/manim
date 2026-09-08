@@ -1,7 +1,8 @@
-"""Legacy renderer views of Manager-owned execution state.
+"""Renderer accessors for the animation clock and play state.
 
-An unclaimed renderer retains bootstrap values for constructor compatibility. Once a
-Manager claims them, only that Manager stores the live state.
+Before a manager is attached, the renderer stores the initial values. The manager
+takes over that state object; renderer properties then read and update it through
+the manager.
 """
 
 from __future__ import annotations
@@ -15,6 +16,8 @@ if TYPE_CHECKING:
 
 @dataclass
 class _ExecutionState:
+    """Animation clock, counters, and cache/skip state for one scene."""
+
     time: float = 0.0
     num_plays: int = 0
     skip_animations: bool = False
@@ -23,7 +26,7 @@ class _ExecutionState:
 
 
 class _RendererExecutionView:
-    """Compatibility properties, not a second execution owner or scheduler."""
+    """Keep renderer properties working with the manager's playback state."""
 
     def _initialize_execution(self, skip_animations: bool) -> None:
         self._execution_owner: Manager | None = None
