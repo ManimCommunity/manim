@@ -1,4 +1,4 @@
-"""Common Manager clock contract; legacy traces are preserved in 30a72b67."""
+"""Cairo and OpenGL expose the same animation times to user code."""
 
 import pytest
 

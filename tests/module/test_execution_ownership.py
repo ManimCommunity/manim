@@ -1,4 +1,4 @@
-"""Execution state and orchestration have one owner, independent of pixel delivery."""
+"""Manager controls playback and advances animation time independently of drawing."""
 
 from unittest.mock import Mock
 
