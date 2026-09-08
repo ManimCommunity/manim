@@ -1,4 +1,4 @@
-"""Adversarial regressions for completed timeline observations."""
+"""Validate captured clocks, event completion, and declaration placement offsets."""
 
 import contextlib
 

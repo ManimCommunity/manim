@@ -1,4 +1,4 @@
-"""No-media JSON production consumed by an independent stdlib-only reader."""
+"""Export timeline JSON through the CLI and consume it with the standalone reader."""
 
 import json
 import os

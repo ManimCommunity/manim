@@ -1,4 +1,4 @@
-"""Experimental version-1 observations of completed no-raster execution."""
+"""Experimental timeline records and JSON export for completed scene evaluation."""
 
 from __future__ import annotations
 
@@ -32,10 +32,23 @@ def _canonical(value: Any) -> str:
 
 @dataclass(frozen=True, slots=True)
 class Timeline:
-    """Immutable completed observation; dictionary access always returns a fresh copy.
+    """A completed execution timeline, stored as immutable JSON.
 
-    Version 1 describes no-raster evaluation only, not output frames or arbitrary
-    Python dependencies. The canonical document includes a SHA-256 content revision.
+    Obtain a timeline from :attr:`.Manager.timeline` after evaluating a scene with
+    capture enabled, or load one with :meth:`from_json`. :meth:`to_dict` returns
+    an independent, editable dictionary.
+
+    Parameters
+    ----------
+    _document
+        Serialized version-1 JSON. Prefer :meth:`from_json` when loading a report.
+
+    Notes
+    -----
+    The format and Python API are experimental and may change without a
+    deprecation period. Version 1 records play/wait timing, animation-step counts,
+    and section, caption, and sound declarations. Its SHA-256 revision identifies
+    the report's content.
     """
 
     _document: str
@@ -62,21 +75,39 @@ class Timeline:
 
     @classmethod
     def from_json(cls, document: str) -> Timeline:
-        """Read a completed version-1 document and verify its content revision."""
+        """Load JSON and check its version-1 header and content revision.
+
+        Parameters
+        ----------
+        document
+            JSON text from a completed timeline capture. The schema name, version,
+            completion flag, and content hash are checked.
+        """
         return cls(_canonical(json.loads(document)))
 
     def to_dict(self) -> dict[str, Any]:
+        """Return an independent dictionary containing the report data."""
         return cast("dict[str, Any]", json.loads(self._document))
 
     def to_json(self) -> str:
+        """Return canonical JSON text with a trailing newline."""
         return self._document + "\n"
 
     @property
     def revision(self) -> str:
+        """Return the report's SHA-256 content identifier."""
         return str(self.to_dict()["revision"])
 
     def write(self, path: str | Path) -> None:
-        """Atomically replace explicit metadata output after successful capture."""
+        """Save UTF-8 JSON, replacing the destination only after writing succeeds.
+
+        Parameters
+        ----------
+        path
+            Destination file. Missing parent directories are created. Relative
+            paths use the current working directory. The file contains this
+            snapshot's captured report.
+        """
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
         temporary: Path | None = None
@@ -97,6 +128,8 @@ class Timeline:
 
 @dataclass(frozen=True, slots=True)
 class _SourceSnapshot:
+    """Primary-file bytes and hash used to check for source changes."""
+
     path: Path | None
     digest: str | None
     provenance: str
@@ -121,6 +154,8 @@ class _SourceSnapshot:
 
 
 class _TimelineRecorder:
+    """Collect events and declarations from Manager's evaluation loop."""
+
     def __init__(
         self,
         scene: Any,
@@ -210,7 +245,7 @@ class _TimelineRecorder:
             del frame
 
     def observe_time(self, time: float) -> None:
-        """Validate reached clock values, including between events and at teardown."""
+        """Check for finite, nondecreasing animation time."""
         if not math.isfinite(time) or time < self.last_time:
             self.failed = True
             raise ValueError(
@@ -289,8 +324,8 @@ class _TimelineRecorder:
 
     def declare(self, kind: str, time: float, boundary: int, **values: Any) -> None:
         self.observe_time(time)
-        # Freeze reached arguments now; don't observe subsequent user mutations.
-        # A caller catching serialization failure must not publish an omitted request.
+        # Store an independent copy of the arguments at declaration time.
+        # Remember serialization errors even if scene code catches the exception.
         try:
             values = json.loads(_canonical(values))
         except BaseException:

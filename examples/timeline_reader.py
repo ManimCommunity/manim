@@ -1,6 +1,7 @@
-"""Standalone experimental timeline reader. Requires only the Python standard library.
+"""Read an experimental timeline and optionally create an HTML view.
 
-python examples/timeline_reader.py report.json --source-root path/to/scenes --html view.html
+Uses Python's standard library to read the report and check its primary source file.
+Example: python examples/timeline_reader.py report.json --source-root path/to/scenes --html view.html
 """
 
 import argparse
@@ -11,6 +12,7 @@ from pathlib import Path
 
 
 def read_timeline(path):
+    """Check the version, completion flag and content hash, then return the data."""
     data = json.loads(Path(path).read_text(encoding="utf-8"))
     if (
         not isinstance(data, dict)
@@ -35,6 +37,7 @@ def read_timeline(path):
 
 
 def source_status(data, root):
+    """Compare the primary file on disk with its recorded hash, when available."""
     source = data["source"]
     if root is None or source["path"] is None:
         return "source unverified"
