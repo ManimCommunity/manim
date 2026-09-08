@@ -97,8 +97,8 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
             while True:
                 with tempconfig({}):
                     scene = SceneClass()
-                    # Scope custom render overrides too, and reuse a Manager
-                    # already attached by an explicit constructor-time request.
+                    # Reuse a manager created by the scene's constructor. The
+                    # with block also cleans up after custom render() overrides.
                     with scene._get_manager():
                         rerun = scene.render()
                 if not rerun:
