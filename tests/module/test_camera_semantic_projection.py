@@ -1,4 +1,4 @@
-"""Semantic camera queries and identity do not depend on drawing caches."""
+"""Projection uses current camera angles, and reading it leaves cache keys unchanged."""
 
 import numpy as np
 import pytest
