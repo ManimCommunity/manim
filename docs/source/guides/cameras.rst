@@ -1,15 +1,29 @@
 Working with cameras and scene images
 =====================================
 
-A camera describes the logical view of a scene: its position, visible extent, and
-projection. A renderer turns that view into pixels. You normally work with the camera
-through ``self.camera`` and request images through the scene, without managing a renderer.
+A camera represents a view of the current scene: in short, the camera describes
+where the scene is being viewed from and how much of the scene is visible. The
+renderer "draws" the scene from this view and turns it into an image.
+
+Most often, interaction with the camera happens inside a scene class using
+``self.camera``.
+
+The camera frame
+----------------
+
+In 2D scenes, the camera's view is described by its *frame* (not to be confused
+with a frame of a video). This frame is roughly equivalent to a picture frame
+that is laid on top of the scene, with the camera "seeing" everything that lies
+inside the frame. When the camera pans you can think of it as the frame sliding
+across the "surface" of the scene, and when the camera zooms in or out, you can
+think of it as the frame getting smaller or bigger (since less or more of the
+scene, respectively, will fit into the picture frame).
 
 Moving the Cairo camera
 -----------------------
 
-The ordinary Cairo :class:`.Camera` has an animatable ``frame``. You do not need a
-special scene subclass to pan or zoom::
+In the ordinary Cairo :class:`.Camera`, the frame is an actual mobject called
+``frame``. You can modify or animate this frame like any other mobject::
 
     class CameraExample(Scene):
         def construct(self):
@@ -28,11 +42,13 @@ frame with the usual mobject operations::
 :class:`.MovingCameraScene` remains available as a descriptive name for this behavior.
 These frame examples describe the Cairo camera; OpenGL uses its own camera controls.
 
-Logical view and image resolution
----------------------------------
+Camera view and image resolution
+--------------------------------
 
-Frame dimensions are in scene units; pixel dimensions specify the raster resolution.
-Configure pixel dimensions before constructing the scene or renderer::
+The dimensions of the camera's frame and of the images output by the renderer
+are specified separately. Camera frame dimensions are defined in scene units,
+while output dimensions are defined in pixels. You must configure pixel
+dimensions before constructing the scene or renderer::
 
     with tempconfig({"pixel_width": 640, "pixel_height": 360}):
         scene = Scene()
@@ -47,9 +63,9 @@ two dimensions or a custom frame preserve the geometry you specify::
     camera = Camera(frame_width=8, frame_height=4)
     camera.frame.move_to([2, 1, 0])
 
-With both dimensions explicit, choose the same logical and raster aspect ratio when
-undistorted output is required. Drawing does not resize your semantic frame. Scene
-image requests use the existing renderer dimensions, not later pixel-config edits.
+When both the width and height of the camera frame are explicitly provided, you
+should ensure that frame dimensions and pixel dimensions have the same aspect
+ratio; otherwise, the camera's output will be distorted when it is rendered.
 
 Inspecting the current scene
 ----------------------------
@@ -66,8 +82,8 @@ It includes manual changes since the last animation and the current camera view:
             self.get_image().save("after.png")
 
 Use ``scene.show()`` to open a fresh image in PIL's external image viewer. In a notebook,
-display the returned PIL image directly. Saving and opening an image are explicit;
-``get_image()`` itself does not write a media artifact or open a viewer.
+the returned PIL image is displayed directly. ``get_image()`` only generates the
+snapshot; the image must be saved to disk explicitly.
 
 An image request does not execute construction, run updaters, advance scene time, or
 append a movie frame. It photographs the graph as it stands, even if updater-derived
@@ -91,9 +107,11 @@ For ordinary Cairo mobjects, use :meth:`.Mobject.get_image` or :meth:`.Mobject.s
     Group(Square().shift(LEFT), Circle().shift(RIGHT)).get_image().save("objects.png")
     image = square.get_image(camera=self.camera)
 
-The optional camera selects the view, not the scene contents: only the supplied mobject
-and its family are drawn. Without it, a default camera is used. These standalone helpers
-are Cairo-specific; use ``scene.get_image()`` for an OpenGL scene, including its meshes.
+The ``camera`` parameter allows for a different camera to be used to generate
+the image. Without it, the scene's default camera is used.
+
+These standalone helpers are Cairo-specific; use ``scene.get_image()`` for an
+OpenGL scene, including its meshes.
 
 Three-dimensional and nested views
 ----------------------------------
@@ -115,17 +133,18 @@ Multiple camera views
 ---------------------
 
 The Cairo backend supports several camera views within one scene through
-:class:`.MultiCamera`. The primary camera draws the overall scene; each secondary
-camera supplies an image displayed by an :class:`.ImageMobjectFromCamera` mobject.
-This is live composition of the same scene, not separate Scene executions or separate
-video outputs. This API is not supported by the OpenGL backend.
+:class:`.MultiCamera`. The primary camera draws the overall scene; each
+secondary camera supplies an image displayed by an
+:class:`.ImageMobjectFromCamera` mobject.
+During the execution of the scene, each camera records the scene from its own
+view. This API is not supported by the OpenGL backend.
 
 There are two independent controls:
 
 * The secondary camera's ``frame`` selects the region to look at. Move it to pan,
   or shrink it to zoom in.
-* The display mobject selects where that view appears in the primary scene. Move or
-  scale it like another mobject, without changing the secondary camera's view.
+* The display mobject selects where that view appears in the primary scene, as a
+  "picture-in-picture" display. This mobject can be manipulated like any other.
 
 For example, this scene places two detail views above the original objects::
 
