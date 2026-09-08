@@ -1,5 +1,4 @@
-"""What every renderer declares: its features, where it is in its life, and the
-narrow animation drawing boundary."""
+"""Renderer capabilities, lifecycle state, and drawing methods used by Manager."""
 
 from __future__ import annotations
 
@@ -75,10 +74,11 @@ class Renderer(Protocol):
 
 
 class _AnimationRenderer(Protocol):
-    """Drawing/presentation operations, never compilation, selection or clock ticks.
+    """Draw frames and display them in a preview window at Manager's request.
 
-    Kept private during the render-flow migration. The native backend owns wall
-    pacing; Manager owns when these operations are requested and any output delivery.
+    Manager prepares animations, checks the cache, advances animation time, and
+    sends frames to the writer. The renderer prepares its drawing resources and
+    uses wall-clock time to pace its live preview.
     """
 
     def _animation_cache_identity(self, scene: Scene) -> tuple[str, Any]: ...
