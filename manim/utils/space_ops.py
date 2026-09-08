@@ -361,15 +361,15 @@ def normalize(
     vect: np.ndarray | tuple[float], fall_back: np.ndarray | None = None
 ) -> np.ndarray:
     """Normalizes a vector to unit length while preserving its direction. If the vector
-    has length 0, a fallback vector is returned instead.
+    has norm 0, a fallback vector is returned instead.
 
     Parameters
     ----------
     vect
         The vector to be normalized.
     fall_back
-        The vector to be returned if ``vect`` has length 0. If ``None``, a zero vector
-        of the same length as ``vect`` is returned.
+        The vector to be returned if ``vect`` has norm 0. If ``None``, a zero vector of
+        the same length as ``vect`` is returned.
     """
     norm = np.linalg.norm(vect)
     if norm > 0:
