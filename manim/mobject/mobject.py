@@ -2373,17 +2373,18 @@ class Mobject:
             if points is None
             else np.asarray(points)
         )
+
         values = np_points[:, dim]
         _min, _max = numpy_minmax.minmax(values)
+
         if key < 0:
             rv: float = float(_min)
-            return rv
         elif key == 0:
             rv = (_min + _max) / 2
-            return rv
         else:
             rv = float(_max)
-            return rv
+
+        return rv
 
     def get_critical_point(self, direction: Vector3DLike) -> Point3D:
         """Picture a box bounding the :class:`~.Mobject`.  Such a box has
