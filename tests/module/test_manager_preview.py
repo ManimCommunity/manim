@@ -1,4 +1,4 @@
-"""Interactive redraws still deliver/present, but never consume semantic time."""
+"""Interactive redraws display frames without advancing animation time."""
 
 from unittest.mock import Mock
 

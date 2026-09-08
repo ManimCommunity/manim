@@ -96,7 +96,7 @@ class CairoRenderer(_RendererExecutionView):
         *args: Animation | Mobject | _AnimationBuilder,
         **kwargs: Any,
     ) -> None:
-        """Compatibility entrypoint; Manager owns animation orchestration."""
+        """Delegate playback to the scene's manager; prefer Scene.play for new code."""
         scene._get_manager()._play(*args, **kwargs)
 
     def _animation_cache_identity(self, scene: Scene) -> tuple[str, Any]:
@@ -281,7 +281,7 @@ class CairoRenderer(_RendererExecutionView):
     ) -> None:
         if self._render_all_mobjects:
             moving_mobjects = None
-        # Drawing is separate from Manager-owned time advancement and delivery.
+        # Manager advances animation time and sends the pixels to the writer.
         self.update_frame(scene, moving_mobjects)
 
     def get_frame(self) -> RGBAPixelArray:

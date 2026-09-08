@@ -130,9 +130,9 @@ def test_parallel_encoding_cache_behavior(tmp_path):
     scene_file = tmp_path / "parallel_encoding_scenes.py"
     scene_file.write_text(_SCENE_SOURCE)
 
-    # Equal geometry at different execution epochs no longer implies equal
-    # pixels. Reuse is checked on a second render of the same timeline below;
-    # the writer's in-flight lookup is covered separately at the writer boundary.
+    # Identical geometry can produce different pixels at different scene times.
+    # Check cache reuse by rendering the same scene again below. Separate writer
+    # tests cover cache lookups while a matching segment is still being encoded.
     media_dir = tmp_path / "media"
     quality_directory, partial_directory = _render_scene(media_dir, scene_file)
     partial_movies = sorted(partial_directory.glob("*.mp4"))
@@ -188,7 +188,7 @@ def test_disable_caching_is_evaluated_per_play(config, tmp_path):
     assert restored_hash is not None
     assert cached_hash is not None
     assert not cached_hash.startswith("uncached_")
-    assert cached_hash != restored_hash  # Different execution epoch, caching enabled.
+    assert cached_hash != restored_hash  # Different play index; caching is enabled.
 
 
 @pytest.mark.slow

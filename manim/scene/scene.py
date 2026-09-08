@@ -291,7 +291,7 @@ class Scene:
 
     @property
     def time(self) -> float:
-        """The time since the start of the managed execution."""
+        """Elapsed animation time in seconds, as reported by the scene's manager."""
         if self.manager is not None:
             return self.manager.time
         return self.renderer.time
@@ -1304,10 +1304,11 @@ class Scene:
         duration
             The run time of the animation.
         stop_condition
-            A function without positional arguments that is evaluated every time
-            a frame is rendered. The animation only stops when the return value
-            of the function is truthy, or when the time specified in ``duration``
-            passes.
+            A function without positional arguments, evaluated after each animation
+            step. During normal playback, ``self.time`` then includes that step's
+            frame interval.
+            The wait ends when the function returns a truthy value or the requested
+            duration is reached.
         frozen_frame
             If True, updater functions are not evaluated, and the animation outputs
             a frozen frame. If False, updater functions are called and frames
@@ -1316,7 +1317,7 @@ class Scene:
 
         See also
         --------
-        :class:`.Wait`, :meth:`.should_mobjects_update`
+        :class:`.Wait`, :meth:`.should_update_mobjects`
         """
         duration = self.validate_run_time(duration, self.wait, "duration")
         self.play(
@@ -1366,10 +1367,10 @@ class Scene:
         *animations: Animation | Mobject | _AnimationBuilder,
         **play_kwargs: Any,
     ) -> Self | None:
-        """Given a list of animations, compile the corresponding
-        static and moving mobjects, and gather the animation durations.
+        """Prepare animations, their run time, and frozen-wait status for a play call.
 
-        This also begins the animations.
+        The manager starts the prepared animations afterward via
+        :meth:`begin_animations`.
 
         Parameters
         ----------
@@ -1382,10 +1383,8 @@ class Scene:
         Returns
         -------
         self, None
-            None if there is nothing to play, or self otherwise.
+            This scene, or ``None`` for a frozen wait.
         """
-        # NOTE TODO : returns statement of this method are wrong. It should return nothing, as it makes a little sense to get any information from this method.
-        # The return are kept to keep webgl renderer from breaking.
         if len(animations) == 0:
             raise ValueError("Called Scene.play with no animations")
 
@@ -1403,7 +1402,7 @@ class Scene:
                 self.update_mobjects(dt=0)  # Any problems with this?
                 self.stop_condition = self.animations[0].stop_condition
             else:
-                # Static image logic when the wait is static is done by the renderer, not here.
+                # Manager will draw one frame and repeat it for this wait.
                 self.animations[0].is_static_wait = True
                 return None
 
@@ -1417,8 +1416,7 @@ class Scene:
             animation.begin()
 
         if config.renderer == RendererType.CAIRO:
-            # Paint all non-moving objects onto the screen, so they don't
-            # have to be rendered every frame
+            # Identify mobjects whose pixels can be reused between frames.
             (
                 self.moving_mobjects,
                 self.static_mobjects,
