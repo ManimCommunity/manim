@@ -1,4 +1,4 @@
-"""Actual no-raster execution observations and immutable/atomic publication."""
+"""Capture evaluation steps and atomically save immutable reports."""
 
 import json
 from pathlib import Path

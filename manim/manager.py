@@ -343,7 +343,11 @@ class Manager(Generic[SceneT]):
 
     @property
     def timeline(self) -> Timeline:
-        """The immutable snapshot after successful requested timeline capture."""
+        """Return the completed timeline requested during :meth:`evaluate`.
+
+        Read this property after ``evaluate(capture_timeline=True)`` returns
+        successfully. The returned snapshot is immutable.
+        """
         if self._timeline is None:
             raise RuntimeError("No completed timeline capture is available.")
         return self._timeline
@@ -355,13 +359,14 @@ class Manager(Generic[SceneT]):
         animation steps and clock as uncached, unskipped rendering. Movie caches,
         animation ranges, and skip flags are ignored. Section, subcaption, and
         sound calls produce no media output; sound files are not checked. Optional
-        timeline capture records these calls along with the animation steps.
+        timeline capture records these calls and summarizes each play or wait.
 
         Parameters
         ----------
         capture_timeline
-            Store a completed :attr:`timeline` after successful evaluation.
-            This does not write JSON or create an output directory.
+            Record play/wait timing, step counts, and section/caption/sound calls
+            in :attr:`timeline` after successful evaluation. Use
+            :meth:`.Timeline.write` to save the captured report as JSON.
 
         Notes
         -----
