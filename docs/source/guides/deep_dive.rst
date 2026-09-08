@@ -264,7 +264,7 @@ depend on any configuration options set in ``config``. Then the scene inspects t
 ``OpenGLRenderer`` object, exposed by its read-only ``renderer`` property.
 
 After selecting the renderer, the scene resolves the mutable configuration into
-one immutable render-session specification. In abbreviated form, initialization
+an immutable *render-session specification*. In abbreviated form, initialization
 continues as follows:
 
 ::
@@ -303,6 +303,18 @@ frames or using media and cache resources. In contrast, ``format = none`` only
 suppresses the primary artifact; an OpenGL live preview with automatic output
 still rasterizes and displays frames without writing a file. Both requests have
 an effective output format of ``none``, so the session's ``dry_run`` field
+The session specification separates *primary artifact* intent (an ``OutputSpec``
+which defines the type of file we wish Manim to create based on our scene) from
+*presentation requests* such as displaying a live preview or opening the
+artifact after rendering finishes.
+When the primary artifact is a video, the session specification also contains
+information about the video codec, pixel format, dimension, frame rate, etc.
+The specification also separately records requests for *dry-run execution*.
+A dry run requests semantic scene evaluation without rasterizing
+frames or using media and cache resources. In contrast, ``format = none`` only
+suppresses the primary artifact; an OpenGL live preview with automatic output
+still rasterizes and displays frames without writing a file. Both requests have
+an effective output format of ``none``, so the session's ``dry_run`` field
 preserves the intended execution behavior.
 
 The current renderer loops do not yet enforce no-raster dry runs; the session
@@ -315,7 +327,13 @@ The scene then resolves existing directory templates once into an immutable
 output plan containing exact scene-specific artifact, section, image-sequence,
 and cache paths. Planning performs no file I/O and creates no directories. The
 resolved format determines the artifact suffix; ``output_file`` supplies only a
-name and cannot change the format.
+The scene then resolves existing directory templates once into an immutable
+*output plan* containing scene-specific output paths for the artifact, sections,
+image-sequences, and cached files. If any of these paths contain directories
+which do not exist, those directories will be created when a file writer needs
+to use them and not at this point in time.
+File extensions are determined by the resolved session specification and cannot
+be changed.
 
 The scene stores the output plan, video encoding settings, cache limits, and
 sound-asset directory in ``_SceneFileWriterSettings``. The :class:`.Manager` uses
@@ -344,15 +362,17 @@ The ``-p`` / ``--preview`` option opens the completed output file after renderin
 it is separate from OpenGL's live-preview window.
 
 Scene initialization also prepares ``mobjects``, the list of mobjects added to the
-scene, and sets ``manager`` to ``None``. The first call that needs a manager, such
-as ``render()`` or ``get_image()``, creates one and attaches it to the scene.
-Subsequent calls reuse ``scene.manager``.
+scene, and sets ``manager`` to ``None``. The manager is lazily created: the
+first time a call is made which requires a manager, such as ``render()`` or
+``get_image()``, a new manager is created and attached to the scene as
+``scene.manager``. This manager is then reused for any subsequent calls.
 
 **One renderer per scene.** A scene keeps the renderer selected at construction;
 ``scene.renderer`` is read-only. Successive plays reuse that renderer and its
 writer. For another scene, create a new renderer or let the scene create its
 default. The renderer stores the camera, animation clock, play count, and skip
-state; the manager's corresponding properties read and update those values.
+state; the manager has corresponding properties which are used to read and
+update those values.
 
 The CLI creates a fresh scene for each selected class and each interactive rerun,
 on both Cairo and OpenGL. It closes the previous run's resources before creating
@@ -406,10 +426,11 @@ from the renderer, keep it open with a ``with manager:`` block::
         manager.render()
         last_frame = manager.renderer.get_frame()
 
-The renderer stays open after successful rendering until the block ends. For a
-fresh image of the current mobjects instead, use ``scene.get_image()``; this also
-works after the rendering resources have closed. OpenGL meshes stored directly
-on the GPU require their original context, so inspect them inside the block.
+The renderer will then stay open after successful rendering until the end of the
+``with`` block. The rendered scene persists even after the renderer closes, and
+any renderer-independent methods may still be called; this includes
+``scene.get_image()``. OpenGL meshes stored directly on the GPU require their
+original context, so these must be inspected inside the block.
 
 When file logging is enabled, the manager opens the scene's log at the start of
 rendering or the first direct ``play()`` call. It removes and closes that handler
