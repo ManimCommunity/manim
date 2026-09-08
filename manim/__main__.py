@@ -5,6 +5,7 @@ import cloup
 
 from manim import __version__
 from manim._config import cli_ctx_settings, console
+from manim.cli.cache.commands import cache
 from manim.cli.cfg.group import cfg
 from manim.cli.checkhealth.commands import checkhealth
 from manim.cli.default_group import DefaultGroup
@@ -92,6 +93,7 @@ def main(ctx: click.Context) -> None:
 
 
 main.add_command(checkhealth)
+main.add_command(cache)
 main.add_command(cfg)
 main.add_command(plugins)
 main.add_command(init)

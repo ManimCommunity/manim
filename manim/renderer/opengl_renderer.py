@@ -13,7 +13,7 @@ from moderngl import Framebuffer
 from PIL import Image
 from typing_extensions import override
 
-from manim import config, logger
+from manim import config
 from manim.mobject.opengl.opengl_mobject import (
     OpenGLMobject,
     OpenGLPoint,
@@ -36,6 +36,7 @@ from ..utils.space_ops import (
     rotation_matrix_transpose,
     rotation_matrix_transpose_from_quaternion,
 )
+from .protocol import RendererCapabilities
 from .shader import Mesh, Shader
 from .vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_fill,
@@ -46,9 +47,11 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
     from typing import Self
 
+    from manim._config.render_session import RenderSessionSpec
     from manim.animation.animation import Animation
     from manim.mobject.mobject import Mobject, _AnimationBuilder
     from manim.scene.scene import Scene
+    from manim.scene.scene_file_writer import _SceneFileWriterSettings
     from manim.typing import (
         FloatRGBA,
         PathFuncType,
@@ -484,6 +487,8 @@ class OpenGLRenderer:
         The window used for previewing, if any.
     """
 
+    capabilities = RendererCapabilities(live_preview=True)
+
     def __init__(
         self,
         file_writer_class: type[SceneFileWriter] = SceneFileWriter,
@@ -516,7 +521,12 @@ class OpenGLRenderer:
         self.path_to_texture_id: dict[str, int] = {}
         self.background_color = config["background_color"]
 
-    def init_scene(self, scene: Scene) -> None:
+    def init_scene(
+        self,
+        scene: Scene,
+        session_spec: RenderSessionSpec,
+        file_writer_settings: _SceneFileWriterSettings,
+    ) -> None:
         """
         Initializes the OpenGL rendering context and related resources
         for the given scene.
@@ -534,13 +544,12 @@ class OpenGLRenderer:
         """
         self.partial_movie_files: list[str | None] = []
         self.file_writer: SceneFileWriter = self._file_writer_class(
-            self,
-            scene.__class__.__name__,
+            file_writer_settings,
         )
         self.scene = scene
 
         self.background_color = config["background_color"]
-        if self.should_create_window():
+        if self.should_create_window(session_spec):
             from .opengl_renderer_window import Window
 
             self.window = Window(self)
@@ -566,28 +575,13 @@ class OpenGLRenderer:
             moderngl.ONE,
         )
 
-    def should_create_window(self) -> bool:
+    def should_create_window(self, session_spec: RenderSessionSpec) -> bool:
         """
         Determine whether a window should be created for rendering
         based on the current configuration.
 
-        Notes
-        -----
-        A windows is always created if the 'force_window' configuration is enabled.
         """
-        if config["force_window"]:
-            logger.warning(
-                "'--force_window' is enabled, this is intended for debugging purposes "
-                "and may impact performance if used when outputting files",
-            )
-            return True
-        return (
-            config["preview"]
-            and not config["save_last_frame"]
-            and not config["format"]
-            and not config["write_to_movie"]
-            and not config["dry_run"]
-        )
+        return session_spec.presentation.live_preview
 
     def get_pixel_shape(self) -> tuple[int, int] | None:
         """
@@ -802,6 +796,8 @@ class OpenGLRenderer:
         # there is always at least one section -> no out of bounds here
         if self.file_writer.sections[-1].skip_animations:
             self.skip_animations = True
+        if self.file_writer.output_spec.is_still:
+            self.skip_animations = True
         if (
             config.from_animation_number > 0
             and self.num_plays < config.from_animation_number
@@ -839,16 +835,23 @@ class OpenGLRenderer:
         """
         # TODO: Handle data locking / unlocking.
         self.animation_start_time = time.time()
-        self.file_writer.begin_animation(not self.skip_animations)
+        self.file_writer.begin_animation(
+            not self.skip_animations,
+            animation_index=self.num_plays,
+        )
 
         scene.compile_animation_data(*animations, **kwargs)
         scene.begin_animations()
         if scene.is_current_animation_frozen_frame():
             self.update_frame(scene)
 
-            if not self.skip_animations:
+            output = self.file_writer.output_spec
+            if not self.skip_animations and (
+                output.is_video or output.is_image_sequence
+            ):
                 self.file_writer.write_frame(
-                    self, num_frames=int(config.frame_rate * scene.duration)
+                    self.get_frame(),
+                    repeat=int(config.frame_rate * scene.duration),
                 )
 
             if self.window is not None:
@@ -908,7 +911,9 @@ class OpenGLRenderer:
         if self.skip_animations:
             return
 
-        self.file_writer.write_frame(self)
+        output = self.file_writer.output_spec
+        if output.is_video or output.is_image_sequence:
+            self.file_writer.write_frame(self.get_frame())
 
         if self.window is not None:
             self.window.swap_buffers()
@@ -956,46 +961,40 @@ class OpenGLRenderer:
         self.animation_elapsed_time = time.time() - self.animation_start_time
 
     def scene_finished(self, scene: Scene) -> None:
-        """
-        Handle the finalization process after a scene has finished rendering.
-
-        Performs the following actions:
-        - If any plays (animations) have occurred, finalizes the file writing process.
-        - If no plays have occurred but movie writing is enabled, disables
-          movie writing to avoid creating an empty movie file.
-        - If the configuration requires saving the last frame,
-          updates and saves the final image of the scene.
+        """Finalize configured output for the scene.
 
         Parameters
         ----------
-        scene : Scene
+        scene
             The scene that has finished rendering.
         """
-        # When num_plays is 0, no images have been output, so output a single
-        # image in this case
-        if self.num_plays > 0:
+        output = self.file_writer.output_spec
+        if self.num_plays > 0 and (output.is_video or output.is_image_sequence):
             self.file_writer.finish()
-        elif self.num_plays == 0 and config.write_to_movie:
-            config.write_to_movie = False
+        elif self.num_plays == 0:
+            # Keep the framebuffer useful for direct renderer access and
+            # graphical tests even when no media artifact was requested.
+            self.update_frame(scene)
 
         if self.should_save_last_frame():
-            config.save_last_frame = True
-            self.update_frame(scene)
-            self.file_writer.save_image(self.get_image())
+            if self.num_plays > 0:
+                self.update_frame(scene)
+            self.file_writer.save_image(self.get_frame())
 
     def should_save_last_frame(self) -> bool:
         """
-        Determine whether the last frame of the scene should be saved,
-        i.e. if one of the following conditions is met:
-        - The configuration option 'save_last_frame' is enabled.
-        - The scene is not in interactive mode.
-        - This is the first play (i.e., num_plays == 0).
+        Determine whether the last frame of the scene should be saved.
+
+        This is true for explicit last-frame PNG output and for automatic video
+        output when the scene has no play calls. Interactive scenes do not use
+        the automatic fallback.
         """
-        if config["save_last_frame"]:
+        output = self.file_writer.output_spec
+        if output.is_still:
             return True
         if self.scene.interactive_mode:
             return False
-        return self.num_plays == 0
+        return self.num_plays == 0 and output.fallback_to_still
 
     def get_image(self) -> Image.Image:
         """
@@ -1140,8 +1139,7 @@ class OpenGLRenderer:
 
         result_dimensions = (pixel_shape[1], pixel_shape[0], 4)
         np_buf = np.frombuffer(raw, dtype="uint8").reshape(result_dimensions)
-        np_buf = np.flipud(np_buf)
-        return np_buf
+        return np.flipud(np_buf).copy()
 
     # Returns offset from the bottom left corner in pixels.
     # top_left flag should be set to True when using a GUI framework

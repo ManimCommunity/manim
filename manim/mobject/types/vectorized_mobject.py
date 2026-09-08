@@ -1372,9 +1372,7 @@ class VMobject(Mobject):
         filtered = filter(filter_func, range(nppcc, len(points), nppcc))
         split_indices = [0] + list(filtered) + [len(points)]
         return (
-            points[i1:i2]
-            for i1, i2 in zip(split_indices[:-1], split_indices[1:], strict=True)
-            if (i2 - i1) >= nppcc
+            points[i1:i2] for i1, i2 in it.pairwise(split_indices) if (i2 - i1) >= nppcc
         )
 
     def get_subpaths_from_points(self, points: CubicBezierPath) -> list[CubicSpline]:

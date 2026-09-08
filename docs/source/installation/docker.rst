@@ -14,9 +14,9 @@ For our image ``manimcommunity/manim``, there are the following tags:
 
 .. note::
 
-   When using Manim's CLI within a Docker container, some flags like
-   ``-p`` (preview file) and ``-f`` (show output file in the file browser)
-   are not supported.
+   When using Manim's CLI within a Docker container, options that launch host
+   applications, such as ``-p`` and ``--show_in_file_browser``, are not
+   supported. Live preview also requires explicit display forwarding.
 
 .. note::
 

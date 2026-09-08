@@ -26,11 +26,13 @@ def test_mobject_add():
     """Call this function with a Container instance to test its add() method."""
     # check that obj.submobjects is updated correctly
     obj = Mobject()
-    assert len(obj.submobjects) == 0
-    obj.add(Mobject())
-    assert len(obj.submobjects) == 1
-    obj.add(*(Mobject() for _ in range(10)))
-    assert len(obj.submobjects) == 11
+    assert obj.submobjects == []
+    child = Mobject()
+    obj.add(child)
+    assert obj.submobjects == [child]
+    new_mobjects = [Mobject() for _ in range(10)]
+    obj.add(*new_mobjects)
+    assert obj.submobjects == [child] + new_mobjects
 
     # check that adding a mobject twice does not actually add it twice
     repeated = Mobject()
@@ -39,9 +41,19 @@ def test_mobject_add():
     obj.add(repeated)
     assert len(obj.submobjects) == 12
 
+    # check that adding already existing mobjects moves them to the end of the list
+    obj.add(*reversed(new_mobjects))
+    assert obj.submobjects == [child, repeated] + list(reversed(new_mobjects))
+
     # check that Mobject.add() returns the Mobject (for chained calls)
     assert obj.add(Mobject()) is obj
     assert len(obj.submobjects) == 13
+
+    obj = Mobject()
+    # check that inserting duplicate mobjects keeps the last occurrence
+    m1, m2 = Mobject(), Mobject()
+    obj.add(m1, m2, m1)
+    assert obj.submobjects == [m2, m1]
 
     obj = Mobject()
 
@@ -76,6 +88,86 @@ def test_mobject_remove():
     assert len(obj.submobjects) == 10
 
     assert obj.remove(Mobject()) is obj
+
+
+def test_mobject_insert():
+    obj = Mobject()
+    m1, m2, m3, m4 = [Mobject(name=f"m{i}") for i in range(1, 5)]
+    # Insert into empty list
+    obj.insert(0, m1)
+    assert obj.submobjects == [m1]
+
+    # Inserting shifts existing mobjects to the right
+    obj.insert(0, m2)
+    assert obj.submobjects == [m2, m1]
+
+    # Inserting with negative index inserts counting from the end like a list
+    obj.insert(-1, m3)
+    assert obj.submobjects == [m2, m3, m1]
+
+    # Inserting with index greater than length appends
+    obj.insert(10, m4)
+    assert obj.submobjects == [m2, m3, m1, m4]
+
+    # Inserting an existing submobject moves it to the new position
+    obj.insert(4, m1)
+    assert obj.submobjects == [m2, m3, m4, m1]
+
+    # Inserting an existing submobject at or immediately next to its current position
+    # does not change the order
+    obj.insert(3, m1)
+    assert obj.submobjects == [m2, m3, m4, m1]
+    obj.insert(3, m4)
+    assert obj.submobjects == [m2, m3, m4, m1]
+
+    # can only insert Mobjects
+    with pytest.raises(TypeError) as add_str_info:
+        obj.insert(1, "foo")
+    assert str(add_str_info.value) == (
+        "Only values of type Mobject can be added as submobjects of Mobject, "
+        "but the value foo (at index 0) is of type str."
+    )
+
+
+def test_mobject_add_to_back():
+    obj = Mobject()
+    m1, m2, m3, m4 = [Mobject(name=f"m{i}") for i in range(1, 5)]
+
+    # Adding to empty list is the same as adding normally
+    obj.add_to_back(m1)
+    assert obj.submobjects == [m1]
+
+    # Adding a new submobject adds it to the back
+    obj.add_to_back(m2)
+    assert obj.submobjects == [m2, m1]
+
+    # Adding existing submobjects that are already at the back does not change the order
+    obj.add_to_back(m1)
+    assert obj.submobjects == [m1, m2]
+    obj.add_to_back(m1, m2)
+    assert obj.submobjects == [m1, m2]
+
+    # Adding an existing submobject moves it to the back
+    obj.add_to_back(m2)
+    assert obj.submobjects == [m2, m1]
+
+    # In case of duplicates, the last occurrence of a submobject is kept
+    obj.add_to_back(m3, m1, m3)
+    assert obj.submobjects == [m1, m3, m2]
+
+    # The order of the non-prepended submobjects is preserved
+    obj.remove(*obj.submobjects)
+    obj.add(m1, m2, m3, m4)
+    obj.add_to_back(m2, m4)
+    assert obj.submobjects == [m2, m4, m1, m3]
+
+    # can only add Mobjects
+    with pytest.raises(TypeError) as add_str_info:
+        obj.add_to_back("foo")
+    assert str(add_str_info.value) == (
+        "Only values of type Mobject can be added as submobjects of Mobject, "
+        "but the value foo (at index 0) is of type str."
+    )
 
 
 def test_mobject_dimensions_single_mobject():
