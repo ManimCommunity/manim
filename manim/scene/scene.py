@@ -323,18 +323,25 @@ class Scene:
         return self._get_manager().render(preview)
 
     def get_image(self) -> Image:
-        """Draw the current scene and return an independent PIL image.
+        """Return a snapshot of the scene's current mobjects as a PIL image.
 
-        Uses the scene's camera and renderer dimensions, including manual changes
-        made since the last animation. Does not run updaters, advance time, execute
-        construction, or append a movie frame. Saving or displaying is explicit::
+        The snapshot uses the current camera view, including manual changes since
+        the last animation, and the pixel dimensions chosen when the renderer was
+        created. Call between animations or at an idle prompt::
 
             self.add(Square())
             self.get_image().save("checkpoint.png")
 
-        Call between animations or at an idle prompt. OpenGL requests must run on
-        the render/context thread. This is current-state inspection, not seeking
-        to an earlier animation sample or reading the last movie frame.
+        Notes
+        -----
+        A snapshot leaves animations, updaters, and scene time unchanged. It draws
+        the existing mobjects without calling :meth:`construct` or appending a
+        movie frame. After :meth:`play`, it shows the result of animation finish
+        and cleanup, which can differ from the last frame written to the video.
+
+        The returned image retains its pixels after the renderer is closed.
+        OpenGL snapshots must be requested on the thread that created the
+        rendering context.
         """
         return self._get_manager().get_image()
 

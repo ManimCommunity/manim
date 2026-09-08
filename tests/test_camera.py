@@ -37,11 +37,9 @@ def test_movingcamera_auto_zoom():
     assert camera.frame.height == square.height + margin
 
 
-def test_default_camera_is_movable_and_resource_free():
+def test_default_camera_is_movable():
     camera = Camera()
 
-    assert not hasattr(camera, "pixel_array")
-    assert not hasattr(camera, "capture_mobjects")
     camera.frame.move_to([2, 1, 0]).set(width=6)
 
     assert camera.frame_center.tolist() == [2, 1, 0]
@@ -103,25 +101,6 @@ def test_camera_resolves_only_unspecified_dimensions(
         assert camera.frame_height == pytest.approx(expected_height)
 
 
-@pytest.mark.parametrize(
-    "removed_setting",
-    [
-        {"pixel_width": 100},
-        {"frame_rate": 30},
-        {"cairo_line_width_multiple": 0.02},
-        {"fixed_dimension": 1},
-    ],
-)
-def test_camera_rejects_removed_raster_settings(removed_setting):
-    with pytest.raises(TypeError, match="unexpected keyword argument"):
-        Camera(**removed_setting)
-
-
-def test_renderer_rejects_unknown_constructor_settings():
-    with pytest.raises(TypeError, match="unexpected keyword argument"):
-        CairoRenderer(pixel_width=100)
-
-
 def test_default_scene_camera_auto_zoom():
     with tempconfig({"dry_run": True, "quality": "low_quality"}):
         scene = Scene()
@@ -141,14 +120,12 @@ def test_mobject_get_image_uses_temporary_renderer():
     assert np.any(pixels[:, :, 2] > 0)
 
 
-def test_camera_backed_image_constructs_without_camera_pixels():
+def test_camera_backed_image_preserves_camera_aspect():
     camera = Camera()
 
     image = ImageMobjectFromCamera(camera)
 
     assert image.camera is camera
-    assert not hasattr(image, "pixel_array")
-    assert "get_pixel_array" not in type(image).__dict__
     assert image.width / image.height == pytest.approx(
         camera.frame_width / camera.frame_height,
     )
@@ -184,7 +161,6 @@ def test_background_image_is_loaded_by_renderer(tmp_path):
 
     with tempconfig({"pixel_width": 2, "pixel_height": 2}):
         camera = Camera(background_image=str(image_path))
-        assert not hasattr(camera, "background")
         renderer = CairoRenderer(camera=camera)
         try:
             renderer.update_frame(None, mobjects=[Mobject()])

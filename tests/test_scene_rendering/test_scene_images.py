@@ -122,10 +122,9 @@ def test_cairo_snapshot_camera_and_nested_view_parity(scene_class):
             scene.renderer.close()
 
 
+@pytest.mark.parametrize("image_scene", ["opengl"], indirect=True)
 def test_opengl_snapshot_restores_target_on_failure(image_scene, monkeypatch):
     renderer = image_scene.renderer
-    if not hasattr(renderer, "context"):
-        pytest.skip("OpenGL-specific resource test")
     target = renderer.frame_buffer_object
     viewport = renderer.context.viewport
     elapsed = renderer.animation_elapsed_time
@@ -145,9 +144,8 @@ def test_opengl_snapshot_restores_target_on_failure(image_scene, monkeypatch):
     assert image_scene.get_image().size == (128, 128)
 
 
+@pytest.mark.parametrize("image_scene", ["opengl"], indirect=True)
 def test_opengl_snapshot_includes_meshes(image_scene):
-    if not hasattr(image_scene.renderer, "context"):
-        pytest.skip("OpenGL-specific mesh test")
     from manim.renderer.opengl.shader import Mesh, Shader
 
     shader = Shader(
@@ -175,9 +173,8 @@ def test_opengl_snapshot_includes_meshes(image_scene):
     np.testing.assert_array_equal(pixels, image_scene.renderer.get_frame())
 
 
+@pytest.mark.parametrize("image_scene", ["opengl"], indirect=True)
 def test_opengl_snapshot_requires_owner_thread(image_scene):
-    if not hasattr(image_scene.renderer, "context"):
-        pytest.skip("OpenGL-specific thread test")
     with ThreadPoolExecutor(1) as pool:
         future = pool.submit(image_scene.get_image)
         with pytest.raises(RuntimeError, match="render thread"):

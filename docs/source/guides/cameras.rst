@@ -39,26 +39,57 @@ frame with the usual mobject operations::
     self.play(self.camera.auto_zoom([square]))
     self.play(Restore(self.camera.frame))
 
-:class:`.MovingCameraScene` remains available as a descriptive name for this behavior.
-These frame examples describe the Cairo camera; OpenGL uses its own camera controls.
+Moving the OpenGL camera
+------------------------
+
+With the OpenGL renderer, the camera itself is a mobject. Animate
+``self.camera`` directly to pan or zoom::
+
+    class OpenGLCameraExample(Scene):
+        def construct(self):
+            square = Square().shift(2 * RIGHT)
+            self.add(square)
+            self.play(self.camera.animate.move_to(square))
+            self.play(self.camera.animate.scale(0.5))
+
+Run this example with ``--renderer=opengl``. For orientation controls, see
+:class:`.OpenGLCamera` and :class:`.ThreeDScene`.
+
+Choosing a camera class
+-----------------------
+
+To select a different Cairo camera, pass ``camera_class`` to the scene's
+constructor. For example, :class:`.MultiCamera` supports picture-in-picture views::
+
+    class CustomCameraScene(Scene):
+        def __init__(self, **kwargs):
+            super().__init__(camera_class=MultiCamera, **kwargs)
+
+Use the same pattern with your own :class:`.Camera` subclass to customize its
+settings or projection. The renderer creates the camera during scene
+initialization, before ``setup()`` and ``construct()`` are called.
 
 Camera view and image resolution
 --------------------------------
 
 The dimensions of the camera's frame and of the images output by the renderer
 are specified separately. Camera frame dimensions are defined in scene units,
-while output dimensions are defined in pixels. You must configure pixel
-dimensions before constructing the scene or renderer::
+while output dimensions are defined in pixels. The output image's rectangular
+pixel area is called the *viewport*. Configure its pixel dimensions before
+constructing a camera, scene, or renderer::
 
     with tempconfig({"pixel_width": 640, "pixel_height": 360}):
         scene = Scene()
         scene.add(Square())
         image = scene.get_image()
 
-A default Cairo camera preserves ``config.frame_width`` and derives height from the
-configured pixel aspect ratio. Square and portrait output therefore preserve ordinary
-geometry. One explicit camera dimension determines the other using that aspect ratio;
-two dimensions or a custom frame preserve the geometry you specify::
+A default Cairo camera uses ``config.frame_width`` for its width and derives its
+height from the viewport's aspect ratio. This keeps circles circular and squares
+square, including in square or portrait output.
+
+Passing only ``frame_width`` or ``frame_height`` to :class:`.Camera` derives the
+other dimension from that same aspect ratio. Passing both dimensions or a custom
+``frame`` uses the dimensions you specify::
 
     camera = Camera(frame_width=8, frame_height=4)
     camera.frame.move_to([2, 1, 0])
@@ -81,22 +112,18 @@ It includes manual changes since the last animation and the current camera view:
             self.play(square.animate.shift(RIGHT))
             self.get_image().save("after.png")
 
-Use ``scene.show()`` to open a fresh image in PIL's external image viewer. In a notebook,
-the returned PIL image is displayed directly. ``get_image()`` only generates the
-snapshot; the image must be saved to disk explicitly.
+Use ``scene.show()`` to open a fresh image in PIL's external image viewer. In a
+notebook, call ``display(scene.get_image())`` or put ``scene.get_image()`` as the
+cell's final expression. Saving the image to disk is explicit, as in the example.
 
-An image request does not execute construction, run updaters, advance scene time, or
-append a movie frame. It photographs the graph as it stands, even if updater-derived
-geometry has not yet been refreshed. The post-animation graph may differ from the last
-encoded sample because animation finish/cleanup has already run. This is inspection,
-not seeking or replaying an earlier animation position.
+Request snapshots between animations or at an idle prompt to inspect the mobjects
+as they currently stand. Animation playback and updaters run separately, so a
+snapshot after ``self.play()`` shows the state after the animation has finished.
+See :meth:`.Scene.get_image` for details on snapshot timing.
 
-Request images between plays or at an idle prompt. OpenGL capture must run on the thread
-that owns the rendering context; arbitrary worker-thread calls, including background
-embedded-shell calls, are not dispatched automatically. Both Cairo and OpenGL draw into
-independent temporary targets rather than replacing the active frame. Returned images
-remain usable after those temporary targets are released. Explicit image requests also
-work in dry-run mode; they are intentional raster work requested by your Python code.
+.. note::
+
+    For OpenGL, request snapshots on the thread that created the rendering context.
 
 Inspecting individual mobjects
 ------------------------------
@@ -108,7 +135,9 @@ For ordinary Cairo mobjects, use :meth:`.Mobject.get_image` or :meth:`.Mobject.s
     image = square.get_image(camera=self.camera)
 
 The ``camera`` parameter allows for a different camera to be used to generate
-the image. Without it, the scene's default camera is used.
+the image. Without it, a new default :class:`.Camera` is created. Only the
+mobject and its submobjects are drawn; pass ``camera=self.camera`` to use the
+scene's current view.
 
 These standalone helpers are Cairo-specific; use ``scene.get_image()`` for an
 OpenGL scene, including its meshes.
@@ -136,8 +165,8 @@ The Cairo backend supports several camera views within one scene through
 :class:`.MultiCamera`. The primary camera draws the overall scene; each
 secondary camera supplies an image displayed by an
 :class:`.ImageMobjectFromCamera` mobject.
-During the execution of the scene, each camera records the scene from its own
-view. This API is not supported by the OpenGL backend.
+During the execution of the scene, the renderer draws each camera's view into its
+display mobject. This API is not supported by the OpenGL backend.
 
 There are two independent controls:
 
@@ -178,32 +207,35 @@ For example, this scene places two detail views above the original objects::
             self.play(right_camera.frame.animate.move_to(circle))
             self.wait()
 
-Run this example with ``--renderer=cairo``. Selecting ``MultiCamera`` in the constructor
-ensures it is installed before the scene's renderer is initialized.
+Run this example with ``--renderer=cairo``.
 
-Both registration and scene membership matter: registering a display tells MultiCamera
-to produce its view; ``self.add(view)`` places the display in the scene's draw order.
-``add_display_frame()`` adds an optional visible border. The secondary camera's own
-``frame`` is a view control and is not automatically shown as an outline in the scene.
+Call ``self.camera.add_image_mobject_from_camera(view)`` to refresh the display's
+image from its source camera on each draw, then ``self.add(view)`` to show it in
+the scene.
+``view.add_display_frame()`` adds the visible border around the display. To also
+show the region that the secondary camera looks at, give its ``frame`` a visible
+stroke and add it to the scene::
+
+    left_camera.frame.set_stroke(YELLOW, width=2)
+    self.add(left_camera.frame)
 
 A display initially matches its source camera's aspect ratio. Scale it uniformly to
 preserve that ratio; stretching only its width or height can distort the image.
-The renderer chooses the secondary raster size from the display's size relative to
-the primary view and manages resizing and pixel transfer automatically.
+Each inset's pixel resolution follows its display size relative to the primary
+camera frame.
 
-Secondary cameras share the scene's contents rather than having separate object lists.
-Each display and its border are excluded from their own source view. In the example,
-the detail cameras look below the insets so neither inset appears in the other.
-Sibling views are processed in registration order; do not rely on them recursively
-containing each other. For deeper nesting, a secondary camera may itself be a
-MultiCamera with its own registered displays. Cyclic camera registrations are rejected
-rather than rendered recursively forever.
+All cameras view the same scene contents. Each display and its border are excluded
+from their own camera's view. In the example, both detail cameras look below the
+insets, keeping the insets out of each other's views.
+
+For nested insets, use a :class:`.MultiCamera` as a secondary camera and register
+its displays there. Keep this hierarchy acyclic: camera registrations that form
+a cycle raise an error. Cameras registered at the same level are drawn in order;
+place their displays outside each other's views, as above, for independent insets.
 
 To remove a view entirely, remove both its visible mobject and its registration::
 
     self.remove(left_view)
     self.camera.image_mobjects_from_cameras.remove(left_view)
 
-The renderer retires unused secondary targets on the next draw. A scene image requested
-with ``self.get_image()`` includes all currently registered and visible views; there is
-no need to copy camera pixels or refresh each inset yourself.
+``self.get_image()`` captures the scene together with its current inset views.
