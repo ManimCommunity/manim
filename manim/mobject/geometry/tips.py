@@ -48,7 +48,7 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
         >>> tip = ArrowTip()
         Traceback (most recent call last):
         ...
-        NotImplementedError: Has to be implemented in inheriting subclasses.
+        TypeError: Can't instantiate abstract class ArrowTip...
 
     Instead, use one of the pre-defined ones, or make
     a custom one like this:
