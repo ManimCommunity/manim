@@ -76,6 +76,7 @@ Mobjects
    manim.mobject.text.numbers
    manim.mobject.text.tex_mobject
    manim.mobject.text.text_mobject
+   manim.mobject.text.typst_mobject
    manim.mobject.types.image_mobject
    manim.mobject.types.point_cloud_mobject
    manim.mobject.types.vectorized_mobject
