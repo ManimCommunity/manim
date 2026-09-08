@@ -1,8 +1,10 @@
 Export an execution timeline
 ============================
 
-A timeline records completed :doc:`no-raster evaluation <evaluation>`, not estimated
-animation durations or a video index. The format and Python API are experimental.
+A timeline records when a scene's play and wait calls ran during
+:doc:`evaluation`, how many animation steps were processed, and where sections,
+captions, and sounds were requested. The format and Python API are
+**experimental** and may change without a deprecation period.
 
 From Python
 -----------
@@ -18,92 +20,126 @@ From Python
             self.wait(0.3, frozen_frame=True)
 
     with tempconfig({"frame_rate": 4}):
-        manager = Manager(Example())
+        scene = Example()
+        manager = scene.manager or Manager(scene)
         manager.evaluate(capture_timeline=True)
         timeline = manager.timeline
-        print(timeline.to_json())
+        for event in timeline.to_dict()["events"]:
+            print(event["kind"], event["start"], event["end"])
         timeline.write("timeline.json")
 
-``manager.timeline`` is unavailable until requested capture completes successfully.
-The snapshot is immutable; ``to_dict()`` returns a fresh mutable copy, not live scene
-objects. ``Timeline.from_json()`` checks the experimental version and content revision.
-Capture-only Python does not create an output directory unless ``write()`` is called.
+This prints ``wait 0.0 0.5`` and ``wait 0.5 0.75``. The first wait takes two
+animation steps at 4 fps; the frozen wait occupies one frame interval.
+
+Pass ``capture_timeline=True`` to evaluation, then read ``manager.timeline``
+after it returns successfully. The returned :class:`.Timeline` is immutable:
+``to_dict()`` gives you an independent dictionary, ``to_json()`` returns the
+JSON text, and ``write()`` saves the captured report to disk.
 
 From the command line
 ---------------------
+
+From the repository root, try the included example:
 
 .. code-block:: console
 
     manim --fps 4 --timeline-output timeline.json example_scenes/timeline_scene.py TimelineExample
 
-``--timeline-output`` requires exactly one scene, without ``--write_all``. It does not
-render a video, call a custom ``Scene.render()`` override, or create a scene file writer.
-Its evaluation ignores rendered-segment caching and animation skip/range flags, as
-``Manager.evaluate()`` does. Scene loading and construction still execute user code.
-Do not treat this as a sandbox or a replacement for process isolation.
+``--timeline-output`` calls :meth:`.Manager.evaluate` with capture enabled and
+writes the resulting JSON. Supply a source file and select exactly one scene.
+Evaluation runs all play calls reached by the scene's Python code, following the
+behavior described in :doc:`evaluation`.
 
-The explicit JSON path is anchored to the invocation directory before user code runs,
-and is replaced atomically only after successful evaluation and scope cleanup. Failure or cancellation leaves a previous JSON file intact. That file
-is then an older observation, not evidence that the latest evaluation succeeded.
+A relative output path is resolved from the directory where the command was
+invoked, before scene code can change the working directory. The command waits
+for evaluation and manager cleanup, checks the primary source file, then writes
+a temporary JSON file and replaces the destination. If evaluation fails or is
+cancelled before publication, an existing report stays in place and continues
+to describe its original execution.
 
-Read without Manim
-------------------
+Standalone reader
+-----------------
 
-The repository includes a standard-library-only reader:
+The repository also includes a reader that uses only Python's standard library:
 
 .. code-block:: console
 
     python examples/timeline_reader.py timeline.json --source-root example_scenes --html timeline.html
 
-It lists events and source locations, builds an HTML timeline with source-file links,
-shows declarations, and reports whether the primary source still matches its captured
-bytes. File-link line fragments depend on the viewer; the explicit line number is
-always shown. A stale report is not automatically remapped to edited source.
-The reader needs no video or Manim import. The accompanying version-1 fixture is
-``tests/control_data/timeline-v1.json``.
+It prints events and source locations, and optionally writes an HTML timeline
+with source-file links and the recorded section, caption, and sound calls.
+``--source-root`` tells it where to look for those files. It compares the primary
+file's bytes with the recorded hash and labels a mismatch as stale. After editing
+the source, export a fresh timeline to get current line locations. Whether a
+file link opens at its line number depends on the viewer.
 
-Version 1 facts and limits
---------------------------
+What the report contains
+------------------------
 
-The document identifies ``schema = manim.execution-timeline`` and integer ``version = 1``.
-Breaking schema changes require a version bump. Its SHA-256 ``revision`` covers canonical
-UTF-8 JSON excluding the revision field itself (sorted keys, compact separators,
-unescaped Unicode, no NaN/Infinity). It is a content identifier, not authentication or
-a promise that arbitrary Python runs deterministically.
+* ``policy`` is ``no-raster-full``, identifying the evaluation mode used for
+  capture. ``complete`` is true for a completed capture. ``termination`` is
+  ``completed`` for ordinary completion, or ``scene-end-request`` when
+  ``construct()`` ends with a handled ``EndSceneEarlyException``.
+* Each event represents one play or wait call. It includes an ID, play index
+  (``ordinal``), kind, requested duration (``nominal_duration``), observed
+  ``start`` and ``end`` times in seconds, and top-level animation types/run times.
+* ``samples`` counts animation steps; ``hold_intervals`` counts the frame
+  intervals occupied by a frozen wait. In the Python example these are
+  ``(2, 0)`` and ``(0, 1)``. When a stop condition ends a wait early, ``end``
+  records the time reached by that wait.
+* ``declarations`` contains section, caption, and sound calls. Their ``at`` time
+  records when the call happened; placement can differ because of an offset.
+  Captions have resolved ``start`` and ``end`` times. Sounds have a ``start``;
+  ``duration`` is null to indicate an unknown duration. Relative sound paths
+  retain the requested string. Sound options must be JSON-serializable.
+* Events and declarations share an ``order`` counter. A declaration's
+  ``event_id`` refers to a play being prepared or executed, or is null outside
+  one. ``event_boundary`` is the number of completed plays when it was declared.
 
-* ``policy`` is ``no-raster-full``. ``complete`` means requested evaluation completed,
-  with ``termination`` distinguishing ordinary completion from a handled early scene
-  end request. Failed/cancelled captures do not expose a completed snapshot.
-* Events have execution ordinal, ID, kind, nominal duration, observed Manager start/end,
-  effective top-level animation summaries, evaluated sample count and logical frozen
-  hold intervals. A wait produces one event, not both a wait and its internal play.
-* At 4 fps, an ordinary 0.3-second request consumes two samples and advances 0.5 seconds;
-  a frozen request consumes one hold interval and advances 0.25 seconds. An early stop
-  uses its actual observed end, not its nominal maximum duration.
-* Counts describe evaluation, **not emitted media frames**. Version 1 has no ``output``
-  associations or fabricated artifacts. Optional proxy/video mapping is not implemented.
-* Section, caption and sound declarations retain reached order and placement. Caption
-  start/end are resolved. Sound duration may be null; relative sound requests remain
-  unresolved and no audio is decoded. Sound options must be JSON-serializable.
-* Source hints are best-effort, line-only and revision-local. Occurrence counters
-  distinguish repeated calls at the same site. They are not AST identities or edit
-  remapping keys. Generated/unavailable/outside-root sites are marked explicitly.
-* The source root is the primary source file's directory. Outside-root paths are
-  redacted to a display basename and are not navigation identities. Absolute checkout
-  paths, object representations and wall-clock timestamps are not generated in identity.
-* Coverage is **primary-file-only**, not a fingerprint of imported helpers, assets,
-  environment or dependencies. CLI compiles its captured primary-file bytes directly,
-  bypassing potentially stale primary-module bytecode caches; this does not verify
-  imported helpers or later dynamic code changes. Python captures disk bytes before
-  evaluation and does not verify them against already-loaded code. Neither claim is a
-  full executed-code provenance guarantee. Changing the primary file through CLI
-  resource cleanup rejects successful publication.
-* Recursive timed calls and backwards observed time are unsupported. Clock checks
-  cover samples, declarations, event boundaries and completion, not arbitrary transient
-  private-state mutations between observations. A failed timed event or captured
-  declaration cannot be hidden by catching its error and publishing a partial-looking
-  successful report. Arbitrary custom
-  execution schedules and external Python state are not made replayable by capture.
+Source locations and source checks
+----------------------------------
 
-The underlying :doc:`evaluation` resource restrictions still apply. User geometry,
-text/layout, asset loading and arbitrary Python code may perform their own work or I/O.
+Source hints identify a file and line on a best-effort basis. ``occurrence``
+distinguishes repeated calls at the same site within a capture. Use these
+locations with the source revision recorded in the report.
+
+The source root is the primary source file's directory. Paths within that root
+are relative to it. Outside-root locations provide a display basename and a null
+``path``; absolute sound paths outside the root use the same treatment. Generated
+or unavailable locations are marked in the source metadata.
+
+The recorded source hash and the reader's source-status check cover the primary
+file. The CLI and Python API obtain its contents at different points:
+
+* The CLI reads the primary file before loading it and compiles those captured
+  bytes. It checks the file again after loading, evaluation, and manager cleanup
+  before saving.
+* Python capture reads the scene class's source file from disk before evaluation,
+  when available. Load your scene class from the current source before evaluating
+  it in Python.
+
+Format and content revision
+---------------------------
+
+Version 1 uses ``schema = "manim.execution-timeline"`` and integer ``version = 1``.
+:meth:`.Timeline.from_json` checks the schema name, version, completion flag,
+and content revision.
+
+``revision`` is the SHA-256 hash of the document without its ``revision`` field,
+serialized with Python's ``json.dumps`` using ``sort_keys=True``,
+``separators=(",", ":")``, ``ensure_ascii=False``, and ``allow_nan=False``, then
+encoded as UTF-8. The hash is computed before ``to_json()`` appends its trailing
+newline. Readers in other languages must preserve this representation: for
+example, changing ``4.0`` to ``4`` changes the hash even though they compare
+numerically equal. Use the revision to identify a particular report's content.
+
+Capture errors
+--------------
+
+Timeline capture requires sequential play/wait calls and finite, nondecreasing
+animation time. The recorder checks time at samples, declarations, event
+boundaries, and completion. An unfinished event or a declaration-recording
+failure leaves the capture incomplete. To obtain a new report after an error,
+fix the cause and evaluate a fresh scene.
+
+See :doc:`evaluation` for the underlying execution behavior and requirements.
