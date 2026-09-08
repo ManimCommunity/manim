@@ -1,4 +1,4 @@
-"""Semantic camera implementations for the Cairo rendering backend."""
+"""Camera views and projection controls for the Cairo renderer."""
 
 from __future__ import annotations
 
@@ -41,13 +41,13 @@ if TYPE_CHECKING:
 
 
 class _CameraFrame(ScreenRectangle):
-    """Default frame with a direct bounding-box center query, not a cached center."""
+    """Frame whose center is computed directly from its boundary points."""
 
     def get_points_defining_boundary(self) -> Point3D_Array:
         if self.submobjects or len(self.points) <= 1:
             return super().get_points_defining_boundary()
-        # Same start/end anchors as VMobject, without family/list assembly for
-        # the ordinary childless frame. Do not assume it remains rectangular.
+        # Use VMobject's boundary anchors directly for a frame without submobjects.
+        # These also give the bounds when the frame has been deformed.
         curves = self.points.reshape(
             -1, self.n_points_per_cubic_curve, self.points.shape[1]
         )
@@ -64,14 +64,16 @@ class _CameraFrame(ScreenRectangle):
 
 
 class Camera:
-    """Describe the logical view used by a rendering backend.
+    """Configure the camera view and background for Cairo rendering.
 
-    Camera owns an animatable frame, semantic background settings, display ordering,
-    and pure point transformations. Raster targets, pixel dimensions, image buffers,
-    and backend contexts belong to renderers. With no explicit frame dimensions,
-    the configured logical width is preserved and height follows the configured
-    output aspect ratio. Supplying one dimension derives the other from that ratio;
-    supplying both dimensions or a custom frame preserves the requested geometry.
+    A camera has an animatable frame, background settings, and methods for ordering
+    and projecting mobjects. The renderer is responsible for drawing this view
+    into an image.
+
+    By default, the frame width is ``config.frame_width`` and its height is derived
+    from the viewport's pixel aspect ratio. Supplying one frame dimension derives
+    the other from that ratio; supplying both dimensions or a custom ``frame`` uses
+    the dimensions you specify. Frame dimensions are measured in Manim units.
     """
 
     def __init__(
@@ -156,7 +158,7 @@ class Camera:
 
     @property
     def frame_height(self) -> float:
-        """Height of the logical camera frame in Manim units."""
+        """Height of the camera frame in Manim units."""
         return self.frame.height
 
     @frame_height.setter
@@ -165,7 +167,7 @@ class Camera:
 
     @property
     def frame_width(self) -> float:
-        """Width of the logical camera frame in Manim units."""
+        """Width of the camera frame in Manim units."""
         return self.frame.width
 
     @frame_width.setter
@@ -174,7 +176,7 @@ class Camera:
 
     @property
     def frame_center(self) -> Point3D:
-        """Center of the logical camera frame."""
+        """Center of the camera frame in scene coordinates."""
         return self.frame.get_center()
 
     @frame_center.setter
@@ -187,7 +189,7 @@ class Camera:
         include_submobjects: bool = True,
         excluded_mobjects: list[Mobject] | None = None,
     ) -> list[Mobject]:
-        """Return the camera-ordered family members visible to the renderer."""
+        """Return the mobjects and included submobjects in drawing order."""
         if include_submobjects:
             mobjects = extract_mobject_family_members(
                 mobjects,
@@ -203,7 +205,7 @@ class Camera:
         return list(mobjects)
 
     def is_in_frame(self, mobject: Mobject) -> bool:
-        """Whether ``mobject`` intersects the logical frame bounds."""
+        """Whether ``mobject`` intersects the camera frame's bounds."""
         center = self.frame_center
         height = self.frame_height
         width = self.frame_width
@@ -218,7 +220,11 @@ class Camera:
         )
 
     def get_mobjects_indicating_movement(self) -> list[Mobject]:
-        """Camera controls whose animation changes every projected pixel."""
+        """Return mobjects whose animation requires the scene to be redrawn.
+
+        The scene uses these controls to decide whether it can reuse an image of
+        its stationary mobjects during an animation.
+        """
         return [self.frame]
 
     @overload
@@ -296,7 +302,7 @@ class Camera:
         return bounds
 
     def _prepare_for_render(self) -> None:
-        """Refresh derived semantic view state before a renderer borrows it."""
+        """Update derived camera values before drawing."""
 
     def get_view_transform_center(self) -> Point3D:
         """Return the center applied by the renderer's 2D view transform."""
@@ -307,11 +313,11 @@ class Camera:
         vmobject: VMobject,
         background: bool = False,
     ) -> FloatRGBA_Array:
-        """Return stroke colors after camera-specific semantic shading."""
+        """Return stroke colors after camera-specific shading."""
         return vmobject.get_stroke_rgbas(background)
 
     def get_fill_rgbas(self, vmobject: VMobject) -> FloatRGBA_Array:
-        """Return fill colors after camera-specific semantic shading."""
+        """Return fill colors after camera-specific shading."""
         return vmobject.get_fill_rgbas()
 
     def transform_points_pre_display(
@@ -319,7 +325,7 @@ class Camera:
         mobject: Mobject,
         points: Point3D_Array,
     ) -> Point3D_Array:
-        """Apply camera-specific pure projection before display."""
+        """Project the mobject's points for display."""
         if not np.all(np.isfinite(points)):
             return np.zeros((1, 3))
         return points
@@ -347,13 +353,13 @@ class MultiCamera(Camera):
         self,
         image_mobject_from_camera: ImageMobjectFromCamera,
     ) -> None:
-        """Register a camera-backed image for renderer-owned composition."""
+        """Register a display whose image is rendered from another camera."""
         if not isinstance(image_mobject_from_camera.camera, Camera):
             raise TypeError("Nested Cairo views require a Cairo Camera.")
         self.image_mobjects_from_cameras.append(image_mobject_from_camera)
 
     def get_mobjects_indicating_movement(self) -> list[Mobject]:
-        """Return controls whose movement changes a primary or nested view."""
+        """Return camera controls for the primary and nested views."""
 
         def collect(camera: Camera, visited: set[int]) -> list[Mobject]:
             if id(camera) in visited:
