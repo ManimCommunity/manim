@@ -6,15 +6,19 @@ from typing import TYPE_CHECKING, Any
 from manim.utils.hashing import get_hash_from_play_call
 
 from .. import config, logger
+from .._config.video_encoder import video_encoder_fingerprint
 from ..camera.camera import Camera
 from ..mobject.mobject import Mobject, _AnimationBuilder
 from ..scene.scene_file_writer import SceneFileWriter
 from ..utils.exceptions import EndSceneEarlyException
 from ..utils.iterables import list_update
+from .protocol import RendererCapabilities
 
 if TYPE_CHECKING:
+    from manim._config.render_session import RenderSessionSpec
     from manim.animation.animation import Animation
     from manim.scene.scene import Scene
+    from manim.scene.scene_file_writer import _SceneFileWriterSettings
 
     from ..typing import PixelArray
 
@@ -32,6 +36,8 @@ class CairoRenderer:
     time : float
         Time elapsed since initialisation of scene.
     """
+
+    capabilities = RendererCapabilities(live_preview=False)
 
     def __init__(
         self,
@@ -53,11 +59,13 @@ class CairoRenderer:
         self.time = 0.0
         self.static_image: PixelArray | None = None
 
-    def init_scene(self, scene: Scene) -> None:
-        self.file_writer: Any = self._file_writer_class(
-            self,
-            scene.__class__.__name__,
-        )
+    def init_scene(
+        self,
+        scene: Scene,
+        session_spec: RenderSessionSpec,
+        file_writer_settings: _SceneFileWriterSettings,
+    ) -> None:
+        self.file_writer: Any = self._file_writer_class(file_writer_settings)
 
     def play(
         self,
@@ -87,6 +95,11 @@ class CairoRenderer:
                     self.camera,
                     scene.animations,
                     scene.mobjects,
+                    backend="cairo",
+                    encoder_fingerprint=video_encoder_fingerprint(
+                        scene.session_spec.video_encoder,
+                    ),
+                    renderer_state=(),
                 )
                 if self.file_writer.is_already_cached(hash_current_animation):
                     logger.info(
@@ -103,7 +116,10 @@ class CairoRenderer:
             {"h": str(self.animations_hashes[:5])},
         )
 
-        self.file_writer.begin_animation(not self.skip_animations)
+        self.file_writer.begin_animation(
+            not self.skip_animations,
+            animation_index=self.num_plays,
+        )
         scene.begin_animations()
 
         # Save a static image, to avoid rendering non moving objects.
@@ -192,7 +208,7 @@ class CairoRenderer:
         if self.skip_animations:
             return
         self.time += num_frames * dt
-        self.file_writer.write_frame(frame, num_frames=num_frames)
+        self.file_writer.write_frame(frame, repeat=num_frames)
 
     def freeze_current_frame(self, duration: float) -> None:
         """Adds a static frame to the movie for a given duration. The static frame is the current frame.
@@ -252,7 +268,7 @@ class CairoRenderer:
         # there is always at least one section -> no out of bounds here
         if self.file_writer.sections[-1].skip_animations:
             self.skip_animations = True
-        if config["save_last_frame"]:
+        if self.file_writer.output_spec.is_still:
             self.skip_animations = True
         if (
             config.from_animation_number > 0
@@ -267,17 +283,17 @@ class CairoRenderer:
             raise EndSceneEarlyException()
 
     def scene_finished(self, scene: Scene) -> None:
-        # If no animations in scene, render an image instead
-        if self.num_plays:
+        output = self.file_writer.output_spec
+        if self.num_plays and (output.is_video or output.is_image_sequence):
             self.file_writer.finish()
-        elif config.write_to_movie:
-            config.save_last_frame = True
-            config.write_to_movie = False
-        else:
+        elif not self.num_plays:
             self.static_image = None
             self.update_frame(scene)
 
-        if config["save_last_frame"]:
-            self.static_image = None
-            self.update_frame(scene)
-            self.file_writer.save_image(self.camera.get_image())
+        # Automatically selected video output falls back to a last-frame PNG
+        # when a scene has no play calls.
+        if output.is_still or (not self.num_plays and output.fallback_to_still):
+            if self.num_plays:
+                self.static_image = None
+                self.update_frame(scene)
+            self.file_writer.save_image(self.get_frame())

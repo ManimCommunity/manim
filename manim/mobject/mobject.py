@@ -15,6 +15,7 @@ import sys
 import types
 import warnings
 from collections.abc import Callable, Iterable, Iterator, MutableSet, Sequence
+from contextlib import suppress
 from functools import partialmethod, reduce
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, cast
@@ -36,8 +37,12 @@ from ..utils.color import (
     interpolate_color,
 )
 from ..utils.exceptions import MultiAnimationOverrideException
-from ..utils.iterables import list_update, remove_list_redundancies
+from ..utils.iterables import (
+    list_difference_update,
+    remove_list_redundancies,
+)
 from ..utils.paths import straight_path
+from ..utils.simple_functions import clip
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 if TYPE_CHECKING:
@@ -474,10 +479,88 @@ class Mobject:
         """
         return self
 
+    def _insert_submobjects(self, index: int, mobjects: Sequence[Mobject]) -> Self:
+        """Common backing implementation for :meth:`add`, :meth:`add_to_back`, and
+        :meth:`insert`.
+
+        Inserts ``mobjects`` into :attr:`submobjects` such that they end up starting
+        at ``index`` (following the semantics of :meth:`list.insert`). Mobjects that
+        are already present are moved to the new position instead of being duplicated.
+        """
+        # TODO: The logic of adding/inserting submobjects is inconsistent with that of
+        # OpenGLMobjects. Mobjects *do* move already-present submobjects if they are
+        # reinserted, and input is deduplicated by keeping the *last* (rightmost)
+        # occurrence of an element, while OpenGLMobjects *don't* move already-present
+        # submobjects and they deduplicate input by keeping the *first* occurrence.
+        # This behavior should be made consistent when technically possible.
+
+        self._assert_valid_submobjects(mobjects)
+
+        if not mobjects:
+            return self
+
+        unique_mobjects = remove_list_redundancies(mobjects)
+        if len(mobjects) != len(unique_mobjects):
+            logger.warning(
+                "Attempted adding some Mobject as a child more than once, "
+                "this is not possible. Repetitions are ignored.",
+            )
+
+        if not self.submobjects:
+            self.submobjects = unique_mobjects
+            return self
+
+        n = len(self.submobjects)
+
+        # Normalize the index to be in the range [0, n] following the semantics of list.insert
+        norm_index = clip(index if index >= 0 else n + index, 0, n)
+
+        # Shortcut for the common case of adding a single mobject
+        if len(unique_mobjects) == 1:
+            mobject = unique_mobjects[0]
+            # If the mobject is already present at or next to the provided index, we
+            # don't need to do anything
+            if any(
+                self.submobjects[j] is mobject
+                for j in (norm_index - 1, norm_index)
+                if 0 <= j < n
+            ):
+                return self
+
+            try:
+                old_index = self.submobjects.index(mobject)
+            except ValueError:  # mobject isn't already present
+                self.submobjects.insert(norm_index, mobject)
+                return self
+
+            # Compensate for list shifting after popping
+            new_index = norm_index if norm_index < old_index else norm_index - 1
+            self.submobjects.pop(old_index)
+            self.submobjects.insert(new_index, mobject)
+            return self
+
+        if norm_index >= len(self.submobjects):
+            # Skip one list difference since we're just extending the list
+            self.submobjects = [
+                *list_difference_update(self.submobjects, unique_mobjects),
+                *unique_mobjects,
+            ]
+        else:
+            head = list_difference_update(
+                it.islice(self.submobjects, norm_index), unique_mobjects
+            )
+            tail = list_difference_update(
+                it.islice(self.submobjects, norm_index, None), unique_mobjects
+            )
+
+            self.submobjects = [*head, *unique_mobjects, *tail]
+        return self
+
     def add(self, *mobjects: Mobject) -> Self:
         """Add mobjects as submobjects.
 
-        The mobjects are added to :attr:`submobjects`.
+        The mobjects are added to :attr:`submobjects`. If a mobject to be added is
+        already a submobject of ``self``, it will be moved to its new position.
 
         Subclasses of mobject may implement ``+`` and ``+=`` dunder methods.
 
@@ -498,18 +581,21 @@ class Mobject:
         :class:`TypeError`
             When trying to add an object that is not an instance of :class:`Mobject`.
 
-
         Notes
         -----
         A mobject cannot contain itself, and it cannot contain a submobject
-        more than once.  If the parent mobject is displayed, the newly-added
+        more than once. The ``mobjects`` list will be deduplicated before its contents
+        are added; the last (rightmost) occurrence of a duplicate mobject will be the
+        one that is kept.
+        If the parent mobject is displayed, the newly-added
         submobjects will also be displayed (i.e. they are automatically added
         to the parent Scene).
 
         See Also
         --------
-        :meth:`remove`
         :meth:`add_to_back`
+        :meth:`insert`
+        :meth:`remove`
 
         Examples
         --------
@@ -551,24 +637,23 @@ class Mobject:
             [child]
 
         """
-        self._assert_valid_submobjects(mobjects)
-        unique_mobjects = remove_list_redundancies(mobjects)
-        if len(mobjects) != len(unique_mobjects):
-            logger.warning(
-                "Attempted adding some Mobject as a child more than once, "
-                "this is not possible. Repetitions are ignored.",
-            )
+        return self._insert_submobjects(len(self.submobjects), mobjects)
 
-        self.submobjects = list_update(self.submobjects, unique_mobjects)
-        return self
+    # TODO: Since the addition of the private _insert_submobjects method, it has been
+    # possible to insert multiple mobjects into the submobjects list at once. In the
+    # future, the signature of `insert` should be changed to:
+    #   def insert(
+    #       self, index: int, *mobjects: Mobject
+    #   ) -> Self:
+    # This can either be done as part of a larger breaking change or as a gradual
+    # change with a period of supporting both argument names and appropriate deprecation
+    # warnings for use of the singular "mobject" keyword.
 
     def insert(self, index: int, mobject: Mobject) -> Self:
-        """Inserts a mobject at a specific position into self.submobjects
+        """Inserts a mobject at a specific position into the submobjects list.
 
-        Effectively just calls  ``self.submobjects.insert(index, mobject)``,
-        where ``self.submobjects`` is a list.
-
-        Highly adapted from ``Mobject.add``.
+        If ``mobject`` is already a submobject of ``self``, it will be moved to the new
+        position.
 
         Parameters
         ----------
@@ -576,10 +661,41 @@ class Mobject:
             The index at which
         mobject
             The mobject to be inserted.
+
+
+        .. note::
+            ``mobject`` will be inserted at position ``index``, but there is no
+            guarantee that this will be its final position in :attr:`submobjects`, since
+            the list will shift if ``mobject`` was already present at a lower index than
+            ``index``.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Raises
+        ------
+        :class:`ValueError`
+            When a mobject tries to add itself.
+        :class:`TypeError`
+            When trying to add an object that is not an instance of :class:`Mobject`.
+
+        Notes
+        -----
+        A mobject cannot contain itself, and it cannot contain a submobject
+        more than once.
+        If the parent mobject is displayed, the newly-added
+        submobject will also be displayed (i.e. it is automatically added
+        to the parent Scene).
+
+        See Also
+        --------
+        :meth:`add`
+        :meth:`add_to_back`
+        :meth:`remove`
         """
-        self._assert_valid_submobjects([mobject])
-        self.submobjects.insert(index, mobject)
-        return self
+        return self._insert_submobjects(index, (mobject,))
 
     def __add__(self, mobject: Mobject) -> Self:
         raise NotImplementedError
@@ -590,7 +706,7 @@ class Mobject:
     def add_to_back(self, *mobjects: Mobject) -> Self:
         """Add all passed mobjects to the back of the submobjects.
 
-        If :attr:`submobjects` already contains the given mobjects, they just get moved
+        If :attr:`submobjects` already contains any of the given mobjects, they just get moved
         to the back instead.
 
         Parameters
@@ -621,24 +737,24 @@ class Mobject:
         Notes
         -----
         A mobject cannot contain itself, and it cannot contain a submobject
-        more than once.  If the parent mobject is displayed, the newly-added
+        more than once. The ``mobjects`` list will be deduplicated before its contents
+        are added; the last (rightmost) occurrence of a duplicate mobject will be the
+        one that is kept.
+        If the parent mobject is displayed, the newly-added
         submobjects will also be displayed (i.e. they are automatically added
         to the parent Scene).
 
         See Also
         --------
-        :meth:`remove`
         :meth:`add`
+        :meth:`insert`
+        :meth:`remove`
 
         """
-        self._assert_valid_submobjects(mobjects)
-        self.remove(*mobjects)
-        # dict.fromkeys() removes duplicates while maintaining order
-        self.submobjects = list(dict.fromkeys(mobjects)) + self.submobjects
-        return self
+        return self._insert_submobjects(0, mobjects)
 
     def remove(self, *mobjects: Mobject) -> Self:
-        """Remove :attr:`submobjects`.
+        """Remove submobjects.
 
         The mobjects are removed from :attr:`submobjects`, if they exist.
 
@@ -659,9 +775,14 @@ class Mobject:
         :meth:`add`
 
         """
-        for mobject in mobjects:
-            if mobject in self.submobjects:
-                self.submobjects.remove(mobject)
+        if not self.submobjects:
+            return self
+
+        if len(mobjects) == 1:
+            with suppress(ValueError):
+                self.submobjects.remove(mobjects[0])
+            return self
+        self.submobjects = list_difference_update(self.submobjects, mobjects)
         return self
 
     def __sub__(self, other: Mobject) -> Self:
@@ -1122,8 +1243,7 @@ class Mobject:
         :meth:`get_updaters`
 
         """
-        while update_function in self.updaters:
-            self.updaters.remove(update_function)
+        self.updaters = list_difference_update(self.updaters, [update_function])
         return self
 
     def clear_updaters(self, recursive: bool = True) -> Self:
@@ -2410,7 +2530,7 @@ class Mobject:
         return Group(
             *(
                 template.copy().pointwise_become_partial(self, a1, a2)
-                for a1, a2 in zip(alphas[:-1], alphas[1:], strict=True)
+                for a1, a2 in it.pairwise(alphas)
             )
         )
 
@@ -2629,7 +2749,7 @@ class Mobject:
                     x = VGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
                     self.add(x)
         """
-        for m1, m2 in zip(self.submobjects[:-1], self.submobjects[1:], strict=True):
+        for m1, m2 in it.pairwise(self.submobjects):
             m2.next_to(m1, direction, buff, **kwargs)
         if center:
             self.center()

@@ -18,7 +18,28 @@ def test_render(using_temp_config, disabling_caching):
     scene.render()
     assert renderer.add_frame.call_count == config["frame_rate"]
     assert renderer.update_frame.call_count == config["frame_rate"]
-    assert_file_exists(config["output_file"])
+    assert_file_exists(renderer.file_writer.final_file_path)
+    assert config.output_file == ""
+
+
+def test_automatic_output_uses_still_for_static_scene(using_temp_config):
+    scene = StaticScene()
+
+    scene.render()
+
+    assert scene.renderer.file_writer.output_spec.fallback_to_still is True
+    assert scene.renderer.file_writer.final_file_path.suffix == ".png"
+    assert_file_exists(scene.renderer.file_writer.final_file_path)
+
+
+def test_explicit_video_output_for_static_scene_fails(using_temp_config):
+    config.format = "mp4"
+    scene = StaticScene()
+
+    with pytest.raises(RuntimeError, match="explicitly requested MP4"):
+        scene.render()
+
+    assert not hasattr(scene.renderer.file_writer, "final_file_path")
 
 
 def test_skipping_status_with_from_to_and_up_to(using_temp_config, disabling_caching):
@@ -60,7 +81,7 @@ def test_when_animation_is_cached(using_temp_config):
     # Check that manim correctly skipped the animation.
     scene.update_to_time.assert_called_once_with(1)
     # Check that the output video has been generated.
-    assert_file_exists(config["output_file"])
+    assert_file_exists(scene.renderer.file_writer.final_file_path)
 
 
 def test_hash_logic_is_not_called_when_caching_is_disabled(
@@ -71,7 +92,7 @@ def test_hash_logic_is_not_called_when_caching_is_disabled(
         scene = SquareToCircle()
         scene.render()
         mocked.assert_not_called()
-        assert_file_exists(config["output_file"])
+        assert_file_exists(scene.renderer.file_writer.final_file_path)
 
 
 def test_hash_logic_is_called_when_caching_is_enabled(using_temp_config):
@@ -84,3 +105,5 @@ def test_hash_logic_is_called_when_caching_is_enabled(using_temp_config):
         scene = SquareToCircle()
         scene.render()
         mocked.assert_called_once()
+        assert mocked.call_args.kwargs["backend"] == "cairo"
+        assert mocked.call_args.kwargs["encoder_fingerprint"] != "none"

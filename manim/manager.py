@@ -7,12 +7,14 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 import srt
 
-from . import config, logger
+from . import logger
 from .scene.section import DefaultSectionType
 from .utils.exceptions import EndSceneEarlyException, RerunSceneException
 from .utils.file_ops import open_media_file
 
 if TYPE_CHECKING:
+    from ._config.output import OutputSpec
+    from ._config.render_session import RenderSessionSpec
     from .animation.animation import Animation
     from .camera.camera import Camera
     from .mobject.mobject import Mobject, _AnimationBuilder
@@ -86,6 +88,16 @@ class Manager(Generic[SceneT]):
         return cast("SceneFileWriter", self.renderer.file_writer)
 
     @property
+    def output_spec(self) -> OutputSpec:
+        """Return the immutable output intent captured for this session."""
+        return self.session_spec.output
+
+    @property
+    def session_spec(self) -> RenderSessionSpec:
+        """Return the immutable artifact, presentation, and execution intent."""
+        return self.scene.session_spec
+
+    @property
     def time(self) -> float:
         """Return the current renderer time."""
         return self.renderer.time
@@ -133,6 +145,11 @@ class Manager(Generic[SceneT]):
             ``False``. This matches the return value of
             :meth:`~manim.scene.scene.Scene.render`.
         """
+        presentation = self.session_spec.presentation
+        open_after_render = preview or presentation.open_after_render
+        if open_after_render and not self.output_spec.enabled:
+            raise ValueError("Previewing after render requires a media artifact.")
+
         self.setup()
         try:
             self.construct()
@@ -158,12 +175,12 @@ class Manager(Generic[SceneT]):
         self.tear_down()
         self.post_construct()
 
-        # If preview open up the render after rendering.
-        if preview:
-            config["preview"] = True
-
-        if config["preview"] or config["show_in_file_browser"]:
-            open_media_file(self.file_writer)
+        if open_after_render or presentation.show_in_file_browser:
+            open_media_file(
+                self.file_writer,
+                preview=open_after_render,
+                show_in_file_browser=presentation.show_in_file_browser,
+            )
 
         return False
 
@@ -178,15 +195,34 @@ class Manager(Generic[SceneT]):
     def post_construct(self) -> None:
         """Finalize output after scene construction and tear-down.
 
-        This asks the renderer to finish the scene and logs the number of played
-        animations. It intentionally runs after :meth:`tear_down` to preserve the
-        established render lifecycle.
+        This validates empty video output, asks the renderer to finish the scene,
+        and logs the number of played animations. It intentionally runs after
+        :meth:`tear_down` to preserve the established render lifecycle.
         """
+        output = self.output_spec
+        empty_video_output = self.num_plays == 0 and output.is_video
+        if empty_video_output and not output.fallback_to_still:
+            raise RuntimeError(
+                f"{self.scene} has no play calls, so the explicitly requested "
+                f"{output.format.value.upper()} output cannot be produced. "
+                "Use --format=png to save its last frame.",
+            )
+
         # We have to reset these settings in case of multiple renders.
         self.renderer.scene_finished(self.scene)
 
+        if (
+            empty_video_output
+            and output.fallback_to_still
+            and getattr(self.file_writer, "final_file_path", None) is not None
+        ):
+            logger.warning(
+                f"{self.scene} has no play calls. Automatic video output has "
+                "been saved as a PNG instead.",
+            )
+
         # Show info only if animations are rendered or to get image.
-        if self.num_plays or config["format"] == "png" or config["save_last_frame"]:
+        if self.num_plays or output.enabled:
             logger.info(
                 f"Rendered {str(self.scene)}\nPlayed {self.num_plays} animations",
             )
