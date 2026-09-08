@@ -997,7 +997,11 @@ class Mobject:
 
     # Displaying
     def get_image(self, camera: Camera | None = None) -> Image.Image:
-        """Render this mobject with an explicit temporary Cairo renderer."""
+        """Draw this mobject and its submobjects using Cairo and return a PIL image.
+
+        Pass a ``camera`` to select the view, or omit it to create a default
+        :class:`.Camera`. To use a scene's current view, pass ``camera=scene.camera``.
+        """
         from manim.renderer.cairo import CairoRenderer
         from manim.renderer.cairo.camera import Camera
 
