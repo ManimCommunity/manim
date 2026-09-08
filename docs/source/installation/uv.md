@@ -272,7 +272,7 @@ uv add "manim[typst]"
 ```
 
 This dependency includes the Typst compiler, so no separate system-level Typst
-installation is required. See the :ref:`Typst section in the text guide <rendering-with-typst>`
+installation is required. See the {ref}`Typst section in the text guide <rendering-with-typst>`
 for examples.
 :::
 
