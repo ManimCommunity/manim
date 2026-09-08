@@ -64,8 +64,7 @@ class Positionable:
     def set_points(self, points: Point3DLike_Array | Positionable) -> Self:
         """Sets the points.
 
-        If an array is passed, set's the points of this object.
-        If another object is passed, matches the points of corresponding family members in order.
+        If an array is passed, set's the points of this object. When another object is passed, the points of corresponding family members are matched in order.
 
         Parameters
         ----------
@@ -77,8 +76,8 @@ class Positionable:
         Self
             The object itself.
 
-        Examples
-        --------
+        Example
+        -------
         .. manim:: MatchPointsScene
 
             class MatchPointsScene(Scene):
@@ -145,7 +144,7 @@ class Positionable:
         return self.apply_to_family(apply)
 
     def get_num_points(self) -> int:
-        """The number of points.
+        """Returns the number of points.
 
         Does not take family members into account.
 
@@ -198,8 +197,8 @@ class Positionable:
         list[Positionable]
             The family.
 
-        Examples
-        --------
+        Example
+        -------
         ::
 
             >>> from manim import Square, Rectangle, VGroup, Group, Mobject, VMobject
@@ -337,7 +336,6 @@ class Positionable:
 
         Example
         -------
-
         .. manim:: ApplyFuncExample
 
             class ApplyFuncExample(Scene):
@@ -416,9 +414,8 @@ class Positionable:
         Self
             The object itself.
 
-        Examples
-        --------
-
+        Example
+        -------
         .. manim:: MobjectScaleExample
             :save_last_frame:
 
@@ -510,9 +507,8 @@ class Positionable:
             (interpolation between the two states), without showing proper rotational motion
             based on the angle (from 0 to the given angle).
 
-        Examples
-        --------
-
+        Example
+        -------
         .. manim:: RotateMethodExample
             :save_last_frame:
 
@@ -700,7 +696,7 @@ class Positionable:
         return self.get_position(direction=DOWN)
 
     def set_bottom(self, bottom: Point3DLike | Positionable) -> Self:
-        """Sets the bottom.
+        """Sets the bottom position.
 
         Parameters
         ----------
@@ -715,7 +711,7 @@ class Positionable:
         return self.set_position(position=bottom, direction=DOWN)
 
     def get_right(self) -> Point3D:
-        """Returns the right.
+        """Returns the right position.
 
         Returns
         -------
@@ -972,7 +968,7 @@ class Positionable:
         direction : Vector3DLike
             The direction.
         buff : float, optional
-            The buff., by default DEFAULT_MOBJECT_TO_EDGE_BUFFER
+            The buff., by default `DEFAULT_MOBJECT_TO_EDGE_BUFFER`
 
         Returns
         -------
@@ -1006,9 +1002,12 @@ class Positionable:
         Self
             The object itself.
 
-        Examples:
-        mob1.align_to(mob2, UP) moves mob1 vertically so that its
-        top edge lines ups with mob2's top edge.
+        Example
+        -------
+        .. code-block:: python
+
+            # moves mob1 vertically so that its top edge lines ups with mob2's top edge
+            mob1.align_to(mob2, UP)
         """
         if isinstance(mobject_or_point, Positionable):
             mobject_or_point = mobject_or_point.get_position(direction=direction)
@@ -1026,7 +1025,7 @@ class Positionable:
         *,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
     ) -> Self:
-        """Shifts itself onto the screen.
+        """Shifts onto the screen.
 
         Parameters
         ----------
@@ -1384,8 +1383,8 @@ class Positionable:
         Self
             The object itself.
 
-        Examples
-        --------
+        Example
+        -------
         ::
 
             >>> from manim import *
@@ -1526,8 +1525,8 @@ class Positionable:
         Self
             The object itself.
 
-        Examples
-        --------
+        Example
+        -------
         ::
 
             >>> from manim import *
@@ -1572,8 +1571,8 @@ class Positionable:
         Self
             The object itself.
 
-        Examples
-        --------
+        Example
+        -------
         ::
 
             >>> from manim import *
@@ -1655,9 +1654,8 @@ class Positionable:
         Self
             The object itself.
 
-        Examples
-        --------
-
+        Example
+        -------
         .. manim:: FlipExample
             :save_last_frame:
 
@@ -1831,7 +1829,9 @@ class Positionable:
         Point3D
             The critical point.
 
-        ::
+        Example
+        -------
+        .. code-block:: python
 
             sample = Arc(start_angle=PI / 7, angle=PI / 5)
 
@@ -1963,7 +1963,7 @@ class Positionable:
         corner: Vector3DLike = DL,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
     ) -> Self:
-        """Moves to a corner.
+        """Sets the position to a corner.
 
         Note
         ----
@@ -1981,9 +1981,8 @@ class Positionable:
         Self
             The object itself.
 
-        Examples
-        --------
-
+        Example
+        -------
         .. manim:: ToCornerExample
             :save_last_frame:
 
@@ -2004,7 +2003,7 @@ class Positionable:
         edge: Vector3DLike = LEFT,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
     ) -> Self:
-        """Moves to an edge.
+        """Sets the position to an edge.
 
         Note
         ----
@@ -2022,9 +2021,8 @@ class Positionable:
         Self
             The object itself.
 
-        Examples
-        --------
-
+        Example
+        -------
         .. manim:: ToEdgeExample
             :save_last_frame:
 
@@ -2046,8 +2044,8 @@ class Positionable:
 
         A property for the :meth:`get_width` and :meth:`set_width` methods.
 
-        Examples
-        --------
+        Example
+        -------
         .. manim:: WidthExample
 
             class WidthExample(Scene):
@@ -2074,8 +2072,8 @@ class Positionable:
 
         A property for the :meth:`get_height` and :meth:`set_height` methods.
 
-        Examples
-        --------
+        Example
+        -------
         .. manim:: HeightExample
 
             class HeightExample(Scene):
