@@ -52,7 +52,7 @@ from .camera import OpenGLCamera
 
 __all__ = ["OpenGLRenderer"]
 
-# Track only contexts opened by this backend, not arbitrary external GL hosts.
+# Remember the active Manim renderer on each thread so captures can restore it.
 _active_context = threading.local()
 
 
@@ -137,10 +137,12 @@ class OpenGLRenderer:
         session_spec: RenderSessionSpec,
     ) -> None:
         """
-        Bind a scene and capture opening inputs without acquiring GPU resources.
+        Attach a scene and save its pixel dimensions and preview-window settings.
 
-        Resolution remains constructor-time until execution-start composition moves
-        into Manager. Explicit GPU access or rendering opens the captured target.
+        :meth:`open` uses these settings to create the OpenGL context and
+        framebuffer. The manager calls it before the scene's ``setup()`` method;
+        an explicit request for GPU resources, such as :attr:`context`, opens
+        them sooner.
 
         Parameters
         ----------
@@ -167,7 +169,12 @@ class OpenGLRenderer:
             raise RuntimeError("The OpenGL renderer is closed or retiring.")
 
     def open(self) -> None:
-        """Acquire the bound scene's GPU resources on the calling thread."""
+        """Create or activate the scene's OpenGL context.
+
+        The first call creates the context, framebuffer, and preview window if
+        requested. Further calls activate the same context. Use and close these
+        resources on the thread that first opened them.
+        """
         self._ensure_not_closed()
         if self._context is not None:
             if isinstance(self._context.mglo, moderngl.InvalidObject):
@@ -191,7 +198,7 @@ class OpenGLRenderer:
 
                 window = Window(self, _settings=self._window_settings)
                 resources.callback(window.close)
-                # The window owns its native context and default framebuffer.
+                # Closing the window also releases its context and default framebuffer.
                 context = window.ctx
                 frame = context.detect_framebuffer()
             else:
@@ -225,7 +232,7 @@ class OpenGLRenderer:
             except BaseException:
                 logger.exception("Failed to restore the previous OpenGL context")
             raise
-        # Publish only a fully configured context/target.
+        # Store the resources after initialization succeeds.
         self.window = window
         self._context = context
         self._frame_buffer_object = frame
@@ -261,10 +268,13 @@ class OpenGLRenderer:
         self._frame_buffer_object = frame
 
     def close(self) -> None:
-        """Retire GPU resources; finalize/abort output before calling this method.
+        """Release GPU resources and close the preview window.
 
-        This does not reopen a closed renderer. Image inspection can use a fresh
-        independent scope for ordinary mobjects; raw GPU meshes require a live host.
+        Use :meth:`.Manager.close` for scene cleanup: it stops encoding jobs
+        before closing the renderer. To render another scene, create a new
+        renderer. :meth:`.Scene.get_image` can still draw ordinary mobjects with
+        a temporary context; GPU-backed meshes require their original context
+        to remain open.
         """
         if self._closed:
             return
@@ -291,8 +301,8 @@ class OpenGLRenderer:
             except BaseException as error:
                 failures.append(error)
 
-        # Scene.interact may already have destroyed the native window. Its GPU
-        # objects are then gone; do not issue deletes into another current host.
+        # Scene.interact may already have closed the window and released its GPU
+        # objects. Deleting them again could affect a different active context.
         host_alive = (
             self._context is not None
             and not isinstance(self._context.mglo, moderngl.InvalidObject)
@@ -325,8 +335,8 @@ class OpenGLRenderer:
             else self.window._window.context is not None
         )
         if failures and host_still_alive:
-            # Keep the host reachable for an explicit cleanup retry. Child
-            # allocations are ultimately retired with it; drawing stays blocked.
+            # Keep the context reachable so close() can retry. Closing it releases
+            # any remaining GPU objects; rendering stays disabled until then.
             self._resources.callback(
                 self._context.release if self.window is None else self.window.close
             )
@@ -361,27 +371,21 @@ class OpenGLRenderer:
 
     @property
     def file_writer(self) -> SceneFileWriter:
-        """Compatibility view of the bound scene Manager's lazily owned writer."""
+        """Return the scene manager's file writer, creating it if needed."""
         return self.scene._get_manager().file_writer
 
     def should_create_window(self, session_spec: RenderSessionSpec) -> bool:
-        """
-        Determine whether a window should be created for rendering
-        based on the current configuration.
-
-        """
+        """Return whether the scene's saved settings request a live-preview window."""
         return session_spec.presentation.live_preview
 
     def get_pixel_shape(self) -> tuple[int, int] | None:
         """
-        Retrieve the pixel dimensions of the current frame buffer object (2D).
+        Return the pixel dimensions of the current framebuffer.
 
         Returns
         -------
-        width : int
-            The width of the frame buffer in pixels.
-        height : int
-            The height of the frame buffer in pixels.
+        tuple[int, int] | None
+            ``(width, height)`` in pixels, or ``None`` when no framebuffer is open.
         """
         frame_buffer = self._frame_buffer_object
         if frame_buffer is None:
@@ -758,7 +762,11 @@ class OpenGLRenderer:
                 mesh.render()
 
     def _get_scene_image(self, scene: Scene) -> Image.Image:
-        """Capture on the context's owning thread without touching its live target."""
+        """Draw a snapshot separately from the live-preview framebuffer.
+
+        An existing context is used on its rendering thread. Otherwise, ordinary
+        mobjects are drawn with a temporary context and renderer.
+        """
         if (
             self._context_thread is not None
             and threading.get_ident() != self._context_thread

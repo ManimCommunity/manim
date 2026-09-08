@@ -278,7 +278,11 @@ class Scene:
 
     @property
     def renderer(self) -> CairoRenderer | OpenGLRenderer:
-        """The renderer bound to this scene; create a new Scene to change it."""
+        """The renderer selected at construction, shared by this scene's plays.
+
+        This property is read-only. Choose a different renderer when creating
+        a new scene.
+        """
         return self._renderer
 
     @property
