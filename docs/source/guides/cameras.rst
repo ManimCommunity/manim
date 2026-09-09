@@ -134,10 +134,13 @@ For ordinary Cairo mobjects, use :meth:`.Mobject.get_image` or :meth:`.Mobject.s
     Group(Square().shift(LEFT), Circle().shift(RIGHT)).get_image().save("objects.png")
     image = square.get_image(camera=self.camera)
 
+These methods render an image from the view of a camera such that only the
+chosen mobject and its submobjects are drawn; anything else in the scene is
+ignored.
+
 The ``camera`` parameter allows for a different camera to be used to generate
-the image. Without it, a new default :class:`.Camera` is created. Only the
-mobject and its submobjects are drawn; pass ``camera=self.camera`` to use the
-scene's current view.
+the image. Without it, a new default :class:`.Camera` is created. To use the
+view of the current camera, pass ``camera=self.camera``.
 
 These standalone helpers are Cairo-specific; use ``scene.get_image()`` for an
 OpenGL scene, including its meshes.
@@ -149,8 +152,8 @@ Use :class:`.ThreeDScene` and its camera orientation methods for three-dimension
 scenes. Image inspection uses the current projection and fixed-object declarations,
 just like ordinary drawing.
 
-For an inset magnified view, :class:`.ZoomedScene` provides the camera and display
-relationship::
+:class:`.ZoomedScene` sets up a secondary camera and an inset display to show a
+magnified region of the scene::
 
     class DetailExample(ZoomedScene):
         def construct(self):
@@ -212,15 +215,16 @@ Run this example with ``--renderer=cairo``.
 Call ``self.camera.add_image_mobject_from_camera(view)`` to refresh the display's
 image from its source camera on each draw, then ``self.add(view)`` to show it in
 the scene.
-``view.add_display_frame()`` adds the visible border around the display. To also
-show the region that the secondary camera looks at, give its ``frame`` a visible
-stroke and add it to the scene::
+``view.add_display_frame()`` adds a visible border around the display.
+To show the region which the secondary camera is currently looking at, give its
+``frame`` a visible stroke and add it to the scene::
 
     left_camera.frame.set_stroke(YELLOW, width=2)
     self.add(left_camera.frame)
 
-A display initially matches its source camera's aspect ratio. Scale it uniformly to
-preserve that ratio; stretching only its width or height can distort the image.
+A display initially matches the aspect ratio of its source camera. When resizing
+this display, make sure it is scaled uniformly to preserve its aspect ratio;
+stretching only its width or height can distort the image.
 Each inset's pixel resolution follows its display size relative to the primary
 camera frame.
 

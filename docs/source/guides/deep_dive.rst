@@ -998,34 +998,30 @@ the *static mobjects* are assumed to have already been painted statically to
 the background of the scene). All of the hard work then happens when the renderer
 updates its current frame via a call to :meth:`.CairoRenderer.update_frame`:
 
-First, the renderer prepares its own Cairo raster target. If a reusable
-``static_image`` is available, the renderer copies it into that target; otherwise it
-resets the target from the semantic background settings of :class:`.Camera`.
-Background images whose dimensions differ from the target are resized to the target
-dimensions. The camera itself does not own pixels or a Cairo context; its constructor
-accepts semantic view settings rather than pixel dimensions or frame-rate options.
+First, the renderer prepares its Cairo image buffer. If a reusable ``static_image``
+is available, the renderer copies it into that buffer; otherwise it resets the buffer
+using the camera's background color or image. Background images are resized to match
+the buffer's dimensions.
 
 Things get a bit technical here, and at some point it is more efficient to delve into
-the implementation -- but the renderer-owned drawing process can be summarized as
-follows:
+the implementation -- but the drawing process can be summarized as follows:
 
-- The camera supplies a flat, ordered list of visible mobjects and applies pure
+- The camera supplies a flat, ordered list of visible mobjects and applies
   view/projection and shading transformations. Its animatable ``frame`` describes the
-  logical region being viewed.
+  region being viewed.
 - Private Cairo renderer helpers process consecutive batches of vectorized, point
   cloud, and image mobjects without changing their draw order.
 - Vectorized mobjects are converted to Cairo paths and drawn with their background
   stroke, fill, and foreground stroke. Point clouds and image mobjects are converted
   to target pixel coordinates and composited by renderer helpers.
-- A :class:`.MultiCamera` describes nested camera-backed views. Their
-  :class:`.ImageMobjectFromCamera` display mobjects contain geometry and sampling
-  settings but no placeholder or live pixels. The renderer creates secondary targets
-  lazily, excludes each view's own display from its source camera, and composites the
-  result into the primary target.
+- With a :class:`.MultiCamera`, the renderer draws each secondary camera's view into
+  a separate image buffer, excluding that camera's own display mobject. It then draws
+  the resulting image in the corresponding :class:`.ImageMobjectFromCamera` in the
+  primary view.
 
-After all batches have been processed, :class:`.CairoRenderer` owns the image
-representation of the Scene. It passes a fresh top-left-origin, C-contiguous ``uint8``
-RGBA array to its :class:`.SceneFileWriter`. This concludes one iteration of the
+After all batches have been processed, :meth:`.CairoRenderer.get_frame` copies the
+rendered image into a top-left-origin, C-contiguous ``uint8`` RGBA array. The renderer
+passes this array to :class:`.SceneFileWriter`. This concludes one iteration of the
 render loop, and once the time progression has been processed completely, a final bit
 of cleanup is performed before the :meth:`.Scene.play_internal` call is completed.
 
@@ -1042,9 +1038,9 @@ A TL;DR for the render loop, in the context of our toy example, reads as follows
   ``alpha = 0.5``).
 - Then the scene asks the renderer to do its job. The only mobject that needs to
   be processed at this point is the main mobject attached to the transformation.
-  The camera supplies its semantic view transform, while renderer-owned Cairo
-  helpers draw the current mobject state into the renderer's raster target. The
-  renderer reads that target and passes an owned array to the file writer.
+  The camera supplies its view transform, while Cairo drawing helpers draw the
+  transformed square into the renderer's image buffer. The renderer passes a copy
+  of that buffer's RGBA pixels to the file writer.
 - At the end of the loop, 90 frames have been passed to the file writer.
 
 Completing the render loop
