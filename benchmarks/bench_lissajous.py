@@ -51,7 +51,7 @@ def get_circles(
     circles = VGroup()
     for i in range(n_circles):
         circles.add(LissajousCircle(speed=speeds[i], **circle_kwargs))
-    return circles.arrange(arrange_direction, buff)
+    return circles.arrange(arrange_direction, buff=buff)
 
 
 def get_intersection_point(

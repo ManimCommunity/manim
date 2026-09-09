@@ -4,7 +4,7 @@ import operator
 import sys
 from collections.abc import Callable, Iterable
 from functools import reduce
-from typing import Any, Self
+from typing import Any, Literal, Self
 
 import numpy as np
 
@@ -1173,6 +1173,199 @@ class Positionable:
         index = np.argmax(all_points.dot(direction))
         return all_points[index]
 
+    def apply_function_to_submobject_positions(
+        self,
+        function: Callable[[Point3D], Point3D],
+    ) -> Self:
+        """Applies a function to the submobject positions.
+
+        Parameters
+        ----------
+        function : Callable[[Point3D], Point3D]
+            The function.
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+        raise NotImplementedError
+
+    def space_out_submobjects(
+        self,
+        factor: float = 1.5,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
+        """Spaces out the submobjects.
+
+        Parameters
+        ----------
+        factor : float, optional
+            The factor., by default 1.5
+        about_point : Point3DLike | None, optional
+            About which point to scale., by default None
+        about_edge : Vector3DLike | None, optional
+            About which edge to scale., by default None
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+        raise NotImplementedError
+
+    def arrange(
+        self,
+        direction: Vector3DLike = RIGHT,
+        *,
+        aligned_edge: Vector3DLike = ORIGIN,
+        buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
+        center: bool = True,
+    ) -> Self:
+        """Arranges the submobject.
+
+        Parameters
+        ----------
+        direction : Vector3DLike, optional
+            The direction., by default RIGHT
+        aligned_edge : Vector3DLike, optional
+            The aligned edge., by default ORIGIN
+        buff : float, optional
+            The buff., by default DEFAULT_MOBJECT_TO_MOBJECT_BUFFER
+        center : bool, optional
+            Whether to center., by default True
+
+        Returns
+        -------
+        Self
+            The object itself.
+
+        Examples
+        --------
+        .. manim:: ArrangeExample
+            :save_last_frame:
+
+            class ArrangeExample(Scene):
+                def construct(self):
+                    s= VGroup(*[Dot().shift(i*0.1*RIGHT*np.random.uniform(-1,1)+UP*np.random.uniform(-1,1)) for i in range(0,15)])
+                    s.shift(UP).set_color(BLUE)
+                    s2= s.copy().set_color(RED)
+                    s2.arrange()
+                    s2.shift(DOWN)
+                    self.add(s,s2)
+
+
+        .. manim:: Example
+            :save_last_frame:
+
+            class Example(Scene):
+                def construct(self):
+                    s1 = Square()
+                    s2 = Square()
+                    s3 = Square()
+                    s4 = Square()
+                    x = VGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
+                    self.add(x)
+        """
+        raise NotImplementedError
+
+    def arrange_in_grid(
+        self,
+        rows: int | None = None,
+        cols: int | None = None,
+        buff: float | tuple[float, float] = MED_SMALL_BUFF,
+        cell_alignment: Vector3DLike = ORIGIN,
+        # TODO: replace with Vector3DLike
+        row_alignments: Literal["u", "c", "d"] | None = None,
+        # TODO: replace with Vector3DLike
+        col_alignments: Literal["l", "c", "r"] | None = None,
+        row_heights: Iterable[float | None] | None = None,
+        col_widths: Iterable[float | None] | None = None,
+        # TODO: replace with Vector3DLike
+        flow_order: Literal["dr", "dl", "ur", "ul", "rd", "ld", "ru", "lu"] = "rd",
+    ) -> Self:
+        """Arranges the submobjects in a grid.
+
+        Parameters
+        ----------
+        rows : int | None, optional
+            The number of rows., by default None
+        cols : int | None, optional
+            The number of columns., by default None
+        buff : float | tuple[float, float], optional
+            The gap between grid cells., by default MED_SMALL_BUFF
+        cell_alignment : Vector3DLike, optional
+            The way each submobject is aligned in its grid cell., by default ORIGIN
+        row_alignments : Literal['u', 'c', 'd'] | None, optional
+            The vertical alignment for each row., by default None
+        col_alignments : Literal['l', 'c', 'r'] | None, optional
+            The horizontal alignment for each column., by default None
+        row_heights : Iterable[float  |  None] | None, optional
+            Defines the heights for certain rows. For ``None``, the height is based on the highest element in that row., by default None
+        col_widths : Iterable[float  |  None] | None, optional
+            Defines the widths for certain columns. For ``None``, the width is based on the widest element in that column., by default None
+        flow_order : Literal['dr', 'dl', 'ur', 'ul', 'rd', 'ld', 'ru', 'lu'], optional
+            The order in which submobjects fill the grid., by default "rd"
+
+        Returns
+        -------
+        Self
+            The object itself.
+
+        Raises
+        ------
+        ValueError
+            If ``rows`` and ``cols`` are too small to fit all submobjects.
+        ValueError
+            If :code:`cols`, :code:`col_alignments` and :code:`col_widths` or :code:`rows`,
+            :code:`row_alignments` and :code:`row_heights` have mismatching sizes.
+
+        Notes
+        -----
+        If only one of ``cols`` and ``rows`` is set implicitly, the other one will be chosen big
+        enough to fit all submobjects. If neither is set, they will be chosen to be about the same,
+        tending towards ``cols`` > ``rows`` (simply because videos are wider than they are high).
+
+        If both ``cell_alignment`` and ``row_alignments`` / ``col_alignments`` are defined, the latter has higher priority.
+
+
+        Examples
+        --------
+
+        .. manim:: ExampleBoxes
+            :save_last_frame:
+
+            class ExampleBoxes(Scene):
+                def construct(self):
+                    boxes=VGroup(*[Square() for s in range(0,6)])
+                    boxes.arrange_in_grid(rows=2, buff=0.1)
+                    self.add(boxes)
+
+
+        .. manim:: ArrangeInGrid
+            :save_last_frame:
+
+            class ArrangeInGrid(Scene):
+                def construct(self):
+                    boxes = VGroup(*[
+                        Rectangle(WHITE, 0.5, 0.5).add(Text(str(i+1)).scale(0.5))
+                        for i in range(24)
+                    ])
+                    self.add(boxes)
+
+                    boxes.arrange_in_grid(
+                        buff=(0.25,0.5),
+                        col_alignments="lccccr",
+                        row_alignments="uccd",
+                        col_widths=[1, *[None]*4, 1],
+                        row_heights=[1, None, None, 1],
+                        flow_order="dr"
+                    )
+        """
+        raise NotImplementedError
+
     # =========
     # endregion
     # =========
@@ -2330,6 +2523,22 @@ class Positionable:
     # @deprecated()
     def get_points_defining_boundary(self) -> Point3D_Array:
         return self.get_all_points()
+
+    # @deprecated(replacement="arrange")
+    def arrange_submobjects(
+        self,
+        direction: Vector3DLike = RIGHT,
+        *,
+        aligned_edge: Vector3DLike = ORIGIN,
+        buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
+        center: bool = True,
+    ) -> Self:
+        return self.arrange(
+            direction=direction,
+            aligned_edge=aligned_edge,
+            buff=buff,
+            center=center,
+        )
 
     ###############################
     ########## UTILITIES ##########

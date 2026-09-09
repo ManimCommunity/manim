@@ -13,7 +13,7 @@ from collections.abc import Callable, Iterable, Iterator, MutableSet, Sequence
 from contextlib import suppress
 from functools import partialmethod
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
 
@@ -49,7 +49,6 @@ if TYPE_CHECKING:
     from manim.mobject.types.point_cloud_mobject import Point
     from manim.typing import (
         FunctionOverride,
-        MappingFunction,
         MultiMappingFunction,
         PathFuncType,
         Point3D,
@@ -1251,7 +1250,9 @@ class Mobject(Positionable):
 
     # Transforming operations
 
-    def apply_function_to_submobject_positions(self, function: MappingFunction) -> Self:
+    def apply_function_to_submobject_positions(
+        self, function: Callable[[Point3D], Point3D]
+    ) -> Self:
         for submob in self.submobjects:
             submob.apply_function_to_position(function)
         return self
@@ -1262,8 +1263,14 @@ class Mobject(Positionable):
 
     # Positioning methods
 
-    def space_out_submobjects(self, factor: float = 1.5, **kwargs: Any) -> Self:
-        self.scale(factor, **kwargs)
+    def space_out_submobjects(
+        self,
+        factor: float = 1.5,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
+        self.scale(factor, about_point=about_point, about_edge=about_edge)
         for submob in self.submobjects:
             submob.scale(1.0 / factor)
         return self
@@ -1689,29 +1696,13 @@ class Mobject(Positionable):
     def arrange(
         self,
         direction: Vector3DLike = RIGHT,
+        *,
+        aligned_edge: Vector3DLike = ORIGIN,
         buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         center: bool = True,
-        **kwargs: Any,
     ) -> Self:
-        """Sorts :class:`~.Mobject` next to each other on screen.
-
-        Examples
-        --------
-
-        .. manim:: Example
-            :save_last_frame:
-
-            class Example(Scene):
-                def construct(self):
-                    s1 = Square()
-                    s2 = Square()
-                    s3 = Square()
-                    s4 = Square()
-                    x = VGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
-                    self.add(x)
-        """
         for m1, m2 in it.pairwise(self.submobjects):
-            m2.next_to(m1, direction, buff=buff, **kwargs)
+            m2.next_to(m1, direction, buff=buff, aligned_edge=aligned_edge)
         if center:
             self.center()
         return self
@@ -1722,99 +1713,12 @@ class Mobject(Positionable):
         cols: int | None = None,
         buff: float | tuple[float, float] = MED_SMALL_BUFF,
         cell_alignment: Vector3DLike = ORIGIN,
-        row_alignments: str | None = None,  # "ucd"
-        col_alignments: str | None = None,  # "lcr"
+        row_alignments: Literal["u", "c", "d"] | None = None,
+        col_alignments: Literal["l", "c", "r"] | None = None,
         row_heights: Iterable[float | None] | None = None,
         col_widths: Iterable[float | None] | None = None,
-        flow_order: str = "rd",
-        **kwargs: Any,
+        flow_order: Literal["dr", "dl", "ur", "ul", "rd", "ld", "ru", "lu"] = "rd",
     ) -> Self:
-        """Arrange submobjects in a grid.
-
-        Parameters
-        ----------
-        rows
-            The number of rows in the grid.
-        cols
-            The number of columns in the grid.
-        buff
-            The gap between grid cells. To specify a different buffer in the horizontal and
-            vertical directions, a tuple of two values can be given - ``(row, col)``.
-        cell_alignment
-            The way each submobject is aligned in its grid cell.
-        row_alignments
-            The vertical alignment for each row (top to bottom). Accepts the following characters: ``"u"`` -
-            up, ``"c"`` - center, ``"d"`` - down.
-        col_alignments
-            The horizontal alignment for each column (left to right). Accepts the following characters ``"l"`` - left,
-            ``"c"`` - center, ``"r"`` - right.
-        row_heights
-            Defines a list of heights for certain rows (top to bottom). If the list contains
-            ``None``, the corresponding row will fit its height automatically based
-            on the highest element in that row.
-        col_widths
-            Defines a list of widths for certain columns (left to right). If the list contains ``None``, the
-            corresponding column will fit its width automatically based on the widest element in that column.
-        flow_order
-            The order in which submobjects fill the grid. Can be one of the following values:
-            "rd", "dr", "ld", "dl", "ru", "ur", "lu", "ul". ("rd" -> fill rightwards then downwards)
-
-        Returns
-        -------
-        :class:`Mobject`
-            ``self``
-
-        Raises
-        ------
-        ValueError
-            If ``rows`` and ``cols`` are too small to fit all submobjects.
-        ValueError
-            If :code:`cols`, :code:`col_alignments` and :code:`col_widths` or :code:`rows`,
-            :code:`row_alignments` and :code:`row_heights` have mismatching sizes.
-
-        Notes
-        -----
-        If only one of ``cols`` and ``rows`` is set implicitly, the other one will be chosen big
-        enough to fit all submobjects. If neither is set, they will be chosen to be about the same,
-        tending towards ``cols`` > ``rows`` (simply because videos are wider than they are high).
-
-        If both ``cell_alignment`` and ``row_alignments`` / ``col_alignments`` are
-        defined, the latter has higher priority.
-
-        Examples
-        --------
-        .. manim:: ExampleBoxes
-            :save_last_frame:
-
-            class ExampleBoxes(Scene):
-                def construct(self):
-                    boxes=VGroup(*[Square() for s in range(0,6)])
-                    boxes.arrange_in_grid(rows=2, buff=0.1)
-                    self.add(boxes)
-
-
-        .. manim:: ArrangeInGrid
-            :save_last_frame:
-
-            class ArrangeInGrid(Scene):
-                def construct(self):
-                    boxes = VGroup(*[
-                        Rectangle(WHITE, 0.5, 0.5).add(Text(str(i+1)).scale(0.5))
-                        for i in range(24)
-                    ])
-                    self.add(boxes)
-
-                    boxes.arrange_in_grid(
-                        buff=(0.25,0.5),
-                        col_alignments="lccccr",
-                        row_alignments="uccd",
-                        col_widths=[1, *[None]*4, 1],
-                        row_heights=[1, None, None, 1],
-                        flow_order="dr"
-                    )
-
-
-        """
         from manim.mobject.geometry.line import Line
 
         mobs = self.submobjects.copy()
@@ -2021,26 +1925,6 @@ class Mobject(Positionable):
         return self
 
     # Just here to keep from breaking old scenes.
-    def arrange_submobjects(self, *args: Any, **kwargs: Any) -> Self:
-        """Arrange the position of :attr:`submobjects` with a small buffer.
-
-        Examples
-        --------
-
-        .. manim:: ArrangeSumobjectsExample
-            :save_last_frame:
-
-            class ArrangeSumobjectsExample(Scene):
-                def construct(self):
-                    s= VGroup(*[Dot().shift(i*0.1*RIGHT*np.random.uniform(-1,1)+UP*np.random.uniform(-1,1)) for i in range(0,15)])
-                    s.shift(UP).set_color(BLUE)
-                    s2= s.copy().set_color(RED)
-                    s2.arrange_submobjects()
-                    s2.shift(DOWN)
-                    self.add(s,s2)
-
-        """
-        return self.arrange(*args, **kwargs)
 
     def sort_submobjects(self, *args: Any, **kwargs: Any) -> Self:
         """Sort the :attr:`submobjects`"""
