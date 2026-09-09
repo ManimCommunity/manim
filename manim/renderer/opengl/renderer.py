@@ -244,7 +244,7 @@ class OpenGLRenderer:
 
     def _activate_context(self) -> None:
         if self.window is not None:
-            self.window._window.switch_to()
+            self.window._activate_context()
         else:
             assert self._context is not None
             self._context.__enter__()
