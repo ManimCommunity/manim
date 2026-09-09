@@ -44,11 +44,12 @@ def test_windows_activation_binds_native_context_before_updating_pyglet(
 @pytest.mark.parametrize("operation", ["snapshot", "render"])
 def test_first_preview_after_offscreen_retirement(tmp_path, operation):
     # A previous preview can cache WGL function pointers and conceal this failure.
-    result = subprocess.run(
-        [
-            sys.executable,
-            "-c",
-            """
+    try:
+        result = subprocess.run(
+            [
+                sys.executable,
+                "-c",
+                """
 import faulthandler
 import sys
 # Diagnose slow imports or native calls before the parent's 20-second deadline.
@@ -84,14 +85,18 @@ with tempconfig({"renderer": "opengl", "format": "none", "live_preview": False,
             assert target.read(components=4) == pixels
         assert preview.renderer.window is None
 """,
-            operation,
-            str(tmp_path),
-        ],
-        capture_output=True,
-        encoding="utf-8",
-        env={**os.environ, "PYTHONIOENCODING": "utf-8"},
-        timeout=20,
-    )
+                operation,
+                str(tmp_path),
+            ],
+            capture_output=True,
+            encoding="utf-8",
+            env={**os.environ, "PYTHONIOENCODING": "utf-8"},
+            timeout=20,
+        )
+    except subprocess.TimeoutExpired as error:
+        # Pytest abbreviates exception locals; emit the child's full stack instead.
+        print((error.stderr or b"").decode("utf-8", errors="replace"), file=sys.stderr)
+        raise
     assert result.returncode == 0, result.stdout + result.stderr
 
 
