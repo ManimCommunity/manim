@@ -293,6 +293,7 @@ class OpenGLRenderer:
             if current is not None and current() is self
             else current
         )
+        # Release all resources before propagating a cleanup error or interruption.
         failures: list[BaseException] = []
 
         def release(callback: Callable[[], Any]) -> None:

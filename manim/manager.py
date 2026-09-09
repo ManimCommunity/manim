@@ -133,6 +133,7 @@ class Manager(Generic[SceneT]):
         if self._closed:
             return
         self._closing = True
+        # Attempt every cleanup even on KeyboardInterrupt/SystemExit, then reraise.
         failures: list[BaseException] = []
 
         def cleanup(callback: Callable[[], Any]) -> None:
@@ -153,6 +154,7 @@ class Manager(Generic[SceneT]):
         self._closed = True
 
     def _cleanup_after_failure(self) -> None:
+        # A rendering exception is already propagating; cleanup must not replace it.
         try:
             self.close()
         except BaseException:

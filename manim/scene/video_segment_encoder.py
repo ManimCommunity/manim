@@ -101,9 +101,7 @@ class VideoSegmentEncoder:
                 self._next_pts += 1
                 for packet in self._stream.encode(frame):
                     self._container.mux(packet)
-        except BaseException as error:
-            if not isinstance(error, Exception):
-                raise
+        except Exception as error:
             raise self._operation_error("encode", error) from error
 
     def finish(self) -> None:
@@ -111,6 +109,7 @@ class VideoSegmentEncoder:
         if self._closed:
             return
         self._closed = True
+        # Close even after an interruption, preserving a flush failure if close fails too.
         first_error: BaseException | None = None
         try:
             try:
@@ -131,6 +130,7 @@ class VideoSegmentEncoder:
 
     def abort(self) -> None:
         """Close resources and remove the incomplete target."""
+        # An interrupted close must still remove the target and remain the primary error.
         first_error: BaseException | None = None
         try:
             if not self._closed:
