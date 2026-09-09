@@ -4,9 +4,13 @@ from __future__ import annotations
 
 import datetime
 import math
+from bisect import bisect_right
+from contextlib import suppress
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 import srt
+from PIL import Image as PILImage
 
 from . import config, logger
 from ._config.logger_utils import set_file_logger
@@ -37,9 +41,44 @@ if TYPE_CHECKING:
     from .timeline import Timeline, _SourceSnapshot, _TimelineRecorder
     from .typing import RGBAPixelArray
 
-__all__ = ["Manager"]
+__all__ = ["Manager", "RenderedFrame"]
 
 SceneT = TypeVar("SceneT", bound="Scene")
+
+
+@dataclass(frozen=True)
+class RenderedFrame:
+    """A frame captured by :meth:`.Manager.capture_frame_at`.
+
+    Parameters
+    ----------
+    image
+        An independent PIL image in RGBA format.
+    requested_time
+        The requested timestamp in seconds.
+    time
+        The selected frame's start time in seconds.
+    frame_index
+        The selected frame's position, counting from zero.
+    """
+
+    image: Image
+    requested_time: float
+    time: float
+    frame_index: int
+
+
+@dataclass
+class _FrameRequest:
+    timestamp: float
+    frames: int = 0
+    result: RenderedFrame | None = None
+    stopped: bool = False
+    playing: bool = False
+
+
+class _FrameCaptured(BaseException):
+    """Stop scene execution after capturing the requested frame."""
 
 
 class Manager(Generic[SceneT]):
@@ -66,8 +105,9 @@ class Manager(Generic[SceneT]):
     -----
     Output settings are saved during scene construction. During rendering, the
     manager creates the file writer when first requested and makes it available
-    before :meth:`~manim.scene.scene.Scene.setup` runs. :meth:`evaluate` runs the
-    scene without creating a writer or drawing frames.
+    before :meth:`~manim.scene.scene.Scene.setup` runs. Use :meth:`evaluate` to
+    inspect the scene's animation time and mobject state, or :meth:`capture_frame_at`
+    to get an image at a requested timestamp.
 
     Both backends use the same animation clock and sampling rules. Cached and
     skipped animations follow a separate fast-forward path.
@@ -100,6 +140,7 @@ class Manager(Generic[SceneT]):
         self._scope_depth = 0
         self._evaluating = False
         self._evaluation_started = False
+        self._frame_request: _FrameRequest | None = None
         self._timeline: Timeline | None = None
         self._timeline_recorder: _TimelineRecorder | None = None
         self._timeline_source: _SourceSnapshot | None = None
@@ -124,7 +165,7 @@ class Manager(Generic[SceneT]):
             self.close()
 
     def _open_log_handler(self) -> None:
-        if self._evaluating:
+        if self._evaluating or self._frame_request is not None:
             return
         if self._log_handler is not None:
             return
@@ -196,12 +237,15 @@ class Manager(Generic[SceneT]):
         this property before calling :meth:`setup`; ``renderer.file_writer``
         returns the same writer. Both properties are read-only. To choose a custom
         writer class, pass ``file_writer_class`` when constructing the renderer.
-        Accessing this property during :meth:`evaluate` raises ``RuntimeError``.
+        Accessing this property during :meth:`evaluate` or :meth:`capture_frame_at`
+        raises ``RuntimeError``.
         """
         if self._evaluating:
             raise RuntimeError(
                 "Media output is unavailable during no-raster evaluation."
             )
+        if self._frame_request is not None:
+            raise RuntimeError("Media output is unavailable during frame capture.")
         if self._file_writer is None:
             if self._closed or self._closing:
                 raise RuntimeError(
@@ -260,6 +304,10 @@ class Manager(Generic[SceneT]):
             raise RuntimeError("The Manager is closed or closing.")
         if self.renderer._closed or getattr(self.renderer, "_retiring", False):
             raise RuntimeError("Cannot execute a closed or retiring renderer.")
+        if self._frame_request is not None and self._frame_request.stopped:
+            raise RuntimeError(
+                "Frame capture has ended; use a fresh Scene for further playback."
+            )
         if float(config.frame_rate) != self.session_spec.frame_rate:
             raise ValueError(
                 "frame_rate changed after Scene construction. Construct a new Scene "
@@ -296,6 +344,8 @@ class Manager(Generic[SceneT]):
 
         if self._evaluating:
             raise RuntimeError("Cannot render during no-raster evaluation.")
+        if self._frame_request is not None:
+            raise RuntimeError("Frame capture requires its own Scene execution.")
         self._validate_execution()
         started = False
         try:
@@ -339,6 +389,92 @@ class Manager(Generic[SceneT]):
             # Stop it while preserving the original rendering error.
             if started or self._file_writer is not None:
                 self._cleanup_after_failure()
+            raise
+
+    def capture_frame_at(self, timestamp: float) -> RenderedFrame | None:
+        """Return the frame displayed at ``timestamp`` by executing a fresh scene.
+
+        Runs the scene's animation steps from the beginning, drawing each frame
+        with Cairo or OpenGL until the requested frame is reached. The returned
+        image can be viewed or saved after the renderer closes. For an image of
+        the scene's current state, use :meth:`get_image`.
+
+        Parameters
+        ----------
+        timestamp
+            A finite time of zero or greater, in seconds from the start of the
+            frame sequence. At 4 fps, times from 0.25 up to but excluding 0.5
+            select the frame starting at 0.25. During a frozen wait, capture
+            returns the held image.
+
+        Returns
+        -------
+        RenderedFrame | None
+            The image, its frame index, and its start time. Returns ``None`` for
+            a timestamp at or beyond the end of the frame sequence.
+
+        Notes
+        -----
+        Create a fresh scene with ``live_preview=False`` for each request, and
+        keep the frame rate chosen at construction. ``setup()`` and ``construct()``
+        run until capture. Earlier animations finish normally; playback stops
+        with the selected animation at its captured state. Python ``finally``
+        blocks run, followed by ``tear_down()`` for cleanup. The image retains
+        the captured pixels through cleanup.
+
+        A successful call closes the renderer, or keeps it open until an enclosing
+        ``with manager:`` block ends. If scene code fails, Manager attempts resource
+        cleanup and raises the original error. For OpenGL, make the call on the
+        thread that opened the scene's context.
+
+        Examples
+        --------
+        At 4 fps, a request at 0.3 seconds selects the frame starting at 0.25::
+
+            class Motion(Scene):
+                def construct(self):
+                    square = Square()
+                    self.add(square)
+                    self.play(square.animate.shift(RIGHT))
+
+
+            with tempconfig({"frame_rate": 4, "live_preview": False}):
+                scene = Motion()
+                manager = Manager(scene)
+                frame = manager.capture_frame_at(0.3)
+                if frame is not None:
+                    print(frame.time)  # 0.25
+                    frame.image.save("frame.png")
+        """
+        timestamp = float(timestamp)
+        if not math.isfinite(timestamp) or timestamp < 0:
+            raise ValueError("timestamp must be finite and nonnegative.")
+        self._validate_execution()
+        if (
+            self._frame_request is not None
+            or self._evaluation_started
+            or self._file_writer is not None
+            or self.num_plays
+            or self.time != 0
+        ):
+            raise RuntimeError("Frame capture requires a fresh, unused Scene.")
+        if self.session_spec.presentation.live_preview:
+            raise ValueError(
+                "Construct the Scene with live_preview=False for frame capture."
+            )
+        request = self._frame_request = _FrameRequest(timestamp)
+        try:
+            self.renderer._start_animation()
+            with suppress(_FrameCaptured):
+                self.setup()
+                with suppress(EndSceneEarlyException):
+                    self.construct()
+            request.stopped = True
+            self.tear_down()
+            self._finish_resource_scope()
+            return request.result
+        except BaseException:
+            self._cleanup_after_failure()
             raise
 
     @property
@@ -386,6 +522,8 @@ class Manager(Generic[SceneT]):
         not a sandbox.
         """
         self._validate_execution()
+        if self._frame_request is not None:
+            raise RuntimeError("Frame capture requires its own Scene execution.")
         if self._evaluating:
             raise RuntimeError("Recursive evaluation is not supported.")
         if (
@@ -441,7 +579,11 @@ class Manager(Generic[SceneT]):
             self.close()
 
     def get_image(self) -> Image:
-        """Draw a fresh scene image; see :meth:`.Scene.get_image` for snapshot behavior."""
+        """Return an image of the scene's current mobjects and camera view.
+
+        See :meth:`.Scene.get_image` for snapshot usage. To execute a fresh scene
+        up to a chosen timestamp, use :meth:`capture_frame_at`.
+        """
         if self._evaluating:
             raise RuntimeError(
                 "Image requests are unavailable during no-raster evaluation."
@@ -521,6 +663,13 @@ class Manager(Generic[SceneT]):
             by :meth:`.Scene.compile_animations`.
         """
         self._validate_execution()
+        request = self._frame_request
+        if request is not None:
+            if request.playing:
+                raise RuntimeError(
+                    "Recursive play/wait calls are unsupported during frame capture."
+                )
+            request.playing = True
         try:
             self._open_log_handler()
             start_time = self.time
@@ -537,13 +686,16 @@ class Manager(Generic[SceneT]):
                     duration=subcaption_duration,
                     offset=-run_time + subcaption_offset,
                 )
-        except (EndSceneEarlyException, RerunSceneException):
-            # Leave early scene endings and rerun requests for the caller to handle.
+        except (_FrameCaptured, EndSceneEarlyException, RerunSceneException):
+            # Let the execution entry point handle a requested stop or rerun.
             raise
         except BaseException:
             # A direct play() can fail outside render(), so it needs cleanup here too.
             self._cleanup_after_failure()
             raise
+        finally:
+            if request is not None:
+                request.playing = False
 
     def _update_skipping_status(self) -> None:
         if (
@@ -571,10 +723,11 @@ class Manager(Generic[SceneT]):
         scene = self.scene
         renderer: _AnimationRenderer = self.renderer
         self._check_evaluation_scene()
+        writing = not self._evaluating and self._frame_request is None
         self.skip_animations = (
-            False if self._evaluating else self._execution.original_skipping_status
+            self._execution.original_skipping_status if writing else False
         )
-        if not self._evaluating:
+        if writing:
             self._update_skipping_status()
         event_start = self.time
         event_ordinal = self.num_plays
@@ -583,8 +736,10 @@ class Manager(Generic[SceneT]):
         scene.compile_animation_data(*args, **kwargs)
         if self._timeline_recorder is not None:
             self._timeline_recorder.begin(scene, event_start, event_ordinal)
-        if not self._evaluating:
+        if writing:
             self._begin_animation_output()
+        elif not self._evaluating:
+            renderer._start_animation()
         scene.begin_animations()
         self._check_evaluation_scene()
         if not self._evaluating:
@@ -594,16 +749,19 @@ class Manager(Generic[SceneT]):
             frame_rate = self.session_spec.frame_rate
             repeats = int(scene.duration * frame_rate)
             if not self.skip_animations:
+                start_time = self.time
                 self.time += repeats / frame_rate
                 if self._timeline_recorder is not None:
                     self._timeline_recorder.hold(repeats, self.time)
                 if frame is not None:
-                    self.file_writer.write_frame(frame, repeat=repeats)
-            if not self._evaluating:
+                    self._write_animation_frame(
+                        frame, repeat=repeats, start_time=start_time
+                    )
+            if writing:
                 renderer._present_frozen_frame(scene, scene.duration)
         else:
             self._play_internal()
-        if not self._evaluating:
+        if writing:
             self.file_writer.end_animation(not self.skip_animations)
         self.num_plays += 1
         if self._timeline_recorder is not None:
@@ -689,43 +847,49 @@ class Manager(Generic[SceneT]):
             scene.animations,
             scene.duration,
         )
-        for sample_index, t in enumerate(scene.time_progression):
-            scene.update_to_time(t)
-            self._check_evaluation_scene()
-            draw = (
-                not self._evaluating
-                and not skip_rendering
-                and not scene.skip_animation_preview
-            )
-            frame = self._draw_animation_frame(t) if draw else None
-            # Count this step's frame interval even when evaluation draws no frame.
-            # Stop conditions and finish() see the time at the end of that interval.
+        try:
+            for sample_index, t in enumerate(scene.time_progression):
+                scene.update_to_time(t)
+                self._check_evaluation_scene()
+                draw = (
+                    not self._evaluating
+                    and not skip_rendering
+                    and not scene.skip_animation_preview
+                )
+                frame = self._draw_animation_frame(t) if draw else None
+                # Count this step's frame interval even when evaluation draws no frame.
+                # Stop conditions and finish() see the time at the end of that interval.
+                if not self.skip_animations:
+                    self.time = event_start + (sample_index + 1) / frame_rate
+                    if self._timeline_recorder is not None:
+                        self._timeline_recorder.sample(self.time)
+                if draw:
+                    self._deliver_animation_frame(frame, t)
+                if scene.stop_condition is not None and scene.stop_condition():
+                    scene.time_progression.close()
+                    break
+            for animation in scene.animations:
+                animation.finish()
+                animation.clean_up_from_scene(scene)
             if not self.skip_animations:
-                self.time = event_start + (sample_index + 1) / frame_rate
-                if self._timeline_recorder is not None:
-                    self._timeline_recorder.sample(self.time)
-            if draw:
-                self._deliver_animation_frame(frame, t)
-            if scene.stop_condition is not None and scene.stop_condition():
-                scene.time_progression.close()
-                break
-        for animation in scene.animations:
-            animation.finish()
-            animation.clean_up_from_scene(scene)
-        if not self.skip_animations:
-            scene.update_mobjects(0)
-        self.renderer.static_image = None  # type: ignore[union-attr]
-        scene.time_progression.close()
+                scene.update_mobjects(0)
+        finally:
+            self.renderer.static_image = None  # type: ignore[union-attr]
+            scene.time_progression.close()
 
     def _draw_animation_frame(self, frame_offset: float) -> RGBAPixelArray | None:
         from .renderer.cairo.renderer import CairoRenderer
 
         self.renderer.render(self.scene, frame_offset, self.scene.moving_mobjects)
-        if isinstance(self.renderer, CairoRenderer) or (
-            not self.skip_animations
-            and (
-                self.file_writer.output_spec.is_video
-                or self.file_writer.output_spec.is_image_sequence
+        if (
+            self._frame_request is not None
+            or isinstance(self.renderer, CairoRenderer)
+            or (
+                not self.skip_animations
+                and (
+                    self.file_writer.output_spec.is_video
+                    or self.file_writer.output_spec.is_image_sequence
+                )
             )
         ):
             return self.renderer.get_frame()
@@ -737,8 +901,44 @@ class Manager(Generic[SceneT]):
         if self.skip_animations:
             return
         if frame is not None:
-            self.file_writer.write_frame(frame)
-        self.renderer._present_frame(self.scene, frame_offset)
+            self._write_animation_frame(frame)
+        if self._frame_request is None:
+            self.renderer._present_frame(self.scene, frame_offset)
+
+    def _write_animation_frame(
+        self, frame: RGBAPixelArray, *, repeat: int = 1, start_time: float | None = None
+    ) -> None:
+        request = self._frame_request
+        if request is None:
+            self.file_writer.write_frame(frame, repeat=repeat)
+            return
+        if request.stopped:
+            raise RuntimeError("Animation playback has ended for this frame request.")
+        first = request.frames
+        request.frames += repeat
+        frame_rate = self.session_spec.frame_rate
+        if request.timestamp < request.frames / frame_rate:
+            # Compare interval boundaries directly, including within a frozen hold.
+            # Multiplying the timestamp by fps can round across an exact boundary.
+            index = (
+                first
+                + bisect_right(
+                    range(first, request.frames),
+                    request.timestamp,
+                    key=lambda i: i / frame_rate,
+                )
+                - 1
+            )
+            if start_time is not None:
+                self.time = start_time + (index - first + 1) / frame_rate
+            request.result = RenderedFrame(
+                image=PILImage.fromarray(frame).copy(),
+                requested_time=request.timestamp,
+                time=index / frame_rate,
+                frame_index=index,
+            )
+            request.stopped = True
+            raise _FrameCaptured
 
     def _render_preview_frame(self, frame_offset: float) -> None:
         """Redraw and display an interactive frame without advancing animation time."""
@@ -750,8 +950,9 @@ class Manager(Generic[SceneT]):
         """Write frames and advance time for callers of CairoRenderer.add_frame."""
         self._validate_execution()
         if not self.skip_animations:
+            start_time = self.time
             self.time += num_frames / self.session_spec.frame_rate
-            self.file_writer.write_frame(frame, repeat=num_frames)
+            self._write_animation_frame(frame, repeat=num_frames, start_time=start_time)
 
     def next_section(
         self,
@@ -773,6 +974,8 @@ class Manager(Generic[SceneT]):
         skip_animations
             Whether animation output in this section should be skipped.
         """
+        if self._frame_request is not None:
+            return
         if self._evaluating:
             if self._timeline_recorder is not None:
                 self._timeline_recorder.declare(
@@ -803,7 +1006,9 @@ class Manager(Generic[SceneT]):
         offset
             The offset in seconds from the current scene time.
         """
-        if self._evaluating and self._timeline_recorder is None:
+        if self._frame_request is not None or (
+            self._evaluating and self._timeline_recorder is None
+        ):
             return
         start = datetime.timedelta(seconds=float(self.time + offset))
         end = datetime.timedelta(seconds=float(self.time + offset + duration))
@@ -850,7 +1055,7 @@ class Manager(Generic[SceneT]):
             Additional arguments forwarded to
             :meth:`~manim.scene.scene_file_writer.SceneFileWriter.add_sound`.
         """
-        if self.skip_animations:
+        if self.skip_animations or self._frame_request is not None:
             return
         if self._evaluating:
             if self._timeline_recorder is not None:
