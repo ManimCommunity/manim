@@ -155,6 +155,19 @@ jobs:
         run: |
           uv sync --all-extras --locked
 
+      - name: Temporary WGL diagnostics
+        if: runner.os == 'Windows' && matrix.python == '3.13'
+        shell: pwsh
+        run: |
+          # These experiments intentionally include failing cases. Report them without
+          # preventing the unchanged test suite below from reporting its own result.
+          foreach ($restore in @('none', 'set-current', 'native')) {
+            Write-Output "=== WGL diagnostic: restoration=$restore ==="
+            uv run python .github/scripts/windows_context_probe.py --restore $restore
+            Write-Output "Diagnostic exit code: $LASTEXITCODE"
+          }
+          exit 0
+
       - name: Run tests
         run: |
           uv run python -m pytest
