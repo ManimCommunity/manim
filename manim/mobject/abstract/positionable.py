@@ -59,7 +59,7 @@ class Positionable:
         if len(all_points) == 0:
             return np.zeros((0, 3))
         elif len(all_points) == 1:
-            return all_points[0].copy()
+            return all_points[0]
         return np.concatenate(all_points)
 
     def set_points(self, points: Point3DLike_Array | Positionable) -> Self:
