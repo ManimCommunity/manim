@@ -49,7 +49,10 @@ def test_first_preview_after_offscreen_retirement(tmp_path, operation):
             sys.executable,
             "-c",
             """
+import faulthandler
 import sys
+# Diagnose slow imports or native calls before the parent's 20-second deadline.
+faulthandler.dump_traceback_later(10, repeat=True)
 from manim import Manager, Scene, Square, tempconfig
 # Initialize Pyglet's shadow context without opening a Manim preview first.
 from manim.renderer.opengl.window import Window
