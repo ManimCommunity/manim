@@ -59,7 +59,7 @@ class Positionable:
         if len(all_points) == 0:
             return np.zeros((0, 3))
         elif len(all_points) == 1:
-            return all_points[0]
+            return all_points[0].copy()
         return np.concatenate(all_points)
 
     def set_points(self, points: Point3DLike_Array | Positionable) -> Self:
@@ -1285,7 +1285,7 @@ class Positionable:
         """
         all_points = self.get_all_points()
         if len(all_points) == 0:
-            return ORIGIN
+            return ORIGIN.copy()
         return np.array(
             [
                 all_points[:, 0].mean(),
@@ -1309,7 +1309,7 @@ class Positionable:
         """
         all_points = self.get_all_points()
         if len(all_points) == 0:
-            return ORIGIN
+            return ORIGIN.copy()
         index = np.argmax(all_points.dot(direction))
         return all_points[index]
 
