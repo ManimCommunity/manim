@@ -11,6 +11,7 @@ import numpy as np
 from manim._config import config
 from manim.constants import (
     DEFAULT_MOBJECT_TO_EDGE_BUFFER,
+    DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
     DL,
     DOWN,
     IN,
@@ -1020,6 +1021,60 @@ class Positionable:
                 vector[dim] = mobject_or_point[dim] - source
         return self.translate(vector=vector)
 
+    def next_to(
+        self,
+        # TODO: Rename to `point`
+        mobject_or_point: Point3DLike | Positionable,
+        direction: Vector3DLike = RIGHT,
+        *,
+        aligned_edge: Vector3DLike = ORIGIN,
+        buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
+    ) -> Self:
+        """Sets the position next to a point.
+
+        Parameters
+        ----------
+        mobject_or_point : Point3DLike | Positionable
+            The point.
+        direction : Vector3DLike, optional
+            The direction., by default RIGHT
+        buff : float, optional
+            The buff., by default DEFAULT_MOBJECT_TO_MOBJECT_BUFFER
+        aligned_edge : Vector3DLike, optional
+            The edge to align., by default ORIGIN
+
+        Returns
+        -------
+        Self
+            The object itself.
+
+        Example
+        -------
+
+        .. manim:: GeometricShapes
+            :save_last_frame:
+
+            class GeometricShapes(Scene):
+                def construct(self):
+                    d = Dot()
+                    c = Circle()
+                    s = Square()
+                    t = Triangle()
+                    d.next_to(c, RIGHT)
+                    s.next_to(c, LEFT)
+                    t.next_to(c, DOWN)
+                    self.add(d, c, s, t)
+        """
+        direction = np.asarray(direction)
+        aligned_edge = np.asarray(aligned_edge)
+        if isinstance(mobject_or_point, Positionable):
+            target_direction = aligned_edge + direction
+            mobject_or_point = mobject_or_point.get_position(direction=target_direction)
+        source_direction = aligned_edge - direction
+        source_point = self.get_position(direction=source_direction)
+        vector = mobject_or_point - source_point + buff * direction
+        return self.translate(vector=vector)
+
     def shift_onto_screen(
         self,
         *,
@@ -1117,8 +1172,6 @@ class Positionable:
             return ORIGIN
         index = np.argmax(all_points.dot(direction))
         return all_points[index]
-
-    # TODO: next_to
 
     # =========
     # endregion

@@ -1262,60 +1262,6 @@ class Mobject(Positionable):
 
     # Positioning methods
 
-    def next_to(
-        self,
-        mobject_or_point: Mobject | Point3DLike,
-        direction: Vector3DLike = RIGHT,
-        buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
-        aligned_edge: Vector3DLike = ORIGIN,
-        submobject_to_align: Mobject | None = None,
-        index_of_submobject_to_align: int | None = None,
-        coor_mask: Vector3DLike = np.array([1, 1, 1]),
-    ) -> Self:
-        """Move this :class:`~.Mobject` next to another's :class:`~.Mobject` or Point3D.
-
-        Examples
-        --------
-
-        .. manim:: GeometricShapes
-            :save_last_frame:
-
-            class GeometricShapes(Scene):
-                def construct(self):
-                    d = Dot()
-                    c = Circle()
-                    s = Square()
-                    t = Triangle()
-                    d.next_to(c, RIGHT)
-                    s.next_to(c, LEFT)
-                    t.next_to(c, DOWN)
-                    self.add(d, c, s, t)
-
-        """
-        np_direction = np.asarray(direction)
-        np_aligned_edge = np.asarray(aligned_edge)
-
-        if isinstance(mobject_or_point, Mobject):
-            mob = mobject_or_point
-            if index_of_submobject_to_align is not None:
-                target_aligner = mob[index_of_submobject_to_align]
-            else:
-                target_aligner = mob
-            target_point = target_aligner.get_critical_point(
-                np_aligned_edge + np_direction
-            )
-        else:
-            target_point = mobject_or_point
-        if submobject_to_align is not None:
-            aligner = submobject_to_align
-        elif index_of_submobject_to_align is not None:
-            aligner = self[index_of_submobject_to_align]
-        else:
-            aligner = self
-        point_to_align = aligner.get_critical_point(np_aligned_edge - np_direction)
-        self.shift((target_point - point_to_align + buff * np_direction) * coor_mask)
-        return self
-
     def space_out_submobjects(self, factor: float = 1.5, **kwargs: Any) -> Self:
         self.scale(factor, **kwargs)
         for submob in self.submobjects:
@@ -1765,7 +1711,7 @@ class Mobject(Positionable):
                     self.add(x)
         """
         for m1, m2 in it.pairwise(self.submobjects):
-            m2.next_to(m1, direction, buff, **kwargs)
+            m2.next_to(m1, direction, buff=buff, **kwargs)
         if center:
             self.center()
         return self
