@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import sys
 from typing import TYPE_CHECKING, Any
 
 import moderngl_window as mglw
 from moderngl_window.context.pyglet.window import Window as PygletWindow
 from moderngl_window.timers.clock import Timer
+from pyglet import gl
 from screeninfo import Monitor, get_monitors
 
 from ... import __version__, config, logger
@@ -14,6 +16,17 @@ if TYPE_CHECKING:
     from .renderer import OpenGLRenderer
 
 __all__ = ["Window"]
+
+
+def _activate_pyglet_context(context: Any) -> None:
+    if sys.platform == "win32":
+        from pyglet.gl import wgl
+
+        # glcontext can change the native binding without updating Pyglet's cache.
+        # set_current() alone may then skip the wglMakeCurrent call we need.
+        if not wgl.wglMakeCurrent(context.canvas.hdc, context._context):
+            raise RuntimeError("Failed to activate the window's OpenGL context.")
+    context.set_current()
 
 
 class Window(PygletWindow):
@@ -70,6 +83,10 @@ class Window(PygletWindow):
             raise ValueError(invalid_window_size_error_message)
 
         try:
+            # Pixel-format extension lookup needs a current native context, even
+            # when a previous standalone render left Pyglet's shadow context idle.
+            if gl.current_context is not None:
+                _activate_pyglet_context(gl.current_context)
             super().__init__(size=size)
 
             self.title = f"Manim Community {__version__}"
@@ -96,6 +113,9 @@ class Window(PygletWindow):
                         "Failed to close an incompletely initialized window"
                     )
             raise
+
+    def _activate_context(self) -> None:
+        _activate_pyglet_context(self._window.context)
 
     # Delegate event handling to scene.
     def on_mouse_motion(self, x: int, y: int, dx: int, dy: int) -> None:
