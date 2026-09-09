@@ -661,6 +661,7 @@ class Circle(Arc):
         self,
         mobject: Mobject,
         dim_to_match: int = 0,
+        *,
         stretch: bool = False,
         buffer_factor: float = 1.2,
     ) -> Self:
