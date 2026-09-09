@@ -167,7 +167,7 @@ def test_normalize_nonzero_vector(vec, expected):
     normalized_vec = normalize(vec)
     assert np.allclose(normalized_vec, expected)
 
-    # check that fallback vector is returned when the input vector is non-zero
+    # check that fallback vector is ignored when the input vector is non-zero
     fallback_vec = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
     normalized_vec_with_fallback = normalize(vec, fall_back=fallback_vec)
     assert np.all(normalized_vec_with_fallback == normalized_vec)
