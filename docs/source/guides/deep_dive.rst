@@ -293,16 +293,6 @@ continues as follows:
         self.session_spec,
     )
 
-The session specification separates primary artifact intent (an ``OutputSpec``)
-from presentation requests such as opening the completed artifact or displaying
-a live preview. For video output it also contains the resolved segment profile:
-container, codec, pixel format, dimensions, exact frame rate, and codec options.
-It records dry-run execution separately from artifact selection. A dry run
-requests semantic scene evaluation without rasterizing
-frames or using media and cache resources. In contrast, ``format = none`` only
-suppresses the primary artifact; an OpenGL live preview with automatic output
-still rasterizes and displays frames without writing a file. Both requests have
-an effective output format of ``none``, so the session's ``dry_run`` field
 The session specification separates *primary artifact* intent (an ``OutputSpec``
 which defines the type of file we wish Manim to create based on our scene) from
 *presentation requests* such as displaying a live preview or opening the
@@ -324,16 +314,12 @@ Cairo rejects live preview, while OpenGL advertises support for it. A concrete
 format records the live preview as well.
 
 The scene then resolves existing directory templates once into an immutable
-output plan containing exact scene-specific artifact, section, image-sequence,
-and cache paths. Planning performs no file I/O and creates no directories. The
-resolved format determines the artifact suffix; ``output_file`` supplies only a
-The scene then resolves existing directory templates once into an immutable
 *output plan* containing scene-specific output paths for the artifact, sections,
 image-sequences, and cached files. If any of these paths contain directories
 which do not exist, those directories will be created when a file writer needs
 to use them and not at this point in time.
-File extensions are determined by the resolved session specification and cannot
-be changed.
+The resolved output format determines the file extension; ``output_file`` supplies
+a name rather than overriding that format.
 
 The scene stores the output plan, video encoding settings, cache limits, and
 sound-asset directory in ``_SceneFileWriterSettings``. The :class:`.Manager` uses
@@ -421,16 +407,16 @@ renderer once the output is complete. To read the last-rendered frame directly
 from the renderer, keep it open with a ``with manager:`` block::
 
     scene = ToyExample()
-    manager = scene.manager or Manager(scene)
+    manager = Manager(scene)
     with manager:
         manager.render()
         last_frame = manager.renderer.get_frame()
 
-The renderer will then stay open after successful rendering until the end of the
-``with`` block. The rendered scene persists even after the renderer closes, and
-any renderer-independent methods may still be called; this includes
-``scene.get_image()``. OpenGL meshes stored directly on the GPU require their
-original context, so these must be inspected inside the block.
+The renderer stays open after successful rendering until the end of the ``with``
+block. The scene and its mobjects remain available afterward. To draw a new image,
+call ``scene.get_image()``; it creates temporary rendering resources as needed.
+OpenGL meshes stored directly on the GPU require their original context, so these
+must be inspected inside the block.
 
 When file logging is enabled, the manager opens the scene's log at the start of
 rendering or the first direct ``play()`` call. It removes and closes that handler

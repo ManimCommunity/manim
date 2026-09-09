@@ -1,5 +1,6 @@
 """Each CLI run has a fresh Scene and reuses that scene's manager."""
 
+import os
 import subprocess
 import sys
 
@@ -8,7 +9,7 @@ import pytest
 
 def render(tmp_path, backend, source, *selection, output="png"):
     script = tmp_path / "scene.py"
-    script.write_text(source)
+    script.write_text(source, encoding="utf-8")
     return subprocess.run(
         [
             sys.executable,
@@ -30,7 +31,8 @@ def render(tmp_path, backend, source, *selection, output="png"):
             *selection,
         ],
         capture_output=True,
-        text=True,
+        encoding="utf-8",
+        env={**os.environ, "PYTHONIOENCODING": "utf-8"},
         timeout=20,
     )
 
@@ -103,14 +105,18 @@ class InspectConstructor(Scene):
 
 
 @pytest.mark.parametrize("backend", ["cairo", "opengl"])
-def test_failed_constructor_play_does_not_strand_encoder(tmp_path, backend):
+def test_failed_constructor_play_does_not_strand_encoder(
+    tmp_path, backend, monkeypatch
+):
+    # The helper must use UTF-8 even when the parent's stream encoding differs.
+    monkeypatch.setenv("PYTHONIOENCODING", "ascii")
     result = render(
         tmp_path,
         backend,
         """from manim import Animation, Scene, Square
 class BrokenAnimation(Animation):
     def interpolate_mobject(self, alpha):
-        raise RuntimeError("constructor play failed")
+        raise RuntimeError("constructor play failed → cleanup")
 class BrokenConstructor(Scene):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -121,4 +127,5 @@ class BrokenConstructor(Scene):
     )
     assert result.returncode == 1, result.stdout + result.stderr
     assert "constructor play failed" in result.stdout + result.stderr
+    assert "→ cleanup" in result.stdout + result.stderr
     assert not list((tmp_path / "media").rglob("*.mp4"))
