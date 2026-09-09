@@ -1251,10 +1251,12 @@ class Mobject(Positionable):
     # Transforming operations
 
     def apply_function_to_submobject_positions(
-        self, function: Callable[[Point3D], Point3D]
+        self,
+        function: Callable[[Point3D], Point3D],
+        **kwargs: Any,
     ) -> Self:
         for submob in self.submobjects:
-            submob.apply_function_to_position(function)
+            submob.apply_function_to_position(function, **kwargs)
         return self
 
     # In place operations.
@@ -1269,10 +1271,11 @@ class Mobject(Positionable):
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
-        self.scale(factor, about_point=about_point, about_edge=about_edge)
+        self.scale(factor, about_point=about_point, about_edge=about_edge, **kwargs)
         for submob in self.submobjects:
-            submob.scale(1.0 / factor)
+            submob.scale(1.0 / factor, **kwargs)
         return self
 
     def put_start_and_end_on(self, start: Point3DLike, end: Point3DLike) -> Self:
@@ -1700,24 +1703,27 @@ class Mobject(Positionable):
         aligned_edge: Vector3DLike = ORIGIN,
         buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         center: bool = True,
+        **kwargs: Any,
     ) -> Self:
         for m1, m2 in it.pairwise(self.submobjects):
-            m2.next_to(m1, direction, buff=buff, aligned_edge=aligned_edge)
+            m2.next_to(m1, direction, buff=buff, aligned_edge=aligned_edge, **kwargs)
         if center:
-            self.center()
+            self.center(**kwargs)
         return self
 
     def arrange_in_grid(
         self,
         rows: int | None = None,
         cols: int | None = None,
+        *,
         buff: float | tuple[float, float] = MED_SMALL_BUFF,
         cell_alignment: Vector3DLike = ORIGIN,
-        row_alignments: Literal["u", "c", "d"] | None = None,
-        col_alignments: Literal["l", "c", "r"] | None = None,
+        row_alignments: str | None = None,
+        col_alignments: str | None = None,
         row_heights: Iterable[float | None] | None = None,
         col_widths: Iterable[float | None] | None = None,
         flow_order: Literal["dr", "dl", "ur", "ul", "rd", "ld", "ru", "lu"] = "rd",
+        **kwargs: Any,
     ) -> Self:
         from manim.mobject.geometry.line import Line
 
@@ -1868,12 +1874,11 @@ class Mobject(Positionable):
                     # box code that Mobject.move_to(Mobject) already
                     # includes.
 
-                    grid[r][c].move_to(line, alignment)
+                    grid[r][c].move_to(line, alignment, **kwargs)
                 x += widths[c] + buff_x
             y += heights[r] + buff_y
 
-        self.move_to(start_pos)
-        return self
+        return self.move_to(start_pos, **kwargs)
 
     def sort(
         self,

@@ -97,7 +97,7 @@ class Positionable:
             self.points = np.array(points, dtype=float)
         return self
 
-    def reset_points(self) -> Self:
+    def reset_points(self, **kwargs: Any) -> Self:
         """Resets the points.
 
         Does not affect family members.
@@ -107,9 +107,9 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_points(np.zeros((0, 3)))
+        return self.set_points(np.zeros((0, 3)), **kwargs)
 
-    def reverse_points(self) -> Self:
+    def reverse_points(self, **kwargs: Any) -> Self:
         """Reverses the points.
 
         Returns
@@ -121,9 +121,9 @@ class Positionable:
         def apply(mob: Positionable) -> None:
             mob.points[:] = mob.points[::-1]
 
-        return self.apply_to_family(func=apply)
+        return self.apply_to_family(func=apply, **kwargs)
 
-    def repeat(self, count: int) -> Self:
+    def repeat(self, count: int, **kwargs: Any) -> Self:
         """Repeats the points.
 
         Can make transition animations nicer.
@@ -142,7 +142,7 @@ class Positionable:
         def apply(mob: Positionable) -> None:
             mob.points = np.tile(mob.points, (count, 1))
 
-        return self.apply_to_family(apply)
+        return self.apply_to_family(func=apply, **kwargs)
 
     def get_num_points(self) -> int:
         """Returns the number of points.
@@ -217,6 +217,7 @@ class Positionable:
         func: Callable[[Positionable], Any],
         *,
         should_skip: Callable[[Positionable], bool] = lambda mob: mob.has_no_points(),
+        **kwargs: Any,
     ) -> Self:
         """Applies a function.
 
@@ -245,6 +246,7 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Applies a points function.
 
@@ -276,7 +278,10 @@ class Positionable:
             mob.points = func(mob.points)
             mob.points += about_point
 
-        return self.apply_to_family(func=apply)
+        return self.apply_to_family(
+            func=apply,
+            **kwargs,
+        )
 
     # TODO: Rename to `apply_point_function`?
     def apply_function(
@@ -285,6 +290,7 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Applies a point function.
 
@@ -310,6 +316,7 @@ class Positionable:
             func=lambda points: np.apply_along_axis(function, 1, points),
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     def apply_complex_function(
@@ -318,6 +325,7 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Applies a complex function.
 
@@ -366,6 +374,7 @@ class Positionable:
             function=R3_func,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     # =========
@@ -376,7 +385,11 @@ class Positionable:
     # region TRANSFORMATIONS
     # ======================
 
-    def translate(self, vector: Vector3DLike) -> Self:
+    def translate(
+        self,
+        vector: Vector3DLike,
+        **kwargs: Any,
+    ) -> Self:
         """Applies a translation.
 
         Parameters
@@ -389,7 +402,10 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.apply_to_family(func=lambda mob: mob.points.__iadd__(vector))
+        return self.apply_to_family(
+            func=lambda mob: mob.points.__iadd__(vector),
+            **kwargs,
+        )
 
     def scale(
         self,
@@ -398,6 +414,7 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Applies a uniform scaling.
 
@@ -434,6 +451,7 @@ class Positionable:
             lambda points: points.__imul__(scale_factor),
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     def stretch(
@@ -443,6 +461,7 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Applies a non-uniform scaling.
 
@@ -471,6 +490,7 @@ class Positionable:
             func=func,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     def rotate(
@@ -480,6 +500,7 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Applies a rotation.
 
@@ -530,11 +551,14 @@ class Positionable:
 
                     self.add(VGroup(group1, group2, group3).arrange(RIGHT, buff=1))
         """
-        matrix = rotation_matrix(angle, axis).T
-        return self.apply_points_function(
-            func=lambda points: np.dot(points, matrix),
+        if about_point is None and about_edge is None:
+            about_edge = ORIGIN
+        matrix = rotation_matrix(angle, axis)
+        return self.apply_matrix(
+            matrix=matrix,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     def apply_matrix(
@@ -543,6 +567,7 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Applies a transformation matrix.
 
@@ -564,12 +589,16 @@ class Positionable:
         if about_point is None and about_edge is None:
             about_point = ORIGIN
         matrix = np.asarray(matrix)
-        full_matrix = np.identity(3)
-        full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
+        if matrix.shape == (3, 3):
+            full_matrix = matrix
+        else:
+            full_matrix = np.identity(3)
+            full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
         return self.apply_points_function(
             func=lambda points: np.dot(points, full_matrix.T),
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     # =========
@@ -605,6 +634,7 @@ class Positionable:
         self,
         position: Point3DLike | Positionable,
         direction: Vector3DLike = ORIGIN,
+        **kwargs: Any,
     ) -> Self:
         """Sets the position.
 
@@ -624,7 +654,10 @@ class Positionable:
         if isinstance(position, Positionable):
             position = position.get_position(direction=direction)
         vector = position - source
-        return self.translate(vector=vector)
+        return self.translate(
+            vector=vector,
+            **kwargs,
+        )
 
     def get_center(self) -> Point3D:
         """Returns the center position.
@@ -636,7 +669,11 @@ class Positionable:
         """
         return self.get_position(direction=ORIGIN)
 
-    def set_center(self, center: Point3DLike | Positionable) -> Self:
+    def set_center(
+        self,
+        center: Point3DLike | Positionable,
+        **kwargs: Any,
+    ) -> Self:
         """Sets the center position.
 
         Parameters
@@ -649,9 +686,13 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_position(position=center, direction=ORIGIN)
+        return self.set_position(
+            position=center,
+            direction=ORIGIN,
+            **kwargs,
+        )
 
-    def center(self) -> Self:
+    def center(self, **kwargs: Any) -> Self:
         """Sets the position to the origin.
 
         Returns
@@ -659,7 +700,10 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_center(center=ORIGIN)
+        return self.set_center(
+            center=ORIGIN,
+            **kwargs,
+        )
 
     def get_top(self) -> Point3D:
         """Returns the top position.
@@ -671,7 +715,11 @@ class Positionable:
         """
         return self.get_position(direction=UP)
 
-    def set_top(self, top: Point3DLike | Positionable) -> Self:
+    def set_top(
+        self,
+        top: Point3DLike | Positionable,
+        **kwargs: Any,
+    ) -> Self:
         """Sets the top position.
 
         Parameters
@@ -684,7 +732,11 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_position(position=top, direction=UP)
+        return self.set_position(
+            position=top,
+            direction=UP,
+            **kwargs,
+        )
 
     def get_bottom(self) -> Point3D:
         """Returns the bottom position.
@@ -696,7 +748,11 @@ class Positionable:
         """
         return self.get_position(direction=DOWN)
 
-    def set_bottom(self, bottom: Point3DLike | Positionable) -> Self:
+    def set_bottom(
+        self,
+        bottom: Point3DLike | Positionable,
+        **kwargs: Any,
+    ) -> Self:
         """Sets the bottom position.
 
         Parameters
@@ -709,7 +765,7 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_position(position=bottom, direction=DOWN)
+        return self.set_position(position=bottom, direction=DOWN, **kwargs)
 
     def get_right(self) -> Point3D:
         """Returns the right position.
@@ -721,7 +777,11 @@ class Positionable:
         """
         return self.get_position(direction=RIGHT)
 
-    def set_right(self, right: Point3DLike | Positionable) -> Self:
+    def set_right(
+        self,
+        right: Point3DLike | Positionable,
+        **kwargs: Any,
+    ) -> Self:
         """Sets the right position.
 
         Parameters
@@ -734,7 +794,11 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_position(position=right, direction=RIGHT)
+        return self.set_position(
+            position=right,
+            direction=RIGHT,
+            **kwargs,
+        )
 
     def get_left(self) -> Point3D:
         """Returns the left position.
@@ -746,7 +810,11 @@ class Positionable:
         """
         return self.get_position(direction=LEFT)
 
-    def set_left(self, left: Point3DLike | Positionable) -> Self:
+    def set_left(
+        self,
+        left: Point3DLike | Positionable,
+        **kwargs: Any,
+    ) -> Self:
         """Sets the left position.
 
         Parameters
@@ -759,7 +827,11 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_position(position=left, direction=LEFT)
+        return self.set_position(
+            position=left,
+            direction=LEFT,
+            **kwargs,
+        )
 
     def get_zenith(self) -> Point3D:
         """Returns the zenith position.
@@ -771,7 +843,11 @@ class Positionable:
         """
         return self.get_position(direction=OUT)
 
-    def set_zenith(self, zenith: Point3DLike | Positionable) -> Self:
+    def set_zenith(
+        self,
+        zenith: Point3DLike | Positionable,
+        **kwargs: Any,
+    ) -> Self:
         """Sets the zenith position.
 
         Parameters
@@ -784,7 +860,11 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_position(position=zenith, direction=OUT)
+        return self.set_position(
+            position=zenith,
+            direction=OUT,
+            **kwargs,
+        )
 
     def get_nadir(self) -> Point3D:
         """Returns the nadir position.
@@ -796,7 +876,11 @@ class Positionable:
         """
         return self.get_position(direction=IN)
 
-    def set_nadir(self, nadir: Point3DLike | Positionable) -> Self:
+    def set_nadir(
+        self,
+        nadir: Point3DLike | Positionable,
+        **kwargs: Any,
+    ) -> Self:
         """Sets the nadir position.
 
         Parameters
@@ -809,7 +893,11 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_position(position=nadir, direction=IN)
+        return self.set_position(
+            position=nadir,
+            direction=IN,
+            **kwargs,
+        )
 
     def get_coordinate(self, dim: int, direction: Vector3DLike = ORIGIN) -> float:
         """Returns the coordinate of a dimension.
@@ -836,6 +924,7 @@ class Positionable:
         coordinate: float | Positionable,
         dim: int,
         direction: Vector3DLike = ORIGIN,
+        **kwargs: Any,
     ) -> Self:
         """Sets the coordinate of a dimension.
 
@@ -858,7 +947,7 @@ class Positionable:
             coordinate = coordinate.get_coordinate(dim=dim, direction=direction)
         vector = np.zeros(3)
         vector[dim] = coordinate - source
-        return self.translate(vector=vector)
+        return self.translate(vector=vector, **kwargs)
 
     def get_x(self, direction: Vector3DLike = ORIGIN) -> float:
         """Returns the x coordinate.
@@ -875,7 +964,12 @@ class Positionable:
         """
         return self.get_coordinate(dim=0, direction=direction)
 
-    def set_x(self, x: float | Positionable, direction: Vector3DLike = ORIGIN) -> Self:
+    def set_x(
+        self,
+        x: float | Positionable,
+        direction: Vector3DLike = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
         """Sets the x coordinate.
 
         Parameters
@@ -890,7 +984,12 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_coordinate(coordinate=x, dim=0, direction=direction)
+        return self.set_coordinate(
+            coordinate=x,
+            dim=0,
+            direction=direction,
+            **kwargs,
+        )
 
     def get_y(self, direction: Vector3DLike = ORIGIN) -> float:
         """Returns the x coordinate.
@@ -907,7 +1006,12 @@ class Positionable:
         """
         return self.get_coordinate(dim=1, direction=direction)
 
-    def set_y(self, y: float | Positionable, direction: Vector3DLike = ORIGIN) -> Self:
+    def set_y(
+        self,
+        y: float | Positionable,
+        direction: Vector3DLike = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
         """Sets the y coordinate.
 
         Parameters
@@ -922,7 +1026,12 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_coordinate(coordinate=y, dim=1, direction=direction)
+        return self.set_coordinate(
+            coordinate=y,
+            dim=1,
+            direction=direction,
+            **kwargs,
+        )
 
     def get_z(self, direction: Vector3DLike = ORIGIN) -> float:
         """Returns the z coordinate.
@@ -939,7 +1048,12 @@ class Positionable:
         """
         return self.get_coordinate(dim=2, direction=direction)
 
-    def set_z(self, z: float | Positionable, direction: Vector3DLike = ORIGIN) -> Self:
+    def set_z(
+        self,
+        z: float | Positionable,
+        direction: Vector3DLike = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
         """Sets the z coordinate.
 
         Parameters
@@ -954,13 +1068,19 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_coordinate(coordinate=z, dim=2, direction=direction)
+        return self.set_coordinate(
+            coordinate=z,
+            dim=2,
+            direction=direction,
+            **kwargs,
+        )
 
     def align_on_border(
         self,
         direction: Vector3DLike,
         *,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
+        **kwargs: Any,
     ) -> Self:
         """Aligns itself on the border.
 
@@ -981,13 +1101,17 @@ class Positionable:
         target: Point3D = np.sign(direction) * frame
         vector = target - source - buff * np.array(direction)
         vector = vector * abs(np.sign(direction))
-        return self.translate(vector)
+        return self.translate(
+            vector,
+            **kwargs,
+        )
 
     def align_to(
         self,
         # TODO: Rename to `point`
         mobject_or_point: Point3DLike | Positionable,
         direction: Vector3DLike = ORIGIN,
+        **kwargs: Any,
     ) -> Self:
         """Aligns itself to a point.
 
@@ -1019,7 +1143,10 @@ class Positionable:
             if direction[dim] != 0:
                 source = self._get_extremum(all_points[:, dim], key=direction[dim])
                 vector[dim] = mobject_or_point[dim] - source
-        return self.translate(vector=vector)
+        return self.translate(
+            vector=vector,
+            **kwargs,
+        )
 
     def next_to(
         self,
@@ -1029,6 +1156,7 @@ class Positionable:
         *,
         aligned_edge: Vector3DLike = ORIGIN,
         buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
+        **kwargs: Any,
     ) -> Self:
         """Sets the position next to a point.
 
@@ -1073,12 +1201,16 @@ class Positionable:
         source_direction = aligned_edge - direction
         source_point = self.get_position(direction=source_direction)
         vector = mobject_or_point - source_point + buff * direction
-        return self.translate(vector=vector)
+        return self.translate(
+            vector=vector,
+            **kwargs,
+        )
 
     def shift_onto_screen(
         self,
         *,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
+        **kwargs: Any,
     ) -> Self:
         """Shifts onto the screen.
 
@@ -1098,12 +1230,17 @@ class Positionable:
             max_value = frame[dim] - buff
             edge_center = self.get_position(direction=edge)
             if np.dot(edge_center, edge) > max_value:
-                self.align_on_border(direction=edge, buff=buff)
+                self.align_on_border(
+                    direction=edge,
+                    buff=buff,
+                    **kwargs,
+                )
         return self
 
     def apply_function_to_position(
         self,
         function: Callable[[Point3D], Point3D],
+        **kwargs: Any,
     ) -> Self:
         """Applies a function to the position.
 
@@ -1117,7 +1254,10 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_position(function(self.get_center()))
+        return self.set_position(
+            function(self.get_center()),
+            **kwargs,
+        )
 
     def is_off_screen(self) -> bool:
         """Whether this is off screen.
@@ -1176,6 +1316,7 @@ class Positionable:
     def apply_function_to_submobject_positions(
         self,
         function: Callable[[Point3D], Point3D],
+        **kwargs: Any,
     ) -> Self:
         """Applies a function to the submobject positions.
 
@@ -1197,6 +1338,7 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Spaces out the submobjects.
 
@@ -1223,6 +1365,7 @@ class Positionable:
         aligned_edge: Vector3DLike = ORIGIN,
         buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         center: bool = True,
+        **kwargs: Any,
     ) -> Self:
         """Arranges the submobject.
 
@@ -1275,16 +1418,18 @@ class Positionable:
         self,
         rows: int | None = None,
         cols: int | None = None,
+        *,
         buff: float | tuple[float, float] = MED_SMALL_BUFF,
         cell_alignment: Vector3DLike = ORIGIN,
         # TODO: replace with Vector3DLike
-        row_alignments: Literal["u", "c", "d"] | None = None,
+        row_alignments: str | None = None,
         # TODO: replace with Vector3DLike
-        col_alignments: Literal["l", "c", "r"] | None = None,
+        col_alignments: str | None = None,
         row_heights: Iterable[float | None] | None = None,
         col_widths: Iterable[float | None] | None = None,
         # TODO: replace with Vector3DLike
         flow_order: Literal["dr", "dl", "ur", "ul", "rd", "ld", "ru", "lu"] = "rd",
+        **kwargs: Any,
     ) -> Self:
         """Arranges the submobjects in a grid.
 
@@ -1395,10 +1540,11 @@ class Positionable:
         self,
         size: float | Positionable,
         dim: int,
-        stretch: bool = False,
         *,
+        stretch: bool = False,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Sets the size of a dimension.
 
@@ -1432,12 +1578,14 @@ class Positionable:
                 dim=dim,
                 about_point=about_point,
                 about_edge=about_edge,
+                **kwargs,
             )
         else:
             return self.scale(
                 scale_factor=factor,
                 about_point=about_point,
                 about_edge=about_edge,
+                **kwargs,
             )
 
     def get_width(self) -> float:
@@ -1453,10 +1601,11 @@ class Positionable:
     def set_width(
         self,
         width: float | Positionable,
-        stretch: bool = False,
         *,
+        stretch: bool = False,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Sets the width.
 
@@ -1482,6 +1631,7 @@ class Positionable:
             stretch=stretch,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     def get_height(self) -> float:
@@ -1497,10 +1647,11 @@ class Positionable:
     def set_height(
         self,
         height: float | Positionable,
-        stretch: bool = False,
         *,
+        stretch: bool = False,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Sets the height.
 
@@ -1526,6 +1677,7 @@ class Positionable:
             stretch=stretch,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     def get_depth(self) -> float:
@@ -1545,6 +1697,7 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Sets the depth.
 
@@ -1570,6 +1723,7 @@ class Positionable:
             stretch=stretch,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     def scale_to_fit_dim(
@@ -1579,6 +1733,7 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Scales to fit a size of a dimension.
 
@@ -1604,6 +1759,7 @@ class Positionable:
             stretch=False,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     def scale_to_fit_width(
@@ -1612,6 +1768,7 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Scales to fit a width.
 
@@ -1650,6 +1807,7 @@ class Positionable:
             stretch=False,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     def scale_to_fit_height(
@@ -1658,6 +1816,7 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Scales to fit a height.
 
@@ -1681,6 +1840,7 @@ class Positionable:
             stretch=False,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     def scale_to_fit_depth(
@@ -1689,6 +1849,7 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Scales to fit a depth.
 
@@ -1712,6 +1873,7 @@ class Positionable:
             stretch=False,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     def stretch_to_fit_dim(
@@ -1721,6 +1883,7 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Stretches to fit a size of a dimension.
 
@@ -1746,6 +1909,7 @@ class Positionable:
             stretch=True,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     def stretch_to_fit_width(
@@ -1754,6 +1918,7 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Stretches to fit a width.
 
@@ -1792,6 +1957,7 @@ class Positionable:
             stretch=True,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     def stretch_to_fit_height(
@@ -1800,6 +1966,7 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Stretches to fit a height.
 
@@ -1838,6 +2005,7 @@ class Positionable:
             stretch=True,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     def stretch_to_fit_depth(
@@ -1846,6 +2014,7 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Stretches to fit a depth.
 
@@ -1869,6 +2038,7 @@ class Positionable:
             stretch=True,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     # endregion
@@ -1883,6 +2053,7 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Flips.
 
@@ -1917,6 +2088,7 @@ class Positionable:
             axis=axis,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     def pose_at_angle(
@@ -1924,6 +2096,7 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Poses at an angle.
 
@@ -1944,6 +2117,7 @@ class Positionable:
             axis=UR,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     def replace(
@@ -1951,7 +2125,9 @@ class Positionable:
         mobject: Positionable,
         # TODO: rename to `dim`
         dim_to_match: int = 0,
+        *,
         stretch: bool = False,
+        **kwargs: Any,
     ) -> Self:
         """
 
@@ -1972,21 +2148,22 @@ class Positionable:
         # if self.has_no_points() and not mobject.submobjects:
         #    raise Warning("Attempting to replace mobject with no points")
         if stretch:
-            self.stretch_to_fit_width(width=mobject)
-            self.stretch_to_fit_height(height=mobject)
+            self.stretch_to_fit_width(width=mobject, **kwargs)
+            self.stretch_to_fit_height(height=mobject, **kwargs)
             # TODO: add self.stretch_to_fit_depth(depth=mobject)
         else:
-            self.scale_to_fit_dim(mobject, dim=dim_to_match)
-        return self.set_position(position=mobject)
+            self.scale_to_fit_dim(mobject, dim=dim_to_match, **kwargs)
+        return self.set_position(position=mobject, **kwargs)
 
     def surround(
         self,
         mobject: Positionable,
         # TODO: Rename to `dim`
         dim_to_match: int = 0,
-        stretch: bool = False,
         *,
+        stretch: bool = False,
         buff: float = MED_SMALL_BUFF,
+        **kwargs: Any,
     ) -> Self:
         """Surrounds an object.
 
@@ -2007,18 +2184,27 @@ class Positionable:
             The object itself.
         """
         # TODO: Avoid scaling/stretching twice
-        self.replace(mobject=mobject, dim_to_match=dim_to_match, stretch=stretch)
+        self.replace(
+            mobject=mobject,
+            dim_to_match=dim_to_match,
+            stretch=stretch,
+            **kwargs,
+        )
         size = mobject.get_dim_size(dim=dim_to_match)
         if size == 0:
             return self
-        return self.scale((size + buff) / size)
+        factor = (size + buff) / size
+        return self.scale(
+            scale_factor=factor,
+            **kwargs,
+        )
 
     #############################
     ########## ALIASES ##########
     #############################
 
     # TODO: Only allow passing a single vector
-    def shift(self, *vectors: Vector3DLike) -> Self:
+    def shift(self, *vectors: Vector3DLike, **kwargs: Any) -> Self:
         """Applies a translation.
 
         Note
@@ -2037,7 +2223,7 @@ class Positionable:
             vector = vectors[0]
         else:
             vector = reduce(operator.add, vectors)
-        return self.translate(vector=vector)
+        return self.translate(vector=vector, **kwargs)
 
     def length_over_dim(self, dim: int) -> float:
         """Returns the size of a dimension.
@@ -2131,6 +2317,7 @@ class Positionable:
         point_or_mobject: Point3DLike | Positionable,
         aligned_edge: Vector3DLike = ORIGIN,
         # coor_mask: Vector3DLike = np.array([1, 1, 1]),
+        **kwargs: Any,
     ) -> Self:
         """Sets the position.
 
@@ -2153,6 +2340,7 @@ class Positionable:
         return self.set_position(
             position=point_or_mobject,
             direction=aligned_edge,
+            **kwargs,
         )
 
     def get_coord(self, dim: int, direction: Vector3DLike = ORIGIN) -> float:
@@ -2181,6 +2369,7 @@ class Positionable:
         value: float,
         dim: int,
         direction: Vector3DLike = ORIGIN,
+        **kwargs: Any,
     ) -> Self:
         """Sets the coordinate of a dimension.
 
@@ -2202,12 +2391,19 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_coordinate(coordinate=value, dim=dim, direction=direction)
+        return self.set_coordinate(
+            coordinate=value,
+            dim=dim,
+            direction=direction,
+            **kwargs,
+        )
 
     def to_corner(
         self,
         corner: Vector3DLike = DL,
+        *,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
+        **kwargs: Any,
     ) -> Self:
         """Sets the position to a corner.
 
@@ -2242,12 +2438,14 @@ class Positionable:
                     t.to_corner(DL, buff=0)
                     t2.to_corner(UL, buff=1.5)
         """
-        return self.align_on_border(direction=corner, buff=buff)
+        return self.align_on_border(direction=corner, buff=buff, **kwargs)
 
     def to_edge(
         self,
         edge: Vector3DLike = LEFT,
+        *,
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
+        **kwargs: Any,
     ) -> Self:
         """Sets the position to an edge.
 
@@ -2282,7 +2480,7 @@ class Positionable:
                     tex_side.to_edge(LEFT)
                     c.to_edge(RIGHT, buff=0)
         """
-        return self.align_on_border(direction=edge, buff=buff)
+        return self.align_on_border(direction=edge, buff=buff, **kwargs)
 
     @property
     def width(self) -> float:
@@ -2361,13 +2559,16 @@ class Positionable:
     def apply_points_function_about_point(
         self,
         func: Callable[[Point3D_Array], Point3D_Array],
+        *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         return self.apply_points_function(
             func=func,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     # @deprecated(replacement="set_dim_size")
@@ -2375,9 +2576,11 @@ class Positionable:
         self,
         length: float | Positionable,
         dim: int,
+        *,
         stretch: bool = False,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         return self.set_dim_size(
             size=length,
@@ -2385,6 +2588,7 @@ class Positionable:
             stretch=stretch,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     # @deprecated(replacement="stretch")
@@ -2393,12 +2597,9 @@ class Positionable:
         factor: float,
         dim: int,
         point: Point3DLike,
+        **kwargs: Any,
     ) -> Self:
-        return self.stretch(
-            factor=factor,
-            dim=dim,
-            about_point=point,
-        )
+        return self.stretch(factor=factor, dim=dim, about_point=point, **kwargs)
 
     # @deprecated(replacement="get_coordinate")
     def get_extremum_along_dim(
@@ -2419,9 +2620,11 @@ class Positionable:
         self,
         mobject: Positionable,
         dim: int,
+        *,
         stretch: bool = False,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         return self.set_dim_size(
             size=mobject,
@@ -2429,51 +2632,61 @@ class Positionable:
             stretch=stretch,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     # @deprecated(replacement="set_width")
     def match_width(
         self,
         mobject: Positionable,
+        *,
         stretch: bool = False,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         return self.set_width(
             width=mobject,
             stretch=stretch,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     # @deprecated(replacement="set_height")
     def match_height(
         self,
         mobject: Positionable,
+        *,
         stretch: bool = False,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         return self.set_height(
             height=mobject,
             stretch=stretch,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     # @deprecated(replacement="set_depth")
     def match_depth(
         self,
         mobject: Positionable,
+        *,
         stretch: bool = False,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         return self.set_depth(
             depth=mobject,
             stretch=stretch,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
 
     # @deprecated(replacement="set_coordinate")
@@ -2482,32 +2695,78 @@ class Positionable:
         mobject: Positionable | float,
         dim: int,
         direction: Vector3DLike = ORIGIN,
+        **kwargs: Any,
     ) -> Self:
         return self.set_coordinate(
             coordinate=mobject,
             dim=dim,
             direction=direction,
+            **kwargs,
         )
 
     # @deprecated(replacement="set_x")
-    def match_x(self, mobject: Positionable, direction: Vector3DLike = ORIGIN) -> Self:
-        return self.set_x(x=mobject, direction=direction)
+    def match_x(
+        self,
+        mobject: Positionable,
+        direction: Vector3DLike = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
+        return self.set_x(
+            x=mobject,
+            direction=direction,
+            **kwargs,
+        )
 
     # @deprecated(replacement="set_y")
-    def match_y(self, mobject: Positionable, direction: Vector3DLike = ORIGIN) -> Self:
-        return self.set_y(y=mobject, direction=direction)
+    def match_y(
+        self,
+        mobject: Positionable,
+        direction: Vector3DLike = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
+        return self.set_y(
+            y=mobject,
+            direction=direction,
+            **kwargs,
+        )
 
     # @deprecated(replacement="set_z")
-    def match_z(self, mobject: Positionable, direction: Vector3DLike = ORIGIN) -> Self:
-        return self.set_z(z=mobject, direction=direction)
+    def match_z(
+        self,
+        mobject: Positionable,
+        direction: Vector3DLike = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
+        return self.set_z(
+            z=mobject,
+            direction=direction,
+            **kwargs,
+        )
 
     # @deprecated(replacement="set_points")
-    def match_points(self, mobject: Positionable) -> Self:
-        return self.set_points(points=mobject)
+    def match_points(
+        self,
+        mobject: Positionable,
+        **kwargs: Any,
+    ) -> Self:
+        return self.set_points(
+            points=mobject,
+            **kwargs,
+        )
 
     # @deprecated(replacement="rotate")
-    def rotate_about_origin(self, angle: float, axis: Vector3DLike = OUT) -> Self:
-        return self.rotate(angle=angle, axis=axis, about_point=ORIGIN)
+    def rotate_about_origin(
+        self,
+        angle: float,
+        axis: Vector3DLike = OUT,
+        **kwargs: Any,
+    ) -> Self:
+        return self.rotate(
+            angle=angle,
+            axis=axis,
+            about_point=ORIGIN,
+            **kwargs,
+        )
 
     # @deprecated()
     def reduce_across_dimension(
@@ -2532,12 +2791,14 @@ class Positionable:
         aligned_edge: Vector3DLike = ORIGIN,
         buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         center: bool = True,
+        **kwargs: Any,
     ) -> Self:
         return self.arrange(
             direction=direction,
             aligned_edge=aligned_edge,
             buff=buff,
             center=center,
+            **kwargs,
         )
 
     ###############################

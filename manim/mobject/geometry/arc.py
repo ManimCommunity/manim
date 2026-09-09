@@ -704,7 +704,7 @@ class Circle(Arc):
 
         # Something goes wrong here when surrounding lines?
         # TODO: Figure out and fix
-        self.replace(mobject, dim_to_match, stretch)
+        self.replace(mobject, dim_to_match, stretch=stretch)
 
         self.width = np.sqrt(mobject.width**2 + mobject.height**2)
         return self.scale(buffer_factor)
