@@ -19,11 +19,11 @@ from manim.mobject.value_tracker import ValueTracker
 from .. import config
 from ..animation.animation import Animation
 from ..animation.transform import Transform
-from ..camera.three_d_camera import ThreeDCamera
-from ..constants import DEGREES, RendererType
+from ..constants import DEGREES
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
-from ..renderer.opengl_renderer import OpenGLCamera
+from ..renderer.cairo.camera import ThreeDCamera
+from ..renderer.opengl.camera import OpenGLCamera
 from ..scene.scene import Scene
 from ..utils.config_ops import merge_dicts_recursively
 
@@ -86,18 +86,35 @@ class ThreeDScene(Scene):
             The new center of the camera frame in cartesian coordinates.
 
         """
-        if phi is not None:
-            self.renderer.camera.set_phi(phi)
-        if theta is not None:
-            self.renderer.camera.set_theta(theta)
-        if focal_distance is not None:
-            self.renderer.camera.set_focal_distance(focal_distance)
-        if gamma is not None:
-            self.renderer.camera.set_gamma(gamma)
-        if zoom is not None:
-            self.renderer.camera.set_zoom(zoom)
-        if frame_center is not None:
-            self.renderer.camera._frame_center.move_to(frame_center)
+        if isinstance(self.camera, ThreeDCamera):
+            if phi is not None:
+                self.camera.set_phi(phi)
+            if theta is not None:
+                self.camera.set_theta(theta)
+            if focal_distance is not None:
+                self.camera.set_focal_distance(focal_distance)
+            if gamma is not None:
+                self.camera.set_gamma(gamma)
+            if zoom is not None:
+                self.camera.set_zoom(zoom)
+            if frame_center is not None:
+                self.camera.frame.move_to(frame_center)
+        elif isinstance(self.camera, OpenGLCamera):
+            if phi is not None:
+                self.camera.set_phi(phi)
+            if theta is not None:
+                self.camera.set_theta(theta)
+            if gamma is not None:
+                self.camera.set_gamma(gamma)
+            if zoom is not None:
+                self.camera.scale(config.frame_height / (zoom * self.camera.height))
+            if focal_distance is not None:
+                warnings.warn(
+                    "focal distance of OpenGLCamera can not be adjusted.",
+                    stacklevel=2,
+                )
+            if frame_center is not None:
+                self.camera.move_to(frame_center)
 
     def begin_ambient_camera_rotation(self, rate: float = 0.02, about: str = "theta"):
         """
@@ -116,7 +133,7 @@ class ThreeDScene(Scene):
         # can begin and end smoothly
         about: str = about.lower()
         try:
-            if config.renderer == RendererType.CAIRO:
+            if isinstance(self.camera, ThreeDCamera):
                 trackers = {
                     "theta": self.camera.theta_tracker,
                     "phi": self.camera.phi_tracker,
@@ -125,14 +142,15 @@ class ThreeDScene(Scene):
                 x: ValueTracker = trackers[about]
                 x.add_updater(lambda m, dt: x.increment_value(rate * dt))
                 self.add(x)
-            elif config.renderer == RendererType.OPENGL:
-                cam: OpenGLCamera = self.camera
+            elif isinstance(self.camera, OpenGLCamera):
                 methods = {
-                    "theta": cam.increment_theta,
-                    "phi": cam.increment_phi,
-                    "gamma": cam.increment_gamma,
+                    "theta": self.camera.increment_theta,
+                    "phi": self.camera.increment_phi,
+                    "gamma": self.camera.increment_gamma,
                 }
-                cam.add_updater(lambda m, dt: methods[about](rate * dt))
+                self.camera.add_updater(
+                    lambda m, dt: methods[about](rate * dt),
+                )
                 self.add(self.camera)
         except Exception as e:
             raise ValueError("Invalid ambient rotation angle.") from e
@@ -141,7 +159,7 @@ class ThreeDScene(Scene):
         """This method stops all ambient camera rotation."""
         about: str = about.lower()
         try:
-            if config.renderer == RendererType.CAIRO:
+            if isinstance(self.camera, ThreeDCamera):
                 trackers = {
                     "theta": self.camera.theta_tracker,
                     "phi": self.camera.phi_tracker,
@@ -150,7 +168,7 @@ class ThreeDScene(Scene):
                 x: ValueTracker = trackers[about]
                 x.clear_updaters()
                 self.remove(x)
-            elif config.renderer == RendererType.OPENGL:
+            elif isinstance(self.camera, OpenGLCamera):
                 self.camera.clear_updaters()
         except Exception as e:
             raise ValueError("Invalid ambient rotation angle.") from e
@@ -249,8 +267,7 @@ class ThreeDScene(Scene):
         """
         anims = []
 
-        if config.renderer == RendererType.CAIRO:
-            self.camera: ThreeDCamera
+        if isinstance(self.camera, ThreeDCamera):
             value_tracker_pairs = [
                 (phi, self.camera.phi_tracker),
                 (theta, self.camera.theta_tracker),
@@ -262,10 +279,9 @@ class ThreeDScene(Scene):
                 if value is not None:
                     anims.append(tracker.animate.set_value(value))
             if frame_center is not None:
-                anims.append(self.camera._frame_center.animate.move_to(frame_center))
-        elif config.renderer == RendererType.OPENGL:
-            cam: OpenGLCamera = self.camera
-            cam2 = cam.copy()
+                anims.append(self.camera.frame.animate.move_to(frame_center))
+        elif isinstance(self.camera, OpenGLCamera):
+            cam2 = self.camera.copy()
             methods = {
                 "theta": cam2.set_theta,
                 "phi": cam2.set_phi,
@@ -280,7 +296,7 @@ class ThreeDScene(Scene):
 
             zoom_value = None
             if zoom is not None:
-                zoom_value = config.frame_height / (zoom * cam.height)
+                zoom_value = config.frame_height / (zoom * self.camera.height)
 
             for value, method in [
                 [theta, "theta"],
@@ -298,34 +314,13 @@ class ThreeDScene(Scene):
                     stacklevel=2,
                 )
 
-            anims += [Transform(cam, cam2)]
+            anims += [Transform(self.camera, cam2)]
 
         self.play(*anims + added_anims, **kwargs)
 
-        # These lines are added to improve performance. If manim thinks that frame_center is moving,
-        # it is required to redraw every object. These lines remove frame_center from the Scene once
-        # its animation is done, ensuring that manim does not think that it is moving. Since the
-        # frame_center is never actually drawn, this shouldn't break anything.
-        if frame_center is not None and config.renderer == RendererType.CAIRO:
-            self.remove(self.camera._frame_center)
-
-    def get_moving_mobjects(self, *animations: Animation):
-        """
-        This method returns a list of all of the Mobjects in the Scene that
-        are moving, that are also in the animations passed.
-
-        Parameters
-        ----------
-        *animations
-            The animations whose mobjects will be checked.
-        """
-        moving_mobjects = super().get_moving_mobjects(*animations)
-        camera_mobjects = self.renderer.camera.get_value_trackers() + [
-            self.renderer.camera._frame_center,
-        ]
-        if any(cm in moving_mobjects for cm in camera_mobjects):
-            return self.mobjects
-        return moving_mobjects
+        # The semantic camera frame is a control mobject, not scene content.
+        if frame_center is not None and isinstance(self.camera, ThreeDCamera):
+            self.remove(self.camera.frame)
 
     def add_fixed_orientation_mobjects(self, *mobjects: Mobject, **kwargs):
         """
@@ -345,10 +340,10 @@ class ThreeDScene(Scene):
                 use_static_center_func : bool
                 center_func : function
         """
-        if config.renderer == RendererType.CAIRO:
+        if isinstance(self.camera, ThreeDCamera):
             self.add(*mobjects)
-            self.renderer.camera.add_fixed_orientation_mobjects(*mobjects, **kwargs)
-        elif config.renderer == RendererType.OPENGL:
+            self.camera.add_fixed_orientation_mobjects(*mobjects, **kwargs)
+        elif isinstance(self.camera, OpenGLCamera):
             for mob in mobjects:
                 mob: OpenGLMobject
                 mob.fix_orientation()
@@ -366,11 +361,10 @@ class ThreeDScene(Scene):
         *mobjects
             The Mobjects whose orientation must be fixed.
         """
-        if config.renderer == RendererType.CAIRO:
+        if isinstance(self.camera, ThreeDCamera):
             self.add(*mobjects)
-            self.camera: ThreeDCamera
             self.camera.add_fixed_in_frame_mobjects(*mobjects)
-        elif config.renderer == RendererType.OPENGL:
+        elif isinstance(self.camera, OpenGLCamera):
             for mob in mobjects:
                 mob: OpenGLMobject
                 mob.fix_in_frame()
@@ -388,9 +382,9 @@ class ThreeDScene(Scene):
         *mobjects
             The Mobjects whose orientation must be unfixed.
         """
-        if config.renderer == RendererType.CAIRO:
-            self.renderer.camera.remove_fixed_orientation_mobjects(*mobjects)
-        elif config.renderer == RendererType.OPENGL:
+        if isinstance(self.camera, ThreeDCamera):
+            self.camera.remove_fixed_orientation_mobjects(*mobjects)
+        elif isinstance(self.camera, OpenGLCamera):
             for mob in mobjects:
                 mob: OpenGLMobject
                 mob.unfix_orientation()
@@ -407,9 +401,9 @@ class ThreeDScene(Scene):
         *mobjects
             The Mobjects whose position and orientation must be unfixed.
         """
-        if config.renderer == RendererType.CAIRO:
-            self.renderer.camera.remove_fixed_in_frame_mobjects(*mobjects)
-        elif config.renderer == RendererType.OPENGL:
+        if isinstance(self.camera, ThreeDCamera):
+            self.camera.remove_fixed_in_frame_mobjects(*mobjects)
+        elif isinstance(self.camera, OpenGLCamera):
             for mob in mobjects:
                 mob: OpenGLMobject
                 mob.unfix_from_frame()

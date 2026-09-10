@@ -354,7 +354,7 @@ class DrawLissajousFigures(LissajousTableScene):
         self.add_path_updaters()
 
         self.wait_until(lambda: self.is_path_traced_once())
-        self.wait(1 / self.camera.frame_rate)
+        self.wait(1 / config.frame_rate)
         self.suspend_circles_updating()
         self.wait(2)
 

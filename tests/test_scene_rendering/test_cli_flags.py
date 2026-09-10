@@ -73,6 +73,45 @@ def test_resolution_flag(tmp_path, manim_cfg_file, simple_scenes_path):
 
 
 @pytest.mark.slow
+@pytest.mark.parametrize("resolution", [(128, 128), (96, 160)])
+def test_resolution_flag_preserves_square_geometry(tmp_path, resolution):
+    source = tmp_path / "square_scene.py"
+    source.write_text(
+        "from manim import Scene, Square\n"
+        "class SquareScene(Scene):\n"
+        "    def construct(self):\n"
+        '        self.add(Square(fill_color="#ffffff", fill_opacity=1, stroke_width=0))\n',
+        encoding="utf-8",
+    )
+    output = tmp_path / "square.png"
+    width, height = resolution
+    _, err, exit_code = capture(
+        [
+            sys.executable,
+            "-m",
+            "manim",
+            "--renderer=cairo",
+            "--format=png",
+            "--resolution",
+            f"{width},{height}",
+            "--media_dir",
+            str(tmp_path / "media"),
+            "-o",
+            str(output),
+            str(source),
+            "SquareScene",
+        ]
+    )
+    assert exit_code == 0, err
+    with Image.open(output) as image:
+        assert image.size == resolution
+        pixels = np.asarray(image)
+    rows, columns = np.where(pixels[:, :, 0] > 128)
+    assert len(rows) > 0
+    assert np.ptp(columns) == pytest.approx(np.ptp(rows), abs=1)
+
+
+@pytest.mark.slow
 @video_comparison(
     "SquareToCircleWithlFlag.json",
     "videos/simple_scenes/480p15/SquareToCircle.mp4",
