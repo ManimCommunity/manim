@@ -1233,6 +1233,8 @@ class MarkupText(SVGMobject):
         if len(colormap) > 0:
             logger.warning(
                 'Using <color> tags in MarkupText is deprecated. Please use <span foreground="..."> instead.',
+                stack_info=True,
+                stacklevel=2,
             )
         gradientmap = self._extract_gradient_tags()
         validate_error = MarkupUtils.validate(self.text)
