@@ -602,20 +602,35 @@ class ThreeDCamera(Camera):
         self.zoom_tracker.set_value(value)
 
     def reset_rotation_matrix(self) -> None:
-        """Sets the value of self.rotation_matrix to
-        the matrix corresponding to the current position of the camera
-        """
-        self.rotation_matrix = self.generate_rotation_matrix()
+        """Recompute the cached rotation matrix from the camera's current angles."""
+        self._rotation_matrix_key = (self.get_phi(), self.get_theta(), self.get_gamma())
+        self._rotation_matrix = self.generate_rotation_matrix()
+        self._rotation_matrix.flags.writeable = False
 
     def get_rotation_matrix(self) -> MatrixMN:
-        """Returns the matrix corresponding to the current position of the camera.
+        """Return the rotation matrix for the camera's current angles.
+
+        The cached matrix is recomputed when the angle trackers change, without
+        waiting for a frame to be drawn.
 
         Returns
         -------
-        np.array
-            The matrix corresponding to the current position of the camera.
+        numpy.ndarray
+            The read-only rotation matrix.
         """
-        return self.rotation_matrix
+        key = (self.get_phi(), self.get_theta(), self.get_gamma())
+        if key != self._rotation_matrix_key:
+            self.reset_rotation_matrix()
+        return self._rotation_matrix
+
+    @property
+    def rotation_matrix(self) -> MatrixMN:
+        """Read-only rotation matrix computed from the current camera angles.
+
+        Change the angle trackers or override :meth:`generate_rotation_matrix`
+        to customize the rotation.
+        """
+        return self.get_rotation_matrix()
 
     def generate_rotation_matrix(self) -> MatrixMN:
         """Generates a rotation matrix based off the current position of the camera.
