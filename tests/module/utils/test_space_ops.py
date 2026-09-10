@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
+from scipy.spatial.transform import Rotation
 
 from manim.utils.space_ops import *
 from manim.utils.space_ops import shoelace
@@ -51,6 +52,33 @@ def test_rotation_matrices():
                 [-0.22237, -0.5547, 0.80178],
             ]
         ),
+    )
+
+
+@pytest.mark.parametrize(
+    "angle",
+    # the first three are at or below PI, where no folding happens
+    [0.5, 2.0, np.pi, 3.5, 4.0, 5.5, 2 * np.pi - 0.01],
+)
+def test_angle_axis_from_quaternion(angle):
+    axis = normalize(np.array([1.0, -2.0, 3.0]))
+    quaternion = quaternion_from_angle_axis(angle, axis)
+    result_angle, result_axis = angle_axis_from_quaternion(quaternion)
+
+    # the returned pair must describe the same rotation as the input
+    np.testing.assert_allclose(
+        rotation_matrix(result_angle, result_axis),
+        rotation_matrix(angle, axis),
+        atol=1e-8,
+    )
+
+    # ... expressed the way scipy's Rotation.as_rotvec expresses it, i.e. with
+    # the angle in [0, PI] and the direction carried by the axis
+    rotation_vector = Rotation.from_quat([*quaternion[1:], quaternion[0]]).as_rotvec()
+    assert 0 <= result_angle <= np.pi
+    np.testing.assert_allclose(result_angle, np.linalg.norm(rotation_vector), atol=1e-8)
+    np.testing.assert_allclose(
+        result_axis, rotation_vector / np.linalg.norm(rotation_vector), atol=1e-8
     )
 
 
