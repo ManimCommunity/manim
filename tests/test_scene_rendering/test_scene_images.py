@@ -22,10 +22,7 @@ def image_scene(request):
     ):
         scene = Scene()
         yield scene
-        if request.param == "cairo":
-            scene.renderer.close()
-        else:
-            scene.renderer.context.release()
+        scene.renderer.close()
 
 
 def test_fresh_image_without_evaluation(image_scene, monkeypatch):
@@ -102,7 +99,8 @@ def test_cairo_image_after_close_and_with_static_cache():
         renderer.close()
         np.testing.assert_array_equal(image, scene.get_image())
         assert renderer._closed
-        assert renderer._target._pixels.size == 0
+        # Snapshots only opened temporary targets, not the scene's primary one.
+        assert renderer._target is None
 
 
 @pytest.mark.parametrize("scene_class", [Scene, ThreeDScene, ZoomedScene])
@@ -175,6 +173,7 @@ def test_opengl_snapshot_includes_meshes(image_scene):
 
 @pytest.mark.parametrize("image_scene", ["opengl"], indirect=True)
 def test_opengl_snapshot_requires_owner_thread(image_scene):
+    image_scene.renderer.open()
     with ThreadPoolExecutor(1) as pool:
         future = pool.submit(image_scene.get_image)
         with pytest.raises(RuntimeError, match="render thread"):

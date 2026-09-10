@@ -35,10 +35,11 @@ def test_live_preview_opengl_render_with_movies(
     scene = SquareToCircle()
     renderer = scene.renderer
     renderer.update_frame = Mock(wraps=renderer.update_frame)
-    scene.render()
-    assert renderer.window is not None
-    assert_file_exists(renderer.file_writer.final_file_path)
-    renderer.window.close()
+    with scene._get_manager():
+        scene.render()
+        assert renderer.window is not None
+        assert_file_exists(renderer.file_writer.final_file_path)
+    assert renderer.window is None
 
 
 @pytest.mark.skipif(
@@ -53,9 +54,10 @@ def test_live_preview_opengl_render_with_image_sequence(
     scene = SquareToCircle()
     renderer = scene.renderer
     renderer.update_frame = Mock(wraps=renderer.update_frame)
-    scene.render()
-    assert renderer.window is not None
-    renderer.window.close()
+    with scene._get_manager():
+        scene.render()
+        assert renderer.window is not None
+    assert renderer.window is None
 
 
 def test_get_frame_with_live_preview_disabled(config, using_opengl_renderer):
@@ -87,6 +89,8 @@ def test_get_frame_with_live_preview_enabled(config, using_opengl_renderer):
     assert config.live_preview is True
 
     renderer = scene.renderer
+    assert renderer.window is None
+    renderer.open()
     assert renderer.window is not None
     assert not renderer.file_writer.output_spec.enabled
     renderer.update_frame(scene)

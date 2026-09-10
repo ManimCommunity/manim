@@ -1,18 +1,32 @@
 from __future__ import annotations
 
+import sys
 from typing import TYPE_CHECKING, Any
 
 import moderngl_window as mglw
 from moderngl_window.context.pyglet.window import Window as PygletWindow
 from moderngl_window.timers.clock import Timer
+from pyglet import gl
 from screeninfo import Monitor, get_monitors
 
-from ... import __version__, config
+from ... import __version__, config, logger
+from .window_settings import _WindowSettings
 
 if TYPE_CHECKING:
     from .renderer import OpenGLRenderer
 
 __all__ = ["Window"]
+
+
+def _activate_pyglet_context(context: Any) -> None:
+    if sys.platform == "win32":
+        from pyglet.gl import wgl
+
+        # glcontext can change the native binding without updating Pyglet's cache.
+        # set_current() alone may then skip the wglMakeCurrent call we need.
+        if not wgl.wglMakeCurrent(context.canvas.hdc, context._context):
+            raise RuntimeError("Failed to activate the window's OpenGL context.")
+    context.set_current()
 
 
 class Window(PygletWindow):
@@ -25,11 +39,18 @@ class Window(PygletWindow):
     def __init__(
         self,
         renderer: OpenGLRenderer,
-        window_size: str | tuple[int, ...] = config.window_size,
+        window_size: str | tuple[int, ...] | None = None,
+        *,
+        _settings: _WindowSettings | None = None,
         **kwargs: Any,
     ) -> None:
+        self._settings = (
+            _WindowSettings.from_config(config) if _settings is None else _settings
+        )
+        if window_size is None:
+            window_size = self._settings.size
         monitors = get_monitors()
-        mon_index = config.window_monitor
+        mon_index = self._settings.monitor
         monitor = monitors[min(mon_index, len(monitors) - 1)]
 
         invalid_window_size_error_message = (
@@ -45,12 +66,14 @@ class Window(PygletWindow):
             # make window_width half the width of the monitor
             # but make it full screen if --fullscreen
             window_width = monitor.width
-            if not config.fullscreen:
+            if not self._settings.fullscreen:
                 window_width //= 2
 
             #  by default window_height = 9/16 * window_width
             window_height = int(
-                window_width * config.frame_height // config.frame_width,
+                window_width
+                * self._settings.frame_height
+                // self._settings.frame_width,
             )
             size = (window_width, window_height)
         elif len(window_size.split(",")) == 2:
@@ -59,21 +82,40 @@ class Window(PygletWindow):
         else:
             raise ValueError(invalid_window_size_error_message)
 
-        super().__init__(size=size)
+        try:
+            # Pixel-format extension lookup needs a current native context, even
+            # when a previous standalone render left Pyglet's shadow context idle.
+            if gl.current_context is not None:
+                _activate_pyglet_context(gl.current_context)
+            super().__init__(size=size)
 
-        self.title = f"Manim Community {__version__}"
-        self.size = size
-        self.renderer = renderer
+            self.title = f"Manim Community {__version__}"
+            self.size = size
+            self.renderer = renderer
 
-        mglw.activate_context(window=self)
-        self.timer = Timer()
-        self.config = mglw.WindowConfig(ctx=self.ctx, wnd=self, timer=self.timer)
-        self.timer.start()
+            mglw.activate_context(window=self)
+            self.timer = Timer()
+            self.config = mglw.WindowConfig(ctx=self.ctx, wnd=self, timer=self.timer)
+            self.timer.start()
 
-        self.swap_buffers()
+            self.swap_buffers()
 
-        initial_position = self.find_initial_position(size, monitor)
-        self.position = initial_position
+            initial_position = self.find_initial_position(size, monitor)
+            self.position = initial_position
+        except BaseException:
+            # Pyglet may have opened the window before setup failed. Close it
+            # here, since the caller will receive an exception instead of a Window.
+            if getattr(self, "_window", None) is not None:
+                try:
+                    self.close()
+                except BaseException:
+                    logger.exception(
+                        "Failed to close an incompletely initialized window"
+                    )
+            raise
+
+    def _activate_context(self) -> None:
+        _activate_pyglet_context(self._window.context)
 
     # Delegate event handling to scene.
     def on_mouse_motion(self, x: int, y: int, dx: int, dy: int) -> None:
@@ -115,7 +157,7 @@ class Window(PygletWindow):
     def find_initial_position(
         self, size: tuple[int, int], monitor: Monitor
     ) -> tuple[int, int]:
-        custom_position = config.window_position
+        custom_position = self._settings.position
         window_width, window_height = size
         # Position might be specified with a string of the form x,y for integers x and y
         if len(custom_position) == 1:
