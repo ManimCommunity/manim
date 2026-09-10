@@ -171,7 +171,6 @@ def test_curves_as_submobjects_point_from_proportion():
     obj.add(VMobject())
     with pytest.raises(Exception, match="have no points"):
         obj.point_from_proportion(0)
-
     # submobject[0] is a line of length 4
     obj.submobjects[0].set_points_as_corners(
         [
@@ -190,6 +189,25 @@ def test_curves_as_submobjects_point_from_proportion():
 
     # point at proportion 0.5 should be at length 3, point [3, 0, 0]
     np.testing.assert_array_equal(obj.point_from_proportion(0.5), np.array([3, 0, 0]))
+
+
+def test_curves_as_submobjects_errors_use_dynamic_class_name():
+    class MyCurves(CurvesAsSubmobjects):
+        pass
+
+    obj = MyCurves(VGroup())
+    with pytest.raises(
+        Exception,
+        match=r"Cannot call MyCurves\. point_from_proportion for a MyCurves with no submobjects",
+    ):
+        obj.point_from_proportion(0)
+
+    obj.add(VMobject())
+    with pytest.raises(
+        Exception,
+        match=r"Cannot call MyCurves\. point_from_proportion for a MyCurves whose submobjects have no points",
+    ):
+        obj.point_from_proportion(0)
 
 
 def test_vgroup_init():
