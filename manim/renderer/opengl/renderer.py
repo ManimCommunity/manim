@@ -19,12 +19,11 @@ from manim.mobject.opengl.opengl_mobject import (
 )
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.typing import Point3D
-from manim.utils.caching import handle_caching_play
 from manim.utils.color import color_to_rgba
-from manim.utils.exceptions import EndSceneEarlyException
 
 from ...constants import *
 from ...scene.scene_file_writer import SceneFileWriter
+from .._execution import _RendererExecutionView
 from ..protocol import RendererCapabilities
 from .shader import Mesh, Shader, shader_program_cache
 from .vectorized_mobject_rendering import (
@@ -56,7 +55,7 @@ __all__ = ["OpenGLRenderer"]
 _active_context = threading.local()
 
 
-class OpenGLRenderer:
+class OpenGLRenderer(_RendererExecutionView):
     """
     An OpenGL-based renderer.
 
@@ -108,13 +107,9 @@ class OpenGLRenderer:
         self.anti_alias_width = 1.5
         self._file_writer_class = file_writer_class
 
-        self._original_skipping_status = skip_animations
-        self.skip_animations = skip_animations
+        self._initialize_execution(skip_animations)
         self.animation_start_time = 0.0
         self.animation_elapsed_time = 0.0
-        self.time = 0.0
-        self.animations_hashes: list[str | None] = []
-        self.num_plays = 0
 
         self.camera = OpenGLCamera()
         self.pressed_keys: set[int] = set()
@@ -578,93 +573,57 @@ class OpenGLRenderer:
         return tid
 
     def update_skipping_status(self) -> None:
-        """
-        Check and update the skipping status for the current animation
-        (self.skip_animations flag) based on the configuration settings.
-
-        Parameters
-        ----------
-        None
+        """Ask the scene's manager whether this play should be fast-forwarded.
 
         Raises
         ------
         EndSceneEarlyException
             If the number of played animations exceeds the configured upper bound.
         """
-        # there is always at least one section -> no out of bounds here
-        if self.file_writer.sections[-1].skip_animations:
-            self.skip_animations = True
-        if self.file_writer.output_spec.is_still:
-            self.skip_animations = True
-        if (
-            config.from_animation_number > 0
-            and self.num_plays < config.from_animation_number
-        ):
-            self.skip_animations = True
-        if (
-            config.upto_animation_number >= 0
-            and self.num_plays > config.upto_animation_number
-        ):
-            self.skip_animations = True
-            raise EndSceneEarlyException()
+        self.scene._get_manager()._update_skipping_status()
 
-    @handle_caching_play
     def play(
         self,
         scene: Scene,
         *animations: Animation | Mobject | _AnimationBuilder,
         **kwargs: Any,
     ) -> None:
-        """
-        Plays the given animations or mobjects in the specified scene.
+        """Delegate animation playback to the scene's manager.
 
-        "Playing" here refers to the process of compiling animation data,
-        beginning the animations, updating frames, and finalizing the animation
-        in the context of the renderer.
+        Prefer :meth:`.Scene.play` for new code; it also handles subcaptions and
+        calls made from another thread during OpenGL interaction.
 
         Parameters
         ----------
-        scene Scene
+        scene
             The scene in which to play the animations.
-        *animations Animation | Mobject | _AnimationBuilder
+        animations
             The animations, mobjects, or animation builders to play.
-        **kwargs Any
-            Additional keyword arguments to pass to the animation compilation.
+        kwargs
+            Animation options such as ``run_time`` and ``rate_func``.
         """
+        scene._get_manager()._play(*animations, **kwargs)
+
+    def _animation_cache_identity(self, scene: Scene) -> tuple[str, Any]:
+        return "opengl", {
+            "meshes": scene.meshes,
+            "background_color": self.background_color,
+            "anti_alias_width": self.anti_alias_width,
+        }
+
+    def _start_animation(self) -> None:
         self.open()
-        # TODO: Handle data locking / unlocking.
         self.animation_start_time = time.time()
-        self.file_writer.begin_animation(
-            not self.skip_animations,
-            animation_index=self.num_plays,
-        )
 
-        scene.compile_animation_data(*animations, **kwargs)
-        scene.begin_animations()
-        if scene.is_current_animation_frozen_frame():
-            self.update_frame(scene)
+    def _prepare_animation(self, scene: Scene) -> None:
+        pass
 
-            output = self.file_writer.output_spec
-            if not self.skip_animations and (
-                output.is_video or output.is_image_sequence
-            ):
-                self.file_writer.write_frame(
-                    self.get_frame(),
-                    repeat=int(config.frame_rate * scene.duration),
-                )
-
-            if self.window is not None:
-                self.window.swap_buffers()
-                while time.time() - self.animation_start_time < scene.duration:
-                    pass
-            self.animation_elapsed_time = scene.duration
-
-        else:
-            scene.play_internal()
-
-        self.file_writer.end_animation(not self.skip_animations)
-        self.time += scene.duration
-        self.num_plays += 1
+    def _present_frozen_frame(self, scene: Scene, duration: float) -> None:
+        if self.window is not None:
+            self.window.swap_buffers()
+            while time.time() - self.animation_start_time < duration:
+                pass
+        self.animation_elapsed_time = duration
 
     def clear_screen(self) -> None:
         """
@@ -682,38 +641,29 @@ class OpenGLRenderer:
     def render(
         self, scene: Scene, frame_offset: float, moving_mobjects: list[Mobject]
     ) -> None:
-        """
-        Renders a single frame of the given scene using OpenGL.
+        """Draw a single frame of the scene's current state using OpenGL.
 
         Parameters
         ----------
-        scene : Scene
-            The scene to render.
-        frame_offset : float
-            The time offset for the current frame in seconds. If no window is present,
-            this parameter is ignored, and a frame is a true snapshot of
-            the scene at the current time.
-        moving_mobjects : list[Mobject]
-            List of mobjects that are currently moving and need to be updated.
-            Not used at all, kept for compatibility with other renderers.
+        scene
+            The scene to draw.
+        frame_offset
+            Animation-relative time in seconds. Accepted for the common renderer
+            interface; drawing itself does not use this value.
+        moving_mobjects
+            Accepted for the common renderer interface. OpenGL draws the full
+            scene rather than using Cairo's moving/static split.
 
         Notes
         -----
-        - Updates the frame for the scene.
-        - If animations are skipped, the method returns early.
-        - Writes the current frame using the file writer.
-        - If a window is present, swaps buffers and continues
-          updating frames until the animation elapsed time reaches the frame offset.
+        This method draws into the framebuffer. The manager reads any pixels
+        needed for output and displays the preview window separately. Drawing
+        alone neither writes frames nor advances ``Scene.time``.
         """
         self.update_frame(scene)
 
-        if self.skip_animations:
-            return
-
-        output = self.file_writer.output_spec
-        if output.is_video or output.is_image_sequence:
-            self.file_writer.write_frame(self.get_frame())
-
+    def _present_frame(self, scene: Scene, frame_offset: float) -> None:
+        """Refresh the preview window until wall-clock time reaches the frame offset."""
         if self.window is not None:
             self.window.swap_buffers()
             while self.animation_elapsed_time < frame_offset:
@@ -729,7 +679,7 @@ class OpenGLRenderer:
         2. Refresh camera perspective uniforms for rendering.
         3. Iterate through all mobjects in the scene, rendering those marked for display.
         4. Iterate through all mesh objects in the scene, setting their uniforms and rendering them.
-        5. Update the elapsed animation time.
+        5. Update the wall-clock time used to pace the preview window.
 
         Parameters
         ----------

@@ -130,13 +130,13 @@ def test_parallel_encoding_cache_behavior(tmp_path):
     scene_file = tmp_path / "parallel_encoding_scenes.py"
     scene_file.write_text(_SCENE_SOURCE)
 
-    # The duplicate tail play must cache-hit within the run (one file fewer
-    # than the number of plays); that hit exercises the writer's in-flight
-    # lookup while the first tail file may still be encoding.
+    # Identical geometry can produce different pixels at different scene times.
+    # Check cache reuse by rendering the same scene again below. Separate writer
+    # tests cover cache lookups while a matching segment is still being encoded.
     media_dir = tmp_path / "media"
     quality_directory, partial_directory = _render_scene(media_dir, scene_file)
     partial_movies = sorted(partial_directory.glob("*.mp4"))
-    assert len(partial_movies) == _TOTAL_PLAYS - 1
+    assert len(partial_movies) == _TOTAL_PLAYS
     assert (quality_directory / f"{_SCENE_NAME}.mp4").exists()
     for partial_movie in partial_movies:
         with av.open(partial_movie) as container:
@@ -186,7 +186,9 @@ def test_disable_caching_is_evaluated_per_play(config, tmp_path):
     assert initial_hash is not None
     assert uncached_hash == "uncached_00001"
     assert restored_hash is not None
-    assert cached_hash == restored_hash
+    assert cached_hash is not None
+    assert not cached_hash.startswith("uncached_")
+    assert cached_hash != restored_hash  # Different play index; caching is enabled.
 
 
 @pytest.mark.slow
@@ -668,7 +670,7 @@ def test_abort_encode_jobs_noop_on_dry_run_writer(config):
 
 
 def test_keyboard_interrupt_aborts_encode_jobs_and_reraises(config):
-    scene = Scene(renderer=Mock())
+    scene = Scene(renderer=Mock(_closed=False, _retiring=False))
     writer = scene._get_manager().file_writer
 
     def construct():
@@ -688,7 +690,7 @@ def test_rerun_propagates_encoder_failure(config, tmp_path):
     failing_inflight = Mock(path=tmp_path / "inflight.mp4")
     failing_inflight.join.side_effect = expected_exception
     _add_inflight_job(writer, failing_inflight)
-    scene = Scene(renderer=Mock())
+    scene = Scene(renderer=Mock(_closed=False, _retiring=False))
     scene._get_manager()._file_writer = writer
 
     def construct():
@@ -718,7 +720,7 @@ def test_rerun_propagates_failed_current_job(config, tmp_path):
             break
         time.sleep(0.01)
 
-    scene = Scene(renderer=Mock())
+    scene = Scene(renderer=Mock(_closed=False, _retiring=False))
     scene._get_manager()._file_writer = writer
 
     def construct():

@@ -48,6 +48,8 @@ def test_skipped_drawing_and_close_do_not_allocate(target_factory):
         renderer.get_frame()
     with pytest.raises(RuntimeError, match="closed"):
         renderer.render_mobjects([])
+    with pytest.raises(RuntimeError, match="closed"):
+        renderer.add_frame(np.zeros((1, 1, 4), dtype=np.uint8))
     target_factory.assert_not_called()
 
 

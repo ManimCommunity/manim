@@ -137,10 +137,10 @@ def test_graph_accepts_labeledline_as_edge_type():
 
 def test_custom_animation_mobject_list():
     G = Graph([1, 2, 3], [(1, 2), (2, 3)])
-    scene = Scene()
-    scene.add(G)
-    assert scene.mobjects == [G]
     with tempconfig({"dry_run": True, "quality": "low_quality"}):
+        scene = Scene()
+        scene.add(G)
+        assert scene.mobjects == [G]
         scene.play(G.animate.add_vertices(4))
         assert str(G) == "Undirected graph on 4 vertices and 2 edges"
         assert scene.mobjects == [G]
