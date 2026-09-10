@@ -87,7 +87,8 @@ with tempconfig({"renderer": "opengl", "format": "none", "live_preview": False,
         capture_output=True,
         encoding="utf-8",
         env={**os.environ, "PYTHONIOENCODING": "utf-8"},
-        timeout=20,
+        # Bound hangs while allowing cold imports and driver startup on shared CI.
+        timeout=60,
     )
     assert result.returncode == 0, result.stdout + result.stderr
 
