@@ -37,7 +37,8 @@ def run_cli(tmp_path, source, output, *extra):
         ],
         cwd=tmp_path,
         capture_output=True,
-        text=True,
+        encoding="utf-8",
+        env={**os.environ, "PYTHONIOENCODING": "utf-8"},
         timeout=30,
     )
 
@@ -67,13 +68,25 @@ def test_cli_and_independent_reader(tmp_path, backend):
         "--html",
         str(html),
     ]
-    reader = subprocess.run(command, capture_output=True, text=True, timeout=10)
+    reader = subprocess.run(
+        command,
+        capture_output=True,
+        encoding="utf-8",
+        env={**os.environ, "PYTHONIOENCODING": "utf-8"},
+        timeout=10,
+    )
     assert reader.returncode == 0, reader.stderr
     assert "event-000000 wait" in reader.stdout
     assert "source matches captured bytes" in reader.stdout
     assert "event-000001" in html.read_text()
     source.write_text(SOURCE + "\n# edited\n")
-    stale = subprocess.run(command, capture_output=True, text=True, timeout=10)
+    stale = subprocess.run(
+        command,
+        capture_output=True,
+        encoding="utf-8",
+        env={**os.environ, "PYTHONIOENCODING": "utf-8"},
+        timeout=10,
+    )
     assert "source STALE" in stale.stdout
 
 
@@ -131,16 +144,24 @@ def test_relative_output_is_anchored_before_user_code_changes_directory(tmp_path
     assert not (destination / "report.json").exists()
 
 
-def test_cli_failure_preserves_previous_report_and_rejects_batches(tmp_path):
+def test_cli_failure_preserves_previous_report_and_rejects_batches(
+    tmp_path, monkeypatch
+):
+    monkeypatch.setenv("PYTHONIOENCODING", "ascii")
     source = tmp_path / "scene.py"
     output = tmp_path / "report.json"
     source.write_text(SOURCE)
     assert run_cli(tmp_path, source, output).returncode == 0
     previous = output.read_bytes()
     source.write_text(
-        SOURCE.replace('self.add_sound("missing.wav")', 'raise RuntimeError("broken")')
+        SOURCE.replace(
+            'self.add_sound("missing.wav")', 'raise RuntimeError("broken → cleanup")'
+        ),
+        encoding="utf-8",
     )
-    assert run_cli(tmp_path, source, output).returncode != 0
+    failed = run_cli(tmp_path, source, output)
+    assert failed.returncode != 0
+    assert "broken → cleanup" in failed.stdout + failed.stderr
     assert output.read_bytes() == previous
     source.write_text(SOURCE + "\nclass Another(Scene):\n    pass\n")
     result = run_cli(tmp_path, source, output)
