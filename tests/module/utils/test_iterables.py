@@ -2,6 +2,18 @@ import pytest
 
 from manim.utils.iterables import list_difference_update, list_update
 
+ORDERED_ITERABLE_TYPES = [
+    # Common non-list iterables
+    pytest.param(tuple, id="tuple"),
+    pytest.param(lambda values: dict.fromkeys(values).keys(), id="dictkeys"),
+    # One-shot iterables
+    pytest.param(iter, id="iter"),
+    pytest.param(
+        lambda values: (value for value in values),
+        id="generator",
+    ),
+]
+
 STANDARD_LIST_DIFFERENCE_CASES = [
     ([1, 2, 3, 4], [4, 2], [1, 3]),
     ([], [1, 2], []),
@@ -25,6 +37,13 @@ STANDARD_LIST_UPDATE_CASES = [
 @pytest.mark.parametrize(("l1", "l2", "expected"), STANDARD_LIST_DIFFERENCE_CASES)
 def test_list_difference_update_removes_matching_items(l1, l2, expected):
     assert list_difference_update(l1, l2) == expected
+
+
+@pytest.mark.parametrize("l1_type", ORDERED_ITERABLE_TYPES)
+@pytest.mark.parametrize("l2_type", ORDERED_ITERABLE_TYPES)
+def test_list_difference_update_accepts_iterables(l1_type, l2_type):
+    l1, l2, expected = STANDARD_LIST_DIFFERENCE_CASES[0]
+    assert list_difference_update(l1_type(l1), l2_type(l2)) == expected
 
 
 def test_list_difference_update_preserves_l1_duplicates_and_order():
@@ -88,6 +107,13 @@ def test_list_difference_update_with_key_function_matches_unequal_items(
     assert list_difference_update(l1, l2, key=key) == expected
 
 
+@pytest.mark.parametrize("l1_type", ORDERED_ITERABLE_TYPES)
+@pytest.mark.parametrize("l2_type", ORDERED_ITERABLE_TYPES)
+def test_list_difference_update_with_key_function_accepts_iterables(l1_type, l2_type):
+    l1, l2, expected = (["a", "b", "C", "A", "a"], ["A", "D"], ["b", "C"])
+    assert list_difference_update(l1_type(l1), l2_type(l2), key=str.lower) == expected
+
+
 @pytest.mark.parametrize(
     ("l1", "l2", "key", "expected"),
     [
@@ -107,6 +133,13 @@ def test_list_difference_update_with_key_function_matches_different_types(
 @pytest.mark.parametrize(("l1", "l2", "expected"), STANDARD_LIST_UPDATE_CASES)
 def test_list_update_removes_overlap_and_appends_l2(l1, l2, expected):
     assert list_update(l1, l2) == expected
+
+
+@pytest.mark.parametrize("l1_type", ORDERED_ITERABLE_TYPES)
+@pytest.mark.parametrize("l2_type", ORDERED_ITERABLE_TYPES)
+def test_list_update_accepts_iterables(l1_type, l2_type):
+    l1, l2, expected = STANDARD_LIST_UPDATE_CASES[0]
+    assert list_update(l1_type(l1), l2_type(l2)) == expected
 
 
 def test_list_update_preserves_l1_duplicates_and_order():
@@ -154,6 +187,16 @@ def test_list_update_with_key_function_matches_unequal_items(l1, l2, key, expect
     function, even if they are not equal.
     """
     assert list_update(l1, l2, key=key) == expected
+
+
+@pytest.mark.parametrize("l1_type", ORDERED_ITERABLE_TYPES)
+@pytest.mark.parametrize("l2_type", ORDERED_ITERABLE_TYPES)
+def test_list_update_with_key_function_accepts_iterables(l1_type, l2_type):
+    """Test that items in l1 are removed if they match items in l2 according to the key
+    function, even if they are not equal.
+    """
+    l1, l2, expected = (["a", "b", "C", "A", "a"], ["A", "D"], ["b", "C", "A", "D"])
+    assert list_update(l1_type(l1), l2_type(l2), key=str.lower) == expected
 
 
 @pytest.mark.parametrize(
