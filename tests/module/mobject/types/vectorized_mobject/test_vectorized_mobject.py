@@ -192,6 +192,25 @@ def test_curves_as_submobjects_point_from_proportion():
     np.testing.assert_array_equal(obj.point_from_proportion(0.5), np.array([3, 0, 0]))
 
 
+def test_curves_as_submobjects_error_message_uses_dynamic_class_name():
+    """The error messages should reference the actual class name, not a
+    hardcoded "CurvesAsSubmobjects" string, so that subclasses are reported
+    correctly."""
+
+    class CustomCurves(CurvesAsSubmobjects):
+        pass
+
+    obj = CustomCurves(VGroup())
+    with pytest.raises(Exception, match="Cannot call CustomCurves") as error:
+        obj.point_from_proportion(0)
+    assert "CurvesAsSubmobjects" not in str(error.value)
+
+    obj.add(VMobject())
+    with pytest.raises(Exception, match="Cannot call CustomCurves") as error:
+        obj.point_from_proportion(0)
+    assert "CurvesAsSubmobjects" not in str(error.value)
+
+
 def test_vgroup_init():
     """Test the VGroup instantiation."""
     VGroup()
