@@ -21,3 +21,4 @@ Animations
    ~animation.transform
    ~animation.transform_matching_parts
    ~animation.updaters
+   ~animation.video
