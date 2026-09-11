@@ -151,7 +151,8 @@ def list_difference_update(
     *,
     key: Callable[[T | U], Hashable] | None = None,
 ) -> list[T]:
-    """Returns a list containing all the elements of l1 not in l2.
+    """Returns a list containing all the elements of ``l1`` which are not present
+    in ``l2``.
 
     Parameters
     ----------
@@ -160,8 +161,8 @@ def list_difference_update(
     l2
         The second iterable.
     key
-        A key function which provides a value used to determine uniqueness. The default
-        value of ``None`` means that the elements' own hash values will be used.
+        A key function which provides a value used to determine element equality. The
+        default value of ``None`` means that the elements' own hash values will be used.
 
     Examples
     --------
@@ -172,7 +173,7 @@ def list_difference_update(
         >>> list_difference_update(["a", "b", "A", "C"], ["A", "D"], key=str.lower)
         ['b', 'C']
     """
-    if key in (None, hash):
+    if key is None:
         if not isinstance(l2, (set, dict, frozenset)):
             # l2 is not a set-like object, so convert it to a set for faster lookups
             l2 = set(l2)
@@ -200,9 +201,8 @@ def list_update(
     *,
     key: Callable[[T | U], Hashable] | None = None,
 ) -> list[T | U]:
-    """Used instead of ``set.update()`` to maintain order, making sure duplicates are
-    removed from l1, not l2.
-    Removes overlap of l1 and l2 and then concatenates l2 unchanged.
+    """List equivalent of ``set.update()``. Any elements in ``l1`` that are also in
+    ``l2`` are removed from ``l1``, and then ``l2`` is concatenated to the end of ``l1``.
 
     Parameters
     ----------
@@ -211,8 +211,8 @@ def list_update(
     l2
         The second iterable.
     key
-        A key function which provides a value used to determine uniqueness. The default
-        value of ``None`` means that the elements' own hash values will be used.
+        A key function which provides a value used to determine element equality. The
+        default value of ``None`` means that the elements' own hash values will be used.
 
     Examples
     --------
