@@ -195,7 +195,8 @@ def test_curves_as_submobjects_point_from_proportion():
 def test_curves_as_submobjects_error_message_uses_dynamic_class_name():
     """The error messages should reference the actual class name, not a
     hardcoded "CurvesAsSubmobjects" string, so that subclasses are reported
-    correctly."""
+    correctly.
+    """
 
     class CustomCurves(CurvesAsSubmobjects):
         pass
