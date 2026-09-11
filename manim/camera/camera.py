@@ -43,7 +43,6 @@ if TYPE_CHECKING:
 
 
 LINE_JOIN_MAP = {
-    LineJointType.AUTO: None,  # TODO: this could be improved
     LineJointType.ROUND: cairo.LineJoin.ROUND,
     LineJointType.BEVEL: cairo.LineJoin.BEVEL,
     LineJointType.MITER: cairo.LineJoin.MITER,
@@ -51,7 +50,6 @@ LINE_JOIN_MAP = {
 
 
 CAP_STYLE_MAP = {
-    CapStyleType.AUTO: None,  # TODO: this could be improved
     CapStyleType.ROUND: cairo.LineCap.ROUND,
     CapStyleType.BUTT: cairo.LineCap.BUTT,
     CapStyleType.SQUARE: cairo.LineCap.SQUARE,
@@ -852,10 +850,8 @@ class Camera:
             * (self.frame_width / self.frame_width),
             # This ensures lines have constant width as you zoom in on them.
         )
-        if vmobject.joint_type != LineJointType.AUTO:
-            ctx.set_line_join(LINE_JOIN_MAP[vmobject.joint_type])
-        if vmobject.cap_style != CapStyleType.AUTO:
-            ctx.set_line_cap(CAP_STYLE_MAP[vmobject.cap_style])
+        ctx.set_line_join(LINE_JOIN_MAP[vmobject.joint_type])
+        ctx.set_line_cap(CAP_STYLE_MAP[vmobject.cap_style])
         ctx.stroke_preserve()
         return self
 
