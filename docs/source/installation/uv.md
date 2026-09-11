@@ -161,6 +161,14 @@ uv add manim
 
 Manim is now installed in your local project environment!
 
+:::{tip}
+If `uv add manim` reports that Microsoft Visual C++ is required, install the
+[Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
+In the Visual Studio Installer, select the **Desktop development with C++**
+workload. After the installation finishes, open a new terminal and run
+`uv add manim` again.
+:::
+
 :::::
 
 :::::{tab-item} MacOS
@@ -261,6 +269,20 @@ uv add manim
 :::::
 
 ::::::
+
+:::{dropdown} Optional: Add Typst support
+
+To render text and mathematical expressions with [Typst](https://typst.app/),
+add Manim's optional `typst` dependency to your project:
+
+```bash
+uv add "manim[typst]"
+```
+
+This dependency includes the Typst compiler, so no separate system-level Typst
+installation is required. See the {ref}`Typst section in the text guide <rendering-with-typst>`
+for examples.
+:::
 
 To verify that your local Python project is setup correctly
 and that Manim is available, simply run
