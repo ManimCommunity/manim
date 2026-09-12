@@ -1436,6 +1436,9 @@ jupyterlab = [
     { name = "jupyterlab" },
     { name = "notebook" },
 ]
+tectonic = [
+    { name = "tecto" },
+]
 typst = [
     { name = "typst" },
 ]
@@ -1492,12 +1495,13 @@ requires-dist = [
     { name = "skia-pathops", specifier = ">=0.9.0" },
     { name = "srt", specifier = ">=3.0.0" },
     { name = "svgelements", specifier = ">=1.9.0" },
+    { name = "tecto", marker = "extra == 'tectonic'", specifier = ">=0.16.9" },
     { name = "tqdm", specifier = ">=4.21.0" },
     { name = "typing-extensions", specifier = ">=4.12.0" },
     { name = "typst", marker = "extra == 'typst'", specifier = ">=0.14" },
     { name = "watchdog", specifier = ">=2.0.0" },
 ]
-provides-extras = ["gui", "jupyterlab", "typst"]
+provides-extras = ["gui", "jupyterlab", "typst", "tectonic"]
 
 [package.metadata.requires-dev]
 dev = [
@@ -3214,6 +3218,19 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/5d/29/1c93c94a2289675ba2ff898612f9c9a03f46d69f253bdf4da0dfc08a599d/svgelements-1.9.6.tar.gz", hash = "sha256:7c02ad6404cd3d1771fd50e40fbfc0550b0893933466f86a6eb815f3ba3f37f7", size = 162145, upload-time = "2023-08-17T02:01:51.822Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/48/2c/6c9bb53db56c8a12a736d2158a8b842a5993b96daabc29d90a098e840280/svgelements-1.9.6-py2.py3-none-any.whl", hash = "sha256:8a5cf2cc066d98e713d5b875b1d6e5eeb9b92e855e835ebd7caab2713ae1dcad", size = 137856, upload-time = "2023-08-17T02:01:48.76Z" },
+]
+
+[[package]]
+name = "tecto"
+version = "0.16.9"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8c/96/b8bd09640ae2ab7420db2f45fb78f74994999352a740c0034e03aed1f462/tecto-0.16.9-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:ba51a38c90c7bf718c6a438f198c8ee3d2019251d8a1981606a67842c7a47b7a", size = 39665917, upload-time = "2026-04-18T15:03:42.256Z" },
+    { url = "https://files.pythonhosted.org/packages/5f/e8/3b55c499c66bf580d244b42de6c2215072e351742db74d103e0d4d24c26f/tecto-0.16.9-py3-none-macosx_11_0_arm64.whl", hash = "sha256:7f083a36955e42fb7f0903df23fdd47a3f70e7ce925f86eee2ce45aedaae5c60", size = 39552101, upload-time = "2026-04-18T15:03:45.583Z" },
+    { url = "https://files.pythonhosted.org/packages/f7/57/d5e5cd9d270613cf723629c9349c64c6eaf380271924d5b98f9fba822e35/tecto-0.16.9-py3-none-manylinux2014_x86_64.whl", hash = "sha256:bc7696ebf58c86ffeca77b6c4a83b9915e40e0ac04584fe574af5f00393b0731", size = 41607561, upload-time = "2026-04-18T15:03:49.051Z" },
+    { url = "https://files.pythonhosted.org/packages/58/cb/47e6127d657c64dba48b77d4b8cf844d642dd5eaca7aada208cbe6338233/tecto-0.16.9-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:7f5df5d1f392e4e22030036c6e174a8a7e3eca50be32e504286c0f46553724b8", size = 19208539, upload-time = "2026-04-18T15:03:51.937Z" },
+    { url = "https://files.pythonhosted.org/packages/41/2d/b03fb1cf50d9abce0c0e55aeeff6c35dca532c55844be948ae421080308a/tecto-0.16.9-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:f2ee0401f0ee1033d27c35e17e46ba35101dd872d469581d8ff1d3e6b72a4857", size = 19725452, upload-time = "2026-04-18T15:03:54.323Z" },
+    { url = "https://files.pythonhosted.org/packages/19/49/1d44a16885a6935c2b13c8481dbec0b84c00004e5072f384befc5b65a463/tecto-0.16.9-py3-none-win_amd64.whl", hash = "sha256:a067142f90b02eac2bac78d2e0e04fea75695e895e31b897a00ac6756342e004", size = 38343808, upload-time = "2026-04-18T15:03:56.951Z" },
 ]
 
 [[package]]
