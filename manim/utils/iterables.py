@@ -180,7 +180,7 @@ def list_difference_update(
         return [e for e in l1 if e not in l2]
 
     # Use provided key function to determine uniqueness
-    l2_keys = set(map(key, l2))
+    l2_keys = {key(e) for e in l2}
     return [e for e in l1 if key(e) not in l2_keys]
 
 
