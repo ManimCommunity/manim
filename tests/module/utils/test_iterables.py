@@ -124,9 +124,6 @@ def test_list_difference_update_with_key_function_accepts_iterables(l1_type, l2_
 def test_list_difference_update_with_key_function_matches_different_types(
     l1, l2, key, expected
 ):
-    """Test that items in l1 are removed if they match items in l2 according to the key
-    function, even if they are not equal.
-    """
     assert list_difference_update(l1, l2, key=key) == expected
 
 
