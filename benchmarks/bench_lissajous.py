@@ -51,7 +51,7 @@ def get_circles(
     circles = VGroup()
     for i in range(n_circles):
         circles.add(LissajousCircle(speed=speeds[i], **circle_kwargs))
-    return circles.arrange(arrange_direction, buff)
+    return circles.arrange(arrange_direction, buff=buff)
 
 
 def get_intersection_point(
@@ -221,7 +221,9 @@ class LissajousTableScene(Scene):
             self.top_edge_buff + 2 * self.radius + self.column_buff
         )
         aligned_edge = self.column_circles.get_critical_point(UP)
-        return circles.next_to(x * RIGHT + y * UP, DOWN, 0, aligned_edge)
+        return circles.next_to(
+            x * RIGHT + y * UP, DOWN, buff=0, aligned_edge=aligned_edge
+        )
 
     def get_horizontal_lines(
         self,

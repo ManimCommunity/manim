@@ -657,10 +657,11 @@ class Circle(Arc):
             **kwargs,
         )
 
-    def surround(
+    def surround(  # type: ignore[override]
         self,
         mobject: Mobject,
         dim_to_match: int = 0,
+        *,
         stretch: bool = False,
         buffer_factor: float = 1.2,
     ) -> Self:
@@ -704,7 +705,7 @@ class Circle(Arc):
 
         # Something goes wrong here when surrounding lines?
         # TODO: Figure out and fix
-        self.replace(mobject, dim_to_match, stretch)
+        self.replace(mobject, dim_to_match, stretch=stretch)
 
         self.width = np.sqrt(mobject.width**2 + mobject.height**2)
         return self.scale(buffer_factor)

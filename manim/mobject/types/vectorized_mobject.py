@@ -484,10 +484,11 @@ class VMobject(Mobject):
     def scale(
         self,
         scale_factor: float,
-        scale_stroke: bool = False,
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        scale_stroke: bool = False,
+        **kwargs: Any,
     ) -> Self:
         r"""Scale the size by a factor.
 
@@ -551,8 +552,13 @@ class VMobject(Mobject):
                         background=True,
                         family=False,
                     )
-        super().scale(scale_factor, about_point=about_point, about_edge=about_edge)
-        return self
+        return super().scale(
+            scale_factor,
+            about_point=about_point,
+            about_edge=about_edge,
+            scale_stroke=scale_stroke,
+            **kwargs,
+        )
 
     def fade(self, darkness: float = 0.5, family: bool = True) -> Self:
         factor = 1.0 - darkness
@@ -791,10 +797,6 @@ class VMobject(Mobject):
             submob.shade_in_3d = value
             if z_index_as_group:
                 submob.z_index_group = self
-        return self
-
-    def set_points(self, points: Point3DLike_Array) -> Self:
-        self.points: Point3D_Array = np.array(points)
         return self
 
     def resize_points(
