@@ -65,6 +65,8 @@ class Positionable:
     def set_points(self, points: Point3DLike_Array | Positionable) -> Self:
         """Sets the points.
 
+        Does not affect family members.
+
         Parameters
         ----------
         points : Point3DLike_Array
