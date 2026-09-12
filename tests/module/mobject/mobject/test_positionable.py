@@ -11,15 +11,15 @@ def test_get_all_points() -> None:
     np.testing.assert_allclose(p.get_all_points(), [(0, 0, 0), (1, 1, 0)])
 
 
-def test_set_points_array() -> None:
+def test_set_points() -> None:
     p = Positionable().set_points([(1, 2, 3)])
     np.testing.assert_allclose(p.points, [(1, 2, 3)])
 
 
-def test_set_points_other() -> None:
+def test_match_points() -> None:
     p = Positionable().set_points([(5, 5, 5), (6, 6, 6)])
     other = Positionable().set_points([(0, 0, 0), (1, 1, 1)])
-    p.set_points(other)
+    p.match_points(other)
     np.testing.assert_allclose(p.points, [(0, 0, 0), (1, 1, 1)])
 
 
@@ -149,33 +149,33 @@ def test_apply_matrix_about_point() -> None:
     np.testing.assert_allclose(p.points, [(2, 0, 0)], atol=1e-7)
 
 
-def test_get_position() -> None:
+def test_get_anchor() -> None:
     p = Positionable().set_points([(0, 0, 0), (2, 4, 0)])
     np.testing.assert_allclose(p.get_anchor(RIGHT), [2, 2, 0])
 
 
-def test_get_position_directions() -> None:
+def test_get_anchor_directions() -> None:
     p = Positionable().set_points([(0, 0, 0), (2, 4, 6)])
     np.testing.assert_allclose(p.get_anchor(LEFT), [0, 2, 3])
     np.testing.assert_allclose(p.get_anchor(DOWN), [1, 0, 3])
 
 
-def test_set_position() -> None:
+def test_set_anchor() -> None:
     p = Positionable().set_points([(0, 0, 0), (2, 2, 0)])
     p.set_anchor((5, 5, 0))
     np.testing.assert_allclose(p.get_center(), [5, 5, 0])
 
 
-def test_set_position_direction() -> None:
+def test_set_anchor_direction() -> None:
     p = Positionable().set_points([(0, 0, 0), (2, 2, 0)])
     p.set_anchor((5, 5, 0), direction=UP)
     np.testing.assert_allclose(p.get_top(), [5, 5, 0])
 
 
-def test_set_position_with_positionable() -> None:
-    target = Positionable().set_points([(10, 10, 0)])
+def test_match_anchor() -> None:
     p = Positionable().set_points([(0, 0, 0), (2, 2, 0)])
-    p.set_anchor(target)
+    other = Positionable().set_points([(10, 10, 0)])
+    p.match_anchor(other)
     np.testing.assert_allclose(p.get_center(), [10, 10, 0])
 
 
@@ -196,10 +196,10 @@ def test_set_coordinate() -> None:
     np.testing.assert_allclose(p.points, [(8, 0, 0), (10, 0, 0)])
 
 
-def test_set_coordinate_with_positionable() -> None:
-    target = Positionable().set_points([(9, 0, 0)])
+def test_match_coordinate() -> None:
     p = Positionable().set_points([(0, 0, 0), (2, 0, 0)])
-    p.set_coordinate(target, dim=0, direction=RIGHT)
+    other = Positionable().set_points([(9, 0, 0)])
+    p.match_coordinate(other, dim=0, direction=RIGHT)
     np.testing.assert_allclose(p.points, [(7, 0, 0), (9, 0, 0)])
 
 
@@ -225,10 +225,10 @@ def test_align_to() -> None:
     np.testing.assert_allclose(p.get_top(), [1, 5, 0])
 
 
-def test_align_to_with_positionable() -> None:
-    target = Positionable().set_points([(5, 5, 0)])
+def test_align_to_other() -> None:
     p = Positionable().set_points([(0, 0, 0), (2, 2, 0)])
-    p.align_to(target, direction=UP)
+    other = Positionable().set_points([(5, 5, 0)])
+    p.align_to(other, direction=UP)
     np.testing.assert_allclose(p.get_top(), [1, 5, 0])
 
 

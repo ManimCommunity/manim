@@ -65,12 +65,28 @@ class Positionable:
     def set_points(self, points: Point3DLike_Array | Positionable) -> Self:
         """Sets the points.
 
-        If an array is passed, set's the points of this object. When another object is passed, the points of corresponding family members are matched in order.
+        Parameters
+        ----------
+        points : Point3DLike_Array
+            The points.
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+        self.points = np.asarray(points, dtype=float, copy=True)
+        return self
+
+    def match_points(self, other: Positionable, *, strict: bool = False) -> Self:
+        """Matches the points.
+
+        The points of the family members are matched in order.
 
         Parameters
         ----------
-        points : Point3DLike_Array | Positionable
-            The points.
+        other : Positionable
+            The other object.
 
         Returns
         -------
@@ -87,14 +103,11 @@ class Positionable:
                     square = Square(fill_color=BLUE, fill_opacity=0.2)
                     self.add(circ)
                     self.wait(0.5)
-                    self.play(circ.animate.set_points(square))
+                    self.play(circ.animate.match_points(square))
                     self.wait(0.5)
         """
-        if isinstance(points, Positionable):
-            for sm1, sm2 in zip(self.get_family(), points.get_family(), strict=False):
-                sm1.points = np.array(sm2.points)
-        else:
-            self.points = np.array(points, dtype=float)
+        for sm1, sm2 in zip(self.get_family(), other.get_family(), strict=strict):
+            sm1.points = sm2.points.copy()
         return self
 
     def reset_points(self, **kwargs: Any) -> Self:
@@ -123,6 +136,7 @@ class Positionable:
 
         return self.apply_to_family(func=apply, **kwargs)
 
+    # TODO: Rename to `repeat_points`
     def repeat(self, count: int, **kwargs: Any) -> Self:
         """Repeats the points.
 
@@ -632,7 +646,7 @@ class Positionable:
 
     def set_anchor(
         self,
-        position: Point3DLike | Positionable,
+        position: Point3DLike,
         direction: Vector3DLike = ORIGIN,
         **kwargs: Any,
     ) -> Self:
@@ -640,7 +654,7 @@ class Positionable:
 
         Parameters
         ----------
-        position : Point3DLike | Positionable
+        position : Point3DLike
             The position.
         direction : Vector3DLike, optional
             The direction., by default ORIGIN
@@ -651,11 +665,32 @@ class Positionable:
             The object itself.
         """
         source = self.get_anchor(direction=direction)
-        if isinstance(position, Positionable):
-            position = position.get_anchor(direction=direction)
         vector = position - source
-        return self.translate(
-            vector=vector,
+        return self.translate(vector=vector, **kwargs)
+
+    def match_anchor(
+        self,
+        other: Positionable,
+        direction: Vector3DLike = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
+        """Matches the anchor position.
+
+        Parameters
+        ----------
+        other : Positionable
+            The other object.
+        direction : Vector3DLike, optional
+            The direction., by default ORIGIN
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+        return self.set_anchor(
+            position=other.get_anchor(direction=direction),
+            direction=direction,
             **kwargs,
         )
 
@@ -671,14 +706,14 @@ class Positionable:
 
     def set_center(
         self,
-        center: Point3DLike | Positionable,
+        center: Point3DLike,
         **kwargs: Any,
     ) -> Self:
         """Sets the center position.
 
         Parameters
         ----------
-        center : Point3DLike | Positionable
+        center : Point3DLike
             The center position.
 
         Returns
@@ -686,11 +721,22 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_anchor(
-            position=center,
-            direction=ORIGIN,
-            **kwargs,
-        )
+        return self.set_anchor(position=center, direction=ORIGIN, **kwargs)
+
+    def match_center(self, other: Positionable, **kwargs: Any) -> Self:
+        """Matches the center position.
+
+        Parameters
+        ----------
+        other : Positionable
+            The other object.
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+        return self.set_center(center=other.get_center(), **kwargs)
 
     def center(self, **kwargs: Any) -> Self:
         """Sets the position to the origin.
@@ -700,10 +746,7 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_center(
-            center=ORIGIN,
-            **kwargs,
-        )
+        return self.set_center(center=ORIGIN, **kwargs)
 
     def get_top(self) -> Point3D:
         """Returns the top position.
@@ -715,16 +758,12 @@ class Positionable:
         """
         return self.get_anchor(direction=UP)
 
-    def set_top(
-        self,
-        top: Point3DLike | Positionable,
-        **kwargs: Any,
-    ) -> Self:
+    def set_top(self, top: Point3DLike, **kwargs: Any) -> Self:
         """Sets the top position.
 
         Parameters
         ----------
-        top : Point3DLike | Positionable
+        top : Point3DLike
             The top position.
 
         Returns
@@ -732,11 +771,22 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_anchor(
-            position=top,
-            direction=UP,
-            **kwargs,
-        )
+        return self.set_anchor(position=top, direction=UP, **kwargs)
+
+    def match_top(self, other: Positionable, **kwargs: Any) -> Self:
+        """Matches the top position.
+
+        Parameters
+        ----------
+        other : Positionable
+            The other object.
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+        return self.set_top(top=other.get_top(), **kwargs)
 
     def get_bottom(self) -> Point3D:
         """Returns the bottom position.
@@ -748,16 +798,12 @@ class Positionable:
         """
         return self.get_anchor(direction=DOWN)
 
-    def set_bottom(
-        self,
-        bottom: Point3DLike | Positionable,
-        **kwargs: Any,
-    ) -> Self:
+    def set_bottom(self, bottom: Point3DLike, **kwargs: Any) -> Self:
         """Sets the bottom position.
 
         Parameters
         ----------
-        bottom : Point3DLike | Positionable
+        bottom : Point3DLike
             The bottom position.
 
         Returns
@@ -766,6 +812,21 @@ class Positionable:
             The object itself.
         """
         return self.set_anchor(position=bottom, direction=DOWN, **kwargs)
+
+    def match_bottom(self, other: Positionable, **kwargs: Any) -> Self:
+        """Matches the bottom position.
+
+        Parameters
+        ----------
+        other : Positionable
+            The other object.
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+        return self.set_bottom(bottom=other.get_bottom(), **kwargs)
 
     def get_right(self) -> Point3D:
         """Returns the right position.
@@ -777,16 +838,12 @@ class Positionable:
         """
         return self.get_anchor(direction=RIGHT)
 
-    def set_right(
-        self,
-        right: Point3DLike | Positionable,
-        **kwargs: Any,
-    ) -> Self:
+    def set_right(self, right: Point3DLike, **kwargs: Any) -> Self:
         """Sets the right position.
 
         Parameters
         ----------
-        right : Point3DLike | Positionable
+        right : Point3DLike
             The right position.
 
         Returns
@@ -794,11 +851,22 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_anchor(
-            position=right,
-            direction=RIGHT,
-            **kwargs,
-        )
+        return self.set_anchor(position=right, direction=RIGHT, **kwargs)
+
+    def match_right(self, other: Positionable, **kwargs: Any) -> Self:
+        """Matches the right position.
+
+        Parameters
+        ----------
+        other : Positionable
+            The other object.
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+        return self.set_right(right=other.get_right(), **kwargs)
 
     def get_left(self) -> Point3D:
         """Returns the left position.
@@ -810,16 +878,12 @@ class Positionable:
         """
         return self.get_anchor(direction=LEFT)
 
-    def set_left(
-        self,
-        left: Point3DLike | Positionable,
-        **kwargs: Any,
-    ) -> Self:
+    def set_left(self, left: Point3DLike, **kwargs: Any) -> Self:
         """Sets the left position.
 
         Parameters
         ----------
-        left : Point3DLike | Positionable
+        left : Point3DLike
             The left position.
 
         Returns
@@ -827,11 +891,22 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_anchor(
-            position=left,
-            direction=LEFT,
-            **kwargs,
-        )
+        return self.set_anchor(position=left, direction=LEFT, **kwargs)
+
+    def match_left(self, other: Positionable, **kwargs: Any) -> Self:
+        """Matches the left position.
+
+        Parameters
+        ----------
+        other : Positionable
+            The other object.
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+        return self.set_left(left=other.get_left(), **kwargs)
 
     def get_zenith(self) -> Point3D:
         """Returns the zenith position.
@@ -843,16 +918,12 @@ class Positionable:
         """
         return self.get_anchor(direction=OUT)
 
-    def set_zenith(
-        self,
-        zenith: Point3DLike | Positionable,
-        **kwargs: Any,
-    ) -> Self:
+    def set_zenith(self, zenith: Point3DLike, **kwargs: Any) -> Self:
         """Sets the zenith position.
 
         Parameters
         ----------
-        zenith : Point3DLike | Positionable
+        zenith : Point3DLike
             The zenith position.
 
         Returns
@@ -860,11 +931,22 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_anchor(
-            position=zenith,
-            direction=OUT,
-            **kwargs,
-        )
+        return self.set_anchor(position=zenith, direction=OUT, **kwargs)
+
+    def match_zenith(self, other: Positionable, **kwargs: Any) -> Self:
+        """Matches the zenith position.
+
+        Parameters
+        ----------
+        other : Positionable
+            The other object.
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+        return self.set_zenith(zenith=other.get_zenith(), **kwargs)
 
     def get_nadir(self) -> Point3D:
         """Returns the nadir position.
@@ -876,16 +958,12 @@ class Positionable:
         """
         return self.get_anchor(direction=IN)
 
-    def set_nadir(
-        self,
-        nadir: Point3DLike | Positionable,
-        **kwargs: Any,
-    ) -> Self:
+    def set_nadir(self, nadir: Point3DLike, **kwargs: Any) -> Self:
         """Sets the nadir position.
 
         Parameters
         ----------
-        nadir : Point3DLike | Positionable
+        nadir : Point3DLike
             The nadir position.
 
         Returns
@@ -893,11 +971,22 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_anchor(
-            position=nadir,
-            direction=IN,
-            **kwargs,
-        )
+        return self.set_anchor(position=nadir, direction=IN, **kwargs)
+
+    def match_nadir(self, other: Positionable, **kwargs: Any) -> Self:
+        """Matches the nadir position.
+
+        Parameters
+        ----------
+        other : Positionable
+            The other object.
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+        return self.set_nadir(nadir=other.get_nadir(), **kwargs)
 
     def get_coordinate(self, dim: int, direction: Vector3DLike = ORIGIN) -> float:
         """Returns the coordinate of a dimension.
@@ -921,7 +1010,7 @@ class Positionable:
 
     def set_coordinate(
         self,
-        coordinate: float | Positionable,
+        coordinate: float,
         dim: int,
         direction: Vector3DLike = ORIGIN,
         **kwargs: Any,
@@ -930,7 +1019,7 @@ class Positionable:
 
         Parameters
         ----------
-        coordinate : float | Positionable
+        coordinate : float
             The coordinate.
         dim : int
             The dimension.
@@ -943,11 +1032,39 @@ class Positionable:
             The object itself.
         """
         source = self.get_coordinate(dim=dim, direction=direction)
-        if isinstance(coordinate, Positionable):
-            coordinate = coordinate.get_coordinate(dim=dim, direction=direction)
         vector = np.zeros(3)
         vector[dim] = coordinate - source
         return self.translate(vector=vector, **kwargs)
+
+    def match_coordinate(
+        self,
+        other: Positionable,
+        dim: int,
+        direction: Vector3DLike = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
+        """Matches the coordinate of a dimension.
+
+        Parameters
+        ----------
+        other : Positionable
+            The other object.
+        dim : int
+            The dimension.
+        direction : Vector3DLike, optional
+            The direction., by default ORIGIN
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+        return self.set_coordinate(
+            coordinate=other.get_coordinate(dim=dim, direction=direction),
+            dim=dim,
+            direction=direction,
+            **kwargs,
+        )
 
     def get_x(self, direction: Vector3DLike = ORIGIN) -> float:
         """Returns the x coordinate.
@@ -964,17 +1081,12 @@ class Positionable:
         """
         return self.get_coordinate(dim=0, direction=direction)
 
-    def set_x(
-        self,
-        x: float | Positionable,
-        direction: Vector3DLike = ORIGIN,
-        **kwargs: Any,
-    ) -> Self:
+    def set_x(self, x: float, direction: Vector3DLike = ORIGIN, **kwargs: Any) -> Self:
         """Sets the x coordinate.
 
         Parameters
         ----------
-        x : float | Positionable
+        x : float
             The x coordinate.
         direction : Vector3DLike, optional
             The direction., by default ORIGIN
@@ -984,9 +1096,30 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_coordinate(
-            coordinate=x,
-            dim=0,
+        return self.set_coordinate(coordinate=x, dim=0, direction=direction, **kwargs)
+
+    def match_x(
+        self,
+        other: Positionable,
+        direction: Vector3DLike = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
+        """Matches the x coordinate.
+
+        Parameters
+        ----------
+        other : Positionable
+            The other object.
+        direction : Vector3DLike, optional
+            The direction., by default ORIGIN
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+        return self.set_x(
+            x=other.get_x(direction=direction),
             direction=direction,
             **kwargs,
         )
@@ -1006,17 +1139,12 @@ class Positionable:
         """
         return self.get_coordinate(dim=1, direction=direction)
 
-    def set_y(
-        self,
-        y: float | Positionable,
-        direction: Vector3DLike = ORIGIN,
-        **kwargs: Any,
-    ) -> Self:
+    def set_y(self, y: float, direction: Vector3DLike = ORIGIN, **kwargs: Any) -> Self:
         """Sets the y coordinate.
 
         Parameters
         ----------
-        y : float | Positionable
+        y : float
             The y coordinate.
         direction : Vector3DLike, optional
             The direction., by default ORIGIN
@@ -1029,6 +1157,32 @@ class Positionable:
         return self.set_coordinate(
             coordinate=y,
             dim=1,
+            direction=direction,
+            **kwargs,
+        )
+
+    def match_y(
+        self,
+        other: Positionable,
+        direction: Vector3DLike = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
+        """Matches the y coordinate.
+
+        Parameters
+        ----------
+        other : Positionable
+            The other object.
+        direction : Vector3DLike, optional
+            The direction., by default ORIGIN
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+        return self.set_y(
+            y=other.get_y(direction=direction),
             direction=direction,
             **kwargs,
         )
@@ -1050,7 +1204,7 @@ class Positionable:
 
     def set_z(
         self,
-        z: float | Positionable,
+        z: float,
         direction: Vector3DLike = ORIGIN,
         **kwargs: Any,
     ) -> Self:
@@ -1058,7 +1212,7 @@ class Positionable:
 
         Parameters
         ----------
-        z : float | Positionable
+        z : float
             The z coordinate.
         direction : Vector3DLike, optional
             The direction., by default ORIGIN
@@ -1071,6 +1225,32 @@ class Positionable:
         return self.set_coordinate(
             coordinate=z,
             dim=2,
+            direction=direction,
+            **kwargs,
+        )
+
+    def match_z(
+        self,
+        other: Positionable,
+        direction: Vector3DLike = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
+        """Matches the z coordinate.
+
+        Parameters
+        ----------
+        other : Positionable
+            The other object.
+        direction : Vector3DLike, optional
+            The direction., by default ORIGIN
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+        return self.set_z(
+            z=other.get_z(direction=direction),
             direction=direction,
             **kwargs,
         )
@@ -1538,7 +1718,7 @@ class Positionable:
 
     def set_dim_size(
         self,
-        size: float | Positionable,
+        size: float,
         dim: int,
         *,
         stretch: bool = False,
@@ -1550,7 +1730,7 @@ class Positionable:
 
         Parameters
         ----------
-        size : float | Positionable
+        size : float
             The size.
         dim : int
             The dimension.
@@ -1569,8 +1749,6 @@ class Positionable:
         source = self.get_dim_size(dim=dim)
         if source == 0:
             return self
-        if isinstance(size, Positionable):
-            size = size.get_dim_size(dim=dim)
         factor = size / source
         if stretch:
             return self.stretch(
@@ -1588,6 +1766,45 @@ class Positionable:
                 **kwargs,
             )
 
+    def match_dim_size(
+        self,
+        other: Positionable,
+        dim: int,
+        *,
+        stretch: bool = False,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
+    ) -> Self:
+        """Matches the size of a dimension.
+
+        Parameters
+        ----------
+        other : Positionable
+            The other object.
+        dim : int
+            The dimension.
+        stretch : bool, optional
+            Whether to stretch or scale., by default False
+        about_point : Point3DLike | None, optional
+            About which point to set the dim size., by default None
+        about_edge : Vector3DLike | None, optional
+            About which edge to set the dim size., by default None
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+        return self.set_dim_size(
+            size=other.get_dim_size(dim=dim),
+            dim=dim,
+            stretch=stretch,
+            about_point=about_point,
+            about_edge=about_edge,
+            **kwargs,
+        )
+
     def get_width(self) -> float:
         """Returns the width.
 
@@ -1600,7 +1817,7 @@ class Positionable:
 
     def set_width(
         self,
-        width: float | Positionable,
+        width: float,
         *,
         stretch: bool = False,
         about_point: Point3DLike | None = None,
@@ -1611,7 +1828,7 @@ class Positionable:
 
         Parameters
         ----------
-        width : float | Positionable
+        width : float
             The width.
         stretch : bool, optional
             Whether to stretch or scale., by default False
@@ -1634,6 +1851,41 @@ class Positionable:
             **kwargs,
         )
 
+    def match_width(
+        self,
+        other: Positionable,
+        *,
+        stretch: bool = False,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
+    ) -> Self:
+        """Matches the width.
+
+        Parameters
+        ----------
+        other : Positionable
+            The other object.
+        stretch : bool, optional
+            Whether to stretch or scale., by default False
+        about_point : Point3DLike | None, optional
+            About which point to set the width., by default None
+        about_edge : Vector3DLike | None, optional
+            About which edge to set the width., by default None
+
+        Returns
+        -------
+        Self
+            _description_
+        """
+        return self.set_width(
+            width=other.get_width(),
+            stretch=stretch,
+            about_point=about_point,
+            about_edge=about_edge,
+            **kwargs,
+        )
+
     def get_height(self) -> float:
         """Returns the height.
 
@@ -1646,7 +1898,7 @@ class Positionable:
 
     def set_height(
         self,
-        height: float | Positionable,
+        height: float,
         *,
         stretch: bool = False,
         about_point: Point3DLike | None = None,
@@ -1657,7 +1909,7 @@ class Positionable:
 
         Parameters
         ----------
-        height : float | Positionable
+        height : float
             The height.
         stretch : bool, optional
             Whether to stretch or scale., by default False
@@ -1680,6 +1932,41 @@ class Positionable:
             **kwargs,
         )
 
+    def match_height(
+        self,
+        other: Positionable,
+        *,
+        stretch: bool = False,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
+    ) -> Self:
+        """Matches the height.
+
+        Parameters
+        ----------
+        other : Positionable
+            The other object.
+        stretch : bool, optional
+            Whether to stretch or scale., by default False
+        about_point : Point3DLike | None, optional
+            About which point to set the width., by default None
+        about_edge : Vector3DLike | None, optional
+            About which edge to set the width., by default None
+
+        Returns
+        -------
+        Self
+            _description_
+        """
+        return self.set_height(
+            height=other.get_height(),
+            stretch=stretch,
+            about_point=about_point,
+            about_edge=about_edge,
+            **kwargs,
+        )
+
     def get_depth(self) -> float:
         """Returns the depth.
 
@@ -1692,7 +1979,7 @@ class Positionable:
 
     def set_depth(
         self,
-        depth: float | Positionable,
+        depth: float,
         stretch: bool = False,
         *,
         about_point: Point3DLike | None = None,
@@ -1703,7 +1990,7 @@ class Positionable:
 
         Parameters
         ----------
-        depth : float | Positionable
+        depth : float
             The depth.
         stretch : bool, optional
             Whether to stretch or scale., by default False
@@ -1726,9 +2013,44 @@ class Positionable:
             **kwargs,
         )
 
+    def match_depth(
+        self,
+        other: Positionable,
+        *,
+        stretch: bool = False,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
+    ) -> Self:
+        """Matches the depth.
+
+        Parameters
+        ----------
+        other : Positionable
+            The other object.
+        stretch : bool, optional
+            Whether to stretch or scale., by default False
+        about_point : Point3DLike | None, optional
+            About which point to set the width., by default None
+        about_edge : Vector3DLike | None, optional
+            About which edge to set the width., by default None
+
+        Returns
+        -------
+        Self
+            _description_
+        """
+        return self.set_depth(
+            depth=other.get_depth(),
+            stretch=stretch,
+            about_point=about_point,
+            about_edge=about_edge,
+            **kwargs,
+        )
+
     def scale_to_fit_dim(
         self,
-        size: float | Positionable,
+        size: float,
         dim: int,
         *,
         about_point: Point3DLike | None = None,
@@ -1739,7 +2061,7 @@ class Positionable:
 
         Parameters
         ----------
-        size : float | Positionable
+        size : float
             The size.
         dim : int
             The dimension.
@@ -1764,7 +2086,7 @@ class Positionable:
 
     def scale_to_fit_width(
         self,
-        width: float | Positionable,
+        width: float,
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
@@ -1774,7 +2096,7 @@ class Positionable:
 
         Parameters
         ----------
-        width : float | Positionable
+        width : float
             The width.
         about_point : Point3DLike | None, optional
             About which point to scale., by default None
@@ -1812,7 +2134,7 @@ class Positionable:
 
     def scale_to_fit_height(
         self,
-        height: float | Positionable,
+        height: float,
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
@@ -1822,7 +2144,7 @@ class Positionable:
 
         Parameters
         ----------
-        height : float | Positionable
+        height : float
             The height.
         about_point : Point3DLike | None, optional
             About which point to scale., by default None
@@ -1845,7 +2167,7 @@ class Positionable:
 
     def scale_to_fit_depth(
         self,
-        depth: float | Positionable,
+        depth: float,
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
@@ -1855,7 +2177,7 @@ class Positionable:
 
         Parameters
         ----------
-        depth : float | Positionable
+        depth : float
             The depth.
         about_point : Point3DLike | None, optional
             About which point to scale., by default None
@@ -1878,7 +2200,7 @@ class Positionable:
 
     def stretch_to_fit_dim(
         self,
-        size: float | Positionable,
+        size: float,
         dim: int,
         *,
         about_point: Point3DLike | None = None,
@@ -1889,7 +2211,7 @@ class Positionable:
 
         Parameters
         ----------
-        size : float | Positionable
+        size : float
             The size.
         dim : int
             The dimension.
@@ -1914,7 +2236,7 @@ class Positionable:
 
     def stretch_to_fit_width(
         self,
-        width: float | Positionable,
+        width: float,
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
@@ -1924,7 +2246,7 @@ class Positionable:
 
         Parameters
         ----------
-        width : float | Positionable
+        width : float
             The width.
         about_point : Point3DLike | None, optional
             About which point to stretch., by default None
@@ -1962,7 +2284,7 @@ class Positionable:
 
     def stretch_to_fit_height(
         self,
-        height: float | Positionable,
+        height: float,
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
@@ -1972,7 +2294,7 @@ class Positionable:
 
         Parameters
         ----------
-        height : float | Positionable
+        height : float
             The height.
         about_point : Point3DLike | None, optional
             About which point to stretch., by default None
@@ -2010,7 +2332,7 @@ class Positionable:
 
     def stretch_to_fit_depth(
         self,
-        depth: float | Positionable,
+        depth: float,
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
@@ -2020,7 +2342,7 @@ class Positionable:
 
         Parameters
         ----------
-        depth : float | Positionable
+        depth : float
             The depth.
         about_point : Point3DLike | None, optional
             About which point to stretch., by default None
@@ -2148,12 +2470,16 @@ class Positionable:
         # if self.has_no_points() and not mobject.submobjects:
         #    raise Warning("Attempting to replace mobject with no points")
         if stretch:
-            self.stretch_to_fit_width(width=mobject, **kwargs)
-            self.stretch_to_fit_height(height=mobject, **kwargs)
-            # TODO: add self.stretch_to_fit_depth(depth=mobject)
+            self.stretch_to_fit_width(width=mobject.get_width(), **kwargs)
+            self.stretch_to_fit_height(height=mobject.get_height(), **kwargs)
+            # TODO: add self.stretch_to_fit_depth(depth=mobject.get_depth(), **kwargs)
         else:
-            self.scale_to_fit_dim(mobject, dim=dim_to_match, **kwargs)
-        return self.set_anchor(position=mobject, **kwargs)
+            self.scale_to_fit_dim(
+                size=mobject.get_dim_size(dim=dim_to_match),
+                dim=dim_to_match,
+                **kwargs,
+            )
+        return self.set_center(center=mobject.get_center(), **kwargs)
 
     def surround(
         self,
@@ -2337,11 +2663,19 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_anchor(
-            position=point_or_mobject,
-            direction=aligned_edge,
-            **kwargs,
-        )
+        if not isinstance(point_or_mobject, Positionable):
+            return self.set_anchor(
+                position=point_or_mobject,
+                direction=aligned_edge,
+                **kwargs,
+            )
+
+        else:
+            return self.match_anchor(
+                other=point_or_mobject,
+                direction=aligned_edge,
+                **kwargs,
+            )
 
     def get_coord(self, dim: int, direction: Vector3DLike = ORIGIN) -> float:
         """Returns the coordinate of a dimension.
@@ -2393,6 +2727,40 @@ class Positionable:
         """
         return self.set_coordinate(
             coordinate=value,
+            dim=dim,
+            direction=direction,
+            **kwargs,
+        )
+
+    def match_coord(
+        self,
+        mobject: Positionable,
+        dim: int,
+        direction: Vector3DLike = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
+        """Matches the coordinate of a dimension.
+
+        Note
+        ----
+        An alias for the :meth:`match_coordinate` method.
+
+        Parameters
+        ----------
+        mobject : Positionable
+            The other object.
+        dim : int
+            The dimension.
+        direction : Vector3DLike, optional
+            The direction., by default ORIGIN
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
+        return self.match_coordinate(
+            other=mobject,
             dim=dim,
             direction=direction,
             **kwargs,
@@ -2574,7 +2942,7 @@ class Positionable:
     # @deprecated(replacement="set_dim_size")
     def rescale_to_fit(
         self,
-        length: float | Positionable,
+        length: float,
         dim: int,
         *,
         stretch: bool = False,
@@ -2614,145 +2982,6 @@ class Positionable:
         direction = np.zeros(3)
         direction[dim] = key
         return self.get_coordinate(dim=dim, direction=direction)
-
-    # @deprecated(replacement="set_dim_size")
-    def match_dim_size(
-        self,
-        mobject: Positionable,
-        dim: int,
-        *,
-        stretch: bool = False,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-        **kwargs: Any,
-    ) -> Self:
-        return self.set_dim_size(
-            size=mobject,
-            dim=dim,
-            stretch=stretch,
-            about_point=about_point,
-            about_edge=about_edge,
-            **kwargs,
-        )
-
-    # @deprecated(replacement="set_width")
-    def match_width(
-        self,
-        mobject: Positionable,
-        *,
-        stretch: bool = False,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-        **kwargs: Any,
-    ) -> Self:
-        return self.set_width(
-            width=mobject,
-            stretch=stretch,
-            about_point=about_point,
-            about_edge=about_edge,
-            **kwargs,
-        )
-
-    # @deprecated(replacement="set_height")
-    def match_height(
-        self,
-        mobject: Positionable,
-        *,
-        stretch: bool = False,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-        **kwargs: Any,
-    ) -> Self:
-        return self.set_height(
-            height=mobject,
-            stretch=stretch,
-            about_point=about_point,
-            about_edge=about_edge,
-            **kwargs,
-        )
-
-    # @deprecated(replacement="set_depth")
-    def match_depth(
-        self,
-        mobject: Positionable,
-        *,
-        stretch: bool = False,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-        **kwargs: Any,
-    ) -> Self:
-        return self.set_depth(
-            depth=mobject,
-            stretch=stretch,
-            about_point=about_point,
-            about_edge=about_edge,
-            **kwargs,
-        )
-
-    # @deprecated(replacement="set_coordinate")
-    def match_coord(
-        self,
-        mobject: Positionable | float,
-        dim: int,
-        direction: Vector3DLike = ORIGIN,
-        **kwargs: Any,
-    ) -> Self:
-        return self.set_coordinate(
-            coordinate=mobject,
-            dim=dim,
-            direction=direction,
-            **kwargs,
-        )
-
-    # @deprecated(replacement="set_x")
-    def match_x(
-        self,
-        mobject: Positionable,
-        direction: Vector3DLike = ORIGIN,
-        **kwargs: Any,
-    ) -> Self:
-        return self.set_x(
-            x=mobject,
-            direction=direction,
-            **kwargs,
-        )
-
-    # @deprecated(replacement="set_y")
-    def match_y(
-        self,
-        mobject: Positionable,
-        direction: Vector3DLike = ORIGIN,
-        **kwargs: Any,
-    ) -> Self:
-        return self.set_y(
-            y=mobject,
-            direction=direction,
-            **kwargs,
-        )
-
-    # @deprecated(replacement="set_z")
-    def match_z(
-        self,
-        mobject: Positionable,
-        direction: Vector3DLike = ORIGIN,
-        **kwargs: Any,
-    ) -> Self:
-        return self.set_z(
-            z=mobject,
-            direction=direction,
-            **kwargs,
-        )
-
-    # @deprecated(replacement="set_points")
-    def match_points(
-        self,
-        mobject: Positionable,
-        **kwargs: Any,
-    ) -> Self:
-        return self.set_points(
-            points=mobject,
-            **kwargs,
-        )
 
     # @deprecated(replacement="rotate")
     def rotate_about_origin(
