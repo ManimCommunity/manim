@@ -138,8 +138,7 @@ class Positionable:
 
         return self.apply_to_family(func=apply, **kwargs)
 
-    # TODO: Rename to `repeat_points`
-    def repeat(self, count: int, **kwargs: Any) -> Self:
+    def repeat_points(self, count: int, **kwargs: Any) -> Self:
         """Repeats the points.
 
         Can make transition animations nicer.
@@ -3019,6 +3018,10 @@ class Positionable:
             center=center,
             **kwargs,
         )
+
+    # @deprecated(replacement="repeat_points")
+    def repeat(self, count: int, **kwargs: Any) -> Self:
+        return self.repeat_points(count=count, **kwargs)
 
     # @deprecated(replacement="has_points")
     def has_no_points(self) -> bool:
