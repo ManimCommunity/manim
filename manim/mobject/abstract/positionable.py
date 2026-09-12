@@ -172,18 +172,6 @@ class Positionable:
         """
         return len(self.points)
 
-    def has_no_points(self) -> bool:
-        """Whether this has no points.
-
-        Does not take family members into account.
-
-        Returns
-        -------
-        bool
-            Has no points.
-        """
-        return len(self.points) == 0
-
     def has_points(self) -> bool:
         """Whether this has points.
 
@@ -232,7 +220,7 @@ class Positionable:
         # TODO: Rename to `function`
         func: Callable[[Positionable], Any],
         *,
-        should_skip: Callable[[Positionable], bool] = lambda mob: mob.has_no_points(),
+        should_skip: Callable[[Positionable], bool] = lambda mob: not mob.has_points(),
         **kwargs: Any,
     ) -> Self:
         """Applies a function.
@@ -242,7 +230,7 @@ class Positionable:
         func : Callable[[Positionable], Any]
             The function.
         should_skip : Callable -> bool, optional
-            Whether a family member should be skipped., by default `has_no_points()`
+            Whether a family member should be skipped., by default `not has_points()`
 
         Returns
         -------
@@ -2469,7 +2457,7 @@ class Positionable:
         Self
             The object itself.
         """
-        # if self.has_no_points() and not mobject.submobjects:
+        # if not self.has_points() and not mobject.submobjects:
         #    raise Warning("Attempting to replace mobject with no points")
         if stretch:
             self.stretch_to_fit_width(width=mobject.get_width(), **kwargs)
@@ -3032,6 +3020,10 @@ class Positionable:
             **kwargs,
         )
 
+    # @deprecated(replacement="has_points")
+    def has_no_points(self) -> bool:
+        return not self.has_points()
+
     ###############################
     ########## UTILITIES ##########
     ###############################
@@ -3047,7 +3039,7 @@ class Positionable:
         )
 
     def throw_error_if_no_points(self) -> None:
-        if self.has_no_points():
+        if not self.has_points():
             caller_name = sys._getframe(1).f_code.co_name
             cls = type(self).__name__
             message = f"Cannot call {cls}.{caller_name} because {self!r} has no points."
