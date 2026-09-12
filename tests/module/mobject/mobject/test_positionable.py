@@ -151,31 +151,31 @@ def test_apply_matrix_about_point() -> None:
 
 def test_get_position() -> None:
     p = Positionable().set_points([(0, 0, 0), (2, 4, 0)])
-    np.testing.assert_allclose(p.get_position(RIGHT), [2, 2, 0])
+    np.testing.assert_allclose(p.get_anchor(RIGHT), [2, 2, 0])
 
 
 def test_get_position_directions() -> None:
     p = Positionable().set_points([(0, 0, 0), (2, 4, 6)])
-    np.testing.assert_allclose(p.get_position(LEFT), [0, 2, 3])
-    np.testing.assert_allclose(p.get_position(DOWN), [1, 0, 3])
+    np.testing.assert_allclose(p.get_anchor(LEFT), [0, 2, 3])
+    np.testing.assert_allclose(p.get_anchor(DOWN), [1, 0, 3])
 
 
 def test_set_position() -> None:
     p = Positionable().set_points([(0, 0, 0), (2, 2, 0)])
-    p.set_position((5, 5, 0))
+    p.set_anchor((5, 5, 0))
     np.testing.assert_allclose(p.get_center(), [5, 5, 0])
 
 
 def test_set_position_direction() -> None:
     p = Positionable().set_points([(0, 0, 0), (2, 2, 0)])
-    p.set_position((5, 5, 0), direction=UP)
+    p.set_anchor((5, 5, 0), direction=UP)
     np.testing.assert_allclose(p.get_top(), [5, 5, 0])
 
 
 def test_set_position_with_positionable() -> None:
     target = Positionable().set_points([(10, 10, 0)])
     p = Positionable().set_points([(0, 0, 0), (2, 2, 0)])
-    p.set_position(target)
+    p.set_anchor(target)
     np.testing.assert_allclose(p.get_center(), [10, 10, 0])
 
 

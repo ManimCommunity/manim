@@ -267,7 +267,7 @@ class Positionable:
         if about_point is None:
             if about_edge is None:
                 about_edge = ORIGIN
-            about_point = self.get_position(about_edge)
+            about_point = self.get_anchor(about_edge)
         else:
             # TODO: Is this required?
             # Make a copy to prevent mutation of the original array if about_point is a view
@@ -609,8 +609,8 @@ class Positionable:
     # region POSITION
     # ===============
 
-    def get_position(self, direction: Vector3DLike = ORIGIN) -> Point3D:
-        """Returns the position.
+    def get_anchor(self, direction: Vector3DLike = ORIGIN) -> Point3D:
+        """Returns the position of an anchor.
 
         Parameters
         ----------
@@ -630,13 +630,13 @@ class Positionable:
             ]
         )
 
-    def set_position(
+    def set_anchor(
         self,
         position: Point3DLike | Positionable,
         direction: Vector3DLike = ORIGIN,
         **kwargs: Any,
     ) -> Self:
-        """Sets the position.
+        """Sets the position of an anchor.
 
         Parameters
         ----------
@@ -650,9 +650,9 @@ class Positionable:
         Self
             The object itself.
         """
-        source = self.get_position(direction=direction)
+        source = self.get_anchor(direction=direction)
         if isinstance(position, Positionable):
-            position = position.get_position(direction=direction)
+            position = position.get_anchor(direction=direction)
         vector = position - source
         return self.translate(
             vector=vector,
@@ -667,7 +667,7 @@ class Positionable:
         Point3D
             The center position.
         """
-        return self.get_position(direction=ORIGIN)
+        return self.get_anchor(direction=ORIGIN)
 
     def set_center(
         self,
@@ -686,7 +686,7 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_position(
+        return self.set_anchor(
             position=center,
             direction=ORIGIN,
             **kwargs,
@@ -713,7 +713,7 @@ class Positionable:
         Point3D
             The top position.
         """
-        return self.get_position(direction=UP)
+        return self.get_anchor(direction=UP)
 
     def set_top(
         self,
@@ -732,7 +732,7 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_position(
+        return self.set_anchor(
             position=top,
             direction=UP,
             **kwargs,
@@ -746,7 +746,7 @@ class Positionable:
         Point3D
             The bottom position.
         """
-        return self.get_position(direction=DOWN)
+        return self.get_anchor(direction=DOWN)
 
     def set_bottom(
         self,
@@ -765,7 +765,7 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_position(position=bottom, direction=DOWN, **kwargs)
+        return self.set_anchor(position=bottom, direction=DOWN, **kwargs)
 
     def get_right(self) -> Point3D:
         """Returns the right position.
@@ -775,7 +775,7 @@ class Positionable:
         Point3D
             The right position.
         """
-        return self.get_position(direction=RIGHT)
+        return self.get_anchor(direction=RIGHT)
 
     def set_right(
         self,
@@ -794,7 +794,7 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_position(
+        return self.set_anchor(
             position=right,
             direction=RIGHT,
             **kwargs,
@@ -808,7 +808,7 @@ class Positionable:
         Point3D
             The left position.
         """
-        return self.get_position(direction=LEFT)
+        return self.get_anchor(direction=LEFT)
 
     def set_left(
         self,
@@ -827,7 +827,7 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_position(
+        return self.set_anchor(
             position=left,
             direction=LEFT,
             **kwargs,
@@ -841,7 +841,7 @@ class Positionable:
         Point3D
             The zenith position.
         """
-        return self.get_position(direction=OUT)
+        return self.get_anchor(direction=OUT)
 
     def set_zenith(
         self,
@@ -860,7 +860,7 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_position(
+        return self.set_anchor(
             position=zenith,
             direction=OUT,
             **kwargs,
@@ -874,7 +874,7 @@ class Positionable:
         Point3D
             The nadir position.
         """
-        return self.get_position(direction=IN)
+        return self.get_anchor(direction=IN)
 
     def set_nadir(
         self,
@@ -893,7 +893,7 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_position(
+        return self.set_anchor(
             position=nadir,
             direction=IN,
             **kwargs,
@@ -1097,7 +1097,7 @@ class Positionable:
             The object itself.
         """
         frame = (config.frame_x_radius, config.frame_y_radius, 0.0)
-        source = self.get_position(direction)
+        source = self.get_anchor(direction)
         target: Point3D = np.sign(direction) * frame
         vector = target - source - buff * np.array(direction)
         vector = vector * abs(np.sign(direction))
@@ -1135,7 +1135,7 @@ class Positionable:
             mob1.align_to(mob2, UP)
         """
         if isinstance(mobject_or_point, Positionable):
-            mobject_or_point = mobject_or_point.get_position(direction=direction)
+            mobject_or_point = mobject_or_point.get_anchor(direction=direction)
 
         all_points = self.get_all_points()
         vector = np.zeros(3)
@@ -1197,9 +1197,9 @@ class Positionable:
         aligned_edge = np.asarray(aligned_edge)
         if isinstance(mobject_or_point, Positionable):
             target_direction = aligned_edge + direction
-            mobject_or_point = mobject_or_point.get_position(direction=target_direction)
+            mobject_or_point = mobject_or_point.get_anchor(direction=target_direction)
         source_direction = aligned_edge - direction
-        source_point = self.get_position(direction=source_direction)
+        source_point = self.get_anchor(direction=source_direction)
         vector = mobject_or_point - source_point + buff * direction
         return self.translate(
             vector=vector,
@@ -1228,7 +1228,7 @@ class Positionable:
         frame = (config.frame_x_radius, config.frame_y_radius)
         for dim, edge in (1, UP), (1, DOWN), (0, LEFT), (0, RIGHT):
             max_value = frame[dim] - buff
-            edge_center = self.get_position(direction=edge)
+            edge_center = self.get_anchor(direction=edge)
             if np.dot(edge_center, edge) > max_value:
                 self.align_on_border(
                     direction=edge,
@@ -1254,7 +1254,7 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_position(
+        return self.set_anchor(
             function(self.get_center()),
             **kwargs,
         )
@@ -2153,7 +2153,7 @@ class Positionable:
             # TODO: add self.stretch_to_fit_depth(depth=mobject)
         else:
             self.scale_to_fit_dim(mobject, dim=dim_to_match, **kwargs)
-        return self.set_position(position=mobject, **kwargs)
+        return self.set_anchor(position=mobject, **kwargs)
 
     def surround(
         self,
@@ -2272,7 +2272,7 @@ class Positionable:
             max_y_2 = sample.get_critical_point(UP)[1]
             max_y_3 = sample.get_extremum_along_dim(dim=1, key=1)
         """
-        return self.get_position(direction=direction)
+        return self.get_anchor(direction=direction)
 
     def get_edge_center(self, direction: Vector3DLike) -> Point3D:
         """Returns an edge position.
@@ -2291,7 +2291,7 @@ class Positionable:
         Point3D
             The edge position.
         """
-        return self.get_position(direction=direction)
+        return self.get_anchor(direction=direction)
 
     def get_corner(self, direction: Vector3DLike) -> Point3D:
         """Returns a corner position.
@@ -2310,7 +2310,7 @@ class Positionable:
         Point3D
             The corner position.
         """
-        return self.get_position(direction=direction)
+        return self.get_anchor(direction=direction)
 
     def move_to(
         self,
@@ -2337,7 +2337,7 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_position(
+        return self.set_anchor(
             position=point_or_mobject,
             direction=aligned_edge,
             **kwargs,
