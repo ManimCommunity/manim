@@ -305,7 +305,6 @@ class LineJointType(Enum):
                     self.add(label)
     """
 
-    AUTO = 0
     ROUND = 1
     BEVEL = 2
     MITER = 3
@@ -343,7 +342,6 @@ class CapStyleType(Enum):
                     self.add(label)
     """
 
-    AUTO = 0
     ROUND = 1
     BUTT = 2
     SQUARE = 3

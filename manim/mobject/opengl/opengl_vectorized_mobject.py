@@ -113,8 +113,7 @@ class OpenGLVMobject(OpenGLMobject):
         long_lines: bool = False,
         should_subdivide_sharp_curves: bool = False,
         should_remove_null_curves: bool = False,
-        # Could also be "bevel", "miter", "round"
-        joint_type: LineJointType | None = None,
+        joint_type: LineJointType = LineJointType.MITER,
         flat_stroke: bool = True,
         render_primitive=moderngl.TRIANGLES,
         triangulation_locked: bool = False,
@@ -140,8 +139,6 @@ class OpenGLVMobject(OpenGLMobject):
         self.long_lines = long_lines
         self.should_subdivide_sharp_curves = should_subdivide_sharp_curves
         self.should_remove_null_curves = should_remove_null_curves
-        if joint_type is None:
-            joint_type = LineJointType.AUTO
         self.joint_type = joint_type
         self.flat_stroke = flat_stroke
         self.render_primitive = render_primitive
