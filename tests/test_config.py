@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 from click.testing import CliRunner
 
-from manim import RIGHT, WHITE, Scene, Square, Tex, Text, Vector, tempconfig
+from manim import BLUE, RED, RIGHT, WHITE, Scene, Square, Tex, Text, Vector, tempconfig
 from manim._config.output import OutputFormat, OutputSpec
 from manim._config.render_session import resolve_render_session
 from manim._config.utils import ManimConfig
@@ -425,6 +425,43 @@ def test_absent_cli_output_options_preserve_config_file_values(tmp_path):
     assert candidate.format == "webm"
     assert candidate.output_file == "configured-name"
     assert candidate.transparent is True
+
+
+def test_folder_wide_config_resolves_relative_to_scene_file(tmp_path, config):
+    """Regression test for #4963.
+
+    A folder-wide ``manim.cfg`` must be resolved relative to the directory
+    containing the scene file being rendered, not relative to whatever the
+    current working directory happens to be. This also checks that options
+    the scene folder's config file does *not* set fall back to the library
+    defaults, rather than leaking a stray value some other config file may
+    have set previously.
+    """
+    scene_dir = tmp_path / "project" / "src"
+    scene_dir.mkdir(parents=True)
+    scene_file = scene_dir / "scene.py"
+    scene_file.write_text("# --jupyter returns before loading this file\n")
+    (scene_dir / "manim.cfg").write_text("[CLI]\nbackground_color = RED\n")
+
+    # Simulate contamination from an unrelated config file (e.g. one found
+    # in the current working directory at import time) that set options the
+    # scene folder's config does not mention.
+    config.background_color = BLUE
+    config.pixel_height = 720
+
+    result = CliRunner().invoke(
+        render,
+        [str(scene_file), "--jupyter"],
+        standalone_mode=False,
+    )
+    assert result.exception is None
+
+    config.digest_args(result.return_value)
+
+    assert config.background_color == RED
+    # Not set by the scene folder's manim.cfg: must fall back to the
+    # library default (1080), not the contaminated value (720).
+    assert config.pixel_height == 1080
 
 
 class MyScene(Scene):
