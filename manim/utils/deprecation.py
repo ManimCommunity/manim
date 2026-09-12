@@ -503,7 +503,7 @@ def deprecated_params(
                 if len(redirector_args) > 0:
                     kwargs.update(redirector(**redirector_args))  # type: ignore[call-arg]
 
-    def deprecate_params(func: Callable[P, T], *args: Any, **kwargs: Any) -> T:
+    def deprecate_params(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:
         """The actual decorator function used to extend the callables behavior.
 
         Logs a warning message when a deprecated parameter is used and redirects it if
