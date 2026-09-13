@@ -754,6 +754,23 @@ class ManimConfig(MutableMapping):
         # flags supersede it
         if args.config_file:
             self.digest_file(args.config_file)
+        elif str(args.file) != "-":
+            # No explicit --config_file: honor a manim.cfg next to the scene
+            # file being rendered. The library-wide config file was already
+            # digested at import time together with whatever manim.cfg
+            # happened to exist in the *current working directory* (see
+            # config_file_paths()), which is not necessarily the scene
+            # file's directory. Re-digest library-wide + user-wide + the
+            # scene folder's config as one cascade so the folder-wide file
+            # is resolved relative to the scene file, not to cwd.
+            scene_folder_config = Path(args.file).resolve().parent / "manim.cfg"
+            if scene_folder_config.exists():
+                library_wide, user_wide, _ = config_file_paths()
+                parser = configparser.ConfigParser()
+                with library_wide.open() as file:
+                    parser.read_file(file)
+                parser.read([user_wide, scene_folder_config])
+                self.digest_parser(parser)
 
         # read input_file from the args if it wasn't set by the config file
         if not self.input_file:
