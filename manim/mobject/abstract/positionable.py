@@ -453,12 +453,31 @@ class Positionable:
                     vgroup = VGroup(f1, f2, f3, f4).arrange(6 * RIGHT)
                     self.add(vgroup)
         """
-        return self.apply_points_function(
-            lambda points: points.__imul__(scale_factor),
+        about_point = self._get_about_point(
             about_point=about_point,
             about_edge=about_edge,
-            **kwargs,
+            default="CENTER",
         )
+        for mob in reversed(self.get_family()):
+            mob._scale(
+                scale_factor=scale_factor,
+                about_point=about_point,
+                **kwargs,
+            )
+        return self
+
+    def _scale(
+        self,
+        # TODO: Rename to `factor`
+        scale_factor: float,
+        *,
+        about_point: Point3D,
+        **kwargs: Any,
+    ) -> Self:
+        self.points -= about_point
+        self.points *= scale_factor
+        self.points += about_point
+        return self
 
     def stretch(
         self,
@@ -606,6 +625,27 @@ class Positionable:
             about_edge=about_edge,
             **kwargs,
         )
+
+    def _get_about_point(
+        self,
+        about_point: Point3DLike | None,
+        about_edge: Vector3DLike | None,
+        default: Literal["ORIGIN", "CENTER"],
+    ) -> Point3D:
+        if about_point is None:
+            if about_edge is None:
+                if default == "ORIGIN":
+                    return ORIGIN.copy()
+                elif default == "CENTER":
+                    return self.get_anchor(direction=ORIGIN)
+                else:
+                    raise ValueError(default)
+            else:
+                return self.get_anchor(direction=about_edge)
+        else:
+            # TODO: Is this required?
+            # Make a copy to prevent mutation of the original array if about_point is a view
+            return np.array(about_point, copy=True)
 
     # =========
     # endregion

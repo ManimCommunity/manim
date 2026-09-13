@@ -995,14 +995,14 @@ class Table(VGroup):
 
         return AnimationGroup(*animations, lag_ratio=lag_ratio)
 
-    def scale(
+    def _scale(
         self, scale_factor: float, *, scale_stroke: bool = False, **kwargs: Any
     ) -> Self:
         # h_buff and v_buff must be adjusted so that Table.get_cell
         # can construct an accurate polygon for a cell.
         self.h_buff *= scale_factor
         self.v_buff *= scale_factor
-        super().scale(scale_factor, scale_stroke=scale_stroke, **kwargs)
+        super()._scale(scale_factor, scale_stroke=scale_stroke, **kwargs)
         return self
 
 

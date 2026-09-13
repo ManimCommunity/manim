@@ -15,7 +15,7 @@ import itertools as it
 import math
 import sys
 from collections.abc import Callable, Hashable, Iterable, Iterator, Mapping, Sequence
-from typing import TYPE_CHECKING, Any, Literal, cast
+from typing import TYPE_CHECKING, Any, Literal, Self, cast
 
 import numpy as np
 from PIL.Image import Image
@@ -540,22 +540,35 @@ class VMobject(Mobject):
         :meth:`move_to`
 
         """
-        if scale_stroke:
-            for mob in self.get_family():
-                if isinstance(mob, VMobject):
-                    mob.set_stroke(
-                        width=abs(scale_factor) * mob.get_stroke_width(),
-                        family=False,
-                    )
-                    mob.set_stroke(
-                        width=abs(scale_factor) * mob.get_stroke_width(background=True),
-                        background=True,
-                        family=False,
-                    )
         return super().scale(
             scale_factor,
             about_point=about_point,
             about_edge=about_edge,
+            scale_stroke=scale_stroke,
+            **kwargs,
+        )
+
+    def _scale(
+        self,
+        scale_factor: float,
+        *,
+        about_point: Point3D,
+        scale_stroke: bool = False,
+        **kwargs: Any,
+    ) -> Self:
+        if scale_stroke:
+            self.set_stroke(
+                width=abs(scale_factor) * self.get_stroke_width(),
+                family=False,
+            )
+            self.set_stroke(
+                width=abs(scale_factor) * self.get_stroke_width(background=True),
+                background=True,
+                family=False,
+            )
+        return super()._scale(
+            scale_factor,
+            about_point=about_point,
             scale_stroke=scale_stroke,
             **kwargs,
         )

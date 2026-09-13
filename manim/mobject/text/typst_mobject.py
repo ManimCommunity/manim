@@ -117,7 +117,7 @@ query either :attr:`~.Typst.baseline_frames` for all tracked leaf elements or
 
 from __future__ import annotations
 
-from manim.typing import Point3DLike, Vector3DLike
+from manim.typing import Point3D
 
 __all__ = [
     "Typst",
@@ -292,20 +292,18 @@ class Typst(SVGMobject):
         if self.height > 0:
             self.scale(val / self.font_size)
 
-    def scale(
+    def _scale(
         self,
         scale_factor: float,
         *,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_point: Point3D,
         scale_stroke: bool = False,
         **kwargs: Any,
     ) -> Self:
-        result = super().scale(
+        result = super()._scale(
             scale_factor,
             scale_stroke=scale_stroke,
             about_point=about_point,
-            about_edge=about_edge,
             **kwargs,
         )
         self._refresh_svg_stroke_widths()
