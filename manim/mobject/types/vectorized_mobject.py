@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from manim.typing import Point3D
+
 __all__ = [
     "VMobject",
     "VGroup",
@@ -1245,17 +1247,17 @@ class VMobject(Mobject):
             self.make_smooth()
         return self
 
-    def rotate(
+    def _rotate(
         self,
         angle: float,
-        axis: Vector3DLike = OUT,
+        axis: Vector3DLike,
+        matrix: np.ndarray,
         *,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_point: Point3D,
+        **kwargs: Any,
     ) -> Self:
         self.rotate_sheen_direction(angle, axis)
-        super().rotate(angle, axis, about_point=about_point, about_edge=about_edge)
-        return self
+        return super()._rotate(angle, axis, matrix, about_point=about_point, **kwargs)
 
     def scale_handle_to_anchor_distances(self, factor: float) -> Self:
         """If the distance between a given handle point H and its associated

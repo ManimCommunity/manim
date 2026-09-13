@@ -591,15 +591,35 @@ class Positionable:
 
                     self.add(VGroup(group1, group2, group3).arrange(RIGHT, buff=1))
         """
-        if about_point is None and about_edge is None:
-            about_edge = ORIGIN
-        matrix = rotation_matrix(angle, axis)
-        return self.apply_matrix(
-            matrix=matrix,
+        about_point = self._get_about_point(
             about_point=about_point,
             about_edge=about_edge,
-            **kwargs,
+            default="CENTER",
         )
+        matrix = rotation_matrix(angle, axis)
+        for mob in reversed(self.get_family()):
+            mob._rotate(
+                angle=angle,
+                axis=axis,
+                matrix=matrix,
+                about_point=about_point,
+                **kwargs,
+            )
+        return self
+
+    def _rotate(
+        self,
+        angle: float,
+        axis: Vector3DLike,
+        matrix: np.ndarray,
+        *,
+        about_point: Point3D,
+        **kwargs: Any,
+    ) -> Self:
+        self.points -= about_point
+        self.points @= matrix.T
+        self.points += about_point
+        return self
 
     def apply_matrix(
         self,
