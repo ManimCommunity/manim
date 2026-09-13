@@ -14,7 +14,7 @@ __all__ = [
     "RightAngle",
 ]
 
-from typing import TYPE_CHECKING, Any, Literal, Self, cast
+from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
 
@@ -607,13 +607,11 @@ class Arrow(Line):
         self.add_tip(tip_shape=tip_shape)
         self._set_stroke_width_from_length()
 
+    # TODO: Switch to `_scale` override
     def scale(
         self,
         scale_factor: float,
         *,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-        scale_stroke: bool = False,
         scale_tips: bool = False,
         **kwargs: Any,
     ) -> Self:
@@ -644,33 +642,18 @@ class Arrow(Line):
             False
 
         """
-        return super().scale(
-            scale_factor,
-            about_point=about_point,
-            about_edge=about_edge,
-            scale_stroke=scale_stroke,
-            scale_tips=scale_tips,
-            **kwargs,
-        )
-
-    def _scale(
-        self, scale_factor: float, *, scale_tips: bool = False, **kwargs: Any
-    ) -> Self:
         if self.get_length() == 0:
             return self
 
         if scale_tips:
-            super()._scale(scale_factor, scale_tips=scale_tips, **kwargs)
-            self._set_stroke_width_from_length()
-            return self
+            return super().scale(scale_factor, scale_tips=scale_tips, **kwargs)
 
         has_tip = self.has_tip()
         has_start_tip = self.has_start_tip()
         if has_tip or has_start_tip:
             old_tips = self.pop_tips()
 
-        super()._scale(scale_factor, scale_tips=scale_tips, **kwargs)
-        self._set_stroke_width_from_length()
+        result = super().scale(scale_factor, scale_tips=scale_tips, **kwargs)
 
         if has_tip:
             # error: Argument "tip" to "add_tip" of "TipableVMobject" has incompatible type "VMobject"; expected "ArrowTip | None"  [arg-type]
@@ -678,7 +661,7 @@ class Arrow(Line):
         if has_start_tip:
             # error: Argument "tip" to "add_tip" of "TipableVMobject" has incompatible type "VMobject"; expected "ArrowTip | None"  [arg-type]
             self.add_tip(tip=cast(ArrowTip, old_tips[1]), at_start=True)
-        return self
+        return result
 
     def get_normal_vector(self) -> Vector3D:
         """Returns the normal of a vector.
