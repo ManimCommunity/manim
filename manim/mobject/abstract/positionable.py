@@ -405,10 +405,13 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.apply_to_family(
-            func=lambda mob: mob.points.__iadd__(vector),
-            **kwargs,
-        )
+        for mob in reversed(self.get_family()):
+            mob._translate(vector=vector, **kwargs)
+        return self
+
+    def _translate(self, vector: Vector3DLike, **kwargs: Any) -> Self:
+        self.points += vector
+        return self
 
     def scale(
         self,
