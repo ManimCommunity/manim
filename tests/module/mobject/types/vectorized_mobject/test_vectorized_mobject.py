@@ -172,6 +172,24 @@ def test_curves_as_submobjects_point_from_proportion():
     with pytest.raises(Exception, match="have no points"):
         obj.point_from_proportion(0)
 
+
+def test_curves_as_submobjects_error_messages_use_actual_class_name():
+    """Regression test for #4983: error messages should name the actual
+    (sub)class, not hardcode "CurvesAsSubmobjects".
+    """
+
+    class MyCurvesAsSubmobjects(CurvesAsSubmobjects):
+        pass
+
+    obj = MyCurvesAsSubmobjects(VGroup())
+
+    with pytest.raises(Exception, match="MyCurvesAsSubmobjects.*with no submobjects"):
+        obj.point_from_proportion(0)
+
+    obj.add(VMobject())
+    with pytest.raises(Exception, match="MyCurvesAsSubmobjects.*have no points"):
+        obj.point_from_proportion(0)
+
     # submobject[0] is a line of length 4
     obj.submobjects[0].set_points_as_corners(
         [
