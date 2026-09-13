@@ -404,12 +404,30 @@ class Positionable:
         -------
         Self
             The object itself.
+
+
+        .. note::
+           Derived classes should override the :meth:`_translate` method for custom logic.
         """
         for mob in reversed(self.get_family()):
             mob._translate(vector=vector, **kwargs)
         return self
 
     def _translate(self, vector: Vector3DLike, **kwargs: Any) -> Self:
+        """Applies a translation.
+
+        Does not affect family members.
+
+        Parameters
+        ----------
+        vector : Vector3DLike
+            The vector.
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         self.points += vector
         return self
 
@@ -452,6 +470,9 @@ class Positionable:
 
                     vgroup = VGroup(f1, f2, f3, f4).arrange(6 * RIGHT)
                     self.add(vgroup)
+
+        .. note::
+            Derived classes should override the :meth:`_scale` method for custom logic.
         """
         about_point = self._get_about_point(
             about_point=about_point,
@@ -474,6 +495,22 @@ class Positionable:
         about_point: Point3D,
         **kwargs: Any,
     ) -> Self:
+        """Applies a uniform scaling.
+
+        Does not affect family members.
+
+        Parameters
+        ----------
+        scale_factor : float
+            The scale factor.
+        about_point : Point3D
+            About which point to scale.
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         self.points -= about_point
         self.points *= scale_factor
         self.points += about_point
@@ -505,6 +542,9 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        .. note::
+            Derived classes should override the :meth:`_stretch` method for custom logic.
         """
         about_point = self._get_about_point(
             about_point=about_point,
@@ -528,6 +568,24 @@ class Positionable:
         about_point: Point3D,
         **kwargs: Any,
     ) -> Self:
+        """Applies a non-uniform scaling.
+
+        Does not affect family members.
+
+        Parameters
+        ----------
+        factor : float
+            The factor.
+        dim : int
+            The dimension.
+        about_point : Point3D
+            About which point to stretch.
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         self.points -= about_point
         self.points[:, dim] *= factor
         self.points += about_point
@@ -568,6 +626,9 @@ class Positionable:
             from the initial state to the final rotated state
             (interpolation between the two states), without showing proper rotational motion
             based on the angle (from 0 to the given angle).
+
+        .. note::
+            Derived classes should override the :meth:`_stretch` method for custom logic.
 
         Example
         -------
@@ -616,6 +677,26 @@ class Positionable:
         about_point: Point3D,
         **kwargs: Any,
     ) -> Self:
+        """Applies a rotation.
+
+        Does not affect family members.
+
+        Parameters
+        ----------
+        angle : float
+            The angle.
+        axis : Vector3DLike
+            The axis.
+        matrix : np.ndarray
+            The matrix.
+        about_point : Point3D
+            About which point to rotate.
+
+        Returns
+        -------
+        Self
+            The object itself.
+        """
         self.points -= about_point
         self.points @= matrix.T
         self.points += about_point
