@@ -617,18 +617,6 @@ class Arrow(Line):
         scale_tips: bool = False,
         **kwargs: Any,
     ) -> Self:
-        return super().scale(
-            scale_factor,
-            about_point=about_point,
-            about_edge=about_edge,
-            scale_stroke=scale_stroke,
-            scale_tips=scale_tips,
-            **kwargs,
-        )
-
-    def _scale(
-        self, scale_factor: float, *, scale_tips: bool = False, **kwargs: Any
-    ) -> Self:
         r"""Scale an arrow, but keep stroke width and arrow tip size fixed.
 
 
@@ -656,6 +644,18 @@ class Arrow(Line):
             False
 
         """
+        return super().scale(
+            scale_factor,
+            about_point=about_point,
+            about_edge=about_edge,
+            scale_stroke=scale_stroke,
+            scale_tips=scale_tips,
+            **kwargs,
+        )
+
+    def _scale(
+        self, scale_factor: float, *, scale_tips: bool = False, **kwargs: Any
+    ) -> Self:
         if self.get_length() == 0:
             return self
 
