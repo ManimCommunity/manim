@@ -506,17 +506,32 @@ class Positionable:
         Self
             The object itself.
         """
-
-        def func(points: Point3D_Array) -> Point3D_Array:
-            points[:, dim] *= factor
-            return points
-
-        return self.apply_points_function(
-            func=func,
+        about_point = self._get_about_point(
             about_point=about_point,
             about_edge=about_edge,
-            **kwargs,
+            default="CENTER",
         )
+        for mob in reversed(self.get_family()):
+            mob._stretch(
+                factor=factor,
+                dim=dim,
+                about_point=about_point,
+                **kwargs,
+            )
+        return self
+
+    def _stretch(
+        self,
+        factor: float,
+        dim: int,
+        *,
+        about_point: Point3D,
+        **kwargs: Any,
+    ) -> Self:
+        self.points -= about_point
+        self.points[:, dim] *= factor
+        self.points += about_point
+        return self
 
     def rotate(
         self,
