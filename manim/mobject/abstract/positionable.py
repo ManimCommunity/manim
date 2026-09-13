@@ -645,21 +645,37 @@ class Positionable:
         Self
             The object itself.
         """
-        # Default to applying matrix about the origin, not mobjects center
-        if about_point is None and about_edge is None:
-            about_point = ORIGIN
+        about_point = self._get_about_point(
+            about_point=about_point,
+            about_edge=about_edge,
+            default="ORIGIN",
+        )
         matrix = np.asarray(matrix)
         if matrix.shape == (3, 3):
             full_matrix = matrix
         else:
             full_matrix = np.identity(3)
             full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
-        return self.apply_points_function(
-            func=lambda points: np.dot(points, full_matrix.T),
-            about_point=about_point,
-            about_edge=about_edge,
-            **kwargs,
-        )
+
+        for mob in reversed(self.get_family()):
+            mob._apply_matrix(
+                matrix=full_matrix,
+                about_point=about_point,
+                **kwargs,
+            )
+        return self
+
+    def _apply_matrix(
+        self,
+        matrix: np.ndarray,
+        *,
+        about_point: Point3D,
+        **kwargs: Any,
+    ) -> Self:
+        self.points -= about_point
+        self.points @= matrix.T
+        self.points += about_point
+        return self
 
     def _get_about_point(
         self,
