@@ -9,10 +9,14 @@ from typing import Any, Self
 from manim import logger
 from manim._config import config
 from manim.constants import (
+    DL,
     DOWN,
+    DR,
     LEFT,
     RIGHT,
     SMALL_BUFF,
+    UL,
+    UR,
 )
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RoundedRectangle

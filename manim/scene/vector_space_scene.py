@@ -674,7 +674,7 @@ class LinearTransformationScene(VectorScene):
             },
         }
 
-        self.ghost_vectors = VGroup()
+        self.ghost_vectors: VGroup[VGroup[Vector]] = VGroup()
 
         self.foreground_plane_kwargs: dict[str, Any] = {
             "x_range": np.array([-config["frame_width"], config["frame_width"], 1.0]),

@@ -167,7 +167,7 @@ class Code(VGroup[VMobjectT], metaclass=ConvertToOpenGL):
         "line_spacing": 0.5,
         "disable_ligatures": True,
     }
-    code: VMobject
+    code: VMobjectT
 
     def __init__(
         self,

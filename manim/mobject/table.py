@@ -352,7 +352,7 @@ class Table(VGroup[VMobjectT]):
                 mob_table.insert(0, self.col_labels)
         return mob_table
 
-    def _add_horizontal_lines(self) -> Table:
+    def _add_horizontal_lines(self) -> Self:
         """Adds the horizontal lines to the table."""
         anchor_left = self.get_left()[0] - 0.5 * self.h_buff
         anchor_right = self.get_right()[0] + 0.5 * self.h_buff
@@ -386,7 +386,7 @@ class Table(VGroup[VMobjectT]):
         self.horizontal_lines = line_group
         return self
 
-    def _add_vertical_lines(self) -> Table:
+    def _add_vertical_lines(self) -> Self:
         """Adds the vertical lines to the table"""
         anchor_top = self.get_rows().get_top()[1] + 0.5 * self.v_buff
         anchor_bottom = self.get_rows().get_bottom()[1] - 0.5 * self.v_buff

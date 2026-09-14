@@ -211,7 +211,7 @@ class Paragraph(VGroup[VMobjectT]):
                 char_index_counter += 1
         return chars
 
-    def _set_all_lines_alignments(self, alignment: str) -> Paragraph:
+    def _set_all_lines_alignments(self, alignment: str) -> Self:
         """Function to set all line's alignment to a specific value.
 
         Parameters
@@ -223,7 +223,7 @@ class Paragraph(VGroup[VMobjectT]):
             self._change_alignment_for_a_line(alignment, line_no)
         return self
 
-    def _set_line_alignment(self, alignment: str, line_no: int) -> Paragraph:
+    def _set_line_alignment(self, alignment: str, line_no: int) -> Self:
         """Function to set one line's alignment to a specific value.
 
         Parameters
@@ -236,7 +236,7 @@ class Paragraph(VGroup[VMobjectT]):
         self._change_alignment_for_a_line(alignment, line_no)
         return self
 
-    def _set_all_lines_to_initial_positions(self) -> Paragraph:
+    def _set_all_lines_to_initial_positions(self) -> Self:
         """Set all lines to their initial positions."""
         self.lines_alignments = [None] * len(self.lines_chars)
         for line_no in range(len(self.lines_chars)):
@@ -245,7 +245,7 @@ class Paragraph(VGroup[VMobjectT]):
             )
         return self
 
-    def _set_line_to_initial_position(self, line_no: int) -> Paragraph:
+    def _set_line_to_initial_position(self, line_no: int) -> Self:
         """Function to set one line to initial positions.
 
         Parameters
