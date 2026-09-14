@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from manim import BarChart, DecimalNumber, Text, VGroup
+from manim import BarChart, DecimalNumber, VGroup
 
 
 def _number_groups(axis):
@@ -17,14 +17,16 @@ def _number_groups(axis):
 def test_barchart_y_axis_include_numbers_false():
     chart = BarChart(
         values=[1, 2, 3],
-        y_axis_config={"include_numbers": False, "label_constructor": Text},
+        y_axis_config={"include_numbers": False},
     )
     assert _number_groups(chart.y_axis) == []
 
 
 def test_barchart_y_axis_numbers_are_added_once():
+    # Keep the default label constructor: DecimalNumber caches digit mobjects
+    # globally by string, so a non-default one here leaks into later tests.
     chart = BarChart(
         values=[1, 2, 3],
-        y_axis_config={"include_numbers": True, "label_constructor": Text},
+        y_axis_config={"include_numbers": True},
     )
     assert len(_number_groups(chart.y_axis)) == 1
