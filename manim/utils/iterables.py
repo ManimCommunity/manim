@@ -35,8 +35,8 @@ import numpy as np
 T = TypeVar("T")
 U = TypeVar("U")
 F = TypeVar("F", np.float64, np.int_)
-H = TypeVar("H", bound=Hashable)
-J = TypeVar("J", bound=Hashable)
+H1 = TypeVar("H1", bound=Hashable)
+H2 = TypeVar("H2", bound=Hashable)
 
 
 if TYPE_CHECKING:
@@ -136,8 +136,8 @@ def concatenate_lists(*list_of_lists: Iterable[T]) -> list[T]:
 
 @overload
 def list_difference_update(
-    l1: Iterable[H], l2: Iterable[J], *, key: None = None
-) -> list[H]: ...
+    l1: Iterable[H1], l2: Iterable[H2], *, key: None = None
+) -> list[H1]: ...
 @overload
 def list_difference_update(
     l1: Iterable[T],
@@ -186,8 +186,8 @@ def list_difference_update(
 
 @overload
 def list_update(
-    l1: Iterable[H], l2: Iterable[J], *, key: None = None
-) -> list[H | J]: ...
+    l1: Iterable[H1], l2: Iterable[H2], *, key: None = None
+) -> list[H1 | H2]: ...
 @overload
 def list_update(
     l1: Iterable[T],
@@ -321,7 +321,7 @@ def make_even_by_cycling(
     )
 
 
-def remove_list_redundancies(lst: Reversible[H]) -> list[H]:
+def remove_list_redundancies(lst: Reversible[H1]) -> list[H1]:
     """Used instead of ``list(set(l))`` to maintain order.
     Keeps the last occurrence of each element.
     """
