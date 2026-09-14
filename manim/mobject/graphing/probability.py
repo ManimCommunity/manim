@@ -212,7 +212,7 @@ class SampleSpace(Rectangle):
                     self.add(getattr(parts, subattr))
         return self
 
-    def __getitem__(self, index: Any) -> VMobject:
+    def __getitem__(self, index: int | slice) -> VMobject:
         if hasattr(self, "horizontal_parts"):
             return self.horizontal_parts[index]
         elif hasattr(self, "vertical_parts"):

@@ -15,11 +15,10 @@ import itertools as it
 import math
 import sys
 from collections.abc import Callable, Hashable, Iterable, Iterator, Mapping, Sequence
-from typing import TYPE_CHECKING, Any, Generic, Literal, Self, cast
+from typing import TYPE_CHECKING, Any, Generic, Literal, Self, TypeVar, cast, overload
 
 import numpy as np
 from PIL.Image import Image
-from typing_extensions import TypeVar
 
 from manim import config
 from manim.constants import *
@@ -2252,9 +2251,12 @@ class VGroup(VMobject, Generic[VMobjectT], metaclass=ConvertToOpenGL):
             f"submobject{'' if len(self.submobjects) == 1 else 's'}"
         )
 
+    # TODO: submobject modifiers such as add() or setters might use VMobjectT instead,
+    # but using VMobjectT on add() currently causes typing issues
+
     def add(
         self,
-        *vmobjects: VMobject | Iterable[VMobject],  # TODO: use VMobjectT instead?
+        *vmobjects: VMobject | Iterable[VMobject],
     ) -> Self:
         """Checks if all passed elements are an instance, or iterables of VMobject and then adds them to submobjects
 
@@ -2365,21 +2367,21 @@ class VGroup(VMobject, Generic[VMobjectT], metaclass=ConvertToOpenGL):
 
         return super().add(*valid_vmobjects)
 
-    def __add__(self, vmobject: VMobjectT) -> Self:
+    def __add__(self, vmobject: VMobject) -> Self:
         return VGroup(*self.submobjects, vmobject)
 
-    def __iadd__(self, vmobject: VMobjectT) -> Self:
+    def __iadd__(self, vmobject: VMobject) -> Self:
         return self.add(vmobject)
 
-    def __sub__(self, vmobject: VMobjectT) -> Self:
+    def __sub__(self, vmobject: VMobject) -> Self:
         copy = VGroup(*self.submobjects)
         copy.remove(vmobject)
         return copy
 
-    def __isub__(self, vmobject: VMobjectT) -> Self:
+    def __isub__(self, vmobject: VMobject) -> Self:
         return self.remove(vmobject)
 
-    def __setitem__(self, key: int, value: VMobjectT | Sequence[VMobjectT]) -> None:
+    def __setitem__(self, key: int, value: VMobject | Sequence[VMobject]) -> None:
         """Override the [] operator for item assignment.
 
         Parameters
@@ -2403,7 +2405,13 @@ class VGroup(VMobject, Generic[VMobjectT], metaclass=ConvertToOpenGL):
         self._assert_valid_submobjects(tuplify(value))
         self.submobjects[key] = value
 
-    def __getitem__(self, key: int | slice) -> VMobjectT:
+    @overload
+    def __getitem__(self, key: int) -> VMobjectT: ...
+
+    @overload
+    def __getitem__(self, key: slice) -> VGroup[VMobjectT]: ...
+
+    def __getitem__(self, key: int | slice) -> VMobjectT | VGroup[VMobjectT]:
         return cast(VMobject, super().__getitem__(key))
 
 
