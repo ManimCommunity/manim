@@ -20,6 +20,7 @@ __all__ = [
 
 import itertools as it
 from collections.abc import (
+    Callable,
     Collection,
     Generator,
     Hashable,
@@ -27,7 +28,7 @@ from collections.abc import (
     Reversible,
     Sequence,
 )
-from typing import TYPE_CHECKING, Callable, TypeVar, overload
+from typing import TYPE_CHECKING, TypeVar, cast, overload
 
 import numpy as np
 
@@ -57,7 +58,7 @@ def adjacent_n_tuples(objects: Sequence[T], n: int) -> zip[tuple[T, ...]]:
         >>> list(adjacent_n_tuples([1, 2, 3, 4], 3))
         [(1, 2, 3), (2, 3, 4), (3, 4, 1), (4, 1, 2)]
     """
-    return zip(*([*objects[k:], *objects[:k]] for k in range(n)))
+    return zip(*([*objects[k:], *objects[:k]] for k in range(n)), strict=True)
 
 
 def adjacent_pairs(objects: Sequence[T]) -> zip[tuple[T, ...]]:
@@ -132,7 +133,7 @@ def concatenate_lists(*list_of_lists: Iterable[T]) -> list[T]:
     return [item for lst in list_of_lists for item in lst]
 
 
-def list_difference_update(l1: Iterable[T], l2: Iterable[T]) -> list[T]:
+def list_difference_update(l1: Iterable[T], l2: Iterable[U]) -> list[T]:
     """Returns a list containing all the elements of l1 not in l2.
 
     Examples
@@ -142,10 +143,11 @@ def list_difference_update(l1: Iterable[T], l2: Iterable[T]) -> list[T]:
         >>> list_difference_update([1, 2, 3, 4], [2, 4])
         [1, 3]
     """
+    l2 = set(l2)
     return [e for e in l1 if e not in l2]
 
 
-def list_update(l1: Iterable[T], l2: Iterable[T]) -> list[T]:
+def list_update(l1: Iterable[T], l2: Iterable[U]) -> list[T | U]:
     """Used instead of ``set.update()`` to maintain order,
         making sure duplicates are removed from l1, not l2.
         Removes overlap of l1 and l2 and then concatenates l2 unchanged.
@@ -157,7 +159,8 @@ def list_update(l1: Iterable[T], l2: Iterable[T]) -> list[T]:
         >>> list_update([1, 2, 3], [2, 4, 4])
         [1, 3, 2, 4, 4]
     """
-    return [e for e in l1 if e not in l2] + list(l2)
+    l2 = list(l2)
+    return list_difference_update(l1, l2) + cast(list[T | U], l2)
 
 
 @overload

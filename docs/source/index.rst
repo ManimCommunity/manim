@@ -21,8 +21,11 @@ in the right place!
 
 .. note::
 
-   Please be aware that there are different, incompatible versions
-   of Manim available. Check our :ref:`installation FAQ <different-versions>`
+   Please be aware that there are different, incompatible versions of Manim available.
+   This version, the Community Edition of Manim (`ManimCE <https://github.com/ManimCommunity/manim>`_),
+   is a separate project maintained by the community, but it was forked from `3b1b/manim <https://github.com/3b1b/manim>`_,
+   the original Manim created and open-sourced by Grant Sanderson, creator of `3Blue1Brown <https://www.youtube.com/channel/UCYO_jab_esuFRV4b17AJtAw>`_ educational math videos.
+   Check our :ref:`installation FAQ <different-versions>`
    to learn more!
 
 - The :doc:`Installation <installation>` section has the latest and
@@ -90,6 +93,21 @@ We'd love to hear from you and see your manimations
 or `Discord <https://www.manim.community/discord/>`_. If you're using Manim in a scientific
 context, instructions on how to cite a particular release can be found
 `in our README <https://github.com/ManimCommunity/manim/blob/main/README.md>`_.
+
+License Information
+-------------------
+
+Manim is an open-source library licensed under the **MIT License**, which applies to both the
+original and the community editions of the software. This means you are free to use, modify,
+and distribute the code in accordance with the MIT License terms. However, there are some
+additional points to be aware of:
+
+- **Copyrighted Assets:** Specific assets, such as the "Pi creatures" in Grant Sanderson's
+  (3Blue1Brown) videos, are copyrighted and protected. Please avoid using these characters in
+  any derivative works.
+- **Content Creation and Sharing:** Videos and animations created with Manim can be freely
+  shared, and no attribution to Manim is required—although it is much appreciated! You are
+  encouraged to showcase your work online and share it with the Manim community.
 
 Index
 -----

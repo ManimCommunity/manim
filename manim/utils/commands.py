@@ -4,8 +4,11 @@ import os
 from collections.abc import Generator
 from pathlib import Path
 from subprocess import run
+from typing import TypedDict
 
 import av
+
+from manim.typing import StrOrBytesPath
 
 __all__ = [
     "capture",
@@ -14,7 +17,11 @@ __all__ = [
 ]
 
 
-def capture(command, cwd=None, command_input=None):
+def capture(
+    command: str | list[str],
+    cwd: StrOrBytesPath | None = None,
+    command_input: str | None = None,
+) -> tuple[str, str, int]:
     p = run(
         command,
         cwd=cwd,
@@ -27,7 +34,17 @@ def capture(command, cwd=None, command_input=None):
     return out, err, p.returncode
 
 
-def get_video_metadata(path_to_video: str | os.PathLike) -> dict[str]:
+class VideoMetadata(TypedDict):
+    width: int
+    height: int
+    nb_frames: str
+    duration: str
+    avg_frame_rate: str
+    codec_name: str
+    pix_fmt: str
+
+
+def get_video_metadata(path_to_video: str | os.PathLike) -> VideoMetadata:
     with av.open(str(path_to_video)) as container:
         stream = container.streams.video[0]
         ctxt = stream.codec_context

@@ -6,6 +6,16 @@ from pathlib import Path
 import numpy as np
 
 from manim import WHITE, Scene, Square, tempconfig
+from manim._config.render_session import resolve_render_session
+from manim.renderer.protocol import RendererCapabilities
+
+
+def _resolve_output(config):
+    return resolve_render_session(
+        config,
+        RendererCapabilities(live_preview=True),
+        renderer_name="TestRenderer",
+    ).output
 
 
 def test_tempconfig(config, using_opengl_renderer):
@@ -112,15 +122,12 @@ def test_frame_size_if_frame_width(config, using_opengl_renderer, tmp_path):
 
 def test_temporary_dry_run(config, using_opengl_renderer):
     """Test that tempconfig correctly restores after setting dry_run."""
-    assert config["write_to_movie"]
-    assert not config["save_last_frame"]
+    assert _resolve_output(config).is_video
 
     with tempconfig({"dry_run": True}):
-        assert not config["write_to_movie"]
-        assert not config["save_last_frame"]
+        assert not _resolve_output(config).enabled
 
-    assert config["write_to_movie"]
-    assert not config["save_last_frame"]
+    assert _resolve_output(config).is_video
 
 
 def test_dry_run_with_png_format(config, using_opengl_renderer, dry_run):
@@ -135,7 +142,7 @@ def test_dry_run_with_png_format_skipped_animations(
     config, using_opengl_renderer, dry_run
 ):
     """Test that there are no exceptions when running a png without output and skipped animations"""
-    config.write_to_movie = False
+    config.format = "png"
     config.disable_caching = True
     assert config["dry_run"] is True
     scene = MyScene(skip_animations=True)

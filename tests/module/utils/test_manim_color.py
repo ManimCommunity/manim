@@ -45,6 +45,18 @@ def test_init_with_hex() -> None:
     nt.assert_array_equal(color._internal_value, np.array([1, 0, 0, 0]))
 
 
+def test_init_with_hex_short() -> None:
+    color = ManimColor("#F00")
+    nt.assert_array_equal(color._internal_value, np.array([1, 0, 0, 1]))
+    color = ManimColor("0xF00")
+    nt.assert_array_equal(color._internal_value, np.array([1, 0, 0, 1]))
+
+    color = ManimColor("#F000")
+    nt.assert_array_equal(color._internal_value, np.array([1, 0, 0, 0]))
+    color = ManimColor("0xF000")
+    nt.assert_array_equal(color._internal_value, np.array([1, 0, 0, 0]))
+
+
 def test_init_with_string() -> None:
     color = ManimColor("BLACK")
     nt.assert_array_equal(color._internal_value, BLACK._internal_value)
@@ -104,9 +116,19 @@ def test_to_hsv() -> None:
 
 def test_to_hsl() -> None:
     color = ManimColor((0x1, 0x2, 0x3, 0x4))
-    nt.assert_array_equal(
-        color.to_hsl(), colorsys.rgb_to_hls(0x1 / 255, 0x2 / 255, 0x3 / 255)
-    )
+    hls = colorsys.rgb_to_hls(0x1 / 255, 0x2 / 255, 0x3 / 255)
+
+    nt.assert_array_equal(color.to_hsl(), np.array([hls[0], hls[2], hls[1]]))
+
+
+def test_from_hsl() -> None:
+    hls = colorsys.rgb_to_hls(0x1 / 255, 0x2 / 255, 0x3 / 255)
+    hsl = np.array([hls[0], hls[2], hls[1]])
+
+    color = ManimColor.from_hsl(hsl)
+    rgb = np.array([0x1 / 255, 0x2 / 255, 0x3 / 255])
+
+    nt.assert_allclose(color.to_rgb(), rgb)
 
 
 def test_invert() -> None:

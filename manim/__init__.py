@@ -1,9 +1,16 @@
 #!/usr/bin/env python
 from __future__ import annotations
 
-from importlib.metadata import version
+from importlib.metadata import PackageNotFoundError, version
 
-__version__ = version(__name__)
+# Use installed distribution version if available; otherwise fall back to a
+# sensible default so that importing from a source checkout works without an
+# editable install (pip install -e .).
+try:
+    __version__ = version(__name__)
+except PackageNotFoundError:
+    # Package is not installed; provide a fallback version string.
+    __version__ = "0.0.0+unknown"
 
 
 # isort: off
@@ -40,6 +47,7 @@ from .camera.moving_camera import *
 from .camera.multi_camera import *
 from .camera.three_d_camera import *
 from .constants import *
+from .manager import *
 from .mobject.frame import *
 from .mobject.geometry.arc import *
 from .mobject.geometry.boolean_ops import *
@@ -66,6 +74,7 @@ from .mobject.text.code_mobject import *
 from .mobject.text.numbers import *
 from .mobject.text.tex_mobject import *
 from .mobject.text.text_mobject import *
+from .mobject.text.typst_mobject import *
 from .mobject.three_d.polyhedra import *
 from .mobject.three_d.three_d_utils import *
 from .mobject.three_d.three_dimensions import *

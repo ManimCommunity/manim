@@ -3,9 +3,12 @@ from __future__ import annotations
 import contextlib
 import logging
 import warnings
+from collections.abc import Generator
 from pathlib import Path
 
 import numpy as np
+
+from manim.typing import PixelArray
 
 from ._show_diff import show_diff_helper
 
@@ -16,7 +19,7 @@ logger = logging.getLogger("manim")
 
 
 class _FramesTester:
-    def __init__(self, file_path: Path, show_diff=False) -> None:
+    def __init__(self, file_path: Path, show_diff: bool = False) -> None:
         self._file_path = file_path
         self._show_diff = show_diff
         self._frames: np.ndarray
@@ -24,7 +27,7 @@ class _FramesTester:
         self._frames_compared = 0
 
     @contextlib.contextmanager
-    def testing(self):
+    def testing(self) -> Generator[None, None, None]:
         with np.load(self._file_path) as data:
             self._frames = data["frame_data"]
             # For backward compatibility, when the control data contains only one frame (<= v0.8.0)
@@ -38,7 +41,7 @@ class _FramesTester:
                 f"when there are {self._number_frames} control frames for this test."
             )
 
-    def check_frame(self, frame_number: int, frame: np.ndarray):
+    def check_frame(self, frame_number: int, frame: PixelArray) -> None:
         assert frame_number < self._number_frames, (
             f"The tested scene is at frame number {frame_number} "
             f"when there are {self._number_frames} control frames."
@@ -86,17 +89,17 @@ class _ControlDataWriter(_FramesTester):
         self._number_frames_written: int = 0
 
     # Actually write a frame.
-    def check_frame(self, index: int, frame: np.ndarray):
+    def check_frame(self, index: int, frame: PixelArray) -> None:
         frame = frame[np.newaxis, ...]
         self.frames = np.concatenate((self.frames, frame))
         self._number_frames_written += 1
 
     @contextlib.contextmanager
-    def testing(self):
+    def testing(self) -> Generator[None, None, None]:
         yield
         self.save_contol_data()
 
-    def save_contol_data(self):
+    def save_contol_data(self) -> None:
         self.frames = self.frames.astype("uint8")
         np.savez_compressed(self.file_path, frame_data=self.frames)
         logger.info(

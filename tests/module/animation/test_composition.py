@@ -5,14 +5,16 @@ from unittest.mock import MagicMock
 import pytest
 
 from manim.animation.animation import Animation, Wait
-from manim.animation.composition import AnimationGroup, Succession
+from manim.animation.composition import AnimationGroup, LaggedStartMap, Succession
 from manim.animation.creation import Create, Write
 from manim.animation.fading import FadeIn, FadeOut
 from manim.constants import DOWN, UP
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RegularPolygon, Square
+from manim.mobject.types.vectorized_mobject import VGroup
 from manim.scene.scene import Scene
+from manim.utils.rate_functions import linear, there_and_back
 
 
 def test_succession_timing():
@@ -169,6 +171,59 @@ def test_animationgroup_is_passing_remover_to_nested_animationgroups():
     assert sqr_animation.remover
     assert circ_animation.remover
     assert polygon_animation.remover
+
+
+def test_animationgroup_calls_finish():
+    class MyAnimation(Animation):
+        def __init__(self, mobject):
+            super().__init__(mobject)
+            self.finished = False
+
+        def finish(self):
+            self.finished = True
+
+    scene = Scene()
+    sqr_animation = MyAnimation(Square())
+    circ_animation = MyAnimation(Circle())
+    animation_group = AnimationGroup(sqr_animation, circ_animation)
+    scene.play(animation_group)
+    assert sqr_animation.finished
+    assert circ_animation.finished
+
+
+def test_laggedstartmap_only_passes_kwargs_to_subanimations():
+    mobject = VGroup(Square(), Circle())
+    animation = LaggedStartMap(
+        FadeIn,
+        mobject,
+        rate_func=there_and_back,
+        lag_ratio=0.3,
+    )
+
+    assert animation.rate_func is linear
+    assert animation.lag_ratio == 0.3
+    assert all(
+        subanimation.rate_func is there_and_back
+        for subanimation in animation.animations
+    )
+
+
+def test_laggedstartmap_default_arg_creator_keeps_submobject_whole():
+    inner1 = VGroup(Square(), Square())
+    inner2 = VGroup(Circle(), Circle())
+    outer = VGroup(inner1, inner2)
+
+    received_args = []
+
+    class RecordingAnimation(Animation):
+        def __init__(self, *args, **kwargs):
+            received_args.append(args)
+            super().__init__(args[0], **kwargs)
+
+    LaggedStartMap(RecordingAnimation, outer)
+
+    assert all(len(args) == 1 for args in received_args)
+    assert [args[0] for args in received_args] == [inner1, inner2]
 
 
 def test_empty_animation_group_fails():

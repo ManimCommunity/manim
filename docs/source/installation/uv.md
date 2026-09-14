@@ -143,8 +143,63 @@ the instructions below.
 
 ::::::{tab-set}
 
-:::::{tab-item} MacOS & Windows
+:::::{tab-item} Windows
 The following commands will
+
+- create a new directory for a Python project,
+- and add Manim as a dependency, which installs it into the corresponding
+  local Python environment.
+
+The name for the Python project is *manimations*, which you can change
+to anything you like.
+
+```bash
+uv init manimations
+cd manimations
+uv add manim
+```
+
+Manim is now installed in your local project environment!
+
+:::{tip}
+If `uv add manim` reports that Microsoft Visual C++ is required, install the
+[Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
+In the Visual Studio Installer, select the **Desktop development with C++**
+workload. After the installation finishes, open a new terminal and run
+`uv add manim` again.
+:::
+
+:::::
+
+:::::{tab-item} MacOS
+Before we can install Manim, we need to make sure that the system utilities
+`cairo` and `pkg-config` are present. They are needed for the [`pycairo` Python
+package](https://pycairo.readthedocs.io/en/latest/), a dependency of Manim.
+
+The easiest way of installing these utilities is by using [Homebrew](https://brew.sh/),
+a fairly popular 3rd party package manager for MacOS. Check whether Homebrew is
+already installed by running
+
+```bash
+brew --version
+```
+
+which will report something along the lines of `Homebrew 4.4.15-54-...`
+if it is installed, and a message `command not found: brew` otherwise. In this
+case, use the shell installer [as instructed on Homebrew's website](https://brew.sh/),
+or get a `.pkg`-installer from
+[their GitHub release page](https://github.com/Homebrew/brew/releases). Make sure to
+follow the instructions of the installer carefully, especially when prompted to
+modify your `.zprofile` to add Homebrew to your system's PATH.
+
+With Homebrew available, the required utilities can be installed by running
+
+```bash
+brew install cairo pkg-config
+```
+
+With all of this preparation out of the way, now it is time to actually install
+Manim itself! The following commands will
 
 - create a new directory for a Python project,
 - and add Manim as a dependency, which installs it into the corresponding
@@ -164,7 +219,7 @@ Manim is now installed in your local project environment!
 :::::
 
 :::::{tab-item} Linux
-Practically, the instructions given in the *MacOS & Windows* tab
+Practically, the instructions given in the *Windows* tab
 also apply for Linux -- however, some additional dependencies are
 required as Linux users need to build
 [ManimPango](https://github.com/ManimCommunity/ManimPango)
@@ -214,6 +269,20 @@ uv add manim
 :::::
 
 ::::::
+
+:::{dropdown} Optional: Add Typst support
+
+To render text and mathematical expressions with [Typst](https://typst.app/),
+add Manim's optional `typst` dependency to your project:
+
+```bash
+uv add "manim[typst]"
+```
+
+This dependency includes the Typst compiler, so no separate system-level Typst
+installation is required. See the {ref}`Typst section in the text guide <rendering-with-typst>`
+for examples.
+:::
 
 To verify that your local Python project is setup correctly
 and that Manim is available, simply run
@@ -281,4 +350,14 @@ version satisfies the requirement. Change the line to, for example
 `requires-python = ">=3.12"`. After that, run `uv python pin 3.12`
 to pin the python version to `3.12`. Finally, run `uv sync`, and your
 environment is updated!
+:::
+
+:::{dropdown} Installing the latest development version
+If you want to install the latest (potentially unstable!)
+development version of Manim from our source repository
+[on GitHub](https://github.com/ManimCommunity/manim), then
+simply run
+```bash
+uv add git+https://github.com/ManimCommunity/manim.git@main
+```
 :::

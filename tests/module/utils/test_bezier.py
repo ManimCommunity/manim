@@ -10,6 +10,8 @@ from manim.utils.bezier import (
     _get_subdivision_matrix,
     get_quadratic_approximation_of_cubic,
     get_smooth_cubic_bezier_handle_points,
+    interpolate,
+    is_closed,
     partial_bezier_points,
     split_bezier,
     subdivide_bezier,
@@ -214,4 +216,36 @@ def test_get_quadratic_approximation_of_cubic() -> None:
                 [5, -3, 0],
             ]
         ),
+    )
+
+
+def test_interpolate() -> None:
+    """Test that :func:`interpolate` handles interpolation of both float and uint8 values."""
+    start = 127.0
+    end = 25.0
+    alpha = 0.2
+    val = interpolate(start, end, alpha)
+    assert np.allclose(val, 106.6000000)
+
+    start = np.array(127, dtype=np.uint8)
+    end = np.array(25, dtype=np.uint8)
+    alpha = 0.09739
+    val = interpolate(start, end, alpha)
+    assert np.allclose(val, np.array([117.06622]))
+
+
+def test_is_closed_in_negative_space() -> None:
+    """:func:`is_closed` must use ``abs`` in its relative tolerance.
+
+    It hand-rolls ``np.allclose``; without ``abs`` on the reference term the
+    tolerance ``atol + rtol * start`` goes negative once a start coordinate is
+    below ``-1e-3``, so an exactly closed curve shifted into negative space was
+    misclassified as open.
+    """
+    closed = np.array([[-5.0, 0.0, 0.0], [1.0, 2.0, 3.0], [-5.0, 0.0, 0.0]])
+    assert is_closed(closed)
+    # A positive-space control and an open curve stay correct.
+    assert is_closed(np.array([[5.0, 0.0, 0.0], [1.0, 2.0, 3.0], [5.0, 0.0, 0.0]]))
+    assert not is_closed(
+        np.array([[-5.0, 0.0, 0.0], [1.0, 2.0, 3.0], [-5.0, 0.0, 1.0]])
     )
