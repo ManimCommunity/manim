@@ -231,9 +231,10 @@ def _make_test_comparing_frames(
                 ),  # testRenderer(file_writer_class=file_writer_class),
             )
             scene_tested = sceneTested(skip_animations=True)
-            scene_tested.render()
-            if last_frame:
-                frames_tester.check_frame(-1, scene_tested.renderer.get_frame())
+            with scene_tested._get_manager():
+                scene_tested.render()
+                if last_frame:
+                    frames_tester.check_frame(-1, scene_tested.renderer.get_frame())
 
     return real_test
 
