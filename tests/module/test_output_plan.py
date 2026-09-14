@@ -56,13 +56,15 @@ def _output(
 def test_resolve_video_plan(tmp_path, output_format, extension):
     layout = _layout(tmp_path)
 
+    output = _output(output_format)
     plan = resolve_output_plan(
         layout,
-        _output(output_format),
+        output,
         scene_name="ExampleScene",
         requested_output_name=None,
     )
 
+    assert plan.output is output
     assert plan.primary_artifact == layout.video_dir / f"ExampleScene{extension}"
     assert plan.fallback_image is None
     assert plan.segment_cache_dir == layout.partial_movie_dir

@@ -148,3 +148,46 @@ def test_triangulation_ring_connection():
     assert len(triangulation) % 3 == 0
     assert min(triangulation) >= 0
     assert max(triangulation) < len(verts)
+
+
+@pytest.mark.parametrize(
+    ("vec", "expected"),
+    [
+        (np.array([1, 2, 3]), [0.26726124, 0.53452248, 0.80178373]),
+        ((-1, -2, -3), [-0.26726124, -0.53452248, -0.80178373]),
+        ((0.1, 0.1, 0), [0.70710678, 0.70710678, 0]),
+        (np.array([10]), [1]),
+        (
+            np.array([0, 1, 2, 3, 4, 5]),
+            [0, 0.13483997, 0.26967994, 0.40451992, 0.53935989, 0.67419986],
+        ),
+    ],
+)
+def test_normalize_nonzero_vector(vec, expected):
+    normalized_vec = normalize(vec)
+    assert np.allclose(normalized_vec, expected)
+
+    # check that fallback vector is ignored when the input vector is non-zero
+    fallback_vec = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    normalized_vec_with_fallback = normalize(vec, fall_back=fallback_vec)
+    assert np.all(normalized_vec_with_fallback == normalized_vec)
+
+
+@pytest.mark.parametrize(
+    "vec",
+    [
+        np.array([0, 0, 0]),
+        np.array([-0, -0, -0]),
+        (0, 0, 0),
+        np.array([0]),
+        np.array([0, 0, 0, 0, 0]),
+    ],
+)
+def test_normalize_zero_vector(vec):
+    normalized_zero_vec = normalize(vec)
+    assert np.allclose(normalized_zero_vec, np.zeros(len(vec)))
+
+    # check that fallback vector is returned when the input vector is zero
+    fallback_vec = np.array([1, 0, 0])
+    normalized_zero_vec_with_fallback = normalize(vec, fall_back=fallback_vec)
+    assert np.allclose(normalized_zero_vec_with_fallback, fallback_vec)

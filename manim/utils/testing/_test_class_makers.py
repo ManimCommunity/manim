@@ -6,7 +6,7 @@ from typing import Any
 from manim.renderer.cairo_renderer import CairoRenderer
 from manim.renderer.opengl_renderer import OpenGLRenderer
 from manim.scene.scene import Scene
-from manim.scene.scene_file_writer import SceneFileWriter
+from manim.scene.scene_file_writer import SceneFileWriter, _SceneFileWriterSettings
 from manim.typing import PixelArray, StrPath
 
 from ._frames_testers import _FramesTester
@@ -44,20 +44,19 @@ def _make_test_renderer_class(from_renderer: type) -> Any:
 class DummySceneFileWriter(SceneFileWriter):
     """Delegate of SceneFileWriter used to test the frames."""
 
-    def __init__(
-        self,
-        renderer: CairoRenderer | OpenGLRenderer,
-        scene_name: str,
-        **kwargs: Any,
-    ) -> None:
-        super().__init__(renderer, scene_name, **kwargs)
+    def __init__(self, settings: _SceneFileWriterSettings) -> None:
+        super().__init__(settings)
         self.i = 0
 
     def add_partial_movie_file(self, hash_animation: str | None) -> None:
         pass
 
     def begin_animation(
-        self, allow_write: bool = True, file_path: StrPath | None = None
+        self,
+        allow_write: bool = True,
+        *,
+        animation_index: int,
+        file_path: StrPath | None = None,
     ) -> Any:
         pass
 
@@ -70,21 +69,14 @@ class DummySceneFileWriter(SceneFileWriter):
     def combine_to_section_videos(self) -> None:
         pass
 
-    def clean_cache(self) -> None:
-        pass
-
-    def write_frame(
-        self, frame_or_renderer: PixelArray | OpenGLRenderer, num_frames: int = 1
-    ) -> None:
+    def write_frame(self, pixels: PixelArray, *, repeat: int = 1) -> None:
         self.i += 1
 
 
 def _make_scene_file_writer_class(tester: _FramesTester) -> type[SceneFileWriter]:
     class TestSceneFileWriter(DummySceneFileWriter):
-        def write_frame(
-            self, frame_or_renderer: PixelArray | OpenGLRenderer, num_frames: int = 1
-        ) -> None:
-            tester.check_frame(self.i, frame_or_renderer)
-            super().write_frame(frame_or_renderer, num_frames=num_frames)
+        def write_frame(self, pixels: PixelArray, *, repeat: int = 1) -> None:
+            tester.check_frame(self.i, pixels)
+            super().write_frame(pixels, repeat=repeat)
 
     return TestSceneFileWriter

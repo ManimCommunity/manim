@@ -54,6 +54,14 @@ def test_tempconfig(config):
             assert config[k] == v
 
 
+def test_max_files_cached_uses_minus_one_for_unlimited(config):
+    config.max_files_cached = -1
+    assert config.max_files_cached == -1
+
+    with pytest.raises(ValueError, match="non-negative integer or -1"):
+        config.max_files_cached = float("inf")
+
+
 def test_tempconfig_restores_renderer_class_bases(config):
     with tempconfig({"renderer": "opengl"}):
         assert config.renderer == RendererType.OPENGL
@@ -222,6 +230,143 @@ def test_format_is_loaded_from_config_file(tmp_path, config):
     config.digest_file(config_file)
 
     assert config.format == "png-sequence"
+
+
+def test_render_session_resolves_configured_encoder_profile(config):
+    config.format = "mov"
+    config.video_codec = "qtrle"
+    config.pixel_format = "argb"
+    config.video_encoder_options = {"threads": "1"}
+
+    encoder = _resolve_session(config).video_encoder
+
+    assert encoder is not None
+    assert encoder.codec == "qtrle"
+    assert encoder.pixel_format == "argb"
+    assert encoder.options == (("threads", "1"),)
+
+
+def test_video_encoder_profile_is_loaded_from_config_file(tmp_path, config):
+    config_file = tmp_path / "encoder.cfg"
+    config_file.write_text(
+        """\
+[video_encoder]
+codec = libx264
+pixel_format = yuv444p
+
+[video_encoder.options]
+crf = 18
+preset = veryslow
+tune = animation, film: grain
+""",
+    )
+
+    config.digest_file(config_file)
+
+    assert config.video_codec == "libx264"
+    assert config.pixel_format == "yuv444p"
+    assert config.video_encoder_options == {
+        "crf": "18",
+        "preset": "veryslow",
+        "tune": "animation, film: grain",
+    }
+
+
+def test_media_loglevel_is_loaded_from_media_section(tmp_path, config):
+    config_file = tmp_path / "media.cfg"
+    config_file.write_text("[media]\nloglevel = DEBUG\n")
+
+    config.digest_file(config_file)
+
+    assert config.media_loglevel == "DEBUG"
+    with pytest.raises(AttributeError):
+        _ = config.ffmpeg_loglevel
+
+
+def test_video_encoder_options_are_copied(config):
+    supplied = {"crf": "18"}
+    config.video_encoder_options = supplied
+    supplied["crf"] = "30"
+    assert config.video_encoder_options == {"crf": "18"}
+
+    returned = config.video_encoder_options
+    returned["crf"] = "40"
+    assert config.video_encoder_options == {"crf": "18"}
+
+
+def test_encoder_cli_options_replace_config_file_map(tmp_path, config):
+    scene_file = tmp_path / "trivial_scene.py"
+    scene_file.write_text("# --jupyter returns before importing this file\n")
+    config_file = tmp_path / "encoder.cfg"
+    config_file.write_text(
+        """\
+[video_encoder]
+codec = qtrle
+pixel_format = argb
+
+[video_encoder.options]
+predictor = 1
+""",
+    )
+    runner = CliRunner()
+    common_args = [
+        str(scene_file),
+        "--jupyter",
+        "--config_file",
+        str(config_file),
+    ]
+
+    result = runner.invoke(
+        render,
+        [
+            *common_args,
+            "--video-codec",
+            "libx264",
+            "--pixel-format",
+            "yuv420p",
+            "--encoder-option",
+            "crf=18",
+            "--encoder-option",
+            "tune=animation=film",
+        ],
+        standalone_mode=False,
+    )
+    assert result.exit_code == 0, result.output
+    with tempconfig({}):
+        config.digest_args(result.return_value)
+        assert config.video_codec == "libx264"
+        assert config.pixel_format == "yuv420p"
+        assert config.video_encoder_options == {
+            "crf": "18",
+            "tune": "animation=film",
+        }
+
+    result = runner.invoke(render, common_args, standalone_mode=False)
+    assert result.exit_code == 0, result.output
+    with tempconfig({}):
+        config.digest_args(result.return_value)
+        assert config.video_codec == "qtrle"
+        assert config.pixel_format == "argb"
+        assert config.video_encoder_options == {"predictor": "1"}
+
+
+@pytest.mark.parametrize(
+    "options",
+    [
+        ["--encoder-option", "missing-separator"],
+        ["--encoder-option", "=missing-key"],
+        ["--encoder-option", "missing-value="],
+        ["--encoder-option", "crf=18", "--encoder-option", "crf=20"],
+    ],
+)
+def test_encoder_cli_options_reject_malformed_or_duplicate_entries(tmp_path, options):
+    scene_file = tmp_path / "trivial_scene.py"
+    scene_file.touch()
+
+    result = CliRunner().invoke(render, [str(scene_file), *options])
+
+    assert result.exit_code == 2
+    assert "Invalid value" in result.output
 
 
 def test_cli_distinguishes_preview_from_live_preview(tmp_path):

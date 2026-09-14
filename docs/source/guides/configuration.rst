@@ -180,6 +180,25 @@ and serve the same purpose.  Take, for example, the following config file.
 Config files are parsed with the standard python library ``configparser``. In
 particular, they will ignore any line that starts with a pound symbol ``#``.
 
+Video encoder profiles use dedicated sections because codec options are arbitrary
+key/value pairs:
+
+.. code-block:: ini
+
+   [video_encoder]
+   codec = libx264
+   pixel_format = yuv420p
+
+   [video_encoder.options]
+   crf = 18
+   preset = slow
+
+``codec`` and ``pixel_format`` default to ``auto``. Manim resolves them from the
+output format and whether alpha is required. The equivalent CLI options are
+``--video-codec``, ``--pixel-format``, and repeatable
+``--encoder-option KEY=VALUE``. If any ``--encoder-option`` is supplied, the CLI
+option map replaces the complete ``[video_encoder.options]`` map.
+
 Now, executing the following command
 
 .. code-block:: bash

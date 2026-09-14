@@ -5,6 +5,7 @@ import re
 import sys
 from typing import TYPE_CHECKING
 
+from click import BadParameter
 from cloup import Choice, IntRange, option, option_group
 
 from manim.constants import QUALITIES, RendererType
@@ -61,6 +62,35 @@ def validate_scene_range(
         sys.exit()
 
     return start, end
+
+
+def validate_encoder_options(
+    ctx: Context,
+    param: Option,
+    value: tuple[str, ...],
+) -> dict[str, str] | None:
+    """Parse repeatable ``KEY=VALUE`` encoder options."""
+    if not value:
+        return None
+
+    options: dict[str, str] = {}
+    for entry in value:
+        key, separator, option_value = entry.partition("=")
+        key = key.strip()
+        if not separator or not key or not option_value:
+            raise BadParameter(
+                "encoder options must use KEY=VALUE with nonempty key and value",
+                ctx=ctx,
+                param=param,
+            )
+        if key in options:
+            raise BadParameter(
+                f"encoder option {key!r} was supplied more than once",
+                ctx=ctx,
+                param=param,
+            )
+        options[key] = option_value
+    return options
 
 
 def validate_resolution(
@@ -179,6 +209,27 @@ render_options = option_group(
         type=float,
         default=None,
         help="Render at this frame rate.",
+    ),
+    option(
+        "--video-codec",
+        "video_codec",
+        default=None,
+        help="Video encoder used for cached segments (default: auto).",
+    ),
+    option(
+        "--pixel-format",
+        "pixel_format",
+        default=None,
+        help="Pixel format used for cached segments (default: auto).",
+    ),
+    option(
+        "--encoder-option",
+        "video_encoder_options",
+        multiple=True,
+        default=None,
+        callback=validate_encoder_options,
+        metavar="KEY=VALUE",
+        help="Set a codec option; repeat to set multiple options.",
     ),
     option(
         "--max-inflight-encoders",

@@ -51,6 +51,7 @@ if TYPE_CHECKING:
     from manim.animation.animation import Animation
     from manim.mobject.mobject import Mobject, _AnimationBuilder
     from manim.scene.scene import Scene
+    from manim.scene.scene_file_writer import _SceneFileWriterSettings
     from manim.typing import (
         FloatRGBA,
         PathFuncType,
@@ -520,7 +521,12 @@ class OpenGLRenderer:
         self.path_to_texture_id: dict[str, int] = {}
         self.background_color = config["background_color"]
 
-    def init_scene(self, scene: Scene, session_spec: RenderSessionSpec) -> None:
+    def init_scene(
+        self,
+        scene: Scene,
+        session_spec: RenderSessionSpec,
+        file_writer_settings: _SceneFileWriterSettings,
+    ) -> None:
         """
         Initializes the OpenGL rendering context and related resources
         for the given scene.
@@ -538,10 +544,7 @@ class OpenGLRenderer:
         """
         self.partial_movie_files: list[str | None] = []
         self.file_writer: SceneFileWriter = self._file_writer_class(
-            self,
-            scene.__class__.__name__,
-            output_spec=session_spec.output,
-            output_plan=scene.output_plan,
+            file_writer_settings,
         )
         self.scene = scene
 
@@ -832,16 +835,23 @@ class OpenGLRenderer:
         """
         # TODO: Handle data locking / unlocking.
         self.animation_start_time = time.time()
-        self.file_writer.begin_animation(not self.skip_animations)
+        self.file_writer.begin_animation(
+            not self.skip_animations,
+            animation_index=self.num_plays,
+        )
 
         scene.compile_animation_data(*animations, **kwargs)
         scene.begin_animations()
         if scene.is_current_animation_frozen_frame():
             self.update_frame(scene)
 
-            if not self.skip_animations:
+            output = self.file_writer.output_spec
+            if not self.skip_animations and (
+                output.is_video or output.is_image_sequence
+            ):
                 self.file_writer.write_frame(
-                    self, num_frames=int(config.frame_rate * scene.duration)
+                    self.get_frame(),
+                    repeat=int(config.frame_rate * scene.duration),
                 )
 
             if self.window is not None:
@@ -901,7 +911,9 @@ class OpenGLRenderer:
         if self.skip_animations:
             return
 
-        self.file_writer.write_frame(self)
+        output = self.file_writer.output_spec
+        if output.is_video or output.is_image_sequence:
+            self.file_writer.write_frame(self.get_frame())
 
         if self.window is not None:
             self.window.swap_buffers()
@@ -967,7 +979,7 @@ class OpenGLRenderer:
         if self.should_save_last_frame():
             if self.num_plays > 0:
                 self.update_frame(scene)
-            self.file_writer.save_image(self.get_image())
+            self.file_writer.save_image(self.get_frame())
 
     def should_save_last_frame(self) -> bool:
         """
@@ -1127,8 +1139,7 @@ class OpenGLRenderer:
 
         result_dimensions = (pixel_shape[1], pixel_shape[0], 4)
         np_buf = np.frombuffer(raw, dtype="uint8").reshape(result_dimensions)
-        np_buf = np.flipud(np_buf)
-        return np_buf
+        return np.flipud(np_buf).copy()
 
     # Returns offset from the bottom left corner in pixels.
     # top_left flag should be set to True when using a GUI framework

@@ -11,6 +11,15 @@ import manim.utils.hashing as hashing
 from manim import ImageMobject, Square
 
 ALREADY_PROCESSED_PLACEHOLDER = hashing._Memoizer.ALREADY_PROCESSED_PLACEHOLDER
+_CACHE_IDENTITY = {
+    "backend": "cairo",
+    "encoder_fingerprint": "encoder-token",
+    "renderer_state": (),
+}
+
+
+def _play_hash(*args):
+    return hashing.get_hash_from_play_call(*args, **_CACHE_IDENTITY)
 
 
 def test_JSON_basic():
@@ -254,13 +263,13 @@ def test_play_hash_includes_mobject_pixels_but_not_camera_pixels():
     camera = HashableObject("camera", np.arange(8, dtype=np.uint8))
     mobject = ImageMobject(np.zeros((8, 8, 4), dtype=np.uint8))
 
-    original = hashing.get_hash_from_play_call(scene, camera, [], [mobject])
+    original = _play_hash(scene, camera, [], [mobject])
     mobject.pixel_array[4, 4, 0] ^= 1
-    assert hashing.get_hash_from_play_call(scene, camera, [], [mobject]) != original
+    assert _play_hash(scene, camera, [], [mobject]) != original
 
     mobject.pixel_array[4, 4, 0] ^= 1
     camera.pixel_array[0] ^= 1
-    assert hashing.get_hash_from_play_call(scene, camera, [], [mobject]) == original
+    assert _play_hash(scene, camera, [], [mobject]) == original
 
 
 def test_play_hash_keeps_distinct_mobjects_with_equal_python_hashes():
@@ -278,9 +287,51 @@ def test_play_hash_keeps_distinct_mobjects_with_equal_python_hashes():
     camera = CollidingObject("camera")
     mobjects = [CollidingObject("first"), CollidingObject("second")]
 
-    original = hashing.get_hash_from_play_call(scene, camera, [], mobjects)
+    original = _play_hash(scene, camera, [], mobjects)
     mobjects[1].name = "changed"
-    assert hashing.get_hash_from_play_call(scene, camera, [], mobjects) != original
+    assert _play_hash(scene, camera, [], mobjects) != original
+
+
+def test_play_hash_includes_backend_encoder_and_renderer_state():
+    class HashableObject:
+        def __init__(self, value):
+            self.value = value
+
+    scene = HashableObject("scene")
+    camera = HashableObject("camera")
+
+    def cache_key(*, backend="cairo", encoder="encoder", **renderer_state):
+        return hashing.get_hash_from_play_call(
+            scene,
+            camera,
+            [],
+            [],
+            backend=backend,
+            encoder_fingerprint=encoder,
+            renderer_state=renderer_state,
+        )
+
+    renderer_state = {
+        "meshes": [HashableObject("mesh")],
+        "background_color": np.array([0.0, 0.0, 0.0, 1.0]),
+        "anti_alias_width": 1.5,
+    }
+    original = cache_key(**renderer_state)
+    changed_inputs = [
+        cache_key(backend="opengl", **renderer_state),
+        cache_key(encoder="other", **renderer_state),
+        cache_key(**{**renderer_state, "meshes": [HashableObject("changed")]}),
+        cache_key(
+            **{
+                **renderer_state,
+                "background_color": np.array([1.0, 0.0, 0.0, 1.0]),
+            },
+        ),
+        cache_key(**{**renderer_state, "anti_alias_width": 2.0}),
+    ]
+
+    assert len(original) == 64
+    assert all(changed != original for changed in changed_inputs)
 
 
 def test_JSON_with_tuple():
