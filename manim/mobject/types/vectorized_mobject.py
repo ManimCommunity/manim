@@ -2254,7 +2254,7 @@ class VGroup(VMobject, Generic[VMobjectT], metaclass=ConvertToOpenGL):
 
     def add(
         self,
-        *vmobjects: VMobject | Iterable[VMobject],
+        *vmobjects: VMobject | Iterable[VMobject],  # TODO: use VMobjectT instead?
     ) -> Self:
         """Checks if all passed elements are an instance, or iterables of VMobject and then adds them to submobjects
 
@@ -2365,21 +2365,21 @@ class VGroup(VMobject, Generic[VMobjectT], metaclass=ConvertToOpenGL):
 
         return super().add(*valid_vmobjects)
 
-    def __add__(self, vmobject: VMobject) -> Self:
+    def __add__(self, vmobject: VMobjectT) -> Self:
         return VGroup(*self.submobjects, vmobject)
 
-    def __iadd__(self, vmobject: VMobject) -> Self:
+    def __iadd__(self, vmobject: VMobjectT) -> Self:
         return self.add(vmobject)
 
-    def __sub__(self, vmobject: VMobject) -> Self:
+    def __sub__(self, vmobject: VMobjectT) -> Self:
         copy = VGroup(*self.submobjects)
         copy.remove(vmobject)
         return copy
 
-    def __isub__(self, vmobject: VMobject) -> Self:
+    def __isub__(self, vmobject: VMobjectT) -> Self:
         return self.remove(vmobject)
 
-    def __setitem__(self, key: int, value: VMobject | Sequence[VMobject]) -> None:
+    def __setitem__(self, key: int, value: VMobjectT | Sequence[VMobjectT]) -> None:
         """Override the [] operator for item assignment.
 
         Parameters
@@ -2403,7 +2403,7 @@ class VGroup(VMobject, Generic[VMobjectT], metaclass=ConvertToOpenGL):
         self._assert_valid_submobjects(tuplify(value))
         self.submobjects[key] = value
 
-    def __getitem__(self, key: int | slice) -> VMobject:
+    def __getitem__(self, key: int | slice) -> VMobjectT:
         return cast(VMobject, super().__getitem__(key))
 
 
