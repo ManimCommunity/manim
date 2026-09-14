@@ -40,7 +40,7 @@ from ..utils.color import (
     color_to_rgb,
     rgb_to_color,
 )
-from ..utils.rate_functions import ease_out_sine, linear
+from ..utils.rate_functions import RateFunction, ease_out_sine, linear
 from ..utils.simple_functions import sigmoid
 
 if TYPE_CHECKING:
@@ -130,9 +130,9 @@ class VectorField(VGroup[VMobjectT]):
 
     @staticmethod
     def shift_func(
-        func: MappingFunction,
+        func: Callable[[Point3D], Vector3D],
         shift_vector: Vector3D,
-    ) -> MappingFunction:
+    ) -> Callable[[Point3D], Vector3D]:
         """Shift a vector field function.
 
         Parameters
@@ -152,9 +152,9 @@ class VectorField(VGroup[VMobjectT]):
 
     @staticmethod
     def scale_func(
-        func: MappingFunction,
+        func: Callable[[Point3D], Vector3D],
         scalar: float,
-    ) -> MappingFunction:
+    ) -> Callable[[Point3D], Vector3D]:
         """Scale a vector field function.
 
         Parameters
@@ -552,9 +552,9 @@ class ArrowVectorField(VectorField[Vector]):
 
     def __init__(
         self,
-        func: MappingFunction,
+        func: Callable[[Point3D], Vector3D],
         color: ParsableManimColor | None = None,
-        color_scheme: Callable[[npt.NDArray], float] | None = None,
+        color_scheme: Callable[[Vector3D], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[ParsableManimColor] = DEFAULT_SCALAR_FIELD_COLORS,
@@ -726,9 +726,9 @@ class StreamLines(VectorField[VMobjectT]):
 
     def __init__(
         self,
-        func: MappingFunction,
+        func: Callable[[Point3D], Vector3D],
         color: ParsableManimColor | None = None,
-        color_scheme: Callable[[npt.NDArray], float] | None = None,
+        color_scheme: Callable[[Vector3D], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[ParsableManimColor] = DEFAULT_SCALAR_FIELD_COLORS,
@@ -927,7 +927,7 @@ class StreamLines(VectorField[VMobjectT]):
         warm_up: bool = True,
         flow_speed: float = 1,
         time_width: float = 0.3,
-        rate_func: Callable[[float], float] = linear,
+        rate_func: RateFunction = linear,
         line_animation_class: type[ShowPassingFlash] = ShowPassingFlash,
         **kwargs,
     ) -> Self:
