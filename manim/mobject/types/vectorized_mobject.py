@@ -15,10 +15,11 @@ import itertools as it
 import math
 import sys
 from collections.abc import Callable, Hashable, Iterable, Iterator, Mapping, Sequence
-from typing import TYPE_CHECKING, Any, Generic, Literal, Self, TypeVar, cast, overload
+from typing import TYPE_CHECKING, Any, Generic, Literal, Self, cast, overload
 
 import numpy as np
 from PIL.Image import Image
+from typing_extensions import TypeVar
 
 from manim import config
 from manim.constants import *
