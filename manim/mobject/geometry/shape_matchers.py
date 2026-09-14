@@ -9,11 +9,14 @@ from typing import Any, Self
 from manim import logger
 from manim._config import config
 from manim.constants import (
+    DL,
     DOWN,
+    DR,
     LEFT,
     RIGHT,
     SMALL_BUFF,
-    UP,
+    UL,
+    UR,
 )
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RoundedRectangle
@@ -150,7 +153,7 @@ class BackgroundRectangle(SurroundingRectangle):
         return self
 
 
-class Cross(VGroup):
+class Cross(VGroup[Line]):
     """Creates a cross.
 
     Parameters
@@ -183,9 +186,7 @@ class Cross(VGroup):
         scale_factor: float = 1.0,
         **kwargs: Any,
     ) -> None:
-        super().__init__(
-            Line(UP + LEFT, DOWN + RIGHT), Line(UP + RIGHT, DOWN + LEFT), **kwargs
-        )
+        super().__init__(Line(UL, DR), Line(UR, DL), **kwargs)
         if mobject is not None:
             self.replace(mobject, stretch=True)
         self.scale(scale_factor)

@@ -15,10 +15,11 @@ import itertools as it
 import math
 import sys
 from collections.abc import Callable, Hashable, Iterable, Iterator, Mapping, Sequence
-from typing import TYPE_CHECKING, Any, Literal, cast
+from typing import TYPE_CHECKING, Any, Generic, Literal, Self, cast, overload
 
 import numpy as np
 from PIL.Image import Image
+from typing_extensions import TypeVar
 
 from manim import config
 from manim.constants import *
@@ -48,8 +49,6 @@ from manim.utils.iterables import (
 from manim.utils.space_ops import rotate_vector, shoelace_direction
 
 if TYPE_CHECKING:
-    from typing import Self
-
     import numpy.typing as npt
 
     from manim.typing import (
@@ -2176,7 +2175,10 @@ class VMobject(Mobject):
         return self
 
 
-class VGroup(VMobject, metaclass=ConvertToOpenGL):
+VMobjectT = TypeVar("VMobjectT", bound=VMobject, default=VMobject)
+
+
+class VGroup(VMobject, Generic[VMobjectT], metaclass=ConvertToOpenGL):
     """A group of vectorized mobjects.
 
     This can be used to group multiple :class:`~.VMobject` instances together
@@ -2236,7 +2238,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
     """
 
     def __init__(
-        self, *vmobjects: VMobject | Iterable[VMobject], **kwargs: Any
+        self, *vmobjects: VMobjectT | Iterable[VMobjectT], **kwargs: Any
     ) -> None:
         super().__init__(**kwargs)
         self.add(*vmobjects)
@@ -2249,6 +2251,9 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
             f"{self.__class__.__name__} of {len(self.submobjects)} "
             f"submobject{'' if len(self.submobjects) == 1 else 's'}"
         )
+
+    # TODO: submobject modifiers such as add() or setters might use VMobjectT instead,
+    # but using VMobjectT on add() currently causes typing issues
 
     def add(
         self,
@@ -2401,7 +2406,13 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         self._assert_valid_submobjects(tuplify(value))
         self.submobjects[key] = value
 
-    def __getitem__(self, key: int | slice) -> VMobject:
+    @overload
+    def __getitem__(self, key: int) -> VMobjectT: ...
+
+    @overload
+    def __getitem__(self, key: slice) -> VGroup[VMobjectT]: ...
+
+    def __getitem__(self, key: int | slice) -> VMobjectT | VGroup[VMobjectT]:
         return cast(VMobject, super().__getitem__(key))
 
 
@@ -2782,7 +2793,7 @@ class VectorizedPoint(VMobject, metaclass=ConvertToOpenGL):
         return self
 
 
-class CurvesAsSubmobjects(VGroup):
+class CurvesAsSubmobjects(VGroup[VMobject]):
     """Convert a curve's elements to submobjects.
 
     Examples

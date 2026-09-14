@@ -20,7 +20,7 @@ from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create, SpiralIn
 from ..animation.fading import FadeIn
 from ..mobject.svg.svg_mobject import VMobjectFromSVGPath
-from ..mobject.types.vectorized_mobject import VGroup
+from ..mobject.types.vectorized_mobject import VGroup, VMobjectT
 from ..utils.rate_functions import ease_in_out_cubic, smooth
 
 MANIM_SVG_PATHS: list[se.Path] = [
@@ -104,7 +104,7 @@ MANIM_SVG_PATHS: list[se.Path] = [
 ]
 
 
-class ManimBanner(VGroup):
+class ManimBanner(VGroup[VMobjectT]):
     r"""Convenience class representing Manim's banner.
 
     Can be animated using custom methods.

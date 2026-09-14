@@ -141,6 +141,14 @@ Typing guidelines
        from manim.typing import Vector3D
    # type stuff with Vector3D
 
+* When typing something like ``VGroup``, type it as if it were a list, not as if it was a tuple.
+
+.. code:: py
+    # not VGroup[Line, Line]
+    def get_two_lines() -> VGroup[Line]:
+        return VGroup(Line(), Line().shift(LEFT))
+
+
 Missing Sections for typehints are:
 -----------------------------------
 
