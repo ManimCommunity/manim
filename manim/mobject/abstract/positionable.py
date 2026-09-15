@@ -249,6 +249,7 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        default_point: Literal["ORIGIN", "OBJECT_CENTER"] = "OBJECT_CENTER",
         **kwargs: Any,
     ) -> Self:
         """Applies a points function.
@@ -267,24 +268,21 @@ class Positionable:
         Self
             The object itself.
         """
-        if about_point is None:
-            if about_edge is None:
-                about_edge = ORIGIN
-            about_point = self.get_anchor(about_edge)
-        else:
-            # TODO: Is this required?
-            # Make a copy to prevent mutation of the original array if about_point is a view
-            about_point = np.array(about_point, copy=True)
+        about_point = self._get_about_point(
+            about_point=about_point,
+            about_edge=about_edge,
+            default=default_point,
+        )
+        # TODO: Do we really need this?
+        # Make a copy to prevent mutation of the original array if about_point is a view
+        about_point = np.array(about_point, copy=True)
 
         def apply(mob: Positionable) -> None:
             mob.points -= about_point
             mob.points = func(mob.points)
             mob.points += about_point
 
-        return self.apply_to_family(
-            func=apply,
-            **kwargs,
-        )
+        return self.apply_to_family(func=apply, **kwargs)
 
     # TODO: Rename to `apply_point_function`?
     def apply_function(
@@ -311,14 +309,11 @@ class Positionable:
         Self
             The object itself.
         """
-        # Default to applying matrix about the origin, not mobjects center
-        if about_point is None and about_edge is None:
-            about_point = ORIGIN
-
         return self.apply_points_function(
             func=lambda points: np.apply_along_axis(function, 1, points),
             about_point=about_point,
             about_edge=about_edge,
+            default_point="ORIGIN",
             **kwargs,
         )
 
@@ -409,27 +404,11 @@ class Positionable:
         .. note::
            Derived classes should override the :meth:`_translate` method for custom logic.
         """
-        for mob in reversed(self.get_family()):
-            mob._translate(vector=vector, **kwargs)
-        return self
 
-    def _translate(self, vector: Vector3DLike, **kwargs: Any) -> Self:
-        """Applies a translation.
+        def apply(mob: Positionable) -> None:
+            mob.points += vector
 
-        Does not affect family members.
-
-        Parameters
-        ----------
-        vector : Vector3DLike
-            The vector.
-
-        Returns
-        -------
-        Self
-            The object itself.
-        """
-        self.points += vector
-        return self
+        return self.apply_to_family(func=apply, **kwargs)
 
     def scale(
         self,
@@ -474,47 +453,17 @@ class Positionable:
         .. note::
             Derived classes should override the :meth:`_scale` method for custom logic.
         """
-        about_point = self._get_about_point(
+
+        def apply(points: Point3D_Array) -> Point3D_Array:
+            return scale_factor * points
+
+        return self.apply_points_function(
+            func=apply,
             about_point=about_point,
             about_edge=about_edge,
-            default="CENTER",
+            default_point="OBJECT_CENTER",
+            **kwargs,
         )
-        for mob in reversed(self.get_family()):
-            mob._scale(
-                scale_factor=scale_factor,
-                about_point=about_point,
-                **kwargs,
-            )
-        return self
-
-    def _scale(
-        self,
-        # TODO: Rename to `factor`
-        scale_factor: float,
-        *,
-        about_point: Point3D,
-        **kwargs: Any,
-    ) -> Self:
-        """Applies a uniform scaling.
-
-        Does not affect family members.
-
-        Parameters
-        ----------
-        scale_factor : float
-            The scale factor.
-        about_point : Point3D
-            About which point to scale.
-
-        Returns
-        -------
-        Self
-            The object itself.
-        """
-        self.points -= about_point
-        self.points *= scale_factor
-        self.points += about_point
-        return self
 
     def stretch(
         self,
@@ -546,50 +495,18 @@ class Positionable:
         .. note::
             Derived classes should override the :meth:`_stretch` method for custom logic.
         """
-        about_point = self._get_about_point(
+
+        def apply(points: Point3D_Array) -> Point3D_Array:
+            points[:, dim] *= factor
+            return points
+
+        return self.apply_points_function(
+            func=apply,
             about_point=about_point,
             about_edge=about_edge,
-            default="CENTER",
+            default_point="OBJECT_CENTER",
+            **kwargs,
         )
-        for mob in reversed(self.get_family()):
-            mob._stretch(
-                factor=factor,
-                dim=dim,
-                about_point=about_point,
-                **kwargs,
-            )
-        return self
-
-    def _stretch(
-        self,
-        factor: float,
-        dim: int,
-        *,
-        about_point: Point3D,
-        **kwargs: Any,
-    ) -> Self:
-        """Applies a non-uniform scaling.
-
-        Does not affect family members.
-
-        Parameters
-        ----------
-        factor : float
-            The factor.
-        dim : int
-            The dimension.
-        about_point : Point3D
-            About which point to stretch.
-
-        Returns
-        -------
-        Self
-            The object itself.
-        """
-        self.points -= about_point
-        self.points[:, dim] *= factor
-        self.points += about_point
-        return self
 
     def rotate(
         self,
@@ -652,55 +569,17 @@ class Positionable:
 
                     self.add(VGroup(group1, group2, group3).arrange(RIGHT, buff=1))
         """
-        about_point = self._get_about_point(
+        matrix = rotation_matrix(angle, axis)
+
+        def apply(points: Point3D_Array) -> Point3D_Array:
+            return points.dot(matrix.T)
+
+        return self.apply_points_function(
+            func=apply,
             about_point=about_point,
             about_edge=about_edge,
-            default="CENTER",
+            default_point="OBJECT_CENTER",
         )
-        matrix = rotation_matrix(angle, axis)
-        for mob in reversed(self.get_family()):
-            mob._rotate(
-                angle=angle,
-                axis=axis,
-                matrix=matrix,
-                about_point=about_point,
-                **kwargs,
-            )
-        return self
-
-    def _rotate(
-        self,
-        angle: float,
-        axis: Vector3DLike,
-        matrix: np.ndarray,
-        *,
-        about_point: Point3D,
-        **kwargs: Any,
-    ) -> Self:
-        """Applies a rotation.
-
-        Does not affect family members.
-
-        Parameters
-        ----------
-        angle : float
-            The angle.
-        axis : Vector3DLike
-            The axis.
-        matrix : np.ndarray
-            The matrix.
-        about_point : Point3D
-            About which point to rotate.
-
-        Returns
-        -------
-        Self
-            The object itself.
-        """
-        self.points -= about_point
-        self.points @= matrix.T
-        self.points += about_point
-        return self
 
     def apply_matrix(
         self,
@@ -738,46 +617,34 @@ class Positionable:
             full_matrix = np.identity(3)
             full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
 
-        for mob in reversed(self.get_family()):
-            mob._apply_matrix(
-                matrix=full_matrix,
-                about_point=about_point,
-                **kwargs,
-            )
-        return self
+        def apply(points: Point3D_Array) -> Point3D_Array:
+            return points.dot(full_matrix.T)
 
-    def _apply_matrix(
-        self,
-        matrix: np.ndarray,
-        *,
-        about_point: Point3D,
-        **kwargs: Any,
-    ) -> Self:
-        self.points -= about_point
-        self.points @= matrix.T
-        self.points += about_point
-        return self
+        return self.apply_points_function(
+            func=apply,
+            about_point=about_point,
+            about_edge=about_edge,
+            default_point="ORIGIN",
+        )
 
     def _get_about_point(
         self,
         about_point: Point3DLike | None,
         about_edge: Vector3DLike | None,
-        default: Literal["ORIGIN", "CENTER"],
-    ) -> Point3D:
+        default: Literal["ORIGIN", "OBJECT_CENTER"],
+    ) -> Point3DLike:
         if about_point is None:
             if about_edge is None:
                 if default == "ORIGIN":
                     return ORIGIN.copy()
-                elif default == "CENTER":
+                elif default == "OBJECT_CENTER":
                     return self.get_anchor(direction=ORIGIN)
                 else:
                     raise ValueError(default)
             else:
                 return self.get_anchor(direction=about_edge)
         else:
-            # TODO: Is this required?
-            # Make a copy to prevent mutation of the original array if about_point is a view
-            return np.array(about_point, copy=True)
+            return about_point
 
     # =========
     # endregion

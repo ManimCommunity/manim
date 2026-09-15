@@ -607,7 +607,6 @@ class Arrow(Line):
         self.add_tip(tip_shape=tip_shape)
         self._set_stroke_width_from_length()
 
-    # TODO: Switch to `_scale` override
     def scale(
         self,
         scale_factor: float,
@@ -653,7 +652,7 @@ class Arrow(Line):
         if has_tip or has_start_tip:
             old_tips = self.pop_tips()
 
-        result = super().scale(scale_factor, scale_tips=scale_tips, **kwargs)
+        super().scale(scale_factor, scale_tips=scale_tips, **kwargs)
 
         if has_tip:
             # error: Argument "tip" to "add_tip" of "TipableVMobject" has incompatible type "VMobject"; expected "ArrowTip | None"  [arg-type]
@@ -661,7 +660,7 @@ class Arrow(Line):
         if has_start_tip:
             # error: Argument "tip" to "add_tip" of "TipableVMobject" has incompatible type "VMobject"; expected "ArrowTip | None"  [arg-type]
             self.add_tip(tip=cast(ArrowTip, old_tips[1]), at_start=True)
-        return result
+        return self
 
     def get_normal_vector(self) -> Vector3D:
         """Returns the normal of a vector.

@@ -542,35 +542,22 @@ class VMobject(Mobject):
         :meth:`move_to`
 
         """
+        if scale_stroke:
+            for mob in self.get_family():
+                if isinstance(mob, VMobject):
+                    mob.set_stroke(
+                        width=abs(scale_factor) * mob.get_stroke_width(),
+                        family=False,
+                    )
+                    mob.set_stroke(
+                        width=abs(scale_factor) * mob.get_stroke_width(background=True),
+                        background=True,
+                        family=False,
+                    )
         return super().scale(
             scale_factor,
             about_point=about_point,
             about_edge=about_edge,
-            scale_stroke=scale_stroke,
-            **kwargs,
-        )
-
-    def _scale(
-        self,
-        scale_factor: float,
-        *,
-        about_point: Point3D,
-        scale_stroke: bool = False,
-        **kwargs: Any,
-    ) -> Self:
-        if scale_stroke:
-            self.set_stroke(
-                width=abs(scale_factor) * self.get_stroke_width(),
-                family=False,
-            )
-            self.set_stroke(
-                width=abs(scale_factor) * self.get_stroke_width(background=True),
-                background=True,
-                family=False,
-            )
-        return super()._scale(
-            scale_factor,
-            about_point=about_point,
             scale_stroke=scale_stroke,
             **kwargs,
         )
@@ -1247,17 +1234,23 @@ class VMobject(Mobject):
             self.make_smooth()
         return self
 
-    def _rotate(
+    def rotate(
         self,
         angle: float,
-        axis: Vector3DLike,
-        matrix: np.ndarray,
+        axis: Vector3DLike = OUT,
         *,
-        about_point: Point3D,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
         **kwargs: Any,
     ) -> Self:
         self.rotate_sheen_direction(angle, axis)
-        return super()._rotate(angle, axis, matrix, about_point=about_point, **kwargs)
+        return super().rotate(
+            angle,
+            axis,
+            about_point=about_point,
+            about_edge=about_edge,
+            **kwargs,
+        )
 
     def scale_handle_to_anchor_distances(self, factor: float) -> Self:
         """If the distance between a given handle point H and its associated
