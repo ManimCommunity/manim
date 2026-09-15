@@ -547,6 +547,7 @@ class Text(SVGMobject):
             width=width,
             should_center=should_center,
             use_svg_cache=use_svg_cache,
+            color=parsed_color,
             **kwargs,
         )
         self.text = text
@@ -1257,6 +1258,7 @@ class MarkupText(SVGMobject):
             height=height,
             width=width,
             should_center=should_center,
+            color=parsed_color,
             **kwargs,
         )
 
