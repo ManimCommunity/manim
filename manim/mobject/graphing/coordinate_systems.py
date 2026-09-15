@@ -62,6 +62,9 @@ if TYPE_CHECKING:
         Point2DLike,
         Point3D,
         Point3DLike,
+        Point3DLike_Array,
+        PointNDLike,
+        PointNDLike_Array,
         Vector3D,
         Vector3DLike,
     )
@@ -155,12 +158,16 @@ class CoordinateSystem:
         self.num_sampled_graph_points_per_tick = 10
         self.x_axis: NumberLine
 
-    def coords_to_point(self, *coords: ManimFloat) -> Point3D:
-        # TODO: I think the method should be able to return more than just a single point.
-        # E.g. see the implementation of it on line 2065.
+    def coords_to_point(
+        self,
+        *coords: float | PointNDLike | PointNDLike_Array,
+    ) -> np.ndarray:
         raise NotImplementedError()
 
-    def point_to_coords(self, point: Point3DLike) -> list[ManimFloat]:
+    def point_to_coords(
+        self,
+        point: Point3DLike | Point3DLike_Array,
+    ) -> np.ndarray:
         raise NotImplementedError()
 
     def polar_to_point(self, radius: float, azimuth: float) -> Point2D:
@@ -211,12 +218,16 @@ class CoordinateSystem:
         return np.sqrt(x**2 + y**2), np.arctan2(y, x)
 
     def c2p(
-        self, *coords: float | Sequence[float] | Sequence[Sequence[float]] | np.ndarray
+        self,
+        *coords: float | PointNDLike | PointNDLike_Array,
     ) -> np.ndarray:
         """Abbreviation for :meth:`coords_to_point`"""
         return self.coords_to_point(*coords)
 
-    def p2c(self, point: Point3DLike) -> list[ManimFloat]:
+    def p2c(
+        self,
+        point: Point3DLike | Point3DLike_Array,
+    ) -> np.ndarray:
         """Abbreviation for :meth:`point_to_coords`"""
         return self.point_to_coords(point)
 
@@ -1861,12 +1872,18 @@ class CoordinateSystem:
 
         return T_label_group
 
-    def __matmul__(self, coord: Point3DLike | Mobject) -> Point3DLike:
+    def __matmul__(
+        self,
+        coord: PointNDLike | PointNDLike_Array | Mobject,
+    ) -> np.ndarray:
         if isinstance(coord, Mobject):
             coord = coord.get_center()
         return self.coords_to_point(*coord)
 
-    def __rmatmul__(self, point: Point3DLike) -> Point3DLike:
+    def __rmatmul__(
+        self,
+        point: Point3DLike | Point3DLike_Array,
+    ) -> np.ndarray:
         return self.point_to_coords(point)
 
     @staticmethod
@@ -2073,7 +2090,8 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         return axis
 
     def coords_to_point(
-        self, *coords: float | Sequence[float] | Sequence[Sequence[float]] | np.ndarray
+        self,
+        *coords: float | PointNDLike | PointNDLike_Array,
     ) -> np.ndarray:
         """Accepts coordinates from the axes and returns a point with respect to the scene.
         Equivalent to `ax @ (coord1)`
@@ -2144,7 +2162,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
                     self.add(plane, dot_scene, ax, dot_axes, lines)
         """
-        coords = np.asarray(coords)
+        coords_array = np.asarray(coords)
         origin = self.x_axis.number_to_point(
             self._origin_shift([self.x_axis.x_min, self.x_axis.x_max]),
         )
@@ -2155,22 +2173,22 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         are_coordinates_transposed = False
 
         # If coords is in the format ([[x1 y1 z1] [x2 y2 z2] ...]):
-        if coords.ndim == 3:
+        if coords_array.ndim == 3:
             # Extract from original tuple: now coords looks like [[x y z]] or [[x1 y1 z1] [x2 y2 z2] ...].
-            coords = coords[0]
+            coords_array = coords_array[0]
             # If there's a single coord (coords = [[x y z]]), extract it so that
             # coords = [x y z] and coords_to_point returns a single point.
-            if coords.shape[0] == 1:
-                coords = coords[0]
+            if coords_array.shape[0] == 1:
+                coords_array = coords_array[0]
             # Else, if coords looks more like [[x1 y1 z1] [x2 y2 z2] ...], transform them (by
             # transposing) into the format [[x1 x2 ...] [y1 y2 ...] [z1 z2 ...]] for later processing.
             else:
-                coords = coords.T
+                coords_array = coords_array.T
                 are_coordinates_transposed = True
         # If coords is in the format ([x, y, z]) -- a single flat list/array passed as one argument:
-        elif coords.ndim == 2 and coords.shape[0] == 1:
+        elif coords_array.ndim == 2 and coords_array.shape[0] == 1:
             # Extract the single list so [x, y, z] is treated like c2p(x, y, z).
-            coords = coords[0]
+            coords_array = coords_array[0]
         # Otherwise, coords already looked like (x, y, z) or ([x1 x2 ...], [y1 y2 ...], [z1 z2 ...]),
         # so no further processing is needed.
 
@@ -2178,9 +2196,9 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         # so it can be iterated directly. Each element is either a float representing a single
         # coordinate, or a float ndarray of coordinates corresponding to a single axis.
         # Although "points" and "nums" are in plural, there might be a single point or number.
-        points = self.x_axis.number_to_point(coords[0])
+        points = self.x_axis.number_to_point(coords_array[0])
         other_axes = self.axes.submobjects[1:]
-        for axis, nums in zip(other_axes, coords[1:], strict=False):
+        for axis, nums in zip(other_axes, coords_array[1:], strict=False):
             points += axis.number_to_point(nums) - origin
 
         # Return points as is, except if coords originally looked like
@@ -2190,7 +2208,10 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             return points
         return points.T
 
-    def point_to_coords(self, point: Sequence[float]) -> np.ndarray:
+    def point_to_coords(
+        self,
+        point: Point3DLike | Point3DLike_Array,
+    ) -> np.ndarray:
         """Accepts a point from the scene and returns its coordinates with respect to the axes.
 
         Parameters
@@ -2237,9 +2258,11 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
                     self.add(ax, circ, label, Dot(circ.get_right()))
         """
-        point = np.asarray(point)
-        result = np.asarray([axis.point_to_number(point) for axis in self.get_axes()])
-        if point.ndim == 2:
+        point_array = np.asarray(point)
+        result = np.asarray(
+            [axis.point_to_number(point_array) for axis in self.get_axes()]
+        )
+        if point_array.ndim == 2:
             return result.T
         return result
 
