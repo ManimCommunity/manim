@@ -236,6 +236,33 @@ def test_color_gradient_passes_through_each_of_four_reference_colors() -> None:
     assert gradient[3] == WHITE
 
 
+def test_manimcolor_gradient_zero_length_returns_empty_list() -> None:
+    assert ManimColor.gradient([RED], 0) == []
+
+
+def test_manimcolor_gradient_empty_reference_raises() -> None:
+    with pytest.raises(ValueError, match="Expected 1 or more reference colors"):
+        ManimColor.gradient([], 5)
+
+
+def test_manimcolor_gradient_single_reference_is_repeated() -> None:
+    gradient = ManimColor.gradient([RED], 5)
+    assert len(gradient) == 5
+    assert all(color == RED for color in gradient)
+
+
+def test_manimcolor_gradient_interpolates_endpoints() -> None:
+    gradient = ManimColor.gradient([BLACK, WHITE], 7)
+    assert len(gradient) == 7
+    assert gradient[0] == BLACK
+    assert gradient[-1] == WHITE
+
+
+def test_manimcolor_gradient_matches_module_function() -> None:
+    refs = [BLACK, RED, BLUE, WHITE]
+    assert ManimColor.gradient(refs, 7) == color_gradient(refs, 7)
+
+
 # ---------------------------------------------------------------------------
 # Random color machinery
 # ---------------------------------------------------------------------------

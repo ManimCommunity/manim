@@ -955,14 +955,28 @@ class ManimColor:
             return cls._from_internal(ManimColor(color, alpha)._internal_value)
 
     @staticmethod
-    def gradient(
-        colors: list[ManimColor], length: int
-    ) -> ManimColor | list[ManimColor]:
-        """This method is currently not implemented. Refer to :func:`color_gradient` for
-        a working implementation for now.
+    def gradient(colors: list[ManimColor], length: int) -> list[ManimColor]:
+        """Create a list of colors interpolated between the input colors.
+
+        Parameters
+        ----------
+        colors
+            The colors to be interpolated between or spread apart.
+        length
+            The number of colors that the output should have, ideally more than
+            the input.
+
+        Returns
+        -------
+        list[ManimColor]
+            A list of interpolated :class:`ManimColor`'s.
+
+        See Also
+        --------
+        :func:`color_gradient`
+            The module-level function this method delegates to.
         """
-        # TODO: implement proper gradient, research good implementation for this or look at 3b1b implementation
-        raise NotImplementedError
+        return color_gradient(colors, length)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}('{self.to_hex()}')"
