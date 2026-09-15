@@ -774,3 +774,26 @@ def test_pointwise_become_partial_where_vmobject_is_self():
         ]
     )
     np.testing.assert_allclose(sq.points, expected_points)
+
+
+@pytest.mark.parametrize("use_subclass", [False, True])
+@pytest.mark.parametrize("empty_child", [False, True])
+def test_curves_as_submobjects_errors_use_actual_class(use_subclass, empty_child):
+    class CustomCurves(CurvesAsSubmobjects):
+        pass
+
+    curves_class = CustomCurves if use_subclass else CurvesAsSubmobjects
+    curves = curves_class(VGroup())
+    if empty_child:
+        curves.add(VMobject())
+
+    with pytest.raises(Exception) as error:
+        curves.point_from_proportion(0)
+
+    reason = (
+        "whose submobjects have no points" if empty_child else "with no submobjects"
+    )
+    class_name = curves_class.__name__
+    assert str(error.value) == (
+        f"Cannot call {class_name}.point_from_proportion for a {class_name} {reason}"
+    )
