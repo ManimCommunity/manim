@@ -1,325 +1,278 @@
 ============
 Adding Tests
 ============
-If you are adding new features to manim, you should add appropriate tests for them. Tests prevent
-manim from breaking at each change by checking that no other
-feature has been broken and/or been unintentionally modified.
+
+If you add a feature or fix a bug in Manim, you should also add tests that
+cover the changed behavior. Tests help prevent later changes from breaking
+existing functionality.
 
 .. warning::
 
-   The full tests suite requires Cairo 1.18 in order to run all tests.
-   However, Cairo 1.18 may not be available from your package manager,
-   like ``apt``, and it is very likely that you have an older version installed,
-   e.g., 1.16. If you run tests with a version prior to 1.18,
-   many tests will be skipped. Those tests are not skipped in the online CI.
+   The full test suite requires Cairo 1.18 or later. If an older version of
+   Cairo is installed, graphical tests that depend on Cairo are skipped
+   locally, but they still run in continuous integration (CI).
 
-   If you want to run all tests locally, you need to install Cairo 1.18 or above.
-   You can do so by compiling Cairo from source:
+   If Cairo 1.18 is not available from your package manager, download a recent
+   release from the `Cairo releases page
+   <https://www.cairographics.org/releases/>`_ and follow the installation
+   instructions included with it.
 
-   1. download ``cairo-1.18.0.tar.xz`` from
-      `here <https://www.cairographics.org/releases/>`_.
-      and uncompress it;
-   2. open the INSTALL file and follow the instructions (you might need to install
-      ``meson`` and ``ninja``);
-   3. run the tests suite and verify that the Cairo version is correct.
+Running the Test Suite
+----------------------
 
-How Manim tests
----------------
+Manim uses `pytest <https://docs.pytest.org/>`_ as its test framework. From
+the root directory of the repository, run the test suite with:
 
-Manim uses pytest as its testing framework.
-To start the testing process, go to the root directory of the project and run pytest in your terminal.
-Any errors that occur during testing will be displayed in the terminal.
+.. code-block:: bash
 
-Some useful pytest flags:
+   uv run pytest
 
-- ``-x`` will make pytest stop at the first failure it encounters
+The following pytest options are particularly useful while developing tests:
 
-- ``-s`` will make pytest display all the print messages (including those during scene generation, like DEBUG messages)
+``-x``
+   Stop after the first failure.
 
-- ``--skip_slow`` will skip the (arbitrarily) slow tests
+``-s``
+   Show output written while the test is running, including Manim's render
+   logs.
 
-- ``--show_diff`` will show a visual comparison in case a unit test is failing.
+``--skip_slow``
+   Skip tests marked as slow.
 
+``--show_diff``
+   Open a visual comparison when a graphical test fails.
 
-How it Works
-~~~~~~~~~~~~
+You can also run a single file or test by passing its path and node ID. For
+example:
 
-At the moment there are three types of tests:
+.. code-block:: bash
 
-#. Unit Tests:
+   uv run pytest tests/test_graphical_units/test_geometry.py::test_Circle
 
-   Tests for most of the basic functionalities of manim. For example, there a test for
-   ``Mobject``, that checks if it can be added to a Scene, etc.
+To run the doctests embedded in Manim's source code, use:
 
-#. Graphical unit tests:
-   Because ``manim`` is a graphics library, we test frames. To do so, we create test scenes that render a specific feature.
-   When pytest runs, it compares the result of the test to the control data, either at 6 fps or just the last frame. If it matches, the tests
-   pass. If the test and control data differ, the tests fail. You can use ``--show_diff`` flag with ``pytest`` to visually
-   see the differences. The ``extract_frames.py`` script lets you see all the frames of a test.
+.. code-block:: bash
 
-#. Videos format tests:
+   uv run pytest --doctest-modules manim
 
-   As Manim is a video library, we have to test videos as well. Unfortunately,
-   we cannot directly test video content as rendered videos can
-   differ slightly depending on the system (for reasons related to
-   ffmpeg). Therefore, we only compare video configuration values, exported in
-   .json.
+Types of Tests
+--------------
 
-Architecture
-------------
+Manim's test suite contains three broad kinds of tests:
 
-The ``manim/tests`` directory looks like this:
+Unit tests
+   These test individual functions, classes, and other behavior that can be
+   checked directly. Most unit tests live in ``tests/module/``.
+
+Graphical tests
+   These render a small scene and compare the resulting frame data against a
+   committed ``.npz`` control file. A graphical test can compare only the last
+   frame or multiple frames from an animation. Graphical tests live in
+   ``tests/test_graphical_units/``.
+
+Render and output tests
+   These exercise scene rendering, command-line options, caching, sections,
+   and generated files. Video comparison tests check metadata and section
+   output recorded in committed JSON control files. They do not compare the
+   encoded video pixel by pixel because encoding can vary between systems.
+   Most of these tests live in ``tests/test_scene_rendering/``.
+
+Test Directory Layout
+---------------------
+
+The main testing directories are organized as follows:
 
 ::
 
-    .
-    ├── conftest.py
-    ├── control_data
-    │   ├── graphical_units_data
-    │   │   ├── creation
-    │   │   │   ├── DrawBorderThenFillTest.npy
-    │   │   │   ├── FadeInFromDownTest.npy
-    │   │   │   ├── FadeInFromLargeTest.npy
-    │   │   │   ├── FadeInFromTest.npy
-    │   │   │   ├── FadeInTest.npy
-    │   │   │   ├── ...
-    │   │   ├── geometry
-    │   │   │   ├── AnnularSectorTest.npy
-    │   │   │   ├── AnnulusTest.npy
-    │   │   │   ├── ArcBetweenPointsTest.npy
-    │   │   │   ├── ArcTest.npy
-    │   │   │   ├── CircleTest.npy
-    │   │   │   ├── CoordinatesTest.npy
-    │   │   │   ├── ...
-    │   │   ├── graph
-    │   │   │   ├── ...
-    |   |   |   | ...
-    │   └── videos_data
-    │       ├── SquareToCircleWithDefaultValues.json
-    │       └── SquareToCircleWithlFlag.json
-    ├── helpers
-    │   ├── graphical_units.py
-    │   ├── __init__.py
-    │   └── video_utils.py
-    ├── __init__.py
-    ├── test_camera.py
-    ├── test_config.py
-    ├── test_copy.py
-    ├── test_vectorized_mobject.py
-    ├── test_graphical_units
-    │   ├── conftest.py
-    │   ├── __init__.py
-    │   ├── test_creation.py
-    │   ├── test_geometry.py
-    │   ├── test_graph.py
-    │   ├── test_indication.py
-    │   ├── test_movements.py
-    │   ├── test_threed.py
-    │   ├── test_transform.py
-    │   └── test_updaters.py
-    ├── test_logging
-    │   ├── basic_scenes.py
-    │   ├── expected.txt
-    │   ├── testloggingconfig.cfg
-    │   └── test_logging.py
-    ├── test_scene_rendering
-    │   ├── conftest.py
-    │   ├── __init__.py
-    │   ├── simple_scenes.py
-    │   ├── standard_config.cfg
-    │   └── test_cli_flags.py
-    └── utils
-        ├── commands.py
-        ├── __init__.py
-        ├── testing_utils.py
-        └── video_tester.py
-       ...
+   tests/
+   ├── conftest.py
+   ├── control_data/
+   │   └── videos_data/
+   ├── helpers/
+   │   ├── graphical_units.py
+   │   └── video_utils.py
+   ├── module/
+   ├── test_graphical_units/
+   │   ├── control_data/
+   │   └── test_*.py
+   ├── test_scene_rendering/
+   └── utils/
+       └── video_tester.py
 
-The Main Directories
---------------------
+``conftest.py``
+   Defines shared fixtures and custom pytest options.
 
-- ``control_data/``:
+``control_data/``
+   Stores expected data used by tests. Video metadata and section layouts are
+   stored in ``tests/control_data/videos_data/``. Graphical frame data is
+   stored next to the graphical tests in
+   ``tests/test_graphical_units/control_data/``.
 
-  The directory containing control data. ``control_data/graphical_units_data/`` contains the expected and correct frame data for graphical tests, and
-  ``control_data/videos_data/`` contains the .json files used to check videos.
+``helpers/``
+   Contains utilities for generating control data.
 
-- ``test_graphical_units/``:
+``module/``
+   Contains unit tests grouped to mirror Manim's source modules.
 
-  Contains graphical tests.
+``test_graphical_units/``
+   Contains frame-comparison tests and their control data.
 
-- ``test_scene_rendering/``:
+``test_scene_rendering/``
+   Contains tests that render scenes or exercise output-related behavior.
 
-  For tests that need to render a scene in some way, such as tests for CLI
-  flags (end-to-end tests).
+``utils/``
+   Contains internal utilities used by the test suite. Shared pytest fixtures
+   belong in a ``conftest.py`` file rather than this directory.
 
-- ``utils/``:
+Adding a Unit Test
+------------------
 
-  Useful internal functions used by pytest.
+Pytest discovers files named ``test_*.py``. Within those files, it discovers
+functions named ``test_*`` and classes named ``Test*``. Add unit tests to the
+directory that corresponds to the source module being tested; for example,
+tests for vectorized mobjects belong in
+``tests/module/mobject/types/vectorized_mobject/test_vectorized_mobject.py``.
 
-  .. note:: fixtures are not contained here, they are in ``conftest.py``.
+Keep each test focused on one behavior. When fixing a bug, add a regression
+test that fails without the fix and passes with it.
 
-- ``helpers/``:
+Adding a Graphical Test
+-----------------------
 
-  Helper functions for developers to setup graphical/video tests.
+Use a graphical test when correctness is best expressed by how a scene looks.
+Place it in the appropriate file under ``tests/test_graphical_units/`` and use
+the ``frames_comparison`` decorator. Every graphical test module must define
+``__module_test__``; this value determines the subdirectory that stores its
+control data.
 
-Adding a New Test
------------------
+The decorated test must accept a parameter named ``scene``. Use it in the same
+way that you would use ``self`` in a scene's ``construct`` method:
 
-Unit Tests
-~~~~~~~~~~
+.. code-block:: python
 
-Pytest determines which functions are tests by searching for files whose
-names begin with "test\_", and then within those files for functions
-beginning with "test" and classes beginning with "Test". These kinds of
-tests must be in ``tests/`` (e.g. ``tests/test_container.py``).
+   from manim import Circle
+   from manim.utils.testing.frames_comparison import frames_comparison
 
-Graphical Unit Test
-~~~~~~~~~~~~~~~~~~~
-
-The test must be written in the correct file (i.e. the file that corresponds to the appropriate category the feature belongs to) and follow the structure
-of unit tests.
-
-For example, to test the ``Circle`` VMobject which resides in
-``manim/mobject/geometry.py``, add the CircleTest to
-``test/test_geometry.py``.
-
-The name of the module is indicated by the variable __module_test__, that **must** be declared in any graphical test file. The module name is used to store the graphical control data.
-
-.. important::
-    You will need to use the ``frames_comparison`` decorator to create a test. The test function **must** accept a
-    parameter named ``scene`` that will be used like ``self`` in a standard ``construct`` method.
-
-Here's an example in ``test_geometry.py``:
-
-.. code:: python
-
-  from manim import *
-  from manim.utils.testing.frames_comparison import frames_comparison
-
-  __module_test__ = "geometry"
+   __module_test__ = "geometry"
 
 
-  @frames_comparison
-  def test_circle(scene):
-      circle = Circle()
-      scene.play(Animation(circle))
+   @frames_comparison
+   def test_Circle(scene):
+       scene.add(Circle())
 
-The decorator can be used with or without parentheses. **By default, the test only tests the last frame. To enable multi-frame testing, you have to set ``last_frame=False`` in the parameters.**
+The decorator can be used with or without parentheses. By default, only the
+last rendered frame is compared. Set ``last_frame=False`` when the intermediate
+frames of an animation are significant:
 
-.. code:: python
+.. code-block:: python
 
-  @frames_comparison(last_frame=False)
-  def test_circle(scene):
-      circle = Circle()
-      scene.play(Animation(circle))
+   from manim import Circle, Create
 
-You can also specify, when needed, which base scene you need (ThreeDScene, for example) :
 
-.. code:: python
+   @frames_comparison(last_frame=False)
+   def test_CircleCreation(scene):
+       scene.play(Create(Circle()))
 
-  @frames_comparison(last_frame=False, base_scene=ThreeDScene)
-  def test_circle(scene):
-      circle = Circle()
-      scene.play(Animation(circle))
+You can also select a different base scene when necessary:
 
-Feel free to check the documentation of ``@frames_comparison`` for more.
+.. code-block:: python
 
-Note that tests name must follow the syntax ``test_<thing_to_test>``, otherwise pytest will not recognize it as a test.
+   from manim import ThreeDScene
 
-.. warning::
-  If you run pytest now, you will get a ``FileNotFound`` error. This is because
-  you have not created control data for your test.
 
-To create the control data for your test, you have to use the flag ``--set_test`` along with pytest.
-For the example above, it would be
+   @frames_comparison(base_scene=ThreeDScene)
+   def test_ThreeDCircle(scene):
+       scene.add(Circle())
+
+See the documentation of ``frames_comparison`` for the complete set of
+options.
+
+Generating graphical control data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A new graphical test initially fails because its control data does not exist.
+After carefully checking that the rendered result is correct, generate the
+control file with ``--set_test``:
 
 .. code-block:: bash
 
-    pytest test_geometry.py::test_circle --set_test -s
+   uv run pytest tests/test_graphical_units/test_geometry.py::test_Circle --set_test -s
 
-(``-s`` is here to see manim logs, so you can see what's going on).
-
-If you want to see all the control data frames (e.g. to make sure your test is doing what you want), use the
-``extract_frames.py`` script. The first parameter is the path to a ``.npz`` file and the second parameter is the
-directory you want the frames created. The frames will be named ``frame0.png``, ``frame1.png``, etc.
+For the example above, this writes
+``tests/test_graphical_units/control_data/geometry/Circle.npz``. Review the
+generated frames before committing them. The frame extraction script converts
+the control data into PNG files for inspection:
 
 .. code-block:: bash
 
-    python scripts/extract_frames.py tests/test_graphical_units/control_data/plot/axes.npz output
+   uv run python scripts/extract_frames.py \
+       tests/test_graphical_units/control_data/geometry/Circle.npz output
+
+The output directory will contain ``frame0.png``, ``frame1.png``, and so on.
+Commit the reviewed ``.npz`` file together with the test.
+
+Adding a Video Comparison Test
+------------------------------
+
+Use ``tests.utils.video_tester.video_comparison`` when a test needs to verify
+the metadata and section files produced by a rendered video. The decorator
+takes the name of a JSON control file and the expected path of the generated
+video relative to the media directory:
+
+.. code-block:: python
+
+   import sys
+
+   from manim import capture
+   from tests.utils.video_tester import video_comparison
 
 
-Please make sure to add the control data to git as soon as it is produced with ``git add <your-control-data.npz>``.
+   @video_comparison(
+       "SquareToCircleWithlFlag.json",
+       "videos/simple_scenes/480p15/SquareToCircle.mp4",
+   )
+   def test_basic_scene_l_flag(tmp_path, simple_scenes_path):
+       command = [
+           sys.executable,
+           "-m",
+           "manim",
+           "-ql",
+           "--media_dir",
+           str(tmp_path),
+           str(simple_scenes_path),
+           "SquareToCircle",
+       ]
+       _, err, exit_code = capture(command)
+       assert exit_code == 0, err
+
+Here, ``tmp_path`` is pytest's temporary-directory fixture. The test directs
+Manim's output there, and the decorator locates the generated video relative
+to that directory. Fixtures such as ``simple_scenes_path`` are defined in the
+nearest ``conftest.py`` file.
+
+Generating video control data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Render the scene using the same options as the test, inspect the result, and
+then pass the generated video path to
+``tests.helpers.video_utils.save_control_data_from_video``:
+
+.. code-block:: python
+
+   from pathlib import Path
+
+   from tests.helpers.video_utils import save_control_data_from_video
 
 
-Videos tests
-~~~~~~~~~~~~
+   save_control_data_from_video(
+       Path("<path-to-video>"),
+       "SquareToCircleWithlFlag",
+   )
 
-To test videos generated, we use the decorator
-``tests.utils.videos_tester.video_comparison``:
+This writes
+``tests/control_data/videos_data/SquareToCircleWithlFlag.json``. The file
+records the movie metadata, section directory layout, and section index used by
+the comparison test. Review and commit the JSON control file with the test.
 
-.. code:: python
-
-    @video_comparison(
-        "SquareToCircleWithlFlag.json", "videos/simple_scenes/480p15/SquareToCircle.mp4"
-    )
-    def test_basic_scene_l_flag(tmp_path, manim_cfg_file, simple_scenes_path):
-        scene_name = "SquareToCircle"
-        command = [
-            "python",
-            "-m",
-            "manim",
-            simple_scenes_path,
-            scene_name,
-            "-l",
-            "--media_dir",
-            str(tmp_path),
-        ]
-        out, err, exit_code = capture(command)
-        assert exit_code == 0, err
-
-.. note:: ``assert exit*\ code == 0, err`` is used in case of the command fails
-  to run. The decorator takes two arguments: json name and the path
-  to where the video should be generated, starting from the ``media/`` dir.
-
-Note the fixtures here:
-
-- tmp_path is a pytest fixture to get a tmp_path. Manim will output here, according to the flag ``--media_dir``.
-
-- ``manim_cfg_file`` fixture that return a path pointing to ``test_scene_rendering/standard_config.cfg``. It's just to shorten the code, in the case multiple tests need to use this cfg file.
-
-- ``simple_scenes_path`` same as above, except for ``test_scene_rendering/simple_scene.py``
-
-You have to generate a ``.json`` file first to be able to test your video. To
-do that, use ``helpers.save_control_data_from_video``.
-
-For instance, testing low-quality output requires first rendering a video from a
-scene with the ``-ql`` flag. The example below tests
-``SquareToCircle``, which lives in ``test_scene_rendering/simple_scene.py``.
-Change directories to ``tests/``,
-create a file (e.g. ``create\_data.py``) that you will remove as soon as
-you're done. Then run:
-
-.. code:: python
-
-    save_control_data_from_video("<path-to-video>", "SquareToCircleWithlFlag.json")
-
-Running this will save
-``control_data/videos_data/SquareToCircleWithlFlag.json``, which will
-look like this:
-
-.. code:: json
-
-    {
-        "name": "SquareToCircleWithlFlag",
-        "config": {
-            "codec_name": "h264",
-            "width": 854,
-            "height": 480,
-            "avg_frame_rate": "15/1",
-            "duration": "1.000000",
-            "nb_frames": "15"
-        }
-    }
-
-If you have any questions, please don't hesitate to ask on `Discord
+If you have questions, ask on `Discord
 <https://www.manim.community/discord/>`_, in your pull request, or in an issue.
