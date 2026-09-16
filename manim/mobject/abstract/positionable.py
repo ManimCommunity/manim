@@ -77,10 +77,19 @@ class Positionable:
         Self
             The object itself.
         """
+        # TODO: Do we need to create a copy?
         self.points = np.asarray(points, dtype=float, copy=True)
+        if self.points.size == 0:
+            self.points = self.points.reshape(0, 3)
         return self
 
-    def match_points(self, mobject: Positionable, *, strict: bool = False) -> Self:
+    def match_points(
+        self,
+        # TODO: Rename to `other`
+        mobject: Positionable,
+        *,
+        strict: bool = False,
+    ) -> Self:
         """Matches the points.
 
         The points of the family members are matched in order.
