@@ -146,6 +146,20 @@ def test_vmobject_point_from_proportion():
         obj.point_from_proportion(0)
 
 
+def test_point_from_proportion_invalid_points_error():
+    obj = VMobject()
+    obj.set_points_as_corners(
+        [
+            np.array([0, 0, 0]),
+            np.array([np.nan, np.nan, 0]),
+            np.array([1, 1, 0]),
+        ],
+    )
+
+    with pytest.raises(ValueError, match="invalid \(NaN or infinite\) points"):
+        obj.point_from_proportion(0.5)
+
+
 def test_no_points_error_reports_pointful_family_members():
     child = VMobject().set_points_as_corners([[0, 0, 0], [1, 0, 0]])
     group = VGroup(VGroup(child))
