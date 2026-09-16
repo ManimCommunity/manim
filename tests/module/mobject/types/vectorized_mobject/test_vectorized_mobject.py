@@ -156,7 +156,7 @@ def test_point_from_proportion_invalid_points_error():
         ],
     )
 
-    with pytest.raises(ValueError, match="invalid \(NaN or infinite\) points"):
+    with pytest.raises(ValueError, match=r"invalid \(NaN or infinite\) points"):
         obj.point_from_proportion(0.5)
 
 
