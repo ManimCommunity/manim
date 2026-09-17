@@ -69,7 +69,7 @@ class Positionable:
 
         Parameters
         ----------
-        points : Point3DLike_Array
+        points
             The points.
 
         Returns
@@ -96,7 +96,7 @@ class Positionable:
 
         Parameters
         ----------
-        other : Positionable
+        other
             The other object.
 
         Returns
@@ -154,7 +154,7 @@ class Positionable:
 
         Parameters
         ----------
-        count : int
+        count
             The repeat count.
 
         Returns
@@ -235,9 +235,9 @@ class Positionable:
 
         Parameters
         ----------
-        func : Callable[[Positionable], Any]
+        func
             The function.
-        should_skip : Callable -> bool, optional
+        should_skip
             Whether a family member should be skipped., by default `not has_points()`
 
         Returns
@@ -265,11 +265,11 @@ class Positionable:
 
         Parameters
         ----------
-        func : Callable[[Point3D_Array], Point3D_Array]
+        func
             The function.
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to apply the function., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to apply the function., by default None
 
         Returns
@@ -306,11 +306,11 @@ class Positionable:
 
         Parameters
         ----------
-        function : Callable[[Point3D], Point3D]
+        function
             The function.
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to apply the function., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to apply the function., by default None
 
         Returns
@@ -338,11 +338,11 @@ class Positionable:
 
         Parameters
         ----------
-        function : Callable[[complex], complex]
+        function
             The function.
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to apply the function., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to apply the function., by default None
 
         Returns
@@ -401,7 +401,7 @@ class Positionable:
 
         Parameters
         ----------
-        vector : Vector3DLike
+        vector
             The vector.
 
         Returns
@@ -432,11 +432,11 @@ class Positionable:
 
         Parameters
         ----------
-        scale_factor : float
+        scale_factor
             The scale_factor.
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to scale., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to scale., by default None
 
         Returns
@@ -487,13 +487,13 @@ class Positionable:
 
         Parameters
         ----------
-        factor : float
+        factor
             The factor.
-        dim : int
+        dim
             The dimension.
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to stretch., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to stretch., by default None
 
         Returns
@@ -530,13 +530,13 @@ class Positionable:
 
         Parameters
         ----------
-        angle : float
+        angle
             The angle.
-        axis : Vector3DLike, optional
+        axis
             The axis., by default OUT
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to rotate., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to rotate., by default None
 
         Returns
@@ -602,11 +602,11 @@ class Positionable:
 
         Parameters
         ----------
-        matrix : MatrixMN
+        matrix
             The matrix.
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to apply the matrix., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to apply the matrix., by default None
 
         Returns
@@ -668,7 +668,7 @@ class Positionable:
 
         Parameters
         ----------
-        direction : Vector3DLike, optional
+        direction
             The direction., by default ORIGIN
 
         Returns
@@ -694,9 +694,9 @@ class Positionable:
 
         Parameters
         ----------
-        position : Point3DLike
+        position
             The position.
-        direction : Vector3DLike, optional
+        direction
             The direction., by default ORIGIN
 
         Returns
@@ -718,9 +718,9 @@ class Positionable:
 
         Parameters
         ----------
-        other : Positionable
+        other
             The other object.
-        direction : Vector3DLike, optional
+        direction
             The direction., by default ORIGIN
 
         Returns
@@ -753,7 +753,7 @@ class Positionable:
 
         Parameters
         ----------
-        center : Point3DLike
+        center
             The center position.
 
         Returns
@@ -768,7 +768,7 @@ class Positionable:
 
         Parameters
         ----------
-        other : Positionable
+        other
             The other object.
 
         Returns
@@ -803,7 +803,7 @@ class Positionable:
 
         Parameters
         ----------
-        top : Point3DLike
+        top
             The top position.
 
         Returns
@@ -818,7 +818,7 @@ class Positionable:
 
         Parameters
         ----------
-        other : Positionable
+        other
             The other object.
 
         Returns
@@ -843,7 +843,7 @@ class Positionable:
 
         Parameters
         ----------
-        bottom : Point3DLike
+        bottom
             The bottom position.
 
         Returns
@@ -858,7 +858,7 @@ class Positionable:
 
         Parameters
         ----------
-        other : Positionable
+        other
             The other object.
 
         Returns
@@ -883,7 +883,7 @@ class Positionable:
 
         Parameters
         ----------
-        right : Point3DLike
+        right
             The right position.
 
         Returns
@@ -898,7 +898,7 @@ class Positionable:
 
         Parameters
         ----------
-        other : Positionable
+        other
             The other object.
 
         Returns
@@ -923,7 +923,7 @@ class Positionable:
 
         Parameters
         ----------
-        left : Point3DLike
+        left
             The left position.
 
         Returns
@@ -938,7 +938,7 @@ class Positionable:
 
         Parameters
         ----------
-        other : Positionable
+        other
             The other object.
 
         Returns
@@ -963,7 +963,7 @@ class Positionable:
 
         Parameters
         ----------
-        zenith : Point3DLike
+        zenith
             The zenith position.
 
         Returns
@@ -978,7 +978,7 @@ class Positionable:
 
         Parameters
         ----------
-        other : Positionable
+        other
             The other object.
 
         Returns
@@ -1003,7 +1003,7 @@ class Positionable:
 
         Parameters
         ----------
-        nadir : Point3DLike
+        nadir
             The nadir position.
 
         Returns
@@ -1018,7 +1018,7 @@ class Positionable:
 
         Parameters
         ----------
-        other : Positionable
+        other
             The other object.
 
         Returns
@@ -1033,9 +1033,9 @@ class Positionable:
 
         Parameters
         ----------
-        dim : int
+        dim
             The dimension.
-        direction : Vector3DLike, optional
+        direction
             The direction., by default ORIGIN
 
         Returns
@@ -1059,11 +1059,11 @@ class Positionable:
 
         Parameters
         ----------
-        coordinate : float
+        coordinate
             The coordinate.
-        dim : int
+        dim
             The dimension.
-        direction : Vector3DLike, optional
+        direction
             The direction., by default ORIGIN
 
         Returns
@@ -1087,11 +1087,11 @@ class Positionable:
 
         Parameters
         ----------
-        other : Positionable
+        other
             The other object.
-        dim : int
+        dim
             The dimension.
-        direction : Vector3DLike, optional
+        direction
             The direction., by default ORIGIN
 
         Returns
@@ -1111,7 +1111,7 @@ class Positionable:
 
         Parameters
         ----------
-        direction : Vector3DLike, optional
+        direction
             The direction., by default ORIGIN
 
         Returns
@@ -1126,9 +1126,9 @@ class Positionable:
 
         Parameters
         ----------
-        x : float
+        x
             The x coordinate.
-        direction : Vector3DLike, optional
+        direction
             The direction., by default ORIGIN
 
         Returns
@@ -1148,9 +1148,9 @@ class Positionable:
 
         Parameters
         ----------
-        other : Positionable
+        other
             The other object.
-        direction : Vector3DLike, optional
+        direction
             The direction., by default ORIGIN
 
         Returns
@@ -1169,7 +1169,7 @@ class Positionable:
 
         Parameters
         ----------
-        direction : Vector3DLike, optional
+        direction
             The direction., by default ORIGIN
 
         Returns
@@ -1184,9 +1184,9 @@ class Positionable:
 
         Parameters
         ----------
-        y : float
+        y
             The y coordinate.
-        direction : Vector3DLike, optional
+        direction
             The direction., by default ORIGIN
 
         Returns
@@ -1211,9 +1211,9 @@ class Positionable:
 
         Parameters
         ----------
-        other : Positionable
+        other
             The other object.
-        direction : Vector3DLike, optional
+        direction
             The direction., by default ORIGIN
 
         Returns
@@ -1232,7 +1232,7 @@ class Positionable:
 
         Parameters
         ----------
-        direction : Vector3DLike, optional
+        direction
             The direction., by default ORIGIN
 
         Returns
@@ -1252,9 +1252,9 @@ class Positionable:
 
         Parameters
         ----------
-        z : float
+        z
             The z coordinate.
-        direction : Vector3DLike, optional
+        direction
             The direction., by default ORIGIN
 
         Returns
@@ -1279,9 +1279,9 @@ class Positionable:
 
         Parameters
         ----------
-        other : Positionable
+        other
             The other object.
-        direction : Vector3DLike, optional
+        direction
             The direction., by default ORIGIN
 
         Returns
@@ -1306,9 +1306,9 @@ class Positionable:
 
         Parameters
         ----------
-        direction : Vector3DLike
+        direction
             The direction.
-        buff : float, optional
+        buff
             The buff., by default `DEFAULT_MOBJECT_TO_EDGE_BUFFER`
 
         Returns
@@ -1337,9 +1337,9 @@ class Positionable:
 
         Parameters
         ----------
-        mobject_or_point : Point3DLike | Positionable
+        mobject_or_point
             The point.
-        direction : Vector3DLike, optional
+        direction
             The direction., by default ORIGIN
 
         Returns
@@ -1382,13 +1382,13 @@ class Positionable:
 
         Parameters
         ----------
-        mobject_or_point : Point3DLike | Positionable
+        mobject_or_point
             The point.
-        direction : Vector3DLike, optional
+        direction
             The direction., by default RIGHT
-        buff : float, optional
+        buff
             The buff., by default DEFAULT_MOBJECT_TO_MOBJECT_BUFFER
-        aligned_edge : Vector3DLike, optional
+        aligned_edge
             The edge to align., by default ORIGIN
 
         Returns
@@ -1436,7 +1436,7 @@ class Positionable:
 
         Parameters
         ----------
-        buff : float, optional
+        buff
             The buff., by default DEFAULT_MOBJECT_TO_EDGE_BUFFER
 
         Returns
@@ -1466,7 +1466,7 @@ class Positionable:
 
         Parameters
         ----------
-        function : Callable[[Point3D], Point3D]
+        function
             The function.
 
         Returns
@@ -1519,7 +1519,7 @@ class Positionable:
 
         Parameters
         ----------
-        direction : Vector3DLike
+        direction
             The direction.
 
         Returns
@@ -1542,7 +1542,7 @@ class Positionable:
 
         Parameters
         ----------
-        function : Callable[[Point3D], Point3D]
+        function
             The function.
 
         Returns
@@ -1564,11 +1564,11 @@ class Positionable:
 
         Parameters
         ----------
-        factor : float, optional
+        factor
             The factor., by default 1.5
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to scale., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to scale., by default None
 
         Returns
@@ -1591,13 +1591,13 @@ class Positionable:
 
         Parameters
         ----------
-        direction : Vector3DLike, optional
+        direction
             The direction., by default RIGHT
-        aligned_edge : Vector3DLike, optional
+        aligned_edge
             The aligned edge., by default ORIGIN
-        buff : float, optional
+        buff
             The buff., by default DEFAULT_MOBJECT_TO_MOBJECT_BUFFER
-        center : bool, optional
+        center
             Whether to center., by default True
 
         Returns
@@ -1655,23 +1655,23 @@ class Positionable:
 
         Parameters
         ----------
-        rows : int | None, optional
+        rows
             The number of rows., by default None
-        cols : int | None, optional
+        cols
             The number of columns., by default None
-        buff : float | tuple[float, float], optional
+        buff
             The gap between grid cells., by default MED_SMALL_BUFF
-        cell_alignment : Vector3DLike, optional
+        cell_alignment
             The way each submobject is aligned in its grid cell., by default ORIGIN
-        row_alignments : Literal['u', 'c', 'd'] | None, optional
+        row_alignments
             The vertical alignment for each row., by default None
-        col_alignments : Literal['l', 'c', 'r'] | None, optional
+        col_alignments
             The horizontal alignment for each column., by default None
-        row_heights : Iterable[float  |  None] | None, optional
+        row_heights
             Defines the heights for certain rows. For ``None``, the height is based on the highest element in that row., by default None
-        col_widths : Iterable[float  |  None] | None, optional
+        col_widths
             Defines the widths for certain columns. For ``None``, the width is based on the widest element in that column., by default None
-        flow_order : Literal['dr', 'dl', 'ur', 'ul', 'rd', 'ld', 'ru', 'lu'], optional
+        flow_order
             The order in which submobjects fill the grid., by default "rd"
 
         Returns
@@ -1743,7 +1743,7 @@ class Positionable:
 
         Parameters
         ----------
-        dim : int
+        dim
             The dimension.
 
         Returns
@@ -1770,15 +1770,15 @@ class Positionable:
 
         Parameters
         ----------
-        size : float
+        size
             The size.
-        dim : int
+        dim
             The dimension.
-        stretch : bool, optional
+        stretch
             Whether to stretch or scale., by default False
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to set the dim size., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to set the dim size., by default None
 
         Returns
@@ -1820,15 +1820,15 @@ class Positionable:
 
         Parameters
         ----------
-        other : Positionable
+        other
             The other object.
-        dim : int
+        dim
             The dimension.
-        stretch : bool, optional
+        stretch
             Whether to stretch or scale., by default False
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to set the dim size., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to set the dim size., by default None
 
         Returns
@@ -1868,13 +1868,13 @@ class Positionable:
 
         Parameters
         ----------
-        width : float
+        width
             The width.
-        stretch : bool, optional
+        stretch
             Whether to stretch or scale., by default False
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to set the width., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to set the width., by default None
 
         Returns
@@ -1904,13 +1904,13 @@ class Positionable:
 
         Parameters
         ----------
-        other : Positionable
+        other
             The other object.
-        stretch : bool, optional
+        stretch
             Whether to stretch or scale., by default False
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to set the width., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to set the width., by default None
 
         Returns
@@ -1949,13 +1949,13 @@ class Positionable:
 
         Parameters
         ----------
-        height : float
+        height
             The height.
-        stretch : bool, optional
+        stretch
             Whether to stretch or scale., by default False
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to set the height., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to set the height., by default None
 
         Returns
@@ -1985,19 +1985,19 @@ class Positionable:
 
         Parameters
         ----------
-        other : Positionable
+        other
             The other object.
-        stretch : bool, optional
+        stretch
             Whether to stretch or scale., by default False
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to set the width., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to set the width., by default None
 
         Returns
         -------
         Self
-            _description_
+            The object itself.
         """
         return self.set_height(
             height=mobject.get_height(),
@@ -2030,13 +2030,13 @@ class Positionable:
 
         Parameters
         ----------
-        depth : float
+        depth
             The depth.
-        stretch : bool, optional
+        stretch
             Whether to stretch or scale., by default False
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to set the depth., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to set the depth., by default None
 
         Returns
@@ -2066,19 +2066,19 @@ class Positionable:
 
         Parameters
         ----------
-        other : Positionable
+        other
             The other object.
-        stretch : bool, optional
+        stretch
             Whether to stretch or scale., by default False
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to set the width., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to set the width., by default None
 
         Returns
         -------
         Self
-            _description_
+            The object itself.
         """
         return self.set_depth(
             depth=mobject.get_depth(),
@@ -2101,13 +2101,13 @@ class Positionable:
 
         Parameters
         ----------
-        size : float
+        size
             The size.
-        dim : int
+        dim
             The dimension.
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to scale., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to scale., by default None
 
         Returns
@@ -2136,11 +2136,11 @@ class Positionable:
 
         Parameters
         ----------
-        width : float
+        width
             The width.
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to scale., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to scale., by default None
 
         Returns
@@ -2184,11 +2184,11 @@ class Positionable:
 
         Parameters
         ----------
-        height : float
+        height
             The height.
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to scale., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to scale., by default None
 
         Returns
@@ -2217,11 +2217,11 @@ class Positionable:
 
         Parameters
         ----------
-        depth : float
+        depth
             The depth.
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to scale., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to scale., by default None
 
         Returns
@@ -2251,13 +2251,13 @@ class Positionable:
 
         Parameters
         ----------
-        size : float
+        size
             The size.
-        dim : int
+        dim
             The dimension.
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to stretch., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to stretch., by default None
 
         Returns
@@ -2286,11 +2286,11 @@ class Positionable:
 
         Parameters
         ----------
-        width : float
+        width
             The width.
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to stretch., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to stretch., by default None
 
         Returns
@@ -2334,11 +2334,11 @@ class Positionable:
 
         Parameters
         ----------
-        height : float
+        height
             The height.
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to stretch., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to stretch., by default None
 
         Returns
@@ -2382,11 +2382,11 @@ class Positionable:
 
         Parameters
         ----------
-        depth : float
+        depth
             The depth.
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to stretch., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to stretch., by default None
 
         Returns
@@ -2421,11 +2421,11 @@ class Positionable:
 
         Parameters
         ----------
-        axis : Vector3DLike, optional
+        axis
             The axis., by default UP
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to flip., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to flip., by default None
 
         Returns
@@ -2464,9 +2464,9 @@ class Positionable:
 
         Parameters
         ----------
-        about_point : Point3DLike | None, optional
+        about_point
             About which point to pose., by default None
-        about_edge : Vector3DLike | None, optional
+        about_edge
             About which edge to pose., by default None
 
         Returns
@@ -2495,11 +2495,11 @@ class Positionable:
 
         Parameters
         ----------
-        mobject : Positionable
+        mobject
             The mobject.
-        dim_to_match : int, optional
+        dim_to_match
             The dimension., by default 0
-        stretch : bool, optional
+        stretch
             Whether to stretch., by default False
 
         Returns
@@ -2535,13 +2535,13 @@ class Positionable:
 
         Parameters
         ----------
-        mobject : Positionable
+        mobject
             The mobject.
-        dim_to_match : int, optional
+        dim_to_match
             The dimension., by default 0
-        stretch : bool, optional
+        stretch
             Whether to stretch or scale., by default False
-        buff : float, optional
+        buff
             The buff., by default MED_SMALL_BUFF
 
         Returns
@@ -2600,7 +2600,7 @@ class Positionable:
 
         Parameters
         ----------
-        dim : int
+        dim
             The dimension.
 
         Returns
@@ -2619,7 +2619,7 @@ class Positionable:
 
         Parameters
         ----------
-        direction : Vector3DLike, optional
+        direction
             The direction., by default ORIGIN
 
         Returns
@@ -2649,7 +2649,7 @@ class Positionable:
 
         Parameters
         ----------
-        direction : Vector3DLike
+        direction
             The direction.
 
         Returns
@@ -2668,7 +2668,7 @@ class Positionable:
 
         Parameters
         ----------
-        direction : Vector3DLike
+        direction
             The direction.
 
         Returns
@@ -2693,9 +2693,9 @@ class Positionable:
 
         Parameters
         ----------
-        point_or_mobject : Point3DLike | Positionable
+        point_or_mobject
             The point_or_mobject.
-        aligned_edge : Vector3DLike, optional
+        aligned_edge
             The aligned edge., by default ORIGIN
 
         Returns
@@ -2726,9 +2726,9 @@ class Positionable:
 
         Parameters
         ----------
-        dim : int
+        dim
             The dimension.
-        direction : Vector3DLike, optional
+        direction
             The direction., by default ORIGIN
 
         Returns
@@ -2753,11 +2753,11 @@ class Positionable:
 
         Parameters
         ----------
-        value : float
+        value
             The value.
-        dim : int
+        dim
             The dimension.
-        direction : Vector3DLike, optional
+        direction
             The direction., by default ORIGIN
 
         Returns
@@ -2787,11 +2787,11 @@ class Positionable:
 
         Parameters
         ----------
-        mobject : Positionable
+        mobject
             The other object.
-        dim : int
+        dim
             The dimension.
-        direction : Vector3DLike, optional
+        direction
             The direction., by default ORIGIN
 
         Returns
@@ -2821,9 +2821,9 @@ class Positionable:
 
         Parameters
         ----------
-        corner : Vector3DLike, optional
+        corner
             The corner., by default DL
-        buff : float, optional
+        buff
             The buff., by default DEFAULT_MOBJECT_TO_EDGE_BUFFER
 
         Returns
@@ -2863,9 +2863,9 @@ class Positionable:
 
         Parameters
         ----------
-        edge : Vector3DLike, optional
+        edge
             The edge., by default LEFT
-        buff : float, optional
+        buff
             The buff., by default DEFAULT_MOBJECT_TO_EDGE_BUFFER
 
         Returns
