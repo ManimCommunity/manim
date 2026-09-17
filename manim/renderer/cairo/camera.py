@@ -377,6 +377,10 @@ class MultiCamera(Camera):
 
 
 class ThreeDCamera(Camera):
+    #: The angle trackers already determine the rotation, so recomputing the cached
+    #: matrix must not change the movie-cache key.
+    _hash_excluded_attributes = frozenset({"_rotation_matrix", "_rotation_matrix_key"})
+
     def __init__(
         self,
         focal_distance: float = 20.0,
