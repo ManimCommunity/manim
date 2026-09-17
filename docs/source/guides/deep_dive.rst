@@ -867,6 +867,13 @@ no frames, so it also does no drawing, no readback, and no presentation: scene s
 does not depend on rendering, which is the same guarantee
 :meth:`~.Manager.evaluate` relies on.
 
+The two cases differ for sound. A reused segment still occupies its span in the
+artifact, so :meth:`~.Scene.add_sound` behaves exactly as in a full render and a
+re-rendered scene keeps its audio. An excluded play is absent from the artifact, whose
+timeline then covers only part of the scene; sound is placed at scene time, so those
+requests are dropped rather than positioned wrongly. Use a full render to audition
+audio.
+
 Whatever the case, the clock follows one rule:
 
    Every play advances the clock by the duration of the frames a full render would
