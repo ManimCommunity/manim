@@ -397,7 +397,7 @@ class Positionable:
         vector: Vector3DLike,
         **kwargs: Any,
     ) -> Self:
-        """Applies a translation.
+        """Translates the object by a vector.
 
         Parameters
         ----------
@@ -428,7 +428,7 @@ class Positionable:
         about_edge: Vector3DLike | None = None,
         **kwargs: Any,
     ) -> Self:
-        """Applies a uniform scaling.
+        """Scales the object uniformly by a factor along all dimensions.
 
         Parameters
         ----------
@@ -483,7 +483,7 @@ class Positionable:
         about_edge: Vector3DLike | None = None,
         **kwargs: Any,
     ) -> Self:
-        """Applies a non-uniform scaling.
+        """Stretches the object by a factor along one dimension.
 
         Parameters
         ----------
@@ -526,7 +526,7 @@ class Positionable:
         about_edge: Vector3DLike | None = None,
         **kwargs: Any,
     ) -> Self:
-        """Applies a rotation.
+        """Rotates the object by an angle along an axis.
 
         Parameters
         ----------
