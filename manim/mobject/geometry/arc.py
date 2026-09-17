@@ -23,6 +23,8 @@ Examples
 
 from __future__ import annotations
 
+from manim.mobject.abstract.positionable import Positionable
+
 __all__ = [
     "TipableVMobject",
     "Arc",
@@ -68,7 +70,6 @@ if TYPE_CHECKING:
 
     import manim.mobject.geometry.tips as tips
     from manim.mobject.geometry.line import Line
-    from manim.mobject.mobject import Mobject
     from manim.mobject.text.tex_mobject import SingleStringMathTex, Tex
     from manim.mobject.text.text_mobject import Text
     from manim.typing import (
@@ -657,13 +658,14 @@ class Circle(Arc):
             **kwargs,
         )
 
-    def surround(  # type: ignore[override]
+    def surround(
         self,
-        mobject: Mobject,
+        mobject: Positionable,
         dim_to_match: int = 0,
         *,
         stretch: bool = False,
         buffer_factor: float = 1.2,
+        **kwargs: Any,
     ) -> Self:
         """Modifies a circle so that it surrounds a given mobject.
 
