@@ -526,3 +526,36 @@ def test_sibling_closures_are_not_collapsed_to_placeholder():
         assert entry["nonlocals"] == {"k": k}, (
             f"closure {k} collapsed: {entry['nonlocals']!r}"
         )
+
+
+def test_collected_names_do_not_keep_a_class_alive():
+    """Scenes may build classes per run, so the collection must not pin them."""
+
+    class Throwaway:
+        _hash_excluded_attributes = frozenset({"derived"})
+
+    assert hashing._derived_attribute_names(Throwaway) == frozenset({"derived"})
+
+    reference = weakref.ref(Throwaway)
+    del Throwaway
+    gc.collect()
+    assert reference() is None
+
+
+def test_switching_renderers_recollects_derived_attributes():
+    """``ConvertToOpenGL`` rebases classes, changing what their keys must ignore.
+
+    ``Indirect`` is not itself rebased, since its base is not one of the swapped
+    classes, but rebasing that base still changes its MRO.
+    """
+    with tempconfig({"renderer": "cairo"}):
+
+        class Indirect(Square):
+            pass
+
+        assert "triangulation" not in hashing._derived_attribute_names(Indirect)
+
+        with tempconfig({"renderer": "opengl"}):
+            assert "triangulation" in hashing._derived_attribute_names(Indirect)
+
+        assert "triangulation" not in hashing._derived_attribute_names(Indirect)
