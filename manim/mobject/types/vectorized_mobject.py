@@ -2,17 +2,6 @@
 
 from __future__ import annotations
 
-from manim.typing import Point3D
-
-__all__ = [
-    "VMobject",
-    "VGroup",
-    "VDict",
-    "VectorizedPoint",
-    "CurvesAsSubmobjects",
-    "DashedVMobject",
-]
-
 import itertools as it
 import math
 import sys
@@ -31,6 +20,7 @@ from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.three_d.three_d_utils import (
     get_3d_vmob_gradient_start_and_end_points,
 )
+from manim.typing import Point3D
 from manim.utils.bezier import (
     bezier,
     bezier_remap,
@@ -70,6 +60,15 @@ if TYPE_CHECKING:
         Vector3D,
         Vector3DLike,
     )
+
+__all__ = [
+    "VMobject",
+    "VGroup",
+    "VDict",
+    "VectorizedPoint",
+    "CurvesAsSubmobjects",
+    "DashedVMobject",
+]
 
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
@@ -554,13 +553,14 @@ class VMobject(Mobject):
                         background=True,
                         family=False,
                     )
-        return super().scale(
+        super().scale(
             scale_factor,
             about_point=about_point,
             about_edge=about_edge,
             scale_stroke=scale_stroke,
             **kwargs,
         )
+        return self
 
     def fade(self, darkness: float = 0.5, family: bool = True) -> Self:
         factor = 1.0 - darkness
@@ -1244,13 +1244,14 @@ class VMobject(Mobject):
         **kwargs: Any,
     ) -> Self:
         self.rotate_sheen_direction(angle, axis)
-        return super().rotate(
+        super().rotate(
             angle,
             axis,
             about_point=about_point,
             about_edge=about_edge,
             **kwargs,
         )
+        return self
 
     def scale_handle_to_anchor_distances(self, factor: float) -> Self:
         """If the distance between a given handle point H and its associated

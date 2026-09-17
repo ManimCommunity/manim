@@ -209,14 +209,14 @@ class ManimBanner(VGroup):
         # Note: self.anim is only added to self after expand()
         if self.anim not in self.submobjects:
             self.anim.scale(
-                scale_factor=scale_factor,
+                scale_factor,
                 about_point=about_point,
                 about_edge=about_edge,
                 scale_stroke=scale_stroke,
                 **kwargs,
             )
         return super().scale(
-            scale_factor=scale_factor,
+            scale_factor,
             about_point=about_point,
             about_edge=about_edge,
             scale_stroke=scale_stroke,

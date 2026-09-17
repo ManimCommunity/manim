@@ -1010,11 +1010,14 @@ class Table(VGroup):
         # can construct an accurate polygon for a cell.
         self.h_buff *= scale_factor
         self.v_buff *= scale_factor
-        return super().scale(
-            scale_factor=scale_factor,
+        super().scale(
+            scale_factor,
+            about_point=about_point,
+            about_edge=about_edge,
             scale_stroke=scale_stroke,
             **kwargs,
         )
+        return self
 
 
 class MathTable(Table):

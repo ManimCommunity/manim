@@ -645,7 +645,9 @@ class Arrow(Line):
             return self
 
         if scale_tips:
-            return super().scale(scale_factor, scale_tips=scale_tips, **kwargs)
+            super().scale(scale_factor, scale_tips=scale_tips, **kwargs)
+            self._set_stroke_width_from_length()
+            return self
 
         has_tip = self.has_tip()
         has_start_tip = self.has_start_tip()
@@ -653,6 +655,7 @@ class Arrow(Line):
             old_tips = self.pop_tips()
 
         super().scale(scale_factor, scale_tips=scale_tips, **kwargs)
+        self._set_stroke_width_from_length()
 
         if has_tip:
             # error: Argument "tip" to "add_tip" of "TipableVMobject" has incompatible type "VMobject"; expected "ArrowTip | None"  [arg-type]
