@@ -244,7 +244,7 @@ class Positionable:
         func
             The function.
         should_skip
-            Whether a family member should be skipped., by default `not has_points()`
+            Whether a family member should be skipped., Defaults to ``not has_points()``
 
         Returns
         -------
@@ -539,7 +539,7 @@ class Positionable:
         angle
             The angle.
         axis
-            The axis., by default OUT
+            The axis., Defaults to ``OUT``
         about_point
             About which point to rotate., Defaults to ``None``
         about_edge
@@ -675,7 +675,7 @@ class Positionable:
         Parameters
         ----------
         direction
-            The direction., by default ORIGIN
+            The direction., Defaults to ``ORIGIN``
 
         Returns
         -------
@@ -703,7 +703,7 @@ class Positionable:
         position
             The position.
         direction
-            The direction., by default ORIGIN
+            The direction., Defaults to ``ORIGIN``
 
         Returns
         -------
@@ -727,7 +727,7 @@ class Positionable:
         other
             The other object.
         direction
-            The direction., by default ORIGIN
+            The direction., Defaults to ``ORIGIN``
 
         Returns
         -------
@@ -1042,7 +1042,7 @@ class Positionable:
         dim
             The dimension.
         direction
-            The direction., by default ORIGIN
+            The direction., Defaults to ``ORIGIN``
 
         Returns
         -------
@@ -1070,7 +1070,7 @@ class Positionable:
         dim
             The dimension.
         direction
-            The direction., by default ORIGIN
+            The direction., Defaults to ``ORIGIN``
 
         Returns
         -------
@@ -1098,7 +1098,7 @@ class Positionable:
         dim
             The dimension.
         direction
-            The direction., by default ORIGIN
+            The direction., Defaults to ``ORIGIN``
 
         Returns
         -------
@@ -1118,7 +1118,7 @@ class Positionable:
         Parameters
         ----------
         direction
-            The direction., by default ORIGIN
+            The direction., Defaults to ``ORIGIN``
 
         Returns
         -------
@@ -1135,7 +1135,7 @@ class Positionable:
         x
             The x coordinate.
         direction
-            The direction., by default ORIGIN
+            The direction., Defaults to ``ORIGIN``
 
         Returns
         -------
@@ -1157,7 +1157,7 @@ class Positionable:
         other
             The other object.
         direction
-            The direction., by default ORIGIN
+            The direction., Defaults to ``ORIGIN``
 
         Returns
         -------
@@ -1176,7 +1176,7 @@ class Positionable:
         Parameters
         ----------
         direction
-            The direction., by default ORIGIN
+            The direction., Defaults to ``ORIGIN``
 
         Returns
         -------
@@ -1193,7 +1193,7 @@ class Positionable:
         y
             The y coordinate.
         direction
-            The direction., by default ORIGIN
+            The direction., Defaults to ``ORIGIN``
 
         Returns
         -------
@@ -1220,7 +1220,7 @@ class Positionable:
         other
             The other object.
         direction
-            The direction., by default ORIGIN
+            The direction., Defaults to ``ORIGIN``
 
         Returns
         -------
@@ -1239,7 +1239,7 @@ class Positionable:
         Parameters
         ----------
         direction
-            The direction., by default ORIGIN
+            The direction., Defaults to ``ORIGIN``
 
         Returns
         -------
@@ -1261,7 +1261,7 @@ class Positionable:
         z
             The z coordinate.
         direction
-            The direction., by default ORIGIN
+            The direction., Defaults to ``ORIGIN``
 
         Returns
         -------
@@ -1288,7 +1288,7 @@ class Positionable:
         other
             The other object.
         direction
-            The direction., by default ORIGIN
+            The direction., Defaults to ``ORIGIN``
 
         Returns
         -------
@@ -1315,7 +1315,7 @@ class Positionable:
         direction
             The direction.
         buff
-            The buff., by default `DEFAULT_MOBJECT_TO_EDGE_BUFFER`
+            The buff., Defaults to ``DEFAULT_MOBJECT_TO_EDGE_BUFFER``
 
         Returns
         -------
@@ -1346,7 +1346,7 @@ class Positionable:
         mobject_or_point
             The point.
         direction
-            The direction., by default ORIGIN
+            The direction., Defaults to ``ORIGIN``
 
         Returns
         -------
@@ -1391,11 +1391,11 @@ class Positionable:
         mobject_or_point
             The point.
         direction
-            The direction., by default RIGHT
+            The direction., Defaults to ``RIGHT``
         buff
-            The buff., by default DEFAULT_MOBJECT_TO_MOBJECT_BUFFER
+            The buff., Defaults to ``DEFAULT_MOBJECT_TO_MOBJECT_BUFFER``
         aligned_edge
-            The edge to align., by default ORIGIN
+            The edge to align., Defaults to ``ORIGIN``
 
         Returns
         -------
@@ -1443,7 +1443,7 @@ class Positionable:
         Parameters
         ----------
         buff
-            The buff., by default DEFAULT_MOBJECT_TO_EDGE_BUFFER
+            The buff., Defaults to ``DEFAULT_MOBJECT_TO_EDGE_BUFFER``
 
         Returns
         -------
@@ -1571,7 +1571,7 @@ class Positionable:
         Parameters
         ----------
         factor
-            The factor., by default 1.5
+            The factor., Defaults to ``1.5``
         about_point
             About which point to scale., Defaults to ``None``
         about_edge
@@ -1598,13 +1598,13 @@ class Positionable:
         Parameters
         ----------
         direction
-            The direction., by default RIGHT
+            The direction., Defaults to ``RIGHT``
         aligned_edge
-            The aligned edge., by default ORIGIN
+            The aligned edge., Defaults to ``ORIGIN``
         buff
-            The buff., by default DEFAULT_MOBJECT_TO_MOBJECT_BUFFER
+            The buff., Defaults to ``DEFAULT_MOBJECT_TO_MOBJECT_BUFFER``
         center
-            Whether to center., by default True
+            Whether to center., Defaults to ``True``
 
         Returns
         -------
@@ -1666,9 +1666,9 @@ class Positionable:
         cols
             The number of columns., Defaults to ``None``
         buff
-            The gap between grid cells., by default MED_SMALL_BUFF
+            The gap between grid cells., Defaults to ``MED_SMALL_BUFF``
         cell_alignment
-            The way each submobject is aligned in its grid cell., by default ORIGIN
+            The way each submobject is aligned in its grid cell., Defaults to ``ORIGIN``
         row_alignments
             The vertical alignment for each row., Defaults to ``None``
         col_alignments
@@ -1678,7 +1678,7 @@ class Positionable:
         col_widths
             Defines the widths for certain columns. For ``None``, the width is based on the widest element in that column., Defaults to ``None``
         flow_order
-            The order in which submobjects fill the grid., by default "rd"
+            The order in which submobjects fill the grid., Defaults to ``rd``
 
         Returns
         -------
@@ -1781,7 +1781,7 @@ class Positionable:
         dim
             The dimension.
         stretch
-            Whether to stretch or scale., by default False
+            Whether to stretch or scale., Defaults to ``False``
         about_point
             About which point to set the dim size., Defaults to ``None``
         about_edge
@@ -1831,7 +1831,7 @@ class Positionable:
         dim
             The dimension.
         stretch
-            Whether to stretch or scale., by default False
+            Whether to stretch or scale., Defaults to ``False``
         about_point
             About which point to set the dim size., Defaults to ``None``
         about_edge
@@ -1877,7 +1877,7 @@ class Positionable:
         width
             The width.
         stretch
-            Whether to stretch or scale., by default False
+            Whether to stretch or scale., Defaults to ``False``
         about_point
             About which point to set the width., Defaults to ``None``
         about_edge
@@ -1913,7 +1913,7 @@ class Positionable:
         other
             The other object.
         stretch
-            Whether to stretch or scale., by default False
+            Whether to stretch or scale., Defaults to ``False``
         about_point
             About which point to set the width., Defaults to ``None``
         about_edge
@@ -1958,7 +1958,7 @@ class Positionable:
         height
             The height.
         stretch
-            Whether to stretch or scale., by default False
+            Whether to stretch or scale., Defaults to ``False``
         about_point
             About which point to set the height., Defaults to ``None``
         about_edge
@@ -1994,7 +1994,7 @@ class Positionable:
         other
             The other object.
         stretch
-            Whether to stretch or scale., by default False
+            Whether to stretch or scale., Defaults to ``False``
         about_point
             About which point to set the width., Defaults to ``None``
         about_edge
@@ -2039,7 +2039,7 @@ class Positionable:
         depth
             The depth.
         stretch
-            Whether to stretch or scale., by default False
+            Whether to stretch or scale., Defaults to ``False``
         about_point
             About which point to set the depth., Defaults to ``None``
         about_edge
@@ -2075,7 +2075,7 @@ class Positionable:
         other
             The other object.
         stretch
-            Whether to stretch or scale., by default False
+            Whether to stretch or scale., Defaults to ``False``
         about_point
             About which point to set the width., Defaults to ``None``
         about_edge
@@ -2428,7 +2428,7 @@ class Positionable:
         Parameters
         ----------
         axis
-            The axis., by default UP
+            The axis., Defaults to ``UP``
         about_point
             About which point to flip., Defaults to ``None``
         about_edge
@@ -2504,9 +2504,9 @@ class Positionable:
         mobject
             The mobject.
         dim_to_match
-            The dimension., by default 0
+            The dimension., Defaults to ``0``
         stretch
-            Whether to stretch., by default False
+            Whether to stretch., Defaults to ``False``
 
         Returns
         -------
@@ -2544,11 +2544,11 @@ class Positionable:
         mobject
             The mobject.
         dim_to_match
-            The dimension., by default 0
+            The dimension., Defaults to ``0``
         stretch
-            Whether to stretch or scale., by default False
+            Whether to stretch or scale., Defaults to ``False``
         buff
-            The buff., by default MED_SMALL_BUFF
+            The buff., Defaults to ``MED_SMALL_BUFF``
 
         Returns
         -------
@@ -2626,7 +2626,7 @@ class Positionable:
         Parameters
         ----------
         direction
-            The direction., by default ORIGIN
+            The direction., Defaults to ``ORIGIN``
 
         Returns
         -------
@@ -2702,7 +2702,7 @@ class Positionable:
         point_or_mobject
             The point_or_mobject.
         aligned_edge
-            The aligned edge., by default ORIGIN
+            The aligned edge., Defaults to ``ORIGIN``
 
         Returns
         -------
@@ -2735,7 +2735,7 @@ class Positionable:
         dim
             The dimension.
         direction
-            The direction., by default ORIGIN
+            The direction., Defaults to ``ORIGIN``
 
         Returns
         -------
@@ -2764,7 +2764,7 @@ class Positionable:
         dim
             The dimension.
         direction
-            The direction., by default ORIGIN
+            The direction., Defaults to ``ORIGIN``
 
         Returns
         -------
@@ -2798,7 +2798,7 @@ class Positionable:
         dim
             The dimension.
         direction
-            The direction., by default ORIGIN
+            The direction., Defaults to ``ORIGIN``
 
         Returns
         -------
@@ -2828,9 +2828,9 @@ class Positionable:
         Parameters
         ----------
         corner
-            The corner., by default DL
+            The corner., Defaults to ``DL``
         buff
-            The buff., by default DEFAULT_MOBJECT_TO_EDGE_BUFFER
+            The buff., Defaults to ``DEFAULT_MOBJECT_TO_EDGE_BUFFER``
 
         Returns
         -------
@@ -2870,9 +2870,9 @@ class Positionable:
         Parameters
         ----------
         edge
-            The edge., by default LEFT
+            The edge., Defaults to ``LEFT``
         buff
-            The buff., by default DEFAULT_MOBJECT_TO_EDGE_BUFFER
+            The buff., Defaults to ``DEFAULT_MOBJECT_TO_EDGE_BUFFER``
 
         Returns
         -------
