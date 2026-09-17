@@ -74,6 +74,7 @@ class _FrameRequest:
     frames: int = 0
     result: RenderedFrame | None = None
     stopped: bool = False
+    unwinding: bool = False
     playing: bool = False
 
 
@@ -423,6 +424,12 @@ class Manager(Generic[SceneT]):
         blocks run, followed by ``tear_down()`` for cleanup. The image retains
         the captured pixels through cleanup.
 
+        Playback has ended once the frame is captured. A ``finally`` block or
+        ``tear_down()`` that calls :meth:`play` or :meth:`~.Scene.wait` ends
+        early at that call, and the remaining statements in that block are
+        skipped. The captured frame is still returned. Keep cleanup that must
+        always finish, such as closing files, ahead of any playback call.
+
         A successful call closes the renderer, or keeps it open until an enclosing
         ``with manager:`` block ends. If scene code fails, Manager attempts resource
         cleanup and raises the original error. For OpenGL, make the call on the
@@ -470,11 +477,15 @@ class Manager(Generic[SceneT]):
                 self.setup()
                 with suppress(EndSceneEarlyException):
                     self.construct()
-            request.stopped = True
-            self.tear_down()
+            request.stopped = request.unwinding = True
+            # tear_down() may play or wait; stop it the same way as construct().
+            with suppress(_FrameCaptured):
+                self.tear_down()
+            request.unwinding = False
             self._finish_resource_scope()
             return request.result
         except BaseException:
+            request.unwinding = False
             self._cleanup_after_failure()
             raise
 
@@ -647,6 +658,9 @@ class Manager(Generic[SceneT]):
     ) -> None:
         """Play animations and add an optional subcaption.
 
+        Once :meth:`capture_frame_at` has captured its frame, this call ends
+        scene execution instead of playing, so cleanup code can unwind.
+
         Parameters
         ----------
         args
@@ -663,8 +677,15 @@ class Manager(Generic[SceneT]):
             Animation options such as ``run_time`` and ``rate_func``, applied
             by :meth:`.Scene.compile_animations`.
         """
-        self._validate_execution()
         request = self._frame_request
+        if request is not None and request.unwinding:
+            # Playback has ended and capture_frame_at() is unwinding the scene.
+            # Cleanup reached during that unwind, such as a `finally` block or
+            # tear_down(), may call play() or wait(). Resume the unwind instead of
+            # reporting an error that would replace the captured result. Calls
+            # made after capture_frame_at() returns still report an error.
+            raise _FrameCaptured
+        self._validate_execution()
         if request is not None:
             if request.playing:
                 raise RuntimeError(
@@ -955,7 +976,7 @@ class Manager(Generic[SceneT]):
                 time=index / frame_rate,
                 frame_index=index,
             )
-            request.stopped = True
+            request.stopped = request.unwinding = True
             raise _FrameCaptured
 
     def _render_preview_frame(self, frame_offset: float) -> None:
