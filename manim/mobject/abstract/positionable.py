@@ -39,7 +39,13 @@ __all__ = ["Positionable"]
 
 
 class Positionable:
-    """A positionable object."""
+    """A positionable object.
+    
+    Attributes
+    ----------
+    points
+        The points making up the body of the object.
+    """
 
     # =============
     # region POINTS
