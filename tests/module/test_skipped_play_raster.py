@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 from manim import (
+    Manager,
     Scene,
     Square,
     ThreeDScene,
@@ -194,7 +195,42 @@ def test_three_d_projection_survives_undrawn_excluded_plays(tmp_path):
     np.testing.assert_array_equal(full.observed[-4:], partial.observed[-4:])
 
 
-# NOTE: capture_frame_at() lives on #5008. Once that branch is rebased onto this one,
-# add the companion test that a capture inside a later play still resolves correctly
-# with long earlier plays, so a future "skip earlier plays during capture" change
-# cannot silently break frame indexing. See agents/refactor/skip-shortcut-plan.md.
+@pytest.mark.parametrize("frozen", [False, True])
+def test_frame_capture_still_draws_plays_before_the_target(tmp_path, frozen):
+    """Capture must not inherit shortcut elision, or frame indexing would drift.
+
+    A frame request runs the whole scene, and the plays before the target are not
+    skipped, so they still produce the frames the requested index counts. If a future
+    change made capture skip them, the returned frame would silently be the wrong one.
+    """
+
+    class Long(Scene):
+        def construct(self):
+            square = Square(fill_opacity=1)
+            self.add(square)
+            for _ in range(4):
+                if frozen:
+                    self.wait(1, frozen_frame=True)
+                else:
+                    self.play(
+                        square.animate.shift(np.array([0.5, 0.0, 0.0])), run_time=1
+                    )
+
+    with tempconfig(
+        {
+            "renderer": "cairo",
+            "format": "mp4",
+            "frame_rate": 4,
+            "pixel_width": 32,
+            "pixel_height": 16,
+            "live_preview": False,
+            "disable_caching": True,
+            "progress_bar": "none",
+            "media_dir": str(tmp_path),
+        }
+    ):
+        manager = Manager(Long())
+        frame = manager.capture_frame_at(3.25)
+
+    assert frame is not None
+    assert (frame.frame_index, frame.time) == (13, 3.25)
