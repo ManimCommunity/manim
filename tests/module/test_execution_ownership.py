@@ -105,7 +105,8 @@ def test_stopped_clock_and_next_play_without_frame_delivery(scene, monkeypatch):
     assert manager.num_plays == 2
 
 
-def test_cached_play_advances_once_before_begin(scene, monkeypatch):
+def test_cached_play_advances_once_after_its_evaluation_step(scene, monkeypatch):
+    """A shortcut is one interval: begin sees its start, finish sees the consumed span."""
     manager = scene._get_manager()
     manager.time = 2
     observed = []
@@ -115,6 +116,9 @@ def test_cached_play_advances_once_before_begin(scene, monkeypatch):
             observed.append(("begin", scene.time))
             super().begin()
 
+        def interpolate_mobject(self, alpha):
+            observed.append(("interpolate", scene.time, float(alpha)))
+
         def finish(self):
             observed.append(("finish", scene.time))
             super().finish()
@@ -123,7 +127,14 @@ def test_cached_play_advances_once_before_begin(scene, monkeypatch):
     monkeypatch.setattr(manager.file_writer, "is_already_cached", lambda _: True)
     with tempconfig({"disable_caching": False}):
         scene.play(Probe(Square(), run_time=0.3))
-    assert observed == [("begin", 2.5), ("finish", 2.5)]
+    # 0.3 s at 4 fps is two frames, so the play consumes 0.5 s, as a render would.
+    assert observed == [
+        ("begin", 2),
+        ("interpolate", 2, 0.0),
+        ("interpolate", 2, 1.0),
+        ("finish", 2.5),
+        ("interpolate", 2.5, 1.0),
+    ]
     assert manager.time == 2.5
 
 
@@ -144,7 +155,8 @@ def test_changed_rate_is_rejected_before_execution(scene):
     assert scene.manager._file_writer is None
 
 
-def test_skipped_stop_wait_keeps_legacy_nominal_span(scene):
+def test_skipped_stop_wait_is_stepped_like_a_rendered_one(scene):
+    """A skipped stop condition must observe per-frame times, not jump to the end."""
     manager = scene._get_manager()
     manager.time = 2
     scene.renderer._original_skipping_status = True
@@ -155,5 +167,15 @@ def test_skipped_stop_wait_keeps_legacy_nominal_span(scene):
         return scene.time >= 3
 
     scene.wait(1, stop_condition=stop)
-    assert stops == [3]
+    assert stops == [2.25, 2.5, 2.75, 3]
     assert scene.time == 3
+
+
+def test_skipped_wait_until_ends_where_its_condition_holds(scene):
+    """wait_until used to consume its whole max_time when skipped."""
+    manager = scene._get_manager()
+    manager.time = 2
+    scene.renderer._original_skipping_status = True
+
+    scene.wait_until(lambda: scene.time >= 2.5, max_time=60)
+    assert scene.time == 2.5
