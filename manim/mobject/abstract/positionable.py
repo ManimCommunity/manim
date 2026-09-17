@@ -1327,6 +1327,7 @@ class Positionable:
 
     def align_to(
         self,
+        # TODO: Rename to `point_or_mobject`
         mobject_or_point: Positionable | Point3DLike,
         direction: Vector3DLike = ORIGIN,
         **kwargs: Any,
@@ -1368,6 +1369,7 @@ class Positionable:
 
     def next_to(
         self,
+        # TODO: Rename to `point_or_mobject`
         mobject_or_point: Positionable | Point3DLike,
         direction: Vector3DLike = RIGHT,
         *,
@@ -1595,7 +1597,7 @@ class Positionable:
         buff
             The buff., Defaults to ``DEFAULT_MOBJECT_TO_MOBJECT_BUFFER``
         center
-            Whether to center., Defaults to ``True``
+            Whether to center the object after arranging., Defaults to ``True``
 
         Returns
         -------
@@ -1669,7 +1671,7 @@ class Positionable:
         col_widths
             Defines the widths for certain columns. For ``None``, the width is based on the widest element in that column., Defaults to ``None``
         flow_order
-            The order in which submobjects fill the grid., Defaults to ``rd``
+            The order in which submobjects fill the grid., Defaults to ``rd``, meaning first right and then down.
 
         Returns
         -------
@@ -1772,7 +1774,7 @@ class Positionable:
         dim
             The dimension.
         stretch
-            Whether to stretch or scale., Defaults to ``False``
+            Whether to stretch (``True``) or scale (``False``)., Defaults to ``False``
         about_point
             About which point to resize., Defaults to ``None``
         about_edge
@@ -1822,7 +1824,7 @@ class Positionable:
         dim
             The dimension.
         stretch
-            Whether to stretch or scale., Defaults to ``False``
+            Whether to stretch (``True``) or scale (``False``)., Defaults to ``False``
         about_point
             About which point to set the dim size., Defaults to ``None``
         about_edge
@@ -1868,7 +1870,7 @@ class Positionable:
         size
             The size.
         stretch
-            Whether to stretch or scale., Defaults to ``False``
+            Whether to stretch (``True``) or scale (``False``)., Defaults to ``False``
         about_point
             About which point to set the width., Defaults to ``None``
         about_edge
@@ -1904,7 +1906,7 @@ class Positionable:
         other
             The other object.
         stretch
-            Whether to stretch or scale., Defaults to ``False``
+            Whether to stretch (``True``) or scale (``False``)., Defaults to ``False``
         about_point
             About which point to set the width., Defaults to ``None``
         about_edge
@@ -1949,7 +1951,7 @@ class Positionable:
         size
             The size.
         stretch
-            Whether to stretch or scale., Defaults to ``False``
+            Whether to stretch (``True``) or scale (``False``)., Defaults to ``False``
         about_point
             About which point to set the height., Defaults to ``None``
         about_edge
@@ -1985,7 +1987,7 @@ class Positionable:
         other
             The other object.
         stretch
-            Whether to stretch or scale., Defaults to ``False``
+            Whether to stretch (``True``) or scale (``False``)., Defaults to ``False``
         about_point
             About which point to set the width., Defaults to ``None``
         about_edge
@@ -2030,7 +2032,7 @@ class Positionable:
         size
             The size.
         stretch
-            Whether to stretch or scale., Defaults to ``False``
+            Whether to stretch (``True``) or scale (``False``)., Defaults to ``False``
         about_point
             About which point to set the depth., Defaults to ``None``
         about_edge
@@ -2066,7 +2068,7 @@ class Positionable:
         other
             The other object.
         stretch
-            Whether to stretch or scale., Defaults to ``False``
+            Whether to stretch (``True``) or scale (``False``)., Defaults to ``False``
         about_point
             About which point to set the width., Defaults to ``None``
         about_edge
@@ -2419,7 +2421,7 @@ class Positionable:
         Parameters
         ----------
         axis
-            The axis., Defaults to ``UP``
+            The axis to flip around., Defaults to ``UP``
         about_point
             About which point to flip., Defaults to ``None``
         about_edge
@@ -2535,7 +2537,7 @@ class Positionable:
         dim
             The dimension., Defaults to ``0``
         stretch
-            Whether to stretch or scale., Defaults to ``False``
+            Whether to stretch (``True``) or scale (``False``)., Defaults to ``False``
         buff
             The buff., Defaults to ``MED_SMALL_BUFF``
 
@@ -2680,16 +2682,16 @@ class Positionable:
         # coor_mask: Vector3DLike = np.array([1, 1, 1]),
         **kwargs: Any,
     ) -> Self:
-        """Moves the object to the ``point_or_mobject``.
+        """Moves the object to the ``point`` or ``mobject``.
 
         Note
         ----
-        An alias for the :meth:`set_position` method.
+        An alias for the :meth:`set_anchor` method.
 
         Parameters
         ----------
         point_or_mobject
-            The point_or_mobject.
+            The point or mobject.
         aligned_edge
             The aligned edge., Defaults to ``ORIGIN``
 
