@@ -11,6 +11,10 @@ AXES = np.array([(1, 0, 0), (0, 1, 0), (0, 0, 1)])
 """All 27 possible axis."""
 
 
+DIMENSIONS = [0, 1, 2]
+"""All 3 dimensions."""
+
+
 CUBE_VERTICES = np.array(list(product([-1.0, 1.0], repeat=3)))
 """The vertices of a cube of size 2.
 
