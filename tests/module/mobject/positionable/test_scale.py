@@ -3,6 +3,7 @@ import pytest
 
 from manim.mobject.abstract.positionable import Positionable
 from manim.typing import Point3DLike, Vector3DLike
+from tests.module.mobject.positionable.utils import ANCHOR_POINTS, CUBE_VERTICES
 
 
 def test_no_points() -> None:
@@ -33,45 +34,18 @@ def test_about_point(
     np.testing.assert_allclose(p.points, expected)
 
 
-@pytest.mark.parametrize(
-    argnames=("about_edge", "expected"),
-    argvalues=[
-        ((-1, -1, -1), [(-1, -1, -1), (5, 5, 5)]),
-        ((-1, -1, +0), [(-1, -1, -3), (5, 5, 3)]),
-        ((-1, -1, +1), [(-1, -1, -5), (5, 5, 1)]),
-        ((-1, +0, -1), [(-1, -3, -1), (5, 3, 5)]),
-        ((-1, +0, +0), [(-1, -3, -3), (5, 3, 3)]),
-        ((-1, +0, +1), [(-1, -3, -5), (5, 3, 1)]),
-        ((-1, +1, -1), [(-1, -5, -1), (5, 1, 5)]),
-        ((-1, +1, +0), [(-1, -5, -3), (5, 1, 3)]),
-        ((-1, +1, +1), [(-1, -5, -5), (5, 1, 1)]),
-        ((+0, -1, -1), [(-3, -1, -1), (3, 5, 5)]),
-        ((+0, -1, +0), [(-3, -1, -3), (3, 5, 3)]),
-        ((+0, -1, +1), [(-3, -1, -5), (3, 5, 1)]),
-        ((+0, +0, -1), [(-3, -3, -1), (3, 3, 5)]),
-        ((+0, +0, +0), [(-3, -3, -3), (3, 3, 3)]),
-        ((+0, +0, +1), [(-3, -3, -5), (3, 3, 1)]),
-        ((+0, +1, -1), [(-3, -5, -1), (3, 1, 5)]),
-        ((+0, +1, +0), [(-3, -5, -3), (3, 1, 3)]),
-        ((+0, +1, +1), [(-3, -5, -5), (3, 1, 1)]),
-        ((+1, -1, -1), [(-5, -1, -1), (1, 5, 5)]),
-        ((+1, -1, +0), [(-5, -1, -3), (1, 5, 3)]),
-        ((+1, -1, +1), [(-5, -1, -5), (1, 5, 1)]),
-        ((+1, +0, -1), [(-5, -3, -1), (1, 3, 5)]),
-        ((+1, +0, +0), [(-5, -3, -3), (1, 3, 3)]),
-        ((+1, +0, +1), [(-5, -3, -5), (1, 3, 1)]),
-        ((+1, +1, -1), [(-5, -5, -1), (1, 1, 5)]),
-        ((+1, +1, +0), [(-5, -5, -3), (1, 1, 3)]),
-        ((+1, +1, +1), [(-5, -5, -5), (1, 1, 1)]),
-    ],
-)
-def test_about_edge(
-    about_edge: Vector3DLike,
-    expected: list[tuple[float, float, float]],
-) -> None:
-    p = Positionable().set_points([(-1, -1, -1), (1, 1, 1)])
-    p.scale(3, about_edge=about_edge)
-    np.testing.assert_allclose(p.points, expected)
+@pytest.mark.parametrize("factor", [-1.0, 0.0, 1.0, 2.0])
+@pytest.mark.parametrize("about_edge", ANCHOR_POINTS)
+def test_about_edge(factor: float, about_edge: Vector3DLike) -> None:
+    about_point = about_edge
+    expected_points = CUBE_VERTICES.copy()
+    expected_points -= about_point
+    expected_points *= factor
+    expected_points += about_point
+
+    p = Positionable().set_points(CUBE_VERTICES)
+    p.scale(factor, about_edge=about_edge)
+    np.testing.assert_allclose(p.points, expected_points)
 
 
 def test_about_point_and_edge() -> None:
