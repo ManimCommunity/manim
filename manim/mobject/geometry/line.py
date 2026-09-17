@@ -609,7 +609,7 @@ class Arrow(Line):
 
     def scale(
         self,
-        scale_factor: float,
+        factor: float,
         *,
         scale_tips: bool = False,
         **kwargs: Any,
@@ -645,7 +645,7 @@ class Arrow(Line):
             return self
 
         if scale_tips:
-            super().scale(scale_factor, scale_tips=scale_tips, **kwargs)
+            super().scale(factor, scale_tips=scale_tips, **kwargs)
             self._set_stroke_width_from_length()
             return self
 
@@ -654,7 +654,7 @@ class Arrow(Line):
         if has_tip or has_start_tip:
             old_tips = self.pop_tips()
 
-        super().scale(scale_factor, scale_tips=scale_tips, **kwargs)
+        super().scale(factor, scale_tips=scale_tips, **kwargs)
         self._set_stroke_width_from_length()
 
         if has_tip:

@@ -661,7 +661,7 @@ class Circle(Arc):
     def surround(
         self,
         mobject: Positionable,
-        dim_to_match: int = 0,
+        dim: int = 0,
         *,
         stretch: bool = False,
         buffer_factor: float = 1.2,
@@ -707,7 +707,7 @@ class Circle(Arc):
 
         # Something goes wrong here when surrounding lines?
         # TODO: Figure out and fix
-        self.replace(mobject, dim_to_match, stretch=stretch)
+        self.replace(mobject, dim, stretch=stretch)
 
         self.width = np.sqrt(mobject.width**2 + mobject.height**2)
         return self.scale(buffer_factor)

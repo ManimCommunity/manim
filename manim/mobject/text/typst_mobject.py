@@ -294,7 +294,7 @@ class Typst(SVGMobject):
 
     def scale(
         self,
-        scale_factor: float,
+        factor: float,
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
@@ -302,7 +302,7 @@ class Typst(SVGMobject):
         **kwargs: Any,
     ) -> Self:
         result = super().scale(
-            scale_factor,
+            factor,
             scale_stroke=scale_stroke,
             about_point=about_point,
             about_edge=about_edge,

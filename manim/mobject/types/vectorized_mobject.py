@@ -484,7 +484,7 @@ class VMobject(Mobject):
 
     def scale(
         self,
-        scale_factor: float,
+        factor: float,
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
@@ -497,7 +497,7 @@ class VMobject(Mobject):
 
         Parameters
         ----------
-        scale_factor
+        factor
             The scaling factor :math:`\alpha`. If :math:`0 < |\alpha| < 1`, the mobject
             will shrink, and for :math:`|\alpha| > 1` it will grow. Furthermore,
             if :math:`\alpha < 0`, the mobject is also flipped.
@@ -545,16 +545,16 @@ class VMobject(Mobject):
             for mob in self.get_family():
                 if isinstance(mob, VMobject):
                     mob.set_stroke(
-                        width=abs(scale_factor) * mob.get_stroke_width(),
+                        width=abs(factor) * mob.get_stroke_width(),
                         family=False,
                     )
                     mob.set_stroke(
-                        width=abs(scale_factor) * mob.get_stroke_width(background=True),
+                        width=abs(factor) * mob.get_stroke_width(background=True),
                         background=True,
                         family=False,
                     )
         super().scale(
-            scale_factor,
+            factor,
             about_point=about_point,
             about_edge=about_edge,
             scale_stroke=scale_stroke,

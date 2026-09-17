@@ -186,7 +186,7 @@ class ManimBanner(VGroup):
 
     def scale(
         self,
-        scale_factor: float,
+        factor: float,
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
@@ -197,7 +197,7 @@ class ManimBanner(VGroup):
 
         Parameters
         ----------
-        scale_factor
+        factor
             The factor used for scaling the banner.
 
         Returns
@@ -205,18 +205,18 @@ class ManimBanner(VGroup):
         :class:`~.ManimBanner`
             The scaled banner.
         """
-        self.scale_factor *= scale_factor
+        self.scale_factor *= factor
         # Note: self.anim is only added to self after expand()
         if self.anim not in self.submobjects:
             self.anim.scale(
-                scale_factor,
+                factor,
                 about_point=about_point,
                 about_edge=about_edge,
                 scale_stroke=scale_stroke,
                 **kwargs,
             )
         return super().scale(
-            scale_factor,
+            factor,
             about_point=about_point,
             about_edge=about_edge,
             scale_stroke=scale_stroke,
