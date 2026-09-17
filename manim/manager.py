@@ -100,6 +100,7 @@ class Manager(Generic[SceneT]):
         self._scope_depth = 0
         self._evaluating = False
         self._evaluation_started = False
+        self._output_excluded = False
         scene.manager = self
 
     def __enter__(self) -> Manager[SceneT]:
@@ -509,21 +510,25 @@ class Manager(Generic[SceneT]):
             raise
 
     def _update_skipping_status(self) -> None:
+        # Track exclusion separately from skipping. Both reuse and exclusion set
+        # skip_animations, but only exclusion leaves the play out of the artifact,
+        # and only that case may drop a sound. See add_sound.
+        self._output_excluded = self._execution.original_skipping_status
         if (
             self.file_writer.sections[-1].skip_animations
             or self.file_writer.output_spec.is_still
         ):
-            self.skip_animations = True
+            self.skip_animations = self._output_excluded = True
         if (
             config.from_animation_number > 0
             and self.num_plays < config.from_animation_number
         ):
-            self.skip_animations = True
+            self.skip_animations = self._output_excluded = True
         if (
             config.upto_animation_number >= 0
             and self.num_plays > config.upto_animation_number
         ):
-            self.skip_animations = True
+            self.skip_animations = self._output_excluded = True
             raise EndSceneEarlyException()
 
     def _play(
@@ -773,8 +778,18 @@ class Manager(Generic[SceneT]):
     ) -> None:
         """Add sound to the output at the current scene time.
 
-        No sound is added while animations are being skipped. During
-        :meth:`evaluate`, this call also produces no output; the sound file is
+        Reusing a cached segment does not affect sound: the artifact still contains
+        that span, so re-rendering a scene produces the same audio whether or not its
+        movies were reused.
+
+        No sound is added while the surrounding plays are excluded from the output, by
+        ``-n``, by :meth:`next_section` with ``skip_animations=True``, or by still
+        output. Sound is placed at scene time, and an excluded run's artifact covers
+        only part of the scene's timeline, so such requests cannot yet be positioned
+        correctly. Mapping scene time onto a partial artifact is future work; until
+        then a partial render is not a reliable way to audition audio.
+
+        During :meth:`evaluate`, this call also produces no output; the sound file is
         neither checked nor decoded.
 
         Parameters
@@ -789,7 +804,7 @@ class Manager(Generic[SceneT]):
             Additional arguments forwarded to
             :meth:`~manim.scene.scene_file_writer.SceneFileWriter.add_sound`.
         """
-        if self.skip_animations:
+        if self._output_excluded:
             return
         if self._evaluating:
             return
