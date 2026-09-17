@@ -33,6 +33,7 @@ class RenderSessionSpec:
     output: OutputSpec
     presentation: PresentationSpec
     dry_run: bool
+    frame_rate: float
     video_encoder: VideoEncoderSpec | None
 
 
@@ -122,5 +123,6 @@ def resolve_render_session(
         output=output,
         presentation=presentation,
         dry_run=dry_run,
+        frame_rate=float(config.frame_rate),
         video_encoder=video_encoder,
     )
