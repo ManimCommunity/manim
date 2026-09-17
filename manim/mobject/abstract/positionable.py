@@ -2621,7 +2621,7 @@ class Positionable:
 
         Note
         ----
-        An alias for the :meth:`get_position` method.
+        An alias for the :meth:`get_anchor` method.
 
         Parameters
         ----------
@@ -2651,7 +2651,7 @@ class Positionable:
 
         Note
         ----
-        An alias for the :meth:`get_position` method.
+        An alias for the :meth:`get_anchor` method.
 
         Parameters
         ----------
@@ -2670,7 +2670,7 @@ class Positionable:
 
         Note
         ----
-        An alias for the :meth:`get_position` method.
+        An alias for the :meth:`get_anchor` method.
 
         Parameters
         ----------
