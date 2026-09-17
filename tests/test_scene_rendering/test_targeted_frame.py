@@ -1,6 +1,7 @@
 """Check frame selection against actual writer delivery on Cairo and OpenGL."""
 
 import math
+from contextlib import contextmanager
 from unittest.mock import Mock
 
 import numpy as np
@@ -123,6 +124,72 @@ def test_invalid_timestamp_leaves_scene_unused(settings, timestamp):
             manager.capture_frame_at(timestamp)
         assert manager._frame_request is None
         assert manager._file_writer is None
+
+
+@pytest.mark.parametrize("settings", ["cairo"], indirect=True)
+def test_playback_in_finally_block_keeps_captured_frame(settings):
+    """Cleanup that waits, as manim-voiceover does, must not lose the frame."""
+
+    class Cleanup(Scene):
+        def setup(self):
+            self.trace = []
+
+        @contextmanager
+        def segment(self):
+            try:
+                yield
+            finally:
+                self.trace.append("finally")
+                self.wait(1)
+                self.trace.append("after wait")
+
+        def construct(self):
+            square = Square(fill_opacity=1)
+            self.add(square)
+            with self.segment():
+                self.play(square.animate.shift(RIGHT), run_time=1, rate_func=linear)
+            self.trace.append("after segment")
+
+        def tear_down(self):
+            self.trace.append("tear_down")
+
+    manager = Manager(Cleanup())
+    result = manager.capture_frame_at(0.25)
+    assert (result.requested_time, result.time, result.frame_index) == (0.25, 0.25, 1)
+    # The wait stops the unwind, so nothing after it in that block runs.
+    assert manager.scene.trace == ["finally", "tear_down"]
+    assert manager._closed
+    assert manager._file_writer is None
+
+
+@pytest.mark.parametrize("settings", ["cairo"], indirect=True)
+def test_playback_in_teardown_stops_without_error(settings):
+    class WaitingTeardown(Scene):
+        def construct(self):
+            self.add(Square(fill_opacity=1))
+            self.wait(1)
+
+        def tear_down(self):
+            self.cleaned = True
+            self.wait(1)
+            raise AssertionError("playback must stop tear_down at the wait")
+
+    manager = Manager(WaitingTeardown())
+    result = manager.capture_frame_at(0.25)
+    assert result.frame_index == 1
+    assert manager.scene.cleaned is True
+    assert manager._closed
+
+
+@pytest.mark.parametrize("settings", ["cairo"], indirect=True)
+def test_playback_after_capture_still_rejected_on_reuse(settings):
+    """A second request on a used scene stays an explicit error, not a silent stop."""
+    with Manager(MovingScene()) as manager:
+        assert manager.capture_frame_at(0.25) is not None
+        with pytest.raises(RuntimeError, match="Frame capture has ended"):
+            manager.capture_frame_at(0.5)
+        with pytest.raises(RuntimeError, match="Frame capture has ended"):
+            manager.play(Square().animate.shift(RIGHT))
 
 
 def test_teardown_failure_closes_capture_resources(settings, monkeypatch):
