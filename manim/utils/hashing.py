@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import contextlib
 import copy
 import functools
 import hashlib
 import inspect
 import json
+import weakref
 import zlib
 from collections.abc import Callable, Hashable, Iterable, Sequence
 from time import perf_counter
@@ -88,8 +90,25 @@ def _hash_ndarray(array: np.ndarray) -> str:
     return f"NDARRAY:{encoded_descriptor}:{array.shape}:{digest.hexdigest()}"
 
 
-@functools.cache
-def _derived_attribute_names(mro: tuple[type, ...]) -> frozenset[str]:
+#: Collected names per class. Weak keys, so a scene that builds classes on the fly
+#: does not pin them, and plain ``frozenset`` values, so an entry cannot keep its own
+#: key alive the way storing the MRO would.
+_derived_attribute_cache: weakref.WeakKeyDictionary[type, frozenset[str]] = (
+    weakref.WeakKeyDictionary()
+)
+
+
+def invalidate_derived_attribute_names() -> None:
+    """Discard collected names after any class has been rebased.
+
+    Called by :meth:`ManimConfig.renderer` after ``ConvertToOpenGL`` swaps base classes,
+    which changes what :func:`_derived_attribute_names` would collect for classes that
+    are not themselves rebased but inherit from one that is.
+    """
+    _derived_attribute_cache.clear()
+
+
+def _derived_attribute_names(klass: type) -> frozenset[str]:
     """Return attribute names on a class that must not contribute to a cache key.
 
     These are values derived from other attributes and filled in on demand, so they
@@ -104,18 +123,26 @@ def _derived_attribute_names(mro: tuple[type, ...]) -> frozenset[str]:
     - every name a class lists in ``_hash_excluded_attributes``, for caches that are
       managed by hand with an explicit dirty flag.
 
-    Takes the MRO rather than the class because ``ConvertToOpenGL`` rebases already
-    created classes when ``config.renderer`` changes (see
-    :meth:`ManimConfig.renderer`). Memoizing on the class itself would keep returning
-    the names collected under whichever renderer happened to run first.
+    The result is memoized until :func:`invalidate_derived_attribute_names` clears it,
+    which the renderer setter does because ``ConvertToOpenGL`` rebases already created
+    classes when ``config.renderer`` changes.
     """
+    cached = _derived_attribute_cache.get(klass)
+    if cached is not None:
+        return cached
     names: set[str] = set()
-    for klass in mro:
-        for name, value in vars(klass).items():
+    for ancestor in klass.__mro__:
+        for name, value in vars(ancestor).items():
             if isinstance(value, functools.cached_property):
                 names.add(name)
-        names.update(vars(klass).get("_hash_excluded_attributes", ()))
-    return frozenset(names)
+        names.update(vars(ancestor).get("_hash_excluded_attributes", ()))
+    collected = frozenset(names)
+    # Static extension types cannot be weakly referenced; those are recollected each
+    # time, which costs nothing in practice since only instances with a __dict__ of
+    # their own reach this.
+    with contextlib.suppress(TypeError):
+        _derived_attribute_cache[klass] = collected
+    return collected
 
 
 class _Memoizer:
@@ -322,7 +349,7 @@ class _CustomEncoder(json.JSONEncoder):
             return _hash_ndarray(obj)
         elif hasattr(obj, "__dict__"):
             temp = obj.__dict__
-            derived = _derived_attribute_names(type(obj).__mro__)
+            derived = _derived_attribute_names(type(obj))
             if derived:
                 temp = {key: value for key, value in temp.items() if key not in derived}
             # MappingProxy is scene-caching nightmare. It contains all of the object methods and attributes. We skip it as the mechanism will at some point process the object, but instantiated.
