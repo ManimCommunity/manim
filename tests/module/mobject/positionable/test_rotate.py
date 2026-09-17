@@ -5,10 +5,14 @@ from manim.constants import DEGREES
 from manim.mobject.abstract.positionable import Positionable
 from manim.typing import Point3DLike, Vector3DLike
 from manim.utils.space_ops import rotation_matrix
-from tests.module.mobject.positionable.utils import ANCHOR_POINTS, AXES, CUBE_VERTICES
+from tests.module.mobject.positionable.utils import (
+    ANCHOR_POINTS,
+    AXES,
+    CUBE_VERTICES,
+    POSITIONS,
+)
 
 ATOL = 1e-9
-ABOUT_POINTS = [(-3, -2, 1), (0, 0, 0), (1, 2, 3)]
 ANGLES = [-360, -90, -45, -33, 0, 33, 45, 90, 360]
 
 
@@ -44,7 +48,7 @@ def test_axis(angle: float, axis: Vector3DLike) -> None:
 
 @pytest.mark.parametrize("angle", ANGLES)
 @pytest.mark.parametrize("axis", AXES)
-@pytest.mark.parametrize("about_point", ABOUT_POINTS)
+@pytest.mark.parametrize("about_point", POSITIONS)
 def test_about_point(
     angle: float,
     axis: Vector3DLike,
