@@ -854,17 +854,35 @@ animations. This happens once per play call and includes the following steps:
   animations). This is stored in the ``duration`` attribute of the scene.
 
 
-**Skipping and caching.** If rendering is explicitly skipped, the manager records
-``None`` as the play call's cache key and advances the clock by the requested
-animation run time before beginning the animations.
+**Skipping and caching.** A play call can take a shortcut instead of being rendered
+frame by frame. It is *excluded* when rendering is explicitly skipped -- by ``-n``,
+by :meth:`~.Scene.next_section` with ``skip_animations=True``, or by still output
+(``-s``) -- and it is *cached* when a matching partial movie file already exists.
+In both cases the manager takes a single evaluation step instead of stepping every
+frame, and records ``None`` as the cache key for an excluded play.
 
-Otherwise, if caching is enabled, the manager computes a key with
+Whatever the case, the clock follows one rule:
+
+   Every play advances the clock by the duration of the frames a full render would
+   produce, and it advances after the state update, not before.
+
+This includes rounding to whole frames, as explained below. Later animations therefore
+start at the same time whether an earlier play was rendered, reused from the cache, or
+skipped entirely, and a segment rendered under ``-n`` can be reused by a later full
+render. Because a shortcut is treated as a single interval, :meth:`~.Animation.begin`
+and the shortcut's state update observe the play's start time, while
+:meth:`~.Animation.finish` and :meth:`~.Animation.clean_up_from_scene` observe the
+end of the consumed span, exactly as they do for the last frame of a rendered play.
+
+A wait with a stop condition is the one shortcut that still steps frame by frame, even
+when it is skipped: only stepping can determine when its condition becomes true. Its
+clock advances per frame, so the condition sees the same times it would in a render and
+the wait ends at the same moment.
+
+If caching is enabled, the manager computes a key with
 :func:`.get_hash_from_play_call` and asks the file writer whether a matching
 partial movie file exists. A match lets Manim reuse that file instead of drawing
-and encoding the frames again. The clock advances before the animations begin,
-just as for an explicitly skipped play, but by the duration of the frames that
-normal playback would produce. This includes rounding to whole frames, as
-explained below, so later animations start at the same time on a cache hit or miss.
+and encoding the frames again.
 
 The key includes the play call's start time, index, and frame rate as well as its
 visual inputs. Identical geometry at different points in a scene can therefore

@@ -82,6 +82,107 @@ def test_time_dependent_cache_and_fractional_downstream_epochs(tmp_path, backend
 
 
 @pytest.mark.parametrize("backend", ["cairo", "opengl"])
+def test_excluded_plays_leave_later_plays_on_a_full_render_timeline(tmp_path, backend):
+    """Frames rendered under -n must equal the same frames of a full render.
+
+    TimeDriven positions its square from scene.time, so a clock that drifted over the
+    excluded plays would move every later frame.
+    """
+    with tempconfig(
+        {
+            "renderer": backend,
+            "format": "mp4",
+            "media_dir": str(tmp_path),
+            "frame_rate": 4,
+            "pixel_width": 64,
+            "pixel_height": 32,
+            "live_preview": False,
+            "disable_caching": True,
+            "progress_bar": "none",
+        }
+    ):
+        full = TimeDrivenScene()
+        full.render()
+        reference = decoded_frames(full.manager.file_writer.final_file_path)
+        assert len(reference) == 8
+
+        with tempconfig({"from_animation_number": 2, "upto_animation_number": 3}):
+            partial = TimeDrivenScene()
+            partial.render()
+            actual = decoded_frames(partial.manager.file_writer.final_file_path)
+
+        # Plays 0 and 1 are excluded; plays 2 and 3 supply reference frames 4 through 7.
+        assert partial.time == full.time
+        np.testing.assert_array_equal(actual, reference[4:])
+
+
+@pytest.mark.parametrize("backend", ["cairo", "opengl"])
+def test_segments_rendered_under_exclusion_are_reused_by_a_full_render(
+    tmp_path, backend
+):
+    """The point of the whole-frame clock: -n output is cache-compatible."""
+    with tempconfig(
+        {
+            "renderer": backend,
+            "format": "mp4",
+            "media_dir": str(tmp_path),
+            "frame_rate": 4,
+            "pixel_width": 64,
+            "pixel_height": 32,
+            "live_preview": False,
+            "disable_caching": False,
+            "progress_bar": "none",
+        }
+    ):
+        with tempconfig({"from_animation_number": 2, "upto_animation_number": 3}):
+            TimeDrivenScene().render()
+
+        full = TimeDrivenScene()
+        writer = full._get_manager().file_writer
+        hits = {}
+        lookup = writer.is_already_cached
+
+        def cached(key):
+            result = lookup(key)
+            hits[len(hits)] = result
+            return result
+
+        writer.is_already_cached = cached
+        full.render()
+        # Plays 2 and 3 were rendered by the excluded run and must now be reused.
+        assert hits[2]
+        assert hits[3]
+
+
+@pytest.mark.parametrize("backend", ["cairo", "opengl"])
+def test_still_output_ends_on_the_full_render_clock(tmp_path, backend):
+    """-s excludes every play, so its clock is pure shortcut arithmetic."""
+    with tempconfig(
+        {
+            "renderer": backend,
+            "media_dir": str(tmp_path),
+            "frame_rate": 4,
+            "pixel_width": 64,
+            "pixel_height": 32,
+            "live_preview": False,
+            "disable_caching": True,
+            "progress_bar": "none",
+        }
+    ):
+        with tempconfig({"format": "mp4"}):
+            full = TimeDrivenScene()
+            full.render()
+        with tempconfig({"save_last_frame": True}):
+            still = TimeDrivenScene()
+            still.render()
+            assert still.manager.file_writer.output_spec.is_still
+
+    # Every play is excluded here, so this is the pure shortcut clock: four run_time=0.3
+    # plays at 4 fps consume two frames each. Before the fix it accumulated 4 * 0.3.
+    assert still.time == full.time == 2
+
+
+@pytest.mark.parametrize("backend", ["cairo", "opengl"])
 def test_rate_change_cannot_publish_mismatched_video(tmp_path, backend):
     with tempconfig(
         {
