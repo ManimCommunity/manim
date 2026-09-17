@@ -463,7 +463,6 @@ class Manager(Generic[SceneT]):
         if self.skip_animations:
             logger.debug(f"Skipping animation {self.num_plays}")
             hash_current_animation = None
-            self.time += scene.duration
         else:
             if config["disable_caching"]:
                 logger.info("Caching disabled.")
@@ -500,9 +499,6 @@ class Manager(Generic[SceneT]):
                         {"hash_current_animation": hash_current_animation},
                     )
                     self.skip_animations = True
-                    self.time += self._sampled_duration(
-                        scene.duration, scene.is_current_animation_frozen_frame()
-                    )
         self.file_writer.add_partial_movie_file(hash_current_animation)
         self._execution.animations_hashes.append(hash_current_animation)
         logger.debug(
@@ -519,10 +515,10 @@ class Manager(Generic[SceneT]):
             frame = self._draw_animation_frame(0)
             frame_rate = self.session_spec.frame_rate
             repeats = int(scene.duration * frame_rate)
-            if not self.skip_animations:
-                self.time += repeats / frame_rate
-                if frame is not None:
-                    self.file_writer.write_frame(frame, repeat=repeats)
+            # Every kind of play consumes the frames normal playback would produce.
+            self.time += repeats / frame_rate
+            if not self.skip_animations and frame is not None:
+                self.file_writer.write_frame(frame, repeat=repeats)
             renderer._present_frozen_frame(scene, scene.duration)
         else:
             self._play_internal()
@@ -552,23 +548,33 @@ class Manager(Generic[SceneT]):
             scene.animations,
             scene.duration,
         )
+        # A skipped wait with a stop condition still steps frame by frame, so its clock
+        # advances per sample. Every other shortcut play takes a single evaluation step
+        # and advances once, after that step. This is the same stop_condition that keeps
+        # such waits out of the cache, so the progression and the clock cannot disagree.
+        per_sample = not self.skip_animations or scene.stop_condition is not None
         for sample_index, t in enumerate(scene.time_progression):
             scene.update_to_time(t)
             draw = not skip_rendering and not scene.skip_animation_preview
             frame = self._draw_animation_frame(t) if draw else None
             # Count the interval displayed by this frame, including the t=0 frame.
             # Stop conditions and finish() see the time at the end of that interval.
-            if not self.skip_animations:
+            if per_sample:
                 self.time = event_start + (sample_index + 1) / frame_rate
             if draw:
                 self._deliver_animation_frame(frame, t)
             if scene.stop_condition is not None and scene.stop_condition():
                 scene.time_progression.close()
                 break
+        if not per_sample:
+            # The shortcut step observes the start time; finish() sees the consumed span.
+            self.time = event_start + self._sampled_duration(
+                scene.duration, frozen=False
+            )
         for animation in scene.animations:
             animation.finish()
             animation.clean_up_from_scene(scene)
-        if not self.skip_animations:
+        if per_sample:
             scene.update_mobjects(0)
         self.renderer.static_image = None  # type: ignore[union-attr]
         scene.time_progression.close()
