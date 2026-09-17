@@ -40,7 +40,7 @@ __all__ = ["Positionable"]
 
 class Positionable:
     """A positionable object.
-    
+
     Attributes
     ----------
     points
