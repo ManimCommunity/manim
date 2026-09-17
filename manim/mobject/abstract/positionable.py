@@ -268,9 +268,9 @@ class Positionable:
         func
             The function.
         about_point
-            About which point to apply the function., by default None
+            About which point to apply the function., Defaults to ``None``
         about_edge
-            About which edge to apply the function., by default None
+            About which edge to apply the function., Defaults to ``None``
 
         Returns
         -------
@@ -309,9 +309,9 @@ class Positionable:
         function
             The function.
         about_point
-            About which point to apply the function., by default None
+            About which point to apply the function., Defaults to ``None``
         about_edge
-            About which edge to apply the function., by default None
+            About which edge to apply the function., Defaults to ``None``
 
         Returns
         -------
@@ -341,9 +341,9 @@ class Positionable:
         function
             The function.
         about_point
-            About which point to apply the function., by default None
+            About which point to apply the function., Defaults to ``None``
         about_edge
-            About which edge to apply the function., by default None
+            About which edge to apply the function., Defaults to ``None``
 
         Returns
         -------
@@ -435,9 +435,9 @@ class Positionable:
         scale_factor
             The scale_factor.
         about_point
-            About which point to scale., by default None
+            About which point to scale., Defaults to ``None``
         about_edge
-            About which edge to scale., by default None
+            About which edge to scale., Defaults to ``None``
 
         Returns
         -------
@@ -492,9 +492,9 @@ class Positionable:
         dim
             The dimension.
         about_point
-            About which point to stretch., by default None
+            About which point to stretch., Defaults to ``None``
         about_edge
-            About which edge to stretch., by default None
+            About which edge to stretch., Defaults to ``None``
 
         Returns
         -------
@@ -535,9 +535,9 @@ class Positionable:
         axis
             The axis., by default OUT
         about_point
-            About which point to rotate., by default None
+            About which point to rotate., Defaults to ``None``
         about_edge
-            About which edge to rotate., by default None
+            About which edge to rotate., Defaults to ``None``
 
         Returns
         -------
@@ -605,9 +605,9 @@ class Positionable:
         matrix
             The matrix.
         about_point
-            About which point to apply the matrix., by default None
+            About which point to apply the matrix., Defaults to ``None``
         about_edge
-            About which edge to apply the matrix., by default None
+            About which edge to apply the matrix., Defaults to ``None``
 
         Returns
         -------
@@ -1567,9 +1567,9 @@ class Positionable:
         factor
             The factor., by default 1.5
         about_point
-            About which point to scale., by default None
+            About which point to scale., Defaults to ``None``
         about_edge
-            About which edge to scale., by default None
+            About which edge to scale., Defaults to ``None``
 
         Returns
         -------
@@ -1656,21 +1656,21 @@ class Positionable:
         Parameters
         ----------
         rows
-            The number of rows., by default None
+            The number of rows., Defaults to ``None``
         cols
-            The number of columns., by default None
+            The number of columns., Defaults to ``None``
         buff
             The gap between grid cells., by default MED_SMALL_BUFF
         cell_alignment
             The way each submobject is aligned in its grid cell., by default ORIGIN
         row_alignments
-            The vertical alignment for each row., by default None
+            The vertical alignment for each row., Defaults to ``None``
         col_alignments
-            The horizontal alignment for each column., by default None
+            The horizontal alignment for each column., Defaults to ``None``
         row_heights
-            Defines the heights for certain rows. For ``None``, the height is based on the highest element in that row., by default None
+            Defines the heights for certain rows. For ``None``, the height is based on the highest element in that row., Defaults to ``None``
         col_widths
-            Defines the widths for certain columns. For ``None``, the width is based on the widest element in that column., by default None
+            Defines the widths for certain columns. For ``None``, the width is based on the widest element in that column., Defaults to ``None``
         flow_order
             The order in which submobjects fill the grid., by default "rd"
 
@@ -1777,9 +1777,9 @@ class Positionable:
         stretch
             Whether to stretch or scale., by default False
         about_point
-            About which point to set the dim size., by default None
+            About which point to set the dim size., Defaults to ``None``
         about_edge
-            About which edge to set the dim size., by default None
+            About which edge to set the dim size., Defaults to ``None``
 
         Returns
         -------
@@ -1827,9 +1827,9 @@ class Positionable:
         stretch
             Whether to stretch or scale., by default False
         about_point
-            About which point to set the dim size., by default None
+            About which point to set the dim size., Defaults to ``None``
         about_edge
-            About which edge to set the dim size., by default None
+            About which edge to set the dim size., Defaults to ``None``
 
         Returns
         -------
@@ -1873,9 +1873,9 @@ class Positionable:
         stretch
             Whether to stretch or scale., by default False
         about_point
-            About which point to set the width., by default None
+            About which point to set the width., Defaults to ``None``
         about_edge
-            About which edge to set the width., by default None
+            About which edge to set the width., Defaults to ``None``
 
         Returns
         -------
@@ -1909,9 +1909,9 @@ class Positionable:
         stretch
             Whether to stretch or scale., by default False
         about_point
-            About which point to set the width., by default None
+            About which point to set the width., Defaults to ``None``
         about_edge
-            About which edge to set the width., by default None
+            About which edge to set the width., Defaults to ``None``
 
         Returns
         -------
@@ -1954,9 +1954,9 @@ class Positionable:
         stretch
             Whether to stretch or scale., by default False
         about_point
-            About which point to set the height., by default None
+            About which point to set the height., Defaults to ``None``
         about_edge
-            About which edge to set the height., by default None
+            About which edge to set the height., Defaults to ``None``
 
         Returns
         -------
@@ -1990,9 +1990,9 @@ class Positionable:
         stretch
             Whether to stretch or scale., by default False
         about_point
-            About which point to set the width., by default None
+            About which point to set the width., Defaults to ``None``
         about_edge
-            About which edge to set the width., by default None
+            About which edge to set the width., Defaults to ``None``
 
         Returns
         -------
@@ -2035,9 +2035,9 @@ class Positionable:
         stretch
             Whether to stretch or scale., by default False
         about_point
-            About which point to set the depth., by default None
+            About which point to set the depth., Defaults to ``None``
         about_edge
-            About which edge to set the depth., by default None
+            About which edge to set the depth., Defaults to ``None``
 
         Returns
         -------
@@ -2071,9 +2071,9 @@ class Positionable:
         stretch
             Whether to stretch or scale., by default False
         about_point
-            About which point to set the width., by default None
+            About which point to set the width., Defaults to ``None``
         about_edge
-            About which edge to set the width., by default None
+            About which edge to set the width., Defaults to ``None``
 
         Returns
         -------
@@ -2106,9 +2106,9 @@ class Positionable:
         dim
             The dimension.
         about_point
-            About which point to scale., by default None
+            About which point to scale., Defaults to ``None``
         about_edge
-            About which edge to scale., by default None
+            About which edge to scale., Defaults to ``None``
 
         Returns
         -------
@@ -2139,9 +2139,9 @@ class Positionable:
         width
             The width.
         about_point
-            About which point to scale., by default None
+            About which point to scale., Defaults to ``None``
         about_edge
-            About which edge to scale., by default None
+            About which edge to scale., Defaults to ``None``
 
         Returns
         -------
@@ -2187,9 +2187,9 @@ class Positionable:
         height
             The height.
         about_point
-            About which point to scale., by default None
+            About which point to scale., Defaults to ``None``
         about_edge
-            About which edge to scale., by default None
+            About which edge to scale., Defaults to ``None``
 
         Returns
         -------
@@ -2220,9 +2220,9 @@ class Positionable:
         depth
             The depth.
         about_point
-            About which point to scale., by default None
+            About which point to scale., Defaults to ``None``
         about_edge
-            About which edge to scale., by default None
+            About which edge to scale., Defaults to ``None``
 
         Returns
         -------
@@ -2256,9 +2256,9 @@ class Positionable:
         dim
             The dimension.
         about_point
-            About which point to stretch., by default None
+            About which point to stretch., Defaults to ``None``
         about_edge
-            About which edge to stretch., by default None
+            About which edge to stretch., Defaults to ``None``
 
         Returns
         -------
@@ -2289,9 +2289,9 @@ class Positionable:
         width
             The width.
         about_point
-            About which point to stretch., by default None
+            About which point to stretch., Defaults to ``None``
         about_edge
-            About which edge to stretch., by default None
+            About which edge to stretch., Defaults to ``None``
 
         Returns
         -------
@@ -2337,9 +2337,9 @@ class Positionable:
         height
             The height.
         about_point
-            About which point to stretch., by default None
+            About which point to stretch., Defaults to ``None``
         about_edge
-            About which edge to stretch., by default None
+            About which edge to stretch., Defaults to ``None``
 
         Returns
         -------
@@ -2385,9 +2385,9 @@ class Positionable:
         depth
             The depth.
         about_point
-            About which point to stretch., by default None
+            About which point to stretch., Defaults to ``None``
         about_edge
-            About which edge to stretch., by default None
+            About which edge to stretch., Defaults to ``None``
 
         Returns
         -------
@@ -2424,9 +2424,9 @@ class Positionable:
         axis
             The axis., by default UP
         about_point
-            About which point to flip., by default None
+            About which point to flip., Defaults to ``None``
         about_edge
-            About which edge to flip., by default None
+            About which edge to flip., Defaults to ``None``
 
         Returns
         -------
@@ -2465,9 +2465,9 @@ class Positionable:
         Parameters
         ----------
         about_point
-            About which point to pose., by default None
+            About which point to pose., Defaults to ``None``
         about_edge
-            About which edge to pose., by default None
+            About which edge to pose., Defaults to ``None``
 
         Returns
         -------
