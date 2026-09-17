@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import functools
 import gc
 import json
 import weakref
@@ -8,7 +9,7 @@ from zlib import crc32
 import numpy as np
 
 import manim.utils.hashing as hashing
-from manim import ImageMobject, Square
+from manim import ImageMobject, Square, tempconfig
 
 ALREADY_PROCESSED_PLACEHOLDER = hashing._Memoizer.ALREADY_PROCESSED_PLACEHOLDER
 _CACHE_IDENTITY = {
@@ -270,6 +271,48 @@ def test_play_hash_includes_mobject_pixels_but_not_camera_pixels():
     mobject.pixel_array[4, 4, 0] ^= 1
     camera.pixel_array[0] ^= 1
     assert _play_hash(scene, camera, [], [mobject]) == original
+
+
+def test_reading_a_cached_property_does_not_change_the_key():
+    """A key must describe what is drawn, not whether anything has been drawn yet.
+
+    ``cached_property`` values only enter ``__dict__`` once something reads them, so
+    a run that skipped earlier plays would otherwise compute a different key than a
+    full render for the very same play.
+    """
+
+    class Derived:
+        def __init__(self, base: int) -> None:
+            self.base = base
+
+        @functools.cached_property
+        def doubled(self) -> int:
+            return self.base * 2
+
+    untouched = Derived(3)
+    read = Derived(3)
+    assert read.doubled == 6
+
+    assert hashing.get_json(untouched) == hashing.get_json(read)
+    # The state the value is derived from still participates in the key.
+    assert hashing.get_json(Derived(4)) != hashing.get_json(untouched)
+
+
+def test_opengl_camera_key_ignores_its_derived_view_matrices():
+    from manim.renderer.opengl.camera import OpenGLCamera
+
+    with tempconfig({"renderer": "opengl", "pixel_width": 64, "pixel_height": 32}):
+        untouched = OpenGLCamera()
+        drawn = OpenGLCamera()
+        # Rendering reads these; they are just inv(model_matrix) and its shader layout.
+        assert drawn.formatted_view_matrix is not None
+        assert drawn.unformatted_view_matrix is not None
+
+        assert hashing.get_json(untouched) == hashing.get_json(drawn)
+
+        moved = OpenGLCamera()
+        moved.model_matrix = moved.model_matrix * 2
+        assert hashing.get_json(moved) != hashing.get_json(untouched)
 
 
 def test_play_hash_keeps_distinct_mobjects_with_equal_python_hashes():

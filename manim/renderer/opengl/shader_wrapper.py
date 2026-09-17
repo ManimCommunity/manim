@@ -47,6 +47,14 @@ _ShaderData: TypeAlias = npt.NDArray[_ShaderDType]
 
 
 class ShaderWrapper:
+    #: Vertex buffers, index buffers and uniforms are copied in from the mobject when
+    #: it is drawn, and are otherwise empty. They restate data the mobject already
+    #: contributes to the movie-cache key, so including them would make that key depend
+    #: on whether an earlier play in the same run happened to be drawn. ``program_code``
+    #: is deliberately not listed: :meth:`.OpenGLMobject.set_color_by_code` edits it, so
+    #: it carries visual state of its own.
+    _hash_excluded_attributes = frozenset({"vert_data", "vert_indices", "uniforms"})
+
     def __init__(
         self,
         vert_data: _ShaderData = None,

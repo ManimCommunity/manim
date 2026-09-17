@@ -544,17 +544,20 @@ class Manager(Generic[SceneT]):
             self._begin_animation_output()
         scene.begin_animations()
         self._check_evaluation_scene()
-        if not self._evaluating:
+        # A shortcut play produces no frames, so it needs no drawing, readback, static
+        # frame preparation, or presentation. Its state updates do not depend on them.
+        rendering = not self._evaluating and not self.skip_animations
+        if rendering:
             renderer._prepare_animation(scene)
         if scene.is_current_animation_frozen_frame():
-            frame = None if self._evaluating else self._draw_animation_frame(0)
+            frame = self._draw_animation_frame(0) if rendering else None
             frame_rate = self.session_spec.frame_rate
             repeats = int(scene.duration * frame_rate)
             # Every kind of play consumes the frames normal playback would produce.
             self.time += repeats / frame_rate
             if not self.skip_animations and frame is not None:
                 self.file_writer.write_frame(frame, repeat=repeats)
-            if not self._evaluating:
+            if rendering:
                 renderer._present_frozen_frame(scene, scene.duration)
         else:
             self._play_internal()
@@ -648,6 +651,7 @@ class Manager(Generic[SceneT]):
             self._check_evaluation_scene()
             draw = (
                 not self._evaluating
+                and not self.skip_animations
                 and not skip_rendering
                 and not scene.skip_animation_preview
             )

@@ -862,7 +862,10 @@ frame by frame. It is *excluded* when rendering is explicitly skipped -- by ``-n
 by :meth:`~.Scene.next_section` with ``skip_animations=True``, or by still output
 (``-s``) -- and it is *cached* when a matching partial movie file already exists.
 In both cases the manager takes a single evaluation step instead of stepping every
-frame, and records ``None`` as the cache key for an excluded play.
+frame, and records ``None`` as the cache key for an excluded play. A shortcut produces
+no frames, so it also does no drawing, no readback, and no presentation: scene state
+does not depend on rendering, which is the same guarantee
+:meth:`~.Manager.evaluate` relies on.
 
 Whatever the case, the clock follows one rule:
 
