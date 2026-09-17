@@ -1327,8 +1327,7 @@ class Positionable:
 
     def align_to(
         self,
-        # TODO: Rename to `point_or_mobject`
-        mobject_or_point: Positionable | Point3DLike,
+        point_or_mobject: Point3DLike | Positionable,
         direction: Vector3DLike = ORIGIN,
         **kwargs: Any,
     ) -> Self:
@@ -1336,8 +1335,8 @@ class Positionable:
 
         Parameters
         ----------
-        mobject_or_point
-            The point.
+        point_or_mobject
+            The point or mobject.
         direction
             The direction., Defaults to ``ORIGIN``, i.e. the object's center point.
 
@@ -1353,15 +1352,15 @@ class Positionable:
             # moves mob1 vertically so that its top edge lines ups with mob2's top edge
             mob1.align_to(mob2, UP)
         """
-        if isinstance(mobject_or_point, Positionable):
-            mobject_or_point = mobject_or_point.get_anchor(direction=direction)
+        if isinstance(point_or_mobject, Positionable):
+            point_or_mobject = point_or_mobject.get_anchor(direction=direction)
 
         all_points = self.get_all_points()
         vector = np.zeros(3)
         for dim in range(3):
             if direction[dim] != 0:
                 source = self._get_extremum(all_points[:, dim], key=direction[dim])
-                vector[dim] = mobject_or_point[dim] - source
+                vector[dim] = point_or_mobject[dim] - source
         return self.translate(
             vector=vector,
             **kwargs,
@@ -1369,8 +1368,7 @@ class Positionable:
 
     def next_to(
         self,
-        # TODO: Rename to `point_or_mobject`
-        mobject_or_point: Positionable | Point3DLike,
+        point_or_mobject: Point3DLike | Positionable,
         direction: Vector3DLike = RIGHT,
         *,
         aligned_edge: Vector3DLike = ORIGIN,
@@ -1381,8 +1379,8 @@ class Positionable:
 
         Parameters
         ----------
-        mobject_or_point
-            The point.
+        point_or_mobject
+            The point or mobject.
         direction
             The direction., Defaults to ``RIGHT``
         buff
@@ -1414,12 +1412,12 @@ class Positionable:
         """
         direction = np.asarray(direction)
         aligned_edge = np.asarray(aligned_edge)
-        if isinstance(mobject_or_point, Positionable):
+        if isinstance(point_or_mobject, Positionable):
             target_direction = aligned_edge + direction
-            mobject_or_point = mobject_or_point.get_anchor(direction=target_direction)
+            point_or_mobject = point_or_mobject.get_anchor(direction=target_direction)
         source_direction = aligned_edge - direction
         source_point = self.get_anchor(direction=source_direction)
-        vector = mobject_or_point - source_point + buff * direction
+        vector = point_or_mobject - source_point + buff * direction
         return self.translate(
             vector=vector,
             **kwargs,
