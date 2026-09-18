@@ -81,6 +81,70 @@ class Mobject:
     getting and setting generic attributes with ``get_*``
     and ``set_*`` methods. See :meth:`set` for more details.
 
+    Mobjects support NumPy-like indexing and slicing. If more than one item is
+    extracted, the results are collected inside a :class:`Group` or, if this is
+    a :class:`~.VMobject`, a :class:`~.VGroup`. For example, given this
+    structure of VMobjects:
+
+    .. code::
+
+        Mob0
+        ├──VGroup [0]
+        │   ├──Mob1 [0, 0]
+        │   └──Mob2 [0, 1]
+        ├──VGroup [1]
+        │   ├──Mob3 [1, 0]
+        │   │   ├──VGroup [1, 0, 0]
+        │   │   │   └──Mob7 [1, 0, 0, 0]
+        │   │   └──Mob8 [1, 0, 1]
+        │   │       └──Mob9 [1, 0, 1, 0]
+        │   ├──Mob4 [1, 1]
+        │   └──Mob5 [1, 2]
+        └──Mob6 [2]
+
+    this is possible:
+
+    .. code:: pycon
+
+        >>> mobs = [VMobject(name=f"Mob{i}") for i in range(10)]
+        >>> vgroups = [VGroup(*mobs[1:3]), VGroup(*mobs[3:6]), VGroup(mobs[7])]
+        >>>
+        >>> base_mob = mobs[0]
+        >>> base_mob.add(vgroups[0], vgroups[1], mobs[6])
+        >>> mobs[3].add(vgroups[2], mobs[8])
+        >>> mobs[8].add(mobs[9])
+        >>>
+        >>> # Basic indexing
+        >>> base_mob[2]
+        Mob6
+        >>> base_mob[0]
+        VGroup(Mob1, Mob2)
+        >>> base_mob[1]
+        VGroup(Mob3, Mob4, Mob5)
+        >>> base_mob[1:]
+        VGroup(VGroup of 3 submobjects, Mob6)
+        >>>
+        >>> # Multi-dimensional indexing
+        >>> base_mob[0, 0]
+        Mob1
+        >>> base_mob[1, 0, 0]
+        VGroup(Mob7)
+        >>> base_mob[1, 0, 0, 0]
+        Mob7
+        >>> base_mob[:2, 0]
+        VGroup(Mob1, Mob3)
+        >>> base_mob[:2, 1]
+        VGroup(Mob2, Mob4)
+        >>> base_mob[1, 0, :, 0]
+        VGroup(Mob7, Mob9)
+        >>>
+        >>> # Fancy indexing
+        >>> base_mob[[2, 0]]
+        VGroup(Mob6, VGroup of 2 submobjects)
+        >>> base_mob[[True, False, True]]
+        VGroup(VGroup of 2 submobjects, Mob6)
+
+
     Attributes
     ----------
     submobjects : List[:class:`Mobject`]
@@ -2614,28 +2678,64 @@ class Mobject:
 
     # Family matters
 
-    def __getitem__(self, value: Any) -> Mobject:
-        if isinstance(value, slice):
-            GroupClass = self.get_group_class()
+    def __getitem__(self, index: int | slice | tuple | list | np.ndarray) -> Mobject:
+        """See the Mobject docstring for more information. This magic method's
+        docstring is not rendered in the docs.
+        """
+        group_class = self.get_group_class()
 
-            if self.has_no_points():
-                return GroupClass(*self.submobjects[value])
+        def _recursive_getitem(
+            mob: Mobject, remaining_indices: tuple, index_pos: int
+        ) -> Mobject:
+            if not remaining_indices:
+                return mob
 
-            r = range(*value.indices(len(self)))
-            if not r:  # If slice is empty
-                return GroupClass()
-            if 0 not in r:
-                # If self is not included in the slice, we can gain a small speed boost
-                # by indexing directly into the submobjects list.
-                stop = r.stop - 1 if (r.step > 0 or r.stop > 0) else None
-                return GroupClass(*self.submobjects[r.start - 1 : stop : r.step])
+            current_index = remaining_indices[0]
+            current_index_should_be_integer = False
+            subindices: Iterable[Any]
+            if isinstance(current_index, slice):
+                subindices = range(*current_index.indices(len(mob)))
+            elif isinstance(current_index, (list, np.ndarray)):
+                if all(np.issubdtype(type(item), np.bool) for item in current_index):
+                    subindices = [
+                        i for i, is_true in enumerate(current_index) if is_true
+                    ]
+                else:
+                    # This catches cases where the subindices are int, bool, np.integer,
+                    # a class whose __index__() method returns an integer, etc. If the
+                    # subindices cannot be cast as int, this will raise an IndexError.
+                    subindices = current_index
+            else:
+                # This catches cases where the index is int, bool, np.integer, a class
+                # whose __index__() method returns an integer, etc. If the index
+                # cannot be cast as int, this will raise an IndexError.
+                current_index_should_be_integer = True
+                subindices = [current_index]
 
-            return GroupClass(*[self.submobjects[i - 1] if i != 0 else self for i in r])
+            if not subindices:
+                return group_class()
 
-        index: int = range(len(self))[value]  # Normalize the index
-        if self.has_no_points():
-            return self.submobjects[index]
-        return self if index == 0 else self.submobjects[index - 1]
+            # Normalize subindices: make them ints >= 0 and < len(mob)
+            r = range(len(mob))
+            normal_subindices: list[int] = [r[i] for i in subindices]
+
+            if mob.has_points():
+                submobs = [
+                    mob if i == 0 else mob.submobjects[i - 1] for i in normal_subindices
+                ]
+            else:
+                submobs = [mob.submobjects[i] for i in normal_subindices]
+
+            collected_submobs = [
+                _recursive_getitem(submob, remaining_indices[1:], index_pos + 1)
+                for submob in submobs
+            ]
+            if current_index_should_be_integer:
+                return collected_submobs[0]
+            return group_class(*collected_submobs)
+
+        indices = index if isinstance(index, tuple) else (index,)
+        return _recursive_getitem(self, indices, 0)
 
     def __iter__(self) -> Iterator[Mobject]:
         return it.chain([self] if self.has_points() else [], self.submobjects)
