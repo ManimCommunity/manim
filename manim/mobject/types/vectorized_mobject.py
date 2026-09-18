@@ -178,6 +178,15 @@ class VMobject(Mobject):
     def __iter__(self) -> Iterator[VMobject]:
         return cast(Iterator[VMobject], super().__iter__())
 
+    def apply_to_family(
+        self,
+        function: Callable[[VMobject], Any],
+        *,
+        should_skip: Callable[[VMobject], bool] = lambda mob: not mob.has_points(),
+        **kwargs: Any,
+    ) -> Self:
+        return super().apply_to_family(function, should_skip=should_skip, **kwargs)  # type: ignore[arg-type]
+
     # OpenGL compatibility
     @property
     def n_points_per_curve(self) -> int:
