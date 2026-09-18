@@ -9,12 +9,6 @@ __all__ = [
     "seek_full_path_from_defaults",
     "modify_atime",
     "open_file",
-    "is_mp4_format",
-    "is_gif_format",
-    "is_png_format",
-    "is_webm_format",
-    "is_mov_format",
-    "write_to_movie",
     "ensure_executable",
 ]
 
@@ -37,96 +31,9 @@ from manim import __version__, config, logger
 from .. import console
 
 
-def is_mp4_format() -> bool:
-    """
-    Determines if output format is .mp4
-
-    Returns
-    -------
-    class:`bool`
-        ``True`` if format is set as mp4
-
-    """
-    return config["format"] == "mp4"
-
-
-def is_gif_format() -> bool:
-    """
-    Determines if output format is .gif
-
-    Returns
-    -------
-    class:`bool`
-        ``True`` if format is set as gif
-
-    """
-    return config["format"] == "gif"
-
-
-def is_webm_format() -> bool:
-    """
-    Determines if output format is .webm
-
-    Returns
-    -------
-    class:`bool`
-        ``True`` if format is set as webm
-
-    """
-    return config["format"] == "webm"
-
-
-def is_mov_format() -> bool:
-    """
-    Determines if output format is .mov
-
-    Returns
-    -------
-    class:`bool`
-        ``True`` if format is set as mov
-
-    """
-    return config["format"] == "mov"
-
-
-def is_png_format() -> bool:
-    """
-    Determines if output format is .png
-
-    Returns
-    -------
-    class:`bool`
-        ``True`` if format is set as png
-
-    """
-    return config["format"] == "png"
-
-
-def write_to_movie() -> bool:
-    """
-    Determines from config if the output is a video format such as mp4 or gif, if the --format is set as 'png'
-    then it will take precedence event if the write_to_movie flag is set
-
-    Returns
-    -------
-    class:`bool`
-        ``True`` if the output should be written in a movie format
-
-    """
-    if is_png_format():
-        return False
-    return (
-        config["write_to_movie"]
-        or is_mp4_format()
-        or is_gif_format()
-        or is_webm_format()
-        or is_mov_format()
-    )
-
-
 def ensure_executable(path_to_exe: Path) -> bool:
     if path_to_exe.parent == Path("."):
-        executable = shutil.which(path_to_exe.stem)
+        executable: StrPath | None = shutil.which(path_to_exe.stem)
         if executable is None:
             return False
     else:
@@ -148,15 +55,14 @@ def add_version_before_extension(file_name: Path) -> Path:
 
 
 def guarantee_existence(path: Path) -> Path:
-    if not path.exists():
-        path.mkdir(parents=True)
+    path.mkdir(parents=True, exist_ok=True)
     return path.resolve(strict=True)
 
 
 def guarantee_empty_existence(path: Path) -> Path:
     if path.exists():
         shutil.rmtree(str(path))
-    path.mkdir(parents=True)
+    path.mkdir(parents=True, exist_ok=True)
     return path.resolve(strict=True)
 
 
@@ -191,7 +97,12 @@ def modify_atime(file_path: str) -> None:
 def open_file(file_path: Path, in_browser: bool = False) -> None:
     current_os = platform.system()
     if current_os == "Windows":
-        os.startfile(file_path if not in_browser else file_path.parent)
+        # os.startfile is only available on Windows, so use getattr to keep
+        # static analysis platform-independent.
+        startfile = getattr(os, "startfile", None)
+        if startfile is None:
+            raise OSError("os.startfile is unavailable on this Windows system")
+        startfile(file_path if not in_browser else file_path.parent)
     else:
         if current_os == "Linux":
             commands = ["xdg-open"]
@@ -207,24 +118,26 @@ def open_file(file_path: Path, in_browser: bool = False) -> None:
         # check after so that file path is set correctly
         if config.preview_command:
             commands = [config.preview_command]
-        commands.append(file_path)
+        commands.append(str(file_path))
         sp.run(commands)
 
 
-def open_media_file(file_writer: SceneFileWriter) -> None:
-    file_paths = []
-
-    if config["save_last_frame"]:
-        file_paths.append(file_writer.image_file_path)
-    if write_to_movie() and not is_gif_format():
-        file_paths.append(file_writer.movie_file_path)
-    if write_to_movie() and is_gif_format():
-        file_paths.append(file_writer.gif_file_path)
+def open_media_file(
+    file_writer: SceneFileWriter,
+    *,
+    preview: bool,
+    show_in_file_browser: bool,
+) -> None:
+    final_file_path = getattr(file_writer, "final_file_path", None)
+    if final_file_path is None:
+        logger.warning("No media artifact is available to open.")
+        return
+    file_paths = [final_file_path]
 
     for file_path in file_paths:
-        if config["show_in_file_browser"]:
+        if show_in_file_browser:
             open_file(file_path, True)
-        if config["preview"]:
+        if preview:
             open_file(file_path, False)
 
             logger.info(f"Previewed File at: '{file_path}'")

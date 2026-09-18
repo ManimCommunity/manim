@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
@@ -11,7 +11,7 @@ from manim import get_video_metadata
 __all__ = ["Section", "DefaultSectionType"]
 
 
-class DefaultSectionType(str, Enum):
+class DefaultSectionType(StrEnum):
     """The type of a section can be used for third party applications.
     A presentation system could for example use the types to created loops.
 
@@ -59,7 +59,9 @@ class Section:
     :meth:`.OpenGLRenderer.update_skipping_status`
     """
 
-    def __init__(self, type_: str, video: str | None, name: str, skip_animations: bool):
+    def __init__(
+        self, type_: str, video: str | None, name: str, skip_animations: bool
+    ) -> None:
         self.type_ = type_
         # None when not to be saved -> still keeps section alive
         self.video: str | None = video
@@ -100,5 +102,5 @@ class Section:
             **video_metadata,
         )
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Section '{self.name}' stored in '{self.video}'>"

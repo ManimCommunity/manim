@@ -22,32 +22,51 @@ in space. For example:
 
 .. code-block:: python
 
-   def status2D(coord: Point2D) -> None:
+   def print_point2D(coord: Point2DLike) -> None:
        x, y = coord
        print(f"Point at {x=},{y=}")
 
 
-   def status3D(coord: Point3D) -> None:
+   def print_point3D(coord: Point3DLike) -> None:
        x, y, z = coord
        print(f"Point at {x=},{y=},{z=}")
 
 
-   def get_statuses(coords: Point2D_Array | Point3D_Array) -> None:
+   def print_point_array(coords: Point2DLike_Array | Point3DLike_Array) -> None:
        for coord in coords:
            if len(coord) == 2:
-               # it's a Point2D
-               status2D(coord)
+               # it's a Point2DLike
+               print_point2D(coord)
            else:
-               # it's a point3D
-               status3D(coord)
+               # it's a Point3DLike
+               print_point3D(coord)
 
-It's important to realize that the status functions accepted both
-tuples/lists of the correct length, and ``NDArray``'s of the correct shape.
-If they only accepted ``NDArray``'s, we would use their ``Internal`` counterparts:
-:class:`~.typing.InternalPoint2D`, :class:`~.typing.InternalPoint3D`, :class:`~.typing.InternalPoint2D_Array` and :class:`~.typing.InternalPoint3D_Array`.
+   def shift_point_up(coord: Point3DLike) -> Point3D:
+       result = np.asarray(coord)
+       result += UP
+       print(f"New point: {result}")
+       return result
 
-In general, the type aliases prefixed with ``Internal`` should never be used on
-user-facing classes and functions, but should be reserved for internal behavior.
+Notice that the last function, ``shift_point_up()``, accepts a
+:class:`~.Point3DLike` as a parameter and returns a :class:`~.Point3D`. A
+:class:`~.Point3D` always represents a NumPy array consisting of 3 floats,
+whereas a :class:`~.Point3DLike` can represent anything resembling a 3D point:
+either a NumPy array or a tuple/list of 3 floats, hence the ``Like`` word. The
+same happens with :class:`~.Point2D`, :class:`~.Point2D_Array` and
+:class:`~.Point3D_Array`, and their ``Like`` counterparts
+:class:`~.Point2DLike`, :class:`~.Point2DLike_Array` and
+:class:`~.Point3DLike_Array`.
+
+The rule for typing functions is: **make parameter types as broad as possible,
+and return types as specific as possible.** Therefore, for functions which are
+intended to be called by users, **we should always, if possible, accept**
+``Like`` **types as parameters and return NumPy, non-** ``Like`` **types.** The
+main reason is to be more flexible with users who might want to pass tuples or
+lists as arguments rather than NumPy arrays, because it's more convenient. The
+last function, ``shift_point_up()``, is an example of it.
+
+Internal functions which are *not* meant to be called by users may accept
+non-``Like`` parameters if necessary.
 
 Vectors
 ~~~~~~~
@@ -61,20 +80,13 @@ consider this slightly contrived function:
    def shift_mobject(mob: M, direction: Vector3D, scale_factor: float = 1) -> M:
        return mob.shift(direction * scale_factor)
 
-Here we see an important example of the difference. ``direction`` can not, and
-should not, be typed as a :class:`~.typing.Point3D` because the function does not accept tuples/lists,
-like ``direction=(0, 1, 0)``. You could type it as :class:`~.typing.InternalPoint3D` and
-the type checker and linter would be happy; however, this makes the code harder
-to understand.
+Here we see an important example of the difference. ``direction`` should not be
+typed as a :class:`~.Point3D`, because it represents a direction along
+which to shift a :class:`~.Mobject`, not a position in space.
 
 As a general rule, if a parameter is called ``direction`` or ``axis``,
-it should be type hinted as some form of :class:`~.VectorND`.
-
-.. warning::
-
-   This is not always true. For example, as of Manim 0.18.0, the direction
-   parameter of the :class:`.Vector` Mobject should be ``Point2D | Point3D``,
-   as it can also accept ``tuple[float, float]`` and ``tuple[float, float, float]``.
+it should be type hinted as some form of :class:`~.VectorND` or
+:class:`~.VectorNDLike`.
 
 Colors
 ------

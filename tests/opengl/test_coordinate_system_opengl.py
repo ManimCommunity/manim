@@ -20,7 +20,7 @@ from manim import (
     tempconfig,
 )
 from manim import CoordinateSystem as CS
-from manim.utils.color import BLUE, GREEN, ORANGE, RED, YELLOW
+from manim.utils.color import BLUE, GREEN, ORANGE, PURE_YELLOW, RED
 from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "coordinate_system_opengl"
@@ -152,7 +152,7 @@ def test_gradient_line_graph_x_axis(scene, using_opengl_renderer):
     curve = axes.plot(
         lambda x: 0.1 * x**3,
         x_range=(-3, 3, 0.001),
-        colorscale=[BLUE, GREEN, YELLOW, ORANGE, RED],
+        colorscale=[BLUE, GREEN, PURE_YELLOW, ORANGE, RED],
         colorscale_axis=0,
     )
 
@@ -167,7 +167,7 @@ def test_gradient_line_graph_y_axis(scene, using_opengl_renderer):
     curve = axes.plot(
         lambda x: 0.1 * x**3,
         x_range=(-3, 3, 0.001),
-        colorscale=[BLUE, GREEN, YELLOW, ORANGE, RED],
+        colorscale=[BLUE, GREEN, PURE_YELLOW, ORANGE, RED],
         colorscale_axis=1,
     )
 

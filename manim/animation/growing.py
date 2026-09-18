@@ -31,16 +31,17 @@ __all__ = [
     "SpinInFromNothing",
 ]
 
-import typing
-
-import numpy as np
+from typing import TYPE_CHECKING, Any
 
 from ..animation.transform import Transform
 from ..constants import PI
 from ..utils.paths import spiral_path
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from manim.mobject.geometry.line import Arrow
+    from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+    from manim.typing import Point3DLike, Vector3DLike
+    from manim.utils.color import ParsableManimColor
 
     from ..mobject.mobject import Mobject
 
@@ -76,16 +77,20 @@ class GrowFromPoint(Transform):
     """
 
     def __init__(
-        self, mobject: Mobject, point: np.ndarray, point_color: str = None, **kwargs
-    ) -> None:
+        self,
+        mobject: Mobject,
+        point: Point3DLike,
+        point_color: ParsableManimColor | None = None,
+        **kwargs: Any,
+    ):
         self.point = point
         self.point_color = point_color
         super().__init__(mobject, introducer=True, **kwargs)
 
-    def create_target(self) -> Mobject:
+    def create_target(self) -> Mobject | OpenGLMobject:
         return self.mobject
 
-    def create_starting_mobject(self) -> Mobject:
+    def create_starting_mobject(self) -> Mobject | OpenGLMobject:
         start = super().create_starting_mobject()
         start.scale(0)
         start.move_to(self.point)
@@ -118,7 +123,12 @@ class GrowFromCenter(GrowFromPoint):
 
     """
 
-    def __init__(self, mobject: Mobject, point_color: str = None, **kwargs) -> None:
+    def __init__(
+        self,
+        mobject: Mobject,
+        point_color: ParsableManimColor | None = None,
+        **kwargs: Any,
+    ):
         point = mobject.get_center()
         super().__init__(mobject, point, point_color=point_color, **kwargs)
 
@@ -153,8 +163,12 @@ class GrowFromEdge(GrowFromPoint):
     """
 
     def __init__(
-        self, mobject: Mobject, edge: np.ndarray, point_color: str = None, **kwargs
-    ) -> None:
+        self,
+        mobject: Mobject,
+        edge: Vector3DLike,
+        point_color: ParsableManimColor | None = None,
+        **kwargs: Any,
+    ):
         point = mobject.get_critical_point(edge)
         super().__init__(mobject, point, point_color=point_color, **kwargs)
 
@@ -183,11 +197,13 @@ class GrowArrow(GrowFromPoint):
 
     """
 
-    def __init__(self, arrow: Arrow, point_color: str = None, **kwargs) -> None:
+    def __init__(
+        self, arrow: Arrow, point_color: ParsableManimColor | None = None, **kwargs: Any
+    ):
         point = arrow.get_start()
         super().__init__(arrow, point, point_color=point_color, **kwargs)
 
-    def create_starting_mobject(self) -> Mobject:
+    def create_starting_mobject(self) -> Mobject | OpenGLMobject:
         start_arrow = self.mobject.copy()
         start_arrow.scale(0, scale_tips=True, about_point=self.point)
         if self.point_color:
@@ -224,8 +240,12 @@ class SpinInFromNothing(GrowFromCenter):
     """
 
     def __init__(
-        self, mobject: Mobject, angle: float = PI / 2, point_color: str = None, **kwargs
-    ) -> None:
+        self,
+        mobject: Mobject,
+        angle: float = PI / 2,
+        point_color: ParsableManimColor | None = None,
+        **kwargs: Any,
+    ):
         self.angle = angle
         super().__init__(
             mobject, path_func=spiral_path(angle), point_color=point_color, **kwargs

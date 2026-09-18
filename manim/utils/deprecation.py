@@ -8,15 +8,15 @@ __all__ = ["deprecated", "deprecated_params"]
 import inspect
 import logging
 import re
-from collections.abc import Iterable
-from typing import Any, Callable
+from collections.abc import Callable, Iterable
+from typing import Any, ParamSpec, TypeVar, overload
 
 from decorator import decorate, decorator
 
 logger = logging.getLogger("manim")
 
 
-def _get_callable_info(callable_: Callable, /) -> tuple[str, str]:
+def _get_callable_info(callable_: Callable[..., Any], /) -> tuple[str, str]:
     """Returns type and name of a callable.
 
     Parameters
@@ -40,9 +40,9 @@ def _get_callable_info(callable_: Callable, /) -> tuple[str, str]:
 
 
 def _deprecation_text_component(
-    since: str | None,
-    until: str | None,
-    message: str,
+    since: str | None = None,
+    until: str | None = None,
+    message: str | None = None,
 ) -> str:
     """Generates a text component used in deprecation messages.
 
@@ -70,13 +70,37 @@ def _deprecation_text_component(
     return f"deprecated {since}and {until}.{msg}"
 
 
+P = ParamSpec("P")
+T = TypeVar("T")
+
+
+@overload
 def deprecated(
-    func: Callable = None,
+    func: Callable[P, T],
     since: str | None = None,
     until: str | None = None,
     replacement: str | None = None,
     message: str | None = "",
-) -> Callable:
+) -> Callable[P, T]: ...
+
+
+@overload
+def deprecated(
+    func: None = None,
+    since: str | None = None,
+    until: str | None = None,
+    replacement: str | None = None,
+    message: str | None = "",
+) -> Callable[[Callable[P, T]], Callable[P, T]]: ...
+
+
+def deprecated(
+    func: Callable[P, T] | None = None,
+    since: str | None = None,
+    until: str | None = None,
+    replacement: str | None = None,
+    message: str | None = "",
+) -> Callable[P, T] | Callable[[Callable[P, T]], Callable[P, T]]:
     """Decorator to mark a callable as deprecated.
 
     The decorated callable will cause a warning when used. The docstring of the
@@ -136,7 +160,9 @@ def deprecated(
         from manim.utils.deprecation import deprecated
 
 
-        @deprecated(since="v0.2", until="v0.4", replacement="bar", message="It is cooler.")
+        @deprecated(
+            since="v0.2", until="v0.4", replacement="bar", message="It is cooler."
+        )
         def foo():
             pass
 
@@ -187,7 +213,7 @@ def deprecated(
         deprecated = _deprecation_text_component(since, until, msg)
         return f"The {what} {name} has been {deprecated}"
 
-    def deprecate_docs(func: Callable):
+    def deprecate_docs(func: Callable[P, T]) -> None:
         """Adjust docstring to indicate the deprecation.
 
         Parameters
@@ -199,7 +225,7 @@ def deprecated(
         doc_string = func.__doc__ or ""
         func.__doc__ = f"{doc_string}\n\n.. attention:: Deprecated\n  {warning}"
 
-    def deprecate(func: Callable, *args, **kwargs):
+    def deprecate(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:
         """The actual decorator used to extend the callables behavior.
 
         Logs a warning message.
@@ -224,6 +250,9 @@ def deprecated(
 
     if type(func).__name__ != "function":
         deprecate_docs(func)
+        # The following line raises this mypy error:
+        # Accessing "__init__" on an instance is unsound, since instance.__init__
+        # could be from an incompatible subclass  [misc]</pre>
         func.__init__ = decorate(func.__init__, deprecate)
         return func
 
@@ -236,10 +265,9 @@ def deprecated_params(
     params: str | Iterable[str] | None = None,
     since: str | None = None,
     until: str | None = None,
-    message: str | None = "",
-    redirections: None
-    | (Iterable[tuple[str, str] | Callable[..., dict[str, Any]]]) = None,
-) -> Callable:
+    message: str = "",
+    redirections: None | (Iterable[tuple[str, str] | Callable[P, dict[str, T]]]) = None,
+) -> Callable[P, T]:
     """Decorator to mark parameters of a callable as deprecated.
 
     It can also be used to automatically redirect deprecated parameter values to their
@@ -378,9 +406,11 @@ def deprecated_params(
 
         @deprecated_params(
             redirections=[
-                lambda buff=1: {"buff_x": buff[0], "buff_y": buff[1]}
-                if isinstance(buff, tuple)
-                else {"buff_x": buff, "buff_y": buff}
+                lambda buff=1: (
+                    {"buff_x": buff[0], "buff_y": buff[1]}
+                    if isinstance(buff, tuple)
+                    else {"buff_x": buff, "buff_y": buff}
+                )
             ]
         )
         def foo(**kwargs):
@@ -426,7 +456,7 @@ def deprecated_params(
 
     redirections = list(redirections)
 
-    def warning_msg(func: Callable, used: list[str]):
+    def warning_msg(func: Callable[P, T], used: list[str]) -> str:
         """Generate the deprecation warning message.
 
         Parameters
@@ -449,7 +479,7 @@ def deprecated_params(
         deprecated = _deprecation_text_component(since, until, message)
         return f"The parameter{parameter_s} {used_} of {what} {name} {has_have_been} {deprecated}"
 
-    def redirect_params(kwargs: dict, used: list[str]):
+    def redirect_params(kwargs: dict[str, Any], used: list[str]) -> None:
         """Adjust the keyword arguments as defined by the redirections.
 
         Parameters
@@ -471,9 +501,9 @@ def deprecated_params(
                     if redirector_param in used:
                         redirector_args[redirector_param] = kwargs.pop(redirector_param)
                 if len(redirector_args) > 0:
-                    kwargs.update(redirector(**redirector_args))
+                    kwargs.update(redirector(**redirector_args))  # type: ignore[call-arg]
 
-    def deprecate_params(func, *args, **kwargs):
+    def deprecate_params(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:
         """The actual decorator function used to extend the callables behavior.
 
         Logs a warning message when a deprecated parameter is used and redirects it if
@@ -495,14 +525,11 @@ def deprecated_params(
             arguments.
 
         """
-        used = []
-        for param in params:
-            if param in kwargs:
-                used.append(param)
+        used = [param for param in params if param in kwargs]
 
         if len(used) > 0:
             logger.warning(warning_msg(func, used))
             redirect_params(kwargs, used)
         return func(*args, **kwargs)
 
-    return decorator(deprecate_params)
+    return decorator(deprecate_params)  # type: ignore[return-value]

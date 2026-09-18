@@ -10,9 +10,9 @@ __all__ = [
 
 import itertools as it
 import random
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from math import ceil, floor
-from typing import Callable
+from typing import TYPE_CHECKING, Self
 
 import numpy as np
 from PIL import Image
@@ -42,6 +42,15 @@ from ..utils.color import (
 )
 from ..utils.rate_functions import ease_out_sine, linear
 from ..utils.simple_functions import sigmoid
+
+if TYPE_CHECKING:
+    from manim.typing import (
+        FloatRGB,
+        FloatRGB_Array,
+        FloatRGBA_Array,
+        Point3D,
+        Vector3D,
+    )
 
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
 
@@ -74,9 +83,9 @@ class VectorField(VGroup):
 
     def __init__(
         self,
-        func: Callable[[np.ndarray], np.ndarray],
+        func: Callable[[Point3D], Vector3D],
         color: ParsableManimColor | None = None,
-        color_scheme: Callable[[np.ndarray], float] | None = None,
+        color_scheme: Callable[[Vector3D], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[ParsableManimColor] = DEFAULT_SCALAR_FIELD_COLORS,
@@ -88,13 +97,13 @@ class VectorField(VGroup):
             self.single_color = False
             if color_scheme is None:
 
-                def color_scheme(p):
-                    return np.linalg.norm(p)
+                def color_scheme(vec: Vector3D) -> float:
+                    return np.linalg.norm(vec)
 
             self.color_scheme = color_scheme  # TODO maybe other default for direction?
-            self.rgbs = np.array(list(map(color_to_rgb, colors)))
+            self.rgbs: FloatRGB_Array = np.array(list(map(color_to_rgb, colors)))
 
-            def pos_to_rgb(pos: np.ndarray) -> tuple[float, float, float, float]:
+            def pos_to_rgb(pos: Point3D) -> FloatRGB:
                 vec = self.func(pos)
                 color_value = np.clip(
                     self.color_scheme(vec),
@@ -107,8 +116,8 @@ class VectorField(VGroup):
                     color_value,
                 )
                 alpha *= len(self.rgbs) - 1
-                c1 = self.rgbs[int(alpha)]
-                c2 = self.rgbs[min(int(alpha + 1), len(self.rgbs) - 1)]
+                c1: FloatRGB = self.rgbs[int(alpha)]
+                c2: FloatRGB = self.rgbs[min(int(alpha + 1), len(self.rgbs) - 1)]
                 alpha %= 1
                 return interpolate(c1, c2, alpha)
 
@@ -178,7 +187,7 @@ class VectorField(VGroup):
         """
         return lambda p: func(p * scalar)
 
-    def fit_to_coordinate_system(self, coordinate_system: CoordinateSystem):
+    def fit_to_coordinate_system(self, coordinate_system: CoordinateSystem) -> Self:
         """Scale the vector field to fit a coordinate system.
 
         This method is useful when the vector field is defined in a coordinate system
@@ -193,6 +202,7 @@ class VectorField(VGroup):
 
         """
         self.apply_function(lambda pos: coordinate_system.coords_to_point(*pos))
+        return self
 
     def nudge(
         self,
@@ -200,7 +210,7 @@ class VectorField(VGroup):
         dt: float = 1,
         substeps: int = 1,
         pointwise: bool = False,
-    ) -> VectorField:
+    ) -> Self:
         """Nudge a :class:`~.Mobject` along the vector field.
 
         Parameters
@@ -284,7 +294,7 @@ class VectorField(VGroup):
         dt: float = 1,
         substeps: int = 1,
         pointwise: bool = False,
-    ) -> VectorField:
+    ) -> Self:
         """Apply a nudge along the vector field to all submobjects.
 
         Parameters
@@ -335,7 +345,7 @@ class VectorField(VGroup):
         self,
         speed: float = 1,
         pointwise: bool = False,
-    ) -> VectorField:
+    ) -> Self:
         """Start continuously moving all submobjects along the vector field.
 
         Calling this method multiple times will result in removing the previous updater created by this method.
@@ -361,7 +371,7 @@ class VectorField(VGroup):
         self.add_updater(self.submob_movement_updater)
         return self
 
-    def stop_submobject_movement(self) -> VectorField:
+    def stop_submobject_movement(self) -> Self:
         """Stops the continuous movement started using :meth:`start_submobject_movement`.
 
         Returns
@@ -418,7 +428,7 @@ class VectorField(VGroup):
         start: float,
         end: float,
         colors: Iterable[ParsableManimColor],
-    ):
+    ) -> Callable[[Sequence[float], float], FloatRGBA_Array]:
         """
         Generates a gradient of rgbas as a numpy array
 
@@ -435,9 +445,9 @@ class VectorField(VGroup):
         -------
             function to generate the gradients as numpy arrays representing rgba values
         """
-        rgbs = np.array([color_to_rgb(c) for c in colors])
+        rgbs: FloatRGB_Array = np.array([color_to_rgb(c) for c in colors])
 
-        def func(values, opacity=1):
+        def func(values: Sequence[float], opacity: float = 1.0) -> FloatRGBA_Array:
             alphas = inverse_interpolate(start, end, np.array(values))
             alphas = np.clip(alphas, 0, 1)
             scaled_alphas = alphas * (len(rgbs) - 1)
@@ -445,12 +455,14 @@ class VectorField(VGroup):
             next_indices = np.clip(indices + 1, 0, len(rgbs) - 1)
             inter_alphas = scaled_alphas % 1
             inter_alphas = inter_alphas.repeat(3).reshape((len(indices), 3))
-            result = interpolate(rgbs[indices], rgbs[next_indices], inter_alphas)
-            result = np.concatenate(
-                (result, np.full([len(result), 1], opacity)),
+            new_rgbs: FloatRGB_Array = interpolate(
+                rgbs[indices], rgbs[next_indices], inter_alphas
+            )
+            new_rgbas: FloatRGBA_Array = np.concatenate(
+                (new_rgbs, np.full([len(new_rgbs), 1], opacity)),
                 axis=1,
             )
-            return result
+            return new_rgbas
 
         return func
 
@@ -780,13 +792,13 @@ class StreamLines(VectorField):
         self.stroke_width = stroke_width
 
         half_noise = self.noise_factor / 2
-        np.random.seed(0)
+        rng = np.random.default_rng(0)
         start_points = np.array(
             [
                 (x - half_noise) * RIGHT
                 + (y - half_noise) * UP
                 + (z - half_noise) * OUT
-                + self.noise_factor * np.random.random(3)
+                + self.noise_factor * rng.random(3)
                 for n in range(self.n_repeats)
                 for x in np.arange(*self.x_range)
                 for y in np.arange(*self.y_range)
@@ -918,7 +930,7 @@ class StreamLines(VectorField):
         rate_func: Callable[[float], float] = linear,
         line_animation_class: type[ShowPassingFlash] = ShowPassingFlash,
         **kwargs,
-    ) -> None:
+    ) -> Self:
         """Animates the stream lines using an updater.
 
         The stream lines will continuously flow
@@ -976,6 +988,7 @@ class StreamLines(VectorField):
         self.flow_animation = updater
         self.flow_speed = flow_speed
         self.time_width = time_width
+        return self
 
     def end_animation(self) -> AnimationGroup:
         """End the stream line animation smoothly.

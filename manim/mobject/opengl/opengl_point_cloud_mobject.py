@@ -2,15 +2,34 @@ from __future__ import annotations
 
 __all__ = ["OpenGLPMobject", "OpenGLPGroup", "OpenGLPMPoint"]
 
+from typing import TYPE_CHECKING
+
 import moderngl
 import numpy as np
 
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.utils.bezier import interpolate
-from manim.utils.color import BLACK, WHITE, YELLOW, color_gradient, color_to_rgba
+from manim.utils.color import (
+    BLACK,
+    PURE_YELLOW,
+    WHITE,
+    ParsableManimColor,
+    color_gradient,
+    color_to_rgba,
+)
 from manim.utils.config_ops import _Uniforms
 from manim.utils.iterables import resize_with_interpolation
+
+if TYPE_CHECKING:
+    from typing import Self
+
+    from manim.typing import (
+        FloatRGBA_Array,
+        FloatRGBALike_Array,
+        Point3D_Array,
+        Point3DLike_Array,
+    )
 
 __all__ = ["OpenGLPMobject", "OpenGLPGroup", "OpenGLPMPoint"]
 
@@ -27,7 +46,11 @@ class OpenGLPMobject(OpenGLMobject):
     point_radius = _Uniforms()
 
     def __init__(
-        self, stroke_width=2.0, color=YELLOW, render_primitive=moderngl.POINTS, **kwargs
+        self,
+        stroke_width: float = 2.0,
+        color: ParsableManimColor = PURE_YELLOW,
+        render_primitive: int = moderngl.POINTS,
+        **kwargs,
     ):
         self.stroke_width = stroke_width
         super().__init__(color=color, render_primitive=render_primitive, **kwargs)
@@ -35,22 +58,28 @@ class OpenGLPMobject(OpenGLMobject):
             self.stroke_width * OpenGLPMobject.OPENGL_POINT_RADIUS_SCALE_FACTOR
         )
 
-    def reset_points(self):
-        self.rgbas = np.zeros((1, 4))
-        self.points = np.zeros((0, 3))
+    def reset_points(self) -> Self:
+        self.rgbas: FloatRGBA_Array = np.zeros((1, 4))
+        self.points: Point3D_Array = np.zeros((0, 3))
         return self
 
     def get_array_attrs(self):
         return ["points", "rgbas"]
 
-    def add_points(self, points, rgbas=None, color=None, opacity=None):
+    def add_points(
+        self,
+        points: Point3DLike_Array,
+        rgbas: FloatRGBALike_Array | None = None,
+        color: ParsableManimColor | None = None,
+        opacity: float | None = None,
+    ) -> Self:
         """Add points.
 
         Points must be a Nx3 numpy array.
         Rgbas must be a Nx4 numpy array if it is not None.
         """
         if rgbas is None and color is None:
-            color = YELLOW
+            color = PURE_YELLOW
         self.append_points(points)
         # rgbas array will have been resized with points
         if color is not None:
@@ -64,7 +93,7 @@ class OpenGLPMobject(OpenGLMobject):
         self.rgbas = np.append(self.rgbas, new_rgbas, axis=0)
         return self
 
-    def thin_out(self, factor=5):
+    def thin_out(self, factor=5) -> Self:
         """Removes all but every nth point for n = factor"""
         for mob in self.family_members_with_points():
             num_points = mob.get_num_points()
@@ -78,7 +107,7 @@ class OpenGLPMobject(OpenGLMobject):
 
         return self
 
-    def set_color_by_gradient(self, *colors):
+    def set_color_by_gradient(self, *colors) -> Self:
         self.rgbas = np.array(
             list(map(color_to_rgba, color_gradient(*colors, self.get_num_points()))),
         )
@@ -90,7 +119,7 @@ class OpenGLPMobject(OpenGLMobject):
         radius=1,
         inner_color=WHITE,
         outer_color=BLACK,
-    ):
+    ) -> Self:
         start_rgba, end_rgba = list(map(color_to_rgba, [inner_color, outer_color]))
         if center is None:
             center = self.get_center()
@@ -105,25 +134,25 @@ class OpenGLPMobject(OpenGLMobject):
             )
         return self
 
-    def match_colors(self, pmobject):
+    def match_colors(self, pmobject) -> Self:
         self.rgbas[:] = resize_with_interpolation(pmobject.rgbas, self.get_num_points())
         return self
 
-    def fade_to(self, color, alpha, family=True):
+    def fade_to(self, color, alpha, family=True) -> Self:
         rgbas = interpolate(self.rgbas, color_to_rgba(color), alpha)
         for mob in self.submobjects:
             mob.fade_to(color, alpha, family)
         self.set_rgba_array_direct(rgbas)
         return self
 
-    def filter_out(self, condition):
+    def filter_out(self, condition) -> Self:
         for mob in self.family_members_with_points():
             to_keep = ~np.apply_along_axis(condition, 1, mob.points)
             for key in mob.data:
                 mob.data[key] = mob.data[key][to_keep]
         return self
 
-    def sort_points(self, function=lambda p: p[0]):
+    def sort_points(self, function=lambda p: p[0]) -> Self:
         """function is any map from R^3 to R"""
         for mob in self.family_members_with_points():
             indices = np.argsort(np.apply_along_axis(function, 1, mob.points))
@@ -131,7 +160,7 @@ class OpenGLPMobject(OpenGLMobject):
                 mob.data[key] = mob.data[key][indices]
         return self
 
-    def ingest_submobjects(self):
+    def ingest_submobjects(self) -> Self:
         for key in self.data:
             self.data[key] = np.vstack([sm.data[key] for sm in self.get_family()])
         return self
@@ -140,7 +169,7 @@ class OpenGLPMobject(OpenGLMobject):
         index = alpha * (self.get_num_points() - 1)
         return self.points[int(index)]
 
-    def pointwise_become_partial(self, pmobject, a, b):
+    def pointwise_become_partial(self, pmobject, a, b) -> Self:
         lower_index = int(a * pmobject.get_num_points())
         upper_index = int(b * pmobject.get_num_points())
         for key in self.data:
@@ -165,10 +194,11 @@ class OpenGLPGroup(OpenGLPMobject):
         super().__init__(**kwargs)
         self.add(*pmobs)
 
-    def fade_to(self, color, alpha, family=True):
+    def fade_to(self, color, alpha, family=True) -> Self:
         if family:
             for mob in self.submobjects:
                 mob.fade_to(color, alpha, family)
+        return self
 
 
 class OpenGLPMPoint(OpenGLPMobject):
@@ -176,5 +206,6 @@ class OpenGLPMPoint(OpenGLPMobject):
         self.location = location
         super().__init__(stroke_width=stroke_width, **kwargs)
 
-    def init_points(self):
+    def init_points(self) -> Self:
         self.points = np.array([self.location], dtype=np.float32)
+        return self
