@@ -1,3 +1,5 @@
+"""Tests the `Positionable.reverse_points` method."""
+
 import numpy as np
 
 from manim.mobject.abstract.positionable import Positionable
@@ -5,18 +7,21 @@ from tests.module.mobject.positionable.utils import PositionableWithFamily
 
 
 def test_no_points() -> None:
+    """Tests whether `reverse_points` works correctly for an object with no points."""
     p = Positionable()
     p.reverse_points()
     np.testing.assert_allclose(p.points, np.zeros((0, 3)))
 
 
 def test_single() -> None:
+    """Tests whether `reverse_points` works correctly for an object with no family members."""
     p = Positionable().set_points([(0, 1, 2), (3, 4, 5), (6, 7, 8)])
     p.reverse_points()
     np.testing.assert_allclose(p.points, [(6, 7, 8), (3, 4, 5), (0, 1, 2)])
 
 
 def test_family() -> None:
+    """Tests whether `reverse_points` works correctly for an object with children."""
     p = PositionableWithFamily(
         [
             Positionable().set_points([(0, 1, 2), (3, 4, 5), (6, 7, 8)]),

@@ -1,5 +1,4 @@
-# TODO
-
+"""Tests the `Positionable.get_anchor` method."""
 
 import numpy as np
 import pytest
@@ -10,17 +9,20 @@ from tests.module.mobject.positionable.utils import ANCHOR_POINTS, CUBE_VERTICES
 
 
 def test_no_points_default() -> None:
+    """Tests whether `get_anchor` with default parameters returns the origin point for an object with no points."""
     p = Positionable()
     np.testing.assert_allclose(p.get_anchor(), (0, 0, 0))
 
 
 @pytest.mark.parametrize("anchor", ANCHOR_POINTS)
 def test_no_points_anchor(anchor: Vector3DLike) -> None:
+    """Tests whether `get_anchor` returns the origin point for any anchor for an object with no points."""
     p = Positionable()
     np.testing.assert_allclose(p.get_anchor(direction=anchor), (0, 0, 0))
 
 
 def test_default() -> None:
+    """Tests whether `get_anchor` returns the center anchor when no parameters are passed."""
     p = Positionable().set_points(CUBE_VERTICES)
     np.testing.assert_allclose(p.get_anchor(), (0, 0, 0))
 
@@ -30,5 +32,6 @@ def test_default() -> None:
 
 @pytest.mark.parametrize("anchor", ANCHOR_POINTS)
 def test_anchor(anchor: Vector3DLike) -> None:
+    """Tests whether `get_anchor` returns the correct position when passing the anchor parameter."""
     p = Positionable().set_points(CUBE_VERTICES)
     np.testing.assert_allclose(p.get_anchor(anchor), anchor)

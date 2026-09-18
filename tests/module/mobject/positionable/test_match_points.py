@@ -1,3 +1,5 @@
+"""Tests the `Positionable.match_points` method."""
+
 import numpy as np
 
 from manim.mobject.abstract.positionable import Positionable
@@ -5,6 +7,7 @@ from tests.module.mobject.positionable.utils import PositionableWithFamily
 
 
 def test_single_to_single() -> None:
+    """Tests whether `match_points` works correctly when an object with no family is matched onto an object with no family."""
     p = Positionable()
     other = Positionable().set_points([(0, 1, 2), (3, 4, 5), (6, 7, 8)])
     p.match_points(other)
@@ -12,6 +15,7 @@ def test_single_to_single() -> None:
 
 
 def test_single_to_family() -> None:
+    """Tests whether `match_points` works correct when an object with no family is matched onto an object with children."""
     p = Positionable()
     other = PositionableWithFamily(
         [
@@ -26,6 +30,7 @@ def test_single_to_family() -> None:
 
 
 def test_family_to_single() -> None:
+    """Tests whether `match_points` works correct when an object with children is matched onto an object with no family."""
     p = PositionableWithFamily(
         [
             Positionable().set_points([(0, 1, 2), (3, 4, 5), (6, 7, 8)]),
@@ -49,6 +54,7 @@ def test_family_to_single() -> None:
 
 
 def test_family_to_family() -> None:
+    """Tests whether `match_points` works correct when an object with children is matched onto an object with children."""
     p = PositionableWithFamily(
         [
             Positionable().set_points([(1, 2, 3)]),

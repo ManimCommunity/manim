@@ -1,9 +1,11 @@
+"""Tests the `Positionable.rotate` method."""
+
 import numpy as np
 import pytest
 
 from manim.constants import DEGREES
 from manim.mobject.abstract.positionable import Positionable
-from manim.typing import Point3DLike, Vector3DLike
+from manim.typing import Point3D, Vector3D
 from manim.utils.space_ops import rotation_matrix
 from tests.module.mobject.positionable.utils import (
     ANCHOR_POINTS,
@@ -16,28 +18,26 @@ ATOL = 1e-9
 ANGLES = [-360, -90, -45, -33, 0, 33, 45, 90, 360]
 
 
-def test_no_points() -> None:
+@pytest.mark.parametrize("angle", ANGLES)
+@pytest.mark.parametrize("axis", AXES)
+def test_no_points(angle: float, axis: Vector3D) -> None:
+    """Tests whether `rotate` works correctly for an object with no points."""
     p = Positionable()
-    p.rotate(90 * DEGREES)
-    np.testing.assert_allclose(
-        p.points,
-        np.zeros((0, 3)),
-    )
+    p.rotate(angle, axis)
+    np.testing.assert_allclose(p.points, np.zeros((0, 3)))
 
 
 def test_defaults() -> None:
+    """Tests whether `rotate` works correctly for a simple object with default arguments."""
     p = Positionable().set_points([(0, 1, 2), (3, 4, 5), (6, 7, 8)])
     p.rotate(90 * DEGREES)
-    np.testing.assert_allclose(
-        p.points,
-        [(6, 1, 2), (3, 4, 5), (0, 7, 8)],
-        atol=ATOL,
-    )
+    np.testing.assert_allclose(p.points, [(6, 1, 2), (3, 4, 5), (0, 7, 8)], atol=ATOL)
 
 
 @pytest.mark.parametrize("angle", ANGLES)
 @pytest.mark.parametrize("axis", AXES)
-def test_axis(angle: float, axis: Vector3DLike) -> None:
+def test_axis(angle: float, axis: Vector3D) -> None:
+    """Tests whether the `axis` parameter of the `rotate` method works correctly."""
     expected_points = CUBE_VERTICES.copy()
     expected_points @= rotation_matrix(angle, axis).T
 
@@ -49,11 +49,8 @@ def test_axis(angle: float, axis: Vector3DLike) -> None:
 @pytest.mark.parametrize("angle", ANGLES)
 @pytest.mark.parametrize("axis", AXES)
 @pytest.mark.parametrize("about_point", POSITIONS)
-def test_about_point(
-    angle: float,
-    axis: Vector3DLike,
-    about_point: Point3DLike,
-) -> None:
+def test_about_point(angle: float, axis: Vector3D, about_point: Point3D) -> None:
+    """Tests whether the `about_point` parameter of the `rotate` method works correctly."""
     expected_points = CUBE_VERTICES.copy()
     expected_points -= about_point
     expected_points @= rotation_matrix(angle, axis).T
@@ -67,11 +64,8 @@ def test_about_point(
 @pytest.mark.parametrize("angle", ANGLES)
 @pytest.mark.parametrize("axis", AXES)
 @pytest.mark.parametrize("about_edge", ANCHOR_POINTS)
-def test_about_edge(
-    angle: float,
-    axis: Vector3DLike,
-    about_edge: Vector3DLike,
-) -> None:
+def test_about_edge(angle: float, axis: Vector3D, about_edge: Vector3D) -> None:
+    """Tests whether the `about_edge` parameter of the `rotate` method works correctly."""
     about_point = about_edge
     expected_points = CUBE_VERTICES.copy()
     expected_points -= about_point
