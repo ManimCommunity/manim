@@ -899,6 +899,21 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        Example
+        -------
+        .. manim:: SetCenterExample
+
+            class SetCenterExample(Scene):
+                def construct(self) -> None:
+                    circle = Circle()
+                    square = Square()
+
+                    self.add(Dot((-2, 0, 0)), Dot((2, 0, 0)))
+                    self.play(
+                        circle.animate.set_center((-2, 0, 0)),
+                        square.animate.set_center((2, 0, 0)),
+                    )
         """
         return self.set_anchor(position, ORIGIN, **kwargs)
 
@@ -914,6 +929,17 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        Example
+        -------
+        .. manim:: MatchCenterExample
+
+            class MatchCenterExample(Scene):
+                def construct(self) -> None:
+                    circle = Circle()
+                    square = Square().to_corner(DR).shift(3 * LEFT)
+                    self.add(square)
+                    self.play(circle.animate.match_center(square))
         """
         return self.set_center(other.get_center(), **kwargs)
 
@@ -924,6 +950,24 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        Example
+        -------
+        .. manim:: CenterExample
+
+            class CenterExample(Scene):
+                def construct(self) -> None:
+                    circle_0 = Circle().to_corner(UL)
+                    circle_1 = Circle().to_corner(UR)
+                    circle_2 = Circle().to_corner(DL)
+                    circle_3 = Circle().to_corner(DR)
+
+                    self.play(
+                        circle_0.animate.center(),
+                        circle_1.animate.center(),
+                        circle_2.animate.center(),
+                        circle_3.animate.center(),
+                    )
         """
         return self.set_center(ORIGIN, **kwargs)
 
@@ -1642,6 +1686,26 @@ class Positionable:
         -------
         Point3D
             The boundary point.
+
+        Example
+        -------
+        .. manim:: GetBoundaryPointExample
+
+            class GetBoundaryPointExample(Scene):
+                def construct(self) -> None:
+                    star = Star(n=7, inner_radius=1, outer_radius=2)
+                    tracker = ValueTracker()
+
+                    def update(dot: Mobject) -> Mobject:
+                        value = tracker.get_value()
+                        vector = np.array([np.cos(value), np.sin(value), 0.0])
+                        point = star.get_boundary_point(vector)
+                        return dot.move_to(point)
+
+                    dot = Dot().add_updater(update)
+                    self.add(star, dot)
+                    self.play(tracker.animate.set_value(2 * PI), run_time=3, rate_func=linear)
+
         """
         all_points = self.get_all_points()
         if len(all_points) == 0:
@@ -1691,6 +1755,20 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        Example
+        -------
+        .. manim:: SpaceOutSubmobjectsExample
+
+            class SpaceOutSubmobjectsExample(Scene):
+                def construct(self) -> None:
+                    circles = VGroup(
+                        Circle(),
+                        Circle(),
+                        Circle(),
+                        Circle(),
+                    ).arrange_in_grid()
+                    self.play(circles.animate.space_out_submobjects())
         """
         raise NotImplementedError
 
@@ -1747,6 +1825,21 @@ class Positionable:
                     s4 = Square()
                     x = VGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
                     self.add(x)
+
+        .. manim:: ArrangeExampleShapes
+
+            class ArrangeExampleShapes(Scene):
+                def construct(self) -> None:
+                    group = VGroup(
+                        Rectangle(),
+                        Circle(),
+                        Star(),
+                    ).set_fill(opacity=1)
+
+                    self.play(group.animate.arrange(RIGHT))
+                    self.wait(0.1)
+                    self.play(group.animate.arrange(DOWN, aligned_edge=RIGHT))
+
         """
         raise NotImplementedError
 
@@ -2007,6 +2100,17 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        Example
+        -------
+        .. manim:: SetWidthExample
+
+            class SetWidthExample(Scene):
+                def construct(self) -> None:
+                    rectangle = Rectangle().set_fill(opacity=1)
+
+                    self.play(rectangle.animate.set_width(2))
+                    self.play(rectangle.animate.set_width(5, stretch=True, about_edge=LEFT))
         """
         return self.set_dim_size(
             size,
@@ -2088,6 +2192,17 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        Example
+        -------
+        .. manim:: SetHeightExample
+
+            class SetHeightExample(Scene):
+                def construct(self) -> None:
+                    rectangle = Star().set_fill(opacity=1)
+
+                    self.play(rectangle.animate.set_height(6, stretch=True))
+                    self.play(rectangle.animate.set_height(3, about_edge=UP))
         """
         return self.set_dim_size(
             size,
@@ -2169,6 +2284,7 @@ class Positionable:
         -------
         Self
             The object itself.
+
         """
         return self.set_dim_size(
             size,
@@ -2672,6 +2788,17 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        Example
+        -------
+        .. manim:: SurroundExample
+
+            class SurroundExample(ThreeDScene):
+                def construct(self) -> None:
+                    rectangle = Square(side_length=1).to_corner(UL)
+                    banner = ManimBanner()
+                    self.add(banner)
+                    self.play(rectangle.animate.surround(banner, stretch=True))
         """
         # TODO: Avoid scaling/stretching twice
         self.replace(
