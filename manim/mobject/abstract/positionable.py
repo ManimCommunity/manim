@@ -111,9 +111,9 @@ class Positionable:
 
         Example
         -------
-        .. manim:: MatchPointsScene
+        .. manim:: MatchPointsExample
 
-            class MatchPointsScene(Scene):
+            class MatchPointsExample(Scene):
                 def construct(self):
                     circ = Circle(fill_color=RED, fill_opacity=0.8)
                     square = Square(fill_color=BLUE, fill_opacity=0.2)
@@ -145,6 +145,18 @@ class Positionable:
         -------
         Self
             The object itself.
+
+
+        Example
+        -------
+        .. manim:: ReversePointsExample
+
+            class ReversePointsExample(Scene):
+                def construct(self) -> None:
+                    star_1 = Star().set_color(RED)
+                    star_2 = Star().set_color(GREEN).reverse_points()
+                    VGroup(star_1, star_2).arrange()
+                    self.play(Create(star_1), Create(star_2), run_time=3)
         """
 
         def apply(mob: Positionable) -> None:
@@ -663,6 +675,24 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        Example
+        -------
+        .. manim:: ApplyMatrixExample
+
+            class ApplyMatrixExample(Scene):
+                def construct(self) -> None:
+                    scale_x = 2
+                    scale_y = 3
+                    shear_x = 120 * DEGREES
+                    matrix = np.array(
+                        [
+                            [scale_x, shear_x, 0],
+                            [0, scale_y, 0],
+                            [0, 0, 1],
+                        ],
+                    )
+                    self.play(Star().animate.apply_matrix(matrix))
         """
         about_point = self._get_about_point(about_point, about_edge, "ORIGIN")
         matrix = np.asarray(matrix)
@@ -812,6 +842,18 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        Example
+        -------
+        .. manim:: MatchAnchorExample
+
+            class MatchAnchorExample(Scene):
+                def construct(self) -> None:
+                    anchor = DR
+                    triangle = Triangle(radius=3)
+                    star = Square().to_corner(DL)
+                    self.add(triangle, Dot(triangle.get_anchor(anchor)))
+                    self.play(star.animate.match_anchor(triangle, DR))
         """
         return self.set_anchor(other.get_anchor(direction), direction, **kwargs)
 
@@ -822,6 +864,22 @@ class Positionable:
         -------
         Point3D
             The center position.
+
+        Example
+        -------
+        .. manim:: GetCenterExample
+
+            class GetCenterExample(Scene):
+                def construct(self) -> None:
+                    square = Circle().to_corner(UL)
+                    arrow = Arrow()
+
+                    def update(mob: Arrow) -> Arrow:
+                        return mob.put_start_and_end_on(ORIGIN, square.get_center())
+
+                    arrow.add_updater(update)
+                    self.add(square, arrow)
+                    self.play(square.animate.to_corner(UR))
         """
         return self.get_anchor(ORIGIN)
 
