@@ -248,6 +248,19 @@ class Positionable:
         -------
         Self
             The object itself.
+
+
+        Example
+        -------
+        .. manim:: ApplyToFamilyExample
+
+            class ApplyToFamilyExample(Scene):
+                def construct(self: Scene) -> None:
+                    group = VGroup(Circle() for _ in range(4)).arrange_in_grid()
+                    def function(mob: VMobject) -> None:
+                        mob.move_to(ORIGIN)
+                    self.play(group.animate.apply_to_family(function))
+
         """
         for mob in self.get_family():
             if not should_skip(mob):
@@ -279,6 +292,21 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        Example
+        -------
+        .. manim:: ApplyPointsFunctionExample
+
+            class ApplyPointsFunctionExample(Scene):
+                def construct(self: Scene) -> None:
+                    circle = Circle()
+
+                    def function(points: Point3D_Array) -> Point3D_Array:
+                        points[:, 0] *= 3
+                        points[:, 1] = -abs(points[:, 1])
+                        return points
+
+                    self.play(circle.animate.apply_points_function(function))
         """
         about_point = self._get_about_point(about_point, about_edge, default_point)
         # TODO: Do we really need this?
@@ -316,6 +344,19 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        Example
+        -------
+        .. manim:: ApplyPointFunctionExample
+
+            class ApplyPointFunctionExample(Scene):
+                def construct(self: Scene) -> None:
+                    circle = Circle()
+
+                    def function(point: Point3D) -> Point3D:
+                        return np.array([point[0], np.cos(point[1]) - 1, point[2]])
+
+                    self.play(circle.animate.apply_function(function))
         """
         return self.apply_points_function(
             lambda points: np.apply_along_axis(function, 1, points),
@@ -351,9 +392,9 @@ class Positionable:
 
         Example
         -------
-        .. manim:: ApplyFuncExample
+        .. manim:: ApplyComplexFunctionExample
 
-            class ApplyFuncExample(Scene):
+            class ApplyComplexFunctionExample(Scene):
                 def construct(self):
                     circ = Circle().scale(1.5)
                     circ_ref = circ.copy()
@@ -408,9 +449,18 @@ class Positionable:
         Self
             The object itself.
 
+        Example
+        -------
+        .. manim:: TranslateExample
 
-        .. note::
-           Derived classes should override the :meth:`_translate` method for custom logic.
+            class TranslateExample(Scene):
+                def construct(self: Scene) -> None:
+                    circle = Circle()
+                    circle.translate(LEFT + UP)
+                    self.play(circle.animate.translate(2 * RIGHT))
+                    self.play(circle.animate.translate(2 * DOWN))
+                    self.play(circle.animate.translate(2 * LEFT))
+                    self.play(circle.animate.translate(2 * UP))
         """
 
         def apply(mob: Positionable) -> None:
@@ -444,10 +494,10 @@ class Positionable:
 
         Example
         -------
-        .. manim:: MobjectScaleExample
+        .. manim:: ScaleExample
             :save_last_frame:
 
-            class MobjectScaleExample(Scene):
+            class ScaleExample(Scene):
                 def construct(self):
                     f1 = Text("F")
                     f2 = Text("F").scale(2)
@@ -495,6 +545,16 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        Example
+        -------
+        .. manim:: StretchExample
+
+            class StretchExample(Scene):
+                def construct(self) -> None:
+                    circle = Circle()
+                    self.play(circle.animate.stretch(3, dim=0))
+                    self.play(circle.animate.stretch(0.5, dim=1))
         """
 
         def apply(points: Point3D_Array) -> Point3D_Array:
@@ -547,10 +607,10 @@ class Positionable:
 
         Example
         -------
-        .. manim:: RotateMethodExample
+        .. manim:: RotateExample
             :save_last_frame:
 
-            class RotateMethodExample(Scene):
+            class RotateExample(Scene):
                 def construct(self):
                     circle = Circle(radius=1, color=BLUE)
                     line = Line(start=ORIGIN, end=RIGHT)
@@ -662,6 +722,28 @@ class Positionable:
         -------
         Point3D
             The position.
+
+        Example
+        -------
+        .. manim:: GetAnchorExample
+            :save_last_frame:
+
+            class GetAnchorExample(Scene):
+                def construct(self) -> None:
+                    circle = Circle(radius=2)
+                    self.add(circle)
+
+                    anchors = [
+                        ("UL", UL), ("LEFT", LEFT), ("DL", DL),
+                        ("UP", UP), ("ORIGIN", ORIGIN), ("DOWN", DOWN),
+                        ("UR", UR), ("RIGHT", RIGHT), ("DR", DR),
+                    ]
+                    for label, anchor in anchors:
+                        dot = Dot()
+                        dot.move_to(circle.get_anchor(anchor))
+                        dot.add(Text(label, font_size=24).next_to(dot, DOWN, buff=0.1))
+                        self.add(dot)
+
         """
         all_points = self.get_all_points()
         return np.array(
@@ -690,6 +772,22 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        Example
+        -------
+        .. manim:: SetAnchorExample
+
+            class SetAnchorExample(Scene):
+                def construct(self) -> None:
+                    point = (0, -1, 0)
+                    anchors = [LEFT, RIGHT, UP, DOWN]
+
+                    circles = VGroup(Circle() for _ in range(len(anchors)))
+                    circles.arrange(RIGHT).to_edge(UP)
+
+                    self.add(Dot(point), circles)
+                    for anchor, circle in zip(anchors, circles):
+                        self.play(circle.animate.set_anchor(point, anchor))
         """
         source = self.get_anchor(direction)
         vector = position - source
@@ -1050,6 +1148,16 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        Example
+        -------
+        .. manim:: SetCoordinateExample
+
+            class SetCoordinateExample(Scene):
+                def construct(self) -> None:
+                    circle = Circle()
+                    self.play(circle.animate.set_coordinate(-3, dim=0))
+                    self.play(circle.animate.set_coordinate(2, dim=1))
         """
         source = self.get_coordinate(dim, direction)
         vector = np.zeros(3)
@@ -1356,10 +1464,10 @@ class Positionable:
         Example
         -------
 
-        .. manim:: GeometricShapes
+        .. manim:: NextToExample
             :save_last_frame:
 
-            class GeometricShapes(Scene):
+            class NextToExample(Scene):
                 def construct(self):
                     d = Dot()
                     c = Circle()
@@ -1557,10 +1665,10 @@ class Positionable:
 
         Examples
         --------
-        .. manim:: ArrangeExample
+        .. manim:: ArrangeExampleDots
             :save_last_frame:
 
-            class ArrangeExample(Scene):
+            class ArrangeExampleDots(Scene):
                 def construct(self):
                     s= VGroup(*[Dot().shift(i*0.1*RIGHT*np.random.uniform(-1,1)+UP*np.random.uniform(-1,1)) for i in range(0,15)])
                     s.shift(UP).set_color(BLUE)
@@ -1570,10 +1678,10 @@ class Positionable:
                     self.add(s,s2)
 
 
-        .. manim:: Example
+        .. manim:: ArrangeExampleBoxes
             :save_last_frame:
 
-            class Example(Scene):
+            class ArrangeExampleBoxes(Scene):
                 def construct(self):
                     s1 = Square()
                     s2 = Square()
@@ -1649,20 +1757,20 @@ class Positionable:
         Examples
         --------
 
-        .. manim:: ExampleBoxes
+        .. manim:: ArrangeInGridExampleBoxes
             :save_last_frame:
 
-            class ExampleBoxes(Scene):
+            class ArrangeInGridExampleBoxes(Scene):
                 def construct(self):
                     boxes=VGroup(*[Square() for s in range(0,6)])
                     boxes.arrange_in_grid(rows=2, buff=0.1)
                     self.add(boxes)
 
 
-        .. manim:: ArrangeInGrid
+        .. manim:: ArrangeInGridExampleNumbers
             :save_last_frame:
 
-            class ArrangeInGrid(Scene):
+            class ArrangeInGridExampleNumbers(Scene):
                 def construct(self):
                     boxes = VGroup(*[
                         Rectangle(WHITE, 0.5, 0.5).add(Text(str(i+1)).scale(0.5))
@@ -1735,6 +1843,16 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        Example
+        -------
+        .. manim:: SetDimSizeExample
+
+            class SetDimSizeExample(Scene):
+                def construct(self) -> None:
+                    rectangle = Rectangle()
+                    self.play(rectangle.animate.set_dim_size(2, dim=0))
+                    self.play(rectangle.animate.set_dim_size(4, dim=1, stretch=True))
         """
         source = self.get_dim_size(dim)
         if source == 0:
