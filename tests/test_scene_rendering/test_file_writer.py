@@ -175,3 +175,18 @@ def test_unicode_partial_movie(config, tmpdir, simple_scenes_path):
 
     _, err, exit_code = capture(command)
     assert exit_code == 0, err
+
+
+def test_webm_audio_codec_prefers_libvorbis(monkeypatch):
+    from manim.scene import scene_file_writer
+
+    monkeypatch.setattr(av, "codecs_available", {"libvorbis", "libopus", "aac"})
+    assert scene_file_writer._webm_audio_codec() == "libvorbis"
+
+
+def test_webm_audio_codec_falls_back_to_libopus(monkeypatch):
+    from manim.scene import scene_file_writer
+
+    # Some PyAV builds (e.g. certain Windows wheels) do not ship libvorbis.
+    monkeypatch.setattr(av, "codecs_available", {"libopus", "vorbis", "aac"})
+    assert scene_file_writer._webm_audio_codec() == "libopus"
