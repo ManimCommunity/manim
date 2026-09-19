@@ -275,8 +275,8 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         bracket_pair = VGroup(l_bracket, r_bracket)
         if self.stretch_brackets:
             bracket_pair.stretch_to_fit_height(self.height + 2 * self.bracket_v_buff)
-        l_bracket.next_to(self, LEFT, self.bracket_h_buff)
-        r_bracket.next_to(self, RIGHT, self.bracket_h_buff)
+        l_bracket.next_to(self, LEFT, buff=self.bracket_h_buff)
+        r_bracket.next_to(self, RIGHT, buff=self.bracket_h_buff)
         self.brackets = bracket_pair
         self.add(l_bracket, r_bracket)
         return self

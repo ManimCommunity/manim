@@ -2,20 +2,11 @@
 
 from __future__ import annotations
 
-__all__ = [
-    "VMobject",
-    "VGroup",
-    "VDict",
-    "VectorizedPoint",
-    "CurvesAsSubmobjects",
-    "DashedVMobject",
-]
-
 import itertools as it
 import math
 import sys
 from collections.abc import Callable, Hashable, Iterable, Iterator, Mapping, Sequence
-from typing import TYPE_CHECKING, Any, Literal, cast
+from typing import TYPE_CHECKING, Any, Literal, Self, cast
 
 import numpy as np
 from PIL.Image import Image
@@ -29,6 +20,7 @@ from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.three_d.three_d_utils import (
     get_3d_vmob_gradient_start_and_end_points,
 )
+from manim.typing import Point3D
 from manim.utils.bezier import (
     bezier,
     bezier_remap,
@@ -68,6 +60,15 @@ if TYPE_CHECKING:
         Vector3D,
         Vector3DLike,
     )
+
+__all__ = [
+    "VMobject",
+    "VGroup",
+    "VDict",
+    "VectorizedPoint",
+    "CurvesAsSubmobjects",
+    "DashedVMobject",
+]
 
 # TODO
 # - Change cubic curve groups to have 4 points instead of 3
@@ -176,6 +177,15 @@ class VMobject(Mobject):
 
     def __iter__(self) -> Iterator[VMobject]:
         return cast(Iterator[VMobject], super().__iter__())
+
+    def apply_to_family(
+        self,
+        function: Callable[[VMobject], Any],
+        *,
+        should_skip: Callable[[VMobject], bool] = lambda mob: not mob.has_points(),
+        **kwargs: Any,
+    ) -> Self:
+        return super().apply_to_family(function, should_skip=should_skip, **kwargs)  # type: ignore[arg-type]
 
     # OpenGL compatibility
     @property
@@ -483,11 +493,12 @@ class VMobject(Mobject):
 
     def scale(
         self,
-        scale_factor: float,
-        scale_stroke: bool = False,
+        factor: float,
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        scale_stroke: bool = False,
+        **kwargs: Any,
     ) -> Self:
         r"""Scale the size by a factor.
 
@@ -495,7 +506,7 @@ class VMobject(Mobject):
 
         Parameters
         ----------
-        scale_factor
+        factor
             The scaling factor :math:`\alpha`. If :math:`0 < |\alpha| < 1`, the mobject
             will shrink, and for :math:`|\alpha| > 1` it will grow. Furthermore,
             if :math:`\alpha < 0`, the mobject is also flipped.
@@ -543,15 +554,21 @@ class VMobject(Mobject):
             for mob in self.get_family():
                 if isinstance(mob, VMobject):
                     mob.set_stroke(
-                        width=abs(scale_factor) * mob.get_stroke_width(),
+                        width=abs(factor) * mob.get_stroke_width(),
                         family=False,
                     )
                     mob.set_stroke(
-                        width=abs(scale_factor) * mob.get_stroke_width(background=True),
+                        width=abs(factor) * mob.get_stroke_width(background=True),
                         background=True,
                         family=False,
                     )
-        super().scale(scale_factor, about_point=about_point, about_edge=about_edge)
+        super().scale(
+            factor,
+            about_point=about_point,
+            about_edge=about_edge,
+            scale_stroke=scale_stroke,
+            **kwargs,
+        )
         return self
 
     def fade(self, darkness: float = 0.5, family: bool = True) -> Self:
@@ -791,10 +808,6 @@ class VMobject(Mobject):
             submob.shade_in_3d = value
             if z_index_as_group:
                 submob.z_index_group = self
-        return self
-
-    def set_points(self, points: Point3DLike_Array) -> Self:
-        self.points: Point3D_Array = np.array(points)
         return self
 
     def resize_points(
@@ -1237,9 +1250,16 @@ class VMobject(Mobject):
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         self.rotate_sheen_direction(angle, axis)
-        super().rotate(angle, axis, about_point=about_point, about_edge=about_edge)
+        super().rotate(
+            angle,
+            axis,
+            about_point=about_point,
+            about_edge=about_edge,
+            **kwargs,
+        )
         return self
 
     def scale_handle_to_anchor_distances(self, factor: float) -> Self:
