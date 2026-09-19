@@ -68,7 +68,7 @@ class Positionable:
             return all_points[0]
         return np.concatenate(all_points)
 
-    def set_points(self, points: Point3DLike_Array | Positionable) -> Self:
+    def set_points(self, points: Point3DLike_Array) -> Self:
         """Replaces the object's points with ``points``.
 
         Does not affect family members.
@@ -118,9 +118,7 @@ class Positionable:
                     circ = Circle(fill_color=RED, fill_opacity=0.8)
                     square = Square(fill_color=BLUE, fill_opacity=0.2)
                     self.add(circ)
-                    self.wait(0.5)
                     self.play(circ.animate.match_points(square))
-                    self.wait(0.5)
         """
         for sm1, sm2 in zip(self.get_family(), other.get_family(), strict=strict):
             sm1.points = sm2.points.copy()
@@ -254,7 +252,7 @@ class Positionable:
         function
             The function to be applied.
         should_skip
-            A predicate function which returns ``True`` if a family member should be skipped. By default, family members with no points are skipped.
+            A predicate function which returns ``True`` if a family member should be skipped. Defaults to skipping family members with no points.
 
         Returns
         -------
@@ -1487,6 +1485,22 @@ class Positionable:
         -------
         Self
             The object itself.
+
+        Example
+        -------
+        .. manim:: AlignOnBorderExample
+
+            class AlignOnBorderExample(ThreeDScene):
+                def construct(self) -> None:
+                    circle, triangle, square, star = Circle(), Triangle(), Square(), Star()
+                    VGroup(circle, triangle, square, star).arrange()
+                    self.add(circle, triangle, square, star)
+
+                    self.play(circle.animate.align_on_border(LEFT))
+                    self.play(triangle.animate.align_on_border(UP))
+                    self.play(square.animate.align_on_border(RIGHT))
+                    self.play(star.animate.align_on_border(DOWN))
+
         """
         frame = (config.frame_x_radius, config.frame_y_radius, 0.0)
         source = self.get_anchor(direction)
@@ -1520,10 +1534,16 @@ class Positionable:
 
         Example
         -------
-        .. code-block:: python
+        .. manim:: AlignToExample
 
-            # moves mob1 vertically so that its top edge lines ups with mob2's top edge
-            mob1.align_to(mob2, UP)
+            class AlignToExample(ThreeDScene):
+                def construct(self) -> None:
+                    square = Square(side_length=1, color=RED).to_edge(DOWN)
+                    triangle = Triangle(radius=2).move_to((2, 1, 0))
+
+                    self.add(triangle)
+                    self.play(square.animate.align_to(triangle, UP))
+                    self.play(square.animate.align_to(triangle, DR))
         """
         if isinstance(point_or_mobject, Positionable):
             point_or_mobject = point_or_mobject.get_anchor(direction)
@@ -1571,14 +1591,14 @@ class Positionable:
 
             class NextToExample(Scene):
                 def construct(self):
-                    d = Dot()
-                    c = Circle()
-                    s = Square()
-                    t = Triangle()
-                    d.next_to(c, RIGHT)
-                    s.next_to(c, LEFT)
-                    t.next_to(c, DOWN)
-                    self.add(d, c, s, t)
+                    dot = Dot()
+                    circle = Circle()
+                    square = Square()
+                    triangle = Triangle()
+                    dot.next_to(circle, RIGHT)
+                    square.next_to(circle, LEFT)
+                    triangle.next_to(circle, DOWN)
+                    self.add(dot, circle, square, triangle)
         """
         direction = np.asarray(direction)
         aligned_edge = np.asarray(aligned_edge)
@@ -1806,12 +1826,14 @@ class Positionable:
 
             class ArrangeExampleDots(Scene):
                 def construct(self):
-                    s= VGroup(*[Dot().shift(i*0.1*RIGHT*np.random.uniform(-1,1)+UP*np.random.uniform(-1,1)) for i in range(0,15)])
-                    s.shift(UP).set_color(BLUE)
-                    s2= s.copy().set_color(RED)
-                    s2.arrange()
-                    s2.shift(DOWN)
-                    self.add(s,s2)
+                    dots = VGroup(
+                        Dot().shift(
+                            i * 0.1 * RIGHT * np.random.uniform(-1, 1)
+                            + UP * np.random.uniform(-1, 1)
+                        )
+                        for i in range(0, 16)
+                    ).set_color(BLUE)
+                    self.play(dots.animate.arrange())
 
 
         .. manim:: ArrangeExampleBoxes
@@ -1819,19 +1841,20 @@ class Positionable:
 
             class ArrangeExampleBoxes(Scene):
                 def construct(self):
-                    s1 = Square()
-                    s2 = Square()
-                    s3 = Square()
-                    s4 = Square()
-                    x = VGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
-                    self.add(x)
+                    boxes = VGroup(
+                        Square(color=RED),
+                        Square(color=GREEN),
+                        Square(color=BLUE),
+                        Square(color=YELLOW),
+                    )
+                    self.play(boxes.animate.arrange(buff=1.0))
 
         .. manim:: ArrangeExampleShapes
 
             class ArrangeExampleShapes(Scene):
                 def construct(self) -> None:
                     group = VGroup(
-                        Rectangle(),
+                        Rectangle(color=YELLOW),
                         Circle(),
                         Star(),
                     ).set_fill(opacity=1)
@@ -1913,7 +1936,14 @@ class Positionable:
 
             class ArrangeInGridExampleBoxes(Scene):
                 def construct(self):
-                    boxes=VGroup(*[Square() for s in range(0,6)])
+                    boxes = VGroup(
+                        Square(color=RED),
+                        Square(color=GREEN),
+                        Square(color=BLUE),
+                        Square(color=YELLOW),
+                        Square(color=PURPLE),
+                        Square(color=ORANGE),
+                    )
                     boxes.arrange_in_grid(rows=2, buff=0.1)
                     self.add(boxes)
 
@@ -1923,20 +1953,20 @@ class Positionable:
 
             class ArrangeInGridExampleNumbers(Scene):
                 def construct(self):
-                    boxes = VGroup(*[
-                        Rectangle(WHITE, 0.5, 0.5).add(Text(str(i+1)).scale(0.5))
+                    boxes = VGroup(
+                        Rectangle(WHITE, 0.5, 0.5).add(Text(str(i + 1)).scale(0.5))
                         for i in range(24)
-                    ])
-                    self.add(boxes)
-
+                    )
                     boxes.arrange_in_grid(
-                        buff=(0.25,0.5),
+                        buff=(0.25, 0.5),
                         col_alignments="lccccr",
                         row_alignments="uccd",
-                        col_widths=[1, *[None]*4, 1],
+                        col_widths=[1, *[None] * 4, 1],
                         row_heights=[1, None, None, 1],
-                        flow_order="dr"
+                        flow_order="dr",
                     )
+                    self.add(boxes)
+
         """
         raise NotImplementedError
 
@@ -2682,10 +2712,9 @@ class Positionable:
 
             class FlipExample(Scene):
                 def construct(self):
-                    s= Line(LEFT, RIGHT+UP).shift(4*LEFT)
-                    self.add(s)
-                    s2= s.copy().flip()
-                    self.add(s2)
+                    line = Line(LEFT, UR, color=RED)
+                    flipped = line.copy().flip(axis=RIGHT).set_color(GREEN)
+                    self.add(line, flipped)
         """
         return self.rotate(
             TAU / 2,
@@ -3068,13 +3097,13 @@ class Positionable:
 
             class ToCornerExample(Scene):
                 def construct(self):
-                    c = Circle()
-                    c.to_corner(UR)
-                    t = Tex("To the corner!")
-                    t2 = MathTex("x^3").shift(DOWN)
-                    self.add(c,t,t2)
-                    t.to_corner(DL, buff=0)
-                    t2.to_corner(UL, buff=1.5)
+                    circle = Circle()
+                    circle.to_corner(UR)
+                    tex = Tex("To the corner!")
+                    mathtex = MathTex("x^3").shift(DOWN)
+                    self.add(circle,tex,mathtex)
+                    tex.to_corner(DL, buff=0)
+                    mathtex.to_corner(UL, buff=1.5)
         """
         return self.align_on_border(corner, buff=buff, **kwargs)
 
@@ -3113,10 +3142,10 @@ class Positionable:
                     tex_top = Tex("I am at the top!")
                     tex_top.to_edge(UP)
                     tex_side = Tex("I am moving to the side!")
-                    c = Circle().shift(2*DOWN)
-                    self.add(tex_top, tex_side, c)
+                    circle = Circle().shift(2*DOWN)
+                    self.add(tex_top, tex_side, circle)
                     tex_side.to_edge(LEFT)
-                    c.to_edge(RIGHT, buff=0)
+                    circle.to_edge(RIGHT, buff=0)
         """
         return self.align_on_border(edge, buff=buff, **kwargs)
 
