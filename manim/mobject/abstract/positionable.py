@@ -2163,7 +2163,7 @@ class Positionable:
         about_edge: Vector3DLike | None = None,
         **kwargs: Any,
     ) -> Self:
-        """Scales the object so that the depth is ``size`.
+        """Scales the object so that the depth is ``size``.
 
         Parameters
         ----------
@@ -2232,7 +2232,7 @@ class Positionable:
         about_edge: Vector3DLike | None = None,
         **kwargs: Any,
     ) -> Self:
-        """Stretches the object so that the width is ``size`.
+        """Stretches the object so that the width is ``size``.
 
         Parameters
         ----------
@@ -2280,7 +2280,7 @@ class Positionable:
         about_edge: Vector3DLike | None = None,
         **kwargs: Any,
     ) -> Self:
-        """Stretches the object so that the height is ``size`.
+        """Stretches the object so that the height is ``size``.
 
         Parameters
         ----------
@@ -2328,7 +2328,7 @@ class Positionable:
         about_edge: Vector3DLike | None = None,
         **kwargs: Any,
     ) -> Self:
-        """Stretches the object so that the depth is ``size`.
+        """Stretches the object so that the depth is ``size``.
 
         Parameters
         ----------
