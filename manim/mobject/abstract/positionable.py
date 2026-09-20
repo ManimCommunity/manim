@@ -762,16 +762,15 @@ class Positionable:
                     self.add(circle)
 
                     anchors = [
-                        ("UL", UL), ("LEFT", LEFT), ("DL", DL),
-                        ("UP", UP), ("ORIGIN", ORIGIN), ("DOWN", DOWN),
-                        ("UR", UR), ("RIGHT", RIGHT), ("DR", DR),
+                        ("UL", UL),         ("UP", UP),           ("UR", UR),
+                        ("LEFT", LEFT), ("ORIGIN", ORIGIN), ("RIGHT", RIGHT),
+                        ("DL", DL),       ("DOWN", DOWN),         ("DR", DR),
                     ]
                     for label, anchor in anchors:
-                        dot = Dot()
-                        dot.move_to(circle.get_anchor(anchor))
-                        dot.add(Text(label, font_size=24).next_to(dot, DOWN, buff=0.1))
+                        dot = Dot(color=BLUE)
+                        dot.move_to(circle.get_critical_point(anchor))
+                        dot.add(Text(label, font_size=24).next_to(dot, DOWN if anchor is ORIGIN else anchor, buff=0.1))
                         self.add(dot)
-
         """
         all_points = self.get_all_points()
         return np.array(
