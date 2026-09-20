@@ -30,9 +30,6 @@ Has the unique characteristic that the anchor point is identical to the anchor v
 TRIANGLE_VERTICES = np.array([(-1, 0, 0), (1, 0, 0), (0, math.sqrt(2), 0)])
 """The vertices of a triangle."""
 
-TRIANGLE_ORIGIN = np.array([0, math.sqrt(2) / 2, 0])
-"""The origin of the triangle."""
-
 POSITIONS: Point3D_Array = np.array([(-3, -2, -1), (0, 0, 0), (1, 2, 3)])
 """Some positions."""
 

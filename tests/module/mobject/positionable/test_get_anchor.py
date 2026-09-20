@@ -1,5 +1,7 @@
 """Tests the `Positionable.get_anchor` method."""
 
+import math
+
 import numpy as np
 import pytest
 
@@ -9,6 +11,7 @@ from tests.module.mobject.positionable.utils import (
     ANCHOR_POINTS,
     CUBE_VERTICES,
     POSITIONS,
+    TRIANGLE_VERTICES,
 )
 
 
@@ -47,3 +50,18 @@ def test_anchor_cube_with_offset(anchor: Vector3DLike, offset: Point3D) -> None:
     """Tests whether `get_anchor` returns the correct position when passing the anchor parameter."""
     p = Positionable().set_points(CUBE_VERTICES + offset)
     np.testing.assert_allclose(p.get_anchor(anchor), anchor + offset)
+
+
+@pytest.mark.parametrize("anchor", ANCHOR_POINTS)
+def test_anchor_triangle(anchor: Vector3DLike) -> None:
+    """Tests whether `Get_achor` returns the correct anchor positions for a triangle."""
+    p = Positionable().set_points(TRIANGLE_VERTICES)
+    bounding_box = np.array(
+        [
+            [-1, 0, 0],
+            [0, math.sqrt(2) / 2, 0],
+            [1, math.sqrt(2), 0],
+        ]
+    )
+    expected = [bounding_box[int(key + 1), dim] for dim, key in enumerate(anchor)]
+    np.testing.assert_allclose(p.get_anchor(anchor), expected)
