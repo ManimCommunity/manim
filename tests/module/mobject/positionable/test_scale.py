@@ -5,10 +5,14 @@ import pytest
 
 from manim.mobject.abstract.positionable import Positionable
 from manim.typing import Point3DLike, Vector3DLike
-from tests.module.mobject.positionable.utils import ANCHOR_POINTS, CUBE_VERTICES
+from tests.module.mobject.positionable.utils import (
+    ANCHOR_POINTS,
+    CUBE_VERTICES,
+    FACTORS,
+)
 
 
-@pytest.mark.parametrize("factor", [-1, 0, 1, 2, 5])
+@pytest.mark.parametrize("factor", FACTORS)
 def test_no_points(factor: float) -> None:
     """Tests whether `scale` works correctly for an object with no points."""
     p = Positionable()
@@ -40,7 +44,7 @@ def test_about_point(
     np.testing.assert_allclose(p.points, expected)
 
 
-@pytest.mark.parametrize("factor", [-1.0, 0.0, 1.0, 2.0])
+@pytest.mark.parametrize("factor", FACTORS)
 @pytest.mark.parametrize("about_edge", ANCHOR_POINTS)
 def test_about_edge(factor: float, about_edge: Vector3DLike) -> None:
     """Tests whether the `about_edge` parameter of the `scale` method works correctly."""

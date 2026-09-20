@@ -10,9 +10,8 @@ from tests.module.mobject.positionable.utils import (
     CUBE_VERTICES,
     DIMENSIONS,
     POSITIONS,
+    SIZES,
 )
-
-SIZES = [-2, -1, 0, 1, 2, 5]
 
 
 @pytest.mark.parametrize("size", SIZES)

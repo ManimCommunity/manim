@@ -5,10 +5,15 @@ import pytest
 
 from manim.mobject.abstract.positionable import Positionable
 from manim.typing import Vector3DLike
-from tests.module.mobject.positionable.utils import ANCHOR_POINTS, CUBE_VERTICES
+from tests.module.mobject.positionable.utils import (
+    ANCHOR_POINTS,
+    CUBE_VERTICES,
+    DIMENSIONS,
+    FACTORS,
+)
 
 
-@pytest.mark.parametrize("dim", [0, 1, 2])
+@pytest.mark.parametrize("dim", FACTORS)
 def test_no_points(dim: int) -> None:
     """Tests whether `stretch` works correctly for an object with no points."""
     p = Positionable()
@@ -46,8 +51,8 @@ def test_about_point(dim: int, expected: list[tuple[float, float, float]]) -> No
     np.testing.assert_allclose(p.points, expected)
 
 
-@pytest.mark.parametrize("factor", [-1.0, 0.0, 1.0, 2.0])
-@pytest.mark.parametrize("dim", [0, 1, 2])
+@pytest.mark.parametrize("factor", FACTORS)
+@pytest.mark.parametrize("dim", DIMENSIONS)
 @pytest.mark.parametrize("about_edge", ANCHOR_POINTS)
 def test_about_edge(factor: float, dim: int, about_edge: Vector3DLike) -> None:
     """Tests whether `stretch` works correctly for a cube when passing the `about_edge` parameter."""

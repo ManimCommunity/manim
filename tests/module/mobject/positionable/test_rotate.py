@@ -5,17 +5,18 @@ import pytest
 
 from manim.constants import DEGREES
 from manim.mobject.abstract.positionable import Positionable
-from manim.typing import Point3D, Vector3D
+from manim.typing import Point3D, Vector3D, Vector3DLike
 from manim.utils.space_ops import rotation_matrix
 from tests.module.mobject.positionable.utils import (
     ANCHOR_POINTS,
-    AXES,
+    ANGLES,
     CUBE_VERTICES,
+    MAIN_AXES,
     POSITIONS,
 )
 
 ATOL = 1e-9
-ANGLES = [-360, -90, -45, -33, 0, 33, 45, 90, 360]
+AXES = np.array([*MAIN_AXES, (0, 0, 0), (-0.4, 3, -100)])
 
 
 @pytest.mark.parametrize("angle", ANGLES)
@@ -36,7 +37,7 @@ def test_defaults() -> None:
 
 @pytest.mark.parametrize("angle", ANGLES)
 @pytest.mark.parametrize("axis", AXES)
-def test_axis(angle: float, axis: Vector3D) -> None:
+def test_axis(angle: float, axis: Vector3DLike) -> None:
     """Tests whether the `axis` parameter of the `rotate` method works correctly."""
     expected_points = CUBE_VERTICES.copy()
     expected_points @= rotation_matrix(angle, axis).T
@@ -76,3 +77,12 @@ def test_about_edge(angle: float, axis: Vector3D, about_edge: Vector3D) -> None:
     p.rotate(angle, axis, about_edge=about_edge)
 
     np.testing.assert_allclose(p.points, expected_points, atol=ATOL)
+
+
+@pytest.mark.parametrize("angle", np.array([-5, -3, -1, 0, 1, 3, 5]) * 360 * DEGREES)
+@pytest.mark.parametrize("axis", AXES)
+def test_wraps_around(angle: int, axis: Vector3D) -> None:
+    """Tests whether rotations of a multiple of 360 degrees do not affect the object."""
+    p = Positionable().set_points(CUBE_VERTICES)
+    p.rotate(angle, axis)
+    np.testing.assert_allclose(p.points, CUBE_VERTICES, atol=ATOL)
