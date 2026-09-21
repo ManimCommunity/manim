@@ -1632,7 +1632,7 @@ class Positionable:
         buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         **kwargs: Any,
     ) -> Self:
-        """Sets the position of the object next to a point.
+        """Moves the object next to a point or object.
 
         Parameters
         ----------
@@ -1686,7 +1686,7 @@ class Positionable:
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
         **kwargs: Any,
     ) -> Self:
-        """Shifts the object onto the screen.
+        """Moves the object onto the screen.
 
         Parameters
         ----------
