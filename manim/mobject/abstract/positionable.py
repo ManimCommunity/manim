@@ -3284,8 +3284,6 @@ class Positionable:
     def width(self) -> float:
         """The width of the object.
 
-        A property for the :meth:`get_width` and :meth:`set_width` methods.
-
         Example
         -------
         .. manim:: WidthExample
@@ -3301,6 +3299,11 @@ class Positionable:
                     self.add(rect_copy, rect, decimal)
                     self.play(rect.animate.set(width=7))
                     self.wait()
+
+        See Also
+        --------
+        :meth:`get_width`
+        :meth:`set_width`
         """
         return self.get_width()
 
@@ -3311,8 +3314,6 @@ class Positionable:
     @property
     def height(self) -> float:
         """The height of the object.
-
-        A property for the :meth:`get_height` and :meth:`set_height` methods.
 
         Example
         -------
@@ -3329,6 +3330,11 @@ class Positionable:
                     self.add(rect_copy, rect, decimal)
                     self.play(rect.animate.set(height=5))
                     self.wait()
+
+        See Also
+        --------
+        :meth:`get_height`
+        :meth:`set_height`
         """
         return self.get_height()
 
@@ -3340,7 +3346,10 @@ class Positionable:
     def depth(self) -> float:
         """The depth of the object.
 
-        A property for the :meth:`get_depth` and :meth:`set_depth` methods.
+        See Also
+        --------
+        :meth:`get_depth`
+        :meth:`set_depth`
         """
         return self.get_depth()
 
