@@ -1747,9 +1747,7 @@ class Positionable:
         )
 
     def get_center_of_mass(self) -> Point3D:
-        """Returns the center of mass of the object.
-
-        This is useful for finding the geometric center when the central anchor and the geometric anchor do not match.
+        """Returns the mean of all points of the object.
 
         Returns
         -------
@@ -1768,7 +1766,7 @@ class Positionable:
         )
 
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
-        """Returns a boundary point of the object.
+        """Returns the furthest point of the object in the given direction.
 
         .. note::
             Unlike anchor points, boundary points are guaranteed to lie on the convex hull of the object's points.
@@ -1789,17 +1787,17 @@ class Positionable:
 
             class GetBoundaryPointExample(Scene):
                 def construct(self) -> None:
-                    star = Star(n=7, inner_radius=1, outer_radius=2)
                     tracker = ValueTracker()
+                    star = Star(n=7, inner_radius=1.5, outer_radius=3)
 
-                    def update(dot: Mobject) -> Mobject:
+                    def get_vector() -> Vector3D:
                         value = tracker.get_value()
-                        vector = np.array([np.cos(value), np.sin(value), 0.0])
-                        point = star.get_boundary_point(vector)
-                        return dot.move_to(point)
+                        return np.array([np.cos(value), np.sin(value), 0.0])
 
-                    dot = Dot().add_updater(update)
-                    self.add(star, dot)
+                    dot = always_redraw(lambda: Dot(star.get_boundary_point(get_vector())))
+                    arrow = always_redraw(lambda: Arrow().put_start_and_end_on(ORIGIN, get_vector()))
+
+                    self.add(star, dot, arrow)
                     self.play(tracker.animate.set_value(2 * PI), run_time=3, rate_func=linear)
 
         """
@@ -1880,7 +1878,7 @@ class Positionable:
         center: bool = True,
         **kwargs: Any,
     ) -> Self:
-        """Arranges the submobjects.
+        """Arranges the submobjects along a direction.
 
         Parameters
         ----------
