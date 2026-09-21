@@ -1522,12 +1522,22 @@ class Positionable:
         buff: float = DEFAULT_MOBJECT_TO_EDGE_BUFFER,
         **kwargs: Any,
     ) -> Self:
-        """Aligns the object on a border.
+        """Aligns the object on a border of the camera's frame.
+
+        For example, ``obj.align_on_border(UP, buff=1)`` moves ``obj`` vertically
+        so that its top edge is 1 unit from the top edge of the frame. ``obj``
+        is not moved along the x or z axes.
+
+        .. note ::
+
+            This method currently only works for stationary cameras. To properly
+            align an object to a :class:`~.MovingCamera`, see
+            :meth:`~.Positionable.align_to`.
 
         Parameters
         ----------
         direction
-            The direction of the anchor point.
+            The direction of the border.
         buff
             The distance to the border.
             Defaults to ``DEFAULT_MOBJECT_TO_EDGE_BUFFER``
@@ -1551,7 +1561,6 @@ class Positionable:
                     self.play(triangle.animate.align_on_border(UP))
                     self.play(square.animate.align_on_border(RIGHT))
                     self.play(star.animate.align_on_border(DOWN))
-
         """
         frame = (config.frame_x_radius, config.frame_y_radius, 0.0)
         source = self.get_anchor(direction)
@@ -1569,7 +1578,12 @@ class Positionable:
         direction: Vector3DLike = ORIGIN,
         **kwargs: Any,
     ) -> Self:
-        """Aligns the object to a point.
+        """Aligns the object to a point or object in a certain direction.
+
+        For example, ``mob.align_to((0.5, 1, 5), RIGHT)`` moves ``mob``
+        horizontally so that its right edge is at x = 0.5, while
+        ``mob.align_to(other_obj, UP)`` moves ``mob`` vertically so that its top
+        edge lines up with ``other_obj``'s top edge.
 
         Parameters
         ----------
