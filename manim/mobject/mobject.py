@@ -1270,7 +1270,7 @@ class Mobject(Positionable):
         factor: float = 1.5,
         *,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
         self.scale(factor, about_point=about_point, about_edge=about_edge, **kwargs)

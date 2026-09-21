@@ -496,7 +496,7 @@ class VMobject(Mobject):
         factor: float,
         *,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         scale_stroke: bool = False,
         **kwargs: Any,
     ) -> Self:
@@ -1234,10 +1234,16 @@ class VMobject(Mobject):
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         factor = self.pre_function_handle_to_anchor_scale_factor
         self.scale_handle_to_anchor_distances(factor)
-        super().apply_function(function)
+        super().apply_function(
+            function,
+            about_point=about_point,
+            about_edge=about_edge,
+            **kwargs,
+        )
         self.scale_handle_to_anchor_distances(1.0 / factor)
         if self.make_smooth_after_applying_functions:
             self.make_smooth()
@@ -1249,7 +1255,7 @@ class VMobject(Mobject):
         axis: Vector3DLike = OUT,
         *,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
         self.rotate_sheen_direction(angle, axis)

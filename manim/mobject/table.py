@@ -57,6 +57,7 @@ from __future__ import annotations
 
 from typing import Self
 
+from manim.constants import ORIGIN
 from manim.typing import Point3DLike, Vector3DLike
 
 __all__ = [
@@ -1002,7 +1003,7 @@ class Table(VGroup):
         factor: float,
         *,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         scale_stroke: bool = False,
         **kwargs: Any,
     ) -> Self:

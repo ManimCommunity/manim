@@ -103,6 +103,9 @@ class Positionable:
         ----------
         other
             The other object.
+        strict
+            Whether to through an error when the familys are not of the same size.
+            Defaults to ``False``
 
         Returns
         -------
@@ -223,7 +226,7 @@ class Positionable:
         Returns
         -------
         list[Positionable]
-            The family.
+            The family members.
 
         Example
         -------
@@ -245,14 +248,15 @@ class Positionable:
         should_skip: Callable[[Positionable], bool] = lambda mob: not mob.has_points(),
         **kwargs: Any,
     ) -> Self:
-        """Applies a function to the object.
+        """Applies a function to the object and its family members.
 
         Parameters
         ----------
         function
             The function to be applied.
         should_skip
-            A predicate function which returns ``True`` if a family member should be skipped. Defaults to skipping family members with no points.
+            A predicate function which returns ``True`` if a family member should be skipped.
+            Defaults to skipping family members with no points
 
         Returns
         -------
@@ -265,7 +269,7 @@ class Positionable:
         .. manim:: ApplyToFamilyExample
 
             class ApplyToFamilyExample(Scene):
-                def construct(self: Scene) -> None:
+                def construct(self) -> None:
                     group = VGroup(Circle() for _ in range(4)).arrange_in_grid()
                     def function(mob: VMobject) -> None:
                         mob.move_to(ORIGIN)
@@ -284,7 +288,6 @@ class Positionable:
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
-        default_point: Literal["ORIGIN", "OBJECT_CENTER"] = "OBJECT_CENTER",
         **kwargs: Any,
     ) -> Self:
         """Applies a function to the points of the object.
@@ -294,9 +297,11 @@ class Positionable:
         function
             The function to be applied.
         about_point
-            About which point to apply the function., Defaults to ``None``
+            About which point to apply the function.
+            Defaults to ``None``
         about_edge
-            About which edge to apply the function., Defaults to ``None``
+            About which edge to apply the function.
+            Defaults to ``None``
 
         Returns
         -------
@@ -308,7 +313,7 @@ class Positionable:
         .. manim:: ApplyPointsFunctionExample
 
             class ApplyPointsFunctionExample(Scene):
-                def construct(self: Scene) -> None:
+                def construct(self) -> None:
                     circle = Circle()
 
                     def function(points: Point3D_Array) -> Point3D_Array:
@@ -318,7 +323,7 @@ class Positionable:
 
                     self.play(circle.animate.apply_points_function(function))
         """
-        about_point = self._get_about_point(about_point, about_edge, default_point)
+        about_point = self._get_about_point(about_point, about_edge)
         # TODO: Do we really need this?
         # Make a copy to prevent mutation of the original array if about_point is a view
         about_point = np.array(about_point, copy=True)
@@ -339,16 +344,18 @@ class Positionable:
         about_edge: Vector3DLike | None = None,
         **kwargs: Any,
     ) -> Self:
-        """Applies a function to every point to the object.
+        """Applies a function to every point of the object.
 
         Parameters
         ----------
         function
             The function to be applied.
         about_point
-            About which point to apply the function., Defaults to ``None``
+            About which point to apply the function.
+            Defaults to ``None``
         about_edge
-            About which edge to apply the function., Defaults to ``None``
+            About which edge to apply the function.
+            Defaults to ``None``
 
         Returns
         -------
@@ -360,7 +367,7 @@ class Positionable:
         .. manim:: ApplyPointFunctionExample
 
             class ApplyPointFunctionExample(Scene):
-                def construct(self: Scene) -> None:
+                def construct(self) -> None:
                     circle = Circle()
 
                     def function(point: Point3D) -> Point3D:
@@ -372,7 +379,6 @@ class Positionable:
             lambda points: np.apply_along_axis(function, 1, points),
             about_point=about_point,
             about_edge=about_edge,
-            default_point="ORIGIN",
             **kwargs,
         )
 
@@ -384,16 +390,18 @@ class Positionable:
         about_edge: Vector3DLike | None = None,
         **kwargs: Any,
     ) -> Self:
-        """Applies a complex function to every point to the object.
+        """Applies a complex function to every point of the object.
 
         Parameters
         ----------
         function
             The function to be applied.
         about_point
-            About which point to apply the function., Defaults to ``None``
+            About which point to apply the function.
+            Defaults to ``None``
         about_edge
-            About which edge to apply the function., Defaults to ``None``
+            About which edge to apply the function.
+            Defaults to ``None``
 
         Returns
         -------
@@ -452,7 +460,7 @@ class Positionable:
         Parameters
         ----------
         vector
-            The vector.
+            The translation vector.
 
         Returns
         -------
@@ -464,7 +472,7 @@ class Positionable:
         .. manim:: TranslateExample
 
             class TranslateExample(Scene):
-                def construct(self: Scene) -> None:
+                def construct(self) -> None:
                     circle = Circle()
                     circle.translate(LEFT + UP)
                     self.play(circle.animate.translate(2 * RIGHT))
@@ -483,19 +491,25 @@ class Positionable:
         factor: float,
         *,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
-        """Scales the object uniformly by a factor along all dimensions.
+        r"""Scales the object uniformly along all dimensions.
 
         Parameters
         ----------
         factor
-            The factor.
+            The scaling factor.
+
+            - For :math:`0 < |\alpha| < 1` the object shrinks.
+            - For :math:`|\alpha| > 1` the object grows.
+            - For :math:`\alpha < 0` the object flips.
         about_point
-            About which point to scale., Defaults to ``None``
+            About which point to scale.
+            Defaults to ``None``
         about_edge
-            About which edge to scale., Defaults to ``None``
+            About which edge to scale.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -525,7 +539,6 @@ class Positionable:
             apply,
             about_point=about_point,
             about_edge=about_edge,
-            default_point="OBJECT_CENTER",
             **kwargs,
         )
 
@@ -535,21 +548,27 @@ class Positionable:
         dim: int,
         *,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
-        """Stretches the object by a factor along one dimension.
+        r"""Stretches the object along one dimension.
 
         Parameters
         ----------
         factor
-            The factor.
+            The stretching factor.
+
+            - For :math:`0 < |\alpha| < 1` the object shrinks.
+            - For :math:`|\alpha| > 1` the object grows.
+            - For :math:`\alpha < 0` the object flips.
         dim
-            The dimension.
+            The dimension to stretch along.
         about_point
-            About which point to stretch., Defaults to ``None``
+            About which point to stretch.
+            Defaults to ``None``
         about_edge
-            About which edge to stretch., Defaults to ``None``
+            About which edge to stretch.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -575,7 +594,6 @@ class Positionable:
             apply,
             about_point=about_point,
             about_edge=about_edge,
-            default_point="OBJECT_CENTER",
             **kwargs,
         )
 
@@ -585,7 +603,7 @@ class Positionable:
         axis: Vector3DLike = OUT,
         *,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
         """Rotates the object by an angle along an axis.
@@ -593,19 +611,22 @@ class Positionable:
         Parameters
         ----------
         angle
-            The angle.
+            The rotation angle in radians.
+            The predefined constant ``DEGREES`` can be used to specify the angles in degrees.
         axis
-            The axis., Defaults to ``OUT``
+            The axis to rotate around.
+            Defaults to ``OUT``, meaning the Z axis (i.e. the XY plane)
         about_point
-            About which point to rotate., Defaults to ``None``
+            About which point to rotate.
+            Defaults to ``None``
         about_edge
-            About which edge to rotate., Defaults to ``None``
+            About which edge to rotate.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
         Self
             The object itself.
-
 
         .. note::
             To animate a rotation, use :class:`~.Rotating` or :class:`~.Rotate`
@@ -646,7 +667,6 @@ class Positionable:
             apply,
             about_point=about_point,
             about_edge=about_edge,
-            default_point="OBJECT_CENTER",
             **kwargs,
         )
 
@@ -658,16 +678,18 @@ class Positionable:
         about_edge: Vector3DLike | None = None,
         **kwargs: Any,
     ) -> Self:
-        """Applies a transformation matrix to the points to the object.
+        """Applies a transformation matrix to the points of the object.
 
         Parameters
         ----------
         matrix
-            The matrix.
+            The transformation matrix.
         about_point
-            About which point to apply the matrix., Defaults to ``None``
+            About which point to apply the matrix.
+            Defaults to ``None``
         about_edge
-            About which edge to apply the matrix., Defaults to ``None``
+            About which edge to apply the matrix.
+            Defaults to ``None``
 
         Returns
         -------
@@ -692,7 +714,7 @@ class Positionable:
                     )
                     self.play(Star().animate.apply_matrix(matrix))
         """
-        about_point = self._get_about_point(about_point, about_edge, "ORIGIN")
+        about_point = self._get_about_point(about_point, about_edge)
         matrix = np.asarray(matrix)
         if matrix.shape == (3, 3):
             full_matrix = matrix
@@ -707,7 +729,6 @@ class Positionable:
             apply,
             about_point=about_point,
             about_edge=about_edge,
-            default_point="ORIGIN",
             **kwargs,
         )
 
@@ -715,16 +736,10 @@ class Positionable:
         self,
         about_point: Point3DLike | None,
         about_edge: Vector3DLike | None,
-        default: Literal["ORIGIN", "OBJECT_CENTER"],
     ) -> Point3DLike:
         if about_point is None:
             if about_edge is None:
-                if default == "ORIGIN":
-                    return ORIGIN.copy()
-                elif default == "OBJECT_CENTER":
-                    return self.get_anchor(ORIGIN)
-                else:
-                    raise ValueError(default)
+                return ORIGIN.copy()
             else:
                 return self.get_anchor(about_edge)
         else:
@@ -744,12 +759,27 @@ class Positionable:
         Parameters
         ----------
         direction
-            The direction., Defaults to ``ORIGIN``, i.e. the object's center point., i.e.
+            The direction of the anchor point.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
         Point3D
-            The position.
+            The anchor position.
+
+        .. note::
+            Picture an axis-aligned bounding box which surrounds the object.
+            The object's "anchor points" are the 27 points located at the corners, edge centers, face centers, and the center of this bounding box.
+            Each anchor point's direction is defined as a vector whose dimensions are of value -1, 0 or 1.
+            Manim offers predefined constants for many of these directions, including all on the XY plane:
+
+            .. code-block::
+
+                UL   |   UP   |    UR
+                -----|--------|------
+                LEFT | ORIGIN | RIGHT
+                -----|--------|------
+                DL   |  DOWN  |    DR
 
         Example
         -------
@@ -768,7 +798,7 @@ class Positionable:
                     ]
                     for label, anchor in anchors:
                         dot = Dot(color=BLUE)
-                        dot.move_to(circle.get_critical_point(anchor))
+                        dot.move_to(circle.get_anchor(anchor))
                         dot.add(Text(label, font_size=24).next_to(dot, DOWN if anchor is ORIGIN else anchor, buff=0.1))
                         self.add(dot)
         """
@@ -791,9 +821,10 @@ class Positionable:
         Parameters
         ----------
         position
-            The position.
+            The anchor position.
         direction
-            The direction., Defaults to ``ORIGIN``, i.e. the object's center point.
+            The direction of the anchor point.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -826,14 +857,15 @@ class Positionable:
         direction: Vector3DLike = ORIGIN,
         **kwargs: Any,
     ) -> Self:
-        """Translates the object so that the anchor is identical to the corresponding anchor of the other object.
+        """Translates the object so that the position of the anchor matches the corresponding anchor of the other object.
 
         Parameters
         ----------
         other
             The other object.
         direction
-            The direction., Defaults to ``ORIGIN``, i.e. the object's center point.
+            The direction of the anchor point.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -846,11 +878,10 @@ class Positionable:
 
             class MatchAnchorExample(Scene):
                 def construct(self) -> None:
-                    anchor = DR
                     triangle = Triangle(radius=3)
-                    star = Square().to_corner(DL)
-                    self.add(triangle, Dot(triangle.get_anchor(anchor)))
-                    self.play(star.animate.match_anchor(triangle, DR))
+                    square = Square().to_corner(DL)
+                    self.add(triangle, Dot(triangle.get_anchor(DR)))
+                    self.play(square.animate.match_anchor(triangle, DR))
         """
         return self.set_anchor(other.get_anchor(direction), direction, **kwargs)
 
@@ -868,15 +899,15 @@ class Positionable:
 
             class GetCenterExample(Scene):
                 def construct(self) -> None:
-                    square = Circle().to_corner(UL)
+                    circle = Circle().to_corner(UL)
                     arrow = Arrow()
 
                     def update(mob: Arrow) -> Arrow:
-                        return mob.put_start_and_end_on(ORIGIN, square.get_center())
+                        return mob.put_start_and_end_on(ORIGIN, circle.get_center())
 
                     arrow.add_updater(update)
-                    self.add(square, arrow)
-                    self.play(square.animate.to_corner(UR))
+                    self.add(circle, arrow)
+                    self.play(circle.animate.to_corner(UR))
         """
         return self.get_anchor(ORIGIN)
 
@@ -889,8 +920,8 @@ class Positionable:
 
         Parameters
         ----------
-        center
-            The position.
+        position
+            The center position.
 
         Returns
         -------
@@ -915,7 +946,7 @@ class Positionable:
         return self.set_anchor(position, ORIGIN, **kwargs)
 
     def match_center(self, other: Positionable, **kwargs: Any) -> Self:
-        """Translates the object so that the center position is identical to the center of the other object.
+        """Translates the object so that the center position matches the center of the other object.
 
         Parameters
         ----------
@@ -984,7 +1015,7 @@ class Positionable:
         Parameters
         ----------
         position
-            The position.
+            The top position.
 
         Returns
         -------
@@ -994,7 +1025,7 @@ class Positionable:
         return self.set_anchor(position, UP, **kwargs)
 
     def match_top(self, other: Positionable, **kwargs: Any) -> Self:
-        """Translates the object so that the top position is identical to the top position of the other object.
+        """Translates the object so that the top position matches the top position of the other object.
 
         Parameters
         ----------
@@ -1024,7 +1055,7 @@ class Positionable:
         Parameters
         ----------
         position
-            The position.
+            The bottom position.
 
         Returns
         -------
@@ -1033,8 +1064,8 @@ class Positionable:
         """
         return self.set_anchor(position, DOWN, **kwargs)
 
-    def match_bottom(self, mobject: Positionable, **kwargs: Any) -> Self:
-        """Translates the object so that the bottom position is identical to the bottom position of the other object.
+    def match_bottom(self, other: Positionable, **kwargs: Any) -> Self:
+        """Translates the object so that the bottom position matches the bottom position of the other object.
 
         Parameters
         ----------
@@ -1046,7 +1077,7 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_bottom(mobject.get_bottom(), **kwargs)
+        return self.set_bottom(other.get_bottom(), **kwargs)
 
     def get_right(self) -> Point3D:
         """Returns the right position of the object.
@@ -1064,7 +1095,7 @@ class Positionable:
         Parameters
         ----------
         position
-            The position.
+            The right position.
 
         Returns
         -------
@@ -1074,7 +1105,7 @@ class Positionable:
         return self.set_anchor(position, RIGHT, **kwargs)
 
     def match_right(self, other: Positionable, **kwargs: Any) -> Self:
-        """Translates the object so that the right position is identical to the right position of the other object.
+        """Translates the object so that the right position matches the right position of the other object.
 
         Parameters
         ----------
@@ -1104,7 +1135,7 @@ class Positionable:
         Parameters
         ----------
         position
-            The position.
+            The left position.
 
         Returns
         -------
@@ -1114,7 +1145,7 @@ class Positionable:
         return self.set_anchor(position, LEFT, **kwargs)
 
     def match_left(self, other: Positionable, **kwargs: Any) -> Self:
-        """Translates the object so that the left position is identical to the left position of the other object.
+        """Translates the object so that the left position matches the left position of the other object.
 
         Parameters
         ----------
@@ -1144,7 +1175,7 @@ class Positionable:
         Parameters
         ----------
         position
-            The position.
+            The zenith position.
 
         Returns
         -------
@@ -1154,7 +1185,7 @@ class Positionable:
         return self.set_anchor(position, OUT, **kwargs)
 
     def match_zenith(self, other: Positionable, **kwargs: Any) -> Self:
-        """Translates the object so that the zenith position is identical to the zenith position of the other object.
+        """Translates the object so that the zenith position matches the zenith position of the other object.
 
         Parameters
         ----------
@@ -1184,7 +1215,7 @@ class Positionable:
         Parameters
         ----------
         position
-            The position.
+            The nadir position.
 
         Returns
         -------
@@ -1194,7 +1225,7 @@ class Positionable:
         return self.set_anchor(position, IN, **kwargs)
 
     def match_nadir(self, other: Positionable, **kwargs: Any) -> Self:
-        """Translates the object so that the nadir position is identical to the nadir position of the other object.
+        """Translates the object so that the nadir position matches the nadir position of the other object.
 
         Parameters
         ----------
@@ -1209,19 +1240,20 @@ class Positionable:
         return self.set_nadir(other.get_nadir(), **kwargs)
 
     def get_coordinate(self, dim: int, direction: Vector3DLike = ORIGIN) -> float:
-        """Returns the coordinate of a dimension of the object.
+        """Returns the ``dim``th coordinate at one of the object's anchor points.
 
         Parameters
         ----------
         dim
-            The dimension.
+            The dimension of the coordinate.
         direction
-            The direction., Defaults to ``ORIGIN``, i.e. the object's center point.
+            The direction of the anchor point.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
         float
-            The coordinate.
+            The coordinate value.
         """
         return self._get_extremum(self.get_all_points()[:, dim], direction[dim])
 
@@ -1232,16 +1264,18 @@ class Positionable:
         direction: Vector3DLike = ORIGIN,
         **kwargs: Any,
     ) -> Self:
-        """Translates the object so that the coordinate of a dimension is at ``value``.
+        """Translates the object so that the ``dim``th coordinate at the specified
+        anchor point is at ``value``.
 
         Parameters
         ----------
         value
-            The value.
+            The coordinate value.
         dim
-            The dimension.
+            The dimension of the coordinate.
         direction
-            The direction., Defaults to ``ORIGIN``, i.e. the object's center point.
+            The direction of the anchor point.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -1270,16 +1304,18 @@ class Positionable:
         direction: Vector3DLike = ORIGIN,
         **kwargs: Any,
     ) -> Self:
-        """Translates the object so that the coordinate of a dimension is identical to the corresponding coordinate of the other object.
+        """Translates the object so that the ``dim``th coordinate at the specified anchor point
+        matches the ``dim``th coordinate at the corresponding anchor point of the other object.
 
         Parameters
         ----------
         other
             The other object.
         dim
-            The dimension.
+            The dimension of the coordinate.
         direction
-            The direction., Defaults to ``ORIGIN``, i.e. the object's center point.
+            The direction of the anchor point.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -1294,12 +1330,13 @@ class Positionable:
         )
 
     def get_x(self, direction: Vector3DLike = ORIGIN) -> float:
-        """Returns the x coordinate of the object.
+        """Returns the x coordinate at one of the object's anchor points.
 
         Parameters
         ----------
         direction
-            The direction., Defaults to ``ORIGIN``, i.e. the object's center point.
+            The direction of the anchor point.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -1311,14 +1348,16 @@ class Positionable:
     def set_x(
         self, value: float, direction: Vector3DLike = ORIGIN, **kwargs: Any
     ) -> Self:
-        """Translates the object so that the x coordinate is at ``value``.
+        """Translates the object so that the x coordinate at the specified anchor point
+        is at ``value``.
 
         Parameters
         ----------
         value
-            The value.
+            The x value.
         direction
-            The direction., Defaults to ``ORIGIN``, i.e. the object's center point.
+            The direction of the anchor point.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -1333,14 +1372,16 @@ class Positionable:
         direction: Vector3DLike = ORIGIN,
         **kwargs: Any,
     ) -> Self:
-        """Translates the object so that the x coordinate is identical to the x coordinate of the other object.
+        """Translates the object so that the x coordinate at the specified anchor point
+        matches the x coordinate of the corresponding anchor point of the other object.
 
         Parameters
         ----------
         other
             The other object.
         direction
-            The direction., Defaults to ``ORIGIN``, i.e. the object's center point.
+            The direction of the anchor point.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -1350,12 +1391,13 @@ class Positionable:
         return self.set_x(other.get_x(direction), direction, **kwargs)
 
     def get_y(self, direction: Vector3DLike = ORIGIN) -> float:
-        """Returns the y coordinate of the object.
+        """Returns the y coordinate at one of the object's anchor points.
 
         Parameters
         ----------
         direction
-            The direction., Defaults to ``ORIGIN``, i.e. the object's center point.
+            The direction of the anchor point.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -1367,14 +1409,16 @@ class Positionable:
     def set_y(
         self, value: float, direction: Vector3DLike = ORIGIN, **kwargs: Any
     ) -> Self:
-        """Translates the object so that the y coordinate is at ``value``.
+        """Translates the object so that the y coordinate at the specified anchor point
+        is at ``value``.
 
         Parameters
         ----------
         value
-            The value.
+            The y value.
         direction
-            The direction., Defaults to ``ORIGIN``, i.e. the object's center point.
+            The direction of the anchor point.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -1389,14 +1433,16 @@ class Positionable:
         direction: Vector3DLike = ORIGIN,
         **kwargs: Any,
     ) -> Self:
-        """Translates the object so that the y coordinate is identical to the y coordinate of the other object.
+        """Translates the object so that the y coordinate at the specified anchor point
+        matches the y coordinate at the corresponding anchor point of the other object.
 
         Parameters
         ----------
         other
             The other object.
         direction
-            The direction., Defaults to ``ORIGIN``, i.e. the object's center point.
+            The direction of the anchor point.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -1406,12 +1452,13 @@ class Positionable:
         return self.set_y(other.get_y(direction), direction, **kwargs)
 
     def get_z(self, direction: Vector3DLike = ORIGIN) -> float:
-        """Returns the z coordinate of the object.
+        """Returns the z coordinate at one of the object's anchor points.
 
         Parameters
         ----------
         direction
-            The direction., Defaults to ``ORIGIN``, i.e. the object's center point.
+            The direction of the anchor point.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -1426,14 +1473,16 @@ class Positionable:
         direction: Vector3DLike = ORIGIN,
         **kwargs: Any,
     ) -> Self:
-        """Translates the object so that the z coordinate is at ``value``.
+        """Translates the object so that the z coordinate at the specified anchor point
+        is at ``value``.
 
         Parameters
         ----------
         value
-            The value.
+            The z value.
         direction
-            The direction., Defaults to ``ORIGIN``, i.e. the object's center point.
+            The direction of the anchor point.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -1448,14 +1497,16 @@ class Positionable:
         direction: Vector3DLike = ORIGIN,
         **kwargs: Any,
     ) -> Self:
-        """Translates the object so that the z coordinate is identical to the z coordinate of the other object.
+        """Translates the object so that the z coordinate at the specified anchor point
+        matches the z coordinate at the corresponding anchor point of the other object.
 
         Parameters
         ----------
         other
             The other object.
         direction
-            The direction., Defaults to ``ORIGIN``, i.e. the object's center point.
+            The direction of the anchor point.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -1476,9 +1527,10 @@ class Positionable:
         Parameters
         ----------
         direction
-            The direction.
+            The direction of the anchor point.
         buff
-            The buff., Defaults to ``DEFAULT_MOBJECT_TO_EDGE_BUFFER``
+            The distance to the border.
+            Defaults to ``DEFAULT_MOBJECT_TO_EDGE_BUFFER``
 
         Returns
         -------
@@ -1489,7 +1541,7 @@ class Positionable:
         -------
         .. manim:: AlignOnBorderExample
 
-            class AlignOnBorderExample(ThreeDScene):
+            class AlignOnBorderExample(Scene):
                 def construct(self) -> None:
                     circle, triangle, square, star = Circle(), Triangle(), Square(), Star()
                     VGroup(circle, triangle, square, star).arrange()
@@ -1524,7 +1576,8 @@ class Positionable:
         point_or_mobject
             The point or mobject.
         direction
-            The direction., Defaults to ``ORIGIN``, i.e. the object's center point.
+            The direction of the anchor point.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -1535,7 +1588,7 @@ class Positionable:
         -------
         .. manim:: AlignToExample
 
-            class AlignToExample(ThreeDScene):
+            class AlignToExample(Scene):
                 def construct(self) -> None:
                     square = Square(side_length=1, color=RED).to_edge(DOWN)
                     triangle = Triangle(radius=2).move_to((2, 1, 0))
@@ -1571,11 +1624,14 @@ class Positionable:
         point_or_mobject
             The point or mobject.
         direction
-            The direction., Defaults to ``RIGHT``
-        buff
-            The buff., Defaults to ``DEFAULT_MOBJECT_TO_MOBJECT_BUFFER``
+            The direction of the anchor point.
+            Defaults to ``RIGHT``
         aligned_edge
-            The edge to align., Defaults to ``ORIGIN``
+            The edge to align.
+            Defaults to ``ORIGIN``, meaning the object's center
+        buff
+            The distance to the point or mobject.
+            Defaults to ``DEFAULT_MOBJECT_TO_MOBJECT_BUFFER``
 
         Returns
         -------
@@ -1620,7 +1676,8 @@ class Positionable:
         Parameters
         ----------
         buff
-            The buff., Defaults to ``DEFAULT_MOBJECT_TO_EDGE_BUFFER``
+            The distance to the border.
+            Defaults to ``DEFAULT_MOBJECT_TO_EDGE_BUFFER``
 
         Returns
         -------
@@ -1680,7 +1737,7 @@ class Positionable:
         Returns
         -------
         Point3D
-            The center_of_mass.
+            The center of mass.
         """
         all_points = self.get_all_points()
         if len(all_points) == 0:
@@ -1699,7 +1756,7 @@ class Positionable:
         Parameters
         ----------
         direction
-            The direction.
+            The direction of the anchor point.
 
         Returns
         -------
@@ -1756,7 +1813,7 @@ class Positionable:
         factor: float = 1.5,
         *,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
         """Spaces out the submobjects.
@@ -1764,11 +1821,14 @@ class Positionable:
         Parameters
         ----------
         factor
-            The factor., Defaults to ``1.5``
+            The spacing factor.
+            Defaults to ``1.5``
         about_point
-            About which point to scale., Defaults to ``None``
+            About which point to scale.
+            Defaults to ``None``
         about_edge
-            About which edge to scale., Defaults to ``None``
+            About which edge to scale.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -1800,18 +1860,22 @@ class Positionable:
         center: bool = True,
         **kwargs: Any,
     ) -> Self:
-        """Arranges the submobject.
+        """Arranges the submobjects.
 
         Parameters
         ----------
         direction
-            The direction., Defaults to ``RIGHT``
+            The direction of the anchor point.
+            Defaults to ``RIGHT``
         aligned_edge
-            The aligned edge., Defaults to ``ORIGIN``
+            The aligned edge.
+            Defaults to ``ORIGIN``, meaning the object's center
         buff
-            The buff., Defaults to ``DEFAULT_MOBJECT_TO_MOBJECT_BUFFER``
+            The distance between the objects.
+            Defaults to ``DEFAULT_MOBJECT_TO_MOBJECT_BUFFER``
         center
-            Whether to center the object after arranging., Defaults to ``True``
+            Whether to center the object after arranging.
+            Defaults to ``True``
 
         Returns
         -------
@@ -1887,23 +1951,32 @@ class Positionable:
         Parameters
         ----------
         rows
-            The number of rows., Defaults to ``None``
+            The number of rows.
+            Defaults to ``None``
         cols
-            The number of columns., Defaults to ``None``
+            The number of columns.
+            Defaults to ``None``
         buff
-            The gap between grid cells., Defaults to ``MED_SMALL_BUFF``
+            The gap between grid cells.
+            Defaults to ``MED_SMALL_BUFF``
         cell_alignment
-            The way each submobject is aligned in its grid cell., Defaults to ``ORIGIN``
+            The way each submobject is aligned in its grid cell.
+            Defaults to ``ORIGIN``, meaning the cell's center
         row_alignments
-            The vertical alignment for each row., Defaults to ``None``
+            The vertical alignment for each row.
+            Defaults to ``None``
         col_alignments
-            The horizontal alignment for each column., Defaults to ``None``
+            The horizontal alignment for each column.
+            Defaults to ``None``
         row_heights
-            Defines the heights for certain rows. For ``None``, the height is based on the highest element in that row., Defaults to ``None``
+            Defines the heights for certain rows. For ``None``, the height is based on the highest element in that row.
+            Defaults to ``None``
         col_widths
-            Defines the widths for certain columns. For ``None``, the width is based on the widest element in that column., Defaults to ``None``
+            Defines the widths for certain columns. For ``None``, the width is based on the widest element in that column.
+            Defaults to ``None``
         flow_order
-            The order in which submobjects fill the grid., Defaults to ``rd``, meaning first right and then down.
+            The order in which submobjects fill the grid.
+            Defaults to ``rd``, meaning first right and then down
 
         Returns
         -------
@@ -1987,7 +2060,7 @@ class Positionable:
         Returns
         -------
         float
-            The dim size.
+            The size of the dimension.
         """
         all_points = self.get_all_points()
         if len(all_points) == 0:
@@ -2001,7 +2074,7 @@ class Positionable:
         *,
         stretch: bool = False,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
         """Resizes the object so that the size of a dimension is ``size``.
@@ -2013,11 +2086,14 @@ class Positionable:
         dim
             The dimension.
         stretch
-            Whether to stretch (``True``) or scale (``False``)., Defaults to ``False``
+            Whether to stretch (``True``) or scale (``False``).
+            Defaults to ``False``
         about_point
-            About which point to resize., Defaults to ``None``
+            About which point to resize.
+            Defaults to ``None``
         about_edge
-            About which edge to resize., Defaults to ``None``
+            About which edge to resize.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -2061,10 +2137,10 @@ class Positionable:
         *,
         stretch: bool = False,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
-        """Resizes the object so that the size of a dimension is identical to the corresponding size of the other object.
+        """Resizes the object so that the size of a dimension matches the corresponding size of the other object.
 
         Parameters
         ----------
@@ -2073,11 +2149,14 @@ class Positionable:
         dim
             The dimension.
         stretch
-            Whether to stretch (``True``) or scale (``False``)., Defaults to ``False``
+            Whether to stretch (``True``) or scale (``False``).
+            Defaults to ``False``
         about_point
-            About which point to set the dim size., Defaults to ``None``
+            About which point to set the dim size.
+            Defaults to ``None``
         about_edge
-            About which edge to set the dim size., Defaults to ``None``
+            About which edge to set the dim size.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -2109,7 +2188,7 @@ class Positionable:
         *,
         stretch: bool = False,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
         """Resizes the object so that the width is ``size``.
@@ -2119,11 +2198,14 @@ class Positionable:
         size
             The size.
         stretch
-            Whether to stretch (``True``) or scale (``False``)., Defaults to ``False``
+            Whether to stretch (``True``) or scale (``False``).
+            Defaults to ``False``
         about_point
-            About which point to set the width., Defaults to ``None``
+            About which point to set the width.
+            Defaults to ``None``
         about_edge
-            About which edge to set the width., Defaults to ``None``
+            About which edge to set the width.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -2156,21 +2238,24 @@ class Positionable:
         *,
         stretch: bool = False,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
-        """Resizes the object so that the width is identical to the width of the other object.
+        """Resizes the object so that the width matches the width of the other object.
 
         Parameters
         ----------
         other
             The other object.
         stretch
-            Whether to stretch (``True``) or scale (``False``)., Defaults to ``False``
+            Whether to stretch (``True``) or scale (``False``).
+            Defaults to ``False``
         about_point
-            About which point to set the width., Defaults to ``None``
+            About which point to set the width.
+            Defaults to ``None``
         about_edge
-            About which edge to set the width., Defaults to ``None``
+            About which edge to set the width.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -2201,7 +2286,7 @@ class Positionable:
         *,
         stretch: bool = False,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
         """Resizes the object so that the height is ``size``.
@@ -2211,11 +2296,14 @@ class Positionable:
         size
             The size.
         stretch
-            Whether to stretch (``True``) or scale (``False``)., Defaults to ``False``
+            Whether to stretch (``True``) or scale (``False``).
+            Defaults to ``False``
         about_point
-            About which point to set the height., Defaults to ``None``
+            About which point to set the height.
+            Defaults to ``None``
         about_edge
-            About which edge to set the height., Defaults to ``None``
+            About which edge to set the height.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -2228,10 +2316,10 @@ class Positionable:
 
             class SetHeightExample(Scene):
                 def construct(self) -> None:
-                    rectangle = Star().set_fill(opacity=1)
+                    star = Star().set_fill(opacity=1)
 
-                    self.play(rectangle.animate.set_height(6, stretch=True))
-                    self.play(rectangle.animate.set_height(3, about_edge=UP))
+                    self.play(star.animate.set_height(6, stretch=True))
+                    self.play(star.animate.set_height(3, about_edge=UP))
         """
         return self.set_dim_size(
             size,
@@ -2248,21 +2336,24 @@ class Positionable:
         *,
         stretch: bool = False,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
-        """Resizse the object so that the height is identical to the height of the other object.
+        """Resizes the object so that the height matches the height of the other object.
 
         Parameters
         ----------
         other
             The other object.
         stretch
-            Whether to stretch (``True``) or scale (``False``)., Defaults to ``False``
+            Whether to stretch (``True``) or scale (``False``).
+            Defaults to ``False``
         about_point
-            About which point to set the width., Defaults to ``None``
+            About which point to set the height.
+            Defaults to ``None``
         about_edge
-            About which edge to set the width., Defaults to ``None``
+            About which edge to set the height.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -2293,7 +2384,7 @@ class Positionable:
         stretch: bool = False,
         *,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
         """Resizes the object so that the depth is ``size``.
@@ -2303,11 +2394,14 @@ class Positionable:
         size
             The size.
         stretch
-            Whether to stretch (``True``) or scale (``False``)., Defaults to ``False``
+            Whether to stretch (``True``) or scale (``False``).
+            Defaults to ``False``
         about_point
-            About which point to set the depth., Defaults to ``None``
+            About which point to set the depth.
+            Defaults to ``None``
         about_edge
-            About which edge to set the depth., Defaults to ``None``
+            About which edge to set the depth.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -2330,21 +2424,24 @@ class Positionable:
         *,
         stretch: bool = False,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
-        """Resizes the object so that the depth is identical to the depth of the other object.
+        """Resizes the object so that the depth matches the depth of the other object.
 
         Parameters
         ----------
         other
             The other object.
         stretch
-            Whether to stretch (``True``) or scale (``False``)., Defaults to ``False``
+            Whether to stretch (``True``) or scale (``False``).
+            Defaults to ``False``
         about_point
-            About which point to set the width., Defaults to ``None``
+            About which point to set the depth.
+            Defaults to ``None``
         about_edge
-            About which edge to set the width., Defaults to ``None``
+            About which edge to set the depth.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -2365,7 +2462,7 @@ class Positionable:
         dim: int,
         *,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
         """Scales the object so that the size of a dimension is ``size``.
@@ -2377,9 +2474,11 @@ class Positionable:
         dim
             The dimension.
         about_point
-            About which point to scale., Defaults to ``None``
+            About which point to scale.
+            Defaults to ``None``
         about_edge
-            About which edge to scale., Defaults to ``None``
+            About which edge to scale.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -2400,7 +2499,7 @@ class Positionable:
         size: float,
         *,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
         """Scales the object so that the width is ``size``.
@@ -2410,9 +2509,11 @@ class Positionable:
         size
             The size.
         about_point
-            About which point to scale., Defaults to ``None``
+            About which point to scale.
+            Defaults to ``None``
         about_edge
-            About which edge to scale., Defaults to ``None``
+            About which edge to scale.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -2448,7 +2549,7 @@ class Positionable:
         size: float,
         *,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
         """Scales the object so that the height is ``size``.
@@ -2458,9 +2559,11 @@ class Positionable:
         size
             The size.
         about_point
-            About which point to scale., Defaults to ``None``
+            About which point to scale.
+            Defaults to ``None``
         about_edge
-            About which edge to scale., Defaults to ``None``
+            About which edge to scale.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -2481,7 +2584,7 @@ class Positionable:
         size: float,
         *,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
         """Scales the object so that the depth is ``size``.
@@ -2491,9 +2594,11 @@ class Positionable:
         size
             The size.
         about_point
-            About which point to scale., Defaults to ``None``
+            About which point to scale.
+            Defaults to ``None``
         about_edge
-            About which edge to scale., Defaults to ``None``
+            About which edge to scale.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -2515,7 +2620,7 @@ class Positionable:
         dim: int,
         *,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
         """Stretches the object so that the size of a dimension is ``size``.
@@ -2527,9 +2632,11 @@ class Positionable:
         dim
             The dimension.
         about_point
-            About which point to stretch., Defaults to ``None``
+            About which point to stretch.
+            Defaults to ``None``
         about_edge
-            About which edge to stretch., Defaults to ``None``
+            About which edge to stretch.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -2550,7 +2657,7 @@ class Positionable:
         size: float,
         *,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
         """Stretches the object so that the width is ``size``.
@@ -2560,9 +2667,11 @@ class Positionable:
         size
             The size.
         about_point
-            About which point to stretch., Defaults to ``None``
+            About which point to stretch.
+            Defaults to ``None``
         about_edge
-            About which edge to stretch., Defaults to ``None``
+            About which edge to stretch.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -2598,7 +2707,7 @@ class Positionable:
         size: float,
         *,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
         """Stretches the object so that the height is ``size``.
@@ -2608,9 +2717,11 @@ class Positionable:
         size
             The size.
         about_point
-            About which point to stretch., Defaults to ``None``
+            About which point to stretch.
+            Defaults to ``None``
         about_edge
-            About which edge to stretch., Defaults to ``None``
+            About which edge to stretch.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -2625,12 +2736,12 @@ class Positionable:
             >>> sq = Square()
             >>> sq.width
             np.float64(2.0)
-            >>> sq.scale_to_fit_height(5)
+            >>> sq.stretch_to_fit_height(5)
             Square
             >>> sq.height
             np.float64(5.0)
             >>> sq.width
-            np.float64(5.0)
+            np.float64(2.0)
         """
         return self.set_dim_size(
             size,
@@ -2646,7 +2757,7 @@ class Positionable:
         size: float,
         *,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
         """Stretches the object so that the depth is ``size``.
@@ -2656,9 +2767,11 @@ class Positionable:
         size
             The size.
         about_point
-            About which point to stretch., Defaults to ``None``
+            About which point to stretch.
+            Defaults to ``None``
         about_edge
-            About which edge to stretch., Defaults to ``None``
+            About which edge to stretch.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -2685,7 +2798,7 @@ class Positionable:
         axis: Vector3DLike = UP,
         *,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
         """Flips the object along an axis.
@@ -2693,11 +2806,14 @@ class Positionable:
         Parameters
         ----------
         axis
-            The axis to flip around., Defaults to ``UP``
+            The axis to flip around.
+            Defaults to ``UP``
         about_point
-            About which point to flip., Defaults to ``None``
+            About which point to flip.
+            Defaults to ``None``
         about_edge
-            About which edge to flip., Defaults to ``None``
+            About which edge to flip.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -2727,7 +2843,7 @@ class Positionable:
         self,
         *,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
         """Poses the object at an angle.
@@ -2735,9 +2851,11 @@ class Positionable:
         Parameters
         ----------
         about_point
-            About which point to pose., Defaults to ``None``
+            About which point to pose.
+            Defaults to ``None``
         about_edge
-            About which edge to pose., Defaults to ``None``
+            About which edge to pose.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -2754,7 +2872,7 @@ class Positionable:
 
     def replace(
         self,
-        mobject: Positionable,
+        other: Positionable,
         dim: int = 0,
         *,
         stretch: bool = False,
@@ -2764,12 +2882,14 @@ class Positionable:
 
         Parameters
         ----------
-        mobject
-            The mobject.
+        other
+            The other object.
         dim
-            The dimension., Defaults to ``0``
+            The dimension.
+            Defaults to ``0``
         stretch
-            Whether to stretch., Defaults to ``False``
+            Whether to stretch.
+            Defaults to ``False``
 
         Returns
         -------
@@ -2779,20 +2899,20 @@ class Positionable:
         # if not self.has_points() and not mobject.submobjects:
         #    raise Warning("Attempting to replace mobject with no points")
         if stretch:
-            self.stretch_to_fit_width(mobject.get_width(), **kwargs)
-            self.stretch_to_fit_height(mobject.get_height(), **kwargs)
+            self.stretch_to_fit_width(other.get_width(), **kwargs)
+            self.stretch_to_fit_height(other.get_height(), **kwargs)
             # TODO: add self.stretch_to_fit_depth(depth=mobject.get_depth(), **kwargs)
         else:
             self.scale_to_fit_dim(
-                mobject.get_dim_size(dim),
+                other.get_dim_size(dim),
                 dim,
                 **kwargs,
             )
-        return self.set_center(mobject.get_center(), **kwargs)
+        return self.set_center(other.get_center(), **kwargs)
 
     def surround(
         self,
-        mobject: Positionable,
+        other: Positionable,
         dim: int = 0,
         *,
         stretch: bool = False,
@@ -2803,14 +2923,17 @@ class Positionable:
 
         Parameters
         ----------
-        mobject
-            The mobject.
+        other
+            The other object.
         dim
-            The dimension., Defaults to ``0``
+            The dimension.
+            Defaults to ``0``
         stretch
-            Whether to stretch (``True``) or scale (``False``)., Defaults to ``False``
+            Whether to stretch (``True``) or scale (``False``).
+            Defaults to ``False``
         buff
-            The buff., Defaults to ``MED_SMALL_BUFF``
+            The distance to the other object.
+            Defaults to ``MED_SMALL_BUFF``
 
         Returns
         -------
@@ -2821,21 +2944,21 @@ class Positionable:
         -------
         .. manim:: SurroundExample
 
-            class SurroundExample(ThreeDScene):
+            class SurroundExample(Scene):
                 def construct(self) -> None:
-                    rectangle = Square(side_length=1).to_corner(UL)
+                    square = Square(side_length=1).to_corner(UL)
                     banner = ManimBanner()
                     self.add(banner)
-                    self.play(rectangle.animate.surround(banner, stretch=True))
+                    self.play(square.animate.surround(banner, stretch=True))
         """
         # TODO: Avoid scaling/stretching twice
         self.replace(
-            mobject,
+            other,
             dim,
             stretch=stretch,
             **kwargs,
         )
-        size = mobject.get_dim_size(dim)
+        size = other.get_dim_size(dim)
         if size == 0:
             return self
         factor = (size + buff) / size
@@ -2852,6 +2975,11 @@ class Positionable:
         Note
         ----
         An alias for the :meth:`translate` method.
+
+        Parameters
+        ----------
+        vectors
+            The translation vectors.
 
         Returns
         -------
@@ -2882,12 +3010,12 @@ class Positionable:
         Returns
         -------
         float
-            The dim size.
+            The size of the dimension.
         """
         return self.get_dim_size(dim)
 
     def get_critical_point(self, direction: Vector3DLike = ORIGIN) -> Point3D:
-        """Returns a critical point of the object.
+        """Returns the position of an anchor of the object.
 
         Note
         ----
@@ -2896,12 +3024,13 @@ class Positionable:
         Parameters
         ----------
         direction
-            The direction., Defaults to ``ORIGIN``, i.e. the object's center point.
+            The direction of the anchor point.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
         Point3D
-            The critical point.
+            The anchor position.
 
         Example
         -------
@@ -2926,7 +3055,7 @@ class Positionable:
         Parameters
         ----------
         direction
-            The direction.
+            The direction of the anchor point.
 
         Returns
         -------
@@ -2936,7 +3065,7 @@ class Positionable:
         return self.get_anchor(direction)
 
     def get_corner(self, direction: Vector3DLike) -> Point3D:
-        """Returns a corner position of the object.
+        """Returns the position of an anchor of the object.
 
         Note
         ----
@@ -2945,12 +3074,12 @@ class Positionable:
         Parameters
         ----------
         direction
-            The direction.
+            The direction of the anchor point.
 
         Returns
         -------
         Point3D
-            The corner position.
+            The anchor position.
         """
         return self.get_anchor(direction)
 
@@ -2965,14 +3094,15 @@ class Positionable:
 
         Note
         ----
-        An alias for the :meth:`set_anchor` method.
+        An alias for the :meth:`set_anchor` and :meth:`match_anchor` methods.
 
         Parameters
         ----------
         point_or_mobject
-            The point or mobject.
+            The point or mobject to move to.
         aligned_edge
-            The aligned edge., Defaults to ``ORIGIN``
+            The aligned edge.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -2986,7 +3116,7 @@ class Positionable:
             return self.match_anchor(point_or_mobject, aligned_edge, **kwargs)
 
     def get_coord(self, dim: int, direction: Vector3DLike = ORIGIN) -> float:
-        """Returns the coordinate of a dimension of the object.
+        """Returns the ``dim``th coordinate at one of the object's anchor points.
 
         Note
         ----
@@ -2995,14 +3125,15 @@ class Positionable:
         Parameters
         ----------
         dim
-            The dimension.
+            The dimension of the coordinate.
         direction
-            The direction., Defaults to ``ORIGIN``, i.e. the object's center point.
+            The direction of the anchor point.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
         float
-            The coordinate.
+            The coordinate value.
         """
         return self.get_coordinate(dim, direction)
 
@@ -3013,7 +3144,8 @@ class Positionable:
         direction: Vector3DLike = ORIGIN,
         **kwargs: Any,
     ) -> Self:
-        """Translates the object so that the coordinate of a dimension is at coordinate.
+        """Translates the object so that the ``dim``th coordinate at the specified
+        anchor point is at ``value``.
 
         Note
         ----
@@ -3022,11 +3154,12 @@ class Positionable:
         Parameters
         ----------
         value
-            The value.
+            The coordinate value.
         dim
-            The dimension.
+            The dimension of the coordinate.
         direction
-            The direction., Defaults to ``ORIGIN``, i.e. the object's center point.
+            The direction of the anchor point.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -3042,7 +3175,8 @@ class Positionable:
         direction: Vector3DLike = ORIGIN,
         **kwargs: Any,
     ) -> Self:
-        """Translates the object so that the coordinate of a dimension is identical to the corresponding coordinate of the other object.
+        """Translates the object so that the ``dim``th coordinate at the specified anchor point
+        matches the ``dim``th coordinate at the corresponding anchor point of the other object.
 
         Note
         ----
@@ -3053,9 +3187,10 @@ class Positionable:
         other
             The other object.
         dim
-            The dimension.
+            The dimension of the coordinate.
         direction
-            The direction., Defaults to ``ORIGIN``, i.e. the object's center point.
+            The direction of the anchor point.
+            Defaults to ``ORIGIN``, meaning the object's center
 
         Returns
         -------
@@ -3080,9 +3215,11 @@ class Positionable:
         Parameters
         ----------
         corner
-            The corner., Defaults to ``DL``
+            The corner.
+            Defaults to ``DL``, meaning the down left corner
         buff
-            The buff., Defaults to ``DEFAULT_MOBJECT_TO_EDGE_BUFFER``
+            The distance to the corner.
+            Defaults to ``DEFAULT_MOBJECT_TO_EDGE_BUFFER``
 
         Returns
         -------
@@ -3122,9 +3259,11 @@ class Positionable:
         Parameters
         ----------
         edge
-            The edge., Defaults to ``LEFT``
+            The edge.
+            Defaults to ``LEFT``
         buff
-            The buff., Defaults to ``DEFAULT_MOBJECT_TO_EDGE_BUFFER``
+            The distance to the edge.
+            Defaults to ``DEFAULT_MOBJECT_TO_EDGE_BUFFER``
 
         Returns
         -------
@@ -3245,7 +3384,7 @@ class Positionable:
         *,
         stretch: bool = False,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
         return self.set_dim_size(

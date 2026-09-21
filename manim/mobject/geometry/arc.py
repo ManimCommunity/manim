@@ -660,11 +660,11 @@ class Circle(Arc):
 
     def surround(
         self,
-        mobject: Positionable,
+        other: Positionable,
         dim: int = 0,
         *,
         stretch: bool = False,
-        buffer_factor: float = 1.2,
+        buff: float = 1.2,
         **kwargs: Any,
     ) -> Self:
         """Modifies a circle so that it surrounds a given mobject.
@@ -707,10 +707,10 @@ class Circle(Arc):
 
         # Something goes wrong here when surrounding lines?
         # TODO: Figure out and fix
-        self.replace(mobject, dim, stretch=stretch)
+        self.replace(other, dim, stretch=stretch)
 
-        self.width = np.sqrt(mobject.width**2 + mobject.height**2)
-        return self.scale(buffer_factor)
+        self.width = np.sqrt(other.width**2 + other.height**2)
+        return self.scale(buff)
 
     def point_at_angle(self, angle: float) -> Point3D:
         """Returns the position of a point on the circle.
