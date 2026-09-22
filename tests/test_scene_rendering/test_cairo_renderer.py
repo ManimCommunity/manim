@@ -14,9 +14,10 @@ def test_render(using_temp_config, disabling_caching):
     scene = SquareToCircle()
     renderer = scene.renderer
     renderer.update_frame = Mock(wraps=renderer.update_frame)
-    renderer.add_frame = Mock(wraps=renderer.add_frame)
+    writer = scene._get_manager().file_writer
+    writer.write_frame = Mock(wraps=writer.write_frame)
     scene.render()
-    assert renderer.add_frame.call_count == config["frame_rate"]
+    assert writer.write_frame.call_count == config["frame_rate"]
     assert renderer.update_frame.call_count == config["frame_rate"]
     assert_file_exists(renderer.file_writer.final_file_path)
     assert config.output_file == ""
@@ -88,7 +89,7 @@ def test_hash_logic_is_not_called_when_caching_is_disabled(
     using_temp_config,
     disabling_caching,
 ):
-    with patch("manim.renderer.cairo.renderer.get_hash_from_play_call") as mocked:
+    with patch("manim.manager.get_hash_from_play_call") as mocked:
         scene = SquareToCircle()
         scene.render()
         mocked.assert_not_called()
@@ -96,10 +97,10 @@ def test_hash_logic_is_not_called_when_caching_is_disabled(
 
 
 def test_hash_logic_is_called_when_caching_is_enabled(using_temp_config):
-    from manim.renderer.cairo.renderer import get_hash_from_play_call
+    from manim.manager import get_hash_from_play_call
 
     with patch(
-        "manim.renderer.cairo.renderer.get_hash_from_play_call",
+        "manim.manager.get_hash_from_play_call",
         wraps=get_hash_from_play_call,
     ) as mocked:
         scene = SquareToCircle()
