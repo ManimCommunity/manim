@@ -34,7 +34,7 @@ from typing_extensions import (
 from manim import config, logger
 from manim.constants import *
 from manim.data_structures import MethodWithArgs
-from manim.renderer.shader_wrapper import get_colormap_code
+from manim.renderer.opengl.shader_wrapper import get_colormap_code
 from manim.typing import (
     Point3D,
     Point3D_Array,
@@ -72,7 +72,7 @@ from manim.utils.space_ops import (
 
 if TYPE_CHECKING:
     from manim.animation.animation import Animation
-    from manim.renderer.shader_wrapper import ShaderWrapper
+    from manim.renderer.opengl.shader_wrapper import ShaderWrapper
     from manim.typing import (
         FloatRGB_Array,
         FloatRGBA_Array,
@@ -3013,7 +3013,7 @@ class OpenGLMobject:
         return self
 
     def get_shader_wrapper(self) -> "ShaderWrapper":  # noqa: UP037
-        from manim.renderer.shader_wrapper import ShaderWrapper
+        from manim.renderer.opengl.shader_wrapper import ShaderWrapper
 
         # if hasattr(self, "shader_wrapper"):
         #     return self.shader_wrapper

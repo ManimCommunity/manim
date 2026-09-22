@@ -326,7 +326,7 @@ renderer reference or read mutable global configuration. Directories are created
 lazily when their owning operation first writes. The writer remains Manim's
 interface to ``libav`` for media assembly. The Cairo renderer (see the
 implementation `here
-<https://github.com/ManimCommunity/manim/blob/main/manim/renderer/cairo_renderer.py>`__)
+<https://github.com/ManimCommunity/manim/blob/main/manim/renderer/cairo/renderer.py>`__)
 does not require further renderer-specific initialization. OpenGL creates a
 window only when the resolved presentation specification requests a live preview.
 The ``-p`` / ``--preview`` option does not create this window; it opens the
@@ -998,44 +998,31 @@ the *static mobjects* are assumed to have already been painted statically to
 the background of the scene). All of the hard work then happens when the renderer
 updates its current frame via a call to :meth:`.CairoRenderer.update_frame`:
 
-First, the renderer prepares its :class:`.Camera` by checking whether the renderer
-has a ``static_image`` different from ``None`` stored already. If so, it sets the
-image as the *background image* of the camera via :meth:`.Camera.set_frame_to_background`,
-and otherwise it just resets the camera via :meth:`.Camera.reset`. The camera is then
-asked to capture the scene with a call to :meth:`.Camera.capture_mobjects`.
+First, the renderer prepares its Cairo image buffer. If a reusable ``static_image``
+is available, the renderer copies it into that buffer; otherwise it resets the buffer
+using the camera's background color or image. Background images are resized to match
+the buffer's dimensions.
 
-Things get a bit technical here, and at some point it is more efficient to
-delve into the implementation -- but here is a summary of what happens once the
-camera is asked to capture the scene:
+Things get a bit technical here, and at some point it is more efficient to delve into
+the implementation -- but the drawing process can be summarized as follows:
 
-- First, a flat list of mobjects is created (so submobjects get extracted from
-  their parents). This list is then processed in groups of the same type of
-  mobjects (e.g., a batch of vectorized mobjects, followed by a batch of image mobjects,
-  followed by more vectorized mobjects, etc. -- in many cases there will just be
-  one batch of vectorized mobjects).
-- Depending on the type of the currently processed batch, the camera uses dedicated
-  *display functions* to convert the :class:`.Mobject` Python object to
-  a NumPy array stored in the camera's ``pixel_array`` attribute.
-  The most important example in that context is the display function for
-  vectorized mobjects, :meth:`.Camera.display_multiple_vectorized_mobjects`,
-  or the more particular (in case you did not add a background image to your
-  :class:`.VMobject`), :meth:`.Camera.display_multiple_non_background_colored_vmobjects`.
-  This method first gets the current Cairo context, and then, for every (vectorized)
-  mobject in the batch, calls :meth:`.Camera.display_vectorized`. There,
-  the actual background stroke, fill, and then stroke of the mobject is
-  drawn onto the context. See :meth:`.Camera.apply_stroke` and
-  :meth:`.Camera.set_cairo_context_color` for more details -- but it does not get
-  much deeper than that, in the latter method the actual Bézier curves
-  determined by the points of the mobject are drawn; this is where the low-level
-  interaction with Cairo happens.
+- The camera supplies a flat, ordered list of visible mobjects and applies
+  view/projection and shading transformations. Its animatable ``frame`` describes the
+  region being viewed.
+- Private Cairo renderer helpers process consecutive batches of vectorized, point
+  cloud, and image mobjects without changing their draw order.
+- Vectorized mobjects are converted to Cairo paths and drawn with their background
+  stroke, fill, and foreground stroke. Point clouds and image mobjects are converted
+  to target pixel coordinates and composited by renderer helpers.
+- With a :class:`.MultiCamera`, the renderer draws each secondary camera's view into
+  a separate image buffer, excluding that camera's own display mobject. It then draws
+  the resulting image in the corresponding :class:`.ImageMobjectFromCamera` in the
+  primary view.
 
-After all batches have been processed, the camera has an image representation
-of the Scene at the current time stamp in form of a NumPy array stored in its
-``pixel_array`` attribute. The renderer passes a top-left-origin,
-C-contiguous ``uint8`` RGBA array to its :class:`.SceneFileWriter`. OpenGL uses
-the same array contract and performs GPU readback at this renderer boundary only
-when file output needs a frame. This concludes one iteration of the render loop,
-and once the time progression has been processed completely, a final bit
+After all batches have been processed, :meth:`.CairoRenderer.get_frame` copies the
+rendered image into a top-left-origin, C-contiguous ``uint8`` RGBA array. The renderer
+passes this array to :class:`.SceneFileWriter`. This concludes one iteration of the
+render loop, and once the time progression has been processed completely, a final bit
 of cleanup is performed before the :meth:`.Scene.play_internal` call is completed.
 
 A TL;DR for the render loop, in the context of our toy example, reads as follows:
@@ -1049,11 +1036,11 @@ A TL;DR for the render loop, in the context of our toy example, reads as follows
   state of the transformation animation to the desired time stamp (for example,
   at time stamp ``t = 45/30``, the animation is completed to a rate of
   ``alpha = 0.5``).
-- Then the scene asks the renderer to do its job. The renderer asks its camera
-  to capture the scene, the only mobject that needs to be processed at this point
-  is the main mobject attached to the transformation; the camera converts the
-  current state of the mobject to entries in a NumPy array. The renderer passes
-  this array to the file writer.
+- Then the scene asks the renderer to do its job. The only mobject that needs to
+  be processed at this point is the main mobject attached to the transformation.
+  The camera supplies its view transform, while Cairo drawing helpers draw the
+  transformed square into the renderer's image buffer. The renderer passes a copy
+  of that buffer's RGBA pixels to the file writer.
 - At the end of the loop, 90 frames have been passed to the file writer.
 
 Completing the render loop

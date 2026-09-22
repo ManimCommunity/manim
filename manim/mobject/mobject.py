@@ -66,7 +66,7 @@ if TYPE_CHECKING:
     )
 
     from ..animation.animation import Animation
-    from ..camera.camera import Camera
+    from ..renderer.cairo.camera import Camera
 
 
 _TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
@@ -997,10 +997,20 @@ class Mobject:
 
     # Displaying
     def get_image(self, camera: Camera | None = None) -> Image.Image:
-        if camera is None:
-            camera = Camera()
-        camera.capture_mobject(self)
-        return camera.get_image()
+        """Draw this mobject and its submobjects using Cairo and return a PIL image.
+
+        Pass a ``camera`` to select the view, or omit it to create a default
+        :class:`.Camera`. To use a scene's current view, pass ``camera=scene.camera``.
+        """
+        from manim.renderer.cairo import CairoRenderer
+        from manim.renderer.cairo.camera import Camera
+
+        renderer = CairoRenderer(camera=Camera() if camera is None else camera)
+        try:
+            renderer.render_mobjects([self])
+            return renderer.get_image()
+        finally:
+            renderer.close()
 
     def show(self, camera: Camera | None = None) -> None:
         self.get_image(camera=camera).show()
