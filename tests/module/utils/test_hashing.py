@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import functools
 import gc
 import json
 import weakref
@@ -8,7 +9,7 @@ from zlib import crc32
 import numpy as np
 
 import manim.utils.hashing as hashing
-from manim import ImageMobject, Square
+from manim import ImageMobject, Square, tempconfig
 
 ALREADY_PROCESSED_PLACEHOLDER = hashing._Memoizer.ALREADY_PROCESSED_PLACEHOLDER
 _CACHE_IDENTITY = {
@@ -272,6 +273,48 @@ def test_play_hash_includes_mobject_pixels_but_not_camera_pixels():
     assert _play_hash(scene, camera, [], [mobject]) == original
 
 
+def test_reading_a_cached_property_does_not_change_the_key():
+    """A key must describe what is drawn, not whether anything has been drawn yet.
+
+    ``cached_property`` values only enter ``__dict__`` once something reads them, so
+    a run that skipped earlier plays would otherwise compute a different key than a
+    full render for the very same play.
+    """
+
+    class Derived:
+        def __init__(self, base: int) -> None:
+            self.base = base
+
+        @functools.cached_property
+        def doubled(self) -> int:
+            return self.base * 2
+
+    untouched = Derived(3)
+    read = Derived(3)
+    assert read.doubled == 6
+
+    assert hashing.get_json(untouched) == hashing.get_json(read)
+    # The state the value is derived from still participates in the key.
+    assert hashing.get_json(Derived(4)) != hashing.get_json(untouched)
+
+
+def test_opengl_camera_key_ignores_its_derived_view_matrices():
+    from manim.renderer.opengl.camera import OpenGLCamera
+
+    with tempconfig({"renderer": "opengl", "pixel_width": 64, "pixel_height": 32}):
+        untouched = OpenGLCamera()
+        drawn = OpenGLCamera()
+        # Rendering reads these; they are just inv(model_matrix) and its shader layout.
+        assert drawn.formatted_view_matrix is not None
+        assert drawn.unformatted_view_matrix is not None
+
+        assert hashing.get_json(untouched) == hashing.get_json(drawn)
+
+        moved = OpenGLCamera()
+        moved.model_matrix = moved.model_matrix * 2
+        assert hashing.get_json(moved) != hashing.get_json(untouched)
+
+
 def test_play_hash_keeps_distinct_mobjects_with_equal_python_hashes():
     class CollidingObject:
         def __init__(self, name: str) -> None:
@@ -483,3 +526,36 @@ def test_sibling_closures_are_not_collapsed_to_placeholder():
         assert entry["nonlocals"] == {"k": k}, (
             f"closure {k} collapsed: {entry['nonlocals']!r}"
         )
+
+
+def test_collected_names_do_not_keep_a_class_alive():
+    """Scenes may build classes per run, so the collection must not pin them."""
+
+    class Throwaway:
+        _hash_excluded_attributes = frozenset({"derived"})
+
+    assert hashing._derived_attribute_names(Throwaway) == frozenset({"derived"})
+
+    reference = weakref.ref(Throwaway)
+    del Throwaway
+    gc.collect()
+    assert reference() is None
+
+
+def test_switching_renderers_recollects_derived_attributes():
+    """``ConvertToOpenGL`` rebases classes, changing what their keys must ignore.
+
+    ``Indirect`` is not itself rebased, since its base is not one of the swapped
+    classes, but rebasing that base still changes its MRO.
+    """
+    with tempconfig({"renderer": "cairo"}):
+
+        class Indirect(Square):
+            pass
+
+        assert "triangulation" not in hashing._derived_attribute_names(Indirect)
+
+        with tempconfig({"renderer": "opengl"}):
+            assert "triangulation" in hashing._derived_attribute_names(Indirect)
+
+        assert "triangulation" not in hashing._derived_attribute_names(Indirect)
