@@ -23,9 +23,8 @@ class RendererCapabilities:
 class _AnimationRenderer(Protocol):
     """Draw frames and display them in a preview window at Manager's request.
 
-    Manager prepares animations, checks the cache, advances animation time, and
-    sends frames to the writer. The renderer prepares its drawing resources and
-    uses wall-clock time to pace its live preview.
+    Manager runs animations and sends frames to the writer or returns a requested
+    frame. The renderer draws the images and paces the live preview.
     """
 
     def _animation_cache_identity(self, scene: Scene) -> tuple[str, Any]: ...
