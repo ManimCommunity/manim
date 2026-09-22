@@ -192,24 +192,35 @@ Generating graphical control data
 
 A new graphical test initially fails because its control data does not exist.
 After carefully checking that the rendered result is correct, generate the
-control file with ``--set_test``:
+control file with ``--set_test``. For example, if you add a new test named
+``test_NewCircle`` to ``test_geometry.py``, run:
 
 .. code-block:: bash
 
-   uv run pytest tests/test_graphical_units/test_geometry.py::test_Circle --set_test -s
+   uv run pytest tests/test_graphical_units/test_geometry.py::test_NewCircle --set_test -s
 
-For the example above, this writes
-``tests/test_graphical_units/control_data/geometry/Circle.npz``. Review the
-generated frames before committing them. The frame extraction script converts
-the control data into PNG files for inspection:
+This writes ``tests/test_graphical_units/control_data/geometry/NewCircle.npz``.
+Review the generated frames before committing them. The frame extraction script
+converts the control data into PNG files for inspection:
 
 .. code-block:: bash
 
    uv run python scripts/extract_frames.py \
-       tests/test_graphical_units/control_data/geometry/Circle.npz output
+       tests/test_graphical_units/control_data/geometry/NewCircle.npz output
 
 The output directory will contain ``frame0.png``, ``frame1.png``, and so on.
 Commit the reviewed ``.npz`` file together with the test.
+
+When a graphical test fails against existing control data, rerun it with
+``--show_diff`` to compare the newly rendered frame with the expected frame:
+
+.. code-block:: bash
+
+   uv run pytest tests/test_graphical_units/test_geometry.py::test_Circle --show_diff
+
+The comparison highlights differing pixels, making it easier to tell whether
+the change is intentional or a regression. Inspect the difference before using
+``--set_test`` to replace existing control data.
 
 Adding a Video Comparison Test
 ------------------------------
