@@ -232,9 +232,10 @@ def test_nested_target_size_tracks_display_size_and_closes():
         view.stretch_to_fit_width(4).stretch_to_fit_height(2)
         primary_camera = MultiCamera([view])
         renderer = CairoRenderer(camera=primary_camera)
-        main_target = renderer._target
+        assert renderer._target is None
 
         renderer.update_frame(None, mobjects=[view])
+        main_target = renderer._target
         first_target = renderer._sub_targets[id(view)]
         assert first_target.settings.pixel_width == max(
             1,

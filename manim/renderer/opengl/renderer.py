@@ -5,6 +5,7 @@ import itertools as it
 import threading
 import time
 import typing
+import weakref
 from typing import TYPE_CHECKING, Any
 
 import moderngl
@@ -12,7 +13,7 @@ import numpy as np
 from moderngl import Framebuffer
 from PIL import Image
 
-from manim import config
+from manim import config, logger
 from manim.mobject.opengl.opengl_mobject import (
     OpenGLMobject,
 )
@@ -25,20 +26,20 @@ from manim.utils.exceptions import EndSceneEarlyException
 from ...constants import *
 from ...scene.scene_file_writer import SceneFileWriter
 from ..protocol import RendererCapabilities
-from .shader import Mesh, Shader
+from .shader import Mesh, Shader, shader_program_cache
 from .vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_fill,
     render_opengl_vectorized_mobject_stroke,
 )
+from .window_settings import _WindowSettings
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Callable, Iterable
 
     from manim._config.render_session import RenderSessionSpec
     from manim.animation.animation import Animation
     from manim.mobject.mobject import Mobject, _AnimationBuilder
     from manim.scene.scene import Scene
-    from manim.scene.scene_file_writer import _SceneFileWriterSettings
     from manim.typing import (
         FloatRGBA,
         RGBAPixelArray,
@@ -50,6 +51,9 @@ if TYPE_CHECKING:
 from .camera import OpenGLCamera
 
 __all__ = ["OpenGLRenderer"]
+
+# Remember the active Manim renderer on each thread so captures can restore it.
+_active_context = threading.local()
 
 
 class OpenGLRenderer:
@@ -117,83 +121,274 @@ class OpenGLRenderer:
         self.window: Window | None = None
         self.path_to_texture_id: dict[str, int] = {}
         self.background_color = config["background_color"]
+        self._context: moderngl.Context | None = None
+        self._frame_buffer_object: Framebuffer | None = None
+        self._context_thread: int | None = None
+        self._capturing_image = False
+        self._closed = False
+        self._retiring = False
+        self._resources = contextlib.ExitStack()
+        self._textures: list[moderngl.Texture] = []
+        self._previous_renderer: weakref.ReferenceType[OpenGLRenderer] | None = None
 
     def init_scene(
         self,
         scene: Scene,
         session_spec: RenderSessionSpec,
-        file_writer_settings: _SceneFileWriterSettings,
     ) -> None:
         """
-        Initializes the OpenGL rendering context and related resources
-        for the given scene.
+        Attach a scene and save its pixel dimensions and preview-window settings.
 
-        Set up:
-        - the file writer
-        - the background color
-        - the OpenGL context
-        - the window (if needed)
+        :meth:`open` uses these settings to create the OpenGL context and
+        framebuffer. The manager calls it before the scene's ``setup()`` method;
+        an explicit request for GPU resources, such as :attr:`context`, opens
+        them sooner.
 
         Parameters
         ----------
         scene : Scene
             The scene to be rendered
         """
+        self._ensure_not_closed()
+        if hasattr(self, "scene"):
+            raise RuntimeError("This renderer is already bound to a Scene.")
         self.partial_movie_files: list[str | None] = []
-        self.file_writer: SceneFileWriter = self._file_writer_class(
-            file_writer_settings,
-        )
         self.scene = scene
 
         self.background_color = config["background_color"]
-        if self.should_create_window(session_spec):
-            from .window import Window
-
-            self.window = Window(self)
-            self.context = self.window.ctx
-            self.frame_buffer_object = self.context.detect_framebuffer()
-        else:
-            # self.window = None
-            try:
-                self.context = moderngl.create_context(standalone=True)
-            except Exception:
-                self.context = moderngl.create_context(
-                    standalone=True,
-                    backend="egl",
-                )
-            self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
-            self.frame_buffer_object.use()
-        self._context_thread = threading.get_ident()
-        self._capturing_image = False
-        self.context.enable(moderngl.BLEND)
-        self.context.wireframe = config["enable_wireframe"]
-        self.context.blend_func = (
-            moderngl.SRC_ALPHA,
-            moderngl.ONE_MINUS_SRC_ALPHA,
-            moderngl.ONE,
-            moderngl.ONE,
+        self._pixel_size = (int(config.pixel_width), int(config.pixel_height))
+        self._wireframe = config.enable_wireframe
+        self._window_settings = (
+            _WindowSettings.from_config(config)
+            if self.should_create_window(session_spec)
+            else None
         )
 
-    def should_create_window(self, session_spec: RenderSessionSpec) -> bool:
-        """
-        Determine whether a window should be created for rendering
-        based on the current configuration.
+    def _ensure_not_closed(self) -> None:
+        if self._closed or self._retiring:
+            raise RuntimeError("The OpenGL renderer is closed or retiring.")
 
+    def open(self) -> None:
+        """Create or activate the scene's OpenGL context.
+
+        The first call creates the context, framebuffer, and preview window if
+        requested. Further calls activate the same context. Use and close these
+        resources on the thread that first opened them.
         """
+        self._ensure_not_closed()
+        if self._context is not None:
+            if isinstance(self._context.mglo, moderngl.InvalidObject):
+                raise RuntimeError("The OpenGL context was released externally.")
+            if self.window is not None and self.window._window.context is None:
+                raise RuntimeError("The OpenGL window was destroyed externally.")
+            if self._context_thread != threading.get_ident():
+                raise RuntimeError(
+                    "OpenGL resources must be used on their owning thread."
+                )
+            self._activate_context()
+            return
+        if not hasattr(self, "scene"):
+            raise RuntimeError("Bind an OpenGL scene before opening its resources.")
+        previous = getattr(_active_context, "renderer", None)
+        resources = contextlib.ExitStack()
+        try:
+            window = None
+            if self._window_settings is not None:
+                from .window import Window
+
+                window = Window(self, _settings=self._window_settings)
+                resources.callback(window.close)
+                # Closing the window also releases its context and default framebuffer.
+                context = window.ctx
+                frame = context.detect_framebuffer()
+            else:
+                try:
+                    context = moderngl.create_context(standalone=True)
+                except Exception:
+                    context = moderngl.create_context(standalone=True, backend="egl")
+                resources.callback(context.release)
+                frame = self.get_frame_buffer_object(context, 0, size=self._pixel_size)
+                for color in frame.color_attachments:
+                    resources.callback(color.release)
+                if frame.depth_attachment is not None:
+                    resources.callback(frame.depth_attachment.release)
+                resources.callback(frame.release)
+                frame.use()
+            context.enable(moderngl.BLEND)
+            context.wireframe = self._wireframe
+            context.blend_func = (
+                moderngl.SRC_ALPHA,
+                moderngl.ONE_MINUS_SRC_ALPHA,
+                moderngl.ONE,
+                moderngl.ONE,
+            )
+        except BaseException:
+            try:
+                resources.close()
+            except BaseException:
+                logger.exception("Failed to roll back OpenGL initialization")
+            try:
+                self._restore_renderer(previous)
+            except BaseException:
+                logger.exception("Failed to restore the previous OpenGL context")
+            raise
+        # Store the resources after initialization succeeds.
+        self.window = window
+        self._context = context
+        self._frame_buffer_object = frame
+        self._context_thread = threading.get_ident()
+        self._capturing_image = False
+        self._resources = resources.pop_all()
+        self._previous_renderer = previous
+        _active_context.renderer = weakref.ref(self)
+
+    def _activate_context(self) -> None:
+        if self.window is not None:
+            self.window._activate_context()
+        else:
+            assert self._context is not None
+            self._context.__enter__()
+        _active_context.renderer = weakref.ref(self)
+
+    @property
+    def context(self) -> moderngl.Context:
+        self.open()
+        assert self._context is not None
+        return self._context
+
+    @property
+    def frame_buffer_object(self) -> Framebuffer:
+        self.open()
+        assert self._frame_buffer_object is not None
+        return self._frame_buffer_object
+
+    @frame_buffer_object.setter
+    def frame_buffer_object(self, frame: Framebuffer) -> None:
+        self._ensure_not_closed()
+        self._frame_buffer_object = frame
+
+    def close(self) -> None:
+        """Release GPU resources and close the preview window.
+
+        Use :meth:`.Manager.close` for scene cleanup: it stops encoding jobs
+        before closing the renderer. To render another scene, create a new
+        renderer. :meth:`.Scene.get_image` can still draw ordinary mobjects with
+        a temporary context; GPU-backed meshes require their original context
+        to remain open.
+        """
+        if self._closed:
+            return
+        if self._capturing_image:
+            raise RuntimeError("Cannot close OpenGL resources during image capture.")
+        if self._context is not None and self._context_thread != threading.get_ident():
+            raise RuntimeError(
+                "OpenGL resources must be closed on their owning thread."
+            )
+        if self._context is None:
+            self._closed = True
+            return
+        current = getattr(_active_context, "renderer", None)
+        previous = (
+            self._previous_renderer
+            if current is not None and current() is self
+            else current
+        )
+        # Release all resources before propagating a cleanup error or interruption.
+        failures: list[BaseException] = []
+
+        def release(callback: Callable[[], Any]) -> None:
+            try:
+                callback()
+            except BaseException as error:
+                failures.append(error)
+
+        # Scene.interact may already have closed the window and released its GPU
+        # objects. Deleting them again could affect a different active context.
+        host_alive = (
+            self._context is not None
+            and not isinstance(self._context.mglo, moderngl.InvalidObject)
+            and (self.window is None or self.window._window.context is not None)
+        )
+        if self._context is not None and host_alive:
+            self._activate_context()
+        self._retiring = True
+        for name, program in list(shader_program_cache.items()):
+            if program.ctx is self._context:
+                del shader_program_cache[name]
+                if host_alive:
+                    release(program.release)
+        if host_alive:
+            for texture in reversed(self._textures):
+                release(texture.release)
+        self._textures.clear()
+        if host_alive:
+            release(self._resources.close)
+        else:
+            self._resources.pop_all()
+            if self.window is not None and self.window._window.context is not None:
+                release(self.window.close)
+        self.path_to_texture_id.clear()
+        self.pressed_keys.clear()
+        self._resources = contextlib.ExitStack()
+        host_still_alive = (
+            not isinstance(self._context.mglo, moderngl.InvalidObject)
+            if self.window is None
+            else self.window._window.context is not None
+        )
+        if failures and host_still_alive:
+            # Keep the context reachable so close() can retry. Closing it releases
+            # any remaining GPU objects; rendering stays disabled until then.
+            self._resources.callback(
+                self._context.release if self.window is None else self.window.close
+            )
+        else:
+            self._context = None
+            self._frame_buffer_object = None
+            self._context_thread = None
+            self.window = None
+            self._retiring = False
+            self._closed = True
+        _active_context.renderer = None
+        release(lambda: self._restore_renderer(previous))
+        if failures:
+            for secondary in failures[1:]:
+                logger.error("Additional OpenGL cleanup failure", exc_info=secondary)
+            raise failures[0]
+
+    @staticmethod
+    def _restore_renderer(
+        reference: weakref.ReferenceType[OpenGLRenderer] | None,
+    ) -> None:
+        prior = reference() if reference is not None else None
+        if (
+            prior is not None
+            and not prior._closed
+            and not prior._retiring
+            and prior._context is not None
+            and not isinstance(prior._context.mglo, moderngl.InvalidObject)
+            and (prior.window is None or prior.window._window.context is not None)
+        ):
+            prior.open()
+
+    @property
+    def file_writer(self) -> SceneFileWriter:
+        """Return the scene manager's file writer, creating it if needed."""
+        return self.scene._get_manager().file_writer
+
+    def should_create_window(self, session_spec: RenderSessionSpec) -> bool:
+        """Return whether the scene's saved settings request a live-preview window."""
         return session_spec.presentation.live_preview
 
     def get_pixel_shape(self) -> tuple[int, int] | None:
         """
-        Retrieve the pixel dimensions of the current frame buffer object (2D).
+        Return the pixel dimensions of the current framebuffer.
 
         Returns
         -------
-        width : int
-            The width of the frame buffer in pixels.
-        height : int
-            The height of the frame buffer in pixels.
+        tuple[int, int] | None
+            ``(width, height)`` in pixels, or ``None`` when no framebuffer is open.
         """
-        frame_buffer: Framebuffer | None = getattr(self, "frame_buffer_object", None)
+        frame_buffer = self._frame_buffer_object
         if frame_buffer is None:
             return None
         _, _, pixel_width, pixel_height = frame_buffer.viewport
@@ -214,6 +409,7 @@ class OpenGLRenderer:
         ValueError
             If the renderer's pixel shape is not available.
         """
+        self.open()
         pixel_shape = self.get_pixel_shape()
         if pixel_shape is None:
             msg = "Pixel shape is None, cannot refresh perspective uniforms."
@@ -253,6 +449,7 @@ class OpenGLRenderer:
         TypeError
             If a shader texture is not a moderngl.Uniform or moderngl.UniformBlock.
         """
+        self.open()
         if isinstance(mobject, OpenGLVMobject):
             if config["use_projection_fill_shaders"]:
                 render_opengl_vectorized_mobject_fill(self, mobject)
@@ -331,6 +528,7 @@ class OpenGLRenderer:
         int
             The OpenGL texture ID corresponding to the given path.
         """
+        self._ensure_not_closed()
         return (
             self.path_to_texture_id[path]
             if path in self.path_to_texture_id
@@ -375,6 +573,7 @@ class OpenGLRenderer:
         texture.filter = (moderngl.NEAREST, moderngl.NEAREST)
         texture.swizzle = swizzle
         texture.use(location=tid)
+        self._textures.append(texture)
         self.path_to_texture_id[image_path] = tid
         return tid
 
@@ -432,6 +631,7 @@ class OpenGLRenderer:
         **kwargs Any
             Additional keyword arguments to pass to the animation compilation.
         """
+        self.open()
         # TODO: Handle data locking / unlocking.
         self.animation_start_time = time.time()
         self.file_writer.begin_animation(
@@ -563,13 +763,49 @@ class OpenGLRenderer:
                 mesh.render()
 
     def _get_scene_image(self, scene: Scene) -> Image.Image:
-        """Capture on the context's owning thread without touching its live target."""
-        if threading.get_ident() != self._context_thread:
+        """Draw a snapshot separately from the live-preview framebuffer.
+
+        An existing context is used on its rendering thread. Otherwise, ordinary
+        mobjects are drawn with a temporary context and renderer.
+        """
+        if (
+            self._context_thread is not None
+            and threading.get_ident() != self._context_thread
+        ):
             raise RuntimeError(
                 "OpenGL scene images must be requested on the render thread."
             )
         if self._capturing_image:
             raise RuntimeError("Recursive OpenGL scene image capture is not supported.")
+        if self._context is None:
+            if scene.meshes:
+                raise RuntimeError(
+                    "GPU-backed meshes require a live OpenGL context for inspection."
+                )
+            temporary = OpenGLRenderer()
+            temporary.scene = scene
+            temporary.camera = self.camera
+            temporary._background_color = self._background_color.copy()
+            temporary._pixel_size = self._pixel_size
+            temporary._wireframe = self._wireframe
+            temporary._window_settings = None
+            self._capturing_image = True
+            try:
+                try:
+                    temporary._draw_scene(scene)
+                    image = temporary.get_image()
+                except BaseException:
+                    try:
+                        temporary.close()
+                    except BaseException:
+                        logger.exception(
+                            "Failed to close the temporary OpenGL image scope"
+                        )
+                    raise
+                temporary.close()
+                return image
+            finally:
+                self._capturing_image = False
         target = self.frame_buffer_object
         bound = self.context.fbo
         viewport = self.context.viewport
@@ -671,10 +907,14 @@ class OpenGLRenderer:
     def save_static_frame_data(
         self, scene: Scene, static_mobjects: Iterable[Mobject]
     ) -> None:
-        pass
+        self._ensure_not_closed()
 
     def get_frame_buffer_object(
-        self, context: moderngl.Context, samples: int = 0
+        self,
+        context: moderngl.Context,
+        samples: int = 0,
+        *,
+        size: tuple[int, int] | None = None,
     ) -> Framebuffer:
         """
         Creates and returns a framebuffer object configured with color
@@ -706,20 +946,29 @@ class OpenGLRenderer:
         .. [1] Wikipedia, "Multisample anti-aliasing",
                https://en.wikipedia.org/wiki/Multisample_anti-aliasing
         """
-        pixel_width = config["pixel_width"]
-        pixel_height = config["pixel_height"]
-        num_channels = 4
-        return context.framebuffer(
-            color_attachments=context.texture(
-                (pixel_width, pixel_height),
-                components=num_channels,
-                samples=samples,
-            ),
-            depth_attachment=context.depth_renderbuffer(
-                (pixel_width, pixel_height),
-                samples=samples,
-            ),
+        pixel_width, pixel_height = (
+            (config["pixel_width"], config["pixel_height"]) if size is None else size
         )
+        num_channels = 4
+        resources = contextlib.ExitStack()
+        try:
+            color = context.texture(
+                (pixel_width, pixel_height), components=num_channels, samples=samples
+            )
+            resources.callback(color.release)
+            depth = context.depth_renderbuffer(
+                (pixel_width, pixel_height), samples=samples
+            )
+            resources.callback(depth.release)
+            frame = context.framebuffer(color_attachments=color, depth_attachment=depth)
+        except BaseException:
+            try:
+                resources.close()
+            except BaseException:
+                logger.exception("Failed to roll back OpenGL framebuffer allocation")
+            raise
+        resources.pop_all()
+        return frame
 
     def get_raw_frame_buffer_object_data(self, dtype: str = "f1") -> bytes:
         """
