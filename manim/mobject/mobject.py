@@ -1275,7 +1275,7 @@ class Mobject(Positionable):
     ) -> Self:
         self.scale(factor, about_point=about_point, about_edge=about_edge, **kwargs)
         for submob in self.submobjects:
-            submob.scale(1.0 / factor, **kwargs)
+            submob.scale(1.0 / factor)
         return self
 
     def put_start_and_end_on(self, start: Point3DLike, end: Point3DLike) -> Self:

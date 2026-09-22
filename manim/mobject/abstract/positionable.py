@@ -1639,7 +1639,7 @@ class Positionable:
         point_or_mobject
             The point or mobject.
         direction
-            The direction of the anchor point.
+            The direction.
             Defaults to ``RIGHT``
         aligned_edge
             The edge to align.
@@ -1826,20 +1826,13 @@ class Positionable:
         """
         raise NotImplementedError
 
-    def space_out_submobjects(
-        self,
-        factor: float = 1.5,
-        *,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = ORIGIN,
-        **kwargs: Any,
-    ) -> Self:
-        """Spaces out the submobjects.
+    def space_out_submobjects(self, factor: float = 1.5) -> Self:
+        """Scales the distance between the submobjects of the object.
 
         Parameters
         ----------
         factor
-            The spacing factor.
+            The scaling factor.
             Defaults to ``1.5``
         about_point
             About which point to scale.
