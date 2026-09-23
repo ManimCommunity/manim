@@ -2825,13 +2825,12 @@ class CurvesAsSubmobjects(VGroup):
         ------
         :exc:`ValueError`
             If ``alpha`` is not between 0 and 1.
-        :exc:`Exception`
-            If the :class:`CurvesAsSubmobjects` has no submobjects, or no submobject has points.
+        :exc:`ValueError`
+            If there is no submobject with points from which to compute a position.
         """
         if alpha < 0 or alpha > 1:
             raise ValueError(f"Alpha {alpha} not between 0 and 1.")
 
-        self._throw_error_if_no_submobjects()
         submobjs_with_pts = self._get_submobjects_with_points()
 
         if alpha == 1:
@@ -2853,21 +2852,13 @@ class CurvesAsSubmobjects(VGroup):
 
             current_length += part_length
 
-    def _throw_error_if_no_submobjects(self):
-        if len(self.submobjects) == 0:
-            caller_name = sys._getframe(1).f_code.co_name
-            raise Exception(
-                f"Cannot call CurvesAsSubmobjects. {caller_name} for a CurvesAsSubmobject with no submobjects"
-            )
-
     def _get_submobjects_with_points(self):
         submobjs_with_pts = tuple(
             part for part in self.submobjects if len(part.points) > 0
         )
         if len(submobjs_with_pts) == 0:
-            caller_name = sys._getframe(1).f_code.co_name
-            raise Exception(
-                f"Cannot call CurvesAsSubmobjects. {caller_name} for a CurvesAsSubmobject whose submobjects have no points"
+            raise ValueError(
+                "Cannot compute a point because there are no submobjects with points."
             )
         return submobjs_with_pts
 

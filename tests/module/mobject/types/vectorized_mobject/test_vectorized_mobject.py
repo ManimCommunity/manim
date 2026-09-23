@@ -165,11 +165,11 @@ def test_curves_as_submobjects_point_from_proportion():
 
     with pytest.raises(ValueError, match="between 0 and 1"):
         obj.point_from_proportion(2)
-    with pytest.raises(Exception, match="with no submobjects"):
+    with pytest.raises(ValueError, match="no submobjects with points"):
         obj.point_from_proportion(0)
 
     obj.add(VMobject())
-    with pytest.raises(Exception, match="have no points"):
+    with pytest.raises(ValueError, match="no submobjects with points"):
         obj.point_from_proportion(0)
 
     # submobject[0] is a line of length 4
