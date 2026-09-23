@@ -324,9 +324,6 @@ class Positionable:
                     self.play(circle.animate.apply_points_function(function))
         """
         about_point = self._get_about_point(about_point, about_edge)
-        # TODO: Do we really need this?
-        # Make a copy to prevent mutation of the original array if about_point is a view
-        about_point = np.array(about_point, copy=True)
 
         def apply(mob: Positionable) -> None:
             mob.points -= about_point
@@ -659,13 +656,8 @@ class Positionable:
 
                     self.add(VGroup(group1, group2, group3).arrange(RIGHT, buff=1))
         """
-        matrix = rotation_matrix(angle, axis)
-
-        def apply(points: Point3D_Array) -> Point3D_Array:
-            return points.dot(matrix.T)
-
-        return self.apply_points_function(
-            apply,
+        return self.apply_matrix(
+            rotation_matrix(angle, axis),
             about_point=about_point,
             about_edge=about_edge,
             **kwargs,
@@ -715,8 +707,6 @@ class Positionable:
                     )
                     self.play(Star().animate.apply_matrix(matrix))
         """
-        about_point = self._get_about_point(about_point, about_edge)
-        matrix = np.asarray(matrix)
         if matrix.shape == (3, 3):
             full_matrix = matrix
         else:
@@ -738,13 +728,14 @@ class Positionable:
         about_point: Point3DLike | None,
         about_edge: Vector3DLike | None,
     ) -> Point3DLike:
-        if about_point is None:
-            if about_edge is None:
-                return ORIGIN.copy()
-            else:
-                return self.get_anchor(about_edge)
+        if about_point is not None:
+            # TODO: Do we really need this?
+            # Make a copy to prevent mutation of the original array if about_point is a view
+            return np.asarray(about_point, copy=True)
+        elif about_edge is not None:
+            return self.get_anchor(about_edge)
         else:
-            return about_point
+            return ORIGIN.copy()
 
     # =========
     # endregion
