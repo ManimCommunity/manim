@@ -493,7 +493,7 @@ class VMobject(Mobject):
 
     def scale(
         self,
-        factor: float,
+        factor: float | Vector3DLike,
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = ORIGIN,
@@ -551,14 +551,15 @@ class VMobject(Mobject):
 
         """
         if scale_stroke:
+            width_factor = factor if isinstance(factor, (float, int)) else factor[0]
             for mob in self.get_family():
                 if isinstance(mob, VMobject):
                     mob.set_stroke(
-                        width=abs(factor) * mob.get_stroke_width(),
+                        width=abs(width_factor) * mob.get_stroke_width(),
                         family=False,
                     )
                     mob.set_stroke(
-                        width=abs(factor) * mob.get_stroke_width(background=True),
+                        width=abs(width_factor) * mob.get_stroke_width(background=True),
                         background=True,
                         family=False,
                     )

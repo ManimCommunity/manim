@@ -609,7 +609,7 @@ class Arrow(Line):
 
     def scale(
         self,
-        factor: float,
+        factor: float | Vector3DLike,
         *,
         scale_tips: bool = False,
         **kwargs: Any,

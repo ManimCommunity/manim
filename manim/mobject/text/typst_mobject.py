@@ -299,7 +299,7 @@ class Typst(SVGMobject):
 
     def scale(
         self,
-        factor: float,
+        factor: float | Vector3DLike,
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = ORIGIN,

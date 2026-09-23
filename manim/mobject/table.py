@@ -1000,7 +1000,7 @@ class Table(VGroup):
 
     def scale(
         self,
-        factor: float,
+        factor: float | Vector3DLike,
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = ORIGIN,
@@ -1009,8 +1009,8 @@ class Table(VGroup):
     ) -> Self:
         # h_buff and v_buff must be adjusted so that Table.get_cell
         # can construct an accurate polygon for a cell.
-        self.h_buff *= factor
-        self.v_buff *= factor
+        self.h_buff *= factor if isinstance(factor, (float, int)) else factor[0]
+        self.v_buff *= factor if isinstance(factor, (float, int)) else factor[1]
         super().scale(
             factor,
             about_point=about_point,

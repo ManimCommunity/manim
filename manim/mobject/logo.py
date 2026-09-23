@@ -186,7 +186,7 @@ class ManimBanner(VGroup):
 
     def scale(
         self,
-        factor: float,
+        factor: float | Vector3DLike,
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = cst.ORIGIN,
@@ -205,7 +205,7 @@ class ManimBanner(VGroup):
         :class:`~.ManimBanner`
             The scaled banner.
         """
-        self.scale_factor *= factor
+        self.scale_factor *= factor if isinstance(factor, (float, int)) else factor[0]
         # Note: self.anim is only added to self after expand()
         if self.anim not in self.submobjects:
             self.anim.scale(

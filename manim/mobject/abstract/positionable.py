@@ -485,7 +485,7 @@ class Positionable:
 
     def scale(
         self,
-        factor: float,
+        factor: float | Vector3DLike,
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = ORIGIN,
@@ -528,6 +528,7 @@ class Positionable:
                     vgroup = VGroup(f1, f2, f3, f4).arrange(6 * RIGHT)
                     self.add(vgroup)
         """
+        factor = np.asarray(factor)
 
         def apply(points: Point3D_Array) -> Point3D_Array:
             return factor * points
@@ -843,40 +844,6 @@ class Positionable:
         vector = position - source
         return self.translate(vector, **kwargs)
 
-    def match_anchor(
-        self,
-        other: Positionable,
-        direction: Vector3DLike = ORIGIN,
-        **kwargs: Any,
-    ) -> Self:
-        """Translates the object so that the anchor matches the corresponding anchor of the other object.
-
-        Parameters
-        ----------
-        other
-            The other object.
-        direction
-            The direction of the anchor point.
-            Defaults to ``ORIGIN``, meaning the object's center
-
-        Returns
-        -------
-        Self
-            The object itself.
-
-        Example
-        -------
-        .. manim:: MatchAnchorExample
-
-            class MatchAnchorExample(Scene):
-                def construct(self) -> None:
-                    triangle = Triangle(radius=3)
-                    square = Square().to_corner(DL)
-                    self.add(triangle, Dot(triangle.get_anchor(DR)))
-                    self.play(square.animate.match_anchor(triangle, DR))
-        """
-        return self.set_anchor(other.get_anchor(direction), direction, **kwargs)
-
     def get_center(self) -> Point3D:
         """Returns the center position of the object.
 
@@ -937,32 +904,6 @@ class Positionable:
         """
         return self.set_anchor(position, ORIGIN, **kwargs)
 
-    def match_center(self, other: Positionable, **kwargs: Any) -> Self:
-        """Translates the object so that its center position matches the center of the other object.
-
-        Parameters
-        ----------
-        other
-            The other object.
-
-        Returns
-        -------
-        Self
-            The object itself.
-
-        Example
-        -------
-        .. manim:: MatchCenterExample
-
-            class MatchCenterExample(Scene):
-                def construct(self) -> None:
-                    circle = Circle()
-                    square = Square().to_corner(DR).shift(3 * LEFT)
-                    self.add(square)
-                    self.play(circle.animate.match_center(square))
-        """
-        return self.set_center(other.get_center(), **kwargs)
-
     def center(self, **kwargs: Any) -> Self:
         """Translates the object so that its center position is at ``ORIGIN``.
 
@@ -1016,21 +957,6 @@ class Positionable:
         """
         return self.set_anchor(position, UP, **kwargs)
 
-    def match_top(self, other: Positionable, **kwargs: Any) -> Self:
-        """Translates the object so that its top position matches the top position of the other object.
-
-        Parameters
-        ----------
-        other
-            The other object.
-
-        Returns
-        -------
-        Self
-            The object itself.
-        """
-        return self.set_top(other.get_top(), **kwargs)
-
     def get_bottom(self) -> Point3D:
         """Returns the bottom position of the object.
 
@@ -1055,21 +981,6 @@ class Positionable:
             The object itself.
         """
         return self.set_anchor(position, DOWN, **kwargs)
-
-    def match_bottom(self, other: Positionable, **kwargs: Any) -> Self:
-        """Translates the object so that its bottom position matches the bottom position of the other object.
-
-        Parameters
-        ----------
-        other
-            The other object.
-
-        Returns
-        -------
-        Self
-            The object itself.
-        """
-        return self.set_bottom(other.get_bottom(), **kwargs)
 
     def get_right(self) -> Point3D:
         """Returns the right position of the object.
@@ -1096,21 +1007,6 @@ class Positionable:
         """
         return self.set_anchor(position, RIGHT, **kwargs)
 
-    def match_right(self, other: Positionable, **kwargs: Any) -> Self:
-        """Translates the object so that its right position matches the right position of the other object.
-
-        Parameters
-        ----------
-        other
-            The other object.
-
-        Returns
-        -------
-        Self
-            The object itself.
-        """
-        return self.set_right(other.get_right(), **kwargs)
-
     def get_left(self) -> Point3D:
         """Returns the left position of the object.
 
@@ -1135,21 +1031,6 @@ class Positionable:
             The object itself.
         """
         return self.set_anchor(position, LEFT, **kwargs)
-
-    def match_left(self, other: Positionable, **kwargs: Any) -> Self:
-        """Translates the object so that its left position matches the left position of the other object.
-
-        Parameters
-        ----------
-        other
-            The other object.
-
-        Returns
-        -------
-        Self
-            The object itself.
-        """
-        return self.set_left(other.get_left(), **kwargs)
 
     def get_zenith(self) -> Point3D:
         """Returns the zenith position of the object.
@@ -1176,21 +1057,6 @@ class Positionable:
         """
         return self.set_anchor(position, OUT, **kwargs)
 
-    def match_zenith(self, other: Positionable, **kwargs: Any) -> Self:
-        """Translates the object so that its zenith position matches the zenith position of the other object.
-
-        Parameters
-        ----------
-        other
-            The other object.
-
-        Returns
-        -------
-        Self
-            The object itself.
-        """
-        return self.set_zenith(other.get_zenith(), **kwargs)
-
     def get_nadir(self) -> Point3D:
         """Returns the nadir position of the object.
 
@@ -1215,21 +1081,6 @@ class Positionable:
             The object itself.
         """
         return self.set_anchor(position, IN, **kwargs)
-
-    def match_nadir(self, other: Positionable, **kwargs: Any) -> Self:
-        """Translates the object so that its nadir position matches the nadir position of the other object.
-
-        Parameters
-        ----------
-        other
-            The other object.
-
-        Returns
-        -------
-        Self
-            The object itself.
-        """
-        return self.set_nadir(other.get_nadir(), **kwargs)
 
     def get_coordinate(self, dim: int, direction: Vector3DLike = ORIGIN) -> float:
         """Returns the ``dim``th coordinate at one of the object's anchor points.
@@ -1289,38 +1140,6 @@ class Positionable:
         vector[dim] = value - source
         return self.translate(vector, **kwargs)
 
-    def match_coordinate(
-        self,
-        other: Positionable,
-        dim: int,
-        direction: Vector3DLike = ORIGIN,
-        **kwargs: Any,
-    ) -> Self:
-        """Translates the object so that the ``dim``th coordinate at the specified anchor point
-        matches the ``dim``th coordinate at the corresponding anchor point of the other object.
-
-        Parameters
-        ----------
-        other
-            The other object.
-        dim
-            The dimension of the coordinate.
-        direction
-            The direction of the anchor point.
-            Defaults to ``ORIGIN``, meaning the object's center
-
-        Returns
-        -------
-        Self
-            The object itself.
-        """
-        return self.set_coordinate(
-            other.get_coordinate(dim, direction),
-            dim,
-            direction,
-            **kwargs,
-        )
-
     def get_x(self, direction: Vector3DLike = ORIGIN) -> float:
         """Returns the x coordinate at one of the object's anchor points.
 
@@ -1358,30 +1177,6 @@ class Positionable:
         """
         return self.set_coordinate(value, 0, direction, **kwargs)
 
-    def match_x(
-        self,
-        other: Positionable,
-        direction: Vector3DLike = ORIGIN,
-        **kwargs: Any,
-    ) -> Self:
-        """Translates the object so that its x coordinate at the specified anchor point
-        matches the x coordinate of the corresponding anchor point of the other object.
-
-        Parameters
-        ----------
-        other
-            The other object.
-        direction
-            The direction of the anchor point.
-            Defaults to ``ORIGIN``, meaning the object's center
-
-        Returns
-        -------
-        Self
-            The object itself.
-        """
-        return self.set_x(other.get_x(direction), direction, **kwargs)
-
     def get_y(self, direction: Vector3DLike = ORIGIN) -> float:
         """Returns the y coordinate at one of the object's anchor points.
 
@@ -1418,30 +1213,6 @@ class Positionable:
             The object itself.
         """
         return self.set_coordinate(value, 1, direction, **kwargs)
-
-    def match_y(
-        self,
-        other: Positionable,
-        direction: Vector3DLike = ORIGIN,
-        **kwargs: Any,
-    ) -> Self:
-        """Translates the object so that its y coordinate at the specified anchor point
-        matches the y coordinate at the corresponding anchor point of the other object.
-
-        Parameters
-        ----------
-        other
-            The other object.
-        direction
-            The direction of the anchor point.
-            Defaults to ``ORIGIN``, meaning the object's center
-
-        Returns
-        -------
-        Self
-            The object itself.
-        """
-        return self.set_y(other.get_y(direction), direction, **kwargs)
 
     def get_z(self, direction: Vector3DLike = ORIGIN) -> float:
         """Returns the z coordinate at one of the object's anchor points.
@@ -1482,30 +1253,6 @@ class Positionable:
             The object itself.
         """
         return self.set_coordinate(value, 2, direction, **kwargs)
-
-    def match_z(
-        self,
-        other: Positionable,
-        direction: Vector3DLike = ORIGIN,
-        **kwargs: Any,
-    ) -> Self:
-        """Translates the object so that its z coordinate at the specified anchor point
-        matches the z coordinate at the corresponding anchor point of the other object.
-
-        Parameters
-        ----------
-        other
-            The other object.
-        direction
-            The direction of the anchor point.
-            Defaults to ``ORIGIN``, meaning the object's center
-
-        Returns
-        -------
-        Self
-            The object itself.
-        """
-        return self.set_z(other.get_z(direction), direction, **kwargs)
 
     def align_on_border(
         self,
@@ -2069,395 +1816,6 @@ class Positionable:
             return 0.0
         return np.ptp(all_points[:, dim])  # type: ignore[no-any-return]
 
-    def set_dim_size(
-        self,
-        size: float,
-        dim: int,
-        *,
-        stretch: bool = False,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = ORIGIN,
-        **kwargs: Any,
-    ) -> Self:
-        """Resizes the object so that its size along the specified dimension is ``size``.
-
-        Parameters
-        ----------
-        size
-            The size.
-        dim
-            The dimension.
-        stretch
-            Whether to stretch (``True``) or scale (``False``).
-            Defaults to ``False``
-        about_point
-            About which point to resize.
-            Defaults to ``None``
-        about_edge
-            About which edge to resize.
-            Defaults to ``ORIGIN``, meaning the object's center
-
-        Returns
-        -------
-        Self
-            The object itself.
-
-        Example
-        -------
-        .. manim:: SetDimSizeExample
-
-            class SetDimSizeExample(Scene):
-                def construct(self) -> None:
-                    rectangle = Rectangle()
-                    self.play(rectangle.animate.set_dim_size(2, dim=0))
-                    self.play(rectangle.animate.set_dim_size(4, dim=1, stretch=True))
-        """
-        source = self.get_dim_size(dim)
-        if source == 0:
-            return self
-        factor = size / source
-        if stretch:
-            return self.stretch(
-                factor,
-                dim,
-                about_point=about_point,
-                about_edge=about_edge,
-                **kwargs,
-            )
-        else:
-            return self.scale(
-                factor,
-                about_point=about_point,
-                about_edge=about_edge,
-                **kwargs,
-            )
-
-    def match_dim_size(
-        self,
-        other: Positionable,
-        dim: int,
-        *,
-        stretch: bool = False,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = ORIGIN,
-        **kwargs: Any,
-    ) -> Self:
-        """Resizes the object so that its size along a dimension matches the corresponding size of the other object.
-
-        Parameters
-        ----------
-        other
-            The other object.
-        dim
-            The dimension.
-        stretch
-            Whether to stretch (``True``) or scale (``False``).
-            Defaults to ``False``
-        about_point
-            About which point to set the dim size.
-            Defaults to ``None``
-        about_edge
-            About which edge to set the dim size.
-            Defaults to ``ORIGIN``, meaning the object's center
-
-        Returns
-        -------
-        Self
-            The object itself.
-        """
-        return self.set_dim_size(
-            other.get_dim_size(dim),
-            dim,
-            stretch=stretch,
-            about_point=about_point,
-            about_edge=about_edge,
-            **kwargs,
-        )
-
-    def get_width(self) -> float:
-        """Returns the width of the object.
-
-        Returns
-        -------
-        float
-            The width.
-        """
-        return self.get_dim_size(0)
-
-    def set_width(
-        self,
-        size: float,
-        *,
-        stretch: bool = False,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = ORIGIN,
-        **kwargs: Any,
-    ) -> Self:
-        """Resizes the object so that its width is ``size``.
-
-        Parameters
-        ----------
-        size
-            The size.
-        stretch
-            Whether to stretch (``True``) or scale (``False``).
-            Defaults to ``False``
-        about_point
-            About which point to set the width.
-            Defaults to ``None``
-        about_edge
-            About which edge to set the width.
-            Defaults to ``ORIGIN``, meaning the object's center
-
-        Returns
-        -------
-        Self
-            The object itself.
-
-        Example
-        -------
-        .. manim:: SetWidthExample
-
-            class SetWidthExample(Scene):
-                def construct(self) -> None:
-                    rectangle = Rectangle().set_fill(opacity=1)
-
-                    self.play(rectangle.animate.set_width(2))
-                    self.play(rectangle.animate.set_width(5, stretch=True, about_edge=LEFT))
-        """
-        return self.set_dim_size(
-            size,
-            0,
-            stretch=stretch,
-            about_point=about_point,
-            about_edge=about_edge,
-            **kwargs,
-        )
-
-    def match_width(
-        self,
-        other: Positionable,
-        *,
-        stretch: bool = False,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = ORIGIN,
-        **kwargs: Any,
-    ) -> Self:
-        """Resizes the object so that its width matches the width of the other object.
-
-        Parameters
-        ----------
-        other
-            The other object.
-        stretch
-            Whether to stretch (``True``) or scale (``False``).
-            Defaults to ``False``
-        about_point
-            About which point to set the width.
-            Defaults to ``None``
-        about_edge
-            About which edge to set the width.
-            Defaults to ``ORIGIN``, meaning the object's center
-
-        Returns
-        -------
-        Self
-            The object itself.
-        """
-        return self.set_width(
-            other.get_width(),
-            stretch=stretch,
-            about_point=about_point,
-            about_edge=about_edge,
-            **kwargs,
-        )
-
-    def get_height(self) -> float:
-        """Returns the height of the object.
-
-        Returns
-        -------
-        float
-            The height.
-        """
-        return self.get_dim_size(1)
-
-    def set_height(
-        self,
-        size: float,
-        *,
-        stretch: bool = False,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = ORIGIN,
-        **kwargs: Any,
-    ) -> Self:
-        """Resizes the object so that its height is ``size``.
-
-        Parameters
-        ----------
-        size
-            The size.
-        stretch
-            Whether to stretch (``True``) or scale (``False``).
-            Defaults to ``False``
-        about_point
-            About which point to set the height.
-            Defaults to ``None``
-        about_edge
-            About which edge to set the height.
-            Defaults to ``ORIGIN``, meaning the object's center
-
-        Returns
-        -------
-        Self
-            The object itself.
-
-        Example
-        -------
-        .. manim:: SetHeightExample
-
-            class SetHeightExample(Scene):
-                def construct(self) -> None:
-                    star = Star().set_fill(opacity=1)
-
-                    self.play(star.animate.set_height(6, stretch=True))
-                    self.play(star.animate.set_height(3, about_edge=UP))
-        """
-        return self.set_dim_size(
-            size,
-            1,
-            stretch=stretch,
-            about_point=about_point,
-            about_edge=about_edge,
-            **kwargs,
-        )
-
-    def match_height(
-        self,
-        other: Positionable,
-        *,
-        stretch: bool = False,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = ORIGIN,
-        **kwargs: Any,
-    ) -> Self:
-        """Resizes the object so that its height matches the height of the other object.
-
-        Parameters
-        ----------
-        other
-            The other object.
-        stretch
-            Whether to stretch (``True``) or scale (``False``).
-            Defaults to ``False``
-        about_point
-            About which point to set the height.
-            Defaults to ``None``
-        about_edge
-            About which edge to set the height.
-            Defaults to ``ORIGIN``, meaning the object's center
-
-        Returns
-        -------
-        Self
-            The object itself.
-        """
-        return self.set_height(
-            other.get_height(),
-            stretch=stretch,
-            about_point=about_point,
-            about_edge=about_edge,
-            **kwargs,
-        )
-
-    def get_depth(self) -> float:
-        """Returns the depth of the object.
-
-        Returns
-        -------
-        float
-            The depth.
-        """
-        return self.get_dim_size(2)
-
-    def set_depth(
-        self,
-        size: float,
-        stretch: bool = False,
-        *,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = ORIGIN,
-        **kwargs: Any,
-    ) -> Self:
-        """Resizes the object so that its depth is ``size``.
-
-        Parameters
-        ----------
-        size
-            The size.
-        stretch
-            Whether to stretch (``True``) or scale (``False``).
-            Defaults to ``False``
-        about_point
-            About which point to set the depth.
-            Defaults to ``None``
-        about_edge
-            About which edge to set the depth.
-            Defaults to ``ORIGIN``, meaning the object's center
-
-        Returns
-        -------
-        Self
-            The object itself.
-
-        """
-        return self.set_dim_size(
-            size,
-            2,
-            stretch=stretch,
-            about_point=about_point,
-            about_edge=about_edge,
-            **kwargs,
-        )
-
-    def match_depth(
-        self,
-        other: Positionable,
-        *,
-        stretch: bool = False,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = ORIGIN,
-        **kwargs: Any,
-    ) -> Self:
-        """Resizes the object so that its depth matches the depth of the other object.
-
-        Parameters
-        ----------
-        other
-            The other object.
-        stretch
-            Whether to stretch (``True``) or scale (``False``).
-            Defaults to ``False``
-        about_point
-            About which point to set the depth.
-            Defaults to ``None``
-        about_edge
-            About which edge to set the depth.
-            Defaults to ``ORIGIN``, meaning the object's center
-
-        Returns
-        -------
-        Self
-            The object itself.
-        """
-        return self.set_depth(
-            other.get_depth(),
-            stretch=stretch,
-            about_point=about_point,
-            about_edge=about_edge,
-            **kwargs,
-        )
-
     def scale_to_fit_dim(
         self,
         size: float,
@@ -2487,10 +1845,13 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_dim_size(
-            size,
-            dim,
-            stretch=False,
+        source = self.get_dim_size(dim)
+        if source == 0:
+            return self
+
+        factor = size / source
+        return self.scale(
+            factor,
             about_point=about_point,
             about_edge=about_edge,
             **kwargs,
@@ -2537,10 +1898,9 @@ class Positionable:
             >>> sq.height
             np.float64(5.0)
         """
-        return self.set_dim_size(
+        return self.scale_to_fit_dim(
             size,
             0,
-            stretch=False,
             about_point=about_point,
             about_edge=about_edge,
             **kwargs,
@@ -2572,10 +1932,9 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_dim_size(
+        return self.scale_to_fit_dim(
             size,
             1,
-            stretch=False,
             about_point=about_point,
             about_edge=about_edge,
             **kwargs,
@@ -2607,10 +1966,58 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_dim_size(
+        return self.scale_to_fit_dim(
             size,
             2,
-            stretch=False,
+            about_point=about_point,
+            about_edge=about_edge,
+            **kwargs,
+        )
+
+    def scale_to_fit_size(
+        self,
+        size: Vector3DLike,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
+        """Scales the object so that its size is at most ``size``.
+
+        Parameters
+        ----------
+        size
+            The size.
+        about_point
+            About which point to scale.
+            Defaults to ``None``
+        about_edge
+            About which edge to scale.
+            Defaults to ``ORIGIN``, meaning the object's center
+
+        Returns
+        -------
+        Self
+            The object itself.
+
+        Example
+        -------
+        .. manim:: ScaleToFitSizeExample
+
+            class ScaleToFitSizeExample(Scene):
+                def construct(self) -> None:
+                    square = Square(4)
+                    circle = Ellipse().scale(6)
+                    self.add_foreground_mobject(square)
+                    self.play(circle.animate.scale_to_fit_size(square.size))
+                    self.wait()
+        """
+        source = self.size
+        if (source == 0).all():
+            return self
+        factor = min(size[dim] / source[dim] for dim in range(3) if source[dim] != 0)
+        return self.scale(
+            factor,
             about_point=about_point,
             about_edge=about_edge,
             **kwargs,
@@ -2646,10 +2053,13 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_dim_size(
-            size,
+        source = self.get_dim_size(dim)
+        if source == 0:
+            return self
+        factor = size / source
+        return self.stretch(
+            factor,
             dim,
-            stretch=True,
             about_point=about_point,
             about_edge=about_edge,
             **kwargs,
@@ -2697,10 +2107,9 @@ class Positionable:
             >>> sq.height
             np.float64(2.0)
         """
-        return self.set_dim_size(
+        return self.stretch_to_fit_dim(
             size,
             0,
-            stretch=True,
             about_point=about_point,
             about_edge=about_edge,
             **kwargs,
@@ -2748,10 +2157,9 @@ class Positionable:
             >>> sq.width
             np.float64(2.0)
         """
-        return self.set_dim_size(
+        return self.stretch_to_fit_dim(
             size,
             1,
-            stretch=True,
             about_point=about_point,
             about_edge=about_edge,
             **kwargs,
@@ -2784,20 +2192,74 @@ class Positionable:
         Self
             The object itself.
         """
-        return self.set_dim_size(
+        return self.stretch_to_fit_dim(
             size,
             2,
-            stretch=True,
             about_point=about_point,
             about_edge=about_edge,
             **kwargs,
         )
 
-    # endregion
+    def stretch_to_fit_size(
+        self,
+        size: Vector3DLike,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
+        """Stretches the object so that its size is ``size``.
 
-    ##########################
-    ########## MISC ##########
-    ##########################
+        Parameters
+        ----------
+        size
+            The size.
+        about_point
+            About which point to stretch.
+            Defaults to ``None``
+        about_edge
+            About which edge to stretch.
+            Defaults to ``ORIGIN``, meaning the object's center
+
+        Returns
+        -------
+        Self
+            The object itself.
+
+        Example
+        -------
+        .. manim:: StretchToFitSizeExample
+
+            class StretchToFitSizeExample(Scene):
+                def construct(self) -> None:
+                    square = Square(4)
+                    circle = Ellipse().scale(6)
+                    self.add_foreground_mobject(square)
+                    self.play(circle.animate.stretch_to_fit_size(square.size))
+                    self.wait()
+        """
+        source = self.size
+        if (source == 0).all():
+            return self
+        factor = (
+            size[0] / source[0] if source[0] != 0 else 1,
+            size[1] / source[1] if source[1] != 0 else 1,
+            size[2] / source[2] if source[2] != 0 else 1,
+        )
+        return self.scale(
+            factor,
+            about_point=about_point,
+            about_edge=about_edge,
+            **kwargs,
+        )
+
+    # =========
+    # endregion
+    # =========
+
+    # ===========
+    # region MISC
+    # ===========
 
     def flip(
         self,
@@ -2874,8 +2336,8 @@ class Positionable:
         # if not self.has_points() and not mobject.submobjects:
         #    raise Warning("Attempting to replace mobject with no points")
         if stretch:
-            self.stretch_to_fit_width(other.get_width(), **kwargs)
-            self.stretch_to_fit_height(other.get_height(), **kwargs)
+            self.stretch_to_fit_width(other.width, **kwargs)
+            self.stretch_to_fit_height(other.height, **kwargs)
             # TODO: add self.stretch_to_fit_depth(depth=mobject.get_depth(), **kwargs)
         else:
             self.scale_to_fit_dim(
@@ -2939,9 +2401,11 @@ class Positionable:
         factor = (size + buff) / size
         return self.scale(factor, **kwargs)
 
-    #############################
-    ########## ALIASES ##########
-    #############################
+    # endregion
+
+    # ==============
+    # region ALIASES
+    # ==============
 
     # TODO: Only allow passing a single vector
     def shift(self, *vectors: Vector3DLike, **kwargs: Any) -> Self:
@@ -3084,11 +2548,9 @@ class Positionable:
         Self
             The object itself.
         """
-        if not isinstance(point_or_mobject, Positionable):
-            return self.set_anchor(point_or_mobject, aligned_edge, **kwargs)
-
-        else:
-            return self.match_anchor(point_or_mobject, aligned_edge, **kwargs)
+        if isinstance(point_or_mobject, Positionable):
+            point_or_mobject = point_or_mobject.get_anchor(aligned_edge)
+        return self.set_anchor(point_or_mobject, aligned_edge, **kwargs)
 
     def get_coord(self, dim: int, direction: Vector3DLike = ORIGIN) -> float:
         """Returns the ``dim``th coordinate at one of the object's anchor points.
@@ -3142,37 +2604,6 @@ class Positionable:
             The object itself.
         """
         return self.set_coordinate(value, dim, direction, **kwargs)
-
-    def match_coord(
-        self,
-        other: Positionable,
-        dim: int,
-        direction: Vector3DLike = ORIGIN,
-        **kwargs: Any,
-    ) -> Self:
-        """Translates the object so that the ``dim``th coordinate at the specified anchor point
-        matches the ``dim``th coordinate at the corresponding anchor point of the other object.
-
-        Note
-        ----
-        An alias for the :meth:`match_coordinate` method.
-
-        Parameters
-        ----------
-        other
-            The other object.
-        dim
-            The dimension of the coordinate.
-        direction
-            The direction of the anchor point.
-            Defaults to ``ORIGIN``, meaning the object's center
-
-        Returns
-        -------
-        Self
-            The object itself.
-        """
-        return self.match_coordinate(other, dim, direction, **kwargs)
 
     def to_corner(
         self,
@@ -3281,17 +2712,12 @@ class Positionable:
                     self.add(rect_copy, rect, decimal)
                     self.play(rect.animate.set(width=7))
                     self.wait()
-
-        See Also
-        --------
-        :meth:`get_width`
-        :meth:`set_width`
         """
-        return self.get_width()
+        return self.get_dim_size(0)
 
     @width.setter
     def width(self, value: float) -> None:
-        self.set_width(value)
+        self.scale_to_fit_width(value)
 
     @property
     def height(self) -> float:
@@ -3312,36 +2738,46 @@ class Positionable:
                     self.add(rect_copy, rect, decimal)
                     self.play(rect.animate.set(height=5))
                     self.wait()
-
-        See Also
-        --------
-        :meth:`get_height`
-        :meth:`set_height`
         """
-        return self.get_height()
+        return self.get_dim_size(1)
 
     @height.setter
     def height(self, value: float) -> None:
-        self.set_height(value)
+        self.scale_to_fit_height(value)
 
     @property
     def depth(self) -> float:
-        """The depth of the object.
-
-        See Also
-        --------
-        :meth:`get_depth`
-        :meth:`set_depth`
-        """
-        return self.get_depth()
+        """The depth of the object."""
+        return self.get_dim_size(2)
 
     @depth.setter
     def depth(self, value: float) -> None:
-        self.set_depth(value)
+        self.scale_to_fit_depth(value)
 
-    ################################
-    ########## DEPRECATED ##########
-    ################################
+    @property
+    def size(self) -> Vector3D:
+        """The size of the object.
+
+        Example
+        -------
+        .. manim:: SizeExample
+
+            class SizeExample(Scene):
+                def construct(self) -> None:
+                    square = Square()
+                    self.play(square.animate.set(size=(10, 0.25, 0)), run_time=3)
+        """
+        return np.array([self.width, self.height, self.depth])
+
+    @size.setter
+    def size(self, value: Vector3DLike) -> None:
+        self.stretch_to_fit_size(value)
+
+    # endregion
+
+    # =================
+    # region DEPRECATED
+    # =================
     dim: int = 3
 
     # @deprecated(replacement="apply_points_function")
@@ -3363,7 +2799,7 @@ class Positionable:
     # @deprecated(replacement="set_dim_size")
     def rescale_to_fit(
         self,
-        length: float,
+        size: float,
         dim: int,
         *,
         stretch: bool = False,
@@ -3371,14 +2807,22 @@ class Positionable:
         about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
-        return self.set_dim_size(
-            length,
-            dim,
-            stretch=stretch,
-            about_point=about_point,
-            about_edge=about_edge,
-            **kwargs,
-        )
+        if stretch:
+            return self.stretch_to_fit_dim(
+                size,
+                dim,
+                about_point=about_point,
+                about_edge=about_edge,
+                **kwargs,
+            )
+        else:
+            return self.scale_to_fit_dim(
+                size,
+                dim,
+                about_point=about_point,
+                about_edge=about_edge,
+                **kwargs,
+            )
 
     # @deprecated(replacement="stretch")
     def stretch_about_point(
@@ -3475,9 +2919,138 @@ class Positionable:
             **kwargs,
         )
 
-    ###############################
-    ########## UTILITIES ##########
-    ###############################
+    # @deprecated(replacement="(scale|stretch)_to_fit_dim(other.get_dim_size())")
+    def match_dim_size(
+        self,
+        other: Positionable,
+        dim: int,
+        *,
+        stretch: bool = False,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
+        if stretch:
+            return self.stretch_to_fit_dim(
+                other.get_dim_size(dim),
+                dim,
+                about_point=about_point,
+                about_edge=about_edge,
+                **kwargs,
+            )
+        else:
+            return self.scale_to_fit_dim(
+                other.get_dim_size(dim),
+                dim,
+                about_point=about_point,
+                about_edge=about_edge,
+                **kwargs,
+            )
+
+    # @deprecated(replacement="(scale|stretch)_to_fit_width(other.width)")
+    def match_width(
+        self,
+        other: Positionable,
+        *,
+        stretch: bool = False,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
+        return self.match_dim_size(
+            other,
+            0,
+            stretch=stretch,
+            about_point=about_point,
+            about_edge=about_edge,
+            **kwargs,
+        )
+
+    # @deprecated(replacement="(scale|stretch)_to_fit_height(other.height)")
+    def match_height(
+        self,
+        other: Positionable,
+        *,
+        stretch: bool = False,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
+        return self.match_dim_size(
+            other,
+            1,
+            stretch=stretch,
+            about_point=about_point,
+            about_edge=about_edge,
+            **kwargs,
+        )
+
+    # @deprecated(replacement="(scale|stretch)_to_fit_depth(other.depth)")
+    def match_depth(
+        self,
+        other: Positionable,
+        *,
+        stretch: bool = False,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
+        return self.match_dim_size(
+            other,
+            2,
+            stretch=stretch,
+            about_point=about_point,
+            about_edge=about_edge,
+            **kwargs,
+        )
+
+    # @deprecated(replacement="set_coordinate(other.get_coordinate())")
+    def match_coord(
+        self,
+        other: Positionable,
+        dim: int,
+        direction: Vector3DLike = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
+        return self.set_coordinate(
+            other.get_coordinate(dim, direction), dim, direction, **kwargs
+        )
+
+    # @deprecated(replacement="set_x(other.get_x())")
+    def match_x(
+        self,
+        other: Positionable,
+        direction: Vector3DLike = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
+        return self.set_x(other.get_x(direction), direction, **kwargs)
+
+    # @deprecated(replacement="set_y(other.get_y())")
+    def match_y(
+        self,
+        other: Positionable,
+        direction: Vector3DLike = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
+        return self.set_y(other.get_y(direction), direction, **kwargs)
+
+    # @deprecated(replacement="set_z(other.get_z())")
+    def match_z(
+        self,
+        other: Positionable,
+        direction: Vector3DLike = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
+        return self.set_z(other.get_z(direction), direction, **kwargs)
+
+    # =========
+    # endregion
+    # =========
+
+    # ================
+    # region UTILITIES
+    # ================
+
     def _get_extremum(self, values: np.ndarray, key: float) -> float:
         if len(values) == 0:
             return 0.0
@@ -3504,3 +3077,5 @@ class Positionable:
                     f"mobject{'' if count == 1 else 's'} with points."
                 )
             raise ValueError(message)
+
+    # endregion
