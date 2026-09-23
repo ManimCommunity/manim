@@ -532,4 +532,4 @@ def deprecated_params(
             redirect_params(kwargs, used)
         return func(*args, **kwargs)
 
-    return decorator(deprecate_params)  # type: ignore[return-value]
+    return decorator(deprecate_params, kwsyntax=True)  # type: ignore[return-value]
