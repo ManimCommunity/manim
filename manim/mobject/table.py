@@ -81,12 +81,12 @@ from ..animation.animation import Animation
 from ..animation.composition import AnimationGroup
 from ..animation.creation import Create, Write
 from ..animation.fading import FadeIn
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
+from ..mobject.types.vectorized_mobject import VGroup, VMobject, VMobjectT
 from ..utils.color import BLACK, PURE_YELLOW, ManimColor, ParsableManimColor
 from .utils import get_vectorized_mobject_class
 
 
-class Table(VGroup):
+class Table(VGroup[VMobjectT]):
     r"""A mobject that displays a table on the screen.
 
     Parameters
@@ -352,7 +352,7 @@ class Table(VGroup):
                 mob_table.insert(0, self.col_labels)
         return mob_table
 
-    def _add_horizontal_lines(self) -> Table:
+    def _add_horizontal_lines(self) -> Self:
         """Adds the horizontal lines to the table."""
         anchor_left = self.get_left()[0] - 0.5 * self.h_buff
         anchor_right = self.get_right()[0] + 0.5 * self.h_buff
@@ -386,7 +386,7 @@ class Table(VGroup):
         self.horizontal_lines = line_group
         return self
 
-    def _add_vertical_lines(self) -> Table:
+    def _add_vertical_lines(self) -> Self:
         """Adds the vertical lines to the table"""
         anchor_top = self.get_rows().get_top()[1] + 0.5 * self.v_buff
         anchor_bottom = self.get_rows().get_bottom()[1] - 0.5 * self.v_buff

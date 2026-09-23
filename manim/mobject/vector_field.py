@@ -27,7 +27,7 @@ from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
 from ..constants import OUT, RIGHT, UP, RendererType
 from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup
+from ..mobject.types.vectorized_mobject import VGroup, VMobjectT
 from ..mobject.utils import get_vectorized_mobject_class
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import (
@@ -40,7 +40,7 @@ from ..utils.color import (
     color_to_rgb,
     rgb_to_color,
 )
-from ..utils.rate_functions import ease_out_sine, linear
+from ..utils.rate_functions import RateFunction, ease_out_sine, linear
 from ..utils.simple_functions import sigmoid
 
 if TYPE_CHECKING:
@@ -55,7 +55,7 @@ if TYPE_CHECKING:
 DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
 
 
-class VectorField(VGroup):
+class VectorField(VGroup[VMobjectT]):
     """A vector field.
 
     Vector fields are based on a function defining a vector at every position.
@@ -90,7 +90,7 @@ class VectorField(VGroup):
         max_color_scheme_value: float = 2,
         colors: Sequence[ParsableManimColor] = DEFAULT_SCALAR_FIELD_COLORS,
         **kwargs,
-    ):
+    ) -> None:
         super().__init__(**kwargs)
         self.func = func
         if color is None:
@@ -130,9 +130,9 @@ class VectorField(VGroup):
 
     @staticmethod
     def shift_func(
-        func: Callable[[np.ndarray], np.ndarray],
-        shift_vector: np.ndarray,
-    ) -> Callable[[np.ndarray], np.ndarray]:
+        func: Callable[[Point3D], Vector3D],
+        shift_vector: Vector3D,
+    ) -> Callable[[Point3D], Vector3D]:
         """Shift a vector field function.
 
         Parameters
@@ -152,9 +152,9 @@ class VectorField(VGroup):
 
     @staticmethod
     def scale_func(
-        func: Callable[[np.ndarray], np.ndarray],
+        func: Callable[[Point3D], Vector3D],
         scalar: float,
-    ) -> Callable[[np.ndarray], np.ndarray]:
+    ) -> Callable[[Point3D], Vector3D]:
         """Scale a vector field function.
 
         Parameters
@@ -467,7 +467,7 @@ class VectorField(VGroup):
         return func
 
 
-class ArrowVectorField(VectorField):
+class ArrowVectorField(VectorField[Vector]):
     """A :class:`VectorField` represented by a set of change vectors.
 
     Vector fields are always based on a function defining the :class:`~.Vector` at every position.
@@ -552,9 +552,9 @@ class ArrowVectorField(VectorField):
 
     def __init__(
         self,
-        func: Callable[[np.ndarray], np.ndarray],
+        func: Callable[[Point3D], Vector3D],
         color: ParsableManimColor | None = None,
-        color_scheme: Callable[[np.ndarray], float] | None = None,
+        color_scheme: Callable[[Vector3D], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[ParsableManimColor] = DEFAULT_SCALAR_FIELD_COLORS,
@@ -620,7 +620,7 @@ class ArrowVectorField(VectorField):
         )
         self.set_opacity(self.opacity)
 
-    def get_vector(self, point: np.ndarray):
+    def get_vector(self, point: Point3D) -> Vector:
         """Creates a vector in the vector field.
 
         The created vector is based on the function of the vector field and is
@@ -646,7 +646,7 @@ class ArrowVectorField(VectorField):
         return vect
 
 
-class StreamLines(VectorField):
+class StreamLines(VectorField[VMobjectT]):
     """StreamLines represent the flow of a :class:`VectorField` using the trace of moving agents.
 
     Vector fields are always based on a function defining the vector at every position.
@@ -726,9 +726,9 @@ class StreamLines(VectorField):
 
     def __init__(
         self,
-        func: Callable[[np.ndarray], np.ndarray],
+        func: Callable[[Point3D], Vector3D],
         color: ParsableManimColor | None = None,
-        color_scheme: Callable[[np.ndarray], float] | None = None,
+        color_scheme: Callable[[Vector3D], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[ParsableManimColor] = DEFAULT_SCALAR_FIELD_COLORS,
@@ -927,7 +927,7 @@ class StreamLines(VectorField):
         warm_up: bool = True,
         flow_speed: float = 1,
         time_width: float = 0.3,
-        rate_func: Callable[[float], float] = linear,
+        rate_func: RateFunction = linear,
         line_animation_class: type[ShowPassingFlash] = ShowPassingFlash,
         **kwargs,
     ) -> Self:

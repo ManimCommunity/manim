@@ -674,7 +674,7 @@ class LinearTransformationScene(VectorScene):
             },
         }
 
-        self.ghost_vectors = VGroup()
+        self.ghost_vectors: VGroup[VGroup[Vector]] = VGroup()
 
         self.foreground_plane_kwargs: dict[str, Any] = {
             "x_range": np.array([-config["frame_width"], config["frame_width"], 1.0]),
@@ -809,7 +809,7 @@ class LinearTransformationScene(VectorScene):
         mobject.target = target_mobject
         self.add_special_mobjects(self.moving_mobjects, mobject)
 
-    def get_ghost_vectors(self) -> VGroup:
+    def get_ghost_vectors(self) -> VGroup[VGroup[Vector]]:
         """
         Returns all ghost vectors ever added to ``self``. Each element is a ``VGroup`` of
         two ghost vectors.

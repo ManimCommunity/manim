@@ -22,12 +22,12 @@ from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.mobject.types.vectorized_mobject import VGroup, VMobjectT
 from manim.typing import StrPath
 from manim.utils.color import BLACK, WHITE
 
 
-class Code(VMobject, metaclass=ConvertToOpenGL):
+class Code(VGroup[VMobjectT], metaclass=ConvertToOpenGL):
     """A highlighted source code listing.
 
     Examples
@@ -167,7 +167,7 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         "line_spacing": 0.5,
         "disable_ligatures": True,
     }
-    code: VMobject
+    code: VMobjectT
 
     def __init__(
         self,

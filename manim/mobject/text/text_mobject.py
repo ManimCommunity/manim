@@ -61,7 +61,7 @@ from collections.abc import Iterable, Iterator, Sequence
 from contextlib import contextmanager
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import Any, Self
 
 import manimpango
 import numpy as np
@@ -71,14 +71,9 @@ from manim import config, logger
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.svg.svg_mobject import SVGMobject
-from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject, VMobjectT
 from manim.typing import Point3D
 from manim.utils.color import ManimColor, ParsableManimColor, color_gradient
-
-if TYPE_CHECKING:
-    from typing import Self
-
-    from manim.typing import Point3D
 
 TEXT_MOB_SCALE_FACTOR = 0.05
 DEFAULT_LINE_SPACING_SCALE = 0.3
@@ -111,7 +106,7 @@ def remove_invisible_chars(mobject: VMobject) -> VMobject:
     return mobject_without_dots
 
 
-class Paragraph(VGroup):
+class Paragraph(VGroup[VMobjectT]):
     r"""Display a paragraph of text.
 
     For a given :class:`.Paragraph` ``par``, the attribute ``par.chars`` is a
@@ -216,7 +211,7 @@ class Paragraph(VGroup):
                 char_index_counter += 1
         return chars
 
-    def _set_all_lines_alignments(self, alignment: str) -> Paragraph:
+    def _set_all_lines_alignments(self, alignment: str) -> Self:
         """Function to set all line's alignment to a specific value.
 
         Parameters
@@ -228,7 +223,7 @@ class Paragraph(VGroup):
             self._change_alignment_for_a_line(alignment, line_no)
         return self
 
-    def _set_line_alignment(self, alignment: str, line_no: int) -> Paragraph:
+    def _set_line_alignment(self, alignment: str, line_no: int) -> Self:
         """Function to set one line's alignment to a specific value.
 
         Parameters
@@ -241,7 +236,7 @@ class Paragraph(VGroup):
         self._change_alignment_for_a_line(alignment, line_no)
         return self
 
-    def _set_all_lines_to_initial_positions(self) -> Paragraph:
+    def _set_all_lines_to_initial_positions(self) -> Self:
         """Set all lines to their initial positions."""
         self.lines_alignments = [None] * len(self.lines_chars)
         for line_no in range(len(self.lines_chars)):
@@ -250,7 +245,7 @@ class Paragraph(VGroup):
             )
         return self
 
-    def _set_line_to_initial_position(self, line_no: int) -> Paragraph:
+    def _set_line_to_initial_position(self, line_no: int) -> Self:
         """Function to set one line to initial positions.
 
         Parameters
