@@ -154,6 +154,9 @@ def list_difference_update(
     """Returns a list containing all the elements of ``l1`` which are not present
     in ``l2``.
 
+    An optional key function can be provided to specify which elements
+    should be considered equal.
+
     Parameters
     ----------
     l1
@@ -162,7 +165,7 @@ def list_difference_update(
         The second iterable.
     key
         A key function which provides a value used to determine element equality. The
-        default value of ``None`` means that the elements' own hash values will be used.
+        default value of ``None`` means that regular hashable equality will be used.
 
     Examples
     --------
@@ -204,6 +207,9 @@ def list_update(
     """List equivalent of ``set.update()``. Any elements in ``l1`` that are also in
     ``l2`` are removed from ``l1``, and then ``l2`` is concatenated to the end of ``l1``.
 
+    An optional key function can be provided to specify which elements
+    should be considered equal.
+
     Parameters
     ----------
     l1
@@ -212,7 +218,7 @@ def list_update(
         The second iterable.
     key
         A key function which provides a value used to determine element equality. The
-        default value of ``None`` means that the elements' own hash values will be used.
+        default value of ``None`` means that regular hashable equality will be used.
 
     Examples
     --------
