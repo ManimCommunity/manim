@@ -407,10 +407,10 @@ class VectorField(VGroup):
             raise ValueError(
                 "There is no point in generating an image if the vector field uses a single color.",
             )
-        ph = int(config["pixel_height"] / sampling_rate)
-        pw = int(config["pixel_width"] / sampling_rate)
-        fw = config["frame_width"]
-        fh = config["frame_height"]
+        ph = int(config.pixel_height / sampling_rate)
+        pw = int(config.pixel_width / sampling_rate)
+        fw = config.frame_width
+        fh = config.frame_height
         points_array = np.zeros((ph, pw, 3))
         x_array = np.linspace(-fw / 2, fw / 2, pw)
         y_array = np.linspace(fh / 2, -fh / 2, ph)
@@ -570,12 +570,12 @@ class ArrowVectorField(VectorField):
         **kwargs,
     ):
         self.x_range = x_range or [
-            floor(-config["frame_width"] / 2),
-            ceil(config["frame_width"] / 2),
+            floor(-config.frame_width / 2),
+            ceil(config.frame_width / 2),
         ]
         self.y_range = y_range or [
-            floor(-config["frame_height"] / 2),
-            ceil(config["frame_height"] / 2),
+            floor(-config.frame_height / 2),
+            ceil(config.frame_height / 2),
         ]
         self.ranges = [self.x_range, self.y_range]
 
@@ -750,12 +750,12 @@ class StreamLines(VectorField):
         **kwargs,
     ):
         self.x_range = x_range or [
-            floor(-config["frame_width"] / 2),
-            ceil(config["frame_width"] / 2),
+            floor(-config.frame_width / 2),
+            ceil(config.frame_width / 2),
         ]
         self.y_range = y_range or [
-            floor(-config["frame_height"] / 2),
-            ceil(config["frame_height"] / 2),
+            floor(-config.frame_height / 2),
+            ceil(config.frame_height / 2),
         ]
         self.ranges = [self.x_range, self.y_range]
 
@@ -819,7 +819,7 @@ class StreamLines(VectorField):
         max_steps = ceil(virtual_time / dt) + 1
         if not self.single_color:
             self.background_img = self.get_colored_background_image()
-            if config["renderer"] == RendererType.OPENGL:
+            if config.renderer == RendererType.OPENGL:
                 self.values_to_rgbas = self.get_vectorized_rgba_gradient_function(
                     min_color_scheme_value,
                     max_color_scheme_value,
@@ -1047,7 +1047,7 @@ class StreamLines(VectorField):
         # creation_run_time is calculated so that the creation animation starts at the same speed
         # as the regular line flash animation but eases out.
 
-        dt = 1 / config["frame_rate"]
+        dt = 1 / config.frame_rate
         animations = []
         self.remove_updater(self.flow_animation)
         self.flow_animation = None

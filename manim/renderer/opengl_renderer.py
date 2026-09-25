@@ -165,7 +165,7 @@ class OpenGLCamera(OpenGLMobject):
             )
 
         if frame_shape is None:
-            self.frame_shape = (config["frame_width"], config["frame_height"])
+            self.frame_shape = (config.frame_width, config.frame_height)
         else:
             self.frame_shape = frame_shape
 
@@ -224,8 +224,8 @@ class OpenGLCamera(OpenGLMobject):
         (config frame size, centered at origin, no rotation).
         """
         self.center()
-        self.set_height(config["frame_height"])
-        self.set_width(config["frame_width"])
+        self.set_height(config.frame_height)
+        self.set_width(config.frame_width)
         self.set_euler_angles(0, 0, 0)
         self.model_matrix = self.default_model_matrix
         return self
@@ -519,7 +519,7 @@ class OpenGLRenderer:
         self.pressed_keys: set[int] = set()
         self.window: Window | None = None
         self.path_to_texture_id: dict[str, int] = {}
-        self.background_color = config["background_color"]
+        self.background_color = config.background_color
 
     def init_scene(
         self,
@@ -548,7 +548,7 @@ class OpenGLRenderer:
         )
         self.scene = scene
 
-        self.background_color = config["background_color"]
+        self.background_color = config.background_color
         if self.should_create_window(session_spec):
             from .opengl_renderer_window import Window
 
@@ -567,7 +567,7 @@ class OpenGLRenderer:
             self.frame_buffer_object = self.get_frame_buffer_object(self.context, 0)
             self.frame_buffer_object.use()
         self.context.enable(moderngl.BLEND)
-        self.context.wireframe = config["enable_wireframe"]
+        self.context.wireframe = config.enable_wireframe
         self.context.blend_func = (
             moderngl.SRC_ALPHA,
             moderngl.ONE_MINUS_SRC_ALPHA,
@@ -655,10 +655,10 @@ class OpenGLRenderer:
             If a shader texture is not a moderngl.Uniform or moderngl.UniformBlock.
         """
         if isinstance(mobject, OpenGLVMobject):
-            if config["use_projection_fill_shaders"]:
+            if config.use_projection_fill_shaders:
                 render_opengl_vectorized_mobject_fill(self, mobject)
 
-            if config["use_projection_stroke_shaders"]:
+            if config.use_projection_stroke_shaders:
                 render_opengl_vectorized_mobject_stroke(self, mobject)
 
         shader_wrapper_list = mobject.get_shader_wrapper_list()
@@ -1071,8 +1071,8 @@ class OpenGLRenderer:
         .. [1] Wikipedia, "Multisample anti-aliasing",
                https://en.wikipedia.org/wiki/Multisample_anti-aliasing
         """
-        pixel_width = config["pixel_width"]
-        pixel_height = config["pixel_height"]
+        pixel_width = config.pixel_width
+        pixel_height = config.pixel_height
         num_channels = 4
         return context.framebuffer(
             color_attachments=context.texture(
@@ -1179,7 +1179,7 @@ class OpenGLRenderer:
         if pixel_shape is None:
             return typing.cast(Point3D, np.array([0.0, 0.0, 0.0]))
         pixel_width, pixel_height = pixel_shape
-        frame_height = config["frame_height"]
+        frame_height = config.frame_height
         frame_center = self.camera.get_center()
         if relative:
             # relative -> just normalize to [-1, 1]

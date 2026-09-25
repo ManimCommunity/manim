@@ -571,8 +571,8 @@ class VectorScene(Scene):
                 vector = np.append(np.array(vector), 0.0)
         vector_cleaned: Vector3D = vector
 
-        x_max = int(config["frame_x_radius"] + abs(vector_cleaned[0]))
-        y_max = int(config["frame_y_radius"] + abs(vector_cleaned[1]))
+        x_max = int(config.frame_x_radius + abs(vector_cleaned[0]))
+        y_max = int(config.frame_y_radius + abs(vector_cleaned[1]))
         # TODO:
         # I think that this should be a VGroup instead of a VMobject.
         dots = VMobject(
@@ -677,8 +677,8 @@ class LinearTransformationScene(VectorScene):
         self.ghost_vectors = VGroup()
 
         self.foreground_plane_kwargs: dict[str, Any] = {
-            "x_range": np.array([-config["frame_width"], config["frame_width"], 1.0]),
-            "y_range": np.array([-config["frame_width"], config["frame_width"], 1.0]),
+            "x_range": np.array([-config.frame_width, config.frame_width, 1.0]),
+            "y_range": np.array([-config.frame_width, config.frame_width, 1.0]),
             "faded_line_ratio": 1,
         }
 

@@ -46,7 +46,7 @@ def tex_to_svg_file(
     environment
         The string containing the environment in which the expression should be typeset, e.g. ``align*``
     tex_template
-        Template class used to typesetting. If not set, use default template set via `config["tex_template"]`
+        Template class used to typesetting. If not set, use default template set via `config.tex_template`
 
     Returns
     -------
@@ -54,7 +54,7 @@ def tex_to_svg_file(
         Path to generated SVG file.
     """
     if tex_template is None:
-        tex_template = config["tex_template"]
+        tex_template = config.tex_template
     tex_file = generate_tex_file(expression, environment, tex_template)
 
     # check if svg already exists
@@ -68,7 +68,7 @@ def tex_to_svg_file(
         tex_template.output_format,
     )
     svg_file = convert_to_svg(dvi_file, tex_template.output_format)
-    if not config["no_latex_cleanup"]:
+    if not config.no_latex_cleanup:
         delete_nonsvg_files()
     return svg_file
 
@@ -88,7 +88,7 @@ def generate_tex_file(
     environment
         The string containing the environment in which the expression should be typeset, e.g. ``align*``
     tex_template
-        Template class used to typesetting. If not set, use default template set via `config["tex_template"]`
+        Template class used to typesetting. If not set, use default template set via `config.tex_template`
 
     Returns
     -------
@@ -96,7 +96,7 @@ def generate_tex_file(
         Path to generated TeX file
     """
     if tex_template is None:
-        tex_template = config["tex_template"]
+        tex_template = config.tex_template
     if environment is not None:
         output = tex_template.get_texcode_for_expression_in_env(expression, environment)
     else:

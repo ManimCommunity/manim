@@ -222,7 +222,7 @@ class FunctionGraph(ParametricFunction):
         **kwargs: Any,
     ) -> None:
         if x_range is None:
-            x_range = (-config["frame_x_radius"], config["frame_x_radius"])
+            x_range = (-config.frame_x_radius, config.frame_x_radius)
 
         self.x_range = x_range
         self.parametric_function: Callable[[float], Point3D] = lambda t: np.array(

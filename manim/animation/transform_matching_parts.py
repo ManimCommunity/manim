@@ -146,7 +146,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
         for sm in self.get_mobject_parts(mobject):
             key = self.get_mobject_key(sm)
             if key not in shape_map:
-                if config["renderer"] == RendererType.OPENGL:
+                if config.renderer == RendererType.OPENGL:
                     shape_map[key] = OpenGLVGroup()
                 else:
                     shape_map[key] = VGroup()

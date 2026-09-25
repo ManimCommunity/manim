@@ -132,8 +132,8 @@ class CoordinateSystem:
         default_step = 1
         if x_range is None:
             x_range = [
-                round(-config["frame_x_radius"]),
-                round(config["frame_x_radius"]),
+                round(-config.frame_x_radius),
+                round(config.frame_x_radius),
                 default_step,
             ]
         elif len(x_range) == 2:
@@ -141,8 +141,8 @@ class CoordinateSystem:
 
         if y_range is None:
             y_range = [
-                round(-config["frame_y_radius"]),
-                round(config["frame_y_radius"]),
+                round(-config.frame_y_radius),
+                round(config.frame_y_radius),
                 default_step,
             ]
         elif len(y_range) == 2:
@@ -1170,7 +1170,7 @@ class CoordinateSystem:
             # Search from right to left
             for x in np.linspace(self.x_range[1], self.x_range[0], 100):
                 point = self.input_to_graph_point(x, graph)
-                if point[1] < config["frame_y_radius"]:
+                if point[1] < config.frame_y_radius:
                     break
         else:
             point = self.input_to_graph_point(x_val, graph)
@@ -2762,13 +2762,13 @@ class NumberPlane(Axes):
     def __init__(
         self,
         x_range: Sequence[float] | None = (
-            -config["frame_x_radius"],
-            config["frame_x_radius"],
+            -config.frame_x_radius,
+            config.frame_x_radius,
             1,
         ),
         y_range: Sequence[float] | None = (
-            -config["frame_y_radius"],
-            config["frame_y_radius"],
+            -config.frame_y_radius,
+            config.frame_y_radius,
             1,
         ),
         x_length: float | None = None,
@@ -3032,7 +3032,7 @@ class PolarPlane(Axes):
 
     def __init__(
         self,
-        radius_max: float = config["frame_y_radius"],
+        radius_max: float = config.frame_y_radius,
         size: float | None = None,
         radius_step: float = 1,
         azimuth_step: float | None = None,

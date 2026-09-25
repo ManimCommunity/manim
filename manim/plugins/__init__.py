@@ -8,7 +8,7 @@ __all__ = [
     "list_plugins",
 ]
 
-requested_plugins: set[str] = set(config["plugins"])
+requested_plugins: set[str] = set(config.plugins)
 missing_plugins = requested_plugins - set(get_plugins().keys())
 
 

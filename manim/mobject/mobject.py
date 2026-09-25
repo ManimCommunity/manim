@@ -1728,8 +1728,8 @@ class Mobject:
         corner in the 2d plane.
         """
         target_point = np.sign(direction) * (
-            config["frame_x_radius"],
-            config["frame_y_radius"],
+            config.frame_x_radius,
+            config.frame_y_radius,
             0,
         )
         point_to_align = self.get_critical_point(direction)
@@ -1851,7 +1851,7 @@ class Mobject:
         return self
 
     def shift_onto_screen(self, **kwargs: Any) -> Self:
-        space_lengths = [config["frame_x_radius"], config["frame_y_radius"]]
+        space_lengths = [config.frame_x_radius, config.frame_y_radius]
         for vect in UP, DOWN, LEFT, RIGHT:
             dim = np.argmax(np.abs(vect))
             buff = kwargs.get("buff", DEFAULT_MOBJECT_TO_EDGE_BUFFER)
@@ -1862,13 +1862,13 @@ class Mobject:
         return self
 
     def is_off_screen(self) -> bool:
-        if self.get_left()[0] > config["frame_x_radius"]:
+        if self.get_left()[0] > config.frame_x_radius:
             return True
-        if self.get_right()[0] < -config["frame_x_radius"]:
+        if self.get_right()[0] < -config.frame_x_radius:
             return True
-        if self.get_bottom()[1] > config["frame_y_radius"]:
+        if self.get_bottom()[1] > config.frame_y_radius:
             return True
-        rv: bool = self.get_top()[1] < -config["frame_y_radius"]
+        rv: bool = self.get_top()[1] < -config.frame_y_radius
         return rv
 
     def stretch_about_point(self, factor: float, dim: int, point: Point3DLike) -> Self:

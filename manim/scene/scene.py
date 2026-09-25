@@ -1125,15 +1125,15 @@ class Scene:
         if self.renderer.skip_animations and not override_skip_animations:
             times: Iterable[float] = [run_time]
         else:
-            step = 1 / config["frame_rate"]
+            step = 1 / config.frame_rate
             times = np.arange(0, run_time, step)
         time_progression = tqdm(
             times,
             desc=description,
             total=n_iterations,
-            leave=config["progress_bar"] == "leave",
+            leave=config.progress_bar == "leave",
             ascii=True if platform.system() == "Windows" else None,
-            disable=config["progress_bar"] == "none",
+            disable=config.progress_bar == "none",
         )
         return time_progression
 
@@ -1504,7 +1504,7 @@ class Scene:
             keyboard_thread.daemon = True
         keyboard_thread.start()
 
-        if self.dearpygui_imported and config["enable_gui"]:
+        if self.dearpygui_imported and config.enable_gui:
             if not dpg.is_dearpygui_running():
                 gui_thread = threading.Thread(
                     target=self._configure_pygui,
@@ -1524,7 +1524,7 @@ class Scene:
         assert isinstance(self.renderer, OpenGLRenderer)
         event_handler = RerunSceneHandler(self.queue)
         file_observer = Observer()
-        file_observer.schedule(event_handler, config["input_file"], recursive=True)
+        file_observer.schedule(event_handler, str(config.input_file), recursive=True)
         file_observer.start()
 
         self.quit_interaction = False
@@ -1548,13 +1548,13 @@ class Scene:
                     keyboard_thread.join()
 
                     if "from_animation_number" in action.kwargs:
-                        config["from_animation_number"] = action.kwargs[
+                        config.from_animation_number = action.kwargs[
                             "from_animation_number"
                         ]
                     # # TODO: This option only makes sense if interactive_embed() is run at the
                     # # end of a scene by default.
                     # if "upto_animation_number" in action.kwargs:
-                    #     config["upto_animation_number"] = action.kwargs[
+                    #     config.upto_animation_number = action.kwargs[
                     #         "upto_animation_number"
                     #     ]
 
@@ -1593,7 +1593,7 @@ class Scene:
         file_observer.stop()
         file_observer.join()
 
-        if self.dearpygui_imported and config["enable_gui"]:
+        if self.dearpygui_imported and config.enable_gui:
             dpg.stop_dearpygui()
 
         if self.renderer.window is not None and self.renderer.window.is_closing:
@@ -1665,18 +1665,16 @@ class Scene:
             self.queue.put(SceneInteractContinue("gui"))
 
         def scene_selection_callback(sender: Any, data: Any) -> None:
-            config["scene_names"] = (dpg.get_value(sender),)
+            config.scene_names = [dpg.get_value(sender)]
             self.queue.put(SceneInteractRerun("gui"))
 
-        scene_classes = scene_classes_from_file(
-            Path(config["input_file"]), full_list=True
-        )  # type: ignore[call-overload]
+        scene_classes = scene_classes_from_file(Path(config.input_file), full_list=True)  # type: ignore[call-overload]
         scene_names = [scene_class.__name__ for scene_class in scene_classes]
 
         with dpg.window(
             id=window,
             label="Manim GUI",
-            pos=[config["gui_location"][0], config["gui_location"][1]],
+            pos=[config.gui_location[0], config.gui_location[1]],
             width=1000,
             height=500,
         ):
@@ -1687,12 +1685,12 @@ class Scene:
                 label="Selected scene",
                 items=scene_names,
                 callback=scene_selection_callback,
-                default_value=config["scene_names"][0],
+                default_value=config.scene_names[0],
             )
             dpg.add_separator()
             if len(self.widgets) != 0:
                 with dpg.collapsing_header(
-                    label=f"{config['scene_names'][0]} widgets",
+                    label=f"{config.scene_names[0]} widgets",
                     default_open=True,
                 ):
                     for widget_config in self.widgets:

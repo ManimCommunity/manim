@@ -480,7 +480,7 @@ class SpecialThreeDScene(ThreeDScene):
         self.sphere_config = sphere_config
         self.default_angled_camera_position = default_angled_camera_position
         self.low_quality_config = low_quality_config
-        if self.renderer.camera_config["pixel_width"] == config["pixel_width"]:
+        if self.renderer.camera_config["pixel_width"] == config.pixel_width:
             _config = {}
         else:
             _config = self.low_quality_config

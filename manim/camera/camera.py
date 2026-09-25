@@ -112,39 +112,39 @@ class Camera:
         ) = None
 
         if pixel_height is None:
-            pixel_height = config["pixel_height"]
+            pixel_height = config.pixel_height
         self.pixel_height = pixel_height
 
         if pixel_width is None:
-            pixel_width = config["pixel_width"]
+            pixel_width = config.pixel_width
         self.pixel_width = pixel_width
 
         if frame_height is None:
-            frame_height = config["frame_height"]
+            frame_height = config.frame_height
         self.frame_height = frame_height
 
         if frame_width is None:
-            frame_width = config["frame_width"]
+            frame_width = config.frame_width
         self.frame_width = frame_width
 
         if frame_rate is None:
-            frame_rate = config["frame_rate"]
+            frame_rate = config.frame_rate
         self.frame_rate = frame_rate
 
         if background_color is None:
             self._background_color: ManimColor = ManimColor.parse(
-                config["background_color"]
+                config.background_color
             )
         else:
             self._background_color = ManimColor.parse(background_color)
         if background_opacity is None:
-            self._background_opacity: float = config["background_opacity"]
+            self._background_opacity: float = config.background_opacity
         else:
             self._background_opacity = background_opacity
 
         # This one is in the same boat as the above, but it doesn't have the
         # same name as the corresponding key so it has to be handled on its own
-        self.max_allowable_norm = config["frame_width"]
+        self.max_allowable_norm = config.frame_width
 
         self.rgb_max_val = np.iinfo(self.pixel_array_dtype).max
         self.pixel_array_to_cairo_context: dict[int, cairo.Context] = {}
@@ -230,7 +230,7 @@ class Camera:
                 return _type
         raise TypeError(f"Displaying an object of class {_type} is not supported")
 
-    def reset_pixel_shape(self, new_height: float, new_width: float) -> None:
+    def reset_pixel_shape(self, new_height: int, new_width: int) -> None:
         """This method resets the height and width
         of a single pixel to the passed new_height and new_width.
 
@@ -1286,7 +1286,7 @@ class Camera:
             the camera.
         """
         # TODO: This seems...unsystematic
-        big_sum: float = op.add(config["pixel_height"], config["pixel_width"])
+        big_sum: float = op.add(config.pixel_height, config.pixel_width)
         this_sum: float = op.add(self.pixel_height, self.pixel_width)
         factor = big_sum / this_sum
         return 1 + (thickness - 1) * factor

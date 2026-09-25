@@ -85,7 +85,7 @@ class CairoRenderer:
             hash_current_animation = None
             self.time += scene.duration
         else:
-            if config["disable_caching"]:
+            if config.disable_caching:
                 logger.info("Caching disabled.")
                 hash_current_animation = f"uncached_{self.num_plays:05}"
             else:

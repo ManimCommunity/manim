@@ -1942,8 +1942,8 @@ class OpenGLMobject:
         corner in the 2d plane.
         """
         target_point = np.sign(direction) * (
-            config["frame_x_radius"],
-            config["frame_y_radius"],
+            config.frame_x_radius,
+            config.frame_y_radius,
             0,
         )
         point_to_align = self.get_bounding_box_point(direction)
@@ -2023,8 +2023,8 @@ class OpenGLMobject:
 
     def shift_onto_screen(self, **kwargs: Any) -> Self:
         space_lengths: list[float] = [
-            config["frame_x_radius"],
-            config["frame_y_radius"],
+            config.frame_x_radius,
+            config.frame_y_radius,
         ]
         for vect in UP, DOWN, LEFT, RIGHT:
             dim = np.argmax(np.abs(vect))

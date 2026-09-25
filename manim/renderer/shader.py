@@ -460,12 +460,12 @@ class FullScreenQuad(Mesh):
         attributes = np.zeros(6, dtype=[("in_vert", np.float32, (4,))])
         attributes["in_vert"] = np.array(
             [
-                [-config["frame_x_radius"], -config["frame_y_radius"], 0, 1],
-                [-config["frame_x_radius"], config["frame_y_radius"], 0, 1],
-                [config["frame_x_radius"], config["frame_y_radius"], 0, 1],
-                [-config["frame_x_radius"], -config["frame_y_radius"], 0, 1],
-                [config["frame_x_radius"], -config["frame_y_radius"], 0, 1],
-                [config["frame_x_radius"], config["frame_y_radius"], 0, 1],
+                [-config.frame_x_radius, -config.frame_y_radius, 0, 1],
+                [-config.frame_x_radius, config.frame_y_radius, 0, 1],
+                [config.frame_x_radius, config.frame_y_radius, 0, 1],
+                [-config.frame_x_radius, -config.frame_y_radius, 0, 1],
+                [config.frame_x_radius, -config.frame_y_radius, 0, 1],
+                [config.frame_x_radius, config.frame_y_radius, 0, 1],
             ],
         )
         shader.set_uniform("u_model_view_matrix", opengl.view_matrix())

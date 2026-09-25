@@ -106,12 +106,12 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
                         # Attach explicitly, but preserve custom Scene.render overrides.
                         Manager(scene)
                         rerun = scene.render()
-                    if rerun or config["write_all"]:
+                    if rerun or config.write_all:
                         renderer.num_plays = 0
                         continue
                     keep_running = False
                     break
-                if config["write_all"]:
+                if config.write_all:
                     keep_running = False
         else:
             for SceneClass in scene_classes:

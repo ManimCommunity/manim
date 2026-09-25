@@ -71,7 +71,7 @@ class ThreeDCamera(Camera):
         self.light_source = Point(self.light_source_start_point)
         self.should_apply_shading = should_apply_shading
         self.exponential_projection = exponential_projection
-        self.max_allowable_norm = 3 * config["frame_width"]
+        self.max_allowable_norm = 3 * config.frame_width
         self.phi_tracker = ValueTracker(self.phi)
         self.theta_tracker = ValueTracker(self.theta)
         self.focal_distance_tracker = ValueTracker(self.focal_distance)

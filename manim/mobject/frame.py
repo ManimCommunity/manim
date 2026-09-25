@@ -38,4 +38,4 @@ class ScreenRectangle(Rectangle):
 class FullScreenRectangle(ScreenRectangle):
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
-        self.height = config["frame_height"]
+        self.height = config.frame_height

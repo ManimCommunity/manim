@@ -74,7 +74,7 @@ class SingleStringMathTex(SVGMobject):
         self.organize_left_to_right = organize_left_to_right
         self.tex_environment = tex_environment
         if tex_template is None:
-            tex_template = config["tex_template"]
+            tex_template = config.tex_template
         self.tex_template: TexTemplate = tex_template
 
         self.tex_string = tex_string
@@ -284,7 +284,7 @@ class MathTex(SingleStringMathTex):
         tex_environment: str | None = "align*",
         **kwargs: Any,
     ):
-        self.tex_template = kwargs.pop("tex_template", config["tex_template"])
+        self.tex_template = kwargs.pop("tex_template", config.tex_template)
         self.arg_separator = arg_separator
         self.substrings_to_isolate = (
             [] if substrings_to_isolate is None else list(substrings_to_isolate)
@@ -751,7 +751,7 @@ class Title(Tex):
         super().__init__(*text_parts, **kwargs)
         self.to_edge(UP)
         if self.include_underline:
-            underline_width = config["frame_width"] - 2
+            underline_width = config.frame_width - 2
             underline = Line(LEFT, RIGHT)
             underline.next_to(self, DOWN, buff=self.underline_buff)
             if self.match_underline_width_to_text:

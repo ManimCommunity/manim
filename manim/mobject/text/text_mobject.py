@@ -847,8 +847,8 @@ class Text(SVGMobject):
             svg_file = str(file_name.resolve())
         else:
             settings = self._text2settings(color)
-            width = config["pixel_width"]
-            height = config["pixel_height"]
+            width = config.pixel_width
+            height = config.pixel_height
 
             svg_file = manimpango.text2svg(
                 settings,

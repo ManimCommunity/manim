@@ -1317,7 +1317,7 @@ class OpenGLVMobject(OpenGLMobject):
 
     def interpolate(self, mobject1, mobject2, alpha, *args, **kwargs) -> Self:
         super().interpolate(mobject1, mobject2, alpha, *args, **kwargs)
-        if config["use_projection_fill_shaders"]:
+        if config.use_projection_fill_shaders:
             self.refresh_triangulation()
         else:
             if self.has_fill():
@@ -1554,9 +1554,9 @@ class OpenGLVMobject(OpenGLMobject):
         stroke_shader_wrappers = []
         back_stroke_shader_wrappers = []
         for submob in self.family_members_with_points():
-            if submob.has_fill() and not config["use_projection_fill_shaders"]:
+            if submob.has_fill() and not config.use_projection_fill_shaders:
                 fill_shader_wrappers.append(submob.get_fill_shader_wrapper())
-            if submob.has_stroke() and not config["use_projection_stroke_shaders"]:
+            if submob.has_stroke() and not config.use_projection_stroke_shaders:
                 ssw = submob.get_stroke_shader_wrapper()
                 if submob.draw_stroke_behind_fill:
                     back_stroke_shader_wrappers.append(ssw)
