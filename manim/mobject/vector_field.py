@@ -959,6 +959,9 @@ class StreamLines(VectorField):
         """
         if run_time is None:
             run_time = self.virtual_time
+        run_time = float(
+            run_time(self.virtual_time) if callable(run_time) else run_time
+        )
         if lag_ratio is None:
             lag_ratio = run_time / 2 / len(self.submobjects)
 
