@@ -1025,7 +1025,8 @@ class StreamLines(VectorField):
             line.time = random.random() * self.virtual_time
             if warm_up:
                 line.time *= -1
-            self.add(anim.mobject)
+            # error: Argument 1 to "add" of "VGroup" has incompatible type "OpenGLMobject"; expected "VMobject | Iterable[VMobject]"  [arg-type]
+            self.add(anim.mobject)  # type: ignore[arg-type]
 
         def updater(mob: Mobject, dt: float) -> object:
             assert isinstance(mob, StreamLines)
@@ -1090,7 +1091,8 @@ class StreamLines(VectorField):
             line.time += dt * self.flow_speed
             line.anim.interpolate(min(line.time / line.anim.run_time, 1))
             if alpha == 1:
-                self.remove(line.anim.mobject)
+                # error: Argument 1 to "remove" of "Mobject" has incompatible type "OpenGLMobject"; expected "Mobject"  [arg-type]
+                self.remove(line.anim.mobject)  # type: ignore[arg-type]
                 line.anim.finish()
 
         max_run_time = self.virtual_time / self.flow_speed
@@ -1125,7 +1127,8 @@ class StreamLines(VectorField):
                         create,
                     ),
                 )
-                self.remove(line.anim.mobject)
+                # error: Argument 1 to "remove" of "Mobject" has incompatible type "OpenGLMobject"; expected "Mobject"  [arg-type]
+                self.remove(line.anim.mobject)  # type: ignore[arg-type]
                 line.anim.finish()
             else:
                 remaining_time = max_run_time - line.time / self.flow_speed
