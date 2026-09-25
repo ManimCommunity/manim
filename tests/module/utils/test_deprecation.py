@@ -1,16 +1,20 @@
 from __future__ import annotations
 
+from typing import Any
+
+import pytest
+
 from manim.utils.deprecation import deprecated, deprecated_params
 
 
-def _get_caplog_record_msg(manim_caplog):
-    logger_name, level, message = manim_caplog.record_tuples[0]
+def _get_caplog_record_msg(manim_caplog: pytest.LogCaptureFixture, i: int = 0) -> str:
+    logger_name, level, message = manim_caplog.record_tuples[i]
     return message
 
 
 @deprecated
 class Foo:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
 
@@ -18,7 +22,7 @@ class Foo:
 class Bar:
     """The Bar class."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
 
@@ -26,30 +30,30 @@ class Bar:
 class Baz:
     """The Baz class."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
 
 @deprecated(since="0.7.0", until="0.9.0-rc2")
 class Qux:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
 
 @deprecated(message="Use something else.")
 class Quux:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
 
 @deprecated(replacement="ReplaceQuuz")
 class Quuz:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
 
 class ReplaceQuuz:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
 
@@ -60,14 +64,14 @@ class ReplaceQuuz:
     message="Don't use this please.",
 )
 class QuuzAll:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
 
 doc_admonition = "\n\n.. attention:: Deprecated\n  "
 
 
-def test_deprecate_class_no_args(manim_caplog):
+def test_deprecate_class_no_args(manim_caplog: pytest.LogCaptureFixture) -> None:
     """Test the deprecation of a class (decorator with no arguments)."""
     f = Foo()
     assert len(manim_caplog.record_tuples) == 1
@@ -79,7 +83,7 @@ def test_deprecate_class_no_args(manim_caplog):
     assert f.__doc__ == f"{doc_admonition}{msg}"
 
 
-def test_deprecate_class_since(manim_caplog):
+def test_deprecate_class_since(manim_caplog: pytest.LogCaptureFixture) -> None:
     """Test the deprecation of a class (decorator with since argument)."""
     b = Bar()
     assert len(manim_caplog.record_tuples) == 1
@@ -91,7 +95,7 @@ def test_deprecate_class_since(manim_caplog):
     assert b.__doc__ == f"The Bar class.{doc_admonition}{msg}"
 
 
-def test_deprecate_class_until(manim_caplog):
+def test_deprecate_class_until(manim_caplog: pytest.LogCaptureFixture) -> None:
     """Test the deprecation of a class (decorator with until argument)."""
     bz = Baz()
     assert len(manim_caplog.record_tuples) == 1
@@ -103,7 +107,9 @@ def test_deprecate_class_until(manim_caplog):
     assert bz.__doc__ == f"The Baz class.{doc_admonition}{msg}"
 
 
-def test_deprecate_class_since_and_until(manim_caplog):
+def test_deprecate_class_since_and_until(
+    manim_caplog: pytest.LogCaptureFixture,
+) -> None:
     """Test the deprecation of a class (decorator with since and until arguments)."""
     qx = Qux()
     assert len(manim_caplog.record_tuples) == 1
@@ -115,7 +121,7 @@ def test_deprecate_class_since_and_until(manim_caplog):
     assert qx.__doc__ == f"{doc_admonition}{msg}"
 
 
-def test_deprecate_class_msg(manim_caplog):
+def test_deprecate_class_msg(manim_caplog: pytest.LogCaptureFixture) -> None:
     """Test the deprecation of a class (decorator with msg argument)."""
     qu = Quux()
     assert len(manim_caplog.record_tuples) == 1
@@ -127,7 +133,7 @@ def test_deprecate_class_msg(manim_caplog):
     assert qu.__doc__ == f"{doc_admonition}{msg}"
 
 
-def test_deprecate_class_replacement(manim_caplog):
+def test_deprecate_class_replacement(manim_caplog: pytest.LogCaptureFixture) -> None:
     """Test the deprecation of a class (decorator with replacement argument)."""
     qz = Quuz()
     assert len(manim_caplog.record_tuples) == 1
@@ -140,7 +146,7 @@ def test_deprecate_class_replacement(manim_caplog):
     assert qz.__doc__ == f"{doc_admonition}{doc_msg}"
 
 
-def test_deprecate_class_all(manim_caplog):
+def test_deprecate_class_all(manim_caplog: pytest.LogCaptureFixture) -> None:
     """Test the deprecation of a class (decorator with all arguments)."""
     qza = QuuzAll()
     assert len(manim_caplog.record_tuples) == 1
@@ -154,60 +160,64 @@ def test_deprecate_class_all(manim_caplog):
 
 
 @deprecated
-def useless(**kwargs):
+def useless(**kwargs: Any) -> None:
     pass
 
 
 class Top:
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     @deprecated(since="0.8.0", message="This method is useless.")
-    def mid_func(self):
+    def mid_func(self) -> None:
         """Middle function in Top."""
         pass
 
     @deprecated(until="1.4.0", replacement="Top.NewNested")
     class Nested:
-        def __init__(self):
+        def __init__(self) -> None:
             pass
 
     class NewNested:
-        def __init__(self):
+        def __init__(self) -> None:
             pass
 
         @deprecated(since="1.0.0", until="12/25/2025")
-        def nested_func(self):
+        def nested_func(self) -> None:
             """Nested function in Top.NewNested."""
             pass
 
     class Bottom:
-        def __init__(self):
+        def __init__(self) -> None:
             pass
 
-        def normal_func(self):
+        def normal_func(self) -> None:
             @deprecated
-            def nested_func(self):
+            def nested_func(self) -> None:
                 pass
 
             return nested_func
 
     @deprecated_params(params="a, b, c", message="Use something else.")
-    def foo(self, **kwargs):
+    def foo(self, **kwargs) -> None:
+        pass
+
+    @deprecated_params(redirections=[("a", "x"), ("b", "y"), ("c", "z")])
+    def foo_2(self, x: int, /, y: int, *, z: int) -> None:
         pass
 
     @deprecated_params(params="a", since="v0.2", until="v0.4")
-    def bar(self, **kwargs):
+    def bar(self, **kwargs) -> None:
         pass
 
     @deprecated_params(redirections=[("old_param", "new_param")])
-    def baz(self, **kwargs):
+    def baz(self, **kwargs) -> None:
         return kwargs
 
     @deprecated_params(
         redirections=[lambda runtime_in_ms: {"run_time": runtime_in_ms / 1000}],
     )
-    def qux(self, **kwargs):
+    def qux(self, **kwargs) -> None:
         return kwargs
 
     @deprecated_params(
@@ -215,7 +225,7 @@ class Top:
             lambda point2D_x=1, point2D_y=1: {"point2D": (point2D_x, point2D_y)},
         ],
     )
-    def quux(self, **kwargs):
+    def quux(self, **kwargs) -> None:
         return kwargs
 
     @deprecated_params(
@@ -227,11 +237,11 @@ class Top:
             ),
         ],
     )
-    def quuz(self, **kwargs):
+    def quuz(self, **kwargs) -> None:
         return kwargs
 
 
-def test_deprecate_func_no_args(manim_caplog):
+def test_deprecate_func_no_args(manim_caplog: pytest.LogCaptureFixture) -> None:
     """Test the deprecation of a method (decorator with no arguments)."""
     useless()
     assert len(manim_caplog.record_tuples) == 1
@@ -243,7 +253,9 @@ def test_deprecate_func_no_args(manim_caplog):
     assert useless.__doc__ == f"{doc_admonition}{msg}"
 
 
-def test_deprecate_func_in_class_since_and_message(manim_caplog):
+def test_deprecate_func_in_class_since_and_message(
+    manim_caplog: pytest.LogCaptureFixture,
+) -> None:
     """Test the deprecation of a method within a class (decorator with since and message arguments)."""
     t = Top()
     t.mid_func()
@@ -256,7 +268,9 @@ def test_deprecate_func_in_class_since_and_message(manim_caplog):
     assert t.mid_func.__doc__ == f"Middle function in Top.{doc_admonition}{msg}"
 
 
-def test_deprecate_nested_class_until_and_replacement(manim_caplog):
+def test_deprecate_nested_class_until_and_replacement(
+    manim_caplog: pytest.LogCaptureFixture,
+) -> None:
     """Test the deprecation of a nested class (decorator with until and replacement arguments)."""
     n = Top().Nested()
     assert len(manim_caplog.record_tuples) == 1
@@ -269,7 +283,9 @@ def test_deprecate_nested_class_until_and_replacement(manim_caplog):
     assert n.__doc__ == f"{doc_admonition}{doc_msg}"
 
 
-def test_deprecate_nested_class_func_since_and_until(manim_caplog):
+def test_deprecate_nested_class_func_since_and_until(
+    manim_caplog: pytest.LogCaptureFixture,
+) -> None:
     """Test the deprecation of a method within a nested class (decorator with since and until arguments)."""
     n = Top().NewNested()
     n.nested_func()
@@ -285,7 +301,7 @@ def test_deprecate_nested_class_func_since_and_until(manim_caplog):
     )
 
 
-def test_deprecate_nested_func(manim_caplog):
+def test_deprecate_nested_func(manim_caplog: pytest.LogCaptureFixture) -> None:
     """Test the deprecation of a nested method (decorator with no arguments)."""
     b = Top().Bottom()
     answer = b.normal_func()
@@ -299,7 +315,7 @@ def test_deprecate_nested_func(manim_caplog):
     assert answer.__doc__ == f"{doc_admonition}{msg}"
 
 
-def test_deprecate_func_params(manim_caplog):
+def test_deprecate_func_params(manim_caplog: pytest.LogCaptureFixture) -> None:
     """Test the deprecation of method parameters (decorator with params argument)."""
     t = Top()
     t.foo(a=2, b=3, z=4)
@@ -310,8 +326,48 @@ def test_deprecate_func_params(manim_caplog):
         == "The parameters a and b of method Top.foo have been deprecated and may be removed in a later version. Use something else."
     )
 
+    t.foo_2(1, 2, z=3)
+    assert len(manim_caplog.record_tuples) == 1
 
-def test_deprecate_func_single_param_since_and_until(manim_caplog):
+    t.foo_2(1, y=2, z=3)
+    assert len(manim_caplog.record_tuples) == 1
+
+    t.foo_2(1, b=2, z=3)
+    assert len(manim_caplog.record_tuples) == 2
+    msg = _get_caplog_record_msg(manim_caplog, 1)
+    assert (
+        msg
+        == "The parameter b of method Top.foo_2 has been deprecated and may be removed in a later version."
+    )
+
+    t.foo_2(1, 2, c=3)
+    assert len(manim_caplog.record_tuples) == 3
+    msg = _get_caplog_record_msg(manim_caplog, 2)
+    assert (
+        msg
+        == "The parameter c of method Top.foo_2 has been deprecated and may be removed in a later version."
+    )
+
+    t.foo_2(1, y=2, c=3)
+    assert len(manim_caplog.record_tuples) == 4
+    msg = _get_caplog_record_msg(manim_caplog, 3)
+    assert (
+        msg
+        == "The parameter c of method Top.foo_2 has been deprecated and may be removed in a later version."
+    )
+
+    t.foo_2(1, b=2, c=3)
+    assert len(manim_caplog.record_tuples) == 5
+    msg = _get_caplog_record_msg(manim_caplog, 4)
+    assert (
+        msg
+        == "The parameters b and c of method Top.foo_2 have been deprecated and may be removed in a later version."
+    )
+
+
+def test_deprecate_func_single_param_since_and_until(
+    manim_caplog: pytest.LogCaptureFixture,
+) -> None:
     """Test the deprecation of a single method parameter (decorator with since and until arguments)."""
     t = Top()
     t.bar(a=1, b=2)
@@ -323,7 +379,9 @@ def test_deprecate_func_single_param_since_and_until(manim_caplog):
     )
 
 
-def test_deprecate_func_param_redirect_tuple(manim_caplog):
+def test_deprecate_func_param_redirect_tuple(
+    manim_caplog: pytest.LogCaptureFixture,
+) -> None:
     """Test the deprecation of a method parameter and redirecting it to a new one using tuple."""
     t = Top()
     obj = t.baz(x=1, old_param=2)
@@ -336,7 +394,9 @@ def test_deprecate_func_param_redirect_tuple(manim_caplog):
     assert obj == {"x": 1, "new_param": 2}
 
 
-def test_deprecate_func_param_redirect_lambda(manim_caplog):
+def test_deprecate_func_param_redirect_lambda(
+    manim_caplog: pytest.LogCaptureFixture,
+) -> None:
     """Test the deprecation of a method parameter and redirecting it to a new one using lambda function."""
     t = Top()
     obj = t.qux(runtime_in_ms=500)
@@ -349,7 +409,9 @@ def test_deprecate_func_param_redirect_lambda(manim_caplog):
     assert obj == {"run_time": 0.5}
 
 
-def test_deprecate_func_param_redirect_many_to_one(manim_caplog):
+def test_deprecate_func_param_redirect_many_to_one(
+    manim_caplog: pytest.LogCaptureFixture,
+) -> None:
     """Test the deprecation of multiple method parameters and redirecting them to one."""
     t = Top()
     obj = t.quux(point2D_x=3, point2D_y=5)
@@ -362,7 +424,9 @@ def test_deprecate_func_param_redirect_many_to_one(manim_caplog):
     assert obj == {"point2D": (3, 5)}
 
 
-def test_deprecate_func_param_redirect_one_to_many(manim_caplog):
+def test_deprecate_func_param_redirect_one_to_many(
+    manim_caplog: pytest.LogCaptureFixture,
+) -> None:
     """Test the deprecation of one method parameter and redirecting it to many."""
     t = Top()
     obj1 = t.quuz(point2D=0)
