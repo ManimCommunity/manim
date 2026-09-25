@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Any
+from collections.abc import Callable
+from typing import Any, Self
 
 import pytest
 
@@ -191,15 +192,15 @@ class Top:
         def __init__(self) -> None:
             pass
 
-        def normal_func(self) -> None:
+        def normal_func(self) -> Callable[[Self], None]:
             @deprecated
-            def nested_func(self) -> None:
+            def nested_func(self: Self) -> None:
                 pass
 
             return nested_func
 
     @deprecated_params(params="a, b, c", message="Use something else.")
-    def foo(self, **kwargs) -> None:
+    def foo(self, **kwargs: Any) -> None:
         pass
 
     @deprecated_params(redirections=[("a", "x"), ("b", "y"), ("c", "z")])
@@ -207,17 +208,17 @@ class Top:
         pass
 
     @deprecated_params(params="a", since="v0.2", until="v0.4")
-    def bar(self, **kwargs) -> None:
+    def bar(self, **kwargs: Any) -> None:
         pass
 
     @deprecated_params(redirections=[("old_param", "new_param")])
-    def baz(self, **kwargs) -> None:
+    def baz(self, **kwargs: Any) -> dict[str, Any]:
         return kwargs
 
     @deprecated_params(
         redirections=[lambda runtime_in_ms: {"run_time": runtime_in_ms / 1000}],
     )
-    def qux(self, **kwargs) -> None:
+    def qux(self, **kwargs: Any) -> dict[str, Any]:
         return kwargs
 
     @deprecated_params(
@@ -225,7 +226,7 @@ class Top:
             lambda point2D_x=1, point2D_y=1: {"point2D": (point2D_x, point2D_y)},
         ],
     )
-    def quux(self, **kwargs) -> None:
+    def quux(self, **kwargs: Any) -> dict[str, Any]:
         return kwargs
 
     @deprecated_params(
@@ -237,7 +238,7 @@ class Top:
             ),
         ],
     )
-    def quuz(self, **kwargs) -> None:
+    def quuz(self, **kwargs: Any) -> dict[str, Any]:
         return kwargs
 
 
