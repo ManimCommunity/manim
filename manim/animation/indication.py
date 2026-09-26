@@ -633,7 +633,7 @@ class Circumscribe(Succession):
         elif shape is Circle:
             frame = Circle(color=color, stroke_width=stroke_width).surround(
                 mobject,
-                buffer_factor=1,
+                buff=1,
             )
             radius = frame.width / 2
             frame.scale((radius + buff) / radius)
