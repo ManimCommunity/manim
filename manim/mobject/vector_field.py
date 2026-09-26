@@ -49,9 +49,10 @@ if TYPE_CHECKING:
         FloatRGBA_Array,
         Point3D,
         Vector3D,
+        Vector3DLike,
     )
 
-DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
+DEFAULT_SCALAR_FIELD_COLORS: list[ManimColor] = [BLUE_E, GREEN, YELLOW, RED]
 
 
 class VectorField(VGroup):
@@ -134,9 +135,9 @@ class VectorField(VGroup):
 
     @staticmethod
     def shift_func(
-        func: Callable[[np.ndarray], np.ndarray],
-        shift_vector: np.ndarray,
-    ) -> Callable[[np.ndarray], np.ndarray]:
+        func: Callable[[Point3D], Vector3D],
+        shift_vector: Vector3DLike,
+    ) -> Callable[[Point3D], Vector3D]:
         """Shift a vector field function.
 
         Parameters
@@ -148,17 +149,17 @@ class VectorField(VGroup):
 
         Returns
         -------
-        `Callable[[np.ndarray], np.ndarray]`
+        `Callable[[Point3D], Vector3D]`
             The shifted vector field function.
 
         """
-        return lambda p: func(p - shift_vector)
+        return lambda p: func(p - np.asarray(shift_vector))
 
     @staticmethod
     def scale_func(
-        func: Callable[[np.ndarray], np.ndarray],
+        func: Callable[[Point3D], Vector3D],
         scalar: float,
-    ) -> Callable[[np.ndarray], np.ndarray]:
+    ) -> Callable[[Point3D], Vector3D]:
         """Scale a vector field function.
 
         Parameters
@@ -185,7 +186,7 @@ class VectorField(VGroup):
 
         Returns
         -------
-        `Callable[[np.ndarray], np.ndarray]`
+        `Callable[[Point3D], Vector3D]`
             The scaled vector field function.
 
         """
@@ -276,7 +277,7 @@ class VectorField(VGroup):
 
             Returns
             -------
-            float
+            Vector3D
                How much the point is shifted.
             """
             k_1 = self.func(p)
@@ -557,9 +558,9 @@ class ArrowVectorField(VectorField):
 
     def __init__(
         self,
-        func: Callable[[np.ndarray], np.ndarray],
+        func: Callable[[Point3D], Vector3D],
         color: ParsableManimColor | None = None,
-        color_scheme: Callable[[np.ndarray], float] | None = None,
+        color_scheme: Callable[[Vector3D], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[ParsableManimColor] = DEFAULT_SCALAR_FIELD_COLORS,
@@ -571,30 +572,30 @@ class ArrowVectorField(VectorField):
         # Takes in actual norm, spits out displayed norm
         length_func: Callable[[float], float] = lambda norm: 0.45 * sigmoid(norm),
         opacity: float = 1.0,
-        vector_config: dict | None = None,
+        vector_config: dict[str, Any] | None = None,
         **kwargs: Any,
     ):
-        if x_range:
-            self.x_range = list(x_range)
-        else:
+        if x_range is None:
             self.x_range = [
                 floor(-config["frame_width"] / 2),
                 ceil(config["frame_width"] / 2),
             ]
-        if y_range:
-            self.y_range = list(y_range)
         else:
+            self.x_range = list(x_range)
+        if y_range is None:
             self.y_range = [
                 floor(-config["frame_height"] / 2),
                 ceil(config["frame_height"] / 2),
             ]
+        else:
+            self.y_range = list(y_range)
         self.ranges: list[list[float]] = [self.x_range, self.y_range]
 
         if three_dimensions or z_range:
-            if z_range:
-                self.z_range = list(z_range)
-            else:
+            if z_range is None:
                 self.z_range = self.y_range
+            else:
+                self.z_range = list(z_range)
             self.ranges += [self.z_range]
         else:
             self.ranges += [[0, 0]]
@@ -634,7 +635,7 @@ class ArrowVectorField(VectorField):
         )
         self.set_opacity(self.opacity)
 
-    def get_vector(self, point: np.ndarray) -> Vector:
+    def get_vector(self, point: Point3D) -> Vector:
         """Creates a vector in the vector field.
 
         The created vector is based on the function of the vector field and is
@@ -757,9 +758,9 @@ class StreamLines(VectorField):
 
     def __init__(
         self,
-        func: Callable[[np.ndarray], np.ndarray],
+        func: Callable[[Point3D], Vector3D],
         color: ParsableManimColor | None = None,
-        color_scheme: Callable[[np.ndarray], float] | None = None,
+        color_scheme: Callable[[Vector3D], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[ParsableManimColor] = DEFAULT_SCALAR_FIELD_COLORS,
