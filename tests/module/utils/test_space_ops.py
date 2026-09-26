@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
+from scipy.spatial.transform import Rotation
 
 from manim.utils.space_ops import *
 from manim.utils.space_ops import shoelace
@@ -51,6 +52,33 @@ def test_rotation_matrices():
                 [-0.22237, -0.5547, 0.80178],
             ]
         ),
+    )
+
+
+@pytest.mark.parametrize(
+    "angle",
+    # the first three are at or below PI, where no folding happens
+    [0.5, 2.0, np.pi, 3.5, 4.0, 5.5, 2 * np.pi - 0.01],
+)
+def test_angle_axis_from_quaternion(angle):
+    axis = normalize(np.array([1.0, -2.0, 3.0]))
+    quaternion = quaternion_from_angle_axis(angle, axis)
+    result_angle, result_axis = angle_axis_from_quaternion(quaternion)
+
+    # the returned pair must describe the same rotation as the input
+    np.testing.assert_allclose(
+        rotation_matrix(result_angle, result_axis),
+        rotation_matrix(angle, axis),
+        atol=1e-8,
+    )
+
+    # ... expressed the way scipy's Rotation.as_rotvec expresses it, i.e. with
+    # the angle in [0, PI] and the direction carried by the axis
+    rotation_vector = Rotation.from_quat([*quaternion[1:], quaternion[0]]).as_rotvec()
+    assert 0 <= result_angle <= np.pi
+    np.testing.assert_allclose(result_angle, np.linalg.norm(rotation_vector), atol=1e-8)
+    np.testing.assert_allclose(
+        result_axis, rotation_vector / np.linalg.norm(rotation_vector), atol=1e-8
     )
 
 
@@ -122,3 +150,72 @@ def test_polar_coords():
     np.testing.assert_array_equal(
         np.round(spherical_to_cartesian(b), 4), np.array([0, 2, 0])
     )
+
+
+def test_triangulation_ring_connection():
+    verts = np.array(
+        [
+            # outer ring
+            [-2, -2, 0],
+            [2, -2, 0],
+            [2, 2, 0],
+            [-2, 2, 0],
+            # inner ring (hole)
+            [-0.5, -1.5, 0],
+            [-0.5, -0.5, 0],
+            [-1.5, -0.5, 0],
+            [-1.5, -1.5, 0],
+        ],
+        dtype=float,
+    )
+    ring_ends = [4, 8]
+
+    triangulation = earclip_triangulation(verts, ring_ends)
+
+    assert len(triangulation) > 0
+    assert len(triangulation) % 3 == 0
+    assert min(triangulation) >= 0
+    assert max(triangulation) < len(verts)
+
+
+@pytest.mark.parametrize(
+    ("vec", "expected"),
+    [
+        (np.array([1, 2, 3]), [0.26726124, 0.53452248, 0.80178373]),
+        ((-1, -2, -3), [-0.26726124, -0.53452248, -0.80178373]),
+        ((0.1, 0.1, 0), [0.70710678, 0.70710678, 0]),
+        (np.array([10]), [1]),
+        (
+            np.array([0, 1, 2, 3, 4, 5]),
+            [0, 0.13483997, 0.26967994, 0.40451992, 0.53935989, 0.67419986],
+        ),
+    ],
+)
+def test_normalize_nonzero_vector(vec, expected):
+    normalized_vec = normalize(vec)
+    assert np.allclose(normalized_vec, expected)
+
+    # check that fallback vector is ignored when the input vector is non-zero
+    fallback_vec = np.array([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    normalized_vec_with_fallback = normalize(vec, fall_back=fallback_vec)
+    assert np.all(normalized_vec_with_fallback == normalized_vec)
+
+
+@pytest.mark.parametrize(
+    "vec",
+    [
+        np.array([0, 0, 0]),
+        np.array([-0, -0, -0]),
+        (0, 0, 0),
+        np.array([0]),
+        np.array([0, 0, 0, 0, 0]),
+    ],
+)
+def test_normalize_zero_vector(vec):
+    normalized_zero_vec = normalize(vec)
+    assert np.allclose(normalized_zero_vec, np.zeros(len(vec)))
+
+    # check that fallback vector is returned when the input vector is zero
+    fallback_vec = np.array([1, 0, 0])
+    normalized_zero_vec_with_fallback = normalize(vec, fall_back=fallback_vec)
+    assert np.allclose(normalized_zero_vec_with_fallback, fallback_vec)

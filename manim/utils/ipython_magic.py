@@ -9,7 +9,6 @@ from pathlib import Path
 from typing import Any
 
 from manim import config, logger, tempconfig
-from manim.__main__ import main
 from manim.renderer.shader import shader_program_cache
 
 from ..constants import RendererType
@@ -120,6 +119,10 @@ else:
             if cell:
                 exec(cell, local_ns)
 
+            # Import lazily to keep package initialization independent of the CLI
+            # entry point and avoid a manim -> IPython magic -> CLI import cycle.
+            from manim.__main__ import main
+
             args = line.split()
             if not len(args) or "-h" in args or "--help" in args or "--version" in args:
                 main(args, standalone_mode=False, prog_name="manim")
@@ -150,11 +153,19 @@ else:
                     if renderer is not None and renderer.window is not None:
                         renderer.window.close()
 
-                if config["output_file"] is None:
+                output_file = getattr(
+                    scene.renderer.file_writer,
+                    "final_file_path",
+                    None,
+                )
+                if output_file is None:
                     logger.info("No output file produced")
                     return
+                if output_file.is_dir():
+                    logger.info("Image-sequence output is not displayed in notebooks")
+                    return
 
-                local_path = Path(config["output_file"]).relative_to(Path.cwd())
+                local_path = output_file.relative_to(Path.cwd())
                 tmpfile = (
                     Path(config["media_dir"])
                     / "jupyter"
@@ -167,7 +178,7 @@ else:
                 tmpfile.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy(local_path, tmpfile)
 
-                file_type = mimetypes.guess_type(config["output_file"])[0]
+                file_type = mimetypes.guess_type(output_file)[0]
                 assert isinstance(file_type, str)
                 embed = config["media_embed"]
                 if not embed:
@@ -177,7 +188,7 @@ else:
                     embed = "google.colab" in str(get_ipython())
 
                 if file_type.startswith("image"):
-                    result = Image(filename=config["output_file"])
+                    result = Image(filename=output_file)
                 else:
                     result = Video(
                         tmpfile,

@@ -93,7 +93,7 @@ class OpenGLPMobject(OpenGLMobject):
         self.rgbas = np.append(self.rgbas, new_rgbas, axis=0)
         return self
 
-    def thin_out(self, factor=5):
+    def thin_out(self, factor=5) -> Self:
         """Removes all but every nth point for n = factor"""
         for mob in self.family_members_with_points():
             num_points = mob.get_num_points()
@@ -107,7 +107,7 @@ class OpenGLPMobject(OpenGLMobject):
 
         return self
 
-    def set_color_by_gradient(self, *colors):
+    def set_color_by_gradient(self, *colors) -> Self:
         self.rgbas = np.array(
             list(map(color_to_rgba, color_gradient(*colors, self.get_num_points()))),
         )
@@ -119,7 +119,7 @@ class OpenGLPMobject(OpenGLMobject):
         radius=1,
         inner_color=WHITE,
         outer_color=BLACK,
-    ):
+    ) -> Self:
         start_rgba, end_rgba = list(map(color_to_rgba, [inner_color, outer_color]))
         if center is None:
             center = self.get_center()
@@ -134,25 +134,25 @@ class OpenGLPMobject(OpenGLMobject):
             )
         return self
 
-    def match_colors(self, pmobject):
+    def match_colors(self, pmobject) -> Self:
         self.rgbas[:] = resize_with_interpolation(pmobject.rgbas, self.get_num_points())
         return self
 
-    def fade_to(self, color, alpha, family=True):
+    def fade_to(self, color, alpha, family=True) -> Self:
         rgbas = interpolate(self.rgbas, color_to_rgba(color), alpha)
         for mob in self.submobjects:
             mob.fade_to(color, alpha, family)
         self.set_rgba_array_direct(rgbas)
         return self
 
-    def filter_out(self, condition):
+    def filter_out(self, condition) -> Self:
         for mob in self.family_members_with_points():
             to_keep = ~np.apply_along_axis(condition, 1, mob.points)
             for key in mob.data:
                 mob.data[key] = mob.data[key][to_keep]
         return self
 
-    def sort_points(self, function=lambda p: p[0]):
+    def sort_points(self, function=lambda p: p[0]) -> Self:
         """function is any map from R^3 to R"""
         for mob in self.family_members_with_points():
             indices = np.argsort(np.apply_along_axis(function, 1, mob.points))
@@ -160,7 +160,7 @@ class OpenGLPMobject(OpenGLMobject):
                 mob.data[key] = mob.data[key][indices]
         return self
 
-    def ingest_submobjects(self):
+    def ingest_submobjects(self) -> Self:
         for key in self.data:
             self.data[key] = np.vstack([sm.data[key] for sm in self.get_family()])
         return self
@@ -169,7 +169,7 @@ class OpenGLPMobject(OpenGLMobject):
         index = alpha * (self.get_num_points() - 1)
         return self.points[int(index)]
 
-    def pointwise_become_partial(self, pmobject, a, b):
+    def pointwise_become_partial(self, pmobject, a, b) -> Self:
         lower_index = int(a * pmobject.get_num_points())
         upper_index = int(b * pmobject.get_num_points())
         for key in self.data:
@@ -194,10 +194,11 @@ class OpenGLPGroup(OpenGLPMobject):
         super().__init__(**kwargs)
         self.add(*pmobs)
 
-    def fade_to(self, color, alpha, family=True):
+    def fade_to(self, color, alpha, family=True) -> Self:
         if family:
             for mob in self.submobjects:
                 mob.fade_to(color, alpha, family)
+        return self
 
 
 class OpenGLPMPoint(OpenGLPMobject):
@@ -205,5 +206,6 @@ class OpenGLPMPoint(OpenGLPMobject):
         self.location = location
         super().__init__(stroke_width=stroke_width, **kwargs)
 
-    def init_points(self):
+    def init_points(self) -> Self:
         self.points = np.array([self.location], dtype=np.float32)
+        return self

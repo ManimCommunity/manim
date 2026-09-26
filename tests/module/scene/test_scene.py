@@ -4,7 +4,18 @@ import datetime
 
 import pytest
 
-from manim import Circle, Dot, FadeIn, Group, Mobject, Scene, Square
+from manim import (
+    Circle,
+    Dot,
+    FadeIn,
+    Group,
+    Line,
+    Mobject,
+    Scene,
+    ShowPassingFlash,
+    Square,
+    Succession,
+)
 from manim.animation.animation import Wait
 
 
@@ -49,6 +60,39 @@ def test_scene_time(dry_run):
     scene.renderer._original_skipping_status = True
     scene.play(FadeIn(Square()), run_time=5)  # this animation gets skipped.
     assert pytest.approx(scene.time) == 7.5
+
+
+def test_animation_group_moving_mobjects_preserve_z_index_order(dry_run):
+    scene = Scene()
+    left_circle = Circle().set_z_index(1)
+    right_circle = Circle().set_z_index(1)
+    line = Line().set_z_index(-1)
+    scene.add(left_circle, right_circle)
+
+    succession = Succession(
+        right_circle.animate.set_fill(opacity=1),
+        ShowPassingFlash(line),
+    )
+    scene.compile_animation_data(succession)
+    scene.begin_animations()
+
+    assert left_circle in scene.moving_mobjects
+    assert left_circle not in scene.static_mobjects
+
+
+@pytest.mark.parametrize("parent_cls", [Group, Circle])
+@pytest.mark.parametrize("z_index", [-10, 0, 10])
+def test_parent_of_moving_submobject_is_marked_moving(dry_run, parent_cls, z_index):
+    scene = Scene()
+    child = Square()
+    parent = parent_cls().set_z_index(z_index).add(child)
+    scene.add(parent)
+
+    scene.compile_animation_data(child.animate.shift((1, 0, 0)))
+    scene.begin_animations()
+
+    assert parent in scene.moving_mobjects
+    assert parent not in scene.static_mobjects
 
 
 def test_subcaption(dry_run):

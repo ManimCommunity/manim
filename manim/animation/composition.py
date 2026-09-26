@@ -408,8 +408,8 @@ class LaggedStartMap(LaggedStart):
     ):
         if arg_creator is None:
 
-            def identity(mob: Mobject) -> Mobject:
-                return mob
+            def identity(mob: Mobject) -> tuple[Mobject]:
+                return (mob,)
 
             arg_creator = identity
 

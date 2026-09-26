@@ -226,7 +226,7 @@ Animations
             y=ValueTracker(0)
             d1.add_updater(lambda z: z.set_x(x.get_value()))
             d2.add_updater(lambda z: z.set_y(y.get_value()))
-            l1.add_updater(lambda z: z.become(Line(d1.get_center(),d2.get_center())))
+            l1.add_updater(lambda z: z.match_points(Line(d1.get_center(),d2.get_center())))
             self.add(d1,d2,l1)
             self.play(x.animate.set_value(5))
             self.play(y.animate.set_value(4))

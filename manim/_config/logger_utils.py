@@ -148,27 +148,14 @@ def parse_theme(parser: configparser.SectionProxy) -> Theme | None:
     return custom_theme
 
 
-def set_file_logger(scene_name: str, module_name: str, log_dir: Path) -> None:
-    """Add a file handler to manim logger.
-
-    The path to the file is built using ``config.log_dir``.
+def set_file_logger(log_file_path: Path) -> None:
+    """Add a file handler for one exact, already resolved log path.
 
     Parameters
     ----------
-    scene_name
-        The name of the scene, used in the name of the log file.
-    module_name
-        The name of the module, used in the name of the log file.
-    log_dir
-        Path to the folder where log files are stored.
+    log_file_path
+        Exact path of the log file for this scene.
     """
-    # Note: The log file name will be
-    # <name_of_animation_file>_<name_of_scene>.log, gotten from config.  So it
-    # can differ from the real name of the scene.  <name_of_scene> would only
-    # appear if scene name was provided when manim was called.
-    log_file_name = f"{module_name}_{scene_name}.log"
-    log_file_path = log_dir / log_file_name
-
     file_handler = logging.FileHandler(log_file_path, mode="w")
     file_handler.setFormatter(JSONFormatter())
 

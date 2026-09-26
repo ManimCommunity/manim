@@ -5,7 +5,8 @@ import re
 import sys
 from typing import TYPE_CHECKING
 
-from cloup import Choice, option, option_group
+from click import BadParameter
+from cloup import Choice, IntRange, option, option_group
 
 from manim.constants import QUALITIES, RendererType
 
@@ -61,6 +62,35 @@ def validate_scene_range(
         sys.exit()
 
     return start, end
+
+
+def validate_encoder_options(
+    ctx: Context,
+    param: Option,
+    value: tuple[str, ...],
+) -> dict[str, str] | None:
+    """Parse repeatable ``KEY=VALUE`` encoder options."""
+    if not value:
+        return None
+
+    options: dict[str, str] = {}
+    for entry in value:
+        key, separator, option_value = entry.partition("=")
+        key = key.strip()
+        if not separator or not key or not option_value:
+            raise BadParameter(
+                "encoder options must use KEY=VALUE with nonempty key and value",
+                ctx=ctx,
+                param=param,
+            )
+        if key in options:
+            raise BadParameter(
+                f"encoder option {key!r} was supplied more than once",
+                ctx=ctx,
+                param=param,
+            )
+        options[key] = option_value
+    return options
 
 
 def validate_resolution(
@@ -121,15 +151,30 @@ render_options = option_group(
     ),
     option(
         "--format",
-        type=Choice(["png", "gif", "mp4", "webm", "mov"], case_sensitive=False),
+        type=Choice(
+            [
+                "auto",
+                "none",
+                "png",
+                "png-sequence",
+                "gif",
+                "mp4",
+                "webm",
+                "mov",
+            ],
+            case_sensitive=False,
+        ),
         default=None,
+        help="Primary output format. PNG renders only the last frame; "
+        "png-sequence writes every rendered frame.",
     ),
     option(
         "-s",
         "--save_last_frame",
         default=None,
         is_flag=True,
-        help="Render and save only the last frame of a scene as a PNG image.",
+        help="Fast-forward animations and save the last frame as PNG "
+        "(equivalent to --format=png).",
     ),
     option(
         "-q",
@@ -166,27 +211,51 @@ render_options = option_group(
         help="Render at this frame rate.",
     ),
     option(
+        "--video-codec",
+        "video_codec",
+        default=None,
+        help="Video encoder used for cached segments (default: auto).",
+    ),
+    option(
+        "--pixel-format",
+        "pixel_format",
+        default=None,
+        help="Pixel format used for cached segments (default: auto).",
+    ),
+    option(
+        "--encoder-option",
+        "video_encoder_options",
+        multiple=True,
+        default=None,
+        callback=validate_encoder_options,
+        metavar="KEY=VALUE",
+        help="Set a codec option; repeat to set multiple options.",
+    ),
+    option(
+        "--max-inflight-encoders",
+        type=IntRange(min=1),
+        default=None,
+        help="Maximum number of partial movie files being encoded concurrently "
+        "while the scene continues rendering. 1 (the default) encodes each "
+        "animation's file before the next animation starts; values > 1 overlap "
+        "encoding with rendering (4 is a good value on typical hardware).",
+    ),
+    option(
+        "--encoder-queue-size",
+        type=IntRange(min=1),
+        default=None,
+        help="Maximum number of pending frame buffers held by each encoder when "
+        "parallel encoding is enabled. Ignored when --max-inflight-encoders is "
+        "1 (the default). Defaults to 8.",
+    ),
+    option(
         "--renderer",
         type=Choice(
             [renderer_type.value for renderer_type in RendererType],
             case_sensitive=False,
         ),
         help="Select a renderer for your Scene.",
-        default="cairo",
-    ),
-    option(
-        "-g",
-        "--save_pngs",
-        is_flag=True,
         default=None,
-        help="Save each frame as png (Deprecated).",
-    ),
-    option(
-        "-i",
-        "--save_as_gif",
-        default=None,
-        is_flag=True,
-        help="Save as a gif (Deprecated).",
     ),
     option(
         "--save_sections",
@@ -198,6 +267,7 @@ render_options = option_group(
         "-t",
         "--transparent",
         is_flag=True,
+        default=None,
         help="Render scenes with alpha channel.",
     ),
     option(

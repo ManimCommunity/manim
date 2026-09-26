@@ -31,7 +31,7 @@ def set_test_scene(scene_object: type[Scene], module_name: str, config):
         set_test_scene(DotTest, "geometry")
 
     """
-    config["write_to_movie"] = False
+    config.format = "none"
     config["disable_caching"] = True
     config["format"] = "png"
     config["pixel_height"] = 480

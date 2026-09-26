@@ -469,7 +469,11 @@ class MathTex(SingleStringMathTex):
         first_match_length = 0
         first_match = None
         for substring in substrings_to_isolate:
-            match = re.match(f"(.*?)({re.escape(substring)})(.*)", unprocessed_string)
+            match = re.match(
+                f"(.*?)({re.escape(substring)})(.*)",
+                unprocessed_string,
+                flags=re.DOTALL,
+            )
             if match and len(match.group(1)) < first_match_start:
                 first_match = match
                 first_match_start = len(match.group(1))
@@ -588,13 +592,16 @@ class MathTex(SingleStringMathTex):
         return self
 
     def index_of_part(self, part: VMobject) -> int:
-        split_self = self.split()
-        if part not in split_self:
+        index, *_ = next(
+            ((i, mob) for i, mob in enumerate(self) if mob == part), [None]
+        )
+        if index is None:
             raise ValueError("Trying to get index of part not in MathTex")
-        return split_self.index(part)
+        return index
 
-    def sort_alphabetically(self) -> None:
+    def sort_alphabetically(self) -> Self:
         self.submobjects.sort(key=lambda m: m.get_tex_string())
+        return self
 
 
 class MathTexPart(VMobject, metaclass=ConvertToOpenGL):
@@ -639,6 +646,19 @@ class Tex(MathTex):
 class BulletedList(Tex):
     """A bulleted list.
 
+    Parameters
+    ----------
+    items
+        The text elements.
+    buff
+        The vertical spacing between the list elements.
+    dot_scale_factor
+        The scale factor for the bullets.
+    tex_environment
+        The tex environment used for the text elements.
+    dot_buff
+        The horizontal spacing between the dots and the text elements.
+
     Examples
     --------
 
@@ -660,6 +680,7 @@ class BulletedList(Tex):
         buff: float = MED_LARGE_BUFF,
         dot_scale_factor: float = 2,
         tex_environment: str | None = None,
+        dot_buff: float = SMALL_BUFF,
         **kwargs: Any,
     ):
         self.buff = buff
@@ -673,11 +694,11 @@ class BulletedList(Tex):
         )
         for part in self:
             dot = MathTex("\\cdot").scale(self.dot_scale_factor)
-            dot.next_to(part[0], LEFT, SMALL_BUFF)
+            dot.next_to(part[0], LEFT, buff=dot_buff)
             part.add_to_back(dot)
         self.arrange(DOWN, aligned_edge=LEFT, buff=self.buff)
 
-    def fade_all_but(self, index_or_string: int | str, opacity: float = 0.5) -> None:
+    def fade_all_but(self, index_or_string: int | str, opacity: float = 0.5) -> Self:
         arg = index_or_string
         if isinstance(arg, str):
             part: VGroup | VMobject | None = self.get_part_by_tex(arg)
@@ -694,6 +715,8 @@ class BulletedList(Tex):
                 other_part.set_fill(opacity=1)
             else:
                 other_part.set_fill(opacity=opacity)
+
+        return self
 
 
 class Title(Tex):

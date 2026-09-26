@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING, Any, Self
 import numpy as np
 import svgelements as se
 
-from manim._config import config
 from manim.mobject.geometry.arc import Arc
 from manim.mobject.geometry.line import Line
 from manim.mobject.mobject import Mobject
@@ -123,6 +122,9 @@ class Brace(VMobjectFromSVGPath):
             **kwargs,
         )
         self.flip(RIGHT)
+        self._tip_point_index = np.argmin(
+            np.linalg.norm(self.points - self.get_bottom(), axis=1)
+        )
         self.stretch_to_fit_width(target_width)
         self.shift(left - self.get_corner(UP + LEFT) + self.buff * DOWN)
 
@@ -192,11 +194,7 @@ class Brace(VMobjectFromSVGPath):
 
     def get_tip(self) -> Point3D:
         """Returns the point at the brace tip."""
-        # Returns the position of the seventh point in the path, which is the tip.
-        if config["renderer"] == "opengl":
-            return self.points[34]
-
-        return self.points[28]  # = 7*4
+        return self.points[self._tip_point_index]
 
     def get_direction(self) -> Vector3D:
         """Returns the direction from the center to the brace tip."""

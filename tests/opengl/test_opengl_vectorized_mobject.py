@@ -5,7 +5,10 @@ import pytest
 
 from manim import Circle, Line, Square, VDict, VGroup, VMobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import (
+    OpenGLVGroup,
+    OpenGLVMobject,
+)
 
 
 def test_opengl_vmobject_add(using_opengl_renderer):
@@ -75,8 +78,30 @@ def test_opengl_vmobject_point_from_proportion(using_opengl_renderer):
         obj.point_from_proportion(2)
 
     obj.clear_points()
-    with pytest.raises(Exception, match="with no points"):
+    with pytest.raises(
+        ValueError,
+        match=(
+            r"Cannot call OpenGLVMobject\.point_from_proportion because "
+            r"OpenGLVMobject has no points\."
+        ),
+    ):
         obj.point_from_proportion(0)
+
+
+def test_opengl_no_points_error_reports_pointful_family_members(
+    using_opengl_renderer,
+):
+    child = OpenGLVMobject().set_points_as_corners([[0, 0, 0], [1, 0, 0]])
+    group = OpenGLVGroup(OpenGLVGroup(child))
+
+    with pytest.raises(ValueError) as error:
+        group.point_from_proportion(0)
+
+    message = str(error.value)
+    assert message.startswith(
+        "Cannot call OpenGLVGroup.point_from_proportion because OpenGLVGroup(",
+    )
+    assert message.endswith("Its family contains 1 mobject with points.")
 
 
 def test_vgroup_init(using_opengl_renderer):
@@ -372,3 +397,25 @@ def test_vgroup_item_assignment_only_allows_vmobjects(using_opengl_renderer):
         "Only values of type OpenGLVMobject can be added as submobjects of "
         "VGroup, but the value invalid object (at index 0) is of type str."
     )
+
+
+def test_vgroup_str_name(using_opengl_renderer):
+    """Test VGroup's string representation correctly includes class name"""
+
+    class VGroupSubclass(VGroup):
+        pass
+
+    for cls, name in (VGroup, "VGroup"), (VGroupSubclass, "VGroupSubclass"):
+        group = cls(OpenGLVMobject())
+        expected = f"{name} of"
+        actual = str(group)
+        assert actual.startswith(expected), f"'{actual}'.startswith('{expected}')"
+
+
+def test_vgroup_str_pluralization(using_opengl_renderer):
+    """Test VGroup's string representation correctly pluralizes 'submobject(s)'"""
+    for i in (0, 1, 2):
+        group = VGroup(OpenGLVMobject() for _ in range(i))
+        expected = f"of {i} {'submobject' if i == 1 else 'submobjects'}"
+        actual = str(group)
+        assert actual.endswith(expected), f"'{actual}'.endswith('{expected}')"
