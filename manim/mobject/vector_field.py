@@ -12,7 +12,7 @@ import itertools as it
 import random
 from collections.abc import Callable, Iterable, Sequence
 from math import ceil, floor
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING, Any, Self
 
 import numpy as np
 from PIL import Image
@@ -27,8 +27,7 @@ from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
 from ..constants import OUT, RIGHT, UP, RendererType
 from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup
-from ..mobject.utils import get_vectorized_mobject_class
+from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import (
     BLUE_E,
@@ -50,9 +49,10 @@ if TYPE_CHECKING:
         FloatRGBA_Array,
         Point3D,
         Vector3D,
+        Vector3DLike,
     )
 
-DEFAULT_SCALAR_FIELD_COLORS: list = [BLUE_E, GREEN, YELLOW, RED]
+DEFAULT_SCALAR_FIELD_COLORS: list[ManimColor] = [BLUE_E, GREEN, YELLOW, RED]
 
 
 class VectorField(VGroup):
@@ -89,7 +89,7 @@ class VectorField(VGroup):
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[ParsableManimColor] = DEFAULT_SCALAR_FIELD_COLORS,
-        **kwargs,
+        **kwargs: Any,
     ):
         super().__init__(**kwargs)
         self.func = func
@@ -98,7 +98,8 @@ class VectorField(VGroup):
             if color_scheme is None:
 
                 def color_scheme(vec: Vector3D) -> float:
-                    return np.linalg.norm(vec)
+                    norm: float = np.linalg.norm(vec)
+                    return norm
 
             self.color_scheme = color_scheme  # TODO maybe other default for direction?
             self.rgbs: FloatRGB_Array = np.array(list(map(color_to_rgb, colors)))
@@ -122,17 +123,21 @@ class VectorField(VGroup):
                 return interpolate(c1, c2, alpha)
 
             self.pos_to_rgb = pos_to_rgb
-            self.pos_to_color = lambda pos: rgb_to_color(self.pos_to_rgb(pos))
+
+            def pos_to_color(pos: Point3D) -> FloatRGB:
+                return rgb_to_color(self.pos_to_rgb(pos))
+
+            self.pos_to_color = pos_to_color
         else:
             self.single_color = True
             self.color = ManimColor.parse(color)
-        self.submob_movement_updater = None
+        self.submob_movement_updater: Callable[[Mobject, float], object] | None = None
 
     @staticmethod
     def shift_func(
-        func: Callable[[np.ndarray], np.ndarray],
-        shift_vector: np.ndarray,
-    ) -> Callable[[np.ndarray], np.ndarray]:
+        func: Callable[[Point3D], Vector3D],
+        shift_vector: Vector3DLike,
+    ) -> Callable[[Point3D], Vector3D]:
         """Shift a vector field function.
 
         Parameters
@@ -144,17 +149,17 @@ class VectorField(VGroup):
 
         Returns
         -------
-        `Callable[[np.ndarray], np.ndarray]`
+        `Callable[[Point3D], Vector3D]`
             The shifted vector field function.
 
         """
-        return lambda p: func(p - shift_vector)
+        return lambda p: func(p - np.asarray(shift_vector))
 
     @staticmethod
     def scale_func(
-        func: Callable[[np.ndarray], np.ndarray],
+        func: Callable[[Point3D], Vector3D],
         scalar: float,
-    ) -> Callable[[np.ndarray], np.ndarray]:
+    ) -> Callable[[Point3D], Vector3D]:
         """Scale a vector field function.
 
         Parameters
@@ -181,7 +186,7 @@ class VectorField(VGroup):
 
         Returns
         -------
-        `Callable[[np.ndarray], np.ndarray]`
+        `Callable[[Point3D], Vector3D]`
             The scaled vector field function.
 
         """
@@ -261,7 +266,7 @@ class VectorField(VGroup):
 
         """
 
-        def runge_kutta(self, p: Sequence[float], step_size: float) -> float:
+        def runge_kutta(self: Self, p: Point3D, step_size: float) -> Vector3D:
             """Returns the change in position of a point along a vector field.
             Parameters
             ----------
@@ -272,7 +277,7 @@ class VectorField(VGroup):
 
             Returns
             -------
-            float
+            Vector3D
                How much the point is shifted.
             """
             k_1 = self.func(p)
@@ -379,7 +384,8 @@ class VectorField(VGroup):
         VectorField
             This vector field.
         """
-        self.remove_updater(self.submob_movement_updater)
+        if self.submob_movement_updater is not None:
+            self.remove_updater(self.submob_movement_updater)
         self.submob_movement_updater = None
         return self
 
@@ -407,10 +413,10 @@ class VectorField(VGroup):
             raise ValueError(
                 "There is no point in generating an image if the vector field uses a single color.",
             )
-        ph = int(config["pixel_height"] / sampling_rate)
-        pw = int(config["pixel_width"] / sampling_rate)
-        fw = config["frame_width"]
-        fh = config["frame_height"]
+        ph = int(config.pixel_height / sampling_rate)
+        pw = int(config.pixel_width / sampling_rate)
+        fw = config.frame_width
+        fh = config.frame_height
         points_array = np.zeros((ph, pw, 3))
         x_array = np.linspace(-fw / 2, fw / 2, pw)
         y_array = np.linspace(fh / 2, -fh / 2, ph)
@@ -552,35 +558,44 @@ class ArrowVectorField(VectorField):
 
     def __init__(
         self,
-        func: Callable[[np.ndarray], np.ndarray],
+        func: Callable[[Point3D], Vector3D],
         color: ParsableManimColor | None = None,
-        color_scheme: Callable[[np.ndarray], float] | None = None,
+        color_scheme: Callable[[Vector3D], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[ParsableManimColor] = DEFAULT_SCALAR_FIELD_COLORS,
         # Determining Vector positions:
-        x_range: Sequence[float] = None,
-        y_range: Sequence[float] = None,
-        z_range: Sequence[float] = None,
+        x_range: Sequence[float] | None = None,
+        y_range: Sequence[float] | None = None,
+        z_range: Sequence[float] | None = None,
         three_dimensions: bool = False,  # Automatically True if z_range is set
         # Takes in actual norm, spits out displayed norm
         length_func: Callable[[float], float] = lambda norm: 0.45 * sigmoid(norm),
         opacity: float = 1.0,
-        vector_config: dict | None = None,
-        **kwargs,
+        vector_config: dict[str, Any] | None = None,
+        **kwargs: Any,
     ):
-        self.x_range = x_range or [
-            floor(-config["frame_width"] / 2),
-            ceil(config["frame_width"] / 2),
-        ]
-        self.y_range = y_range or [
-            floor(-config["frame_height"] / 2),
-            ceil(config["frame_height"] / 2),
-        ]
-        self.ranges = [self.x_range, self.y_range]
+        if x_range is None:
+            self.x_range: list[float] = [
+                floor(-config.frame_width / 2),
+                ceil(config.frame_width / 2),
+            ]
+        else:
+            self.x_range = list(x_range)
+        if y_range is None:
+            self.y_range: list[float] = [
+                floor(-config.frame_height / 2),
+                ceil(config.frame_height / 2),
+            ]
+        else:
+            self.y_range = list(y_range)
+        self.ranges: list[list[float]] = [self.x_range, self.y_range]
 
         if three_dimensions or z_range:
-            self.z_range = z_range or self.y_range.copy()
+            if z_range is None:
+                self.z_range = self.y_range
+            else:
+                self.z_range = list(z_range)
             self.ranges += [self.z_range]
         else:
             self.ranges += [[0, 0]]
@@ -620,7 +635,7 @@ class ArrowVectorField(VectorField):
         )
         self.set_opacity(self.opacity)
 
-    def get_vector(self, point: np.ndarray):
+    def get_vector(self, point: Point3D) -> Vector:
         """Creates a vector in the vector field.
 
         The created vector is based on the function of the vector field and is
@@ -644,6 +659,23 @@ class ArrowVectorField(VectorField):
         else:
             vect.set_color(self.pos_to_color(point))
         return vect
+
+
+class StreamLine(VMobject):
+    """A single stream line as generated by :class:`StreamLines`.
+
+    This subclass adds attributes used by the flow animations of
+    :class:`StreamLines` which are not part of the public API.
+    """
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        #: The simulated time this line took to be traced.
+        self.duration: float = 0
+        #: The current virtual time position of the flowing animation.
+        self.time: float = 0
+        #: The animation currently flashing this line, if any.
+        self.anim: ShowPassingFlash | None = None
 
 
 class StreamLines(VectorField):
@@ -726,41 +758,50 @@ class StreamLines(VectorField):
 
     def __init__(
         self,
-        func: Callable[[np.ndarray], np.ndarray],
+        func: Callable[[Point3D], Vector3D],
         color: ParsableManimColor | None = None,
-        color_scheme: Callable[[np.ndarray], float] | None = None,
+        color_scheme: Callable[[Vector3D], float] | None = None,
         min_color_scheme_value: float = 0,
         max_color_scheme_value: float = 2,
         colors: Sequence[ParsableManimColor] = DEFAULT_SCALAR_FIELD_COLORS,
         # Determining stream line starting positions:
-        x_range: Sequence[float] = None,
-        y_range: Sequence[float] = None,
-        z_range: Sequence[float] = None,
+        x_range: Sequence[float] | None = None,
+        y_range: Sequence[float] | None = None,
+        z_range: Sequence[float] | None = None,
         three_dimensions: bool = False,
         noise_factor: float | None = None,
-        n_repeats=1,
+        n_repeats: int = 1,
         # Determining how lines are drawn
-        dt=0.05,
-        virtual_time=3,
-        max_anchors_per_line=100,
-        padding=3,
+        dt: float = 0.05,
+        virtual_time: float = 3,
+        max_anchors_per_line: int = 100,
+        padding: float = 3,
         # Determining stream line appearance:
-        stroke_width=1,
-        opacity=1,
-        **kwargs,
+        stroke_width: float = 1,
+        opacity: float = 1,
+        **kwargs: Any,
     ):
-        self.x_range = x_range or [
-            floor(-config["frame_width"] / 2),
-            ceil(config["frame_width"] / 2),
-        ]
-        self.y_range = y_range or [
-            floor(-config["frame_height"] / 2),
-            ceil(config["frame_height"] / 2),
-        ]
+        if x_range:
+            self.x_range = list(x_range)
+        else:
+            self.x_range = [
+                floor(-config.frame_width / 2),
+                ceil(config.frame_width / 2),
+            ]
+        if y_range:
+            self.y_range = list(y_range)
+        else:
+            self.y_range = [
+                floor(-config.frame_height / 2),
+                ceil(config.frame_height / 2),
+            ]
         self.ranges = [self.x_range, self.y_range]
 
         if three_dimensions or z_range:
-            self.z_range = z_range or self.y_range.copy()
+            if z_range:
+                self.z_range = list(z_range)
+            else:
+                self.z_range = self.y_range
             self.ranges += [self.z_range]
         else:
             self.ranges += [[0, 0]]
@@ -806,8 +847,8 @@ class StreamLines(VectorField):
             ],
         )
 
-        def outside_box(p):
-            return (
+        def outside_box(p: Point3D) -> bool:
+            outside: bool = (
                 p[0] < self.x_range[0] - self.padding
                 or p[0] > self.x_range[1] + self.padding - self.x_range[2]
                 or p[1] < self.y_range[0] - self.padding
@@ -815,11 +856,12 @@ class StreamLines(VectorField):
                 or p[2] < self.z_range[0] - self.padding
                 or p[2] > self.z_range[1] + self.padding - self.z_range[2]
             )
+            return outside
 
         max_steps = ceil(virtual_time / dt) + 1
         if not self.single_color:
             self.background_img = self.get_colored_background_image()
-            if config["renderer"] == RendererType.OPENGL:
+            if config.renderer == RendererType.OPENGL:
                 self.values_to_rgbas = self.get_vectorized_rgba_gradient_function(
                     min_color_scheme_value,
                     max_color_scheme_value,
@@ -836,7 +878,7 @@ class StreamLines(VectorField):
             step = max_steps
             if not step:
                 continue
-            line = get_vectorized_mobject_class()()
+            line = StreamLine()
             line.duration = step * dt
             step = max(1, int(len(points) / self.max_anchors_per_line))
             line.set_points_smoothly(points[::step])
@@ -864,13 +906,15 @@ class StreamLines(VectorField):
                         line.color_using_background_image(self.background_img)
                     line.set_stroke(width=self.stroke_width, opacity=opacity)
             self.add(line)
-        self.stream_lines = [*self.submobjects]
+        self.stream_lines = [
+            line for line in self.submobjects if isinstance(line, StreamLine)
+        ]
 
     def create(
         self,
         lag_ratio: float | None = None,
-        run_time: Callable[[float], float] | None = None,
-        **kwargs,
+        run_time: Callable[[float], float] | float | None = None,
+        **kwargs: Any,
     ) -> AnimationGroup:
         """The creation animation of the stream lines.
 
@@ -913,6 +957,9 @@ class StreamLines(VectorField):
         """
         if run_time is None:
             run_time = self.virtual_time
+        run_time = float(
+            run_time(self.virtual_time) if callable(run_time) else run_time
+        )
         if lag_ratio is None:
             lag_ratio = run_time / 2 / len(self.submobjects)
 
@@ -929,7 +976,7 @@ class StreamLines(VectorField):
         time_width: float = 0.3,
         rate_func: Callable[[float], float] = linear,
         line_animation_class: type[ShowPassingFlash] = ShowPassingFlash,
-        **kwargs,
+        **kwargs: Any,
     ) -> Self:
         """Animates the stream lines using an updater.
 
@@ -964,28 +1011,33 @@ class StreamLines(VectorField):
         """
         for line in self.stream_lines:
             run_time = line.duration / flow_speed
-            line.anim = line_animation_class(
+            anim = line_animation_class(
                 line,
                 run_time=run_time,
                 rate_func=rate_func,
                 time_width=time_width,
                 **kwargs,
             )
-            line.anim.begin()
+            line.anim = anim
+            anim.begin()
             line.time = random.random() * self.virtual_time
             if warm_up:
                 line.time *= -1
-            self.add(line.anim.mobject)
+            # error: Argument 1 to "add" of "VGroup" has incompatible type "OpenGLMobject"; expected "VMobject | Iterable[VMobject]"  [arg-type]
+            self.add(anim.mobject)  # type: ignore[arg-type]
 
-        def updater(mob, dt):
+        def updater(mob: Mobject, dt: float) -> object:
+            assert isinstance(mob, StreamLines)
             for line in mob.stream_lines:
+                assert line.anim is not None
                 line.time += dt * flow_speed
                 if line.time >= self.virtual_time:
                     line.time -= self.virtual_time
                 line.anim.interpolate(np.clip(line.time / line.anim.run_time, 0, 1))
+            return mob
 
         self.add_updater(updater)
-        self.flow_animation = updater
+        self.flow_animation: Callable[[Mobject, float], object] | None = updater
         self.flow_speed = flow_speed
         self.time_width = time_width
         return self
@@ -1025,17 +1077,20 @@ class StreamLines(VectorField):
         if self.flow_animation is None:
             raise ValueError("You have to start the animation before fading it out.")
 
-        def hide_and_wait(mob, alpha):
+        def hide_and_wait(mob: Mobject, alpha: float) -> None:
             if alpha == 0:
                 mob.set_stroke(opacity=0)
             elif alpha == 1:
                 mob.set_stroke(opacity=1)
 
-        def finish_updater_cycle(line, alpha):
+        def finish_updater_cycle(line: Mobject, alpha: float) -> None:
+            assert isinstance(line, StreamLine)
+            assert line.anim is not None
             line.time += dt * self.flow_speed
             line.anim.interpolate(min(line.time / line.anim.run_time, 1))
             if alpha == 1:
-                self.remove(line.anim.mobject)
+                # error: Argument 1 to "remove" of "Mobject" has incompatible type "OpenGLMobject"; expected "Mobject"  [arg-type]
+                self.remove(line.anim.mobject)  # type: ignore[arg-type]
                 line.anim.finish()
 
         max_run_time = self.virtual_time / self.flow_speed
@@ -1047,12 +1102,13 @@ class StreamLines(VectorField):
         # creation_run_time is calculated so that the creation animation starts at the same speed
         # as the regular line flash animation but eases out.
 
-        dt = 1 / config["frame_rate"]
+        dt = 1 / config.frame_rate
         animations = []
         self.remove_updater(self.flow_animation)
         self.flow_animation = None
 
         for line in self.stream_lines:
+            assert line.anim is not None
             create = Create(
                 line,
                 run_time=creation_run_time,
@@ -1069,7 +1125,8 @@ class StreamLines(VectorField):
                         create,
                     ),
                 )
-                self.remove(line.anim.mobject)
+                # error: Argument 1 to "remove" of "Mobject" has incompatible type "OpenGLMobject"; expected "Mobject"  [arg-type]
+                self.remove(line.anim.mobject)  # type: ignore[arg-type]
                 line.anim.finish()
             else:
                 remaining_time = max_run_time - line.time / self.flow_speed
