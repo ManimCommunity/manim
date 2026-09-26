@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Hashable
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Self
 
 import numpy as np
 
@@ -145,10 +145,11 @@ class Polyhedron(VGroup):
             face_group.add(Polygon(*face, **self.faces_config))
         return face_group
 
-    def update_faces(self, m: Mobject) -> None:
+    def update_faces(self, m: Mobject) -> Self:
         face_coords = self.extract_face_coords()
         new_faces = self.create_faces(face_coords)
         self.faces.match_points(new_faces)
+        return self
 
     def extract_face_coords(self) -> Point3DLike_Array:
         """Extracts the coordinates of the vertices in the graph.

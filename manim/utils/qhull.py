@@ -112,12 +112,22 @@ class QuickHull:
         self.internal: PointND | None = None
         self.tolerance = tolerance
 
+    def _find_initial_simplex(self, points: PointND_Array) -> PointND_Array:
+        """Find a deterministic, affinely independent initial simplex."""
+        dimension = points.shape[1]
+        indices = [0]
+
+        for index in range(1, len(points)):
+            candidate = points[indices + [index]]
+            if np.linalg.matrix_rank(candidate[1:] - candidate[0]) == len(indices):
+                indices.append(index)
+                if len(indices) == dimension + 1:
+                    return points[indices]
+
+        raise ValueError("The points do not span the full coordinate dimension.")
+
     def initialize(self, points: PointND_Array) -> None:
-        # Sample Points
-        rng = np.random.default_rng()
-        simplex = points[
-            rng.choice(points.shape[0], points.shape[1] + 1, replace=False)
-        ]
+        simplex = self._find_initial_simplex(points)
         self.unclaimed = points
         new_internal: PointND = np.mean(simplex, axis=0)
         self.internal = new_internal

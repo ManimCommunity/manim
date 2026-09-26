@@ -33,8 +33,10 @@ class TexTemplate:
     _body: str = field(default="", init=False)
     """A custom body, can be set from a file."""
 
-    tex_compiler: str = "latex"
-    """The TeX compiler to be used, e.g. ``latex``, ``pdflatex`` or ``lualatex``."""
+    tex_compiler: str | list[str] = "latex"
+    """The TeX compiler(s) to be used. Can be a single compiler (e.g. ``"latex"``,
+    ``"pdflatex"``, ``"lualatex"``) or a list of compilers to compile in order
+    (e.g. ``["lualatex", "pdflatex"]``)."""
 
     description: str = ""
     """A description of the template"""

@@ -627,7 +627,7 @@ def get_det_text(
     parens = MathTex("(", ")")
     parens.scale(initial_scale_factor)
     parens.stretch_to_fit_height(matrix.height)
-    l_paren, r_paren = parens.split()
+    l_paren, r_paren = parens
     l_paren.next_to(matrix, LEFT, buff=0.1)
     r_paren.next_to(matrix, RIGHT, buff=0.1)
     det = Tex("det")

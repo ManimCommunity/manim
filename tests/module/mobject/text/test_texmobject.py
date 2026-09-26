@@ -136,6 +136,26 @@ def test_split_double_braces(tex_string, expected_segments):
     assert MathTex._split_double_braces(tex_string) == expected_segments
 
 
+def test_multiline_tex():
+    multiline_string = Tex(
+        """This is a very long string,
+        which will test how well the new implementation of Tex handles such long strings.""",
+        substrings_to_isolate=["This", "implementation"],
+    )
+    assert len(multiline_string.get_part_by_tex("This").submobjects) == 4
+    assert len(multiline_string.get_part_by_tex("implementation").submobjects) == 14
+    assert len(multiline_string.submobjects[0]) == 90
+
+
+def test_multiline_tex_remainder_is_not_truncated():
+    match = MathTex("a")._locate_first_match(
+        ["first"],
+        "first line\nsecond line",
+    )
+    assert match is not None
+    assert match.groups() == ("", "first", " line\nsecond line")
+
+
 def test_tex(config):
     Tex("The horse does not eat cucumber salad.")
     assert Path(config.media_dir, "Tex", "5384b41741a246bd.svg").exists()

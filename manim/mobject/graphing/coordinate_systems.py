@@ -2008,7 +2008,8 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
     @staticmethod
     def _update_default_configs(
-        default_configs: tuple[dict[Any, Any]], passed_configs: tuple[dict[Any, Any]]
+        default_configs: tuple[dict[Any, Any], ...],
+        passed_configs: tuple[dict[Any, Any] | None, ...],
     ) -> None:
         """Takes in two tuples of dicts and return modifies the first such that values from
         ``passed_configs`` overwrite values in ``default_configs``. If a key does not exist

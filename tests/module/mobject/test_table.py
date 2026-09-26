@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from manim import Table
+import numpy as np
+
+from manim import Circle, Table
 from manim.utils.color import GREEN
 
 
@@ -41,3 +43,56 @@ def test_table_include_inner_lines_true():
 
     assert len(table.get_horizontal_lines()) == 3
     assert len(table.get_vertical_lines()) == 3
+
+
+def test_table_accepts_iterable_data():
+    """Table data can be any iterable of iterables."""
+    data = (iter(row) for row in [["A", "B"], ["C", "D"]])
+
+    table = Table(data)
+
+    assert len(table.get_entries()) == 4
+
+
+def test_table_accepts_numpy_label_arrays():
+    """NumPy arrays remain valid iterables for row and column labels."""
+    for label_parameter, label_getter in (
+        ("row_labels", Table.get_row_labels),
+        ("col_labels", Table.get_col_labels),
+    ):
+        labels = np.empty(2, dtype=object)
+        labels[:] = [Circle(), Circle()]
+
+        table = Table(
+            [["A", "B"], ["C", "D"]],
+            **{label_parameter: labels},
+        )
+        actual_labels = label_getter(table)
+
+        assert len(actual_labels) == len(labels)
+        assert all(
+            actual_labels[index] is labels[index] for index in range(len(labels))
+        )
+
+
+def test_empty_label_iterables_are_treated_as_absent():
+    """Empty label iterables do not affect the other label dimension."""
+    col_labels = [Circle(), Circle()]
+    table_without_row_labels = Table(
+        [["A", "B"], ["C", "D"]],
+        row_labels=iter(()),
+        col_labels=col_labels,
+    )
+
+    assert len(table_without_row_labels.get_row_labels()) == 0
+    assert len(table_without_row_labels.get_col_labels()) == 2
+
+    row_labels = [Circle(), Circle()]
+    table_without_col_labels = Table(
+        [["A", "B"], ["C", "D"]],
+        row_labels=row_labels,
+        col_labels=iter(()),
+    )
+
+    assert len(table_without_col_labels.get_row_labels()) == 2
+    assert len(table_without_col_labels.get_col_labels()) == 0
