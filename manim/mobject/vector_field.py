@@ -283,10 +283,7 @@ class VectorField(VGroup):
             k_2 = self.func(p + step_size * (k_1 * 0.5))
             k_3 = self.func(p + step_size * (k_2 * 0.5))
             k_4 = self.func(p + step_size * k_3)
-            calculated_shift: float = (
-                step_size / 6.0 * (k_1 + 2.0 * k_2 + 2.0 * k_3 + k_4)
-            )
-            return calculated_shift
+            return step_size / 6.0 * (k_1 + 2.0 * k_2 + 2.0 * k_3 + k_4)
 
         step_size = dt / substeps
         for _ in range(substeps):
