@@ -89,6 +89,7 @@ class Positionable:
             self.points = self.points.reshape(0, 3)
         return self
 
+    # @deprecated_params(params="mobject", redirections=[("mobject", "other")])
     def match_points(
         self,
         other: Positionable,
@@ -241,6 +242,7 @@ class Positionable:
         """
         return [self]
 
+    # @deprecated_params(redirections=[("func", "function")])
     def apply_to_family(
         self,
         function: Callable[[Positionable], Any],
@@ -282,6 +284,7 @@ class Positionable:
 
         return self
 
+    # @deprecated_params(redirections=[("func", "function")])
     def apply_points_function(
         self,
         function: Callable[[Point3D_Array], Point3D_Array],
@@ -483,6 +486,7 @@ class Positionable:
 
         return self.apply_to_family(apply, **kwargs)
 
+    # @deprecated_params(redirections=[("scale_factor", "factor")])
     def scale(
         self,
         factor: float | Vector3DLike,
@@ -1156,6 +1160,7 @@ class Positionable:
         """
         return self.get_coordinate(0, direction)
 
+    # @deprecated_params(redirections=[("x", "value")])
     def set_x(
         self, value: float, direction: Vector3DLike = ORIGIN, **kwargs: Any
     ) -> Self:
@@ -1193,6 +1198,7 @@ class Positionable:
         """
         return self.get_coordinate(1, direction)
 
+    # @deprecated_params(redirections=[("x", "value")])
     def set_y(
         self, value: float, direction: Vector3DLike = ORIGIN, **kwargs: Any
     ) -> Self:
@@ -1230,6 +1236,7 @@ class Positionable:
         """
         return self.get_coordinate(2, direction)
 
+    # @deprecated_params(redirections=[("y", "value")])
     def set_z(
         self,
         value: float,
@@ -1311,6 +1318,7 @@ class Positionable:
             **kwargs,
         )
 
+    # @deprecated_params(redirections=[("mobject_or_point", "point_or_mobject")])
     def align_to(
         self,
         point_or_mobject: Point3DLike | Positionable,
@@ -1361,6 +1369,7 @@ class Positionable:
                 vector[dim] = point_or_mobject[dim] - source
         return self.translate(vector, **kwargs)
 
+    # @deprecated_params(redirections=[("mobject_or_point", "point_or_mobject")])
     def next_to(
         self,
         point_or_mobject: Point3DLike | Positionable,
@@ -1446,6 +1455,7 @@ class Positionable:
                 self.align_on_border(edge, buff=buff, **kwargs)
         return self
 
+    # TODO: Should this be deprecated?
     def apply_function_to_position(
         self,
         function: Callable[[Point3D], Point3D],
@@ -1545,6 +1555,7 @@ class Positionable:
         index = np.argmax(all_points.dot(direction))
         return all_points[index]
 
+    # TODO: Should this be deprecated?
     def apply_function_to_submobject_positions(
         self,
         function: Callable[[Point3D], Point3D],
@@ -1564,7 +1575,14 @@ class Positionable:
         """
         raise NotImplementedError
 
-    def space_out_submobjects(self, factor: float = 1.5) -> Self:
+    def space_out_submobjects(
+        self,
+        factor: float = 1.5,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
+        **kwargs: Any,
+    ) -> Self:
         """Scales the distance between the submobjects of the object.
 
         Parameters
@@ -1685,9 +1703,9 @@ class Positionable:
         *,
         buff: float | tuple[float, float] = MED_SMALL_BUFF,
         cell_alignment: Vector3DLike = ORIGIN,
-        # TODO: replace with Vector3DLike
+        # TODO: replace with Vector3DLikes
         row_alignments: str | None = None,
-        # TODO: replace with Vector3DLike
+        # TODO: replace with Vector3DLikes
         col_alignments: str | None = None,
         row_heights: Iterable[float | None] | None = None,
         col_widths: Iterable[float | None] | None = None,
@@ -1857,6 +1875,7 @@ class Positionable:
             **kwargs,
         )
 
+    # @deprecated_params(redirections=[("width", "size")])
     def scale_to_fit_width(
         self,
         size: float,
@@ -1906,6 +1925,7 @@ class Positionable:
             **kwargs,
         )
 
+    # @deprecated_params(redirections=[("width", "size")])
     def scale_to_fit_height(
         self,
         size: float,
@@ -1940,6 +1960,7 @@ class Positionable:
             **kwargs,
         )
 
+    # @deprecated_params(redirections=[("depth", "size")])
     def scale_to_fit_depth(
         self,
         size: float,
@@ -2065,6 +2086,7 @@ class Positionable:
             **kwargs,
         )
 
+    # @deprecated_params(redirections=[("width", "size")])
     def stretch_to_fit_width(
         self,
         size: float,
@@ -2115,6 +2137,7 @@ class Positionable:
             **kwargs,
         )
 
+    # @deprecated_params(redirections=[("height", "size")])
     def stretch_to_fit_height(
         self,
         size: float,
@@ -2165,6 +2188,7 @@ class Positionable:
             **kwargs,
         )
 
+    # @deprecated_params(redirections=[("depth", "size")])
     def stretch_to_fit_depth(
         self,
         size: float,
@@ -2307,6 +2331,9 @@ class Positionable:
             **kwargs,
         )
 
+    # TODO: Use a more descriptive name?
+
+    # @deprecated_params(redirections=[("mobject", "other")])
     def replace(
         self,
         other: Positionable,
@@ -2347,6 +2374,7 @@ class Positionable:
             )
         return self.set_center(other.get_center(), **kwargs)
 
+    # @deprecated_params(redirections=[("mobject", "other"), ("dim_to_match", "dim")])
     def surround(
         self,
         other: Positionable,
@@ -2522,6 +2550,7 @@ class Positionable:
         """
         return self.get_anchor(direction)
 
+    # @deprecated_params(redirections=[("mobject_or_point", "point_or_mobject")])
     def move_to(
         self,
         point_or_mobject: Point3DLike | Positionable,
@@ -2781,22 +2810,24 @@ class Positionable:
     dim: int = 3
 
     # @deprecated(replacement="apply_points_function")
+    # @deprecated_params(redirections=[("func", "function")])
     def apply_points_function_about_point(
         self,
-        func: Callable[[Point3D_Array], Point3D_Array],
+        function: Callable[[Point3D_Array], Point3D_Array],
         *,
         about_point: Point3DLike | None = None,
         about_edge: Vector3DLike | None = None,
         **kwargs: Any,
     ) -> Self:
         return self.apply_points_function(
-            func,
+            function,
             about_point=about_point,
             about_edge=about_edge,
             **kwargs,
         )
 
     # @deprecated(replacement="set_dim_size")
+    # @deprecated_params(redirections=[("length", "size")])
     def rescale_to_fit(
         self,
         size: float,
@@ -2825,14 +2856,23 @@ class Positionable:
             )
 
     # @deprecated(replacement="stretch")
+    # @deprecated_params(redirections=[("point", "about_point")])
     def stretch_about_point(
         self,
         factor: float,
         dim: int,
-        point: Point3DLike,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> Self:
-        return self.stretch(factor, dim, about_point=point, **kwargs)
+        return self.stretch(
+            factor,
+            dim,
+            about_point=about_point,
+            about_edge=about_edge,
+            **kwargs,
+        )
 
     # @deprecated(replacement="get_coordinate")
     def get_extremum_along_dim(
@@ -2863,15 +2903,16 @@ class Positionable:
         )
 
     # @deprecated()
+    # @deprecated_params(redirections=["reduce_func", "function"])
     def reduce_across_dimension(
         self,
-        reduce_func: Callable[[Iterable[float]], float],
+        function: Callable[[Iterable[float]], float],
         dim: int,
     ) -> float | None:
         all_points = self.get_all_points()
         if len(all_points) == 0:
             return None
-        return reduce_func(all_points[:, dim])
+        return function(all_points[:, dim])
 
     # @deprecated()
     def get_points_defining_boundary(self) -> Point3D_Array:
@@ -2920,6 +2961,7 @@ class Positionable:
         )
 
     # @deprecated(replacement="(scale|stretch)_to_fit_dim(other.get_dim_size())")
+    # @deprecated_params(redirections=["mobject", "other"])
     def match_dim_size(
         self,
         other: Positionable,
@@ -2948,6 +2990,7 @@ class Positionable:
             )
 
     # @deprecated(replacement="(scale|stretch)_to_fit_width(other.width)")
+    # @deprecated_params(redirections=["mobject", "other"])
     def match_width(
         self,
         other: Positionable,
@@ -2967,6 +3010,7 @@ class Positionable:
         )
 
     # @deprecated(replacement="(scale|stretch)_to_fit_height(other.height)")
+    # @deprecated_params(redirections=["mobject", "other"])
     def match_height(
         self,
         other: Positionable,
@@ -2986,6 +3030,7 @@ class Positionable:
         )
 
     # @deprecated(replacement="(scale|stretch)_to_fit_depth(other.depth)")
+    # @deprecated_params(redirections=["mobject", "other"])
     def match_depth(
         self,
         other: Positionable,
@@ -3005,6 +3050,7 @@ class Positionable:
         )
 
     # @deprecated(replacement="set_coordinate(other.get_coordinate())")
+    # @deprecated_params(redirections=["mobject", "other"])
     def match_coord(
         self,
         other: Positionable,
@@ -3017,6 +3063,7 @@ class Positionable:
         )
 
     # @deprecated(replacement="set_x(other.get_x())")
+    # @deprecated_params(redirections=["mobject", "other"])
     def match_x(
         self,
         other: Positionable,
@@ -3026,6 +3073,7 @@ class Positionable:
         return self.set_x(other.get_x(direction), direction, **kwargs)
 
     # @deprecated(replacement="set_y(other.get_y())")
+    # @deprecated_params(redirections=["mobject", "other"])
     def match_y(
         self,
         other: Positionable,
@@ -3035,6 +3083,7 @@ class Positionable:
         return self.set_y(other.get_y(direction), direction, **kwargs)
 
     # @deprecated(replacement="set_z(other.get_z())")
+    # @deprecated_params(redirections=["mobject", "other"])
     def match_z(
         self,
         other: Positionable,
