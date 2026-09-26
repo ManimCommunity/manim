@@ -265,7 +265,7 @@ class VectorField(VGroup):
 
         """
 
-        def runge_kutta(self: Self, p: Sequence[float], step_size: float) -> float:
+        def runge_kutta(self: Self, p: Point3D, step_size: float) -> Vector3D:
             """Returns the change in position of a point along a vector field.
             Parameters
             ----------
