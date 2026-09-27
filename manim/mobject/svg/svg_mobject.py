@@ -375,8 +375,9 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         shape
             The parsed SVG element.
         """
+        # stroke="none" still inherits a stroke-width, but has no color to draw it with
         mob.set_style(
-            stroke_width=shape.stroke_width,
+            stroke_width=shape.stroke_width if shape.stroke.value is not None else 0,
             stroke_color=shape.stroke.hexrgb,
             stroke_opacity=shape.stroke.opacity,
             fill_color=shape.fill.hexrgb,
