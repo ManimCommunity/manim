@@ -593,7 +593,7 @@ class ArrowVectorField(VectorField):
 
         if three_dimensions or z_range:
             if z_range is None:
-                self.z_range = self.y_range
+                self.z_range = self.y_range.copy()
             else:
                 self.z_range = list(z_range)
             self.ranges += [self.z_range]
@@ -801,7 +801,7 @@ class StreamLines(VectorField):
             if z_range:
                 self.z_range = list(z_range)
             else:
-                self.z_range = self.y_range
+                self.z_range = self.y_range.copy()
             self.ranges += [self.z_range]
         else:
             self.ranges += [[0, 0]]
