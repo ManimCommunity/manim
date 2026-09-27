@@ -90,7 +90,7 @@ class VectorField(VGroup):
         max_color_scheme_value: float = 2,
         colors: Sequence[ParsableManimColor] = DEFAULT_SCALAR_FIELD_COLORS,
         **kwargs: Any,
-    ):
+    ) -> None:
         super().__init__(**kwargs)
         self.func = func
         if color is None:
@@ -124,7 +124,7 @@ class VectorField(VGroup):
 
             self.pos_to_rgb = pos_to_rgb
 
-            def pos_to_color(pos: Point3D) -> FloatRGB:
+            def pos_to_color(pos: Point3D) -> ManimColor:
                 return rgb_to_color(self.pos_to_rgb(pos))
 
             self.pos_to_color = pos_to_color
@@ -574,7 +574,7 @@ class ArrowVectorField(VectorField):
         opacity: float = 1.0,
         vector_config: dict[str, Any] | None = None,
         **kwargs: Any,
-    ):
+    ) -> None:
         if x_range is None:
             self.x_range: list[float] = [
                 floor(-config.frame_width / 2),
@@ -780,7 +780,7 @@ class StreamLines(VectorField):
         stroke_width: float = 1,
         opacity: float = 1,
         **kwargs: Any,
-    ):
+    ) -> None:
         if x_range:
             self.x_range = list(x_range)
         else:
