@@ -395,7 +395,9 @@ class NumberLine(Line):
         val = interpolate(self.get_start(), self.get_end(), alphas)
         return val
 
-    def point_to_number(self, point: Sequence[float]) -> float:
+    def point_to_number(
+        self, point: Sequence[float] | Sequence[Sequence[float]] | np.ndarray
+    ) -> float | np.ndarray:
         """Accepts a point with respect to the scene and returns
         a value along the number line, or an array of values for multiple points.
 
@@ -428,11 +430,11 @@ class NumberLine(Line):
         point = np.asarray(point)
         start, end = self.get_start_and_end()
         unit_vect = normalize(end - start)
-        proportion: float = np.dot(point - start, unit_vect) / np.dot(
+        proportion: float | np.ndarray = np.dot(point - start, unit_vect) / np.dot(
             end - start, unit_vect
         )
         return cast(
-            float,
+            float | np.ndarray,
             self.scaling.function(
                 interpolate(self.x_range[0], self.x_range[1], proportion)
             ),
@@ -442,7 +444,9 @@ class NumberLine(Line):
         """Abbreviation for :meth:`~.NumberLine.number_to_point`."""
         return self.number_to_point(number)
 
-    def p2n(self, point: Point3DLike) -> float:
+    def p2n(
+        self, point: Sequence[float] | Sequence[Sequence[float]] | np.ndarray
+    ) -> float | np.ndarray:
         """Abbreviation for :meth:`~.NumberLine.point_to_number`."""
         return self.point_to_number(point)
 
@@ -682,7 +686,10 @@ class NumberLine(Line):
     def __matmul__(self, other: float) -> Point3D:
         return self.n2p(other)
 
-    def __rmatmul__(self, other: Point3DLike | Mobject) -> float:
+    def __rmatmul__(
+        self,
+        other: Point3DLike | Sequence[float] | Sequence[Sequence[float]] | Mobject,
+    ) -> float | np.ndarray:
         if isinstance(other, Mobject):
             other = other.get_center()
         return self.p2n(other)

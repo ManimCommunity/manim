@@ -140,11 +140,18 @@ def test_scaled_coordinate_round_trip(scaling, transformed):
     points = line.number_to_point(numbers)
 
     np.testing.assert_allclose(line.point_to_number(points), numbers, atol=1e-12)
+    assert isinstance(line.p2n(points), np.ndarray)
+    np.testing.assert_allclose(line.p2n(points), numbers, atol=1e-12)
+    np.testing.assert_allclose(line.p2n(points.tolist()), numbers, atol=1e-12)
+    np.testing.assert_allclose(points.tolist() @ line, numbers, atol=1e-12)
     np.testing.assert_allclose(
         line.point_to_number(points.tolist()), numbers, atol=1e-12
     )
     for number, point in zip(numbers, points, strict=True):
         np.testing.assert_allclose(line.point_to_number(point), number, atol=1e-12)
+        assert np.isscalar(line.p2n(point))
+        np.testing.assert_allclose(line.p2n(point), number, atol=1e-12)
+        np.testing.assert_allclose(point.tolist() @ line, number, atol=1e-12)
 
 
 def test_start_and_end_at_same_point():
