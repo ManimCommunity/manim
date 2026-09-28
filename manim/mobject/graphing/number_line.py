@@ -397,17 +397,20 @@ class NumberLine(Line):
 
     def point_to_number(self, point: Sequence[float]) -> float:
         """Accepts a point with respect to the scene and returns
-        a float along the number line.
+        a value along the number line, or an array of values for multiple points.
+
+        The configured scaling is applied, reversing :meth:`number_to_point`.
 
         Parameters
         ----------
         point
-            A sequence of values consisting of ``(x_coord, y_coord, z_coord)``.
+            A sequence of values consisting of ``(x_coord, y_coord, z_coord)``,
+            or a sequence of such points.
 
         Returns
         -------
-        float
-            A float representing a value along the number line.
+        float or np.ndarray
+            The value along the number line, or an array for multiple points.
 
         Examples
         --------
@@ -428,7 +431,12 @@ class NumberLine(Line):
         proportion: float = np.dot(point - start, unit_vect) / np.dot(
             end - start, unit_vect
         )
-        return interpolate(self.x_min, self.x_max, proportion)
+        return cast(
+            float,
+            self.scaling.function(
+                interpolate(self.x_range[0], self.x_range[1], proportion)
+            ),
+        )
 
     def n2p(self, number: float | np.ndarray) -> Point3D:
         """Abbreviation for :meth:`~.NumberLine.number_to_point`."""
