@@ -204,8 +204,8 @@ def list_update(
     *,
     key: Callable[[T | U], Hashable] | None = None,
 ) -> list[T | U]:
-    """List equivalent of ``set.update()``. Any elements in ``l1`` that are also in
-    ``l2`` are removed from ``l1``, and then ``l2`` is concatenated to the end of ``l1``.
+    """Returns a new list containing all the elements of ``l1`` which are not present in
+    ``l2``, followed by all the elements of ``l2``. Element order is preserved.
 
     An optional key function can be provided to specify which elements
     should be considered equal.
