@@ -136,6 +136,11 @@ class ShowPartial(Animation):
     def _get_bounds(self, alpha: float) -> tuple[float, float]:
         raise NotImplementedError("Please use Create or ShowPassingFlash")
 
+    def update_mobjects(self, dt: float) -> None:
+        if self.suspend_mobject_updating:
+            dt = 0
+        super().update_mobjects(dt)
+
 
 class Create(ShowPartial):
     """Incrementally show a VMobject.
