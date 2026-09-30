@@ -162,7 +162,7 @@ class SampleSpace(Rectangle):
             else:
                 label_mob = MathTex(label)
                 label_mob.scale(self.default_label_scale_val)
-            label_mob.next_to(brace, direction, buff)
+            label_mob.next_to(brace, direction, buff=buff)
 
             braces.add(brace)
             assert isinstance(label_mob, VMobject)

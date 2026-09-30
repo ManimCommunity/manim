@@ -109,7 +109,7 @@ class AbstractImageMobject(Mobject):
         self.resampling_algorithm = resampling_algorithm
         return self
 
-    def reset_points(self) -> Self:
+    def reset_points(self, **kwargs: Any) -> Self:
         """Sets :attr:`points` to be the four image corners."""
         self.points = np.array(
             [
@@ -125,8 +125,8 @@ class AbstractImageMobject(Mobject):
             height = h / self.scale_to_resolution * config["frame_height"]
         else:
             height = 3  # this is the case for ImageMobjectFromCamera
-        self.stretch_to_fit_height(height)
-        self.stretch_to_fit_width(height * w / h)
+        self.stretch_to_fit_height(height, **kwargs)
+        self.stretch_to_fit_width(height * w / h, **kwargs)
         return self
 
 

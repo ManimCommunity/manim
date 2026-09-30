@@ -117,6 +117,8 @@ query either :attr:`~.Typst.baseline_frames` for all tracked leaf elements or
 
 from __future__ import annotations
 
+from manim.typing import Point3DLike, Vector3DLike
+
 __all__ = [
     "Typst",
     "MathTypst",
@@ -132,7 +134,12 @@ import numpy as np
 import svgelements as se
 
 from manim import config
-from manim.constants import DEFAULT_FONT_SIZE, SCALE_FACTOR_PER_FONT_POINT, RendererType
+from manim.constants import (
+    DEFAULT_FONT_SIZE,
+    ORIGIN,
+    SCALE_FACTOR_PER_FONT_POINT,
+    RendererType,
+)
 from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import BLACK, ParsableManimColor
@@ -418,17 +425,19 @@ class Typst(SVGMobject):
 
     def scale(
         self,
-        scale_factor: float,
-        scale_stroke: bool = False,
+        factor: float | Vector3DLike,
         *,
-        about_point: np.ndarray | None = None,
-        about_edge: np.ndarray | None = None,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
+        scale_stroke: bool = False,
+        **kwargs: Any,
     ) -> Self:
         result = super().scale(
-            scale_factor,
+            factor,
             scale_stroke=scale_stroke,
             about_point=about_point,
             about_edge=about_edge,
+            **kwargs,
         )
         self._refresh_svg_stroke_widths()
         return result

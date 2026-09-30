@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any
 
 from ..animation.animation import Animation
 from ..animation.transform import Transform
-from ..constants import OUT, PI, TAU
+from ..constants import ORIGIN, OUT, PI, TAU
 from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
@@ -91,7 +91,7 @@ class Rotating(Animation):
         angle: float = TAU,
         axis: Vector3DLike = OUT,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         run_time: float = 5,
         rate_func: Callable[[float], float] = linear,
         **kwargs: Any,
@@ -158,7 +158,7 @@ class Rotate(Transform):
         angle: float = PI,
         axis: Vector3DLike = OUT,
         about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
+        about_edge: Vector3DLike | None = ORIGIN,
         **kwargs: Any,
     ) -> None:
         if "path_arc" not in kwargs:
