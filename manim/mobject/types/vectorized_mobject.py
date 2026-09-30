@@ -101,6 +101,10 @@ class VMobject(Mobject):
         The line joint type used to connect the curve segments
         of this vectorized mobject. See :class:`.LineJointType`
         for options.
+    gradient_type
+        Indicates the type of gradient to be applied. Options
+        are GradientType.LINEAR and GradientType.RADIAL.
+        See :class:`.GradientType`
     """
 
     sheen_factor = 0.0
@@ -128,6 +132,7 @@ class VMobject(Mobject):
         tolerance_for_point_equality: float = 1e-6,
         n_points_per_cubic_curve: int = 4,
         cap_style: CapStyleType = CapStyleType.AUTO,
+        gradient_type: GradientType = GradientType.LINEAR,
         **kwargs: Any,
     ):
         self.fill_opacity = fill_opacity
@@ -159,6 +164,7 @@ class VMobject(Mobject):
             0, 1, n_points_per_cubic_curve
         )
         self.cap_style: CapStyleType = cap_style
+        self.gradient_type = gradient_type
         super().__init__(**kwargs)
         self.submobjects: list[VMobject]
 
