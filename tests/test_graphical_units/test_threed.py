@@ -133,7 +133,7 @@ def test_SurfaceColorscale(scene):
         u_range=[-3, 3],
     )
     trig_plane.set_fill_by_value(
-        axes=axes, colorscale=[BLUE, GREEN, YELLOW, ORANGE, RED]
+        axes=axes, colorscale=[BLUE, GREEN, PURE_YELLOW, ORANGE, RED]
     )
     scene.add(axes, trig_plane)
 
@@ -158,7 +158,7 @@ def test_Y_Direction(scene):
     )
     surface_plane.set_style(fill_opacity=1)
     surface_plane.set_fill_by_value(
-        axes=axes, colorscale=[(RED, -0.4), (YELLOW, 0), (GREEN, 0.4)], axis=1
+        axes=axes, colorscale=[(RED, -0.4), (PURE_YELLOW, 0), (GREEN, 0.4)], axis=1
     )
     scene.add(axes, surface_plane)
 

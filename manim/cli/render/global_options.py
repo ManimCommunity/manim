@@ -62,23 +62,10 @@ global_options = option_group(
         default=None,
     ),
     option(
-        "--custom_folders",
-        is_flag=True,
-        default=None,
-        help="Use the folders defined in the [custom_folders] section of the "
-        "config file to define the output folder structure.",
-    ),
-    option(
         "--disable_caching",
         is_flag=True,
         default=None,
         help="Disable the use of the cache (still generates cache files).",
-    ),
-    option(
-        "--flush_cache",
-        is_flag=True,
-        help="Remove cached partial movie files.",
-        default=None,
     ),
     option("--tex_template", help="Specify a custom TeX template file.", default=None),
     option(
@@ -88,7 +75,7 @@ global_options = option_group(
             ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
             case_sensitive=False,
         ),
-        help="Verbosity of CLI output. Changes ffmpeg log level unless 5+.",
+        help="Verbosity of CLI output. Changes media log level unless 5+.",
         default=None,
     ),
     option(
@@ -122,12 +109,6 @@ global_options = option_group(
         default=None,
     ),
     option(
-        "--force_window",
-        is_flag=True,
-        help="Force window to open when using the opengl renderer, intended for debugging as it may impact performance",
-        default=None,
-    ),
-    option(
         "--dry_run",
         is_flag=True,
         help="Renders animations without outputting image or video files and disables the window",
@@ -142,6 +123,12 @@ global_options = option_group(
     option(
         "--preview_command",
         help="The command used to preview the output file (for example vlc for video files)",
+        default=None,
+    ),
+    option(
+        "--seed",
+        type=int,
+        help="Set the random seed to allow reproducibility.",
         default=None,
     ),
 )

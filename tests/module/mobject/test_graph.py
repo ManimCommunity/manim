@@ -18,6 +18,14 @@ def test_graph_creation():
     assert str(G_directed) == "Directed graph on 4 vertices and 4 edges"
 
 
+@pytest.mark.parametrize("graph_class", [Graph, DiGraph])
+def test_empty_graph_creation(graph_class):
+    graph = graph_class([], [])
+
+    assert graph.vertices == {}
+    assert graph.edges == {}
+
+
 def test_graph_add_vertices():
     G = Graph([1, 2, 3], [(1, 2), (2, 3)])
     G.add_vertices(4)
@@ -76,6 +84,19 @@ def test_graph_add_edges():
     assert set(G._graph.edges()) == set(G.edges.keys())
 
 
+def test_graph_getitem():
+    vertices = [1, 2, 3, 4]
+    edges = [(1, 2), (2, 3), (3, 4), (4, 1)]
+    G = Graph(vertices, edges)
+    # Vertex access
+    assert G[1] is G.vertices[1]
+    # Edge access via tuple key
+    assert G[(1, 2)] is G.edges[(1, 2)]
+    # DiGraph edge access
+    DG = DiGraph(vertices, edges)
+    assert DG[(1, 2)] is DG.edges[(1, 2)]
+
+
 def test_graph_remove_edges():
     G = Graph([1, 2, 3, 4, 5], [(1, 2), (2, 3), (3, 4), (4, 5), (1, 5)])
     removed_mobjects = G.remove_edges((1, 2))
@@ -105,11 +126,11 @@ def test_graph_accepts_labeledline_as_edge_type():
         vertices, edges, edge_type=LabeledLine, edge_config=edge_config
     )
 
-    for _edge_key, edge_obj in G_manual.edges.items():
+    for edge_obj in G_manual.edges.values():
         assert isinstance(edge_obj, LabeledLine)
         assert hasattr(edge_obj, "label")
 
-    for _edge_key, edge_obj in G_directed.edges.items():
+    for edge_obj in G_directed.edges.values():
         assert isinstance(edge_obj, LabeledLine)
         assert hasattr(edge_obj, "label")
 

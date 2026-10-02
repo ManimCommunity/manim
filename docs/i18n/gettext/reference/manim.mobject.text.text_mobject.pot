@@ -65,7 +65,7 @@ msgid "In ``assets/fonts`` folder."
 msgstr ""
 
 #: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.register_font:7
-msgid "In ``font/`` folder."
+msgid "In ``fonts/`` folder."
 msgstr ""
 
 #: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.register_font:8

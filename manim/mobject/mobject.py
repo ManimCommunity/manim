@@ -14,10 +14,11 @@ import random
 import sys
 import types
 import warnings
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Iterator, MutableSet, Sequence
+from contextlib import suppress
 from functools import partialmethod, reduce
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 
@@ -28,38 +29,49 @@ from .. import config, logger
 from ..constants import *
 from ..utils.color import (
     BLACK,
+    PURE_YELLOW,
     WHITE,
-    YELLOW_C,
     ManimColor,
     ParsableManimColor,
     color_gradient,
     interpolate_color,
 )
 from ..utils.exceptions import MultiAnimationOverrideException
-from ..utils.iterables import list_update, remove_list_redundancies
+from ..utils.iterables import (
+    list_difference_update,
+    remove_list_redundancies,
+)
 from ..utils.paths import straight_path
+from ..utils.simple_functions import clip
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 if TYPE_CHECKING:
-    from typing_extensions import Self, TypeAlias
+    from typing import Self, TypeAlias
 
+    from PIL import Image
+
+    from manim.mobject.types.point_cloud_mobject import Point
     from manim.typing import (
         FunctionOverride,
         MappingFunction,
+        MatrixMN,
         MultiMappingFunction,
         PathFuncType,
-        PixelArray,
         Point3D,
+        Point3D_Array,
         Point3DLike,
         Point3DLike_Array,
+        Vector3D,
         Vector3DLike,
     )
 
     from ..animation.animation import Animation
+    from ..camera.camera import Camera
 
-    TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
-    NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
-    Updater: TypeAlias = NonTimeBasedUpdater | TimeBasedUpdater
+
+_TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
+_NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
+_Updater: TypeAlias = _NonTimeBasedUpdater | _TimeBasedUpdater
 
 
 class Mobject:
@@ -82,16 +94,18 @@ class Mobject:
 
     """
 
-    animation_overrides = {}
+    original_id: str
+    _original__init__: Callable[..., None]
+    animation_overrides: dict[
+        type[Animation],
+        FunctionOverride,
+    ] = {}
 
     @classmethod
-    def __init_subclass__(cls, **kwargs) -> None:
+    def __init_subclass__(cls, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
 
-        cls.animation_overrides: dict[
-            type[Animation],
-            FunctionOverride,
-        ] = {}
+        cls.animation_overrides = {}
         cls._add_intrinsic_animation_overrides()
         cls._original__init__ = cls.__init__
 
@@ -100,16 +114,16 @@ class Mobject:
         color: ParsableManimColor | list[ParsableManimColor] = WHITE,
         name: str | None = None,
         dim: int = 3,
-        target=None,
+        target: Mobject | None = None,
         z_index: float = 0,
-    ) -> None:
+    ):
         self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
         self.target = target
         self.z_index = z_index
         self.point_hash = None
-        self.submobjects = []
-        self.updaters: list[Updater] = []
+        self.submobjects: list[Mobject] = []
+        self.updaters: list[_Updater] = []
         self.updating_suspended = False
         self.color = ManimColor.parse(color)
 
@@ -150,7 +164,7 @@ class Mobject:
         return self._assert_valid_submobjects_internal(submobjects, Mobject)
 
     def _assert_valid_submobjects_internal(
-        self, submobjects: list[Mobject], mob_class: type[Mobject]
+        self, submobjects: Iterable[Mobject], mob_class: type[Mobject]
     ) -> Self:
         for i, submob in enumerate(submobjects):
             if not isinstance(submob, mob_class):
@@ -246,7 +260,7 @@ class Mobject:
             )
 
     @classmethod
-    def set_default(cls, **kwargs) -> None:
+    def set_default(cls, **kwargs: Any) -> None:
         """Sets the default values of keyword arguments.
 
         If this method is called without any additional keyword
@@ -289,8 +303,11 @@ class Mobject:
 
         """
         if kwargs:
-            cls.__init__ = partialmethod(cls.__init__, **kwargs)
+            # Apparently mypy does not correctly understand `partialmethod`:
+            #   see https://github.com/python/mypy/issues/8619
+            cls.__init__ = partialmethod(cls.__init__, **kwargs)  # type: ignore[assignment]
         else:
+            # error: Cannot assign to a method  [method-assign]
             cls.__init__ = cls._original__init__
 
     @property
@@ -393,7 +410,43 @@ class Mobject:
         """
         return _AnimationBuilder(self)
 
-    def __deepcopy__(self, clone_from_id) -> Self:
+    @property
+    def always(self) -> Self:
+        """Call a method on a mobject every frame.
+
+        This is syntactic sugar for ``mob.add_updater(lambda m: m.method(*args, **kwargs), call_updater=True)``.
+        Note that this will call the method immediately. If this behavior is not
+        desired, you should use :meth:`add_updater` directly.
+
+        .. warning::
+
+            Chaining of methods is allowed, but each method will be added
+            as its own updater. If you are chaining methods, make sure they
+            do not interfere with each other or you may get unexpected results.
+
+        .. warning::
+
+            :attr:`always` is not compatible with :meth:`.ValueTracker.get_value`, because
+            the value will be computed once and then never updated again. Use :meth:`add_updater`
+            if you would like to use a :class:`~.ValueTracker` to update the value.
+
+        Example
+        -------
+
+            .. manim:: AlwaysExample
+
+                class AlwaysExample(Scene):
+                    def construct(self):
+                        sq = Square().to_edge(LEFT)
+                        t = Text("Hello World!")
+                        t.always.next_to(sq, UP)
+                        self.add(sq, t)
+                        self.play(sq.animate.to_edge(RIGHT))
+        """
+        # can't use typing.cast because Self is under TYPE_CHECKING
+        return _UpdaterBuilder(self)  # type: ignore[return-value]
+
+    def __deepcopy__(self, clone_from_id: dict[int, Mobject]) -> Self:
         cls = self.__class__
         result = cls.__new__(cls)
         clone_from_id[id(self)] = result
@@ -405,28 +458,109 @@ class Mobject:
     def __repr__(self) -> str:
         return str(self.name)
 
-    def reset_points(self) -> None:
+    def reset_points(self) -> Self:
         """Sets :attr:`points` to be an empty array."""
         self.points = np.zeros((0, self.dim))
+        return self
 
-    def init_colors(self) -> object:
+    def init_colors(self, propagate_colors: bool = True) -> Self:
         """Initializes the colors.
 
         Gets called upon creation. This is an empty method that can be implemented by
         subclasses.
         """
+        return self
 
-    def generate_points(self) -> object:
+    def generate_points(self) -> Self:
         """Initializes :attr:`points` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be implemented by
         subclasses.
         """
+        return self
+
+    def _insert_submobjects(self, index: int, mobjects: Sequence[Mobject]) -> Self:
+        """Common backing implementation for :meth:`add`, :meth:`add_to_back`, and
+        :meth:`insert`.
+
+        Inserts ``mobjects`` into :attr:`submobjects` such that they end up starting
+        at ``index`` (following the semantics of :meth:`list.insert`). Mobjects that
+        are already present are moved to the new position instead of being duplicated.
+        """
+        # TODO: The logic of adding/inserting submobjects is inconsistent with that of
+        # OpenGLMobjects. Mobjects *do* move already-present submobjects if they are
+        # reinserted, and input is deduplicated by keeping the *last* (rightmost)
+        # occurrence of an element, while OpenGLMobjects *don't* move already-present
+        # submobjects and they deduplicate input by keeping the *first* occurrence.
+        # This behavior should be made consistent when technically possible.
+
+        self._assert_valid_submobjects(mobjects)
+
+        if not mobjects:
+            return self
+
+        unique_mobjects = remove_list_redundancies(mobjects)
+        if len(mobjects) != len(unique_mobjects):
+            logger.warning(
+                "Attempted adding some Mobject as a child more than once, "
+                "this is not possible. Repetitions are ignored.",
+            )
+
+        if not self.submobjects:
+            self.submobjects = unique_mobjects
+            return self
+
+        n = len(self.submobjects)
+
+        # Normalize the index to be in the range [0, n] following the semantics of list.insert
+        norm_index = clip(index if index >= 0 else n + index, 0, n)
+
+        # Shortcut for the common case of adding a single mobject
+        if len(unique_mobjects) == 1:
+            mobject = unique_mobjects[0]
+            # If the mobject is already present at or next to the provided index, we
+            # don't need to do anything
+            if any(
+                self.submobjects[j] is mobject
+                for j in (norm_index - 1, norm_index)
+                if 0 <= j < n
+            ):
+                return self
+
+            try:
+                old_index = self.submobjects.index(mobject)
+            except ValueError:  # mobject isn't already present
+                self.submobjects.insert(norm_index, mobject)
+                return self
+
+            # Compensate for list shifting after popping
+            new_index = norm_index if norm_index < old_index else norm_index - 1
+            self.submobjects.pop(old_index)
+            self.submobjects.insert(new_index, mobject)
+            return self
+
+        if norm_index >= len(self.submobjects):
+            # Skip one list difference since we're just extending the list
+            self.submobjects = [
+                *list_difference_update(self.submobjects, unique_mobjects),
+                *unique_mobjects,
+            ]
+        else:
+            head = list_difference_update(
+                it.islice(self.submobjects, norm_index), unique_mobjects
+            )
+            tail = list_difference_update(
+                it.islice(self.submobjects, norm_index, None), unique_mobjects
+            )
+
+            self.submobjects = [*head, *unique_mobjects, *tail]
+        return self
 
     def add(self, *mobjects: Mobject) -> Self:
         """Add mobjects as submobjects.
 
-        The mobjects are added to :attr:`submobjects`.
+        The mobjects are added to :attr:`submobjects`. If a mobject to be added is
+        already a submobject of ``self``, it will be moved to its new position.
 
         Subclasses of mobject may implement ``+`` and ``+=`` dunder methods.
 
@@ -447,18 +581,21 @@ class Mobject:
         :class:`TypeError`
             When trying to add an object that is not an instance of :class:`Mobject`.
 
-
         Notes
         -----
         A mobject cannot contain itself, and it cannot contain a submobject
-        more than once.  If the parent mobject is displayed, the newly-added
+        more than once. The ``mobjects`` list will be deduplicated before its contents
+        are added; the last (rightmost) occurrence of a duplicate mobject will be the
+        one that is kept.
+        If the parent mobject is displayed, the newly-added
         submobjects will also be displayed (i.e. they are automatically added
         to the parent Scene).
 
         See Also
         --------
-        :meth:`remove`
         :meth:`add_to_back`
+        :meth:`insert`
+        :meth:`remove`
 
         Examples
         --------
@@ -500,24 +637,23 @@ class Mobject:
             [child]
 
         """
-        self._assert_valid_submobjects(mobjects)
-        unique_mobjects = remove_list_redundancies(mobjects)
-        if len(mobjects) != len(unique_mobjects):
-            logger.warning(
-                "Attempted adding some Mobject as a child more than once, "
-                "this is not possible. Repetitions are ignored.",
-            )
+        return self._insert_submobjects(len(self.submobjects), mobjects)
 
-        self.submobjects = list_update(self.submobjects, unique_mobjects)
-        return self
+    # TODO: Since the addition of the private _insert_submobjects method, it has been
+    # possible to insert multiple mobjects into the submobjects list at once. In the
+    # future, the signature of `insert` should be changed to:
+    #   def insert(
+    #       self, index: int, *mobjects: Mobject
+    #   ) -> Self:
+    # This can either be done as part of a larger breaking change or as a gradual
+    # change with a period of supporting both argument names and appropriate deprecation
+    # warnings for use of the singular "mobject" keyword.
 
-    def insert(self, index: int, mobject: Mobject) -> None:
-        """Inserts a mobject at a specific position into self.submobjects
+    def insert(self, index: int, mobject: Mobject) -> Self:
+        """Inserts a mobject at a specific position into the submobjects list.
 
-        Effectively just calls  ``self.submobjects.insert(index, mobject)``,
-        where ``self.submobjects`` is a list.
-
-        Highly adapted from ``Mobject.add``.
+        If ``mobject`` is already a submobject of ``self``, it will be moved to the new
+        position.
 
         Parameters
         ----------
@@ -525,20 +661,52 @@ class Mobject:
             The index at which
         mobject
             The mobject to be inserted.
-        """
-        self._assert_valid_submobjects([mobject])
-        self.submobjects.insert(index, mobject)
 
-    def __add__(self, mobject: Mobject):
+
+        .. note::
+            ``mobject`` will be inserted at position ``index``, but there is no
+            guarantee that this will be its final position in :attr:`submobjects`, since
+            the list will shift if ``mobject`` was already present at a lower index than
+            ``index``.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Raises
+        ------
+        :class:`ValueError`
+            When a mobject tries to add itself.
+        :class:`TypeError`
+            When trying to add an object that is not an instance of :class:`Mobject`.
+
+        Notes
+        -----
+        A mobject cannot contain itself, and it cannot contain a submobject
+        more than once.
+        If the parent mobject is displayed, the newly-added
+        submobject will also be displayed (i.e. it is automatically added
+        to the parent Scene).
+
+        See Also
+        --------
+        :meth:`add`
+        :meth:`add_to_back`
+        :meth:`remove`
+        """
+        return self._insert_submobjects(index, (mobject,))
+
+    def __add__(self, mobject: Mobject) -> Self:
         raise NotImplementedError
 
-    def __iadd__(self, mobject: Mobject):
+    def __iadd__(self, mobject: Mobject) -> Self:
         raise NotImplementedError
 
     def add_to_back(self, *mobjects: Mobject) -> Self:
         """Add all passed mobjects to the back of the submobjects.
 
-        If :attr:`submobjects` already contains the given mobjects, they just get moved
+        If :attr:`submobjects` already contains any of the given mobjects, they just get moved
         to the back instead.
 
         Parameters
@@ -569,24 +737,24 @@ class Mobject:
         Notes
         -----
         A mobject cannot contain itself, and it cannot contain a submobject
-        more than once.  If the parent mobject is displayed, the newly-added
+        more than once. The ``mobjects`` list will be deduplicated before its contents
+        are added; the last (rightmost) occurrence of a duplicate mobject will be the
+        one that is kept.
+        If the parent mobject is displayed, the newly-added
         submobjects will also be displayed (i.e. they are automatically added
         to the parent Scene).
 
         See Also
         --------
-        :meth:`remove`
         :meth:`add`
+        :meth:`insert`
+        :meth:`remove`
 
         """
-        self._assert_valid_submobjects(mobjects)
-        self.remove(*mobjects)
-        # dict.fromkeys() removes duplicates while maintaining order
-        self.submobjects = list(dict.fromkeys(mobjects)) + self.submobjects
-        return self
+        return self._insert_submobjects(0, mobjects)
 
     def remove(self, *mobjects: Mobject) -> Self:
-        """Remove :attr:`submobjects`.
+        """Remove submobjects.
 
         The mobjects are removed from :attr:`submobjects`, if they exist.
 
@@ -607,18 +775,23 @@ class Mobject:
         :meth:`add`
 
         """
-        for mobject in mobjects:
-            if mobject in self.submobjects:
-                self.submobjects.remove(mobject)
+        if not self.submobjects:
+            return self
+
+        if len(mobjects) == 1:
+            with suppress(ValueError):
+                self.submobjects.remove(mobjects[0])
+            return self
+        self.submobjects = list_difference_update(self.submobjects, mobjects)
         return self
 
-    def __sub__(self, other):
+    def __sub__(self, other: Mobject) -> Self:
         raise NotImplementedError
 
-    def __isub__(self, other):
+    def __isub__(self, other: Mobject) -> Self:
         raise NotImplementedError
 
-    def set(self, **kwargs) -> Self:
+    def set(self, **kwargs: Any) -> Self:
         """Sets attributes.
 
         I.e. ``my_mobject.set(foo=1)`` applies ``my_mobject.foo = 1``.
@@ -686,7 +859,7 @@ class Mobject:
             # Remove the "get_" prefix
             to_get = attr[4:]
 
-            def getter(self):
+            def getter(self: Mobject) -> Any:
                 warnings.warn(
                     "This method is not guaranteed to stay around. Please prefer "
                     "getting the attribute normally.",
@@ -703,7 +876,7 @@ class Mobject:
             # Remove the "set_" prefix
             to_set = attr[4:]
 
-            def setter(self, value):
+            def setter(self: Mobject, value: Any) -> Mobject:
                 warnings.warn(
                     "This method is not guaranteed to stay around. Please prefer "
                     "setting the attribute normally or with Mobject.set().",
@@ -754,7 +927,7 @@ class Mobject:
         return self.length_over_dim(0)
 
     @width.setter
-    def width(self, value: float):
+    def width(self, value: float) -> None:
         self.scale_to_fit_width(value)
 
     @property
@@ -790,7 +963,7 @@ class Mobject:
         return self.length_over_dim(1)
 
     @height.setter
-    def height(self, value: float):
+    def height(self, value: float) -> None:
         self.scale_to_fit_height(value)
 
     @property
@@ -810,11 +983,11 @@ class Mobject:
         return self.length_over_dim(2)
 
     @depth.setter
-    def depth(self, value: float):
+    def depth(self, value: float) -> None:
         self.scale_to_fit_depth(value)
 
     # Can't be staticmethod because of point_cloud_mobject.py
-    def get_array_attrs(self) -> list[Literal["points"]]:
+    def get_array_attrs(self) -> list[str]:
         return ["points"]
 
     def apply_over_attr_arrays(self, func: MultiMappingFunction) -> Self:
@@ -823,16 +996,13 @@ class Mobject:
         return self
 
     # Displaying
-
-    def get_image(self, camera=None) -> PixelArray:
+    def get_image(self, camera: Camera | None = None) -> Image.Image:
         if camera is None:
-            from ..camera.camera import Camera
-
             camera = Camera()
         camera.capture_mobject(self)
         return camera.get_image()
 
-    def show(self, camera=None) -> None:
+    def show(self, camera: Camera | None = None) -> None:
         self.get_image(camera=camera).show()
 
     def save_image(self, name: str | None = None) -> None:
@@ -896,15 +1066,17 @@ class Mobject:
             return self
         for updater in self.updaters:
             if "dt" in inspect.signature(updater).parameters:
-                updater(self, dt)
+                time_based_updater = cast(_TimeBasedUpdater, updater)
+                time_based_updater(self, dt)
             else:
-                updater(self)
+                non_time_based_updater = cast(_NonTimeBasedUpdater, updater)
+                non_time_based_updater(self)
         if recursive:
             for submob in self.submobjects:
-                submob.update(dt, recursive)
+                submob.update(dt, recursive=recursive)
         return self
 
-    def get_time_based_updaters(self) -> list[TimeBasedUpdater]:
+    def get_time_based_updaters(self) -> list[_TimeBasedUpdater]:
         """Return all updaters using the ``dt`` parameter.
 
         The updaters use this parameter as the input for difference in time.
@@ -920,11 +1092,12 @@ class Mobject:
         :meth:`has_time_based_updater`
 
         """
-        return [
-            updater
-            for updater in self.updaters
-            if "dt" in inspect.signature(updater).parameters
-        ]
+        rv: list[_TimeBasedUpdater] = []
+        for updater in self.updaters:
+            if "dt" in inspect.signature(updater).parameters:
+                time_based_updater = cast(_TimeBasedUpdater, updater)
+                rv.append(time_based_updater)
+        return rv
 
     def has_time_based_updater(self) -> bool:
         """Test if ``self`` has a time based updater.
@@ -944,7 +1117,7 @@ class Mobject:
             "dt" in inspect.signature(updater).parameters for updater in self.updaters
         )
 
-    def get_updaters(self) -> list[Updater]:
+    def get_updaters(self) -> list[_Updater]:
         """Return all updaters.
 
         Returns
@@ -960,12 +1133,12 @@ class Mobject:
         """
         return self.updaters
 
-    def get_family_updaters(self) -> list[Updater]:
+    def get_family_updaters(self) -> list[_Updater]:
         return list(it.chain(*(sm.get_updaters() for sm in self.get_family())))
 
     def add_updater(
         self,
-        update_function: Updater,
+        update_function: _Updater,
         index: int | None = None,
         call_updater: bool = False,
     ) -> Self:
@@ -1039,12 +1212,15 @@ class Mobject:
         if call_updater:
             parameters = inspect.signature(update_function).parameters
             if "dt" in parameters:
-                update_function(self, 0)
+                time_based_updater = cast(_TimeBasedUpdater, update_function)
+                time_based_updater(self, 0)
             else:
-                update_function(self)
+                non_time_based_updater = cast(_NonTimeBasedUpdater, update_function)
+                non_time_based_updater(self)
+
         return self
 
-    def remove_updater(self, update_function: Updater) -> Self:
+    def remove_updater(self, update_function: _Updater) -> Self:
         """Remove an updater.
 
         If the same updater is applied multiple times, every instance gets removed.
@@ -1067,8 +1243,7 @@ class Mobject:
         :meth:`get_updaters`
 
         """
-        while update_function in self.updaters:
-            self.updaters.remove(update_function)
+        self.updaters = list_difference_update(self.updaters, [update_function])
         return self
 
     def clear_updaters(self, recursive: bool = True) -> Self:
@@ -1180,7 +1355,7 @@ class Mobject:
 
     # Transforming operations
 
-    def apply_to_family(self, func: Callable[[Mobject], None]) -> None:
+    def apply_to_family(self, func: Callable[[Mobject], None]) -> Self:
         """Apply a function to ``self`` and every submobject with points recursively.
 
         Parameters
@@ -1201,6 +1376,8 @@ class Mobject:
         """
         for mob in self.family_members_with_points():
             func(mob)
+
+        return self
 
     def shift(self, *vectors: Vector3DLike) -> Self:
         """Shift by the given vectors.
@@ -1227,7 +1404,13 @@ class Mobject:
 
         return self
 
-    def scale(self, scale_factor: float, **kwargs) -> Self:
+    def scale(
+        self,
+        scale_factor: float,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
         r"""Scale the size by a factor.
 
         Default behavior is to scale about the center of the mobject.
@@ -1238,9 +1421,10 @@ class Mobject:
             The scaling factor :math:`\alpha`. If :math:`0 < |\alpha| < 1`, the mobject
             will shrink, and for :math:`|\alpha| > 1` it will grow. Furthermore,
             if :math:`\alpha < 0`, the mobject is also flipped.
-        kwargs
-            Additional keyword arguments passed to
-            :meth:`apply_points_function_about_point`.
+        about_point
+            The point about which to apply the scaling.
+        about_edge
+            The edge about which to apply the scaling.
 
         Returns
         -------
@@ -1269,7 +1453,7 @@ class Mobject:
 
         """
         self.apply_points_function_about_point(
-            lambda points: scale_factor * points, **kwargs
+            lambda points: scale_factor * points, about_point, about_edge
         )
         return self
 
@@ -1281,8 +1465,10 @@ class Mobject:
         self,
         angle: float,
         axis: Vector3DLike = OUT,
+        *,
         about_point: Point3DLike | None = None,
-        **kwargs,
+        about_edge: Vector3DLike | None = None,
+        **kwargs: Any,
     ) -> Self:
         """Rotates the :class:`~.Mobject` around a specified axis and point.
 
@@ -1296,9 +1482,8 @@ class Mobject:
         about_point
             The point about which the mobject rotates. If ``None``, rotation occurs around
             the center of the mobject.
-        **kwargs
-            Additional keyword arguments passed to :meth:`apply_points_function_about_point`,
-            such as ``about_edge``.
+        about_edge
+            The edge about which to apply the scaling.
 
         Returns
         -------
@@ -1344,11 +1529,17 @@ class Mobject:
         """
         rot_matrix = rotation_matrix(angle, axis)
         self.apply_points_function_about_point(
-            lambda points: np.dot(points, rot_matrix.T), about_point, **kwargs
+            lambda points: np.dot(points, rot_matrix.T), about_point, about_edge
         )
         return self
 
-    def flip(self, axis: Vector3DLike = UP, **kwargs) -> Self:
+    def flip(
+        self,
+        axis: Vector3DLike = UP,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
         """Flips/Mirrors an mobject about its center.
 
         Examples
@@ -1365,26 +1556,45 @@ class Mobject:
                     self.add(s2)
 
         """
-        return self.rotate(TAU / 2, axis, **kwargs)
+        return self.rotate(
+            TAU / 2, axis, about_point=about_point, about_edge=about_edge
+        )
 
-    def stretch(self, factor: float, dim: int, **kwargs) -> Self:
+    def stretch(
+        self,
+        factor: float,
+        dim: int,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
         def func(points: Point3D_Array) -> Point3D_Array:
             points[:, dim] *= factor
             return points
 
-        self.apply_points_function_about_point(func, **kwargs)
+        self.apply_points_function_about_point(func, about_point, about_edge)
         return self
 
-    def apply_function(self, function: MappingFunction, **kwargs) -> Self:
+    def apply_function(
+        self,
+        function: MappingFunction,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
         # Default to applying matrix about the origin, not mobjects center
-        if len(kwargs) == 0:
-            kwargs["about_point"] = ORIGIN
+        if about_point is None and about_edge is None:
+            about_point = ORIGIN
 
         def multi_mapping_function(points: Point3D_Array) -> Point3D_Array:
             result: Point3D_Array = np.apply_along_axis(function, 1, points)
             return result
 
-        self.apply_points_function_about_point(multi_mapping_function, **kwargs)
+        self.apply_points_function_about_point(
+            multi_mapping_function,
+            about_point,
+            about_edge,
+        )
         return self
 
     def apply_function_to_position(self, function: MappingFunction) -> Self:
@@ -1396,20 +1606,30 @@ class Mobject:
             submob.apply_function_to_position(function)
         return self
 
-    def apply_matrix(self, matrix, **kwargs) -> Self:
+    def apply_matrix(
+        self,
+        matrix: MatrixMN,
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
+    ) -> Self:
         # Default to applying matrix about the origin, not mobjects center
-        if ("about_point" not in kwargs) and ("about_edge" not in kwargs):
-            kwargs["about_point"] = ORIGIN
+        if about_point is None and about_edge is None:
+            about_point = ORIGIN
         full_matrix = np.identity(self.dim)
         matrix = np.array(matrix)
         full_matrix[: matrix.shape[0], : matrix.shape[1]] = matrix
         self.apply_points_function_about_point(
-            lambda points: np.dot(points, full_matrix.T), **kwargs
+            lambda points: np.dot(points, full_matrix.T), about_point, about_edge
         )
         return self
 
     def apply_complex_function(
-        self, function: Callable[[complex], complex], **kwargs
+        self,
+        function: Callable[[complex], complex],
+        *,
+        about_point: Point3DLike | None = None,
+        about_edge: Vector3DLike | None = None,
     ) -> Self:
         """Applies a complex function to a :class:`Mobject`.
         The x and y Point3Ds correspond to the real and imaginary parts respectively.
@@ -1437,12 +1657,14 @@ class Mobject:
                     self.play(t.animate.set_value(TAU), run_time=3)
         """
 
-        def R3_func(point):
+        def R3_func(point: Point3D) -> Point3D:
             x, y, z = point
             xy_complex = function(complex(x, y))
-            return [xy_complex.real, xy_complex.imag, z]
+            return np.array([xy_complex.real, xy_complex.imag, z])
 
-        return self.apply_function(R3_func)
+        return self.apply_function(
+            R3_func, about_point=about_point, about_edge=about_edge
+        )
 
     def reverse_points(self) -> Self:
         for mob in self.family_members_with_points():
@@ -1452,7 +1674,7 @@ class Mobject:
     def repeat(self, count: int) -> Self:
         """This can make transition animations nicer"""
 
-        def repeat_array(array):
+        def repeat_array(array: Point3D_Array) -> Point3D_Array:
             return reduce(lambda a1, a2: np.append(a1, a2, axis=0), [array] * count)
 
         for mob in self.family_members_with_points():
@@ -1482,7 +1704,7 @@ class Mobject:
             mob.points += about_point
         return self
 
-    def pose_at_angle(self, **kwargs):
+    def pose_at_angle(self, **kwargs: Any) -> Self:
         self.rotate(TAU / 14, RIGHT + UP, **kwargs)
         return self
 
@@ -1628,7 +1850,7 @@ class Mobject:
         self.shift((target_point - point_to_align + buff * np_direction) * coor_mask)
         return self
 
-    def shift_onto_screen(self, **kwargs) -> Self:
+    def shift_onto_screen(self, **kwargs: Any) -> Self:
         space_lengths = [config["frame_x_radius"], config["frame_y_radius"]]
         for vect in UP, DOWN, LEFT, RIGHT:
             dim = np.argmax(np.abs(vect))
@@ -1639,20 +1861,21 @@ class Mobject:
                 self.to_edge(vect, **kwargs)
         return self
 
-    def is_off_screen(self):
+    def is_off_screen(self) -> bool:
         if self.get_left()[0] > config["frame_x_radius"]:
             return True
         if self.get_right()[0] < -config["frame_x_radius"]:
             return True
         if self.get_bottom()[1] > config["frame_y_radius"]:
             return True
-        return self.get_top()[1] < -config["frame_y_radius"]
+        rv: bool = self.get_top()[1] < -config["frame_y_radius"]
+        return rv
 
     def stretch_about_point(self, factor: float, dim: int, point: Point3DLike) -> Self:
         return self.stretch(factor, dim, about_point=point)
 
     def rescale_to_fit(
-        self, length: float, dim: int, stretch: bool = False, **kwargs
+        self, length: float, dim: int, stretch: bool = False, **kwargs: Any
     ) -> Self:
         old_length = self.length_over_dim(dim)
         if old_length == 0:
@@ -1663,7 +1886,7 @@ class Mobject:
             self.scale(length / old_length, **kwargs)
         return self
 
-    def scale_to_fit_width(self, width: float, **kwargs) -> Self:
+    def scale_to_fit_width(self, width: float, **kwargs: Any) -> Self:
         """Scales the :class:`~.Mobject` to fit a width while keeping height/depth proportional.
 
         Returns
@@ -1688,7 +1911,7 @@ class Mobject:
         """
         return self.rescale_to_fit(width, 0, stretch=False, **kwargs)
 
-    def stretch_to_fit_width(self, width: float, **kwargs) -> Self:
+    def stretch_to_fit_width(self, width: float, **kwargs: Any) -> Self:
         """Stretches the :class:`~.Mobject` to fit a width, not keeping height/depth proportional.
 
         Returns
@@ -1713,7 +1936,7 @@ class Mobject:
         """
         return self.rescale_to_fit(width, 0, stretch=True, **kwargs)
 
-    def scale_to_fit_height(self, height: float, **kwargs) -> Self:
+    def scale_to_fit_height(self, height: float, **kwargs: Any) -> Self:
         """Scales the :class:`~.Mobject` to fit a height while keeping width/depth proportional.
 
         Returns
@@ -1738,7 +1961,7 @@ class Mobject:
         """
         return self.rescale_to_fit(height, 1, stretch=False, **kwargs)
 
-    def stretch_to_fit_height(self, height: float, **kwargs) -> Self:
+    def stretch_to_fit_height(self, height: float, **kwargs: Any) -> Self:
         """Stretches the :class:`~.Mobject` to fit a height, not keeping width/depth proportional.
 
         Returns
@@ -1763,15 +1986,17 @@ class Mobject:
         """
         return self.rescale_to_fit(height, 1, stretch=True, **kwargs)
 
-    def scale_to_fit_depth(self, depth: float, **kwargs) -> Self:
+    def scale_to_fit_depth(self, depth: float, **kwargs: Any) -> Self:
         """Scales the :class:`~.Mobject` to fit a depth while keeping width/height proportional."""
         return self.rescale_to_fit(depth, 2, stretch=False, **kwargs)
 
-    def stretch_to_fit_depth(self, depth: float, **kwargs) -> Self:
+    def stretch_to_fit_depth(self, depth: float, **kwargs: Any) -> Self:
         """Stretches the :class:`~.Mobject` to fit a depth, not keeping width/height proportional."""
         return self.rescale_to_fit(depth, 2, stretch=True, **kwargs)
 
-    def set_coord(self, value, dim: int, direction: Vector3DLike = ORIGIN) -> Self:
+    def set_coord(
+        self, value: float, dim: int, direction: Vector3DLike = ORIGIN
+    ) -> Self:
         curr = self.get_coord(dim, direction)
         shift_vect = np.zeros(self.dim)
         shift_vect[dim] = value - curr
@@ -1790,7 +2015,7 @@ class Mobject:
         """Set z value of the center of the :class:`~.Mobject` (``int`` or ``float``)"""
         return self.set_coord(z, 2, direction)
 
-    def space_out_submobjects(self, factor: float = 1.5, **kwargs) -> Self:
+    def space_out_submobjects(self, factor: float = 1.5, **kwargs: Any) -> Self:
         self.scale(factor, **kwargs)
         for submob in self.submobjects:
             submob.scale(1.0 / factor)
@@ -1841,35 +2066,41 @@ class Mobject:
         return self
 
     def put_start_and_end_on(self, start: Point3DLike, end: Point3DLike) -> Self:
-        curr_start, curr_end = self.get_start_and_end()
-        curr_vect = curr_end - curr_start
-        if np.all(curr_vect == 0):
-            # TODO: this looks broken. It makes self.points a Point3D instead
-            # of a Point3D_Array. However, modifying this breaks some tests
-            # where this is currently expected.
-            self.points = np.array(start)
+        current_start, current_end = self.get_start_and_end()
+        current_vector = current_end - current_start
+        if np.all(current_vector == 0):
+            warnings.warn(
+                "put_start_and_end_on has been called on a closed loop or zero-length mobject. "
+                f"{type(self).__name__} will be shifted to start point instead.",
+                stacklevel=2,
+            )
+            self.shift(np.asarray(start) - current_start)
             return self
-        target_vect = np.asarray(end) - np.asarray(start)
+
+        target_vector = np.asarray(end) - np.asarray(start)
         axis = (
-            normalize(np.cross(curr_vect, target_vect))
-            if np.linalg.norm(np.cross(curr_vect, target_vect)) != 0
+            normalize(np.cross(current_vector, target_vector))
+            if np.linalg.norm(np.cross(current_vector, target_vector)) != 0
             else OUT
         )
         self.scale(
-            np.linalg.norm(target_vect) / np.linalg.norm(curr_vect),
-            about_point=curr_start,
+            np.linalg.norm(target_vector) / np.linalg.norm(current_vector),
+            about_point=current_start,
         )
         self.rotate(
-            angle_between_vectors(curr_vect, target_vect),
-            about_point=curr_start,
+            angle_between_vectors(current_vector, target_vector),
+            about_point=current_start,
             axis=axis,
         )
-        self.shift(start - curr_start)
+        self.shift(np.asarray(start) - current_start)
         return self
 
     # Background rectangle
     def add_background_rectangle(
-        self, color: ParsableManimColor | None = None, opacity: float = 0.75, **kwargs
+        self,
+        color: ParsableManimColor | None = None,
+        opacity: float = 0.75,
+        **kwargs: Any,
     ) -> Self:
         """Add a BackgroundRectangle as submobject.
 
@@ -1908,12 +2139,14 @@ class Mobject:
         self.add_to_back(self.background_rectangle)
         return self
 
-    def add_background_rectangle_to_submobjects(self, **kwargs) -> Self:
+    def add_background_rectangle_to_submobjects(self, **kwargs: Any) -> Self:
         for submobject in self.submobjects:
             submobject.add_background_rectangle(**kwargs)
         return self
 
-    def add_background_rectangle_to_family_members_with_points(self, **kwargs) -> Self:
+    def add_background_rectangle_to_family_members_with_points(
+        self, **kwargs: Any
+    ) -> Self:
         for mob in self.family_members_with_points():
             mob.add_background_rectangle(**kwargs)
         return self
@@ -1921,7 +2154,10 @@ class Mobject:
     # Color functions
 
     def set_color(
-        self, color: ParsableManimColor = YELLOW_C, family: bool = True
+        self,
+        color: ParsableManimColor = PURE_YELLOW,
+        alpha: Any = None,
+        family: bool = True,
     ) -> Self:
         """Condition is function which takes in one arguments, (x, y, z).
         Here it just recurses to submobjects, but in subclasses this
@@ -1963,7 +2199,7 @@ class Mobject:
         )
         return self
 
-    def set_submobject_colors_by_gradient(self, *colors: Iterable[ParsableManimColor]):
+    def set_submobject_colors_by_gradient(self, *colors: ParsableManimColor) -> Self:
         if len(colors) == 0:
             raise ValueError("Need at least one color")
         elif len(colors) == 1:
@@ -1972,7 +2208,7 @@ class Mobject:
         mobs = self.family_members_with_points()
         new_colors = color_gradient(colors, len(mobs))
 
-        for mob, color in zip(mobs, new_colors):
+        for mob, color in zip(mobs, new_colors, strict=True):
             mob.set_color(color, family=False)
         return self
 
@@ -1989,7 +2225,9 @@ class Mobject:
         for mob in self.family_members_with_points():
             t = np.linalg.norm(mob.get_center() - center) / radius
             t = min(t, 1)
-            mob_color = interpolate_color(inner_color, outer_color, t)
+            mob_color = interpolate_color(
+                ManimColor(inner_color), ManimColor(outer_color), t
+            )
             mob.set_color(mob_color, family=False)
 
         return self
@@ -2002,7 +2240,7 @@ class Mobject:
         self, color: ParsableManimColor, alpha: float, family: bool = True
     ) -> Self:
         if self.get_num_points() > 0:
-            new_color = interpolate_color(self.get_color(), color, alpha)
+            new_color = interpolate_color(self.get_color(), ManimColor(color), alpha)
             self.set_color(new_color, family=False)
         if family:
             for submob in self.submobjects:
@@ -2042,18 +2280,38 @@ class Mobject:
 
     def restore(self) -> Self:
         """Restores the state that was previously saved with :meth:`~.Mobject.save_state`."""
-        if not hasattr(self, "saved_state") or self.save_state is None:
+        if not hasattr(self, "saved_state") or self.saved_state is None:
             raise Exception("Trying to restore without having saved")
         self.become(self.saved_state)
         return self
 
-    def reduce_across_dimension(self, reduce_func: Callable, dim: int):
-        """Find the min or max value from a dimension across all points in this and submobjects."""
+    def reduce_across_dimension(
+        self, reduce_func: Callable[[Iterable[float]], float], dim: int
+    ) -> float | None:
+        """Find the min or max value from a dimension across all points in this Mobject and its
+        submobjects. This allows for using :meth:`~.length_over_dim` to calculate its length over
+        a dimension, i.e. its height, width or depth. If this Mobject is empty, return ``None``,
+        since this Mobject should not be taken into account when calculating lengths.
+
+        Parameters
+        ----------
+        reduce_func
+            The reducer function to use in order to calculate a value over a dimension.
+        dim
+            The dimension to use. It should be 0, 1 or 2, representing the X, Y or Z coordinate,
+            respectively.
+
+        Returns
+        -------
+        float | None
+            The min or max value over the dimension specified by ``dim``, or ``None`` if this
+            Mobject is empty.
+        """
         assert dim >= 0
         assert dim <= 2
         if len(self.submobjects) == 0 and len(self.points) == 0:
-            # If we have no points and no submobjects, return 0 (e.g. center)
-            return 0
+            # If we have no points and no submobjects, return None
+            return None
 
         # If we do not have points (but do have submobjects)
         # use only the points from those.
@@ -2066,10 +2324,13 @@ class Mobject:
         # smallest dimension they have and compare it to the return value.
         for mobj in self.submobjects:
             value = mobj.reduce_across_dimension(reduce_func, dim)
-            rv = value if rv is None else reduce_func([value, rv])
+            if rv is None:
+                rv = value
+            elif value is not None:
+                rv = reduce_func([value, rv])
         return rv
 
-    def nonempty_submobjects(self) -> list[Self]:
+    def nonempty_submobjects(self) -> Sequence[Mobject]:
         return [
             submob
             for submob in self.submobjects
@@ -2113,11 +2374,14 @@ class Mobject:
         )
         values = np_points[:, dim]
         if key < 0:
-            return np.min(values)
+            rv: float = np.min(values)
+            return rv
         elif key == 0:
-            return (np.min(values) + np.max(values)) / 2
+            rv = (np.min(values) + np.max(values)) / 2
+            return rv
         else:
-            return np.max(values)
+            rv = np.max(values)
+            return rv
 
     def get_critical_point(self, direction: Vector3DLike) -> Point3D:
         """Picture a box bounding the :class:`~.Mobject`.  Such a box has
@@ -2142,7 +2406,7 @@ class Mobject:
             result[dim] = self.get_extremum_along_dim(
                 all_points,
                 dim=dim,
-                key=direction[dim],
+                key=np.array(direction[dim]),
             )
         return result
 
@@ -2217,14 +2481,15 @@ class Mobject:
 
     def length_over_dim(self, dim: int) -> float:
         """Measure the length of an :class:`~.Mobject` in a certain direction."""
-        return self.reduce_across_dimension(
-            max,
-            dim,
-        ) - self.reduce_across_dimension(min, dim)
+        max_coord = self.reduce_across_dimension(max, dim)
+        min_coord = self.reduce_across_dimension(min, dim)
+        if max_coord is None or min_coord is None:
+            return 0
+        return max_coord - min_coord
 
     def get_coord(self, dim: int, direction: Vector3DLike = ORIGIN) -> float:
         """Meant to generalize ``get_x``, ``get_y`` and ``get_z``"""
-        return self.get_extremum_along_dim(dim=dim, key=direction[dim])
+        return self.get_extremum_along_dim(dim=dim, key=np.array(direction)[dim])
 
     def get_x(self, direction: Vector3DLike = ORIGIN) -> float:
         """Returns x Point3D of the center of the :class:`~.Mobject` as ``float``"""
@@ -2265,7 +2530,7 @@ class Mobject:
         return Group(
             *(
                 template.copy().pointwise_become_partial(self, a1, a2)
-                for a1, a2 in zip(alphas[:-1], alphas[1:])
+                for a1, a2 in it.pairwise(alphas)
             )
         )
 
@@ -2288,19 +2553,19 @@ class Mobject:
         """Match the color with the color of another :class:`~.Mobject`."""
         return self.set_color(mobject.get_color())
 
-    def match_dim_size(self, mobject: Mobject, dim: int, **kwargs) -> Self:
+    def match_dim_size(self, mobject: Mobject, dim: int, **kwargs: Any) -> Self:
         """Match the specified dimension with the dimension of another :class:`~.Mobject`."""
         return self.rescale_to_fit(mobject.length_over_dim(dim), dim, **kwargs)
 
-    def match_width(self, mobject: Mobject, **kwargs) -> Self:
+    def match_width(self, mobject: Mobject, **kwargs: Any) -> Self:
         """Match the width with the width of another :class:`~.Mobject`."""
         return self.match_dim_size(mobject, 0, **kwargs)
 
-    def match_height(self, mobject: Mobject, **kwargs) -> Self:
+    def match_height(self, mobject: Mobject, **kwargs: Any) -> Self:
         """Match the height with the height of another :class:`~.Mobject`."""
         return self.match_dim_size(mobject, 1, **kwargs)
 
-    def match_depth(self, mobject: Mobject, **kwargs) -> Self:
+    def match_depth(self, mobject: Mobject, **kwargs: Any) -> Self:
         """Match the depth with the depth of another :class:`~.Mobject`."""
         return self.match_dim_size(mobject, 2, **kwargs)
 
@@ -2314,15 +2579,15 @@ class Mobject:
             direction=direction,
         )
 
-    def match_x(self, mobject: Mobject, direction=ORIGIN) -> Self:
+    def match_x(self, mobject: Mobject, direction: Vector3DLike = ORIGIN) -> Self:
         """Match x coord. to the x coord. of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 0, direction)
 
-    def match_y(self, mobject: Mobject, direction=ORIGIN) -> Self:
+    def match_y(self, mobject: Mobject, direction: Vector3DLike = ORIGIN) -> Self:
         """Match y coord. to the x coord. of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 1, direction)
 
-    def match_z(self, mobject: Mobject, direction=ORIGIN) -> Self:
+    def match_z(self, mobject: Mobject, direction: Vector3DLike = ORIGIN) -> Self:
         """Match z coord. to the x coord. of another :class:`~.Mobject`."""
         return self.match_coord(mobject, 2, direction)
 
@@ -2349,18 +2614,34 @@ class Mobject:
 
     # Family matters
 
-    def __getitem__(self, value):
-        self_list = self.split()
+    def __getitem__(self, value: Any) -> Mobject:
         if isinstance(value, slice):
             GroupClass = self.get_group_class()
-            return GroupClass(*self_list.__getitem__(value))
-        return self_list.__getitem__(value)
 
-    def __iter__(self):
-        return iter(self.split())
+            if self.has_no_points():
+                return GroupClass(*self.submobjects[value])
+
+            r = range(*value.indices(len(self)))
+            if not r:  # If slice is empty
+                return GroupClass()
+            if 0 not in r:
+                # If self is not included in the slice, we can gain a small speed boost
+                # by indexing directly into the submobjects list.
+                stop = r.stop - 1 if (r.step > 0 or r.stop > 0) else None
+                return GroupClass(*self.submobjects[r.start - 1 : stop : r.step])
+
+            return GroupClass(*[self.submobjects[i - 1] if i != 0 else self for i in r])
+
+        index: int = range(len(self))[value]  # Normalize the index
+        if self.has_no_points():
+            return self.submobjects[index]
+        return self if index == 0 else self.submobjects[index - 1]
+
+    def __iter__(self) -> Iterator[Mobject]:
+        return it.chain([self] if self.has_points() else [], self.submobjects)
 
     def __len__(self) -> int:
-        return len(self.split())
+        return len(self.submobjects) + (1 if self.has_points() else 0)
 
     def get_group_class(self) -> type[Group]:
         return Group
@@ -2370,11 +2651,11 @@ class Mobject:
         """Return the base class of this mobject type."""
         return Mobject
 
-    def split(self) -> list[Self]:
-        result = [self] if len(self.points) > 0 else []
+    def split(self) -> list[Mobject]:
+        result: list[Mobject] = [self] if len(self.points) > 0 else []
         return result + self.submobjects
 
-    def get_family(self, recurse: bool = True) -> list[Self]:
+    def get_family(self, recurse: bool = True) -> list[Mobject]:
         """Lists all mobjects in the hierarchy (family) of the given mobject,
         including the mobject itself and all its submobjects recursively.
 
@@ -2404,11 +2685,21 @@ class Mobject:
         :meth:`~.Mobject.family_members_with_points`, :meth:`~.Mobject.align_data`
 
         """
-        sub_families = [x.get_family() for x in self.submobjects]
-        all_mobjects = [self] + list(it.chain(*sub_families))
-        return remove_list_redundancies(all_mobjects)
+        return remove_list_redundancies(list(self._iter_family(set())))
 
-    def family_members_with_points(self) -> list[Self]:
+    def _iter_family(self, active_path: MutableSet[Mobject]) -> Iterator[Mobject]:
+        if self in active_path:
+            return
+
+        active_path.add(self)
+        try:
+            yield self
+            for submobject in self.submobjects:
+                yield from submobject._iter_family(active_path)
+        finally:
+            active_path.remove(self)
+
+    def family_members_with_points(self) -> list[Mobject]:
         """Filters the list of family members (generated by :meth:`.get_family`) to include only mobjects with points.
 
         Returns
@@ -2439,7 +2730,7 @@ class Mobject:
         direction: Vector3DLike = RIGHT,
         buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         center: bool = True,
-        **kwargs,
+        **kwargs: Any,
     ) -> Self:
         """Sorts :class:`~.Mobject` next to each other on screen.
 
@@ -2458,7 +2749,7 @@ class Mobject:
                     x = VGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
                     self.add(x)
         """
-        for m1, m2 in zip(self.submobjects, self.submobjects[1:]):
+        for m1, m2 in it.pairwise(self.submobjects):
             m2.next_to(m1, direction, buff, **kwargs)
         if center:
             self.center()
@@ -2475,7 +2766,7 @@ class Mobject:
         row_heights: Iterable[float | None] | None = None,
         col_widths: Iterable[float | None] | None = None,
         flow_order: str = "rd",
-        **kwargs,
+        **kwargs: Any,
     ) -> Self:
         """Arrange submobjects in a grid.
 
@@ -2569,13 +2860,18 @@ class Mobject:
         start_pos = self.get_center()
 
         # get cols / rows values if given (implicitly)
-        def init_size(num, alignments, sizes):
+        def init_size(
+            num: int | None,
+            alignments: str | None,
+            sizes: Iterable[float | None] | None,
+        ) -> int | None:
             if num is not None:
                 return num
             if alignments is not None:
                 return len(alignments)
             if sizes is not None:
-                return len(sizes)
+                return len(list(sizes))
+            return None
 
         cols = init_size(cols, col_alignments, col_widths)
         rows = init_size(rows, row_alignments, row_heights)
@@ -2586,8 +2882,9 @@ class Mobject:
             # make the grid as close to quadratic as possible.
             # choosing cols first can results in cols>rows.
             # This is favored over rows>cols since in general
-            # the sceene is wider than high.
+            # the scene is wider than high.
         if rows is None:
+            assert isinstance(cols, int)
             rows = math.ceil(len(mobs) / cols)
         if cols is None:
             cols = math.ceil(len(mobs) / rows)
@@ -2602,25 +2899,29 @@ class Mobject:
             buff_x = buff_y = buff
 
         # Initialize alignments correctly
-        def init_alignments(alignments, num, mapping, name, dir_):
+        def init_alignments(
+            alignments: str | None,
+            num: int,
+            char_to_direction: dict[str, Vector3D],
+            name: str,
+            dir_: Vector3D,
+        ) -> list[Vector3D]:
             if alignments is None:
                 # Use cell_alignment as fallback
                 return [cell_alignment * dir_] * num
             if len(alignments) != num:
                 raise ValueError(f"{name}_alignments has a mismatching size.")
-            alignments = list(alignments)
-            for i in range(num):
-                alignments[i] = mapping[alignments[i]]
-            return alignments
+            alignment_directions = [char_to_direction[char] for char in alignments]
+            return alignment_directions
 
-        row_alignments = init_alignments(
+        row_alignment_directions = init_alignments(
             row_alignments,
             rows,
             {"u": UP, "c": ORIGIN, "d": DOWN},
             "row",
             RIGHT,
         )
-        col_alignments = init_alignments(
+        col_alignment_directions = init_alignments(
             col_alignments,
             cols,
             {"l": LEFT, "c": ORIGIN, "r": RIGHT},
@@ -2629,7 +2930,7 @@ class Mobject:
         )
         # Now row_alignment[r] + col_alignment[c] is the alignment in cell [r][c]
 
-        mapper = {
+        mapper: dict[str, Callable[[int, int], int]] = {
             "dr": lambda r, c: (rows - r - 1) + c * rows,
             "dl": lambda r, c: (rows - r - 1) + (cols - c - 1) * rows,
             "ur": lambda r, c: r + c * rows,
@@ -2643,18 +2944,14 @@ class Mobject:
             raise ValueError(
                 'flow_order must be one of the following values: "dr", "rd", "ld" "dl", "ru", "ur", "lu", "ul".',
             )
-        flow_order = mapper[flow_order]
+        get_mob_index_by_position = mapper[flow_order]
 
-        # Reverse row_alignments and row_heights. Necessary since the
+        # Reverse row_alignment_directions and row_heights. Necessary since the
         # grid filling is handled bottom up for simplicity reasons.
-        def reverse(maybe_list):
-            if maybe_list is not None:
-                maybe_list = list(maybe_list)
-                maybe_list.reverse()
-                return maybe_list
-
-        row_alignments = reverse(row_alignments)
-        row_heights = reverse(row_heights)
+        row_alignment_directions.reverse()
+        row_heights_list = list(row_heights) if row_heights is not None else []
+        row_heights_list.reverse()
+        col_widths_list = list(col_widths) if col_widths is not None else []
 
         placeholder = Mobject()
         # Used to fill up the grid temporarily, doesn't get added to the scene.
@@ -2662,7 +2959,10 @@ class Mobject:
         # properties of 0.
 
         mobs.extend([placeholder] * (rows * cols - len(mobs)))
-        grid = [[mobs[flow_order(r, c)] for c in range(cols)] for r in range(rows)]
+        grid = [
+            [mobs[get_mob_index_by_position(r, c)] for c in range(cols)]
+            for r in range(rows)
+        ]
 
         measured_heigths = [
             max(grid[r][c].height for c in range(cols)) for r in range(rows)
@@ -2672,24 +2972,29 @@ class Mobject:
         ]
 
         # Initialize row_heights / col_widths correctly using measurements as fallback
-        def init_sizes(sizes, num, measures, name):
-            if sizes is None:
+        def init_sizes(
+            sizes: list[float | None] | None, num: int, measures: list[float], name: str
+        ) -> list[float]:
+            if sizes is None or len(sizes) == 0:
                 sizes = [None] * num
             if len(sizes) != num:
                 raise ValueError(f"{name} has a mismatching size.")
             return [
-                sizes[i] if sizes[i] is not None else measures[i] for i in range(num)
+                size if size is not None else measure
+                for size, measure in zip(sizes, measures, strict=False)
             ]
 
-        heights = init_sizes(row_heights, rows, measured_heigths, "row_heights")
-        widths = init_sizes(col_widths, cols, measured_widths, "col_widths")
+        heights = init_sizes(row_heights_list, rows, measured_heigths, "row_heights")
+        widths = init_sizes(col_widths_list, cols, measured_widths, "col_widths")
 
-        x, y = 0, 0
+        x, y = 0.0, 0.0
         for r in range(rows):
             x = 0
             for c in range(cols):
                 if grid[r][c] is not placeholder:
-                    alignment = row_alignments[r] + col_alignments[c]
+                    alignment = (
+                        row_alignment_directions[r] + col_alignment_directions[c]
+                    )
                     line = Line(
                         x * RIGHT + y * UP,
                         (x + widths[c]) * RIGHT + (y + heights[r]) * UP,
@@ -2719,14 +3024,15 @@ class Mobject:
         self.submobjects.sort(key=submob_func)
         return self
 
-    def shuffle(self, recursive: bool = False) -> None:
+    def shuffle(self, recursive: bool = False) -> Self:
         """Shuffles the list of :attr:`submobjects`."""
         if recursive:
             for submob in self.submobjects:
                 submob.shuffle(recursive=True)
         random.shuffle(self.submobjects)
+        return self
 
-    def invert(self, recursive: bool = False) -> None:
+    def invert(self, recursive: bool = False) -> Self:
         """Inverts the list of :attr:`submobjects`.
 
         Parameters
@@ -2751,9 +3057,10 @@ class Mobject:
             for submob in self.submobjects:
                 submob.invert(recursive=True)
         self.submobjects.reverse()
+        return self
 
     # Just here to keep from breaking old scenes.
-    def arrange_submobjects(self, *args, **kwargs) -> Self:
+    def arrange_submobjects(self, *args: Any, **kwargs: Any) -> Self:
         """Arrange the position of :attr:`submobjects` with a small buffer.
 
         Examples
@@ -2774,11 +3081,11 @@ class Mobject:
         """
         return self.arrange(*args, **kwargs)
 
-    def sort_submobjects(self, *args, **kwargs) -> Self:
+    def sort_submobjects(self, *args: Any, **kwargs: Any) -> Self:
         """Sort the :attr:`submobjects`"""
         return self.sort(*args, **kwargs)
 
-    def shuffle_submobjects(self, *args, **kwargs) -> None:
+    def shuffle_submobjects(self, *args: Any, **kwargs: Any) -> Self:
         """Shuffles the order of :attr:`submobjects`
 
         Examples
@@ -2797,7 +3104,7 @@ class Mobject:
         return self.shuffle(*args, **kwargs)
 
     # Alignment
-    def align_data(self, mobject: Mobject, skip_point_alignment: bool = False) -> None:
+    def align_data(self, mobject: Mobject, skip_point_alignment: bool = False) -> Self:
         """Aligns the family structure and data of this mobject with another mobject.
 
         Afterwards, the two mobjects will have the same number of submobjects
@@ -2828,6 +3135,7 @@ class Mobject:
             >>> rect = Rectangle(width=4.0, height=2.0, grid_xstep=1.0, grid_ystep=0.5)
             >>> line = Line(start=ORIGIN,end=RIGHT)
             >>> line.align_data(rect)
+            Line
             >>> len(line.get_family()) == len(rect.get_family())
             True
             >>> line.get_num_points() == rect.get_num_points()
@@ -2843,10 +3151,11 @@ class Mobject:
         if not skip_point_alignment:
             self.align_points(mobject)
         # Recurse
-        for m1, m2 in zip(self.submobjects, mobject.submobjects):
+        for m1, m2 in zip(self.submobjects, mobject.submobjects, strict=True):
             m1.align_data(m2)
+        return self
 
-    def get_point_mobject(self, center=None):
+    def get_point_mobject(self, center: Point3DLike | None = None) -> Point:
         """The simplest :class:`~.Mobject` to be transformed to or from self.
         Should by a point of the appropriate type
         """
@@ -2862,7 +3171,7 @@ class Mobject:
             mobject.align_points_with_larger(self)
         return self
 
-    def align_points_with_larger(self, larger_mobject: Mobject):
+    def align_points_with_larger(self, larger_mobject: Mobject) -> Self:
         raise NotImplementedError("Please override in a child class.")
 
     def align_submobjects(self, mobject: Mobject) -> Self:
@@ -2874,7 +3183,7 @@ class Mobject:
         mob2.add_n_more_submobjects(max(0, n1 - n2))
         return self
 
-    def null_point_align(self, mobject: Mobject):
+    def null_point_align(self, mobject: Mobject) -> Self:
         """If a :class:`~.Mobject` with points is being aligned to
         one without, treat both as groups, and push
         the one with points into its own submobjects
@@ -2913,14 +3222,13 @@ class Mobject:
         repeat_indices = (np.arange(target) * curr) // target
         split_factors = [sum(repeat_indices == i) for i in range(curr)]
         new_submobs = []
-        for submob, sf in zip(self.submobjects, split_factors):
+        for submob, sf in zip(self.submobjects, split_factors, strict=True):
             new_submobs.append(submob)
-            for _ in range(1, sf):
-                new_submobs.append(submob.copy().fade(1))
+            new_submobs.extend(submob.copy().fade(1) for _ in range(1, sf))
         self.submobjects = new_submobs
         return self
 
-    def repeat_submobject(self, submob: Mobject) -> Self:
+    def repeat_submobject(self, submob: Mobject) -> Mobject:
         return submob.copy()
 
     def interpolate(
@@ -2996,7 +3304,9 @@ class Mobject:
         self.interpolate_color(mobject1, mobject2, alpha)
         return self
 
-    def interpolate_color(self, mobject1: Mobject, mobject2: Mobject, alpha: float):
+    def interpolate_color(
+        self, mobject1: Mobject, mobject2: Mobject, alpha: float
+    ) -> Self:
         raise NotImplementedError("Please override in a child class.")
 
     def become(
@@ -3126,7 +3436,7 @@ class Mobject:
                 mobject.move_to(self.get_center())
 
         self.align_data(mobject, skip_point_alignment=True)
-        for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
+        for sm1, sm2 in zip(self.get_family(), mobject.get_family(), strict=True):
             sm1.points = np.array(sm2.points)
             sm1.interpolate_color(sm1, sm2, 1)
         return self
@@ -3148,7 +3458,7 @@ class Mobject:
                     self.play(circ.animate.match_points(square))
                     self.wait(0.5)
         """
-        for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
+        for sm1, sm2 in zip(self.get_family(), mobject.get_family(), strict=False):
             sm1.points = np.array(sm2.points)
         return self
 
@@ -3156,9 +3466,16 @@ class Mobject:
     def throw_error_if_no_points(self) -> None:
         if self.has_no_points():
             caller_name = sys._getframe(1).f_code.co_name
-            raise Exception(
-                f"Cannot call Mobject.{caller_name} for a Mobject with no points",
-            )
+            cls = type(self).__name__
+            message = f"Cannot call {cls}.{caller_name} because {self!r} has no points."
+            pointful_family_members = self.family_members_with_points()
+            if pointful_family_members:
+                count = len(pointful_family_members)
+                message += (
+                    f" Its family contains {count} "
+                    f"mobject{'' if count == 1 else 's'} with points."
+                )
+            raise ValueError(message)
 
     # About z-index
     def set_z_index(
@@ -3227,25 +3544,25 @@ class Group(Mobject, metaclass=ConvertToOpenGL):
     be added to the group.
     """
 
-    def __init__(self, *mobjects, **kwargs) -> None:
+    def __init__(self, *mobjects: Any, **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.add(*mobjects)
 
 
 class _AnimationBuilder:
-    def __init__(self, mobject) -> None:
+    def __init__(self, mobject: Mobject) -> None:
         self.mobject = mobject
         self.mobject.generate_target()
 
-        self.overridden_animation = None
+        self.overridden_animation: Animation | None = None
         self.is_chaining = False
         self.methods: list[MethodWithArgs] = []
 
         # Whether animation args can be passed
         self.cannot_pass_args = False
-        self.anim_args = {}
+        self.anim_args: dict[str, Any] = {}
 
-    def __call__(self, **kwargs) -> Self:
+    def __call__(self, **kwargs: Any) -> Self:
         if self.cannot_pass_args:
             raise ValueError(
                 "Animation arguments must be passed before accessing methods and can only be passed once",
@@ -3256,7 +3573,7 @@ class _AnimationBuilder:
 
         return self
 
-    def __getattr__(self, method_name) -> types.MethodType:
+    def __getattr__(self, method_name: str) -> Callable[..., _AnimationBuilder]:
         method = getattr(self.mobject.target, method_name)
         has_overridden_animation = hasattr(method, "_override_animate")
 
@@ -3265,7 +3582,7 @@ class _AnimationBuilder:
                 "Method chaining is currently not supported for overridden animations",
             )
 
-        def update_target(*method_args, **method_kwargs):
+        def update_target(*method_args: Any, **method_kwargs: Any) -> _AnimationBuilder:
             if has_overridden_animation:
                 self.overridden_animation = method._override_animate(
                     self.mobject,
@@ -3284,9 +3601,7 @@ class _AnimationBuilder:
         return update_target
 
     def build(self) -> Animation:
-        from ..animation.transform import (  # is this to prevent circular import?
-            _MethodAnimation,
-        )
+        from ..animation.transform import _MethodAnimation
 
         anim = self.overridden_animation or _MethodAnimation(self.mobject, self.methods)
 
@@ -3296,7 +3611,27 @@ class _AnimationBuilder:
         return anim
 
 
-def override_animate(method) -> types.FunctionType:
+class _UpdaterBuilder:
+    """Syntactic sugar for adding updaters to mobjects."""
+
+    def __init__(self, mobject: Mobject):
+        self._mobject = mobject
+
+    def __getattr__(self, name: str, /) -> Callable[..., _UpdaterBuilder]:
+        # just return a function that will add the updater
+        def add_updater(*method_args: Any, **method_kwargs: Any) -> _UpdaterBuilder:
+            self._mobject.add_updater(
+                lambda m: getattr(m, name)(*method_args, **method_kwargs),
+                call_updater=True,
+            )
+            return self
+
+        return add_updater
+
+
+def override_animate(
+    method: types.MethodType,
+) -> Callable[[types.MethodType], types.MethodType]:
     r"""Decorator for overriding method animations.
 
     This allows to specify a method (returning an :class:`~.Animation`)
@@ -3347,9 +3682,11 @@ def override_animate(method) -> types.FunctionType:
                 self.wait()
 
     """
+    temp_method = cast(_AnimationBuilder, method)
 
-    def decorator(animation_method):
-        method._override_animate = animation_method
+    def decorator(animation_method: types.MethodType) -> types.MethodType:
+        # error: "Callable[..., Animation]" has no attribute "_override_animate"  [attr-defined]
+        temp_method._override_animate = animation_method  # type: ignore[attr-defined]
         return animation_method
 
     return decorator

@@ -144,10 +144,38 @@ def main():
                 ]
             )
 
-        env_vars = {
-            # add the venv bin directory to PATH so that meson can find ninja
-            "PATH": f"{os.path.join(tmpdir, VENV_NAME, 'bin')}{os.pathsep}{os.environ['PATH']}",
-        }
+        # Inherit the current environment so PKG_CONFIG_PATH, CFLAGS, LDFLAGS, etc. are preserved.
+        env_vars = os.environ.copy()
+        # Prepend the venv bin directory so meson/ninja from the venv are used.
+        env_vars["PATH"] = f"{os.path.join(tmpdir, VENV_NAME, 'bin')}{os.pathsep}{env_vars.get('PATH','')}"
+
+        # Ensure Homebrew-provided pkgconfig and include/lib paths are present on macOS ARM.
+        if sys.platform == "darwin":
+            try:
+                # Try to get specific prefix for lzo (safer for opt path), fall back to generic brew prefix.
+                brew_prefix = subprocess.check_output(["brew", "--prefix", "lzo"], text=True).strip()
+            except subprocess.CalledProcessError:
+                try:
+                    brew_prefix = subprocess.check_output(["brew", "--prefix"], text=True).strip()
+                except Exception:
+                    brew_prefix = None
+
+            if brew_prefix:
+                # pkg-config files can live in lib/pkgconfig or opt/<pkg>/lib/pkgconfig
+                pkgconfig_paths = [f"{brew_prefix}/lib/pkgconfig", f"{brew_prefix}/opt/lzo/lib/pkgconfig"]
+                # merge with any existing PKG_CONFIG_PATH
+                existing_pc = env_vars.get("PKG_CONFIG_PATH", "")
+                merged_pc = ":".join([p for p in pkgconfig_paths if p]) + (f":{existing_pc}" if existing_pc else "")
+                env_vars["PKG_CONFIG_PATH"] = merged_pc
+
+                # Ensure compiler & linker flags include brew include/lib
+                existing_cflags = env_vars.get("CFLAGS", "")
+                existing_ldflags = env_vars.get("LDFLAGS", "")
+                env_vars["CFLAGS"] = f"-I{brew_prefix}/include {existing_cflags}".strip()
+                env_vars["LDFLAGS"] = f"-L{brew_prefix}/lib {existing_ldflags}".strip()
+
+        # Debugging: log environment keys relevant to detection
+        # logger.info(f"env vars for meson: {env_vars}")
 
         with gha_group("Building and Installing Cairo"):
             logger.info("Running meson setup")

@@ -30,6 +30,29 @@ def test_logging_to_file(tmp_path, python_version):
     assert exitcode == 0, err
 
 
+def test_library_logging_without_media_output(tmp_path, python_version):
+    script = f"""
+from manim import Scene, tempconfig
+
+class LibraryScene(Scene):
+    pass
+
+with tempconfig({{
+    "format": "none",
+    "log_to_file": True,
+    "media_dir": {str(tmp_path)!r},
+}}):
+    LibraryScene().render()
+"""
+
+    _, err, exitcode = capture([python_version, "-c", script])
+
+    assert exitcode == 0, err
+    assert (tmp_path / "logs" / "_LibraryScene.log").is_file()
+    assert not (tmp_path / "videos").exists()
+    assert not (tmp_path / "images").exists()
+
+
 def test_error_logging(tmp_path, python_version):
     path_error_scene = Path("tests/test_logging/basic_scenes_error.py")
 

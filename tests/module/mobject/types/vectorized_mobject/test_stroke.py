@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import manim.utils.color as C
-from manim import VMobject
+from manim import ORIGIN, NumberPlane, VMobject
 from manim.mobject.vector_field import StreamLines
 
 
@@ -61,3 +61,57 @@ def test_background_stroke_scale():
     b.scale(0.5, scale_stroke=True)
     assert a.get_stroke_width(background=True) == 50
     assert b.get_stroke_width(background=True) == 25
+
+
+def test_scale_stroke_preserves_zero_width_on_number_plane_coordinates():
+    """Regression for #4648: compound scale with scale_stroke must not add stroke to text labels."""
+    npl = NumberPlane().add_coordinates()
+    zero_stroke_mobs = [
+        mob
+        for mob in npl.get_family()
+        if isinstance(mob, VMobject) and mob.get_stroke_width() == 0
+    ]
+
+    nonzero_stroke_mobs = [
+        mob
+        for mob in npl.get_family()
+        if isinstance(mob, VMobject) and mob.get_stroke_width() != 0
+    ]
+
+    assert zero_stroke_mobs
+    assert nonzero_stroke_mobs
+
+    npl.scale(0.01, scale_stroke=True, about_point=ORIGIN)
+
+    for mob in zero_stroke_mobs:
+        assert mob.get_stroke_width() == 0
+
+
+def test_stroke_scale_preserves_relative_widths_in_compound_mobjects():
+    """Regression test for fix 429f25328 (PR #4694).
+
+    When ``scale(..., scale_stroke=True)`` is called on a compound VMobject
+    whose submobjects have different stroke widths, the buggy version called
+    ``self.set_stroke(width=abs(scale_factor) * self.get_stroke_width())``,
+    which uses the *parent's* stroke width and then propagates that single
+    scaled value to the whole family — overwriting each submobject's own
+    width. In particular, a submobject with zero stroke would gain non-zero
+    stroke after scaling.
+
+    The fix iterates over ``self.get_family()`` and scales each submobject's
+    stroke individually with ``family=False`` so the relative widths are
+    preserved.
+    """
+    from manim import VGroup
+
+    inner_with_stroke = VMobject()
+    inner_with_stroke.set_stroke(width=4)
+    inner_zero_stroke = VMobject()
+    inner_zero_stroke.set_stroke(width=0)
+    compound = VGroup(inner_with_stroke, inner_zero_stroke)
+
+    compound.scale(0.5, scale_stroke=True)
+
+    # Post-fix: each submob's width is scaled by 0.5 of its OWN value.
+    assert inner_with_stroke.get_stroke_width() == 2
+    assert inner_zero_stroke.get_stroke_width() == 0

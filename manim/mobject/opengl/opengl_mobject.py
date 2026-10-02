@@ -6,19 +6,28 @@ import itertools as it
 import random
 import sys
 import types
+import warnings
 from collections.abc import Callable, Iterable, Iterator, Sequence
+from contextlib import suppress
 from functools import partialmethod, wraps
 from math import ceil
-from typing import TYPE_CHECKING, Any, ClassVar, Protocol, TypeVar, cast
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    ClassVar,
+    Never,
+    Protocol,
+    Self,
+    TypeAlias,
+    TypeVar,
+    cast,
+    overload,
+)
 
 import moderngl
 import numpy as np
 import numpy.typing as npt
 from typing_extensions import (
-    Never,
-    Self,
-    TypeAlias,
-    overload,
     override,
 )
 
@@ -46,7 +55,7 @@ from manim.utils.config_ops import _Data, _Uniforms
 # from ..utils.iterables import batch_by_property
 from manim.utils.iterables import (
     batch_by_property,
-    list_update,
+    list_difference_update,
     listify,
     make_even,
     resize_array,
@@ -350,29 +359,31 @@ class OpenGLMobject:
         else:
             cls.__init__ = cls._original__init__
 
-    def init_data(self) -> None:
+    def init_data(self) -> Self:
         """Initializes the ``points``, ``bounding_box`` and ``rgbas`` attributes and groups them into self.data.
         Subclasses can inherit and overwrite this method to extend `self.data`.
         """
         self.points = np.zeros((0, 3))
         self.bounding_box = np.zeros((3, 3))
         self.rgbas = np.zeros((1, 4))
+        return self
 
-    def init_colors(self) -> None:
+    def init_colors(self) -> Self:
         """Initializes the colors.
 
         Gets called upon creation
         """
         self.set_color(self.color, self.opacity)
+        return self
 
-    def init_points(self) -> None:
+    def init_points(self) -> Self:
         """Initializes :attr:`points` and therefore the shape.
 
         Gets called upon creation. This is an empty method that can be implemented by
         subclasses.
         """
         # Typically implemented in subclass, unless purposefully left blank
-        pass
+        return self
 
     def set(self, **kwargs: object) -> Self:
         """Sets attributes.
@@ -813,10 +824,90 @@ class OpenGLMobject:
     def family_members_with_points(self) -> Sequence[OpenGLMobject]:
         return [m for m in self.get_family() if m.has_points()]
 
+    def _update_new_children(self, mobjects: Iterable[OpenGLMobject]) -> Self:
+        for mob in mobjects:
+            if self not in mob.parents:
+                mob.parents.append(self)
+        self.assemble_family()
+        return self
+
+    def _insert_submobjects(
+        self,
+        index: int,
+        mobjects: Sequence[OpenGLMobject],
+        update_parent: bool,
+    ) -> Self:
+        """Common backing implementation for :meth:`add`, :meth:`add_to_back`, and
+        :meth:`insert`.
+
+        Inserts ``mobjects`` into :attr:`submobjects` such that they end up starting
+        at ``index`` (following the semantics of :meth:`list.insert`). Mobjects which
+        are already present in :attr:`submobjects` will be ignored and therefore keep
+        their current position.
+        """
+        # TODO: The logic of adding/inserting submobjects is inconsistent with that of
+        # Mobjects. OpenGLMobjects *do not* move already-present submobjects if they are
+        # reinserted, and input is deduplicated by keeping the *first* (leftmost)
+        # occurrence of an element, while Mobjects *do* move already-present submobjects
+        # and they deduplicate input by keeping the *last* occurrence.
+        # This behavior should be made consistent when technically possible.
+
+        if update_parent:
+            assert len(mobjects) == 1, "Can't set multiple parents."
+            mobjects[0].parent = self
+
+        self._assert_valid_submobjects(mobjects)
+
+        unique_mobjects = dict.fromkeys(mobjects)
+        if len(mobjects) != len(unique_mobjects):
+            logger.warning(
+                "Attempted adding some Mobject as a child more than once, "
+                "this is not possible. Repetitions are ignored.",
+            )
+
+        if not self._submobjects:
+            self._submobjects = list(unique_mobjects)
+            self._update_new_children(self._submobjects)
+            return self
+
+        # Shortcut for the common case of adding a single mobject
+        if len(unique_mobjects) == 1:
+            mob = unique_mobjects.popitem()[0]
+            if mob not in self._submobjects:
+                if index >= len(self._submobjects):
+                    self._submobjects.append(mob)
+                else:
+                    self._submobjects.insert(index, mob)
+                self._update_new_children([mob])
+            return self
+
+        # Remove already-present submobjects from input
+        for mob in self._submobjects:
+            if not unique_mobjects:
+                break
+            if mob in unique_mobjects:
+                unique_mobjects.pop(mob)
+
+        if not unique_mobjects:  # No new mobjects to add
+            return self
+
+        if index >= len(self._submobjects):
+            # If we can just extend with the new mobjects, that is much faster than
+            # concatenating.
+            self._submobjects.extend(unique_mobjects)
+        else:
+            head = it.islice(self._submobjects, index)
+            tail = it.islice(self._submobjects, index, None)
+            # Skip the setter of self.submobjects
+            self._submobjects = [*head, *unique_mobjects, *tail]
+        self._update_new_children(unique_mobjects)
+        return self
+
     def add(self, *mobjects: OpenGLMobject, update_parent: bool = False) -> Self:
         """Add mobjects as submobjects.
 
-        The mobjects are added to :attr:`submobjects`.
+        The mobjects are added to :attr:`submobjects`. Any mobject in ``mobjects`` which
+        is already present in :attr:`submobjects` will keep its current position.
 
         Subclasses of mobject may implement ``+`` and ``+=`` dunder methods.
 
@@ -841,14 +932,15 @@ class OpenGLMobject:
         Notes
         -----
         A mobject cannot contain itself, and it cannot contain a submobject
-        more than once.  If the parent mobject is displayed, the newly-added
-        submobjects will also be displayed (i.e. they are automatically added
-        to the parent Scene).
+        more than once. The ``mobjects`` list will be deduplicated before its contents
+        are added; the first (leftmost) occurrence of a duplicate mobject will be the
+        one that is kept.
 
         See Also
         --------
-        :meth:`remove`
         :meth:`add_to_back`
+        :meth:`insert`
+        :meth:`remove`
 
         Examples
         --------
@@ -879,34 +971,24 @@ class OpenGLMobject:
             ValueError: Cannot add OpenGLMobject as a submobject of itself (at index 0).
 
         """
-        if update_parent:
-            assert len(mobjects) == 1, "Can't set multiple parents."
-            mobjects[0].parent = self
+        return self._insert_submobjects(len(self.submobjects), mobjects, update_parent)
 
-        self._assert_valid_submobjects(mobjects)
-
-        if any(mobjects.count(elem) > 1 for elem in mobjects):
-            logger.warning(
-                "Attempted adding some Mobject as a child more than once, "
-                "this is not possible. Repetitions are ignored.",
-            )
-        for mobject in mobjects:
-            if mobject not in self.submobjects:
-                self.submobjects.append(mobject)
-            if self not in mobject.parents:
-                mobject.parents.append(self)
-        self.assemble_family()
-        return self
+    # TODO: Since the addition of the private _insert_submobjects method, it has been
+    # possible to insert multiple mobjects into the submobjects list at once. In the
+    # future, the signature of `insert` should be changed to:
+    #   def insert(
+    #       self, index: int, *mobjects: OpenGLMobject, update_parent: bool = False
+    #   ) -> Self:
+    # This can either be done as part of a larger breaking change or as a gradual
+    # change with a period of supporting both argument names and appropriate deprecation
+    # warnings for use of the singular "mobject" keyword.
+    # The same should be done for Mobject.insert.
 
     def insert(
         self, index: int, mobject: OpenGLMobject, update_parent: bool = False
     ) -> Self:
-        """Inserts a mobject at a specific position into self.submobjects
-
-        Effectively just calls  ``self.submobjects.insert(index, mobject)``,
-        where ``self.submobjects`` is a list.
-
-        Highly adapted from ``OpenGLMobject.add``.
+        """Inserts a mobject at a specific position into ``self.submobjects``. If the
+        mobject is already a submobject of ``self``, its position does not change.
 
         Parameters
         ----------
@@ -917,19 +999,7 @@ class OpenGLMobject:
         update_parent
             Whether or not to set ``mobject.parent`` to ``self``.
         """
-        if update_parent:
-            mobject.parent = self
-
-        self._assert_valid_submobjects([mobject])
-
-        if mobject not in self.submobjects:
-            self.submobjects.insert(index, mobject)
-
-        if self not in mobject.parents:
-            mobject.parents.append(self)
-
-        self.assemble_family()
-        return self
+        return self._insert_submobjects(index, [mobject], update_parent)
 
     def remove(self, *mobjects: OpenGLMobject, update_parent: bool = False) -> Self:
         """Remove :attr:`submobjects`.
@@ -957,20 +1027,29 @@ class OpenGLMobject:
             assert len(mobjects) == 1, "Can't remove multiple parents."
             mobjects[0].parent = None
 
-        for mobject in mobjects:
-            if mobject in self.submobjects:
-                self.submobjects.remove(mobject)
-            if self in mobject.parents:
-                mobject.parents.remove(self)
-        self.assemble_family()
+        if not self.submobjects:
+            return self
+
+        n = len(self.submobjects)
+        if len(mobjects) == 1:
+            with suppress(ValueError):
+                self.submobjects.remove(mobjects[0])
+        else:
+            self._submobjects = list_difference_update(self._submobjects, mobjects)
+
+        if len(self.submobjects) != n:
+            for mobject in mobjects:
+                with suppress(ValueError):
+                    mobject.parents.remove(self)
+
+            self.assemble_family()
         return self
 
     def add_to_back(self, *mobjects: OpenGLMobject) -> Self:
-        # NOTE: is the note true OpenGLMobjects?
         """Add all passed mobjects to the back of the submobjects.
 
-        If :attr:`submobjects` already contains the given mobjects, they just get moved
-        to the back instead.
+        Any mobject in ``mobject`` which is already present in :attr:`submobjects`
+        is not moved.
 
         Parameters
         ----------
@@ -985,7 +1064,7 @@ class OpenGLMobject:
 
         .. note::
 
-            Technically, this is done by adding (or moving) the mobjects to
+            Technically, this is done by adding the mobjects to
             the head of :attr:`submobjects`. The head of this list is rendered
             first, which places the corresponding mobjects behind the
             subsequent list members.
@@ -1000,26 +1079,46 @@ class OpenGLMobject:
         Notes
         -----
         A mobject cannot contain itself, and it cannot contain a submobject
-        more than once.  If the parent mobject is displayed, the newly-added
-        submobjects will also be displayed (i.e. they are automatically added
-        to the parent Scene).
+        more than once. The ``mobjects`` list will be deduplicated before its contents
+        are added; the first (leftmost) occurrence of a duplicate mobject will be the
+        one that is kept.
 
         See Also
         --------
-        :meth:`remove`
         :meth:`add`
+        :meth:`insert`
+        :meth:`remove`
 
         """
-        self._assert_valid_submobjects(mobjects)
-        self.submobjects = list_update(mobjects, self.submobjects)
-        return self
+        return self._insert_submobjects(0, mobjects, update_parent=False)
 
     def replace_submobject(self, index: int, new_submob: OpenGLMobject) -> Self:
+        """Replaces the submobject at the given index with a new submobject.
+        If ``self.submobjects`` already contains the new submobject, it is also removed
+        from its previous position.
+
+        Parameters
+        ----------
+        index
+            The index of the submobject to replace.
+        new_submob
+            The new submobject to insert at the given index.
+        """
         self._assert_valid_submobjects([new_submob])
         old_submob = self.submobjects[index]
-        if self in old_submob.parents:
-            old_submob.parents.remove(self)
+        if old_submob == new_submob:
+            return self
+
+        existing_index = None
+        with suppress(ValueError):
+            existing_index = self.submobjects.index(new_submob)
         self.submobjects[index] = new_submob
+        if existing_index is not None:
+            self.submobjects.pop(existing_index)
+
+        with suppress(ValueError):
+            old_submob.parents.remove(self)
+        self._update_new_children([new_submob])
         self.assemble_family()
         return self
 
@@ -1048,7 +1147,7 @@ class OpenGLMobject:
                     x = OpenGLVGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
                     self.add(x)
         """
-        for m1, m2 in zip(self.submobjects, self.submobjects[1:]):
+        for m1, m2 in it.pairwise(self.submobjects):
             m2.next_to(m1, direction, **kwargs)
         if center:
             self.center()
@@ -1190,7 +1289,7 @@ class OpenGLMobject:
             # make the grid as close to quadratic as possible.
             # choosing cols first can results in cols>rows.
             # This is favored over rows>cols since in general
-            # the sceene is wider than high.
+            # the scene is wider than high.
         if rows is None:
             rows = ceil(len(mobs) / cols)
         if cols is None:
@@ -1215,7 +1314,7 @@ class OpenGLMobject:
         ) -> Sequence[Vector3D]:
             if str_alignments is None:
                 # Use cell_alignment as fallback
-                return [cast(Vector3D, cell_alignment * direction)] * num
+                return [cast("Vector3D", cell_alignment * direction)] * num
             if len(str_alignments) != num:
                 raise ValueError(f"{name}_alignments has a mismatching size.")
             return [mapping[letter] for letter in str_alignments]
@@ -1415,7 +1514,7 @@ class OpenGLMobject:
 
     # Copying
 
-    def copy(self, shallow: bool = False) -> OpenGLMobject:
+    def copy(self, shallow: bool = False) -> Self:
         """Create and return an identical copy of the :class:`OpenGLMobject` including all
         :attr:`submobjects`.
 
@@ -1473,14 +1572,14 @@ class OpenGLMobject:
             #     setattr(copy_mobject, attr, value.copy())
         return copy_mobject
 
-    def deepcopy(self) -> OpenGLMobject:
+    def deepcopy(self) -> Self:
         parents = self.parents
         self.parents = []
         result = copy.deepcopy(self)
         self.parents = parents
         return result
 
-    def generate_target(self, use_deepcopy: bool = False) -> OpenGLMobject:
+    def generate_target(self, use_deepcopy: bool = False) -> Self:
         self.target: OpenGLMobject | None = None  # Prevent exponential explosion
         if use_deepcopy:
             self.target = self.deepcopy()
@@ -1508,19 +1607,19 @@ class OpenGLMobject:
 
     # Updating
 
-    def init_updaters(self) -> None:
+    def init_updaters(self) -> Self:
         self.time_based_updaters: list["_TimeBasedUpdater"] = []  # noqa: UP037
         self.non_time_updaters: list["_NonTimeBasedUpdater"] = []  # noqa: UP037
         self.has_updaters: bool = False
         self.updating_suspended: bool = False
+        return self
 
     def update(self, dt: float = 0, recurse: bool = True) -> Self:
-        if not self.has_updaters or self.updating_suspended:
-            return self
-        for time_based_updater in self.time_based_updaters:
-            time_based_updater(self, dt)
-        for non_time_updater in self.non_time_updaters:
-            non_time_updater(self)
+        if self.has_updaters and not self.updating_suspended:
+            for time_based_updater in self.time_based_updaters:
+                time_based_updater(self, dt)
+            for non_time_updater in self.non_time_updaters:
+                non_time_updater(self)
         if recurse:
             for submob in self.submobjects:
                 submob.update(dt, recurse)
@@ -1563,10 +1662,12 @@ class OpenGLMobject:
         return self
 
     def remove_updater(self, update_function: _Updater) -> Self:
-        for updater_list in [self.time_based_updaters, self.non_time_updaters]:
-            updater_list = cast("list[_Updater]", updater_list)
-            while update_function in updater_list:
-                updater_list.remove(update_function)
+        self.time_based_updaters = list_difference_update(
+            self.time_based_updaters, [update_function]
+        )
+        self.non_time_updaters = list_difference_update(
+            self.non_time_updaters, [update_function]
+        )
         self.refresh_has_updater_status()
         return self
 
@@ -1937,7 +2038,7 @@ class OpenGLMobject:
     def is_off_screen(self) -> bool:
         if self.get_left()[0] > config.frame_x_radius:
             return True
-        if self.get_right()[0] < config.frame_x_radius:
+        if self.get_right()[0] < -config.frame_x_radius:
             return True
         if self.get_bottom()[1] > config.frame_y_radius:
             return True
@@ -1994,7 +2095,7 @@ class OpenGLMobject:
 
     def stretch_to_fit_depth(self, depth: float, **kwargs: Any) -> Self:
         """Stretches the :class:`~.OpenGLMobject` to fit a depth, not keeping width/height proportional."""
-        return self.rescale_to_fit(depth, 1, stretch=True, **kwargs)
+        return self.rescale_to_fit(depth, 2, stretch=True, **kwargs)
 
     def set_width(
         self,
@@ -2128,26 +2229,33 @@ class OpenGLMobject:
         return self
 
     def put_start_and_end_on(self, start: Point3DLike, end: Point3DLike) -> Self:
-        curr_start, curr_end = self.get_start_and_end()
-        curr_vect = curr_end - curr_start
-        if np.all(curr_vect == 0):
-            raise Exception("Cannot position endpoints of closed loop")
-        target_vect = np.array(end) - np.array(start)
+        current_start, current_end = self.get_start_and_end()
+        current_vector = current_end - current_start
+        if np.all(current_vector == 0):
+            warnings.warn(
+                "put_start_and_end_on has been called on a closed loop or zero-length mobject. "
+                f"{type(self).__name__} will be shifted to start point instead.",
+                stacklevel=2,
+            )
+            self.shift(np.asarray(start) - current_start)
+            return self
+
+        target_vector = np.asarray(end) - np.asarray(start)
         axis = (
-            normalize(np.cross(curr_vect, target_vect))
-            if np.linalg.norm(np.cross(curr_vect, target_vect)) != 0
+            normalize(np.cross(current_vector, target_vector))
+            if np.linalg.norm(np.cross(current_vector, target_vector)) != 0
             else OUT
         )
         self.scale(
-            float(np.linalg.norm(target_vect) / np.linalg.norm(curr_vect)),
-            about_point=curr_start,
+            np.linalg.norm(target_vector) / np.linalg.norm(current_vector),
+            about_point=current_start,
         )
         self.rotate(
-            angle_between_vectors(curr_vect, target_vect),
-            about_point=curr_start,
+            angle_between_vectors(current_vector, target_vector),
+            about_point=current_start,
             axis=axis,
         )
-        self.shift(start - curr_start)
+        self.shift(np.asarray(start) - current_start)
         return self
 
     # Color functions
@@ -2184,7 +2292,7 @@ class OpenGLMobject:
         # Color and opacity
         if color is not None and opacity is not None:
             rgbas: FloatRGBA_Array = np.array(
-                [[*rgb, o] for rgb, o in zip(*make_even(rgbs, opacities))]
+                [[*rgb, o] for rgb, o in zip(*make_even(rgbs, opacities), strict=True)]
             )
             for mob in self.get_family(recurse):
                 mob.data[name] = rgbas.copy()
@@ -2260,7 +2368,7 @@ class OpenGLMobject:
         mobs = self.submobjects
         new_colors = color_gradient(colors, len(mobs))
 
-        for mob, color in zip(mobs, new_colors):
+        for mob, color in zip(mobs, new_colors, strict=True):
             mob.set_color(color)
         return self
 
@@ -2367,10 +2475,7 @@ class OpenGLMobject:
 
     def get_boundary_point(self, direction: Vector3DLike) -> Point3D:
         all_points = self.get_all_points()
-        boundary_directions = all_points - self.get_center()
-        norms = np.linalg.norm(boundary_directions, axis=1)
-        boundary_directions /= np.repeat(norms, 3).reshape((len(norms), 3))
-        index = np.argmax(np.dot(boundary_directions, direction))
+        index = np.argmax(np.dot(all_points, direction))
         return all_points[index]
 
     def get_continuous_bounding_box_point(self, direction: Vector3DLike) -> Point3D:
@@ -2475,7 +2580,7 @@ class OpenGLMobject:
         return OpenGLGroup(
             *(
                 template.copy().pointwise_become_partial(self, a1, a2)
-                for a1, a2 in zip(alphas[:-1], alphas[1:])
+                for a1, a2 in it.pairwise(alphas)
             )
         )
 
@@ -2576,7 +2681,7 @@ class OpenGLMobject:
     def align_data(self, mobject: OpenGLMobject) -> Self:
         # In case any data arrays get resized when aligned to shader data
         # self.refresh_shader_data()
-        for mob1, mob2 in zip(self.get_family(), mobject.get_family()):
+        for mob1, mob2 in zip(self.get_family(), mobject.get_family(), strict=False):
             # Separate out how points are treated so that subclasses
             # can handle that case differently if they choose
             mob1.align_points(mob2)
@@ -2606,7 +2711,7 @@ class OpenGLMobject:
             mob1.add_n_more_submobjects(max(0, n2 - n1))
             mob2.add_n_more_submobjects(max(0, n1 - n2))
         # Recurse
-        for sm1, sm2 in zip(mob1.submobjects, mob2.submobjects):
+        for sm1, sm2 in zip(mob1.submobjects, mob2.submobjects, strict=True):
             sm1.align_family(sm2)
         return self
 
@@ -2632,7 +2737,7 @@ class OpenGLMobject:
         repeat_indices = (np.arange(target) * curr) // target
         split_factors = [(repeat_indices == i).sum() for i in range(curr)]
         new_submobs = []
-        for submob, sf in zip(self.submobjects, split_factors):
+        for submob, sf in zip(self.submobjects, split_factors, strict=True):
             new_submobs.append(submob)
             for _ in range(1, sf):
                 new_submob = submob.copy()
@@ -2774,7 +2879,7 @@ class OpenGLMobject:
             mobject.move_to(self.get_center())
 
         self.align_family(mobject)
-        for sm1, sm2 in zip(self.get_family(), mobject.get_family()):
+        for sm1, sm2 in zip(self.get_family(), mobject.get_family(), strict=True):
             sm1.set_data(sm2.data)
             sm1.set_uniforms(sm2.uniforms)
         self.refresh_bounding_box(recurse_down=True)
@@ -2782,7 +2887,7 @@ class OpenGLMobject:
 
     # Locking data
 
-    def lock_data(self, keys: Iterable[str]) -> None:
+    def lock_data(self, keys: Iterable[str]) -> Self:
         """
         To speed up some animations, particularly transformations,
         it can be handy to acknowledge which pieces of data
@@ -2791,10 +2896,11 @@ class OpenGLMobject:
         read into the shader_wrapper objects needlessly
         """
         if self.has_updaters:
-            return
+            return self
         # Be sure shader data has most up to date information
         self.refresh_shader_data()
         self.locked_data_keys = set(keys)
+        return self
 
     def lock_matching_data(
         self, mobject1: OpenGLMobject, mobject2: OpenGLMobject
@@ -2803,6 +2909,7 @@ class OpenGLMobject:
             self.get_family(),
             mobject1.get_family(),
             mobject2.get_family(),
+            strict=False,
         ):
             keys = sm.data.keys() & sm1.data.keys() & sm2.data.keys()
             sm.lock_data(
@@ -2815,9 +2922,10 @@ class OpenGLMobject:
             )
         return self
 
-    def unlock_data(self) -> None:
+    def unlock_data(self) -> Self:
         for mob in self.get_family():
             mob.locked_data_keys = set()
+        return self
 
     # Operations touching shader uniforms
 
@@ -2962,19 +3070,21 @@ class OpenGLMobject:
         shader_data: _ShaderData,  # has structured data type, ex. ("point", np.float32, (3,))
         shader_data_key: str,
         data_key: str,
-    ) -> None:
+    ) -> Self:
         if data_key in self.locked_data_keys:
-            return
+            return self
         self.check_data_alignment(shader_data, data_key)
         shader_data[shader_data_key] = self.data[data_key]
+        return self
 
     def get_shader_data(self) -> _ShaderData:
         shader_data = self.get_resized_shader_data_array(self.get_num_points())
         self.read_data_to_shader(shader_data, "point", "points")
         return shader_data
 
-    def refresh_shader_data(self) -> None:
+    def refresh_shader_data(self) -> Self:
         self.get_shader_data()
+        return self
 
     def get_shader_uniforms(self) -> dict[str, Any]:
         return self.uniforms
@@ -2995,11 +3105,17 @@ class OpenGLMobject:
 
     def throw_error_if_no_points(self) -> None:
         if not self.has_points():
-            message = (
-                "Cannot call OpenGLMobject.{} " + "for a OpenGLMobject with no points"
-            )
             caller_name = sys._getframe(1).f_code.co_name
-            raise Exception(message.format(caller_name))
+            cls = type(self).__name__
+            message = f"Cannot call {cls}.{caller_name} because {self!r} has no points."
+            pointful_family_members = self.family_members_with_points()
+            if pointful_family_members:
+                count = len(pointful_family_members)
+                message += (
+                    f" Its family contains {count} "
+                    f"mobject{'' if count == 1 else 's'} with points."
+                )
+            raise ValueError(message)
 
 
 class OpenGLGroup(OpenGLMobject):
@@ -3030,14 +3146,15 @@ class OpenGLPoint(OpenGLMobject):
         return self.artificial_height
 
     def get_location(self) -> Point3D:
-        return cast(Point3D, self.points[0]).copy()
+        return cast("Point3D", self.points[0]).copy()
 
     @override
     def get_bounding_box_point(self, *args: object, **kwargs: Any) -> Point3D:
         return self.get_location()
 
-    def set_location(self, new_loc: Point3DLike) -> None:
+    def set_location(self, new_loc: Point3DLike) -> Self:
         self.set_points(np.array(new_loc, ndmin=2, dtype=float))
+        return self
 
 
 class _AnimationBuilder:
@@ -3076,7 +3193,7 @@ class _AnimationBuilder:
         # NOTE: using `Self` here should not be a problem, because it's equivalent to a `TypeVar` introduced in `__getattr__`.
         #   For this reason, here it's still in scope and can be used (that's why pyright does not flag this as an error).
         #   However, mypy currently does not seem to understand this: hence the `type: ignore` comment.
-        def update_target(*method_args: object, **method_kwargs: object) -> Self:  # type: ignore[type-var, misc]
+        def update_target(*method_args: object, **method_kwargs: object) -> Self:  # type: ignore[type-var]
             if has_overridden_animation:
                 self.overridden_animation = cast(
                     "Callable[..., Animation]", method._override_animate

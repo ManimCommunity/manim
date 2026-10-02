@@ -28,14 +28,15 @@ from collections.abc import (
     Reversible,
     Sequence,
 )
-from typing import TYPE_CHECKING, TypeVar, overload
+from typing import TYPE_CHECKING, TypeVar, cast, overload
 
 import numpy as np
 
 T = TypeVar("T")
 U = TypeVar("U")
 F = TypeVar("F", np.float64, np.int_)
-H = TypeVar("H", bound=Hashable)
+H1 = TypeVar("H1", bound=Hashable)
+H2 = TypeVar("H2", bound=Hashable)
 
 
 if TYPE_CHECKING:
@@ -58,7 +59,7 @@ def adjacent_n_tuples(objects: Sequence[T], n: int) -> zip[tuple[T, ...]]:
         >>> list(adjacent_n_tuples([1, 2, 3, 4], 3))
         [(1, 2, 3), (2, 3, 4), (3, 4, 1), (4, 1, 2)]
     """
-    return zip(*([*objects[k:], *objects[:k]] for k in range(n)))
+    return zip(*([*objects[k:], *objects[:k]] for k in range(n)), strict=True)
 
 
 def adjacent_pairs(objects: Sequence[T]) -> zip[tuple[T, ...]]:
@@ -133,23 +134,91 @@ def concatenate_lists(*list_of_lists: Iterable[T]) -> list[T]:
     return [item for lst in list_of_lists for item in lst]
 
 
-def list_difference_update(l1: Iterable[T], l2: Iterable[T]) -> list[T]:
-    """Returns a list containing all the elements of l1 not in l2.
+@overload
+def list_difference_update(
+    l1: Iterable[H1], l2: Iterable[H2], *, key: None = None
+) -> list[H1]: ...
+@overload
+def list_difference_update(
+    l1: Iterable[T],
+    l2: Iterable[U],
+    *,
+    key: Callable[[T | U], Hashable],
+) -> list[T]: ...
+def list_difference_update(
+    l1: Iterable[T],
+    l2: Iterable[U],
+    *,
+    key: Callable[[T | U], Hashable] | None = None,
+) -> list[T]:
+    """Returns a list containing all the elements of ``l1`` which are not present
+    in ``l2``.
+
+    An optional key function can be provided to specify which elements
+    should be considered equal.
+
+    Parameters
+    ----------
+    l1
+        The first iterable.
+    l2
+        The second iterable.
+    key
+        A key function which provides a value used to determine element equality. The
+        default value of ``None`` means that regular hashable equality will be used.
 
     Examples
     --------
     .. code-block:: pycon
 
-        >>> list_difference_update([1, 2, 3, 4], [2, 4])
-        [1, 3]
+        >>> list_difference_update([1, 2, 3, 4, 1], [2, 4])
+        [1, 3, 1]
+        >>> list_difference_update(["a", "b", "A", "C"], ["A", "D"], key=str.lower)
+        ['b', 'C']
     """
-    return [e for e in l1 if e not in l2]
+    if key is None:
+        if not isinstance(l2, (set, dict, frozenset)):
+            # l2 is not a set-like object, so convert it to a set for faster lookups
+            l2 = set(l2)
+        return [e for e in l1 if e not in l2]
+
+    # Use provided key function to determine uniqueness
+    l2_keys = {key(e) for e in l2}
+    return [e for e in l1 if key(e) not in l2_keys]
 
 
-def list_update(l1: Iterable[T], l2: Iterable[T]) -> list[T]:
-    """Used instead of ``set.update()`` to maintain order,
-        making sure duplicates are removed from l1, not l2.
-        Removes overlap of l1 and l2 and then concatenates l2 unchanged.
+@overload
+def list_update(
+    l1: Iterable[H1], l2: Iterable[H2], *, key: None = None
+) -> list[H1 | H2]: ...
+@overload
+def list_update(
+    l1: Iterable[T],
+    l2: Iterable[U],
+    *,
+    key: Callable[[T | U], Hashable],
+) -> list[T | U]: ...
+def list_update(
+    l1: Iterable[T],
+    l2: Iterable[U],
+    *,
+    key: Callable[[T | U], Hashable] | None = None,
+) -> list[T | U]:
+    """Returns a new list containing all the elements of ``l1`` which are not present in
+    ``l2``, followed by all the elements of ``l2``. Element order is preserved.
+
+    An optional key function can be provided to specify which elements
+    should be considered equal.
+
+    Parameters
+    ----------
+    l1
+        The first iterable.
+    l2
+        The second iterable.
+    key
+        A key function which provides a value used to determine element equality. The
+        default value of ``None`` means that regular hashable equality will be used.
 
     Examples
     --------
@@ -157,8 +226,12 @@ def list_update(l1: Iterable[T], l2: Iterable[T]) -> list[T]:
 
         >>> list_update([1, 2, 3], [2, 4, 4])
         [1, 3, 2, 4, 4]
+        >>> list_update(["a", "b", "c", "A", "B", "C"], ["A", "b", "D"], key=str.lower)
+        ['c', 'C', 'A', 'b', 'D']
     """
-    return [e for e in l1 if e not in l2] + list(l2)
+    if not isinstance(l2, list):
+        l2 = list(l2)
+    return list_difference_update(l1, l2, key=key) + cast(list[T | U], l2)
 
 
 @overload
@@ -254,7 +327,7 @@ def make_even_by_cycling(
     )
 
 
-def remove_list_redundancies(lst: Reversible[H]) -> list[H]:
+def remove_list_redundancies(lst: Reversible[H1]) -> list[H1]:
     """Used instead of ``list(set(l))`` to maintain order.
     Keeps the last occurrence of each element.
     """

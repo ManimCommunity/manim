@@ -428,8 +428,8 @@ class ThreeDScene(Scene):
             which have the same meaning as the parameters in set_camera_orientation.
         """
         config = dict(
-            self.default_camera_orientation_kwargs,
-        )  # Where doe this come from?
+            self.default_angled_camera_orientation_kwargs,
+        )
         config.update(kwargs)
         self.set_camera_orientation(**config)
 

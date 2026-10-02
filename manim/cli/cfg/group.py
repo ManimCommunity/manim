@@ -308,7 +308,7 @@ Are you sure you want to continue? (y/n)""",
     if proceed:
         if not directory_path.is_dir():
             console.print(f"Creating folder: {directory}.", style="red bold")
-            directory_path.mkdir(parents=True)
+            directory_path.mkdir(parents=True, exist_ok=True)
 
         ctx.invoke(write)
         from_path = Path.cwd() / "manim.cfg"

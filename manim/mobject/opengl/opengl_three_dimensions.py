@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Self
 
 import numpy as np
 
@@ -33,7 +33,7 @@ class OpenGLSurfaceMesh(OpenGLVGroup):
             **kwargs,
         )
 
-    def init_points(self) -> None:
+    def init_points(self) -> Self:
         uv_surface = self.uv_surface
 
         full_nu, full_nv = uv_surface.resolution
@@ -54,3 +54,5 @@ class OpenGLSurfaceMesh(OpenGLVGroup):
             path = OpenGLVMobject()
             path.set_points_smoothly(nudged_points[vi::full_nv])
             self.add(path)
+
+        return self

@@ -3,17 +3,21 @@ from __future__ import annotations
 import logging
 
 import numpy as np
+import pytest
 
 from manim import (
     DEGREES,
     DOWN,
+    GREEN,
     LEFT,
     ORIGIN,
     RIGHT,
     UP,
+    Angle,
     BackgroundRectangle,
     Circle,
     Line,
+    Polygon,
     Polygram,
     Sector,
     Square,
@@ -89,7 +93,7 @@ def test_Polygram_get_vertex_groups():
     for vertex_groups in vertex_groups_arr:
         polygram = Polygram(*vertex_groups)
         poly_vertex_groups = polygram.get_vertex_groups()
-        for poly_group, group in zip(poly_vertex_groups, vertex_groups):
+        for poly_group, group in zip(poly_vertex_groups, vertex_groups, strict=True):
             np.testing.assert_array_equal(poly_group, group)
 
     # If polygram is a Polygram of a vertex group containing the start vertex N times,
@@ -152,6 +156,18 @@ def test_BackgroundRectangle(manim_caplog):
     )
 
 
+def test_BackgroundRectangle_color_access():
+    """Test that BackgroundRectangle color access works correctly.
+
+    Regression test for https://github.com/ManimCommunity/manim/issues/4419
+    """
+    square = Square()
+    bg_rect = BackgroundRectangle(square, color=GREEN)
+
+    # Should not cause infinite recursion
+    assert bg_rect.color == GREEN
+
+
 def test_Square_side_length_reflets_correct_width_and_height():
     sq = Square(side_length=1).scale(3)
     assert sq.side_length == 3
@@ -202,3 +218,94 @@ def test_line_with_buff_and_path_arc():
         ]
     )
     np.testing.assert_allclose(line.points, expected_points)
+
+
+def test_Circle_point_at_angle():
+    from manim import TAU
+
+    # Test basic angles
+    circle = Circle(radius=1.0)
+    start_point = circle.points[0].copy()
+
+    # Angle 0 should return start point
+    p0 = circle.point_at_angle(0)
+    np.testing.assert_array_almost_equal(p0, start_point, decimal=5)
+
+    # Angle π/2 should return point 90° along arc
+    p90 = circle.point_at_angle(TAU / 4)
+    # Verify it's approximately at top of circle
+    assert p90[1] > 0.9  # Y coordinate close to 1
+
+    # Angle π should return point opposite to start
+    p180 = circle.point_at_angle(TAU / 2)
+    # Verify it's opposite to start point
+    np.testing.assert_array_almost_equal(p180[:2], -start_point[:2], decimal=5)
+
+    # Angle beyond 2π should wrap around
+    p720 = circle.point_at_angle(2 * TAU)
+    np.testing.assert_array_almost_equal(p720[:2], start_point[:2], decimal=5)
+
+    # Negative angles should work
+    p_neg = circle.point_at_angle(-TAU / 4)
+    # Should be same as 3/4 TAU
+    p270 = circle.point_at_angle(3 * TAU / 4)
+    np.testing.assert_array_almost_equal(p_neg, p270, decimal=5)
+
+    # Test with rotated circle
+    rotated_circle = Circle(radius=1.0).rotate(TAU / 8)
+    rotated_start = rotated_circle.points[0].copy()
+
+    # Angle 0 should still return start point after rotation
+    p_rotated_0 = rotated_circle.point_at_angle(0)
+    np.testing.assert_array_almost_equal(p_rotated_0, rotated_start, decimal=5)
+
+    # Test with reflected circle
+    reflected_circle = Circle(radius=1.0).flip()
+    reflected_start = reflected_circle.points[0].copy()
+
+    # Angle 0 should return start point even after reflection
+    p_reflected_0 = reflected_circle.point_at_angle(0)
+    np.testing.assert_array_almost_equal(p_reflected_0, reflected_start, decimal=5)
+
+
+def test_angle_parallel_lines_returns_empty():
+    # Regression test for https://github.com/ManimCommunity/manim/issues/1930
+    # When two lines are parallel or collinear, line_intersection raises
+    # ValueError.  Angle should gracefully become an empty Mobject instead
+    # of propagating the error.
+    # Collinear lines (infinitely many intersections)
+    l1 = Line(LEFT, RIGHT)
+    l2 = Line(LEFT * 0.5, RIGHT * 0.5)
+    angle = Angle(l1, l2)
+    assert not angle.has_points()
+    assert angle.get_value() == 0
+
+    # Parallel but non-collinear lines (no intersection)
+    l3 = Line(UP, UP + RIGHT)
+    l4 = Line(DOWN, DOWN + RIGHT)
+    angle2 = Angle(l3, l4)
+    assert not angle2.has_points()
+    assert angle2.get_value() == 0
+
+
+def test_angle_non_xy_lines_raise():
+    l1 = Line([0, 0, 1], [1, 0, 1])
+    l2 = Line([0, 0, 1], [0, 1, 1])
+
+    with pytest.raises(ValueError, match="xy-plane"):
+        Angle(l1, l2)
+
+
+def test_round_corners_collinear_points_stays_finite():
+    # Regression test for https://github.com/ManimCommunity/manim/issues/3052
+    # Collinear vertices create a (near) 180 degree turn at a corner, which
+    # makes ``tan(angle / 2)`` diverge to infinity.  This previously produced
+    # either astronomically large coordinates (default mode) or an 8.70 PiB
+    # ``MemoryError`` when anchors were evenly distributed.
+    for kwargs in ({}, {"evenly_distribute_anchors": True}):
+        poly = Polygon([-1, 0, 0], [0, 0, 0], [1, 0, 0])
+        poly.round_corners(0.15, **kwargs)
+        assert np.all(np.isfinite(poly.points))
+        # The rounded corner is bounded by half the shorter adjacent edge, so
+        # no coordinate should blow up beyond the original extent.
+        assert np.max(np.abs(poly.points)) <= 1.0

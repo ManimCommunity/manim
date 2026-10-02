@@ -140,6 +140,12 @@ def is_manim_executable_associated_to_this_library() -> bool:
     with open(path_to_manim, "rb") as manim_binary:
         manim_exec = manim_binary.read()
 
+    # support uv toolchain's shim executable structure
+    companion_script = path_to_manim + ".__script__.py"
+    if os.path.isfile(companion_script):
+        with open(companion_script, "rb") as f:
+            manim_exec += f.read()
+
     # first condition below corresponds to the executable being
     # some sort of python script. second condition happens when
     # the executable is actually a Windows batch file.
