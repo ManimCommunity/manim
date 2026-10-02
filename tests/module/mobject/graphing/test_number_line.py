@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import numpy as np
+import pytest
 
-from manim import DashedLine, NumberLine
+from manim import DashedLine, LinearBase, LogBase, NumberLine
 from manim.mobject.text.numbers import Integer
 
 
@@ -123,6 +124,34 @@ def test_point_to_number():
     np.testing.assert_array_equal(np.round(num_1, 4), np.round(expected, 4))
     np.testing.assert_array_equal(np.round(num_2, 4), np.round(expected, 4))
     np.testing.assert_array_equal(np.round(num_3, 4), np.round(expected, 4))
+
+
+@pytest.mark.parametrize(
+    "scaling",
+    [LinearBase(), LinearBase(2), LogBase(), LogBase(2)],
+    ids=["linear", "linear-scaled", "log-10", "log-2"],
+)
+@pytest.mark.parametrize("transformed", [False, True])
+def test_scaled_coordinate_round_trip(scaling, transformed):
+    line = NumberLine(x_range=[-2, 3], scaling=scaling, length=6)
+    if transformed:
+        line.rotate(np.pi / 3).scale(1.5).shift([1, -2, 0.5])
+    numbers = scaling.function(np.array([-3, -2, 0, 1.5, 3, 4]))
+    points = line.number_to_point(numbers)
+
+    np.testing.assert_allclose(line.point_to_number(points), numbers, atol=1e-12)
+    assert isinstance(line.p2n(points), np.ndarray)
+    np.testing.assert_allclose(line.p2n(points), numbers, atol=1e-12)
+    np.testing.assert_allclose(line.p2n(points.tolist()), numbers, atol=1e-12)
+    np.testing.assert_allclose(points.tolist() @ line, numbers, atol=1e-12)
+    np.testing.assert_allclose(
+        line.point_to_number(points.tolist()), numbers, atol=1e-12
+    )
+    for number, point in zip(numbers, points, strict=True):
+        np.testing.assert_allclose(line.point_to_number(point), number, atol=1e-12)
+        assert np.isscalar(line.p2n(point))
+        np.testing.assert_allclose(line.p2n(point), number, atol=1e-12)
+        np.testing.assert_allclose(point.tolist() @ line, number, atol=1e-12)
 
 
 def test_start_and_end_at_same_point():

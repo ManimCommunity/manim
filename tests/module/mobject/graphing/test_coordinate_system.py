@@ -14,6 +14,7 @@ from manim import (
     Circle,
     ComplexPlane,
     Dot,
+    LogBase,
     NumberPlane,
     PolarPlane,
     ThreeDAxes,
@@ -21,6 +22,31 @@ from manim import (
     tempconfig,
 )
 from manim import CoordinateSystem as CS
+
+
+def test_log_axis_coordinate_round_trip():
+    ax = Axes(
+        x_range=[0, 3],
+        y_range=[0, 1],
+        tips=False,
+        x_axis_config={"scaling": LogBase()},
+    )
+    np.testing.assert_allclose(ax.point_to_coords(ax.c2p(100, 0.5)), [100, 0.5])
+
+
+def test_log_axis_line_graph_label():
+    ax = Axes(
+        x_range=[0, 3],
+        y_range=[0, 1],
+        tips=False,
+        x_axis_config={"scaling": LogBase()},
+    )
+    graph = ax.plot_line_graph([1, 10, 100, 1000], [0.5] * 4, add_vertex_dots=False)[
+        "line_graph"
+    ]
+    label = ax.get_graph_label(graph, Dot(), x_val=100, dot=True)
+
+    np.testing.assert_allclose(label.dot.get_center(), ax.c2p(100, 0.5), atol=1e-3)
 
 
 def test_initial_config():
