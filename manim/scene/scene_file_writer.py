@@ -64,6 +64,18 @@ def convert_audio(
             output_audio.mux(packet)
 
 
+def _webm_audio_codec() -> str:
+    """Return the audio codec used for sound in a VP9 (webm) video.
+
+    ``libvorbis`` is preferred, but PyAV wheels are not always built with it
+    (for example some Windows builds only ship the experimental native
+    ``vorbis`` encoder). Fall back to ``libopus``, which webm also supports.
+    """
+    if "libvorbis" in av.codecs_available:
+        return "libvorbis"
+    return "libopus"
+
+
 class _PartialMovieEncodeJob:
     """Run one segment encoder on a dedicated worker thread."""
 
@@ -892,7 +904,7 @@ class SceneFileWriter:
             # manually.
             if self.output_spec.segment_extension == ".webm":
                 ogg_sound_file_path = sound_file_path.with_suffix(".ogg")
-                convert_audio(sound_file_path, ogg_sound_file_path, "libvorbis")
+                convert_audio(sound_file_path, ogg_sound_file_path, _webm_audio_codec())
                 sound_file_path = ogg_sound_file_path
             elif self.output_spec.segment_extension == ".mp4":
                 # Similarly, pyav may reject wav audio in an .mp4 file;
