@@ -5,6 +5,7 @@ from io import StringIO
 
 import pytest
 
+from manim import RED, WHITE
 from manim.mobject.text.text_mobject import MarkupText, Text
 
 
@@ -62,3 +63,24 @@ def test_gen_chars_handles_spaces_with_disable_ligatures():
     chars = text._gen_chars()
     # One entry per character of the (whitespace-stripped) indexing text.
     assert len(chars) == len(text.text)
+
+
+def test_text_color_attribute_applied():
+    """``Text``/``MarkupText`` should apply the ``color`` argument to the mobject itself.
+
+    Regression test for #4817: the color was baked into the SVG glyphs but not
+    propagated to the :class:`~.SVGMobject`, so ``get_color()`` reported black
+    regardless of the ``color`` argument.
+    """
+    assert Text("test", color=WHITE).get_color() == WHITE
+    assert Text("test", color=RED).get_color() == RED
+    assert MarkupText("test", color=RED).get_color() == RED
+    # the default color is white
+    assert Text("test").get_color() == WHITE
+
+
+def test_text_color_does_not_break_t2c():
+    """Per-character colors from ``t2c`` should still override the default color."""
+    text = Text("ab", t2c={"a": RED})
+    assert text.get_color() == WHITE
+    assert [c.get_color() for c in text.chars] == [RED, WHITE]
