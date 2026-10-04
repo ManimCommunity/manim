@@ -503,7 +503,10 @@ class ArcBetweenPoints(Arc):
 
 
 class TangentialArc(ArcBetweenPoints):
-    """A TangentialArc.
+    """A tangential arc, that is, an arc tangent to two intersecting lines.
+
+    Use ``corner = (s1, s2)`` to choose one of the four possible corner arcs.
+    Each sign is ±1 and controls the direction along the corresponding line.
 
     Parameters
     ----------
@@ -517,10 +520,6 @@ class TangentialArc(ArcBetweenPoints):
         Choose which corner to draw, use one of (1, 1), (1, -1), (-1, 1) and (-1, -1).
     kwargs
         Additional arguments to be passed to :class:`Arc`
-
-    Construct an arc that is tangent to two intersecting lines.
-    You can choose any of the 4 possible corner arcs via the `corner` tuple.
-    corner = (s1, s2) where each si is ±1 to control direction along each line.
 
     Examples
     --------
