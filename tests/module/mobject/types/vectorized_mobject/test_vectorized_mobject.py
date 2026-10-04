@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 from manim import (
+    Arc,
     Circle,
     CurvesAsSubmobjects,
     Line,
@@ -15,7 +16,7 @@ from manim import (
     VGroup,
     VMobject,
 )
-from manim.constants import PI
+from manim.constants import DEGREES, LEFT, PI, RIGHT, TAU
 
 
 def test_vmobject_add():
@@ -774,3 +775,150 @@ def test_pointwise_become_partial_where_vmobject_is_self():
         ]
     )
     np.testing.assert_allclose(sq.points, expected_points)
+
+
+def test_width_height_account_for_curve_interior_extrema():
+    """Handles (control points) must not inflate width/height (#3619)."""
+    c = Circle(radius=3).rotate(30 * DEGREES)
+    assert c.width == pytest.approx(6.0, abs=1e-3)
+    assert c.height == pytest.approx(6.0, abs=1e-3)
+
+
+def test_width_height_include_interior_extrema_of_wild_cubic():
+    # Handles at x=5 and x=-5 with anchors x=0 and x=1: the control-point
+    # bounding box would give width 10, but the curve itself peaks at
+    # x ~= 1.45299 and dips to x ~= -0.98473, so the exact width is ~2.4377.
+    vmob = VMobject().set_points(
+        np.array([[0.0, 0.0, 0.0], [5.0, 3.0, 0.0], [-5.0, 3.0, 0.0], [1.0, 0.0, 0.0]])
+    )
+    assert vmob.width == pytest.approx(2.4377191199218955, abs=1e-4)
+    assert vmob.height == pytest.approx(2.25, abs=1e-4)
+
+
+def test_arc_critical_points_agree_with_width_height():
+    # Choose an arc whose x-extremum lies between subdivision anchors.
+    # Control-point, anchor-only, and exact curve bounds are all different.
+    arc = Arc(radius=2, start_angle=PI / 5, angle=TAU * 0.7)
+    assert arc.width == pytest.approx(3.618034, abs=1e-4)
+    assert arc.height == pytest.approx(4.0, abs=1e-3)
+    assert arc.get_right()[0] - arc.get_left()[0] == pytest.approx(arc.width, abs=1e-6)
+    assert arc.get_top()[1] - arc.get_bottom()[1] == pytest.approx(arc.height, abs=1e-6)
+
+
+@pytest.mark.parametrize("dim", ["width", "height", "depth"])
+def test_width_height_depth_setters_round_trip(dim):
+    # Setting a dimension must result in exactly that dimension, regardless of
+    # which one is set.  Explicit VMobject so the test does not depend on the
+    # point layout chosen by a specific shape.
+    mob = VMobject().set_points(
+        np.array(
+            [
+                [0.0, 0.0, 0.0],
+                [3.0, 2.0, 1.0],
+                [-2.0, 1.0, -1.0],
+                [1.0, 0.0, 0.0],
+            ]
+        )
+    )
+    setattr(mob, dim, 5.0)
+    assert getattr(mob, dim) == pytest.approx(5.0)
+
+
+def test_width_height_of_single_point_vmobject():
+    vmob = VMobject().set_points(np.array([[3.0, 4.0, 0.0]]))
+    assert vmob.width == pytest.approx(0.0)
+    assert vmob.height == pytest.approx(0.0)
+
+
+def test_critical_points_agree_with_width_height():
+    # Critical points and dimensions must use the same exact curve bounds.
+    vmob = VMobject().set_points(
+        np.array([[0.0, 0.0, 0.0], [5.0, 3.0, 0.0], [-5.0, 3.0, 0.0], [1.0, 0.0, 0.0]])
+    )
+    assert vmob.width == pytest.approx(2.4377191199218955, abs=1e-4)
+    assert vmob.get_left()[0] == pytest.approx(-0.98472845, abs=1e-6)
+    assert vmob.get_right()[0] == pytest.approx(1.45299067, abs=1e-6)
+    assert vmob.get_bottom()[1] == pytest.approx(0.0, abs=1e-6)
+    assert vmob.get_top()[1] == pytest.approx(2.25, abs=1e-6)
+    assert vmob.get_right()[0] - vmob.get_left()[0] == pytest.approx(
+        vmob.width, abs=1e-6
+    )
+    assert vmob.get_top()[1] - vmob.get_bottom()[1] == pytest.approx(
+        vmob.height, abs=1e-6
+    )
+    assert vmob.get_center()[0] == pytest.approx(
+        (vmob.get_left()[0] + vmob.get_right()[0]) / 2, abs=1e-6
+    )
+
+
+def test_depth_and_critical_points_cover_curve_extrema():
+    # Control points along z span [-5, 5], but the rendered curve only
+    # reaches ~[-0.985, 1.453].  depth and the OUT/IN critical points must
+    # agree with each other and stay within the control hull.
+    vmob = VMobject().set_points(
+        np.array([[0.0, 0.0, 0.0], [0.0, 0.0, 5.0], [0.0, 0.0, -5.0], [0.0, 0.0, 1.0]])
+    )
+    assert vmob.depth == pytest.approx(2.437719, abs=1e-4)
+    out = vmob.get_critical_point(np.array([0.0, 0.0, 1.0]))
+    inn = vmob.get_critical_point(np.array([0.0, 0.0, -1.0]))
+    assert out[2] == pytest.approx(1.45299067, abs=1e-6)
+    assert inn[2] == pytest.approx(-0.98472845, abs=1e-6)
+    assert out[2] - inn[2] == pytest.approx(vmob.depth, abs=1e-6)
+
+
+def _wild_cubic() -> VMobject:
+    return VMobject().set_points(
+        np.array([[0.0, 0.0, 0.0], [5.0, 3.0, 0.0], [-5.0, 3.0, 0.0], [1.0, 0.0, 0.0]])
+    )
+
+
+def test_coord_planning_uses_exact_extrema():
+    # get_x/get_coord/set_coord/align_to must be consistent with the exact
+    # critical points, otherwise set_x and align_to move wrong amounts.
+    vmob = _wild_cubic()
+    assert vmob.get_x() == pytest.approx(vmob.get_center()[0])
+    assert vmob.get_x(RIGHT) == pytest.approx(vmob.get_right()[0])
+    assert vmob.get_x(LEFT) == pytest.approx(vmob.get_left()[0])
+    assert vmob.get_extremum_along_dim(dim=0, key=1) == pytest.approx(
+        vmob.get_right()[0]
+    )
+    assert vmob.get_extremum_along_dim(dim=0, key=-1) == pytest.approx(
+        vmob.get_left()[0]
+    )
+
+    vmob.set_x(0)
+    assert vmob.get_center()[0] == pytest.approx(0, abs=1e-9)
+
+    vmob = _wild_cubic()
+    vmob.set_x(0, RIGHT)
+    assert vmob.get_right()[0] == pytest.approx(0, abs=1e-9)
+
+    rect = Square(side_length=2).shift(3 * RIGHT)
+    vmob = _wild_cubic()
+    vmob.align_to(rect, RIGHT)
+    assert vmob.get_right()[0] == pytest.approx(rect.get_right()[0], abs=1e-9)
+
+
+def test_extrema_scale_invariance():
+    # Scaling a curve must not change which roots are treated as interior
+    # extrema, so width scales exactly with the overall scale factor.
+    true_width = 2.4377191199218955
+    pts = np.array(
+        [[0.0, 0.0, 0.0], [5.0, 3.0, 0.0], [-5.0, 3.0, 0.0], [1.0, 0.0, 0.0]]
+    )
+    for scale in (1e-16, 1e-14, 1e-12, 1e-9, 1e-3, 1.0, 1e3, 1e9):
+        vmob = VMobject().set_points(pts * scale)
+        assert vmob.width == pytest.approx(true_width * scale, rel=1e-9, abs=1e-20)
+
+    vmob = VMobject().set_points(pts * 1e-14)
+    vmob.width = 1.0
+    assert vmob.width == pytest.approx(1.0, abs=1e-9)
+
+
+def test_family_fast_path_aggregates_exact_bounds():
+    left = _wild_cubic().shift(20 * LEFT)
+    right = _wild_cubic().shift(20 * RIGHT)
+    group = VGroup(left, right)
+    assert group.get_left()[0] == pytest.approx(-20.98472845, abs=1e-6)
+    assert group.get_right()[0] == pytest.approx(21.45299067, abs=1e-6)
+    assert group.width == pytest.approx(42.4377191, abs=1e-4)
