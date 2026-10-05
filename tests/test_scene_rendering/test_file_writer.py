@@ -175,3 +175,30 @@ def test_unicode_partial_movie(config, tmpdir, simple_scenes_path):
 
     _, err, exit_code = capture(command)
     assert exit_code == 0, err
+
+
+@pytest.mark.parametrize(
+    ("vorbis_modes", "expected"),
+    [({"r", "w"}, "libvorbis"), ({"r"}, "libopus"), (set(), "libopus")],
+    ids=["encoder-available", "decoder-only", "missing"],
+)
+def test_webm_audio_codec_checks_encoder_availability(
+    monkeypatch, vorbis_modes, expected
+):
+    from manim.scene import scene_file_writer
+
+    available = {"libopus", "vorbis", "aac"}
+    if vorbis_modes:
+        available.add("libvorbis")
+    monkeypatch.setattr(av, "codecs_available", available)
+    calls = []
+
+    def codec(name, mode):
+        calls.append((name, mode))
+        if mode not in vorbis_modes:
+            raise ValueError("libvorbis encoder is unavailable")
+        return object()
+
+    monkeypatch.setattr(av.codec, "Codec", codec)
+    assert scene_file_writer._webm_audio_codec() == expected
+    assert calls == [("libvorbis", "w")]
