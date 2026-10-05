@@ -4,6 +4,7 @@ import contextlib
 import itertools as it
 import time
 import typing
+import warnings
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, Self
 
@@ -20,6 +21,7 @@ from manim.mobject.opengl.opengl_mobject import (
 )
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.typing import MatrixMN, Point3D
+from manim.utils.bezier import interpolate
 from manim.utils.caching import handle_caching_play
 from manim.utils.color import color_to_rgba
 from manim.utils.exceptions import EndSceneEarlyException
@@ -410,6 +412,51 @@ class OpenGLCamera(OpenGLMobject):
         self.refresh_rotation_matrix()
         return self
 
+    def set_zoom(self, zoom: float) -> Self:
+        """
+        Set the zoom factor of the camera.
+
+        Parameters
+        ----------
+        zoom : float
+            The new zoom factor. Values greater than ``1`` zoom in.
+
+        Returns
+        -------
+        Self
+            The camera instance. Returned for chaining.
+        """
+        return self.scale(config["frame_height"] / (zoom * self.get_height()))
+
+    def set_focal_distance(self, focal_distance: float) -> Self:
+        """
+        Not supported by :class:`OpenGLCamera`, only emits a warning.
+
+        Parameters
+        ----------
+        focal_distance : float
+            Ignored.
+
+        Returns
+        -------
+        Self
+            The unchanged camera instance. Returned for chaining.
+        """
+        warnings.warn(
+            "focal distance of OpenGLCamera can not be adjusted.",
+            stacklevel=2,
+        )
+        return self
+
+    @property
+    def frame_center(self) -> Point3D:
+        """The center of the camera frame."""
+        return self.get_center()
+
+    @frame_center.setter
+    def frame_center(self, point: Point3DLike) -> None:
+        self.move_to(point)
+
     def get_shape(self) -> tuple[float, float]:
         """Retrieve the width and height of the camera frame."""
         return (self.get_width(), self.get_height())
@@ -451,6 +498,11 @@ class OpenGLCamera(OpenGLMobject):
         path_func: PathFuncType = straight_path(),
     ) -> Self:
         super().interpolate(mobject1, mobject2, alpha, path_func)
+        if isinstance(mobject1, OpenGLCamera) and isinstance(mobject2, OpenGLCamera):
+            # Keep angles unwrapped so explicitly requested full turns are animated.
+            self.euler_angles[:] = interpolate(
+                mobject1.euler_angles, mobject2.euler_angles, alpha
+            )
         self.refresh_rotation_matrix()
         return self
 
