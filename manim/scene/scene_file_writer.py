@@ -71,9 +71,11 @@ def _webm_audio_codec() -> str:
     (for example some Windows builds only ship the experimental native
     ``vorbis`` encoder). Fall back to ``libopus``, which webm also supports.
     """
-    if "libvorbis" in av.codecs_available:
-        return "libvorbis"
-    return "libopus"
+    try:
+        av.codec.Codec("libvorbis", "w")
+    except ValueError:
+        return "libopus"
+    return "libvorbis"
 
 
 class _PartialMovieEncodeJob:

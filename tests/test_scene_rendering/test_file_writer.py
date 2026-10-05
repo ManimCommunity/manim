@@ -177,16 +177,28 @@ def test_unicode_partial_movie(config, tmpdir, simple_scenes_path):
     assert exit_code == 0, err
 
 
-def test_webm_audio_codec_prefers_libvorbis(monkeypatch):
+@pytest.mark.parametrize(
+    ("vorbis_modes", "expected"),
+    [({"r", "w"}, "libvorbis"), ({"r"}, "libopus"), (set(), "libopus")],
+    ids=["encoder-available", "decoder-only", "missing"],
+)
+def test_webm_audio_codec_checks_encoder_availability(
+    monkeypatch, vorbis_modes, expected
+):
     from manim.scene import scene_file_writer
 
-    monkeypatch.setattr(av, "codecs_available", {"libvorbis", "libopus", "aac"})
-    assert scene_file_writer._webm_audio_codec() == "libvorbis"
+    available = {"libopus", "vorbis", "aac"}
+    if vorbis_modes:
+        available.add("libvorbis")
+    monkeypatch.setattr(av, "codecs_available", available)
+    calls = []
 
+    def codec(name, mode):
+        calls.append((name, mode))
+        if mode not in vorbis_modes:
+            raise ValueError("libvorbis encoder is unavailable")
+        return object()
 
-def test_webm_audio_codec_falls_back_to_libopus(monkeypatch):
-    from manim.scene import scene_file_writer
-
-    # Some PyAV builds (e.g. certain Windows wheels) do not ship libvorbis.
-    monkeypatch.setattr(av, "codecs_available", {"libopus", "vorbis", "aac"})
-    assert scene_file_writer._webm_audio_codec() == "libopus"
+    monkeypatch.setattr(av.codec, "Codec", codec)
+    assert scene_file_writer._webm_audio_codec() == expected
+    assert calls == [("libvorbis", "w")]
