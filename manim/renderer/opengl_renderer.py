@@ -21,6 +21,7 @@ from manim.mobject.opengl.opengl_mobject import (
 )
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.typing import MatrixMN, Point3D
+from manim.utils.bezier import interpolate
 from manim.utils.caching import handle_caching_play
 from manim.utils.color import color_to_rgba
 from manim.utils.exceptions import EndSceneEarlyException
@@ -497,6 +498,11 @@ class OpenGLCamera(OpenGLMobject):
         path_func: PathFuncType = straight_path(),
     ) -> Self:
         super().interpolate(mobject1, mobject2, alpha, path_func)
+        if isinstance(mobject1, OpenGLCamera) and isinstance(mobject2, OpenGLCamera):
+            # Keep angles unwrapped so explicitly requested full turns are animated.
+            self.euler_angles[:] = interpolate(
+                mobject1.euler_angles, mobject2.euler_angles, alpha
+            )
         self.refresh_rotation_matrix()
         return self
 
