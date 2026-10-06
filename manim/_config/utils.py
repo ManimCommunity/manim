@@ -1258,9 +1258,9 @@ class ManimConfig(MutableMapping):
 
     @property
     def encoder_queue_size(self) -> int:
-        """Maximum number of pending frame buffers held by each encoder when
-        parallel encoding is enabled. Ignored when ``max_inflight_encoders`` is
-        1 (--encoder-queue-size).
+        """Maximum number of pending frame buffers held by each encoder; this
+        bounds the memory used by frames waiting to be encoded
+        (--encoder-queue-size).
         """
         return self._d["encoder_queue_size"]
 
