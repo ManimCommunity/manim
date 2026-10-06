@@ -356,7 +356,7 @@ def test_write_frame_fails_fast_after_encoder_failure(config, tmp_path):
 
 @pytest.mark.parametrize(
     ("max_inflight_encoders", "encoder_queue_size", "expected_queue_size"),
-    [(1, 8, 0), (1, 3, 0), (2, 8, 8), (2, 3, 3)],
+    [(1, 8, 8), (1, 3, 3), (2, 8, 8), (2, 3, 3)],
 )
 def test_frame_queue_configuration(
     config,
@@ -379,6 +379,43 @@ def test_frame_queue_configuration(
 
     writer.close_partial_movie_stream()
     writer.join_all_encode_jobs()
+    assert not _alive_encoder_threads()
+
+
+def test_serial_encoding_blocks_when_frame_queue_is_full(config, tmp_path):
+    config.max_inflight_encoders = 1
+    config.encoder_queue_size = 2
+    writer = _make_writer("SerialBackpressureScene")
+    encoder = _fake_segment_encoder(tmp_path, "serial_backpressure")
+    release_encoder = threading.Event()
+    encoder.write_frame.side_effect = lambda *args, **kwargs: release_encoder.wait()
+    writer._create_segment_encoder = lambda target: encoder
+    writer.open_partial_movie_stream(
+        animation_index=0,
+        file_path=tmp_path / "partial.mp4",
+    )
+    job = writer._current_encode_job
+
+    def write_frames():
+        for _ in range(10):
+            writer.write_frame(_frame())
+
+    producer = threading.Thread(target=write_frames, daemon=True)
+    producer.start()
+    try:
+        for _ in range(500):
+            if job.queue.full():
+                break
+            time.sleep(0.01)
+        assert job.queue.full(), "Frame queue never reached its bound"
+        assert producer.is_alive(), "Producer did not block on the full queue"
+    finally:
+        release_encoder.set()
+        producer.join(timeout=5)
+
+    writer.close_partial_movie_stream()
+    writer.join_all_encode_jobs()
+    assert encoder.write_frame.call_count == 10
     assert not _alive_encoder_threads()
 
 

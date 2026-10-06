@@ -244,9 +244,8 @@ render_options = option_group(
         "--encoder-queue-size",
         type=IntRange(min=1),
         default=None,
-        help="Maximum number of pending frame buffers held by each encoder when "
-        "parallel encoding is enabled. Ignored when --max-inflight-encoders is "
-        "1 (the default). Defaults to 8.",
+        help="Maximum number of pending frame buffers held by each encoder "
+        "(bounds the memory used by frames waiting to be encoded). Defaults to 8.",
     ),
     option(
         "--renderer",

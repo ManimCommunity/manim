@@ -843,7 +843,8 @@ By default, Manim finishes encoding each partial movie file before rendering the
 next animation. If ``max_inflight_encoders`` is set to a value greater than 1,
 encoding can instead overlap with rendering. The setting bounds the number of
 partial movie encoders active at the same time, while ``encoder_queue_size``
-bounds the number of pending frame buffers held by each parallel encoder.
+bounds the number of pending frame buffers held by each encoder (the renderer
+waits when the queue is full, so memory use does not grow with scene length).
 
 First, it literally *begins* all of the animations by calling their
 setup methods (:meth:`.Animation._setup_scene`, :meth:`.Animation.begin`).
