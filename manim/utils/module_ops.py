@@ -47,7 +47,10 @@ def get_module(file_name: Path) -> types.ModuleType:
             ext = file_name.suffix
             if ext != ".py":
                 raise ValueError(f"{file_name} is not a valid Manim python script.")
-            module_name = ".".join(file_name.with_suffix("").parts)
+
+            cwd = Path.cwd().resolve()
+            rel_path = file_name.relative_to(cwd)
+            module_name = ".".join(rel_path.with_suffix("").parts)
 
             warnings.filterwarnings(
                 "default",
