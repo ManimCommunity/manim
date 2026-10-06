@@ -146,7 +146,7 @@ Transforming a square into a circle
 
 With our circle animation complete, let's move on to something a little more complicated.
 
-1. Open ``scene.py``, and add the following code snippet below the ``CreateCircle`` class:
+1. Open ``main.py``, and add the following code snippet below the ``CreateCircle`` class:
 
 .. code-block:: python
 
@@ -166,7 +166,7 @@ With our circle animation complete, let's move on to something a little more com
 
 .. code-block:: bash
 
-   manim -pql scene.py SquareToCircle
+   manim -pql main.py SquareToCircle
 
 The following animation will render:
 
@@ -195,7 +195,7 @@ Positioning ``Mobject``\s
 
 Next, let's go over some basic techniques for positioning ``Mobject``\s.
 
-1. Open ``scene.py``, and add the following code snippet below the ``SquareToCircle`` class:
+1. Open ``main.py``, and add the following code snippet below the ``SquareToCircle`` class:
 
 .. code-block:: python
 
@@ -214,7 +214,7 @@ Next, let's go over some basic techniques for positioning ``Mobject``\s.
 
 .. code-block:: bash
 
-   manim -pql scene.py SquareAndCircle
+   manim -pql main.py SquareAndCircle
 
 The following animation will render:
 
@@ -260,7 +260,7 @@ can be played using ``self.play``. Let's return to ``SquareToCircle`` to see the
 differences between using methods when creating a ``Mobject``,
 and animating those method calls with ``.animate``.
 
-1. Open ``scene.py``, and add the following code snippet below the ``SquareAndCircle`` class:
+1. Open ``main.py``, and add the following code snippet below the ``SquareAndCircle`` class:
 
 .. code-block:: python
 
@@ -280,7 +280,7 @@ and animating those method calls with ``.animate``.
 
 .. code-block:: bash
 
-   manim -pql scene.py AnimatedSquareToCircle
+   manim -pql main.py AnimatedSquareToCircle
 
 The following animation will render:
 
@@ -305,7 +305,7 @@ with the changes already applied.
 
 Try other methods, like ``flip`` or ``shift``, and see what happens.
 
-3. Open ``scene.py``, and add the following code snippet below the ``AnimatedSquareToCircle`` class:
+3. Open ``main.py``, and add the following code snippet below the ``AnimatedSquareToCircle`` class:
 
 .. code-block:: python
 
@@ -322,7 +322,7 @@ Try other methods, like ``flip`` or ``shift``, and see what happens.
 
 .. code-block:: bash
 
-   manim -pql scene.py DifferentRotations
+   manim -pql main.py DifferentRotations
 
 The following animation will render:
 
