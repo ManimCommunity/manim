@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 import types
 
 import pytest
@@ -13,8 +12,7 @@ def tmp_files(tmp_path, monkeypatch):
     """
     File structure:
     -tmp_path (cwd)
-        __init__.py
-        -parent_dir
+        -parent_dir (package_root)
              __init__.py
              parent_file.py
              -sub_dir
@@ -27,11 +25,7 @@ def tmp_files(tmp_path, monkeypatch):
 
     # Change cwd to tmp_path
     monkeypatch.chdir(tmp_path)
-    # Add to sys.path - this is done automatically in production
-    sys.path.insert(0, str(tmp_path.absolute()))
 
-    # __init__.py not strictly required but don't hurt
-    (tmp_path / "__init__.py").write_text("")
     (tmp_path / "parent_dir" / "__init__.py").write_text("")
     (tmp_path / "parent_dir" / "sub_dir" / "__init__.py").write_text("")
     parent_file = tmp_path / "parent_dir" / "parent.py"
@@ -57,3 +51,12 @@ def test_relative_import_works_from_subdir_to_parent(tmp_files):
 
     assert hasattr(module, "result")
     assert module.result == 42
+
+
+def test_absolute_imports_outside_cwd(tmp_path):
+    file = tmp_path / "scene.py"
+    file.write_text("")
+    module = module_ops.get_module(file)
+
+    assert module.__spec__.name == "scene"
+    assert module.__spec__.loader is not None
