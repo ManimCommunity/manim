@@ -141,7 +141,7 @@ else:
                     renderer = OpenGLRenderer()
 
                 try:
-                    SceneClass = local_ns[config["scene_names"][0]]
+                    SceneClass = local_ns[config.scene_names[0]]
                     scene = SceneClass(renderer=renderer)
                     scene.render()
                 finally:
@@ -167,7 +167,7 @@ else:
 
                 local_path = output_file.relative_to(Path.cwd())
                 tmpfile = (
-                    Path(config["media_dir"])
+                    Path(config.media_dir)
                     / "jupyter"
                     / f"{_generate_file_name()}{local_path.suffix}"
                 )
@@ -180,7 +180,7 @@ else:
 
                 file_type = mimetypes.guess_type(output_file)[0]
                 assert isinstance(file_type, str)
-                embed = config["media_embed"]
+                embed = config.media_embed
                 if not embed:
                     # videos need to be embedded when running in google colab.
                     # do this automatically in case config.media_embed has not been
@@ -192,7 +192,7 @@ else:
                 else:
                     result = Video(
                         tmpfile,
-                        html_attributes=f'controls autoplay loop style="max-width: {config["media_width"]};"',
+                        html_attributes=f'controls autoplay loop style="max-width: {config.media_width};"',
                         embed=embed,
                     )
 
@@ -208,6 +208,6 @@ else:
 
 def _generate_file_name() -> str:
     val: str = (
-        config["scene_names"][0] + "@" + datetime.now().strftime("%Y-%m-%d@%H-%M-%S")
+        config.scene_names[0] + "@" + datetime.now().strftime("%Y-%m-%d@%H-%M-%S")
     )
     return val
