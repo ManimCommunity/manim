@@ -138,6 +138,8 @@ Date
 * Improve {class}`.Example` by {user}`alice` in {pr}`123`
 * Fix {issue}`456`
 
+See the {doc}`configuration guide </guides/configuration>` and {doc}`/guides/deep_dive`.
+
 **Full Changelog**: [Compare view](https://example.com/compare)
 """
 
@@ -153,4 +155,12 @@ Date
     assert "`Example` by @alice" in result
     assert "https://github.com/manimcommunity/manim/pull/123" in result
     assert "https://github.com/manimcommunity/manim/issues/456" in result
+    assert (
+        "[configuration guide]"
+        "(https://docs.manim.community/en/stable/guides/configuration.html)"
+    ) in result
+    assert (
+        "[guides/deep_dive]"
+        "(https://docs.manim.community/en/stable/guides/deep_dive.html)"
+    ) in result
     assert result.endswith("\n")
