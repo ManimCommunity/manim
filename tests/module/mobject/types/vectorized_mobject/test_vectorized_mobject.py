@@ -6,6 +6,7 @@ import pytest
 from manim import (
     Circle,
     CurvesAsSubmobjects,
+    FunctionGraph,
     Line,
     Mobject,
     Polygon,
@@ -15,7 +16,7 @@ from manim import (
     VGroup,
     VMobject,
 )
-from manim.constants import PI
+from manim.constants import ORIGIN, PI, RIGHT, UP
 
 
 def test_vmobject_add():
@@ -695,6 +696,45 @@ def test_proportion_from_point():
     abc.scale(0.8)
     props = [abc.proportion_from_point(p) for p in abc.get_vertices()]
     np.testing.assert_allclose(props, [0, 1 / 3, 2 / 3])
+
+
+def _point_from_proportion_per_curve(vmob, alpha):
+    # The loop point_from_proportion used before the lengths were vectorized
+    curves_and_lengths = tuple(vmob.get_curve_functions_with_lengths())
+    target_length = alpha * sum(length for _, length in curves_and_lengths)
+    current_length = 0
+    for curve, length in curves_and_lengths:
+        if current_length + length >= target_length:
+            return curve((target_length - current_length) / length if length else 0)
+        current_length += length
+
+
+def test_vectorized_curve_lengths_match_per_curve_lengths():
+    rng = np.random.default_rng(0)
+    vmobs = [
+        Circle(),
+        Square(),
+        FunctionGraph(np.sin, x_range=[-6, 6, 0.1]),
+        VMobject().set_points(rng.normal(size=(4 * 50, 3))),
+        # zero-length curves, the second one detached from the first
+        VMobject().set_points([ORIGIN] * 4 + [RIGHT] * 4 + [RIGHT, RIGHT, UP, UP]),
+    ]
+    for vmob in vmobs:
+        num_curves = vmob.get_num_curves()
+        pieces = [vmob.get_nth_curve_length_pieces(n) for n in range(num_curves)]
+        np.testing.assert_array_equal(vmob._get_curve_length_pieces(), pieces)
+
+        lengths = [vmob.get_nth_curve_length(n) for n in range(num_curves)]
+        assert vmob.get_arc_length() == sum(lengths)
+        assert vmob.get_arc_length(3) == sum(
+            vmob.get_nth_curve_length(n, 3) for n in range(num_curves)
+        )
+
+        for alpha in [0, 0.5, *rng.random(20)]:
+            np.testing.assert_array_equal(
+                vmob.point_from_proportion(alpha),
+                _point_from_proportion_per_curve(vmob, alpha),
+            )
 
 
 def test_align_points_handles_vmobject_with_no_complete_cubic_curves():
