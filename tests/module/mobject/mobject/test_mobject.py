@@ -5,20 +5,11 @@ from itertools import product
 import numpy as np
 import pytest
 
-from manim import (
-    DL,
-    DR,
-    PI,
-    UL,
-    UR,
-    Circle,
-    Mobject,
-    Rectangle,
-    Square,
-    Triangle,
-    VGroup,
-    VMobject,
-)
+from manim.constants import DL, DR, PI, UL, UR
+from manim.mobject.geometry.arc import Circle
+from manim.mobject.geometry.polygram import Rectangle, Square, Triangle
+from manim.mobject.mobject import Mobject
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 
 
 def test_mobject_add():
@@ -355,6 +346,76 @@ def test_apply_matrix_about_vertex_view():
 
 
 # Tests for methods which provide Mobject's sequence interface
+
+
+def test_mobject_get_item():
+    mobs = [VMobject(name=f"Mob{i}") for i in range(10)]
+    vgroups = [VGroup(*mobs[1:3]), VGroup(*mobs[3:6]), VGroup(mobs[7])]
+
+    base_mob = mobs[0]
+    base_mob.add(vgroups[0], vgroups[1], mobs[6])
+    mobs[3].add(vgroups[2], mobs[8])
+    mobs[8].add(mobs[9])
+
+    """
+    Structure:
+
+    Mob0
+     ├──VGroup [0]
+     │   ├──Mob1 [0, 0]
+     │   └──Mob2 [0, 1]
+     ├──VGroup [1]
+     │   ├──Mob3 [1, 0]
+     │   │   ├──VGroup [1, 0, 0]
+     │   │   │   └──Mob7 [1, 0, 0, 0]
+     │   │   └──Mob8 [1, 0, 1]
+     │   │       └──Mob9 [1, 0, 1, 0]
+     │   ├──Mob4 [1, 1]
+     │   └──Mob5 [1, 2]
+     └──Mob6 [2]
+    """
+
+    # Basic indexing, 1 dimension
+    assert base_mob[0].__repr__() == "VGroup(Mob1, Mob2)"
+    assert base_mob[1].__repr__() == "VGroup(Mob3, Mob4, Mob5)"
+    assert base_mob[2].__repr__() == "Mob6"
+    assert base_mob[1:].__repr__() == "VGroup(VGroup of 3 submobjects, Mob6)"
+    assert (
+        base_mob[:2].__repr__()
+        == "VGroup(VGroup of 2 submobjects, VGroup of 3 submobjects)"
+    )
+    assert base_mob[::2].__repr__() == "VGroup(VGroup of 2 submobjects, Mob6)"
+
+    # Basic indexing, N dimensions
+    assert base_mob[0, 0].__repr__() == "Mob1"
+    assert base_mob[0, 1].__repr__() == "Mob2"
+    assert base_mob[1, 0].__repr__() == "Mob3"
+    assert base_mob[1, 0, 0].__repr__() == "VGroup(Mob7)"
+    assert base_mob[1, 0, 0, 0].__repr__() == "Mob7"
+    assert base_mob[1, 0, 1].__repr__() == "Mob8"
+    assert base_mob[1, 0, 1, 0].__repr__() == "Mob9"
+    assert base_mob[1, 1].__repr__() == "Mob4"
+    assert base_mob[1, 2].__repr__() == "Mob5"
+
+    assert base_mob[:2, 0].__repr__() == "VGroup(Mob1, Mob3)"
+    assert base_mob[:2, 1].__repr__() == "VGroup(Mob2, Mob4)"
+    assert (
+        base_mob[:2, ::2].__repr__()
+        == "VGroup(VGroup of 1 submobject, VGroup of 2 submobjects)"
+    )
+    assert base_mob[1, 0, :, 0].__repr__() == "VGroup(Mob7, Mob9)"
+
+    # Fancy indexing
+    assert (
+        base_mob[[0, 1]].__repr__()
+        == "VGroup(VGroup of 2 submobjects, VGroup of 3 submobjects)"
+    )
+    assert base_mob[[2, 0]].__repr__() == "VGroup(Mob6, VGroup of 2 submobjects)"
+    assert (
+        base_mob[[True, False, True]].__repr__()
+        == "VGroup(VGroup of 2 submobjects, Mob6)"
+    )
+    assert base_mob[[0, 1], 0].__repr__() == "VGroup(Mob1, Mob3)"
 
 
 def build_mobject(n=10, has_points=False, mob_cls=Mobject):
