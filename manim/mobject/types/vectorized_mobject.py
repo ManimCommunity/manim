@@ -167,9 +167,12 @@ class VMobject(Mobject):
         #     fill_color = kwargs["color"]
         #     stroke_color = kwargs["color"]
         if fill_color is not None:
-            self.fill_color = ManimColor.parse(fill_color)
+            self.set_fill(color=ManimColor.parse(fill_color), opacity=self.fill_opacity)
         if stroke_color is not None:
             self.stroke_color = ManimColor.parse(stroke_color)
+            self.set_stroke(
+                color=ManimColor.parse(stroke_color), opacity=self.stroke_opacity
+            )
 
     def _assert_valid_submobjects(self, submobjects: Iterable[VMobject]) -> Self:
         return self._assert_valid_submobjects_internal(submobjects, VMobject)
@@ -240,7 +243,7 @@ class VMobject(Mobject):
         ]
         rgbas: FloatRGBA_Array = np.array(
             [
-                c.to_rgba_with_alpha(o)
+                c.to_rgba_with_alpha(c._internal_value[3] * o)
                 for c, o in zip(*make_even(colors, opacities), strict=True)
             ],
         )
