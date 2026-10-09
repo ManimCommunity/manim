@@ -145,15 +145,17 @@ def test_codecs(config, tmp_path, format, transparent, codec, pixel_format):
     np.testing.assert_allclose(first_frame[-1, -1], target_rgba_center, atol=5)
 
 
-def test_scene_with_non_raw_or_wav_audio(config, manim_caplog):
+def test_scene_with_mp3_audio(config):
     class SceneWithMP3(Scene):
         def construct(self):
             file_path = Path(__file__).parent / "click.mp3"
             self.add_sound(file_path)
             self.wait()
 
-    SceneWithMP3().render()
-    assert "click.mp3 to .wav" in manim_caplog.text
+    scene = SceneWithMP3()
+    scene.render()
+    with av.open(str(scene.manager.file_writer.final_file_path)) as container:
+        assert container.streams.audio[0].codec_context.name == "aac"
 
 
 @pytest.mark.slow

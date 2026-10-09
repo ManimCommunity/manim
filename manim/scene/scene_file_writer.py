@@ -5,14 +5,15 @@ from __future__ import annotations
 __all__ = ["SceneFileWriter"]
 
 import json
-import shutil
-import warnings
+from collections.abc import Iterator
 from contextlib import suppress
 from dataclasses import dataclass
+from fractions import Fraction
+from functools import cached_property
 from io import BytesIO
 from pathlib import Path
 from queue import Queue
-from tempfile import NamedTemporaryFile, _TemporaryFileWrapper
+from tempfile import NamedTemporaryFile
 from threading import Thread
 from typing import TYPE_CHECKING, Any
 
@@ -20,17 +21,6 @@ import av
 import numpy as np
 import srt
 from PIL import Image
-
-# Manim handles audio conversion through PyAV directly. Importing pydub emits a
-# RuntimeWarning if ffmpeg/avconv is not on PATH, even when only WAV code paths
-# are used (which do not need ffmpeg). Silence this specific warning.
-with warnings.catch_warnings():
-    warnings.filterwarnings(
-        "ignore",
-        message=r".*ffmpeg or avconv.*",
-        category=RuntimeWarning,
-    )
-    from pydub import AudioSegment
 
 from manim import __version__
 
@@ -40,6 +30,7 @@ from .._config.video_encoder import VideoEncoderSpec
 from ..utils.caching import prune_segment_cache
 from ..utils.file_ops import modify_atime
 from ..utils.sounds import get_full_sound_file_path
+from .audio_mixer import LAYOUT, SAMPLE_RATE, _probe_duration, _Sound, _SoundMix
 from .section import DefaultSectionType, Section
 from .video_segment_encoder import VideoSegmentEncoder
 
@@ -47,21 +38,13 @@ if TYPE_CHECKING:
     from manim.typing import RGBAPixelArray, StrPath
 
 
-def convert_audio(
-    input_path: Path, output_path: Path | _TemporaryFileWrapper[bytes], codec_name: str
-) -> None:
-    with (
-        av.open(input_path) as input_audio,
-        av.open(output_path, "w") as output_audio,
-    ):
-        input_audio_stream = input_audio.streams.audio[0]
-        output_audio_stream = output_audio.add_stream(codec_name)
-        for frame in input_audio.decode(input_audio_stream):
-            for packet in output_audio_stream.encode(frame):
-                output_audio.mux(packet)
-
-        for packet in output_audio_stream.encode():
-            output_audio.mux(packet)
+def _audio_codec(container_extension: str) -> str:
+    """Return the audio codec used for sound in a video container."""
+    if container_extension == ".webm":
+        return _webm_audio_codec()
+    if container_extension == ".mov":
+        return "pcm_s16le"
+    return "aac"
 
 
 def _webm_audio_codec() -> str:
@@ -76,6 +59,41 @@ def _webm_audio_codec() -> str:
     except ValueError:
         return "libopus"
     return "libvorbis"
+
+
+class _AudioTrack:
+    """Encode mixed sample blocks into an audio stream of an output container."""
+
+    def __init__(
+        self,
+        container: av.container.OutputContainer,
+        codec: str,
+        blocks: Iterator[np.ndarray],
+    ) -> None:
+        self._container = container
+        self._stream = container.add_stream(codec, rate=SAMPLE_RATE, layout=LAYOUT)
+        self._blocks = blocks
+        self._written = 0
+        self._finished = False
+
+    def write_until(self, seconds: float | None) -> None:
+        """Encode audio up to ``seconds``, or all remaining audio for ``None``."""
+        while not self._finished and (
+            seconds is None or self._written < seconds * SAMPLE_RATE
+        ):
+            block = next(self._blocks, None)
+            if block is None:
+                self._finished = True
+                frame = None
+            else:
+                # PyAV converts the sample format and frame size for the codec.
+                frame = av.AudioFrame.from_ndarray(block, format="fltp", layout=LAYOUT)
+                frame.sample_rate = SAMPLE_RATE
+                frame.pts = self._written
+                frame.time_base = Fraction(1, SAMPLE_RATE)
+                self._written += block.shape[1]
+            for packet in self._stream.encode(frame):
+                self._container.mux(packet)
 
 
 class _PartialMovieEncodeJob:
@@ -253,7 +271,9 @@ class SceneFileWriter:
         self._inflight_encode_jobs: list[_PartialMovieEncodeJob] = []
         self._inflight_by_path: dict[str, _PartialMovieEncodeJob] = {}
         self._current_encode_job: _PartialMovieEncodeJob | None = None
-        self.init_audio()
+        self._sounds: list[_Sound] = []
+        # Scene-time intervals visible in the movie, in order; adjacent ones merged.
+        self._intervals: list[tuple[float, float]] = []
         self.frame_count = 0
         self.partial_movie_files: list[str | None] = []
         self.subcaptions: list[srt.Subtitle] = []
@@ -371,99 +391,44 @@ class SceneFileWriter:
             self.sections[-1].partial_movie_files.append(new_partial_movie_file)
 
     # Sound
-    def init_audio(self) -> None:
-        """Preps the writer for adding audio to the movie."""
-        self.includes_sound = False
-
-    def create_audio_segment(self) -> None:
-        """Creates an empty, silent, Audio Segment."""
-        self.audio_segment = AudioSegment.silent()
-
-    def add_audio_segment(
-        self,
-        new_segment: AudioSegment,
-        time: float | None = None,
-        gain_to_background: float | None = None,
-    ) -> None:
-        """This method adds an audio segment from an AudioSegment type object
-        and suitable parameters.
-
-        Parameters
-        ----------
-        new_segment
-            The audio segment to add
-
-        time
-            the timestamp at which the sound should be added.
-
-        gain_to_background
-            The gain of the segment from the background.
-        """
-        if not self.includes_sound:
-            self.includes_sound = True
-            self.create_audio_segment()
-        segment = self.audio_segment
-        curr_end = segment.duration_seconds
-        if time is None:
-            time = curr_end
-        if time < 0:
-            raise ValueError("Adding sound at timestamp < 0")
-
-        new_end = time + new_segment.duration_seconds
-        diff = new_end - curr_end
-        if diff > 0:
-            segment = segment.append(
-                AudioSegment.silent(int(np.ceil(diff * 1000))),
-                crossfade=0,
-            )
-        self.audio_segment = segment.overlay(
-            new_segment,
-            position=int(1000 * time),
-            gain_during_overlay=gain_to_background,
-        )
-
     def add_sound(
         self,
         sound_file: StrPath,
-        time: float | None = None,
+        time: float,
         gain: float | None = None,
-        **kwargs: Any,
+        gain_to_background: float | None = None,
     ) -> None:
-        """This method adds an audio segment from a sound file.
+        """Add a sound at a scene time.
+
+        The file is located and checked immediately, so a missing or unreadable
+        file fails at the call site. It is decoded and mixed when the movie is
+        assembled; see :mod:`~manim.scene.audio_mixer`.
 
         Parameters
         ----------
         sound_file
-            The path to the sound file.
-
+            The path to the sound file, absolute or relative to the assets
+            directory.
         time
-            The timestamp at which the audio should be added.
-
+            The scene time in seconds at which the sound starts.
         gain
-            The gain of the given audio segment.
-
-        **kwargs
-            This method uses add_audio_segment, so any keyword arguments
-            used there can be referenced here.
-
+            Gain applied to the sound, in dB.
+        gain_to_background
+            Gain applied to all previously added sounds while this one plays,
+            in dB.
         """
+        if time < 0:
+            raise ValueError("Adding sound at timestamp < 0")
         file_path = get_full_sound_file_path(sound_file, self.settings.assets_dir)
-        # we assume files with .wav / .raw suffix are actually
-        # .wav and .raw files, respectively.
-        if file_path.suffix not in (".wav", ".raw"):
-            # we need to pass delete=False to work on Windows
-            # TODO: figure out a way to cache the wav file generated (benchmark needed)
-            with NamedTemporaryFile(suffix=".wav", delete=False) as wav_file_path:
-                convert_audio(file_path, wav_file_path, "pcm_s16le")
-                new_segment = AudioSegment.from_file(wav_file_path.name)
-                logger.info(f"Automatically converted {file_path} to .wav")
-            Path(wav_file_path.name).unlink()
-        else:
-            new_segment = AudioSegment.from_file(file_path)
+        _probe_duration(file_path)
+        self._sounds.append(_Sound(file_path, time, gain, gain_to_background))
 
-        if gain:
-            new_segment = new_segment.apply_gain(gain)
-        self.add_audio_segment(new_segment, time, **kwargs)
+    @cached_property
+    def _sound_mix(self) -> _SoundMix | None:
+        """The scene's mix through the visible intervals, created on first use."""
+        if not self._sounds:
+            return None
+        return _SoundMix(self._sounds, self._intervals)
 
     # Writers
     def begin_animation(
@@ -490,16 +455,32 @@ class SceneFileWriter:
                 file_path=file_path,
             )
 
-    def end_animation(self, allow_write: bool = False) -> None:
-        """Seal the current segment job when video writing is enabled.
+    def end_animation(
+        self,
+        allow_write: bool = False,
+        *,
+        scene_interval: tuple[float, float],
+    ) -> None:
+        """Seal the current segment job and record the scene time it shows.
 
         Parameters
         ----------
         allow_write
             Whether the current animation has an open segment job.
+        scene_interval
+            The scene times at which the animation started and ended. The
+            interval is part of the movie unless the animation was excluded from
+            the output; sounds and subcaptions are placed through these intervals.
         """
-        if self.output_spec.is_video and allow_write:
+        if not self.output_spec.is_video:
+            return
+        if allow_write:
             self.close_partial_movie_stream()
+        if self.partial_movie_files and self.partial_movie_files[-1] is not None:
+            start, end = scene_interval
+            if self._intervals and self._intervals[-1][1] == start:
+                start = self._intervals.pop()[0]
+            self._intervals.append((start, end))
 
     def write_frame(
         self,
@@ -749,8 +730,22 @@ class SceneFileWriter:
         input_files: list[str],
         output_file: Path,
         create_gif: bool = False,
-        includes_sound: bool = False,
+        audio: Iterator[np.ndarray] | None = None,
     ) -> None:
+        """Concatenate segments into ``output_file``, optionally adding audio.
+
+        Parameters
+        ----------
+        input_files
+            Segment paths in playback order.
+        output_file
+            The artifact to write.
+        create_gif
+            Whether to encode a GIF instead of copying the video packets.
+        audio
+            Mixed float32 ``(2, n)`` sample blocks covering the artifact, as
+            produced by the scene's sound mix. Ignored for GIFs.
+        """
         output_file.parent.mkdir(parents=True, exist_ok=True)
         logger.debug(
             f"Partial movie files to combine ({len(input_files)} files): %(p)s",
@@ -761,9 +756,6 @@ class SceneFileWriter:
         av_options = {
             "safe": "0",  # needed to read files
         }
-
-        if not includes_sound:
-            av_options["an"] = "1"
 
         partial_movies_input = av.open(
             manifest,
@@ -838,6 +830,15 @@ class SceneFileWriter:
                 and self.output_spec.segment_extension == ".webm"
             ):
                 output_stream.pix_fmt = "yuva420p"
+            audio_track = (
+                None
+                if audio is None
+                else _AudioTrack(
+                    output_container,
+                    _audio_codec(self.output_spec.segment_extension),
+                    audio,
+                )
+            )
             for packet in partial_movies_input.demux(partial_movies_stream):
                 # We need to skip the "flushing" packets that `demux` generates.
                 if packet.dts is None:
@@ -846,9 +847,15 @@ class SceneFileWriter:
                 packet.dts = None  # This seems to be needed, as dts from consecutive
                 # files may not be monotically increasing, so we let libav compute it.
 
+                # Keep audio interleaved with the video it accompanies.
+                if audio_track is not None and packet.pts is not None:
+                    audio_track.write_until(float(packet.pts * packet.time_base))
+
                 # We need to assign the packet to the new stream.
                 packet.stream = output_stream
                 output_container.mux(packet)
+            if audio_track is not None:
+                audio_track.write_until(None)
 
         partial_movies_input.close()
         output_container.close()
@@ -876,86 +883,13 @@ class SceneFileWriter:
 
         logger.info("Combining to Movie file.")
         self._write_concat_manifest(partial_movie_files)
+        mix = None if self.output_spec.is_gif else self._sound_mix
         self.combine_files(
             partial_movie_files,
             movie_file_path,
             self.output_spec.is_gif,
-            self.includes_sound,
+            audio=None if mix is None else mix.blocks(0, mix.duration),
         )
-
-        # handle sound
-        if self.includes_sound and not self.output_spec.is_gif:
-            sound_file_path = movie_file_path.with_suffix(".wav")
-            # Makes sure sound file length will match video file
-            self.add_audio_segment(AudioSegment.silent(0))
-            self.audio_segment.export(
-                sound_file_path,
-                format="wav",
-                bitrate="312k",
-            )
-            # Audio added to a VP9 encoded (webm) video file needs
-            # to be encoded as vorbis or opus. Directly exporting
-            # self.audio_segment with such a codec works in principle,
-            # but tries to call ffmpeg via its CLI -- which we want
-            # to avoid. This is why we need to do the conversion
-            # manually.
-            if self.output_spec.segment_extension == ".webm":
-                ogg_sound_file_path = sound_file_path.with_suffix(".ogg")
-                convert_audio(sound_file_path, ogg_sound_file_path, _webm_audio_codec())
-                sound_file_path = ogg_sound_file_path
-            elif self.output_spec.segment_extension == ".mp4":
-                # Similarly, pyav may reject wav audio in an .mp4 file;
-                # convert to AAC.
-                aac_sound_file_path = sound_file_path.with_suffix(".aac")
-                convert_audio(sound_file_path, aac_sound_file_path, "aac")
-                sound_file_path = aac_sound_file_path
-
-            temp_file_path = movie_file_path.with_name(
-                f"{movie_file_path.stem}_temp{movie_file_path.suffix}"
-            )
-            av_options = {
-                "shortest": "1",
-                "metadata": f"comment=Rendered with Manim Community v{__version__}",
-            }
-
-            with (
-                av.open(movie_file_path) as video_input,
-                av.open(sound_file_path) as audio_input,
-            ):
-                video_stream = video_input.streams.video[0]
-                audio_stream = audio_input.streams.audio[0]
-                output_container = av.open(
-                    str(temp_file_path), mode="w", options=av_options
-                )
-                output_video_stream = output_container.add_stream_from_template(
-                    template=video_stream
-                )
-                output_audio_stream = output_container.add_stream_from_template(
-                    template=audio_stream
-                )
-
-                for packet in video_input.demux(video_stream):
-                    # We need to skip the "flushing" packets that `demux` generates.
-                    if packet.dts is None:
-                        continue
-
-                    # We need to assign the packet to the new stream.
-                    packet.stream = output_video_stream
-                    output_container.mux(packet)
-
-                for packet in audio_input.demux(audio_stream):
-                    # We need to skip the "flushing" packets that `demux` generates.
-                    if packet.dts is None:
-                        continue
-
-                    # We need to assign the packet to the new stream.
-                    packet.stream = output_audio_stream
-                    output_container.mux(packet)
-
-                output_container.close()
-
-            shutil.move(str(temp_file_path), str(movie_file_path))
-            sound_file_path.unlink()
 
         self.print_file_ready_message(str(movie_file_path))
         if self.output_spec.is_video:

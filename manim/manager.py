@@ -794,7 +794,9 @@ class Manager(Generic[SceneT]):
         else:
             self._play_internal()
         if writing:
-            self.file_writer.end_animation(not self.skip_animations)
+            self.file_writer.end_animation(
+                not self.skip_animations, scene_interval=(event_start, self.time)
+            )
         self.num_plays += 1
         if self._timeline_recorder is not None:
             self._timeline_recorder.end(self.time)
