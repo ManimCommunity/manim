@@ -52,7 +52,6 @@ def placements(scene_class, monkeypatch, sound_file):
     return recorded
 
 
-@pytest.mark.parametrize("backend", ["cairo", "opengl"])
 def decoded_audio(path):
     """Decode an artifact's audio stream to mono float samples.
 
