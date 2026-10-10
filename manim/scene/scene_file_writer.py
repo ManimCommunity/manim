@@ -5,6 +5,7 @@ from __future__ import annotations
 __all__ = ["SceneFileWriter"]
 
 import json
+import math
 from collections.abc import Iterator
 from contextlib import suppress
 from dataclasses import dataclass
@@ -365,6 +366,7 @@ class SceneFileWriter:
                 section_video,
                 name,
                 skip_animations,
+                output_start=self._output_time(math.inf),
             ),
         )
 
@@ -905,15 +907,25 @@ class SceneFileWriter:
     def combine_to_section_videos(self) -> None:
         """Concatenate partial movie files for each section."""
         self.finish_last_section()
+        mix = self._sound_mix
         sections_index: list[dict[str, Any]] = []
-        for section in self.sections:
+        for index, section in enumerate(self.sections):
             # only if section does want to be saved
             if section.video is not None:
                 logger.info(f"Combining partial files for section '{section.name}'")
                 section_path = self.sections_output_dir / section.video
+                # A section shows its stretch of the scene's single mix.
+                end = (
+                    self.sections[index + 1].output_start
+                    if index + 1 < len(self.sections)
+                    else self._output_time(math.inf)
+                )
                 self.combine_files(
                     section.get_clean_partial_movie_files(),
                     section_path,
+                    audio=None
+                    if mix is None
+                    else mix.blocks(section.output_start, end),
                 )
                 sections_index.append(section.get_dict(self.sections_output_dir))
         section_index = self.output_plan.section_index

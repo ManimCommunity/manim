@@ -247,3 +247,36 @@ def test_subcaptions_follow_the_movie(tmp_path, manim_caplog):
     assert (
         "Subcaption 'last' runs 1.00 s past the end of the movie" in manim_caplog.text
     )
+
+
+def test_section_videos_carry_their_slice_of_the_mix(tmp_path):
+    beep = write_wav(tmp_path / "beep.wav", seconds=0.3)
+    # Added in the first section, heard across the section boundary.
+    long = write_wav(tmp_path / "long.wav", seconds=1.5, value=0.25)
+
+    class TwoSections(Scene):
+        def construct(self):
+            square = Square()
+            self.next_section("first")
+            self.add_sound(str(long))
+            self.play(square.animate.shift([1, 0, 0]), run_time=1)
+            self.next_section("skipped", skip_animations=True)
+            self.play(square.animate.shift([1, 0, 0]), run_time=1)
+            self.next_section("second")
+            self.add_sound(str(beep), time_offset=0.5)
+            self.play(square.animate.shift([-1, 0, 0]), run_time=1)
+
+    with tempconfig({"save_sections": True}):
+        path = render_scene(tmp_path, TwoSections, format="mov")
+    writer_sections = path.parent / "sections"
+    first = audio_and_video_durations(next(writer_sections.glob("*first*.mov")))
+    second = audio_and_video_durations(next(writer_sections.glob("*second*.mov")))
+    _, movie, rate = audio_and_video_durations(path)
+
+    for video_duration, levels, _ in (first, second):
+        assert abs(levels.size / rate - video_duration) < 0.03
+    # PCM in mov is lossless, so the slices must match the movie exactly.
+    np.testing.assert_array_equal(np.concatenate([first[1], second[1]]), movie)
+    # The skipped section's half second of the long sound is not heard.
+    assert level(second[1], rate, 0.0, 0.4) < 0.01
+    assert level(second[1], rate, 0.55, 0.75) == pytest.approx(0.5, abs=0.01)
