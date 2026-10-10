@@ -104,12 +104,15 @@ def test_reused_segments_produce_an_identical_audio_track(
     np.testing.assert_allclose(warm[:common], cold[:common], atol=1e-3)
 
 
-def test_excluded_plays_still_drop_sound(tmp_path, monkeypatch, beep):
-    """Documented limitation: scene time cannot be placed in a partial artifact.
-
-    Positioning these correctly needs a map from scene time onto the selected
-    output span, which is a separate work package.
-    """
+@pytest.mark.parametrize(
+    "excluding_config",
+    [{"from_animation_number": 2}, {"save_last_frame": True}],
+    ids=["from-animation-number", "still-output"],
+)
+def test_sounds_of_excluded_plays_reach_the_writer(
+    tmp_path, monkeypatch, beep, excluding_config
+):
+    """Every sound is recorded at scene time; assembly decides what is heard."""
     with tempconfig(
         {
             "renderer": "cairo",
@@ -121,29 +124,9 @@ def test_excluded_plays_still_drop_sound(tmp_path, monkeypatch, beep):
             "disable_caching": True,
             "progress_bar": "none",
             "media_dir": str(tmp_path),
-            "from_animation_number": 2,
+            **excluding_config,
         }
     ):
         recorded = placements(Noisy, monkeypatch, beep)
 
-    # Only the request made before any play was excluded survives.
-    assert recorded == [0.0]
-
-
-def test_still_output_adds_no_sound(tmp_path, monkeypatch, beep):
-    with tempconfig(
-        {
-            "renderer": "cairo",
-            "frame_rate": 4,
-            "pixel_width": 64,
-            "pixel_height": 32,
-            "live_preview": False,
-            "disable_caching": True,
-            "progress_bar": "none",
-            "media_dir": str(tmp_path),
-            "save_last_frame": True,
-        }
-    ):
-        recorded = placements(Noisy, monkeypatch, beep)
-
-    assert recorded == [0.0]
+    assert recorded == [0.0, 1.0, 2.0]

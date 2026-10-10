@@ -8,6 +8,7 @@ import json
 from collections.abc import Iterator
 from contextlib import suppress
 from dataclasses import dataclass
+from datetime import timedelta
 from fractions import Fraction
 from functools import cached_property
 from io import BytesIO
@@ -417,8 +418,6 @@ class SceneFileWriter:
             Gain applied to all previously added sounds while this one plays,
             in dB.
         """
-        if time < 0:
-            raise ValueError("Adding sound at timestamp < 0")
         file_path = get_full_sound_file_path(sound_file, self.settings.assets_dir)
         _probe_duration(file_path)
         self._sounds.append(_Sound(file_path, time, gain, gain_to_background))
@@ -884,6 +883,12 @@ class SceneFileWriter:
         logger.info("Combining to Movie file.")
         self._write_concat_manifest(partial_movie_files)
         mix = None if self.output_spec.is_gif else self._sound_mix
+        if mix is not None and (cut := mix.cut_at_end()) > 0:
+            logger.warning(
+                "Sound runs up to %(cut).2f s past the end of the movie; that part "
+                "is cut. Add a wait() at the end of the scene to hear all of it.",
+                {"cut": cut},
+            )
         self.combine_files(
             partial_movie_files,
             movie_file_path,
@@ -923,9 +928,41 @@ class SceneFileWriter:
             return
         subcaption_file = self.output_plan.subcaption_file
         assert subcaption_file is not None
+        # Subcaptions are recorded at scene time; place them in the movie.
+        output_end = self._intervals[-1][1] if self._intervals else 0.0
+        subcaptions: list[srt.Subtitle] = []
+        for subcaption in self.subcaptions:
+            start = subcaption.start.total_seconds()
+            end = subcaption.end.total_seconds()
+            if start < output_end < end:
+                logger.warning(
+                    "Subcaption %(content)r runs %(cut).2f s past the end of the "
+                    "movie; that part is cut.",
+                    {"content": subcaption.content, "cut": end - output_end},
+                )
+            start, end = self._output_time(start), self._output_time(end)
+            if start < end:
+                subcaptions.append(
+                    srt.Subtitle(
+                        index=len(subcaptions),
+                        content=subcaption.content,
+                        start=timedelta(seconds=start),
+                        end=timedelta(seconds=end),
+                    )
+                )
         subcaption_file.parent.mkdir(parents=True, exist_ok=True)
-        subcaption_file.write_text(srt.compose(self.subcaptions), encoding="utf-8")
+        subcaption_file.write_text(srt.compose(subcaptions), encoding="utf-8")
         logger.info(f"Subcaption file has been written as {subcaption_file}")
+
+    def _output_time(self, scene_time: float) -> float:
+        """Return the movie time at which ``scene_time`` is shown.
+
+        Excluded parts of the scene take no movie time, so the result never
+        decreases and a scene interval maps to one contiguous movie interval.
+        """
+        return sum(
+            max(0.0, min(scene_time, end) - start) for start, end in self._intervals
+        )
 
     def print_file_ready_message(self, file_path: StrPath) -> None:
         """Record and report a completed primary artifact."""
