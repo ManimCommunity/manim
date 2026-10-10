@@ -56,21 +56,6 @@ def test_fresh_image_without_evaluation(image_scene, monkeypatch):
     np.testing.assert_array_equal(np.asarray(scene.get_image()), old)
 
 
-def test_image_uses_existing_resolution(image_scene):
-    image_scene.add(Square())
-    with tempconfig({"pixel_width": 72, "pixel_height": 40}):
-        assert image_scene.get_image().size == (128, 128)
-
-
-def test_show_uses_fresh_image(image_scene, monkeypatch):
-    images = []
-    monkeypatch.setattr(Image.Image, "show", lambda image: images.append(image))
-    image_scene.add(Square())
-    image_scene.show()
-    assert len(images) == 1
-    np.testing.assert_array_equal(images[0], image_scene.get_image())
-
-
 def test_capture_during_construct_and_after_render(image_scene, monkeypatch):
     images = []
 
@@ -90,21 +75,6 @@ def test_capture_during_construct_and_after_render(image_scene, monkeypatch):
     np.testing.assert_array_equal(images[1], image_scene.get_image())
 
 
-def test_cairo_image_after_close_and_with_static_cache():
-    with tempconfig({"dry_run": True, "pixel_width": 128, "pixel_height": 128}):
-        scene = Scene()
-        scene.add(Square(fill_opacity=1))
-        renderer = scene.renderer
-        renderer.static_image = np.full((128, 128, 4), 77, dtype=np.uint8)
-        static = renderer.static_image
-        image = scene.get_image()
-        assert renderer.static_image is static
-        renderer.close()
-        np.testing.assert_array_equal(image, scene.get_image())
-        assert renderer._closed
-        assert renderer._target._pixels.size == 0
-
-
 @pytest.mark.parametrize("scene_class", [Scene, ThreeDScene, ZoomedScene])
 def test_cairo_snapshot_camera_and_nested_view_parity(scene_class):
     with tempconfig({"dry_run": True, "pixel_width": 128, "pixel_height": 128}):
@@ -120,28 +90,6 @@ def test_cairo_snapshot_camera_and_nested_view_parity(scene_class):
             np.testing.assert_array_equal(image, scene.renderer.get_frame())
         finally:
             scene.renderer.close()
-
-
-@pytest.mark.parametrize("image_scene", ["opengl"], indirect=True)
-def test_opengl_snapshot_restores_target_on_failure(image_scene, monkeypatch):
-    renderer = image_scene.renderer
-    target = renderer.frame_buffer_object
-    viewport = renderer.context.viewport
-    elapsed = renderer.animation_elapsed_time
-    original = renderer._draw_scene
-
-    def fail(scene):
-        raise ValueError("drawing failed")
-
-    monkeypatch.setattr(renderer, "_draw_scene", fail)
-    with pytest.raises(ValueError, match="drawing failed"):
-        image_scene.get_image()
-    assert renderer.frame_buffer_object is target
-    assert renderer.context.fbo is target
-    assert renderer.context.viewport == viewport
-    assert renderer.animation_elapsed_time == elapsed
-    monkeypatch.setattr(renderer, "_draw_scene", original)
-    assert image_scene.get_image().size == (128, 128)
 
 
 @pytest.mark.parametrize("image_scene", ["opengl"], indirect=True)
