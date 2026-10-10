@@ -67,7 +67,8 @@ The repository also includes a reader that uses only Python's standard library:
     python examples/timeline_reader.py timeline.json --source-root example_scenes --html timeline.html
 
 It prints events and source locations, and optionally writes an HTML timeline
-with source-file links and the recorded section, caption, and sound calls.
+with source-file links and the recorded section, caption, and sound calls;
+sounds with a known duration are drawn as bars.
 ``--source-root`` tells it where to look for those files. It compares the primary
 file's bytes with the recorded hash and labels a mismatch as stale. After editing
 the source, export a fresh timeline to get current line locations. Whether a
@@ -89,9 +90,12 @@ What the report contains
   records the time reached by that wait.
 * ``declarations`` contains section, caption, and sound calls. Their ``at`` time
   records when the call happened; placement can differ because of an offset.
-  Captions have resolved ``start`` and ``end`` times. Sounds have a ``start``;
-  ``duration`` is null to indicate an unknown duration. Relative sound paths
-  retain the requested string. Sound options must be JSON-serializable.
+  Captions have resolved ``start`` and ``end`` times. Sounds have a ``start``
+  and the sound file's ``duration`` in seconds, read from its headers without
+  decoding; ``duration`` is null when the headers do not state it. Capture
+  raises for a missing or unreadable sound file, as rendering does. Relative
+  sound paths retain the requested string. Sound options must be
+  JSON-serializable.
 * Events and declarations share an ``order`` counter. A declaration's
   ``event_id`` refers to a play being prepared or executed, or is null outside
   one. ``event_boundary`` is the number of completed plays when it was declared.

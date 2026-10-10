@@ -15,10 +15,12 @@ from PIL import Image as PILImage
 from . import config, logger
 from ._config.logger_utils import set_file_logger
 from ._config.video_encoder import video_encoder_fingerprint
+from .scene.audio_mixer import _probe_duration
 from .scene.section import DefaultSectionType
 from .utils.exceptions import EndSceneEarlyException, RerunSceneException
 from .utils.file_ops import open_media_file
 from .utils.hashing import get_hash_from_play_call
+from .utils.sounds import get_full_sound_file_path
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -1096,7 +1098,9 @@ class Manager(Generic[SceneT]):
         The file is checked immediately, so a missing or unreadable file raises
         here. During :meth:`evaluate`, this call produces no output and the sound
         file is neither checked nor decoded. When timeline capture is enabled, the
-        sound request is recorded in the timeline instead.
+        sound request is recorded in the timeline instead, together with the
+        sound's duration read from the file's headers; the file must then exist
+        and be readable, as for rendering.
 
         Parameters
         ----------
@@ -1117,6 +1121,9 @@ class Manager(Generic[SceneT]):
         )
         if self._evaluating:
             if self._timeline_recorder is not None:
+                path = get_full_sound_file_path(
+                    sound_file, self.scene.file_writer_settings.assets_dir
+                )
                 self._timeline_recorder.declare(
                     "sound",
                     self.time,
@@ -1125,7 +1132,7 @@ class Manager(Generic[SceneT]):
                     start=self.time + time_offset,
                     gain=gain,
                     options=dict(kwargs),
-                    duration=None,
+                    duration=_probe_duration(path),
                 )
             return
         self.file_writer.add_sound(sound_file, self.time + time_offset, gain, **kwargs)

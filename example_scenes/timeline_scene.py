@@ -1,6 +1,10 @@
 """Metadata-only example: manim --fps 4 --timeline-output timeline.json timeline_scene.py TimelineExample."""
 
+from pathlib import Path
+
 from manim import RIGHT, Scene, Square
+
+CLICK = Path(__file__).parent / "assets" / "click.wav"
 
 
 class TimelineExample(Scene):
@@ -12,5 +16,5 @@ class TimelineExample(Scene):
         self.wait(0.3, frozen_frame=True)
         start = self.time
         self.wait(1, stop_condition=lambda: self.time >= start + 0.5)
-        # A declaration, not a decoded asset, in metadata-only evaluation.
-        self.add_sound("example.wav")
+        # Recorded with the duration read from the file's headers, not decoded.
+        self.add_sound(CLICK)

@@ -1,6 +1,7 @@
 """Capture evaluation steps and atomically save immutable reports."""
 
 import json
+import wave
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -22,17 +23,27 @@ class TimelineFixture(Scene):
         start = self.time
         self.wait(1, stop_condition=lambda: self.time >= start + .5)
         options = {"levels": [1]}
-        self.add_sound("missing.wav", time_offset=.25, gain=-3, settings=options)
+        self.add_sound("tone.wav", time_offset=.25, gain=-3, settings=options)
         options["levels"].append(2)
 """
+
+
+def write_tone(path, seconds):
+    with wave.open(str(path), "wb") as handle:
+        handle.setnchannels(1)
+        handle.setsampwidth(2)
+        handle.setframerate(8000)
+        handle.writeframes(b"\x00\x10" * round(seconds * 8000))
 
 
 @pytest.fixture
 def fixture_scene(tmp_path):
     path = tmp_path / "scene.py"
     path.write_text(SOURCE)
+    write_tone(tmp_path / "tone.wav", seconds=0.5)
     with tempconfig(
         {
+            "assets_dir": str(tmp_path),
             "renderer": "cairo",
             "format": "none",
             "frame_rate": 4,
@@ -97,9 +108,9 @@ def test_capture_observes_actual_schedule_without_changing_evaluation(
     assert sound["kind"] == "sound"
     assert sound["start"] == 2.5
     assert sound["gain"] == -3
-    assert sound["duration"] is None
+    assert sound["duration"] == 0.5
     assert sound["options"] == {"settings": {"levels": [1]}}
-    assert sound["asset"] == {"request": "missing.wav", "resolution": "unresolved"}
+    assert sound["asset"] == {"request": "tone.wav", "resolution": "unresolved"}
     assert manager._file_writer is None
     reject.assert_not_called()
     other = Manager(scene_class())
@@ -191,3 +202,15 @@ def test_changed_source_prevents_successful_capture(fixture_scene):
         manager.evaluate(capture_timeline=True)
     with pytest.raises(RuntimeError, match="No completed"):
         manager.timeline
+
+
+def test_capture_rejects_missing_sound_files_like_rendering(tmp_path):
+    class MissingSound(Scene):
+        def construct(self):
+            self.wait(0.5, frozen_frame=False)
+            self.add_sound(str(tmp_path / "missing.wav"))
+
+    with tempconfig({"format": "none", "frame_rate": 4, "progress_bar": "none"}):
+        manager = Manager(MissingSound())
+        with pytest.raises(OSError, match="missing.wav"):
+            manager.evaluate(capture_timeline=True)

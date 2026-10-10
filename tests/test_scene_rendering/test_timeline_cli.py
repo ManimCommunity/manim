@@ -5,7 +5,10 @@ import os
 import py_compile
 import subprocess
 import sys
+import wave
 from pathlib import Path
+
+import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = """from manim import *
@@ -14,8 +17,18 @@ class Sample(Scene):
         self.next_section("start")
         for _ in range(2):
             self.wait(.3, frozen_frame=False)
-        self.add_sound("missing.wav")
+        self.add_sound("tone.wav")
 """
+
+
+@pytest.fixture(autouse=True)
+def tone(tmp_path):
+    """The sound file the sample scenes add, found through the assets directory."""
+    with wave.open(str(tmp_path / "tone.wav"), "wb") as handle:
+        handle.setnchannels(1)
+        handle.setsampwidth(2)
+        handle.setframerate(8000)
+        handle.writeframes(b"\x00\x00" * 4000)
 
 
 def run_cli(tmp_path, source, output, *extra):
@@ -53,6 +66,8 @@ def test_cli_and_independent_reader(tmp_path):
     assert "before-loading" in data["source"]["provenance"]
     assert not (tmp_path / "media").exists()
     assert "output" not in data
+    (sound,) = [item for item in data["declarations"] if item["kind"] == "sound"]
+    assert sound["duration"] == 0.5
 
     html = tmp_path / "view.html"
     command = [
@@ -75,7 +90,9 @@ def test_cli_and_independent_reader(tmp_path):
     assert reader.returncode == 0, reader.stderr
     assert "event-000000 wait" in reader.stdout
     assert "source matches captured bytes" in reader.stdout
+    assert "sound at 1.000 for 0.500s" in reader.stdout
     assert "event-000001" in html.read_text()
+    assert "sound tone.wav 1.000–1.500s" in html.read_text()
     source.write_text(SOURCE + "\n# edited\n")
     stale = subprocess.run(
         command,
@@ -108,7 +125,7 @@ def test_cli_failure_preserves_previous_report_and_rejects_batches(tmp_path):
     assert run_cli(tmp_path, source, output).returncode == 0
     previous = output.read_bytes()
     source.write_text(
-        SOURCE.replace('self.add_sound("missing.wav")', 'raise RuntimeError("broken")')
+        SOURCE.replace('self.add_sound("tone.wav")', 'raise RuntimeError("broken")')
     )
     failed = run_cli(tmp_path, source, output)
     assert failed.returncode != 0
