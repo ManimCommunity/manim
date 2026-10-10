@@ -67,6 +67,14 @@ def triggers_refreshed_triangulation(func):
 class OpenGLVMobject(OpenGLMobject):
     """A vectorized mobject."""
 
+    #: Vertex buffers and the triangulation are rebuilt from :attr:`points` the first
+    #: time this mobject is drawn. They are derived state, so they must not contribute
+    #: to the movie-cache key: otherwise an identical play would hash differently
+    #: depending on whether an earlier play in the same run happened to be drawn.
+    _hash_excluded_attributes = frozenset(
+        {"fill_data", "stroke_data", "triangulation", "needs_new_triangulation"}
+    )
+
     fill_dtype = [
         ("point", np.float32, (3,)),
         ("unit_normal", np.float32, (3,)),
