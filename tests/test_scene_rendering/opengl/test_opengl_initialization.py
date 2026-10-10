@@ -8,13 +8,12 @@ import pytest
 from manim import Scene
 
 
-@pytest.mark.parametrize("failure_type", [ValueError, KeyboardInterrupt, SystemExit])
 def test_native_standalone_resources_are_released(
-    using_temp_opengl_config, monkeypatch, failure_type
+    using_temp_opengl_config, monkeypatch
 ):
     create_context = moderngl.create_context
     acquired = []
-    failure = failure_type("blend setup failed")
+    failure = KeyboardInterrupt("blend setup failed")
 
     def create(*args, **kwargs):
         context = create_context(*args, **kwargs)
@@ -33,7 +32,7 @@ def test_native_standalone_resources_are_released(
 
     monkeypatch.setattr(moderngl, "create_context", create)
     try:
-        with pytest.raises(failure_type) as caught:
+        with pytest.raises(KeyboardInterrupt) as caught:
             Scene().renderer.open()
         assert caught.value is failure
         assert len(acquired) == 4

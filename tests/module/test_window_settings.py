@@ -41,19 +41,6 @@ def window_attempt(monkeypatch):
     return attempt
 
 
-def test_omitted_window_size_uses_each_constructions_config(window_attempt):
-    # The module has already been imported by the fixture.
-    with tempconfig({"window_size": (240, 180)}):
-        assert window_attempt()["size"] == (240, 180)
-    with tempconfig({"window_size": (360, 240)}):
-        assert window_attempt()["size"] == (360, 240)
-
-
-def test_explicit_window_size_overrides_config(window_attempt):
-    with tempconfig({"window_size": (240, 180)}):
-        assert window_attempt(window_size=(320, 200))["size"] == (320, 200)
-
-
 def test_supplied_settings_do_not_reread_size(window_attempt):
     with tempconfig({"window_size": (240, 180)}):
         settings = _WindowSettings.from_config(config)

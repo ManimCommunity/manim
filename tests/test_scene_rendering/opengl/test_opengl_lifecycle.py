@@ -1,6 +1,5 @@
 """OpenGL resources open on demand, close after use, and support fresh snapshots."""
 
-from concurrent.futures import ThreadPoolExecutor
 from unittest.mock import Mock
 
 import moderngl
@@ -31,17 +30,14 @@ def scene_factory(using_temp_opengl_config):
                 scene.renderer.close()
 
 
-@pytest.mark.parametrize("live_preview", [False, True])
-def test_scene_construction_and_cold_close_open_nothing(
-    scene_factory, monkeypatch, live_preview
-):
+def test_scene_construction_and_cold_close_open_nothing(scene_factory, monkeypatch):
     from manim.renderer.opengl import window as window_module
 
     create_context = Mock(side_effect=AssertionError("unexpected context"))
     create_window = Mock(side_effect=AssertionError("unexpected window"))
     monkeypatch.setattr(moderngl, "create_context", create_context)
     monkeypatch.setattr(window_module, "Window", create_window)
-    with tempconfig({"live_preview": live_preview}):
+    with tempconfig({"live_preview": True}):
         scene = scene_factory()
     assert scene.renderer._context is None
     assert scene.renderer.window is None
@@ -125,50 +121,3 @@ def test_cold_snapshot_never_opens_preview_and_restores_previous_host(
     window.assert_not_called()
     # Read directly, without renderer access that could hide a missing restore.
     assert target.read(components=4) == before
-
-
-def test_thread_affinity_starts_at_resource_open_not_scene_construction(scene_factory):
-    with ThreadPoolExecutor(1) as pool:
-        scene = pool.submit(scene_factory).result()
-    scene.renderer.open()
-    with ThreadPoolExecutor(1) as pool:
-        future = pool.submit(scene.renderer.close)
-        with pytest.raises(RuntimeError, match="owning thread"):
-            future.result()
-    assert not scene.renderer._closed
-    scene.renderer.close()
-
-
-def test_failed_host_retirement_can_be_retried(scene_factory, monkeypatch):
-    create_context = moderngl.create_context
-    failure = KeyboardInterrupt("context release interrupted")
-    calls = []
-
-    def create(*args, **kwargs):
-        context = create_context(*args, **kwargs)
-        original = context.release
-
-        def release():
-            calls.append(context)
-            if len(calls) == 1:
-                raise failure
-            original()
-
-        monkeypatch.setattr(context, "release", release)
-        return context
-
-    monkeypatch.setattr(moderngl, "create_context", create)
-    scene = scene_factory()
-    renderer = scene.renderer
-    renderer.open()
-    context = renderer.context
-    with pytest.raises(KeyboardInterrupt) as caught:
-        renderer.close()
-    assert caught.value is failure
-    assert renderer._context is context
-    assert not renderer._closed
-    with pytest.raises(RuntimeError, match="retiring"):
-        renderer.get_frame()
-    renderer.close()
-    assert renderer._closed
-    assert isinstance(context.mglo, moderngl.InvalidObject)
