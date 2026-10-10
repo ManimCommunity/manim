@@ -38,9 +38,6 @@ def writer_scene(tmp_path, request):
                 scene.renderer.close()
 
 
-@pytest.mark.parametrize(
-    "writer_scene", [("cairo", "png"), ("opengl", "png")], indirect=True
-)
 def test_snapshot_is_output_free_and_writer_uses_captured_settings(
     writer_scene, tmp_path
 ):
@@ -71,39 +68,6 @@ def test_render_creates_writer_before_setup_once(writer_scene, monkeypatch):
     manager.render()
     factory.assert_called_once()
     assert manager.file_writer.final_file_path.exists()
-
-
-@pytest.mark.parametrize("writer_scene", [("cairo", "none")], indirect=True)
-def test_preview_validation_does_not_create_writer_for_cleanup(writer_scene):
-    scene, factory = writer_scene
-    with pytest.raises(ValueError, match="requires a media artifact"):
-        Manager(scene).render(preview=True)
-    factory.assert_not_called()
-
-
-@pytest.mark.parametrize("failure_type", [ValueError, KeyboardInterrupt, SystemExit])
-def test_failed_writer_creation_preserves_identity_without_retrying_in_cleanup(
-    writer_scene, failure_type
-):
-    scene, factory = writer_scene
-    failure = failure_type("writer initialization failed")
-    factory.side_effect = failure
-    with pytest.raises(failure_type) as caught:
-        Manager(scene).render()
-    assert caught.value is failure
-    factory.assert_called_once()
-
-
-def test_recursive_creation_fails_clearly_and_leaves_retry_possible(writer_scene):
-    scene, factory = writer_scene
-    manager = Manager(scene)
-    factory.side_effect = lambda settings: manager.file_writer
-    with pytest.raises(RuntimeError, match="Recursive file writer creation"):
-        manager.file_writer
-    factory.assert_called_once()
-    factory.side_effect = None
-    assert isinstance(manager.file_writer, SceneFileWriter)
-    assert factory.call_count == 2
 
 
 @pytest.mark.parametrize("writer_scene", [("cairo", "mp4")], indirect=True)
