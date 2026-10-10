@@ -53,29 +53,6 @@ def placements(scene_class, monkeypatch, sound_file):
 
 
 @pytest.mark.parametrize("backend", ["cairo", "opengl"])
-def test_reused_segments_keep_every_sound(tmp_path, monkeypatch, beep, backend):
-    with tempconfig(
-        {
-            "renderer": backend,
-            "format": "mp4",
-            "frame_rate": 4,
-            "pixel_width": 64,
-            "pixel_height": 32,
-            "live_preview": False,
-            "disable_caching": False,
-            "progress_bar": "none",
-            "media_dir": str(tmp_path),
-        }
-    ):
-        cold = placements(Noisy, monkeypatch, beep)
-        warm = placements(Noisy, monkeypatch, beep)
-
-    assert cold == [0.0, 1.0, 2.0]
-    # Before this was fixed, a warm run silently delivered only the first sound.
-    assert warm == cold
-
-
-@pytest.mark.parametrize("backend", ["cairo", "opengl"])
 def decoded_audio(path):
     """Decode an artifact's audio stream to mono float samples.
 

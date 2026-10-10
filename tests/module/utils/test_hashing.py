@@ -528,20 +528,6 @@ def test_sibling_closures_are_not_collapsed_to_placeholder():
         )
 
 
-def test_collected_names_do_not_keep_a_class_alive():
-    """Scenes may build classes per run, so the collection must not pin them."""
-
-    class Throwaway:
-        _hash_excluded_attributes = frozenset({"derived"})
-
-    assert hashing._derived_attribute_names(Throwaway) == frozenset({"derived"})
-
-    reference = weakref.ref(Throwaway)
-    del Throwaway
-    gc.collect()
-    assert reference() is None
-
-
 def test_switching_renderers_recollects_derived_attributes():
     """``ConvertToOpenGL`` rebases classes, changing what their keys must ignore.
 

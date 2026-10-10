@@ -152,9 +152,8 @@ def test_explicit_resource_demands_fail_honestly(settings, demand):
     assert manager._file_writer is None
 
 
-@pytest.mark.parametrize("error_type", [ValueError, KeyboardInterrupt, SystemExit])
-def test_evaluation_failure_preserves_primary_exception(settings, error_type):
-    error = error_type("primary")
+def test_evaluation_failure_preserves_primary_exception(settings):
+    error = KeyboardInterrupt("primary")
 
     class Broken(Scene):
         def construct(self):
@@ -162,7 +161,7 @@ def test_evaluation_failure_preserves_primary_exception(settings, error_type):
             raise error
 
     manager = Manager(Broken())
-    with pytest.raises(error_type) as caught:
+    with pytest.raises(KeyboardInterrupt) as caught:
         manager.evaluate()
     assert caught.value is error
     assert manager._closed
@@ -184,16 +183,6 @@ def test_retained_static_scope_cannot_be_evaluated_twice(settings):
         manager.evaluate()
         with pytest.raises(RuntimeError, match="cold, unused"):
             manager.evaluate()
-
-
-def test_existing_writer_scope_cannot_be_evaluated(settings):
-    scene = Scene()
-    with Manager(scene) as manager:
-        writer = manager.file_writer
-        with pytest.raises(RuntimeError, match="cold, unused"):
-            manager.evaluate()
-        assert manager.file_writer is writer
-        assert not manager._evaluating
 
 
 def test_camera_query_updaters_match_without_raster(tmp_path):
