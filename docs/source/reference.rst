@@ -106,5 +106,6 @@ Module Index
    reference_index/cameras
    reference_index/configuration
    reference_index/mobjects
+   reference_index/renderers
    reference_index/scenes
    reference_index/utilities_misc
