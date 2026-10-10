@@ -92,28 +92,18 @@ def test_frozen_wait_clock_trace(backend, skip):
             assert scene.renderer.num_plays == 1
 
 
-@pytest.mark.parametrize("fps", [4, 15, 24, 30, 60])
-@pytest.mark.parametrize(
-    "duration", [0.1, 0.3, 0.5, 0.7, 0.9, 1, 1 / 3, 1.1, 1.5, 2, 2.5, 3, 5]
-)
-def test_sampled_duration_matches_rendered_sample_count(fps, duration):
+def test_sampled_duration_matches_rendered_sample_count():
     """The shortcut advance must equal the span a rendered play actually emits."""
-    with tempconfig(
-        {
-            "format": "none",
-            "live_preview": False,
-            "pixel_width": 32,
-            "pixel_height": 16,
-            "frame_rate": fps,
-            "progress_bar": "none",
-        }
-    ):
-        scene = Scene()
-        with scene._get_manager() as manager:
-            rendered_samples = len(np.arange(0, duration, 1 / fps))
-            assert manager._sampled_duration(
-                duration, frozen=False
-            ) * fps == pytest.approx(rendered_samples)
+    durations = [0.1, 0.3, 0.5, 0.7, 0.9, 1, 1 / 3, 1.1, 1.5, 2, 2.5, 3, 5]
+    for fps in [4, 15, 24, 30, 60]:
+        with (
+            tempconfig({"format": "none", "frame_rate": fps, "progress_bar": "none"}),
+            Scene()._get_manager() as manager,
+        ):
+            for duration in durations:
+                rendered_samples = len(np.arange(0, duration, 1 / fps))
+                sampled = manager._sampled_duration(duration, frozen=False)
+                assert sampled * fps == pytest.approx(rendered_samples), (fps, duration)
 
 
 @pytest.mark.parametrize("backend", ["cairo", "opengl"])
