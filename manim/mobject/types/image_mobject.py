@@ -14,7 +14,6 @@ from PIL.Image import Resampling
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 
 from ... import config
-from ...camera.moving_camera import MovingCamera
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
@@ -34,9 +33,18 @@ if TYPE_CHECKING:
 
     import numpy.typing as npt
 
+    from manim.renderer.cairo.camera import Camera
     from manim.typing import PixelArray, StrPath
 
-    from ...camera.moving_camera import MovingCamera
+
+def _validate_resampling_algorithm(resampling_algorithm: int) -> None:
+    if resampling_algorithm not in RESAMPLING_ALGORITHMS.values():
+        raise ValueError(
+            "resampling_algorithm has to be an int, one of the values defined in "
+            "RESAMPLING_ALGORITHMS or a Pillow resampling filter constant. "
+            "Available algorithms: 'bicubic' (or 'cubic'), 'nearest' (or 'none'), "
+            "'bilinear' (or 'linear').",
+        )
 
 
 class AbstractImageMobject(Mobject):
@@ -98,14 +106,7 @@ class AbstractImageMobject(Mobject):
             * 'hamming'
             * 'lanczos' or 'antialias'
         """
-        if resampling_algorithm not in RESAMPLING_ALGORITHMS.values():
-            raise ValueError(
-                "resampling_algorithm has to be an int, one of the values defined in "
-                "RESAMPLING_ALGORITHMS or a Pillow resampling filter constant. "
-                "Available algorithms: 'bicubic' (or 'cubic'), 'nearest' (or 'none'), "
-                "'bilinear' (or 'linear').",
-            )
-
+        _validate_resampling_algorithm(resampling_algorithm)
         self.resampling_algorithm = resampling_algorithm
         return self
 
@@ -124,7 +125,7 @@ class AbstractImageMobject(Mobject):
         if self.scale_to_resolution:
             height = h / self.scale_to_resolution * config["frame_height"]
         else:
-            height = 3  # this is the case for ImageMobjectFromCamera
+            height = 3
         self.stretch_to_fit_height(height)
         self.stretch_to_fit_width(height * w / h)
         return self
@@ -308,16 +309,18 @@ class ImageMobject(AbstractImageMobject):
         }
 
 
-# TODO, add the ability to have the dimensions/orientation of this
-# mobject more strongly tied to the frame of the camera it contains,
-# in the case where that's a MovingCamera
+class ImageMobjectFromCamera(Mobject):
+    """A semantic camera view whose pixels are supplied by CairoRenderer.
 
+    The mobject describes where a secondary camera view is composited. It owns
+    geometry and sampling settings, but it never exposes or stores raster pixels.
+    """
 
-class ImageMobjectFromCamera(AbstractImageMobject):
     def __init__(
         self,
-        camera: MovingCamera,
+        camera: Camera,
         default_display_frame_config: dict[str, Any] | None = None,
+        resampling_algorithm: Resampling = Resampling.BICUBIC,
         **kwargs: Any,
     ) -> None:
         self.camera = camera
@@ -328,13 +331,31 @@ class ImageMobjectFromCamera(AbstractImageMobject):
                 "buff": 0,
             }
         self.default_display_frame_config = default_display_frame_config
-        self.pixel_array = self.camera.pixel_array
-        super().__init__(scale_to_resolution=False, **kwargs)
+        self.set_resampling_algorithm(resampling_algorithm)
+        super().__init__(**kwargs)
 
-    # TODO: Get rid of this.
-    def get_pixel_array(self) -> PixelArray:
-        self.pixel_array = self.camera.pixel_array
-        return self.pixel_array
+    def reset_points(self) -> Self:
+        """Set the view geometry from the source camera's logical aspect ratio."""
+        self.points = np.array(
+            [
+                UP + LEFT,
+                UP + RIGHT,
+                DOWN + LEFT,
+                DOWN + RIGHT,
+            ],
+        )
+        self.center()
+        self.stretch_to_fit_height(3)
+        self.stretch_to_fit_width(
+            self.height * self.camera.frame_width / self.camera.frame_height,
+        )
+        return self
+
+    def set_resampling_algorithm(self, resampling_algorithm: int) -> Self:
+        """Set the Pillow sampling algorithm used when compositing the view."""
+        _validate_resampling_algorithm(resampling_algorithm)
+        self.resampling_algorithm = resampling_algorithm
+        return self
 
     def add_display_frame(self, **kwargs: Any) -> Self:
         config = dict(self.default_display_frame_config)
@@ -344,18 +365,10 @@ class ImageMobjectFromCamera(AbstractImageMobject):
         return self
 
     def interpolate_color(
-        self, mobject1: Mobject, mobject2: Mobject, alpha: float
+        self,
+        mobject1: Mobject,
+        mobject2: Mobject,
+        alpha: float,
     ) -> Self:
-        assert isinstance(mobject1, ImageMobjectFromCamera)
-        assert isinstance(mobject2, ImageMobjectFromCamera)
-        assert mobject1.pixel_array.shape == mobject2.pixel_array.shape, (
-            f"Mobject pixel array shapes incompatible for interpolation.\n"
-            f"Mobject 1 ({mobject1}) : {mobject1.pixel_array.shape}\n"
-            f"Mobject 2 ({mobject2}) : {mobject2.pixel_array.shape}"
-        )
-        self.pixel_array = interpolate(
-            mobject1.pixel_array,
-            mobject2.pixel_array,
-            alpha,
-        ).astype(self.pixel_array_dtype)
+        """Keep renderer-supplied camera pixels independent of mobject styling."""
         return self

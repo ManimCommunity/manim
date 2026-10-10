@@ -79,7 +79,7 @@ def clear_segment_cache(directory: Path) -> int:
 
 
 if TYPE_CHECKING:
-    from manim.renderer.opengl_renderer import OpenGLRenderer
+    from manim.renderer.opengl import OpenGLRenderer
     from manim.scene.scene import Scene
 
 

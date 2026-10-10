@@ -95,7 +95,7 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
         _validate_scene_batch_output_name(scene_classes)
 
         if config.renderer == RendererType.OPENGL:
-            from manim.renderer.opengl_renderer import OpenGLRenderer
+            from manim.renderer.opengl import OpenGLRenderer
 
             renderer = OpenGLRenderer()
             keep_running = True
