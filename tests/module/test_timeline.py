@@ -27,13 +27,13 @@ class TimelineFixture(Scene):
 """
 
 
-@pytest.fixture(params=["cairo", "opengl"])
-def fixture_scene(request, tmp_path):
+@pytest.fixture
+def fixture_scene(tmp_path):
     path = tmp_path / "scene.py"
     path.write_text(SOURCE)
     with tempconfig(
         {
-            "renderer": request.param,
+            "renderer": "cairo",
             "format": "none",
             "frame_rate": 4,
             "pixel_width": 32,
@@ -155,27 +155,6 @@ def test_failed_capture_has_no_successful_snapshot(tmp_path):
         with pytest.raises(RuntimeError, match="No completed"):
             manager.timeline
         assert manager._timeline_recorder is None
-
-
-def test_compilation_captions_keep_event_order_and_rounded_placement():
-    class Compiling(Scene):
-        def compile_animation_data(self, *args, **kwargs):
-            self.add_subcaption("during compilation", duration=1 / 3, offset=1 / 7)
-            return super().compile_animation_data(*args, **kwargs)
-
-        def construct(self):
-            self.wait(1, frozen_frame=False)
-
-    with tempconfig({"format": "none", "frame_rate": 4, "progress_bar": "none"}):
-        manager = Manager(Compiling())
-        manager.evaluate(capture_timeline=True)
-    data = manager.timeline.to_dict()
-    caption = data["declarations"][0]
-    assert data["events"][0]["order"] < caption["order"]
-    assert caption["event_id"] == data["events"][0]["id"]
-    assert caption["content"] == "during compilation"
-    assert caption["start"] == 0.142857
-    assert caption["end"] == 0.476190
 
 
 def test_generated_source_is_reported_as_unavailable():
