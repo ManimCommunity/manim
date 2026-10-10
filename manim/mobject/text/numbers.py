@@ -17,7 +17,12 @@ from manim.mobject.types.vectorized_mobject import VMobject
 from manim.mobject.value_tracker import ValueTracker
 from manim.typing import Vector3DLike
 
-string_to_mob_map: dict[str, SingleStringMathTex] = {}
+# Glyphs shared by all numbers. A cached glyph is only valid for the class that
+# built it and for the renderer it was built under: ConvertToOpenGL swaps the
+# bases of mobject classes when the renderer changes.
+string_to_mob_map: dict[
+    tuple[RendererType, type[SingleStringMathTex], str], SingleStringMathTex
+] = {}
 
 
 class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
@@ -223,9 +228,10 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         if mob_class is None:
             mob_class = self.mob_class
 
-        if string not in string_to_mob_map:
-            string_to_mob_map[string] = mob_class(string, **kwargs)
-        mob = string_to_mob_map[string].copy()
+        key = (config.renderer, mob_class, string)
+        if key not in string_to_mob_map:
+            string_to_mob_map[key] = mob_class(string, **kwargs)
+        mob = string_to_mob_map[key].copy()
         mob.font_size = self._font_size
         return mob
 
