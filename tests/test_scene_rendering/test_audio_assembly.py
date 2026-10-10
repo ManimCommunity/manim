@@ -24,7 +24,7 @@ def write_wav(path, seconds, value=0.5, rate=44_100):
 
 
 def write_float_wav(path, seconds, value=0.5, rate=48_000):
-    """Write a 32-bit float WAV, which pydub could only read through ffmpeg."""
+    """Write a 32-bit float WAV; reading one used to require an ffmpeg binary."""
     with av.open(str(path), "w") as container:
         stream = container.add_stream("pcm_f32le", rate=rate, layout="mono")
         frame = av.AudioFrame.from_ndarray(

@@ -1805,19 +1805,33 @@ class Scene:
         gain: float | None = None,
         **kwargs: Any,
     ) -> None:
-        """
-        This method is used to add a sound to the animation.
+        """Add a sound to the scene, starting at the current scene time.
+
+        Sounds belong to the scene, not to an animation: all of a scene's sounds
+        are mixed into one track, which the movie and every section video show.
+        When animations are excluded from the output, with ``-n`` or a section
+        with ``skip_animations=True``, the sound is cut exactly like the video. A
+        part of the sound before the start of the scene or after the end of the
+        movie is cut with a warning; add a :meth:`wait` to hear all of it.
+
+        Any format that PyAV can decode is supported. The file is checked when
+        this method is called, so a missing or unreadable file raises here.
 
         Parameters
         ----------
 
         sound_file
-            The path to the sound file.
+            The path to the sound file, absolute or relative to the assets
+            directory.
         time_offset
-            The offset in the sound file after which
-            the sound can be played.
+            Seconds by which to move the start of the sound relative to the
+            current scene time. Negative values start it earlier.
         gain
-            Amplification of the sound.
+            Gain applied to the sound, in dB.
+        kwargs
+            ``gain_to_background``: gain in dB applied to all previously added
+            sounds while this one plays, for example to lower music under a
+            voice.
 
         Examples
         --------

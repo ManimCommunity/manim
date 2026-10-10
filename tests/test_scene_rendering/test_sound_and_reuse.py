@@ -53,11 +53,7 @@ def placements(scene_class, monkeypatch, sound_file):
 
 
 def decoded_audio(path):
-    """Decode an artifact's audio stream to mono float samples.
-
-    PyAV is used rather than pydub because pydub shells out to the ``ffprobe``
-    binary, which is not installed on CI runners.
-    """
+    """Decode an artifact's audio stream to mono float samples."""
     with av.open(str(path)) as container:
         stream = container.streams.audio[0]
         chunks = [frame.to_ndarray() for frame in container.decode(stream)]
