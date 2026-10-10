@@ -1,8 +1,8 @@
 """Probe, decode, and mix scene sounds for media assembly.
 
-Sounds live on the scene clock. The mix is defined once for the whole scene and is
-sampled through the scene-time intervals that are visible in an artifact, so every
-artifact (movie, section) is a view of the same global mix.
+Sounds are placed at scene times and mixed into one track for the whole scene. A
+movie or section video contains the parts of that track that fall into the scene
+intervals it shows.
 """
 
 from __future__ import annotations

@@ -403,9 +403,7 @@ class SceneFileWriter:
     ) -> None:
         """Add a sound at a scene time.
 
-        The file is located and checked immediately, so a missing or unreadable
-        file fails at the call site. It is decoded and mixed when the movie is
-        assembled; see :mod:`~manim.scene.audio_mixer`.
+        The file is checked now and decoded when the movie is assembled.
 
         Parameters
         ----------

@@ -1,7 +1,6 @@
 """Capture evaluation steps and atomically save immutable reports."""
 
 import json
-import wave
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -9,6 +8,7 @@ import pytest
 
 from manim import Manager, Scene, Timeline, tempconfig
 from manim.utils.module_ops import get_module
+from tests.helpers.audio import write_wav
 
 SOURCE = """from manim import *
 class TimelineFixture(Scene):
@@ -28,19 +28,11 @@ class TimelineFixture(Scene):
 """
 
 
-def write_tone(path, seconds):
-    with wave.open(str(path), "wb") as handle:
-        handle.setnchannels(1)
-        handle.setsampwidth(2)
-        handle.setframerate(8000)
-        handle.writeframes(b"\x00\x10" * round(seconds * 8000))
-
-
 @pytest.fixture
 def fixture_scene(tmp_path):
     path = tmp_path / "scene.py"
     path.write_text(SOURCE)
-    write_tone(tmp_path / "tone.wav", seconds=0.5)
+    write_wav(tmp_path / "tone.wav", seconds=0.5)
     with tempconfig(
         {
             "assets_dir": str(tmp_path),

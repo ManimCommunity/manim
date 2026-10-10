@@ -45,11 +45,10 @@ Python code are evaluated.
 Calls to ``next_section()``, ``add_subcaption()`` and ``add_sound()`` are allowed
 but have no media output effect in this mode. To record these calls and the
 animation steps in a report, opt into :doc:`timeline` capture. Without capture,
-sound files are neither checked nor decoded, so a successful evaluation does not
-tell you whether the same scene's audio files can be rendered. With capture,
-each sound file is located and its headers are read to record its duration; a
-missing or unreadable file then raises, as it would during rendering. Sound
-files are never decoded.
+sound files are not checked, so a successful evaluation does not tell you whether
+the scene's audio files can be rendered. With capture, each sound's duration is
+read from the file's headers, and a missing or unreadable file raises as it would
+during rendering. Sound files are never decoded.
 
 The manager does not finalize output or capture a last-frame image. It creates
 no file writer, encoder, Cairo image buffer, OpenGL context, or preview window,

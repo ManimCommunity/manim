@@ -1,21 +1,14 @@
 """Validate captured clocks, event completion, and declaration placement offsets."""
 
-import wave
-
 import pytest
 
 from manim import Manager, Scene, tempconfig
+from tests.helpers.audio import write_wav
 
 
 @pytest.fixture
 def tone(tmp_path):
-    path = tmp_path / "tone.wav"
-    with wave.open(str(path), "wb") as handle:
-        handle.setnchannels(1)
-        handle.setsampwidth(2)
-        handle.setframerate(8000)
-        handle.writeframes(b"\x00\x00" * 800)
-    return str(path)
+    return str(write_wav(tmp_path / "tone.wav", seconds=0.1))
 
 
 def test_backwards_observed_time_cannot_publish():

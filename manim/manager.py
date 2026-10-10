@@ -1038,10 +1038,9 @@ class Manager(Generic[SceneT]):
     ) -> None:
         """Add a subcaption at the current scene time.
 
-        Subcaptions are placed like sounds: parts of the scene that are excluded
-        from the output, by ``-n`` or by a section with ``skip_animations=True``,
-        cut them like the video. A part before the start of the scene or after the
-        end of the output is cut with a warning.
+        Excluded parts of the scene, by ``-n`` or a section with
+        ``skip_animations=True``, cut subcaptions like the video. Parts before the
+        start of the scene or after the end of the movie are cut with a warning.
 
         During :meth:`evaluate`, this call produces no output. When timeline
         capture is enabled, the caption is recorded in the timeline instead.
@@ -1086,21 +1085,14 @@ class Manager(Generic[SceneT]):
         gain: float | None = None,
         **kwargs: Any,
     ) -> None:
-        """Add sound at the current scene time.
+        """Add a sound at the current scene time.
 
-        Sound belongs to the scene, not to the play during which it is added: the
-        scene's sounds are mixed once and every movie shows that mix. Parts of the
-        scene that are excluded from the output, by ``-n`` or by a section with
-        ``skip_animations=True``, cut the sound exactly like the video, and reusing
-        cached movies does not change it. A part before the start of the scene or
-        after the end of the output is cut with a warning.
+        See :meth:`.Scene.add_sound` for how sounds are placed in the movie. A
+        missing or unreadable file raises here.
 
-        The file is checked immediately, so a missing or unreadable file raises
-        here. During :meth:`evaluate`, this call produces no output and the sound
-        file is neither checked nor decoded. When timeline capture is enabled, the
-        sound request is recorded in the timeline instead, together with the
-        sound's duration read from the file's headers; the file must then exist
-        and be readable, as for rendering.
+        During :meth:`evaluate`, this call produces no output and the file is not
+        checked. With timeline capture, the request is recorded together with the
+        duration read from the file's headers, and the file must exist.
 
         Parameters
         ----------

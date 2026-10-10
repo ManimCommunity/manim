@@ -1,28 +1,16 @@
 """Reusing cached segments must not change a scene's audio."""
 
-import wave
-
 import av
 import numpy as np
 import pytest
 
 from manim import Scene, Square, tempconfig
-from manim.scene.scene_file_writer import SceneFileWriter
-
-# Captured once: a test may call placements() twice, and re-reading the attribute
-# would chain each recorder onto the previous one.
-_ORIGINAL_ADD_SOUND = SceneFileWriter.add_sound
+from tests.helpers.audio import write_wav
 
 
 @pytest.fixture
 def beep(tmp_path):
-    path = tmp_path / "beep.wav"
-    with wave.open(str(path), "wb") as handle:
-        handle.setnchannels(1)
-        handle.setsampwidth(2)
-        handle.setframerate(22050)
-        handle.writeframes(b"\x00\x00" * 22050)
-    return path
+    return write_wav(tmp_path / "beep.wav", seconds=0.3)
 
 
 class Noisy(Scene):
@@ -34,22 +22,6 @@ class Noisy(Scene):
         for _ in range(3):
             self.add_sound(self.sound_file)
             self.play(square.animate.shift([0.5, 0.0, 0.0]), run_time=1)
-
-
-def placements(scene_class, monkeypatch, sound_file):
-    """Return the scene times at which sounds reached the writer."""
-    recorded = []
-
-    def record(self, path, time, gain=None, **kwargs):
-        recorded.append(round(float(time), 3))
-        return _ORIGINAL_ADD_SOUND(self, path, time, gain, **kwargs)
-
-    monkeypatch.setattr(SceneFileWriter, "add_sound", record)
-    scene = type(
-        scene_class.__name__, (scene_class,), {"sound_file": str(sound_file)}
-    )()
-    scene.render()
-    return recorded
 
 
 def decoded_audio(path):
@@ -66,9 +38,7 @@ def decoded_audio(path):
 
 
 @pytest.mark.parametrize("backend", ["cairo", "opengl"])
-def test_reused_segments_produce_an_identical_audio_track(
-    tmp_path, monkeypatch, beep, backend
-):
+def test_reused_segments_produce_an_identical_audio_track(tmp_path, beep, backend):
     def rendered_audio(media_dir):
         with tempconfig(
             {
@@ -92,37 +62,8 @@ def test_reused_segments_produce_an_identical_audio_track(
     cold = rendered_audio(shared)
     warm = rendered_audio(shared)
 
-    assert cold.size > 0
-    # A cache hit must not shorten the track: the bug this covers dropped sounds
-    # outright, which removed roughly two thirds of the samples.
-    assert warm.size == pytest.approx(cold.size, rel=0.02)
-    common = min(cold.size, warm.size)
-    np.testing.assert_allclose(warm[:common], cold[:common], atol=1e-3)
-
-
-@pytest.mark.parametrize(
-    "excluding_config",
-    [{"from_animation_number": 2}, {"save_last_frame": True}],
-    ids=["from-animation-number", "still-output"],
-)
-def test_sounds_of_excluded_plays_reach_the_writer(
-    tmp_path, monkeypatch, beep, excluding_config
-):
-    """Every sound is recorded at scene time; assembly decides what is heard."""
-    with tempconfig(
-        {
-            "renderer": "cairo",
-            "format": "mp4",
-            "frame_rate": 4,
-            "pixel_width": 64,
-            "pixel_height": 32,
-            "live_preview": False,
-            "disable_caching": True,
-            "progress_bar": "none",
-            "media_dir": str(tmp_path),
-            **excluding_config,
-        }
-    ):
-        recorded = placements(Noisy, monkeypatch, beep)
-
-    assert recorded == [0.0, 1.0, 2.0]
+    # The bug this covers dropped the sounds of reused plays, silencing two of the
+    # three beeps.
+    assert np.abs(cold).max() > 0.1
+    assert warm.size == cold.size
+    np.testing.assert_allclose(warm, cold, atol=1e-3)

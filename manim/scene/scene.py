@@ -1807,15 +1807,14 @@ class Scene:
     ) -> None:
         """Add a sound to the scene, starting at the current scene time.
 
-        Sounds belong to the scene, not to an animation: all of a scene's sounds
-        are mixed into one track, which the movie and every section video show.
-        When animations are excluded from the output, with ``-n`` or a section
-        with ``skip_animations=True``, the sound is cut exactly like the video. A
-        part of the sound before the start of the scene or after the end of the
-        movie is cut with a warning; add a :meth:`wait` to hear all of it.
+        All sounds of a scene are mixed into one track, shared by the movie and its
+        section videos. Animations excluded from the output, by ``-n`` or a section
+        with ``skip_animations=True``, cut the sound like the video. Parts before
+        the start of the scene or after the end of the movie are cut with a
+        warning.
 
-        Any format that PyAV can decode is supported. The file is checked when
-        this method is called, so a missing or unreadable file raises here.
+        Any format PyAV can decode is supported. A missing or unreadable file
+        raises here.
 
         Parameters
         ----------

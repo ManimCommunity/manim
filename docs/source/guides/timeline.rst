@@ -91,10 +91,9 @@ What the report contains
 * ``declarations`` contains section, caption, and sound calls. Their ``at`` time
   records when the call happened; placement can differ because of an offset.
   Captions have resolved ``start`` and ``end`` times. Sounds have a ``start``
-  and the sound file's ``duration`` in seconds, read from its headers without
-  decoding; ``duration`` is null when the headers do not state it. Capture
-  raises for a missing or unreadable sound file, as rendering does. Relative
-  sound paths retain the requested string. Sound options must be
+  and a ``duration`` read from the file's headers, or null if the headers do not
+  state one. Capture raises for a missing or unreadable sound file, as rendering
+  does. Relative sound paths retain the requested string. Sound options must be
   JSON-serializable.
 * Events and declarations share an ``order`` counter. A declaration's
   ``event_id`` refers to a play being prepared or executed, or is null outside

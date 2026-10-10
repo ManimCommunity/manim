@@ -867,18 +867,13 @@ no frames, so it also does no drawing, no readback, and no presentation: scene s
 does not depend on rendering, which is the same guarantee
 :meth:`~.Manager.evaluate` relies on.
 
-The two cases differ in what ends up in the movie. A reused segment still occupies
-its span, while an excluded play is absent and takes no time in the movie. When a
-play ends, the manager passes its scene-time interval to the file writer, which keeps
-the intervals of the plays that are part of the movie.
-
-Sound does not belong to plays at all. :meth:`~.Scene.add_sound` records the sound at
-scene time, and the file writer mixes all of the scene's sounds into one track when
-the movie is assembled. That track is then sampled through the kept intervals, so
-an excluded play cuts the sound exactly like the video, later sounds are not shifted
-by the excluded time, and reusing cached segments does not change the audio.
-Subcaptions are placed through the same intervals, and each section video carries
-its stretch of the same track.
+The two cases differ in what ends up in the movie: a reused segment keeps its place,
+while an excluded play takes no time in it. The file writer records which scene-time
+intervals the movie shows. :meth:`~.Scene.add_sound` records sounds at scene time, and
+when the movie is assembled, all of them are mixed into one track from which only the
+shown intervals are kept. An excluded play therefore cuts sound like it cuts the video,
+and reusing a segment does not change the audio. Subcaptions and section videos are
+placed through the same intervals.
 
 Whatever the case, the clock follows one rule:
 

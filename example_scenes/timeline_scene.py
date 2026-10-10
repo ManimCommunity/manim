@@ -16,5 +16,5 @@ class TimelineExample(Scene):
         self.wait(0.3, frozen_frame=True)
         start = self.time
         self.wait(1, stop_condition=lambda: self.time >= start + 0.5)
-        # Recorded with the duration read from the file's headers, not decoded.
+        # Recorded with its duration; the file is not decoded.
         self.add_sound(CLICK)
