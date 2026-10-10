@@ -44,8 +44,10 @@ class VideoSegmentEncoder:
             if container is not None:
                 with suppress(BaseException):
                     container.close()
-            with suppress(OSError):
+            with suppress(BaseException):
                 self.target.unlink(missing_ok=True)
+            if not isinstance(error, Exception):
+                raise
             raise self._operation_error("open", error) from error
 
         self._container = container
@@ -99,7 +101,7 @@ class VideoSegmentEncoder:
                 self._next_pts += 1
                 for packet in self._stream.encode(frame):
                     self._container.mux(packet)
-        except BaseException as error:
+        except Exception as error:
             raise self._operation_error("encode", error) from error
 
     def finish(self) -> None:
@@ -107,37 +109,43 @@ class VideoSegmentEncoder:
         if self._closed:
             return
         self._closed = True
-        first_error: Exception | None = None
+        # Close even after an interruption, preserving a flush failure if close fails too.
+        first_error: BaseException | None = None
         try:
             try:
                 for packet in self._stream.encode():
                     self._container.mux(packet)
-            except Exception as error:
+            except BaseException as error:
                 first_error = error
         finally:
             try:
                 self._container.close()
-            except Exception as error:
+            except BaseException as error:
                 if first_error is None:
                     first_error = error
         if first_error is not None:
+            if not isinstance(first_error, Exception):
+                raise first_error
             raise self._operation_error("finish", first_error) from first_error
 
     def abort(self) -> None:
         """Close resources and remove the incomplete target."""
-        first_error: Exception | None = None
+        # An interrupted close must still remove the target and remain the primary error.
+        first_error: BaseException | None = None
         try:
             if not self._closed:
                 self._closed = True
                 try:
                     self._container.close()
-                except Exception as error:
+                except BaseException as error:
                     first_error = error
         finally:
             try:
                 self.target.unlink(missing_ok=True)
-            except Exception as error:
+            except BaseException as error:
                 if first_error is None:
                     first_error = error
         if first_error is not None:
+            if not isinstance(first_error, Exception):
+                raise first_error
             raise self._operation_error("abort", first_error) from first_error
