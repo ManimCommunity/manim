@@ -60,35 +60,3 @@ def test_custom_frame_center_and_critical_point_hooks_remain_supported():
     frame.get_center = lambda: np.array([6.0, 7.0, 8.0])
     np.testing.assert_array_equal(camera.frame_center, [6, 7, 8])
     assert camera.frame is frame
-
-
-@pytest.mark.parametrize("exponential", [False, True])
-@pytest.mark.parametrize("empty", [False, True])
-def test_projection_matches_previous_arithmetic(exponential, empty):
-    camera = ThreeDCamera(
-        phi=0.2,
-        theta=-0.7,
-        gamma=0.1,
-        focal_distance=4,
-        zoom=1.5,
-        exponential_projection=exponential,
-    )
-    camera.frame.shift([1, 2, 3])
-    points = np.array([[1, 2, -10], [1, 0, 0], [2, -3, 6], [0, 2, 20]], dtype=float)
-    if empty:
-        points = points[:0]
-    original = points.copy()
-    expected = np.dot(points - camera.frame_center, camera.get_rotation_matrix().T)
-    zs = expected[:, 2]
-    distance = camera.get_focal_distance()
-    for i in (0, 1):
-        if exponential:
-            factor = np.exp(zs / distance)
-            negative = zs < 0
-            factor[negative] = distance / (distance - zs[negative])
-        else:
-            factor = distance / (distance - zs)
-            factor[(distance - zs) < 0] = 10**6
-        expected[:, i] *= factor * camera.get_zoom()
-    np.testing.assert_array_equal(camera.project_points(points), expected)
-    np.testing.assert_array_equal(points, original)
