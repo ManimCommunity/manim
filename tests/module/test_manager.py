@@ -393,31 +393,3 @@ def test_scene_add_subcaption_records_placement(dry_run):
             end=datetime.timedelta(seconds=4.25),
         )
     ]
-
-
-def test_scene_add_sound_passes_placement_and_honors_exclusion(dry_run, monkeypatch):
-    scene = Scene()
-    file_writer = scene.renderer.file_writer
-    monkeypatch.setattr(file_writer, "add_sound", Mock())
-    scene.renderer.time = 2.5
-
-    scene.add_sound("bell.wav", time_offset=0.25, gain=-3, marker="test")
-
-    assert isinstance(scene.manager, Manager)
-    file_writer.add_sound.assert_called_once_with("bell.wav", 2.75, -3, marker="test")
-
-    # Fast-forwarding a play does not by itself remove its span from the artifact,
-    # so it must not drop sound. Only exclusion does.
-    file_writer.add_sound.reset_mock()
-    scene.renderer.skip_animations = True
-
-    scene.add_sound("reused.wav")
-
-    file_writer.add_sound.assert_called_once_with("reused.wav", 2.5, None)
-
-    file_writer.add_sound.reset_mock()
-    scene.manager._output_excluded = True
-
-    scene.add_sound("excluded.wav")
-
-    file_writer.add_sound.assert_not_called()

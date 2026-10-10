@@ -15,10 +15,12 @@ from PIL import Image as PILImage
 from . import config, logger
 from ._config.logger_utils import set_file_logger
 from ._config.video_encoder import video_encoder_fingerprint
+from .scene.audio_mixer import _probe_duration
 from .scene.section import DefaultSectionType
 from .utils.exceptions import EndSceneEarlyException, RerunSceneException
 from .utils.file_ops import open_media_file
 from .utils.hashing import get_hash_from_play_call
+from .utils.sounds import get_full_sound_file_path
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -82,6 +84,15 @@ class _FrameCaptured(BaseException):
     """Stop scene execution after capturing the requested frame."""
 
 
+def _warn_if_before_scene_start(kind: str, label: str, start: float) -> None:
+    if start < 0:
+        logger.warning(
+            "%(kind)s %(label)s starts %(cut).2f s before the scene starts; "
+            "that part is cut.",
+            {"kind": kind, "label": label, "cut": -start},
+        )
+
+
 class Manager(Generic[SceneT]):
     """Run a scene's rendering steps and clean up its resources.
 
@@ -141,7 +152,6 @@ class Manager(Generic[SceneT]):
         self._scope_depth = 0
         self._evaluating = False
         self._evaluation_started = False
-        self._output_excluded = False
         self._frame_request: _FrameRequest | None = None
         self._timeline: Timeline | None = None
         self._timeline_recorder: _TimelineRecorder | None = None
@@ -720,25 +730,21 @@ class Manager(Generic[SceneT]):
                 request.playing = False
 
     def _update_skipping_status(self) -> None:
-        # Track exclusion separately from skipping. Both reuse and exclusion set
-        # skip_animations, but only exclusion leaves the play out of the artifact,
-        # and only that case may drop a sound. See add_sound.
-        self._output_excluded = self._execution.original_skipping_status
         if (
             self.file_writer.sections[-1].skip_animations
             or self.file_writer.output_spec.is_still
         ):
-            self.skip_animations = self._output_excluded = True
+            self.skip_animations = True
         if (
             config.from_animation_number > 0
             and self.num_plays < config.from_animation_number
         ):
-            self.skip_animations = self._output_excluded = True
+            self.skip_animations = True
         if (
             config.upto_animation_number >= 0
             and self.num_plays > config.upto_animation_number
         ):
-            self.skip_animations = self._output_excluded = True
+            self.skip_animations = True
             raise EndSceneEarlyException()
 
     def _play(
@@ -755,9 +761,6 @@ class Manager(Generic[SceneT]):
         )
         if writing:
             self._update_skipping_status()
-        else:
-            # Evaluation and frame capture produce no artifact to be excluded from.
-            self._output_excluded = False
         event_start = self.time
         event_ordinal = self.num_plays
         if self._timeline_recorder is not None:
@@ -794,7 +797,9 @@ class Manager(Generic[SceneT]):
         else:
             self._play_internal()
         if writing:
-            self.file_writer.end_animation(not self.skip_animations)
+            self.file_writer.end_animation(
+                not self.skip_animations, scene_interval=(event_start, self.time)
+            )
         self.num_plays += 1
         if self._timeline_recorder is not None:
             self._timeline_recorder.end(self.time)
@@ -1033,6 +1038,10 @@ class Manager(Generic[SceneT]):
     ) -> None:
         """Add a subcaption at the current scene time.
 
+        Excluded parts of the scene, by ``-n`` or a section with
+        ``skip_animations=True``, cut subcaptions like the video. Parts before the
+        start of the scene or after the end of the movie are cut with a warning.
+
         During :meth:`evaluate`, this call produces no output. When timeline
         capture is enabled, the caption is recorded in the timeline instead.
 
@@ -1049,6 +1058,7 @@ class Manager(Generic[SceneT]):
             self._evaluating and self._timeline_recorder is None
         ):
             return
+        _warn_if_before_scene_start("Subcaption", repr(content), self.time + offset)
         start = datetime.timedelta(seconds=float(self.time + offset))
         end = datetime.timedelta(seconds=float(self.time + offset + duration))
         if not self._evaluating:
@@ -1075,22 +1085,14 @@ class Manager(Generic[SceneT]):
         gain: float | None = None,
         **kwargs: Any,
     ) -> None:
-        """Add sound to the output at the current scene time.
+        """Add a sound at the current scene time.
 
-        Reusing a cached segment does not affect sound: the artifact still contains
-        that span, so re-rendering a scene produces the same audio whether or not its
-        movies were reused.
+        See :meth:`.Scene.add_sound` for how sounds are placed in the movie. A
+        missing or unreadable file raises here.
 
-        No sound is added while the surrounding plays are excluded from the output, by
-        ``-n``, by :meth:`next_section` with ``skip_animations=True``, or by still
-        output. Sound is placed at scene time, and an excluded run's artifact covers
-        only part of the scene's timeline, so such requests cannot yet be positioned
-        correctly. Mapping scene time onto a partial artifact is future work; until
-        then a partial render is not a reliable way to audition audio.
-
-        During :meth:`evaluate`, this call also produces no output; the sound file is
-        neither checked nor decoded. When timeline capture is enabled, the sound
-        request is recorded in the timeline instead.
+        During :meth:`evaluate`, this call produces no output and the file is not
+        checked. With timeline capture, the request is recorded together with the
+        duration read from the file's headers, and the file must exist.
 
         Parameters
         ----------
@@ -1104,10 +1106,16 @@ class Manager(Generic[SceneT]):
             Additional arguments forwarded to
             :meth:`~manim.scene.scene_file_writer.SceneFileWriter.add_sound`.
         """
-        if self._output_excluded or self._frame_request is not None:
+        if self._frame_request is not None:
             return
+        _warn_if_before_scene_start(
+            "Sound", repr(str(sound_file)), self.time + time_offset
+        )
         if self._evaluating:
             if self._timeline_recorder is not None:
+                path = get_full_sound_file_path(
+                    sound_file, self.scene.file_writer_settings.assets_dir
+                )
                 self._timeline_recorder.declare(
                     "sound",
                     self.time,
@@ -1116,7 +1124,7 @@ class Manager(Generic[SceneT]):
                     start=self.time + time_offset,
                     gain=gain,
                     options=dict(kwargs),
-                    duration=None,
+                    duration=_probe_duration(path),
                 )
             return
         self.file_writer.add_sound(sound_file, self.time + time_offset, gain, **kwargs)

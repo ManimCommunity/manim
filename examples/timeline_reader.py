@@ -76,13 +76,27 @@ def render_html(data, status, root=None):
         rows.append(
             f"<li>{label_html}<div class='track'><span style='margin-left:{left:.4f}%;width:{width:.4f}%'></span></div></li>"
         )
+    for declaration in data["declarations"]:
+        if declaration["kind"] != "sound" or declaration.get("duration") is None:
+            continue
+        asset = declaration["asset"]
+        name = asset.get("request") or asset.get("path") or asset.get("display_name")
+        start = declaration["start"]
+        end = start + declaration["duration"]
+        # Sounds may start before the scene or run past its end; draw what is inside.
+        left = min(max(0.0, 100 * (start - data["start"]) / total), 100.0)
+        width = max(0.0, min(100 * (end - data["start"]) / total, 100.0) - left)
+        label = html.escape(f"sound {name} {start:.3f}–{end:.3f}s")
+        rows.append(
+            f"<li>{label}<div class='track'><span class='sound' style='margin-left:{left:.4f}%;width:{width:.4f}%'></span></div></li>"
+        )
     declarations = html.escape(
         json.dumps(data["declarations"], indent=2, ensure_ascii=False)
     )
     return (
         "<!doctype html><meta charset='utf-8'><title>Execution timeline</title>"
         "<style>body{font:16px sans-serif;max-width:1000px;margin:2em auto}.track{background:#eee}"
-        ".track span{display:block;height:12px;background:#2980b9}li{margin:1em 0}</style>"
+        ".track span{display:block;height:12px;background:#2980b9}.track span.sound{background:#27ae60}li{margin:1em 0}</style>"
         f"<h1>{html.escape(data['scene']['name'])}</h1><p>{html.escape(status)}</p>"
         f"<ol>{''.join(rows)}</ol><h2>Declarations (sound duration may be unknown)</h2><pre>{declarations}</pre>"
     )
@@ -104,7 +118,9 @@ def main():
             f"{source.get('path') or '?'}:{source.get('line') or '?'}"
         )
     for declaration in data["declarations"]:
-        print(f"{declaration['kind']} at {declaration['at']:.3f}")
+        duration = declaration.get("duration")
+        length = f" for {duration:.3f}s" if duration is not None else ""
+        print(f"{declaration['kind']} at {declaration['at']:.3f}{length}")
     if args.html:
         args.html.write_text(
             render_html(data, status, args.source_root), encoding="utf-8"
