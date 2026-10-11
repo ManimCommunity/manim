@@ -139,8 +139,8 @@ def test_pixel_coords_to_space_coords(config, using_opengl_renderer):
 
     px, py = 3, 2
     pw, ph = renderer.get_pixel_shape()
-    _, fh = renderer.camera.get_shape()
-    fc = renderer.camera.get_center()
+    fh = renderer.camera.frame_height
+    fc = renderer.camera.frame_center
 
     ex = fc[0] + (fh / ph) * (px - pw / 2)
     ey = fc[1] + (fh / ph) * (py - ph / 2)

@@ -21,10 +21,12 @@ from manim.mobject.opengl.opengl_mobject import (
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.typing import Point3D
 from manim.utils.color import color_to_rgba
+from manim.utils.opengl import matrix_to_shader_input
 
 from ...constants import *
 from ...scene.scene_file_writer import SceneFileWriter
 from .._execution import _RendererExecutionView
+from ..cairo.camera import Camera, ThreeDCamera
 from ..protocol import RendererCapabilities, RendererState
 from .shader import Mesh, Shader, shader_program_cache
 from .vectorized_mobject_rendering import (
@@ -48,8 +50,6 @@ if TYPE_CHECKING:
     from manim.utils.color.core import ParsableManimColor
 
     from .window import Window
-
-from .camera import OpenGLCamera
 
 __all__ = ["OpenGLRenderer"]
 
@@ -81,8 +81,8 @@ class OpenGLRenderer(_RendererExecutionView):
         List of animation hashes for caching.
     anti_alias_width : float
         The width used for anti-aliasing in pixel units.
-    camera : OpenGLCamera
-        The camera used for rendering.
+    camera : Camera
+        The camera used for rendering: the same camera classes as the Cairo renderer.
     num_plays : float
         The number of animation plays executed.
     path_to_texture_id : dict[str, int]
@@ -104,6 +104,8 @@ class OpenGLRenderer(_RendererExecutionView):
         self,
         file_writer_class: type[SceneFileWriter] = SceneFileWriter,
         skip_animations: bool = False,
+        camera_class: type[Camera] | None = None,
+        camera: Camera | None = None,
     ) -> None:
         """Initializes the OpenGLRenderer.
 
@@ -113,7 +115,13 @@ class OpenGLRenderer(_RendererExecutionView):
             The class to use for writing scene files, by default SceneFileWriter.
         skip_animations : bool, optional
             Whether to skip animations during rendering, by default False.
+        camera_class
+            The camera class to instantiate, by default :class:`.Camera`.
+        camera
+            A camera to use instead of instantiating ``camera_class``.
         """
+        if camera is not None and camera_class is not None:
+            raise ValueError("Pass either camera or camera_class, not both.")
         # Measured in pixel widths, used for vector graphics
         self.anti_alias_width = 1.5
         self._file_writer_class = file_writer_class
@@ -122,7 +130,14 @@ class OpenGLRenderer(_RendererExecutionView):
         self.animation_start_time = 0.0
         self.animation_elapsed_time = 0.0
 
-        self.camera = OpenGLCamera()
+        self.camera: Camera = (
+            camera if camera is not None else (camera_class or Camera)()
+        )
+        self.perspective_uniforms: dict[str, Any] = {}
+        # View and projection matrices for meshes (Object3D), from the same camera.
+        self.view_matrix: tuple[float, ...] = matrix_to_shader_input(np.identity(4))
+        self.projection_matrix: tuple[float, ...] = self.view_matrix
+        self.camera_view: _CameraView = _CameraView.of(self.camera)
         self.pressed_keys: set[int] = set()
         self.window: Window | None = None
         self.path_to_texture_id: dict[str, int] = {}
@@ -432,15 +447,18 @@ class OpenGLRenderer(_RendererExecutionView):
         _, _, pixel_width, pixel_height = frame_buffer.viewport
         return pixel_width, pixel_height
 
-    def refresh_perspective_uniforms(self, camera: OpenGLCamera) -> None:
-        """
-        Update the perspective-related uniform variables used in the
-        OpenGL renderer based on the current camera settings.
+    def refresh_perspective_uniforms(self, camera: Camera) -> None:
+        """Update the camera uniforms and mesh matrices from ``camera``.
+
+        The shaders rotate points about the frame center, divide by the frame
+        shape and apply a perspective factor ``focal_distance / (focal_distance - z)``,
+        which is what :meth:`.ThreeDCamera.project_points` does on the CPU. A
+        camera without rotation draws orthographically.
 
         Parameters
         ----------
-        camera : OpenGLCamera
-            The camera object from which to extract perspective and lighting information.
+        camera
+            The camera whose view to draw.
 
         Raises
         ------
@@ -452,25 +470,22 @@ class OpenGLRenderer(_RendererExecutionView):
         if pixel_shape is None:
             msg = "Pixel shape is None, cannot refresh perspective uniforms."
             raise ValueError(msg)
-
-        pixel_width, pixel_height = pixel_shape
-        frame_width, frame_height = camera.get_shape()
+        _, pixel_height = pixel_shape
+        view = self.camera_view = _CameraView.of(camera)
+        frame_width, frame_height = view.frame_shape
         # TODO, this should probably be a mobject uniform, with
         # the camera taking care of the conversion factor
         anti_alias_width = self.anti_alias_width / (pixel_height / frame_height)
-        # Orient light
-        rotation = camera.inverse_rotation_matrix
-        light_pos: Point3D = camera.light_source.get_location()
-        light_pos = np.dot(rotation, light_pos)
-
         self.perspective_uniforms = {
-            "frame_shape": camera.get_shape(),
+            "frame_shape": view.frame_shape,
             "anti_alias_width": anti_alias_width,
-            "camera_center": tuple(camera.get_center()),
-            "camera_rotation": tuple(np.array(rotation).T.flatten()),
-            "light_source_position": tuple(light_pos),
-            "focal_distance": camera.get_focal_distance(),
+            "camera_center": tuple(view.center),
+            "camera_rotation": tuple(view.rotation.T.flatten()),
+            "light_source_position": tuple(view.rotation @ view.light_source),
+            "focal_distance": view.focal_distance,
         }
+        self.view_matrix = matrix_to_shader_input(view.view_matrix())
+        self.projection_matrix = matrix_to_shader_input(view.projection_matrix())
 
     def render_mobject(self, mobject: OpenGLMobject | OpenGLVMobject) -> None:
         """
@@ -524,11 +539,8 @@ class OpenGLRenderer(_RendererExecutionView):
                 with contextlib.suppress(KeyError):
                     shader.set_uniform(name, value)
             try:
-                # TODO: make the type of 'camera' generic in the 'Scene' class
-                # to avoid the cast here
-                cam = typing.cast("OpenGLCamera", self.scene.camera)
-                shader.set_uniform("u_view_matrix", cam.formatted_view_matrix)
-                shader.set_uniform("u_projection_matrix", cam.projection_matrix)
+                shader.set_uniform("u_view_matrix", self.view_matrix)
+                shader.set_uniform("u_projection_matrix", self.projection_matrix)
             except KeyError:
                 pass
 
@@ -749,13 +761,11 @@ class OpenGLRenderer(_RendererExecutionView):
         """Draw current objects and meshes without updating animation timing."""
         self.frame_buffer_object.clear(*self.background_color)
 
-        # TODO: make the type of 'camera' generic in the 'Scene' class
-        # to avoid the cast here
-        cam = typing.cast("OpenGLCamera", scene.camera)
-        self.refresh_perspective_uniforms(cam)
+        self.refresh_perspective_uniforms(self.camera)
 
         for mobject in scene.mobjects:
-            if not mobject.should_render:
+            # Mobjects of the common classes are not drawn by this renderer yet.
+            if not isinstance(mobject, OpenGLMobject) or not mobject.should_render:
                 continue
 
             # TODO: make the type of 'mobject' generic in the 'Scene' class
@@ -1090,8 +1100,9 @@ class OpenGLRenderer(_RendererExecutionView):
         if pixel_shape is None:
             return typing.cast(Point3D, np.array([0.0, 0.0, 0.0]))
         pixel_width, pixel_height = pixel_shape
-        frame_height = config["frame_height"]
-        frame_center = self.camera.get_center()
+        view = _CameraView.of(self.camera)
+        frame_height = view.frame_shape[1]
+        frame_center = view.center
         if relative:
             # relative -> just normalize to [-1, 1]
             return 2 * np.array([px / pixel_width, py / pixel_height, 0])
@@ -1116,3 +1127,62 @@ class OpenGLRenderer(_RendererExecutionView):
     @background_color.setter
     def background_color(self, value: ParsableManimColor) -> None:
         self._background_color = color_to_rgba(value, 1.0)
+
+
+#: Focal distance standing in for "no perspective" (a camera without rotation).
+_ORTHOGRAPHIC_FOCAL_DISTANCE = 1e6
+
+
+class _CameraView(typing.NamedTuple):
+    """What the shaders need to know about a camera."""
+
+    center: Point3D
+    #: Rotation applied to ``point - center``, as in ``ThreeDCamera.project_points``.
+    rotation: np.ndarray
+    #: Frame width and height, divided by the zoom factor.
+    frame_shape: tuple[float, float]
+    focal_distance: float
+    light_source: Point3D
+
+    @classmethod
+    def of(cls, camera: Camera) -> _CameraView:
+        if isinstance(camera, ThreeDCamera):
+            zoom = camera.get_zoom()
+            return cls(
+                center=np.asarray(camera.frame_center, dtype=float),
+                rotation=np.asarray(camera.get_rotation_matrix(), dtype=float),
+                frame_shape=(camera.frame_width / zoom, camera.frame_height / zoom),
+                focal_distance=float(camera.get_focal_distance()),
+                light_source=np.asarray(camera.light_source.get_center(), dtype=float),
+            )
+        return cls(
+            center=np.asarray(camera.frame_center, dtype=float),
+            rotation=np.identity(3),
+            frame_shape=(camera.frame_width, camera.frame_height),
+            focal_distance=_ORTHOGRAPHIC_FOCAL_DISTANCE,
+            light_source=np.array([-10.0, 10.0, 10.0]),
+        )
+
+    def view_matrix(self) -> np.ndarray:
+        """World to camera space: rotate about the frame center."""
+        matrix = np.identity(4)
+        matrix[:3, :3] = self.rotation
+        matrix[:3, 3] = -self.rotation @ self.center
+        return matrix
+
+    def projection_matrix(self) -> np.ndarray:
+        """Camera space to clip space, matching the mobject shaders' projection.
+
+        ``x`` and ``y`` are divided by half the frame shape and scaled by
+        ``f / (f - z)`` through ``w``; depth decreases towards the camera.
+        """
+        width, height = self.frame_shape
+        f = self.focal_distance
+        return np.array(
+            [
+                [2 / width, 0, 0, 0],
+                [0, 2 / height, 0, 0],
+                [0, 0, -0.01, 0],
+                [0, 0, -1 / f, 1],
+            ]
+        )

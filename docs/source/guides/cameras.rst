@@ -19,11 +19,11 @@ across the "surface" of the scene, and when the camera zooms in or out, you can
 think of it as the frame getting smaller or bigger (since less or more of the
 scene, respectively, will fit into the picture frame).
 
-Moving the Cairo camera
------------------------
+Moving the camera
+-----------------
 
-In the ordinary Cairo :class:`.Camera`, the frame is an actual mobject called
-``frame``. You can modify or animate this frame like any other mobject:
+The frame of a :class:`.Camera` is an actual mobject called ``frame``. You can
+modify or animate this frame like any other mobject:
 
 .. manim:: CameraExample
 
@@ -50,27 +50,16 @@ frame with the usual mobject operations:
 To keep a mobject in place on screen while the camera moves, for example a title,
 call its :meth:`~.Mobject.fix_in_frame` method.
 
-Moving the OpenGL camera
-------------------------
-
-With the OpenGL renderer, the camera itself is a mobject. Animate
-``self.camera`` directly to pan or zoom::
-
-    class OpenGLCameraExample(Scene):
-        def construct(self):
-            square = Square().shift(2 * RIGHT)
-            self.add(square)
-            self.play(self.camera.animate.move_to(square))
-            self.play(self.camera.animate.scale(0.5))
-
-Run this example with ``--renderer=opengl``. For orientation controls, see
-:class:`.OpenGLCamera` and :class:`.ThreeDScene`.
+The same camera classes are used by the Cairo and the OpenGL renderer. For
+three-dimensional views, :class:`.ThreeDScene` uses a :class:`.ThreeDCamera`; see
+its orientation methods.
 
 Choosing a camera class
 -----------------------
 
-To select a different Cairo camera, pass ``camera_class`` to the scene's
-constructor. For example, :class:`.MultiCamera` supports picture-in-picture views::
+To select a different camera, pass ``camera_class`` to the scene's constructor.
+For example, :class:`.MultiCamera` supports picture-in-picture views (with the
+Cairo renderer)::
 
     class CustomCameraScene(Scene):
         def __init__(self, *, camera_class: type[Camera] = MultiCamera, **kwargs):

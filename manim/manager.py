@@ -43,7 +43,6 @@ if TYPE_CHECKING:
     from .renderer._execution import _ExecutionState
     from .renderer.cairo import CairoRenderer
     from .renderer.cairo.camera import Camera
-    from .renderer.opengl.camera import OpenGLCamera
     from .renderer.opengl.renderer import OpenGLRenderer
     from .scene.scene import Scene
     from .scene.scene_file_writer import SceneFileWriter
@@ -305,7 +304,7 @@ class Manager(Generic[SceneT]):
         return self.scene.renderer
 
     @property
-    def camera(self) -> Camera | OpenGLCamera:
+    def camera(self) -> Camera:
         """The current renderer's camera."""
         return self.renderer.camera
 

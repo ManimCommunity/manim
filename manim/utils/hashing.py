@@ -23,7 +23,6 @@ if TYPE_CHECKING:
     from manim.animation.animation import Animation
     from manim.mobject.mobject import Mobject
     from manim.renderer.cairo.camera import Camera
-    from manim.renderer.opengl.camera import OpenGLCamera
     from manim.scene.scene import Scene
 
 __all__ = ["KEYS_TO_FILTER_OUT", "get_hash_from_play_call", "get_json"]
@@ -471,7 +470,7 @@ def get_json(obj: Any, *, include_pixel_array: bool = False) -> str:
 
 def get_hash_from_play_call(
     scene_object: Scene,
-    camera_object: Camera | OpenGLCamera,
+    camera_object: Camera,
     animations_list: Iterable[Animation],
     current_mobjects_list: Iterable[Mobject],
     *,

@@ -329,10 +329,10 @@ class Mesh(Object3D):
             "u_model_matrix",
             opengl.matrix_to_shader_input(self.model_matrix),
         )
-        self.shader.set_uniform("u_view_matrix", renderer.camera.formatted_view_matrix)
+        self.shader.set_uniform("u_view_matrix", renderer.view_matrix)
         self.shader.set_uniform(
             "u_projection_matrix",
-            renderer.camera.projection_matrix,
+            renderer.projection_matrix,
         )
 
     def render(self) -> None:

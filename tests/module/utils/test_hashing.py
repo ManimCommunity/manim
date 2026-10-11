@@ -300,23 +300,6 @@ def test_reading_a_cached_property_does_not_change_the_key():
     assert hashing.get_json(Derived(4)) != hashing.get_json(untouched)
 
 
-def test_opengl_camera_key_ignores_its_derived_view_matrices():
-    from manim.renderer.opengl.camera import OpenGLCamera
-
-    with tempconfig({"renderer": "opengl", "pixel_width": 64, "pixel_height": 32}):
-        untouched = OpenGLCamera()
-        drawn = OpenGLCamera()
-        # Rendering reads these; they are just inv(model_matrix) and its shader layout.
-        assert drawn.formatted_view_matrix is not None
-        assert drawn.unformatted_view_matrix is not None
-
-        assert hashing.get_json(untouched) == hashing.get_json(drawn)
-
-        moved = OpenGLCamera()
-        moved.model_matrix = moved.model_matrix * 2
-        assert hashing.get_json(moved) != hashing.get_json(untouched)
-
-
 def test_play_hash_keeps_distinct_mobjects_with_equal_python_hashes():
     class CollidingObject:
         def __init__(self, name: str) -> None:
