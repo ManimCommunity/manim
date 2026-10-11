@@ -2517,6 +2517,12 @@ class Mobject:
         all_points = self.get_points_defining_boundary()
         if len(all_points) == 0:
             return result
+        if type(self).get_extremum_along_dim is Mobject.get_extremum_along_dim:
+            # All dimensions at once; the same values as the loop below.
+            points = np.asarray(all_points)[:, : self.dim]
+            low, high = points.min(axis=0), points.max(axis=0)
+            key = np.asarray(direction, dtype=float)[: self.dim]
+            return np.where(key < 0, low, np.where(key > 0, high, (low + high) / 2))
         for dim in range(self.dim):
             result[dim] = self.get_extremum_along_dim(
                 all_points,

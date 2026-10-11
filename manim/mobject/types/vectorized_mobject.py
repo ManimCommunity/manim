@@ -1771,17 +1771,31 @@ class VMobject(Mobject):
         return list(it.chain.from_iterable(zip(s, e, strict=True)))
 
     def get_points_defining_boundary(self) -> Point3D_Array:
-        # Probably returns all anchors, but this is weird regarding  the name of the method.
-        return np.array(
-            tuple(
-                it.chain(
-                    *(
-                        sm.get_anchors() if isinstance(sm, VMobject) else sm.points
-                        for sm in self.get_family()
-                    )
-                )
-            )
-        )
+        """The anchors of the curves of the family, as :meth:`get_anchors` orders them
+        (and the points of meshes in it).
+        """
+        anchors = [
+            sm._anchor_array() if isinstance(sm, VMobject) else sm.points.copy()
+            for sm in self.get_family()
+        ]
+        anchors = [a for a in anchors if len(a)]
+        if not anchors:
+            return np.array(())
+        return np.concatenate(anchors) if len(anchors) > 1 else anchors[0]
+
+    def _anchor_array(self) -> Point3D_Array:
+        """:meth:`get_anchors` as an array: start and end anchor of each curve."""
+        points = self.points
+        if points.shape[0] == 1:
+            return points.copy()
+        nppcc = self.n_points_per_cubic_curve
+        starts, ends = points[::nppcc], points[nppcc - 1 :: nppcc]
+        if len(starts) != len(ends):
+            raise ValueError("The points do not form whole curves.")
+        anchors = np.empty((2 * len(starts), points.shape[1]))
+        anchors[0::2] = starts
+        anchors[1::2] = ends
+        return anchors
 
     def get_arc_length(self, sample_points_per_curve: int | None = None) -> float:
         """Return the approximated length of the whole curve.
