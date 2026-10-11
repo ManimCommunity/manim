@@ -12,8 +12,6 @@ from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
 from manim.mobject.text.tex_mobject import MathTexPart
 
-from .._config import config
-from ..constants import RendererType
 from ..mobject.mobject import Group, Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from .composition import AnimationGroup
@@ -146,7 +144,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
         for sm in self.get_mobject_parts(mobject):
             key = self.get_mobject_key(sm)
             if key not in shape_map:
-                if config.renderer == RendererType.OPENGL:
+                if isinstance(sm, OpenGLMobject):
                     shape_map[key] = OpenGLVGroup()
                 else:
                     shape_map[key] = VGroup()

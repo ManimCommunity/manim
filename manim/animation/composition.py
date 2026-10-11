@@ -7,9 +7,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
-from manim._config import config
 from manim.animation.animation import Animation, prepare_animation
-from manim.constants import RendererType
 from manim.mobject.mobject import Group, Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
 from manim.utils.iterables import remove_list_redundancies
@@ -67,7 +65,7 @@ class AnimationGroup(Animation):
             mobjects = remove_list_redundancies(
                 [anim.mobject for anim in self.animations if not anim.is_introducer()],
             )
-            if config.renderer == RendererType.OPENGL:
+            if mobjects and all(isinstance(m, OpenGLMobject) for m in mobjects):
                 self.group: Group | VGroup | OpenGLGroup | OpenGLVGroup = OpenGLGroup(
                     *mobjects
                 )
