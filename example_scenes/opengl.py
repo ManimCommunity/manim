@@ -8,8 +8,37 @@ from manim.opengl import *
 # Lines that do not yet work with the Community Version are commented.
 
 
+VERTEX_COLORS_SHADER = {
+    "vertex_shader": """
+        #version 330
+
+        uniform mat4 u_model_matrix;
+        uniform mat4 u_view_matrix;
+        uniform mat4 u_projection_matrix;
+        in vec4 in_vert;
+        in vec4 in_color;
+        out vec4 v_color;
+
+        void main() {
+            v_color = in_color;
+            gl_Position = u_projection_matrix * u_view_matrix * u_model_matrix * in_vert;
+        }
+    """,
+    "fragment_shader": """
+        #version 330
+
+        in vec4 v_color;
+        out vec4 frag_color;
+
+        void main() {
+            frag_color = v_color;
+        }
+    """,
+}
+
+
 def get_plane_mesh(context):
-    shader = Shader(context, name="vertex_colors")
+    shader = Shader(context, source=VERTEX_COLORS_SHADER)
     attributes = np.zeros(
         18,
         dtype=[
@@ -151,29 +180,6 @@ class ThreeDMobjectTest(Scene):
 
         mesh.add_updater(update_mesh)
 
-        self.interactive_embed()
-
-
-class NamedFullScreenQuad(Scene):
-    def construct(self):
-        surface = FullScreenQuad(self.renderer.context, fragment_shader_name="design_3")
-        surface.shader.set_uniform(
-            "u_resolution",
-            (config["pixel_width"], config["pixel_height"], 0.0),
-        )
-        surface.shader.set_uniform("u_time", 0)
-        self.add(surface)
-
-        t = 0
-
-        def update_surface(surface, dt):
-            nonlocal t
-            t += dt
-            surface.shader.set_uniform("u_time", t / 4)
-
-        surface.add_updater(update_surface)
-
-        # self.wait()
         self.interactive_embed()
 
 
@@ -361,39 +367,6 @@ class InlineShaderExample(Scene):
 
         self.wait(5)
         # self.embed_2()
-
-
-class NamedShaderExample(Scene):
-    def construct(self):
-        shader = Shader(self.renderer.context, "manim_coords")
-        shader.set_uniform("u_color", (0.0, 1.0, 0.0, 1.0))
-
-        view_matrix = self.camera.formatted_view_matrix
-        shader.set_uniform("u_model_view_matrix", view_matrix)
-        shader.set_uniform(
-            "u_projection_matrix",
-            opengl.perspective_projection_matrix(),
-        )
-        attributes = np.zeros(
-            6,
-            dtype=[
-                ("in_vert", np.float32, (4,)),
-            ],
-        )
-        attributes["in_vert"] = np.array(
-            [
-                [-1, -1, 0, 1],
-                [-1, 1, 0, 1],
-                [1, 1, 0, 1],
-                [-1, -1, 0, 1],
-                [1, -1, 0, 1],
-                [1, 1, 0, 1],
-            ],
-        )
-        mesh = Mesh(shader, attributes)
-        self.add(mesh)
-
-        self.wait(5)
 
 
 class InteractiveDevelopment(Scene):

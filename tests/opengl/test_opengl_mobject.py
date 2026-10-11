@@ -3,8 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from manim import PI
-from manim.mobject.opengl.opengl_geometry import OpenGLTriangle
+from manim import PI, Triangle
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 
@@ -178,7 +177,8 @@ def test_opengl_rotate_about_vertex_view(using_opengl_renderer):
 
     This test verifies that the OpenGL renderer continues to handle vertex views correctly.
     """
-    triangle = OpenGLTriangle()
+    triangle = Triangle()
+    assert isinstance(triangle, OpenGLMobject)
     original_vertices = triangle.get_vertices().copy()
     first_vertex = original_vertices[0].copy()
 
