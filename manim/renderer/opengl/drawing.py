@@ -592,8 +592,6 @@ class SnapshotDrawing:
         shader = Shader(context, name=shader_name)
         for name, value in self._target.uniforms.items():
             shader.set_uniform(name, value)
-        for name in ("is_fixed_in_frame", "is_fixed_orientation"):
-            shader.set_uniform(name, 0.0)
         for name, value in uniforms.items():
             shader.set_uniform(name, value)
         buffer = context.buffer(vertices.tobytes())
@@ -663,8 +661,6 @@ class SnapshotDrawing:
             moderngl.TRIANGLES,
             joint_type=float(first.stroke.joint.value),
             flat_stroke=0.0,
-            gloss=0.0,
-            shadow=0.0,
         )
 
 

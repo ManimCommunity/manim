@@ -460,10 +460,6 @@ class OpenGLRenderer(_RendererExecutionView):
             "anti_alias_width": self.anti_alias_width / (pixel_height / frame_height),
             "camera_center": tuple(view.center),
             "camera_rotation": tuple(view.rotation.T.flatten()),
-            "light_source_position": tuple(
-                view.rotation
-                @ (view.light_source if view.light_source is not None else _NO_LIGHT)
-            ),
             "focal_distance": view.focal_distance,
         }
 
@@ -1010,8 +1006,6 @@ class OpenGLRenderer(_RendererExecutionView):
 
 #: Focal distance standing in for "no perspective" (a camera without rotation).
 _ORTHOGRAPHIC_FOCAL_DISTANCE = 1e6
-#: Where the shaders of the OpenGL mobject classes put the light of flat cameras.
-_NO_LIGHT = np.array([-10.0, 10.0, 10.0])
 
 
 def _eye(center: Point3D, rotation: np.ndarray, focal_distance: float) -> np.ndarray:

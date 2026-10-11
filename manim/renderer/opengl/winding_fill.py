@@ -210,8 +210,6 @@ class WindingFill:
         shader = Shader(context, name="winding_fill")
         for name, value in target.uniforms.items():
             shader.set_uniform(name, value)
-        for name in ("is_fixed_in_frame", "is_fixed_orientation"):
-            shader.set_uniform(name, 0.0)
 
         buffer = context.buffer(vertices.tobytes())
         try:
