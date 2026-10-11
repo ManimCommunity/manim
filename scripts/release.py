@@ -471,7 +471,17 @@ def convert_to_github(body: str) -> str:
     )
     body = re.sub(r"\{user\}`([a-zA-Z0-9_-]+)`", r"@\1", body)
     body = re.sub(r"\{class\}`\.?(.*?)`", r"`\1`", body)
+    body = re.sub(r"\{doc\}`([^`]*?)`", _convert_doc_role, body)
     return body
+
+
+def _convert_doc_role(match: re.Match[str]) -> str:
+    """Convert a MyST ``{doc}`` role to a link into the stable documentation."""
+    content = match.group(1)
+    titled = re.fullmatch(r"(.*?)\s*<(.+)>", content)
+    title, target = (titled.group(1), titled.group(2)) if titled else (None, content)
+    path = target.strip().lstrip("/")
+    return f"[{title or path}](https://docs.manim.community/en/stable/{path}.html)"
 
 
 def format_github_release_notes(version: str, content: str) -> str:
