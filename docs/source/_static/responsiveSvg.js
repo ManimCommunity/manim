@@ -115,4 +115,3 @@ window.addEventListener("load", function () {
         .matchMedia("(prefers-color-scheme: dark)")
         .addEventListener("change", setColorScheme);
 });
-
