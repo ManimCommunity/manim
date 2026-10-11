@@ -115,7 +115,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         rgba = color_to_rgba(color)
         mobs = self.family_members_with_points() if family else [self]
         for mob in mobs:
-            mob.rgbas[:, :] = rgba
+            mob.rgbas = np.repeat([rgba], len(mob.rgbas), axis=0)
         self.color = ManimColor.parse(color)
         return self
 

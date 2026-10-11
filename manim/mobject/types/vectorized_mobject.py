@@ -268,15 +268,17 @@ class VMobject(Mobject):
         curr_rgbas = getattr(self, array_name)
         if len(curr_rgbas) < len(rgbas):
             curr_rgbas = stretch_array_to_length(curr_rgbas, len(rgbas))
-            setattr(self, array_name, curr_rgbas)
-        elif len(rgbas) < len(curr_rgbas):
-            rgbas = stretch_array_to_length(rgbas, len(curr_rgbas))
+        else:
+            curr_rgbas = curr_rgbas.copy()
+            if len(rgbas) < len(curr_rgbas):
+                rgbas = stretch_array_to_length(rgbas, len(curr_rgbas))
         # Only update rgb if color was not None, and only
         # update alpha channel if opacity was passed in
         if color is not None:
             curr_rgbas[:, :3] = rgbas[:, :3]
         if opacity is not None:
             curr_rgbas[:, 3] = rgbas[:, 3]
+        setattr(self, array_name, curr_rgbas)
         return self
 
     def set_fill(

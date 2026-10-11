@@ -208,9 +208,9 @@ class ImageMobject(AbstractImageMobject):
             self.pixel_array, self.pixel_array_dtype
         )
         if self.invert_image:
-            self.pixel_array[:, :, :3] = (
-                np.iinfo(self.pixel_array_dtype).max - self.pixel_array[:, :, :3]
-            )
+            pixels = self.pixel_array.copy()
+            pixels[:, :, :3] = np.iinfo(self.pixel_array_dtype).max - pixels[:, :, :3]
+            self.pixel_array = pixels
         self.orig_alpha_pixel_array = self.pixel_array[:, :, 3].copy()
         super().__init__(scale_to_resolution, **kwargs)
 
@@ -225,9 +225,11 @@ class ImageMobject(AbstractImageMobject):
         family: bool = True,
     ) -> Self:
         rgb = color_to_int_rgb(color)
-        self.pixel_array[:, :, :3] = rgb
+        pixels = self.pixel_array.copy()
+        pixels[:, :, :3] = rgb
         if alpha is not None:
-            self.pixel_array[:, :, 3] = int(255 * alpha)
+            pixels[:, :, 3] = int(255 * alpha)
+        self.pixel_array = pixels
         for submob in self.submobjects:
             submob.set_color(color, alpha, family)
         self.color = ManimColor(color)
@@ -242,7 +244,9 @@ class ImageMobject(AbstractImageMobject):
             The alpha value of the object, 1 being opaque and 0 being
             transparent.
         """
-        self.pixel_array[:, :, 3] = self.orig_alpha_pixel_array * alpha
+        pixels = self.pixel_array.copy()
+        pixels[:, :, 3] = self.orig_alpha_pixel_array * alpha
+        self.pixel_array = pixels
         self.stroke_opacity = alpha
         return self
 
