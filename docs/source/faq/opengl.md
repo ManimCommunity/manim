@@ -2,14 +2,15 @@
 
 ## Are there any resources on how the OpenGL renderer in the community maintained version can be used?
 
-Yes. Unfortunately, at this point, the official online documentation does
-not contain the relevant base classes like `OpenGLMobject` and `OpenGLVMobject`
-or specific OpenGL classes like `OpenGLSurface`, but documentation for some of
-them is available in form of docstrings
-[in the source code](https://github.com/ManimCommunity/manim/tree/main/manim/mobject/opengl).
+Render with `--renderer=opengl`; add `-l` (or `--live-preview`) for an
+interactive preview window. Both renderers draw the same mobjects, so the rest of
+the documentation applies to both. Smooth, lit surfaces
+({class}`.ParametricSurface`, {class}`.MeshMobject`) are currently drawn by the
+OpenGL renderer only.
 
-Furthermore, [this user guide by *aquabeam*](https://web.archive.org/web/20250708135737/https://www.aquabeam.me/manim/opengl_guide/)
-can be helpful to get started using the OpenGL renderer.
+Earlier versions had separate OpenGL mobject classes (`OpenGLMobject`,
+`OpenGLVMobject`, `OpenGLSurface`, ...); see
+{ref}`the upgrading guide <upgrading-opengl-mobjects>` for how to update code that used them.
 
 ---
 

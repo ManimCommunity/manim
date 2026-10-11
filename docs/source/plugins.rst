@@ -116,18 +116,8 @@ for details) is to include the following in your ``pyproject.toml``:
 A note on Renderer Compatibility
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Depending on which renderer is currently active, custom mobjects
-created in your plugin might want to behave differently as the
-corresponding mobject base classes are (unfortunately) not fully
-compatible.
-
-The currently active renderer can be queried by checking the value
-of ``manim.config.renderer``. All possible renderer types are given
-by :class:`.constants.RendererType`. The module :mod:`.manim.mobject.utils`
-contains utility functions that return the base class for the currently
-active renderer.
-
-A simple form of renderer compatibility (by hot-swapping the class
-inheritance chain) for Mobjects directly inheriting from
-:class:`.Mobject` or :class:`.VMobject` can be achieved by using the
-:class:`.mobject.opengl.opengl_compatibility.ConvertToOpenGL` metaclass.
+Both renderers draw the same mobject classes, so custom mobjects created in a
+plugin by subclassing :class:`.Mobject`, :class:`.VMobject` or any other mobject
+work with either renderer. The currently active renderer can be queried by
+checking the value of ``manim.config.renderer``; all possible renderer types are
+given by :class:`.constants.RendererType`.

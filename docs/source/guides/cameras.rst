@@ -167,7 +167,8 @@ The Cairo backend supports several camera views within one scene through
 secondary camera supplies an image displayed by an
 :class:`.ImageMobjectFromCamera` mobject.
 During the execution of the scene, the renderer draws each camera's view into its
-display mobject. This API is not supported by the OpenGL backend.
+display mobject. Both renderers support it; the OpenGL renderer does not draw
+nested views (a :class:`.MultiCamera` used as a secondary camera).
 
 There are two independent controls:
 
