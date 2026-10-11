@@ -21,12 +21,15 @@ from typing import TYPE_CHECKING, Any, Literal, Self
 
 import numpy as np
 
-from manim._config import config, logger
+from manim._config import logger
 from manim.constants import *
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square
 from manim.mobject.mobject import *
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_compatibility import (
+    ConvertToOpenGL,
+    uses_opengl_mobjects,
+)
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
 from manim.utils.color import (
@@ -340,10 +343,10 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
                             new_colors[i],
                             color_index,
                         )
-                        if config.renderer == RendererType.OPENGL:
+                        if uses_opengl_mobjects():
                             assert isinstance(mob, OpenGLMobject)
                             mob.set_color(mob_color, recurse=False)
-                        elif config.renderer == RendererType.CAIRO:
+                        elif not uses_opengl_mobjects():
                             mob.set_color(mob_color, family=False)
                         break
 
@@ -450,9 +453,9 @@ class Sphere(Surface):
         v_range: tuple[float, float] = (0, PI),
         **kwargs: Any,
     ) -> None:
-        if config.renderer == RendererType.OPENGL:
+        if uses_opengl_mobjects():
             res_value = (101, 51)
-        elif config.renderer == RendererType.CAIRO:
+        elif not uses_opengl_mobjects():
             res_value = (24, 12)
         else:
             raise Exception("Unknown renderer")
@@ -882,11 +885,11 @@ class Cylinder(Surface):
     def add_bases(self) -> Self:
         """Adds the end caps of the cylinder."""
         opacity: float
-        if config.renderer == RendererType.OPENGL:
+        if uses_opengl_mobjects():
             assert isinstance(self, OpenGLMobject)
             color = self.color
             opacity = self.opacity
-        elif config.renderer == RendererType.CAIRO:
+        elif not uses_opengl_mobjects():
             color = self.fill_color
             opacity = self.fill_opacity
 
@@ -1321,9 +1324,9 @@ class Torus(Surface):
         resolution: int | tuple[int, int] | None = None,
         **kwargs: Any,
     ) -> None:
-        if config.renderer == RendererType.OPENGL:
+        if uses_opengl_mobjects():
             res_value = (101, 101)
-        elif config.renderer == RendererType.CAIRO:
+        elif not uses_opengl_mobjects():
             res_value = (24, 24)
 
         resolution = resolution if resolution is not None else res_value

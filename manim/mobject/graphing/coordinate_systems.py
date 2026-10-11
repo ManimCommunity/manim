@@ -27,7 +27,10 @@ from manim.mobject.graphing.functions import ImplicitFunction, ParametricFunctio
 from manim.mobject.graphing.number_line import NumberLine
 from manim.mobject.graphing.scale import LinearBase
 from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_compatibility import (
+    ConvertToOpenGL,
+    uses_opengl_mobjects,
+)
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.three_d.three_dimensions import Surface
@@ -787,7 +790,7 @@ class CoordinateSystem:
                             )
                             color_list.append(mob_color)
                             break
-            if config.renderer == RendererType.OPENGL:
+            if uses_opengl_mobjects():
                 graph.set_color(color_list)
             else:
                 graph.set_stroke(color_list)
@@ -994,7 +997,7 @@ class CoordinateSystem:
                         )
                     self.add(axes, trig_plane)
         """
-        if config.renderer == RendererType.CAIRO:
+        if not uses_opengl_mobjects():
             surface = Surface(
                 lambda u, v: self.c2p(u, v, function(u, v)),
                 u_range=u_range,
@@ -1007,7 +1010,7 @@ class CoordinateSystem:
                     colorscale=colorscale,
                     axis=colorscale_axis,
                 )
-        elif config.renderer == RendererType.OPENGL:
+        elif uses_opengl_mobjects():
             surface = OpenGLSurface(
                 lambda u, v: self.c2p(u, v, function(u, v)),
                 u_range=u_range,
@@ -2504,7 +2507,7 @@ class ThreeDAxes(Axes):
         self.add(z_axis)
         self.z_axis = z_axis
 
-        if config.renderer == RendererType.CAIRO:
+        if not uses_opengl_mobjects():
             self._add_3d_pieces()
 
     def _add_3d_pieces(self) -> None:

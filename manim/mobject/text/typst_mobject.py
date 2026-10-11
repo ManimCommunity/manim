@@ -132,7 +132,8 @@ import numpy as np
 import svgelements as se
 
 from manim._config import config
-from manim.constants import DEFAULT_FONT_SIZE, SCALE_FACTOR_PER_FONT_POINT, RendererType
+from manim.constants import DEFAULT_FONT_SIZE, SCALE_FACTOR_PER_FONT_POINT
+from manim.mobject.opengl.opengl_compatibility import uses_opengl_mobjects
 from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import BLACK, ParsableManimColor
@@ -753,9 +754,9 @@ class Typst(SVGMobject):
             if submobject.color != BLACK:
                 continue
             submobject.color = self.color
-            if config.renderer == RendererType.OPENGL:
+            if uses_opengl_mobjects():
                 submobject.init_colors()
-            elif config.renderer == RendererType.CAIRO:
+            elif not uses_opengl_mobjects():
                 submobject.init_colors(propagate_colors=propagate_colors)
         return self
 

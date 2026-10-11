@@ -70,6 +70,7 @@ from manimpango import MarkupUtils, PangoUtils, TextSetting
 from manim._config import config, logger
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
+from manim.mobject.opengl.opengl_compatibility import uses_opengl_mobjects
 from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.typing import Point3D
@@ -867,9 +868,9 @@ class Text(SVGMobject):
         return svg_file
 
     def init_colors(self, propagate_colors: bool = True) -> Self:
-        if config.renderer == RendererType.OPENGL:
+        if uses_opengl_mobjects():
             super().init_colors()
-        elif config.renderer == RendererType.CAIRO:
+        elif not uses_opengl_mobjects():
             super().init_colors(propagate_colors=propagate_colors)
         return self
 

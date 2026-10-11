@@ -1393,7 +1393,10 @@ class ManimConfig(MutableMapping):
             value = value.lower()
         renderer = RendererType(value)
         try:
-            from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+            from manim.mobject.opengl.opengl_compatibility import (
+                COMMON_MOBJECTS,
+                ConvertToOpenGL,
+            )
             from manim.mobject.opengl.opengl_mobject import OpenGLMobject
             from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
@@ -1401,7 +1404,7 @@ class ManimConfig(MutableMapping):
             from ..mobject.types.vectorized_mobject import VMobject
 
             for cls in ConvertToOpenGL._converted_classes:
-                if renderer == RendererType.OPENGL:
+                if renderer == RendererType.OPENGL and not COMMON_MOBJECTS:
                     conversion_dict = {
                         Mobject: OpenGLMobject,
                         VMobject: OpenGLVMobject,

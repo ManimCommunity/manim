@@ -18,12 +18,14 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
 
-from manim._config import config
 from manim.constants import *
 from manim.mobject.geometry.arc import Arc, ArcBetweenPoints, Dot, TipableVMobject
 from manim.mobject.geometry.tips import ArrowTip, ArrowTriangleFilledTip
 from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_compatibility import (
+    ConvertToOpenGL,
+    uses_opengl_mobjects,
+)
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import DashedVMobject, VGroup, VMobject
 from manim.utils.color import WHITE
@@ -694,7 +696,7 @@ class Arrow(Line):
     def _set_stroke_width_from_length(self) -> Self:
         """Sets stroke width based on length."""
         max_ratio = self.max_stroke_width_to_length_ratio
-        if config.renderer == RendererType.OPENGL:
+        if uses_opengl_mobjects():
             # Mypy does not recognize that the self object in this case
             # is a OpenGLVMobject and that the set_stroke method is
             # defined here:

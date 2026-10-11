@@ -38,7 +38,7 @@ from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.tex import TexTemplate
 from manim.utils.tex_file_writing import tex_to_svg_file
 
-from ..opengl.opengl_compatibility import ConvertToOpenGL
+from ..opengl.opengl_compatibility import ConvertToOpenGL, uses_opengl_mobjects
 
 MATHTEX_SUBSTRING = "substring"
 
@@ -217,9 +217,9 @@ class SingleStringMathTex(SVGMobject):
             if submobject.color != BLACK:
                 continue
             submobject.color = self.color
-            if config.renderer == RendererType.OPENGL:
+            if uses_opengl_mobjects():
                 submobject.init_colors()
-            elif config.renderer == RendererType.CAIRO:
+            elif not uses_opengl_mobjects():
                 submobject.init_colors(propagate_colors=propagate_colors)
         return self
 

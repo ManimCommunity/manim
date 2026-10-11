@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
+from manim.mobject.opengl.opengl_compatibility import uses_opengl_mobjects
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
-from .._config import config, logger
-from ..constants import RendererType
+from .._config import logger
 from ..mobject import mobject
 from ..mobject.mobject import Group, Mobject
 from ..mobject.opengl import opengl_mobject
@@ -154,7 +154,7 @@ class Animation:
         if (
             isinstance(mobject, OpenGLMobject)
             if mobject is not None
-            else config.renderer == RendererType.OPENGL
+            else uses_opengl_mobjects()
         ):
             self.starting_mobject: OpenGLMobject = OpenGLMobject()
             self.mobject: OpenGLMobject = (

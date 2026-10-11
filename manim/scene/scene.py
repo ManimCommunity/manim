@@ -34,7 +34,7 @@ except ImportError:
 
 from collections.abc import Callable, Iterable, Sequence
 from types import FrameType
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 from tqdm import tqdm
@@ -60,6 +60,8 @@ from ..animation.animation import Animation, Wait, prepare_animation
 from ..animation.composition import AnimationGroup
 from ..constants import *
 from ..manager import Manager
+from ..mobject.opengl.opengl_compatibility import uses_opengl_mobjects
+from ..mobject.types.point_cloud_mobject import Point
 from ..renderer.cairo import CairoRenderer
 from ..renderer.cairo.camera import Camera, ThreeDCamera
 from ..renderer.opengl.renderer import OpenGLRenderer
@@ -219,8 +221,9 @@ class Scene:
 
         if config.renderer == RendererType.OPENGL:
             # Items associated with interaction
-            self.mouse_point = OpenGLPoint()
-            self.mouse_drag_point = OpenGLPoint()
+            point_class = OpenGLPoint if uses_opengl_mobjects() else Point
+            self.mouse_point = point_class()
+            self.mouse_drag_point = point_class()
             if renderer is None:
                 renderer = OpenGLRenderer(camera_class=self.camera_class)
 
@@ -560,13 +563,12 @@ class Scene:
         list
             List of mobject family members.
         """
-        if config.renderer == RendererType.OPENGL:
+        if uses_opengl_mobjects():
             family_members = []
             for mob in self.mobjects:
                 family_members.extend(mob.get_family())
             return family_members
         else:
-            assert config.renderer == RendererType.CAIRO
             return extract_mobject_family_members(
                 self.mobjects,
                 use_z_index=self.renderer.camera.use_z_index,
@@ -588,20 +590,15 @@ class Scene:
             The same scene after adding the Mobjects in.
 
         """
-        if config.renderer == RendererType.OPENGL:
-            new_mobjects = []
-            new_meshes: list[Object3D] = []
-            for mobject_or_mesh in mobjects:
-                if isinstance(mobject_or_mesh, Object3D):
-                    new_meshes.append(mobject_or_mesh)
-                else:
-                    new_mobjects.append(mobject_or_mesh)
-            self.remove(*new_mobjects)  # type: ignore[arg-type]
-            self.mobjects += new_mobjects  # type: ignore[arg-type]
+        new_meshes = [cast(Object3D, m) for m in mobjects if isinstance(m, Object3D)]
+        if new_meshes:
             self.remove(*new_meshes)  # type: ignore[arg-type]
             self.meshes += new_meshes
+            mobjects = tuple(m for m in mobjects if not isinstance(m, Object3D))
+        if uses_opengl_mobjects():
+            self.remove(*mobjects)  # type: ignore[arg-type]
+            self.mobjects += mobjects  # type: ignore[arg-type]
         else:
-            assert config.renderer == RendererType.CAIRO
             new_and_foreground_mobjects: list[Mobject] = [
                 *mobjects,  # type: ignore[list-item]
                 *self.foreground_mobjects,
@@ -639,32 +636,19 @@ class Scene:
         *mobjects
             The mobjects to remove.
         """
-        if config.renderer == RendererType.OPENGL:
-            mobjects_to_remove = []
-            meshes_to_remove: set[Object3D] = set()
-            mobject_or_mesh: Mobject
-            for mobject_or_mesh in mobjects:
-                if isinstance(mobject_or_mesh, Object3D):
-                    meshes_to_remove.add(mobject_or_mesh)
-                else:
-                    mobjects_to_remove.append(mobject_or_mesh)
+        meshes_to_remove = {m for m in mobjects if isinstance(m, Object3D)}
+        if meshes_to_remove:
+            self.meshes = [m for m in self.meshes if m not in meshes_to_remove]
+            mobjects = tuple(m for m in mobjects if not isinstance(m, Object3D))
+        if uses_opengl_mobjects():
             self.mobjects = restructure_list_to_exclude_certain_family_members(
                 self.mobjects,
-                mobjects_to_remove,
+                list(mobjects),
             )
-
-            def lambda_function(mesh: Object3D) -> bool:
-                return mesh not in set(meshes_to_remove)
-
-            self.meshes = list(
-                filter(lambda_function, self.meshes),
-            )
-            return self
         else:
-            assert config.renderer == RendererType.CAIRO
             for list_name in "mobjects", "foreground_mobjects":
                 self.restructure_mobjects(mobjects, list_name, False)
-            return self
+        return self
 
     def replace(self, old_mobject: Mobject, new_mobject: Mobject) -> None:
         """Replace one mobject in the scene with another, preserving draw order.

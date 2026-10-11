@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from abc import ABCMeta
 from typing import Any
 
@@ -11,7 +12,21 @@ from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
 from ...constants import RendererType
 
-__all__ = ["ConvertToOpenGL"]
+__all__ = ["ConvertToOpenGL", "uses_opengl_mobjects"]
+
+#: Development switch while the OpenGL renderer learns to draw the common mobject
+#: classes: with ``MANIM_OPENGL_COMMON_MOBJECTS=1``, :class:`ConvertToOpenGL` does
+#: nothing and OpenGL scenes contain the same mobjects as Cairo scenes.
+COMMON_MOBJECTS = os.environ.get("MANIM_OPENGL_COMMON_MOBJECTS", "") not in ("", "0")
+
+
+def uses_opengl_mobjects() -> bool:
+    """Whether mobjects are created from the OpenGL classes.
+
+    True for the OpenGL renderer unless :data:`COMMON_MOBJECTS` is set. Code that
+    depends on the mobject classes asks this instead of checking the renderer.
+    """
+    return config.renderer == RendererType.OPENGL and not COMMON_MOBJECTS
 
 
 class ConvertToOpenGL(ABCMeta):
@@ -25,7 +40,7 @@ class ConvertToOpenGL(ABCMeta):
     def __new__(
         mcls, name: str, bases: tuple[type, ...], namespace: dict[str, Any]
     ) -> type:
-        if config.renderer == RendererType.OPENGL:
+        if uses_opengl_mobjects():
             # Must check class names to prevent
             # cyclic importing.
             base_names_to_opengl: dict[str, type] = {

@@ -8,9 +8,11 @@ from typing import Any, Self
 
 import numpy as np
 
-from manim._config import config
 from manim.constants import *
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_compatibility import (
+    ConvertToOpenGL,
+    uses_opengl_mobjects,
+)
 from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex, Tex
 from manim.mobject.text.text_mobject import Text
 from manim.mobject.types.vectorized_mobject import VMobject
@@ -297,7 +299,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         for sm1, sm2 in zip(self.submobjects, old_submobjects, strict=False):
             sm1.match_style(sm2)
 
-        if config.renderer == RendererType.CAIRO:
+        if not uses_opengl_mobjects():
             for mob in old_family:
                 # Dumb hack...due to how scene handles families
                 # of animated mobjects

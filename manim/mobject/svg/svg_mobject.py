@@ -13,14 +13,14 @@ import svgelements as se
 from manim._config import config, logger
 from manim.utils.color import ManimColor, ParsableManimColor
 
-from ...constants import RIGHT, RendererType
+from ...constants import RIGHT
 from ...utils.bezier import get_quadratic_approximation_of_cubic
 from ...utils.images import get_full_vector_image_path
 from ...utils.iterables import hash_obj
 from ..geometry.arc import Circle
 from ..geometry.line import Line
 from ..geometry.polygram import Polygon, Rectangle, RoundedRectangle
-from ..opengl.opengl_compatibility import ConvertToOpenGL
+from ..opengl.opengl_compatibility import ConvertToOpenGL, uses_opengl_mobjects
 from ..types.vectorized_mobject import VGroup, VMobject
 
 __all__ = ["SVGMobject", "VMobjectFromSVGPath"]
@@ -545,7 +545,7 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
         self.should_subdivide_sharp_curves = should_subdivide_sharp_curves
         self.should_remove_null_curves = should_remove_null_curves
 
-        if config.renderer == RendererType.OPENGL:
+        if uses_opengl_mobjects():
             # OpenGLVMobject.__init__ takes these as parameters and would
             # otherwise reset the attributes above to its own defaults.
             kwargs.update(
@@ -561,7 +561,7 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
 
         self.handle_commands()
 
-        if config.renderer == RendererType.OPENGL:
+        if uses_opengl_mobjects():
             if self.should_subdivide_sharp_curves:
                 # For a healthy triangulation later
                 self.subdivide_sharp_curves()

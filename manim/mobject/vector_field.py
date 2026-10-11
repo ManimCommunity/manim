@@ -21,12 +21,13 @@ from PIL import Image
 from manim.animation.updaters.update import UpdateFromAlphaFunc
 from manim.mobject.geometry.line import Vector
 from manim.mobject.graphing.coordinate_systems import CoordinateSystem
+from manim.mobject.opengl.opengl_compatibility import uses_opengl_mobjects
 
 from .._config import config
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
-from ..constants import OUT, RIGHT, UP, RendererType
+from ..constants import OUT, RIGHT, UP
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
 from ..utils.bezier import interpolate, inverse_interpolate
@@ -874,7 +875,7 @@ class StreamLines(VectorField):
         max_steps = ceil(virtual_time / dt) + 1
         if not self.single_color:
             self.background_img = self.get_colored_background_image()
-            if config.renderer == RendererType.OPENGL:
+            if uses_opengl_mobjects():
                 self.values_to_rgbas = self.get_vectorized_rgba_gradient_function(
                     min_color_scheme_value,
                     max_color_scheme_value,
@@ -900,7 +901,7 @@ class StreamLines(VectorField):
                     color=self.color, width=self.stroke_width, opacity=opacity
                 )
             else:
-                if config.renderer == RendererType.OPENGL:
+                if uses_opengl_mobjects():
                     # scaled for compatibility with cairo
                     line.set_stroke(width=self.stroke_width / 4.0)
                     norms = np.array(
