@@ -17,7 +17,6 @@ from manim.constants import DEGREES, DOWN, LEFT, ORIGIN, OUT
 from manim.mobject.frame import ScreenRectangle
 from manim.mobject.mobject import Mobject, _AnimationBuilder
 from manim.mobject.types.image_mobject import ImageMobjectFromCamera
-from manim.mobject.types.point_cloud_mobject import Point
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.mobject.value_tracker import ValueTracker
 from manim.renderer.extract import placement_of
@@ -427,7 +426,10 @@ class ThreeDCamera(Camera):
         self.shading_factor = shading_factor
         self.default_distance = default_distance
         self.light_source_start_point = light_source_start_point
-        self.light_source = Point(self.light_source_start_point)
+        # A plain mobject, which ConvertToOpenGL leaves alone, so that both renderers
+        # read the same light source.
+        self.light_source = Mobject()
+        self.light_source.points = [self.light_source_start_point]
         self.should_apply_shading = should_apply_shading
         self.exponential_projection = exponential_projection
         self.phi_tracker = ValueTracker(phi)
