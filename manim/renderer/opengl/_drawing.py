@@ -806,12 +806,16 @@ def _groups(
     filled = np.array([shows(p.fill) or _background_width(p) > 0 for p in paths])
     piece_boxes, piece_offsets = _piece_boxes(geometry, ~filled, screen, margins)
 
-    groups: list[_Group] = []
+    # Members, whether any is filled, and the pixel box of each group so far.
+    groups: list[tuple[list[RNode], list[_Geometry], list[Any]]] = []
     regions = _Boxes()
     color: tuple[float, ...] | None = None
     joint = None
+    box_list = boxes.tolist()
+    filled_list = filled.tolist()
     for index, (node, geo, path) in enumerate(zip(nodes, geometry, paths, strict=True)):
-        box = boxes[index]
+        x0, y0, x1, y1 = box_list[index]
+        is_filled = filled_list[index]
         single = (
             tuple(path.fill.rgba)
             if isinstance(path.fill, RSolidColor)
@@ -820,39 +824,41 @@ def _groups(
             else None
         )
         joins = bool(groups) and path.stroke.joint == joint
-        if joins and filled[index]:
-            same_color = single is not None and single == color
-            joins = same_color or not (
-                _overlap(groups[-1].box, box) and regions.overlaps(box)
+        if joins and is_filled:
+            same_colour = single is not None and single == colour
+            gx0, gy0, gx1, gy1, _ = groups[-1][2]
+            joins = same_colour or not (
+                gx0 < x1
+                and gx1 > x0
+                and gy0 < y1
+                and gy1 > y0
+                and regions.overlaps(boxes[index])
             )
-        if filled[index] or len(geo.quads) == 0:
-            region = box[None, :]
+        if is_filled or len(geo.quads) == 0:
+            region = boxes[index : index + 1]
         else:
             region = piece_boxes[piece_offsets[index] : piece_offsets[index + 1]]
         if joins:
-            group = groups[-1]
-            group.nodes.append(node)
-            group.geometry.append(geo)
-            if filled[index] and not group.filled:
-                color = single
-            groups[-1] = group._replace(
-                box=np.r_[
-                    np.minimum(group.box[:2], box[:2]),
-                    np.maximum(group.box[2:], box[2:]),
-                ],
-                filled=group.filled or bool(filled[index]),
-            )
+            members, members_geometry, state = groups[-1]
+            members.append(node)
+            members_geometry.append(geo)
+            if is_filled and not state[4]:
+                colour = single
+            state[0] = min(state[0], x0)
+            state[1] = min(state[1], y0)
+            state[2] = max(state[2], x1)
+            state[3] = max(state[3], y1)
+            state[4] = state[4] or is_filled
         else:
-            groups.append(_Group([node], [geo], bool(filled[index]), box))
+            groups.append(([node], [geo], [x0, y0, x1, y1, is_filled]))
             regions = _Boxes()
             color = single
             joint = path.stroke.joint
         regions.add(region)
-    return groups
-
-
-def _overlap(a: np.ndarray, b: np.ndarray) -> bool:
-    return bool(a[0] < b[2] and a[2] > b[0] and a[1] < b[3] and a[3] > b[1])
+    return [
+        _Group(members, members_geometry, state[4], np.array(state[:4]))
+        for members, members_geometry, state in groups
+    ]
 
 
 def _piece_boxes(
