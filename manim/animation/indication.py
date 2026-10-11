@@ -558,7 +558,7 @@ class Wiggle(Animation):
         starting_submobject: Mobject,
         alpha: float,
     ) -> Self:
-        submobject.points[:, :] = starting_submobject.points
+        submobject.points = starting_submobject.points
         submobject.scale(
             interpolate(1, self.scale_value, there_and_back(alpha)),
             about_point=self.get_scale_about_point(),

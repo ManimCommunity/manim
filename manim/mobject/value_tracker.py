@@ -87,7 +87,9 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
 
     def set_value(self, value: float) -> Self:
         """Sets a new scalar value to the ValueTracker."""
-        self.points[0, 0] = value
+        points = self.points.copy()
+        points[0, 0] = value
+        self.points = points
         return self
 
     def increment_value(self, d_value: float) -> Self:
@@ -238,5 +240,7 @@ class ComplexValueTracker(ValueTracker):
     def set_value(self, value: complex | float) -> Self:
         """Sets a new complex value to the ComplexValueTracker."""
         z = complex(value)
-        self.points[0, :2] = (z.real, z.imag)
+        points = self.points.copy()
+        points[0, :2] = (z.real, z.imag)
+        self.points = points
         return self

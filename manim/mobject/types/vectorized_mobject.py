@@ -841,15 +841,16 @@ class VMobject(Mobject):
         assert len(anchors1) == len(handles1) == len(handles2) == len(anchors2)
         nppcc = self.n_points_per_cubic_curve  # 4
         total_len = nppcc * len(anchors1)
-        self.points = np.empty((total_len, self.dim))
+        points = np.empty((total_len, self.dim))
         # the following will, from the four sets, dispatch them in points such that
-        # self.points = [
+        # points = [
         #     anchors1[0], handles1[0], handles2[0], anchors1[0], anchors1[1],
         #     handles1[1], ...
         # ]
         arrays = [anchors1, handles1, handles2, anchors2]
         for index, array in enumerate(arrays):
-            self.points[index::nppcc] = array
+            points[index::nppcc] = array
+        self.points = points
         return self
 
     def clear_points(self) -> Self:
@@ -2062,26 +2063,27 @@ class VMobject(Mobject):
             )
         else:
             # Allocate space for (upper_index-lower_index+1) Bézier curves.
-            self.points = np.empty((nppc * (upper_index - lower_index + 1), self.dim))
+            points = np.empty((nppc * (upper_index - lower_index + 1), self.dim))
             # Look at the "lower_index"-th Bezier curve and select its part from
-            # t=lower_residue to t=1. This is the first curve in self.points.
-            self.points[:nppc] = partial_bezier_points(
+            # t=lower_residue to t=1. This is the first curve in points.
+            points[:nppc] = partial_bezier_points(
                 vmobject_points[nppc * lower_index : nppc * (lower_index + 1)],
                 lower_residue,
                 1,
             )
             # If there are more curves between the "lower_index"-th and the
-            # "upper_index"-th Béziers, add them all to self.points.
-            self.points[nppc:-nppc] = vmobject_points[
+            # "upper_index"-th Béziers, add them all to points.
+            points[nppc:-nppc] = vmobject_points[
                 nppc * (lower_index + 1) : nppc * upper_index
             ]
             # Look at the "upper_index"-th Bézier curve and select its part from
-            # t=0 to t=upper_residue. This is the last curve in self.points.
-            self.points[-nppc:] = partial_bezier_points(
+            # t=0 to t=upper_residue. This is the last curve in points.
+            points[-nppc:] = partial_bezier_points(
                 vmobject_points[nppc * upper_index : nppc * (upper_index + 1)],
                 0,
                 upper_residue,
             )
+            self.points = points
 
         return self
 

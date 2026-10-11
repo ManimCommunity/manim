@@ -1420,8 +1420,7 @@ class Mobject:
         """
         total_vector = reduce(op.add, vectors)
         for mob in self.family_members_with_points():
-            mob.points = mob.points.astype("float")
-            mob.points += total_vector
+            mob.points = mob.points + total_vector
 
         return self
 
@@ -1720,9 +1719,7 @@ class Mobject:
         # Make a copy to prevent mutation of the original array if about_point is a view
         about_point = np.array(about_point, copy=True)
         for mob in self.family_members_with_points():
-            mob.points -= about_point
-            mob.points = func(mob.points)
-            mob.points += about_point
+            mob.points = func(mob.points - about_point) + about_point
         return self
 
     def pose_at_angle(self, **kwargs: Any) -> Self:
