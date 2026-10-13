@@ -1376,12 +1376,11 @@ class VMobject(Mobject):
         )
 
     def get_subpaths_from_points(self, points: CubicBezierPath) -> list[CubicSpline]:
-        return list(
-            self._gen_subpaths_from_points(
-                points,
-                lambda n: not self.consider_points_equals(points[n - 1], points[n]),
-            ),
-        )
+        # Vectorized equivalent of splitting wherever
+        # ``not self.consider_points_equals(points[n - 1], points[n])``.
+        nppcc = self.n_points_per_cubic_curve
+        split_indices = self.get_subpath_split_indices_from_points(points).tolist()
+        return [points[i1:i2] for i1, i2 in split_indices if (i2 - i1) >= nppcc]
 
     def gen_subpaths_from_points_2d(
         self, points: CubicBezierPath
