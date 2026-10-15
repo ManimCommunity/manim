@@ -25,3 +25,23 @@ def test_FixedMobjects3D(scene: Scene):
     triangle = Triangle(fill_opacity=1).to_corner(UR)
     [i.fix_orientation() for i in (circ, square)]
     triangle.fix_in_frame()
+
+
+@frames_comparison(
+    renderer_class=OpenGLRenderer,
+    renderer="opengl",
+)
+def test_ArrowTip(scene):
+    arrows = VGroup()
+    for tip_shape in [
+        ArrowCircleFilledTip,
+        ArrowCircleTip,
+        ArrowSquareTip,
+        ArrowSquareFilledTip,
+        ArrowTriangleTip,
+        ArrowTriangleFilledTip,
+        StealthTip,
+    ]:
+        arrows.add(Arrow(tip_shape=tip_shape))
+        arrows.add(DoubleArrow(tip_shape_start=tip_shape, tip_shape_end=tip_shape))
+    scene.add(arrows.arrange_in_grid(7, 2))
