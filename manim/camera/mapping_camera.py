@@ -156,6 +156,13 @@ class SplitScreenCamera(OldMultiCamera):
     """
 
     def __init__(self, left_camera, right_camera, **kwargs):
+        # NOTE: ``Camera.__init__`` is called explicitly (and before ``super()``)
+        # because ``self.pixel_width`` must be set before ``half_width`` is
+        # computed below. Calling ``super().__init__()`` here would dispatch to
+        # ``OldMultiCamera``, which expects positional camera tuples and does not
+        # set ``pixel_width`` — resulting in an ``AttributeError``. The explicit
+        # ``Camera`` init is idempotent, so running it again via
+        # ``OldMultiCamera.__init__`` is harmless.
         Camera.__init__(self, **kwargs)  # to set attributes such as pixel_width
         self.left_camera = left_camera
         self.right_camera = right_camera

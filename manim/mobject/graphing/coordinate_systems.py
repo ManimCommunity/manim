@@ -1940,6 +1940,13 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         tips: bool = True,
         **kwargs: Any,
     ):
+        # NOTE: the two base ``__init__`` calls below are explicit on purpose.
+        # ``Axes(VGroup, CoordinateSystem)`` has two non-cooperative bases, so
+        # ``super().__init__()`` would follow only one branch of the MRO and skip
+        # ``CoordinateSystem.__init__`` entirely, leaving the instance
+        # half-initialized. Do not "simplify" these to ``super().__init__()``
+        # without first making the whole hierarchy cooperate via ``super()``
+        # chaining.
         VGroup.__init__(self, **kwargs)
         CoordinateSystem.__init__(self, x_range, y_range, x_length, y_length)
 
