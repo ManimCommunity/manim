@@ -3487,6 +3487,15 @@ class Mobject:
                 )
             raise ValueError(message)
 
+    def _throw_error_if_no_submobjects(self) -> None:
+        if len(self.submobjects) == 0:
+            caller_class_name = type(self).__name__
+            caller_name = sys._getframe(1).f_code.co_name
+
+            raise Exception(
+                f"Cannot call {caller_class_name}. {caller_name} for a {caller_class_name} with no submobjects"
+            )
+
     # About z-index
     def set_z_index(
         self,
