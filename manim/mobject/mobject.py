@@ -2505,12 +2505,12 @@ class Mobject:
 
     def get_start(self) -> Point3D:
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` starts."""
-        self.throw_error_if_no_points()
+        self._throw_error_if_no_points()
         return np.array(self.points[0])
 
     def get_end(self) -> Point3D:
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` ends."""
-        self.throw_error_if_no_points()
+        self._throw_error_if_no_points()
         return np.array(self.points[-1])
 
     def get_start_and_end(self) -> tuple[Point3D, Point3D]:
@@ -2546,6 +2546,9 @@ class Mobject:
     def has_no_points(self) -> bool:
         """Check if :class:`~.Mobject` *does not* contains points."""
         return not self.has_points()
+
+    def has_submobjects(self) -> bool:
+        return len(self.submobjects) > 0
 
     # Match other mobject properties
 
@@ -3463,28 +3466,50 @@ class Mobject:
         return self
 
     # Errors
-    def throw_error_if_no_points(self) -> None:
-        if self.has_no_points():
-            caller_name = sys._getframe(1).f_code.co_name
-            cls = type(self).__name__
-            message = f"Cannot call {cls}.{caller_name} because {self!r} has no points."
-            pointful_family_members = self.family_members_with_points()
-            if pointful_family_members:
-                count = len(pointful_family_members)
-                message += (
-                    f" Its family contains {count} "
-                    f"mobject{'' if count == 1 else 's'} with points."
-                )
-            raise ValueError(message)
+    def _check_object_has_property(
+        self, predicate: Callable[[], bool], msg: str
+    ) -> None:
+        """Given a predicate, will perform a check to make sure the predicate is satisfied.
+        If it is not satisfied, will throw a ValueError.
+
+        Parameters
+        ----------
+        predicate
+            Used to check that the value we desire is true. If predicate returns false, will
+            throw a ValueError. Generally, predicate is an instance method which takes 0 arguments,
+            (asides from self), and
+        msg
+            The message explaining what property did not hold. Note that it will be appended at
+            the end of an unfinished sentence of the form "Cannot call <class_name>.<method_name>
+            because <obj> ...". The msg value explains what property obj does not have.
+
+        Returns
+        -------
+
+        """
+        if not predicate():
+            # Goes up 2 levels in the stack frame, because this is meant to be called from inside
+            # an error-checking function.
+            caller_name = sys._getframe(2).f_code.co_name
+            class_name = type(self).__name__
+            err_msg = f"Cannot call {class_name}.{caller_name} because {self!r} {msg}"
+            raise ValueError(err_msg)
+
+    def _throw_error_if_no_points(self) -> None:
+        message = "has no points."
+        pointful_family_members = self.family_members_with_points()
+        if pointful_family_members:
+            count = len(pointful_family_members)
+            message += (
+                f" Its family contains {count} "
+                f"mobject{'' if count == 1 else 's'} with points."
+            )
+
+        self._check_object_has_property(self.has_points, message)
 
     def _throw_error_if_no_submobjects(self) -> None:
-        if len(self.submobjects) == 0:
-            caller_class_name = type(self).__name__
-            caller_name = sys._getframe(1).f_code.co_name
-
-            raise Exception(
-                f"Cannot call {caller_class_name}. {caller_name} for a {caller_class_name} with no submobjects"
-            )
+        message = "has no submobjects"
+        self._check_object_has_property(self.has_submobjects, message)
 
     # About z-index
     def set_z_index(
