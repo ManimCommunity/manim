@@ -6,7 +6,8 @@ from unittest.mock import Mock
 import numpy as np
 import pytest
 
-from manim.renderer.opengl_renderer import OpenGLRenderer
+from manim import Square
+from manim.renderer.opengl import OpenGLRenderer
 from tests.assert_utils import assert_file_exists
 from tests.test_scene_rendering.simple_scenes import *
 
@@ -96,7 +97,16 @@ def test_get_frame_with_live_preview_enabled(config, using_opengl_renderer):
     assert renderer.get_pixel_shape()[1] == frame.shape[0]
     assert frame.dtype == np.uint8
     assert frame.flags.c_contiguous
-    renderer.window.close()
+    try:
+        elapsed = renderer.animation_elapsed_time
+        scene.add(Square(fill_opacity=1))
+        image = scene.get_image()
+        assert image.size == renderer.get_pixel_shape()
+        assert not np.array_equal(image, frame)
+        np.testing.assert_array_equal(renderer.get_frame(), frame)
+        assert renderer.animation_elapsed_time == elapsed
+    finally:
+        renderer.window.close()
 
 
 def test_render_without_frame_output_skips_gpu_readback(

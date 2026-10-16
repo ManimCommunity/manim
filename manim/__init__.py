@@ -41,11 +41,6 @@ from .animation.transform import *
 from .animation.transform_matching_parts import *
 from .animation.updaters.mobject_update_utils import *
 from .animation.updaters.update import *
-from .camera.camera import *
-from .camera.mapping_camera import *
-from .camera.moving_camera import *
-from .camera.multi_camera import *
-from .camera.three_d_camera import *
 from .constants import *
 from .manager import *
 from .mobject.frame import *
@@ -83,7 +78,7 @@ from .mobject.types.point_cloud_mobject import *
 from .mobject.types.vectorized_mobject import *
 from .mobject.value_tracker import *
 from .mobject.vector_field import *
-from .renderer.cairo_renderer import *
+from .renderer.cairo import *
 from .scene.moving_camera_scene import *
 from .scene.scene import *
 from .scene.scene_file_writer import *
