@@ -340,6 +340,16 @@ class Mobject:
 
             make use of method chaining.
 
+            Doing the same with multiple animations for a :class:`Mobject` and
+            one of its submobjects, such as with this animation::
+
+                group = VGroup(mobject1, mobject2)
+                self.play(
+                    group.animate.shift(RIGHT),
+                    mobject1.animate.set_opacity(0.5),
+                )
+            is also discouraged.
+
         Keyword arguments that can be passed to :meth:`.Scene.play` can be passed
         directly after accessing ``.animate``, like so::
 
