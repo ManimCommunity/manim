@@ -867,12 +867,13 @@ no frames, so it also does no drawing, no readback, and no presentation: scene s
 does not depend on rendering, which is the same guarantee
 :meth:`~.Manager.evaluate` relies on.
 
-The two cases differ for sound. A reused segment still occupies its span in the
-artifact, so :meth:`~.Scene.add_sound` behaves exactly as in a full render and a
-re-rendered scene keeps its audio. An excluded play is absent from the artifact, whose
-timeline then covers only part of the scene; sound is placed at scene time, so those
-requests are dropped rather than positioned wrongly. Use a full render to audition
-audio.
+The two cases differ in what ends up in the movie: a reused segment keeps its place,
+while an excluded play takes no time in it. The file writer records which scene-time
+intervals the movie shows. :meth:`~.Scene.add_sound` records sounds at scene time, and
+when the movie is assembled, all of them are mixed into one track from which only the
+shown intervals are kept. An excluded play therefore cuts sound like it cuts the video,
+and reusing a segment does not change the audio. Subcaptions and section videos are
+placed through the same intervals.
 
 Whatever the case, the clock follows one rule:
 

@@ -62,7 +62,12 @@ class DummySceneFileWriter(SceneFileWriter):
     ) -> Any:
         pass
 
-    def end_animation(self, allow_write: bool = False) -> None:
+    def end_animation(
+        self,
+        allow_write: bool = False,
+        *,
+        scene_interval: tuple[float, float],
+    ) -> None:
         pass
 
     def combine_to_movie(self) -> None:

@@ -4,12 +4,9 @@ import struct
 import wave
 from pathlib import Path
 
-import pytest
-
 from manim import Scene
 
 
-@pytest.mark.xfail(reason="Not currently implemented for opengl")
 def test_add_sound(using_opengl_renderer, tmpdir):
     # create sound file
     sound_loc = Path(tmpdir, "noise.wav")

@@ -7,6 +7,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
+from tests.helpers.audio import write_wav
+
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = """from manim import *
 class Sample(Scene):
@@ -14,8 +18,14 @@ class Sample(Scene):
         self.next_section("start")
         for _ in range(2):
             self.wait(.3, frozen_frame=False)
-        self.add_sound("missing.wav")
+        self.add_sound("tone.wav")
 """
+
+
+@pytest.fixture(autouse=True)
+def tone(tmp_path):
+    """The sound file the sample scenes add, found through the assets directory."""
+    write_wav(tmp_path / "tone.wav", seconds=0.1)
 
 
 def run_cli(tmp_path, source, output, *extra):
@@ -108,7 +118,7 @@ def test_cli_failure_preserves_previous_report_and_rejects_batches(tmp_path):
     assert run_cli(tmp_path, source, output).returncode == 0
     previous = output.read_bytes()
     source.write_text(
-        SOURCE.replace('self.add_sound("missing.wav")', 'raise RuntimeError("broken")')
+        SOURCE.replace('self.add_sound("tone.wav")', 'raise RuntimeError("broken")')
     )
     failed = run_cli(tmp_path, source, output)
     assert failed.returncode != 0
