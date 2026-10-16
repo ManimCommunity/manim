@@ -823,6 +823,9 @@ under the same frame-rate configuration, for example::
 Changing ``config.frame_rate`` between construction and playback raises an error:
 the animation steps must use the same rate as the saved video encoding settings.
 
+To run the animation steps without drawing frames or producing media, see
+:doc:`evaluation`.
+
 The manager first checks whether to skip rendering this play call. For example,
 ``-s`` requests only the final image, and ``-n`` selects a range of play calls.
 Section settings can also request skipped rendering. This sets
@@ -859,7 +862,17 @@ frame by frame. It is *excluded* when rendering is explicitly skipped -- by ``-n
 by :meth:`~.Scene.next_section` with ``skip_animations=True``, or by still output
 (``-s``) -- and it is *cached* when a matching partial movie file already exists.
 In both cases the manager takes a single evaluation step instead of stepping every
-frame, and records ``None`` as the cache key for an excluded play.
+frame, and records ``None`` as the cache key for an excluded play. A shortcut produces
+no frames, so it also does no drawing, no readback, and no presentation: scene state
+does not depend on rendering, which is the same guarantee
+:meth:`~.Manager.evaluate` relies on.
+
+The two cases differ for sound. A reused segment still occupies its span in the
+artifact, so :meth:`~.Scene.add_sound` behaves exactly as in a full render and a
+re-rendered scene keeps its audio. An excluded play is absent from the artifact, whose
+timeline then covers only part of the scene; sound is placed at scene time, so those
+requests are dropped rather than positioned wrongly. Use a full render to audition
+audio.
 
 Whatever the case, the clock follows one rule:
 

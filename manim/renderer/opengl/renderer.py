@@ -170,6 +170,7 @@ class OpenGLRenderer(_RendererExecutionView):
         requested. Further calls activate the same context. Use and close these
         resources on the thread that first opened them.
         """
+        self._ensure_raster_allowed()
         self._ensure_not_closed()
         if self._context is not None:
             if isinstance(self._context.mglo, moderngl.InvalidObject):
@@ -718,6 +719,7 @@ class OpenGLRenderer(_RendererExecutionView):
         An existing context is used on its rendering thread. Otherwise, ordinary
         mobjects are drawn with a temporary context and renderer.
         """
+        self._ensure_raster_allowed()
         if (
             self._context_thread is not None
             and threading.get_ident() != self._context_thread

@@ -49,6 +49,13 @@ class _RendererExecutionView:
         self._pending_execution = None
         return state
 
+    def _ensure_raster_allowed(self) -> None:
+        owner = self._execution_owner
+        if owner is not None and owner._evaluating:
+            raise RuntimeError(
+                "Raster/GPU requests are unavailable during no-raster evaluation."
+            )
+
     @property
     def time(self) -> float:
         return self._execution_state.time

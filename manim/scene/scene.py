@@ -1453,6 +1453,10 @@ class Scene:
 
     def interactive_embed(self) -> None:
         """Like embed(), but allows for screen interaction."""
+        if self.manager is not None and self.manager._evaluating:
+            raise RuntimeError(
+                "Interactive preview is unavailable during no-raster evaluation."
+            )
         assert isinstance(self.camera, OpenGLCamera)
         assert isinstance(self.renderer, OpenGLRenderer)
         if not self.check_interactive_embed_is_valid():
@@ -1536,6 +1540,10 @@ class Scene:
     # from IPython.terminal.embed import InteractiveShellEmbed
 
     def interact(self, shell: Any, keyboard_thread: threading.Thread) -> None:
+        if self.manager is not None and self.manager._evaluating:
+            raise RuntimeError(
+                "Interactive preview is unavailable during no-raster evaluation."
+            )
         assert isinstance(self.renderer, OpenGLRenderer)
         event_handler = RerunSceneHandler(self.queue)
         file_observer = Observer()
@@ -1615,6 +1623,10 @@ class Scene:
             self.renderer.window.destroy()
 
     def embed(self) -> None:
+        if self.manager is not None and self.manager._evaluating:
+            raise RuntimeError(
+                "Interactive preview is unavailable during no-raster evaluation."
+            )
         assert isinstance(self.renderer, OpenGLRenderer)
         if not self.session_spec.presentation.live_preview:
             logger.warning("Called embed() while no live preview window is available.")
