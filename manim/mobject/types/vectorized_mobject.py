@@ -950,7 +950,7 @@ class VMobject(Mobject):
         :class:`VMobject`
             ``self``
         """
-        self.throw_error_if_no_points()
+        self._throw_error_if_no_points()
         new_points = [handle1, handle2, anchor]
         if self.has_new_path_started():
             self.append_points(new_points)
@@ -1038,7 +1038,7 @@ class VMobject(Mobject):
         if self.has_new_path_started():
             self.add_line_to(new_anchor)
         else:
-            self.throw_error_if_no_points()
+            self._throw_error_if_no_points()
             last_h2, last_a2 = self.points[-2:]
             last_tangent = last_a2 - last_h2
             handle1 = last_a2 + last_tangent
@@ -1084,7 +1084,7 @@ class VMobject(Mobject):
             The VMobject itself, after appending the straight lines to its
             path.
         """
-        self.throw_error_if_no_points()
+        self._throw_error_if_no_points()
 
         points = np.asarray(points).reshape(-1, self.dim)
         num_points = points.shape[0]
@@ -1659,7 +1659,7 @@ class VMobject(Mobject):
         if alpha < 0 or alpha > 1:
             raise ValueError(f"Alpha {alpha} not between 0 and 1.")
 
-        self.throw_error_if_no_points()
+        self._throw_error_if_no_points()
         if alpha == 1:
             return self.points[-1]
 
@@ -1706,7 +1706,7 @@ class VMobject(Mobject):
         :exc:`Exception`
             If the :class:`VMobject` has no points.
         """
-        self.throw_error_if_no_points()
+        self._throw_error_if_no_points()
 
         # Iterate over each bezier curve that the ``VMobject`` is composed of, checking
         # if the point lies on that curve. If it does not lie on that curve, add
@@ -2857,12 +2857,12 @@ class CurvesAsSubmobjects(VGroup):
         submobjs_with_pts = tuple(
             part for part in self.submobjects if part.has_points()
         )
-        if len(submobjs_with_pts) == 0:
-            caller_name = sys._getframe(1).f_code.co_name
-            caller_class_name = type(self).__name__
-            raise Exception(
-                f"Cannot call {caller_class_name}. {caller_name} for a {caller_class_name} whose submobjects have no points"
-            )
+        err_msg = "does not have any submobjects with points."
+
+        def submobjs_have_points():
+            return len(submobjs_with_pts) != 0
+
+        self._check_object_has_property(submobjs_have_points, err_msg)
         return submobjs_with_pts
 
 
