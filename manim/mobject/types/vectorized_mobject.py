@@ -1524,6 +1524,25 @@ class VMobject(Mobject):
 
         return norms
 
+    def _get_curve_length_pieces(
+        self, sample_points: int | None = None
+    ) -> npt.NDArray[ManimFloat]:
+        """Like :meth:`get_nth_curve_length_pieces`, but for all curves at once.
+        Returns an array of shape ``(num_curves, sample_points - 1)``.
+        """
+        if sample_points is None:
+            sample_points = 10
+
+        nppcc = self.n_points_per_cubic_curve
+        num_curves = self.get_num_curves()
+        curves = self.points[: nppcc * num_curves].reshape(num_curves, nppcc, 3)
+        t = np.linspace(0, 1, sample_points).reshape(-1, 1, 1)
+        points = bezier(curves.swapaxes(0, 1))(t)
+        norms = np.linalg.norm(points[1:] - points[:-1], axis=2)
+        # Contiguous rows are summed in the same order as a single curve's pieces,
+        # which keeps the lengths identical to get_nth_curve_length().
+        return np.ascontiguousarray(norms.T)
+
     def get_nth_curve_length(
         self,
         n: int,
@@ -1663,21 +1682,19 @@ class VMobject(Mobject):
         if alpha == 1:
             return self.points[-1]
 
-        curves_and_lengths = tuple(self.get_curve_functions_with_lengths())
+        lengths = self._get_curve_length_pieces().sum(axis=1)
+        cumulative_lengths = np.cumsum(lengths)
 
-        target_length = alpha * sum(length for _, length in curves_and_lengths)
-        current_length = 0
+        target_length = alpha * sum(lengths)
 
-        for curve, length in curves_and_lengths:
-            if current_length + length >= target_length:
-                if length != 0:
-                    residue = (target_length - current_length) / length
-                else:
-                    residue = 0
-
-                return curve(residue)
-
-            current_length += length
+        # The first curve whose end reaches the target. NaN lengths never do.
+        reached = np.flatnonzero(cumulative_lengths >= target_length)
+        if len(reached) > 0:
+            n = reached[0]
+            length = lengths[n]
+            current_length = cumulative_lengths[n - 1] if n > 0 else 0
+            residue = (target_length - current_length) / length if length != 0 else 0
+            return self.get_nth_curve_function(n)(residue)
         raise Exception(
             "Not sure how you reached here, please file a bug report at https://github.com/ManimCommunity/manim/issues/new/choose"
         )
@@ -1716,12 +1733,11 @@ class VMobject(Mobject):
         # Then, divide ``target_length`` by the total arc length of the shape to get
         # the proportion along the ``VMobject`` the point is at.
 
-        num_curves = self.get_num_curves()
-        total_length = self.get_arc_length()
+        lengths = self._get_curve_length_pieces().sum(axis=1)
+        total_length = sum(lengths)
         target_length = 0
-        for n in range(num_curves):
+        for n, length in enumerate(lengths):
             control_points = self.get_nth_curve_points(n)
-            length = self.get_nth_curve_length(n)
             proportions_along_bezier = proportions_along_bezier_curve_for_point(
                 point,
                 control_points,
@@ -1807,12 +1823,7 @@ class VMobject(Mobject):
         float
             The length of the :class:`VMobject`.
         """
-        return sum(
-            length
-            for _, length in self.get_curve_functions_with_lengths(
-                sample_points=sample_points_per_curve,
-            )
-        )
+        return sum(self._get_curve_length_pieces(sample_points_per_curve).sum(axis=1))
 
     # Alignment
     def align_points(self, vmobject: VMobject) -> Self:
@@ -3002,9 +3013,9 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
 
             if equal_lengths:
                 # calculate the entire length by adding up short line-pieces
-                norms = np.array(0)
-                for k in range(vmobject.get_num_curves()):
-                    norms = np.append(norms, vmobject.get_nth_curve_length_pieces(k))
+                norms = np.concatenate(
+                    [[0], vmobject._get_curve_length_pieces().ravel()]
+                )
                 # add up length-pieces in array form
                 length_vals = np.cumsum(norms)
                 ref_points = np.linspace(0, 1, length_vals.size)
