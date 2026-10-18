@@ -24,6 +24,26 @@ from manim import (
 from manim import CoordinateSystem as CS
 
 
+@pytest.mark.parametrize("renderer", ["cairo", "opengl"])
+def test_axes_initializes_coordinate_system_subclass(config, renderer):
+    config.renderer = renderer
+    calls = []
+
+    class CustomCoordinateSystem(CS):
+        def __init__(self, **kwargs):
+            calls.append("coordinate system")
+            super().__init__(**kwargs)
+
+    class CustomAxes(Axes, CustomCoordinateSystem):
+        pass
+
+    axes = CustomAxes(x_range=[-2, 4], y_range=[-1, 3], x_length=6, y_length=4)
+    assert calls == ["coordinate system"]
+    assert axes.x_range == [-2, 4, 1]
+    assert axes.y_range == [-1, 3, 1]
+    np.testing.assert_allclose(axes.p2c(axes.c2p(1, 2)), [1, 2])
+
+
 def test_log_axis_coordinate_round_trip():
     ax = Axes(
         x_range=[0, 3],

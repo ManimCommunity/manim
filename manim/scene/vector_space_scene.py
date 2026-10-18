@@ -626,8 +626,7 @@ class LinearTransformationScene(VectorScene):
 
         class LinearTransformationSceneExample(LinearTransformationScene):
             def __init__(self, **kwargs):
-                LinearTransformationScene.__init__(
-                    self,
+                super().__init__(
                     show_coordinates=True,
                     leave_ghost_vectors=True,
                     **kwargs

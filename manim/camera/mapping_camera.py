@@ -89,6 +89,11 @@ class OldMultiCamera(Camera):
     """
 
     def __init__(self, *cameras_with_start_positions, **kwargs):
+        self._set_cameras(*cameras_with_start_positions)
+        super().__init__(**kwargs)
+
+    def _set_cameras(self, *cameras_with_start_positions):
+        """Register already-sized cameras without reinitializing the parent."""
         self.shifted_cameras = [
             DictAsObject(
                 {
@@ -103,7 +108,6 @@ class OldMultiCamera(Camera):
             )
             for camera_with_start_positions in cameras_with_start_positions
         ]
-        super().__init__(**kwargs)
 
     def capture_mobjects(self, mobjects, **kwargs):
         for shifted_camera in self.shifted_cameras:
@@ -156,15 +160,18 @@ class SplitScreenCamera(OldMultiCamera):
     """
 
     def __init__(self, left_camera, right_camera, **kwargs):
-        Camera.__init__(self, **kwargs)  # to set attributes such as pixel_width
+        super().__init__(**kwargs)
         self.left_camera = left_camera
         self.right_camera = right_camera
 
         half_width = math.ceil(self.pixel_width / 2)
-        for camera in [self.left_camera, self.right_camera]:
-            camera.reset_pixel_shape(camera.pixel_height, half_width)
+        for camera, width in (
+            (self.left_camera, half_width),
+            (self.right_camera, self.pixel_width - half_width),
+        ):
+            camera.reset_pixel_shape(camera.pixel_height, width)
 
-        super().__init__(
+        self._set_cameras(
             (left_camera, (0, 0)),
             (right_camera, (0, half_width)),
         )

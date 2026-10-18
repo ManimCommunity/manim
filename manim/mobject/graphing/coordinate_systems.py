@@ -72,6 +72,10 @@ if TYPE_CHECKING:
 class CoordinateSystem:
     r"""Abstract base class for Axes and NumberPlane.
 
+    When combined with a mobject base, place this class before that base so
+    cooperative initialization can consume coordinate-system arguments before
+    forwarding the remaining styling arguments to the mobject.
+
     Examples
     --------
     .. manim:: CoordSysExample
@@ -126,7 +130,9 @@ class CoordinateSystem:
         x_length: float | None = None,
         y_length: float | None = None,
         dimension: int = 2,
+        **kwargs: Any,
     ):
+        super().__init__(**kwargs)
         self.dimension = dimension
 
         default_step = 1
@@ -1873,7 +1879,7 @@ class CoordinateSystem:
     def _origin_shift(axis_range: Sequence[float]) -> float: ...
 
 
-class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
+class Axes(CoordinateSystem, VGroup, metaclass=ConvertToOpenGL):
     """Creates a set of axes.
 
     Parameters
@@ -1940,8 +1946,13 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         tips: bool = True,
         **kwargs: Any,
     ):
-        VGroup.__init__(self, **kwargs)
-        CoordinateSystem.__init__(self, x_range, y_range, x_length, y_length)
+        super().__init__(
+            x_range=x_range,
+            y_range=y_range,
+            x_length=x_length,
+            y_length=y_length,
+            **kwargs,
+        )
 
         self.axis_config = {
             "include_tip": tips,

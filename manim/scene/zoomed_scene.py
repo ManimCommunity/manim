@@ -19,8 +19,7 @@ Examples
 
     class ChangingZoomScale(ZoomedScene):
         def __init__(self, **kwargs):
-            ZoomedScene.__init__(
-                self,
+            super().__init__(
                 zoom_factor=0.3,
                 zoomed_display_height=1,
                 zoomed_display_width=3,
