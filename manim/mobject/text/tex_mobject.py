@@ -692,9 +692,7 @@ class BulletedList(Tex):
             tex_environment=tex_environment,
             **kwargs,
         )
-        bullet_color = kwargs.get("color")
-        if bullet_color is None:
-            bullet_color = self.color
+        bullet_color = self.color
         for part in self:
             dot = MathTex("\\cdot").set_color(bullet_color).scale(self.dot_scale_factor)
             dot.next_to(part[0], LEFT, buff=dot_buff)
