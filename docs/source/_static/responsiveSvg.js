@@ -10,12 +10,25 @@ window.addEventListener("load", function () {
             document.body && document.body.getAttribute("data-theme");
         if (bodyTheme === "dark") return true;
         if (bodyTheme === "light") return false;
+        // Furo writes data-theme="auto" explicitly once the user has touched the
+        // toggle; in that case (or when the attribute is absent entirely) the
+        // effective scheme follows the OS preference.
+        if (bodyTheme === "auto") {
+            return window.matchMedia("(prefers-color-scheme: dark)").matches;
+        }
 
-        const stored = localStorage.getItem("theme");
+        // data-theme not set yet (e.g. before Furo's own JS runs) — fall back
+        // to the stored choice, then the OS preference. localStorage can throw
+        // in Safari private mode or sandboxed iframes, so guard the read.
+        let stored = null;
+        try {
+            stored = localStorage.getItem("theme");
+        } catch (e) {
+            // ignore SecurityError, fall through to matchMedia
+        }
         if (stored === "dark") return true;
         if (stored === "light") return false;
 
-        // auto (or unset) -> follow the OS preference.
         return window.matchMedia("(prefers-color-scheme: dark)").matches;
     }
 
@@ -34,12 +47,16 @@ window.addEventListener("load", function () {
     }
 
     const styleElements = [];
+    const pendingDiagrams = [];
     for (const diagram of diagrams) {
         let style = injectStyle(diagram);
         if (!style) {
+            pendingDiagrams.push(diagram);
             diagram.addEventListener("load", function () {
                 style = injectStyle(diagram);
                 if (style) {
+                    const idx = pendingDiagrams.indexOf(diagram);
+                    if (idx !== -1) pendingDiagrams.splice(idx, 1);
                     styleElements.push(style);
                     setColorScheme();
                 }
@@ -50,6 +67,17 @@ window.addEventListener("load", function () {
     }
 
     function setColorScheme() {
+        // Retry injection for diagrams whose contentDocument was not ready at
+        // window.load time (e.g. the object's load event already fired before
+        // this script ran, so the listener attached above will never trigger).
+        for (let i = pendingDiagrams.length - 1; i >= 0; i--) {
+            const style = injectStyle(pendingDiagrams[i]);
+            if (style) {
+                styleElements.push(style);
+                pendingDiagrams.splice(i, 1);
+            }
+        }
+
         let colors, additions = "";
         if (getDark()) {
             // Dark
