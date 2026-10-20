@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from manim import *
 from manim.utils.testing.frames_comparison import frames_comparison
 
@@ -39,6 +41,28 @@ def test_CustomDoubleArrow(scene):
         tip_shape_end=ArrowSquareFilledTip,
     )
     scene.add(a)
+
+
+@frames_comparison
+def test_ArrowTip(scene):
+    arrows = VGroup()
+    for tip_shape in [
+        ArrowCircleFilledTip,
+        ArrowCircleTip,
+        ArrowSquareTip,
+        ArrowSquareFilledTip,
+        ArrowTriangleTip,
+        ArrowTriangleFilledTip,
+        StealthTip,
+    ]:
+        arrows.add(Arrow(tip_shape=tip_shape))
+        arrows.add(DoubleArrow(tip_shape_start=tip_shape, tip_shape_end=tip_shape))
+    scene.add(arrows.arrange_in_grid(7, 2))
+
+
+def test_ArrowTipIsAbstract():
+    with pytest.raises(TypeError):
+        ArrowTip()
 
 
 @frames_comparison
