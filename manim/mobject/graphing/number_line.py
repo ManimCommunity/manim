@@ -67,7 +67,7 @@ class NumberLine(Line):
         from :class:`.ArrowTip`.
     include_numbers
         Whether to add numbers to the tick marks. The number of decimal places is determined
-        by the step size, this default can be overridden by ``decimal_number_config``.
+        by the starting value and step size. This default can be overridden by ``decimal_number_config``.
     scaling
         The way the ``x_range`` is value is scaled, i.e. :class:`~.LogBase` for a logarithmic numberline. Defaults to :class:`~.LinearBase`.
     font_size
@@ -187,7 +187,10 @@ class NumberLine(Line):
 
         if decimal_number_config is None:
             decimal_number_config = {
-                "num_decimal_places": self._decimal_places_from_step(x_range[2]),
+                "num_decimal_places": max(
+                    self._decimal_places_from_value(x_range[0]),
+                    self._decimal_places_from_value(x_range[2]),
+                ),
             }
 
         # turn into a NumPy array to scale by just applying the function
@@ -677,11 +680,10 @@ class NumberLine(Line):
         return label_constructor(str(label_tex), **kwargs)
 
     @staticmethod
-    def _decimal_places_from_step(step: float) -> int:
-        step_str = str(step)
-        if "." not in step_str:
-            return 0
-        return len(step_str.split(".")[-1])
+    def _decimal_places_from_value(value: float) -> int:
+        """Count decimal places using 15 significant digits to suppress float round-off."""
+        mantissa, _, exponent = f"{value:.15g}".partition("e")
+        return max(0, len(mantissa.partition(".")[2]) - int(exponent or 0))
 
     def __matmul__(self, other: float) -> Point3D:
         return self.n2p(other)
