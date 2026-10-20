@@ -2557,9 +2557,6 @@ class Mobject:
         """Check if :class:`~.Mobject` *does not* contains points."""
         return not self.has_points()
 
-    def has_submobjects(self) -> bool:
-        return len(self.submobjects) > 0
-
     # Match other mobject properties
 
     def match_color(self, mobject: Mobject) -> Self:
@@ -3475,51 +3472,18 @@ class Mobject:
             sm1.points = np.array(sm2.points)
         return self
 
-    # Errors
-    def _check_object_has_property(
-        self, predicate: Callable[[], bool], msg: str
-    ) -> None:
-        """Given a predicate, will perform a check to make sure the predicate is satisfied.
-        If it is not satisfied, will throw a ValueError.
-
-        Parameters
-        ----------
-        predicate
-            Used to check that the value we desire is true. If predicate returns false, will
-            throw a ValueError. Generally, predicate is an instance method which takes 0 arguments,
-            (asides from self), and
-        msg
-            The message explaining what property did not hold. Note that it will be appended at
-            the end of an unfinished sentence of the form "Cannot call <class_name>.<method_name>
-            because <obj> ...". The msg value explains what property obj does not have.
-
-        Returns
-        -------
-
-        """
-        if not predicate():
-            # Goes up 2 levels in the stack frame, because this is meant to be called from inside
-            # an error-checking function.
-            caller_name = sys._getframe(2).f_code.co_name
-            class_name = type(self).__name__
-            err_msg = f"Cannot call {class_name}.{caller_name} because {self!r} {msg}"
-            raise ValueError(err_msg)
-
     def _throw_error_if_no_points(self) -> None:
-        message = "has no points."
-        pointful_family_members = self.family_members_with_points()
-        if pointful_family_members:
-            count = len(pointful_family_members)
-            message += (
-                f" Its family contains {count} "
-                f"mobject{'' if count == 1 else 's'} with points."
-            )
-
-        self._check_object_has_property(self.has_points, message)
-
-    def _throw_error_if_no_submobjects(self) -> None:
-        message = "has no submobjects"
-        self._check_object_has_property(self.has_submobjects, message)
+        if self.has_no_points():
+            error_causing_frame = sys._getframe(1)
+            error_reason = f"{self!r} has no points"
+            pointful_family_members = self.family_members_with_points()
+            if pointful_family_members:
+                count = len(pointful_family_members)
+                error_reason += (
+                    f". Its family contains {count} "
+                    f"mobject{'' if count == 1 else 's'} with points"
+                )
+            raise InvalidObjectUsage(self, error_causing_frame, error_reason)
 
     # About z-index
     def set_z_index(
@@ -3671,6 +3635,22 @@ class _UpdaterBuilder:
             return self
 
         return add_updater
+
+
+class InvalidObjectUsage(ValueError):
+    """Used to indicate that an operation (usually a method) was attempted on
+    an object which does not have the necessary properties for the operation to
+    be valid.
+    """
+
+    def __init__(self, obj: object, method: Callable | types.FrameType, reason: str):
+        if isinstance(method, types.FrameType):
+            method_name = method.f_code.co_name
+        else:
+            method_name = method.__name__
+        class_name = type(obj).__name__
+        error_message = f"Cannot call {class_name}.{method_name} because {reason}."
+        super().__init__(error_message)
 
 
 def override_animate(
