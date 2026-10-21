@@ -459,3 +459,15 @@ def test_scene_add_sound_delegates_to_manager_and_honors_skip_state(dry_run):
     scene.add_sound("skipped.wav")
 
     file_writer.add_sound.assert_not_called()
+
+
+def test_scene_stop_sound_delegates_to_manager_even_when_skipping(dry_run):
+    scene = Scene()
+    file_writer = Mock()
+    scene.renderer.file_writer = file_writer
+    scene.renderer.time = 2.5
+    scene.renderer.skip_animations = True
+
+    scene.stop_sound()
+
+    file_writer.stop_sound.assert_called_once_with(2.5)

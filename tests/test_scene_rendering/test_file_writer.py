@@ -1,4 +1,5 @@
 import sys
+import wave
 from pathlib import Path
 
 import av
@@ -154,6 +155,46 @@ def test_scene_with_non_raw_or_wav_audio(config, manim_caplog):
 
     SceneWithMP3().render()
     assert "click.mp3 to .wav" in manim_caplog.text
+
+
+def _audio_samples(container):
+    frames = list(container.decode(audio=0))
+    sample_rate = frames[0].sample_rate
+    samples = np.concatenate(
+        [np.abs(frame.to_ndarray()).max(axis=0) for frame in frames]
+    )
+    return samples, sample_rate
+
+
+def test_audio_does_not_extend_video_and_stop_sound(config, tmp_path):
+    sound_path = tmp_path / "tone.wav"
+    rate = 44100
+    t = np.arange(4 * rate) / rate
+    tone = (8000 * np.sin(2 * np.pi * 440 * t)).astype(np.int16)
+    with wave.open(str(sound_path), "w") as f:
+        f.setparams((1, 2, rate, 0, "NONE", "not compressed"))
+        f.writeframes(tone.tobytes())
+
+    class StopSoundScene(Scene):
+        def construct(self):
+            self.add_sound(sound_path)  # 4 seconds long
+            self.wait(1)
+            self.stop_sound()
+            self.wait(1)
+
+    config.media_dir = tmp_path
+    config.output_file = "stop_sound"
+    StopSoundScene().render()
+
+    video_path = next(tmp_path.rglob("stop_sound.mp4"))
+    with av.open(video_path) as container:
+        # the 4 second sound must not lengthen the 2 second video
+        assert container.duration / av.time_base == pytest.approx(2, abs=0.05)
+        samples, sample_rate = _audio_samples(container)
+
+    assert samples[: int(0.9 * sample_rate)].max() > 0.1
+    # allow for some codec ringing right after the cut
+    assert samples[int(1.1 * sample_rate) :].max() < 0.01
 
 
 @pytest.mark.slow
