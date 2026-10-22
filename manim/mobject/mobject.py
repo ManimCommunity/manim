@@ -11,7 +11,6 @@ import itertools as it
 import math
 import operator as op
 import random
-import sys
 import types
 import warnings
 from collections.abc import Callable, Iterable, Iterator, MutableSet, Sequence
@@ -3474,16 +3473,17 @@ class Mobject:
 
     def _throw_error_if_no_points(self) -> None:
         if self.has_no_points():
-            error_causing_frame = sys._getframe(1)
-            error_reason = f"{self!r} has no points"
+            error_reason = (
+                f"{self!r} has no points, but a method which requires points was called"
+            )
             pointful_family_members = self.family_members_with_points()
             if pointful_family_members:
                 count = len(pointful_family_members)
                 error_reason += (
                     f". Its family contains {count} "
-                    f"mobject{'' if count == 1 else 's'} with points"
+                    f"mobject{'' if count == 1 else 's'} with points."
                 )
-            raise InvalidObjectUsage(self, error_causing_frame, error_reason)
+            raise ValueError(error_reason)
 
     # About z-index
     def set_z_index(
@@ -3635,22 +3635,6 @@ class _UpdaterBuilder:
             return self
 
         return add_updater
-
-
-class InvalidObjectUsage(ValueError):
-    """Used to indicate that an operation (usually a method) was attempted on
-    an object which does not have the necessary properties for the operation to
-    be valid.
-    """
-
-    def __init__(self, obj: object, method: Callable | types.FrameType, reason: str):
-        if isinstance(method, types.FrameType):
-            method_name = method.f_code.co_name
-        else:
-            method_name = method.__name__
-        class_name = type(obj).__name__
-        error_message = f"Cannot call {class_name}.{method_name} because {reason}."
-        super().__init__(error_message)
 
 
 def override_animate(

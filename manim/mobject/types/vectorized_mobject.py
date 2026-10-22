@@ -22,7 +22,7 @@ from PIL.Image import Image
 
 from manim import config
 from manim.constants import *
-from manim.mobject.mobject import InvalidObjectUsage, Mobject
+from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
@@ -2831,14 +2831,12 @@ class CurvesAsSubmobjects(VGroup):
         if alpha < 0 or alpha > 1:
             raise ValueError(f"Alpha {alpha} not between 0 and 1.")
 
-        submobjs_with_pts = self._get_submobjects_with_points()
+        submobjs_with_pts = tuple(
+            part for part in self.submobjects if part.has_points()
+        )
 
         if len(submobjs_with_pts) == 0:
-            raise InvalidObjectUsage(
-                self,
-                VGroup.point_from_proportion,
-                "does not have any submobjects with points",
-            )
+            raise ValueError(f"{self!r} does not have any submobjects with points")
 
         if alpha == 1:
             return submobjs_with_pts[-1].points[-1]
@@ -2858,12 +2856,6 @@ class CurvesAsSubmobjects(VGroup):
                 return part.point_from_proportion(residue)
 
             current_length += part_length
-
-    def _get_submobjects_with_points(self):
-        submobjs_with_pts = tuple(
-            part for part in self.submobjects if part.has_points()
-        )
-        return submobjs_with_pts
 
 
 class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
