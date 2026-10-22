@@ -1665,7 +1665,8 @@ class VMobject(Mobject):
 
         curves_and_lengths = tuple(self.get_curve_functions_with_lengths())
 
-        target_length = alpha * sum(length for _, length in curves_and_lengths)
+        total_length = sum(length for _, length in curves_and_lengths)
+        target_length = alpha * total_length
         current_length = 0
 
         for curve, length in curves_and_lengths:
@@ -1678,8 +1679,13 @@ class VMobject(Mobject):
                 return curve(residue)
 
             current_length += length
-        raise Exception(
-            "Not sure how you reached here, please file a bug report at https://github.com/ManimCommunity/manim/issues/new/choose"
+        raise ValueError(
+            f"Could not determine the point at proportion {alpha} "
+            f"(target arc length {target_length} of total {total_length}). "
+            "This usually happens when the curve contains invalid (NaN or "
+            "infinite) points, which make the arc length undefined. Check "
+            "that the function generating the points does not evaluate to "
+            "NaN or infinity."
         )
 
     def proportion_from_point(
