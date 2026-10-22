@@ -1408,8 +1408,7 @@ def color_gradient(
         raise ValueError("Expected 1 or more reference colors. Got 0 colors.")
     if num_colors == 1:
         return parsed_colors * length_of_output
-
-    rgbs = [color.to_rgb() for color in parsed_colors]
+    rgbas = [color.to_rgba() for color in parsed_colors]
     alphas = np.linspace(0, (num_colors - 1), length_of_output)
     floors = alphas.astype("int")
     alphas_mod1 = alphas % 1
@@ -1417,7 +1416,7 @@ def color_gradient(
     alphas_mod1[-1] = 1
     floors[-1] = num_colors - 2
     return [
-        rgb_to_color((rgbs[i] * (1 - alpha)) + (rgbs[i + 1] * alpha))
+        rgba_to_color((rgbas[i] * (1 - alpha)) + (rgbas[i + 1] * alpha))
         for i, alpha in zip(floors, alphas_mod1, strict=True)
     ]
 
