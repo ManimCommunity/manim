@@ -474,3 +474,167 @@ class Variable(VMobject, metaclass=ConvertToOpenGL):
 
         super().__init__(**kwargs)
         self.add(self.label, self.value)
+
+from manim import *
+
+# Format Instagram Reel 1080x1920
+config.pixel_width = 1080
+config.pixel_height = 1920
+config.frame_width = 9
+config.frame_height = 16
+config.background_color = "#101018"
+
+ORANGE = "#FFA726"
+BLUE = "#5DADE2"
+PINK = "#FF4FA3"
+WHITE_MATH = "#F5F5F5"
+
+class EquationReel(Scene):
+    def construct(self):
+
+        # Les étapes de l'équation
+        equations = [
+            r"-\sqrt{32}+2\sqrt{2}+3\sqrt{50}",
+            r"-\sqrt{16\times2}+2\sqrt{2}+3\sqrt{25\times2}",
+            r"-4\sqrt{2}+2\sqrt{2}+15\sqrt{2}",
+            r"(-4+2+15)\sqrt{2}",
+            r"13\sqrt{2}"
+        ]
+
+        positions = [5.5, 3.2, 0.9, -1.5, -4.0]
+
+        steps = []
+
+        for i, eq in enumerate(equations):
+            formula = MathTex(
+                eq,
+                font_size=48,
+                color=WHITE_MATH
+            )
+
+            formula.set_width(
+                min(formula.width, 7.8)
+            )
+
+            formula.move_to(
+                UP * positions[i]
+            )
+
+            steps.append(formula)
+
+        # ETAPE 1 : Expression initiale
+        self.play(
+            Write(steps[0]),
+            run_time=2.5
+        )
+        self.wait(1)
+
+        # ETAPE 2 : Décomposition
+        arrow1 = Arrow(
+            steps[0].get_bottom() + DOWN * 0.15,
+            steps[1].get_top() + UP * 0.15,
+            buff=0.1,
+            color=BLUE,
+            stroke_width=5
+        )
+
+        self.play(
+            GrowArrow(arrow1),
+            run_time=0.7
+        )
+        self.play(
+            Write(steps[1]),
+            run_time=2.5
+        )
+
+        # Coloration des facteurs
+        self.play(
+            steps[1].animate.set_color_by_tex(
+                r"\sqrt{2}", ORANGE
+            ),
+            run_time=0.8
+        )
+        self.wait(1)
+
+        # ETAPE 3 : Simplification
+        arrow2 = Arrow(
+            steps[1].get_bottom() + DOWN * 0.15,
+            steps[2].get_top() + UP * 0.15,
+            buff=0.1,
+            color=BLUE
+        )
+
+        self.play(GrowArrow(arrow2))
+        self.play(
+            Write(steps[2]),
+            run_time=2.5
+        )
+
+        # Mise en évidence des racines
+        self.play(
+            steps[2].animate.set_color_by_tex(
+                r"\sqrt{2}", ORANGE
+            ),
+            run_time=1
+        )
+        self.wait(1)
+
+        # ETAPE 4 : Factorisation
+        arrow3 = Arrow(
+            steps[2].get_bottom() + DOWN * 0.15,
+            steps[3].get_top() + UP * 0.15,
+            buff=0.1,
+            color=BLUE
+        )
+
+        self.play(GrowArrow(arrow3))
+        self.play(
+            Write(steps[3]),
+            run_time=2
+        )
+
+        self.play(
+            steps[3].animate.set_color_by_tex(
+                r"\sqrt{2}", ORANGE
+            )
+        )
+        self.wait(1)
+
+        # ETAPE 5 : Résultat final
+        arrow4 = Arrow(
+            steps[3].get_bottom() + DOWN * 0.15,
+            steps[4].get_top() + UP * 0.15,
+            buff=0.1,
+            color=BLUE
+        )
+
+        self.play(GrowArrow(arrow4))
+
+        self.play(
+            Write(steps[4]),
+            run_time=2
+        )
+
+        # Cadre rose autour du résultat
+        final_box = SurroundingRectangle(
+            steps[4],
+            color=PINK,
+            buff=0.3,
+            corner_radius=0.15,
+            stroke_width=6
+        )
+
+        self.play(
+            Create(final_box),
+            run_time=1.2
+        )
+
+        self.play(
+            Flash(
+                steps[4],
+                color=PINK,
+                flash_radius=1.5
+            )
+        )
+
+        self.wait(3)
