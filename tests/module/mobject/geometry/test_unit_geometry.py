@@ -231,6 +231,15 @@ def test_line_set_points_by_ends_uses_passed_path_arc(initial_path_arc):
     np.testing.assert_allclose(line.points, expected.points)
 
 
+def test_line_set_points_by_ends_uses_passed_path_arc_for_buff():
+    line = Line(LEFT, RIGHT)
+
+    line.set_points_by_ends(2 * LEFT, 2 * RIGHT, buff=0.5, path_arc=60 * DEGREES)
+
+    expected = Line(2 * LEFT, 2 * RIGHT, buff=0.5, path_arc=60 * DEGREES)
+    np.testing.assert_allclose(line.points, expected.points)
+
+
 def test_Circle_point_at_angle():
     from manim import TAU
 
