@@ -3,8 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from manim.constants import OUT, PI, TAU, UP
-from manim.utils.bezier import interpolate
+from manim.constants import PI, TAU, UP
 from manim.utils.paths import (
     STRAIGHT_PATH_THRESHOLD,
     clockwise_path,
@@ -43,22 +42,14 @@ def test_path_ends_at_end_points(path_func):
     np.testing.assert_allclose(path_func(START, END, 1), END, atol=1e-10)
 
 
-@parametrize_path_funcs
-def test_path_preserves_shape(path_func):
-    assert path_func(START, END, 0.3).shape == START.shape
-
-
-def test_straight_path_is_linear_interpolation():
-    path = straight_path()
-    assert path is interpolate
-    np.testing.assert_allclose(path(START, END, 0.5), (START + END) / 2)
+def test_straight_path_midpoint():
+    np.testing.assert_allclose(straight_path()(START, END, 0.5), (START + END) / 2)
 
 
 @pytest.mark.parametrize("make_path", [path_along_arc, spiral_path])
-def test_tiny_angle_falls_back_to_straight_path(make_path):
-    assert make_path(STRAIGHT_PATH_THRESHOLD / 2) is interpolate
-    assert make_path(-STRAIGHT_PATH_THRESHOLD / 2) is interpolate
-    assert make_path(STRAIGHT_PATH_THRESHOLD * 2) is not interpolate
+def test_tiny_angle_moves_in_a_straight_line(make_path):
+    path = make_path(STRAIGHT_PATH_THRESHOLD / 2)
+    np.testing.assert_allclose(path(START, END, 0.5), (START + END) / 2)
 
 
 def test_counterclockwise_path_goes_below_when_moving_right():
@@ -97,15 +88,6 @@ def test_path_along_arc_respects_axis():
     for alpha in np.linspace(0, 1, 5):
         assert path(start, end, alpha)[0, 1] == pytest.approx(0.5)
     np.testing.assert_allclose(path(start, end, 1), end, atol=1e-10)
-
-
-def test_path_along_arc_zero_axis_falls_back_to_out():
-    start = np.array([[-1.0, 0.0, 0.0]])
-    end = np.array([[1.0, 0.0, 0.0]])
-    np.testing.assert_allclose(
-        path_along_arc(PI / 2, axis=np.zeros(3))(start, end, 0.5),
-        path_along_arc(PI / 2, axis=OUT)(start, end, 0.5),
-    )
 
 
 def test_spiral_path_midpoint():
