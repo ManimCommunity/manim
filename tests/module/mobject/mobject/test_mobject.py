@@ -7,6 +7,7 @@ import pytest
 
 from manim import (
     DL,
+    DOWN,
     DR,
     PI,
     RIGHT,
@@ -419,6 +420,44 @@ def test_arrange_direction():
         > s1.get_center()[1]
     )
     assert np.allclose(s3.get_center(), [0, 1, 0])
+
+
+def test_arrange_animated():
+    s1 = Square()
+    s2 = Circle().move_to([0, 0.5, 0])
+    s3 = Triangle()
+    s4 = Star()
+
+    group = VGroup(s1, s2, s3, s4)
+
+    # pass by kwarg
+    anim = group.animate.arrange(DOWN, 0.5, True, reference=s2).build()
+    anim.begin()
+    anim.interpolate(1)
+    anim.finish()
+    assert (
+        s4.get_center()[1]
+        < s3.get_center()[1]
+        < s2.get_center()[1]
+        < s1.get_center()[1]
+    )
+    assert np.allclose(s2.get_center(), [0, 0.5, 0])
+
+    group2 = VGroup(s1, s2, s3, s4)
+    s3_old_pos = s3.get_center()
+    # pass by arg
+    anim2 = group2.animate.arrange(RIGHT, 0.5, True, s3).build()
+
+    anim2.begin()
+    anim2.interpolate(1)
+    anim2.finish()
+    assert (
+        s4.get_center()[0]
+        > s3.get_center()[0]
+        > s2.get_center()[0]
+        > s1.get_center()[0]
+    )
+    assert np.allclose(s3.get_center(), s3_old_pos)
 
 
 # Tests for methods which provide Mobject's sequence interface
