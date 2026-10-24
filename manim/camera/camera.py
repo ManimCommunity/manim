@@ -718,51 +718,34 @@ class Camera:
 
         ctx.new_path()
 
-        # Subpath boundaries are computed by VMobject; a split occurs wherever
-        # one curve's end anchor is not close to the next curve's start anchor.
-        split_indices = vmobject.get_subpath_split_indices_from_points(points, n_dims=2)
-        if len(split_indices) == 0:
-            return self
+        # Plain Python floats are much faster to index than a NumPy array,
+        # and the paths drawn here are usually only a few curves long.
+        xs = points[:, 0].tolist()
+        ys = points[:, 1].tolist()
 
-        # Precompute flat xy array for fast indexing
-        pts_xy = points[:, :2].ravel()  # [x0, y0, x1, y1, ...]
+        def points_equal(i: int, j: int) -> bool:
+            return (xs[i] == xs[j] and ys[i] == ys[j]) or (
+                vmobject.consider_points_equals_2d((xs[i], ys[i]), (xs[j], ys[j]))
+            )
 
-        # Local references for speed (avoid attribute lookups in loop)
-        _move_to = ctx.move_to
-        _curve_to = ctx.curve_to
-        _new_sub_path = ctx.new_sub_path
-        _close_path = ctx.close_path
+        # Split into subpaths wherever one curve's end anchor is not close to
+        # the next curve's start anchor.
+        splits = [i for i in range(nppcc, len(xs), nppcc) if not points_equal(i - 1, i)]
 
-        for start_idx, end_idx in split_indices:
-            start_idx = int(start_idx)
-            end_idx = int(end_idx)
-            if end_idx - start_idx < nppcc:
+        for start, end in it.pairwise([0, *splits, len(xs)]):
+            if end - start < nppcc:
                 continue
 
-            _new_sub_path()
-            # move_to first point
-            base = start_idx * 2
-            _move_to(pts_xy[base], pts_xy[base + 1])
+            ctx.new_sub_path()
+            ctx.move_to(xs[start], ys[start])
 
-            # Emit all cubic curves in this subpath.
             # Points are: [anchor, handle1, handle2, anchor, handle1, handle2, anchor, ...]
-            # Each curve uses indices 1,2,3 relative to the start of each group of 4.
-            for i in range(start_idx, end_idx - nppcc + 1, nppcc):
-                b = (i + 1) * 2  # handle1
-                _curve_to(
-                    pts_xy[b],
-                    pts_xy[b + 1],
-                    pts_xy[b + 2],
-                    pts_xy[b + 3],
-                    pts_xy[b + 4],
-                    pts_xy[b + 5],
-                )
+            for i in range(start + 1, end - nppcc + 2, nppcc):
+                ctx.curve_to(xs[i], ys[i], xs[i + 1], ys[i + 1], xs[i + 2], ys[i + 2])
 
             # Close if first and last points are equal.
-            if vmobject.consider_points_equals_2d(
-                points[start_idx], points[end_idx - 1]
-            ):
-                _close_path()
+            if points_equal(start, end - 1):
+                ctx.close_path()
 
         return self
 
