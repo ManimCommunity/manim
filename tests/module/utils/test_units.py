@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from manim import PI, X_AXIS, Y_AXIS, Z_AXIS
+from manim import DOWN, LEFT, PI, X_AXIS, Y_AXIS, Z_AXIS
 from manim.utils.unit import Degrees, Munits, Percent, Pixels
 
 
@@ -23,8 +23,12 @@ def test_units(config):
     np.testing.assert_allclose(50 * Percent(X_AXIS), config.frame_width / 2)
     np.testing.assert_allclose(50 * Percent(Y_AXIS), config.frame_height / 2)
 
-    # The length of the Z axis is not defined
-    with pytest.raises(NotImplementedError):
+    # Negative X and Y axes should use frame width and height
+    np.testing.assert_allclose(50 * Percent(LEFT), config.frame_width / 2)
+    np.testing.assert_allclose(50 * Percent(DOWN), config.frame_height / 2)
+
+    # Unsupported axes should raise ValueError
+    with pytest.raises(ValueError):
         Percent(Z_AXIS)
 
     # Degrees should convert from degrees to radians
