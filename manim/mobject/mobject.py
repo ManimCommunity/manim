@@ -11,7 +11,6 @@ import itertools as it
 import math
 import operator as op
 import random
-import sys
 import types
 import warnings
 from collections.abc import Callable, Iterable, Iterator, MutableSet, Sequence
@@ -2515,12 +2514,12 @@ class Mobject:
 
     def get_start(self) -> Point3D:
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` starts."""
-        self.throw_error_if_no_points()
+        self._throw_error_if_no_points()
         return np.array(self.points[0])
 
     def get_end(self) -> Point3D:
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` ends."""
-        self.throw_error_if_no_points()
+        self._throw_error_if_no_points()
         return np.array(self.points[-1])
 
     def get_start_and_end(self) -> tuple[Point3D, Point3D]:
@@ -3472,20 +3471,19 @@ class Mobject:
             sm1.points = np.array(sm2.points)
         return self
 
-    # Errors
-    def throw_error_if_no_points(self) -> None:
+    def _throw_error_if_no_points(self) -> None:
         if self.has_no_points():
-            caller_name = sys._getframe(1).f_code.co_name
-            cls = type(self).__name__
-            message = f"Cannot call {cls}.{caller_name} because {self!r} has no points."
+            error_reason = (
+                f"{self!r} has no points, but a method which requires points was called"
+            )
             pointful_family_members = self.family_members_with_points()
             if pointful_family_members:
                 count = len(pointful_family_members)
-                message += (
-                    f" Its family contains {count} "
+                error_reason += (
+                    f". Its family contains {count} "
                     f"mobject{'' if count == 1 else 's'} with points."
                 )
-            raise ValueError(message)
+            raise ValueError(error_reason)
 
     # About z-index
     def set_z_index(
