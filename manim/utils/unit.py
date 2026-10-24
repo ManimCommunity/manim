@@ -20,12 +20,16 @@ class _PixelUnits:
 
 class Percent:
     def __init__(self, axis: Vector3D) -> None:
-        if np.array_equal(axis, constants.X_AXIS):
+        if np.array_equal(axis, constants.X_AXIS) or np.array_equal(
+            axis, -constants.X_AXIS
+        ):
             self.length = config.frame_width
-        if np.array_equal(axis, constants.Y_AXIS):
+        elif np.array_equal(axis, constants.Y_AXIS) or np.array_equal(
+            axis, -constants.Y_AXIS
+        ):
             self.length = config.frame_height
-        if np.array_equal(axis, constants.Z_AXIS):
-            raise NotImplementedError("length of Z axis is undefined")
+        else:
+            raise ValueError("Percent axis must be X_AXIS or Y_AXIS.")
 
     def __mul__(self, val: float) -> float:
         return val / 100 * self.length
