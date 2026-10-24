@@ -573,8 +573,7 @@ class OpenGLRenderer:
         self.pressed_keys: set[int] = set()
         self.window: Window | None = None
         self.path_to_texture_id: dict[str, int] = {}
-        # Keep in-memory texture images alive so that the ids in their keys
-        # cannot be reused by other images.
+        # In-memory images that textures were created from, by texture key.
         self._texture_images: dict[str, Image.Image] = {}
         self.background_color = config["background_color"]
 
@@ -790,11 +789,7 @@ class OpenGLRenderer:
         int
             The OpenGL texture ID corresponding to the given source.
         """
-        if isinstance(path, Image.Image):
-            key = f"<image {id(path)}>"
-            self._texture_images.setdefault(key, path)
-        else:
-            key = str(path)
+        key = f"<image {id(path)}>" if isinstance(path, Image.Image) else str(path)
 
         if key not in self.path_to_texture_id:
             self._create_texture(path, key)
@@ -846,6 +841,10 @@ class OpenGLRenderer:
         texture.swizzle = swizzle
         texture.use(location=tid)
         self.path_to_texture_id[key] = tid
+        if isinstance(source, Image.Image):
+            # Keep the image alive, so that its id (part of the key) cannot be
+            # reused by another image while the texture exists.
+            self._texture_images[key] = source
         return tid
 
     def update_skipping_status(self) -> None:
