@@ -9,12 +9,15 @@ from manim import (
     DL,
     DR,
     PI,
+    RIGHT,
     UL,
+    UP,
     UR,
     Circle,
     Mobject,
     Rectangle,
     Square,
+    Star,
     Triangle,
     VGroup,
     VMobject,
@@ -352,6 +355,70 @@ def test_apply_matrix_about_vertex_view():
     # The first vertex should remain in the same position (within numerical precision)
     transformed_vertices = triangle.get_vertices()
     np.testing.assert_allclose(transformed_vertices[0], first_vertex, atol=1e-6)
+
+
+def test_arrange_reference():
+    square1 = Square(side_length=1)
+    square2 = Square(side_length=1)
+    square3 = Square(side_length=1)
+
+    group = VGroup(square1, square2, square3)
+
+    original_pos1 = square1.get_center()
+    original_pos2 = square2.get_center()
+    original_pos3 = square3.get_center()
+
+    group.arrange(RIGHT, 0.5, False, square3)
+
+    # Test reference hasn't moved but everything else has
+    assert not np.allclose(original_pos1, square1.get_center())
+    assert not np.allclose(original_pos2, square2.get_center())
+    assert np.allclose(original_pos3, square3.get_center())
+
+    # Test the buffers are correct (1.5 to account for shape side length)
+    assert np.isclose(1.5, abs(square1.get_center()[0] - square2.get_center()[0]))
+    assert np.isclose(1.5, abs(square2.get_center()[0] - square3.get_center()[0]))
+
+
+def test_arrange_centering():
+    square1 = Square()
+    square2 = Square()
+    square3 = Square()
+
+    group = VGroup(square1, square2, square3).set_x(10).set_y(10)
+
+    original_pos3 = square3.get_center()
+
+    # Test that group is not centered when given a reference
+    group.arrange(RIGHT, 0.5, True, square3)
+    assert group.get_center()[0] != 0
+    assert group.get_center()[1] != 0
+    assert np.allclose(original_pos3, square3.get_center())
+
+    # Test that group is centered when not given a reference
+    group.arrange(RIGHT, 0.5, True)
+    assert group.get_center()[0] == 0
+    assert group.get_center()[1] == 0
+
+
+def test_arrange_direction():
+    s1 = Square()
+    s2 = Circle()
+    s3 = Triangle().move_to([0, 1, 0])
+    s4 = Star()
+
+    group = VGroup(s1, s2, s3, s4)
+
+    group.arrange(UP, 0.5, True, reference=s3)
+
+    # Since s3 is the reference, it should not move, and because it's arranged up, it should be increasing from s1
+    assert (
+        s4.get_center()[1]
+        > s3.get_center()[1]
+        > s2.get_center()[1]
+        > s1.get_center()[1]
+    )
+    assert np.allclose(s3.get_center(), [0, 1, 0])
 
 
 # Tests for methods which provide Mobject's sequence interface
