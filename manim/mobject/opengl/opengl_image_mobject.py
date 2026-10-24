@@ -19,6 +19,9 @@ if TYPE_CHECKING:
 
 __all__ = ["OpenGLImageMobject"]
 
+# Maximum side length (in pixels) up to which image arrays are upscaled.
+_MAX_UPSCALED_SIZE = 4096
+
 
 class OpenGLImageMobject(OpenGLTexturedSurface):
     def __init__(
@@ -76,12 +79,13 @@ class OpenGLImageMobject(OpenGLTexturedSurface):
         if isinstance(image_file, (str, Path)):
             return super().get_image_from_file(image_file, image_mode)
         else:
-            return (
-                Image.fromarray(image_file.astype("uint8"))
-                .convert(image_mode)
-                .resize(
-                    image_file.shape[:2]
-                    * 200,  # assumption of 200 ppmu (pixels per manim unit) would suffice
-                    resample=self.resampling_algorithm,
-                )
+            image = Image.fromarray(image_file.astype("uint8")).convert(image_mode)
+            # Upscale the array so that the resampling algorithm, not the
+            # nearest-neighbor texture filter, determines how pixels are
+            # interpolated. Limit the size of the result for larger arrays.
+            width, height = image.size
+            scale = max(1, min(200, _MAX_UPSCALED_SIZE // max(width, height)))
+            return image.resize(
+                (width * scale, height * scale),
+                resample=self.resampling_algorithm,
             )

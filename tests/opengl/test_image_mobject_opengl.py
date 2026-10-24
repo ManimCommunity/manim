@@ -40,3 +40,21 @@ def test_opengl_image_mobject_from_file(using_opengl_renderer, tmp_path):
     np.testing.assert_array_equal(upper, RED)
     np.testing.assert_array_equal(lower, BLUE)
 
+
+def test_opengl_image_mobject_from_array(using_opengl_renderer):
+    upper, lower = _render_and_sample(
+        OpenGLImageMobject(_red_over_blue(4, 6), height=4)
+    )
+
+    np.testing.assert_array_equal(upper, RED)
+    np.testing.assert_array_equal(lower, BLUE)
+
+
+def test_opengl_image_mobject_array_upscaling(using_opengl_renderer):
+    small = OpenGLImageMobject(_red_over_blue(4, 6))
+    texture = small.get_image_from_file(_red_over_blue(4, 6), "RGBA")
+    assert texture.size == (6 * 200, 4 * 200)
+
+    large = OpenGLImageMobject(_red_over_blue(1000, 1500))
+    texture = large.get_image_from_file(_red_over_blue(1000, 1500), "RGBA")
+    assert texture.size == (1500 * 2, 1000 * 2)
