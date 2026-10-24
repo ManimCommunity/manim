@@ -3605,6 +3605,16 @@ class _AnimationBuilder:
                 "Method chaining is currently not supported for overridden animations",
             )
 
+        def get_reference_idx(reference: Mobject) -> int:
+            try:
+                ind = self.mobject.submobjects.index(reference)
+            except ValueError:
+                message = (
+                    f"Invalid reference: {reference.name} was not found in the group"
+                )
+                raise ValueError(message) from None
+            return ind
+
         def update_target(*method_args: Any, **method_kwargs: Any) -> _AnimationBuilder:
             if has_overridden_animation:
                 self.overridden_animation = method._override_animate(
@@ -3630,23 +3640,21 @@ class _AnimationBuilder:
                     # search kwargs for the reference:
                     if "reference" in method_kwargs:
                         reference = method_kwargs.get("reference")
-
-                        if reference is not None:
-                            ind = self.mobject.submobjects.index(reference)
-                            if self.mobject.target is not None:
-                                copied_reference = self.mobject.target.submobjects[ind]
-                                target_kwargs["reference"] = copied_reference
+                        if (
+                            isinstance(reference, Mobject)
+                            and self.mobject.target is not None
+                        ):
+                            ind = get_reference_idx(reference)
+                            copied_reference = self.mobject.target.submobjects[ind]
+                            target_kwargs["reference"] = copied_reference
 
                     # if reference isn't in kwargs, search args:
                     if reference is None:
                         for i in range(len(method_args)):
                             if isinstance(method_args[i], Mobject):
-                                reference = method_args[i]
                                 arg_ind = i
-
-                                reference_ind = self.mobject.submobjects.index(
-                                    reference
-                                )
+                                reference = method_args[i]
+                                reference_ind = get_reference_idx(reference)
                                 if self.mobject.target is not None:
                                     copied_reference = self.mobject.target.submobjects[
                                         reference_ind
