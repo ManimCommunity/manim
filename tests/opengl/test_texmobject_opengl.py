@@ -9,7 +9,7 @@ from manim import MathTex, SingleStringMathTex, Tex
 
 def test_MathTex(config, using_opengl_renderer):
     MathTex("a^2 + b^2 = c^2")
-    assert Path(config.media_dir, "Tex", "e4be163a00cf424f.svg").exists()
+    assert Path(config.media_dir, "Tex", "05bb0a41ed575f00.svg").exists()
 
 
 def test_SingleStringMathTex(config, using_opengl_renderer):
@@ -28,7 +28,7 @@ def test_double_braces_testing(using_opengl_renderer, text_input, length_sub):
 
 def test_tex(config, using_opengl_renderer):
     Tex("The horse does not eat cucumber salad.")
-    assert Path(config.media_dir, "Tex", "c3945e23e546c95a.svg").exists()
+    assert Path(config.media_dir, "Tex", "5384b41741a246bd.svg").exists()
 
 
 def test_tex_whitespace_arg(using_opengl_renderer):

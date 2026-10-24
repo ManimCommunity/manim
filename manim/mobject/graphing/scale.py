@@ -11,7 +11,7 @@ __all__ = ["LogBase", "LinearBase"]
 from manim.mobject.text.numbers import Integer
 
 if TYPE_CHECKING:
-    from typing import Callable
+    from collections.abc import Callable
 
     from manim.mobject.types.vectorized_mobject import VMobject
 

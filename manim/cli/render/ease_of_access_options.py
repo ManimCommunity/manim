@@ -20,13 +20,18 @@ ease_of_access_options = option_group(
         "-p",
         "--preview",
         is_flag=True,
-        help="Preview the Scene's animation. OpenGL does a live preview in a "
-        "popup window. Cairo opens the rendered video file in the system "
-        "default media player.",
+        help="Open the completed media artifact after rendering.",
         default=None,
     ),
     option(
-        "-f",
+        "-l",
+        "--live-preview",
+        is_flag=True,
+        help="Display frames in a renderer-provided live preview. With "
+        "--format=auto, no media file is written.",
+        default=None,
+    ),
+    option(
         "--show_in_file_browser",
         is_flag=True,
         help="Show the output file in the file browser.",

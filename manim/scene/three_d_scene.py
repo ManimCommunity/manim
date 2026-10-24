@@ -97,7 +97,7 @@ class ThreeDScene(Scene):
         if zoom is not None:
             self.renderer.camera.set_zoom(zoom)
         if frame_center is not None:
-            self.renderer.camera._frame_center.move_to(frame_center)
+            self.renderer.camera.frame_center = frame_center
 
     def begin_ambient_camera_rotation(self, rate: float = 0.02, about: str = "theta"):
         """
@@ -428,8 +428,8 @@ class ThreeDScene(Scene):
             which have the same meaning as the parameters in set_camera_orientation.
         """
         config = dict(
-            self.default_camera_orientation_kwargs,
-        )  # Where doe this come from?
+            self.default_angled_camera_orientation_kwargs,
+        )
         config.update(kwargs)
         self.set_camera_orientation(**config)
 

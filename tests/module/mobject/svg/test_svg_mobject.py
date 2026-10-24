@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 from manim import *
 from tests.helpers.path_utils import get_svg_resource
 
@@ -54,6 +56,50 @@ def test_stroke_overrides_color():
         stroke_color=expected_color,
     )
     assert svg.stroke_color.to_hex() == expected_color
+
+
+def test_empty_path_is_ignored(tmp_path: Path):
+    svg_path = tmp_path / "empty_path.svg"
+    svg_path.write_text(
+        '<svg xmlns="http://www.w3.org/2000/svg">'
+        '<path d=""/><path d="M 0 0 L 1 1"/>'
+        "</svg>",
+        encoding="utf-8",
+    )
+
+    svg = SVGMobject(svg_path)
+
+    assert len(svg.submobjects) == 1
+    assert svg.submobjects[0].has_points()
+
+
+def test_none_stroke_and_fill_are_not_drawn(tmp_path: Path):
+    svg_path = tmp_path / "none_paint.svg"
+    svg_path.write_text(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">'
+        '<g stroke="#000" stroke-width="4" fill="#f00">'
+        '<rect x="10" y="10" width="80" height="80"/>'
+        '<rect x="30" y="30" width="40" height="40" stroke="none"/>'
+        '<path d="M 40 40 L 60 40 L 60 60 Z" stroke="none" stroke-width="3"/>'
+        '<rect x="45" y="45" width="10" height="10" fill="none"/>'
+        '<path d="M 45 45 L 55 45 L 55 55 Z" fill="none"/>'
+        "</g>"
+        "</svg>",
+        encoding="utf-8",
+    )
+
+    outer, stroke_none_rect, stroke_none_path, fill_none_rect, fill_none_path = (
+        SVGMobject(svg_path).submobjects
+    )
+
+    assert outer.get_stroke_width() == 4
+    assert outer.get_fill_opacity() == 1
+    assert stroke_none_rect.get_stroke_width() == 0
+    assert stroke_none_path.get_stroke_width() == 0
+    assert stroke_none_rect.get_fill_opacity() == 1
+    assert fill_none_rect.get_fill_opacity() == 0
+    assert fill_none_path.get_fill_opacity() == 0
+    assert fill_none_rect.get_stroke_width() == 4
 
 
 def test_single_path_turns_into_sequence_of_points():

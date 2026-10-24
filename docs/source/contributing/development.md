@@ -196,13 +196,13 @@ that Manim still works as intended and that the code you added
 sticks to our coding conventions.
 
 - **Code style**: We use the code style imposed
-  by [Black](https://black.readthedocs.io/en/stable/), [isort](https://pycqa.github.io/isort/)
-  and [flake8](https://flake8.pycqa.org/en/latest/). The GitHub pipeline
-  makes sure that the (Python) files changed in your pull request
-  also adhere to this code style. If this step of the pipeline fails,
-  fix your code formatting automatically by running `black <file or directory>` and `isort <file or directory>`.
-  To fix code style problems, run `flake8 <file or directory>` for a style report, and then fix the problems
-  manually that were detected by `flake8`.
+  by [ruff](https://docs.astral.sh/ruff/). Every time you commit your changes
+  and when you create a PR based on your committed work, all new and modified
+  (Python) files will be checked for adherence to this code style. You can check
+  your changes and fix any problems yourself before committing by running
+  `ruff check --fix <file or directory>` and `ruff format <file or directory>`.
+  If you want to check your changes without auto-fixing anything, run
+  `ruff check <file or directory>` and `ruff format --check <file or directory>`.
 - **Tests**: The pipeline runs Manim's test suite on different operating systems
   (the latest versions of Ubuntu, macOS, and Windows) for different versions of Python.
   The test suite consists of two different kinds of tests: integration tests

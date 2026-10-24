@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["ManimBanner"]
 
-from typing import Any
+from typing import Any, Self
 
 import svgelements as se
 
@@ -184,7 +184,7 @@ class ManimBanner(VGroup):
         # and thus not yet added to the submobjects of self.
         self.anim = anim
 
-    def scale(self, scale_factor: float, **kwargs: Any) -> ManimBanner:
+    def scale(self, scale_factor: float, **kwargs: Any) -> Self:
         """Scale the banner by the specified scale factor.
 
         Parameters

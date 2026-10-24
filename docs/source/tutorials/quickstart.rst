@@ -195,7 +195,7 @@ Positioning ``Mobject``\s
 
 Next, let's go over some basic techniques for positioning ``Mobject``\s.
 
-1. Open ``scene.py``, and add the following code snippet below the ``SquareToCircle`` method:
+1. Open ``scene.py``, and add the following code snippet below the ``SquareToCircle`` class:
 
 .. code-block:: python
 

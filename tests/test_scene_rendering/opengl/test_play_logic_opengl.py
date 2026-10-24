@@ -93,10 +93,13 @@ def test_t_values_with_cached_data(using_temp_opengl_config):
     assert scene.update_to_time.call_count == 10
 
 
-@pytest.mark.xfail(reason="Not currently handled correctly for opengl")
-def test_t_values_save_last_frame(config, using_temp_opengl_config):
-    """Test that there is only one t value handled when only saving the last frame"""
-    config.save_last_frame = True
+@pytest.mark.parametrize(
+    "still_config",
+    [{"save_last_frame": True}, {"format": "png"}],
+)
+def test_t_values_save_last_frame(config, using_temp_opengl_config, still_config):
+    """Still output fast-forwards each play and only evaluates its final state."""
+    config.update(still_config)
     scene = SquareToCircle()
     scene.update_to_time = Mock()
     scene.render()

@@ -3,6 +3,9 @@ from __future__ import annotations
 from contextlib import redirect_stdout
 from io import StringIO
 
+import pytest
+
+from manim import RED, WHITE
 from manim.mobject.text.text_mobject import MarkupText, Text
 
 
@@ -32,3 +35,52 @@ def test_font_warnings():
 
     # check random string (should be warning)
     assert warning_printed("Manim!" * 3, warn_missing_font=True)
+
+
+def test_gen_chars_raises_clear_error_on_glyph_mismatch():
+    """``_gen_chars`` should raise a clear, actionable error instead of an
+    opaque ``IndexError`` when a font renders fewer glyphs than there are
+    non-space characters. This happens when a font implements some of its
+    ligatures (e.g. programming ligatures like ``<=``) through an OpenType
+    feature that ``disable_ligatures`` doesn't disable, such as ``calt``
+    (see issue #3237). This test simulates that mismatch directly, without
+    depending on any particular font being installed.
+    """
+    text = Text("ab", disable_ligatures=True)
+    # Simulate a font that merged "ab" into a single ligature glyph.
+    text.submobjects = text.submobjects[:1]
+    with pytest.raises(ValueError, match="glyph"):
+        text._gen_chars()
+
+
+def test_gen_chars_handles_spaces_with_disable_ligatures():
+    """``_gen_chars`` must not raise for ordinary text containing spaces when
+    ``disable_ligatures=True``. Spaces are rendered as their own glyph, so the
+    number of submobjects legitimately exceeds the number of non-space
+    characters; this should not be mistaken for a glyph/char mismatch.
+    """
+    text = Text("fl ligature", disable_ligatures=True)
+    chars = text._gen_chars()
+    # One entry per character of the (whitespace-stripped) indexing text.
+    assert len(chars) == len(text.text)
+
+
+def test_text_color_attribute_applied():
+    """``Text``/``MarkupText`` should apply the ``color`` argument to the mobject itself.
+
+    Regression test for #4817: the color was baked into the SVG glyphs but not
+    propagated to the :class:`~.SVGMobject`, so ``get_color()`` reported black
+    regardless of the ``color`` argument.
+    """
+    assert Text("test", color=WHITE).get_color() == WHITE
+    assert Text("test", color=RED).get_color() == RED
+    assert MarkupText("test", color=RED).get_color() == RED
+    # the default color is white
+    assert Text("test").get_color() == WHITE
+
+
+def test_text_color_does_not_break_t2c():
+    """Per-character colors from ``t2c`` should still override the default color."""
+    text = Text("ab", t2c={"a": RED})
+    assert text.get_color() == WHITE
+    assert [c.get_color() for c in text.chars] == [RED, WHITE]

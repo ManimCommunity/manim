@@ -8,16 +8,14 @@ from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 __all__ = ["NumberLine", "UnitInterval"]
 
 
-from collections.abc import Callable, Iterable, Sequence
-from typing import TYPE_CHECKING
+from collections.abc import Iterable, Sequence
+from typing import TYPE_CHECKING, Any, cast
 
 if TYPE_CHECKING:
-    from typing import Any
-
-    from typing_extensions import Self
+    from typing import Self
 
     from manim.mobject.geometry.tips import ArrowTip
-    from manim.typing import Point3D, Point3DLike, Vector3D
+    from manim.typing import ManimTextLabel, Point3D, Point3DLike, Vector3D
 
 import numpy as np
 
@@ -25,9 +23,9 @@ from manim import config
 from manim.constants import *
 from manim.mobject.geometry.line import Line
 from manim.mobject.graphing.scale import LinearBase, _ScaleBase
-from manim.mobject.text.numbers import DecimalNumber, Integer
-from manim.mobject.text.tex_mobject import MathTex, Tex
-from manim.mobject.text.text_mobject import Text
+from manim.mobject.text.numbers import DecimalNumber
+from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex, Tex
+from manim.mobject.text.typst_mobject import MathTypst, Typst
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.bezier import interpolate
 from manim.utils.config_ops import merge_dicts_recursively
@@ -163,7 +161,7 @@ class NumberLine(Line):
         include_numbers: bool = False,
         font_size: float = 36,
         label_direction: Point3DLike = DOWN,
-        label_constructor: type[MathTex] = MathTex,
+        label_constructor: type[ManimTextLabel] = MathTex,
         scaling: _ScaleBase = LinearBase(),
         line_to_number_buff: float = MED_SMALL_BUFF,
         decimal_number_config: dict | None = None,
@@ -264,6 +262,7 @@ class NumberLine(Line):
                         zip(
                             tick_range,
                             custom_labels,
+                            strict=True,
                         )
                     ),
                 )
@@ -285,7 +284,7 @@ class NumberLine(Line):
     ) -> Self:
         return self.rotate(angle, axis, about_point=self.n2p(number), **kwargs)
 
-    def add_ticks(self) -> None:
+    def add_ticks(self) -> Self:
         """Adds ticks to the number line. Ticks can be accessed after creation
         via ``self.ticks``.
         """
@@ -301,6 +300,7 @@ class NumberLine(Line):
             ticks.add(self.get_tick(x, size))
         self.add(ticks)
         self.ticks = ticks
+        return self
 
     def get_tick(self, x: float, size: float | None = None) -> Line:
         """Generates a tick and positions it along the number line.
@@ -395,19 +395,24 @@ class NumberLine(Line):
         val = interpolate(self.get_start(), self.get_end(), alphas)
         return val
 
-    def point_to_number(self, point: Sequence[float]) -> float:
+    def point_to_number(
+        self, point: Sequence[float] | Sequence[Sequence[float]] | np.ndarray
+    ) -> float | np.ndarray:
         """Accepts a point with respect to the scene and returns
-        a float along the number line.
+        a value along the number line, or an array of values for multiple points.
+
+        The configured scaling is applied, reversing :meth:`number_to_point`.
 
         Parameters
         ----------
         point
-            A sequence of values consisting of ``(x_coord, y_coord, z_coord)``.
+            A sequence of values consisting of ``(x_coord, y_coord, z_coord)``,
+            or a sequence of such points.
 
         Returns
         -------
-        float
-            A float representing a value along the number line.
+        float or np.ndarray
+            The value along the number line, or an array for multiple points.
 
         Examples
         --------
@@ -425,16 +430,23 @@ class NumberLine(Line):
         point = np.asarray(point)
         start, end = self.get_start_and_end()
         unit_vect = normalize(end - start)
-        proportion: float = np.dot(point - start, unit_vect) / np.dot(
+        proportion: float | np.ndarray = np.dot(point - start, unit_vect) / np.dot(
             end - start, unit_vect
         )
-        return interpolate(self.x_min, self.x_max, proportion)
+        return cast(
+            float | np.ndarray,
+            self.scaling.function(
+                interpolate(self.x_range[0], self.x_range[1], proportion)
+            ),
+        )
 
     def n2p(self, number: float | np.ndarray) -> Point3D:
         """Abbreviation for :meth:`~.NumberLine.number_to_point`."""
         return self.number_to_point(number)
 
-    def p2n(self, point: Point3DLike) -> float:
+    def p2n(
+        self, point: Sequence[float] | Sequence[Sequence[float]] | np.ndarray
+    ) -> float | np.ndarray:
         """Abbreviation for :meth:`~.NumberLine.point_to_number`."""
         return self.point_to_number(point)
 
@@ -451,7 +463,7 @@ class NumberLine(Line):
         direction: Vector3D | None = None,
         buff: float | None = None,
         font_size: float | None = None,
-        label_constructor: type[MathTex] | None = None,
+        label_constructor: type[SingleStringMathTex] | None = None,
         **number_config: dict[str, Any],
     ) -> VMobject:
         """Generates a positioned :class:`~.DecimalNumber` mobject
@@ -488,7 +500,7 @@ class NumberLine(Line):
         if font_size is None:
             font_size = self.font_size
         if label_constructor is None:
-            label_constructor = self.label_constructor
+            label_constructor = cast(type[SingleStringMathTex], self.label_constructor)
 
         num_mob = DecimalNumber(
             x,
@@ -516,7 +528,7 @@ class NumberLine(Line):
         x_values: Iterable[float] | None = None,
         excluding: Iterable[float] | None = None,
         font_size: float | None = None,
-        label_constructor: type[MathTex] | None = None,
+        label_constructor: type[SingleStringMathTex] | None = None,
         **kwargs: Any,
     ) -> Self:
         """Adds :class:`~.DecimalNumber` mobjects representing their position
@@ -548,7 +560,7 @@ class NumberLine(Line):
             font_size = self.font_size
 
         if label_constructor is None:
-            label_constructor = self.label_constructor
+            label_constructor = cast(type[SingleStringMathTex], self.label_constructor)
 
         numbers = VGroup()
         for x in x_values:
@@ -572,7 +584,7 @@ class NumberLine(Line):
         direction: Point3DLike | None = None,
         buff: float | None = None,
         font_size: float | None = None,
-        label_constructor: type[MathTex] | None = None,
+        label_constructor: type[ManimTextLabel] | None = None,
     ) -> Self:
         """Adds specifically positioned labels to the :class:`~.NumberLine` using a ``dict``.
         The labels can be accessed after creation via ``self.labels``.
@@ -610,14 +622,18 @@ class NumberLine(Line):
             # TODO: remove this check and ability to call
             # this method via CoordinateSystem.add_coordinates()
             # must be explicitly called
-            if isinstance(label, str) and label_constructor is MathTex:
-                label = Tex(label)
+            if isinstance(label, str):
+                if label_constructor is MathTex:
+                    label = Tex(label)
+                elif label_constructor is MathTypst:
+                    label = Typst(label)
+                else:
+                    label = self._create_label_tex(label, label_constructor)
             else:
                 label = self._create_label_tex(label, label_constructor)
 
             if hasattr(label, "font_size"):
-                assert isinstance(label, (MathTex, Tex, Text, Integer)), label
-                label.font_size = font_size
+                cast(Any, label).font_size = font_size
             else:
                 raise AttributeError(f"{label} is not compatible with add_labels.")
             label.next_to(self.number_to_point(x), direction=direction, buff=buff)
@@ -630,7 +646,7 @@ class NumberLine(Line):
     def _create_label_tex(
         self,
         label_tex: str | float | VMobject,
-        label_constructor: Callable | None = None,
+        label_constructor: type[ManimTextLabel] | None = None,
         **kwargs: Any,
     ) -> VMobject:
         """Checks if the label is a :class:`~.VMobject`, otherwise, creates a
@@ -670,7 +686,10 @@ class NumberLine(Line):
     def __matmul__(self, other: float) -> Point3D:
         return self.n2p(other)
 
-    def __rmatmul__(self, other: Point3DLike | Mobject) -> float:
+    def __rmatmul__(
+        self,
+        other: Point3DLike | Sequence[float] | Sequence[Sequence[float]] | Mobject,
+    ) -> float | np.ndarray:
         if isinstance(other, Mobject):
             other = other.get_center()
         return self.p2n(other)

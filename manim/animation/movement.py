@@ -10,7 +10,8 @@ __all__ = [
     "MoveAlongPath",
 ]
 
-from typing import TYPE_CHECKING, Any, Callable
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -18,7 +19,7 @@ from ..animation.animation import Animation
 from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from typing import Self
 
     from manim.mobject.types.vectorized_mobject import VMobject
     from manim.typing import MappingFunction, Point3D

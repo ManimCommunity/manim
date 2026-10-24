@@ -4,7 +4,18 @@ import datetime
 
 import pytest
 
-from manim import Circle, FadeIn, Group, Mobject, Scene, Square
+from manim import (
+    Circle,
+    Dot,
+    FadeIn,
+    Group,
+    Line,
+    Mobject,
+    Scene,
+    ShowPassingFlash,
+    Square,
+    Succession,
+)
 from manim.animation.animation import Wait
 
 
@@ -49,6 +60,39 @@ def test_scene_time(dry_run):
     scene.renderer._original_skipping_status = True
     scene.play(FadeIn(Square()), run_time=5)  # this animation gets skipped.
     assert pytest.approx(scene.time) == 7.5
+
+
+def test_animation_group_moving_mobjects_preserve_z_index_order(dry_run):
+    scene = Scene()
+    left_circle = Circle().set_z_index(1)
+    right_circle = Circle().set_z_index(1)
+    line = Line().set_z_index(-1)
+    scene.add(left_circle, right_circle)
+
+    succession = Succession(
+        right_circle.animate.set_fill(opacity=1),
+        ShowPassingFlash(line),
+    )
+    scene.compile_animation_data(succession)
+    scene.begin_animations()
+
+    assert left_circle in scene.moving_mobjects
+    assert left_circle not in scene.static_mobjects
+
+
+@pytest.mark.parametrize("parent_cls", [Group, Circle])
+@pytest.mark.parametrize("z_index", [-10, 0, 10])
+def test_parent_of_moving_submobject_is_marked_moving(dry_run, parent_cls, z_index):
+    scene = Scene()
+    child = Square()
+    parent = parent_cls().set_z_index(z_index).add(child)
+    scene.add(parent)
+
+    scene.compile_animation_data(child.animate.shift((1, 0, 0)))
+    scene.begin_animations()
+
+    assert parent in scene.moving_mobjects
+    assert parent not in scene.static_mobjects
 
 
 def test_subcaption(dry_run):
@@ -101,3 +145,48 @@ def test_replace(dry_run):
     scene.replace(second, beta)
     assert_names(scene.mobjects, ["alpha", "group", "fourth"])
     assert_names(scene.mobjects[1], ["beta", "third"])
+
+
+def test_reproducible_scene(dry_run):
+    import numpy as np
+
+    scene = Scene(random_seed=42)
+    dots1 = []
+    for _ in range(10):
+        dot = Dot(np.random.uniform(-3, 3, size=3))  # noqa: NPY002
+        dots1.append(dot)
+    scene.add(*dots1)
+
+    scene2 = Scene(random_seed=42)
+    dots2 = []
+    for _ in range(5):
+        dot = Dot(np.random.uniform(-3, 3, size=3))  # noqa: NPY002
+        dots2.append(dot)
+    scene2.add(*dots2)
+
+    for d1, d2 in zip(dots1, dots2, strict=False):
+        np.testing.assert_allclose(d1.get_center(), d2.get_center())
+
+
+def test_random_color_reproducibility_with_seed(dry_run):
+    from manim import random_color, tempconfig
+
+    with tempconfig({"seed": 123}):
+        # First run: create scene (which seeds global random state) and generate colors
+        scene1 = Scene()
+        colors_first_run = [random_color() for _ in range(5)]
+
+        # Interrupt with a scene that has an explicit different seed
+        scene_explicit = Scene(random_seed=999)
+        colors_interrupted = [random_color() for _ in range(3)]
+
+        # Second run: create a new scene without explicit seed (should use config.seed)
+        scene2 = Scene()
+        colors_second_run = [random_color() for _ in range(5)]
+
+        # The colors from the first and second run should match
+        # because both scenes were seeded with config.seed=123
+        assert colors_first_run == colors_second_run
+
+        # The interrupted colors should be different (seeded with 999)
+        assert colors_interrupted != colors_first_run[:3]

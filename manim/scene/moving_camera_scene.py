@@ -64,22 +64,22 @@ Examples
             self.play(Restore(self.camera.frame))
             self.wait()
 
-.. manim:: SlidingMultipleScenes
+.. manim:: SlidingMultipleFrames
 
-    class SlidingMultipleScenes(MovingCameraScene):
+    class SlidingMultipleFrames(MovingCameraScene):
         def construct(self):
-            def create_scene(number):
-                frame = Rectangle(width=16,height=9)
+            def create_frame(number):
+                frame = Rectangle(width=16, height=9)
                 circ = Circle().shift(LEFT)
-                text = Tex(f"This is Scene {str(number)}").next_to(circ, RIGHT)
+                text = Tex(f"This is Frame {str(number)}").next_to(circ, RIGHT)
                 frame.add(circ,text)
                 return frame
 
-            group = VGroup(*(create_scene(i) for i in range(4))).arrange_in_grid(buff=4)
+            group = VGroup(*(create_frame(i) for i in range(4))).arrange_in_grid(buff=4)
             self.add(group)
             self.camera.auto_zoom(group[0], animate=False)
-            for scene in group:
-                self.play(self.camera.auto_zoom(scene))
+            for frame in group:
+                self.play(self.camera.auto_zoom(frame))
                 self.wait()
 
             self.play(self.camera.auto_zoom(group, margin=2))

@@ -22,6 +22,8 @@ class UpdateFromFunc(Animation):
     on another simultaneously animated mobject
     """
 
+    update_function: Callable[..., Any]
+
     def __init__(
         self,
         mobject: Mobject,
@@ -35,12 +37,26 @@ class UpdateFromFunc(Animation):
         )
 
     def interpolate_mobject(self, alpha: float) -> None:
-        self.update_function(self.mobject)  # type: ignore[arg-type]
+        self.update_function(self.mobject)
 
 
 class UpdateFromAlphaFunc(UpdateFromFunc):
+    def __init__(
+        self,
+        mobject: Mobject,
+        update_function: Callable[[Mobject, float], Any],
+        suspend_mobject_updating: bool = False,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(
+            mobject,
+            update_function,  # type: ignore[arg-type]
+            suspend_mobject_updating=suspend_mobject_updating,
+            **kwargs,
+        )
+
     def interpolate_mobject(self, alpha: float) -> None:
-        self.update_function(self.mobject, self.rate_func(alpha))  # type: ignore[call-arg, arg-type]
+        self.update_function(self.mobject, self.rate_func(alpha))
 
 
 class MaintainPositionRelativeTo(Animation):

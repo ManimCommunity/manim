@@ -6,6 +6,7 @@ Scenes
 .. autosummary::
    :toctree: ../reference
 
+   manager
    ~scene.moving_camera_scene
    ~scene.section
    ~scene.scene

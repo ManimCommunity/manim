@@ -46,7 +46,7 @@ Commands:
 
 Made with <3 by Manim Community developers.
 """
-    assert dedent(expected_output) == result.stdout
+    assert dedent(expected_output) == result.output
 
 
 def test_manim_plugins_subcommand():

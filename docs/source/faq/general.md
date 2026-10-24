@@ -76,8 +76,9 @@ ones that are documented for the base classes {class}`.VMobject` and
 Yes: simply pass the CLI flag `-t` (or its long form `--transparent`).
 Note that the default video file format does not support transparency,
 which is why Manim will output a `.mov` instead of a `.mp4` when
-rendering with a transparent background. Other movie file formats
-that support transparency can be obtained by passing
+rendering with a transparent background. Explicitly requesting
+`--format=mp4` together with transparency is rejected. Other movie file
+formats that support transparency can be obtained by passing
 `--format=webm` or `--format=gif`.
 
 ---

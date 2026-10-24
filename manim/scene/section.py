@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
@@ -11,7 +11,7 @@ from manim import get_video_metadata
 __all__ = ["Section", "DefaultSectionType"]
 
 
-class DefaultSectionType(str, Enum):
+class DefaultSectionType(StrEnum):
     """The type of a section can be used for third party applications.
     A presentation system could for example use the types to created loops.
 

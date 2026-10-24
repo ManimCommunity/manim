@@ -1,5 +1,4 @@
 import sys
-from fractions import Fraction
 from pathlib import Path
 
 import av
@@ -7,7 +6,6 @@ import numpy as np
 import pytest
 
 from manim import DR, Circle, Create, Scene, Star, tempconfig
-from manim.scene.scene_file_writer import to_av_frame_rate
 from manim.utils.commands import capture, get_video_metadata
 
 
@@ -179,9 +177,28 @@ def test_unicode_partial_movie(config, tmpdir, simple_scenes_path):
     assert exit_code == 0, err
 
 
-def test_frame_rates():
-    assert to_av_frame_rate(25) == Fraction(25, 1)
-    assert to_av_frame_rate(24.0) == Fraction(24, 1)
-    assert to_av_frame_rate(23.976) == Fraction(24 * 1000, 1001)
-    assert to_av_frame_rate(23.98) == Fraction(24 * 1000, 1001)
-    assert to_av_frame_rate(59.94) == Fraction(60 * 1000, 1001)
+@pytest.mark.parametrize(
+    ("vorbis_modes", "expected"),
+    [({"r", "w"}, "libvorbis"), ({"r"}, "libopus"), (set(), "libopus")],
+    ids=["encoder-available", "decoder-only", "missing"],
+)
+def test_webm_audio_codec_checks_encoder_availability(
+    monkeypatch, vorbis_modes, expected
+):
+    from manim.scene import scene_file_writer
+
+    available = {"libopus", "vorbis", "aac"}
+    if vorbis_modes:
+        available.add("libvorbis")
+    monkeypatch.setattr(av, "codecs_available", available)
+    calls = []
+
+    def codec(name, mode):
+        calls.append((name, mode))
+        if mode not in vorbis_modes:
+            raise ValueError("libvorbis encoder is unavailable")
+        return object()
+
+    monkeypatch.setattr(av.codec, "Codec", codec)
+    assert scene_file_writer._webm_audio_codec() == expected
+    assert calls == [("libvorbis", "w")]

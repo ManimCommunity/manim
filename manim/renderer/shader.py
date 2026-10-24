@@ -6,12 +6,11 @@ import re
 import textwrap
 from collections.abc import Callable, Iterator, Sequence
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Self, TypeAlias
 
 import moderngl
 import numpy as np
 import numpy.typing as npt
-from typing_extensions import Self, TypeAlias
 
 if TYPE_CHECKING:
     from manim.renderer.opengl_renderer import OpenGLRenderer
@@ -248,9 +247,9 @@ class Object3D:
 
     def remove_updater(self, update_function: MeshUpdater) -> Self:
         while update_function in self.time_based_updaters:
-            self.time_based_updaters.remove(update_function)  # type: ignore[arg-type]
+            self.time_based_updaters.remove(update_function)
         while update_function in self.non_time_updaters:
-            self.non_time_updaters.remove(update_function)  # type: ignore[arg-type]
+            self.non_time_updaters.remove(update_function)
         self.refresh_has_updater_status()
         return self
 

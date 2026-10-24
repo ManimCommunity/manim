@@ -6,9 +6,7 @@ __all__ = ["MultiCamera"]
 
 
 from collections.abc import Iterable
-from typing import Any
-
-from typing_extensions import Self
+from typing import Any, Self
 
 from manim.mobject.mobject import Mobject
 from manim.mobject.types.image_mobject import ImageMobjectFromCamera

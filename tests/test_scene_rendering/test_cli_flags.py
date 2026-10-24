@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -139,14 +140,15 @@ def test_s_flag_no_animations(tmp_path, manim_cfg_file, simple_scenes_path):
 
 
 @pytest.mark.slow
-def test_s_flag(tmp_path, manim_cfg_file, simple_scenes_path):
+@pytest.mark.parametrize("still_flag", ["-s", "--format=png"])
+def test_s_flag(tmp_path, manim_cfg_file, simple_scenes_path, still_flag):
     scene_name = "SquareToCircle"
     command = [
         sys.executable,
         "-m",
         "manim",
         "-ql",
-        "-s",
+        still_flag,
         "--media_dir",
         str(tmp_path),
         str(simple_scenes_path),
@@ -251,29 +253,39 @@ def test_a_flag(tmp_path, manim_cfg_file, infallible_scenes_path):
     )
 
 
-@pytest.mark.slow
-def test_custom_folders(tmp_path, manim_cfg_file, simple_scenes_path):
-    scene_name = "SquareToCircle"
+@pytest.mark.parametrize(
+    "scene_selection",
+    [
+        ("-a",),
+        ("Wait1", "Wait3"),
+    ],
+)
+def test_output_file_rejects_multi_scene_render(
+    tmp_path,
+    infallible_scenes_path,
+    scene_selection,
+):
     command = [
         sys.executable,
         "-m",
         "manim",
-        "-ql",
-        "-s",
         "--media_dir",
         str(tmp_path),
-        "--custom_folders",
-        str(simple_scenes_path),
-        scene_name,
+        "-o",
+        "shared-name",
     ]
+    if scene_selection == ("-a",):
+        command.extend(["-a", str(infallible_scenes_path)])
+    else:
+        command.extend([str(infallible_scenes_path), *scene_selection])
+
     out, err, exit_code = capture(command)
-    assert exit_code == 0, err
 
-    exists = (tmp_path / "videos").exists()
-    assert not exists, "--custom_folders produced a 'videos/' dir"
-
-    exists = add_version_before_extension(tmp_path / "SquareToCircle.png").exists()
-    assert exists, "--custom_folders did not produce the output file"
+    assert exit_code == 1
+    assert "--output_file can only be used when rendering exactly one scene" in (
+        err or out
+    )
+    assert not tmp_path.exists() or not any(tmp_path.iterdir())
 
 
 @pytest.mark.slow
@@ -322,7 +334,8 @@ def test_custom_output_name_gif(tmp_path, simple_scenes_path):
 @pytest.mark.slow
 def test_custom_output_name_mp4(tmp_path, simple_scenes_path):
     scene_name = "SquareToCircle"
-    custom_name = "custom_name"
+    requested_name = "custom_name.mov"
+    expected_name = requested_name
     command = [
         sys.executable,
         "-m",
@@ -331,7 +344,7 @@ def test_custom_output_name_mp4(tmp_path, simple_scenes_path):
         "--media_dir",
         str(tmp_path),
         "-o",
-        custom_name,
+        requested_name,
         str(simple_scenes_path),
         scene_name,
     ]
@@ -343,18 +356,18 @@ def test_custom_output_name_mp4(tmp_path, simple_scenes_path):
     )
 
     assert not wrong_mp4_path.exists(), (
-        "The mp4 file does not respect the custom name: " + custom_name + ".mp4"
+        "The mp4 file does not respect the custom name: " + expected_name + ".mp4"
     )
 
     unexpected_gif_path = add_version_before_extension(
-        tmp_path / "videos" / "simple_scenes" / "480p15" / f"{custom_name}.gif"
+        tmp_path / "videos" / "simple_scenes" / "480p15" / f"{expected_name}.gif"
     )
     assert not unexpected_gif_path.exists(), "Found an unexpected gif file at " + str(
         unexpected_gif_path
     )
 
     expected_mp4_path = (
-        tmp_path / "videos" / "simple_scenes" / "480p15" / str(custom_name + ".mp4")
+        tmp_path / "videos" / "simple_scenes" / "480p15" / str(expected_name + ".mp4")
     )
 
     assert expected_mp4_path.exists(), "mp4 file not found at " + str(expected_mp4_path)
@@ -489,12 +502,12 @@ def test_videos_not_created_when_png_format_set(
 
 
 @pytest.mark.slow
-def test_images_are_created_when_png_format_set(
+def test_images_are_created_when_png_sequence_format_set(
     tmp_path,
     manim_cfg_file,
     simple_scenes_path,
 ):
-    """Test images are created in media directory when --format png is set"""
+    """Test images are created when --format png-sequence is set."""
     scene_name = "SquareToCircle"
     command = [
         sys.executable,
@@ -504,24 +517,26 @@ def test_images_are_created_when_png_format_set(
         "--media_dir",
         str(tmp_path),
         "--format",
-        "png",
+        "png-sequence",
         str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
 
-    expected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle0000.png"
+    expected_png_path = (
+        tmp_path / "images" / "simple_scenes" / "SquareToCircle" / "0000.png"
+    )
     assert expected_png_path.exists(), "png file not found at " + str(expected_png_path)
 
 
 @pytest.mark.slow
-def test_images_are_created_when_png_format_set_for_opengl(
+def test_images_are_created_when_png_sequence_format_set_for_opengl(
     tmp_path,
     manim_cfg_file,
     simple_scenes_path,
 ):
-    """Test images are created in media directory when --format png is set for opengl"""
+    """Test OpenGL images are created when --format png-sequence is set."""
     scene_name = "SquareToCircle"
     command = [
         sys.executable,
@@ -533,24 +548,26 @@ def test_images_are_created_when_png_format_set_for_opengl(
         "--media_dir",
         str(tmp_path),
         "--format",
-        "png",
+        "png-sequence",
         str(simple_scenes_path),
         scene_name,
     ]
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
 
-    expected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle0000.png"
+    expected_png_path = (
+        tmp_path / "images" / "simple_scenes" / "SquareToCircle" / "0000.png"
+    )
     assert expected_png_path.exists(), "png file not found at " + str(expected_png_path)
 
 
 @pytest.mark.slow
-def test_images_are_zero_padded_when_zero_pad_set(
+def test_png_sequence_images_are_zero_padded(
     tmp_path,
     manim_cfg_file,
     simple_scenes_path,
 ):
-    """Test images are zero padded when --format png and --zero_pad n are set"""
+    """Test PNG-sequence images respect --zero_pad."""
     scene_name = "SquareToCircle"
     command = [
         sys.executable,
@@ -560,7 +577,7 @@ def test_images_are_zero_padded_when_zero_pad_set(
         "--media_dir",
         str(tmp_path),
         "--format",
-        "png",
+        "png-sequence",
         "--zero_pad",
         "3",
         str(simple_scenes_path),
@@ -569,22 +586,23 @@ def test_images_are_zero_padded_when_zero_pad_set(
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
 
-    unexpected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle0.png"
+    sequence_dir = tmp_path / "images" / "simple_scenes" / "SquareToCircle"
+    unexpected_png_path = sequence_dir / "0.png"
     assert not unexpected_png_path.exists(), "non zero padded png file found at " + str(
         unexpected_png_path,
     )
 
-    expected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle000.png"
+    expected_png_path = sequence_dir / "000.png"
     assert expected_png_path.exists(), "png file not found at " + str(expected_png_path)
 
 
 @pytest.mark.slow
-def test_images_are_zero_padded_when_zero_pad_set_for_opengl(
+def test_opengl_png_sequence_images_are_zero_padded(
     tmp_path,
     manim_cfg_file,
     simple_scenes_path,
 ):
-    """Test images are zero padded when --format png and --zero_pad n are set with the opengl renderer"""
+    """Test OpenGL PNG-sequence images respect --zero_pad."""
     scene_name = "SquareToCircle"
     command = [
         sys.executable,
@@ -596,7 +614,7 @@ def test_images_are_zero_padded_when_zero_pad_set_for_opengl(
         "--media_dir",
         str(tmp_path),
         "--format",
-        "png",
+        "png-sequence",
         "--zero_pad",
         "3",
         str(simple_scenes_path),
@@ -605,12 +623,13 @@ def test_images_are_zero_padded_when_zero_pad_set_for_opengl(
     out, err, exit_code = capture(command)
     assert exit_code == 0, err
 
-    unexpected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle0.png"
+    sequence_dir = tmp_path / "images" / "simple_scenes" / "SquareToCircle"
+    unexpected_png_path = sequence_dir / "0.png"
     assert not unexpected_png_path.exists(), "non zero padded png file found at " + str(
         unexpected_png_path,
     )
 
-    expected_png_path = tmp_path / "images" / "simple_scenes" / "SquareToCircle000.png"
+    expected_png_path = sequence_dir / "000.png"
     assert expected_png_path.exists(), "png file not found at " + str(expected_png_path)
 
 
@@ -717,6 +736,49 @@ def test_mov_can_be_set_as_output_format(tmp_path, manim_cfg_file, simple_scenes
     assert expected_mov_path.exists(), "expected .mov file not found at " + str(
         expected_mov_path,
     )
+
+
+@pytest.mark.slow
+def test_reproducible_animation(tmp_path: Path, manim_cfg_file, simple_scenes_path):
+    scene_name = "SceneWithRandomness"
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+        "--seed",
+        "42",
+        str(simple_scenes_path),
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    first_path = tmp_path / "videos" / "simple_scenes" / "480p15" / f"{scene_name}.mp4"
+
+    command = [
+        sys.executable,
+        "-m",
+        "manim",
+        "-ql",
+        "--media_dir",
+        str(tmp_path),
+        "--seed",
+        "42",
+        str(simple_scenes_path),
+        scene_name,
+    ]
+    out, err, exit_code = capture(command)
+    assert exit_code == 0, err
+
+    second_path = first_path.with_name(scene_name).with_suffix(".mp4")
+
+    with open(first_path, "rb") as f1, open(second_path, "rb") as f2:
+        first_data = f1.read()
+        second_data = f2.read()
+        assert first_data == second_data, "Videos with the same seed differ."
 
 
 @pytest.mark.slow
