@@ -216,3 +216,21 @@ def test_replace_submobject_with_existing_submobject(using_opengl_renderer):
     parent.replace_submobject(0, submobs[2])
 
     assert parent.submobjects == [submobs[2], submobs[1]]
+
+
+def test_opengl_mobject_dim_parameter_is_deprecated(
+    using_opengl_renderer, manim_caplog
+):
+    """Test that passing dim explicitly logs a deprecation warning."""
+    OpenGLMobject(dim=3)
+
+    assert len(manim_caplog.record_tuples) == 1
+    assert "dim" in manim_caplog.record_tuples[0][2]
+
+
+def test_opengl_mobject_dim_default_does_not_warn(using_opengl_renderer, manim_caplog):
+    """Test that omitting dim logs nothing and still produces the existing default."""
+    obj = OpenGLMobject()
+
+    assert len(manim_caplog.record_tuples) == 0
+    assert obj.dim == 3

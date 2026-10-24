@@ -154,7 +154,7 @@ class OpenGLMobject:
         self,
         color: ParsableManimColor | Sequence[ParsableManimColor] = WHITE,
         opacity: float = 1,
-        dim: int = 3,  # TODO, get rid of this
+        dim: int | None = None,
         # Lighting parameters
         # Positive gloss up to 1 makes it reflect the light.
         gloss: float = 0.0,
@@ -183,7 +183,14 @@ class OpenGLMobject:
         )
 
         self.opacity: float | Iterable[float] = opacity
-        self.dim: int = dim  # TODO, get rid of this
+        if dim is not None:
+            logger.warning(
+                "The parameter dim of method OpenGLMobject.__init__ has been "
+                "deprecated since v0.23.0 and is expected to be removed after "
+                "v0.25.0. OpenGLMobject assumes three dimensions throughout, "
+                "so this parameter has no supported non-default value."
+            )
+        self.dim: int = 3 if dim is None else dim
         # Lighting parameters
         # Positive gloss up to 1 makes it reflect the light.
         self.gloss = gloss
