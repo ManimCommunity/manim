@@ -2745,6 +2745,27 @@ class Mobject:
     ) -> Self:
         """Sorts :class:`~.Mobject` next to each other on screen.
 
+        Parameters
+        ----------
+        direction
+            The side of the first Mobject in group to which all other Mobjects are arranged.
+        buff
+            The gap between each Mobject.
+        center
+            Centers the group to origin after arranging, except when ``reference`` is given.
+        reference
+            The Mobject in group that the arrangement is anchored around.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Raises
+        ------
+        ValueError
+            If ``reference`` is not in the group.
+
         Examples
         --------
 
