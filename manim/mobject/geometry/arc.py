@@ -234,6 +234,11 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
     # Getters
 
     def pop_tips(self) -> VGroup:
+        """Removes the tips of the arrow,
+        if there are no tips to return, does nothing
+        """
+        if not self.has_tip() and not self.has_start_tip():
+            return self.get_group_class()()
         start, end = self.get_start_and_end()
         result = self.get_group_class()()
         if self.has_tip():
@@ -300,6 +305,19 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
     def get_length(self) -> float:
         start, end = self.get_start_and_end()
         return float(np.linalg.norm(start - end))
+
+    def pointwise_become_partial(
+        self,
+        vmobject: VMobject,
+        a: float,
+        b: float,
+    ) -> Self:
+        super().pointwise_become_partial(vmobject, a, b)
+        """In case of a dashed object, removes all the excess tips created by each individual dash."""
+        if self.has_tip() and a != 0:
+            """Does the removal of the tip for a particular TipableVMobject"""
+            self.remove(self.tip)
+        return self
 
 
 class Arc(TipableVMobject):
