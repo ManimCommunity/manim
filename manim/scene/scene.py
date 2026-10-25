@@ -192,6 +192,7 @@ class Scene:
         self.stop_condition: Callable[[], bool] | None = None
         self.moving_mobjects: list[Mobject] = []
         self.static_mobjects: list[Mobject] = []
+        self._computing_frames = False
         self.time_progression: tqdm[float] | None = None
         self.duration: float = 0.0
         self.last_t = 0.0
@@ -606,6 +607,11 @@ class Scene:
             assert config.renderer == RendererType.CAIRO
             for list_name in "mobjects", "foreground_mobjects":
                 self.restructure_mobjects(mobjects, list_name, False)
+            # Mobjects removed while the frames of a play are computed (e.g. by
+            # an AnimationGroup cleaning up a finished subanimation) must also
+            # stop being redrawn.
+            if self._computing_frames:
+                self.restructure_mobjects(mobjects, "moving_mobjects", False)
             return self
 
     def replace(self, old_mobject: Mobject, new_mobject: Mobject) -> None:
@@ -1398,6 +1404,7 @@ class Scene:
             self.animations,
             self.duration,
         )
+        self._computing_frames = True
         for t in self.time_progression:
             self.update_to_time(t)
             if not skip_rendering and not self.skip_animation_preview:
@@ -1405,6 +1412,7 @@ class Scene:
             if self.stop_condition is not None and self.stop_condition():
                 self.time_progression.close()
                 break
+        self._computing_frames = False
 
         for animation in self.animations:
             animation.finish()
