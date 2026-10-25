@@ -2780,6 +2780,9 @@ class Mobject:
                     x = VGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
                     self.add(x)
         """
+        # will later be updated to reference's original position, if applicable:
+        original_pos = 0
+
         # save the reference's original position
         if isinstance(reference, Mobject):
             original_pos = reference.get_center().copy()
