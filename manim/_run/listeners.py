@@ -143,6 +143,23 @@ class _Preview(_RunListener):
             manager.renderer._present_frame(scene, frame.offset)
 
 
+class _MeshGuard(_RunListener):
+    """Reject GPU-backed meshes, which evaluation cannot run without a context."""
+
+    def __init__(self, manager: Manager) -> None:
+        self._manager = manager
+
+    def check(self) -> None:
+        if self._manager.scene.meshes:
+            raise RuntimeError("GPU-backed meshes are unsupported during evaluation.")
+
+    def play_started(self, play: _Play) -> None:
+        self.check()
+
+    def frame(self, frame: _Frame) -> None:
+        self.check()
+
+
 class _Progress(_RunListener):
     """Show a progress bar for each play, except for frozen waits."""
 

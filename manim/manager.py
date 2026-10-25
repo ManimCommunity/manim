@@ -2,12 +2,20 @@
 
 from __future__ import annotations
 
+import contextlib
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from . import config, logger
 from ._config.logger_utils import set_file_logger
-from ._run.listeners import _Encoder, _Preview, _Progress
-from ._run.loop import _Caption, _RunLoop, _Section, _Sound, _TargetDrawer
+from ._run.listeners import _Encoder, _MeshGuard, _Preview, _Progress
+from ._run.loop import (
+    _Caption,
+    _RunLoop,
+    _SceneImageDrawer,
+    _Section,
+    _Sound,
+    _TargetDrawer,
+)
 from ._run.selection import _OutputSelection
 from .scene.section import DefaultSectionType
 from .utils.exceptions import EndSceneEarlyException, RerunSceneException
@@ -59,9 +67,10 @@ class Manager(Generic[SceneT]):
 
     Notes
     -----
-    Output settings are saved during scene construction. The manager creates
-    the file writer when first requested and makes it available before
-    :meth:`~manim.scene.scene.Scene.setup` runs.
+    Output settings are saved during scene construction. During rendering, the
+    manager creates the file writer when first requested and makes it available
+    before :meth:`~manim.scene.scene.Scene.setup` runs. :meth:`evaluate` runs the
+    scene without drawing frames or producing media.
 
     Both backends use the same animation clock and sampling rules. Every play
     steps through all of its frames, also when it is skipped or reused from the
@@ -95,6 +104,7 @@ class Manager(Generic[SceneT]):
         self._scope_depth = 0
         self._execution.frame_rate = self.session_spec.frame_rate
         self._run_loop: _RunLoop | None = None
+        self._evaluating = False
         scene.manager = self
 
     def __enter__(self) -> Manager[SceneT]:
@@ -116,7 +126,7 @@ class Manager(Generic[SceneT]):
             self.close()
 
     def _open_log_handler(self) -> None:
-        if self._log_handler is not None:
+        if self._evaluating or self._log_handler is not None:
             return
         path = self.scene._log_file_path
         if path is not None:
@@ -186,7 +196,9 @@ class Manager(Generic[SceneT]):
         this property before calling :meth:`setup`; ``renderer.file_writer``
         returns the same writer. Both properties are read-only. To choose a custom
         writer class, pass ``file_writer_class`` when constructing the renderer.
+        Accessing this property during :meth:`evaluate` raises ``RuntimeError``.
         """
+        self._ensure_not_evaluating("Media output")
         if self._file_writer is None:
             if self._closed or self._closing:
                 raise RuntimeError(
@@ -283,6 +295,7 @@ class Manager(Generic[SceneT]):
         """
         from .renderer.opengl.renderer import OpenGLRenderer
 
+        self._ensure_not_evaluating("Rendering")
         self._validate_execution()
         started = False
         try:
@@ -327,6 +340,68 @@ class Manager(Generic[SceneT]):
             if started or self._file_writer is not None:
                 self._cleanup_after_failure()
             raise
+
+    def evaluate(self) -> None:
+        """Run the scene's animations without drawing frames or producing media.
+
+        Calls ``setup()``, ``construct()`` and ``tear_down()``, using the same
+        animation steps and clock as rendering. Movie caches, animation ranges,
+        and skip flags are ignored, so every play runs. Section, subcaption, and
+        sound calls have no effect; sound files are not checked.
+
+        Notes
+        -----
+        The scene must be unused: it must not have played animations or rendered
+        yet. Each scene can be evaluated once. Keep the frame-rate configuration
+        used to construct it.
+
+        Afterward, inspect ``scene.time`` and the scene's mobjects, or call
+        ``scene.get_image()`` to draw the resulting state; it can also be called
+        during evaluation. The file writer, nested renders, and interactive
+        preview raise an error during evaluation.
+
+        The manager closes on success, or at the end of an enclosing
+        ``with manager:`` block. If evaluation fails, the manager cleans up and
+        raises the original exception.
+
+        See :doc:`/guides/evaluation` for examples.
+        """
+        self._validate_execution()
+        if self._evaluating:
+            raise RuntimeError("Recursive evaluation is not supported.")
+        if (
+            self._run_loop is not None
+            or self._file_writer is not None
+            or self.num_plays
+            or getattr(self.renderer, "_target", None) is not None
+            or getattr(self.renderer, "_context", None) is not None
+        ):
+            raise RuntimeError("Evaluation requires an unused Scene.")
+        meshes = _MeshGuard(self)
+        self._run_loop = _RunLoop(
+            self,
+            listeners=[meshes, _Progress(self)],
+            selection=_OutputSelection.everything(self),
+            drawer=_SceneImageDrawer(self),
+        )
+        self._evaluating = True
+        try:
+            meshes.check()
+            self.setup()
+            with contextlib.suppress(EndSceneEarlyException):
+                self.construct()
+            self.tear_down()
+            meshes.check()
+            self._finish_resource_scope()
+        except BaseException:
+            self._cleanup_after_failure()
+            raise
+        finally:
+            self._evaluating = False
+
+    def _ensure_not_evaluating(self, what: str) -> None:
+        if self._evaluating:
+            raise RuntimeError(f"{what} is unavailable during evaluation.")
 
     def _finish_resource_scope(self) -> None:
         self._close_log_handler()
