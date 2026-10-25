@@ -6,5 +6,7 @@ TEXMFLOCAL /usr/local/texlive/texmf-local
 TEXMFSYSCONFIG /usr/local/texlive/texmf-config
 TEXMFSYSVAR /usr/local/texlive/texmf-var
 TEXMFVAR ~/.texlive/texmf-var
-option_doc 0
-option_src 0
+instopt_adjustpath 0
+tlpdbopt_autobackup 0
+tlpdbopt_install_docfiles 0
+tlpdbopt_install_srcfiles 0
