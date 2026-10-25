@@ -12,6 +12,7 @@ from manim import (
     LEFT,
     ORIGIN,
     RIGHT,
+    TAU,
     UP,
     Angle,
     Arc,
@@ -62,26 +63,30 @@ def test_get_arc_center():
     )
 
 
-def test_Arc_points():
-    arc = Arc(radius=2, start_angle=0.5, angle=1.5, arc_center=[1, 2, 0])
+@pytest.mark.parametrize("angle", [1.5, -1.5, TAU])
+def test_Arc_points(angle):
+    arc = Arc(radius=2, start_angle=0.5, angle=angle, arc_center=[1, 2, 0])
     # Cairo stores cubic curves: num_components anchors, 4 points per curve
     assert len(arc.points) == 4 * (arc.num_components - 1)
     np.testing.assert_allclose(
         arc.get_start(), [1 + 2 * np.cos(0.5), 2 + 2 * np.sin(0.5), 0]
     )
     np.testing.assert_allclose(
-        arc.get_end(), [1 + 2 * np.cos(2.0), 2 + 2 * np.sin(2.0), 0]
+        arc.get_end(),
+        [1 + 2 * np.cos(0.5 + angle), 2 + 2 * np.sin(0.5 + angle), 0],
     )
 
 
-def test_Arc_anchors_lie_on_circle():
-    arc = Arc(radius=2, start_angle=0.5, angle=1.5, arc_center=[1, 2, 0])
+@pytest.mark.parametrize("angle", [1.5, -1.5, TAU])
+def test_Arc_anchors_lie_on_circle(angle):
+    arc = Arc(radius=2, start_angle=0.5, angle=angle, arc_center=[1, 2, 0])
     anchors = np.vstack([arc.points[::4], arc.points[3::4]])
     np.testing.assert_allclose(np.linalg.norm(anchors - [1, 2, 0], axis=1), 2)
 
 
-def test_Arc_generate_points_is_idempotent():
-    arc = Arc(radius=2, start_angle=0.5, angle=1.5, arc_center=[1, 2, 0])
+@pytest.mark.parametrize("angle", [1.5, -1.5, TAU])
+def test_Arc_generate_points_is_idempotent(angle):
+    arc = Arc(radius=2, start_angle=0.5, angle=angle, arc_center=[1, 2, 0])
     expected = arc.points.copy()
     arc.generate_points()
     np.testing.assert_array_equal(arc.points, expected)
