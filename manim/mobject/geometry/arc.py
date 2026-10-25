@@ -51,6 +51,7 @@ import numpy as np
 
 from manim.constants import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import BLACK, BLUE, RED, WHITE, ParsableManimColor
 from manim.utils.iterables import adjacent_pairs
@@ -342,19 +343,8 @@ class Arc(TipableVMobject):
         self.shift(self.arc_center)
         return self
 
-    # Points are set a bit differently when rendering via OpenGL.
-    # TODO: refactor Arc so that only one strategy for setting points
-    # has to be used.
     def init_points(self) -> Self:
-        self.set_points(
-            Arc._create_quadratic_bezier_points(
-                angle=self.angle,
-                start_angle=self.start_angle,
-                n_components=self.num_components,
-            ),
-        )
-        self.scale(self.radius, about_point=ORIGIN)
-        self.shift(self.arc_center)
+        self.generate_points()
         return self
 
     @staticmethod
@@ -381,6 +371,22 @@ class Arc(TipableVMobject):
         return points
 
     def _set_pre_positioned_points(self) -> None:
+        """Set the points of a unit arc centered at the origin.
+
+        The OpenGL renderer stores quadratic Bézier curves, while the Cairo
+        renderer stores cubic ones, so the point layout depends on which
+        base class this arc currently has.
+        """
+        if isinstance(self, OpenGLVMobject):
+            self.set_points(
+                Arc._create_quadratic_bezier_points(
+                    angle=self.angle,
+                    start_angle=self.start_angle,
+                    n_components=self.num_components,
+                ),
+            )
+            return
+
         anchors = np.array(
             [
                 np.cos(a) * RIGHT + np.sin(a) * UP
