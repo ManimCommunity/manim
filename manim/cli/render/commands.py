@@ -72,6 +72,15 @@ def _validate_scene_batch_output_name(scene_classes: list[type]) -> None:
 )
 @cloup.argument("file", type=cloup.Path(path_type=Path), required=True)
 @cloup.argument("scene_names", required=False, nargs=-1)
+@cloup.option(
+    "--timeline-output",
+    type=cloup.Path(path_type=Path, dir_okay=False),
+    help=(
+        "Save a timeline of the scene's play, wait, section, caption, and sound "
+        "calls as JSON. With --dry_run, the scene is evaluated without rendering, "
+        "and every play runs: caching, -n and skipped sections do not apply."
+    ),
+)
 @global_options
 @output_options
 @render_options
@@ -83,6 +92,12 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
 
     SCENES is an optional list of scenes in the file.
     """
+    timeline_output = kwargs.pop("timeline_output", None)
+    if timeline_output is not None:
+        # User module/setup/construct code may change the process working directory.
+        timeline_output = timeline_output.absolute()
+    if timeline_output is not None and kwargs["jupyter"]:
+        raise cloup.UsageError("Use Manager.evaluate(capture_timeline=True) in Python.")
     click_args = ClickArgs(kwargs)
     if kwargs["jupyter"]:
         return click_args
@@ -90,8 +105,12 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
     config.digest_args(click_args)
     file = Path(config.input_file)
     try:
+        if timeline_output is not None and timeline_output.resolve() == file.resolve():
+            raise ValueError("--timeline-output must not replace the input file.")
         scene_classes = scene_classes_from_file(file)
         _validate_scene_batch_output_name(scene_classes)
+        if timeline_output is not None and len(scene_classes) != 1:
+            raise ValueError("--timeline-output requires exactly one selected scene.")
 
         for SceneClass in scene_classes:
             while True:
@@ -99,8 +118,16 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
                     scene = SceneClass()
                     # Reuse a manager created by the scene's constructor. The
                     # with block also cleans up after custom render() overrides.
-                    with scene._get_manager():
-                        rerun = scene.render()
+                    with scene._get_manager() as manager:
+                        if timeline_output is not None and config.dry_run:
+                            manager.evaluate(capture_timeline=True)
+                            rerun = False
+                        else:
+                            # Through Scene.render(), so that overrides still run.
+                            manager._capture_timeline = timeline_output is not None
+                            rerun = scene.render()
+                    if timeline_output is not None and not rerun:
+                        manager.timeline.write(timeline_output)
                 if not rerun:
                     break
     except Exception:

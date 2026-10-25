@@ -139,6 +139,8 @@ class Manager(Generic[SceneT]):
         self._run_loop: _RunLoop | None = None
         self._record: _RunRecord | None = None
         self._timeline: Timeline | None = None
+        # The default of render(capture_timeline=...), set by the CLI.
+        self._capture_timeline = False
         self._evaluating = False
         scene.manager = self
 
@@ -302,7 +304,9 @@ class Manager(Generic[SceneT]):
                 "under the desired configuration before executing it."
             )
 
-    def render(self, preview: bool = False, *, capture_timeline: bool = False) -> bool:
+    def render(
+        self, preview: bool = False, *, capture_timeline: bool | None = None
+    ) -> bool:
         """Run the complete render lifecycle for the managed scene.
 
         The lifecycle invokes :meth:`setup`, :meth:`construct`,
@@ -346,6 +350,8 @@ class Manager(Generic[SceneT]):
             started = True
             self._timeline = None
             record = self._loop_record()
+            if capture_timeline is None:
+                capture_timeline = self._capture_timeline
             record.capture = capture_timeline
             self._open_log_handler()
             if isinstance(self.renderer, OpenGLRenderer):

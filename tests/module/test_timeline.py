@@ -9,6 +9,8 @@ import pytest
 from manim import Manager, Scene, Timeline, tempconfig
 from manim.utils.module_ops import get_module
 
+ROOT = Path(__file__).resolve().parents[2]
+
 SOURCE = """from manim import *
 class TimelineFixture(Scene):
     def construct(self):
@@ -123,6 +125,20 @@ def test_render_records_the_same_calls_and_marks_skipped_plays(scene_class, tmp_
         entry.pop("skipped", None)
     assert rendered["entries"] == expected["entries"]
     assert rendered["duration"] == expected["duration"]
+
+
+def test_example_scene_matches_the_documented_format():
+    path = ROOT / "example_scenes" / "timeline_scene.py"
+    with tempconfig({**SETTINGS, "format": "none"}):
+        manager = Manager(get_module(path).TimelineExample())
+        manager.evaluate(capture_timeline=True)
+    data = manager.timeline.to_dict()
+    expected = json.loads(
+        (ROOT / "tests" / "control_data" / "timeline-v1.json").read_text()
+    )
+    # The hash changes with every edit of the example file.
+    data["source"]["sha256"] = expected["source"]["sha256"]
+    assert data == expected
 
 
 def test_json_round_trip_and_version_check(scene_class):

@@ -38,8 +38,9 @@ as usual. The clock follows the same frame-rate sampling and frozen-wait roundin
 rules described in :doc:`deep_dive`.
 
 Calls to ``next_section()``, ``add_subcaption()`` and ``add_sound()`` are
-allowed and produce no output. In particular, sound files are only opened when the
-scene is rendered, so a missing or unreadable sound file goes unnoticed during
+allowed and produce no output. To record them together with the play and wait
+calls, use :doc:`timeline` capture. Sound files are only opened when the scene
+is rendered, so a missing or unreadable sound file goes unnoticed during
 evaluation.
 
 Inspection and failures
@@ -88,8 +89,9 @@ to that point:
 Each frame is the image a render would show at that time: at 30 fps, every time
 from 0.3 up to, but not including, 0.3333 gives frame 9, which starts at 0.3
 seconds. The evaluation continues to the end of the scene after the last
-requested frame. Times at or after the end of the scene give no frame; use
-``scene.get_image()`` after evaluation to see the final state.
+requested frame, so it can also record a :doc:`timeline` in the same run. Times
+at or after the end of the scene give no frame; use ``scene.get_image()`` after
+evaluation to see the final state.
 
 Limits
 ------
