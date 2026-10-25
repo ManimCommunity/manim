@@ -69,6 +69,7 @@ class NumberLine(Line):
         Whether to add numbers to the tick marks. The number of decimal places is determined
         by the step size (and by ``x_min`` when the ticks start there), this default can be
         overridden by ``decimal_number_config``.
+    scaling
         The way the ``x_range`` is value is scaled, i.e. :class:`~.LogBase` for a logarithmic numberline. Defaults to :class:`~.LinearBase`.
     font_size
         The size of the label mobjects. Defaults to 36.
@@ -190,8 +191,8 @@ class NumberLine(Line):
             # Ticks start at x_min when the range is entirely positive or
             # entirely negative (see get_tick_range), so x_min may need more
             # decimal places than the step, e.g. x_range=[3.5, 7.5, 1].
-            x_min, x_max = x_range[0], x_range[1]
-            if x_min < x_max < 0 or x_max > x_min > 0:
+            x_min = x_range[0]
+            if self._ticks_start_at_x_min(x_min, x_range[1]):
                 num_decimal_places = max(
                     num_decimal_places, self._decimal_places_from_step(x_min)
                 )
@@ -349,7 +350,7 @@ class NumberLine(Line):
             x_max += 1e-6
 
         # Handle cases where min and max are both positive or both negative
-        if x_min < x_max < 0 or x_max > x_min > 0:
+        if self._ticks_start_at_x_min(x_min, x_max):
             tick_range = np.arange(x_min, x_max, x_step)
         else:
             start_point = 0
@@ -684,8 +685,15 @@ class NumberLine(Line):
         return label_constructor(str(label_tex), **kwargs)
 
     @staticmethod
+    def _ticks_start_at_x_min(x_min: float, x_max: float) -> bool:
+        """Whether the ticks start at ``x_min``, i.e. the range is entirely
+        positive or entirely negative. Otherwise they start at 0.
+        """
+        return x_min < x_max < 0 or x_max > x_min > 0
+
+    @staticmethod
     def _decimal_places_from_step(step: float) -> int:
-        step_str = str(step)
+        step_str = str(round(step, 10))
         if "." not in step_str:
             return 0
         return len(step_str.split(".")[-1])
