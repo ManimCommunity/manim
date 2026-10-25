@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from manim import PI, X_AXIS, Y_AXIS, Z_AXIS
+from manim import DOWN, IN, LEFT, OUT, PI, RIGHT, UL, UP, UR, X_AXIS, Y_AXIS, Z_AXIS
 from manim.utils.unit import Degrees, Munits, Percent, Pixels
 
 
@@ -29,3 +29,41 @@ def test_units(config):
 
     # Degrees should convert from degrees to radians
     np.testing.assert_allclose(180 * Degrees, PI)
+
+
+@pytest.mark.parametrize("axis", [X_AXIS, RIGHT, LEFT, 2 * LEFT, [-3, 0, 0]])
+def test_percent_horizontal_directions_use_frame_width(config, axis):
+    np.testing.assert_allclose(50 * Percent(axis), config.frame_width / 2)
+
+
+@pytest.mark.parametrize("axis", [Y_AXIS, UP, DOWN, 0.5 * DOWN])
+def test_percent_vertical_directions_use_frame_height(config, axis):
+    np.testing.assert_allclose(50 * Percent(axis), config.frame_height / 2)
+
+
+@pytest.mark.parametrize("axis", [UR, UL, [3, 1, 0], [1, 3, 0]])
+def test_percent_diagonal_directions_use_extent_of_frame(config, axis):
+    dx, dy = np.abs(axis[:2]) / np.linalg.norm(axis[:2])
+    expected = min(config.frame_width / dx, config.frame_height / dy)
+    np.testing.assert_allclose(100 * Percent(axis), expected)
+
+
+def test_percent_ignores_z_component(config):
+    np.testing.assert_allclose(Percent(RIGHT + OUT) * 50, config.frame_width / 2)
+
+
+@pytest.mark.parametrize("axis", [Z_AXIS, OUT, IN])
+def test_percent_z_direction_is_not_implemented(axis):
+    with pytest.raises(NotImplementedError):
+        Percent(axis)
+
+
+def test_percent_rejects_zero_vector():
+    with pytest.raises(ValueError):
+        Percent([0, 0, 0])
+
+
+def test_percent_follows_config_changes(config):
+    percent = Percent(RIGHT)
+    config.frame_width = 20
+    np.testing.assert_allclose(50 * percent, 10)
