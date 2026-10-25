@@ -4,15 +4,18 @@ from __future__ import annotations
 
 import contextlib
 import enum
+import math
+from dataclasses import dataclass
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from . import config, logger
 from ._config.logger_utils import set_file_logger
 from ._run.cache import _SegmentCache
-from ._run.listeners import _Encoder, _MeshGuard, _Preview, _Progress
+from ._run.listeners import _Encoder, _FrameRequests, _MeshGuard, _Preview, _Progress
 from ._run.loop import (
     _Caption,
+    _RunListener,
     _RunLoop,
     _SceneImageDrawer,
     _Section,
@@ -25,7 +28,7 @@ from .utils.exceptions import EndSceneEarlyException, RerunSceneException
 from .utils.file_ops import open_media_file
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Iterable
     from logging import FileHandler
     from logging.handlers import MemoryHandler
     from types import TracebackType
@@ -44,7 +47,7 @@ if TYPE_CHECKING:
     from .scene.scene_file_writer import SceneFileWriter
     from .typing import RGBAPixelArray
 
-__all__ = ["Manager"]
+__all__ = ["Manager", "RenderedFrame"]
 
 SceneT = TypeVar("SceneT", bound="Scene")
 
@@ -67,6 +70,29 @@ class _State(enum.Enum):
     def usable(self) -> bool:
         """Whether the Manager can play, give out its writer or enter a block."""
         return self in (_State.OPEN, _State.RENDERED)
+
+
+@dataclass(frozen=True)
+class RenderedFrame:
+    """A frame drawn during :meth:`.Manager.evaluate`.
+
+    Parameters
+    ----------
+    image
+        The frame as a PIL image in RGBA format.
+    requested_time
+        The requested time in seconds.
+    time
+        The start time of the frame in seconds.
+    frame_index
+        The position of the frame in the scene's frame sequence, counting from
+        zero.
+    """
+
+    image: Image
+    requested_time: float
+    time: float
+    frame_index: int
 
 
 class Manager(Generic[SceneT]):
@@ -94,7 +120,7 @@ class Manager(Generic[SceneT]):
     Output settings are saved during scene construction. During rendering, the
     manager creates the file writer when first requested and makes it available
     before :meth:`~manim.scene.scene.Scene.setup` runs. :meth:`evaluate` runs the
-    scene without drawing frames or producing media.
+    scene without producing media, and draws only the frames it is asked for.
 
     Both backends use the same animation clock and sampling rules. Every play
     steps through all of its frames, also when it is skipped or reused from the
@@ -429,13 +455,31 @@ class Manager(Generic[SceneT]):
         self._finish_resource_scope()
         return rerun
 
-    def evaluate(self) -> None:
-        """Run the scene's animations without drawing frames or producing media.
+    def evaluate(
+        self,
+        *,
+        frame_times: Iterable[float] = (),
+        on_frame: Callable[[RenderedFrame], object] | None = None,
+    ) -> None:
+        """Run the scene's animations without producing media.
 
         Calls ``setup()``, ``construct()`` and ``tear_down()``, using the same
         animation steps and clock as rendering. Movie caches, animation ranges,
-        and skip flags are ignored, so every play runs. Section, subcaption, and
-        sound calls have no effect; sound files are not checked.
+        and skip flags are ignored, so every play runs. Only the frames requested
+        with ``frame_times`` are drawn. Section, subcaption, and sound calls have
+        no effect; sound files are not checked.
+
+        Parameters
+        ----------
+        frame_times
+            Times in seconds at which to draw the frame that a render would show.
+            Each frame is drawn when evaluation reaches it and passed to
+            ``on_frame``. Times at or after the end of the scene are ignored.
+        on_frame
+            Called with a :class:`RenderedFrame` for each time in
+            ``frame_times``, in increasing order of time. It runs inside the
+            scene's ``play()`` or ``wait()`` call, so an exception it raises ends
+            the evaluation.
 
         Notes
         -----
@@ -465,10 +509,18 @@ class Manager(Generic[SceneT]):
             or getattr(self.renderer, "_context", None) is not None
         ):
             raise RuntimeError("Evaluation requires an unused Scene.")
+        times = [float(time) for time in frame_times]
+        if any(not math.isfinite(time) or time < 0 for time in times):
+            raise ValueError("Frame times must be finite and not negative.")
+        if times and on_frame is None:
+            raise ValueError("Pass on_frame to receive the frames of frame_times.")
         meshes = _MeshGuard(self)
+        listeners: list[_RunListener] = [meshes, _Progress(self)]
+        if on_frame is not None:
+            listeners.append(_FrameRequests(self, times, on_frame))
         self._run_loop = _RunLoop(
             self,
-            listeners=[meshes, _Progress(self)],
+            listeners=listeners,
             selection=_OutputSelection.everything(self),
             drawer=_SceneImageDrawer(self),
         )
