@@ -2,6 +2,7 @@
 # ctex is left out on purpose: it adds ~100 MB of CJK fonts and packages.
 amsmath
 babel-english
+calligra
 cbfonts-fd
 cm-super
 count1to
