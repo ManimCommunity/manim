@@ -364,3 +364,13 @@ def test_arc_tip_keeps_arc_on_circle(angle, at_start):
     # Arcs are cubic Bézier approximations, so long arcs sit ~1e-5 off the
     # circle even without a tip. The bug this guards against was ~1e-1.
     np.testing.assert_allclose(distances, radius, atol=1e-4, rtol=0)
+
+
+@pytest.mark.parametrize("at_start", [False, True])
+def test_arc_tip_longer_than_arc_leaves_arc_unchanged(at_start):
+    # A tip at least as long as the arc can't be trimmed off it, so the arc
+    # is left as it was instead of collapsing or reversing.
+    arc = Arc(radius=1, angle=PI / 2)
+    before = arc.points.copy()
+    arc.add_tip(tip_length=5, at_start=at_start)
+    np.testing.assert_allclose(arc.points, before)
