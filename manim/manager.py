@@ -123,6 +123,7 @@ class Manager(Generic[SceneT]):
         self._log_started = False
         self._state = _State.OPEN
         self._scope_depth = 0
+        self._execution.frame_rate = self.session_spec.frame_rate
         scene.manager = self
 
     def _ensure_usable(self) -> None:
