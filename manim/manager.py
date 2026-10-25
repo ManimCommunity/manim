@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import contextlib
 import math
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
@@ -25,6 +24,7 @@ from ._run.loop import (
     _Sound,
     _TargetDrawer,
 )
+from ._run.record import _RunRecord
 from ._run.selection import _OutputSelection
 from .scene.section import DefaultSectionType
 from .utils.exceptions import EndSceneEarlyException, RerunSceneException
@@ -47,6 +47,7 @@ if TYPE_CHECKING:
     from .renderer.opengl.renderer import OpenGLRenderer
     from .scene.scene import Scene
     from .scene.scene_file_writer import SceneFileWriter
+    from .timeline import Timeline
     from .typing import RGBAPixelArray
 
 __all__ = ["Manager", "RenderedFrame"]
@@ -136,6 +137,8 @@ class Manager(Generic[SceneT]):
         self._scope_depth = 0
         self._execution.frame_rate = self.session_spec.frame_rate
         self._run_loop: _RunLoop | None = None
+        self._record: _RunRecord | None = None
+        self._timeline: Timeline | None = None
         self._evaluating = False
         scene.manager = self
 
@@ -299,7 +302,7 @@ class Manager(Generic[SceneT]):
                 "under the desired configuration before executing it."
             )
 
-    def render(self, preview: bool = False) -> bool:
+    def render(self, preview: bool = False, *, capture_timeline: bool = False) -> bool:
         """Run the complete render lifecycle for the managed scene.
 
         The lifecycle invokes :meth:`setup`, :meth:`construct`,
@@ -317,6 +320,10 @@ class Manager(Generic[SceneT]):
         ----------
         preview
             Whether the rendered media should be opened after rendering.
+        capture_timeline
+            Whether to record the scene's play, wait, section, caption, and sound
+            calls. After a successful render, the result is available as
+            :attr:`timeline`.
 
         Returns
         -------
@@ -337,17 +344,21 @@ class Manager(Generic[SceneT]):
                 raise ValueError("Previewing after render requires a media artifact.")
 
             started = True
+            self._timeline = None
+            record = self._loop_record()
+            record.capture = capture_timeline
             self._open_log_handler()
             if isinstance(self.renderer, OpenGLRenderer):
                 self.renderer.open()
             # Make the writer available to user setup() code.
             _ = self.file_writer
             self.setup()
+            ended_early = False
             try:
                 self.construct()
             except EndSceneEarlyException:
                 # Only a construction boundary is a normal early scene end.
-                pass
+                ended_early = True
             except RerunSceneException:
                 # The caller will create a fresh Scene for the rerun.
                 # Report any encoder errors before allowing that restart.
@@ -355,7 +366,10 @@ class Manager(Generic[SceneT]):
                 self._finish_resource_scope()
                 return True
             self.tear_down()
+            self._loop.finish(ended_early=ended_early)
             self.post_construct()
+            if capture_timeline:
+                self._timeline = record.timeline()
 
             if open_after_render or presentation.show_in_file_browser:
                 open_media_file(
@@ -373,9 +387,21 @@ class Manager(Generic[SceneT]):
                 self._cleanup_after_failure()
             raise
 
+    @property
+    def timeline(self) -> Timeline:
+        """The timeline recorded by a successful call to :meth:`evaluate` or
+        :meth:`render` with ``capture_timeline=True``.
+
+        Raises ``RuntimeError`` if no timeline has been recorded.
+        """
+        if self._timeline is None:
+            raise RuntimeError("No completed timeline capture is available.")
+        return self._timeline
+
     def evaluate(
         self,
         *,
+        capture_timeline: bool = False,
         frame_times: Iterable[float] = (),
         on_frame: Callable[[RenderedFrame], object] | None = None,
     ) -> None:
@@ -389,6 +415,10 @@ class Manager(Generic[SceneT]):
 
         Parameters
         ----------
+        capture_timeline
+            Whether to record the scene's play, wait, section, caption, and sound
+            calls. After a successful evaluation, the result is available as
+            :attr:`timeline`.
         frame_times
             Times in seconds at which to draw the frame that a render would show.
             Each frame is drawn when evaluation reaches it and passed to
@@ -432,8 +462,10 @@ class Manager(Generic[SceneT]):
             raise ValueError("Frame times must be finite and not negative.")
         if times and on_frame is None:
             raise ValueError("Pass on_frame to receive the frames of frame_times.")
+        record = self._record = _RunRecord(self, "evaluate")
+        record.capture = capture_timeline
         meshes = _MeshGuard(self)
-        listeners: list[_RunListener] = [meshes, _Progress(self)]
+        listeners: list[_RunListener] = [record, meshes, _Progress(self)]
         if on_frame is not None:
             listeners.append(_FrameRequests(self, times, on_frame))
         self._run_loop = _RunLoop(
@@ -446,10 +478,16 @@ class Manager(Generic[SceneT]):
         try:
             meshes.check()
             self.setup()
-            with contextlib.suppress(EndSceneEarlyException):
+            ended_early = False
+            try:
                 self.construct()
+            except EndSceneEarlyException:
+                ended_early = True
             self.tear_down()
             meshes.check()
+            self._run_loop.finish(ended_early=ended_early)
+            if capture_timeline:
+                self._timeline = record.timeline()
             self._finish_resource_scope()
         except BaseException:
             self._cleanup_after_failure()
@@ -567,13 +605,24 @@ class Manager(Generic[SceneT]):
             self._cleanup_after_failure()
             raise
 
+    def _loop_record(self) -> _RunRecord:
+        _ = self._loop
+        assert self._record is not None
+        return self._record
+
     @property
     def _loop(self) -> _RunLoop:
         """The loop that runs this scene's play calls, created on first use."""
         if self._run_loop is None:
+            self._record = _RunRecord(self, "render")
             self._run_loop = _RunLoop(
                 self,
-                listeners=[_Encoder(self), _Preview(self), _Progress(self)],
+                listeners=[
+                    self._record,
+                    _Encoder(self),
+                    _Preview(self),
+                    _Progress(self),
+                ],
                 selection=_OutputSelection(self),
                 drawer=_TargetDrawer(self),
             )
