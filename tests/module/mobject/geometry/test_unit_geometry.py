@@ -74,10 +74,16 @@ def test_Arc_points():
     )
 
 
-def test_Arc_init_points_matches_generate_points():
+def test_Arc_anchors_lie_on_circle():
+    arc = Arc(radius=2, start_angle=0.5, angle=1.5, arc_center=[1, 2, 0])
+    anchors = np.vstack([arc.points[::4], arc.points[3::4]])
+    np.testing.assert_allclose(np.linalg.norm(anchors - [1, 2, 0], axis=1), 2)
+
+
+def test_Arc_generate_points_is_idempotent():
     arc = Arc(radius=2, start_angle=0.5, angle=1.5, arc_center=[1, 2, 0])
     expected = arc.points.copy()
-    arc.init_points()
+    arc.generate_points()
     np.testing.assert_array_equal(arc.points, expected)
 
 
