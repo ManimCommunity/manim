@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import contextlib
 import copy
+import functools
 import hashlib
 import inspect
 import json
+import weakref
 import zlib
 from collections.abc import Callable, Hashable, Iterable, Sequence
 from time import perf_counter
@@ -85,6 +88,56 @@ def _hash_ndarray(array: np.ndarray) -> str:
     encoded_descriptor = json.dumps(descriptor, separators=(",", ":"))
     # This compacts array content before the existing CRC32 play-key pipeline.
     return f"NDARRAY:{encoded_descriptor}:{array.shape}:{digest.hexdigest()}"
+
+
+#: Collected names per class. Weak keys, so a scene that builds classes on the fly
+#: does not pin them, and plain ``frozenset`` values, so an entry cannot keep its own
+#: key alive the way storing the MRO would.
+_derived_attribute_cache: weakref.WeakKeyDictionary[type, frozenset[str]] = (
+    weakref.WeakKeyDictionary()
+)
+
+
+def invalidate_derived_attribute_names() -> None:
+    """Forget the collected names, so that they are collected again.
+
+    :meth:`ManimConfig.renderer` calls this after it changes the base classes of
+    mobject classes, because the names of their subclasses can change too.
+    """
+    _derived_attribute_cache.clear()
+
+
+def _derived_attribute_names(klass: type) -> frozenset[str]:
+    """Return the attribute names of a class that the cache key leaves out.
+
+    These attributes hold values computed from other attributes when they are first
+    needed, for example when a mobject is drawn. Leaving them out gives a play the
+    same key whether or not something was drawn before it.
+
+    The names come from the class and all its base classes:
+
+    - every :class:`functools.cached_property`;
+    - every name listed in ``_hash_excluded_attributes``.
+
+    The result is kept per class until :func:`invalidate_derived_attribute_names`
+    clears it. Changing ``config.renderer`` does this, because it changes the base
+    classes of existing mobject classes.
+    """
+    cached = _derived_attribute_cache.get(klass)
+    if cached is not None:
+        return cached
+    names: set[str] = set()
+    for ancestor in klass.__mro__:
+        for name, value in vars(ancestor).items():
+            if isinstance(value, functools.cached_property):
+                names.add(name)
+        names.update(vars(ancestor).get("_hash_excluded_attributes", ()))
+    collected = frozenset(names)
+    # Built-in types cannot be weakly referenced; their names are collected again on
+    # each call, which is cheap.
+    with contextlib.suppress(TypeError):
+        _derived_attribute_cache[klass] = collected
+    return collected
 
 
 class _Memoizer:
@@ -291,6 +344,9 @@ class _CustomEncoder(json.JSONEncoder):
             return _hash_ndarray(obj)
         elif hasattr(obj, "__dict__"):
             temp = obj.__dict__
+            derived = _derived_attribute_names(type(obj))
+            if derived:
+                temp = {key: value for key, value in temp.items() if key not in derived}
             # MappingProxy is scene-caching nightmare. It contains all of the object methods and attributes. We skip it as the mechanism will at some point process the object, but instantiated.
             # Indeed, there is certainly no case where scene-caching will receive only a non instancied object, as this is never used in the library or encouraged to be used user-side.
             if isinstance(temp, MappingProxyType):
