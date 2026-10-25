@@ -42,17 +42,13 @@ def test_t_values(config, using_temp_config, disabling_caching, frame_rate):
     sys.version_info < (3, 8),
     reason="Mock object has a different implementation in python 3.7, which makes it broken with this logic.",
 )
-def test_t_values_with_skip_animations(using_temp_config, disabling_caching):
-    """Test the behaviour of scene.skip_animations"""
+def test_t_values_with_skip_animations(config, using_temp_config, disabling_caching):
+    """Skipped plays are not drawn, but still step through every frame."""
     scene = SquareToCircle()
     scene.update_to_time = Mock()
     scene.renderer._original_skipping_status = True
     scene.render()
-    assert scene.update_to_time.call_count == 1
-    np.testing.assert_almost_equal(
-        scene.update_to_time.call_args.args[0],
-        1.0,
-    )
+    assert scene.update_to_time.call_count == config.frame_rate
 
 
 def test_static_wait_detection(using_temp_config, disabling_caching):
@@ -98,7 +94,7 @@ def test_frozen_frame(using_temp_config, disabling_caching):
     assert scene.scene_update_count == 0
 
 
-def test_t_values_with_cached_data(using_temp_config, monkeypatch):
+def test_t_values_with_cached_data(config, using_temp_config, monkeypatch):
     """Test the proper generation and use of the t values when an animation is cached."""
     scene = SceneWithMultipleCalls()
     writer = scene.renderer.file_writer
@@ -108,7 +104,8 @@ def test_t_values_with_cached_data(using_temp_config, monkeypatch):
     scene.update_to_time = Mock()
 
     scene.render()
-    assert scene.update_to_time.call_count == 10
+    # Ten one-second plays, each stepping every frame without drawing.
+    assert scene.update_to_time.call_count == 10 * config.frame_rate
 
 
 @pytest.mark.parametrize(
@@ -116,12 +113,12 @@ def test_t_values_with_cached_data(using_temp_config, monkeypatch):
     [{"save_last_frame": True}, {"format": "png"}],
 )
 def test_t_values_save_last_frame(config, using_temp_config, still_config):
-    """Still output fast-forwards each play and only evaluates its final state."""
+    """Still output steps every frame of each play without drawing it."""
     config.update(still_config)
     scene = SquareToCircle()
     scene.update_to_time = Mock()
     scene.render()
-    scene.update_to_time.assert_called_once_with(1)
+    assert scene.update_to_time.call_count == config.frame_rate
 
 
 def test_png_sequence_evaluates_every_frame(config, using_temp_config):
