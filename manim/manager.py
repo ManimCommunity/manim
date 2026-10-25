@@ -104,6 +104,7 @@ class Manager(Generic[SceneT]):
         self._closing = False
         self._rendered = False
         self._scope_depth = 0
+        self._execution.frame_rate = self.session_spec.frame_rate
         scene.manager = self
 
     def __enter__(self) -> Manager[SceneT]:
