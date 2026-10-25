@@ -344,8 +344,7 @@ class Arc(TipableVMobject):
         return self
 
     def init_points(self) -> Self:
-        self.generate_points()
-        return self
+        return self.generate_points()
 
     @staticmethod
     def _create_quadratic_bezier_points(
@@ -374,8 +373,8 @@ class Arc(TipableVMobject):
         """Set the points of a unit arc centered at the origin.
 
         The OpenGL renderer stores quadratic Bézier curves, while the Cairo
-        renderer stores cubic ones, so the point layout depends on which
-        base class this arc currently has.
+        renderer stores cubic ones, so the point layout depends on the base
+        class set by ``ConvertToOpenGL``, which follows ``config.renderer``.
         """
         if isinstance(self, OpenGLVMobject):
             self.set_points(
@@ -1036,10 +1035,6 @@ class AnnularSector(Arc):
         self.add_line_to(inner_arc.points[0])
         return self
 
-    def init_points(self) -> Self:
-        self.generate_points()
-        return self
-
 
 class Sector(AnnularSector):
     """A sector of a circle.
@@ -1111,10 +1106,6 @@ class Annulus(Circle):
         self.append_points(outer_circle.points)
         self.append_points(inner_circle.points)
         self.shift(self.arc_center)
-        return self
-
-    def init_points(self) -> Self:
-        self.generate_points()
         return self
 
 
