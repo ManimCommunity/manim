@@ -2,19 +2,16 @@
 
 from __future__ import annotations
 
-import datetime
-import math
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
-
-import srt
 
 from . import config, logger
 from ._config.logger_utils import set_file_logger
-from ._config.video_encoder import video_encoder_fingerprint
+from ._run.listeners import _Encoder, _Preview, _Progress
+from ._run.loop import _Caption, _RunLoop, _Section, _Sound, _TargetDrawer
+from ._run.selection import _OutputSelection
 from .scene.section import DefaultSectionType
 from .utils.exceptions import EndSceneEarlyException, RerunSceneException
 from .utils.file_ops import open_media_file
-from .utils.hashing import get_hash_from_play_call
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -31,7 +28,6 @@ if TYPE_CHECKING:
     from .renderer.cairo.camera import Camera
     from .renderer.opengl.camera import OpenGLCamera
     from .renderer.opengl.renderer import OpenGLRenderer
-    from .renderer.protocol import _AnimationRenderer
     from .scene.scene import Scene
     from .scene.scene_file_writer import SceneFileWriter
     from .typing import RGBAPixelArray
@@ -67,8 +63,9 @@ class Manager(Generic[SceneT]):
     the file writer when first requested and makes it available before
     :meth:`~manim.scene.scene.Scene.setup` runs.
 
-    Both backends use the same animation clock and sampling rules. Cached and
-    skipped animations follow a separate fast-forward path.
+    Both backends use the same animation clock and sampling rules. Every play
+    steps through all of its frames, also when it is skipped or reused from the
+    cache, so the scene always reaches the same state as in a full render.
 
     Rendering normally closes the renderer before returning. Use a
     ``with manager:`` block to keep its resources available after a successful
@@ -97,6 +94,7 @@ class Manager(Generic[SceneT]):
         self._closing = False
         self._scope_depth = 0
         self._execution.frame_rate = self.session_spec.frame_rate
+        self._run_loop: _RunLoop | None = None
         scene.manager = self
 
     def __enter__(self) -> Manager[SceneT]:
@@ -235,7 +233,11 @@ class Manager(Generic[SceneT]):
 
     @property
     def skip_animations(self) -> bool:
-        """Return whether the current play is being fast-forwarded."""
+        """Whether the current play draws no frames.
+
+        This is the case for a play that is left out of the output or reused
+        from the cache. The play still steps through all of its frames.
+        """
         return self._execution.skip_animations
 
     @skip_animations.setter
@@ -432,188 +434,71 @@ class Manager(Generic[SceneT]):
             self._cleanup_after_failure()
             raise
 
+    @property
+    def _loop(self) -> _RunLoop:
+        """The loop that runs this scene's play calls, created on first use."""
+        if self._run_loop is None:
+            self._run_loop = _RunLoop(
+                self,
+                listeners=[_Encoder(self), _Preview(self), _Progress(self)],
+                selection=_OutputSelection(self),
+                drawer=_TargetDrawer(self),
+            )
+        return self._run_loop
+
     def _update_skipping_status(self) -> None:
-        if (
-            self.file_writer.sections[-1].skip_animations
-            or self.file_writer.output_spec.is_still
-        ):
-            self.skip_animations = True
-        if (
-            config.from_animation_number > 0
-            and self.num_plays < config.from_animation_number
-        ):
-            self.skip_animations = True
-        if (
-            config.upto_animation_number >= 0
-            and self.num_plays > config.upto_animation_number
-        ):
-            self.skip_animations = True
-            raise EndSceneEarlyException()
+        """Set :attr:`skip_animations` for the next play, for old renderer callers.
+
+        Raises
+        ------
+        EndSceneEarlyException
+            If the next play lies after ``config.upto_animation_number``.
+        """
+        self.skip_animations = not self._loop.selection.start_play(self.num_plays)
 
     def _play(
         self, *args: Animation | Mobject | _AnimationBuilder, **kwargs: Any
     ) -> None:
         """Prepare and play animations, reusing cached frames when available."""
         self._validate_execution()
-        scene = self.scene
-        renderer: _AnimationRenderer = self.renderer
-        self.skip_animations = self._execution.original_skipping_status
-        self._update_skipping_status()
-        scene.compile_animation_data(*args, **kwargs)
+        self._loop.play(*args, **kwargs)
 
-        if self.skip_animations:
-            logger.debug(f"Skipping animation {self.num_plays}")
-            hash_current_animation = None
-        else:
-            if config["disable_caching"]:
-                logger.info("Caching disabled.")
-                hash_current_animation = f"uncached_{self.num_plays:05}"
-            else:
-                assert scene.animations is not None
-                backend, drawing_state = renderer._animation_cache_identity(scene)
-                hash_current_animation = get_hash_from_play_call(
-                    scene,
-                    self.camera,
-                    scene.animations,
-                    scene.mobjects,
-                    backend=backend,
-                    encoder_fingerprint=video_encoder_fingerprint(
-                        self.session_spec.video_encoder
-                    ),
-                    renderer_state={
-                        "drawing": drawing_state,
-                        "execution": {
-                            "clock": "sample-v2",
-                            "time": self.time,
-                            "play_index": self.num_plays,
-                            "frame_rate": self.session_spec.frame_rate,
-                        },
-                    },
-                )
-                # Cached movies do not record when a stop condition became true.
-                # Run these waits again to determine when they end.
-                if scene.stop_condition is None and self.file_writer.is_already_cached(
-                    hash_current_animation
-                ):
-                    logger.info(
-                        f"Animation {self.num_plays} : Using cached data (hash : %(hash_current_animation)s)",
-                        {"hash_current_animation": hash_current_animation},
-                    )
-                    self.skip_animations = True
-        self.file_writer.add_partial_movie_file(hash_current_animation)
-        self._execution.animations_hashes.append(hash_current_animation)
-        logger.debug(
-            "List of the first few animation hashes of the scene: %(h)s",
-            {"h": str(self._execution.animations_hashes[:5])},
-        )
-        renderer._start_animation()
-        self.file_writer.begin_animation(
-            not self.skip_animations, animation_index=self.num_plays
-        )
-        scene.begin_animations()
-        renderer._prepare_animation(scene)
-        if scene.is_current_animation_frozen_frame():
-            frame = self._draw_animation_frame(0)
-            frame_rate = self.session_spec.frame_rate
-            repeats = int(scene.duration * frame_rate)
-            # Every kind of play consumes the frames normal playback would produce.
-            self.time += repeats / frame_rate
-            if not self.skip_animations and frame is not None:
-                self.file_writer.write_frame(frame, repeat=repeats)
-            renderer._present_frozen_frame(scene, scene.duration)
-        else:
-            self._play_internal()
-        self.file_writer.end_animation(not self.skip_animations)
-        self.num_plays += 1
+    def _wants_frame_pixels(self) -> bool:
+        """Whether the file writer is given the pixels of drawn frames.
 
-    def _sampled_duration(self, duration: float, frozen: bool) -> float:
-        """Return the duration of the frames a normal render would produce."""
-        frame_rate = self.session_spec.frame_rate
-        count = (
-            int(duration * frame_rate)
-            if frozen
-            else math.ceil(duration / (1 / frame_rate))
-        )
-        return count / frame_rate
-
-    def _play_internal(self, skip_rendering: bool = False) -> None:
-        """Step through animations, advancing time even when frames are not written."""
-        self._validate_execution()
-        scene = self.scene
-        # Match Scene.get_time_progression and the scene's saved encoder settings.
-        frame_rate = self.session_spec.frame_rate
-        event_start = self.time
-        assert scene.animations is not None
-        scene.duration = scene.get_run_time(scene.animations)
-        scene.time_progression = scene._get_animation_time_progression(
-            scene.animations,
-            scene.duration,
-        )
-        # A skipped wait with a stop condition still steps frame by frame, so its clock
-        # advances per sample. Every other shortcut play takes a single evaluation step
-        # and advances once, after that step. This is the same stop_condition that keeps
-        # such waits out of the cache, so the progression and the clock cannot disagree.
-        per_sample = not self.skip_animations or scene.stop_condition is not None
-        for sample_index, t in enumerate(scene.time_progression):
-            scene.update_to_time(t)
-            draw = not skip_rendering and not scene.skip_animation_preview
-            frame = self._draw_animation_frame(t) if draw else None
-            # Count the interval displayed by this frame, including the t=0 frame.
-            # Stop conditions and finish() see the time at the end of that interval.
-            if per_sample:
-                self.time = event_start + (sample_index + 1) / frame_rate
-            if draw:
-                self._deliver_animation_frame(frame, t)
-            if scene.stop_condition is not None and scene.stop_condition():
-                scene.time_progression.close()
-                break
-        if not per_sample:
-            # The shortcut step observes the start time; finish() sees the consumed span.
-            self.time = event_start + self._sampled_duration(
-                scene.duration, frozen=False
-            )
-        for animation in scene.animations:
-            animation.finish()
-            animation.clean_up_from_scene(scene)
-        if per_sample:
-            scene.update_mobjects(0)
-        self.renderer.static_image = None  # type: ignore[union-attr]
-        scene.time_progression.close()
-
-    def _draw_animation_frame(self, frame_offset: float) -> RGBAPixelArray | None:
+        Reading pixels back is cheap for Cairo, and test writers record them
+        even without file output. OpenGL reads them back only for video and
+        image-sequence output.
+        """
         from .renderer.cairo.renderer import CairoRenderer
 
-        self.renderer.render(self.scene, frame_offset, self.scene.moving_mobjects)
-        if isinstance(self.renderer, CairoRenderer) or (
-            not self.skip_animations
-            and (
-                self.file_writer.output_spec.is_video
-                or self.file_writer.output_spec.is_image_sequence
-            )
-        ):
-            return self.renderer.get_frame()
-        return None
-
-    def _deliver_animation_frame(
-        self, frame: RGBAPixelArray | None, frame_offset: float
-    ) -> None:
-        if self.skip_animations:
-            return
-        if frame is not None:
-            self.file_writer.write_frame(frame)
-        self.renderer._present_frame(self.scene, frame_offset)
+        output = self.output_spec
+        return (
+            isinstance(self.renderer, CairoRenderer)
+            or output.is_video
+            or output.is_image_sequence
+        )
 
     def _render_preview_frame(self, frame_offset: float) -> None:
-        """Redraw and display an interactive frame without advancing animation time."""
+        """Draw and show the current state without advancing animation time.
+
+        Interactive OpenGL sessions use this between commands. Unless the current
+        play is skipped, the frame is also passed to the file writer.
+        """
         self._validate_execution()
-        frame = self._draw_animation_frame(frame_offset)
-        self._deliver_animation_frame(frame, frame_offset)
+        scene = self.scene
+        self.renderer.render(scene, frame_offset, scene.moving_mobjects)
+        if self.skip_animations:
+            return
+        if self._wants_frame_pixels():
+            self.file_writer.write_frame(self.renderer.get_frame())
+        self.renderer._present_frame(scene, frame_offset)
 
     def _legacy_add_frame(self, frame: RGBAPixelArray, num_frames: int = 1) -> None:
         """Write frames and advance time for callers of CairoRenderer.add_frame."""
         self._validate_execution()
         if not self.skip_animations:
-            self.time += num_frames / self.session_spec.frame_rate
+            self._execution.frame += num_frames
             self.file_writer.write_frame(frame, repeat=num_frames)
 
     def next_section(
@@ -633,7 +518,7 @@ class Manager(Generic[SceneT]):
         skip_animations
             Whether animation output in this section should be skipped.
         """
-        self.file_writer.next_section(name, section_type, skip_animations)
+        self._loop.marker(_Section(name, section_type, skip_animations))
 
     def add_subcaption(
         self, content: str, duration: float = 1, offset: float = 0
@@ -649,13 +534,8 @@ class Manager(Generic[SceneT]):
         offset
             The offset in seconds from the current scene time.
         """
-        subtitle = srt.Subtitle(
-            index=len(self.file_writer.subcaptions),
-            content=content,
-            start=datetime.timedelta(seconds=float(self.time + offset)),
-            end=datetime.timedelta(seconds=float(self.time + offset + duration)),
-        )
-        self.file_writer.subcaptions.append(subtitle)
+        start = float(self.time + offset)
+        self._loop.marker(_Caption(content, start, start + float(duration)))
 
     def add_sound(
         self,
@@ -666,7 +546,7 @@ class Manager(Generic[SceneT]):
     ) -> None:
         """Add sound to the output at the current scene time.
 
-        No sound is added while animations are being skipped.
+        No sound is added while the surrounding plays are left out of the output.
 
         Parameters
         ----------
@@ -680,6 +560,12 @@ class Manager(Generic[SceneT]):
             Additional arguments forwarded to
             :meth:`~manim.scene.scene_file_writer.SceneFileWriter.add_sound`.
         """
-        if self.skip_animations:
-            return
-        self.file_writer.add_sound(sound_file, self.time + time_offset, gain, **kwargs)
+        self._loop.marker(
+            _Sound(
+                sound_file,
+                self.time + time_offset,
+                gain,
+                dict(kwargs),
+                in_output=self._loop.in_output,
+            )
+        )

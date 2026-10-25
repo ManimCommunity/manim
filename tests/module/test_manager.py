@@ -395,7 +395,9 @@ def test_scene_add_subcaption_records_placement(dry_run):
     ]
 
 
-def test_scene_add_sound_passes_placement_and_honors_skip_state(dry_run, monkeypatch):
+def test_scene_add_sound_passes_placement_and_skips_excluded_output(
+    dry_run, monkeypatch
+):
     scene = Scene()
     file_writer = scene.renderer.file_writer
     monkeypatch.setattr(file_writer, "add_sound", Mock())
@@ -407,7 +409,7 @@ def test_scene_add_sound_passes_placement_and_honors_skip_state(dry_run, monkeyp
     file_writer.add_sound.assert_called_once_with("bell.wav", 2.75, -3, marker="test")
 
     file_writer.add_sound.reset_mock()
-    scene.renderer.skip_animations = True
+    scene.next_section("skipped", skip_animations=True)
 
     scene.add_sound("skipped.wav")
 

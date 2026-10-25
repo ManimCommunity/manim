@@ -18,12 +18,12 @@ def scene():
 def test_preview_presents_without_advancing_time(scene, monkeypatch):
     manager = scene.manager
     manager.time = 2
-    draw = Mock(return_value=None)
-    monkeypatch.setattr(manager, "_draw_animation_frame", draw)
+    draw = Mock()
+    monkeypatch.setattr(scene.renderer, "render", draw)
     window = Mock()
     monkeypatch.setattr(scene.renderer, "window", window)
     manager._render_preview_frame(-1)
-    draw.assert_called_once_with(-1)
+    draw.assert_called_once_with(scene, -1, scene.moving_mobjects)
     window.swap_buffers.assert_called_once_with()
     assert scene.time == 2
 

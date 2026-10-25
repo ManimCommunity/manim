@@ -69,8 +69,8 @@ def test_raw_backend_drawing_does_not_advance_clock_or_write(scene, monkeypatch)
     write.assert_not_called()
 
 
-def test_cached_play_advances_once_after_its_evaluation_step(scene, monkeypatch):
-    """A shortcut is one interval: begin sees its start, finish sees the consumed span."""
+def test_cached_play_steps_every_frame(scene, monkeypatch):
+    """A cached play is not drawn, but its animations step like a rendered play."""
     manager = scene._get_manager()
     manager.time = 2
     observed = []
@@ -87,15 +87,18 @@ def test_cached_play_advances_once_after_its_evaluation_step(scene, monkeypatch)
             observed.append(("finish", scene.time))
             super().finish()
 
-    monkeypatch.setattr("manim.manager.get_hash_from_play_call", lambda *a, **k: "hit")
+    monkeypatch.setattr(
+        "manim._run.listeners.get_hash_from_play_call", lambda *a, **k: "hit"
+    )
     monkeypatch.setattr(manager.file_writer, "is_already_cached", lambda _: True)
     with tempconfig({"disable_caching": False}):
         scene.play(Probe(Square(), run_time=0.3))
-    # 0.3 s at 4 fps is two frames, so the play consumes 0.5 s, as a render would.
+    # 0.3 s at 4 fps is two frames, so the play takes 0.5 s, as a render would.
     assert observed == [
         ("begin", 2),
         ("interpolate", 2, 0.0),
-        ("interpolate", 2, 1.0),
+        ("interpolate", 2, 0.0),
+        ("interpolate", 2.25, pytest.approx(0.25 / 0.3)),
         ("finish", 2.5),
         ("interpolate", 2.5, 1.0),
     ]

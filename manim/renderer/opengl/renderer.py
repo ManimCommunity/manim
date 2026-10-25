@@ -809,9 +809,9 @@ class OpenGLRenderer(_RendererExecutionView):
         output = self.file_writer.output_spec
         if self.num_plays > 0 and (output.is_video or output.is_image_sequence):
             self.file_writer.finish()
-        elif self.num_plays == 0:
-            # Keep the framebuffer useful for direct renderer access and
-            # graphical tests even when no media artifact was requested.
+        else:
+            # Leave the final state in the framebuffer for direct renderer access
+            # and graphical tests: skipped plays do not draw.
             self.update_frame(scene)
 
         if self.should_save_last_frame():

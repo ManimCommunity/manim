@@ -39,17 +39,15 @@ def test_t_values(config, using_temp_opengl_config, disabling_caching, frame_rat
     )
 
 
-def test_t_values_with_skip_animations(using_temp_opengl_config, disabling_caching):
-    """Test the behaviour of scene.skip_animations"""
+def test_t_values_with_skip_animations(
+    config, using_temp_opengl_config, disabling_caching
+):
+    """Skipped plays are not drawn, but still step through every frame."""
     scene = SquareToCircle()
     scene.update_to_time = Mock()
     scene.renderer._original_skipping_status = True
     scene.render()
-    assert scene.update_to_time.call_count == 1
-    np.testing.assert_almost_equal(
-        scene.update_to_time.call_args.args[0],
-        1.0,
-    )
+    assert scene.update_to_time.call_count == config.frame_rate
 
 
 def test_static_wait_detection(using_temp_opengl_config, disabling_caching):
@@ -98,12 +96,12 @@ def test_t_values_with_cached_data(using_temp_opengl_config, monkeypatch):
     [{"save_last_frame": True}, {"format": "png"}],
 )
 def test_t_values_save_last_frame(config, using_temp_opengl_config, still_config):
-    """Still output fast-forwards each play and only evaluates its final state."""
+    """Still output steps every frame of each play without drawing it."""
     config.update(still_config)
     scene = SquareToCircle()
     scene.update_to_time = Mock()
     scene.render()
-    scene.update_to_time.assert_called_once_with(1)
+    assert scene.update_to_time.call_count == config.frame_rate
 
 
 def test_animate_with_changed_custom_attribute(using_temp_opengl_config):

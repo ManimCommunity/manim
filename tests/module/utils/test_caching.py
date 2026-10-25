@@ -5,8 +5,9 @@ from unittest.mock import Mock, call
 
 import numpy as np
 
-import manim.manager as manager_module
+import manim._run.listeners as listeners_module
 from manim import Manager, tempconfig
+from manim._run.loop import _RunLoop
 from manim.renderer._execution import _RendererExecutionView
 from manim.utils import caching
 from manim.utils.caching import (
@@ -116,8 +117,8 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
     encoder = object()
     fingerprint = Mock(return_value="encoder-token")
     hash_play = Mock(return_value="cache-key")
-    monkeypatch.setattr(manager_module, "video_encoder_fingerprint", fingerprint)
-    monkeypatch.setattr(manager_module, "get_hash_from_play_call", hash_play)
+    monkeypatch.setattr(listeners_module, "video_encoder_fingerprint", fingerprint)
+    monkeypatch.setattr(listeners_module, "get_hash_from_play_call", hash_play)
 
     class FakeScene:
         def __init__(self):
@@ -133,6 +134,7 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
             self.compile_animation_data = Mock()
             self.begin_animations = Mock()
             self.is_current_animation_frozen_frame = Mock(return_value=False)
+            self._get_animation_time_progression = Mock()
 
         def compile_animations(self, *args, **kwargs):
             return []
@@ -168,7 +170,8 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
     scene.renderer = renderer
     manager = Manager(scene)
     manager._file_writer = renderer.file_writer
-    manager._play_internal = Mock()
+    # Only the cache decisions at the start of each play are under test.
+    monkeypatch.setattr(_RunLoop, "_step", lambda loop, play: None)
 
     with tempconfig({"disable_caching": False, "frame_rate": 60}):
         manager._play()

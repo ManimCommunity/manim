@@ -346,7 +346,9 @@ class CairoRenderer(_RendererExecutionView):
         output = self.file_writer.output_spec
         if self.num_plays and (output.is_video or output.is_image_sequence):
             self.file_writer.finish()
-        elif not self.num_plays:
+        else:
+            # Leave the final state in the image buffer for direct renderer access
+            # and graphical tests: skipped plays do not draw.
             self.static_image = None
             self.update_frame(scene)
 
