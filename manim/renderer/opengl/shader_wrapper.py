@@ -47,6 +47,12 @@ _ShaderData: TypeAlias = npt.NDArray[_ShaderDType]
 
 
 class ShaderWrapper:
+    #: Vertex buffers, index buffers and uniforms are copied from the mobject when it
+    #: is drawn. The mobject's own values are already part of the cache key, so the key
+    #: leaves these copies out. ``program_code`` stays in the key, because
+    #: :meth:`.OpenGLMobject.set_color_by_code` changes it.
+    _hash_excluded_attributes = frozenset({"vert_data", "vert_indices", "uniforms"})
+
     def __init__(
         self,
         vert_data: _ShaderData = None,
