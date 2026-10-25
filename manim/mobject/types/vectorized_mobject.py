@@ -1626,7 +1626,7 @@ class VMobject(Mobject):
         Parameters
         ----------
         alpha
-            The proportion along the the path of the :class:`VMobject`.
+            The proportion along the path of the :class:`VMobject`.
 
         Returns
         -------
@@ -2814,7 +2814,7 @@ class CurvesAsSubmobjects(VGroup):
         Parameters
         ----------
         alpha
-            The proportion along the the path of the :class:`CurvesAsSubmobjects`.
+            The proportion along the path of the :class:`CurvesAsSubmobjects`.
 
         Returns
         -------
