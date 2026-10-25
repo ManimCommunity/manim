@@ -170,17 +170,17 @@ class Manager(Generic[SceneT]):
 
     @property
     def renderer(self) -> CairoRenderer | OpenGLRenderer:
-        """Return the renderer selected when the scene was created."""
+        """The renderer selected when the scene was created."""
         return self.scene.renderer
 
     @property
     def camera(self) -> Camera | OpenGLCamera:
-        """Return the current renderer's camera."""
+        """The current renderer's camera."""
         return self.renderer.camera
 
     @property
     def file_writer(self) -> SceneFileWriter:
-        """Return the scene's file writer, creating it on first access.
+        """The scene's file writer, created on first access.
 
         The writer uses ``scene.file_writer_settings``. :meth:`render` accesses
         this property before calling :meth:`setup`; ``renderer.file_writer``
@@ -205,17 +205,17 @@ class Manager(Generic[SceneT]):
 
     @property
     def output_spec(self) -> OutputSpec:
-        """Return the output format and options saved for this scene."""
+        """The output format and options saved for this scene."""
         return self.session_spec.output
 
     @property
     def session_spec(self) -> RenderSessionSpec:
-        """Return the scene's saved output, preview, and execution settings."""
+        """The scene's saved output, preview, and execution settings."""
         return self.scene.session_spec
 
     @property
     def time(self) -> float:
-        """Return elapsed animation time in seconds."""
+        """The elapsed animation time in seconds."""
         return self._execution.time
 
     @time.setter
@@ -224,7 +224,7 @@ class Manager(Generic[SceneT]):
 
     @property
     def num_plays(self) -> int:
-        """Return the number of completed play or wait calls."""
+        """The number of completed play or wait calls."""
         return self._execution.num_plays
 
     @num_plays.setter
