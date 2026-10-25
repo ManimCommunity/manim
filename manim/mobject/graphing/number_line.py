@@ -67,8 +67,8 @@ class NumberLine(Line):
         from :class:`.ArrowTip`.
     include_numbers
         Whether to add numbers to the tick marks. The number of decimal places is determined
-        by the step size, this default can be overridden by ``decimal_number_config``.
-    scaling
+        by the step size (and by ``x_min`` when the ticks start there), this default can be
+        overridden by ``decimal_number_config``.
         The way the ``x_range`` is value is scaled, i.e. :class:`~.LogBase` for a logarithmic numberline. Defaults to :class:`~.LinearBase`.
     font_size
         The size of the label mobjects. Defaults to 36.
@@ -186,9 +186,16 @@ class NumberLine(Line):
             x_range = [*x_range, 1]
 
         if decimal_number_config is None:
-            decimal_number_config = {
-                "num_decimal_places": self._decimal_places_from_step(x_range[2]),
-            }
+            num_decimal_places = self._decimal_places_from_step(x_range[2])
+            # Ticks start at x_min when the range is entirely positive or
+            # entirely negative (see get_tick_range), so x_min may need more
+            # decimal places than the step, e.g. x_range=[3.5, 7.5, 1].
+            x_min, x_max = x_range[0], x_range[1]
+            if x_min < x_max < 0 or x_max > x_min > 0:
+                num_decimal_places = max(
+                    num_decimal_places, self._decimal_places_from_step(x_min)
+                )
+            decimal_number_config = {"num_decimal_places": num_decimal_places}
 
         # turn into a NumPy array to scale by just applying the function
         self.x_range = np.array(x_range, dtype=float)
