@@ -1125,9 +1125,10 @@ class Camera:
         )
 
         # Paste into an image as large as the camera's pixel array.
-        full_image = Image.fromarray(
-            np.zeros((self.pixel_height, self.pixel_width)),
-            mode="RGBA",
+        full_image = Image.new(
+            "RGBA",
+            (self.pixel_width, self.pixel_height),
+            (0, 0, 0, 0),
         )
         full_image.paste(
             sub_image,
