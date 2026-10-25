@@ -68,6 +68,7 @@ import numpy as np
 from manimpango import MarkupUtils, PangoUtils, TextSetting
 
 from manim import config, logger
+from manim._config.logger_utils import user_stacklevel
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.svg.svg_mobject import SVGMobject
@@ -487,7 +488,11 @@ class Text(SVGMobject):
                 elif font.title() in fonts_list:
                     font = font.title()
                 else:
-                    logger.warning(f"Font {font} not in {fonts_list}.")
+                    logger.warning(
+                        f"Font {font} not in {fonts_list}.",
+                        stack_info=True,
+                        stacklevel=user_stacklevel(),
+                    )
         self.font = font
         self._font_size = float(font_size)
         # needs to be a float or else size is inflated when font_size = 24
@@ -1215,7 +1220,11 @@ class MarkupText(SVGMobject):
                 elif font.title() in fonts_list:
                     font = font.title()
                 else:
-                    logger.warning(f"Font {font} not in {fonts_list}.")
+                    logger.warning(
+                        f"Font {font} not in {fonts_list}.",
+                        stack_info=True,
+                        stacklevel=user_stacklevel(),
+                    )
         self.font = font
         self._font_size = float(font_size)
         self.slant = slant
@@ -1234,6 +1243,8 @@ class MarkupText(SVGMobject):
         if len(colormap) > 0:
             logger.warning(
                 'Using <color> tags in MarkupText is deprecated. Please use <span foreground="..."> instead.',
+                stack_info=True,
+                stacklevel=user_stacklevel(),
             )
         gradientmap = self._extract_gradient_tags()
         validate_error = MarkupUtils.validate(self.text)

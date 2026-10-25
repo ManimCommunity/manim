@@ -32,6 +32,7 @@ from typing_extensions import (
 )
 
 from manim import config, logger
+from manim._config.logger_utils import user_stacklevel
 from manim.constants import *
 from manim.data_structures import MethodWithArgs
 from manim.renderer.shader_wrapper import get_colormap_code
@@ -863,6 +864,8 @@ class OpenGLMobject:
             logger.warning(
                 "Attempted adding some Mobject as a child more than once, "
                 "this is not possible. Repetitions are ignored.",
+                stack_info=True,
+                stacklevel=user_stacklevel(),
             )
 
         if not self._submobjects:

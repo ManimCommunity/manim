@@ -43,7 +43,7 @@ from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLPoint
 
 from .. import config, logger
-from .._config.logger_utils import set_file_logger
+from .._config.logger_utils import set_file_logger, user_stacklevel
 from .._config.output_plan import (
     resolve_file_log_path,
     resolve_media_layout,
@@ -637,7 +637,9 @@ class Scene:
                     # This might be unexpected, so raise a warning.
                     logger.warning(
                         f"Attempted to replace {type(old_m).__name__} "
-                        "with itself in Scene.mobjects."
+                        "with itself in Scene.mobjects.",
+                        stack_info=True,
+                        stacklevel=user_stacklevel(),
                     )
                     return True
                 mobj_list.remove(new_m)
@@ -1160,7 +1162,9 @@ class Scene:
                 f"The original {parameter_name} of {method_name}, "
                 f"{run_time:g} seconds, is too short for the current frame "
                 f"rate of {fps:g} FPS. Rendering with the shortest possible "
-                f"{parameter_name} of {seconds_per_frame:g} seconds instead."
+                f"{parameter_name} of {seconds_per_frame:g} seconds instead.",
+                stack_info=True,
+                stacklevel=user_stacklevel(),
             )
             run_time = seconds_per_frame
 

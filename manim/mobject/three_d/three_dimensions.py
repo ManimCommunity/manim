@@ -22,6 +22,7 @@ from typing import TYPE_CHECKING, Any, Literal, Self
 import numpy as np
 
 from manim import config, logger
+from manim._config.logger_utils import user_stacklevel
 from manim.constants import *
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square
@@ -295,7 +296,9 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         if colorscale is None:
             logger.warning(
                 "The value passed to the colorscale keyword argument was None, "
-                "the surface fill color has not been changed"
+                "the surface fill color has not been changed",
+                stack_info=True,
+                stacklevel=user_stacklevel(),
             )
             return self
         colorscale_list = list(colorscale)
