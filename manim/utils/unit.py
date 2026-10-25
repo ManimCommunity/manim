@@ -37,7 +37,7 @@ class Percent:
     NotImplementedError
         If ``axis`` points along the z axis only, since the frame has no depth.
     ValueError
-        If ``axis`` is the zero vector.
+        If ``axis`` is the zero vector or contains non-finite values.
 
     Examples
     --------
@@ -52,6 +52,8 @@ class Percent:
 
     def __init__(self, axis: Vector3DLike) -> None:
         axis = np.asarray(axis, dtype=float)
+        if not np.all(np.isfinite(axis)):
+            raise ValueError("axis must only contain finite values")
         planar_norm = np.hypot(axis[0], axis[1])
         if planar_norm == 0:
             if np.any(axis[2:]):

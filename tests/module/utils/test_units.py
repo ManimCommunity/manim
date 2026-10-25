@@ -48,6 +48,12 @@ def test_percent_diagonal_directions_use_extent_of_frame(config, axis):
     np.testing.assert_allclose(100 * Percent(axis), expected)
 
 
+def test_percent_diagonal_direction_explicit_value(config):
+    # Along UR, the line through the centre leaves the frame through the top
+    # and bottom edges, so the length is frame_height * sqrt(2).
+    np.testing.assert_allclose(100 * Percent(UR), 8 * np.sqrt(2))
+
+
 def test_percent_ignores_z_component(config):
     np.testing.assert_allclose(Percent(RIGHT + OUT) * 50, config.frame_width / 2)
 
@@ -58,9 +64,12 @@ def test_percent_z_direction_is_not_implemented(axis):
         Percent(axis)
 
 
-def test_percent_rejects_zero_vector():
+@pytest.mark.parametrize(
+    "axis", [[0, 0, 0], [np.nan, 0, 0], [np.inf, 0, 0], [1, np.nan, 0]]
+)
+def test_percent_rejects_invalid_vectors(axis):
     with pytest.raises(ValueError):
-        Percent([0, 0, 0])
+        Percent(axis)
 
 
 def test_percent_follows_config_changes(config):
