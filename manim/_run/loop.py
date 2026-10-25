@@ -149,6 +149,9 @@ class _RunListener:
     def marker(self, marker: _Section | _Caption | _Sound) -> None:
         """A section, caption, or sound call was made."""
 
+    def run_finished(self, ended_early: bool) -> None:
+        """``construct()`` and ``tear_down()`` have returned."""
+
 
 class _Drawer:
     """Draws the frames of a run for its listeners.
@@ -386,6 +389,11 @@ class _RunLoop:
     def in_output(self) -> bool:
         """Whether the next play, which starts at the current time, is in the output."""
         return self.selection.includes(self.manager.num_plays)
+
+    def finish(self, *, ended_early: bool) -> None:
+        """Tell the listeners that the run has finished."""
+        for listener in self.listeners:
+            listener.run_finished(ended_early)
 
     def marker(self, marker: _Section | _Caption | _Sound) -> None:
         if isinstance(marker, _Section):
