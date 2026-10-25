@@ -1,0 +1,33 @@
+# TeX Live packages installed on top of scheme-minimal (one per line).
+# ctex is left out on purpose: it adds ~100 MB of CJK fonts and packages.
+amsmath
+babel-english
+cbfonts-fd
+cm-super
+count1to
+doublestroke
+dvisvgm
+everysel
+fontspec
+frcursive
+fundus-calligra
+gnu-freefont
+jknapltx
+latex-bin
+mathastext
+microtype
+multitoc
+physics
+prelim2e
+preview
+ragged2e
+relsize
+rsfs
+setspace
+standalone
+tipa
+wasy
+wasysym
+xcolor
+xetex
+xkeyval
