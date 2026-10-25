@@ -207,8 +207,23 @@ class _RunLoop:
         self.listeners = tuple(listeners)
         self.selection = selection
         self.drawer = drawer
+        self._playing = False
 
     def play(
+        self, *args: Animation | Mobject | _AnimationBuilder, **kwargs: Any
+    ) -> None:
+        if self._playing:
+            raise RuntimeError(
+                "play() and wait() cannot be called during another play or wait "
+                "call, for example from an updater."
+            )
+        self._playing = True
+        try:
+            self._play(*args, **kwargs)
+        finally:
+            self._playing = False
+
+    def _play(
         self, *args: Animation | Mobject | _AnimationBuilder, **kwargs: Any
     ) -> None:
         manager = self.manager
