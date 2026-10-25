@@ -6,12 +6,12 @@
     <a href="https://hub.docker.com/r/manimcommunity/manim"><img src="https://img.shields.io/docker/v/manimcommunity/manim?color=%23099cec&label=docker%20image&logo=docker" alt="Docker image"> </a>
     <a href="https://mybinder.org/v2/gh/ManimCommunity/jupyter_examples/HEAD?filepath=basic_example_scenes.ipynb"><img src="https://mybinder.org/badge_logo.svg" alt="Launch Binder"></a>
     <a href="http://choosealicense.com/licenses/mit/"><img src="https://img.shields.io/badge/license-MIT-red.svg?style=flat" alt="MIT License"></a>
-    
+
 <a href="https://www.reddit.com/r/manim/">
   <img src="https://img.shields.io/reddit/subreddit-subscribers/manim.svg?color=orange&label=reddit&logo=reddit" alt="Reddit">
 </a>
 
-    
+
 <a href="https://twitter.com/manimcommunity/">
   <img src="https://img.shields.io/twitter/follow/manimcommunity?style=social" alt="Follow @manimcommunity on Twitter">
 </a>
