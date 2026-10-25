@@ -14,6 +14,7 @@ from manim import (
     RIGHT,
     UP,
     Angle,
+    Arc,
     BackgroundRectangle,
     Circle,
     Line,
@@ -59,6 +60,25 @@ def test_get_arc_center():
     np.testing.assert_array_equal(
         Sector(arc_center=[1, 2, 0]).get_arc_center(), [1, 2, 0]
     )
+
+
+def test_Arc_points():
+    arc = Arc(radius=2, start_angle=0.5, angle=1.5, arc_center=[1, 2, 0])
+    # Cairo stores cubic curves: num_components anchors, 4 points per curve
+    assert len(arc.points) == 4 * (arc.num_components - 1)
+    np.testing.assert_allclose(
+        arc.get_start(), [1 + 2 * np.cos(0.5), 2 + 2 * np.sin(0.5), 0]
+    )
+    np.testing.assert_allclose(
+        arc.get_end(), [1 + 2 * np.cos(2.0), 2 + 2 * np.sin(2.0), 0]
+    )
+
+
+def test_Arc_init_points_matches_generate_points():
+    arc = Arc(radius=2, start_angle=0.5, angle=1.5, arc_center=[1, 2, 0])
+    expected = arc.points.copy()
+    arc.init_points()
+    np.testing.assert_array_equal(arc.points, expected)
 
 
 def test_Polygram_get_vertex_groups():
