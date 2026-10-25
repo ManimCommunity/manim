@@ -66,6 +66,31 @@ To see an image of the resulting state, request it after evaluation:
 made by animation cleanup and ``tear_down()``. It draws with a temporary
 renderer, so it also works during evaluation, for example from an updater.
 
+Drawing frames during evaluation
+--------------------------------
+
+To see the scene at particular times, pass ``frame_times`` and an ``on_frame``
+function. When evaluation reaches the frame shown at one of these times, it
+draws that frame and calls ``on_frame`` with a :class:`.RenderedFrame`. Only the
+requested frames are drawn, so this is much faster than rendering the scene up
+to that point:
+
+.. code-block:: python
+
+    def save(frame):
+        print(frame.frame_index, frame.time)  # 9 0.3
+        frame.image.save(f"frame-{frame.frame_index}.png")
+
+    with tempconfig({"frame_rate": 30}):
+        scene = Motion()
+        Manager(scene).evaluate(frame_times=[0.31], on_frame=save)
+
+Each frame is the image a render would show at that time: at 30 fps, every time
+from 0.3 up to, but not including, 0.3333 gives frame 9, which starts at 0.3
+seconds. The evaluation continues to the end of the scene after the last
+requested frame. Times at or after the end of the scene give no frame; use
+``scene.get_image()`` after evaluation to see the final state.
+
 Limits
 ------
 
