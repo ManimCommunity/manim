@@ -59,7 +59,7 @@ class _Sound:
     gain: float | None
     options: dict[str, Any] = field(default_factory=dict)
     in_output: bool = True
-    """Whether the play before the call is part of the rendered output."""
+    """Whether the play that starts at the sound's call is part of the output."""
 
 
 class _Frame:
@@ -176,7 +176,6 @@ class _RunLoop:
         self.listeners = tuple(listeners)
         self.selection = selection
         self.drawer = drawer
-        self._last_in_output: bool | None = None
 
     def play(
         self, *args: Animation | Mobject | _AnimationBuilder, **kwargs: Any
@@ -186,7 +185,6 @@ class _RunLoop:
         state = manager._execution
         index = manager.num_plays
         in_output = self.selection.start_play(index)
-        self._last_in_output = in_output
         manager.skip_animations = not in_output
         scene.compile_animation_data(*args, **kwargs)
         assert scene.animations is not None
@@ -240,10 +238,8 @@ class _RunLoop:
 
     @property
     def in_output(self) -> bool:
-        """Whether the current position of the scene is part of the output."""
-        if self._last_in_output is None:
-            return self.selection.includes(self.manager.num_plays)
-        return self._last_in_output
+        """Whether the next play, which starts at the current time, is in the output."""
+        return self.selection.includes(self.manager.num_plays)
 
     def marker(self, marker: _Section | _Caption | _Sound) -> None:
         if isinstance(marker, _Section):
