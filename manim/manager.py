@@ -177,6 +177,8 @@ class Manager(Generic[SceneT]):
         self._early_markers: list[_Section | _Caption | _Sound] = []
         self._record: _RunRecord | None = None
         self._timeline: Timeline | None = None
+        # The default of render(capture_timeline=...), set by the CLI.
+        self._capture_timeline = False
         scene.manager = self
 
     def _ensure_usable(self) -> None:
@@ -406,7 +408,9 @@ class Manager(Generic[SceneT]):
                 "under the desired configuration before executing it."
             )
 
-    def render(self, preview: bool = False, *, capture_timeline: bool = False) -> bool:
+    def render(
+        self, preview: bool = False, *, capture_timeline: bool | None = None
+    ) -> bool:
         """Run the complete render lifecycle for the managed scene.
 
         The lifecycle invokes :meth:`setup`, :meth:`construct`,
@@ -454,6 +458,8 @@ class Manager(Generic[SceneT]):
             self._ensure_file_writer()
             rerun = False
             try:
+                if capture_timeline is None:
+                    capture_timeline = self._capture_timeline
                 self._run(self._loop, self._loop_record(), capture_timeline)
             except RerunSceneException:
                 # The caller will create a fresh Scene for the rerun.
