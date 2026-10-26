@@ -8,6 +8,7 @@ import pytest
 
 from manim import Manager, Scene, Timeline, tempconfig
 from manim.utils.module_ops import get_module
+from tests.helpers.audio import write_wav
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -24,9 +25,7 @@ class TimelineFixture(Scene):
         self.wait(.3, frozen_frame=True)
         start = self.time
         self.wait(1, stop_condition=lambda: self.time >= start + .5)
-        options = {"levels": [1]}
-        self.add_sound("missing.wav", time_offset=.25, gain=-3, settings=options)
-        options["levels"].append(2)
+        self.add_sound("beep.wav", time_offset=.25, gain=-3, gain_to_background=-6)
 """
 
 SETTINGS = {
@@ -43,8 +42,14 @@ SETTINGS = {
 def scene_class(tmp_path):
     path = tmp_path / "scene.py"
     path.write_text(SOURCE)
+    write_wav(tmp_path / "beep.wav", seconds=0.2)
     with tempconfig(
-        {**SETTINGS, "format": "none", "media_dir": str(tmp_path / "media")}
+        {
+            **SETTINGS,
+            "format": "none",
+            "media_dir": str(tmp_path / "media"),
+            "assets_dir": str(tmp_path),
+        }
     ):
         yield get_module(path).TimelineFixture
 
@@ -98,10 +103,9 @@ def test_evaluation_records_calls_without_rendering(scene_class, monkeypatch):
     assert (caption["content"], caption["start"], caption["end"]) == ("move", 0, 0.5)
     assert entries[3]["skip_animations"]
     sound = entries[8]
-    assert (sound["file"], sound["start"], sound["gain"]) == ("missing.wav", 2.5, -3)
+    assert (sound["file"], sound["start"], sound["gain"]) == ("beep.wav", 2.5, -3)
     assert sound["duration"] is None
-    # Later changes to the arguments are not recorded.
-    assert sound["options"] == {"settings": {"levels": [1]}}
+    assert sound["gain_to_background"] == -6
 
     other = Manager(scene_class())
     other.evaluate(capture_timeline=True)

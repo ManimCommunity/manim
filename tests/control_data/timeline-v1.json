@@ -129,7 +129,7 @@
       "duration": null,
       "file": "example.wav",
       "gain": null,
-      "options": {},
+      "gain_to_background": null,
       "source": {
         "path": "timeline_scene.py",
         "line": 19

@@ -6,7 +6,6 @@ import contextlib
 import functools
 import hashlib
 import inspect
-import json
 import math
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
@@ -155,18 +154,10 @@ class _RunRecord(_RunListener):
                 "kind": "sound",
                 "start": float(marker.start),
                 "duration": None,
-                "file": str(marker.file),
+                "file": marker.file,
                 "gain": marker.gain,
-                "options": dict(marker.options),
+                "gain_to_background": marker.gain_to_background,
             }
-        if self.capture:
-            try:
-                # Copy the values, so that later changes by scene code are not
-                # recorded.
-                values = json.loads(json.dumps(values, allow_nan=False))
-            except (TypeError, ValueError):
-                self._failed = True
-                raise
         source = self._location() if self.capture else None
         self.entries.append({**values, "source": source})
 
