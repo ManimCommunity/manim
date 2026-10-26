@@ -718,6 +718,10 @@ class Camera:
 
         ctx.new_path()
 
+        # Subpath boundaries are computed by VMobject; a split occurs wherever
+        # one curve's end anchor is not close to the next curve's start anchor.
+        split_indices = vmobject.get_subpath_split_indices_from_points(points, n_dims=2)
+
         # Plain Python floats are much faster to index than a NumPy array,
         # and the paths drawn here are usually only a few curves long.
         xs = points[:, 0].tolist()
@@ -728,11 +732,7 @@ class Camera:
                 vmobject.consider_points_equals_2d((xs[i], ys[i]), (xs[j], ys[j]))
             )
 
-        # Split into subpaths wherever one curve's end anchor is not close to
-        # the next curve's start anchor.
-        splits = [i for i in range(nppcc, len(xs), nppcc) if not points_equal(i - 1, i)]
-
-        for start, end in it.pairwise([0, *splits, len(xs)]):
+        for start, end in split_indices.tolist():
             if end - start < nppcc:
                 continue
 
