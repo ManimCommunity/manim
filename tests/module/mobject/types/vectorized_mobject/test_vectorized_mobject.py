@@ -1,3 +1,4 @@
+from itertools import pairwise
 from math import cos, sin
 
 import numpy as np
@@ -519,6 +520,24 @@ def test_trim_dummy():
     assert tuple(map(path_length, o2.get_subpaths())) == (2, 2)
 
 
+def _reference_subpaths(mob, points, n_dims):
+    """Scalar reference for subpath splitting, independent of the vectorized
+    implementation: split wherever two consecutive anchors are not equal
+    according to consider_points_equals (3D) or consider_points_equals_2d (2D).
+    """
+    nppcc = mob.n_points_per_cubic_curve
+    equals = (
+        mob.consider_points_equals_2d if n_dims == 2 else mob.consider_points_equals
+    )
+    split_indices = [
+        n
+        for n in range(nppcc, len(points), nppcc)
+        if not equals(points[n - 1], points[n])
+    ]
+    split_indices = [0, *split_indices, len(points)]
+    return [points[i1:i2] for i1, i2 in pairwise(split_indices) if (i2 - i1) >= nppcc]
+
+
 def test_get_subpath_split_indices_from_points():
     # A VMobject made of three subpaths of differing lengths.
     o = VMobject()
@@ -533,12 +552,21 @@ def test_get_subpath_split_indices_from_points():
     for mob in (o, Circle(), Square(), RegularPolygon(n=5)):
         points = mob.points
         nppcc = mob.n_points_per_cubic_curve
-        # n_dims=3 mirrors get_subpaths_from_points; n_dims=2 mirrors
-        # gen_subpaths_from_points_2d. The new method must agree with both.
-        for n_dims, reference in (
-            (3, mob.get_subpaths_from_points(points)),
-            (2, list(mob.gen_subpaths_from_points_2d(points))),
-        ):
+        # The vectorized splitter must agree with the scalar reference, and
+        # so must the public getters built on top of it.
+        getters = {
+            3: (mob.get_subpaths_from_points(points),),
+            2: (
+                mob.get_subpaths_from_points(points, n_dims=2),
+                list(mob.gen_subpaths_from_points_2d(points)),
+            ),
+        }
+        for n_dims, getter_results in getters.items():
+            reference = _reference_subpaths(mob, points, n_dims)
+            for getter_result in getter_results:
+                assert len(getter_result) == len(reference)
+                for got, expected in zip(getter_result, reference, strict=True):
+                    np.testing.assert_array_equal(got, expected)
             split_indices = mob.get_subpath_split_indices_from_points(
                 points, n_dims=n_dims
             )
@@ -609,12 +637,10 @@ def test_get_subpath_split_indices_from_points_non_finite():
             )
             points[nppcc, coord] = bad  # contaminate the joint anchor
 
-            # n_dims=2 must agree with gen_subpaths_from_points_2d, and
-            # n_dims=3 with get_subpaths_from_points, for every non-finite case.
-            for n_dims, reference in (
-                (2, list(v.gen_subpaths_from_points_2d(points))),
-                (3, v.get_subpaths_from_points(points)),
-            ):
+            # The vectorized splitter must agree with the scalar reference
+            # for every non-finite case, in both 2D and 3D.
+            for n_dims in (2, 3):
+                reference = _reference_subpaths(v, points, n_dims)
                 split_indices = v.get_subpath_split_indices_from_points(
                     points, n_dims=n_dims
                 )

@@ -1343,52 +1343,43 @@ class VMobject(Mobject):
     def get_cubic_bezier_tuples(self) -> CubicBezierPoints_Array:
         return self.get_cubic_bezier_tuples_from_points(self.points)
 
-    def _gen_subpaths_from_points(
+    def get_subpaths_from_points(
         self,
         points: CubicBezierPath,
-        filter_func: Callable[[int], bool],
-    ) -> Iterable[CubicSpline]:
+        n_dims: int = 3,
+    ) -> list[CubicSpline]:
         """Given an array of points defining the bezier curves of the vmobject, return subpaths formed by these points.
-        Here, Two bezier curves form a path if at least two of their anchors are evaluated True by the relation defined by filter_func.
+        Here, two consecutive bezier curves belong to the same subpath if the end anchor of the first one
+        coincides with the start anchor of the second one.
 
-        The algorithm every bezier tuple (anchors and handles) in ``self.points`` (by regrouping each n elements, where
-        n is the number of points per cubic curve)), and evaluate the relation between two anchors with filter_func.
-        NOTE : The filter_func takes an int n as parameter, and will evaluate the relation between points[n] and points[n - 1]. This should probably be changed so
-        the function takes two points as parameters.
+        The split points are computed by :meth:`get_subpath_split_indices_from_points`, which is the
+        vectorized equivalent of comparing each pair of anchors with :meth:`consider_points_equals`
+        (or :meth:`consider_points_equals_2d` when ``n_dims == 2``).
 
         Parameters
         ----------
         points
             points defining the bezier curve.
-        filter_func
-            Filter-func defining the relation.
+        n_dims
+            The number of coordinates to compare when deciding whether two
+            anchors coincide: 3 for the full 3D points, or 2 to consider only
+            their ``x`` and ``y`` coordinates. Default is 3.
 
         Returns
         -------
-        Iterable[CubicSpline]
+        list[CubicSpline]
             subpaths formed by the points.
         """
         nppcc = self.n_points_per_cubic_curve
-        filtered = filter(filter_func, range(nppcc, len(points), nppcc))
-        split_indices = [0] + list(filtered) + [len(points)]
-        return (
-            points[i1:i2] for i1, i2 in it.pairwise(split_indices) if (i2 - i1) >= nppcc
-        )
-
-    def get_subpaths_from_points(self, points: CubicBezierPath) -> list[CubicSpline]:
-        # Vectorized equivalent of splitting wherever
-        # ``not self.consider_points_equals(points[n - 1], points[n])``.
-        nppcc = self.n_points_per_cubic_curve
-        split_indices = self.get_subpath_split_indices_from_points(points).tolist()
+        split_indices = self.get_subpath_split_indices_from_points(
+            points, n_dims=n_dims
+        ).tolist()
         return [points[i1:i2] for i1, i2 in split_indices if (i2 - i1) >= nppcc]
 
     def gen_subpaths_from_points_2d(
         self, points: CubicBezierPath
     ) -> Iterable[CubicSpline]:
-        return self._gen_subpaths_from_points(
-            points,
-            lambda n: not self.consider_points_equals_2d(points[n - 1], points[n]),
-        )
+        return self.get_subpaths_from_points(points, n_dims=2)
 
     def get_subpath_split_indices_from_points(
         self, points: CubicBezierPathLike, n_dims: int = 3
