@@ -9,7 +9,7 @@
   "ended_early": false,
   "source": {
     "path": "timeline_scene.py",
-    "sha256": "3f79b282c4d3e761324e3bf35ee217e7234f445e57467b427f3819ef964b2055"
+    "sha256": "af0411a7597f811dd529841ff6fdf3723cba4de1621600d53e1a53d866aef6e9"
   },
   "entries": [
     {
@@ -126,7 +126,7 @@
     {
       "kind": "sound",
       "start": 2.5,
-      "duration": null,
+      "duration": 0.1,
       "file": "click.wav",
       "gain": null,
       "gain_to_background": null,

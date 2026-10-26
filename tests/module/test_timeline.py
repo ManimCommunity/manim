@@ -109,7 +109,7 @@ def test_evaluation_records_calls_without_rendering(scene_class, monkeypatch):
     assert entries[3]["skip_animations"]
     sound = entries[8]
     assert (sound["file"], sound["start"], sound["gain"]) == ("beep.wav", 2.75, -3)
-    assert sound["duration"] is None
+    assert sound["duration"] == pytest.approx(0.2)
     assert sound["gain_to_background"] == -6
 
     other = Manager(scene_class())
@@ -136,8 +136,10 @@ def test_render_records_the_same_calls_and_marks_skipped_plays(scene_class, tmp_
     assert rendered["duration"] == expected["duration"]
 
 
-def test_reference_scene_matches_the_stored_format():
+def test_reference_scene_matches_the_stored_format(tmp_path, monkeypatch):
     path = ROOT / "tests" / "control_data" / "timeline_scene.py"
+    monkeypatch.chdir(tmp_path)
+    write_wav(tmp_path / "click.wav", seconds=0.1)
     with tempconfig({**SETTINGS, "format": "none"}):
         manager = Manager(get_module(path).TimelineFormat())
         manager.evaluate(capture_timeline=True)

@@ -1,7 +1,7 @@
 """Scene whose timeline is stored in timeline-v1.json, the format reference.
 
 It makes every kind of call that a timeline records. Line numbers matter: after
-editing this file, regenerate timeline-v1.json.
+editing this file, regenerate timeline-v1.json. The test writes click.wav.
 """
 
 from manim import RIGHT, Scene, Square
