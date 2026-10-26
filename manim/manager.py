@@ -83,6 +83,15 @@ class _State(enum.Enum):
         return self is _State.OPEN or self.has_run
 
 
+def _warn_if_before_scene_start(kind: str, label: str, start: float) -> None:
+    if start < 0:
+        logger.warning(
+            "%(kind)s %(label)s starts %(cut).2f s before the scene starts; "
+            "that part is cut.",
+            {"kind": kind, "label": label, "cut": -start},
+        )
+
+
 @dataclass(frozen=True, eq=False)
 class RenderedFrame:
     """A frame drawn during :meth:`.Manager.evaluate`.
@@ -929,6 +938,10 @@ class Manager(Generic[SceneT]):
     ) -> None:
         """Add a subcaption at the current scene time.
 
+        Parts of the scene left out of the output, by ``-n`` or a section with
+        ``skip_animations=True``, cut subcaptions like the video. Parts before the
+        start of the scene or after the end of the movie are cut with a warning.
+
         Parameters
         ----------
         content
@@ -939,6 +952,7 @@ class Manager(Generic[SceneT]):
             The offset in seconds from the current scene time.
         """
         start = float(self.time + offset)
+        _warn_if_before_scene_start("Subcaption", repr(content), start)
         self._marker(_Caption(content, start, start + float(duration)))
 
     def add_sound(
@@ -946,22 +960,26 @@ class Manager(Generic[SceneT]):
         sound_file: str,
         time_offset: float = 0,
         gain: float | None = None,
-        **kwargs: Any,
+        gain_to_background: float | None = None,
     ) -> None:
-        """Add sound to the output at the current scene time.
+        """Add a sound at the current scene time.
 
-        No sound is added while the surrounding plays are left out of the output.
+        See :meth:`.Scene.add_sound` for how sounds are placed in the movie.
 
         Parameters
         ----------
         sound_file
-            The path to the sound file.
+            The path to the sound file, absolute or relative to the assets
+            directory.
         time_offset
-            The offset in seconds from the current scene time.
+            Seconds by which to move the start of the sound relative to the
+            current scene time.
         gain
-            The gain adjustment applied to the sound.
-        kwargs
-            Additional arguments forwarded to
-            :meth:`~manim.scene.scene_file_writer.SceneFileWriter.add_sound`.
+            Gain applied to the sound, in dB.
+        gain_to_background
+            Gain applied to all previously added sounds while this one plays,
+            in dB.
         """
-        self._marker(_Sound(sound_file, self.time + time_offset, gain, dict(kwargs)))
+        start = self.time + time_offset
+        _warn_if_before_scene_start("Sound", repr(str(sound_file)), start)
+        self._marker(_Sound(str(sound_file), start, gain, gain_to_background))

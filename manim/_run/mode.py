@@ -51,9 +51,11 @@ class _RunMode:
         does not depend on the cache.
         """
         assert pixels is not None
+        start = manager.time
         manager._execution.frame += repeat
         if not manager.skip_animations:
             manager.file_writer.write_frame(pixels, repeat=repeat)
+            manager.file_writer.add_movie_interval(start, manager.time)
 
 
 class _EvaluationRun(_RunMode):

@@ -224,9 +224,9 @@ class _RunRecord(_RunListener):
                 "kind": "sound",
                 "start": float(marker.start),
                 "duration": None,
-                "file": str(marker.file),
+                "file": marker.file,
                 "gain": marker.gain,
-                "options": dict(marker.options),
+                "gain_to_background": marker.gain_to_background,
             }
         if self.capture:
             # A copy, so that later changes by scene code are not recorded.

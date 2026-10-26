@@ -1,7 +1,6 @@
 """Check scene time during timeline capture and the placement of offset calls."""
 
 import wave
-from pathlib import Path
 from unittest.mock import Mock
 
 import numpy as np
@@ -43,11 +42,20 @@ def test_offsets_move_sounds_and_captions_but_not_the_clock():
     assert [entry["start"] for entry in calls] == [0.5, 3, 0]
 
 
-def test_values_json_cannot_hold_are_recorded_in_a_readable_form():
+def test_values_json_cannot_hold_are_recorded_in_a_readable_form(tmp_path):
+    click = tmp_path / "click.wav"
+    with wave.open(str(click), "wb") as sound:
+        sound.setnchannels(1)
+        sound.setsampwidth(2)
+        sound.setframerate(8000)
+        sound.writeframes(bytes(1600))
+
     class OddValues(Scene):
         def construct(self):
             self.next_section("intro")
-            self.add_sound(Path("click.wav"), gain=np.float32(-3), seed=np.int64(2))
+            self.add_sound(
+                click, gain=np.float32(-3), gain_to_background=np.float64(-2)
+            )
             self.add_subcaption("caption", duration=np.float64(0.5))
             self.wait(0.5, frozen_frame=False)
 
@@ -57,10 +65,10 @@ def test_values_json_cannot_hold_are_recorded_in_a_readable_form():
     entries = manager.timeline.to_dict()["entries"]
     sound = next(entry for entry in entries if entry["kind"] == "sound")
     caption = next(entry for entry in entries if entry["kind"] == "caption")
-    assert (sound["file"], sound["gain"], sound["options"]) == (
-        "click.wav",
+    assert (sound["file"], sound["gain"], sound["gain_to_background"]) == (
+        str(click),
         -3.0,
-        {"seed": 2},
+        -2.0,
     )
     assert caption["end"] - caption["start"] == 0.5
 

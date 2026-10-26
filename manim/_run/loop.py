@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -74,9 +74,7 @@ class _Sound:
     file: str
     start: float
     gain: float | None
-    options: dict[str, Any] = field(default_factory=dict)
-    in_output: bool = True
-    """Whether the play that starts at the sound's call is part of the output."""
+    gain_to_background: float | None
 
 
 class _Frame:
@@ -380,7 +378,7 @@ class _RunLoop:
             run_time=repeat / manager.session_spec.frame_rate,
             animations=(),
             frozen=True,
-            in_output=self.in_output,
+            in_output=self.selection.includes(manager.num_plays),
         )
         frame = _Frame(self, play, state.frame, repeat, 0.0)
         if pixels is not None:
@@ -390,11 +388,6 @@ class _RunLoop:
             listener.frame(frame)
         state.frame += repeat
 
-    @property
-    def in_output(self) -> bool:
-        """Whether the next play, which starts at the current time, is in the output."""
-        return self.selection.includes(self.manager.num_plays)
-
     def finish(self, *, ended_early: bool) -> None:
         """Tell the listeners that the run has finished."""
         for listener in self.listeners:
@@ -403,8 +396,5 @@ class _RunLoop:
     def marker(self, marker: _Section | _Caption | _Sound) -> None:
         if isinstance(marker, _Section):
             self.selection.start_section(marker.skip_animations)
-        elif isinstance(marker, _Sound):
-            # Heard if the play that starts at the sound's call is in the output.
-            marker = replace(marker, in_output=self.in_output)
         for listener in self.listeners:
             listener.marker(marker)
