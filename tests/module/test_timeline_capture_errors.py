@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 
 from manim import Dot, Manager, Scene, tempconfig
+from tests.helpers.audio import write_wav
 
 
 def test_time_going_backwards_fails_the_capture():
@@ -24,12 +25,14 @@ def test_time_going_backwards_fails_the_capture():
             manager.timeline
 
 
-def test_offsets_move_sounds_and_captions_but_not_the_clock():
+def test_offsets_move_sounds_and_captions_but_not_the_clock(tmp_path):
+    sound = str(write_wav(tmp_path / "beep.wav", seconds=0.5))
+
     class Offsets(Scene):
         def construct(self):
             self.wait(1, frozen_frame=False)
-            self.add_sound("past.wav", time_offset=-0.5)
-            self.add_sound("future.wav", time_offset=2)
+            self.add_sound(sound, time_offset=-0.5)
+            self.add_sound(sound, time_offset=2)
             self.add_subcaption("past", offset=-1)
             self.wait(1, frozen_frame=False)
 
@@ -40,6 +43,7 @@ def test_offsets_move_sounds_and_captions_but_not_the_clock():
     assert data["duration"] == 2
     calls = [entry for entry in data["entries"] if entry["kind"] != "wait"]
     assert [entry["start"] for entry in calls] == [0.5, 3, 0]
+    assert [entry.get("duration") for entry in calls[:2]] == [0.5, 0.5]
 
 
 def test_values_json_cannot_hold_are_recorded_in_a_readable_form(tmp_path):
