@@ -3,7 +3,11 @@
 manim --fps 4 --timeline-output timeline.json example_scenes/timeline_scene.py TimelineExample
 """
 
+from pathlib import Path
+
 from manim import RIGHT, Scene, Square
+
+CLICK = Path(__file__).parent / "assets" / "click.wav"
 
 
 class TimelineExample(Scene):
@@ -13,7 +17,6 @@ class TimelineExample(Scene):
         for _ in range(2):
             self.wait(0.3, frozen_frame=False)
         self.wait(0.3, frozen_frame=True)
+        self.add_sound(CLICK)
         start = self.time
         self.wait(1, stop_condition=lambda: self.time >= start + 0.5)
-        # Only recorded in the timeline; example.wav is a placeholder.
-        self.add_sound("example.wav")

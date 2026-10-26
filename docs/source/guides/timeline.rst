@@ -167,9 +167,11 @@ The other fields depend on the kind:
     ``end``, the time at which the caption disappears, and ``content``. The
     ``start`` and ``end`` times include the caption's offset.
 ``sound``
-    ``file`` (the requested path), ``duration`` (``null`` if unknown), ``gain``,
-    and ``gain_to_background``. The ``start`` time includes the sound's time
-    offset. In version 1, ``duration`` is always ``null``.
+    ``file`` (the requested path), ``duration``, ``gain``, and
+    ``gain_to_background``. The ``start`` time includes the sound's time offset.
+    The duration is read from the file's headers, or ``null`` if they do not
+    state one. Capturing a timeline therefore needs the sound files, just as
+    rendering does.
 
 Capture errors
 --------------

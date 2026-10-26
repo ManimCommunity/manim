@@ -153,13 +153,21 @@ class _RunRecord(_RunListener):
             values = {
                 "kind": "sound",
                 "start": float(marker.start),
-                "duration": None,
+                "duration": self._sound_duration(marker) if self.capture else None,
                 "file": marker.file,
                 "gain": marker.gain,
                 "gain_to_background": marker.gain_to_background,
             }
         source = self._location() if self.capture else None
         self.entries.append({**values, "source": source})
+
+    def _sound_duration(self, sound: _Sound) -> float | None:
+        """Read a sound's duration from its file's headers, as rendering checks it."""
+        from ..scene.audio_mixer import _probe_duration
+        from ..utils.sounds import get_full_sound_file_path
+
+        assets = self._manager.scene.file_writer_settings.assets_dir
+        return _probe_duration(get_full_sound_file_path(sound.file, assets))
 
     def run_finished(self, end_frame: int, ended_early: bool) -> None:
         self._end = self._observe()

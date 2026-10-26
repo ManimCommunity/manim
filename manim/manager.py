@@ -426,7 +426,8 @@ class Manager(Generic[SceneT]):
         animation steps and clock as rendering. Movie caches, animation ranges,
         and skip flags are ignored, so every play runs. Only the frames requested
         with ``frame_times`` are drawn. Section, subcaption, and sound calls have
-        no effect; sound files are not checked.
+        no effect. With ``capture_timeline``, each sound's duration is read from
+        its file, so the file must exist and be readable, as in a render.
 
         Parameters
         ----------

@@ -104,7 +104,7 @@ def test_evaluation_records_calls_without_rendering(scene_class, monkeypatch):
     assert entries[3]["skip_animations"]
     sound = entries[8]
     assert (sound["file"], sound["start"], sound["gain"]) == ("beep.wav", 2.5, -3)
-    assert sound["duration"] is None
+    assert sound["duration"] == pytest.approx(0.2)
     assert sound["gain_to_background"] == -6
 
     other = Manager(scene_class())
@@ -140,8 +140,12 @@ def test_example_scene_matches_the_documented_format():
     expected = json.loads(
         (ROOT / "tests" / "control_data" / "timeline-v1.json").read_text()
     )
-    # The hash changes with every edit of the example file.
+    # The hash changes with every edit of the example file, and the sound's path
+    # depends on where the repository is.
     data["source"]["sha256"] = expected["source"]["sha256"]
+    [sound] = [entry for entry in data["entries"] if entry["kind"] == "sound"]
+    [expected_sound] = [e for e in expected["entries"] if e["kind"] == "sound"]
+    sound["file"] = expected_sound["file"]
     assert data == expected
 
 
