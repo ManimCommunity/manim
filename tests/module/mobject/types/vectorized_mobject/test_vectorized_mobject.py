@@ -16,7 +16,7 @@ from manim import (
     VGroup,
     VMobject,
 )
-from manim.constants import PI
+from manim.constants import PI, RIGHT
 
 
 def test_vmobject_add():
@@ -549,7 +549,12 @@ def test_get_subpath_split_indices_from_points():
     o.start_new_path(np.array([3.0, 3, 0]))
     o.add_line_to(np.array([4.0, 4, 0]))
 
-    for mob in (o, Circle(), Square(), RegularPolygon(n=5)):
+    # Many subpaths in one VMobject, long enough for the vectorized 2D path
+    # of get_subpaths_from_points (short 2D paths use a scalar loop).
+    many = VMobject()
+    many.points = np.concatenate([Circle().shift(i * RIGHT).points for i in range(10)])
+
+    for mob in (o, Circle(), Square(), RegularPolygon(n=5), many):
         points = mob.points
         nppcc = mob.n_points_per_cubic_curve
         # The vectorized splitter must agree with the scalar reference, and

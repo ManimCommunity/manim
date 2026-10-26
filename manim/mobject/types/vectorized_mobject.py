@@ -1354,7 +1354,8 @@ class VMobject(Mobject):
 
         The split points are computed by :meth:`get_subpath_split_indices_from_points`, which is the
         vectorized equivalent of comparing each pair of anchors with :meth:`consider_points_equals`
-        (or :meth:`consider_points_equals_2d` when ``n_dims == 2``).
+        (or :meth:`consider_points_equals_2d` when ``n_dims == 2``). Short 2D paths are compared
+        with :meth:`consider_points_equals_2d` directly, which is faster for them.
 
         Parameters
         ----------
@@ -1371,9 +1372,19 @@ class VMobject(Mobject):
             subpaths formed by the points.
         """
         nppcc = self.n_points_per_cubic_curve
-        split_indices = self.get_subpath_split_indices_from_points(
-            points, n_dims=n_dims
-        ).tolist()
+        if n_dims == 2 and len(points) < 32 * nppcc:
+            # For short paths, the fixed NumPy overhead of the vectorized
+            # splitter exceeds the cost of comparing the few anchors directly.
+            boundaries = [
+                n
+                for n in range(nppcc, len(points), nppcc)
+                if not self.consider_points_equals_2d(points[n - 1], points[n])
+            ]
+            split_indices = it.pairwise([0, *boundaries, len(points)])
+        else:
+            split_indices = self.get_subpath_split_indices_from_points(
+                points, n_dims=n_dims
+            ).tolist()
         return [points[i1:i2] for i1, i2 in split_indices if (i2 - i1) >= nppcc]
 
     def gen_subpaths_from_points_2d(
