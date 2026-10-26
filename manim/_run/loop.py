@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Protocol
 
 import numpy as np
@@ -61,9 +61,7 @@ class _Sound:
     file: str
     start: float
     gain: float | None
-    options: dict[str, Any] = field(default_factory=dict)
-    in_output: bool = True
-    """Whether the play that starts at the sound's call is part of the output."""
+    gain_to_background: float | None
 
 
 class _Frame:
@@ -345,7 +343,7 @@ class _RunLoop:
             run_time=repeat / manager.session_spec.frame_rate,
             animations=(),
             frozen=True,
-            in_output=self.in_output,
+            in_output=self.selection.includes(manager.num_plays),
         )
         frame = _Frame(self, play, state.frame, repeat, 0.0)
         if pixels is not None:
@@ -354,11 +352,6 @@ class _RunLoop:
         for listener in self.listeners:
             listener.frame(frame)
         state.frame += repeat
-
-    @property
-    def in_output(self) -> bool:
-        """Whether the next play, which starts at the current time, is in the output."""
-        return self.selection.includes(self.manager.num_plays)
 
     def finish(self, *, ended_early: bool) -> None:
         """Tell the listeners that the run has finished."""
