@@ -958,7 +958,7 @@ class OpenGLVMobject(OpenGLMobject):
         Parameters
         ----------
         alpha
-            The proportion along the the path of the :class:`OpenGLVMobject`.
+            The proportion along the path of the :class:`OpenGLVMobject`.
 
         Returns
         -------

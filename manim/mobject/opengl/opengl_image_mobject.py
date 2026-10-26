@@ -19,6 +19,27 @@ if TYPE_CHECKING:
 
 __all__ = ["OpenGLImageMobject"]
 
+# The OpenGL renderer samples textures with nearest-neighbor filtering. To apply
+# ``resampling_algorithm`` to image arrays anyway, they are upscaled with it
+# before they are uploaded as textures.
+
+# Maximum factor by which an image array is upscaled.
+_MAX_UPSCALE_FACTOR = 200
+# Maximum length (in pixels) of the longer side of an upscaled image array.
+_MAX_UPSCALED_SIDE_LENGTH = 4096
+
+
+def _get_upscale_factor(width: int, height: int) -> int:
+    """Return the factor by which an image array of the given size is upscaled.
+
+    The factor is at most ``_MAX_UPSCALE_FACTOR``, and the longer side of the
+    upscaled image is at most ``_MAX_UPSCALED_SIDE_LENGTH`` pixels. Image arrays
+    are never downscaled.
+    """
+    return max(
+        1, min(_MAX_UPSCALE_FACTOR, _MAX_UPSCALED_SIDE_LENGTH // max(width, height))
+    )
+
 
 class OpenGLImageMobject(OpenGLTexturedSurface):
     def __init__(
@@ -76,12 +97,10 @@ class OpenGLImageMobject(OpenGLTexturedSurface):
         if isinstance(image_file, (str, Path)):
             return super().get_image_from_file(image_file, image_mode)
         else:
-            return (
-                Image.fromarray(image_file.astype("uint8"))
-                .convert(image_mode)
-                .resize(
-                    image_file.shape[:2]
-                    * 200,  # assumption of 200 ppmu (pixels per manim unit) would suffice
-                    resample=self.resampling_algorithm,
-                )
+            image = Image.fromarray(image_file.astype("uint8")).convert(image_mode)
+            width, height = image.size
+            scale = _get_upscale_factor(width, height)
+            return image.resize(
+                (width * scale, height * scale),
+                resample=self.resampling_algorithm,
             )
