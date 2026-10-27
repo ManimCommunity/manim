@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 from click.testing import CliRunner
 
-from manim import RIGHT, WHITE, Scene, Square, Tex, Text, Vector, tempconfig
+from manim import RIGHT, WHITE, ManimColor, Scene, Square, Tex, Text, Vector, tempconfig
 from manim._config.output import OutputFormat, OutputSpec
 from manim._config.render_session import resolve_render_session
 from manim._config.utils import ManimConfig
@@ -60,6 +60,29 @@ def test_max_files_cached_uses_minus_one_for_unlimited(config):
 
     with pytest.raises(ValueError, match="non-negative integer or -1"):
         config.max_files_cached = float("inf")
+
+
+def test_background_color_is_always_manimcolor(config):
+    """``config.background_color`` returns a ``ManimColor`` however it was set (#4801)."""
+    assert isinstance(config.background_color, ManimColor)
+
+    config.background_color = "RED"
+    assert isinstance(config.background_color, ManimColor)
+
+    config["background_color"] = "#123456"
+    assert isinstance(config.background_color, ManimColor)
+
+    with tempconfig({"background_color": "BLUE"}):
+        assert isinstance(config.background_color, ManimColor)
+
+    other = ManimConfig()
+    other.update({"background_color": "GREEN"})
+    assert isinstance(other.background_color, ManimColor)
+
+    other.update(config)
+    assert isinstance(other.background_color, ManimColor)
+
+    assert isinstance(config.copy().background_color, ManimColor)
 
 
 def test_tempconfig_restores_renderer_class_bases(config):
