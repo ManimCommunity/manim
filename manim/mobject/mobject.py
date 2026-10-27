@@ -2739,9 +2739,31 @@ class Mobject:
         direction: Vector3DLike = RIGHT,
         buff: float = DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
         center: bool = True,
+        reference: Mobject | None = None,
         **kwargs: Any,
     ) -> Self:
         """Sorts :class:`~.Mobject` next to each other on screen.
+
+        Parameters
+        ----------
+        direction
+            The side of the first Mobject in group to which all other Mobjects are arranged.
+        buff
+            The gap between each Mobject.
+        center
+            Centers the group to origin after arranging, except when ``reference`` is given.
+        reference
+            The Mobject in group that the arrangement is anchored around.
+
+        Returns
+        -------
+        :class:`Mobject`
+            ``self``
+
+        Raises
+        ------
+        ValueError
+            If ``reference`` is not in the group.
 
         Examples
         --------
@@ -2758,10 +2780,25 @@ class Mobject:
                     x = VGroup(s1, s2, s3, s4).set_x(0).arrange(buff=1.0)
                     self.add(x)
         """
+        # will later be updated to reference's original position, if applicable:
+        original_pos = 0
+
+        # save the reference's original position
+        if isinstance(reference, Mobject):
+            original_pos = reference.get_center().copy()
+
+        # arrange with respect to the first mobject
         for m1, m2 in it.pairwise(self.submobjects):
             m2.next_to(m1, direction, buff, **kwargs)
-        if center:
+
+        if center and reference is None:
             self.center()
+        elif isinstance(reference, Mobject):
+            # shift the arranged group such that the reference is
+            # back in its original position
+            shift_amount = original_pos - reference.get_center()
+            self.shift(shift_amount)
+
         return self
 
     def arrange_in_grid(
@@ -3590,6 +3627,16 @@ class _AnimationBuilder:
                 "Method chaining is currently not supported for overridden animations",
             )
 
+        def get_reference_idx(reference: Mobject) -> int:
+            try:
+                ind = self.mobject.submobjects.index(reference)
+            except ValueError:
+                message = (
+                    f"Invalid reference: {reference.name} was not found in the group"
+                )
+                raise ValueError(message) from None
+            return ind
+
         def update_target(*method_args: Any, **method_kwargs: Any) -> _AnimationBuilder:
             if has_overridden_animation:
                 self.overridden_animation = method._override_animate(
@@ -3600,7 +3647,53 @@ class _AnimationBuilder:
                 )
             else:
                 self.methods.append(MethodWithArgs(method, method_args, method_kwargs))
-                method(*method_args, **method_kwargs)
+
+                # since the `arrange()` method can now take a reference of a mobject
+                # that belongs to the group to be arranged, we must make sure that
+                # the copied/target version of the reference is also in the copied
+                # version of the group
+                target_kwargs = method_kwargs
+                target_args = method_args
+
+                # check if the method is `arrange()`:
+                if method_name == "arrange":
+                    reference = None
+
+                    # search kwargs for the reference:
+                    if "reference" in method_kwargs:
+                        reference = method_kwargs.get("reference")
+                        if (
+                            isinstance(reference, Mobject)
+                            and self.mobject.target is not None
+                        ):
+                            ind = get_reference_idx(reference)
+                            copied_reference = self.mobject.target.submobjects[ind]
+                            target_kwargs["reference"] = copied_reference
+
+                    # if reference isn't in kwargs, search args:
+                    if reference is None:
+                        for i in range(len(method_args)):
+                            if isinstance(method_args[i], Mobject):
+                                arg_ind = i
+                                reference = method_args[i]
+                                reference_ind = get_reference_idx(reference)
+                                if self.mobject.target is not None:
+                                    copied_reference = self.mobject.target.submobjects[
+                                        reference_ind
+                                    ]
+                                    modifiable_args = list(method_args)
+                                    modifiable_args[arg_ind] = copied_reference
+                                    target_args = tuple(modifiable_args)
+
+                                break
+
+                    # if reference wasn't found at all:
+                    if reference is None:
+                        method(*method_args, **method_kwargs)
+                        return self
+
+                method(*target_args, **target_kwargs)
+
             return self
 
         self.is_chaining = True
