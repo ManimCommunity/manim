@@ -5,9 +5,11 @@ import datetime
 import pytest
 
 from manim import (
+    AnimationGroup,
     Circle,
     Dot,
     FadeIn,
+    FadeOut,
     Group,
     Line,
     Mobject,
@@ -48,6 +50,17 @@ def test_scene_add_remove(dry_run):
 
     # Check that Scene.remove() returns the instance (for chained calls)
     assert scene.add(Mobject()) is scene
+
+
+def test_mobject_removed_during_play_is_not_redrawn(dry_run):
+    scene = Scene()
+    square, circle = Square(), Circle()
+    scene.add(square)
+    redrawn = []
+    scene.add_updater(lambda dt: redrawn.append(square in scene.moving_mobjects))
+    scene.play(AnimationGroup(FadeOut(square), FadeIn(circle), lag_ratio=1))
+    assert redrawn[0]
+    assert not redrawn[-1]
 
 
 def test_scene_time(dry_run):
