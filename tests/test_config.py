@@ -66,23 +66,30 @@ def test_background_color_is_always_manimcolor(config):
     """``config.background_color`` returns a ``ManimColor`` however it was set (#4801)."""
     assert isinstance(config.background_color, ManimColor)
 
-    config.background_color = "RED"
+    config.background_color = "#FC6255"
     assert isinstance(config.background_color, ManimColor)
+    assert config.background_color == ManimColor("#FC6255")
 
     config["background_color"] = "#123456"
     assert isinstance(config.background_color, ManimColor)
+    assert config.background_color == ManimColor("#123456")
 
-    with tempconfig({"background_color": "BLUE"}):
+    with tempconfig({"background_color": "#58C4DD"}):
         assert isinstance(config.background_color, ManimColor)
+        assert config.background_color == ManimColor("#58C4DD")
 
     other = ManimConfig()
-    other.update({"background_color": "GREEN"})
+    other.update({"background_color": "#83C167"})
     assert isinstance(other.background_color, ManimColor)
+    assert other.background_color == ManimColor("#83C167")
 
     other.update(config)
     assert isinstance(other.background_color, ManimColor)
+    assert other.background_color == ManimColor("#123456")
 
-    assert isinstance(config.copy().background_color, ManimColor)
+    copied = config.copy()
+    assert isinstance(copied.background_color, ManimColor)
+    assert copied.background_color == ManimColor("#123456")
 
 
 def test_tempconfig_restores_renderer_class_bases(config):
