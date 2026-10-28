@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 from click.testing import CliRunner
 
-from manim import RIGHT, WHITE, Scene, Square, Tex, Text, Vector, tempconfig
+from manim import RIGHT, WHITE, ManimColor, Scene, Square, Tex, Text, Vector, tempconfig
 from manim._config.output import OutputFormat, OutputSpec
 from manim._config.render_session import resolve_render_session
 from manim._config.utils import ManimConfig
@@ -60,6 +60,36 @@ def test_max_files_cached_uses_minus_one_for_unlimited(config):
 
     with pytest.raises(ValueError, match="non-negative integer or -1"):
         config.max_files_cached = float("inf")
+
+
+def test_background_color_is_always_manimcolor(config):
+    """``config.background_color`` returns a ``ManimColor`` however it was set (#4801)."""
+    assert isinstance(config.background_color, ManimColor)
+
+    config.background_color = "#FC6255"
+    assert isinstance(config.background_color, ManimColor)
+    assert config.background_color == ManimColor("#FC6255")
+
+    config["background_color"] = "#123456"
+    assert isinstance(config.background_color, ManimColor)
+    assert config.background_color == ManimColor("#123456")
+
+    with tempconfig({"background_color": "#58C4DD"}):
+        assert isinstance(config.background_color, ManimColor)
+        assert config.background_color == ManimColor("#58C4DD")
+
+    other = ManimConfig()
+    other.update({"background_color": "#83C167"})
+    assert isinstance(other.background_color, ManimColor)
+    assert other.background_color == ManimColor("#83C167")
+
+    other.update(config)
+    assert isinstance(other.background_color, ManimColor)
+    assert other.background_color == ManimColor("#123456")
+
+    copied = config.copy()
+    assert isinstance(copied.background_color, ManimColor)
+    assert copied.background_color == ManimColor("#123456")
 
 
 def test_tempconfig_restores_renderer_class_bases(config):
