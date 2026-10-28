@@ -283,6 +283,18 @@ def test_media_loglevel_is_loaded_from_media_section(tmp_path, config):
         _ = config.ffmpeg_loglevel
 
 
+@pytest.mark.parametrize("bom", [b"", b"\xef\xbb\xbf"], ids=["utf-8", "utf-8-bom"])
+def test_config_file_is_read_as_utf8(tmp_path, config, bom):
+    config_file = tmp_path / "utf8.cfg"
+    config_file.write_bytes(
+        bom + "[CLI]\n# 解像度と出力先の設定\nmedia_dir = ./動画\n".encode()
+    )
+
+    config.digest_file(config_file)
+
+    assert config.media_dir == "./動画"
+
+
 def test_video_encoder_options_are_copied(config):
     supplied = {"crf": "18"}
     config.video_encoder_options = supplied
