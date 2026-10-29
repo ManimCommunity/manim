@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-import datetime
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
-import srt
-
-from . import logger
+from . import config, logger
 from ._config.logger_utils import set_file_logger
+from ._run.listeners import _Encoder, _Preview, _Progress
+from ._run.loop import _Caption, _RunLoop, _Section, _Sound, _TargetDrawer
+from ._run.selection import _OutputSelection
 from .scene.section import DefaultSectionType
 from .utils.exceptions import EndSceneEarlyException, RerunSceneException
 from .utils.file_ops import open_media_file
@@ -30,6 +30,7 @@ if TYPE_CHECKING:
     from .renderer.opengl.renderer import OpenGLRenderer
     from .scene.scene import Scene
     from .scene.scene_file_writer import SceneFileWriter
+    from .typing import RGBAPixelArray
 
 __all__ = ["Manager"]
 
@@ -40,10 +41,10 @@ class Manager(Generic[SceneT]):
     """Run a scene's rendering steps and clean up its resources.
 
     Each manager works with one :class:`~manim.scene.scene.Scene`. It calls the
-    scene's setup, construct, and tear-down hooks, delegates animation playback to
-    the renderer, and uses a file writer for sections, subcaptions, and audio.
-    Calling :meth:`~manim.scene.scene.Scene.render` creates a manager if needed
-    and stores it in ``scene.manager``.
+    scene's setup, construct, and tear-down hooks, runs animation playback, and
+    uses the renderer for drawing. A file writer handles sections, subcaptions,
+    and audio. Calling :meth:`~manim.scene.scene.Scene.render` creates a manager
+    if needed and stores it in ``scene.manager``.
 
     Parameters
     ----------
@@ -61,6 +62,10 @@ class Manager(Generic[SceneT]):
     Output settings are saved during scene construction. The manager creates
     the file writer when first requested and makes it available before
     :meth:`~manim.scene.scene.Scene.setup` runs.
+
+    Both backends use the same animation clock and sampling rules. Every play
+    steps through all of its frames, also when it is skipped or reused from the
+    cache, so the scene always reaches the same state as in a full render.
 
     Rendering normally closes the renderer before returning. Use a
     ``with manager:`` block to keep its resources available after a successful
@@ -81,12 +86,15 @@ class Manager(Generic[SceneT]):
         if scene.manager is not None:
             raise ValueError("A manager is already attached to this scene.")
         self.scene = scene
+        self._execution = scene.renderer._claim_execution(self)
         self._file_writer: SceneFileWriter | None = None
         self._creating_file_writer = False
         self._log_handler: FileHandler | None = None
         self._closed = False
         self._closing = False
         self._scope_depth = 0
+        self._execution.frame_rate = self.session_spec.frame_rate
+        self._run_loop: _RunLoop | None = None
         scene.manager = self
 
     def __enter__(self) -> Manager[SceneT]:
@@ -162,17 +170,17 @@ class Manager(Generic[SceneT]):
 
     @property
     def renderer(self) -> CairoRenderer | OpenGLRenderer:
-        """Return the renderer selected when the scene was created."""
+        """The renderer selected when the scene was created."""
         return self.scene.renderer
 
     @property
     def camera(self) -> Camera | OpenGLCamera:
-        """Return the current renderer's camera."""
+        """The current renderer's camera."""
         return self.renderer.camera
 
     @property
     def file_writer(self) -> SceneFileWriter:
-        """Return the scene's file writer, creating it on first access.
+        """The scene's file writer, created on first access.
 
         The writer uses ``scene.file_writer_settings``. :meth:`render` accesses
         this property before calling :meth:`setup`; ``renderer.file_writer``
@@ -197,40 +205,55 @@ class Manager(Generic[SceneT]):
 
     @property
     def output_spec(self) -> OutputSpec:
-        """Return the output format and options saved for this scene."""
+        """The output format and options saved for this scene."""
         return self.session_spec.output
 
     @property
     def session_spec(self) -> RenderSessionSpec:
-        """Return the scene's saved output, preview, and execution settings."""
+        """The scene's saved output, preview, and execution settings."""
         return self.scene.session_spec
 
     @property
     def time(self) -> float:
-        """Return the current renderer time."""
-        return self.renderer.time
+        """The elapsed animation time in seconds."""
+        return self._execution.time
 
     @time.setter
     def time(self, value: float) -> None:
-        self.renderer.time = value
+        self._execution.time = value
 
     @property
     def num_plays(self) -> int:
-        """Return the current renderer's play count."""
-        return self.renderer.num_plays
+        """The number of completed play or wait calls."""
+        return self._execution.num_plays
 
     @num_plays.setter
     def num_plays(self, value: int) -> None:
-        self.renderer.num_plays = value
+        self._execution.num_plays = value
 
     @property
     def skip_animations(self) -> bool:
-        """Return the current renderer's animation skip state."""
-        return self.renderer.skip_animations
+        """Whether the current play draws no frames.
+
+        This is the case for a play that is left out of the output or reused
+        from the cache. The play still steps through all of its frames.
+        """
+        return self._execution.skip_animations
 
     @skip_animations.setter
     def skip_animations(self, value: bool) -> None:
-        self.renderer.skip_animations = value
+        self._execution.skip_animations = value
+
+    def _validate_execution(self) -> None:
+        if self._closed or self._closing:
+            raise RuntimeError("The Manager is closed or closing.")
+        if self.renderer._closed or getattr(self.renderer, "_retiring", False):
+            raise RuntimeError("Cannot execute a closed or retiring renderer.")
+        if float(config.frame_rate) != self.session_spec.frame_rate:
+            raise ValueError(
+                "frame_rate changed after Scene construction. Construct a new Scene "
+                "under the desired configuration before executing it."
+            )
 
     def render(self, preview: bool = False) -> bool:
         """Run the complete render lifecycle for the managed scene.
@@ -260,8 +283,7 @@ class Manager(Generic[SceneT]):
         """
         from .renderer.opengl.renderer import OpenGLRenderer
 
-        if self._closed or self._closing:
-            raise RuntimeError("The Manager is closed or closing.")
+        self._validate_execution()
         started = False
         try:
             presentation = self.session_spec.presentation
@@ -369,7 +391,7 @@ class Manager(Generic[SceneT]):
         subcaption_offset: float = 0,
         **kwargs: Any,
     ) -> None:
-        """Coordinate an animation request and its optional subcaption.
+        """Play animations and add an optional subcaption.
 
         Parameters
         ----------
@@ -384,14 +406,14 @@ class Manager(Generic[SceneT]):
         subcaption_offset
             Offset in seconds from the beginning of the play call.
         kwargs
-            Additional animation arguments forwarded to the renderer.
+            Animation options such as ``run_time`` and ``rate_func``, applied
+            by :meth:`.Scene.compile_animations`.
         """
-        if self._closed or self._closing:
-            raise RuntimeError("The Manager is closed or closing.")
+        self._validate_execution()
         try:
             self._open_log_handler()
             start_time = self.time
-            self.renderer.play(self.scene, *args, **kwargs)
+            self._play(*args, **kwargs)
             run_time = self.time - start_time
 
             if subcaption:
@@ -412,6 +434,73 @@ class Manager(Generic[SceneT]):
             self._cleanup_after_failure()
             raise
 
+    @property
+    def _loop(self) -> _RunLoop:
+        """The loop that runs this scene's play calls, created on first use."""
+        if self._run_loop is None:
+            self._run_loop = _RunLoop(
+                self,
+                listeners=[_Encoder(self), _Preview(self), _Progress(self)],
+                selection=_OutputSelection(self),
+                drawer=_TargetDrawer(self),
+            )
+        return self._run_loop
+
+    def _update_skipping_status(self) -> None:
+        """Set :attr:`skip_animations` for the next play, for old renderer callers.
+
+        Raises
+        ------
+        EndSceneEarlyException
+            If the next play lies after ``config.upto_animation_number``.
+        """
+        self.skip_animations = not self._loop.selection.start_play(self.num_plays)
+
+    def _play(
+        self, *args: Animation | Mobject | _AnimationBuilder, **kwargs: Any
+    ) -> None:
+        """Prepare and play animations, reusing cached frames when available."""
+        self._validate_execution()
+        self._loop.play(*args, **kwargs)
+
+    def _wants_frame_pixels(self) -> bool:
+        """Whether the file writer is given the pixels of drawn frames.
+
+        Reading pixels back is cheap for Cairo, and test writers record them
+        even without file output. OpenGL reads them back only for video and
+        image-sequence output.
+        """
+        from .renderer.cairo.renderer import CairoRenderer
+
+        output = self.output_spec
+        return (
+            isinstance(self.renderer, CairoRenderer)
+            or output.is_video
+            or output.is_image_sequence
+        )
+
+    def _render_preview_frame(self, frame_offset: float) -> None:
+        """Draw and show the current state without advancing animation time.
+
+        Interactive OpenGL sessions use this between commands. Unless the current
+        play is skipped, the frame is also passed to the file writer.
+        """
+        self._validate_execution()
+        scene = self.scene
+        self.renderer.render(scene, frame_offset, scene.moving_mobjects)
+        if self.skip_animations:
+            return
+        if self._wants_frame_pixels():
+            self.file_writer.write_frame(self.renderer.get_frame())
+        self.renderer._present_frame(scene, frame_offset)
+
+    def _legacy_add_frame(self, frame: RGBAPixelArray, num_frames: int = 1) -> None:
+        """Write frames and advance time for callers of CairoRenderer.add_frame."""
+        self._validate_execution()
+        if not self.skip_animations:
+            self._execution.frame += num_frames
+            self.file_writer.write_frame(frame, repeat=num_frames)
+
     def next_section(
         self,
         name: str = "unnamed",
@@ -429,7 +518,7 @@ class Manager(Generic[SceneT]):
         skip_animations
             Whether animation output in this section should be skipped.
         """
-        self.file_writer.next_section(name, section_type, skip_animations)
+        self._loop.marker(_Section(name, section_type, skip_animations))
 
     def add_subcaption(
         self, content: str, duration: float = 1, offset: float = 0
@@ -445,13 +534,8 @@ class Manager(Generic[SceneT]):
         offset
             The offset in seconds from the current scene time.
         """
-        subtitle = srt.Subtitle(
-            index=len(self.file_writer.subcaptions),
-            content=content,
-            start=datetime.timedelta(seconds=float(self.time + offset)),
-            end=datetime.timedelta(seconds=float(self.time + offset + duration)),
-        )
-        self.file_writer.subcaptions.append(subtitle)
+        start = float(self.time + offset)
+        self._loop.marker(_Caption(content, start, start + float(duration)))
 
     def add_sound(
         self,
@@ -462,7 +546,7 @@ class Manager(Generic[SceneT]):
     ) -> None:
         """Add sound to the output at the current scene time.
 
-        No sound is added while animations are being skipped.
+        No sound is added while the surrounding plays are left out of the output.
 
         Parameters
         ----------
@@ -476,6 +560,12 @@ class Manager(Generic[SceneT]):
             Additional arguments forwarded to
             :meth:`~manim.scene.scene_file_writer.SceneFileWriter.add_sound`.
         """
-        if self.skip_animations:
-            return
-        self.file_writer.add_sound(sound_file, self.time + time_offset, gain, **kwargs)
+        self._loop.marker(
+            _Sound(
+                sound_file,
+                self.time + time_offset,
+                gain,
+                dict(kwargs),
+                in_output=self._loop.in_output,
+            )
+        )
