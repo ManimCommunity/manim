@@ -173,6 +173,21 @@ def test_nested_view_preserves_square_geometry():
             renderer.close()
 
 
+def test_camera_view_with_a_side_in_line_with_its_longest_side_is_drawn():
+    # Corners in drawing order A, B, C, D: the side D -> A before the longest side
+    # A -> B lies on its line, the side B -> C after it does not.
+    a, b, c, d = (-3, 0, 0), (3, 0, 0), (1, 2.5, 0), (-3.5, 0, 0)
+    with tempconfig({"pixel_width": 160, "pixel_height": 90}):
+        view = ImageMobjectFromCamera(Camera(background_color="#ffffff"))
+        view.points = np.array([a, b, d, c], dtype=float)
+        renderer = CairoRenderer(camera=MultiCamera([view]))
+        try:
+            renderer.render_mobjects([view])
+            assert renderer.get_frame()[..., 0].any()
+        finally:
+            renderer.close()
+
+
 @pytest.mark.parametrize(
     "operation",
     [

@@ -355,7 +355,7 @@ class _CairoDrawingContext:
         if longest_length == 0:
             return
         previous_side = sides[(longest_index - 1) % 4]
-        next_side = sides[(longest_index - 1) % 4]
+        next_side = sides[(longest_index + 1) % 4]
         height_1 = abs(cross2d(longest_side, previous_side)) / longest_length
         height_2 = abs(cross2d(longest_side, next_side)) / longest_length
         if max(height_1, height_2) < 0.5:
