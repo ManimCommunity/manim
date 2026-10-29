@@ -279,3 +279,12 @@ def test_auto_stroke_style_does_not_inherit_previous_style(styled_kwargs):
     np.testing.assert_array_equal(
         _render_pixels([styled, default]), _render_pixels([default, styled])
     )
+
+
+def test_3d_camera_angles_follow_their_trackers():
+    camera = ThreeDCamera(phi=0.25, theta=0.5)
+    camera.set_phi(1.0)
+    camera.theta_tracker.set_value(2.0)
+    assert (camera.phi, camera.theta) == (1.0, 2.0)
+    with pytest.raises(AttributeError):
+        camera.phi = 0.5

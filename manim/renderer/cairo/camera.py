@@ -399,28 +399,50 @@ class ThreeDCamera(Camera):
             Any keyword argument of Camera.
         """
         super().__init__(**kwargs)
-        self.focal_distance = focal_distance
-        self.phi = phi
-        self.theta = theta
-        self.gamma = gamma
-        self.zoom = zoom
         self.shading_factor = shading_factor
         self.default_distance = default_distance
         self.light_source_start_point = light_source_start_point
         self.light_source = Point(self.light_source_start_point)
         self.should_apply_shading = should_apply_shading
         self.exponential_projection = exponential_projection
-        self.phi_tracker = ValueTracker(self.phi)
-        self.theta_tracker = ValueTracker(self.theta)
-        self.focal_distance_tracker = ValueTracker(self.focal_distance)
-        self.gamma_tracker = ValueTracker(self.gamma)
-        self.zoom_tracker = ValueTracker(self.zoom)
+        self.phi_tracker = ValueTracker(phi)
+        self.theta_tracker = ValueTracker(theta)
+        self.focal_distance_tracker = ValueTracker(focal_distance)
+        self.gamma_tracker = ValueTracker(gamma)
+        self.zoom_tracker = ValueTracker(zoom)
         self.fixed_orientation_mobjects: dict[Mobject, Callable[[], Point3D]] = {}
         self.fixed_in_frame_mobjects: set[Mobject] = set()
         self.reset_rotation_matrix()
 
     def _prepare_for_render(self) -> None:
         self.reset_rotation_matrix()
+
+    # Read-only: the trackers hold the orientation. Change it with set_phi() and
+    # the like, set_camera_orientation(), or by animating the trackers.
+    @property
+    def phi(self) -> float:
+        """The polar angle (the angle off the z axis), in radians."""
+        return self.get_phi()
+
+    @property
+    def theta(self) -> float:
+        """The azimuthal angle, in radians."""
+        return self.get_theta()
+
+    @property
+    def gamma(self) -> float:
+        """The rotation about the viewing axis, in radians."""
+        return self.get_gamma()
+
+    @property
+    def focal_distance(self) -> float:
+        """The distance of the camera from the center of the frame."""
+        return self.get_focal_distance()
+
+    @property
+    def zoom(self) -> float:
+        """The zoom factor."""
+        return self.get_zoom()
 
     def get_view_transform_center(self) -> Point3D:
         # project_points() already translates by frame_center.
