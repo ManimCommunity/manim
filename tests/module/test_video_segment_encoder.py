@@ -171,6 +171,23 @@ def test_abort_removes_target_before_propagating_control_flow_exception(tmp_path
     assert not encoder.target.exists()
 
 
+def test_failed_open_removes_partial_target(tmp_path, monkeypatch):
+    """A partial file at the cache path would later be reused as a cached segment."""
+    target = tmp_path / "segment.mp4"
+    container = Mock()
+    container.add_stream.side_effect = KeyboardInterrupt("interrupted")
+
+    def open_container(*args, **kwargs):
+        target.write_bytes(b"partial")
+        return container
+
+    monkeypatch.setattr(av, "open", open_container)
+    with pytest.raises(KeyboardInterrupt):
+        VideoSegmentEncoder(target=target, spec=_spec())
+    assert not target.exists()
+    container.close.assert_called_once()
+
+
 def test_open_failure_has_target_profile_and_original_cause(tmp_path, monkeypatch):
     expected_exception = RuntimeError("open failed")
     monkeypatch.setattr(av, "open", Mock(side_effect=expected_exception))
