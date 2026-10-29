@@ -7,6 +7,7 @@ Thematic Guides
    :glob:
 
    configuration
+   cameras
    deep_dive
    using_text
    add_voiceovers
