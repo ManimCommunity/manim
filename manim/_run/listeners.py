@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import datetime
+from bisect import bisect_right
 from typing import TYPE_CHECKING
 
 import srt
@@ -13,9 +14,11 @@ from ..utils.hashing import get_hash_from_play_call
 from .loop import _Caption, _RunListener, _Section, _Sound
 
 if TYPE_CHECKING:
+    from collections.abc import Callable, Iterable
+
     from tqdm import tqdm
 
-    from ..manager import Manager
+    from ..manager import Manager, RenderedFrame
     from .loop import _Frame, _Play
 
 __all__: list[str] = []
@@ -141,6 +144,65 @@ class _Preview(_RunListener):
             manager.renderer._present_frozen_frame(scene, frame.play.run_time)
         else:
             manager.renderer._present_frame(scene, frame.offset)
+
+
+class _MeshGuard(_RunListener):
+    """Reject GPU-backed meshes, which evaluation cannot run without a context."""
+
+    def __init__(self, manager: Manager) -> None:
+        self._manager = manager
+
+    def check(self) -> None:
+        if self._manager.scene.meshes:
+            raise RuntimeError("GPU-backed meshes are unsupported during evaluation.")
+
+    def play_started(self, play: _Play) -> None:
+        self.check()
+
+    def frame(self, frame: _Frame) -> None:
+        self.check()
+
+
+class _FrameRequests(_RunListener):
+    """Pass the frames shown at requested times to a function.
+
+    Each frame is drawn when the run reaches it, at most once.
+    """
+
+    def __init__(
+        self,
+        manager: Manager,
+        times: Iterable[float],
+        on_frame: Callable[[RenderedFrame], object],
+    ) -> None:
+        self._manager = manager
+        self._times = sorted(times)
+        self._on_frame = on_frame
+
+    def frame(self, frame: _Frame) -> None:
+        from ..manager import RenderedFrame
+
+        offset = self._manager._execution.time_offset
+        rate = self._manager.session_spec.frame_rate
+
+        def start(index: int) -> float:
+            return offset + index / rate
+
+        end = frame.index + frame.repeat
+        while self._times and self._times[0] < start(end):
+            requested = self._times.pop(0)
+            # Compare with the start times of the frames: multiplying the requested
+            # time by the frame rate can round across a frame boundary.
+            starts = range(frame.index, end)
+            index = frame.index + bisect_right(starts, requested, key=start) - 1
+            self._on_frame(
+                RenderedFrame(
+                    image=frame.image(),
+                    requested_time=requested,
+                    time=start(index),
+                    frame_index=index,
+                )
+            )
 
 
 class _Progress(_RunListener):

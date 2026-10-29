@@ -23,12 +23,20 @@ class _OutputSelection:
     ``config.upto_animation_number`` ends the scene.
     """
 
-    def __init__(self, manager: Manager) -> None:
+    def __init__(self, manager: Manager, *, everything: bool = False) -> None:
         self._manager = manager
+        self._everything = everything
         self._section_skipped = False
+
+    @classmethod
+    def everything(cls, manager: Manager) -> _OutputSelection:
+        """A selection that includes every play and never ends the scene early."""
+        return cls(manager, everything=True)
 
     def includes(self, index: int) -> bool:
         """Return whether the play with this index is part of the output."""
+        if self._everything:
+            return True
         manager = self._manager
         return not (
             manager._execution.original_skipping_status
@@ -45,7 +53,7 @@ class _OutputSelection:
         EndSceneEarlyException
             If the play lies after ``config.upto_animation_number``.
         """
-        if 0 <= config.upto_animation_number < index:
+        if not self._everything and 0 <= config.upto_animation_number < index:
             raise EndSceneEarlyException()
         return self.includes(index)
 

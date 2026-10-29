@@ -826,6 +826,9 @@ under the same frame-rate configuration, for example::
 Changing ``config.frame_rate`` between construction and playback raises an error:
 the animation steps must use the same rate as the saved video encoding settings.
 
+To run the animation steps without drawing frames or producing media, see
+:doc:`evaluation`.
+
 First, the manager decides whether this play call is part of the output. For
 example, ``-s`` requests only the final image, ``-n`` selects a range of play
 calls, and a section with ``skip_animations=True`` leaves its plays out. A play
