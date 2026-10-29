@@ -9,7 +9,7 @@
   "ended_early": false,
   "source": {
     "path": "timeline_scene.py",
-    "sha256": "ceab53ce5a5c5d6a85f69732f3ff532d2fbf1adf26f2135279718aedb55ed544"
+    "sha256": "b086563ba8094dfd22cbacd7b7c041ce5d4fdc95148e0bd4214ab8eba0258c5c"
   },
   "entries": [
     {
@@ -20,7 +20,7 @@
       "skip_animations": false,
       "source": {
         "path": "timeline_scene.py",
-        "line": 11
+        "line": 15
       }
     },
     {
@@ -38,7 +38,7 @@
       "skipped": false,
       "source": {
         "path": "timeline_scene.py",
-        "line": 12
+        "line": 16
       }
     },
     {
@@ -48,7 +48,7 @@
       "content": "move",
       "source": {
         "path": "timeline_scene.py",
-        "line": 12
+        "line": 16
       }
     },
     {
@@ -66,7 +66,7 @@
       "skipped": false,
       "source": {
         "path": "timeline_scene.py",
-        "line": 14
+        "line": 18
       }
     },
     {
@@ -84,7 +84,7 @@
       "skipped": false,
       "source": {
         "path": "timeline_scene.py",
-        "line": 14
+        "line": 18
       }
     },
     {
@@ -102,7 +102,19 @@
       "skipped": false,
       "source": {
         "path": "timeline_scene.py",
-        "line": 15
+        "line": 19
+      }
+    },
+    {
+      "kind": "sound",
+      "start": 1.75,
+      "duration": 0.1,
+      "file": "example_scenes/assets/click.wav",
+      "gain": null,
+      "gain_to_background": null,
+      "source": {
+        "path": "timeline_scene.py",
+        "line": 20
       }
     },
     {
@@ -120,19 +132,7 @@
       "skipped": false,
       "source": {
         "path": "timeline_scene.py",
-        "line": 17
-      }
-    },
-    {
-      "kind": "sound",
-      "start": 2.25,
-      "duration": null,
-      "file": "example.wav",
-      "gain": null,
-      "options": {},
-      "source": {
-        "path": "timeline_scene.py",
-        "line": 19
+        "line": 22
       }
     }
   ]

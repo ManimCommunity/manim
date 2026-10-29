@@ -38,10 +38,14 @@ class _Encoder(_RunListener):
     def __init__(self, manager: Manager) -> None:
         self._manager = manager
         self._writing = False
+        self._start = 0.0
+        # The sounds and captions, to warn at the end about those after the scene.
+        self._starts: list[tuple[str, str, float]] = []
 
     def play_started(self, play: _Play) -> None:
         manager = self._manager
         writer = manager.file_writer
+        self._start = manager.time
         key = self._cache_key(play)
         # When a wait with a stop condition stops can depend on state that the
         # cache key does not include, so such waits are always rendered again.
@@ -105,7 +109,10 @@ class _Encoder(_RunListener):
             manager.file_writer.write_frame(frame.pixels(), repeat=frame.repeat)
 
     def play_finished(self, play: _Play, end_frame: int) -> None:
-        self._manager.file_writer.end_animation(self._writing)
+        writer = self._manager.file_writer
+        writer.end_animation(self._writing)
+        if play.in_output:
+            writer.add_movie_interval(self._start, self._manager.time)
         self._writing = False
 
     def marker(self, marker: _Section | _Caption | _Sound) -> None:
@@ -113,6 +120,7 @@ class _Encoder(_RunListener):
         if isinstance(marker, _Section):
             writer.next_section(marker.name, marker.type, marker.skip_animations)
         elif isinstance(marker, _Caption):
+            self._starts.append(("Subcaption", repr(marker.content), marker.start))
             writer.subcaptions.append(
                 srt.Subtitle(
                     index=len(writer.subcaptions),
@@ -121,8 +129,24 @@ class _Encoder(_RunListener):
                     end=datetime.timedelta(seconds=marker.end),
                 )
             )
-        elif marker.in_output:
-            writer.add_sound(marker.file, marker.start, marker.gain, **marker.options)
+        else:
+            self._starts.append(("Sound", repr(marker.file), marker.start))
+            writer.add_sound(
+                marker.file,
+                marker.start,
+                marker.gain,
+                gain_to_background=marker.gain_to_background,
+            )
+
+    def run_finished(self, end_frame: int, ended_early: bool) -> None:
+        end = self._manager.time
+        for kind, label, start in self._starts:
+            if start >= end:
+                logger.warning(
+                    "%(kind)s %(label)s starts at %(start).2f s, when the scene has "
+                    "already ended at %(end).2f s; it is cut.",
+                    {"kind": kind, "label": label, "start": start, "end": end},
+                )
 
 
 class _Preview(_RunListener):

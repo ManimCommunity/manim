@@ -61,9 +61,13 @@ def render_html(data, status, root=None):
             )
             label = f'<a href="{html.escape(url, quote=True)}">{label}</a>'
         bar = ""
-        if entry["kind"] in ("play", "wait", "caption"):
-            left = 100 * entry["start"] / total
-            width = 100 * (entry["end"] - entry["start"]) / total
+        end = entry.get("end")
+        if entry["kind"] == "sound" and entry["duration"] is not None:
+            end = entry["start"] + entry["duration"]
+        if end is not None and entry["kind"] != "section":
+            # Sounds and captions can start before the scene or end after it.
+            left = min(max(0.0, 100 * entry["start"] / total), 100.0)
+            width = max(0.0, min(100 * end / total, 100.0) - left)
             bar = (
                 f"<div class='track'><span class='{entry['kind']}' "
                 f"style='margin-left:{left:.4f}%;width:{width:.4f}%'></span></div>"
@@ -74,6 +78,7 @@ def render_html(data, status, root=None):
         "<style>body{font:16px sans-serif;max-width:1000px;margin:2em auto}"
         ".track{background:#eee}.track span{display:block;height:12px;"
         "background:#2980b9}.track span.caption{background:#8e44ad}"
+        ".track span.sound{background:#27ae60}"
         "li{margin:1em 0}</style>"
         f"<h1>{html.escape(data['scene'])}</h1><p>{html.escape(status)}</p>"
         f"<ol>{''.join(rows)}</ol>"

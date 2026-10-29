@@ -167,17 +167,15 @@ The other fields depend on the kind:
     ``end``, the time at which the caption disappears, and ``content``. The
     ``start`` and ``end`` times include the caption's offset.
 ``sound``
-    ``file`` (the requested path), ``duration`` (``null`` if unknown), ``gain``,
-    and ``options`` (other keyword arguments of ``add_sound()``). The ``start``
-    time includes the sound's time offset. In version 1, ``duration`` is always
-    ``null``.
-
-Arguments of section, caption, and sound calls must be JSON-serializable.
+    ``file`` (the requested path), ``duration``, ``gain``, and
+    ``gain_to_background``. The ``start`` time includes the sound's time offset.
+    The duration is read from the file's headers, or ``null`` if they do not
+    state one. Capturing a timeline therefore needs the sound files, just as
+    rendering does.
 
 Capture errors
 --------------
 
-Timeline capture fails if scene time is not finite or goes backwards, if a play
-or wait call is made while another one is running, for example from an updater,
-or if the arguments of a section, caption, or sound call cannot be stored as
-JSON. After an error, fix the cause and run a new scene instance.
+Timeline capture fails if scene time is not finite or goes backwards, for
+example after assigning ``renderer.time``. After an error, fix the cause and run
+a new scene instance.

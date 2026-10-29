@@ -837,6 +837,12 @@ plays start from the same state as in a full render; its frames are just not
 drawn. While such a play runs, ``manager.skip_animations`` is ``True``; the
 renderer's property reads the same value.
 
+Sounds are placed at scene time, independently of the plays. All sounds of a
+scene are mixed into one track, and when the movie is assembled, only the parts
+of the track that the movie shows are kept. A play left out of the output
+therefore cuts sound like it cuts the video, and reusing a cached segment does
+not change the audio. Subcaptions and section videos are placed the same way.
+
 Next, the manager calls :meth:`.Scene.compile_animation_data` to prepare the
 animations. This happens once per play call and includes the following steps:
 
