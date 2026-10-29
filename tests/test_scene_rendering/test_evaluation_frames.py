@@ -92,6 +92,17 @@ def test_frames_are_delivered_in_time_order(tmp_path):
     assert manager.renderer._target is None
 
 
+def test_frames_and_timeline_come_from_one_evaluation(tmp_path):
+    frames = []
+    with tempconfig(settings("cairo", tmp_path)):
+        manager = Manager(Motion())
+        manager.evaluate(
+            capture_timeline=True, frame_times=[1.0], on_frame=frames.append
+        )
+    assert [frame.frame_index for frame in frames] == [4]
+    assert manager.timeline.to_dict()["duration"] == 2.25
+
+
 def test_invalid_requests_are_rejected(tmp_path):
     with tempconfig(settings("cairo", tmp_path)):
         for times in ([-1], [float("nan")]):

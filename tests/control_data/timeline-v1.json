@@ -1,0 +1,139 @@
+{
+  "schema": "manim.timeline",
+  "version": 1,
+  "mode": "evaluate",
+  "scene": "TimelineExample",
+  "backend": "CairoRenderer",
+  "frame_rate": 4.0,
+  "duration": 2.25,
+  "ended_early": false,
+  "source": {
+    "path": "timeline_scene.py",
+    "sha256": "ceab53ce5a5c5d6a85f69732f3ff532d2fbf1adf26f2135279718aedb55ed544"
+  },
+  "entries": [
+    {
+      "kind": "section",
+      "start": 0.0,
+      "name": "opening",
+      "type": "default.normal",
+      "skip_animations": false,
+      "source": {
+        "path": "timeline_scene.py",
+        "line": 11
+      }
+    },
+    {
+      "kind": "play",
+      "start": 0.0,
+      "end": 0.5,
+      "run_time": 0.3,
+      "frozen": false,
+      "animations": [
+        {
+          "type": "manim.animation.transform._MethodAnimation",
+          "run_time": 0.3
+        }
+      ],
+      "skipped": false,
+      "source": {
+        "path": "timeline_scene.py",
+        "line": 12
+      }
+    },
+    {
+      "kind": "caption",
+      "start": 0.0,
+      "end": 0.5,
+      "content": "move",
+      "source": {
+        "path": "timeline_scene.py",
+        "line": 12
+      }
+    },
+    {
+      "kind": "wait",
+      "start": 0.5,
+      "end": 1.0,
+      "run_time": 0.3,
+      "frozen": false,
+      "animations": [
+        {
+          "type": "manim.animation.animation.Wait",
+          "run_time": 0.3
+        }
+      ],
+      "skipped": false,
+      "source": {
+        "path": "timeline_scene.py",
+        "line": 14
+      }
+    },
+    {
+      "kind": "wait",
+      "start": 1.0,
+      "end": 1.5,
+      "run_time": 0.3,
+      "frozen": false,
+      "animations": [
+        {
+          "type": "manim.animation.animation.Wait",
+          "run_time": 0.3
+        }
+      ],
+      "skipped": false,
+      "source": {
+        "path": "timeline_scene.py",
+        "line": 14
+      }
+    },
+    {
+      "kind": "wait",
+      "start": 1.5,
+      "end": 1.75,
+      "run_time": 0.3,
+      "frozen": true,
+      "animations": [
+        {
+          "type": "manim.animation.animation.Wait",
+          "run_time": 0.3
+        }
+      ],
+      "skipped": false,
+      "source": {
+        "path": "timeline_scene.py",
+        "line": 15
+      }
+    },
+    {
+      "kind": "wait",
+      "start": 1.75,
+      "end": 2.25,
+      "run_time": 1.0,
+      "frozen": false,
+      "animations": [
+        {
+          "type": "manim.animation.animation.Wait",
+          "run_time": 1.0
+        }
+      ],
+      "skipped": false,
+      "source": {
+        "path": "timeline_scene.py",
+        "line": 17
+      }
+    },
+    {
+      "kind": "sound",
+      "start": 2.25,
+      "duration": null,
+      "file": "example.wav",
+      "gain": null,
+      "options": {},
+      "source": {
+        "path": "timeline_scene.py",
+        "line": 19
+      }
+    }
+  ]
+}

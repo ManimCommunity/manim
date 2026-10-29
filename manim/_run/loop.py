@@ -125,6 +125,9 @@ class _RunListener:
     def marker(self, marker: _Section | _Caption | _Sound) -> None:
         """A section, caption, or sound call was made."""
 
+    def run_finished(self, end_frame: int, ended_early: bool) -> None:
+        """``construct()`` and ``tear_down()`` have returned."""
+
 
 class _Drawer(Protocol):
     def draw(self, frame: _Frame) -> None: ...
@@ -207,8 +210,23 @@ class _RunLoop:
         self.listeners = tuple(listeners)
         self.selection = selection
         self.drawer = drawer
+        self._playing = False
 
     def play(
+        self, *args: Animation | Mobject | _AnimationBuilder, **kwargs: Any
+    ) -> None:
+        if self._playing:
+            raise RuntimeError(
+                "play() and wait() cannot be called during another play or wait "
+                "call, for example from an updater."
+            )
+        self._playing = True
+        try:
+            self._play(*args, **kwargs)
+        finally:
+            self._playing = False
+
+    def _play(
         self, *args: Animation | Mobject | _AnimationBuilder, **kwargs: Any
     ) -> None:
         manager = self.manager
@@ -271,6 +289,11 @@ class _RunLoop:
     def in_output(self) -> bool:
         """Whether the next play, which starts at the current time, is in the output."""
         return self.selection.includes(self.manager.num_plays)
+
+    def finish(self, *, ended_early: bool) -> None:
+        """Tell the listeners that the run has finished."""
+        for listener in self.listeners:
+            listener.run_finished(self.manager._execution.frame, ended_early)
 
     def marker(self, marker: _Section | _Caption | _Sound) -> None:
         if isinstance(marker, _Section):
