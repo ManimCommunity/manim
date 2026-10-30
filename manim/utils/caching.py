@@ -116,7 +116,7 @@ def handle_caching_play(func: Callable[..., None]) -> Callable[..., None]:
             self.animations_hashes.append(None)
             self.file_writer.add_partial_movie_file(None)
             return
-        if not config["disable_caching"]:
+        if not config.disable_caching:
             mobjects_on_scene = scene.mobjects
             hash_play = get_hash_from_play_call(
                 scene,
