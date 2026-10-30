@@ -1,411 +1,198 @@
-==========
-Quickstart
-==========
-
-.. note::
-
-  Before proceeding, install Manim and make sure it is running properly by
-  following the steps in :doc:`../installation`. For
-  information on using Manim with Jupyterlab or Jupyter notebook, go to the
-  documentation for the
-  :meth:`IPython magic command <manim.utils.ipython_magic.ManimMagic.manim>`,
-  ``%%manim``.
-
-
-.. important::
-
-  If you installed Manim in the recommended way, using the
-  Python management tool ``uv``, then you either need to make sure the corresponding
-  virtual environment is activated (follow the instructions printed on running ``uv venv``),
-  or you need to remember to prefix the ``manim`` command in the console with ``uv run``;
-  that is, ``uv run manim ...``.
-
-Overview
-********
-
-This quickstart guide will lead you through creating a sample project using Manim: an animation
-engine for precise programmatic animations.
-
-First, you will use a command line
-interface to create a ``Scene``, the class through which Manim generates videos.
-In the ``Scene`` you will animate a circle. Then you will add another ``Scene`` showing
-a square transforming into a circle. This will be your introduction to Manim's animation ability.
-Afterwards, you will position multiple mathematical objects (``Mobject``\s). Finally, you
-will learn the ``.animate`` syntax, a powerful feature that animates the methods you
-use to modify ``Mobject``\s.
-
-
-Starting a new project
-**********************
-
-Start by creating a new folder::
-
-   manim init project my-project --default
-
-The ``my-project`` folder is the root folder for your project. It contains all the files that Manim needs to function,
-as well as any output that your project produces.
-
-
-Animating a circle
-******************
-
-1. Open a text editor, such as Notepad. Open the file ``main.py`` in the ``my-project`` folder.
-   It should look something like this:
-
-   .. code-block:: python
-
-     from manim import *
-
-
-     class CreateCircle(Scene):
-         def construct(self):
-             circle = Circle()  # create a circle
-             circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
-             self.play(Create(circle))  # show the circle on screen
-
-
-2. Open the command line, navigate to your project folder, and execute
-   the following command:
-
-   .. code-block:: bash
-
-     manim -pql main.py CreateCircle
-
-Manim will output rendering information, then create an MP4 file.
-Your default movie player will play the MP4 file, displaying the following animation.
-
-.. manim:: CreateCircle
-   :hide_source:
-
-   class CreateCircle(Scene):
-       def construct(self):
-           circle = Circle()                   # create a circle
-           circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
-           self.play(Create(circle))     # show the circle on screen
-
-If you see an animation of a pink circle being drawn, congratulations!
-You just wrote your first Manim scene from scratch.
-
-If you get an error
-message instead, you do not see a video, or if the video output does not
-look like the preceding animation, it is likely that Manim has not been
-installed correctly. Please refer to our :doc:`FAQ section </faq/index>`
-for help with the most common issues.
-
-
-***********
-Explanation
-***********
-
-Let's go over the script you just executed line by line to see how Manim was
-able to draw the circle.
-
-The first line imports all of the contents of the library:
-
-.. code-block:: python
-
-   from manim import *
-
-This is the recommended way of using Manim, as a single script often uses
-multiple names from the Manim namespace. In your script, you imported and used
-``Scene``, ``Circle``, ``PINK`` and ``Create``.
-
-Now let's look at the next two lines:
-
-.. code-block:: python
-
-   class CreateCircle(Scene):
-       def construct(self):
-           [...]
-
-Most of the time, the code for scripting an animation is entirely contained within
-the :meth:`~.Scene.construct` method of a :class:`.Scene` class.
-Inside :meth:`~.Scene.construct`, you can create objects, display them on screen, and animate them.
-
-The next two lines create a circle and set its color and opacity:
-
-.. code-block:: python
-
-           circle = Circle()  # create a circle
-           circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
-
-Finally, the last line uses the animation :class:`.Create` to display the
-circle on your screen:
-
-.. code-block:: python
-
-           self.play(Create(circle))  # show the circle on screen
-
-.. tip:: All animations must reside within the :meth:`~.Scene.construct` method of a
-         class derived from :class:`.Scene`.  Other code, such as auxiliary
-         or mathematical functions, may reside outside the class.
-
-
-Transforming a square into a circle
-***********************************
-
-With our circle animation complete, let's move on to something a little more complicated.
-
-1. Open ``scene.py``, and add the following code snippet below the ``CreateCircle`` class:
-
-.. code-block:: python
-
-   class SquareToCircle(Scene):
-       def construct(self):
-           circle = Circle()  # create a circle
-           circle.set_fill(PINK, opacity=0.5)  # set color and transparency
-
-           square = Square()  # create a square
-           square.rotate(PI / 4)  # rotate a certain amount
-
-           self.play(Create(square))  # animate the creation of the square
-           self.play(Transform(square, circle))  # interpolate the square into the circle
-           self.play(FadeOut(square))  # fade out animation
-
-2. Render ``SquareToCircle`` by running the following command in the command line:
-
-.. code-block:: bash
-
-   manim -pql scene.py SquareToCircle
-
-The following animation will render:
-
-.. manim:: SquareToCircle2
-   :hide_source:
-
-   class SquareToCircle2(Scene):
-       def construct(self):
-           circle = Circle()  # create a circle
-           circle.set_fill(PINK, opacity=0.5)  # set color and transparency
-
-           square = Square()  # create a square
-           square.rotate(PI / 4)  # rotate a certain amount
-
-           self.play(Create(square))  # animate the creation of the square
-           self.play(Transform(square, circle))  # interpolate the square into the circle
-           self.play(FadeOut(square))  # fade out animation
-
-This example shows one of the primary features of Manim: the ability to
-implement complicated and mathematically intensive animations (such as cleanly
-interpolating between two geometric shapes) with just a few lines of code.
-
-
-Positioning ``Mobject``\s
-*************************
-
-Next, let's go over some basic techniques for positioning ``Mobject``\s.
-
-1. Open ``scene.py``, and add the following code snippet below the ``SquareToCircle`` class:
-
-.. code-block:: python
-
-   class SquareAndCircle(Scene):
-       def construct(self):
-           circle = Circle()  # create a circle
-           circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
-
-           square = Square()  # create a square
-           square.set_fill(BLUE, opacity=0.5)  # set the color and transparency
-
-           square.next_to(circle, RIGHT, buff=0.5)  # set the position
-           self.play(Create(circle), Create(square))  # show the shapes on screen
-
-2. Render ``SquareAndCircle`` by running the following command in the command line:
-
-.. code-block:: bash
-
-   manim -pql scene.py SquareAndCircle
-
-The following animation will render:
-
-.. manim:: SquareAndCircle2
-   :hide_source:
-
-   class SquareAndCircle2(Scene):
-       def construct(self):
-           circle = Circle()  # create a circle
-           circle.set_fill(PINK, opacity=0.5)  # set the color and transparency
-
-           square = Square() # create a square
-           square.set_fill(BLUE, opacity=0.5) # set the color and transparency
-
-           square.next_to(circle, RIGHT, buff=0.5) # set the position
-           self.play(Create(circle), Create(square))  # show the shapes on screen
-
-``next_to`` is a ``Mobject`` method for positioning ``Mobject``\s.
-
-We first specified
-the pink circle as the square's reference point by passing ``circle`` as the method's first argument.
-The second argument is used to specify the direction the ``Mobject`` is placed relative to the reference point.
-In this case, we set the direction to ``RIGHT``, telling Manim to position the square to the right of the circle.
-Finally, ``buff=0.5`` applied a small distance buffer between the two objects.
-
-Try changing ``RIGHT`` to ``LEFT``, ``UP``, or ``DOWN`` instead, and see how that changes the position of the square.
-
-Using positioning methods, you can render a scene with multiple ``Mobject``\s,
-setting their locations in the scene using coordinates or positioning them
-relative to each other.
-
-For more information on ``next_to`` and other positioning methods, check out the
-list of :class:`.Mobject` methods in our reference manual.
-
-
-Using ``.animate`` syntax to animate methods
-********************************************
-
-The final lesson in this tutorial is using ``.animate``, a ``Mobject`` method which
-animates changes you make to a ``Mobject``. When you prepend ``.animate`` to any
-method call that modifies a ``Mobject``, the method becomes an animation which
-can be played using ``self.play``. Let's return to ``SquareToCircle`` to see the
-differences between using methods when creating a ``Mobject``,
-and animating those method calls with ``.animate``.
-
-1. Open ``scene.py``, and add the following code snippet below the ``SquareAndCircle`` class:
-
-.. code-block:: python
-
-   class AnimatedSquareToCircle(Scene):
-       def construct(self):
-           circle = Circle()  # create a circle
-           square = Square()  # create a square
-
-           self.play(Create(square))  # show the square on screen
-           self.play(square.animate.rotate(PI / 4))  # rotate the square
-           self.play(Transform(square, circle))  # transform the square into a circle
-           self.play(
-               square.animate.set_fill(PINK, opacity=0.5)
-           )  # color the circle on screen
-
-2. Render ``AnimatedSquareToCircle`` by running the following command in the command line:
-
-.. code-block:: bash
-
-   manim -pql scene.py AnimatedSquareToCircle
-
-The following animation will render:
-
-.. manim:: AnimatedSquareToCircle2
-   :hide_source:
-
-   class AnimatedSquareToCircle2(Scene):
-       def construct(self):
-           circle = Circle()  # create a circle
-           square = Square()  # create a square
-
-           self.play(Create(square))  # show the square on screen
-           self.play(square.animate.rotate(PI / 4))  # rotate the square
-           self.play(Transform(square, circle))  # transform the square into a circle
-           self.play(square.animate.set_fill(PINK, opacity=0.5))  # color the circle on screen
-
-The first ``self.play`` creates the square. The second animates rotating it 45 degrees.
-The third transforms the square into a circle, and the last colors the circle pink.
-Although the end result is the same as that of ``SquareToCircle``, ``.animate`` shows
-``rotate`` and ``set_fill`` being applied to the ``Mobject`` dynamically, instead of creating them
-with the changes already applied.
-
-Try other methods, like ``flip`` or ``shift``, and see what happens.
-
-3. Open ``scene.py``, and add the following code snippet below the ``AnimatedSquareToCircle`` class:
-
-.. code-block:: python
-
-   class DifferentRotations(Scene):
-       def construct(self):
-           left_square = Square(color=BLUE, fill_opacity=0.7).shift(2 * LEFT)
-           right_square = Square(color=GREEN, fill_opacity=0.7).shift(2 * RIGHT)
-           self.play(
-               left_square.animate.rotate(PI), Rotate(right_square, angle=PI), run_time=2
-           )
-           self.wait()
-
-4. Render ``DifferentRotations`` by running the following command in the command line:
-
-.. code-block:: bash
-
-   manim -pql scene.py DifferentRotations
-
-The following animation will render:
-
-.. manim:: DifferentRotations2
-   :hide_source:
-
-   class DifferentRotations2(Scene):
-       def construct(self):
-           left_square = Square(color=BLUE, fill_opacity=0.7).shift(2*LEFT)
-           right_square = Square(color=GREEN, fill_opacity=0.7).shift(2*RIGHT)
-           self.play(left_square.animate.rotate(PI), Rotate(right_square, angle=PI), run_time=2)
-           self.wait()
-
-This ``Scene`` illustrates the quirks of ``.animate``. When using ``.animate``, Manim
-actually takes a ``Mobject``'s starting state and its ending state and interpolates the two.
-In the ``AnimatedSquareToCircle`` class, you can observe this when the square rotates:
-the corners of the square appear to contract slightly as they move into the positions required
-for the first square to transform into the second one.
-
-In ``DifferentRotations``, the difference between ``.animate``'s interpretation of rotation and the
-``Rotate`` method is far more apparent. The starting and ending states of a ``Mobject`` rotated 180 degrees
-are the same, so ``.animate`` tries to interpolate two identical objects and the result is the left square.
-If you find that your own usage of ``.animate`` is causing similar unwanted behavior, consider
-using conventional animation methods like the right square, which uses ``Rotate``.
-
-
-``Transform`` vs ``ReplacementTransform``
-*****************************************
-The difference between ``Transform`` and ``ReplacementTransform`` is that ``Transform(mob1, mob2)`` transforms the points
-(as well as other attributes like color) of ``mob1`` into the points/attributes of ``mob2``.
-
-``ReplacementTransform(mob1, mob2)`` on the other hand literally replaces ``mob1`` on the scene with ``mob2``.
-
-The use of ``ReplacementTransform`` or ``Transform`` is mostly up to personal preference. They can be used to accomplish the same effect, as shown below.
-
-.. code-block:: python
-
-    class TwoTransforms(Scene):
-        def transform(self):
-            a = Circle()
-            b = Square()
-            c = Triangle()
-            self.play(Transform(a, b))
-            self.play(Transform(a, c))
-            self.play(FadeOut(a))
-
-        def replacement_transform(self):
-            a = Circle()
-            b = Square()
-            c = Triangle()
-            self.play(ReplacementTransform(a, b))
-            self.play(ReplacementTransform(b, c))
-            self.play(FadeOut(c))
-
-        def construct(self):
-            self.transform()
-            self.wait(0.5)  # wait for 0.5 seconds
-            self.replacement_transform()
-
-
-However, in some cases it is more beneficial to use ``Transform``, like when you are transforming several mobjects one after the other.
-The code below avoids having to keep a reference to the last mobject that was transformed.
-
-.. manim:: TransformCycle
-
-    class TransformCycle(Scene):
-        def construct(self):
-            a = Circle()
-            t1 = Square()
-            t2 = Triangle()
-            self.add(a)
-            self.wait()
-            for t in [t1,t2]:
-                self.play(Transform(a,t))
-
-************
-You're done!
-************
-
-With a working installation of Manim and this sample project under your belt,
-you're ready to start creating animations of your own.  To learn
-more about what Manim is doing under the hood, move on to the next tutorial:
-:doc:`output_and_config`.  For an overview of
-Manim's features, as well as its configuration and other settings, check out the
-other :doc:`Tutorials <../tutorials/index>`.  For a list of all available features, refer to the
-:doc:`../reference` page.
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Penyebab Gempa Bumi (30 detik)</title>
+<style>
+:root{--bg:#f3efe8;--fg:#1d1a17;--muted:#6b645b;--btn:#1d1a17;--btnfg:#f3efe8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14120f;--fg:#efe9df;--muted:#a39b8f;--btn:#efe9df;--btnfg:#14120f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14120f;--fg:#efe9df;--muted:#a39b8f;--btn:#efe9df;--btnfg:#14120f;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Trebuchet MS",Verdana,system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;padding:16px}
+.box{width:100%;max-width:960px}
+h1{font-size:1.15rem;margin:0 0 10px;font-weight:700}
+canvas{width:100%;height:auto;aspect-ratio:16/9;display:block;border-radius:8px;background:#0b1020}
+.ctl{display:flex;gap:10px;align-items:center;margin-top:12px;flex-wrap:wrap}
+button{background:var(--btn);color:var(--btnfg);border:0;border-radius:6px;padding:8px 14px;font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid #e0732a;outline-offset:2px}
+input[type=range]{flex:1;min-width:140px}
+label{color:var(--muted);font-size:.9rem;display:flex;gap:6px;align-items:center}
+</style>
+</head>
+<body>
+<div class="box">
+<h1>Penyebab Gempa Bumi: animasi 30 detik</h1>
+<canvas id="c" width="1920" height="1080" aria-label="Animasi penyebab gempa bumi"></canvas>
+<div class="ctl">
+<button id="pp">Jeda</button>
+<button id="rs">Ulang</button>
+<input id="sk" type="range" min="0" max="30" step="0.05" value="0" aria-label="Posisi video">
+<label><input id="vo" type="checkbox"> Suara narasi</label>
+</div>
+</div>
+<script>
+const cv=document.getElementById('c'),ctx=cv.getContext('2d');
+const W=960,H=540,DUR=30;
+const clamp=(x,a=0,b=1)=>Math.min(b,Math.max(a,x));
+const ease=x=>{x=clamp(x);return x*x*(3-2*x)};
+const FONT='"Trebuchet MS",Verdana,sans-serif';
+
+const CAPS=[
+ [0,6,"Bumi tersusun dari kerak, mantel, dan inti. Kerak tidak utuh, tetapi terpecah menjadi lempeng-lempeng."],
+ [6,13,"Panas dari inti menggerakkan arus di dalam mantel, sehingga lempeng bergerak beberapa sentimeter per tahun."],
+ [13,20.4,"Lempeng bertumbukan, saling menjauh, atau bergesekan. Batuan tertahan dan energi terus menumpuk."],
+ [20.4,26,"Saat batuan tak kuat lagi menahan tekanan, patahan terjadi tiba-tiba. Energi dilepas sebagai gelombang seismik: gempa!"],
+ [26,30,"Selain gerakan lempeng, gempa juga bisa dipicu hal lain. Kenali risikonya, siapkan mitigasi."]
+];
+
+function txt(s,x,y,size,color,align='left',weight='normal',alpha=1){
+ ctx.globalAlpha=alpha;ctx.fillStyle=color;ctx.font=`${weight} ${size}px ${FONT}`;ctx.textAlign=align;ctx.fillText(s,x,y);ctx.globalAlpha=1;
+}
+function wrap(s,x,y,maxW,lh,size,color){
+ ctx.font=`${size}px ${FONT}`;ctx.textAlign='left';ctx.fillStyle=color;
+ let line='',yy=y;
+ for(const w of s.split(' ')){
+  const t=line?line+' '+w:w;
+  if(ctx.measureText(t).width>maxW&&line){ctx.fillText(line,x,yy);line=w;yy+=lh}else line=t;
+ }
+ ctx.fillText(line,x,yy);
+}
+
+/* ---------- Adegan 1: struktur Bumi (0-6 dtk) ---------- */
+function sceneEarth(t){
+ const cx=330,cy=235,R=170*ease(t/1);
+ const layer=(r,col,start)=>{ctx.globalAlpha=clamp((t-start)/0.6);ctx.fillStyle=col;ctx.beginPath();ctx.arc(cx,cy,R*r,0,7);ctx.fill();ctx.globalAlpha=1};
+ ctx.fillStyle='#2f7d5b';ctx.beginPath();ctx.arc(cx,cy,R,0,7);ctx.fill();
+ layer(0.93,'#e0732a',1);layer(0.62,'#f2b134',2);layer(0.32,'#fff1a8',2.8);
+ if(t>3.8){
+  ctx.strokeStyle='#fff';ctx.lineWidth=3;ctx.globalAlpha=clamp((t-3.8)/0.8);
+  [0.3,1.2,2.1,3.3,4.4,5.4].forEach(a=>{ctx.beginPath();ctx.moveTo(cx+R*0.93*Math.cos(a),cy+R*0.93*Math.sin(a));ctx.lineTo(cx+R*Math.cos(a),cy+R*Math.sin(a));ctx.stroke()});
+  ctx.globalAlpha=1;
+ }
+ const L=[[0.8,0.97,-0.7,'Kerak bumi',140,'#7ed6a8','Terpecah menjadi lempeng'],[1.8,0.78,-0.2,'Mantel',215,'#ffa45c','Batuan panas, kental'],[2.6,0.47,0.3,'Inti luar',290,'#ffd36b','Logam cair'],[3.2,0.16,0.9,'Inti dalam',365,'#fff1a8','Logam padat, sangat panas']];
+ L.forEach(([s,r,a,n,y,c,d])=>{
+  const al=clamp((t-s)/0.5);if(al<=0)return;
+  const px=cx+R*r*Math.cos(a),py=cy+R*r*Math.sin(a);
+  ctx.globalAlpha=al;ctx.strokeStyle=c;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(600,y-8);ctx.lineTo(620,y-8);ctx.stroke();
+  ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(px,py,4,0,7);ctx.fill();ctx.globalAlpha=1;
+  txt(n,630,y-2,24,c,'left','bold',al);txt(d,630,y+24,17,'#c9d1e6','left','normal',al);
+ });
+}
+
+/* ---------- Adegan 2: arus konveksi (6-13 dtk) ---------- */
+function sceneConv(t){
+ const lt=t-6,mv=lt*6;
+ const g=ctx.createLinearGradient(0,250,0,470);g.addColorStop(0,'#c4561f');g.addColorStop(1,'#ffb347');
+ ctx.fillStyle=g;ctx.fillRect(60,250,840,220);
+ ctx.fillStyle='#7a6a58';ctx.fillRect(80+mv,195,390,55);ctx.fillRect(490-mv,195,390,55);
+ ctx.fillStyle='#4a3f33';ctx.fillRect(80+mv,195,390,10);ctx.fillRect(490-mv,195,390,10);
+ [[270,1],[690,-1]].forEach(([cx,dir])=>{
+  ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(cx,360,170,70,0,0,7);ctx.stroke();
+  for(let i=0;i<12;i++){
+   const a=dir*(lt*1.1)+i*Math.PI/6;
+   const x=cx+170*Math.cos(a),y=360+70*Math.sin(a);
+   ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x,y,5,0,7);ctx.fill();
+  }
+ });
+ const al=ease(lt/1);
+ txt('Lempeng tektonik',480,180,22,'#e8dccb','center','bold',al);
+ txt('Arus konveksi mantel',270,375,18,'#fff','center','normal',al);
+ txt('Arus konveksi mantel',690,375,18,'#fff','center','normal',al);
+ txt('Panas dari inti Bumi',480,458,18,'#3a1a08','center','bold',al);
+ ctx.globalAlpha=al;ctx.fillStyle='#fff';
+ [[450,150,1],[510,150,-1]].forEach(([x,y,d])=>{ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+d*30,y);ctx.moveTo(x+d*30,y);ctx.lineTo(x+d*22,y-7);ctx.lineTo(x+d*22,y+7);ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+d*24,y);ctx.stroke()});
+ ctx.globalAlpha=1;
+}
+
+/* ---------- Adegan 3-4: tekanan lalu patahan (13-26 dtk) ---------- */
+const RUP=20.4,FX=480,FY=285;
+function sceneFault(t){
+ const u=clamp((t-13)/(RUP-13)),r=ease((t-RUP)/0.5);
+ const A=48*(t<RUP?0.15+0.85*u:1);
+ const f=x=>{const d=x-FX,s=Math.sign(d);return -A*s*(1-(1-r)*Math.exp(-Math.abs(d)/110))};
+ const al=ease((t-13)/0.6);
+ ctx.fillStyle='#3a3226';ctx.fillRect(60,110,840,330);
+ const lines=[[150,'#5a4d3c',2],[215,'#5a4d3c',2],[FY,'#ffd23f',6],[355,'#5a4d3c',2],[410,'#5a4d3c',2]];
+ lines.forEach(([y0,c,w])=>{
+  ctx.strokeStyle=c;ctx.lineWidth=w;
+  [[60,FX-1],[FX+1,900]].forEach(([a,b])=>{ctx.beginPath();for(let x=a;x<=b;x+=6){const y=y0+f(x);x===a?ctx.moveTo(x,y):ctx.lineTo(x,y)}ctx.stroke()});
+ });
+ ctx.setLineDash([10,8]);ctx.strokeStyle=r>0?'#ff5a4d':'#9aa0ad';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(FX,110);ctx.lineTo(FX,440);ctx.stroke();ctx.setLineDash([]);
+ txt('Patahan',FX,102,18,'#ff9b91','center','bold',al);
+ txt('Lempeng A',200,132,18,'#e8dccb','center','normal',al);
+ txt('Lempeng B',760,430,18,'#e8dccb','center','normal',al);
+ const arrow=(x,y,d)=>{const p=(t<RUP?1:0)*Math.sin(t*6)*3;ctx.globalAlpha=al*(t<RUP?1:0.3);ctx.fillStyle='#fff';ctx.strokeStyle='#fff';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(x,y-d*26+p);ctx.lineTo(x,y+d*20+p);ctx.stroke();ctx.beginPath();ctx.moveTo(x,y+d*38+p);ctx.lineTo(x-12,y+d*18+p);ctx.lineTo(x+12,y+d*18+p);ctx.fill();ctx.globalAlpha=1};
+ arrow(240,175,1);arrow(720,395,-1);
+ /* meter tekanan */
+ const mv=t<RUP?u:1-r;
+ txt('Tekanan batuan',700,60,16,'#c9d1e6','left','normal',al);
+ ctx.globalAlpha=al;ctx.fillStyle='#232a40';ctx.fillRect(700,68,200,14);
+ ctx.fillStyle=`hsl(${120-120*mv},80%,50%)`;ctx.fillRect(700,68,200*mv,14);ctx.globalAlpha=1;
+ /* gelombang seismik */
+ if(t>RUP){
+  const tt=t-RUP;
+  if(tt<0.5){const g=ctx.createRadialGradient(FX,FY,0,FX,FY,140);g.addColorStop(0,`rgba(255,255,255,${1-tt/0.5})`);g.addColorStop(1,'rgba(255,255,255,0)');ctx.fillStyle=g;ctx.fillRect(0,0,W,H)}
+  for(let k=0;k<4;k++){
+   const rr=(tt-k*0.5)*230;if(rr<=0||rr>720)continue;
+   ctx.strokeStyle=k%2?'#ffb347':'#ff5a4d';ctx.globalAlpha=1-rr/720;ctx.lineWidth=5;ctx.beginPath();ctx.arc(FX,FY,rr,0,7);ctx.stroke();ctx.globalAlpha=1;
+  }
+  ctx.fillStyle='#ff3b30';ctx.beginPath();ctx.arc(FX,FY,9,0,7);ctx.fill();
+  txt('Pusat gempa',FX+16,FY-14,18,'#fff','left','bold',ease(tt/0.5));
+ }
+}
+
+/* ---------- Adegan 5: ringkasan (26-30 dtk) ---------- */
+function sceneSum(t){
+ const items=[['Tektonik','Sekitar 90% gempa: gerakan dan patahan lempeng','#ff7a59'],['Vulkanik','Magma naik dan letusan gunung api','#ffb347'],['Runtuhan','Longsor besar atau ambruknya gua dan tambang','#7ed6a8'],['Aktivitas manusia','Waduk besar, injeksi limbah, ledakan','#7aa7ff']];
+ txt('Apa saja penyebab gempa?',480,100,30,'#fff','center','bold',ease((t-26)/0.5));
+ items.forEach(([n,d,c],i)=>{
+  const a=ease((t-26.3-i*0.6)/0.5);if(a<=0)return;
+  const x=90+(i%2)*400,y=130+Math.floor(i/2)*140+(1-a)*20;
+  ctx.globalAlpha=a;ctx.fillStyle='#1a2240';ctx.beginPath();ctx.roundRect(x,y,380,120,10);ctx.fill();
+  ctx.fillStyle=c;ctx.fillRect(x,y+14,6,92);ctx.globalAlpha=1;
+  txt(n,x+24,y+44,26,c,'left','bold',a);wrap(d,x+24,y+78,330,22,18,`rgba(220,226,240,${a})`);
+ });
+}
+
+/* ---------- Bingkai utama ---------- */
+function draw(t){
+ ctx.setTransform(2,0,0,2,0,0);
+ const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,'#0b1020');bg.addColorStop(1,'#1b1f3a');
+ ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+ ctx.save();
+ if(t>RUP&&t<24.5){const k=1-(t-RUP)/4.1;ctx.translate((Math.random()-.5)*12*k,(Math.random()-.5)*12*k)}
+ if(t<6)sceneEarth(t);else if(t<13)sceneConv(t);else if(t<26)sceneFault(t);else sceneSum(t);
+ ctx.restore();
+ [6,13,26].forEach(b=>{const a=clamp(1-Math.abs(t-b)/0.35);if(a>0){ctx.fillStyle=`rgba(11,16,32,${a})`;ctx.fillRect(0,0,W,H)}});
+ txt('Penyebab Gempa Bumi',28,44,26,'#fff','left','bold');
+ const s=Math.floor(t);txt(`00:${String(s).padStart(2,'0')} / 00:30`,932,44,18,'#c9d1e6','right');
+ const cap=CAPS.find(c=>t>=c[0]&&t<c[1])||CAPS[4];
+ ctx.fillStyle='rgba(0,0,0,.62)';ctx.fillRect(0,448,W,92);
+ wrap(cap[2],32,484,896,28,22,'#fff');
+ ctx.fillStyle='#ff7a59';ctx.fillRect(0,H-5,W*t/DUR,5);
+}
+
+/* ---------- Pemutar ---------- */
+let t=0,playing=true,last=performance.now(),lastCap=-1;
+const pp=document.getElementById('pp'),sk=document.getElementById('sk'),vo=document.getElementById('vo');
+function speak(){
+ if(!vo.checked||!('speechSynthesis' in window))return;
+ const i=CAPS.findIndex(c=>t>=c[0]&&t<c[1]);if(i===lastCap||i<0)return;lastCap=i;
+ speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(CAPS[i][2]);u.lang='id-ID';u.rate=1.08;speechSynthesis.speak(u);
+}
+function setPlaying(p){playing=p;pp.textContent=p?'Jeda':(t>=DUR?'Putar lagi':'Putar');last=performance.now();if(!p&&'speechSynthesis' in window)speechSynthesis.cancel()}
+function loop(now){
+ if(playing){t+=(now-last)/1000;if(t>=DUR){t=DUR;setPlaying(false)}}
+ last=now;sk.value=t;draw(Math.min(t,DUR-0.001));if(playing)speak();
+ requestAnimationFrame(loop);
+}
+pp.onclick=()=>{if(t>=DUR)t=0;lastCap=-1;setPlaying(!playing)};
+document.getElementById('rs').onclick=()=>{t=0;lastCap=-1;setPlaying(true)};
+sk.oninput=()=>{t=parseFloat(sk.value);lastCap=-1};
+vo.onchange=()=>{lastCap=-1;if(!vo.checked&&'speechSynthesis' in window)speechSynthesis.cancel()};
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
