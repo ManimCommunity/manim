@@ -96,7 +96,7 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
                 if vmobject.consider_points_equals(subpath[0], subpath[-1]):
                     path.close()
         elif config.renderer == RendererType.CAIRO:
-            subpaths = vmobject.gen_subpaths_from_points_2d(points)  # type: ignore[assignment]
+            subpaths = vmobject.get_subpaths_from_points(points, n_dims=2)
             for subpath in subpaths:
                 quads = vmobject.gen_cubic_bezier_tuples_from_points(subpath)
                 start = subpath[0]
