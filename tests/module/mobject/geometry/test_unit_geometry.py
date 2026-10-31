@@ -14,6 +14,7 @@ from manim import (
     RIGHT,
     UP,
     Angle,
+    ArcBetweenPoints,
     BackgroundRectangle,
     Circle,
     Line,
@@ -245,6 +246,25 @@ def test_line_with_buff_and_path_arc():
         ]
     )
     np.testing.assert_allclose(line.points, expected_points)
+
+
+@pytest.mark.parametrize("initial_path_arc", [0, 30 * DEGREES])
+def test_line_set_points_by_ends_uses_passed_path_arc(initial_path_arc):
+    line = Line(LEFT, RIGHT, path_arc=initial_path_arc)
+
+    line.set_points_by_ends(2 * LEFT, 2 * RIGHT, path_arc=60 * DEGREES)
+
+    expected = ArcBetweenPoints(2 * LEFT, 2 * RIGHT, angle=60 * DEGREES)
+    np.testing.assert_allclose(line.points, expected.points)
+
+
+def test_line_set_points_by_ends_uses_passed_path_arc_for_buff():
+    line = Line(LEFT, RIGHT)
+
+    line.set_points_by_ends(2 * LEFT, 2 * RIGHT, buff=0.5, path_arc=60 * DEGREES)
+
+    expected = Line(2 * LEFT, 2 * RIGHT, buff=0.5, path_arc=60 * DEGREES)
+    np.testing.assert_allclose(line.points, expected.points)
 
 
 def test_Circle_point_at_angle():
