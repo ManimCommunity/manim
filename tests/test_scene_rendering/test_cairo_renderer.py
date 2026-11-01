@@ -18,7 +18,8 @@ def test_render(using_temp_config, disabling_caching):
     writer.write_frame = Mock(wraps=writer.write_frame)
     scene.render()
     assert writer.write_frame.call_count == config["frame_rate"]
-    assert renderer.update_frame.call_count == config["frame_rate"]
+    # One draw per frame, and one for the final state after the scene ends.
+    assert renderer.update_frame.call_count == config["frame_rate"] + 1
     assert_file_exists(renderer.file_writer.final_file_path)
     assert config.output_file == ""
 
@@ -168,3 +169,23 @@ def test_handled_play_failure_does_not_hide_an_earlier_encoder_failure(
         with pytest.raises(RuntimeError) as caught:
             scene.render()
     assert caught.value is earlier
+
+
+class _FillsACircle(Scene):
+    def construct(self):
+        circle = Circle()
+        self.add(circle)
+        self.play(circle.animate.set_fill(RED, opacity=1), run_time=0.2)
+
+
+def test_last_frame_is_drawn_after_a_cached_render(using_temp_config):
+    def last_frame():
+        scene = _FillsACircle()
+        with scene._get_manager() as manager:
+            manager.render()
+            return scene.renderer.get_frame().copy()
+
+    cold = last_frame()
+    warm = last_frame()
+    assert cold.any()
+    np.testing.assert_array_equal(warm, cold)
