@@ -329,3 +329,21 @@ def test_3d_images_line_up_with_vmobjects_when_frame_center_moves():
         assert len(image_columns) > 0
         assert image_columns.min() == pytest.approx(square_columns.min(), abs=1)
         assert image_columns.max() == pytest.approx(square_columns.max(), abs=1)
+
+
+def test_copied_camera_view_shows_the_same_camera():
+    with tempconfig({"pixel_width": 160, "pixel_height": 90}):
+        source = Camera(background_color=RED)
+        view = ImageMobjectFromCamera(source).set(height=2).shift(3 * LEFT)
+        copy = view.copy().shift(6 * RIGHT)
+        assert copy.camera is source
+
+        renderer = CairoRenderer(camera=MultiCamera([view]))
+        try:
+            renderer.render_mobjects([view, copy])
+            red = renderer.get_frame()[..., 0] > 128
+            left, right = red[:, :80], red[:, 80:]
+            assert left.sum() > 0
+            assert right.sum() == pytest.approx(left.sum(), rel=0.1)
+        finally:
+            renderer.close()

@@ -204,6 +204,7 @@ class CairoRenderer:
             raise RuntimeError("Cairo camera views cannot contain a composition cycle.")
         next_stack = (*camera_stack, camera_id)
         mobject_list = list(mobjects)
+        camera_view_pixels: dict[int, RGBAPixelArray] = {}
 
         if isinstance(camera, MultiCamera):
             for image_mobject in camera.image_mobjects_from_cameras:
@@ -226,11 +227,17 @@ class CairoRenderer:
                     camera_stack=next_stack,
                 )
                 self._camera_view_pixels[id(image_mobject)] = sub_target.pixels
+                camera_view_pixels[id(image_mobject.camera)] = sub_target.pixels
 
         def resolve_image(
             image_mobject: ImageMobjectFromCamera,
         ) -> RGBAPixelArray | None:
-            return self._camera_view_pixels.get(id(image_mobject))
+            # Unregistered views, such as copies of a registered view, show the
+            # pixels most recently drawn for their camera.
+            pixels = self._camera_view_pixels.get(id(image_mobject))
+            if pixels is None:
+                pixels = camera_view_pixels.get(id(image_mobject.camera))
+            return pixels
 
         _CairoDrawingContext(
             camera=camera,
