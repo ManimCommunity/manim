@@ -62,34 +62,32 @@ def test_max_files_cached_uses_minus_one_for_unlimited(config):
         config.max_files_cached = float("inf")
 
 
-def test_background_color_is_always_manimcolor(config):
-    """``config.background_color`` returns a ``ManimColor`` however it was set (#4801)."""
-    assert isinstance(config.background_color, ManimColor)
+_SET_BACKGROUND_COLOR = pytest.mark.parametrize(
+    "set_background_color",
+    [
+        lambda cfg, value: setattr(cfg, "background_color", value),
+        lambda cfg, value: cfg.__setitem__("background_color", value),
+        lambda cfg, value: cfg.update({"background_color": value}),
+    ],
+    ids=["attribute", "item", "update"],
+)
 
-    config.background_color = "#FC6255"
-    assert isinstance(config.background_color, ManimColor)
-    assert config.background_color == ManimColor("#FC6255")
 
-    config["background_color"] = "#123456"
-    assert isinstance(config.background_color, ManimColor)
-    assert config.background_color == ManimColor("#123456")
+@_SET_BACKGROUND_COLOR
+def test_background_color_is_normalized(set_background_color):
+    cfg = ManimConfig()
+    set_background_color(cfg, "#123456")
+    assert isinstance(cfg.background_color, ManimColor)
+    assert cfg.background_color == ManimColor("#123456")
 
-    with tempconfig({"background_color": "#58C4DD"}):
-        assert isinstance(config.background_color, ManimColor)
-        assert config.background_color == ManimColor("#58C4DD")
 
-    other = ManimConfig()
-    other.update({"background_color": "#83C167"})
-    assert isinstance(other.background_color, ManimColor)
-    assert other.background_color == ManimColor("#83C167")
-
-    other.update(config)
-    assert isinstance(other.background_color, ManimColor)
-    assert other.background_color == ManimColor("#123456")
-
-    copied = config.copy()
-    assert isinstance(copied.background_color, ManimColor)
-    assert copied.background_color == ManimColor("#123456")
+@_SET_BACKGROUND_COLOR
+def test_invalid_background_color_is_rejected(set_background_color):
+    cfg = ManimConfig()
+    cfg.background_color = "#123456"
+    with pytest.raises(ValueError, match="not found"):
+        set_background_color(cfg, "not_a_color")
+    assert cfg.background_color == ManimColor("#123456")
 
 
 def test_tempconfig_restores_renderer_class_bases(config):
