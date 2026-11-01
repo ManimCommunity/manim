@@ -148,13 +148,15 @@ def parse_theme(parser: configparser.SectionProxy) -> Theme | None:
     return custom_theme
 
 
-def set_file_logger(log_file_path: Path) -> logging.FileHandler:
+def set_file_logger(log_file_path: Path, mode: str = "w") -> logging.FileHandler:
     """Add a file handler to Manim's logger at the given path.
 
     Parameters
     ----------
     log_file_path
         Exact path of the log file for this scene.
+    mode
+        The file mode: ``"w"`` starts a new log, ``"a"`` appends to it.
 
     Returns
     -------
@@ -162,7 +164,7 @@ def set_file_logger(log_file_path: Path) -> logging.FileHandler:
         The attached handler. Remove it from the logger and close it when
         logging for this scene ends.
     """
-    file_handler = logging.FileHandler(log_file_path, mode="w")
+    file_handler = logging.FileHandler(log_file_path, mode=mode)
     logger = logging.getLogger("manim")
     try:
         file_handler.setFormatter(JSONFormatter())

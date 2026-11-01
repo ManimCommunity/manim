@@ -106,3 +106,12 @@ def test_scene_renderer_binding_cannot_be_replaced(managed_scene):
         assert manager.renderer is renderer
         assert renderer.get_frame().shape == (32, 64, 4)
     assert renderer._closed
+
+
+def test_play_after_render_in_scope_keeps_the_render_log(managed_scene, monkeypatch):
+    scene = managed_scene
+    monkeypatch.setattr(scene, "setup", lambda: logger.info("inside managed setup"))
+    with Manager(scene) as manager:
+        manager.render()
+        scene.wait(0.1)
+    assert "inside managed setup" in scene._log_file_path.read_text()
