@@ -429,7 +429,10 @@ class _CairoDrawingContext:
         points: Point3D_Array,
     ) -> np.ndarray:
         points = self.camera.transform_points_pre_display(mobject, points)
-        shifted_points = points - self.camera.frame_center
+        # Use the same view center as the Cairo context transform, so that
+        # pixel-placed images and point clouds line up with vectorized mobjects
+        # (ThreeDCamera.project_points() has already removed frame_center).
+        shifted_points = points - self.camera.get_view_transform_center()
         settings = self.target.settings
         result = np.zeros((len(points), 2))
         result[:, 0] = (

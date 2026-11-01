@@ -15,6 +15,7 @@ from manim import (
     UP,
     Camera,
     CapStyleType,
+    ImageMobject,
     ImageMobjectFromCamera,
     LineJointType,
     Mobject,
@@ -305,3 +306,26 @@ def test_degenerate_vmobject_does_not_repaint_previous_path(degenerate):
         np.testing.assert_array_equal(
             _render_pixels([square, degenerate]), _render_pixels([square])
         )
+
+
+def test_3d_images_line_up_with_vmobjects_when_frame_center_moves():
+    with tempconfig({"pixel_width": 160, "pixel_height": 90}):
+        camera = ThreeDCamera()
+        camera.frame_center = 2 * RIGHT
+        image = ImageMobject(np.full((2, 2, 3), 255, dtype=np.uint8)).set(width=2)
+        square = Square(side_length=2, fill_color="#ffffff", fill_opacity=1)
+        image.move_to(2 * RIGHT)
+        square.move_to(2 * RIGHT).set_stroke(width=0)
+
+        def white_columns(mobject):
+            renderer = CairoRenderer(camera=camera)
+            try:
+                renderer.render_mobjects([mobject])
+                return np.where(renderer.get_frame()[..., 0].max(axis=0) > 128)[0]
+            finally:
+                renderer.close()
+
+        image_columns, square_columns = white_columns(image), white_columns(square)
+        assert len(image_columns) > 0
+        assert image_columns.min() == pytest.approx(square_columns.min(), abs=1)
+        assert image_columns.max() == pytest.approx(square_columns.max(), abs=1)
