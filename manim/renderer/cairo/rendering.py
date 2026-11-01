@@ -106,7 +106,7 @@ class _CairoDrawingContext:
             lambda vmobject: vmobject.get_background_image(),
         ):
             if image:
-                self._display_background_colored_vmobjects(list(batch))
+                self._display_background_colored_vmobjects(image, list(batch))
             else:
                 self._display_non_background_colored_vmobjects(batch)
 
@@ -235,29 +235,24 @@ class _CairoDrawingContext:
 
     def _display_background_colored_vmobjects(
         self,
+        image: Image.Image | str,
         vmobjects: list[VMobject],
     ) -> None:
+        """Draw vmobjects that share one background image as a mask over it."""
         scratch = self.target.get_scratch_target()
+        scratch.clear()
         scratch_context = _CairoDrawingContext(
             camera=self.camera,
             target=scratch,
             image_resolver=self.image_resolver,
         )
-        current: RGBAPixelArray | None = None
-        for image, batch in it.groupby(
-            vmobjects,
-            lambda vmobject: vmobject.get_background_image(),
-        ):
-            scratch.clear()
-            scratch_context._display_non_background_colored_vmobjects(batch)
-            background = self.target.get_background_image(image)
-            colored = np.asarray(
-                background * scratch.pixels.astype(float) / 255,
-                dtype=np.uint8,
-            )
-            current = colored if current is None else np.maximum(current, colored)
-        if current is not None:
-            self._overlay_rgba_array(self.target.pixels, current)
+        scratch_context._display_non_background_colored_vmobjects(vmobjects)
+        background = self.target.get_background_image(image)
+        colored = np.asarray(
+            background * scratch.pixels.astype(float) / 255,
+            dtype=np.uint8,
+        )
+        self._overlay_rgba_array(self.target.pixels, colored)
 
     def _display_point_cloud_mobjects(self, pmobjects: list[PMobject]) -> None:
         for pmobject in pmobjects:
