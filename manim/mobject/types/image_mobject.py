@@ -334,6 +334,12 @@ class ImageMobjectFromCamera(Mobject):
         self.set_resampling_algorithm(resampling_algorithm)
         super().__init__(**kwargs)
 
+    def __deepcopy__(self, clone_from_id: dict[int, Any]) -> Self:
+        # A copy shows the same camera's view: it must share the camera instead
+        # of holding an unregistered clone that the renderer never draws.
+        clone_from_id.setdefault(id(self.camera), self.camera)
+        return super().__deepcopy__(clone_from_id)
+
     def reset_points(self) -> Self:
         """Set the view geometry from the source camera's logical aspect ratio."""
         self.points = np.array(
