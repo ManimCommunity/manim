@@ -133,6 +133,10 @@ class _CairoDrawingContext:
         context: cairo.Context,
         vmobject: VMobject,
     ) -> None:
+        # Clear the previous path first: fills and strokes use the *_preserve
+        # variants, so an early return must not leave another mobject's path
+        # behind to be painted in this mobject's style.
+        context.new_path()
         points = self.camera.transform_points_pre_display(vmobject, vmobject.points)
         if len(points) == 0:
             return
@@ -143,7 +147,6 @@ class _CairoDrawingContext:
             return
 
         points_xy = points[:, :2].ravel()
-        context.new_path()
         move_to = context.move_to
         curve_to = context.curve_to
         new_sub_path = context.new_sub_path

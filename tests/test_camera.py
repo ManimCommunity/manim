@@ -288,3 +288,20 @@ def test_3d_camera_angles_follow_their_trackers():
     assert (camera.phi, camera.theta) == (1.0, 2.0)
     with pytest.raises(AttributeError):
         camera.phi = 0.5
+
+
+@pytest.mark.parametrize(
+    "degenerate",
+    [
+        VMobject(),
+        VMobject().set_points(np.array([[np.nan, np.nan, np.nan]])),
+    ],
+    ids=["empty", "non-finite"],
+)
+def test_degenerate_vmobject_does_not_repaint_previous_path(degenerate):
+    with tempconfig({"pixel_width": 32, "pixel_height": 18}):
+        square = Square(fill_color=RED, fill_opacity=1, stroke_width=0)
+        degenerate.set_fill(BLUE, opacity=1).set_stroke(width=0)
+        np.testing.assert_array_equal(
+            _render_pixels([square, degenerate]), _render_pixels([square])
+        )
