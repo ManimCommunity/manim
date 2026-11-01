@@ -28,6 +28,33 @@ from manim import (
 logger = logging.getLogger(__name__)
 
 
+@pytest.mark.parametrize("frame_rate", [20, 30])
+def test_line_stays_straight_when_repeatedly_shrunk_and_expanded(frame_rate):
+    line = Line(end=(1, 0, 0))
+    start = np.array([3.4, 0, 0])
+
+    for angle in np.linspace(0.1 * np.pi, 12.1 * np.pi, 6 * frame_rate + 1):
+        end = start + 1.5 * np.cos(angle) * np.array([1, 1, 0])
+        line.put_start_and_end_on(start, end)
+
+        np.testing.assert_allclose(
+            line.points,
+            np.linspace(start, end, len(line.points)),
+            atol=1e-12,
+            rtol=0,
+        )
+
+
+@pytest.mark.parametrize("length", [0, 1e-12])
+def test_curved_line_can_expand_after_nearly_collapsing(length):
+    line = Line(path_arc=np.pi / 3)
+    line.put_start_and_end_on([3.4, 0, 0], [3.4 + length, length, 0])
+    line.put_start_and_end_on(ORIGIN, RIGHT + UP)
+
+    expected = Line(ORIGIN, RIGHT + UP, path_arc=np.pi / 3)
+    np.testing.assert_allclose(line.points, expected.points, atol=1e-12, rtol=0)
+
+
 def test_get_arc_center():
     np.testing.assert_array_equal(
         Sector(arc_center=[1, 2, 0]).get_arc_center(), [1, 2, 0]

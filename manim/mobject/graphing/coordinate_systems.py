@@ -1746,7 +1746,7 @@ class CoordinateSystem:
         graph
             The graph along which the lines are placed.
         x_range
-            A list containing the lower and and upper bounds of the lines: ``x_range = [x_min, x_max]``.
+            A list containing the lower and upper bounds of the lines: ``x_range = [x_min, x_max]``.
         num_lines
             The number of evenly spaced lines.
         kwargs
@@ -2054,7 +2054,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         Parameters
         ----------
         range_terms
-            The range of the the axis : ``(x_min, x_max, x_step)``.
+            The range of the axis : ``(x_min, x_max, x_step)``.
         axis_config
             Additional parameters that are passed to :class:`~.NumberLine`.
         length

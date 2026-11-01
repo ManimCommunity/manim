@@ -230,9 +230,9 @@ class Line(TipableVMobject):
                     self.wait()
         """
         curr_start, curr_end = self.get_start_and_end()
-        if np.all(curr_start == curr_end):
-            # TODO, any problems with resetting
-            # these attrs?
+        if np.isclose(np.linalg.norm(curr_end - curr_start), 0):
+            # Expanding a nearly collapsed line amplifies rounding errors in
+            # its control points. Rebuild it before applying the transform.
             self.start = np.asarray(start)
             self.end = np.asarray(end)
             self.generate_points()

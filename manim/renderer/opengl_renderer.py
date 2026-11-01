@@ -47,6 +47,7 @@ from .vectorized_mobject_rendering import (
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
+    from pathlib import Path
     from typing import Self
 
     from manim._config.render_session import RenderSessionSpec
@@ -528,7 +529,8 @@ class OpenGLRenderer:
     num_plays : float
         The number of animation plays executed.
     path_to_texture_id : dict[str, int]
-        Mapping from texture file paths to OpenGL texture IDs.
+        Mapping from texture keys (file paths or image identifiers) to OpenGL
+        texture IDs.
     pressed_keys : set[int]
         Set of currently pressed key codes.
     skip_animations : bool
@@ -571,6 +573,8 @@ class OpenGLRenderer:
         self.pressed_keys: set[int] = set()
         self.window: Window | None = None
         self.path_to_texture_id: dict[str, int] = {}
+        # In-memory images that textures were created from, by texture key.
+        self._texture_images: dict[str, Image.Image] = {}
         self.background_color = config["background_color"]
 
     def init_scene(
@@ -723,7 +727,7 @@ class OpenGLRenderer:
 
             # Set textures.
             for name, path in shader_wrapper.texture_paths.items():
-                tid = self.get_texture_id(str(path))
+                tid = self.get_texture_id(path)
                 shader_texture = shader.shader_program[name]
                 if not isinstance(
                     shader_texture, (moderngl.Uniform, moderngl.UniformBlock)
@@ -768,44 +772,52 @@ class OpenGLRenderer:
             mesh.set_uniforms(self)
             mesh.render()
 
-    def get_texture_id(self, path: str) -> int:
+    def get_texture_id(self, path: str | Path | Image.Image) -> int:
         """
-        Retrieves the OpenGL texture ID associated with the given image file path.
+        Retrieves the OpenGL texture ID associated with the given texture source.
 
-        Automatically creates a new texture it it has not been loaded before.
+        Automatically creates a new texture if it has not been loaded before.
 
         Parameters
         ----------
-        path : str
-            The file path to the texture image.
+        path
+            The file path to the texture image, or an already loaded image
+            (as used by :class:`.OpenGLTexturedSurface`).
 
         Returns
         -------
         int
-            The OpenGL texture ID corresponding to the given path.
+            The OpenGL texture ID corresponding to the given source.
         """
-        return (
-            self.path_to_texture_id[path]
-            if path in self.path_to_texture_id
-            else self._create_texture(path)
-        )
+        key = f"<image {id(path)}>" if isinstance(path, Image.Image) else str(path)
 
-    def _create_texture(self, image_path: str) -> int:
+        if key not in self.path_to_texture_id:
+            self._create_texture(path, key)
+        return self.path_to_texture_id[key]
+
+    def _create_texture(self, source: str | Path | Image.Image, key: str) -> int:
         """
-        Create an OpenGL texture from the given image file path, get its texture ID,
-        and store it in `self.path_to_texture_id[image_path]`.
+        Create an OpenGL texture from the given image or image file path, get its
+        texture ID, and store it in `self.path_to_texture_id[key]`.
 
         Parameters
         ----------
-        image_path : str
-            The file path to the image to be loaded as a texture.
+        source
+            The image, or the file path to the image, to be loaded as a texture.
+        key
+            The key under which the texture ID is stored.
 
         Returns
         -------
         int
             The texture ID assigned to the newly created texture.
         """
-        with Image.open(image_path) as img:
+        image_context: contextlib.AbstractContextManager[Image.Image] = (
+            contextlib.nullcontext(source)
+            if isinstance(source, Image.Image)
+            else Image.open(source)
+        )
+        with image_context as img:
             tid = len(self.path_to_texture_id)
 
             # grayscale image
@@ -828,7 +840,11 @@ class OpenGLRenderer:
         texture.filter = (moderngl.NEAREST, moderngl.NEAREST)
         texture.swizzle = swizzle
         texture.use(location=tid)
-        self.path_to_texture_id[image_path] = tid
+        self.path_to_texture_id[key] = tid
+        if isinstance(source, Image.Image):
+            # Keep the image alive, so that its id (part of the key) cannot be
+            # reused by another image while the texture exists.
+            self._texture_images[key] = source
         return tid
 
     def update_skipping_status(self) -> None:

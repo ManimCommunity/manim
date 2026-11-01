@@ -2,7 +2,7 @@
 
 .. note::
    Just as you can use :class:`~.Tex` and :class:`~.MathTex` (from the module :mod:`~.tex_mobject`)
-   to insert LaTeX to your videos, you can use :class:`~.Text` to to add normal text.
+   to insert LaTeX to your videos, you can use :class:`~.Text` to add normal text.
 
 .. important::
 
