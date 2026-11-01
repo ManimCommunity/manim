@@ -84,6 +84,9 @@ class Manager(Generic[SceneT]):
         self._file_writer: SceneFileWriter | None = None
         self._creating_file_writer = False
         self._log_handler: FileHandler | None = None
+        # The first handler starts a new log file; later ones append to it, so
+        # a play() after render() in a ``with manager:`` block keeps the log.
+        self._log_started = False
         self._closed = False
         self._closing = False
         self._scope_depth = 0
@@ -113,7 +116,10 @@ class Manager(Generic[SceneT]):
         path = self.scene._log_file_path
         if path is not None:
             path.parent.mkdir(parents=True, exist_ok=True)
-            self._log_handler = set_file_logger(path)
+            self._log_handler = set_file_logger(
+                path, mode="a" if self._log_started else "w"
+            )
+            self._log_started = True
 
     def _close_log_handler(self) -> None:
         handler = self._log_handler
