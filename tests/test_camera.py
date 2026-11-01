@@ -291,6 +291,20 @@ def test_3d_camera_angles_follow_their_trackers():
         camera.phi = 0.5
 
 
+def test_nested_views_without_registered_views_allow_static_reuse():
+    renderer = CairoRenderer(camera=MultiCamera())
+    scene = SimpleNamespace(
+        moving_mobjects=[Square()], mobjects=[], foreground_mobjects=[]
+    )
+
+    try:
+        renderer.save_static_frame_data(scene, [Square()])
+        assert renderer._render_all_mobjects is False
+        assert renderer.static_image is not None
+    finally:
+        renderer.close()
+
+
 @pytest.mark.parametrize(
     "degenerate",
     [
