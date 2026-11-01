@@ -607,7 +607,7 @@ class Manager(Generic[SceneT]):
         """
         if self._run_loop is not loop:
             self._use_loop(loop)
-        record.capture = capture
+        record.start(capture)
         self.setup()
         ended_early = False
         try:

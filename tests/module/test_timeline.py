@@ -1,5 +1,6 @@
 """Record timelines during evaluation and rendering, and save them as JSON."""
 
+import hashlib
 import json
 from pathlib import Path
 from unittest.mock import Mock
@@ -199,3 +200,14 @@ def test_generated_code_has_no_source_location():
     data = manager.timeline.to_dict()
     assert data["source"] is None
     assert data["entries"][0]["source"] is None
+
+
+def test_source_is_hashed_when_the_run_starts(scene_class, tmp_path):
+    path = tmp_path / "scene.py"
+    expected = hashlib.sha256(path.read_bytes()).hexdigest()
+    scene = scene_class()
+    scene.add_updater(lambda dt: path.write_text("# edited during the run\n"))
+    manager = Manager(scene)
+    manager.evaluate(capture_timeline=True)
+    assert path.read_text() == "# edited during the run\n"
+    assert manager.timeline.to_dict()["source"]["sha256"] == expected
