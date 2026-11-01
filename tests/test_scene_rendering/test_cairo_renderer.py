@@ -107,3 +107,32 @@ def test_hash_logic_is_called_when_caching_is_enabled(using_temp_config):
         mocked.assert_called_once()
         assert mocked.call_args.kwargs["backend"] == "cairo"
         assert mocked.call_args.kwargs["encoder_fingerprint"] != "none"
+
+
+class _FailHalfway(Animation):
+    def interpolate_mobject(self, alpha):
+        if alpha > 0.5:
+            raise RuntimeError("failed halfway")
+
+
+class _RecoversFromFailedPlays(Scene):
+    def construct(self):
+        self.play(Create(Circle()), run_time=0.2)
+        with pytest.raises(ValueError, match="no animations"):
+            self.play()
+        with pytest.raises(RuntimeError, match="failed halfway"):
+            self.play(_FailHalfway(Square()), run_time=0.4)
+        self.play(Create(Square()), run_time=0.2)
+
+
+def test_scene_continues_after_a_handled_play_failure(
+    using_temp_config, disabling_caching
+):
+    scene = _RecoversFromFailedPlays()
+    scene.render()
+
+    writer = scene.renderer.file_writer
+    assert scene.renderer.num_plays == 2
+    assert scene.renderer.time == pytest.approx(0.4)
+    assert len(writer.partial_movie_files) == 2
+    assert_file_exists(writer.final_file_path)
