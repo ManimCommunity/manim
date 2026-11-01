@@ -56,7 +56,7 @@ __all__ = ["Manager", "RenderedFrame"]
 SceneT = TypeVar("SceneT", bound="Scene")
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, eq=False)
 class RenderedFrame:
     """A frame drawn during :meth:`.Manager.evaluate`.
 
