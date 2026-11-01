@@ -264,8 +264,6 @@ class Manager(Generic[SceneT]):
             ``False``. This matches the return value of
             :meth:`~manim.scene.scene.Scene.render`.
         """
-        from .renderer.opengl.renderer import OpenGLRenderer
-
         if self._closed or self._closing:
             raise RuntimeError("The Manager is closed or closing.")
         started = False
@@ -277,8 +275,7 @@ class Manager(Generic[SceneT]):
 
             started = True
             self._open_log_handler()
-            if isinstance(self.renderer, OpenGLRenderer):
-                self.renderer.open()
+            self.renderer.open()
             # Make the writer available to user setup() code.
             _ = self.file_writer
             self.setup()
