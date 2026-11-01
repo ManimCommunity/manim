@@ -283,7 +283,10 @@ class ManimBanner(VGroup):
 
         def shift(vector: Vector3D) -> None:
             self.shapes.restore()
+
+            assert self.M.saved_state is not None
             left_group.align_to(self.M.saved_state, cst.LEFT)
+
             if direction == "right":
                 self.shapes.shift(vector)
             elif direction == "center":
@@ -293,6 +296,8 @@ class ManimBanner(VGroup):
                 left_group.shift(-vector)
 
         def slide_and_uncover(mob: Mobject, alpha: float) -> None:
+            assert isinstance(mob, ManimBanner)
+
             shift(alpha * (m_shape_offset + shape_sliding_overshoot) * cst.RIGHT)
 
             # Add letters when they are covered
@@ -310,6 +315,8 @@ class ManimBanner(VGroup):
                 mob.M.save_state()
 
         def slide_back(mob: Mobject, alpha: float) -> None:
+            assert isinstance(mob, ManimBanner)
+
             if alpha == 0:
                 m_clone.set_opacity(1)
                 m_clone.move_to(mob.anim[-1])
