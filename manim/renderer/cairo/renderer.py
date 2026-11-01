@@ -441,6 +441,15 @@ class CairoRenderer:
     def __exit__(self, *exc_info: object) -> None:
         self.close()
 
+    def open(self) -> None:
+        """Check that the renderer can draw.
+
+        Cairo creates its image buffers when it first draws, so there is nothing
+        to allocate here. The method exists so that callers can open any
+        renderer before :meth:`.Scene.setup` runs.
+        """
+        self._ensure_open()
+
     def close(self) -> None:
         """Close the renderer and release its image buffers and drawing contexts."""
         if self._closed:
