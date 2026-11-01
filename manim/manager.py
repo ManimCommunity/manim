@@ -685,6 +685,10 @@ class Manager(Generic[SceneT]):
         their failures are reported as usual.
         Changes the play made to mobjects are kept.
         """
+        if self._evaluating:
+            # Evaluation produces no output to keep consistent, and the clock
+            # stays where the mobjects were left, for inspection after a failure.
+            return lambda: None
         writer = self.file_writer
         state = self._execution
         frame, time_offset = state.frame, state.time_offset
