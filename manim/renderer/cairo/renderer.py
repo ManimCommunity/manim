@@ -140,7 +140,10 @@ class CairoRenderer:
         self.save_static_frame_data(scene, scene.static_mobjects)
 
         if scene.is_current_animation_frozen_frame():
-            self.update_frame(scene, mobjects=scene.moving_mobjects)
+            self.update_frame(
+                scene,
+                mobjects=None if self._render_all_mobjects else scene.moving_mobjects,
+            )
             self.freeze_current_frame(scene.duration)
         else:
             scene.play_internal()
@@ -371,8 +374,10 @@ class CairoRenderer:
         # A nested view can contain any dynamic scene mobject regardless of the
         # view's position in the primary draw order. Keep all primary inputs
         # dynamic until the Manager cutover supplies explicit dynamic roots.
-        self._render_all_mobjects = isinstance(self.camera, MultiCamera) and bool(
-            scene.moving_mobjects,
+        self._render_all_mobjects = (
+            isinstance(self.camera, MultiCamera)
+            and bool(self.camera.image_mobjects_from_cameras)
+            and bool(scene.moving_mobjects)
         )
         if self._render_all_mobjects or not static_mobjects:
             return None
