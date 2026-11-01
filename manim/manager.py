@@ -398,7 +398,7 @@ class Manager(Generic[SceneT]):
             record = self._loop_record()
             if capture_timeline is None:
                 capture_timeline = self._capture_timeline
-            record.capture = capture_timeline
+            record.start(capture_timeline)
             self._open_log_handler()
             self.renderer.open()
             # Make the writer available to user setup() code.
@@ -518,7 +518,7 @@ class Manager(Generic[SceneT]):
             raise ValueError("Pass on_frame to receive the frames of frame_times.")
         self._evaluated = True
         record = self._record = _RunRecord(self, "evaluate")
-        record.capture = capture_timeline
+        record.start(capture_timeline)
         meshes = _MeshGuard(self)
         listeners: list[_RunListener] = [record, meshes, _Progress(self)]
         if on_frame is not None:

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import contextlib
 import functools
 import hashlib
 import inspect
@@ -57,7 +56,39 @@ class _RunRecord(_RunListener):
         self._end: float | None = None
         source = _source_file(type(manager.scene))
         self._source = source
+        self._source_info: dict[str, str] | None = None
         self._root = source.parent if source is not None else Path.cwd().resolve()
+
+    def start(self, capture: bool) -> None:
+        """Begin a run, capturing a timeline if ``capture`` is true.
+
+        Calls made before the run, for example a section started in the
+        scene's constructor, are kept; they have no source location. The source
+        file is hashed now, so that edits during a long render do not change the
+        recorded hash.
+        """
+        self._active = None
+        self._failed = False
+        self._ended_early = False
+        self._end = None
+        self._last_time = 0.0
+        self.capture = capture
+        self._source_info = self._hash_source() if capture else None
+        if capture:
+            self._last_time = float(self._manager.time)
+            try:
+                self.entries = json.loads(json.dumps(self.entries, allow_nan=False))
+            except (TypeError, ValueError):
+                self._failed = True
+
+    def _hash_source(self) -> dict[str, str] | None:
+        if self._source is None:
+            return None
+        try:
+            digest = hashlib.sha256(self._source.read_bytes()).hexdigest()
+        except OSError:
+            return None
+        return {"path": self._source.name, "sha256": digest}
 
     def _location(self) -> dict[str, Any] | None:
         """Return the file and line of the scene code that made the current call.
@@ -182,11 +213,7 @@ class _RunRecord(_RunListener):
             raise RuntimeError("Timeline capture failed earlier during this run.")
         if self._end is None or self._active is not None:
             raise RuntimeError("Timeline capture ended during a play or wait call.")
-        source = None
-        if self._source is not None:
-            with contextlib.suppress(OSError):
-                digest = hashlib.sha256(self._source.read_bytes()).hexdigest()
-                source = {"path": self._source.name, "sha256": digest}
+        source = self._source_info
         scene = self._manager.scene
         data = {
             "schema": _SCHEMA,
