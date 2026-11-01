@@ -224,3 +224,14 @@ def test_camera_queries_match_a_render(tmp_path):
         evaluated = Projection()
         Manager(evaluated).evaluate()
         np.testing.assert_array_equal(ordinary.observed, evaluated.observed)
+
+
+def test_rendered_frames_hash_by_identity():
+    from PIL import Image
+
+    from manim.manager import RenderedFrame
+
+    frame = RenderedFrame(Image.new("RGBA", (1, 1)), 0, 0, 0)
+    twin = RenderedFrame(frame.image, 0, 0, 0)
+    assert {frame, twin} == {frame, twin}
+    assert frame != twin

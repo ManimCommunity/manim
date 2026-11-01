@@ -72,7 +72,7 @@ class _State(enum.Enum):
         return self in (_State.OPEN, _State.RENDERED)
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, eq=False)
 class RenderedFrame:
     """A frame drawn during :meth:`.Manager.evaluate`.
 
