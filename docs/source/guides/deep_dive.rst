@@ -423,10 +423,11 @@ rendering or the first direct ``play()`` call. It removes and closes that handle
 when rendering ends or the manager closes, leaving other log handlers in place.
 If rendering fails, the manager stops unfinished encoding work and closes the
 renderer before raising the original error. Errors from cleanup are logged
-separately. A failed ``play()`` call performs the same cleanup even when called
-outside ``render()``. Put animation code in ``setup()`` or ``construct()`` so it
-runs within the normal render lifecycle; custom file or process operations need
-their own cleanup.
+separately. A failed ``play()`` call only discards its own unfinished output and
+restores the scene time, so code that handles the error, such as an interactive
+session, can keep playing animations. Put animation code in ``setup()`` or
+``construct()`` so it runs within the normal render lifecycle; custom file or
+process operations need their own cleanup.
 
 **Back in our toy example,** the call to :meth:`.Scene.render` creates a manager,
 then :meth:`.Manager.render` triggers :meth:`.Scene.setup` (which only consists of

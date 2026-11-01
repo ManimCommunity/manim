@@ -388,9 +388,10 @@ class Manager(Generic[SceneT]):
         """
         if self._closed or self._closing:
             raise RuntimeError("The Manager is closed or closing.")
+        self._open_log_handler()
+        start_time = self.time
+        rollback = self._play_rollback()
         try:
-            self._open_log_handler()
-            start_time = self.time
             self.renderer.play(self.scene, *args, **kwargs)
             run_time = self.time - start_time
 
@@ -408,9 +409,40 @@ class Manager(Generic[SceneT]):
             # Leave early scene endings and rerun requests for the caller to handle.
             raise
         except BaseException:
-            # A direct play() can fail outside render(), so it needs cleanup here too.
-            self._cleanup_after_failure()
+            # Discard only this play: the caller may handle the error and keep
+            # going, as in an interactive session. render() and the end of a
+            # ``with manager:`` block close the remaining resources.
+            rollback()
             raise
+
+    def _play_rollback(self) -> Callable[[], None]:
+        """Return a callback that undoes the output bookkeeping of a failed play.
+
+        The callback stops the play's encode job and drops its partial movie
+        entry and animation hash, so the next play starts from the same output
+        state as if the failed play had never been called. Changes the play
+        made to mobjects are kept.
+        """
+        writer = self.file_writer
+        renderer = self.renderer
+        time = self.time
+        num_files = len(writer.partial_movie_files)
+        section = writer.sections[-1] if writer.sections else None
+        num_section_files = len(section.partial_movie_files) if section else 0
+        num_hashes = len(renderer.animations_hashes)
+
+        def rollback() -> None:
+            try:
+                writer.abort_encode_jobs()
+            except BaseException:
+                logger.exception("Failed to stop the encoder of a failed play")
+            del writer.partial_movie_files[num_files:]
+            if section is not None:
+                del section.partial_movie_files[num_section_files:]
+            del renderer.animations_hashes[num_hashes:]
+            self.time = time
+
+        return rollback
 
     def next_section(
         self,
