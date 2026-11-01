@@ -633,10 +633,14 @@ class Manager(Generic[SceneT]):
         self.renderer._present_frame(scene, frame_offset)
 
     def _legacy_add_frame(self, frame: RGBAPixelArray, num_frames: int = 1) -> None:
-        """Write frames and advance time for callers of CairoRenderer.add_frame."""
+        """Write frames and advance time for callers of CairoRenderer.add_frame.
+
+        Like a play, the frames advance the clock whether or not they are part
+        of the output, so that scene time does not depend on the cache.
+        """
         self._validate_execution()
+        self._execution.frame += num_frames
         if not self.skip_animations:
-            self._execution.frame += num_frames
             self.file_writer.write_frame(frame, repeat=num_frames)
 
     def next_section(

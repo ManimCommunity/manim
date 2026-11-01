@@ -189,3 +189,24 @@ def test_last_frame_is_drawn_after_a_cached_render(using_temp_config):
     warm = last_frame()
     assert cold.any()
     np.testing.assert_array_equal(warm, cold)
+
+
+class _FreezesBetweenPlays(Scene):
+    def construct(self):
+        self.play(Create(Circle()), run_time=0.2)
+        self.renderer.freeze_current_frame(1)
+        self.play(Create(Square()), run_time=0.2)
+
+
+def test_frames_added_between_plays_advance_time_independently_of_the_cache(
+    using_temp_config,
+):
+    def times():
+        scene = _FreezesBetweenPlays()
+        scene.render()
+        return scene.renderer.time, list(scene.renderer.animations_hashes)
+
+    cold = times()
+    warm = times()
+    assert cold[0] == pytest.approx(1.4)
+    assert warm == cold
