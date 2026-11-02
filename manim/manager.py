@@ -89,6 +89,7 @@ class Manager(Generic[SceneT]):
         self._log_started = False
         self._closed = False
         self._closing = False
+        self._rendered = False
         self._scope_depth = 0
         scene.manager = self
 
@@ -252,6 +253,9 @@ class Manager(Generic[SceneT]):
         the original exception. This cleanup also applies to errors in
         :meth:`tear_down`.
 
+        A manager renders its scene once; calling this method again raises
+        ``RuntimeError``.
+
         Parameters
         ----------
         preview
@@ -266,6 +270,12 @@ class Manager(Generic[SceneT]):
         """
         if self._closed or self._closing:
             raise RuntimeError("The Manager is closed or closing.")
+        if self._rendered:
+            raise RuntimeError(
+                "A Manager renders its scene only once. Construct a new Scene to "
+                "render it again."
+            )
+        self._rendered = True
         started = False
         try:
             presentation = self.session_spec.presentation
