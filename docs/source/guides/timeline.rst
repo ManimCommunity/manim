@@ -13,42 +13,60 @@ deprecation period.
 From Python
 -----------
 
+Save this as ``example.py`` and run it with ``python example.py``:
+
 .. code-block:: python
 
-    from manim import Manager, Scene, tempconfig
+    from manim import Circle, Create, Manager, Scene, tempconfig
+
 
     class Example(Scene):
         def construct(self):
-            self.next_section("opening")
-            self.wait(0.3, frozen_frame=False)
-            self.wait(0.3, frozen_frame=True)
+            self.next_section("intro")
+            self.play(Create(Circle()), run_time=0.5, subcaption="A circle")
+            self.wait(0.25)
+
 
     with tempconfig({"frame_rate": 4}):
-        scene = Example()
-        manager = Manager(scene)
+        manager = Manager(Example())
         manager.evaluate(capture_timeline=True)
-        for entry in manager.timeline.to_dict()["entries"]:
+        timeline = manager.timeline
+        for entry in timeline.to_dict()["entries"]:
             print(entry["kind"], entry["start"], entry.get("end"))
-        manager.timeline.write("timeline.json")
+        timeline.write("timeline.json")
 
-This prints ``section 0.0 None``, ``wait 0.0 0.5`` and ``wait 0.5 0.75``. At
-4 fps, the first wait takes two frames; the frozen wait shows a single frame for
-0.25 seconds.
+This prints:
+
+.. code-block:: text
+
+    section 0.0 None
+    play 0.0 0.5
+    caption 0.0 0.5
+    wait 0.5 0.75
 
 Pass ``capture_timeline=True`` to :meth:`.Manager.evaluate` or
 :meth:`.Manager.render`, then read :attr:`.Manager.timeline`. The
 :class:`.Timeline` object cannot be modified: ``to_dict()`` returns its data as
 a new dictionary that you can edit, ``to_json()`` returns the JSON text, and
-``write()`` saves it to a file.
+``write()`` saves it to a file. To read a saved timeline, use
+:meth:`.Timeline.from_json`:
+
+.. code-block:: python
+
+    from pathlib import Path
+
+    from manim import Timeline
+
+    timeline = Timeline.from_json(Path("timeline.json").read_text(encoding="utf-8"))
+    for entry in timeline.to_dict()["entries"]:
+        print(entry["kind"], entry["source"]["line"])
 
 From the command line
 ---------------------
 
-From the repository root, try the included example:
-
 .. code-block:: console
 
-    manim --fps 4 --dry_run --timeline-output timeline.json example_scenes/timeline_scene.py TimelineExample
+    manim --fps 4 --dry_run --timeline-output timeline.json example.py Example
 
 ``--timeline-output`` saves the timeline of one scene to the given path. With
 ``--dry_run``, Manim evaluates the scene without rendering it, and every play
@@ -56,25 +74,12 @@ runs: caching, ``-n`` and skipped sections do not apply. Without ``--dry_run``,
 Manim renders the scene as usual and records the timeline of that render. The
 timeline is only written if the run succeeds.
 
-Reading a timeline
-------------------
-
-The repository includes a small reader script:
-
-.. code-block:: console
-
-    python examples/timeline_reader.py timeline.json --source-root example_scenes --html timeline.html
-
-It prints the entries and their source lines. With ``--html``, it also writes an
-HTML view with links to the source lines. ``--source-root`` is the directory
-that contains the scene's source file. The reader uses it to find the file and
-to check whether it has changed since the timeline was recorded.
-
 Timeline format
 ---------------
 
 A timeline is a JSON object. All times are scene times in seconds. The same
-scene, run with the same settings, gives the same JSON text.
+scene, run with the same settings, gives the same JSON text. This is the
+timeline of the example above, with the hash shortened:
 
 .. code-block:: json
 
@@ -82,23 +87,30 @@ scene, run with the same settings, gives the same JSON text.
       "schema": "manim.timeline",
       "version": 1,
       "mode": "evaluate",
-      "scene": "TimelineExample",
+      "scene": "Example",
       "backend": "CairoRenderer",
       "frame_rate": 4.0,
-      "duration": 2.5,
+      "duration": 0.75,
       "ended_early": false,
-      "source": {"path": "timeline_scene.py", "sha256": "30b191df…"},
+      "source": {"path": "example.py", "sha256": "…"},
       "entries": [
-        {"kind": "section", "start": 0.0, "name": "opening",
+        {"kind": "section", "start": 0.0, "name": "intro",
          "type": "default.normal", "skip_animations": false,
-         "source": {"path": "timeline_scene.py", "line": 11}},
-        {"kind": "play", "start": 0.0, "end": 0.5, "run_time": 0.3,
-         "frozen": false, "animations": [{"type": "manim.animation.transform._MethodAnimation",
-                         "run_time": 0.3}],
+         "source": {"path": "example.py", "line": 6}},
+        {"kind": "play", "start": 0.0, "end": 0.5, "run_time": 0.5,
+         "frozen": false,
+         "animations": [{"type": "manim.animation.creation.Create",
+                         "run_time": 0.5}],
          "skipped": false,
-         "source": {"path": "timeline_scene.py", "line": 12}},
-        {"kind": "caption", "start": 0.0, "end": 0.5, "content": "move",
-         "source": {"path": "timeline_scene.py", "line": 12}}
+         "source": {"path": "example.py", "line": 7}},
+        {"kind": "caption", "start": 0.0, "end": 0.5, "content": "A circle",
+         "source": {"path": "example.py", "line": 7}},
+        {"kind": "wait", "start": 0.5, "end": 0.75, "run_time": 0.25,
+         "frozen": true,
+         "animations": [{"type": "manim.animation.animation.Wait",
+                         "run_time": 0.25}],
+         "skipped": false,
+         "source": {"path": "example.py", "line": 8}}
       ]
     }
 

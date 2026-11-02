@@ -2,6 +2,8 @@
 
 import hashlib
 import json
+import subprocess
+import sys
 from pathlib import Path
 from unittest.mock import Mock
 
@@ -128,16 +130,16 @@ def test_render_records_the_same_calls_and_marks_skipped_plays(scene_class, tmp_
     assert rendered["duration"] == expected["duration"]
 
 
-def test_example_scene_matches_the_documented_format():
-    path = ROOT / "example_scenes" / "timeline_scene.py"
+def test_reference_scene_matches_the_stored_format():
+    path = ROOT / "tests" / "control_data" / "timeline_scene.py"
     with tempconfig({**SETTINGS, "format": "none"}):
-        manager = Manager(get_module(path).TimelineExample())
+        manager = Manager(get_module(path).TimelineFormat())
         manager.evaluate(capture_timeline=True)
     data = manager.timeline.to_dict()
     expected = json.loads(
         (ROOT / "tests" / "control_data" / "timeline-v1.json").read_text()
     )
-    # The hash changes with every edit of the example file.
+    # The hash changes with every edit of the scene file.
     data["source"]["sha256"] = expected["source"]["sha256"]
     assert data == expected
 
@@ -211,3 +213,58 @@ def test_source_is_hashed_when_the_run_starts(scene_class, tmp_path):
     manager.evaluate(capture_timeline=True)
     assert path.read_text() == "# edited during the run\n"
     assert manager.timeline.to_dict()["source"]["sha256"] == expected
+
+
+def _guide_blocks(language):
+    """Return the code blocks of the timeline guide in the given language."""
+    guide = ROOT / "docs" / "source" / "guides" / "timeline.rst"
+    text = guide.read_text(encoding="utf-8")
+    blocks = []
+    for part in text.split(f".. code-block:: {language}\n\n")[1:]:
+        lines = []
+        for line in part.splitlines():
+            if line and not line.startswith("    "):
+                break
+            lines.append(line[4:])
+        blocks.append("\n".join(lines).strip() + "\n")
+    return blocks
+
+
+def test_guide_example_prints_and_saves_what_the_guide_shows(tmp_path, monkeypatch):
+    example, reader = _guide_blocks("python")
+    (tmp_path / "example.py").write_text(example, encoding="utf-8")
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.syspath_prepend(str(tmp_path))
+    with tempconfig({**SETTINGS, "format": "none"}):
+        result = subprocess.run(
+            [sys.executable, "example.py"],
+            capture_output=True,
+            encoding="utf-8",
+            timeout=120,
+        )
+    assert result.returncode == 0, result.stderr
+    printed = [line for line in result.stdout.splitlines() if line.strip()]
+    assert printed[-4:] == _guide_blocks("text")[0].splitlines()
+
+    saved = json.loads((tmp_path / "timeline.json").read_text(encoding="utf-8"))
+    shown = json.loads(_guide_blocks("json")[0].replace('"…"', '"hash"'))
+    saved["source"]["sha256"] = "hash"
+    assert saved == shown
+
+    reader_output = subprocess.run(
+        [sys.executable, "-c", reader],
+        capture_output=True,
+        encoding="utf-8",
+        timeout=60,
+    )
+    assert reader_output.returncode == 0, reader_output.stderr
+    assert reader_output.stdout.split() == [
+        "section",
+        "6",
+        "play",
+        "7",
+        "caption",
+        "7",
+        "wait",
+        "8",
+    ]
