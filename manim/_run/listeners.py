@@ -105,6 +105,10 @@ class _Encoder(_RunListener):
         self._manager.file_writer.end_animation(self._writing)
         self._writing = False
 
+    def play_failed(self, play: _Play) -> None:
+        # Manager.play discards the play's segment.
+        self._writing = False
+
     def marker(self, marker: _Section | _Caption | _Sound) -> None:
         writer = self._manager.file_writer
         if isinstance(marker, _Section):
@@ -172,3 +176,6 @@ class _Progress(_RunListener):
         if self._bar is not None:
             self._bar.close()
             self._bar = None
+
+    def play_failed(self, play: _Play) -> None:
+        self.play_finished(play, 0)

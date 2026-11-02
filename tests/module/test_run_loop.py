@@ -1,6 +1,6 @@
 """Every play steps through all of its frames; listeners decide what is drawn."""
 
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import numpy as np
 import pytest
@@ -103,3 +103,33 @@ def test_each_frame_is_drawn_once_for_all_listeners(tmp_path):
             Manager(scene).render()
     # 1 s + 0.5 s + 1 s at 4 fps; the encoder and the preview share each drawing.
     assert render.call_count == 4 + 2 + 4
+
+
+def test_a_failed_play_closes_its_progress_bar(tmp_path):
+    from manim import Animation
+
+    class FailsHalfway(Animation):
+        def interpolate_mobject(self, alpha):
+            if alpha > 0.5:
+                raise RuntimeError("failed halfway")
+
+    class Fails(Scene):
+        def construct(self):
+            with pytest.raises(RuntimeError, match="failed halfway"):
+                self.play(FailsHalfway(Square()), run_time=1)
+
+    bars = []
+    with tempconfig({**SETTINGS, "media_dir": str(tmp_path)}):
+        scene = Fails()
+        original = scene._get_animation_time_progression
+
+        def progression(*args, **kwargs):
+            bar = original(*args, **kwargs)
+            bar.close = Mock(wraps=bar.close)
+            bars.append(bar)
+            return bar
+
+        scene._get_animation_time_progression = progression
+        Manager(scene).render()
+    [bar] = bars
+    bar.close.assert_called_once_with()

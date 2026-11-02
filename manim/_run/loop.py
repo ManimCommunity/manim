@@ -122,6 +122,9 @@ class _RunListener:
     def play_finished(self, play: _Play, end_frame: int) -> None:
         """The play's animations have finished and were cleaned up."""
 
+    def play_failed(self, play: _Play) -> None:
+        """The play raised an exception after it started; it does not finish."""
+
     def marker(self, marker: _Section | _Caption | _Sound) -> None:
         """A section, caption, or sound call was made."""
 
@@ -196,18 +199,27 @@ class _RunLoop:
             frozen=scene.is_current_animation_frozen_frame(),
             in_output=in_output,
         )
-        for listener in self.listeners:
-            listener.play_started(play)
-        scene.begin_animations()
+        started: list[_RunListener] = []
         try:
-            if play.frozen:
-                repeat = int(scene.duration * manager.session_spec.frame_rate)
-                self._frame(play, state.frame, repeat, 0.0)
-                state.frame += repeat
-            else:
-                self._step(play)
-        finally:
-            self.drawer.end_play(play)
+            for listener in self.listeners:
+                started.append(listener)
+                listener.play_started(play)
+            scene.begin_animations()
+            try:
+                if play.frozen:
+                    repeat = int(scene.duration * manager.session_spec.frame_rate)
+                    self._frame(play, state.frame, repeat, 0.0)
+                    state.frame += repeat
+                else:
+                    self._step(play)
+            finally:
+                self.drawer.end_play(play)
+        except BaseException:
+            # Let every listener that saw the play start drop its state for it,
+            # so that a caller that handles the error can play on.
+            for listener in started:
+                listener.play_failed(play)
+            raise
         for listener in self.listeners:
             listener.play_finished(play, state.frame)
         manager.num_plays += 1
