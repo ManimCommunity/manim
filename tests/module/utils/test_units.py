@@ -33,6 +33,5 @@ def test_units(config):
 
 @pytest.mark.parametrize("axis", [LEFT, UR])
 def test_percent_rejects_unsupported_axes(axis):
-    # A negative axis (the case reported in #5084) and a non-axis vector
     with pytest.raises(ValueError, match="X_AXIS"):
         Percent(axis)
