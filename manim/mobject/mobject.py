@@ -2170,7 +2170,7 @@ class Mobject:
     ) -> Self:
         """Condition is function which takes in one arguments, (x, y, z).
         Here it just recurses to submobjects, but in subclasses this
-        should be further implemented based on the the inner workings
+        should be further implemented based on the inner workings
         of color
         """
         if family:

@@ -71,7 +71,7 @@ class OpenGLSurface(OpenGLMobject):
         u_range=None,
         v_range=None,
         # Resolution counts number of points sampled, which for
-        # each coordinate is one more than the the number of
+        # each coordinate is one more than the number of
         # rows/columns of approximating squares
         resolution=None,
         axes=None,
@@ -94,7 +94,7 @@ class OpenGLSurface(OpenGLMobject):
         self.u_range = u_range if u_range is not None else (0, 1)
         self.v_range = v_range if v_range is not None else (0, 1)
         # Resolution counts number of points sampled, which for
-        # each coordinate is one more than the the number of
+        # each coordinate is one more than the number of
         # rows/columns of approximating squares
         self.resolution = resolution if resolution is not None else (101, 101)
         self.axes = axes

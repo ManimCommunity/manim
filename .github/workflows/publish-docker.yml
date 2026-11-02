@@ -6,67 +6,137 @@ on:
       - main
   release:
     types: [released]
+  pull_request:
+    paths:
+      - docker/**
+      - .dockerignore
+      - .github/workflows/publish-docker.yml
+  workflow_dispatch:
+
+# A newer push to main supersedes an older build still in progress, so an
+# outdated build can never overwrite `latest`.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  IMAGE: manimcommunity/manim
+  # Only pushes to main and releases publish to Docker Hub. Pull requests and
+  # manual runs on other branches only build and verify the image.
+  PUBLISH: ${{ github.event_name == 'release' || (github.event_name != 'pull_request' && github.ref == 'refs/heads/main') }}
 
 jobs:
-  docker-latest:
-    runs-on: ubuntu-latest
-    if: github.event_name != 'release'
+  build:
+    name: Build (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - arch: amd64
+            platform: linux/amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            platform: linux/arm64
+            runner: ubuntu-24.04-arm
     steps:
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
+      - name: Checkout
+        uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
       - name: Login to DockerHub
+        if: env.PUBLISH == 'true'
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push
+      - name: Build image
         uses: docker/build-push-action@v7
         with:
-          platforms: linux/arm64,linux/amd64
-          push: true
+          context: .
           file: docker/Dockerfile
-          tags: |
-            manimcommunity/manim:latest
+          platforms: ${{ matrix.platform }}
+          load: true
+          tags: manim:verify
+          cache-from: type=gha,scope=docker-${{ matrix.arch }}
+          # Only publishing builds write the cache, so pull requests do not
+          # evict the cache that main and releases rely on.
+          cache-to: ${{ env.PUBLISH == 'true' && format('type=gha,scope=docker-{0},mode=max', matrix.arch) || '' }}
 
-  docker-release:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'release'
-    steps:
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4
-
-      - name: Login to DockerHub
-        uses: docker/login-action@v4
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Get Version
-        id: create_release
-        shell: python
-        env:
-          tag_act: ${{ github.ref }}
+      - name: Verify image
         run: |
-          import os
-          ref_tag = os.getenv('tag_act').split('/')[-1]
-          with open(os.getenv('GITHUB_OUTPUT'), 'w') as f:
-            print(f"tag_name={ref_tag}", file=f)
+          docker run --rm -v "$PWD/docker:/test:ro" manim:verify \
+            manim render -ql --media_dir /tmp/media /test/verify_image.py VerifyImage
 
-      - name: Build and push
+      # Reuses the layers built above; pushes an untagged image by digest.
+      # The publish job tags the per-platform digests as one image.
+      - name: Push image by digest
+        id: push
+        if: env.PUBLISH == 'true'
         uses: docker/build-push-action@v7
         with:
-          platforms: linux/arm64,linux/amd64
-          push: true
+          context: .
           file: docker/Dockerfile
-          tags: |
-            manimcommunity/manim:stable
-            manimcommunity/manim:latest
-            manimcommunity/manim:${{ steps.create_release.outputs.tag_name }}
+          platforms: ${{ matrix.platform }}
+          outputs: type=image,name=${{ env.IMAGE }},push-by-digest=true,name-canonical=true,push=true
+          cache-from: type=gha,scope=docker-${{ matrix.arch }}
+
+      - name: Export digest
+        if: env.PUBLISH == 'true'
+        env:
+          DIGEST: ${{ steps.push.outputs.digest }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/digests"
+          touch "$RUNNER_TEMP/digests/${DIGEST#sha256:}"
+
+      - name: Upload digest
+        if: env.PUBLISH == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: digest-${{ matrix.arch }}
+          path: ${{ runner.temp }}/digests/*
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    name: Publish multi-platform image
+    needs: build
+    if: github.event_name == 'release' || (github.event_name != 'pull_request' && github.ref == 'refs/heads/main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Download digests
+        uses: actions/download-artifact@v8
+        with:
+          path: ${{ runner.temp }}/digests
+          pattern: digest-*
+          merge-multiple: true
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Create and push manifest list
+        working-directory: ${{ runner.temp }}/digests
+        run: |
+          tags=(-t "$IMAGE:latest")
+          if [ "$GITHUB_EVENT_NAME" = release ]; then
+            tags+=(-t "$IMAGE:stable" -t "$IMAGE:$GITHUB_REF_NAME")
+          fi
+          docker buildx imagetools create "${tags[@]}" \
+            $(printf "$IMAGE@sha256:%s " *)
+
+      - name: Inspect image
+        run: docker buildx imagetools inspect "$IMAGE:latest"
