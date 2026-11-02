@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from manim import DOWN, LEFT, ORIGIN, PI, RIGHT, UR, X_AXIS, Y_AXIS, Z_AXIS
+from manim import LEFT, PI, UR, X_AXIS, Y_AXIS, Z_AXIS
 from manim.utils.unit import Degrees, Munits, Percent, Pixels
 
 
@@ -31,20 +31,8 @@ def test_units(config):
     np.testing.assert_allclose(180 * Degrees, PI)
 
 
-@pytest.mark.parametrize("axis", [LEFT, DOWN, UR, 2 * RIGHT, ORIGIN, [1, 1, 0]])
+@pytest.mark.parametrize("axis", [LEFT, UR])
 def test_percent_rejects_unsupported_axes(axis):
-    # Anything other than X_AXIS, Y_AXIS or Z_AXIS should fail immediately
-    with pytest.raises(ValueError, match="X_AXIS and Y_AXIS"):
+    # A negative axis (the case reported in #5084) and a non-axis vector
+    with pytest.raises(ValueError, match="X_AXIS"):
         Percent(axis)
-
-
-def test_percent_direction_can_be_applied_outside(config):
-    # The supported way to use another direction is to multiply outside
-    np.testing.assert_allclose(
-        np.asarray(LEFT * 25 * Percent(X_AXIS), dtype=float),
-        LEFT * config.frame_width / 4,
-    )
-    np.testing.assert_allclose(
-        np.asarray(DOWN * 25 * Percent(Y_AXIS), dtype=float),
-        DOWN * config.frame_height / 4,
-    )

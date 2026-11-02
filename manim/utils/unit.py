@@ -24,10 +24,9 @@ class Percent:
     Parameters
     ----------
     axis
-        Either ``X_AXIS`` (a percentage of ``config.frame_width``) or
-        ``Y_AXIS`` (a percentage of ``config.frame_height``). To move in
-        another direction, multiply by the direction outside, for example
-        ``LEFT * 25 * Percent(X_AXIS)``.
+        Which frame dimension to measure: ``X_AXIS`` for a percentage of
+        ``config.frame_width``, or ``Y_AXIS`` for a percentage of
+        ``config.frame_height``.
 
     Raises
     ------
@@ -59,9 +58,8 @@ class Percent:
             raise NotImplementedError("length of Z axis is undefined")
         else:
             raise ValueError(
-                "Percent only supports X_AXIS and Y_AXIS, "
-                f"got {np.asarray(axis).tolist()}. For other directions, "
-                "put the direction outside, e.g. LEFT * 25 * Percent(X_AXIS)."
+                "Percent only supports X_AXIS (frame width) and "
+                f"Y_AXIS (frame height), got {np.asarray(axis).tolist()}."
             )
 
     def __mul__(self, val: float) -> float:
