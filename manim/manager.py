@@ -142,6 +142,7 @@ class Manager(Generic[SceneT]):
         self._closed = False
         self._closing = False
         self._rendered = False
+        self._evaluated = False
         self._scope_depth = 0
         self._execution.frame_rate = self.session_spec.frame_rate
         self._run_loop: _RunLoop | None = None
@@ -368,10 +369,10 @@ class Manager(Generic[SceneT]):
         """
         self._ensure_not_evaluating("Rendering")
         self._validate_execution()
-        if self._rendered:
+        if self._rendered or self._evaluated:
             raise RuntimeError(
-                "A Manager renders its scene only once. Construct a new Scene to "
-                "render it again."
+                "A Manager renders or evaluates its scene only once. Construct a "
+                "new Scene to render it again."
             )
         self._rendered = True
         started = False
@@ -463,14 +464,17 @@ class Manager(Generic[SceneT]):
         self._validate_execution()
         if self._evaluating:
             raise RuntimeError("Recursive evaluation is not supported.")
+        # Section, caption, and sound calls made before, for example in the
+        # scene's constructor, do not make the scene used.
         if (
-            self._run_loop is not None
-            or self._file_writer is not None
+            self._rendered
+            or self._evaluated
             or self.num_plays
             or getattr(self.renderer, "_target", None) is not None
             or getattr(self.renderer, "_context", None) is not None
         ):
             raise RuntimeError("Evaluation requires an unused Scene.")
+        self._evaluated = True
         times = [float(time) for time in frame_times]
         if any(not math.isfinite(time) or time < 0 for time in times):
             raise ValueError("Frame times must be finite and not negative.")
