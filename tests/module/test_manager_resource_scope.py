@@ -115,3 +115,10 @@ def test_play_after_render_in_scope_keeps_the_render_log(managed_scene, monkeypa
         manager.render()
         scene.wait(0.1)
     assert "inside managed setup" in scene._log_file_path.read_text()
+
+
+def test_a_manager_renders_its_scene_only_once(managed_scene):
+    with Manager(managed_scene) as manager:
+        manager.render()
+        with pytest.raises(RuntimeError, match="only once"):
+            manager.render()
