@@ -794,20 +794,21 @@ class Manager(Generic[SceneT]):
         """Write frames and advance time for callers of CairoRenderer.add_frame.
 
         Like a play, the frames advance the clock whether or not they are part
-        of the output, so that scene time does not depend on the cache. During
-        evaluation, which writes no media, the frames go to the evaluation's
-        listeners; ``frame`` can then be None for the scene's current state.
+        of the output, so that scene time does not depend on the cache. Only
+        plays mark scene time as shown in the movie: frames added during a play
+        lie in its span, and frames added between plays are not written to a
+        movie, which has no open segment then. During evaluation, which writes
+        no media, the frames go to the evaluation's listeners; ``frame`` can then
+        be None for the scene's current state.
         """
         self._validate_execution()
         if self._evaluating:
             self._loop.add_frames(frame, num_frames)
             return
         assert frame is not None
-        start = self.time
         self._execution.frame += num_frames
         if not self.skip_animations:
             self.file_writer.write_frame(frame, repeat=num_frames)
-            self.file_writer.add_movie_interval(start, self.time)
 
     def next_section(
         self,

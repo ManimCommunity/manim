@@ -258,3 +258,31 @@ def test_section_videos_carry_their_slice_of_the_mix(tmp_path):
     # The tail of the long sound, then the beep on top of it.
     assert level(second[1], rate, 0.05, 0.2) == pytest.approx(0.25, abs=0.01)
     assert level(second[1], rate, 0.3, 0.45) == pytest.approx(0.75, abs=0.01)
+
+
+def test_frames_added_with_the_legacy_hook_do_not_shift_sound_or_captions(tmp_path):
+    tone = write_wav(tmp_path / "tone.wav", seconds=3.0, value=0.25)
+
+    class Holds(Scene):
+        def construct(self):
+            self.add_sound(str(tone))
+            held = []
+
+            def hold(mobject, dt):
+                # During the play: the frame lies in the play's own span.
+                if dt > 0 and not held:
+                    held.append(True)
+                    self.renderer.freeze_current_frame(0.2)
+
+            self.add(Square().add_updater(hold))
+            self.play(Square().animate.shift([1, 0, 0]), run_time=0.4)
+            # Between plays: no segment is open, so nothing reaches the movie.
+            self.renderer.freeze_current_frame(0.2)
+            self.play(Square().animate.shift([-1, 0, 0]), run_time=0.4)
+            self.add_subcaption("end", duration=0.2, offset=-0.2)
+
+    path = render_scene(tmp_path, Holds, format="mp4")
+    video_duration, levels, rate = decode_movie(path)
+    assert len(levels) / rate == pytest.approx(video_duration, abs=0.01)
+    [caption] = srt.parse(path.with_suffix(".srt").read_text())
+    assert caption.end.total_seconds() == pytest.approx(video_duration, abs=0.01)
