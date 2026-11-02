@@ -5,7 +5,7 @@ from __future__ import annotations
 import numpy as np
 
 from .. import config, constants
-from ..typing import Vector3DLike
+from ..typing import Vector3D
 
 __all__ = ["Pixels", "Degrees", "Munits", "Percent"]
 
@@ -19,47 +19,50 @@ class _PixelUnits:
 
 
 class Percent:
-    """A percentage of the frame size along a given vector.
-
-    Each component of ``axis`` is scaled by the matching frame dimension
-    (the frame width for x, the frame height for y, and a depth of ``0``
-    for z), and the length of the result is used. So :data:`~.RIGHT` and
-    :data:`~.LEFT` give the frame width, :data:`~.UP` and :data:`~.DOWN`
-    give the frame height, ``2 * RIGHT`` gives twice the frame width,
-    and :data:`~.OUT` or the zero vector give ``0``.
+    """A percentage of the frame width or height.
 
     Parameters
     ----------
     axis
-        The vector along which the percentage is measured.
+        Either ``X_AXIS`` (a percentage of ``config.frame_width``) or
+        ``Y_AXIS`` (a percentage of ``config.frame_height``). To move in
+        another direction, multiply by the direction outside, for example
+        ``LEFT * 25 * Percent(X_AXIS)``.
 
     Raises
     ------
+    NotImplementedError
+        If ``axis`` is ``Z_AXIS``.
     ValueError
-        If ``axis`` contains non-finite values.
+        If ``axis`` is any other vector.
+
+    Notes
+    -----
+    The length is based on ``config.frame_width`` and
+    ``config.frame_height``, not on the current camera frame, so it may
+    not match what is on screen after the camera is moved or zoomed.
 
     Examples
     --------
-    .. code-block:: pycon
-
-        >>> from manim import LEFT, UP
-        >>> float(50 * Percent(LEFT)) == config.frame_width / 2
-        True
-        >>> float(25 * Percent(2 * UP)) == config.frame_height / 2
-        True
+    >>> from manim import X_AXIS, config
+    >>> from manim.utils.unit import Percent
+    >>> 50 * Percent(X_AXIS) == config.frame_width / 2
+    True
     """
 
-    def __init__(self, axis: Vector3DLike) -> None:
-        axis = np.asarray(axis, dtype=float)
-        if not np.all(np.isfinite(axis)):
-            raise ValueError("axis must only contain finite values")
-        self.axis = axis
-
-    @property
-    def length(self) -> float:
-        """The length of :attr:`axis` with each component scaled by the frame size."""
-        frame_size = np.array([config.frame_width, config.frame_height, 0.0])
-        return float(np.linalg.norm(self.axis * frame_size[: len(self.axis)]))
+    def __init__(self, axis: Vector3D) -> None:
+        if np.array_equal(axis, constants.X_AXIS):
+            self.length = config.frame_width
+        elif np.array_equal(axis, constants.Y_AXIS):
+            self.length = config.frame_height
+        elif np.array_equal(axis, constants.Z_AXIS):
+            raise NotImplementedError("length of Z axis is undefined")
+        else:
+            raise ValueError(
+                "Percent only supports X_AXIS and Y_AXIS, "
+                f"got {np.asarray(axis).tolist()}. For other directions, "
+                "put the direction outside, e.g. LEFT * 25 * Percent(X_AXIS)."
+            )
 
     def __mul__(self, val: float) -> float:
         return val / 100 * self.length
