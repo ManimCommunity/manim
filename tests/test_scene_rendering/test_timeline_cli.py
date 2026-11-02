@@ -1,12 +1,10 @@
-"""Save timelines with the CLI and read them with the example reader."""
+"""Save timelines with the CLI."""
 
 import json
 import os
 import subprocess
 import sys
-from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
 SOURCE = """from manim import *
 class Sample(Scene):
     def construct(self):
@@ -91,31 +89,6 @@ def test_render_with_a_timeline_runs_the_scene_s_own_render(tmp_path):
     assert result.returncode == 0, result.stdout + result.stderr
     assert json.loads(output.read_text())["mode"] == "render"
     assert (tmp_path / "override-ran").read_text() == "yes"
-
-
-def test_reader_prints_entries_and_detects_source_changes(tmp_path):
-    source = tmp_path / "scene.py"
-    source.write_text(SOURCE)
-    output = tmp_path / "report.json"
-    assert run_cli(tmp_path, source, output, "--dry_run").returncode == 0
-    html = tmp_path / "view.html"
-    command = [
-        sys.executable,
-        "-S",
-        str(ROOT / "examples/timeline_reader.py"),
-        str(output),
-        "--source-root",
-        str(tmp_path),
-        "--html",
-        str(html),
-    ]
-    reader = run(command, tmp_path)
-    assert reader.returncode == 0, reader.stderr
-    assert "source unchanged" in reader.stdout
-    assert "wait 0.000–0.500s · scene.py:6" in reader.stdout
-    assert "section &#x27;start&#x27;" in html.read_text()
-    source.write_text(SOURCE + "\n# edited\n")
-    assert "source changed" in run(command, tmp_path).stdout
 
 
 def test_failure_keeps_the_previous_report_and_batches_are_rejected(tmp_path):

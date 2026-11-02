@@ -1,12 +1,13 @@
-"""Scene for trying out timeline export.
+"""Scene whose timeline is stored in timeline-v1.json, the format reference.
 
-manim --fps 4 --timeline-output timeline.json example_scenes/timeline_scene.py TimelineExample
+It makes every kind of call that a timeline records. Line numbers matter: after
+editing this file, regenerate timeline-v1.json.
 """
 
 from manim import RIGHT, Scene, Square
 
 
-class TimelineExample(Scene):
+class TimelineFormat(Scene):
     def construct(self):
         self.next_section("opening")
         self.play(Square().animate.shift(RIGHT), run_time=0.3, subcaption="move")
@@ -15,5 +16,4 @@ class TimelineExample(Scene):
         self.wait(0.3, frozen_frame=True)
         start = self.time
         self.wait(1, stop_condition=lambda: self.time >= start + 0.5)
-        # Only recorded in the timeline; example.wav is a placeholder.
-        self.add_sound("example.wav")
+        self.add_sound("click.wav")

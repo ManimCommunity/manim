@@ -2,14 +2,14 @@
   "schema": "manim.timeline",
   "version": 1,
   "mode": "evaluate",
-  "scene": "TimelineExample",
+  "scene": "TimelineFormat",
   "backend": "CairoRenderer",
   "frame_rate": 4.0,
   "duration": 2.5,
   "ended_early": false,
   "source": {
     "path": "timeline_scene.py",
-    "sha256": "ceab53ce5a5c5d6a85f69732f3ff532d2fbf1adf26f2135279718aedb55ed544"
+    "sha256": "3f79b282c4d3e761324e3bf35ee217e7234f445e57467b427f3819ef964b2055"
   },
   "entries": [
     {
@@ -20,7 +20,7 @@
       "skip_animations": false,
       "source": {
         "path": "timeline_scene.py",
-        "line": 11
+        "line": 12
       }
     },
     {
@@ -38,7 +38,7 @@
       "skipped": false,
       "source": {
         "path": "timeline_scene.py",
-        "line": 12
+        "line": 13
       }
     },
     {
@@ -48,7 +48,7 @@
       "content": "move",
       "source": {
         "path": "timeline_scene.py",
-        "line": 12
+        "line": 13
       }
     },
     {
@@ -66,7 +66,7 @@
       "skipped": false,
       "source": {
         "path": "timeline_scene.py",
-        "line": 14
+        "line": 15
       }
     },
     {
@@ -84,7 +84,7 @@
       "skipped": false,
       "source": {
         "path": "timeline_scene.py",
-        "line": 14
+        "line": 15
       }
     },
     {
@@ -102,7 +102,7 @@
       "skipped": false,
       "source": {
         "path": "timeline_scene.py",
-        "line": 15
+        "line": 16
       }
     },
     {
@@ -120,14 +120,14 @@
       "skipped": false,
       "source": {
         "path": "timeline_scene.py",
-        "line": 17
+        "line": 18
       }
     },
     {
       "kind": "sound",
       "start": 2.5,
       "duration": null,
-      "file": "example.wav",
+      "file": "click.wav",
       "gain": null,
       "options": {},
       "source": {
