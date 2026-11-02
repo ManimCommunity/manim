@@ -55,13 +55,15 @@ SceneT = TypeVar("SceneT", bound="Scene")
 class _State(enum.Enum):
     """Where a :class:`Manager` is in its life.
 
-    ``OPEN`` -> ``RENDERED`` (by :meth:`Manager.render`) -> ``CLOSING`` ->
-    ``CLOSED``; a Manager can be closed from ``OPEN`` too. If closing fails, the
-    Manager is ``CLOSE_FAILED``: it refuses everything but another close().
+    ``OPEN`` -> ``RENDERED`` (by :meth:`Manager.render`) or ``EVALUATED`` (by
+    :meth:`Manager.evaluate`) -> ``CLOSING`` -> ``CLOSED``; a Manager can be
+    closed from ``OPEN`` too. If closing fails, the Manager is ``CLOSE_FAILED``:
+    it refuses everything but another close().
     """
 
     OPEN = "open"
     RENDERED = "rendered"
+    EVALUATED = "evaluated"
     CLOSING = "closing"
     CLOSED = "closed"
     CLOSE_FAILED = "close failed"
@@ -69,7 +71,7 @@ class _State(enum.Enum):
     @property
     def usable(self) -> bool:
         """Whether the Manager can play, give out its writer or enter a block."""
-        return self in (_State.OPEN, _State.RENDERED)
+        return self in (_State.OPEN, _State.RENDERED, _State.EVALUATED)
 
 
 @dataclass(frozen=True, eq=False)
@@ -408,10 +410,10 @@ class Manager(Generic[SceneT]):
         """
         self._ensure_not_evaluating("Rendering")
         self._validate_execution()
-        if self._state is _State.RENDERED:
+        if self._state in (_State.RENDERED, _State.EVALUATED):
             raise RuntimeError(
-                "A Manager renders its scene only once. Construct a new Scene to "
-                "render it again."
+                "A Manager renders or evaluates its scene only once. Construct a "
+                "new Scene to render it again."
             )
         presentation = self.session_spec.presentation
         open_after_render = preview or presentation.open_after_render
@@ -501,14 +503,16 @@ class Manager(Generic[SceneT]):
         self._validate_execution()
         if self._evaluating:
             raise RuntimeError("Recursive evaluation is not supported.")
+        # Section, caption, and sound calls made before, for example in the
+        # scene's constructor, do not make the scene used.
         if (
-            self._run_loop is not None
-            or self._file_writer is not None
+            self._state in (_State.RENDERED, _State.EVALUATED)
             or self.num_plays
             or getattr(self.renderer, "_target", None) is not None
             or getattr(self.renderer, "_context", None) is not None
         ):
             raise RuntimeError("Evaluation requires an unused Scene.")
+        self._state = _State.EVALUATED
         times = [float(time) for time in frame_times]
         if any(not math.isfinite(time) or time < 0 for time in times):
             raise ValueError("Frame times must be finite and not negative.")

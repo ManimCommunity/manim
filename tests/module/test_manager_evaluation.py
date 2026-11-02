@@ -192,6 +192,27 @@ def test_a_scene_can_be_evaluated_once(settings):
             manager.evaluate()
 
 
+def test_markers_before_evaluation_do_not_make_the_scene_used(settings):
+    class Introduced(Scene):
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs)
+            self.next_section("intro")
+
+        def construct(self):
+            self.wait(0.25)
+
+    scene = Introduced()
+    scene._get_manager().evaluate()
+    assert scene.time == 0.25
+
+
+def test_an_evaluated_scene_cannot_be_rendered(settings):
+    with Manager(Scene()) as manager:
+        manager.evaluate()
+        with pytest.raises(RuntimeError, match="only once"):
+            manager.render()
+
+
 def test_camera_queries_match_a_render(tmp_path):
     class Projection(ThreeDScene):
         def construct(self):
