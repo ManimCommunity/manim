@@ -423,8 +423,9 @@ class Manager(Generic[SceneT]):
 
         The callback stops the play's encode job and drops its partial movie
         entry and animation hash, so the next play starts from the same output
-        state as if the failed play had never been called. Changes the play
-        made to mobjects are kept.
+        state as if the failed play had never been called. Encode jobs of earlier
+        plays keep running, so that their failures are reported as usual.
+        Changes the play made to mobjects are kept.
         """
         writer = self.file_writer
         renderer = self.renderer
@@ -436,7 +437,7 @@ class Manager(Generic[SceneT]):
 
         def rollback() -> None:
             try:
-                writer.abort_encode_jobs()
+                writer.abort_current_encode_job()
             except BaseException:
                 logger.exception("Failed to stop the encoder of a failed play")
             del writer.partial_movie_files[num_files:]

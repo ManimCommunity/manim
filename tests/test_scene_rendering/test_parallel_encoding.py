@@ -654,6 +654,27 @@ def test_abort_encode_jobs_unlinks_current_and_drains_inflight(
     assert writer._current_encode_job is None
 
 
+def test_abort_current_encode_job_leaves_earlier_jobs_running(
+    config,
+    tmp_path,
+    manim_caplog,
+):
+    writer = _new_writer(config, tmp_path, "AbortCurrentScene")
+    job = _healthy_current_job(tmp_path, "abort_only_current")
+    writer._current_encode_job = job
+    earlier = Mock(path=tmp_path / "earlier.mp4")
+    _add_inflight_job(writer, earlier)
+
+    assert writer.abort_current_encode_job() is None
+
+    assert writer._current_encode_job is None
+    assert not job.path.exists()
+    assert writer._inflight_encode_jobs == [earlier]
+    earlier.join.assert_not_called()
+    assert "Discarded partial movie file" in manim_caplog.text
+    assert writer.abort_current_encode_job() is None
+
+
 def test_abort_encode_jobs_reraise_propagates_inflight_failure(
     config,
     tmp_path,

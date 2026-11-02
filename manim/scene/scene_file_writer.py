@@ -633,6 +633,34 @@ class SceneFileWriter:
         if first_exception is not None:
             raise first_exception
 
+    def abort_current_encode_job(self) -> BaseException | None:
+        """Discard the segment of the current animation, if one is open.
+
+        Segments of earlier animations are left to finish. Returns the failure of
+        the discarded job's encoder, if it had failed; the failure is also logged.
+        """
+        job = self._current_encode_job
+        if job is None:
+            return None
+        # Request abort before clearing: an interrupt between these
+        # statements must not orphan a worker blocked on its queue.
+        job.abort()
+        self._current_encode_job = None
+        job.thread.join()
+        exception = job._exception
+        if exception is not None:
+            logger.error(
+                "Encoder for aborted animation %d had also failed",
+                job.animation_index,
+                exc_info=exception,
+            )
+        else:
+            logger.info(
+                "Discarded partial movie file of aborted animation %(index)d",
+                {"index": job.animation_index},
+            )
+        return exception
+
     def abort_encode_jobs(self, reraise_encoder_failures: bool = False) -> None:
         """Discard the current segment and drain completed encode jobs.
 
@@ -640,26 +668,7 @@ class SceneFileWriter:
         propagated. Otherwise failures are logged so an active render exception
         remains primary.
         """
-        current_exception: BaseException | None = None
-        job = self._current_encode_job
-        if job is not None:
-            # Request abort before clearing: an interrupt between these
-            # statements must not orphan a worker blocked on its queue.
-            job.abort()
-            self._current_encode_job = None
-            job.thread.join()
-            current_exception = job._exception
-            if current_exception is not None:
-                logger.error(
-                    "Encoder for aborted animation %d had also failed",
-                    job.animation_index,
-                    exc_info=current_exception,
-                )
-            else:
-                logger.info(
-                    "Discarded partial movie file of aborted animation %(index)d",
-                    {"index": job.animation_index},
-                )
+        current_exception = self.abort_current_encode_job()
         if reraise_encoder_failures:
             self.join_all_encode_jobs()
             if current_exception is not None:
