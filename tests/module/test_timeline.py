@@ -268,3 +268,33 @@ def test_guide_example_prints_and_saves_what_the_guide_shows(tmp_path, monkeypat
         "wait",
         "8",
     ]
+
+
+def test_a_handled_play_failure_leaves_no_entry():
+    from manim import Animation, Square
+
+    class FailsHalfway(Animation):
+        def interpolate_mobject(self, alpha):
+            if alpha > 0.5:
+                raise RuntimeError("failed halfway")
+
+    class Handled(Scene):
+        def construct(self):
+            self.wait(0.25)
+            with pytest.raises(RuntimeError, match="failed halfway"):
+                self.play(FailsHalfway(Square()), run_time=0.5)
+            self.wait(0.25)
+
+    def entries(run):
+        with tempconfig({**SETTINGS, "format": "none"}):
+            manager = Manager(Handled())
+            run(manager)
+        return [
+            (entry["kind"], entry["start"], entry["end"])
+            for entry in manager.timeline.to_dict()["entries"]
+        ]
+
+    rendered = entries(lambda manager: manager.render(capture_timeline=True))
+    assert rendered == [("wait", 0, 0.25), ("wait", 0.25, 0.5)]
+    evaluated = entries(lambda manager: manager.evaluate(capture_timeline=True))
+    assert [entry[0] for entry in evaluated] == ["wait", "wait"]
