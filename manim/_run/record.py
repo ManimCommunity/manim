@@ -164,6 +164,13 @@ class _RunRecord(_RunListener):
         self._active["end"] = self._observe()
         self._active = None
 
+    def play_failed(self, play: _Play) -> None:
+        # A failed play is not part of the run; Manager.play rolls its output
+        # and the clock back, so the record forgets it as well.
+        if self._active is not None:
+            self.entries.remove(self._active)
+            self._active = None
+
     def marker(self, marker: _Section | _Caption | _Sound) -> None:
         time = self._observe()
         if isinstance(marker, _Section):
