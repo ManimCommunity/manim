@@ -48,14 +48,15 @@ class _RunMode:
 
         A render writes them (``pixels`` is the drawn image) and advances the
         clock whether or not they are part of the output, so that scene time
-        does not depend on the cache.
+        does not depend on the cache. Only plays mark scene time as shown in the
+        movie: frames added during a play lie in its span, and frames added
+        between plays are not written to a movie, which has no open segment
+        then.
         """
         assert pixels is not None
-        start = manager.time
         manager._execution.frame += repeat
         if not manager.skip_animations:
             manager.file_writer.write_frame(pixels, repeat=repeat)
-            manager.file_writer.add_movie_interval(start, manager.time)
 
 
 class _EvaluationRun(_RunMode):
