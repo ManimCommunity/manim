@@ -1004,7 +1004,7 @@ class Line3D(Cylinder):
         thickness: float = 0.02,
         color: ParsableManimColor | None = None,
         resolution: int | tuple[int, int] = 24,
-	    **kwargs: Any,
+        **kwargs: Any,
     ):
         self.thickness = thickness
         self.resolution: tuple[int, int] = (
@@ -1274,7 +1274,7 @@ class Arrow3D(Line3D):
             base_radius=base_radius,
             height=height,
             resolution=cone_resolution,
-	        **kwargs,
+            **kwargs,
         )
         np_end = np.asarray(end, dtype=np.float64)
         self.cone.shift(np_end)
