@@ -1752,7 +1752,8 @@ class Scene:
         assert self.animations is not None
         for animation in self.animations:
             animation.update_mobjects(dt)
-            alpha = t / animation.run_time
+            # An animation that takes no time is complete from the start.
+            alpha = t / animation.run_time if animation.run_time > 0 else 1.0
             animation.interpolate(alpha)
         self.update_mobjects(dt)
         self.update_meshes(dt)
