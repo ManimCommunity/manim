@@ -9,6 +9,8 @@ from __future__ import annotations
 
 __all__: list[str] = []
 
+import functools
+import os
 from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -51,13 +53,24 @@ class _Sound:
 def _probe_duration(path: Path) -> float | None:
     """Return the duration of the first audio stream of ``path`` without decoding.
 
-    Returns ``None`` if the container headers do not state a duration.
+    Returns ``None`` if the container headers do not state a duration. The result
+    is kept while the file is unchanged: a timeline and the file writer both ask
+    for it, and scenes often play the same sound file many times.
 
     Raises
     ------
     ValueError
         If the file cannot be read as media or contains no audio stream.
     """
+    try:
+        stamp = os.stat(path)
+    except OSError as error:
+        raise ValueError(f"Could not read audio from {path}: {error}") from error
+    return _probe_unchanged(str(path), stamp.st_mtime_ns, stamp.st_size)
+
+
+@functools.lru_cache(maxsize=1024)
+def _probe_unchanged(path: str, mtime_ns: int, size: int) -> float | None:
     try:
         with av.open(str(path)) as container:
             if not container.streams.audio:
