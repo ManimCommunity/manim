@@ -149,3 +149,32 @@ def test_a_wait_lasts_the_same_number_of_frames_frozen_or_not(
         scene = Waits()
         scene.render()
     assert scene.time == pytest.approx(frames / 25)
+
+
+@pytest.mark.parametrize("with_updater", [False, True])
+def test_skipped_plays_step_only_when_something_runs_per_frame(
+    tmp_path, monkeypatch, with_updater
+):
+    class Moves(Scene):
+        def construct(self):
+            square = Square()
+            if with_updater:
+                square.add_updater(lambda mobject, dt: None)
+            self.play(square.animate.shift(RIGHT).rotate(1), run_time=1)
+            self.square = square
+
+    steps = []
+    update = Scene.update_to_time
+    monkeypatch.setattr(
+        Scene, "update_to_time", lambda scene, t: steps.append(t) or update(scene, t)
+    )
+    with tempconfig({**SETTINGS, "media_dir": str(tmp_path)}):
+        full = Moves()
+        Manager(full).render()
+        steps.clear()
+        with tempconfig({"save_last_frame": True}):
+            skipped = Moves()
+            Manager(skipped).render()
+    assert len(steps) == (4 if with_updater else 1)
+    np.testing.assert_allclose(skipped.square.points, full.square.points)
+    assert skipped.time == full.time

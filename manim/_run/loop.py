@@ -15,6 +15,8 @@ if TYPE_CHECKING:
     from ..animation.animation import Animation
     from ..manager import Manager
     from ..mobject.mobject import Mobject, _AnimationBuilder
+    from ..mobject.opengl.opengl_mobject import OpenGLMobject
+    from ..scene.scene import Scene
     from ..typing import RGBAPixelArray
     from .selection import _OutputSelection
 
@@ -232,7 +234,17 @@ class _RunLoop:
         assert scene.animations is not None
         scene.duration = scene.get_run_time(scene.animations)
         rate = self.manager.session_spec.frame_rate
-        for index in range(frame_count(scene.duration, rate)):
+        count = frame_count(scene.duration, rate)
+        if count and self._unobserved(scene):
+            # Only the end state matters: go to the last frame in one step, at
+            # the same scene time as when stepping through every frame.
+            state.frame += count - 1
+            offset = (count - 1) / rate
+            scene.update_to_time(offset)
+            self._frame(play, state.frame, 1, offset)
+            state.frame += 1
+            count = 0
+        for index in range(count):
             offset = index / rate
             scene.update_to_time(offset)
             self._frame(play, state.frame, 1, offset)
@@ -244,6 +256,24 @@ class _RunLoop:
             animation.finish()
             animation.clean_up_from_scene(scene)
         scene.update_mobjects(0)
+
+    def _unobserved(self, scene: Scene) -> bool:
+        """Whether nothing can see the frames between a play's start and end.
+
+        True when the frames are not drawn (the play is left out of the output
+        or reused from the cache) and no code runs per frame: no updaters, no
+        stop condition. The play then only needs its last frame.
+        """
+        if not self.manager.skip_animations or scene.stop_condition is not None:
+            return False
+        if scene.updaters or scene.always_update_mobjects or scene.meshes:
+            return False
+        assert scene.animations is not None
+        roots: list[Mobject | OpenGLMobject] = [*scene.mobjects]
+        roots += [a.mobject for a in scene.animations if a.mobject is not None]
+        return not any(
+            mobject.get_updaters() for root in roots for mobject in root.get_family()
+        )
 
     def _frame(self, play: _Play, index: int, repeat: int, offset: float) -> None:
         frame = _Frame(self, play, index, repeat, offset)

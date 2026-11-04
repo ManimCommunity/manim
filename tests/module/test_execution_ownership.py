@@ -69,8 +69,10 @@ def test_raw_backend_drawing_does_not_advance_clock_or_write(scene, monkeypatch)
     write.assert_not_called()
 
 
-def test_cached_play_steps_every_frame(scene, monkeypatch):
-    """A cached play is not drawn, but its animations step like a rendered play."""
+def test_cached_play_goes_to_its_last_frame(scene, monkeypatch):
+    """A cached play without updaters is not drawn and takes one step, at the time
+    of its last frame, as in a rendered play.
+    """
     manager = scene._get_manager()
     manager.time = 2
     observed = []
@@ -96,7 +98,6 @@ def test_cached_play_steps_every_frame(scene, monkeypatch):
     # 0.3 s at 4 fps is two frames, so the play takes 0.5 s, as a render would.
     assert observed == [
         ("begin", 2),
-        ("interpolate", 2, 0.0),
         ("interpolate", 2, 0.0),
         ("interpolate", 2.25, pytest.approx(0.25 / 0.3)),
         ("finish", 2.5),
