@@ -193,7 +193,7 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
                 "anti_alias_width": renderer.anti_alias_width,
             },
             "execution": {
-                "clock": "sample-v2",
+                "clock": "sample-v3",
                 "time": 0,
                 "frame_rate": 60.0,
             },

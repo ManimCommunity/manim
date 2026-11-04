@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Self
 from PIL import Image
 
 from ... import config, logger
+from ..._run.frames import frame_count
 from ...mobject.mobject import Mobject, _AnimationBuilder
 from ...mobject.types.image_mobject import ImageMobjectFromCamera
 from ...scene.scene_file_writer import SceneFileWriter
@@ -331,7 +332,7 @@ class CairoRenderer(_RendererExecutionView):
     def freeze_current_frame(self, duration: float) -> None:
         self.add_frame(
             self.get_frame(),
-            num_frames=int(duration * self._scene.session_spec.frame_rate),
+            num_frames=frame_count(duration, self._scene.session_spec.frame_rate),
         )
 
     def show_frame(self, scene: Scene) -> None:

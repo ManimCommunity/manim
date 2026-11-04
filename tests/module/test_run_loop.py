@@ -133,3 +133,19 @@ def test_a_failed_play_closes_its_progress_bar(tmp_path):
         Manager(scene).render()
     [bar] = bars
     bar.close.assert_called_once_with()
+
+
+@pytest.mark.parametrize("frozen", [True, False])
+@pytest.mark.parametrize(("duration", "frames"), [(0.3, 8), (0.28, 7), (0.01, 1)])
+def test_a_wait_lasts_the_same_number_of_frames_frozen_or_not(
+    tmp_path, frozen, duration, frames
+):
+    class Waits(Scene):
+        def construct(self):
+            self.add(Dot())
+            self.wait(duration, frozen_frame=frozen)
+
+    with tempconfig({**SETTINGS, "frame_rate": 25, "media_dir": str(tmp_path)}):
+        scene = Waits()
+        scene.render()
+    assert scene.time == pytest.approx(frames / 25)

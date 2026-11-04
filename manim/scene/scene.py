@@ -55,6 +55,7 @@ from .._config.output_plan import (
     resolve_requested_output_name,
 )
 from .._config.render_session import resolve_render_session
+from .._run.frames import frame_count
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..constants import *
 from ..manager import Manager
@@ -1197,8 +1198,8 @@ class Scene:
         if self.renderer.skip_animations and not override_skip_animations:
             times: Iterable[float] = [run_time]
         else:
-            step = 1 / config["frame_rate"]
-            times = np.arange(0, run_time, step)
+            rate = config["frame_rate"]
+            times = [i / rate for i in range(frame_count(run_time, rate))]
         time_progression = tqdm(
             times,
             desc=description,
