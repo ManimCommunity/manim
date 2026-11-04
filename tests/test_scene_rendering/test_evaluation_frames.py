@@ -101,6 +101,16 @@ def test_invalid_requests_are_rejected(tmp_path):
             Manager(Motion()).evaluate(frame_times=[0])
 
 
+def test_a_rejected_request_can_be_corrected(tmp_path):
+    received = []
+    with tempconfig(settings("cairo", tmp_path)):
+        manager = Manager(Motion())
+        with pytest.raises(ValueError, match="on_frame"):
+            manager.evaluate(frame_times=[0.5])
+        manager.evaluate(frame_times=[0.5], on_frame=received.append)
+    assert [frame.requested_time for frame in received] == [0.5]
+
+
 def test_an_error_in_on_frame_ends_the_evaluation(tmp_path):
     def fail(frame):
         raise KeyError("stop")
