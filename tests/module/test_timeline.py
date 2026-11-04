@@ -2,6 +2,8 @@
 
 import hashlib
 import json
+import os
+import stat
 import subprocess
 import sys
 from pathlib import Path
@@ -169,6 +171,18 @@ def test_failed_write_keeps_the_previous_file(scene_class, tmp_path, monkeypatch
         manager.timeline.write(path)
     assert path.read_text() == "previous"
     assert not list(tmp_path.glob(".report.json.*"))
+
+
+@pytest.mark.skipif(sys.platform == "win32", reason="POSIX file modes")
+def test_a_written_timeline_has_the_permissions_of_a_new_file(scene_class, tmp_path):
+    manager = Manager(scene_class())
+    manager.evaluate(capture_timeline=True)
+    previous = os.umask(0o022)
+    try:
+        manager.timeline.write(tmp_path / "report.json")
+    finally:
+        os.umask(previous)
+    assert stat.S_IMODE((tmp_path / "report.json").stat().st_mode) == 0o644
 
 
 def test_failed_run_records_no_timeline():
