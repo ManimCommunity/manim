@@ -122,7 +122,13 @@ class _RecoversFromFailedPlays(Scene):
             self.play()
         with pytest.raises(RuntimeError, match="failed halfway"):
             self.play(_FailHalfway(Square()), run_time=0.4)
+        # Fails after all of its frames were played.
+        with pytest.raises(RuntimeError, match="no subcaptions"):
+            self.play(Create(Square()), run_time=0.2, subcaption="caption")
         self.play(Create(Square()), run_time=0.2)
+
+    def add_subcaption(self, *args, **kwargs):
+        raise RuntimeError("no subcaptions")
 
 
 def test_scene_continues_after_a_handled_play_failure(
