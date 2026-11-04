@@ -396,7 +396,7 @@ calls :meth:`.CairoRenderer.scene_finished`, which tells the
 :class:`.SceneFileWriter` to finish any time-based output. For video output, the
 file writer waits for partial movie files that are still being encoded and
 combines them into the final movie. For last-frame PNG output, the animations
-are stepped through without drawing, and a single image is drawn at the end.
+run without drawing (see below), and a single image is drawn at the end.
 When automatic output selected a video for a scene without play calls, the
 writer saves that image as a fallback PNG and
 the manager logs a warning. The writer records the completed artifact as
@@ -830,9 +830,10 @@ the animation steps must use the same rate as the saved video encoding settings.
 First, the manager decides whether this play call is part of the output. For
 example, ``-s`` requests only the final image, ``-n`` selects a range of play
 calls, and a section with ``skip_animations=True`` leaves its plays out. A play
-that is not part of the output is still stepped through frame by frame, so later
-plays start from the same state as in a full render; its frames are just not
-drawn. While such a play runs, ``manager.skip_animations`` is ``True``; the
+that is not part of the output is not drawn, but later plays start from the same
+state as in a full render: if updaters or a stop condition run per frame, the play
+steps through every frame; otherwise nothing can tell the frames in between apart,
+and it goes to its last frame in one step. While such a play runs, ``manager.skip_animations`` is ``True``; the
 renderer's property reads the same value.
 
 Next, the manager calls :meth:`.Scene.compile_animation_data` to prepare the
@@ -863,8 +864,8 @@ animations. This happens once per play call and includes the following steps:
 
 **Caching.** If caching is enabled, the encoder computes a key with
 :func:`.get_hash_from_play_call` and asks the file writer whether a matching
-partial movie file exists. A match lets Manim reuse that file: the play is
-stepped through as usual, but its frames are not drawn or encoded again.
+partial movie file exists. A match lets Manim reuse that file: the play runs
+like a play left out of the output, without drawing or encoding its frames.
 
 The key includes the play call's start time and the frame rate as well as its
 visual inputs. The start time is there because animations and updaters can read
