@@ -1,11 +1,12 @@
 """Check scene time during timeline capture and the placement of offset calls."""
 
+import wave
 from pathlib import Path
 
 import numpy as np
 import pytest
 
-from manim import Manager, Scene, tempconfig
+from manim import Dot, Manager, Scene, tempconfig
 
 
 def test_time_going_backwards_fails_the_capture():
@@ -87,3 +88,40 @@ def test_calls_before_the_run_are_recorded_in_both_modes(tmp_path, mode):
     assert [entry["name"] for entry in entries if entry["kind"] == "section"] == [
         "intro"
     ]
+
+
+def test_a_failed_play_leaves_no_entries_of_calls_made_during_it(tmp_path):
+    click = tmp_path / "click.wav"
+    with wave.open(str(click), "wb") as sound:
+        sound.setnchannels(1)
+        sound.setsampwidth(2)
+        sound.setframerate(8000)
+        sound.writeframes(bytes(1600))
+
+    class Retries(Scene):
+        def construct(self):
+            def sound_then_fail(mobject, dt):
+                if self.time >= 0.25:
+                    self.add_sound(str(click))
+                    raise ValueError("updater failed")
+
+            dot = Dot().add_updater(sound_then_fail)
+            self.add(dot)
+            with pytest.raises(ValueError, match="updater failed"):
+                self.wait(0.5)
+            dot.clear_updaters()
+            self.wait(0.5)
+
+    with tempconfig(
+        {
+            "format": "mp4",
+            "frame_rate": 4,
+            "progress_bar": "none",
+            "disable_caching": True,
+            "media_dir": str(tmp_path),
+        }
+    ):
+        manager = Manager(Retries())
+        manager.render(capture_timeline=True)
+    kinds = [entry["kind"] for entry in manager.timeline.to_dict()["entries"]]
+    assert kinds == ["wait"]

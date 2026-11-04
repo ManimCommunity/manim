@@ -74,6 +74,7 @@ class _RunRecord(_RunListener):
         self._active: dict[str, Any] | None = None
         self._failed = False
         self._last_time = 0.0
+        self._play_start = 0.0
         self._ended_early = False
         self._end: float | None = None
         source = _source_file(type(manager.scene))
@@ -166,6 +167,7 @@ class _RunRecord(_RunListener):
                 else cls.__qualname__
             )
             summaries.append({"type": name, "run_time": float(animation.run_time)})
+        self._play_start = self._last_time
         self._active = {
             "kind": kind,
             "start": self._observe(),
@@ -185,10 +187,12 @@ class _RunRecord(_RunListener):
 
     def play_failed(self, play: _Play) -> None:
         # A failed play is not part of the run; Manager.play rolls its output
-        # and the clock back, so the record forgets it as well.
+        # and the clock back, so the record forgets it as well, with the calls
+        # made during it (e.g. a sound added by an updater).
         if self._active is not None:
-            self.entries.remove(self._active)
+            del self.entries[self.entries.index(self._active) :]
             self._active = None
+            self._last_time = self._play_start
 
     def marker(self, marker: _Section | _Caption | _Sound) -> None:
         time = self._observe()
