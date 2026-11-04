@@ -157,6 +157,21 @@ def test_background_image_is_resized_to_target(tmp_path):
             renderer.close()
 
 
+def test_background_image_objects_are_read_each_time_they_are_drawn():
+    image = Image.new("RGBA", (2, 2), (255, 0, 0, 255))
+    square = Square(side_length=20, fill_opacity=1, stroke_width=0)
+    square.color_using_background_image(image)
+    with tempconfig({"pixel_width": 2, "pixel_height": 2}):
+        renderer = CairoRenderer()
+        try:
+            renderer.render_mobjects([square])
+            image.paste((0, 0, 255, 255), (0, 0, 2, 2))  # edited in place
+            renderer.render_mobjects([square])
+            assert renderer.get_frame()[0, 0].tolist() == [0, 0, 255, 255]
+        finally:
+            renderer.close()
+
+
 def test_nested_view_preserves_square_geometry():
     with tempconfig({"pixel_width": 96, "pixel_height": 160}):
         view = ImageMobjectFromCamera(Camera())
