@@ -679,8 +679,8 @@ class ThreeDCamera(Camera):
     def rotation_matrix(self) -> MatrixMN:
         """Read-only rotation matrix computed from the current camera angles.
 
-        Change the angle trackers or override :meth:`generate_rotation_matrix`
-        to customize the rotation.
+        Change the angle trackers to change the rotation. The matrix is cached
+        for the current angles.
         """
         return self.get_rotation_matrix()
 
