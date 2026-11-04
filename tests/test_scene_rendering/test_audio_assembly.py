@@ -286,3 +286,20 @@ def test_frames_added_with_the_legacy_hook_do_not_shift_sound_or_captions(tmp_pa
     assert len(levels) / rate == pytest.approx(video_duration, abs=0.01)
     [caption] = srt.parse(path.with_suffix(".srt").read_text())
     assert caption.end.total_seconds() == pytest.approx(video_duration, abs=0.01)
+
+
+def test_the_sound_mix_follows_sounds_and_spans_added_after_it_was_made(tmp_path):
+    beep = str(write_wav(tmp_path / "beep.wav", seconds=0.5))
+    with tempconfig(
+        {"format": "mp4", "media_dir": str(tmp_path / "media"), "progress_bar": "none"}
+    ):
+        writer = Scene()._get_manager().file_writer
+        writer.add_sound(beep, 0.0)
+        writer.add_movie_interval(0.0, 1.0)
+        first = writer._sound_mix
+        writer.add_sound(beep, 1.5)
+        writer.add_movie_interval(1.0, 2.0)
+        second = writer._sound_mix
+    assert first.duration == pytest.approx(1.0)
+    assert second.duration == pytest.approx(2.0)
+    assert len(second._sounds) == 2
