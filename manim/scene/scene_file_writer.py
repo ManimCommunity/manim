@@ -421,10 +421,15 @@ class SceneFileWriter:
         file_path = get_full_sound_file_path(sound_file, self.settings.assets_dir)
         _probe_duration(file_path)
         self._sounds.append(_Sound(file_path, time, gain, gain_to_background))
+        self.__dict__.pop("_sound_mix", None)
 
     @cached_property
     def _sound_mix(self) -> _SoundMix | None:
-        """The scene's sound mix cut to the spans the movie shows; made on first use."""
+        """The scene's sound mix cut to the spans the movie shows.
+
+        Made on first use, which decodes the sound files, and shared by the movie
+        and its section videos; made again after a sound or span is added.
+        """
         if not self._sounds:
             return None
         return _SoundMix(self._sounds, self._intervals)
@@ -479,6 +484,7 @@ class SceneFileWriter:
         end
             The scene time at which the span ends, in seconds.
         """
+        self.__dict__.pop("_sound_mix", None)
         if self._intervals and self._intervals[-1][1] == start:
             start = self._intervals.pop()[0]
         self._intervals.append((start, end))
