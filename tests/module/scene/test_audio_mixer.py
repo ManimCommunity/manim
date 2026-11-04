@@ -54,6 +54,22 @@ def test_audio_that_cannot_be_decoded_raises_a_value_error(tmp_path):
         _decode(path)
 
 
+def test_a_sound_file_is_probed_again_only_after_it_changes(tmp_path, monkeypatch):
+    path = write_wav(tmp_path / "beep.wav", seconds=0.5)
+    opened = []
+    real_open = av.open
+    monkeypatch.setattr(
+        "manim.scene.audio_mixer.av.open",
+        lambda *args, **kwargs: opened.append(args[0]) or real_open(*args, **kwargs),
+    )
+    assert _probe_duration(path) == pytest.approx(0.5)
+    assert _probe_duration(path) == pytest.approx(0.5)
+    assert len(opened) == 1
+    write_wav(path, seconds=0.25)
+    assert _probe_duration(path) == pytest.approx(0.25)
+    assert len(opened) == 2
+
+
 def test_gain_is_in_decibels(tmp_path):
     beep = write_wav(tmp_path / "beep.wav", value=0.25)
     track = mix([_Sound(beep, 0.0), _Sound(beep, 0.0, gain=-6.0206)], [(0.0, 1.0)])
