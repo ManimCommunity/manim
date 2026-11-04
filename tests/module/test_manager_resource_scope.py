@@ -44,6 +44,16 @@ def test_nested_inspection_scopes_retire_only_at_outer_exit(managed_scene):
     assert manager._scope_depth == 0
 
 
+def test_a_failure_in_a_nested_scope_leaves_the_manager_open(managed_scene):
+    scene = managed_scene
+    manager = Manager(scene)
+    with manager:
+        with pytest.raises(ValueError), manager:
+            raise ValueError("handled by the enclosing block")
+        assert scene.renderer.get_frame().shape == (32, 64, 4)
+    assert scene.renderer._closed
+
+
 def test_render_log_is_scoped_and_context_exit_retires_backend(
     managed_scene, monkeypatch
 ):
