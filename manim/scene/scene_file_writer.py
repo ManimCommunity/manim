@@ -98,6 +98,10 @@ class _AudioTrack:
                 self._container.mux(packet)
 
 
+# Subcaption times are kept to the microsecond; compare scene times with this slack.
+_TIME_TOLERANCE = 1e-6
+
+
 class _PartialMovieEncodeJob:
     """Run one segment encoder on a dedicated worker thread."""
 
@@ -276,6 +280,8 @@ class SceneFileWriter:
         self._sounds: list[_Sound] = []
         # Spans of scene time shown in the movie, in order; adjacent ones merged.
         self._intervals: list[tuple[float, float]] = []
+        # Scene time at which the scene ended; set when the run finishes.
+        self._scene_end: float | None = None
         self.frame_count = 0
         self.partial_movie_files: list[str | None] = []
         self.subcaptions: list[srt.Subtitle] = []
@@ -531,9 +537,23 @@ class SceneFileWriter:
         Image.fromarray(pixels).save(self.image_file_path)
         self.print_file_ready_message(self.image_file_path)
 
+    def end_scene(self, time: float) -> None:
+        """Record the scene time at which the scene ended.
+
+        Sounds and subcaptions after it are cut from the movie, see :meth:`finish`.
+        """
+        self._scene_end = time
+
     def finish(self) -> None:
-        """Drain segment jobs and assemble the configured time-based output."""
+        """Drain segment jobs and assemble the configured time-based output.
+
+        Before the movie is assembled, a warning names each sound and subcaption
+        that the movie cuts: parts before the scene starts, after it ends, or
+        after the end of the movie when the scene ends there. Cuts made by plays
+        left out of the output are expected and do not warn.
+        """
         if self.output_spec.is_video:
+            self._warn_about_cuts()
             self.join_all_encode_jobs()
             self.combine_to_movie()
             if self.output_spec.save_sections:
@@ -900,12 +920,6 @@ class SceneFileWriter:
         logger.info("Combining to Movie file.")
         self._write_concat_manifest(partial_movie_files)
         mix = None if self.output_spec.is_gif else self._sound_mix
-        if mix is not None and (cut := mix.cut_at_end()) > 0:
-            logger.warning(
-                "Sound runs up to %(cut).2f s past the end of the movie; that part "
-                "is cut. Add a wait() at the end of the scene to hear all of it.",
-                {"cut": cut},
-            )
         self.combine_files(
             partial_movie_files,
             movie_file_path,
@@ -954,18 +968,10 @@ class SceneFileWriter:
         subcaption_file = self.output_plan.subcaption_file
         assert subcaption_file is not None
         # Subcaptions are recorded at scene time; place them in the movie.
-        output_end = self._intervals[-1][1] if self._intervals else 0.0
         subcaptions: list[srt.Subtitle] = []
         for subcaption in self.subcaptions:
-            start = subcaption.start.total_seconds()
-            end = subcaption.end.total_seconds()
-            if start < output_end < end:
-                logger.warning(
-                    "Subcaption %(content)r runs %(cut).2f s past the end of the "
-                    "movie; that part is cut.",
-                    {"content": subcaption.content, "cut": end - output_end},
-                )
-            start, end = self._movie_time(start), self._movie_time(end)
+            start = self._movie_time(subcaption.start.total_seconds())
+            end = self._movie_time(subcaption.end.total_seconds())
             if start < end:
                 subcaptions.append(
                     srt.Subtitle(
@@ -978,6 +984,54 @@ class SceneFileWriter:
         subcaption_file.parent.mkdir(parents=True, exist_ok=True)
         subcaption_file.write_text(srt.compose(subcaptions), encoding="utf-8")
         logger.info(f"Subcaption file has been written as {subcaption_file}")
+
+    def _warn_about_cuts(self) -> None:
+        """Warn about each sound and subcaption the movie cuts; see :meth:`finish`."""
+        if not self._intervals:
+            return
+        movie_end = self._intervals[-1][1]
+        scene_end = movie_end if self._scene_end is None else self._scene_end
+        # When the end of the scene is left out of the output, the movie cuts what
+        # runs into it like any excluded play: that is expected and does not warn.
+        movie_ends_scene = math.isclose(movie_end, scene_end, abs_tol=_TIME_TOLERANCE)
+        spans: list[tuple[str, float, float | None]] = []
+        if not self.output_spec.is_gif:
+            for sound in self._sounds:
+                duration = _probe_duration(sound.path)
+                spans.append(
+                    (
+                        f"Sound {str(sound.path)!r}",
+                        sound.start,
+                        None if duration is None else sound.start + duration,
+                    )
+                )
+        spans += [
+            (
+                f"Subcaption {subcaption.content!r}",
+                subcaption.start.total_seconds(),
+                subcaption.end.total_seconds(),
+            )
+            for subcaption in self.subcaptions
+        ]
+        for label, start, end in spans:
+            if start < 0:
+                logger.warning(
+                    "%(label)s starts %(cut).2f s before the scene starts; that part "
+                    "is cut.",
+                    {"label": label, "cut": -start},
+                )
+            if start >= scene_end - _TIME_TOLERANCE:
+                logger.warning(
+                    "%(label)s starts at %(start).2f s, when the scene has already "
+                    "ended at %(end).2f s; it is cut.",
+                    {"label": label, "start": start, "end": scene_end},
+                )
+            elif end is not None and start < scene_end < end and movie_ends_scene:
+                logger.warning(
+                    "%(label)s runs %(cut).2f s past the end of the scene; that part "
+                    "is cut. Add a wait() at the end of the scene to keep all of it.",
+                    {"label": label, "cut": end - scene_end},
+                )
 
     def _movie_time(self, scene_time: float) -> float:
         """Return the movie time at which ``scene_time`` is shown.

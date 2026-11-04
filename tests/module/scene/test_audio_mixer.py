@@ -106,13 +106,3 @@ def test_negative_start_cuts_the_head(tmp_path):
     track = mix([_Sound(beep, -0.75)], [(0.0, 1.0)])
     np.testing.assert_allclose(track[:, : samples(0.25)], 0.25)
     assert np.all(track[:, samples(0.25) :] == 0)
-
-
-def test_cut_at_end_ignores_sounds_that_are_excluded_anyway(tmp_path):
-    beep = write_wav(tmp_path / "beep.wav", seconds=1.0)
-    # Heard at the end of the movie: 0.5 s are cut.
-    assert _SoundMix(
-        [_Sound(beep, 2.5)], [(0.0, 1.0), (2.0, 3.0)]
-    ).cut_at_end() == pytest.approx(0.5)
-    # Entirely after the last shown interval, e.g. in a skipped final section.
-    assert _SoundMix([_Sound(beep, 3.5)], [(0.0, 3.0)]).cut_at_end() == 0

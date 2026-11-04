@@ -57,15 +57,6 @@ __all__ = ["Manager", "RenderedFrame"]
 SceneT = TypeVar("SceneT", bound="Scene")
 
 
-def _warn_if_before_scene_start(kind: str, label: str, start: float) -> None:
-    if start < 0:
-        logger.warning(
-            "%(kind)s %(label)s starts %(cut).2f s before the scene starts; "
-            "that part is cut.",
-            {"kind": kind, "label": label, "cut": -start},
-        )
-
-
 @dataclass(frozen=True, eq=False)
 class RenderedFrame:
     """A frame drawn during :meth:`.Manager.evaluate`.
@@ -848,7 +839,6 @@ class Manager(Generic[SceneT]):
             The offset in seconds from the current scene time.
         """
         start = float(self.time + offset)
-        _warn_if_before_scene_start("Subcaption", repr(content), start)
         self._loop.marker(_Caption(content, start, start + float(duration)))
 
     def add_sound(
@@ -877,5 +867,4 @@ class Manager(Generic[SceneT]):
             in dB.
         """
         start = self.time + time_offset
-        _warn_if_before_scene_start("Sound", repr(str(sound_file)), start)
         self._loop.marker(_Sound(str(sound_file), start, gain, gain_to_background))

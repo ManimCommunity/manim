@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 import srt
 
-from manim import Scene, Square, tempconfig
+from manim import Manager, Scene, Square, tempconfig
 from manim.scene import scene_file_writer
 from tests.helpers.audio import write_wav
 
@@ -199,8 +199,10 @@ def test_sound_outside_the_scene_is_cut_with_a_warning(tmp_path, manim_caplog):
 
     render(tmp_path, [(str(sound), -0.25), (str(sound), 0.75)], format="mp4")
 
-    assert "starts 0.25 s before the scene starts" in manim_caplog.text
-    assert "Sound runs up to 0.75 s past the end of the movie" in manim_caplog.text
+    assert f"Sound {str(sound)!r} starts 0.25 s before the scene" in manim_caplog.text
+    assert f"Sound {str(sound)!r} runs 0.75 s past the end of the scene" in (
+        manim_caplog.text
+    )
 
 
 def test_subcaptions_follow_the_movie(tmp_path, manim_caplog):
@@ -226,7 +228,7 @@ def test_subcaptions_follow_the_movie(tmp_path, manim_caplog):
         ("last", 1.0, 2.0),
     ]
     assert (
-        "Subcaption 'last' runs 1.00 s past the end of the movie" in manim_caplog.text
+        "Subcaption 'last' runs 1.00 s past the end of the scene" in manim_caplog.text
     )
 
 
@@ -303,3 +305,30 @@ def test_the_sound_mix_follows_sounds_and_spans_added_after_it_was_made(tmp_path
     assert first.duration == pytest.approx(1.0)
     assert second.duration == pytest.approx(2.0)
     assert len(second._sounds) == 2
+
+
+def test_sound_cut_by_a_skipped_final_section_does_not_warn(tmp_path, manim_caplog):
+    # From 0.5 s to 2.5 s: past the end of the movie (1 s) and of the scene (2 s).
+    sound = write_wav(tmp_path / "sound.wav", seconds=2.0)
+
+    class SkippedTail(Scene):
+        def construct(self):
+            square = Square()
+            self.add(square)
+            self.play(square.animate.shift([1, 0, 0]), run_time=1)
+            self.add_sound(str(sound), time_offset=-0.5)
+            self.next_section("tail", skip_animations=True)
+            self.play(square.animate.shift([-1, 0, 0]), run_time=1)
+
+    render_scene(tmp_path, SkippedTail, format="mp4")
+    # The final section is left out, so the movie ends before the scene does:
+    # a wait() at the end would not keep the sound, and the cut is expected.
+    assert "is cut" not in manim_caplog.text
+
+
+def test_evaluation_does_not_warn_about_cuts(tmp_path, manim_caplog):
+    sound = write_wav(tmp_path / "sound.wav", seconds=1.0)
+    scene_class = type("Beeps", (Beeps,), {"sounds": [(str(sound), -0.25)]})
+    with tempconfig({"media_dir": str(tmp_path / "media"), "progress_bar": "none"}):
+        Manager(scene_class()).evaluate()
+    assert "is cut" not in manim_caplog.text
