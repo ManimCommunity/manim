@@ -431,15 +431,17 @@ class Manager(Generic[SceneT]):
     def _play_rollback(self) -> Callable[[], None]:
         """Return a callback that undoes the output bookkeeping of a failed play.
 
-        The callback stops the play's encode job and drops its partial movie
-        entry and animation hash, so the next play starts from the same output
-        state as if the failed play had never been called. Encode jobs of earlier
-        plays keep running, so that their failures are reported as usual.
+        The callback stops the play's encode job, drops its partial movie entry
+        and animation hash, and restores the clock and the play count, so the
+        next play starts from the same output state as if the failed play had
+        never been called. Encode jobs of earlier plays keep running, so that
+        their failures are reported as usual.
         Changes the play made to mobjects are kept.
         """
         writer = self.file_writer
         renderer = self.renderer
         time = self.time
+        num_plays = self.num_plays
         num_files = len(writer.partial_movie_files)
         section = writer.sections[-1] if writer.sections else None
         num_section_files = len(section.partial_movie_files) if section else 0
@@ -455,6 +457,8 @@ class Manager(Generic[SceneT]):
                 del section.partial_movie_files[num_section_files:]
             del renderer.animations_hashes[num_hashes:]
             self.time = time
+            # The play may have failed after it was counted, e.g. in a subcaption.
+            self.num_plays = num_plays
 
         return rollback
 
