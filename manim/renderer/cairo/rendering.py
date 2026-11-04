@@ -90,13 +90,14 @@ class _CairoDrawingContext:
             )
 
         self.camera._prepare_for_render()
-        to_display = self.camera.get_mobjects_to_display(
-            mobjects,
-            include_submobjects=include_submobjects,
-            excluded_mobjects=excluded_mobjects,
-        )
-        for group_type, group in it.groupby(to_display, type_or_raise):
-            display_funcs[group_type](list(group))
+        with self.camera._drawing():
+            to_display = self.camera.get_mobjects_to_display(
+                mobjects,
+                include_submobjects=include_submobjects,
+                excluded_mobjects=excluded_mobjects,
+            )
+            for group_type, group in it.groupby(to_display, type_or_raise):
+                display_funcs[group_type](list(group))
 
     def _display_vectorized_mobjects(self, vmobjects: list[VMobject]) -> None:
         if not vmobjects:

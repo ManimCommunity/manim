@@ -4,8 +4,9 @@ from __future__ import annotations
 
 __all__ = ["Camera", "MovingCamera", "MultiCamera", "ThreeDCamera"]
 
+import contextlib
 import operator as op
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Iterator
 from functools import reduce
 from typing import TYPE_CHECKING, Any, Literal, overload
 
@@ -304,6 +305,11 @@ class Camera:
     def _prepare_for_render(self) -> None:
         """Update derived camera values before drawing."""
 
+    @contextlib.contextmanager
+    def _drawing(self) -> Iterator[None]:
+        """Scope in which one frame is drawn; the camera does not change in it."""
+        yield
+
     def get_view_transform_center(self) -> Point3D:
         """Return the center applied by the renderer's 2D view transform."""
         return self.frame_center
@@ -412,10 +418,30 @@ class ThreeDCamera(Camera):
         self.zoom_tracker = ValueTracker(zoom)
         self.fixed_orientation_mobjects: dict[Mobject, Callable[[], Point3D]] = {}
         self.fixed_in_frame_mobjects: set[Mobject] = set()
+        self._view: tuple[Point3D, float, float, MatrixMN] | None = None
         self.reset_rotation_matrix()
 
     def _prepare_for_render(self) -> None:
         self.reset_rotation_matrix()
+
+    @contextlib.contextmanager
+    def _drawing(self) -> Iterator[None]:
+        # Every mobject of a frame is projected with the same view: compute it
+        # once instead of in each projection (the frame center alone is a
+        # bounding box of the frame mobject).
+        self._view = self._current_view()
+        try:
+            yield
+        finally:
+            self._view = None
+
+    def _current_view(self) -> tuple[Point3D, float, float, MatrixMN]:
+        return (
+            self.frame_center,
+            self.get_focal_distance(),
+            self.get_zoom(),
+            self.get_rotation_matrix(),
+        )
 
     # Read-only: the trackers hold the orientation. Change it with set_phi() and
     # the like, set_camera_orientation(), or by animating the trackers.
@@ -674,10 +700,10 @@ class ThreeDCamera(Camera):
         np.array
             The points after projecting.
         """
-        frame_center = self.frame_center
-        focal_distance = self.get_focal_distance()
-        zoom = self.get_zoom()
-        rot_matrix = self.get_rotation_matrix()
+        view = self._view
+        frame_center, focal_distance, zoom, rot_matrix = (
+            view if view is not None else self._current_view()
+        )
 
         points = points - frame_center
         points = np.dot(points, rot_matrix.T)
