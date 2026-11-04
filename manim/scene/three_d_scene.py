@@ -304,10 +304,18 @@ class ThreeDScene(Scene):
 
             anims += [Transform(self.camera, cam2)]
 
+        frame_was_shown = (
+            isinstance(self.camera, ThreeDCamera) and self.camera.frame in self.mobjects
+        )
         self.play(*anims + added_anims, **kwargs)
 
-        # The semantic camera frame is a control mobject, not scene content.
-        if frame_center is not None and isinstance(self.camera, ThreeDCamera):
+        # Animating the camera frame adds it to the scene; it is a control, not
+        # scene content, unless it was shown before.
+        if (
+            frame_center is not None
+            and isinstance(self.camera, ThreeDCamera)
+            and not frame_was_shown
+        ):
             self.remove(self.camera.frame)
 
     def add_fixed_orientation_mobjects(self, *mobjects: Mobject, **kwargs):
