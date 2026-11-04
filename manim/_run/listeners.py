@@ -133,6 +133,8 @@ class _FrameRequests(_RunListener):
     ) -> None:
         self._manager = manager
         self._times = sorted(times)
+        self._next = 0
+        """The index of the first requested time not yet passed to ``on_frame``."""
         self._on_frame = on_frame
 
     def frame(self, frame: _Frame) -> None:
@@ -145,8 +147,10 @@ class _FrameRequests(_RunListener):
             return offset + index / rate
 
         end = frame.index + frame.repeat
-        while self._times and self._times[0] < start(end):
-            requested = self._times.pop(0)
+        times, limit = self._times, start(end)
+        while self._next < len(times) and times[self._next] < limit:
+            requested = times[self._next]
+            self._next += 1
             # Compare with the start times of the frames: multiplying the requested
             # time by the frame rate can round across a frame boundary.
             starts = range(frame.index, end)
