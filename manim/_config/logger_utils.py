@@ -191,11 +191,12 @@ class JSONFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         """Format the record in a custom JSON format."""
-        record_c = copy.deepcopy(record)
+        # A shallow copy: records with exceptions hold tracebacks, which cannot be
+        # deep-copied. The arguments are replaced, not changed in place.
+        record_c = copy.copy(record)
         if record_c.args:
             if isinstance(record_c.args, dict):
-                for arg in record_c.args:
-                    record_c.args[arg] = "<>"
+                record_c.args = dict.fromkeys(record_c.args, "<>")
             else:
                 record_c.args = ("<>",) * len(record_c.args)
         return json.dumps(
