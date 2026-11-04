@@ -195,7 +195,6 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
             "execution": {
                 "clock": "sample-v2",
                 "time": 0,
-                "play_index": 2,
                 "frame_rate": 60.0,
             },
         },

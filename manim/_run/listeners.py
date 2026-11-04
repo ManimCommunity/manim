@@ -85,8 +85,9 @@ class _Encoder(_RunListener):
                 "drawing": drawing_state,
                 "execution": {
                     "clock": _CLOCK_VERSION,
+                    # Plays can read the scene time, so the same inputs at another
+                    # time can give other frames.
                     "time": manager.time,
-                    "play_index": play.index,
                     "frame_rate": manager.session_spec.frame_rate,
                 },
             },
