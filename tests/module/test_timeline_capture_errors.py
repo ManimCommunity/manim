@@ -1,5 +1,8 @@
 """Check scene time during timeline capture and the placement of offset calls."""
 
+from pathlib import Path
+
+import numpy as np
 import pytest
 
 from manim import Manager, Scene, tempconfig
@@ -36,3 +39,25 @@ def test_offsets_move_sounds_and_captions_but_not_the_clock():
     assert data["duration"] == 2
     calls = [entry for entry in data["entries"] if entry["kind"] != "wait"]
     assert [entry["start"] for entry in calls] == [0.5, 3, 0]
+
+
+def test_values_json_cannot_hold_are_recorded_in_a_readable_form():
+    class OddValues(Scene):
+        def construct(self):
+            self.next_section("intro")
+            self.add_sound(Path("click.wav"), gain=np.float32(-3), seed=np.int64(2))
+            self.add_subcaption("caption", duration=np.float64(0.5))
+            self.wait(0.5, frozen_frame=False)
+
+    with tempconfig({"format": "none", "frame_rate": 4, "progress_bar": "none"}):
+        manager = Manager(OddValues())
+        manager.evaluate(capture_timeline=True)
+    entries = manager.timeline.to_dict()["entries"]
+    sound = next(entry for entry in entries if entry["kind"] == "sound")
+    caption = next(entry for entry in entries if entry["kind"] == "caption")
+    assert (sound["file"], sound["gain"], sound["options"]) == (
+        "click.wav",
+        -3.0,
+        {"seed": 2},
+    )
+    assert caption["end"] - caption["start"] == 0.5

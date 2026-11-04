@@ -5,10 +5,11 @@ from __future__ import annotations
 import functools
 import hashlib
 import inspect
-import json
 import math
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal
+
+import numpy as np
 
 from .loop import _Caption, _RunListener, _Section
 
@@ -25,6 +26,27 @@ _PACKAGE = Path(__file__).resolve().parents[1]
 @functools.cache
 def _resolve(filename: str) -> Path:
     return Path(filename).resolve()
+
+
+def _plain(value: Any) -> Any:
+    """Return ``value`` as plain JSON data.
+
+    Timelines record what scene code passes to section, caption and sound calls.
+    Values JSON cannot hold are recorded in a readable form instead of failing
+    the run: numpy scalars as Python numbers, non-finite numbers as null, and
+    anything else as its string.
+    """
+    if isinstance(value, np.generic):
+        value = value.item()
+    if value is None or isinstance(value, (bool, int, str)):
+        return value
+    if isinstance(value, float):
+        return value if math.isfinite(value) else None
+    if isinstance(value, dict):
+        return {str(key): _plain(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_plain(item) for item in value]
+    return str(value)
 
 
 def _source_file(scene_class: type) -> Path | None:
@@ -76,10 +98,7 @@ class _RunRecord(_RunListener):
         self._source_info = self._hash_source() if capture else None
         if capture:
             self._last_time = float(self._manager.time)
-            try:
-                self.entries = json.loads(json.dumps(self.entries, allow_nan=False))
-            except (TypeError, ValueError):
-                self._failed = True
+            self.entries = [_plain(entry) for entry in self.entries]
 
     def _hash_source(self) -> dict[str, str] | None:
         if self._source is None:
@@ -198,13 +217,8 @@ class _RunRecord(_RunListener):
                 "options": dict(marker.options),
             }
         if self.capture:
-            try:
-                # Copy the values, so that later changes by scene code are not
-                # recorded.
-                values = json.loads(json.dumps(values, allow_nan=False))
-            except (TypeError, ValueError):
-                self._failed = True
-                raise
+            # A copy, so that later changes by scene code are not recorded.
+            values = _plain(values)
         source = self._location() if self.capture else None
         self.entries.append({**values, "source": source})
 
