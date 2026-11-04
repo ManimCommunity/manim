@@ -6,7 +6,7 @@ import av
 import numpy as np
 import pytest
 
-from manim import Animation, Scene, Square, tempconfig
+from manim import RIGHT, UP, Animation, Scene, Square, tempconfig
 
 
 class TimeDriven(Animation):
@@ -201,3 +201,37 @@ def test_stopped_events_do_not_reuse_an_unknown_cached_span(monkeypatch):
             scene.wait(1, stop_condition=lambda: scene.time >= 0.5)
             assert scene.time == 0.5
             lookup.assert_not_called()
+
+
+class _SplitPlay(Scene):
+    split = False
+
+    def construct(self):
+        square = Square()
+        if self.split:
+            self.play(square.animate.shift(0.5 * RIGHT), run_time=0.25)
+            self.play(square.animate.shift(0.5 * RIGHT), run_time=0.25)
+        else:
+            self.play(square.animate.shift(RIGHT), run_time=0.5)
+        self.play(square.animate.shift(UP), run_time=0.5)
+
+
+def test_plays_at_the_same_time_reuse_segments_whatever_came_before(tmp_path):
+    with tempconfig(
+        {
+            "format": "mp4",
+            "media_dir": str(tmp_path),
+            "frame_rate": 4,
+            "pixel_width": 64,
+            "pixel_height": 32,
+            "disable_caching": False,
+            "progress_bar": "none",
+        }
+    ):
+        first = _SplitPlay()
+        first.render()
+        second = _SplitPlay()
+        second.split = True
+        second.render()
+    # The last play starts at the same time, after one play or after two.
+    assert first.renderer.animations_hashes[-1] == second.renderer.animations_hashes[-1]

@@ -866,10 +866,11 @@ animations. This happens once per play call and includes the following steps:
 partial movie file exists. A match lets Manim reuse that file: the play is
 stepped through as usual, but its frames are not drawn or encoded again.
 
-The key includes the play call's start time, index, and frame rate as well as its
-visual inputs. Identical geometry at different points in a scene can therefore
-produce different keys; another render of the same scene can still reuse those
-segments. Waits with a stop condition are always rendered again: when such a wait
+The key includes the play call's start time and the frame rate as well as its
+visual inputs. The start time is there because animations and updaters can read
+the scene time, so the same inputs at another time can give other frames. A
+change that moves later plays in time, such as an inserted wait, therefore renders
+them again; another render of the same scene can still reuse its segments. Waits with a stop condition are always rendered again: when such a wait
 stops can depend on state that the key does not include, so a cached movie file
 could have the wrong length.
 
