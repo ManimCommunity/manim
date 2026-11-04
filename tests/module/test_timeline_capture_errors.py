@@ -61,3 +61,29 @@ def test_values_json_cannot_hold_are_recorded_in_a_readable_form():
         {"seed": 2},
     )
     assert caption["end"] - caption["start"] == 0.5
+
+
+@pytest.mark.parametrize("mode", ["evaluate", "render"])
+def test_calls_before_the_run_are_recorded_in_both_modes(tmp_path, mode):
+    class Introduced(Scene):
+        def __init__(self):
+            super().__init__()
+            self.next_section("intro")
+
+        def construct(self):
+            self.wait(0.25)
+
+    with tempconfig(
+        {
+            "format": "none",
+            "frame_rate": 4,
+            "progress_bar": "none",
+            "media_dir": str(tmp_path),
+        }
+    ):
+        scene = Introduced()
+        getattr(scene.manager, mode)(capture_timeline=True)
+    entries = scene.manager.timeline.to_dict()["entries"]
+    assert [entry["name"] for entry in entries if entry["kind"] == "section"] == [
+        "intro"
+    ]
