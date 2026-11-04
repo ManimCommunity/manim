@@ -2,6 +2,7 @@
 
 import wave
 from pathlib import Path
+from unittest.mock import Mock
 
 import numpy as np
 import pytest
@@ -125,3 +126,12 @@ def test_a_failed_play_leaves_no_entries_of_calls_made_during_it(tmp_path):
         manager.render(capture_timeline=True)
     kinds = [entry["kind"] for entry in manager.timeline.to_dict()["entries"]]
     assert kinds == ["wait"]
+
+
+def test_a_run_without_a_timeline_does_not_look_up_the_scene_file(monkeypatch):
+    lookup = Mock(side_effect=AssertionError("looked up"))
+    monkeypatch.setattr("manim._run.record._source_file", lookup)
+    with tempconfig({"format": "none", "frame_rate": 4, "progress_bar": "none"}):
+        manager = Manager(Scene())
+        manager.evaluate()
+    lookup.assert_not_called()

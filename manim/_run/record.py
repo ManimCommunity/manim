@@ -77,10 +77,7 @@ class _RunRecord(_RunListener):
         self._play_start = 0.0
         self._ended_early = False
         self._end: float | None = None
-        source = _source_file(type(manager.scene))
-        self._source = source
         self._source_info: dict[str, str] | None = None
-        self._root = source.parent if source is not None else Path.cwd().resolve()
 
     def start(self, capture: bool) -> None:
         """Begin a run, capturing a timeline if ``capture`` is true.
@@ -100,6 +97,17 @@ class _RunRecord(_RunListener):
         if capture:
             self._last_time = float(self._manager.time)
             self.entries = [_plain(entry) for entry in self.entries]
+
+    # Looked up only when a timeline is captured: finding the file of the scene
+    # class costs module lookups and file system calls on every run otherwise.
+    @functools.cached_property
+    def _source(self) -> Path | None:
+        return _source_file(type(self._manager.scene))
+
+    @functools.cached_property
+    def _root(self) -> Path:
+        source = self._source
+        return source.parent if source is not None else Path.cwd().resolve()
 
     def _hash_source(self) -> dict[str, str] | None:
         if self._source is None:
