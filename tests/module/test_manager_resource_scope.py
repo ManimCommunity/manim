@@ -132,3 +132,45 @@ def test_a_manager_renders_its_scene_only_once(managed_scene):
         manager.render()
         with pytest.raises(RuntimeError, match="only once"):
             manager.render()
+
+
+def _logging_config(tmp_path):
+    return tempconfig(
+        {
+            "format": "none",
+            "pixel_width": 64,
+            "pixel_height": 32,
+            "log_to_file": True,
+            "log_dir": str(tmp_path / "logs"),
+            "media_dir": str(tmp_path / "media"),
+        }
+    )
+
+
+def test_the_log_file_keeps_messages_from_the_scene_constructor(tmp_path):
+    class LogsWhenCreated(Scene):
+        def __init__(self):
+            super().__init__()
+            logger.warning("logged by the constructor")
+
+    with _logging_config(tmp_path):
+        scene = LogsWhenCreated()
+        scene.render()
+    assert "logged by the constructor" in scene._log_file_path.read_text()
+
+
+def test_the_log_file_keeps_cleanup_failures_after_a_failed_render(
+    tmp_path, monkeypatch
+):
+    class Fails(Scene):
+        def construct(self):
+            raise RuntimeError("render failed")
+
+    with _logging_config(tmp_path):
+        scene = Fails()
+        monkeypatch.setattr(
+            scene.renderer, "close", Mock(side_effect=OSError("cannot close"))
+        )
+        with pytest.raises(RuntimeError, match="render failed"):
+            scene.render()
+    assert "Failed to clean up" in scene._log_file_path.read_text()

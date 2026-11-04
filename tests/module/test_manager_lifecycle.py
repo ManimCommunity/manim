@@ -56,12 +56,14 @@ def test_cleanup_failure_does_not_replace_primary_exception(dry_run, monkeypatch
     abort = Mock(side_effect=RuntimeError("cleanup failed"))
     report = Mock()
     monkeypatch.setattr(scene.renderer.file_writer, "abort_encode_jobs", abort)
-    monkeypatch.setattr("manim.manager.logger.exception", report)
+    monkeypatch.setattr("manim.manager.logger.error", report)
     try:
         with pytest.raises(KeyboardInterrupt) as caught:
             manager.render()
         assert caught.value is failure
         abort.assert_called_once()
+        # Reported with the cleanup failure, not the one being raised.
         report.assert_called_once()
+        assert report.call_args.kwargs["exc_info"] is abort.side_effect
     finally:
         scene.renderer.close()

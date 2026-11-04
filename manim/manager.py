@@ -16,6 +16,7 @@ from .utils.file_ops import open_media_file
 if TYPE_CHECKING:
     from collections.abc import Callable
     from logging import FileHandler
+    from logging.handlers import MemoryHandler
     from types import TracebackType
 
     from PIL.Image import Image
@@ -84,6 +85,9 @@ class Manager(Generic[SceneT]):
         self._file_writer: SceneFileWriter | None = None
         self._creating_file_writer = False
         self._log_handler: FileHandler | None = None
+        # Messages logged before the log file is opened, see Scene.__init__.
+        self._log_buffer: MemoryHandler | None = scene._log_buffer
+        scene._log_buffer = None
         # The first handler starts a new log file; later ones append to it, so
         # a play() after render() in a ``with manager:`` block keeps the log.
         self._log_started = False
@@ -120,12 +124,28 @@ class Manager(Generic[SceneT]):
         path = self.scene._log_file_path
         if path is not None:
             path.parent.mkdir(parents=True, exist_ok=True)
+            # Stop buffering first, so that the file's opening message is not
+            # buffered and written twice.
+            buffer = self._log_buffer
+            if buffer is not None:
+                logger.removeHandler(buffer)
             self._log_handler = set_file_logger(
                 path, mode="a" if self._log_started else "w"
             )
             self._log_started = True
+            if buffer is not None:
+                buffer.setTarget(self._log_handler)
+                self._drop_log_buffer()
+
+    def _drop_log_buffer(self) -> None:
+        """Stop buffering messages; write those buffered to the log file, if open."""
+        buffer, self._log_buffer = self._log_buffer, None
+        if buffer is not None:
+            logger.removeHandler(buffer)
+            buffer.close()  # flushes to its target, if any
 
     def _close_log_handler(self) -> None:
+        self._drop_log_buffer()
         handler = self._log_handler
         if handler is not None:
             logger.removeHandler(handler)
@@ -139,6 +159,12 @@ class Manager(Generic[SceneT]):
         It removes the log handler created by this manager, leaving other handlers
         in place. Rendering calls this automatically, or at the end of an enclosing
         ``with manager:`` block after a successful render.
+        """
+        self._close()
+
+    def _close(self, failure_message: str | None = None) -> None:
+        """Close as :meth:`close` does; log cleanup failures as ``failure_message``
+        instead of raising the first one, if given.
         """
         if self._closed:
             return
@@ -154,21 +180,22 @@ class Manager(Generic[SceneT]):
 
         if self._file_writer is not None:
             cleanup(self._file_writer.abort_encode_jobs)
-
         cleanup(self.renderer.close)
-        cleanup(self._close_log_handler)
-        if failures:
+        # Report the failures while the log file is still open.
+        if failure_message is not None:
+            for failure in failures:
+                logger.error(failure_message, exc_info=failure)
+        else:
             for secondary in failures[1:]:
                 logger.error("Additional Manager cleanup failure", exc_info=secondary)
+        cleanup(self._close_log_handler)
+        if failures and failure_message is None:
             raise failures[0]
-        self._closed = True
+        self._closed = not failures
 
     def _cleanup_after_failure(self) -> None:
         # A rendering exception is already propagating; cleanup must not replace it.
-        try:
-            self.close()
-        except BaseException:
-            logger.exception("Failed to clean up resources after a render failure")
+        self._close("Failed to clean up resources after a render failure")
 
     @property
     def renderer(self) -> CairoRenderer | OpenGLRenderer:
@@ -323,9 +350,10 @@ class Manager(Generic[SceneT]):
             raise
 
     def _finish_resource_scope(self) -> None:
-        self._close_log_handler()
         if self._scope_depth == 0:
             self.close()
+        else:
+            self._close_log_handler()
 
     def get_image(self) -> Image:
         """Draw a fresh scene image; see :meth:`.Scene.get_image` for snapshot behavior."""
