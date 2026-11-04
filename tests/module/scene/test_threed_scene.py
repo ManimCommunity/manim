@@ -28,20 +28,6 @@ def test_set_to_default_angled_camera_orientation():
     assert scene.camera.get_theta() == -135 * DEGREES
 
 
-@pytest.mark.parametrize(
-    "call",
-    [
-        lambda scene: scene.add_fixed_in_frame_mobjects(Square()),
-        lambda scene: scene.add_fixed_orientation_mobjects(Square()),
-        lambda scene: scene.remove_fixed_in_frame_mobjects(Square()),
-        lambda scene: scene.remove_fixed_orientation_mobjects(Square()),
-        lambda scene: scene.begin_ambient_camera_rotation(),
-        lambda scene: scene.stop_ambient_camera_rotation(),
-        lambda scene: scene.move_camera(phi=1),
-    ],
-)
-def test_3d_methods_reject_a_camera_without_orientation(call):
-    scene = ThreeDScene(camera_class=Camera)
-    with pytest.raises(TypeError, match="requires a ThreeDCamera"):
-        call(scene)
-    assert scene.mobjects == []
+def test_3d_scenes_need_a_camera_with_an_orientation():
+    with pytest.raises(TypeError, match="Expected a ThreeDCamera"):
+        ThreeDScene(camera_class=Camera)
