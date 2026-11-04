@@ -100,6 +100,11 @@ class Timeline:
                 stream.write(self.to_json().encode("utf-8"))
                 stream.flush()
                 os.fsync(stream.fileno())
+            # Temporary files are private to their owner; give the timeline the
+            # permissions of any new file, as the media files next to it have.
+            umask = os.umask(0)
+            os.umask(umask)
+            temporary.chmod(0o666 & ~umask)
             temporary.replace(path)
         finally:
             if temporary is not None:
