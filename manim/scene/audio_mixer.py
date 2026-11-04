@@ -186,25 +186,6 @@ class _SoundMix:
                 )
         return pieces
 
-    def cut_at_end(self) -> float:
-        """Return how many seconds of audio the end of the movie cuts off.
-
-        Only sounds heard in the last interval the movie shows count; sounds that
-        lie entirely in parts of the scene left out of the movie are not cut by
-        the end.
-        """
-        if not self._intervals:
-            return 0.0
-        scene_start, _, length = self._intervals[-1]
-        last_end = scene_start + length
-        cut = 0
-        for sound in self._sounds:
-            start = _seconds_to_samples(sound.start)
-            end = start + self._decoded[sound.path].shape[1]
-            if start < last_end < end:
-                cut = max(cut, end - last_end)
-        return cut / SAMPLE_RATE
-
     def blocks(self, start: float, end: float) -> Iterator[np.ndarray]:
         """Yield the mix between two movie times as float32 ``(2, n)`` blocks.
 

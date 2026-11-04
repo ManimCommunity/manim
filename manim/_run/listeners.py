@@ -35,8 +35,6 @@ class _Encoder(_RunListener):
         self._manager = manager
         self._writing = False
         self._start = 0.0
-        # The sounds and captions, to warn at the end about those after the scene.
-        self._starts: list[tuple[str, str, float]] = []
 
     def play_started(self, play: _Play) -> None:
         manager = self._manager
@@ -76,7 +74,6 @@ class _Encoder(_RunListener):
         if isinstance(marker, _Section):
             writer.next_section(marker.name, marker.type, marker.skip_animations)
         elif isinstance(marker, _Caption):
-            self._starts.append(("Subcaption", repr(marker.content), marker.start))
             writer.subcaptions.append(
                 srt.Subtitle(
                     index=len(writer.subcaptions),
@@ -86,7 +83,6 @@ class _Encoder(_RunListener):
                 )
             )
         else:
-            self._starts.append(("Sound", repr(marker.file), marker.start))
             writer.add_sound(
                 marker.file,
                 marker.start,
@@ -95,14 +91,7 @@ class _Encoder(_RunListener):
             )
 
     def run_finished(self, ended_early: bool) -> None:
-        end = self._manager.time
-        for kind, label, start in self._starts:
-            if start >= end:
-                logger.warning(
-                    "%(kind)s %(label)s starts at %(start).2f s, when the scene has "
-                    "already ended at %(end).2f s; it is cut.",
-                    {"kind": kind, "label": label, "start": start, "end": end},
-                )
+        self._manager.file_writer.end_scene(self._manager.time)
 
 
 class _Preview(_RunListener):

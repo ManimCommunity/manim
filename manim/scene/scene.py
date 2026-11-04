@@ -1778,8 +1778,8 @@ class Scene:
         All sounds of a scene are mixed into one track, shared by the movie and its
         section videos. Parts of the scene left out of the output, by ``-n`` or a
         section with ``skip_animations=True``, cut the sound like the video. Parts
-        before the start of the scene or after the end of the movie are cut with
-        a warning.
+        before the start of the scene or after its end are cut too; when the movie
+        is assembled, a warning names the sound.
 
         Any format PyAV can decode is supported. The file is checked when the call
         is made during a render or a timeline capture.
