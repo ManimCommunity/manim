@@ -376,3 +376,22 @@ def test_copied_camera_view_shows_the_same_camera():
             assert right.sum() == pytest.approx(left.sum(), rel=0.1)
         finally:
             renderer.close()
+
+
+def test_3d_camera_computes_its_view_once_per_frame(monkeypatch):
+    camera = ThreeDCamera(phi=1, theta=0.5)
+    reads = []
+    frame_center = ThreeDCamera.frame_center.fget
+    monkeypatch.setattr(
+        ThreeDCamera,
+        "frame_center",
+        property(lambda camera: reads.append(1) or frame_center(camera)),
+    )
+    squares = [Square().shift(0.1 * i * RIGHT) for i in range(20)]
+    with tempconfig({"pixel_width": 32, "pixel_height": 18}):
+        renderer = CairoRenderer(camera=camera)
+        try:
+            renderer.render_mobjects(squares)
+        finally:
+            renderer.close()
+    assert len(reads) <= 2
