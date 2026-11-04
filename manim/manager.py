@@ -106,9 +106,12 @@ class Manager(Generic[SceneT]):
         traceback: TracebackType | None,
     ) -> None:
         self._scope_depth -= 1
+        # An enclosing block may handle the error and keep using the Manager.
+        if self._scope_depth > 0:
+            return
         if exc is not None:
             self._cleanup_after_failure()
-        elif self._scope_depth == 0:
+        else:
             self.close()
 
     def _open_log_handler(self) -> None:
