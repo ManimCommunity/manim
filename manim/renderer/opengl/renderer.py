@@ -135,6 +135,8 @@ class OpenGLRenderer(_RendererExecutionView):
         self._frame_buffer_object: Framebuffer | None = None
         self._context_thread: int | None = None
         self._capturing_image = False
+        # A finished scene whose final state is drawn on the first pixel read.
+        self._final_scene: Scene | None = None
         self._state = RendererState.UNOPENED
         self._resources = contextlib.ExitStack()
         self._textures: list[moderngl.Texture] = []
@@ -738,6 +740,7 @@ class OpenGLRenderer(_RendererExecutionView):
         scene : Scene
             The scene to render the frame for.
         """
+        self._final_scene = None
         self._draw_scene(scene)
         self.animation_elapsed_time = time.time() - self.animation_start_time
 
@@ -838,9 +841,13 @@ class OpenGLRenderer(_RendererExecutionView):
         output = self.file_writer.output_spec
         if self.num_plays > 0 and (output.is_video or output.is_image_sequence):
             self.file_writer.finish()
-        # Leave the final state in the framebuffer for direct renderer access
-        # and graphical tests: skipped and cached plays do not draw.
-        self.update_frame(scene)
+        # Skipped and cached plays do not draw, so the framebuffer may not show
+        # the final state. A preview window shows it; offscreen, it is drawn
+        # when the pixels are read, not for every scene.
+        if self.window is not None:
+            self.update_frame(scene)
+        else:
+            self._final_scene = scene
 
         if self.should_save_last_frame():
             self.file_writer.save_image(self.get_frame())
@@ -984,6 +991,9 @@ class OpenGLRenderer(_RendererExecutionView):
         # gl.glBlitFramebuffer(
         #     0, 0, pw, ph, 0, 0, pw, ph, gl.GL_COLOR_BUFFER_BIT, gl.GL_LINEAR
         # )
+        if self._final_scene is not None:
+            scene, self._final_scene = self._final_scene, None
+            self.update_frame(scene)
         num_channels = 4
         ret: bytes = self.frame_buffer_object.read(
             viewport=self.frame_buffer_object.viewport,

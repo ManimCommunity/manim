@@ -63,6 +63,8 @@ class CairoRenderer(_RendererExecutionView):
         # Image files read for this renderer, shared by all its targets.
         self._image_files = _ImageFiles()
         self._target: _CairoRenderTarget | None = None
+        # A finished scene whose final state is drawn on the first pixel read.
+        self._final_scene: Scene | None = None
         self._sub_targets: dict[int, _CairoRenderTarget] = {}
         self._camera_view_pixels: dict[int, RGBAPixelArray] = {}
         self.static_image: RGBAPixelArray | None = None
@@ -269,6 +271,7 @@ class CairoRenderer(_RendererExecutionView):
         self._ensure_open()
         if self.skip_animations and not ignore_skipping:
             return
+        self._final_scene = None
         if not mobjects:
             mobjects = list_update(scene.mobjects, scene.foreground_mobjects)
         target = self._get_target()
@@ -293,6 +296,7 @@ class CairoRenderer(_RendererExecutionView):
         """Draw the supplied mobjects into the renderer's image buffer."""
         self._ensure_open()
         render_camera = self.camera if camera is None else camera
+        self._final_scene = None
         self._get_target().reset(render_camera)
         self._draw_frame(camera=render_camera, mobjects=mobjects)
 
@@ -309,7 +313,13 @@ class CairoRenderer(_RendererExecutionView):
 
     def get_frame(self) -> RGBAPixelArray:
         """Copy the current image to an RGBA array, with row zero at the top."""
+        self._draw_final_state()
         return self._get_target().read_pixels()
+
+    def _draw_final_state(self) -> None:
+        scene, self._final_scene = self._final_scene, None
+        if scene is not None:
+            self.update_frame(scene)
 
     def _get_scene_image(self, scene: Scene) -> Image.Image:
         """Draw a snapshot with a temporary renderer at the existing resolution."""
@@ -368,10 +378,10 @@ class CairoRenderer(_RendererExecutionView):
         output = self.file_writer.output_spec
         if self.num_plays and (output.is_video or output.is_image_sequence):
             self.file_writer.finish()
-        # Leave the final state in the image buffer for direct renderer access
-        # and graphical tests: skipped and cached plays do not draw.
+        # Skipped and cached plays do not draw, so the buffer may not show the
+        # final state. Draw it when the pixels are read, not for every scene.
         self.static_image = None
-        self.update_frame(scene)
+        self._final_scene = scene
 
         if output.is_still or (not self.num_plays and output.fallback_to_still):
             self.file_writer.save_image(self.get_frame())
@@ -422,6 +432,7 @@ class CairoRenderer(_RendererExecutionView):
         self._image_files.clear()
         self.static_image = None
         self._render_all_mobjects = False
+        self._final_scene = None
         if failures:
             self._state = RendererState.CLOSE_FAILED
             for secondary in failures[1:]:

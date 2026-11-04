@@ -18,8 +18,8 @@ def test_render(using_temp_config, disabling_caching):
     writer.write_frame = Mock(wraps=writer.write_frame)
     scene.render()
     assert writer.write_frame.call_count == config["frame_rate"]
-    # One draw per frame, and one for the final state after the scene ends.
-    assert renderer.update_frame.call_count == config["frame_rate"] + 1
+    # One draw per frame; the final state is drawn only if it is read.
+    assert renderer.update_frame.call_count == config["frame_rate"]
     assert_file_exists(renderer.file_writer.final_file_path)
     assert config.output_file == ""
 
