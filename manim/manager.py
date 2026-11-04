@@ -517,7 +517,11 @@ class Manager(Generic[SceneT]):
         if times and on_frame is None:
             raise ValueError("Pass on_frame to receive the frames of frame_times.")
         self._evaluated = True
+        previous = self._record
         record = self._record = _RunRecord(self, "evaluate")
+        if previous is not None:
+            # Keep calls made before the run, e.g. a section in the constructor.
+            record.entries = previous.entries
         record.start(capture_timeline)
         meshes = _MeshGuard(self)
         listeners: list[_RunListener] = [record, meshes, _Progress(self)]
