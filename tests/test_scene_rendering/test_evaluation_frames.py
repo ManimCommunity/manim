@@ -111,6 +111,20 @@ def test_a_rejected_request_can_be_corrected(tmp_path):
     assert [frame.requested_time for frame in received] == [0.5]
 
 
+def test_frozen_frames_added_by_the_renderer_are_evaluated(tmp_path):
+    class Freezes(Scene):
+        def construct(self):
+            self.add(Square())
+            self.renderer.freeze_current_frame(1)
+
+    received = []
+    with tempconfig(settings("cairo", tmp_path)):
+        scene = Freezes()
+        Manager(scene).evaluate(frame_times=[0.6], on_frame=received.append)
+    assert scene.time == 1
+    assert [(frame.time, frame.frame_index) for frame in received] == [(0.5, 2)]
+
+
 def test_an_error_in_on_frame_ends_the_evaluation(tmp_path):
     def fail(frame):
         raise KeyError("stop")
