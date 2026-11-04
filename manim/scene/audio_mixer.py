@@ -78,17 +78,27 @@ def _decode(path: Path) -> np.ndarray:
     The result has shape ``(2, n)`` at :data:`SAMPLE_RATE`. Mono sources are copied
     to both channels at full level; sources with more than two channels are
     downmixed by libswresample.
+
+    Raises
+    ------
+    ValueError
+        If the file's audio data cannot be decoded.
     """
-    with av.open(str(path)) as container:
-        stream = container.streams.audio[0]
-        layout = "mono" if stream.codec_context.channels == 1 else LAYOUT
-        resampler = av.AudioResampler(format="fltp", layout=layout, rate=SAMPLE_RATE)
-        chunks = [
-            resampled.to_ndarray()
-            for frame in container.decode(stream)
-            for resampled in resampler.resample(frame)
-        ]
-    chunks += [resampled.to_ndarray() for resampled in resampler.resample(None)]
+    try:
+        with av.open(str(path)) as container:
+            stream = container.streams.audio[0]
+            layout = "mono" if stream.codec_context.channels == 1 else LAYOUT
+            resampler = av.AudioResampler(
+                format="fltp", layout=layout, rate=SAMPLE_RATE
+            )
+            chunks = [
+                resampled.to_ndarray()
+                for frame in container.decode(stream)
+                for resampled in resampler.resample(frame)
+            ]
+        chunks += [resampled.to_ndarray() for resampled in resampler.resample(None)]
+    except av.FFmpegError as error:
+        raise ValueError(f"Could not read audio from {path}: {error}") from error
     channels = 1 if layout == "mono" else 2
     samples = (
         np.concatenate(chunks, axis=1)

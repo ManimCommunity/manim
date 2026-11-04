@@ -2,10 +2,17 @@ from __future__ import annotations
 
 from functools import partial
 
+import av
 import numpy as np
 import pytest
 
-from manim.scene.audio_mixer import SAMPLE_RATE, _decode, _Sound, _SoundMix
+from manim.scene.audio_mixer import (
+    SAMPLE_RATE,
+    _decode,
+    _probe_duration,
+    _Sound,
+    _SoundMix,
+)
 from tests.helpers import audio
 
 # Sources at the mix rate are not resampled, so levels and positions are exact.
@@ -25,6 +32,26 @@ def test_decode_copies_mono_to_both_channels_at_full_level(tmp_path):
     # libswresample's mono-to-stereo upmix lowers the level by 3 dB.
     decoded = _decode(write_wav(tmp_path / "mono.wav", value=0.5))
     np.testing.assert_allclose(decoded, 0.5, atol=1e-4)
+
+
+def test_audio_that_cannot_be_decoded_raises_a_value_error(tmp_path):
+    # AAC headers that still give a duration, followed by data that is not audio.
+    path = tmp_path / "damaged.aac"
+    with av.open(str(path), "w", format="adts") as container:
+        stream = container.add_stream("aac", rate=SAMPLE_RATE, layout="mono")
+        tone = np.sin(np.arange(SAMPLE_RATE) * 2 * np.pi * 440 / SAMPLE_RATE)
+        frame = av.AudioFrame.from_ndarray(
+            0.3 * tone[None, :].astype(np.float32), format="fltp", layout="mono"
+        )
+        frame.sample_rate = SAMPLE_RATE
+        for packet in [*stream.encode(frame), *stream.encode(None)]:
+            container.mux(packet)
+    data = bytearray(path.read_bytes())
+    data[1000:] = np.random.default_rng(0).bytes(len(data) - 1000)
+    path.write_bytes(bytes(data))
+    assert _probe_duration(path) is not None
+    with pytest.raises(ValueError, match="Could not read audio"):
+        _decode(path)
 
 
 def test_gain_is_in_decibels(tmp_path):
