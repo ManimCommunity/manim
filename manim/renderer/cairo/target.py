@@ -173,8 +173,10 @@ class _CairoRenderTarget:
 
     def get_background_image(self, image: Image.Image | Path | str) -> RGBAPixelArray:
         self._ensure_open()
-        image_key = str(image)
-        cached = self.background_image_cache.get(image_key)
+        # Only files are cached: an image object can change in place, and its
+        # string form names a memory address that another image can reuse.
+        image_key = str(image) if isinstance(image, (str, Path)) else None
+        cached = self.background_image_cache.get(image_key) if image_key else None
         if cached is not None:
             return cached
 
@@ -192,7 +194,8 @@ class _CairoRenderTarget:
                 (self.settings.pixel_width, self.settings.pixel_height),
             )
             array = np.asarray(resized, dtype=np.uint8).copy()
-        self.background_image_cache[image_key] = array
+        if image_key is not None:
+            self.background_image_cache[image_key] = array
         return array
 
     def read_pixels(self) -> RGBAPixelArray:
