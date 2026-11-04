@@ -51,13 +51,10 @@ class ThreeDScene(Scene):
             default_angled_camera_orientation_kwargs
         )
         super().__init__(camera_class=camera_class, **kwargs)
-
-    def _check_3d_camera(self, method: str) -> None:
-        """Raise if the scene's camera has no 3D orientation to control."""
+        # The camera methods of this class control a 3D orientation.
         if not isinstance(self.camera, (ThreeDCamera, OpenGLCamera)):
             raise TypeError(
-                f"ThreeDScene.{method}() requires a ThreeDCamera or an "
-                f"OpenGLCamera, not {type(self.camera).__name__}.",
+                f"Expected a ThreeDCamera, but got {type(self.camera).__name__}"
             )
 
     def set_camera_orientation(
@@ -120,7 +117,6 @@ class ThreeDScene(Scene):
         about
             one of 3 options: ["theta", "phi", "gamma"]. defaults to theta.
         """
-        self._check_3d_camera("begin_ambient_camera_rotation")
         # TODO, use a ValueTracker for rate, so that it
         # can begin and end smoothly
         about: str = about.lower()
@@ -149,7 +145,6 @@ class ThreeDScene(Scene):
 
     def stop_ambient_camera_rotation(self, about="theta"):
         """This method stops all ambient camera rotation."""
-        self._check_3d_camera("stop_ambient_camera_rotation")
         about: str = about.lower()
         try:
             if isinstance(self.camera, ThreeDCamera):
@@ -258,7 +253,6 @@ class ThreeDScene(Scene):
             Any other animations to be played at the same time.
 
         """
-        self._check_3d_camera("move_camera")
         anims = []
 
         if isinstance(self.camera, ThreeDCamera):
@@ -334,7 +328,6 @@ class ThreeDScene(Scene):
                 use_static_center_func : bool
                 center_func : function
         """
-        self._check_3d_camera("add_fixed_orientation_mobjects")
         if isinstance(self.camera, ThreeDCamera):
             self.add(*mobjects)
             self.camera.add_fixed_orientation_mobjects(*mobjects, **kwargs)
@@ -356,7 +349,6 @@ class ThreeDScene(Scene):
         *mobjects
             The Mobjects whose orientation must be fixed.
         """
-        self._check_3d_camera("add_fixed_in_frame_mobjects")
         if isinstance(self.camera, ThreeDCamera):
             self.add(*mobjects)
             self.camera.add_fixed_in_frame_mobjects(*mobjects)
@@ -378,7 +370,6 @@ class ThreeDScene(Scene):
         *mobjects
             The Mobjects whose orientation must be unfixed.
         """
-        self._check_3d_camera("remove_fixed_orientation_mobjects")
         if isinstance(self.camera, ThreeDCamera):
             self.camera.remove_fixed_orientation_mobjects(*mobjects)
         elif isinstance(self.camera, OpenGLCamera):
@@ -398,7 +389,6 @@ class ThreeDScene(Scene):
         *mobjects
             The Mobjects whose position and orientation must be unfixed.
         """
-        self._check_3d_camera("remove_fixed_in_frame_mobjects")
         if isinstance(self.camera, ThreeDCamera):
             self.camera.remove_fixed_in_frame_mobjects(*mobjects)
         elif isinstance(self.camera, OpenGLCamera):
