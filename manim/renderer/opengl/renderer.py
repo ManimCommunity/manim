@@ -654,7 +654,7 @@ class OpenGLRenderer(_RendererExecutionView):
         kwargs
             Animation options such as ``run_time`` and ``rate_func``.
         """
-        scene._get_manager()._play(*animations, **kwargs)
+        scene._get_manager().play(*animations, **kwargs)
 
     def _animation_cache_identity(self, scene: Scene) -> tuple[str, Any]:
         return "opengl", {

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import enum
+from functools import cached_property
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from . import config, logger
@@ -597,10 +598,10 @@ class Manager(Generic[SceneT]):
     def _play(
         self, *args: Animation | Mobject | _AnimationBuilder, **kwargs: Any
     ) -> None:
-        """Prepare and play animations, reusing cached frames when available."""
-        self._validate_execution()
+        """Play animations through the run loop; :meth:`play` checks and rolls back."""
         self._loop.play(*args, **kwargs)
 
+    @cached_property
     def _wants_frame_pixels(self) -> bool:
         """Whether the file writer is given the pixels of drawn frames.
 
@@ -628,7 +629,7 @@ class Manager(Generic[SceneT]):
         self.renderer.render(scene, frame_offset, scene.moving_mobjects)
         if self.skip_animations:
             return
-        if self._wants_frame_pixels():
+        if self._wants_frame_pixels:
             self.file_writer.write_frame(self.renderer.get_frame())
         self.renderer._present_frame(scene, frame_offset)
 

@@ -108,7 +108,7 @@ class CairoRenderer(_RendererExecutionView):
         **kwargs: Any,
     ) -> None:
         """Delegate playback to the scene's manager; prefer Scene.play for new code."""
-        scene._get_manager()._play(*args, **kwargs)
+        scene._get_manager().play(*args, **kwargs)
 
     def _animation_cache_identity(self, scene: Scene) -> tuple[str, Any]:
         return "cairo", ()

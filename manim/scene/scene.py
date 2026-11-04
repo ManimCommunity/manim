@@ -312,8 +312,7 @@ class Scene:
     @property
     def time(self) -> float:
         """Elapsed animation time in seconds, as reported by the scene's manager."""
-        if self.manager is not None:
-            return self.manager.time
+        # The renderer reads the clock of the scene's manager once there is one.
         return self.renderer.time
 
     def __deepcopy__(self, clone_from_id: dict[int, Any]) -> Scene:

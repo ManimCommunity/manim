@@ -98,7 +98,7 @@ class _Encoder(_RunListener):
         if (
             self._writing
             and not manager.scene.skip_animation_preview
-            and manager._wants_frame_pixels()
+            and manager._wants_frame_pixels
         ):
             manager.file_writer.write_frame(frame.pixels(), repeat=frame.repeat)
 
