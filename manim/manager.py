@@ -512,12 +512,13 @@ class Manager(Generic[SceneT]):
             or getattr(self.renderer, "_context", None) is not None
         ):
             raise RuntimeError("Evaluation requires an unused Scene.")
-        self._state = _State.EVALUATED
+        # Checked before the Manager is used up, so that a call can be corrected.
         times = [float(time) for time in frame_times]
         if any(not math.isfinite(time) or time < 0 for time in times):
             raise ValueError("Frame times must be finite and not negative.")
         if times and on_frame is None:
             raise ValueError("Pass on_frame to receive the frames of frame_times.")
+        self._state = _State.EVALUATED
         meshes = _MeshGuard(self)
         listeners: list[_RunListener] = [meshes, _Progress(self)]
         if on_frame is not None:
