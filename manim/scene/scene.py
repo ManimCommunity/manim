@@ -10,10 +10,13 @@ __all__ = ["Scene"]
 
 import copy
 import inspect
+import logging
+import logging.handlers
 import platform
 import random
 import threading
 import time
+import weakref
 from dataclasses import dataclass
 from pathlib import Path
 from queue import Queue
@@ -90,6 +93,11 @@ if TYPE_CHECKING:
     - a :class:`~.SceneInteractRerun` object, indicating that the scene should
       render again.
     """
+
+
+def _detach_log_handler(handler: logging.Handler) -> None:
+    logger.removeHandler(handler)
+    handler.close()
 
 
 @dataclass
@@ -264,6 +272,17 @@ class Scene:
             module_name=module_name,
             scene_name=scene_name,
         )
+        # Messages logged until the log file is opened, such as those of the
+        # constructor; the scene's Manager writes them to the file when it opens
+        # it, and drops them if it never does (as evaluation).
+        self._log_buffer: logging.handlers.MemoryHandler | None = None
+        if self._log_file_path is not None:
+            self._log_buffer = logging.handlers.MemoryHandler(
+                capacity=10_000, flushLevel=logging.CRITICAL + 1
+            )
+            logger.addHandler(self._log_buffer)
+            # Detach it if the scene is never managed and goes away.
+            weakref.finalize(self, _detach_log_handler, self._log_buffer)
         self.renderer.init_scene(
             self,
             self.session_spec,
@@ -299,12 +318,13 @@ class Scene:
         result = cls.__new__(cls)
         clone_from_id[id(self)] = result
         for k, v in self.__dict__.items():
-            if k in ["manager", "_renderer", "time_progression"]:
+            if k in ["manager", "_renderer", "time_progression", "_log_buffer"]:
                 continue
             if k == "camera_class":
                 setattr(result, k, v)
             setattr(result, k, copy.deepcopy(v, clone_from_id))
         result.manager = None
+        result._log_buffer = None
 
         return result
 
