@@ -779,13 +779,21 @@ class Manager(Generic[SceneT]):
             self.file_writer.write_frame(self.renderer.get_frame())
         self.renderer._present_frame(scene, frame_offset)
 
-    def _legacy_add_frame(self, frame: RGBAPixelArray, num_frames: int = 1) -> None:
+    def _legacy_add_frame(
+        self, frame: RGBAPixelArray | None, num_frames: int = 1
+    ) -> None:
         """Write frames and advance time for callers of CairoRenderer.add_frame.
 
         Like a play, the frames advance the clock whether or not they are part
-        of the output, so that scene time does not depend on the cache.
+        of the output, so that scene time does not depend on the cache. During
+        evaluation, which writes no media, the frames go to the evaluation's
+        listeners; ``frame`` can then be None for the scene's current state.
         """
         self._validate_execution()
+        if self._evaluating:
+            self._loop.add_frames(frame, num_frames)
+            return
+        assert frame is not None
         self._execution.frame += num_frames
         if not self.skip_animations:
             self.file_writer.write_frame(frame, repeat=num_frames)

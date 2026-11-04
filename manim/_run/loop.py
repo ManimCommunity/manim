@@ -333,6 +333,30 @@ class _RunLoop:
         for listener in self.listeners:
             listener.frame(frame)
 
+    def add_frames(self, pixels: RGBAPixelArray | None, repeat: int) -> None:
+        """Show ``repeat`` frames outside of a play, as CairoRenderer.add_frame() does.
+
+        ``pixels`` is the image to show, or None for the scene's current state,
+        drawn only if a listener asks for it.
+        """
+        manager = self.manager
+        state = manager._execution
+        play = _Play(
+            index=manager.num_plays,
+            first_frame=state.frame,
+            run_time=repeat / manager.session_spec.frame_rate,
+            animations=(),
+            frozen=True,
+            in_output=self.in_output,
+        )
+        frame = _Frame(self, play, state.frame, repeat, 0.0)
+        if pixels is not None:
+            frame._pixels = pixels
+            frame._drawn = True
+        for listener in self.listeners:
+            listener.frame(frame)
+        state.frame += repeat
+
     @property
     def in_output(self) -> bool:
         """Whether the next play, which starts at the current time, is in the output."""
