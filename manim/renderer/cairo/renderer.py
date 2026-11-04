@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
+import contextlib
+from collections.abc import Iterable, Iterator
 from typing import TYPE_CHECKING, Any, Self
 
 from PIL import Image
@@ -320,6 +321,11 @@ class CairoRenderer(_RendererExecutionView):
         scene, self._final_scene = self._final_scene, None
         if scene is not None:
             self.update_frame(scene)
+
+    @contextlib.contextmanager
+    def _scene_images(self) -> Iterator[None]:
+        """See OpenGLRenderer._scene_images; Cairo images are cheap to set up."""
+        yield
 
     def _get_scene_image(self, scene: Scene) -> Image.Image:
         """Draw a snapshot with a temporary renderer at the existing resolution."""

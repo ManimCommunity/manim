@@ -531,12 +531,13 @@ class Manager(Generic[SceneT]):
         )
         self._evaluating = True
         try:
-            meshes.check()
-            self.setup()
-            with contextlib.suppress(EndSceneEarlyException):
-                self.construct()
-            self.tear_down()
-            meshes.check()
+            with self.renderer._scene_images():
+                meshes.check()
+                self.setup()
+                with contextlib.suppress(EndSceneEarlyException):
+                    self.construct()
+                self.tear_down()
+                meshes.check()
             self._finish_resource_scope()
         except BaseException:
             self._cleanup_after_failure()

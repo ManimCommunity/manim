@@ -125,6 +125,27 @@ def test_frozen_frames_added_by_the_renderer_are_evaluated(tmp_path):
     assert [(frame.time, frame.frame_index) for frame in received] == [(0.5, 2)]
 
 
+def test_opengl_evaluation_draws_all_frames_with_one_renderer(tmp_path, monkeypatch):
+    from manim.renderer.opengl.renderer import OpenGLRenderer
+    from manim.renderer.protocol import RendererState
+
+    created = []
+    init = OpenGLRenderer.__init__
+
+    def count(renderer, *args, **kwargs):
+        created.append(renderer)
+        init(renderer, *args, **kwargs)
+
+    with tempconfig(settings("opengl", tmp_path)):
+        scene = Motion()
+        monkeypatch.setattr(OpenGLRenderer, "__init__", count)
+        received = []
+        Manager(scene).evaluate(frame_times=[0, 0.5, 1, 1.5], on_frame=received.append)
+    assert len(received) == 4
+    assert len(created) == 1
+    assert created[0].state is RendererState.CLOSED
+
+
 def test_an_error_in_on_frame_ends_the_evaluation(tmp_path):
     def fail(frame):
         raise KeyError("stop")
