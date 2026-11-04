@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
-import numpy as np
+from .frames import frame_count
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -207,7 +207,9 @@ class _RunLoop:
             scene.begin_animations()
             try:
                 if play.frozen:
-                    repeat = int(scene.duration * manager.session_spec.frame_rate)
+                    repeat = frame_count(
+                        scene.duration, manager.session_spec.frame_rate
+                    )
                     self._frame(play, state.frame, repeat, 0.0)
                     state.frame += repeat
                 else:
@@ -229,11 +231,11 @@ class _RunLoop:
         state = self.manager._execution
         assert scene.animations is not None
         scene.duration = scene.get_run_time(scene.animations)
-        # The same sample times as Scene.get_time_progression.
-        step = 1 / self.manager.session_spec.frame_rate
-        for offset in np.arange(0, scene.duration, step):
+        rate = self.manager.session_spec.frame_rate
+        for index in range(frame_count(scene.duration, rate)):
+            offset = index / rate
             scene.update_to_time(offset)
-            self._frame(play, state.frame, 1, float(offset))
+            self._frame(play, state.frame, 1, offset)
             # Stop conditions, finish() and cleanup see the end of the frame.
             state.frame += 1
             if scene.stop_condition is not None and scene.stop_condition():

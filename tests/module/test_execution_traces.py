@@ -80,9 +80,9 @@ def test_frozen_wait_clock_trace(backend, skip):
         scene = Scene(skip_animations=skip)
         scene.renderer._original_skipping_status = skip
         with scene._get_manager():
-            # A skipped frozen wait takes its whole frames too, not 0.3 s.
+            # A frozen wait takes whole frames, as many as a stepped one: 2, not 0.3 s.
             scene.wait(0.3, frozen_frame=True)
-            assert scene.time == 0.25
+            assert scene.time == 0.5
             assert scene.renderer.num_plays == 1
 
 

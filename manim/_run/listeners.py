@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 __all__: list[str] = []
 
-_CLOCK_VERSION = "sample-v2"
+_CLOCK_VERSION = "sample-v3"
 """Part of every cache key. Change it when a play could give different frames
 from the same scene state, so that older cached movies are not reused."""
 
