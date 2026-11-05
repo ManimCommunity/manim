@@ -428,7 +428,6 @@ class ThreeDCamera(Camera):
         default_distance: float = 5.0,
         light_source_start_point: Point3DLike = 9 * DOWN + 7 * LEFT + 10 * OUT,
         should_apply_shading: bool = True,
-        exponential_projection: bool = False,
         phi: float = 0,
         theta: float = -90 * DEGREES,
         gamma: float = 0,
@@ -448,7 +447,6 @@ class ThreeDCamera(Camera):
         self.light_source_start_point = light_source_start_point
         self.light_source = Point(self.light_source_start_point)
         self.should_apply_shading = should_apply_shading
-        self.exponential_projection = exponential_projection
         self.phi_tracker = ValueTracker(phi)
         self.theta_tracker = ValueTracker(theta)
         self.focal_distance_tracker = ValueTracker(focal_distance)
@@ -789,15 +787,8 @@ class ThreeDCamera(Camera):
         points = points - frame_center
         points = np.dot(points, rot_matrix.T)
         zs = points[:, 2]
-        if self.exponential_projection:
-            # Proper projection would involve multiplying x and y by d / (d-z).
-            # The exponential avoids artifacts for high positive z values.
-            factor = np.exp(zs / focal_distance)
-            lt0 = zs < 0
-            factor[lt0] = focal_distance / (focal_distance - zs[lt0])
-        else:
-            factor = focal_distance / (focal_distance - zs)
-            factor[(focal_distance - zs) < 0] = 10**6
+        factor = focal_distance / (focal_distance - zs)
+        factor[(focal_distance - zs) < 0] = 10**6
         scale = factor * zoom
         for i in 0, 1:
             points[:, i] *= scale

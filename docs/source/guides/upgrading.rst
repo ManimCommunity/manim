@@ -244,3 +244,24 @@ default; ``Cube(material=...)`` and ``faces_config={"material": ...}`` set anoth
   ``stroke_opacity``); ``shade_in_3d`` has no effect.
 - A face is transformed only into a face with as many corners; ``Create`` shows a
   face at once instead of drawing its outline.
+
+.. _upgrading-renderers:
+
+Renderers only draw
+-------------------
+
+The Cairo and OpenGL renderers only draw: the :class:`.Manager` runs the scene,
+owns the animation clock and the output files, and hands the renderer what to draw
+in each frame. This section lists what changed for code that used the renderers,
+cameras or scene classes directly.
+
+Removed scene classes and camera options
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- ``SpecialThreeDScene`` is gone. It could not be constructed (it read a
+  renderer setting that no longer existed); use :class:`.ThreeDScene` and create
+  the axes and spheres it offered directly.
+- The ``exponential_projection`` argument and attribute of :class:`.ThreeDCamera`
+  are gone. Only ``SpecialThreeDScene`` used them, and the OpenGL renderer
+  ignored them. Points are projected with the factor
+  ``focal_distance / (focal_distance - z)``.
