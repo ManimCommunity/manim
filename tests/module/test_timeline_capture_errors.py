@@ -1,13 +1,13 @@
 """Check scene time during timeline capture and the placement of offset calls."""
 
 import wave
-from pathlib import Path
 from unittest.mock import Mock
 
 import numpy as np
 import pytest
 
 from manim import Dot, Manager, Scene, tempconfig
+from tests.helpers.audio import write_wav
 
 
 def test_time_going_backwards_fails_the_capture():
@@ -25,12 +25,14 @@ def test_time_going_backwards_fails_the_capture():
             manager.timeline
 
 
-def test_offsets_move_sounds_and_captions_but_not_the_clock():
+def test_offsets_move_sounds_and_captions_but_not_the_clock(tmp_path):
+    sound = str(write_wav(tmp_path / "beep.wav", seconds=0.5))
+
     class Offsets(Scene):
         def construct(self):
             self.wait(1, frozen_frame=False)
-            self.add_sound("past.wav", time_offset=-0.5)
-            self.add_sound("future.wav", time_offset=2)
+            self.add_sound(sound, time_offset=-0.5)
+            self.add_sound(sound, time_offset=2)
             self.add_subcaption("past", offset=-1)
             self.wait(1, frozen_frame=False)
 
@@ -41,13 +43,23 @@ def test_offsets_move_sounds_and_captions_but_not_the_clock():
     assert data["duration"] == 2
     calls = [entry for entry in data["entries"] if entry["kind"] != "wait"]
     assert [entry["start"] for entry in calls] == [0.5, 3, 0]
+    assert [entry.get("duration") for entry in calls[:2]] == [0.5, 0.5]
 
 
-def test_values_json_cannot_hold_are_recorded_in_a_readable_form():
+def test_values_json_cannot_hold_are_recorded_in_a_readable_form(tmp_path):
+    click = tmp_path / "click.wav"
+    with wave.open(str(click), "wb") as sound:
+        sound.setnchannels(1)
+        sound.setsampwidth(2)
+        sound.setframerate(8000)
+        sound.writeframes(bytes(1600))
+
     class OddValues(Scene):
         def construct(self):
             self.next_section("intro")
-            self.add_sound(Path("click.wav"), gain=np.float32(-3), seed=np.int64(2))
+            self.add_sound(
+                click, gain=np.float32(-3), gain_to_background=np.float64(-2)
+            )
             self.add_subcaption("caption", duration=np.float64(0.5))
             self.wait(0.5, frozen_frame=False)
 
@@ -57,10 +69,10 @@ def test_values_json_cannot_hold_are_recorded_in_a_readable_form():
     entries = manager.timeline.to_dict()["entries"]
     sound = next(entry for entry in entries if entry["kind"] == "sound")
     caption = next(entry for entry in entries if entry["kind"] == "caption")
-    assert (sound["file"], sound["gain"], sound["options"]) == (
-        "click.wav",
+    assert (sound["file"], sound["gain"], sound["gain_to_background"]) == (
+        str(click),
         -3.0,
-        {"seed": 2},
+        -2.0,
     )
     assert caption["end"] - caption["start"] == 0.5
 

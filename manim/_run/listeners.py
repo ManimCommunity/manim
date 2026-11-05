@@ -38,10 +38,12 @@ class _Encoder(_RunListener):
     def __init__(self, manager: Manager) -> None:
         self._manager = manager
         self._writing = False
+        self._start = 0.0
 
     def play_started(self, play: _Play) -> None:
         manager = self._manager
         writer = manager.file_writer
+        self._start = manager.time
         key = self._cache_key(play)
         # When a wait with a stop condition stops can depend on state that the
         # cache key does not include, so such waits are always rendered again.
@@ -106,7 +108,10 @@ class _Encoder(_RunListener):
             manager.file_writer.write_frame(frame.pixels(), repeat=frame.repeat)
 
     def play_finished(self, play: _Play, end_frame: int) -> None:
-        self._manager.file_writer.end_animation(self._writing)
+        writer = self._manager.file_writer
+        writer.end_animation(self._writing)
+        if play.in_output:
+            writer.add_movie_interval(self._start, self._manager.time)
         self._writing = False
 
     def play_failed(self, play: _Play) -> None:
@@ -126,8 +131,16 @@ class _Encoder(_RunListener):
                     end=datetime.timedelta(seconds=marker.end),
                 )
             )
-        elif marker.in_output:
-            writer.add_sound(marker.file, marker.start, marker.gain, **marker.options)
+        else:
+            writer.add_sound(
+                marker.file,
+                marker.start,
+                marker.gain,
+                gain_to_background=marker.gain_to_background,
+            )
+
+    def run_finished(self, end_frame: int, ended_early: bool) -> None:
+        self._manager.file_writer.end_scene(self._manager.time)
 
 
 class _Preview(_RunListener):
