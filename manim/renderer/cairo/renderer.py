@@ -5,15 +5,13 @@ from typing import TYPE_CHECKING, Any
 
 from PIL import Image
 
-from manim.utils.hashing import get_hash_from_play_call
-
-from ... import config, logger
-from ..._config.video_encoder import video_encoder_fingerprint
+from ... import config
+from ..._run.frames import frame_count
 from ...mobject.mobject import Mobject, _AnimationBuilder
 from ...mobject.types.image_mobject import ImageMobjectFromCamera
 from ...scene.scene_file_writer import SceneFileWriter
-from ...utils.exceptions import EndSceneEarlyException
 from ...utils.iterables import list_update
+from .._execution import _RendererExecutionView
 from ..protocol import RendererCapabilities
 from .camera import Camera, MultiCamera
 from .rendering import _CairoDrawingContext
@@ -29,7 +27,7 @@ if TYPE_CHECKING:
 __all__ = ["CairoRenderer"]
 
 
-class CairoRenderer:
+class CairoRenderer(_RendererExecutionView):
     """A renderer using Cairo.
 
     The renderer draws the camera's view, including inset views, into image
@@ -54,12 +52,7 @@ class CairoRenderer:
         self._file_writer_class = file_writer_class
         camera_cls = camera_class if camera_class is not None else Camera
         self.camera = camera if camera is not None else camera_cls()
-        self._original_skipping_status = skip_animations
-        self.skip_animations = skip_animations
-        self.animations_hashes: list[str | None] = []
-        self.num_plays = 0
-        self.time = 0.0
-        self._frame_rate = float(config["frame_rate"])
+        self._initialize_execution(skip_animations)
         self._raster_settings = _raster_settings or _CairoRasterSettings(
             pixel_width=int(config["pixel_width"]),
             pixel_height=int(config["pixel_height"]),
@@ -67,6 +60,8 @@ class CairoRenderer:
             base_pixel_height=int(config["pixel_height"]),
         )
         self._target: _CairoRenderTarget | None = None
+        # A finished scene whose final state is drawn on the first pixel read.
+        self._final_scene: Scene | None = None
         self._sub_targets: dict[int, _CairoRenderTarget] = {}
         self._camera_view_pixels: dict[int, RGBAPixelArray] = {}
         self.static_image: RGBAPixelArray | None = None
@@ -104,63 +99,23 @@ class CairoRenderer:
         *args: Animation | Mobject | _AnimationBuilder,
         **kwargs: Any,
     ) -> None:
+        """Delegate playback to the scene's manager; prefer Scene.play for new code."""
+        scene._get_manager().play(*args, **kwargs)
+
+    def _animation_cache_identity(self, scene: Scene) -> tuple[str, Any]:
+        return "cairo", ()
+
+    def _start_animation(self) -> None:
         self._ensure_open()
-        self.skip_animations = self._original_skipping_status
-        self.update_skipping_status()
-        scene.compile_animation_data(*args, **kwargs)
 
-        if self.skip_animations:
-            logger.debug(f"Skipping animation {self.num_plays}")
-            hash_current_animation = None
-            self.time += scene.duration
-        else:
-            if config["disable_caching"]:
-                logger.info("Caching disabled.")
-                hash_current_animation = f"uncached_{self.num_plays:05}"
-            else:
-                assert scene.animations is not None
-                hash_current_animation = get_hash_from_play_call(
-                    scene,
-                    self.camera,
-                    scene.animations,
-                    scene.mobjects,
-                    backend="cairo",
-                    encoder_fingerprint=video_encoder_fingerprint(
-                        scene.session_spec.video_encoder,
-                    ),
-                    renderer_state=(),
-                )
-                if self.file_writer.is_already_cached(hash_current_animation):
-                    logger.info(
-                        f"Animation {self.num_plays} : Using cached data (hash : %(hash_current_animation)s)",
-                        {"hash_current_animation": hash_current_animation},
-                    )
-                    self.skip_animations = True
-                    self.time += scene.duration
-        self.file_writer.add_partial_movie_file(hash_current_animation)
-        self.animations_hashes.append(hash_current_animation)
-        logger.debug(
-            "List of the first few animation hashes of the scene: %(h)s",
-            {"h": str(self.animations_hashes[:5])},
-        )
-
-        self.file_writer.begin_animation(
-            not self.skip_animations,
-            animation_index=self.num_plays,
-        )
-        scene.begin_animations()
+    def _prepare_animation(self, scene: Scene) -> None:
         self.save_static_frame_data(scene, scene.static_mobjects)
 
-        if scene.is_current_animation_frozen_frame():
-            self.update_frame(
-                scene,
-                mobjects=None if self._render_all_mobjects else scene.moving_mobjects,
-            )
-            self.freeze_current_frame(scene.duration)
-        else:
-            scene.play_internal()
-        self.file_writer.end_animation(not self.skip_animations)
-        self.num_plays += 1
+    def _present_frame(self, scene: Scene, frame_offset: float) -> None:
+        pass
+
+    def _present_frozen_frame(self, scene: Scene, duration: float) -> None:
+        pass
 
     def _sub_target_for(
         self,
@@ -301,6 +256,7 @@ class CairoRenderer:
         self._ensure_open()
         if self.skip_animations and not ignore_skipping:
             return
+        self._final_scene = None
         if not mobjects:
             mobjects = list_update(scene.mobjects, scene.foreground_mobjects)
         target = self._get_target()
@@ -325,6 +281,7 @@ class CairoRenderer:
         """Draw the supplied mobjects into the renderer's image buffer."""
         self._ensure_open()
         render_camera = self.camera if camera is None else camera
+        self._final_scene = None
         self._get_target().reset(render_camera)
         self._draw_frame(camera=render_camera, mobjects=mobjects)
 
@@ -336,12 +293,18 @@ class CairoRenderer:
     ) -> None:
         if self._render_all_mobjects:
             moving_mobjects = None
+        # Manager advances animation time and sends the pixels to the writer.
         self.update_frame(scene, moving_mobjects)
-        self.add_frame(self.get_frame())
 
     def get_frame(self) -> RGBAPixelArray:
         """Copy the current image to an RGBA array, with row zero at the top."""
+        self._draw_final_state()
         return self._get_target().read_pixels()
+
+    def _draw_final_state(self) -> None:
+        scene, self._final_scene = self._final_scene, None
+        if scene is not None:
+            self.update_frame(scene)
 
     def _get_scene_image(self, scene: Scene) -> Image.Image:
         """Draw a snapshot with a temporary renderer at the existing resolution."""
@@ -362,15 +325,12 @@ class CairoRenderer:
 
     def add_frame(self, frame: RGBAPixelArray, num_frames: int = 1) -> None:
         self._ensure_open()
-        if self.skip_animations:
-            return
-        self.time += num_frames / self._frame_rate
-        self.file_writer.write_frame(frame, repeat=num_frames)
+        self._scene._get_manager()._legacy_add_frame(frame, num_frames)
 
     def freeze_current_frame(self, duration: float) -> None:
         self.add_frame(
             self.get_frame(),
-            num_frames=int(duration * self._frame_rate),
+            num_frames=frame_count(duration, self._scene.session_spec.frame_rate),
         )
 
     def show_frame(self, scene: Scene) -> None:
@@ -399,35 +359,19 @@ class CairoRenderer:
         return self.static_image
 
     def update_skipping_status(self) -> None:
-        if self.file_writer.sections[-1].skip_animations:
-            self.skip_animations = True
-        if self.file_writer.output_spec.is_still:
-            self.skip_animations = True
-        if (
-            config.from_animation_number > 0
-            and self.num_plays < config.from_animation_number
-        ):
-            self.skip_animations = True
-        if (
-            config.upto_animation_number >= 0
-            and self.num_plays > config.upto_animation_number
-        ):
-            self.skip_animations = True
-            raise EndSceneEarlyException()
+        self._scene._get_manager()._update_skipping_status()
 
     def scene_finished(self, scene: Scene) -> None:
         self._ensure_open()
         output = self.file_writer.output_spec
         if self.num_plays and (output.is_video or output.is_image_sequence):
             self.file_writer.finish()
-        elif not self.num_plays:
-            self.static_image = None
-            self.update_frame(scene)
+        # Skipped and cached plays do not draw, so the buffer may not show the
+        # final state. Draw it when the pixels are read, not for every scene.
+        self.static_image = None
+        self._final_scene = scene
 
         if output.is_still or (not self.num_plays and output.fallback_to_still):
-            if self.num_plays:
-                self.static_image = None
-                self.update_frame(scene)
             self.file_writer.save_image(self.get_frame())
 
     def open(self) -> None:
@@ -452,3 +396,4 @@ class CairoRenderer:
         self._camera_view_pixels.clear()
         self.static_image = None
         self._render_all_mobjects = False
+        self._final_scene = None

@@ -33,6 +33,7 @@ except ImportError:
     dearpygui_imported = False
 
 from collections.abc import Callable, Iterable, Sequence
+from types import FrameType
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -54,6 +55,7 @@ from .._config.output_plan import (
     resolve_requested_output_name,
 )
 from .._config.render_session import resolve_render_session
+from .._run.frames import frame_count
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..constants import *
 from ..manager import Manager
@@ -71,7 +73,6 @@ from ..utils.iterables import list_difference_update, list_update
 from ..utils.module_ops import scene_classes_from_file
 
 if TYPE_CHECKING:
-    from types import FrameType
     from typing import Self, TypeAlias
 
     from PIL.Image import Image
@@ -310,7 +311,8 @@ class Scene:
 
     @property
     def time(self) -> float:
-        """The time since the start of the scene."""
+        """Elapsed animation time in seconds, as reported by the scene's manager."""
+        # The renderer reads the clock of the scene's manager once there is one.
         return self.renderer.time
 
     def __deepcopy__(self, clone_from_id: dict[int, Any]) -> Scene:
@@ -1195,8 +1197,8 @@ class Scene:
         if self.renderer.skip_animations and not override_skip_animations:
             times: Iterable[float] = [run_time]
         else:
-            step = 1 / config["frame_rate"]
-            times = np.arange(0, run_time, step)
+            rate = config["frame_rate"]
+            times = [i / rate for i in range(frame_count(run_time, rate))]
         time_progression = tqdm(
             times,
             desc=description,
@@ -1322,10 +1324,11 @@ class Scene:
         duration
             The run time of the animation.
         stop_condition
-            A function without positional arguments that is evaluated every time
-            a frame is rendered. The animation only stops when the return value
-            of the function is truthy, or when the time specified in ``duration``
-            passes.
+            A function without positional arguments, evaluated after each animation
+            step. During normal playback, ``self.time`` then includes that step's
+            frame interval.
+            The wait ends when the function returns a truthy value or the requested
+            duration is reached.
         frozen_frame
             If True, updater functions are not evaluated, and the animation outputs
             a frozen frame. If False, updater functions are called and frames
@@ -1334,7 +1337,7 @@ class Scene:
 
         See also
         --------
-        :class:`.Wait`, :meth:`.should_mobjects_update`
+        :class:`.Wait`, :meth:`.should_update_mobjects`
         """
         duration = self.validate_run_time(duration, self.wait, "duration")
         self.play(
@@ -1384,10 +1387,10 @@ class Scene:
         *animations: Animation | Mobject | _AnimationBuilder,
         **play_kwargs: Any,
     ) -> Self | None:
-        """Given a list of animations, compile the corresponding
-        static and moving mobjects, and gather the animation durations.
+        """Prepare animations, their run time, and frozen-wait status for a play call.
 
-        This also begins the animations.
+        The manager starts the prepared animations afterward via
+        :meth:`begin_animations`.
 
         Parameters
         ----------
@@ -1400,10 +1403,8 @@ class Scene:
         Returns
         -------
         self, None
-            None if there is nothing to play, or self otherwise.
+            This scene, or ``None`` for a frozen wait.
         """
-        # NOTE TODO : returns statement of this method are wrong. It should return nothing, as it makes a little sense to get any information from this method.
-        # The return are kept to keep webgl renderer from breaking.
         if len(animations) == 0:
             raise ValueError("Called Scene.play with no animations")
 
@@ -1421,7 +1422,7 @@ class Scene:
                 self.update_mobjects(dt=0)  # Any problems with this?
                 self.stop_condition = self.animations[0].stop_condition
             else:
-                # Static image logic when the wait is static is done by the renderer, not here.
+                # Manager will draw one frame and repeat it for this wait.
                 self.animations[0].is_static_wait = True
                 return None
 
@@ -1435,8 +1436,7 @@ class Scene:
             animation.begin()
 
         if config.renderer == RendererType.CAIRO:
-            # Paint all non-moving objects onto the screen, so they don't
-            # have to be rendered every frame
+            # Identify mobjects whose pixels can be reused between frames.
             (
                 self.moving_mobjects,
                 self.static_mobjects,
@@ -1450,41 +1450,6 @@ class Scene:
             and len(self.animations) == 1
             and self.animations[0].is_static_wait
         )
-
-    def play_internal(self, skip_rendering: bool = False) -> None:
-        """
-        This method is used to prep the animations for rendering,
-        apply the arguments and parameters required to them,
-        render them, and write them to the video file.
-
-        Parameters
-        ----------
-        skip_rendering
-            Whether the rendering should be skipped, by default False
-        """
-        assert self.animations is not None
-        self.duration = self.get_run_time(self.animations)
-        self.time_progression = self._get_animation_time_progression(
-            self.animations,
-            self.duration,
-        )
-        for t in self.time_progression:
-            self.update_to_time(t)
-            if not skip_rendering and not self.skip_animation_preview:
-                self.renderer.render(self, t, self.moving_mobjects)
-            if self.stop_condition is not None and self.stop_condition():
-                self.time_progression.close()
-                break
-
-        for animation in self.animations:
-            animation.finish()
-            animation.clean_up_from_scene(self)
-        if not self.renderer.skip_animations:
-            self.update_mobjects(0)
-        # TODO: The OpenGLRenderer does not have the property static.image.
-        self.renderer.static_image = None  # type: ignore[union-attr]
-        # Closing the progress bar at the end of the play.
-        self.time_progression.close()
 
     def check_interactive_embed_is_valid(self) -> bool:
         assert isinstance(self.renderer, OpenGLRenderer)
@@ -1647,7 +1612,7 @@ class Scene:
                 self.renderer.animation_start_time = 0
                 dt = time.time() - last_time
                 last_time = time.time()
-                self.renderer.render(self, dt, self.moving_mobjects)
+                self._get_manager()._render_preview_frame(dt)
                 self.update_mobjects(dt)
                 self.update_meshes(dt)
                 self.update_self(dt)
@@ -1679,7 +1644,7 @@ class Scene:
             return
 
         self.renderer.animation_start_time = 0
-        self.renderer.render(self, -1, self.moving_mobjects)
+        self._get_manager()._render_preview_frame(-1)
 
         # Configure IPython shell.
         from IPython.terminal.embed import InteractiveShellEmbed
@@ -1689,7 +1654,7 @@ class Scene:
         # Have the frame update after each command
         shell.events.register(
             "post_run_cell",
-            lambda *a, **kw: self.renderer.render(self, -1, self.moving_mobjects),
+            lambda *a, **kw: self._get_manager()._render_preview_frame(-1),
         )
 
         # Use the locals of the caller as the local namespace
@@ -1787,7 +1752,8 @@ class Scene:
         assert self.animations is not None
         for animation in self.animations:
             animation.update_mobjects(dt)
-            alpha = t / animation.run_time
+            # An animation that takes no time is complete from the start.
+            alpha = t / animation.run_time if animation.run_time > 0 else 1.0
             animation.interpolate(alpha)
         self.update_mobjects(dt)
         self.update_meshes(dt)
