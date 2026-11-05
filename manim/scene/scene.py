@@ -10,10 +10,13 @@ __all__ = ["Scene"]
 
 import copy
 import inspect
+import logging
+import logging.handlers
 import platform
 import random
 import threading
 import time
+import weakref
 from dataclasses import dataclass
 from pathlib import Path
 from queue import Queue
@@ -43,7 +46,6 @@ from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 
 from .. import config, logger
-from .._config.logger_utils import set_file_logger
 from .._config.output_plan import (
     resolve_file_log_path,
     resolve_media_layout,
@@ -91,6 +93,11 @@ if TYPE_CHECKING:
     - a :class:`~.SceneInteractRerun` object, indicating that the scene should
       render again.
     """
+
+
+def _detach_log_handler(handler: logging.Handler) -> None:
+    logger.removeHandler(handler)
+    handler.close()
 
 
 @dataclass
@@ -218,14 +225,14 @@ class Scene:
                 renderer = OpenGLRenderer()
 
         if renderer is None:
-            self.renderer: CairoRenderer | OpenGLRenderer = CairoRenderer(
+            self._renderer: CairoRenderer | OpenGLRenderer = CairoRenderer(
                 # TODO: Is it a suitable approach to make an instance of
                 # the self.camera_class here?
                 camera_class=self.camera_class,
                 skip_animations=self.skip_animations,
             )
         else:
-            self.renderer = renderer
+            self._renderer = renderer
         self.session_spec = resolve_render_session(
             config,
             self.renderer.capabilities,
@@ -265,13 +272,20 @@ class Scene:
             module_name=module_name,
             scene_name=scene_name,
         )
+        # Messages logged until the log file is opened, such as those of the
+        # constructor; the scene's Manager writes them to the file when it opens
+        # it, and drops them if it never does (as evaluation).
+        self._log_buffer: logging.handlers.MemoryHandler | None = None
         if self._log_file_path is not None:
-            self._log_file_path.parent.mkdir(parents=True, exist_ok=True)
-            set_file_logger(self._log_file_path)
+            self._log_buffer = logging.handlers.MemoryHandler(
+                capacity=10_000, flushLevel=logging.CRITICAL + 1
+            )
+            logger.addHandler(self._log_buffer)
+            # Detach it if the scene is never managed and goes away.
+            weakref.finalize(self, _detach_log_handler, self._log_buffer)
         self.renderer.init_scene(
             self,
             self.session_spec,
-            self.file_writer_settings,
         )
 
         self.mobjects: list[Mobject] = []
@@ -280,6 +294,15 @@ class Scene:
 
         random.seed(self.random_seed)
         np.random.seed(self.random_seed)  # noqa: NPY002 (only way to set seed globally)
+
+    @property
+    def renderer(self) -> CairoRenderer | OpenGLRenderer:
+        """The renderer selected at construction, shared by this scene's plays.
+
+        This property is read-only. Choose a different renderer when creating
+        a new scene.
+        """
+        return self._renderer
 
     @property
     def camera(self) -> Camera | OpenGLCamera:
@@ -295,12 +318,13 @@ class Scene:
         result = cls.__new__(cls)
         clone_from_id[id(self)] = result
         for k, v in self.__dict__.items():
-            if k in ["manager", "renderer", "time_progression"]:
+            if k in ["manager", "_renderer", "time_progression", "_log_buffer"]:
                 continue
             if k == "camera_class":
                 setattr(result, k, v)
             setattr(result, k, copy.deepcopy(v, clone_from_id))
         result.manager = None
+        result._log_buffer = None
 
         return result
 

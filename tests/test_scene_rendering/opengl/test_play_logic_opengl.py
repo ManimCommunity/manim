@@ -80,13 +80,13 @@ def test_frozen_frame(using_temp_opengl_config, disabling_caching):
 
 
 @pytest.mark.xfail(reason="Should be fixed in #2133")
-def test_t_values_with_cached_data(using_temp_opengl_config):
+def test_t_values_with_cached_data(using_temp_opengl_config, monkeypatch):
     """Test the proper generation and use of the t values when an animation is cached."""
     scene = SceneWithMultipleCalls()
-    # Mocking the file_writer will skip all the writing process.
-    scene.renderer.file_writer = Mock(scene.renderer.file_writer)
-    # Simulate that all animations are cached.
-    scene.renderer.file_writer.is_already_cached.return_value = True
+    writer = scene.renderer.file_writer
+    # Simulate cache hits without assembling nonexistent cached segments.
+    monkeypatch.setattr(writer, "is_already_cached", Mock(return_value=True))
+    monkeypatch.setattr(writer, "finish", Mock())
     scene.update_to_time = Mock()
 
     scene.render()
