@@ -1398,11 +1398,10 @@ class VMobject(Mobject):
 
         A subpath is a run of consecutive cubic Bézier curves where every
         curve's end anchor coincides with the next curve's start anchor; a
-        split is introduced wherever two consecutive anchors differ. This is
-        the vectorized equivalent of the comparison done by
-        :meth:`consider_points_equals` (or :meth:`consider_points_equals_2d`
-        when ``n_dims == 2``), matching their handling of non-finite
-        coordinates (``NaN``/``inf``) as well.
+        split is introduced wherever two consecutive anchors differ. Anchors
+        are compared with the semantics of :func:`numpy.isclose`, like
+        :meth:`consider_points_equals_2d`, including its handling of
+        non-finite coordinates (``NaN``/``inf``).
 
         Parameters
         ----------
@@ -1419,38 +1418,35 @@ class VMobject(Mobject):
             A ``(n_subpaths, 2)`` int array whose rows are the ``[start, end]``
             point index ranges (end-exclusive) of each subpath.
         """
-        points = np.asarray(points)
         nppcc = self.n_points_per_cubic_curve
         n_pts = len(points)
         if n_pts < nppcc:
             return np.empty((0, 2), dtype=int)
 
-        # Point indices where each new cubic curve starts.
-        boundary_indices = np.arange(nppcc, n_pts, nppcc)
-        if len(boundary_indices) == 0:
-            # A single cubic curve: no internal boundaries to split on.
-            return np.array([[0, n_pts]])
+        # A split occurs where the previous curve's end anchor is not close
+        # to the next curve's start anchor. Comparing plain Python floats is
+        # much faster than NumPy for the short paths that are most common.
+        points = np.asarray(points)[:, :n_dims]
+        ends = points[nppcc - 1 : n_pts - 1 : nppcc].tolist()
+        starts = points[nppcc:n_pts:nppcc].tolist()
 
-        # A boundary is a split where the previous curve's end anchor is not
-        # close to the next curve's start anchor. This is an allocation-light
-        # vectorization of np.isclose semantics: NaN is never close, while
+        # This follows np.isclose semantics: NaN is never close, while
         # infinities compare equal only when they have the same sign.
         rtol = 1.0e-5  # default from np.isclose()
         atol = self.tolerance_for_point_equality
-        ends = points[boundary_indices - 1, :n_dims]  # end of previous curve
-        starts = points[boundary_indices, :n_dims]  # start of next curve
-        with np.errstate(invalid="ignore"):
-            diffs = np.abs(ends - starts)
-            thresholds = atol + rtol * np.abs(starts)
-            is_close = diffs <= thresholds
-            finite_diffs = np.isfinite(diffs)
-            if not finite_diffs.all():
-                is_close &= finite_diffs
-                is_close |= ends == starts
-        is_split = ~np.all(is_close, axis=1)
-
-        split_points = np.concatenate([[0], boundary_indices[is_split], [n_pts]])
-        return np.stack([split_points[:-1], split_points[1:]], axis=1)
+        split_points = [0]
+        for i, end, start in zip(range(nppcc, n_pts, nppcc), ends, starts, strict=True):
+            if end == start:
+                continue
+            for a, b in zip(end, start, strict=True):
+                if a == b:
+                    continue
+                diff = abs(a - b)
+                if not (diff <= atol + rtol * abs(b) and math.isfinite(diff)):
+                    split_points.append(i)
+                    break
+        split_points.append(n_pts)
+        return np.array([split_points[:-1], split_points[1:]]).T
 
     def get_subpaths(self) -> list[CubicSpline]:
         """Returns subpaths formed by the curves of the VMobject.
