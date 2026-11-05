@@ -64,6 +64,13 @@ def test_Arrow3D(scene):
     scene.add(Arrow3D(resolution=16))
 
 
+def test_Arrow3D_tip_resolution():
+    arrow = Arrow3D()
+    assert arrow.cone.resolution == 8
+    arrow = Arrow3D(tip_resolution=4)
+    assert arrow.cone.resolution == 4
+
+
 @frames_comparison(base_scene=ThreeDScene)
 def test_Torus(scene):
     scene.add(Torus())
