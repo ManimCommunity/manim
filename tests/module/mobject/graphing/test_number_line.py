@@ -59,6 +59,24 @@ def test_whole_numbers_step_size_default_to_0_decimal_places():
     )
 
 
+@pytest.mark.parametrize(
+    ("x_range", "expected_decimal_places"),
+    [
+        ([3.5, 7.5, 1], 1),
+        ([-7.5, -3.5, 1], 1),
+        ([3.25, 5.25, 0.5], 2),
+        ([-4.5, 4.5, 1], 0),
+        ([3, 7, 1], 0),
+        ([-7.5, 0, 1], 0),
+        ([0.1 + 0.2, 3, 1], 1),
+    ],
+)
+def test_decimal_places_account_for_off_step_start(x_range, expected_decimal_places):
+    """Ticks starting at a fractional x_min keep enough decimal places (#5077)."""
+    axis = NumberLine(x_range=x_range)
+    assert axis.decimal_number_config["num_decimal_places"] == expected_decimal_places
+
+
 def test_add_labels():
     expected_label_length = 6
     num_line = NumberLine(x_range=[-4, 4])
