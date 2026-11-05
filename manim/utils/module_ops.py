@@ -89,10 +89,10 @@ def get_scenes_to_render(scene_classes: list[type[Scene]]) -> list[type[Scene]]:
     if not scene_classes:
         logger.error(NO_SCENE_MESSAGE)
         return []
-    if config["write_all"]:
+    if config.write_all:
         return scene_classes
     result = []
-    for scene_name in config["scene_names"]:
+    for scene_name in config.scene_names:
         found = False
         for scene_class in scene_classes:
             if scene_class.__name__ == scene_name:
@@ -104,7 +104,7 @@ def get_scenes_to_render(scene_classes: list[type[Scene]]) -> list[type[Scene]]:
     if result:
         return result
     if len(scene_classes) == 1:
-        config["scene_names"] = [scene_classes[0].__name__]
+        config.scene_names = [scene_classes[0].__name__]
         return [scene_classes[0]]
     return prompt_user_for_choice(scene_classes)
 
@@ -127,7 +127,7 @@ def prompt_user_for_choice(scene_classes: list[type[Scene]]) -> list[type[Scene]
                 num_to_class[int(num_str)]
                 for num_str in re.split(r"\s*,\s*", user_input.strip())
             ]
-        config["scene_names"] = [
+        config.scene_names = [
             scene_class.__name__ for scene_class in selected_scenes_classes
         ]
         return selected_scenes_classes
