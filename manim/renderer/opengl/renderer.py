@@ -33,7 +33,7 @@ from .vectorized_mobject_rendering import (
 from .window_settings import _WindowSettings
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterable
+    from collections.abc import Callable, Iterable, Iterator
     from pathlib import Path
 
     from manim._config.render_session import RenderSessionSpec
@@ -126,6 +126,8 @@ class OpenGLRenderer(_RendererExecutionView):
         self._capturing_image = False
         # A finished scene whose final state is drawn on the first pixel read.
         self._final_scene: Scene | None = None
+        self._keep_image_renderer = False
+        self._image_renderer: OpenGLRenderer | None = None
         self._closed = False
         self._retiring = False
         self._resources = contextlib.ExitStack()
@@ -732,6 +734,22 @@ class OpenGLRenderer(_RendererExecutionView):
                 mesh.set_uniforms(self)
                 mesh.render()
 
+    @contextlib.contextmanager
+    def _scene_images(self) -> Iterator[None]:
+        """Keep the temporary renderer of :meth:`_get_scene_image` for many images.
+
+        Creating an OpenGL context for each image costs far more than drawing it,
+        so evaluation, which draws every requested frame this way, keeps one.
+        """
+        self._keep_image_renderer = True
+        try:
+            yield
+        finally:
+            self._keep_image_renderer = False
+            kept, self._image_renderer = self._image_renderer, None
+            if kept is not None:
+                kept.close()
+
     def _get_scene_image(self, scene: Scene) -> Image.Image:
         """Draw a snapshot separately from the live-preview framebuffer.
 
@@ -752,7 +770,8 @@ class OpenGLRenderer(_RendererExecutionView):
                 raise RuntimeError(
                     "GPU-backed meshes require a live OpenGL context for inspection."
                 )
-            temporary = OpenGLRenderer()
+            kept = self._image_renderer
+            temporary = kept if kept is not None else OpenGLRenderer()
             temporary.scene = scene
             temporary.camera = self.camera
             temporary._background_color = self._background_color.copy()
@@ -765,6 +784,7 @@ class OpenGLRenderer(_RendererExecutionView):
                     temporary._draw_scene(scene)
                     image = temporary.get_image()
                 except BaseException:
+                    self._image_renderer = None
                     try:
                         temporary.close()
                     except BaseException:
@@ -772,7 +792,10 @@ class OpenGLRenderer(_RendererExecutionView):
                             "Failed to close the temporary OpenGL image scope"
                         )
                     raise
-                temporary.close()
+                if self._keep_image_renderer:
+                    self._image_renderer = temporary
+                else:
+                    temporary.close()
                 return image
             finally:
                 self._capturing_image = False

@@ -152,6 +152,14 @@ Use :class:`.ThreeDScene` and its camera orientation methods for three-dimension
 scenes. Image inspection uses the current projection and fixed-object declarations,
 just like ordinary drawing.
 
+The Cairo :class:`.ThreeDCamera` computes its ``rotation_matrix`` from its angle
+trackers (``phi``, ``theta`` and ``gamma``). The property is read-only: to rotate
+the camera, change the trackers or use setters such as ``set_theta()``. A
+subclass can customize the orientation by overriding
+``generate_rotation_matrix()``. If the override depends on anything other than
+the angle trackers, call ``reset_rotation_matrix()`` whenever that extra state
+changes.
+
 :class:`.ZoomedScene` sets up a secondary camera and an inset display to show a
 magnified region of the scene::
 

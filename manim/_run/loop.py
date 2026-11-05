@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Protocol
+
+import numpy as np
 
 from .frames import frame_count
 
@@ -131,6 +133,14 @@ class _RunListener:
         """A section, caption, or sound call was made."""
 
 
+class _Drawer(Protocol):
+    def draw(self, frame: _Frame) -> None: ...
+
+    def pixels(self, frame: _Frame) -> RGBAPixelArray: ...
+
+    def end_play(self, play: _Play) -> None: ...
+
+
 class _TargetDrawer:
     """Draw frames into the renderer's own target, as a render does."""
 
@@ -161,6 +171,29 @@ class _TargetDrawer:
         self._prepared = False
 
 
+class _SceneImageDrawer:
+    """Draw frames with a temporary renderer, as :meth:`.Scene.get_image` does.
+
+    Used during evaluation, which opens no drawing resources of its own.
+    """
+
+    def __init__(self, manager: Manager) -> None:
+        self._manager = manager
+        self._pixels: RGBAPixelArray | None = None
+
+    def draw(self, frame: _Frame) -> None:
+        image = self._manager.renderer._get_scene_image(self._manager.scene)
+        self._pixels = np.asarray(image)
+
+    def pixels(self, frame: _Frame) -> RGBAPixelArray:
+        assert self._pixels is not None
+        pixels, self._pixels = self._pixels, None
+        return pixels
+
+    def end_play(self, play: _Play) -> None:
+        pass
+
+
 class _RunLoop:
     """Run play and wait calls frame by frame.
 
@@ -175,7 +208,7 @@ class _RunLoop:
         *,
         listeners: Sequence[_RunListener],
         selection: _OutputSelection,
-        drawer: _TargetDrawer,
+        drawer: _Drawer,
     ) -> None:
         self.manager = manager
         self.listeners = tuple(listeners)
@@ -279,6 +312,30 @@ class _RunLoop:
         frame = _Frame(self, play, index, repeat, offset)
         for listener in self.listeners:
             listener.frame(frame)
+
+    def add_frames(self, pixels: RGBAPixelArray | None, repeat: int) -> None:
+        """Show ``repeat`` frames outside of a play, as CairoRenderer.add_frame() does.
+
+        ``pixels`` is the image to show, or None for the scene's current state,
+        drawn only if a listener asks for it.
+        """
+        manager = self.manager
+        state = manager._execution
+        play = _Play(
+            index=manager.num_plays,
+            first_frame=state.frame,
+            run_time=repeat / manager.session_spec.frame_rate,
+            animations=(),
+            frozen=True,
+            in_output=self.in_output,
+        )
+        frame = _Frame(self, play, state.frame, repeat, 0.0)
+        if pixels is not None:
+            frame._pixels = pixels
+            frame._drawn = True
+        for listener in self.listeners:
+            listener.frame(frame)
+        state.frame += repeat
 
     @property
     def in_output(self) -> bool:
