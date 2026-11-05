@@ -11,6 +11,7 @@ from typing import Any, Self, cast
 import numpy as np
 
 from manim import config, logger
+from manim._config.logger_utils import user_stacklevel
 from manim.constants import *
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.graphing.coordinate_systems import Axes
@@ -292,7 +293,9 @@ class BarChart(Axes):
     ):
         if isinstance(bar_colors, str):
             logger.warning(
-                "Passing a string to `bar_colors` has been deprecated since v0.15.2 and will be removed after v0.17.0, the parameter must be a list.  "
+                "Passing a string to `bar_colors` has been deprecated since v0.15.2 and will be removed after v0.17.0, the parameter must be a list.  ",
+                stack_info=True,
+                stacklevel=user_stacklevel(),
             )
             bar_colors = list(bar_colors)
 

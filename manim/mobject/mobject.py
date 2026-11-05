@@ -25,6 +25,7 @@ from manim.data_structures import MethodWithArgs
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
 from .. import config, logger
+from .._config.logger_utils import user_stacklevel
 from ..constants import *
 from ..utils.color import (
     BLACK,
@@ -513,6 +514,8 @@ class Mobject:
             logger.warning(
                 "Attempted adding some Mobject as a child more than once, "
                 "this is not possible. Repetitions are ignored.",
+                stack_info=True,
+                stacklevel=user_stacklevel(),
             )
 
         if not self.submobjects:

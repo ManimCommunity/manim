@@ -16,8 +16,11 @@ import configparser
 import copy
 import json
 import logging
+import os
+import sys
 from typing import TYPE_CHECKING, Any
 
+import decorator
 from rich import color, errors
 from rich import print as printf
 from rich.console import Console
@@ -26,8 +29,23 @@ from rich.theme import Theme
 
 if TYPE_CHECKING:
     from pathlib import Path
+    from types import FrameType
 
-__all__ = ["make_logger", "parse_theme", "set_file_logger", "JSONFormatter"]
+__all__ = [
+    "make_logger",
+    "parse_theme",
+    "set_file_logger",
+    "JSONFormatter",
+    "user_stacklevel",
+]
+
+# Frames from these locations are skipped by :func:`user_stacklevel`: the manim
+# package itself, and the ``decorator`` library that wraps deprecated callables.
+_INTERNAL_PATHS = (
+    os.path.normcase(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    + os.sep,
+    os.path.normcase(os.path.abspath(decorator.__file__)),
+)
 
 HIGHLIGHTED_KEYWORDS = [  # these keywords are highlighted specially
     "Played",
@@ -106,6 +124,40 @@ def make_logger(
         libav_logger.setLevel(verbosity)
 
     return logger, console, error_console
+
+
+def _is_internal_file(filename: str) -> bool:
+    return os.path.normcase(os.path.abspath(filename)).startswith(_INTERNAL_PATHS)
+
+
+def user_stacklevel() -> int:
+    """Return the ``stacklevel`` that points a log record at the user's code.
+
+    Warnings about something the user did wrong should tell them where in
+    *their* code it happened. How many Manim frames lie between the user's
+    line and the warning depends on the call path (``VGroup(a, a)`` goes
+    through more frames than ``group.add(a, a)``), so a fixed ``stacklevel``
+    does not work. Instead, this walks up the call stack and counts frames
+    until it reaches the first one outside the ``manim`` package (frames of
+    the ``decorator`` library, used for deprecations, are skipped as well).
+
+    Call it directly inside the call to the logger, so that it is evaluated
+    in the same frame as the logging call::
+
+        logger.warning("...", stack_info=True, stacklevel=user_stacklevel())
+
+    Returns
+    -------
+    int
+        The ``stacklevel`` of the first frame outside of Manim, or ``1`` (the
+        logging call itself) if every frame belongs to Manim.
+    """
+    frame: FrameType | None = sys._getframe(1)  # the function that is about to log
+    stacklevel = 1
+    while frame is not None and _is_internal_file(frame.f_code.co_filename):
+        frame = frame.f_back
+        stacklevel += 1
+    return stacklevel if frame is not None else 1
 
 
 def parse_theme(parser: configparser.SectionProxy) -> Theme | None:
