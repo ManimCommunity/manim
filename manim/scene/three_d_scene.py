@@ -17,10 +17,10 @@ from manim.mobject.value_tracker import ValueTracker
 
 from .._config import config
 from ..animation.animation import Animation
+from ..camera import ThreeDCamera
 from ..constants import DEGREES
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
-from ..renderer.cairo.camera import ThreeDCamera
 from ..scene.scene import Scene
 from ..utils.config_ops import merge_dicts_recursively
 

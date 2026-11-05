@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING, Any, Self
 
 from PIL import Image
 
+from manim.camera import Camera, MultiCamera
+
 from ..._config import config, logger
 from ..._run.frames import frame_count
 from ...mobject.mobject import Mobject, _AnimationBuilder
@@ -14,7 +16,6 @@ from ...scene.scene_file_writer import SceneFileWriter
 from ...utils.iterables import list_update
 from .._execution import _RendererExecutionView
 from ..protocol import RendererCapabilities, RendererState
-from .camera import Camera, MultiCamera
 from .rendering import _CairoDrawingContext
 from .target import _CairoRasterSettings, _CairoRenderTarget, _ImageFiles
 

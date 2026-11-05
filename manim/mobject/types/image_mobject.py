@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 
     import numpy.typing as npt
 
-    from manim.renderer.cairo.camera import Camera
+    from manim.camera import Camera
     from manim.typing import PixelArray, StrPath
 
 

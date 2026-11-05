@@ -57,11 +57,11 @@ from .._config.render_session import resolve_render_session
 from .._run.frames import frame_count
 from ..animation.animation import Animation, Wait, prepare_animation
 from ..animation.composition import AnimationGroup
+from ..camera import Camera, ThreeDCamera
 from ..constants import *
 from ..manager import Manager
 from ..mobject.types.point_cloud_mobject import Point
 from ..renderer.cairo import CairoRenderer
-from ..renderer.cairo.camera import Camera, ThreeDCamera
 from ..renderer.opengl.renderer import OpenGLRenderer
 from ..scene.scene_file_writer import _SceneFileWriterSettings
 from ..utils.deprecation import deprecated
