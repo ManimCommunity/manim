@@ -12,20 +12,13 @@ from _pytest.fixtures import FixtureRequest
 
 from manim._config import tempconfig
 from manim._config.utils import ManimConfig
-from manim.camera import ThreeDCamera
 from manim.renderer.cairo import CairoRenderer
 from manim.renderer.opengl import OpenGLRenderer
 from manim.scene.scene import Scene
-from manim.scene.three_d_scene import ThreeDScene
 from manim.typing import StrPath
 
 from ._frames_testers import _ControlDataWriter, _FramesTester
-from ._test_class_makers import (
-    DummySceneFileWriter,
-    _make_scene_file_writer_class,
-    _make_test_renderer_class,
-    _make_test_scene_class,
-)
+from ._test_class_makers import _make_test_scene_class
 
 SCENE_PARAMETER_NAME = "scene"
 _tests_root_dir_path = Path(__file__).absolute().parents[2]
@@ -113,9 +106,14 @@ def frames_comparison(
             config_tests["text_dir"] = tmp_path
             config_tests["tex_dir"] = tmp_path
 
+            # Frames are compared in memory; no media is written.
+            config_tests["dry_run"] = True
             if last_frame:
                 config_tests["frame_rate"] = 1
-                config_tests["dry_run"] = True
+            # The scene creates the renderer of the configuration, with its camera.
+            config_tests["renderer"] = (
+                "opengl" if renderer_class is OpenGLRenderer else "cairo"
+            )
 
             setting_test = request.config.getoption("--set_test")
             try:
@@ -205,32 +203,14 @@ def _make_test_comparing_frames(
     else:
         frames_tester = _FramesTester(file_path, show_diff=show_diff)
 
-    file_writer_class = (
-        _make_scene_file_writer_class(frames_tester)
-        if not last_frame
-        else DummySceneFileWriter
-    )
-    testRenderer = _make_test_renderer_class(renderer_class)
-
     def real_test() -> None:
         with frames_tester.testing():
             sceneTested = _make_test_scene_class(
                 base_scene=base_scene,
                 construct_test=construct,
-                # NOTE this is really ugly but it's due to the very bad design of the two renderers.
-                # If you pass a custom renderer to the Scene, the Camera class given as an argument in the Scene
-                # is not passed to the renderer. See __init__ of Scene.
-                # This potentially prevents OpenGL testing.
-                test_renderer=(
-                    testRenderer(file_writer_class=file_writer_class)
-                    if base_scene is not ThreeDScene
-                    else testRenderer(
-                        file_writer_class=file_writer_class,
-                        camera_class=ThreeDCamera,
-                    )
-                ),  # testRenderer(file_writer_class=file_writer_class),
+                frames_tester=None if last_frame else frames_tester,
             )
-            scene_tested = sceneTested(skip_animations=True)
+            scene_tested = sceneTested()
             with scene_tested._get_manager():
                 scene_tested.render()
                 if last_frame:

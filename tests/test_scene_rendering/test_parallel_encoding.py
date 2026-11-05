@@ -730,7 +730,7 @@ def test_abort_encode_jobs_noop_on_dry_run_writer(config):
 
 def test_keyboard_interrupt_aborts_encode_jobs_and_reraises(config):
     scene = Scene(renderer=Mock(state=RendererState.OPEN))
-    writer = scene._get_manager().file_writer
+    writer = scene._get_manager()._file_writer = Mock()
 
     def construct():
         raise KeyboardInterrupt

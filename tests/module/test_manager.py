@@ -93,8 +93,8 @@ def test_manager_warns_when_automatic_video_falls_back_to_still(config):
     renderer.capabilities = RendererCapabilities()
     renderer.num_plays = 0
     scene = Scene(renderer)
-    renderer.file_writer.final_file_path = "scene.png"
     manager = Manager(scene)
+    manager._file_writer = Mock(final_file_path="scene.png")
 
     with patch("manim.manager.logger.warning") as warning:
         manager.post_construct()

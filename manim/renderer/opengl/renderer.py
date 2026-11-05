@@ -91,7 +91,6 @@ class OpenGLRenderer(_RendererExecutionView):
 
     def __init__(
         self,
-        file_writer_class: type[SceneFileWriter] = SceneFileWriter,
         skip_animations: bool = False,
         camera_class: type[Camera] | None = None,
         camera: Camera | None = None,
@@ -100,8 +99,6 @@ class OpenGLRenderer(_RendererExecutionView):
 
         Parameters
         ----------
-        file_writer_class : type[SceneFileWriter], optional
-            The class to use for writing scene files, by default SceneFileWriter.
         skip_animations : bool, optional
             Whether to skip animations during rendering, by default False.
         camera_class
@@ -113,7 +110,6 @@ class OpenGLRenderer(_RendererExecutionView):
             raise ValueError("Pass either camera or camera_class, not both.")
         # Measured in pixel widths, used for vector graphics
         self.anti_alias_width = 1.5
-        self._file_writer_class = file_writer_class
 
         self._initialize_execution(skip_animations)
         self.animation_start_time = 0.0

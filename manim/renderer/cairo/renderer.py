@@ -43,7 +43,6 @@ class CairoRenderer(_RendererExecutionView):
 
     def __init__(
         self,
-        file_writer_class: type[SceneFileWriter] = SceneFileWriter,
         camera_class: type[Camera] | None = None,
         camera: Camera | None = None,
         skip_animations: bool = False,
@@ -52,7 +51,6 @@ class CairoRenderer(_RendererExecutionView):
     ) -> None:
         if camera is not None and camera_class is not None:
             raise ValueError("Pass either camera or camera_class, not both.")
-        self._file_writer_class = file_writer_class
         if camera is None:
             camera = Camera() if camera_class is None else camera_class()
         self.camera = camera

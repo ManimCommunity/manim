@@ -78,7 +78,7 @@ def test_real_evaluation_matches_uncached_render(settings, monkeypatch):
     monkeypatch.setattr(evaluated.renderer, "_start_animation", reject)
     monkeypatch.setattr(evaluated.renderer, "_prepare_animation", reject)
     monkeypatch.setattr(evaluated.renderer, "scene_finished", reject)
-    monkeypatch.setattr(evaluated.renderer, "_file_writer_class", reject)
+    monkeypatch.setattr("manim.manager.SceneFileWriter", reject)
     monkeypatch.setattr(evaluated.renderer, "render", reject)
     monkeypatch.setattr("manim._run.cache.get_hash_from_play_call", reject)
     # Evaluation still runs every animation with caching and range skipping enabled.
@@ -118,7 +118,7 @@ def test_declarations_do_not_open_media_logs_or_decode_audio(
         scene = Declarations()
         manager = Manager(scene)
         reject = Mock(side_effect=AssertionError("resource acquired"))
-        monkeypatch.setattr(scene.renderer, "_file_writer_class", reject)
+        monkeypatch.setattr("manim.manager.SceneFileWriter", reject)
         monkeypatch.setattr("manim.manager.set_file_logger", reject)
         if hasattr(scene.renderer, "open"):
             monkeypatch.setattr(scene.renderer, "open", reject)

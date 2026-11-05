@@ -326,8 +326,7 @@ sound-asset directory in ``_SceneFileWriterSettings``. The :class:`.Manager` use
 these settings to create a :class:`.SceneFileWriter` when rendering starts, before
 ``setup()``. Accessing ``manager.file_writer`` or ``renderer.file_writer`` also
 creates this writer if needed. Both properties return the same writer for the
-rest of the scene. To customize it, pass ``file_writer_class`` when constructing
-the renderer.
+rest of the scene.
 
 The writer uses the saved settings to encode and assemble media through ``libav``.
 It creates directories as it writes files. A snapshot from ``scene.get_image()``

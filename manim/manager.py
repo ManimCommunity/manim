@@ -24,6 +24,7 @@ from ._run.loop import (
 from ._run.mode import _EvaluationRun, _RunMode
 from ._run.selection import _OutputSelection
 from .renderer.cairo.renderer import CairoRenderer
+from .scene.scene_file_writer import SceneFileWriter
 from .scene.section import DefaultSectionType
 from .utils.exceptions import EndSceneEarlyException, RerunSceneException
 from .utils.file_ops import open_media_file
@@ -45,7 +46,6 @@ if TYPE_CHECKING:
     from .renderer.cairo import CairoRenderer
     from .renderer.opengl.renderer import OpenGLRenderer
     from .scene.scene import Scene
-    from .scene.scene_file_writer import SceneFileWriter
     from .timeline import Timeline
     from .typing import RGBAPixelArray
 
@@ -315,9 +315,9 @@ class Manager(Generic[SceneT]):
         The writer uses ``scene.file_writer_settings``. :meth:`render` creates it
         before calling :meth:`setup`; ``renderer.file_writer`` returns the same
         writer. Getting it starts the output: section, caption, and sound calls
-        made before go to it, and the scene can no longer be evaluated. Both properties are read-only. To choose a custom writer class,
-        pass ``file_writer_class`` when constructing the renderer.
-        Accessing this property during :meth:`evaluate` raises ``RuntimeError``.
+        made before go to it, and the scene can no longer be evaluated. Both
+        properties are read-only. Accessing this property during :meth:`evaluate`
+        raises ``RuntimeError``.
         """
         return self._ensure_file_writer()
 
@@ -333,9 +333,7 @@ class Manager(Generic[SceneT]):
                 raise RuntimeError("Recursive file writer creation is not supported.")
             self._creating_file_writer = True
             try:
-                self._file_writer = self.renderer._file_writer_class(
-                    self.scene.file_writer_settings
-                )
+                self._file_writer = SceneFileWriter(self.scene.file_writer_settings)
             finally:
                 self._creating_file_writer = False
             self._start_output()
@@ -841,6 +839,15 @@ class Manager(Generic[SceneT]):
             self._early_markers.append(marker)
         else:
             self._run_loop.marker(marker)
+
+    def _add_listener(self, listener: _RunListener) -> None:
+        """Let ``listener`` see the frames of the render, after the others.
+
+        For manim's own tools, such as the graphical test harness
+        (:mod:`manim.utils.testing`); call before the first play.
+        """
+        loop = self._loop
+        loop.listeners = (*loop.listeners, listener)
 
     def _update_skipping_status(self) -> None:
         """Set :attr:`skip_animations` for the next play, for old renderer callers.

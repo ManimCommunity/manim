@@ -65,7 +65,7 @@ def test_evaluation_records_calls_without_rendering(scene_class, monkeypatch):
     scene = scene_class()
     manager = Manager(scene)
     reject = Mock(side_effect=AssertionError("rendering requested"))
-    monkeypatch.setattr(scene.renderer, "_file_writer_class", reject)
+    monkeypatch.setattr("manim.manager.SceneFileWriter", reject)
     monkeypatch.setattr(scene.renderer, "render", reject)
     with pytest.raises(RuntimeError, match="No completed"):
         manager.timeline
