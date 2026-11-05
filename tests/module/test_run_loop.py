@@ -178,3 +178,17 @@ def test_skipped_plays_step_only_when_something_runs_per_frame(
     assert len(steps) == (4 if with_updater else 1)
     np.testing.assert_allclose(skipped.square.points, full.square.points)
     assert skipped.time == full.time
+
+
+def test_a_play_during_another_play_is_rejected(tmp_path):
+    class Nested(Scene):
+        def construct(self):
+            self.add(Dot().add_updater(lambda mobject: self.wait(0.25)))
+            self.wait(0.5, frozen_frame=False)
+
+    with tempconfig({**SETTINGS, "media_dir": str(tmp_path)}):
+        scene = Nested()
+        with pytest.raises(RuntimeError, match="during another play or wait call"):
+            Manager(scene).render()
+        # The guard resets, so the scene's state stays usable for inspection.
+        assert scene.manager._run_loop._playing is False
