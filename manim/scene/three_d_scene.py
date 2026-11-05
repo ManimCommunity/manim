@@ -164,9 +164,9 @@ class ThreeDScene(Scene):
             to the current theta angle.
         """
         if origin_theta is None:
-            origin_theta = self.renderer.camera.theta_tracker.get_value()
+            origin_theta = self.camera.theta_tracker.get_value()
         if origin_phi is None:
-            origin_phi = self.renderer.camera.phi_tracker.get_value()
+            origin_phi = self.camera.phi_tracker.get_value()
 
         val_tracker_theta = ValueTracker(0)
 
@@ -175,8 +175,8 @@ class ThreeDScene(Scene):
             val_for_left_right = 0.2 * np.sin(val_tracker_theta.get_value())
             return m.set_value(origin_theta + val_for_left_right)
 
-        self.renderer.camera.theta_tracker.add_updater(update_theta)
-        self.add(self.renderer.camera.theta_tracker)
+        self.camera.theta_tracker.add_updater(update_theta)
+        self.add(self.camera.theta_tracker)
 
         val_tracker_phi = ValueTracker(0)
 
@@ -185,15 +185,15 @@ class ThreeDScene(Scene):
             val_for_up_down = 0.1 * np.cos(val_tracker_phi.get_value()) - 0.1
             return m.set_value(origin_phi + val_for_up_down)
 
-        self.renderer.camera.phi_tracker.add_updater(update_phi)
-        self.add(self.renderer.camera.phi_tracker)
+        self.camera.phi_tracker.add_updater(update_phi)
+        self.add(self.camera.phi_tracker)
 
     def stop_3dillusion_camera_rotation(self):
         """This method stops all illusion camera rotations."""
-        self.renderer.camera.theta_tracker.clear_updaters()
-        self.remove(self.renderer.camera.theta_tracker)
-        self.renderer.camera.phi_tracker.clear_updaters()
-        self.remove(self.renderer.camera.phi_tracker)
+        self.camera.theta_tracker.clear_updaters()
+        self.remove(self.camera.theta_tracker)
+        self.camera.phi_tracker.clear_updaters()
+        self.remove(self.camera.phi_tracker)
 
     def move_camera(
         self,

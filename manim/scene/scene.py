@@ -211,22 +211,23 @@ class Scene:
         self.interactive_mode = False
         self.manager: Manager[Self] | None = None
 
+        #: The scene's camera; renderers draw what it sees.
+        self._camera: Camera = camera_class()
         if config.renderer == RendererType.OPENGL:
             # Items associated with interaction
             self.mouse_point = Point()
             self.mouse_drag_point = Point()
             if renderer is None:
-                renderer = OpenGLRenderer(camera_class=self.camera_class)
+                renderer = OpenGLRenderer()
 
         if renderer is None:
             self._renderer: CairoRenderer | OpenGLRenderer = CairoRenderer(
-                # TODO: Is it a suitable approach to make an instance of
-                # the self.camera_class here?
-                camera_class=self.camera_class,
                 skip_animations=self.skip_animations,
             )
         else:
             self._renderer = renderer
+        # Until the Manager hands renderers what to draw, they read the camera.
+        self._renderer.camera = self._camera
         self.session_spec = resolve_render_session(
             config,
             self.renderer.capabilities,
@@ -300,7 +301,8 @@ class Scene:
 
     @property
     def camera(self) -> Camera:
-        return self.renderer.camera
+        """The scene's camera, created from ``camera_class`` with the scene."""
+        return self._camera
 
     @property
     def time(self) -> float:
@@ -551,7 +553,7 @@ class Scene:
         """
         return extract_mobject_family_members(
             self.mobjects,
-            use_z_index=self.renderer.camera.use_z_index,
+            use_z_index=self.camera.use_z_index,
         )
 
     def add(self, *mobjects: Mobject) -> Self:
@@ -747,7 +749,7 @@ class Scene:
         if extract_families:
             to_remove = extract_mobject_family_members(
                 to_remove,
-                use_z_index=self.renderer.camera.use_z_index,
+                use_z_index=self.camera.use_z_index,
             )
         _list = getattr(self, mobject_list_name)
         new_list = self.get_restructured_mobject_list(_list, to_remove)

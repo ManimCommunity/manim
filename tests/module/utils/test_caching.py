@@ -121,6 +121,7 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
     class FakeScene:
         def __init__(self):
             self.mobjects = [object()]
+            self.camera = object()
             self.session_spec = Mock(
                 video_encoder=encoder, output=Mock(is_still=False), frame_rate=60.0
             )
@@ -144,7 +145,6 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
         def __init__(self):
             self._initialize_execution(False)
 
-        camera = object()
         anti_alias_width = 1.5
         file_writer = Mock(
             sections=[Mock(skip_animations=False)], output_spec=Mock(is_still=False)

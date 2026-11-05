@@ -37,3 +37,15 @@ def test_moving_mobjects_survive_plays(dry_run):
     scene = Moving()
     scene.render()
     assert [type(mobject) for mobject in scene.moving] == [Vector]
+
+
+def test_lock_in_faded_grid_keeps_a_faded_plane(dry_run):
+    from manim import NumberPlane, VectorScene
+
+    scene = VectorScene()
+    scene.add(Vector(RIGHT))
+    plane = scene.lock_in_faded_grid()
+    assert isinstance(plane, NumberPlane)
+    drawn = scene.get_mobject_family_members()
+    assert plane.background_lines in drawn
+    assert not any(isinstance(m, Vector) for m in drawn)

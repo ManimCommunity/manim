@@ -305,8 +305,8 @@ class Manager(Generic[SceneT]):
 
     @property
     def camera(self) -> Camera:
-        """The current renderer's camera."""
-        return self.renderer.camera
+        """The scene's camera."""
+        return self.scene.camera
 
     @property
     def file_writer(self) -> SceneFileWriter:
