@@ -123,6 +123,22 @@ Made with <3 by Manim Community developers.
     assert dedent(expected_output) == result.output
 
 
+def test_manim_cfg_write_keeps_utf8_values(tmp_path):
+    command = ["cfg", "write", "--level", "cwd", "--open"]
+    runner = CliRunner()
+    with (
+        runner.isolated_filesystem(temp_dir=tmp_path) as tmp_dir,
+        patch("manim.cli.cfg.group.open_file"),
+    ):
+        cfg_file = Path(tmp_dir) / "manim.cfg"
+        cfg_file.write_text(
+            "[CLI]\n# 解像度と出力先の設定\nmedia_dir = ./動画\n", encoding="utf-8"
+        )
+        result = runner.invoke(main, command, prog_name="manim")
+        assert not result.exception
+        assert "media_dir = ./動画" in cfg_file.read_text(encoding="utf-8")
+
+
 def test_manim_init_project(tmp_path):
     command = ["init", "project", "--default", "testproject"]
     runner = CliRunner()
