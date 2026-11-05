@@ -13,6 +13,23 @@ on:
       - main
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v7
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Run ruff lint
+        run: uvx ruff@0.16.2 check
+
+      - name: Run ruff format check
+        run: uvx ruff@0.16.2 format --check
+
   test:
     runs-on: ${{ matrix.os }}
     env:
