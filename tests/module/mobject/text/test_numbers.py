@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from manim import RED, DecimalNumber, Integer
+import pytest
+
+from manim import RED, DecimalNumber, Integer, Text, tempconfig
+from manim.mobject.text import numbers
 
 
 def test_font_size():
@@ -47,3 +50,20 @@ def test_color_when_number_of_digits_changes():
     assert all(
         submob.stroke_color.to_hex() == RED.to_hex() for submob in mob.submobjects
     )
+
+
+@pytest.fixture
+def empty_glyph_cache(monkeypatch):
+    monkeypatch.setattr(numbers, "string_to_mob_map", {})
+
+
+def test_glyphs_built_under_opengl_are_not_reused_by_cairo(empty_glyph_cache):
+    with tempconfig({"renderer": "opengl"}):
+        Integer(7)
+    with tempconfig({"renderer": "cairo"}):
+        Integer(7)
+
+
+def test_glyphs_are_cached_per_digit_class(empty_glyph_cache):
+    Integer(7)
+    assert isinstance(Integer(7, mob_class=Text)[0], Text)
