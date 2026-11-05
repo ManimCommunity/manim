@@ -339,3 +339,12 @@ class Manager(Generic[SceneT]):
         if self.skip_animations:
             return
         self.file_writer.add_sound(sound_file, self.time + time_offset, gain, **kwargs)
+
+    def stop_sound(self) -> None:
+        """Stop all sound at the current scene time.
+
+        Unlike :meth:`add_sound`, this is applied even while animations are
+        being skipped, so that sound added earlier is still cut off at the
+        right moment.
+        """
+        self.file_writer.stop_sound(self.time)

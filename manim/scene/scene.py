@@ -1809,6 +1809,30 @@ class Scene:
         """
         self._get_manager().add_sound(sound_file, time_offset, gain, **kwargs)
 
+    def stop_sound(self) -> None:
+        """
+        Stops all sounds that are currently playing.
+
+        Every sound added with :meth:`add_sound` is cut off at the current
+        time of the scene, including sounds scheduled to start later via
+        ``time_offset``. Sounds added after calling this method play normally.
+
+        Examples
+        --------
+        .. manim:: StopSoundExample
+            :no_autoplay:
+
+            class StopSoundExample(Scene):
+                def construct(self):
+                    self.add_sound("click.wav")
+                    self.add_sound("click.wav", time_offset=2)
+                    self.wait()
+                    # the second click is never heard
+                    self.stop_sound()
+                    self.wait(2)
+        """
+        self._get_manager().stop_sound()
+
     def on_mouse_motion(self, point: Point3D, d_point: Point3D) -> None:
         assert isinstance(self.camera, OpenGLCamera)
         assert isinstance(self.renderer, OpenGLRenderer)

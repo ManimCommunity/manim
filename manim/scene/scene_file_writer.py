@@ -465,6 +465,29 @@ class SceneFileWriter:
             new_segment = new_segment.apply_gain(gain)
         self.add_audio_segment(new_segment, time, **kwargs)
 
+    def stop_sound(self, time: float) -> None:
+        """Stops all audio that would play at or after the given timestamp.
+
+        Sounds added afterwards (at a later timestamp) are not affected.
+
+        Parameters
+        ----------
+        time
+            The timestamp at which all audio should be cut off.
+        """
+        if not self.includes_sound:
+            return
+        if time < 0:
+            raise ValueError("Stopping sound at timestamp < 0")
+        self.audio_segment = self.audio_segment[: int(1000 * time)]
+
+    def _fit_audio_to_duration(self, duration: float) -> None:
+        """Pads with silence or truncates the audio so that it lasts
+        exactly ``duration`` seconds.
+        """
+        self.add_audio_segment(AudioSegment.silent(0), duration)
+        self.audio_segment = self.audio_segment[: int(1000 * duration)]
+
     # Writers
     def begin_animation(
         self,
@@ -886,8 +909,17 @@ class SceneFileWriter:
         # handle sound
         if self.includes_sound and not self.output_spec.is_gif:
             sound_file_path = movie_file_path.with_suffix(".wav")
-            # Makes sure sound file length will match video file
-            self.add_audio_segment(AudioSegment.silent(0))
+            # Makes sure sound file length will match video file, so that
+            # audio extending past the last frame does not lengthen the video.
+            with av.open(movie_file_path) as video_input:
+                video_stream = video_input.streams.video[0]
+                if video_stream.duration is not None:
+                    video_duration = float(
+                        video_stream.duration * video_stream.time_base
+                    )
+                else:
+                    video_duration = video_input.duration / av.time_base
+            self._fit_audio_to_duration(video_duration)
             self.audio_segment.export(
                 sound_file_path,
                 format="wav",
@@ -914,7 +946,6 @@ class SceneFileWriter:
                 f"{movie_file_path.stem}_temp{movie_file_path.suffix}"
             )
             av_options = {
-                "shortest": "1",
                 "metadata": f"comment=Rendered with Manim Community v{__version__}",
             }
 
