@@ -320,21 +320,21 @@ class MultiCamera(Camera):
         self.image_mobjects_from_cameras.append(image_mobject_from_camera)
 
     def get_mobjects_indicating_movement(self) -> list[Mobject]:
-        """Return camera controls for the primary and nested views."""
+        """Return the controls of this camera and of the cameras of its views.
 
-        def collect(camera: Camera, visited: set[int]) -> list[Mobject]:
-            if id(camera) in visited:
-                return []
-            visited.add(id(camera))
-            if not isinstance(camera, MultiCamera):
-                return camera.get_mobjects_indicating_movement()
-
-            indicators = Camera.get_mobjects_indicating_movement(camera)
-            for image_mobject in camera.image_mobjects_from_cameras:
-                indicators.extend(collect(image_mobject.camera, visited))
-            return indicators
-
-        return collect(self, set())
+        Camera views do not show camera views, so the views of those cameras do
+        not count.
+        """
+        indicators = super().get_mobjects_indicating_movement()
+        for image_mobject in self.image_mobjects_from_cameras:
+            camera = image_mobject.camera
+            controls = (
+                Camera.get_mobjects_indicating_movement(camera)
+                if isinstance(camera, MultiCamera)
+                else camera.get_mobjects_indicating_movement()
+            )
+            indicators.extend(controls)
+        return indicators
 
 
 class ThreeDCamera(Camera):

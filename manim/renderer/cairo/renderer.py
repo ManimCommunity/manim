@@ -171,45 +171,47 @@ class CairoRenderer(_RendererExecutionView):
             self._sub_targets[key] = target
         return target
 
-    def _render_camera(
+    def _draw_frame(
         self,
         *,
         camera: Camera,
-        target: _CairoRenderTarget,
         mobjects: Iterable[Mobject],
-        include_submobjects: bool,
-        excluded_mobjects: list[Mobject] | None,
-        camera_stack: tuple[int, ...],
+        include_submobjects: bool = True,
+        excluded_mobjects: list[Mobject] | None = None,
     ) -> None:
-        camera_id = id(camera)
-        if camera_id in camera_stack:
-            raise RuntimeError("Cairo camera views cannot contain a composition cycle.")
-        next_stack = (*camera_stack, camera_id)
+        """Draw what ``camera`` sees, camera views first; views show no views."""
+        target = self._get_target()
         mobject_list = list(mobjects)
+        self._camera_view_pixels.clear()
         camera_view_pixels: dict[int, RGBAPixelArray] = {}
-
-        if isinstance(camera, MultiCamera):
-            for image_mobject in camera.image_mobjects_from_cameras:
-                sub_target = self._sub_target_for(
-                    image_mobject,
-                    parent_camera=camera,
-                    parent_target=target,
-                )
-                sub_target.reset(_render_config(image_mobject.camera, sub_target))
-                sub_excluded_mobjects = list_update(
-                    list(excluded_mobjects or []),
-                    [image_mobject],
-                )
-                self._render_camera(
-                    camera=image_mobject.camera,
-                    target=sub_target,
-                    mobjects=mobject_list,
-                    include_submobjects=include_submobjects,
-                    excluded_mobjects=sub_excluded_mobjects,
-                    camera_stack=next_stack,
-                )
-                self._camera_view_pixels[image_mobject.uid] = sub_target.pixels
-                camera_view_pixels[id(image_mobject.camera)] = sub_target.pixels
+        try:
+            if isinstance(camera, MultiCamera):
+                for image_mobject in camera.image_mobjects_from_cameras:
+                    sub_target = self._sub_target_for(
+                        image_mobject, parent_camera=camera, parent_target=target
+                    )
+                    view_camera = image_mobject.camera
+                    sub_target.reset(_render_config(view_camera, sub_target))
+                    _CairoDrawingContext(
+                        camera=view_camera._state(),
+                        target=sub_target,
+                        image_resolver=lambda node: None,
+                        use_z_index=view_camera.use_z_index,
+                    ).draw(
+                        mobject_list,
+                        include_submobjects=include_submobjects,
+                        excluded_mobjects=list_update(
+                            list(excluded_mobjects or []), [image_mobject]
+                        ),
+                    )
+                    self._camera_view_pixels[image_mobject.uid] = sub_target.pixels
+                    camera_view_pixels[id(view_camera)] = sub_target.pixels
+        finally:
+            # Only completed views lend pixels to this frame. Retire targets for
+            # removed views and any view whose drawing failed before completion.
+            unused = self._sub_targets.keys() - self._camera_view_pixels.keys()
+            for key in unused:
+                self._sub_targets.pop(key).close()
 
         def resolve_image(node: RNode) -> RGBAPixelArray | None:
             # Unregistered views, such as copies of a registered view, show the
@@ -230,31 +232,6 @@ class CairoRenderer(_RendererExecutionView):
             include_submobjects=include_submobjects,
             excluded_mobjects=excluded_mobjects,
         )
-
-    def _draw_frame(
-        self,
-        *,
-        camera: Camera,
-        mobjects: Iterable[Mobject],
-        include_submobjects: bool = True,
-        excluded_mobjects: list[Mobject] | None = None,
-    ) -> None:
-        self._camera_view_pixels.clear()
-        try:
-            self._render_camera(
-                camera=camera,
-                target=self._get_target(),
-                mobjects=mobjects,
-                include_submobjects=include_submobjects,
-                excluded_mobjects=excluded_mobjects,
-                camera_stack=(),
-            )
-        finally:
-            # Only completed views lend pixels to this frame. Retire targets for
-            # removed views and any view whose drawing failed before completion.
-            unused = self._sub_targets.keys() - self._camera_view_pixels.keys()
-            for key in unused:
-                self._sub_targets.pop(key).close()
 
     def update_frame(
         self,

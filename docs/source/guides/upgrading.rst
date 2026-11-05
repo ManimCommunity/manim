@@ -272,3 +272,7 @@ Changed drawing
 - The OpenGL renderer clears frames to the camera's ``background_color`` and
   ``background_opacity``, as the Cairo renderer does; it used to clear to the
   configured background color whatever the camera said.
+- Camera views do not show camera views. Earlier, the Cairo renderer drew a
+  :class:`.MultiCamera` used as a secondary camera with its own insets; now each
+  view shows the scene without insets on both renderers, and registrations that
+  form a cycle are not an error anymore.

@@ -10,6 +10,8 @@ from manim import (
     BLUE,
     LEFT,
     ORIGIN,
+    PURE_BLUE,
+    PURE_RED,
     RED,
     RIGHT,
     UP,
@@ -237,34 +239,44 @@ def test_nested_views_disable_unsafe_static_reuse():
         renderer.close()
 
 
-def test_multicamera_reports_recursive_view_controls_without_recursing_cycles():
-    three_d_camera = ThreeDCamera()
-    nested_camera = MultiCamera([ImageMobjectFromCamera(three_d_camera)])
-    primary_camera = MultiCamera([ImageMobjectFromCamera(nested_camera)])
-    nested_camera.add_image_mobject_from_camera(ImageMobjectFromCamera(primary_camera))
+@pytest.mark.parametrize("renderer_name", ["cairo", "opengl"])
+def test_camera_views_do_not_show_camera_views(renderer_name):
+    # The inner view shows a red camera; the outer view's camera looks at it.
+    with tempconfig(
+        {
+            "renderer": renderer_name,
+            "dry_run": True,
+            "pixel_width": 160,
+            "pixel_height": 90,
+        }
+    ):
+        inner = ImageMobjectFromCamera(Camera(background_color=PURE_RED))
+        inner.set(height=2).shift(4 * LEFT)
+        outer_camera = MultiCamera([inner], background_color=PURE_BLUE)
+        outer_camera.frame.move_to(inner)
+        outer = ImageMobjectFromCamera(outer_camera).set(height=3).shift(3 * RIGHT)
 
-    indicators = primary_camera.get_mobjects_indicating_movement()
+        class Views(Scene):
+            def __init__(self, **kwargs):
+                super().__init__(camera_class=MultiCamera, **kwargs)
+                self.camera.add_image_mobject_from_camera(inner)
+                self.camera.add_image_mobject_from_camera(outer)
 
-    assert primary_camera.frame in indicators
-    assert nested_camera.frame in indicators
-    assert three_d_camera.theta_tracker in indicators
-    assert three_d_camera.zoom_tracker in indicators
+        scene = Views()
+        try:
+            scene.add(inner, outer)
+            pixels = np.asarray(scene.get_image())
+        finally:
+            scene.renderer.close()
 
-
-def test_nested_camera_cycles_are_rejected():
-    first = MultiCamera()
-    second = MultiCamera()
-    second_view = ImageMobjectFromCamera(second)
-    first_view = ImageMobjectFromCamera(first)
-    first.add_image_mobject_from_camera(second_view)
-    second.add_image_mobject_from_camera(first_view)
-    renderer = CairoRenderer(camera=first)
-
-    try:
-        with pytest.raises(RuntimeError, match="composition cycle"):
-            renderer.render_mobjects([first_view, second_view])
-    finally:
-        renderer.close()
+    # The inner view is drawn in the scene; the outer view, whose camera looks at
+    # it, shows only its own background there.
+    red = (pixels[..., 0] > 200) & (pixels[..., 2] < 50)
+    blue = (pixels[..., 2] > 200) & (pixels[..., 0] < 50)
+    left, right = red[:, :80], red[:, 80:]
+    assert left.any()
+    assert blue[:, 80:].any()
+    assert not right.any()
 
 
 def _angled_line(**kwargs):
