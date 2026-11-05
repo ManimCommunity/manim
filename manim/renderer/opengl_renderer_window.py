@@ -25,44 +25,17 @@ class Window(PygletWindow):
     def __init__(
         self,
         renderer: OpenGLRenderer,
-        window_size: str | tuple[int, ...] = config.window_size,
+        window_size: tuple[int, int] = config.window_size,
         **kwargs: Any,
     ) -> None:
         monitors = get_monitors()
         mon_index = config.window_monitor
         monitor = monitors[min(mon_index, len(monitors) - 1)]
 
-        invalid_window_size_error_message = (
-            "window_size must be specified either as 'default', a string of the form "
-            "'width,height', or a tuple of 2 ints of the form (width, height)."
-        )
-
-        if isinstance(window_size, tuple):
-            if len(window_size) != 2:
-                raise ValueError(invalid_window_size_error_message)
-            size = window_size
-        elif window_size == "default":
-            # make window_width half the width of the monitor
-            # but make it full screen if --fullscreen
-            window_width = monitor.width
-            if not config.fullscreen:
-                window_width //= 2
-
-            #  by default window_height = 9/16 * window_width
-            window_height = int(
-                window_width * config.frame_height // config.frame_width,
-            )
-            size = (window_width, window_height)
-        elif len(window_size.split(",")) == 2:
-            (window_width, window_height) = tuple(map(int, window_size.split(",")))
-            size = (window_width, window_height)
-        else:
-            raise ValueError(invalid_window_size_error_message)
-
-        super().__init__(size=size)
+        super().__init__(size=window_size)
 
         self.title = f"Manim Community {__version__}"
-        self.size = size
+        self.size = window_size
         self.renderer = renderer
 
         mglw.activate_context(window=self)
@@ -72,7 +45,7 @@ class Window(PygletWindow):
 
         self.swap_buffers()
 
-        initial_position = self.find_initial_position(size, monitor)
+        initial_position = self.find_initial_position(window_size, monitor)
         self.position = initial_position
 
     # Delegate event handling to scene.
