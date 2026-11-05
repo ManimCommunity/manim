@@ -64,6 +64,28 @@ def test_Arrow3D(scene):
     scene.add(Arrow3D(resolution=16))
 
 
+def test_Arrow3D_default_cone_resolution():
+    arrow = Arrow3D()
+    assert len(arrow.cone.submobjects) == 8 * 16 + 2
+
+
+def test_Arrow3D_custom_cone_resolution():
+    arrow = Arrow3D(cone_resolution=4)
+    assert len(arrow.cone.submobjects) == 4 * 4 + 2
+
+
+def test_Arrow3D_tuple_cone_resolution():
+    arrow = Arrow3D(cone_resolution=(4, 8))
+    assert len(arrow.cone.submobjects) == 4 * 8 + 2
+
+
+def test_Arrow3D_shaft_resolution_independent_of_cone():
+    arrow = Arrow3D(resolution=16, cone_resolution=(4, 8))
+
+    assert arrow.resolution == (2, 16)
+    assert len(arrow.cone.submobjects) == 4 * 8 + 2
+
+
 @frames_comparison(base_scene=ThreeDScene)
 def test_Torus(scene):
     scene.add(Torus())

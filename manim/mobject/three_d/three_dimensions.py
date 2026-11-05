@@ -1222,7 +1222,9 @@ class Arrow3D(Line3D):
         The color of the arrow.
     resolution
         The resolution of the arrow line.
-
+    cone_resolution
+        The resolution of the conical tip. An integer or tuple can be
+        used to define the resolution in the two dimensions.
     Examples
     --------
     .. manim:: ExampleArrow3D
@@ -1249,6 +1251,7 @@ class Arrow3D(Line3D):
         base_radius: float = 0.08,
         color: ParsableManimColor = WHITE,
         resolution: int | tuple[int, int] = 24,
+        cone_resolution: int | tuple[int, int] = (8, 16),
         **kwargs: Any,
     ) -> None:
         super().__init__(
@@ -1270,6 +1273,7 @@ class Arrow3D(Line3D):
             direction=self.direction,
             base_radius=base_radius,
             height=height,
+            resolution=cone_resolution,
             **kwargs,
         )
         np_end = np.asarray(end, dtype=np.float64)
