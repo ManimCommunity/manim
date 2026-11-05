@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 from manim import Circle, Line, Square, VDict, VGroup, VMobject
+from manim.constants import ORIGIN, RIGHT, UP
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import (
     OpenGLVGroup,
@@ -86,6 +87,47 @@ def test_opengl_vmobject_point_from_proportion(using_opengl_renderer):
         ),
     ):
         obj.point_from_proportion(0)
+
+
+def _point_from_proportion_per_curve(vmob, alpha):
+    # The loop point_from_proportion used before the lengths were vectorized
+    curves_and_lengths = tuple(vmob.get_curve_functions_with_lengths())
+    target_length = alpha * np.sum([length for _, length in curves_and_lengths])
+    current_length = 0
+    for curve, length in curves_and_lengths:
+        if current_length + length >= target_length:
+            return curve((target_length - current_length) / length if length else 0)
+        current_length += length
+
+
+def test_opengl_vectorized_curve_lengths_match_per_curve_lengths(
+    using_opengl_renderer,
+):
+    rng = np.random.default_rng(0)
+    vmobs = [
+        Circle(),
+        Square(),
+        OpenGLVMobject().set_points(rng.normal(size=(3 * 50, 3))),
+        # zero-length curves, the second one detached from the first
+        OpenGLVMobject().set_points([ORIGIN] * 3 + [RIGHT] * 3 + [RIGHT, UP, UP]),
+    ]
+    for vmob in vmobs:
+        num_curves = vmob.get_num_curves()
+        pieces = [vmob.get_nth_curve_length_pieces(n) for n in range(num_curves)]
+        np.testing.assert_allclose(vmob._get_curve_length_pieces(), pieces)
+
+        lengths = [vmob.get_nth_curve_length(n) for n in range(num_curves)]
+        np.testing.assert_allclose(vmob.get_arc_length(), np.sum(lengths))
+        np.testing.assert_allclose(
+            vmob.get_arc_length(3),
+            np.sum([vmob.get_nth_curve_length(n, 3) for n in range(num_curves)]),
+        )
+
+        for alpha in [0, 0.5, *rng.random(20)]:
+            np.testing.assert_allclose(
+                vmob.point_from_proportion(alpha),
+                _point_from_proportion_per_curve(vmob, alpha),
+            )
 
 
 def test_opengl_no_points_error_reports_pointful_family_members(
