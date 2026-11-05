@@ -139,22 +139,22 @@ class Line(TipableVMobject):
         """
         self._set_start_and_end_attrs(start, end)
         if path_arc:
-            arc = ArcBetweenPoints(self.start, self.end, angle=self.path_arc)
+            arc = ArcBetweenPoints(self.start, self.end, angle=path_arc)
             self.set_points(arc.points)
         else:
             self.set_points_as_corners(np.asarray([self.start, self.end]))
 
-        self._account_for_buff(buff)
+        self._account_for_buff(buff, path_arc)
         return self
 
     def init_points(self) -> Self:
         self.generate_points()
         return self
 
-    def _account_for_buff(self, buff: float) -> None:
+    def _account_for_buff(self, buff: float, path_arc: float) -> None:
         if buff <= 0:
             return
-        length = self.get_length() if self.path_arc == 0 else self.get_arc_length()
+        length = self.get_length() if path_arc == 0 else self.get_arc_length()
         if length < 2 * buff:
             return
         buff_proportion = buff / length
