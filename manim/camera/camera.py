@@ -18,6 +18,7 @@ from PIL import Image
 
 from manim._config import config, logger
 from manim.constants import *
+from manim.constants import GradientType
 from manim.mobject.mobject import Mobject
 from manim.mobject.types.point_cloud_mobject import PMobject
 from manim.mobject.types.vectorized_mobject import VMobject
@@ -790,9 +791,28 @@ class Camera:
             # encodes it in reverse order
             ctx.set_source_rgba(*rgbas[0][2::-1], rgbas[0][3])
         else:
-            points = vmobject.get_gradient_start_and_end_points()
-            points = self.transform_points_pre_display(vmobject, points)
-            pat = cairo.LinearGradient(*it.chain(*(point[:2] for point in points)))
+            match vmobject.gradient_type:
+                case GradientType.LINEAR:
+                    points = vmobject.get_gradient_start_and_end_points()
+                    points = self.transform_points_pre_display(vmobject, points)
+                    pat = cairo.LinearGradient(
+                        *it.chain(*(point[:2] for point in points))
+                    )
+                case GradientType.RADIAL:
+                    radius = np.hypot(vmobject.get_width(), vmobject.get_height()) / 2
+                    vmobject_center = vmobject.get_center()
+                    pat = cairo.RadialGradient(
+                        vmobject_center[0],
+                        vmobject_center[1],
+                        0,
+                        vmobject_center[0],
+                        vmobject_center[1],
+                        radius,
+                    )
+                case _:
+                    raise ValueError(
+                        f"Gradient type {vmobject.gradient_type} does not exist or is not supported"
+                    )
             offsets = np.linspace(0, 1, len(rgbas))
             for rgba, offset in zip(rgbas, offsets, strict=True):
                 pat.add_color_stop_rgba(offset, *rgba[2::-1], rgba[3])
