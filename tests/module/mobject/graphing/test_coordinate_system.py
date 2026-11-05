@@ -71,6 +71,37 @@ def test_initial_config():
         assert cs.y_range[1] == 200
 
 
+def test_defaults_use_current_frame_size():
+    """Check that default sizes are computed from the config at creation time."""
+    with tempconfig({"frame_width": 20, "frame_height": 10}):
+        ax = Axes()
+        assert (ax.x_length, ax.y_length) == (18, 8)
+
+        ax = ThreeDAxes()
+        assert (ax.x_length, ax.y_length, ax.z_length) == (12.5, 12.5, 8.5)
+
+        plane = NumberPlane()
+        np.testing.assert_allclose(plane.x_range, [-10, 10, 1])
+        np.testing.assert_allclose(plane.y_range, [-5, 5, 1])
+
+        plane = PolarPlane()
+        np.testing.assert_allclose(plane.x_range, [-5, 5, 1])
+
+
+def test_axes_length_none_uses_unit_size():
+    """Check that passing ``None`` as length sizes the axis by its unit size."""
+    ax = Axes(
+        x_range=[-3, 3],
+        y_range=[-2, 2],
+        x_length=None,
+        y_length=None,
+        x_axis_config={"unit_size": 0.5},
+    )
+    assert (ax.x_length, ax.y_length) == (None, None)
+    assert ax.x_axis.get_unit_size() == pytest.approx(0.5)
+    assert ax.y_axis.get_unit_size() == pytest.approx(1)
+
+
 def test_dimension():
     """Check that objects have the correct dimension."""
     assert Axes().dimension == 2

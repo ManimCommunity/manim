@@ -69,6 +69,17 @@ if TYPE_CHECKING:
     LineType = TypeVar("LineType", bound=Line)
 
 
+class _ConfigDefault:
+    """Placeholder for a default computed from ``config`` at creation time."""
+
+    def __repr__(self) -> str:
+        return "<from config>"
+
+
+# Used for parameters where ``None`` already has a different meaning.
+_DEFAULT: Any = _ConfigDefault()
+
+
 class CoordinateSystem:
     r"""Abstract base class for Axes and NumberPlane.
 
@@ -1883,9 +1894,11 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
     y_range
         The ``(y_min, y_max, y_step)`` values of the y-axis.
     x_length
-        The length of the x-axis.
+        The length of the x-axis. Defaults to ``round(config.frame_width) - 2``.
+        If ``None``, the axis is sized by its ``unit_size``.
     y_length
-        The length of the y-axis.
+        The length of the y-axis. Defaults to ``round(config.frame_height) - 2``.
+        If ``None``, the axis is sized by its ``unit_size``.
     axis_config
         Arguments to be passed to :class:`~.NumberLine` that influences both axes.
     x_axis_config
@@ -1932,14 +1945,19 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self,
         x_range: Sequence[float] | None = None,
         y_range: Sequence[float] | None = None,
-        x_length: float | None = round(config.frame_width) - 2,
-        y_length: float | None = round(config.frame_height) - 2,
+        x_length: float | None = _DEFAULT,
+        y_length: float | None = _DEFAULT,
         axis_config: dict | None = None,
         x_axis_config: dict | None = None,
         y_axis_config: dict | None = None,
         tips: bool = True,
         **kwargs: Any,
     ):
+        if x_length is _DEFAULT:
+            x_length = round(config.frame_width) - 2
+        if y_length is _DEFAULT:
+            y_length = round(config.frame_height) - 2
+
         VGroup.__init__(self, **kwargs)
         CoordinateSystem.__init__(self, x_range, y_range, x_length, y_length)
 
@@ -2423,11 +2441,14 @@ class ThreeDAxes(Axes):
     z_range
         The ``[z_min, z_max, z_step]`` values of the z-axis.
     x_length
-        The length of the x-axis.
+        The length of the x-axis. Defaults to ``config.frame_height + 2.5``.
+        If ``None``, the axis is sized by its ``unit_size``.
     y_length
-        The length of the y-axis.
+        The length of the y-axis. Defaults to ``config.frame_height + 2.5``.
+        If ``None``, the axis is sized by its ``unit_size``.
     z_length
-        The length of the z-axis.
+        The length of the z-axis. Defaults to ``config.frame_height - 1.5``.
+        If ``None``, the axis is sized by its ``unit_size``.
     z_axis_config
         Arguments to be passed to :class:`~.NumberLine` that influence the z-axis.
     z_normal
@@ -2449,9 +2470,9 @@ class ThreeDAxes(Axes):
         x_range: Sequence[float] | None = (-6, 6, 1),
         y_range: Sequence[float] | None = (-5, 5, 1),
         z_range: Sequence[float] | None = (-4, 4, 1),
-        x_length: float | None = config.frame_height + 2.5,
-        y_length: float | None = config.frame_height + 2.5,
-        z_length: float | None = config.frame_height - 1.5,
+        x_length: float | None = _DEFAULT,
+        y_length: float | None = _DEFAULT,
+        z_length: float | None = _DEFAULT,
         z_axis_config: dict[str, Any] | None = None,
         z_normal: Vector3DLike = DOWN,
         num_axis_pieces: int = 20,
@@ -2461,6 +2482,13 @@ class ThreeDAxes(Axes):
         gloss: float = 0.5,
         **kwargs: dict[str, Any],
     ):
+        if x_length is _DEFAULT:
+            x_length = config.frame_height + 2.5
+        if y_length is _DEFAULT:
+            y_length = config.frame_height + 2.5
+        if z_length is _DEFAULT:
+            z_length = config.frame_height - 1.5
+
         super().__init__(
             x_range=x_range,
             x_length=x_length,
@@ -2699,8 +2727,10 @@ class NumberPlane(Axes):
     ----------
     x_range
         The ``[x_min, x_max, x_step]`` values of the plane in the horizontal direction.
+        Defaults to ``(-config.frame_x_radius, config.frame_x_radius, 1)``.
     y_range
         The ``[y_min, y_max, y_step]`` values of the plane in the vertical direction.
+        Defaults to ``(-config.frame_y_radius, config.frame_y_radius, 1)``.
     x_length
         The width of the plane.
     y_length
@@ -2761,16 +2791,8 @@ class NumberPlane(Axes):
 
     def __init__(
         self,
-        x_range: Sequence[float] | None = (
-            -config["frame_x_radius"],
-            config["frame_x_radius"],
-            1,
-        ),
-        y_range: Sequence[float] | None = (
-            -config["frame_y_radius"],
-            config["frame_y_radius"],
-            1,
-        ),
+        x_range: Sequence[float] | None = _DEFAULT,
+        y_range: Sequence[float] | None = _DEFAULT,
         x_length: float | None = None,
         y_length: float | None = None,
         background_line_style: dict[str, Any] | None = None,
@@ -2779,6 +2801,11 @@ class NumberPlane(Axes):
         make_smooth_after_applying_functions: bool = True,
         **kwargs: dict[str, Any],
     ):
+        if x_range is _DEFAULT:
+            x_range = (-config.frame_x_radius, config.frame_x_radius, 1)
+        if y_range is _DEFAULT:
+            y_range = (-config.frame_y_radius, config.frame_y_radius, 1)
+
         # configs
         self.axis_config: dict[str, Any] = {
             "stroke_width": 2,
@@ -2979,7 +3006,7 @@ class PolarPlane(Axes):
         The distance between faded radius lines.
 
     radius_max
-        The maximum value of the radius.
+        The maximum value of the radius. Defaults to ``config.frame_y_radius``.
 
     azimuth_units
         Specifies a default labelling system for the azimuth. Choices are:
@@ -3032,7 +3059,7 @@ class PolarPlane(Axes):
 
     def __init__(
         self,
-        radius_max: float = config["frame_y_radius"],
+        radius_max: float | None = None,
         size: float | None = None,
         radius_step: float = 1,
         azimuth_step: float | None = None,
@@ -3049,6 +3076,9 @@ class PolarPlane(Axes):
         make_smooth_after_applying_functions: bool = True,
         **kwargs: Any,
     ):
+        if radius_max is None:
+            radius_max = config.frame_y_radius
+
         # error catching
         if azimuth_units in ["PI radians", "TAU radians", "degrees", "gradians", None]:
             self.azimuth_units = azimuth_units
