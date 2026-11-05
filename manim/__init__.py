@@ -1,17 +1,7 @@
 #!/usr/bin/env python
 from __future__ import annotations
 
-from importlib.metadata import PackageNotFoundError, version
-
-# Use installed distribution version if available; otherwise fall back to a
-# sensible default so that importing from a source checkout works without an
-# editable install (pip install -e .).
-try:
-    __version__ = version(__name__)
-except PackageNotFoundError:
-    # Package is not installed; provide a fallback version string.
-    __version__ = "0.0.0+unknown"
-
+from ._version import __version__
 
 # isort: off
 
