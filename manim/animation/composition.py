@@ -78,6 +78,7 @@ class AnimationGroup(Animation):
         super().__init__(
             self.group, rate_func=self.rate_func, lag_ratio=lag_ratio, **kwargs
         )
+        self.scene: Scene | None = None
         self.run_time: float = self.init_run_time(run_time)
 
     def get_all_mobjects(self) -> Sequence[Mobject | OpenGLMobject]:
@@ -92,16 +93,50 @@ class AnimationGroup(Animation):
         self.anim_group_time = 0.0
         if self.suspend_mobject_updating:
             self.group.suspend_updating()
-        for anim in self.animations:
-            anim.begin()
+        # Subanimations are set up and begun when their start time is reached,
+        # and finished and cleaned up when their end time is reached, so each
+        # one sees the scene as the animations before it left it.
+        self._reset_subanimation_progress()
+        self.interpolate(0)
 
-    def _setup_scene(self, scene: Scene) -> None:
-        for anim in self.animations:
-            anim._setup_scene(scene)
+    def _reset_subanimation_progress(self) -> None:
+        num_animations = len(self.animations)
+        self._anims_started = np.zeros(num_animations, dtype=bool)
+        self._anims_ended = np.zeros(num_animations, dtype=bool)
+        self._anims_cleaned_up = np.zeros(num_animations, dtype=bool)
+
+    def _start_subanimation(self, index: int) -> None:
+        anim = self.animations[index]
+        if self.remover:
+            anim.remover = self.remover
+        if self.scene is not None:
+            anim._setup_scene(self.scene)
+        anim.begin()
+        self._anims_started[index] = True
+
+    def _end_subanimation(self, index: int) -> None:
+        self.animations[index].finish()
+        self._anims_ended[index] = True
+        # A remover group removes all its mobjects together, at its end.
+        if (
+            self.scene is not None
+            and not self.remover
+            and not self._anims_cleaned_up[index]
+        ):
+            self.animations[index].clean_up_from_scene(self.scene)
+            self._anims_cleaned_up[index] = True
+
+    def _setup_scene(self, scene: Scene | None) -> None:
+        self.scene = scene
 
     def finish(self) -> None:
-        for anim in self.animations:
-            anim.finish()
+        # Subanimations still running end here. They are cleaned up in
+        # clean_up_from_scene, which subclasses may override.
+        for index, anim in enumerate(self.animations):
+            if not self._anims_started[index]:
+                self._start_subanimation(index)
+            if not self._anims_ended[index]:
+                anim.finish()
         self.anims_begun[:] = True
         self.anims_finished[:] = True
         if self.suspend_mobject_updating:
@@ -109,7 +144,9 @@ class AnimationGroup(Animation):
 
     def clean_up_from_scene(self, scene: Scene) -> None:
         self._on_finish(scene)
-        for anim in self.animations:
+        for index, anim in enumerate(self.animations):
+            if self._anims_cleaned_up[index]:
+                continue
             if self.remover:
                 anim.remover = self.remover
             anim.clean_up_from_scene(scene)
@@ -172,23 +209,38 @@ class AnimationGroup(Animation):
         awt = self.anims_with_timings
         new_begun = anim_group_time >= awt["start"]
         new_finished = anim_group_time > awt["end"]
-        to_update = awt[
-            (self.anims_begun | new_begun) & (~self.anims_finished | ~new_finished)
-        ]
+        to_update = (self.anims_begun | new_begun) & (
+            ~self.anims_finished | ~new_finished
+        )
 
-        run_times = to_update["end"] - to_update["start"]
+        run_times = awt["end"] - awt["start"]
         with_zero_run_time = run_times == 0
         run_times[with_zero_run_time] = 1
-        sub_alphas = (anim_group_time - to_update["start"]) / run_times
+        sub_alphas = (anim_group_time - awt["start"]) / run_times
         if time_goes_back:
             sub_alphas[(sub_alphas < 0) | with_zero_run_time] = 0
         else:
             sub_alphas[(sub_alphas > 1) | with_zero_run_time] = 1
 
-        for anim_to_update, sub_alpha in zip(
-            to_update["anim"], sub_alphas, strict=True
-        ):
-            anim_to_update.interpolate(sub_alpha)
+        # Animations are handled in order, so one that starts when an earlier
+        # one ends begins only after that one has ended. Animations ending with
+        # the group are ended by finish() instead, so they can still rewind.
+        for index, anim in enumerate(self.animations):
+            if new_begun[index] and not self._anims_started[index]:
+                self._start_subanimation(index)
+            if self._anims_ended[index]:
+                if not time_goes_back or anim_group_time >= awt["end"][index]:
+                    continue
+                # Time went back into this animation, e.g. with there_and_back.
+                self._anims_ended[index] = False
+            if (
+                not time_goes_back
+                and anim_group_time >= awt["end"][index]
+                and awt["end"][index] < self.max_end_time
+            ):
+                self._end_subanimation(index)
+            elif to_update[index]:
+                anim.interpolate(sub_alphas[index])
 
         self.anim_group_time = anim_group_time
         self.anims_begun = new_begun
@@ -241,6 +293,7 @@ class Succession(AnimationGroup):
                 f"Trying to play {self} without animations, this is not supported. "
                 "Please add at least one subanimation."
             )
+        self._reset_subanimation_progress()
         self.update_active_animation(0)
 
     def finish(self) -> None:
@@ -269,8 +322,7 @@ class Succession(AnimationGroup):
             self.active_end_time: float | None = None
         else:
             self.active_animation = self.animations[index]
-            self.active_animation._setup_scene(self.scene)
-            self.active_animation.begin()
+            self._start_subanimation(index)
             self.active_start_time = self.anims_with_timings[index]["start"]
             self.active_end_time = self.anims_with_timings[index]["end"]
 
@@ -280,7 +332,7 @@ class Succession(AnimationGroup):
         This method is called right when the active animation finishes.
         """
         if self.active_animation is not None:
-            self.active_animation.finish()
+            self._end_subanimation(self.active_index)
         self.update_active_animation(self.active_index + 1)
 
     def interpolate(self, alpha: float) -> None:

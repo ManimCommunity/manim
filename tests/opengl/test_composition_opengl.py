@@ -2,13 +2,17 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
+import numpy as np
+
 from manim.animation.animation import Animation, Wait
 from manim.animation.composition import AnimationGroup, Succession
 from manim.animation.fading import FadeIn, FadeOut
-from manim.constants import DOWN, UP
+from manim.animation.transform import Transform
+from manim.constants import DOWN, RIGHT, UP
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Square
+from manim.scene.scene import Scene
 
 
 def test_succession_timing(using_opengl_renderer):
@@ -105,3 +109,24 @@ def test_animationgroup_with_wait(using_opengl_renderer):
     timings = animation_group.anims_with_timings
 
     assert timings.tolist() == [(wait, 0.0, 1.0), (sqr_anim, 1.0, 2.0)]
+
+
+def test_animationgroup_begins_subanimations_at_their_start_time(
+    using_opengl_renderer,
+):
+    scene = Scene()
+    square = Square()
+    scene.add(square)
+    group = AnimationGroup(
+        Transform(square, square.copy().shift(2 * RIGHT)),
+        Transform(square, square.copy().shift(2 * RIGHT + 2 * UP)),
+        lag_ratio=1,
+    )
+    group._setup_scene(scene)
+    group.begin()
+
+    # The second Transform must start from where the first one ended.
+    group.interpolate(0.5)
+    np.testing.assert_allclose(square.get_center(), 2 * RIGHT)
+    group.interpolate(0.75)
+    np.testing.assert_allclose(square.get_center(), 2 * RIGHT + UP)

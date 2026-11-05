@@ -2,13 +2,15 @@ from __future__ import annotations
 
 from unittest.mock import MagicMock
 
+import numpy as np
 import pytest
 
 from manim.animation.animation import Animation, Wait
 from manim.animation.composition import AnimationGroup, LaggedStartMap, Succession
 from manim.animation.creation import Create, Write
 from manim.animation.fading import FadeIn, FadeOut
-from manim.constants import DOWN, UP
+from manim.animation.transform import Transform
+from manim.constants import DOWN, RIGHT, UP
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RegularPolygon, Square
@@ -234,3 +236,81 @@ def test_empty_animation_group_fails():
 def test_empty_succession_fails():
     with pytest.raises(ValueError, match="Please add at least one subanimation."):
         Succession().begin()
+
+
+def _move_right_then_up(square):
+    return (
+        Transform(square, square.copy().shift(2 * RIGHT)),
+        Transform(square, square.copy().shift(2 * RIGHT + 2 * UP)),
+    )
+
+
+@pytest.mark.parametrize("nested", [False, True])
+def test_animationgroup_begins_subanimations_at_their_start_time(nested):
+    scene = Scene()
+    square = Square()
+    scene.add(square)
+    group = AnimationGroup(*_move_right_then_up(square), lag_ratio=1)
+    if nested:
+        group = AnimationGroup(group)
+    group._setup_scene(scene)
+    group.begin()
+
+    # The second Transform must start from where the first one ended.
+    group.interpolate(0.5)
+    np.testing.assert_allclose(square.get_center(), 2 * RIGHT)
+    group.interpolate(0.75)
+    np.testing.assert_allclose(square.get_center(), 2 * RIGHT + UP)
+
+
+def test_animationgroup_sets_up_subanimations_at_their_start_time():
+    scene = Scene()
+    circle = Circle()
+    group = AnimationGroup(Wait(1), FadeIn(circle), lag_ratio=1)
+    group._setup_scene(scene)
+    group.begin()
+
+    group.interpolate(0.25)
+    assert circle not in scene.get_mobject_family_members()
+    group.interpolate(0.75)
+    assert circle in scene.get_mobject_family_members()
+
+
+@pytest.mark.parametrize(
+    "make_group",
+    [lambda *anims: AnimationGroup(*anims, lag_ratio=1), Succession],
+)
+def test_subanimations_are_cleaned_up_when_they_end(make_group):
+    scene = Scene()
+    square = Square()
+    scene.add(square)
+    group = make_group(FadeOut(square), FadeIn(square))
+    group._setup_scene(scene)
+    group.begin()
+
+    # FadeOut has been cleaned up, so FadeIn fades the square in again.
+    group.interpolate(0.75)
+    assert square.get_stroke_opacity() == pytest.approx(0.5)
+
+    group.finish()
+    group.clean_up_from_scene(scene)
+    assert square in scene.get_mobject_family_members()
+    assert square.get_stroke_opacity() == pytest.approx(1)
+
+
+def test_animationgroup_subanimations_can_rewind():
+    scene = Scene()
+    squares = [Square(), Square()]
+    scene.add(*squares)
+    group = AnimationGroup(
+        *(square.animate.shift(UP) for square in squares),
+        lag_ratio=0.5,
+        rate_func=there_and_back,
+    )
+    group._setup_scene(scene)
+    group.begin()
+
+    group.interpolate(0.5)
+    assert [square.get_y() for square in squares] == pytest.approx([1, 1])
+    group.interpolate(1)
+    assert [square.get_y() for square in squares] == pytest.approx([0, 0])
