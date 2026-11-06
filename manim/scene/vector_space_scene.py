@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Any, cast
 import numpy as np
 
 from manim.animation.creation import DrawBorderThenFill, Group
+from manim.camera.camera import Camera
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.line import Arrow, Line, Vector
 from manim.mobject.geometry.polygram import Rectangle
@@ -139,7 +140,7 @@ class VectorScene(Scene):
         self.add(axes)
 
         self.renderer.update_frame(self)
-        self.renderer.camera.set_background(self.renderer.get_frame())
+        cast(Camera, self.renderer.camera).set_background(self.renderer.get_frame())
         self.clear()
 
     def get_vector(self, numerical_vector: Vector3DLike, **kwargs: Any) -> Arrow:
