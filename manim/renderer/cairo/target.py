@@ -154,7 +154,6 @@ class _CairoRenderTarget:
             settings.pixel_height,
         )
         context = cairo.Context(surface)
-        context.scale(settings.pixel_width, settings.pixel_height)
         context.set_matrix(
             cairo.Matrix(
                 settings.pixel_width / camera.frame_width,
