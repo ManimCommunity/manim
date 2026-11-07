@@ -448,6 +448,9 @@ class Manager(Generic[SceneT]):
     ) -> None:
         """Coordinate an animation request and its optional subcaption.
 
+        A play outside :meth:`render` and ``with manager:`` blocks appends to the
+        scene's log file and closes it again when it ends.
+
         Parameters
         ----------
         args
@@ -464,7 +467,26 @@ class Manager(Generic[SceneT]):
             Additional animation arguments forwarded to the renderer.
         """
         self._ensure_usable()
+        # Outside render() and ``with manager:`` blocks, which close the log
+        # file when they end, a play opens it (appending) and closes it again.
+        closes_log = self._log_handler is None and self._scope_depth == 0
         self._open_log_handler()
+        try:
+            self._captioned_play(
+                subcaption, subcaption_duration, subcaption_offset, args, kwargs
+            )
+        finally:
+            if closes_log:
+                self._close_log_handler()
+
+    def _captioned_play(
+        self,
+        subcaption: str | None,
+        subcaption_duration: float | None,
+        subcaption_offset: float,
+        args: tuple[Animation | Mobject | _AnimationBuilder, ...],
+        kwargs: dict[str, Any],
+    ) -> None:
         start_time = self.time
         rollback = self._play_rollback()
         try:

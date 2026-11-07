@@ -218,3 +218,18 @@ def test_a_failure_to_close_the_log_after_a_failed_render_is_logged(
     assert manager._state is _State.CLOSE_FAILED
     manager.close()
     assert manager._state is _State.CLOSED
+
+
+def test_a_play_outside_a_render_does_not_leave_the_log_file_open(managed_scene):
+    # Nothing would close it: render() and ``with manager:`` blocks do, but a
+    # bare play is neither, and the handler would get every later scene's log.
+    def file_handlers():
+        return [h for h in logger.handlers if isinstance(h, logging.FileHandler)]
+
+    before = file_handlers()
+    managed_scene.wait(0.1)
+    managed_scene.wait(0.1)
+    assert file_handlers() == before
+    # Each play appends to the scene's log file.
+    log = managed_scene._log_file_path.read_text()
+    assert log.count("Log file will be saved") == 2
