@@ -1016,12 +1016,12 @@ the implementation -- but the drawing process can be summarized as follows:
   stroke, fill, and foreground stroke. Point clouds and image mobjects are converted
   to target pixel coordinates and composited by renderer helpers.
 - With a :class:`.MultiCamera`, the renderer draws each secondary camera's view into
-  a separate image buffer, excluding that camera's own display mobject. It then draws
-  the resulting image in the corresponding :class:`.ImageMobjectFromCamera` in the
-  primary view.
+  a separate image buffer, excluding that camera's own display mobject.
+- The renderer then draws each of these images in the corresponding
+  :class:`.ImageMobjectFromCamera` in the primary view.
 
 After all batches have been processed, :meth:`.CairoRenderer.get_frame` copies the
-rendered image into a top-left-origin, C-contiguous ``uint8`` RGBA array. The renderer
+rendered image into a top-left-origin, row-major (C-contiguous) ``uint8`` RGBA array. The renderer
 passes this array to :class:`.SceneFileWriter`. This concludes one iteration of the
 render loop, and once the time progression has been processed completely, a final bit
 of cleanup is performed before the :meth:`.Scene.play_internal` call is completed.

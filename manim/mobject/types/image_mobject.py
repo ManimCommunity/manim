@@ -310,10 +310,13 @@ class ImageMobject(AbstractImageMobject):
 
 
 class ImageMobjectFromCamera(Mobject):
-    """A semantic camera view whose pixels are supplied by CairoRenderer.
+    """Where the view of another camera is shown in the scene.
 
-    The mobject describes where a secondary camera view is composited. It owns
-    geometry and sampling settings, but it never exposes or stores raster pixels.
+    The mobject is a rectangle with sampling settings; when a frame is drawn, the
+    renderer draws the view of :attr:`camera` and shows it in this rectangle. It
+    holds no pixels of its own, which is why it is not an
+    :class:`AbstractImageMobject`: those are images with a pixel array, which
+    every frame shows as it is.
     """
 
     def __init__(

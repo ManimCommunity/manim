@@ -1,11 +1,11 @@
-Working with cameras and scene images
-=====================================
+Working with cameras
+====================
 
-A camera represents a view of the current scene: in short, the camera describes
+A camera represents a view of the current scene: In short, the camera describes
 where the scene is being viewed from and how much of the scene is visible. The
 renderer "draws" the scene from this view and turns it into an image.
 
-Most often, interaction with the camera happens inside a scene class using
+Most often, interaction with the camera happens inside a scene using
 ``self.camera``.
 
 The camera frame
@@ -23,7 +23,9 @@ Moving the Cairo camera
 -----------------------
 
 In the ordinary Cairo :class:`.Camera`, the frame is an actual mobject called
-``frame``. You can modify or animate this frame like any other mobject::
+``frame``. You can modify or animate this frame like any other mobject:
+
+.. manim:: CameraExample
 
     class CameraExample(Scene):
         def construct(self):
@@ -33,11 +35,17 @@ In the ordinary Cairo :class:`.Camera`, the frame is an actual mobject called
             self.play(self.camera.frame.animate.scale(0.5))
 
 A smaller frame zooms in; a larger frame shows more of the scene. Save and restore the
-frame with the usual mobject operations::
+frame with the usual mobject operations:
 
-    self.camera.frame.save_state()
-    self.play(self.camera.auto_zoom([square]))
-    self.play(Restore(self.camera.frame))
+.. manim:: CameraRestoreExample
+
+    class CameraRestoreExample(Scene):
+        def construct(self):
+            square = Square()
+            self.add(square)
+            self.camera.frame.save_state()
+            self.play(self.camera.frame.animate.shift(2 * RIGHT).scale(0.5))
+            self.play(Restore(self.camera.frame))
 
 Moving the OpenGL camera
 ------------------------
@@ -62,11 +70,13 @@ To select a different Cairo camera, pass ``camera_class`` to the scene's
 constructor. For example, :class:`.MultiCamera` supports picture-in-picture views::
 
     class CustomCameraScene(Scene):
-        def __init__(self, **kwargs):
-            super().__init__(camera_class=MultiCamera, **kwargs)
+        def __init__(self, *, camera_class: type[Camera] = MultiCamera, **kwargs):
+            super().__init__(camera_class=camera_class, **kwargs)
 
-Use the same pattern with your own :class:`.Camera` subclass to customize its
-settings or projection. The renderer creates the camera during scene
+Taking ``camera_class`` as a keyword with a default, instead of passing a fixed
+class, lets callers and subclasses still choose another camera. Use the same
+pattern with your own :class:`.Camera` subclass to customize its settings or
+projection. The renderer creates the camera during scene
 initialization, before ``setup()`` and ``construct()`` are called.
 
 Camera view and image resolution
@@ -120,10 +130,6 @@ Request snapshots between animations or at an idle prompt to inspect the mobject
 as they currently stand. Animation playback and updaters run separately, so a
 snapshot after ``self.play()`` shows the state after the animation has finished.
 See :meth:`.Scene.get_image` for details on snapshot timing.
-
-.. note::
-
-    For OpenGL, request snapshots on the thread that created the rendering context.
 
 Inspecting individual mobjects
 ------------------------------
@@ -181,8 +187,8 @@ There are two independent controls:
 For example, this scene places two detail views above the original objects::
 
     class TwoCameraViews(Scene):
-        def __init__(self, **kwargs):
-            super().__init__(camera_class=MultiCamera, **kwargs)
+        def __init__(self, *, camera_class: type[Camera] = MultiCamera, **kwargs):
+            super().__init__(camera_class=camera_class, **kwargs)
 
         def construct(self):
             circle = Circle(color=YELLOW).shift(2 * LEFT + DOWN)
@@ -209,8 +215,6 @@ For example, this scene places two detail views above the original objects::
             # Pan the right view from the square to the circle.
             self.play(right_camera.frame.animate.move_to(circle))
             self.wait()
-
-Run this example with ``--renderer=cairo``.
 
 Call ``self.camera.add_image_mobject_from_camera(view)`` to refresh the display's
 image from its source camera on each draw, then ``self.add(view)`` to show it in
