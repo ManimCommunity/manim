@@ -1,9 +1,6 @@
-"""Scene variant configured with :class:`MovingCamera`.
+"""Deprecated: a scene whose camera can move. Every scene's camera can.
 
-.. SEEALSO::
-
-    :mod:`.moving_camera`
-
+The examples show how to move the camera of any scene through its ``frame``.
 
 Examples
 --------
@@ -91,17 +88,17 @@ __all__ = ["MovingCameraScene"]
 
 from typing import Any
 
-from ..renderer.cairo.camera import Camera, MovingCamera
+from ..renderer.cairo.camera import Camera
 from ..scene.scene import Scene
+from ..utils.deprecation import deprecated
 
 
+@deprecated(
+    replacement="Scene",
+    message="The camera of every scene has an animatable frame and auto_zoom().",
+)
 class MovingCameraScene(Scene):
-    """A scene whose default camera class is :class:`MovingCamera`.
+    """A :class:`.Scene`: the camera of every scene has a movable frame now."""
 
-    Its camera exposes the standard animatable frame and auto-zoom behavior.
-    """
-
-    def __init__(
-        self, camera_class: type[Camera] = MovingCamera, **kwargs: Any
-    ) -> None:
+    def __init__(self, camera_class: type[Camera] = Camera, **kwargs: Any) -> None:
         super().__init__(camera_class=camera_class, **kwargs)

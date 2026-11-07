@@ -54,9 +54,9 @@ from typing import TYPE_CHECKING, Any
 from ..animation.transform import ApplyMethod
 from ..constants import *
 from ..mobject.types.image_mobject import ImageMobjectFromCamera
-from ..renderer.cairo.camera import Camera, MovingCamera, MultiCamera
+from ..renderer.cairo.camera import Camera, MultiCamera
 from ..renderer.opengl.camera import OpenGLCamera
-from ..scene.moving_camera_scene import MovingCameraScene
+from ..scene.scene import Scene
 
 if TYPE_CHECKING:
     from manim.typing import Point3DLike, Vector3D
@@ -65,7 +65,7 @@ if TYPE_CHECKING:
 # break, as it was restructured.
 
 
-class ZoomedScene(MovingCameraScene):
+class ZoomedScene(Scene):
     """This is a Scene with special configurations made for when
     a particular part of the scene must be zoomed in on and displayed
     separately.
@@ -111,7 +111,7 @@ class ZoomedScene(MovingCameraScene):
         """
         super().setup()
         # Initialize camera and display
-        zoomed_camera = MovingCamera(**self.zoomed_camera_config)
+        zoomed_camera = Camera(**self.zoomed_camera_config)
         zoomed_display = ImageMobjectFromCamera(
             zoomed_camera, **self.zoomed_camera_image_mobject_config
         )

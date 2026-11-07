@@ -27,6 +27,7 @@ from manim.mobject.types.point_cloud_mobject import Point
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.mobject.value_tracker import ValueTracker
 from manim.utils.color import WHITE, ManimColor, ParsableManimColor, get_shaded_rgb
+from manim.utils.deprecation import deprecated
 from manim.utils.family import extract_mobject_family_members
 from manim.utils.iterables import list_difference_update
 from manim.utils.space_ops import rotation_about_z, rotation_matrix
@@ -334,8 +335,12 @@ class Camera:
         return points
 
 
+@deprecated(
+    replacement="Camera",
+    message="Every camera has an animatable frame and auto_zoom().",
+)
 class MovingCamera(Camera):
-    """Named camera subclass with the standard movable-frame behavior."""
+    """A :class:`Camera`: every camera has a movable frame now."""
 
 
 class MultiCamera(Camera):

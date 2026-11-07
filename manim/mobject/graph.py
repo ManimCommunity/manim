@@ -1521,9 +1521,9 @@ class Graph(GenericGraph):
     above, setting ``vertex_spacing`` overrides the specified value
     for ``layout_scale``, and as such it is harder to control the size
     of the mobject. However, we can adjust the captured frame and
-    zoom out by using a :class:`.MovingCameraScene`::
+    zoom out by moving the scene's camera::
 
-        class LargeTreeGeneration(MovingCameraScene):
+        class LargeTreeGeneration(Scene):
             DEPTH = 4
             CHILDREN_PER_VERTEX = 3
             LAYOUT_CONFIG = {"vertex_spacing": (0.5, 1)}

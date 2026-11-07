@@ -32,8 +32,8 @@ from manim.renderer.cairo import CairoRenderer
 from manim.utils.color import color_to_int_rgba
 
 
-def test_movingcamera_auto_zoom():
-    camera = MovingCamera()
+def test_camera_auto_zoom():
+    camera = Camera()
     square = Square()
     margin = 0.5
     camera.auto_zoom([square], margin=margin, animate=False)
@@ -435,3 +435,18 @@ def test_camera_views_share_the_image_files_read_for_the_frame(tmp_path, monkeyp
         finally:
             renderer.close()
     assert len(reads) == 1
+
+
+def test_moving_camera_classes_are_deprecated(manim_caplog):
+    from manim import MovingCameraScene, ZoomedScene
+
+    camera = MovingCamera()
+    assert isinstance(camera, Camera)
+    assert "MovingCamera has been deprecated" in manim_caplog.text
+    manim_caplog.clear()
+    scene = MovingCameraScene()
+    assert isinstance(scene.camera, Camera)
+    assert "MovingCameraScene has been deprecated" in manim_caplog.text
+    manim_caplog.clear()
+    ZoomedScene()
+    assert "deprecated" not in manim_caplog.text
