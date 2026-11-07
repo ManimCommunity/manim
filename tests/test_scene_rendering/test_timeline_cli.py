@@ -47,16 +47,20 @@ def run_cli(tmp_path, source, output, *extra):
     )
 
 
-def test_dry_run_saves_an_evaluation_timeline(tmp_path):
+def test_dry_run_saves_the_timeline_of_a_render_without_media(tmp_path):
+    # --dry_run keeps its meaning: a render without media files. The timeline is
+    # an extra output of that render, with -n and skipped sections applied.
     source = tmp_path / "scene.py"
     source.write_text(SOURCE)
     output = tmp_path / "report.json"
-    result = run_cli(tmp_path, source, output, "--dry_run")
+    result = run_cli(tmp_path, source, output, "--dry_run", "-n", "1")
     assert result.returncode == 0, result.stdout + result.stderr
     data = json.loads(output.read_text())
-    assert data["mode"] == "evaluate"
+    assert data["mode"] == "render"
     assert data["duration"] == 1
     assert data["source"]["path"] == "scene.py"
+    waits = [entry for entry in data["entries"] if entry["kind"] == "wait"]
+    assert [wait["skipped"] for wait in waits] == [True, False]
     assert not list((tmp_path / "media").rglob("*.mp4"))
 
 

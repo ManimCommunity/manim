@@ -77,8 +77,9 @@ def _validate_scene_batch_output_name(scene_classes: list[type]) -> None:
     type=cloup.Path(path_type=Path, dir_okay=False),
     help=(
         "Save a timeline of the scene's play, wait, section, caption, and sound "
-        "calls as JSON. With --dry_run, the scene is evaluated without rendering, "
-        "and every play runs: caching, -n and skipped sections do not apply."
+        "calls of the render as JSON. Combine with --dry_run to write no media; "
+        "plays left out of the output (by -n or skipped sections) are marked as "
+        "skipped."
     ),
 )
 @global_options
@@ -119,13 +120,10 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
                     # Reuse a manager created by the scene's constructor. The
                     # with block also cleans up after custom render() overrides.
                     with scene._get_manager() as manager:
-                        if timeline_output is not None and config.dry_run:
-                            manager.evaluate(capture_timeline=True)
-                            rerun = False
-                        else:
-                            # Through Scene.render(), so that overrides still run.
-                            manager._capture_timeline = timeline_output is not None
-                            rerun = scene.render()
+                        # Through Scene.render(), so that overrides still run;
+                        # the timeline is an extra output of the same render.
+                        manager._capture_timeline = timeline_output is not None
+                        rerun = scene.render()
                     if timeline_output is not None and not rerun:
                         manager.timeline.write(timeline_output)
                 if not rerun:

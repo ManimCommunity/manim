@@ -68,18 +68,20 @@ From the command line
 
     manim --fps 4 --dry_run --timeline-output timeline.json example.py Example
 
-``--timeline-output`` saves the timeline of one scene to the given path. With
-``--dry_run``, Manim evaluates the scene without rendering it, and every play
-runs: caching, ``-n`` and skipped sections do not apply. Without ``--dry_run``,
-Manim renders the scene as usual and records the timeline of that render. The
-timeline is only written if the run succeeds.
+``--timeline-output`` saves the timeline of one scene's render to the given
+path; it is an extra output and changes nothing else about the render. With
+``--dry_run``, the render writes no media files, so only the timeline is
+saved. Plays left out of the output, by ``-n`` or by skipped sections, are
+in the timeline, marked as skipped. The timeline is only written if the
+render succeeds. To capture a timeline without rendering, in which every play
+runs, use :meth:`.Manager.evaluate` from Python, as above.
 
 Timeline format
 ---------------
 
 A timeline is a JSON object. All times are scene times in seconds. The same
 scene, run with the same settings, gives the same JSON text. This is the
-timeline of the example above, with the hash shortened:
+timeline written by the Python example above, with the hash shortened:
 
 .. code-block:: json
 
