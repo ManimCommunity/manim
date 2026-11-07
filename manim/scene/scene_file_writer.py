@@ -32,7 +32,14 @@ from .._config.video_encoder import VideoEncoderSpec
 from ..utils.caching import prune_segment_cache
 from ..utils.file_ops import modify_atime
 from ..utils.sounds import get_full_sound_file_path
-from .audio_mixer import LAYOUT, SAMPLE_RATE, _probe_duration, _Sound, _SoundMix
+from .audio_mixer import (
+    LAYOUT,
+    SAMPLE_RATE,
+    _movie_time,
+    _probe_duration,
+    _Sound,
+    _SoundMix,
+)
 from .section import DefaultSectionType, Section
 from .video_segment_encoder import VideoSegmentEncoder
 
@@ -1034,15 +1041,8 @@ class SceneFileWriter:
                 )
 
     def _movie_time(self, scene_time: float) -> float:
-        """Return the movie time at which ``scene_time`` is shown.
-
-        Parts of the scene left out of the movie take no movie time, so the result
-        never decreases and a scene interval maps to one contiguous movie
-        interval.
-        """
-        return sum(
-            max(0.0, min(scene_time, end) - start) for start, end in self._intervals
-        )
+        """Return the movie time at which ``scene_time`` is shown."""
+        return _movie_time(self._intervals, scene_time)
 
     def print_file_ready_message(self, file_path: StrPath) -> None:
         """Record and report a completed primary artifact."""

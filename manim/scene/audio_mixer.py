@@ -10,6 +10,7 @@ from __future__ import annotations
 __all__: list[str] = []
 
 import functools
+import math
 import os
 from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
@@ -131,6 +132,18 @@ def _seconds_to_samples(seconds: float) -> int:
     return round(seconds * SAMPLE_RATE)
 
 
+def _movie_time(intervals: Sequence[tuple[float, float]], scene_time: float) -> float:
+    """Return the movie time at which ``scene_time`` is shown.
+
+    ``intervals`` are the ordered, non-overlapping scene-time spans ``(start,
+    end)`` that the movie shows, one after the other. Parts of the scene left
+    out take no movie time, so the result never decreases and a scene interval
+    maps to one contiguous movie interval. The file writer places sections and
+    subcaptions with it, and the mixer its intervals' sample boundaries.
+    """
+    return sum(max(0.0, min(scene_time, end) - start) for start, end in intervals)
+
+
 class _SoundMix:
     """Mix sounds and cut the mix to the parts of the scene the movie shows.
 
@@ -157,17 +170,15 @@ class _SoundMix:
                 decoded[sound.path] = _decode(sound.path)
         self._decoded = decoded
 
-        # Each interval in samples: (scene start, movie start, length). Movie
-        # boundaries are computed from the running movie time once and shared by
-        # neighbouring intervals, so rounding never creates gaps or overlaps.
+        # Each interval in samples: (scene start, movie start, length). An
+        # interval ends at the sample where the next one starts, so rounding
+        # never creates gaps or overlaps.
         self._intervals: list[tuple[int, int, int]] = []
-        movie_time = 0.0
         for start, end in intervals:
-            movie_start = _seconds_to_samples(movie_time)
-            movie_time += end - start
-            length = _seconds_to_samples(movie_time) - movie_start
+            movie_start = _seconds_to_samples(_movie_time(intervals, start))
+            length = _seconds_to_samples(_movie_time(intervals, end)) - movie_start
             self._intervals.append((_seconds_to_samples(start), movie_start, length))
-        self.duration = movie_time
+        self.duration = _movie_time(intervals, math.inf)
         """Total movie duration in seconds."""
 
         # Each sound's audible pieces: (movie start, source start, length).

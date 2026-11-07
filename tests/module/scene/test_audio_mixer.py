@@ -106,3 +106,20 @@ def test_negative_start_cuts_the_head(tmp_path):
     track = mix([_Sound(beep, -0.75)], [(0.0, 1.0)])
     np.testing.assert_allclose(track[:, : samples(0.25)], 0.25)
     assert np.all(track[:, samples(0.25) :] == 0)
+
+
+def test_the_mixer_and_the_writer_place_intervals_at_the_same_movie_times():
+    # Both use one scene-to-movie time function; the mix's intervals start
+    # exactly where it puts their scene start times, and end where the next begins.
+    from manim.scene.audio_mixer import SAMPLE_RATE, _movie_time, _SoundMix
+
+    intervals = [(0.0, 1 / 3), (1.0, 1.0 + 1 / 7), (2.5, 2.5 + 1 / 30)]
+    mix = _SoundMix([], intervals)
+    for (start, _), (scene, movie, _length) in zip(
+        intervals, mix._intervals, strict=True
+    ):
+        assert movie == round(_movie_time(intervals, start) * SAMPLE_RATE)
+        assert scene == round(start * SAMPLE_RATE)
+    ends = [movie + length for _, movie, length in mix._intervals]
+    assert ends[:-1] == [movie for _, movie, _ in mix._intervals][1:]
+    assert mix.duration == _movie_time(intervals, float("inf"))
