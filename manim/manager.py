@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import datetime
+import enum
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 import srt
@@ -35,6 +36,26 @@ if TYPE_CHECKING:
 __all__ = ["Manager"]
 
 SceneT = TypeVar("SceneT", bound="Scene")
+
+
+class _State(enum.Enum):
+    """Where a :class:`Manager` is in its life.
+
+    ``OPEN`` -> ``RENDERED`` (by :meth:`Manager.render`) -> ``CLOSING`` ->
+    ``CLOSED``; a Manager can be closed from ``OPEN`` too. If closing fails, the
+    Manager is ``CLOSE_FAILED``: it refuses everything but another close().
+    """
+
+    OPEN = "open"
+    RENDERED = "rendered"
+    CLOSING = "closing"
+    CLOSED = "closed"
+    CLOSE_FAILED = "close failed"
+
+    @property
+    def usable(self) -> bool:
+        """Whether the Manager can play, give out its writer or enter a block."""
+        return self in (_State.OPEN, _State.RENDERED)
 
 
 class Manager(Generic[SceneT]):
@@ -91,15 +112,18 @@ class Manager(Generic[SceneT]):
         # The first handler starts a new log file; later ones append to it, so
         # a play() after render() in a ``with manager:`` block keeps the log.
         self._log_started = False
-        self._closed = False
-        self._closing = False
-        self._rendered = False
+        self._state = _State.OPEN
         self._scope_depth = 0
         scene.manager = self
 
+    def _ensure_usable(self) -> None:
+        if not self._state.usable:
+            raise RuntimeError(
+                f"The Manager cannot be used: it is {self._state.value}."
+            )
+
     def __enter__(self) -> Manager[SceneT]:
-        if self._closed or self._closing:
-            raise RuntimeError("The Manager is closed or closing.")
+        self._ensure_usable()
         self._scope_depth += 1
         return self
 
@@ -165,10 +189,12 @@ class Manager(Generic[SceneT]):
     def _close(self, failure_message: str | None = None) -> None:
         """Close as :meth:`close` does; log cleanup failures as ``failure_message``
         instead of raising the first one, if given.
+
+        A failed close leaves the Manager ``CLOSE_FAILED``; it can be retried.
         """
-        if self._closed:
+        if self._state in (_State.CLOSING, _State.CLOSED):
             return
-        self._closing = True
+        self._state = _State.CLOSING
         # Attempt every cleanup even on KeyboardInterrupt/SystemExit, then reraise.
         failures: list[BaseException] = []
 
@@ -189,9 +215,9 @@ class Manager(Generic[SceneT]):
             for secondary in failures[1:]:
                 logger.error("Additional Manager cleanup failure", exc_info=secondary)
         cleanup(self._close_log_handler)
+        self._state = _State.CLOSE_FAILED if failures else _State.CLOSED
         if failures and failure_message is None:
             raise failures[0]
-        self._closed = not failures
 
     def _cleanup_after_failure(self) -> None:
         # A rendering exception is already propagating; cleanup must not replace it.
@@ -211,13 +237,17 @@ class Manager(Generic[SceneT]):
     def file_writer(self) -> SceneFileWriter:
         """Return the scene's file writer, creating it on first access.
 
-        The writer uses ``scene.file_writer_settings``. :meth:`render` accesses
-        this property before calling :meth:`setup`; ``renderer.file_writer``
-        returns the same writer. Both properties are read-only. To choose a custom
-        writer class, pass ``file_writer_class`` when constructing the renderer.
+        The writer uses ``scene.file_writer_settings``. :meth:`render` creates it
+        before calling :meth:`setup`; ``renderer.file_writer`` returns the same
+        writer. Both properties are read-only. To choose a custom writer class,
+        pass ``file_writer_class`` when constructing the renderer.
         """
+        return self._ensure_file_writer()
+
+    def _ensure_file_writer(self) -> SceneFileWriter:
+        """Return the scene's file writer, creating it if there is none yet."""
         if self._file_writer is None:
-            if self._closed or self._closing:
+            if not self._state.usable:
                 raise RuntimeError(
                     "Cannot create output resources on a closed Manager."
                 )
@@ -298,27 +328,25 @@ class Manager(Generic[SceneT]):
             ``False``. This matches the return value of
             :meth:`~manim.scene.scene.Scene.render`.
         """
-        if self._closed or self._closing:
-            raise RuntimeError("The Manager is closed or closing.")
-        if self._rendered:
+        self._ensure_usable()
+        if self._state is _State.RENDERED:
             raise RuntimeError(
                 "A Manager renders its scene only once. Construct a new Scene to "
                 "render it again."
             )
-        self._rendered = True
-        started = False
-        try:
-            presentation = self.session_spec.presentation
-            open_after_render = preview or presentation.open_after_render
-            if open_after_render and not self.output_spec.enabled:
-                raise ValueError("Previewing after render requires a media artifact.")
+        presentation = self.session_spec.presentation
+        open_after_render = preview or presentation.open_after_render
+        if open_after_render and not self.output_spec.enabled:
+            raise ValueError("Previewing after render requires a media artifact.")
 
-            started = True
+        self._state = _State.RENDERED
+        try:
             self._open_log_handler()
             self.renderer.open()
-            # Make the writer available to user setup() code.
-            _ = self.file_writer
+            # User setup() code can use the writer.
+            self._ensure_file_writer()
             self.setup()
+            rerun = False
             try:
                 self.construct()
             except EndSceneEarlyException:
@@ -328,26 +356,25 @@ class Manager(Generic[SceneT]):
                 # The caller will create a fresh Scene for the rerun.
                 # Report any encoder errors before allowing that restart.
                 self.file_writer.abort_encode_jobs(reraise_encoder_failures=True)
-                self._finish_resource_scope()
-                return True
-            self.tear_down()
-            self.post_construct()
-
-            if open_after_render or presentation.show_in_file_browser:
-                open_media_file(
-                    self.file_writer,
-                    preview=open_after_render,
-                    show_in_file_browser=presentation.show_in_file_browser,
-                )
-
-            self._finish_resource_scope()
-            return False
+                rerun = True
+            if not rerun:
+                self.tear_down()
+                self.post_construct()
+                if open_after_render or presentation.show_in_file_browser:
+                    open_media_file(
+                        self.file_writer,
+                        preview=open_after_render,
+                        show_in_file_browser=presentation.show_in_file_browser,
+                    )
         except BaseException:
             # An encoder waiting for more frames can prevent Python from exiting.
             # Stop it while preserving the original rendering error.
-            if started or self._file_writer is not None:
-                self._cleanup_after_failure()
+            self._cleanup_after_failure()
             raise
+        # Outside the try: a failure to close is not a render failure, so it is
+        # not cleaned up as one (which would close everything a second time).
+        self._finish_resource_scope()
+        return rerun
 
     def _finish_resource_scope(self) -> None:
         if self._scope_depth == 0:
@@ -430,8 +457,7 @@ class Manager(Generic[SceneT]):
         kwargs
             Additional animation arguments forwarded to the renderer.
         """
-        if self._closed or self._closing:
-            raise RuntimeError("The Manager is closed or closing.")
+        self._ensure_usable()
         self._open_log_handler()
         start_time = self.time
         rollback = self._play_rollback()

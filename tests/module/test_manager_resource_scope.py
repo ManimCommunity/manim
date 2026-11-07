@@ -6,6 +6,7 @@ from unittest.mock import Mock
 import pytest
 
 from manim import Manager, Scene, logger, tempconfig
+from manim.manager import _State
 
 
 @pytest.fixture(params=["cairo", "opengl"])
@@ -76,7 +77,7 @@ def test_render_log_is_scoped_and_context_exit_retires_backend(
             assert external in logger.handlers
             assert not scene.renderer._closed
         assert scene.renderer._closed
-        assert manager._closed
+        assert manager._state is _State.CLOSED
         assert external in logger.handlers
         assert "inside managed setup" in scene._log_file_path.read_text()
     finally:
@@ -98,7 +99,7 @@ def test_render_failure_retires_backend_and_log(managed_scene, monkeypatch):
         scene.render()
     assert caught.value is failure
     assert scene.renderer._closed
-    assert scene.manager._closed
+    assert scene.manager._state is _State.CLOSED
     assert handler[0] not in logger.handlers
     assert handler[0].stream is None
 
@@ -174,3 +175,23 @@ def test_the_log_file_keeps_cleanup_failures_after_a_failed_render(
         with pytest.raises(RuntimeError, match="render failed"):
             scene.render()
     assert "Failed to clean up" in scene._log_file_path.read_text()
+
+
+def test_a_failed_close_after_a_render_is_not_cleaned_up_again(
+    managed_scene, monkeypatch
+):
+    # The close at the end of a successful render used to sit inside the
+    # render's error handling, which then closed everything a second time.
+    close = Mock(side_effect=OSError("close failed"))
+    monkeypatch.setattr(managed_scene.renderer, "close", close)
+    manager = Manager(managed_scene)
+    with pytest.raises(OSError, match="close failed"):
+        manager.render()
+    assert close.call_count == 1
+    assert manager._state is _State.CLOSE_FAILED
+    with pytest.raises(RuntimeError, match="close failed"):
+        manager.play()
+    monkeypatch.undo()
+    manager.close()
+    assert manager._state is _State.CLOSED
+
