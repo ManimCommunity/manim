@@ -52,6 +52,41 @@ class Timeline:
             raise ValueError(f"Expected a {_SCHEMA} document with version {_VERSION}.")
 
     @classmethod
+    def _from_run(
+        cls,
+        *,
+        mode: str,
+        scene: str,
+        backend: str,
+        frame_rate: float,
+        duration: float,
+        ended_early: bool,
+        source: dict[str, str] | None,
+        entries: list[dict[str, Any]],
+    ) -> Timeline:
+        """Make the timeline of a run from what the run recorded.
+
+        The document's layout (its schema, version and fields) is defined here;
+        the run supplies the values.
+        """
+        return cls(
+            _dumps(
+                {
+                    "schema": _SCHEMA,
+                    "version": _VERSION,
+                    "mode": mode,
+                    "scene": scene,
+                    "backend": backend,
+                    "frame_rate": frame_rate,
+                    "duration": duration,
+                    "ended_early": ended_early,
+                    "source": source,
+                    "entries": entries,
+                }
+            )
+        )
+
+    @classmethod
     def from_json(cls, document: str) -> Timeline:
         """Load a timeline from JSON text.
 

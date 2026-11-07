@@ -11,11 +11,11 @@ from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 
+from ..timeline import Timeline
 from .loop import _Caption, _RunListener, _Section
 
 if TYPE_CHECKING:
     from ..manager import Manager
-    from ..timeline import Timeline
     from .loop import _Play, _Sound
 
 __all__: list[str] = []
@@ -240,24 +240,18 @@ class _RunRecord(_RunListener):
 
     def timeline(self) -> Timeline:
         """Export the record of a finished run as a :class:`.Timeline`."""
-        from ..timeline import _SCHEMA, _VERSION, Timeline, _dumps
-
         if self._failed:
             raise RuntimeError("Timeline capture failed earlier during this run.")
         if self._end is None or self._active is not None:
             raise RuntimeError("Timeline capture ended during a play or wait call.")
-        source = self._source_info
         scene = self._manager.scene
-        data = {
-            "schema": _SCHEMA,
-            "version": _VERSION,
-            "mode": self.mode,
-            "scene": type(scene).__qualname__,
-            "backend": type(scene.renderer).__name__,
-            "frame_rate": float(self._manager.session_spec.frame_rate),
-            "duration": self._end,
-            "ended_early": self._ended_early,
-            "source": source,
-            "entries": self.entries,
-        }
-        return Timeline(_dumps(data))
+        return Timeline._from_run(
+            mode=self.mode,
+            scene=type(scene).__qualname__,
+            backend=type(scene.renderer).__name__,
+            frame_rate=float(self._manager.session_spec.frame_rate),
+            duration=self._end,
+            ended_early=self._ended_early,
+            source=self._source_info,
+            entries=self.entries,
+        )
