@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field, replace
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -107,7 +107,11 @@ class _Frame:
             self._drawn = True
 
     def pixels(self) -> RGBAPixelArray:
-        """Return the frame as an RGBA pixel array, drawing it if needed."""
+        """Return the frame as an RGBA pixel array, drawing it if needed.
+
+        A drawer that draws into a target draws the frame first; one without a
+        target, such as evaluation's, draws the pixels directly.
+        """
         if self._pixels is None:
             self.draw()
             self._pixels = self._loop.drawer.pixels(self)
@@ -145,15 +149,25 @@ class _RunListener:
         """A section, caption, or sound call was made."""
 
 
-class _Drawer(Protocol):
-    def draw(self, frame: _Frame) -> None: ...
+class _Drawer:
+    """Draws the frames of a run for its listeners.
 
-    def pixels(self, frame: _Frame) -> RGBAPixelArray: ...
+    Like :class:`_RunListener`, a base class: :meth:`draw` and :meth:`end_play`
+    do nothing unless overridden, for drawers without a target of their own.
+    """
 
-    def end_play(self, play: _Play) -> None: ...
+    def draw(self, frame: _Frame) -> None:
+        """Draw ``frame`` into the renderer's target, for a preview to show."""
+
+    def pixels(self, frame: _Frame) -> RGBAPixelArray:
+        """The pixels of ``frame``, which :meth:`draw` drew if it was called."""
+        raise NotImplementedError
+
+    def end_play(self, play: _Play) -> None:
+        """The play's frames are drawn."""
 
 
-class _TargetDrawer:
+class _TargetDrawer(_Drawer):
     """Draw frames into the renderer's own target, as a render does."""
 
     def __init__(self, manager: Manager) -> None:
@@ -183,27 +197,19 @@ class _TargetDrawer:
         self._prepared = False
 
 
-class _SceneImageDrawer:
+class _SceneImageDrawer(_Drawer):
     """Draw frames with a temporary renderer, as :meth:`.Scene.get_image` does.
 
-    Used during evaluation, which opens no drawing resources of its own.
+    Used during evaluation, which opens no drawing resources of its own, so
+    there is no target to draw into: only pixels are drawn.
     """
 
     def __init__(self, manager: Manager) -> None:
         self._manager = manager
-        self._pixels: RGBAPixelArray | None = None
-
-    def draw(self, frame: _Frame) -> None:
-        image = self._manager.renderer._get_scene_image(self._manager.scene)
-        self._pixels = np.asarray(image)
 
     def pixels(self, frame: _Frame) -> RGBAPixelArray:
-        assert self._pixels is not None
-        pixels, self._pixels = self._pixels, None
-        return pixels
-
-    def end_play(self, play: _Play) -> None:
-        pass
+        manager = self._manager
+        return np.asarray(manager.renderer._get_scene_image(manager.scene))
 
 
 class _RunLoop:
