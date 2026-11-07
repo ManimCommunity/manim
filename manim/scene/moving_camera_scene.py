@@ -8,7 +8,7 @@ Examples
 .. manim:: ChangingCameraWidthAndRestore
 
     class ChangingCameraWidthAndRestore(Scene):
-        def construct(self):
+        def construct(self) -> None:
             text = Text("Hello World").set_color(BLUE)
             self.add(text)
             self.camera.frame.save_state()
@@ -20,7 +20,7 @@ Examples
 .. manim:: MovingCameraCenter
 
     class MovingCameraCenter(Scene):
-        def construct(self):
+        def construct(self) -> None:
             s = Square(color=RED, fill_opacity=0.5).move_to(2 * LEFT)
             t = Triangle(color=GREEN, fill_opacity=0.5).move_to(2 * RIGHT)
             self.wait(0.3)
@@ -33,7 +33,7 @@ Examples
 .. manim:: MovingAndZoomingCamera
 
     class MovingAndZoomingCamera(Scene):
-        def construct(self):
+        def construct(self) -> None:
             s = Square(color=BLUE, fill_opacity=0.5).move_to(2 * LEFT)
             t = Triangle(color=YELLOW, fill_opacity=0.5).move_to(2 * RIGHT)
             self.add(s, t)
@@ -46,7 +46,7 @@ Examples
 .. manim:: MovingCameraOnGraph
 
     class MovingCameraOnGraph(Scene):
-        def construct(self):
+        def construct(self) -> None:
             self.camera.frame.save_state()
 
             ax = Axes(x_range=[-1, 10], y_range=[-1, 10])
@@ -64,8 +64,8 @@ Examples
 .. manim:: SlidingMultipleFrames
 
     class SlidingMultipleFrames(Scene):
-        def construct(self):
-            def create_frame(number):
+        def construct(self) -> None:
+            def create_frame(number: int) -> Rectangle:
                 frame = Rectangle(width=16, height=9)
                 circ = Circle().shift(LEFT)
                 text = Tex(f"This is Frame {str(number)}").next_to(circ, RIGHT)

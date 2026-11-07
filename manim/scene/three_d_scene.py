@@ -7,6 +7,7 @@ __all__ = ["ThreeDScene", "SpecialThreeDScene"]
 
 import warnings
 from collections.abc import Iterable, Sequence
+from typing import Any
 
 import numpy as np
 
@@ -104,7 +105,9 @@ class ThreeDScene(Scene):
         if frame_center is not None:
             self.camera.frame_center = frame_center
 
-    def begin_ambient_camera_rotation(self, rate: float = 0.02, about: str = "theta"):
+    def begin_ambient_camera_rotation(
+        self, rate: float = 0.02, about: str = "theta"
+    ) -> None:
         """
         This method begins an ambient rotation of the camera about the Z_AXIS,
         in the anticlockwise direction
@@ -318,7 +321,7 @@ class ThreeDScene(Scene):
         ):
             self.remove(self.camera.frame)
 
-    def add_fixed_orientation_mobjects(self, *mobjects: Mobject, **kwargs):
+    def add_fixed_orientation_mobjects(self, *mobjects: Mobject, **kwargs: Any) -> None:
         """
         This method is used to prevent the rotation and tilting
         of mobjects as the camera moves around. The mobject can
