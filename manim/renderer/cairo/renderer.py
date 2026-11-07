@@ -17,7 +17,7 @@ from ...utils.iterables import list_update
 from ..protocol import RendererCapabilities
 from .camera import Camera, MultiCamera
 from .rendering import _CairoDrawingContext
-from .target import _CairoRasterSettings, _CairoRenderTarget
+from .target import _CairoRasterSettings, _CairoRenderTarget, _ImageFiles
 
 if TYPE_CHECKING:
     from manim._config.render_session import RenderSessionSpec
@@ -66,7 +66,9 @@ class CairoRenderer:
             base_pixel_width=int(config["pixel_width"]),
             base_pixel_height=int(config["pixel_height"]),
         )
-        self._target = _CairoRenderTarget(settings)
+        # Image files read for this renderer, shared by all its targets.
+        self._image_files = _ImageFiles()
+        self._target = _CairoRenderTarget(settings, self._image_files)
         self._sub_targets: dict[int, _CairoRenderTarget] = {}
         self._camera_view_pixels: dict[int, RGBAPixelArray] = {}
         self.static_image: RGBAPixelArray | None = None
@@ -188,6 +190,7 @@ class CairoRenderer:
                     pixel_width=pixel_width,
                     pixel_height=pixel_height,
                 ),
+                self._image_files,
             )
             self._sub_targets[key] = target
         return target

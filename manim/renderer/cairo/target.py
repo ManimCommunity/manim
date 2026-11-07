@@ -51,11 +51,50 @@ class _CairoRasterSettings:
         )
 
 
+def _rgba_image(
+    image: Image.Image | Path | str, size: tuple[int, int]
+) -> RGBAPixelArray:
+    """The pixels of ``image`` (a file or a PIL image) as RGBA, resized to ``size``."""
+    if isinstance(image, (str, Path)):
+        with Image.open(get_full_raster_image_path(image)) as source:
+            rgba = source.convert("RGBA")
+    else:
+        rgba = image.convert("RGBA")
+    if rgba.size != size:
+        rgba = rgba.resize(size)
+    return np.asarray(rgba, dtype=np.uint8).copy()
+
+
+class _ImageFiles:
+    """Image files read for one renderer, by path and size, shared by its targets."""
+
+    def __init__(self) -> None:
+        self._images: dict[tuple[str, tuple[int, int]], RGBAPixelArray] = {}
+
+    def get(
+        self, image: Image.Image | Path | str, size: tuple[int, int]
+    ) -> RGBAPixelArray:
+        # Only files are cached: an image object can change in place, and its
+        # string form names a memory address that another image can reuse.
+        if not isinstance(image, (str, Path)):
+            return _rgba_image(image, size)
+        key = (str(image), size)
+        cached = self._images.get(key)
+        if cached is None:
+            cached = self._images[key] = _rgba_image(image, size)
+            cached.flags.writeable = False
+        return cached
+
+
 class _CairoRenderTarget:
     """Own one top-left-origin RGBA target and its PyCairo context."""
 
-    def __init__(self, settings: _CairoRasterSettings) -> None:
+    def __init__(
+        self, settings: _CairoRasterSettings, image_files: _ImageFiles | None = None
+    ) -> None:
         self.settings = settings
+        #: Image files read for this target, shared with the renderer's other targets.
+        self.image_files = _ImageFiles() if image_files is None else image_files
         self._pixels = np.zeros(
             (settings.pixel_height, settings.pixel_width, 4),
             dtype=np.uint8,
@@ -65,7 +104,6 @@ class _CairoRenderTarget:
         self._context_key: tuple[float, ...] | None = None
         self._context: cairo.Context | None = None
         self._scratch_target: _CairoRenderTarget | None = None
-        self.background_image_cache: dict[str, RGBAPixelArray] = {}
         self._closed = False
 
     def _ensure_open(self) -> None:
@@ -87,8 +125,11 @@ class _CairoRenderTarget:
             ),
         )
 
+    @property
+    def _size(self) -> tuple[int, int]:
+        return self.settings.pixel_width, self.settings.pixel_height
+
     def _load_background(self, camera: Camera) -> RGBAPixelArray:
-        settings = self.settings
         if camera.background_image is None:
             background = np.empty_like(self._pixels)
             background[:, :] = color_to_int_rgba(
@@ -96,13 +137,7 @@ class _CairoRenderTarget:
                 camera.background_opacity,
             )
             return background
-
-        path = get_full_raster_image_path(camera.background_image)
-        with Image.open(path) as source:
-            image = source.convert("RGBA")
-            if image.size != (settings.pixel_width, settings.pixel_height):
-                image = image.resize((settings.pixel_width, settings.pixel_height))
-            return np.asarray(image, dtype=np.uint8).copy()
+        return self.image_files.get(camera.background_image, self._size)
 
     def reset(self, camera: Camera) -> None:
         self._ensure_open()
@@ -120,7 +155,7 @@ class _CairoRenderTarget:
         """Return a reusable same-sized target for intermediate composition."""
         self._ensure_open()
         if self._scratch_target is None:
-            self._scratch_target = _CairoRenderTarget(self.settings)
+            self._scratch_target = _CairoRenderTarget(self.settings, self.image_files)
         return self._scratch_target
 
     def set_pixels(self, pixels: RGBAPixelArray) -> None:
@@ -171,31 +206,11 @@ class _CairoRenderTarget:
         return context
 
     def get_background_image(self, image: Image.Image | Path | str) -> RGBAPixelArray:
+        """The pixels of a vectorized mobject's background image at this target's
+        size (read-only for files, which are cached).
+        """
         self._ensure_open()
-        # Only files are cached: an image object can change in place, and its
-        # string form names a memory address that another image can reuse.
-        image_key = str(image) if isinstance(image, (str, Path)) else None
-        cached = self.background_image_cache.get(image_key) if image_key else None
-        if cached is not None:
-            return cached
-
-        if isinstance(image, (str, Path)):
-            path = get_full_raster_image_path(image)
-            with Image.open(path) as source:
-                source_image = source.convert("RGBA")
-                array = np.asarray(source_image, dtype=np.uint8).copy()
-        else:
-            array = np.asarray(image.convert("RGBA"), dtype=np.uint8).copy()
-
-        expected_shape = self._pixels.shape
-        if array.shape != expected_shape:
-            resized = Image.fromarray(array).resize(
-                (self.settings.pixel_width, self.settings.pixel_height),
-            )
-            array = np.asarray(resized, dtype=np.uint8).copy()
-        if image_key is not None:
-            self.background_image_cache[image_key] = array
-        return array
+        return self.image_files.get(image, self._size)
 
     def read_pixels(self) -> RGBAPixelArray:
         return self.pixels.copy()
@@ -209,7 +224,6 @@ class _CairoRenderTarget:
         if self._scratch_target is not None:
             self._scratch_target.close()
             self._scratch_target = None
-        self.background_image_cache.clear()
         self._background_key = None
         self._pixels = np.empty((0, 0, 4), dtype=np.uint8)
         self._background = self._pixels

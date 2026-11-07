@@ -408,3 +408,30 @@ def test_update_frame_leaves_out_excluded_mobjects():
             assert np.any(renderer.get_frame()[..., 0] > 0)
         finally:
             renderer.close()
+
+
+def test_camera_views_share_the_image_files_read_for_the_frame(tmp_path, monkeypatch):
+    # A camera view of the same size as the frame needs the same pixels of a
+    # background file; it should not read the file again.
+    from manim.renderer.cairo import target
+
+    path = tmp_path / "background.png"
+    Image.new("RGBA", (4, 4), (255, 0, 0, 255)).save(path)
+    reads = []
+    monkeypatch.setattr(
+        target.Image,
+        "open",
+        lambda fp, *args, open=Image.open: reads.append(fp) or open(fp, *args),
+    )
+    square = Square(side_length=20, fill_opacity=1, stroke_width=0)
+    square.color_using_background_image(str(path))
+    with tempconfig({"pixel_width": 4, "pixel_height": 4}):
+        view = ImageMobjectFromCamera(Camera())
+        view.set(width=config.frame_width)
+        renderer = CairoRenderer(camera=MultiCamera([view]))
+        try:
+            renderer.render_mobjects([square, view])
+            renderer.render_mobjects([square, view])
+        finally:
+            renderer.close()
+    assert len(reads) == 1
