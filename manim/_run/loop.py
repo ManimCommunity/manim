@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import TYPE_CHECKING, Any, Protocol
 
 import numpy as np
@@ -365,5 +365,8 @@ class _RunLoop:
     def marker(self, marker: _Section | _Caption | _Sound) -> None:
         if isinstance(marker, _Section):
             self.selection.start_section(marker.skip_animations)
+        elif isinstance(marker, _Sound):
+            # Heard if the play that starts at the sound's call is in the output.
+            marker = replace(marker, in_output=self.in_output)
         for listener in self.listeners:
             listener.marker(marker)

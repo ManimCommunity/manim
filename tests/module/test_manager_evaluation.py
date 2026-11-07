@@ -188,7 +188,7 @@ def test_images_after_evaluation_do_not_advance_time(settings):
 def test_a_scene_can_be_evaluated_once(settings):
     with Manager(Scene()) as manager:
         manager.evaluate()
-        with pytest.raises(RuntimeError, match="unused Scene"):
+        with pytest.raises(RuntimeError, match="only once"):
             manager.evaluate()
 
 
@@ -202,8 +202,34 @@ def test_markers_before_evaluation_do_not_make_the_scene_used(settings):
             self.wait(0.25)
 
     scene = Introduced()
-    scene._get_manager().evaluate()
+    manager = scene._get_manager()
+    manager.evaluate()
     assert scene.time == 0.25
+    # The section waited for a run; evaluation made no writer for it.
+    assert manager._file_writer is None
+
+
+def test_markers_before_a_render_go_to_its_output(settings):
+    class Introduced(Scene):
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs)
+            self.next_section("intro")
+
+        def construct(self):
+            self.wait(0.25)
+
+    scene = Introduced()
+    with scene._get_manager() as manager:
+        manager.render()
+        assert [section.name for section in manager.file_writer.sections][-1] == "intro"
+
+
+def test_a_scene_with_output_cannot_be_evaluated(settings):
+    scene = Scene()
+    manager = scene._get_manager()
+    manager.file_writer  # output has started
+    with pytest.raises(RuntimeError, match="unused Scene"):
+        manager.evaluate()
 
 
 def test_an_evaluated_scene_cannot_be_rendered(settings):

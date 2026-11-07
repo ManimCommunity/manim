@@ -161,7 +161,10 @@ class Manager(Generic[SceneT]):
         self._log_started = False
         self._state = _State.OPEN
         self._scope_depth = 0
+        # The loop of the current run, created by render(), evaluate() or a play
+        # outside them (which renders); markers made before it are kept for it.
         self._run_loop: _RunLoop | None = None
+        self._early_markers: list[_Section | _Caption | _Sound] = []
         self._evaluating = False
         scene.manager = self
 
@@ -294,7 +297,8 @@ class Manager(Generic[SceneT]):
 
         The writer uses ``scene.file_writer_settings``. :meth:`render` creates it
         before calling :meth:`setup`; ``renderer.file_writer`` returns the same
-        writer. Both properties are read-only. To choose a custom writer class,
+        writer. Getting it starts the output: section, caption, and sound calls
+        made before go to it, and the scene can no longer be evaluated. Both properties are read-only. To choose a custom writer class,
         pass ``file_writer_class`` when constructing the renderer.
         Accessing this property during :meth:`evaluate` raises ``RuntimeError``.
         """
@@ -317,6 +321,9 @@ class Manager(Generic[SceneT]):
                 )
             finally:
                 self._creating_file_writer = False
+            # Output has started: the section, caption and sound calls made so
+            # far go to the render loop, and so to this writer.
+            _ = self._loop
         return self._file_writer
 
     @property
@@ -408,13 +415,7 @@ class Manager(Generic[SceneT]):
             ``False``. This matches the return value of
             :meth:`~manim.scene.scene.Scene.render`.
         """
-        self._ensure_not_evaluating("Rendering")
-        self._validate_execution()
-        if self._state in (_State.RENDERED, _State.EVALUATED):
-            raise RuntimeError(
-                "A Manager renders or evaluates its scene only once. Construct a "
-                "new Scene to render it again."
-            )
+        self._check_run("Rendering")
         presentation = self.session_spec.presentation
         open_after_render = preview or presentation.open_after_render
         if open_after_render and not self.output_spec.enabled:
@@ -426,20 +427,15 @@ class Manager(Generic[SceneT]):
             self.renderer.open()
             # User setup() code can use the writer.
             self._ensure_file_writer()
-            self.setup()
             rerun = False
             try:
-                self.construct()
-            except EndSceneEarlyException:
-                # Only a construction boundary is a normal early scene end.
-                pass
+                self._run(self._loop)
             except RerunSceneException:
                 # The caller will create a fresh Scene for the rerun.
                 # Report any encoder errors before allowing that restart.
                 self.file_writer.abort_encode_jobs(reraise_encoder_failures=True)
                 rerun = True
             if not rerun:
-                self.tear_down()
                 self.post_construct()
                 if open_after_render or presentation.show_in_file_browser:
                     open_media_file(
@@ -500,18 +496,15 @@ class Manager(Generic[SceneT]):
 
         See :doc:`/guides/evaluation` for examples.
         """
-        self._validate_execution()
-        if self._evaluating:
-            raise RuntimeError("Recursive evaluation is not supported.")
-        # Section, caption, and sound calls made before, for example in the
-        # scene's constructor, do not make the scene used.
-        if (
-            self._state in (_State.RENDERED, _State.EVALUATED)
-            or self.num_plays
-            or getattr(self.renderer, "_target", None) is not None
-            or getattr(self.renderer, "_context", None) is not None
-        ):
-            raise RuntimeError("Evaluation requires an unused Scene.")
+        self._check_run("Evaluation")
+        # Every play runs from the start of the scene. Section, caption, and
+        # sound calls made before, for example in the scene's constructor, do
+        # not count: they have no effect on an evaluation.
+        if self.num_plays or self._run_loop is not None:
+            raise RuntimeError(
+                "Evaluation requires an unused Scene: one that has not played or "
+                "produced output yet."
+            )
         # Checked before the Manager is used up, so that a call can be corrected.
         times = [float(time) for time in frame_times]
         if any(not math.isfinite(time) or time < 0 for time in times):
@@ -523,7 +516,7 @@ class Manager(Generic[SceneT]):
         listeners: list[_RunListener] = [meshes, _Progress(self)]
         if on_frame is not None:
             listeners.append(_FrameRequests(self, times, on_frame))
-        self._run_loop = _RunLoop(
+        loop = _RunLoop(
             self,
             listeners=listeners,
             selection=_OutputSelection.everything(self),
@@ -533,17 +526,43 @@ class Manager(Generic[SceneT]):
         try:
             with self.renderer._scene_images():
                 meshes.check()
-                self.setup()
-                with contextlib.suppress(EndSceneEarlyException):
-                    self.construct()
-                self.tear_down()
+                self._run(loop)
                 meshes.check()
-            self._finish_resource_scope()
         except BaseException:
             self._cleanup_after_failure()
             raise
         finally:
             self._evaluating = False
+        # As in render(): a failure to close is not an evaluation failure.
+        self._finish_resource_scope()
+
+    def _check_run(self, what: str) -> None:
+        """Check that the scene can be rendered or evaluated, as ``what``.
+
+        A Manager runs its scene once, by render() or evaluate(), and not
+        from inside an evaluation.
+        """
+        self._ensure_not_evaluating(what)
+        self._validate_execution()
+        if self._state in (_State.RENDERED, _State.EVALUATED):
+            raise RuntimeError(
+                "A Manager renders or evaluates its scene only once. Construct a "
+                "new Scene to run it again."
+            )
+
+    def _run(self, loop: _RunLoop) -> None:
+        """Run setup(), construct() and tear_down(), with ``loop`` running the
+        scene's plays; the markers made before go to it first.
+        """
+        self._run_loop = loop
+        markers, self._early_markers = self._early_markers, []
+        for marker in markers:
+            loop.marker(marker)
+        self.setup()
+        # Only a construction boundary is a normal early scene end.
+        with contextlib.suppress(EndSceneEarlyException):
+            self.construct()
+        self.tear_down()
 
     def _ensure_not_evaluating(self, what: str) -> None:
         if self._evaluating:
@@ -721,7 +740,12 @@ class Manager(Generic[SceneT]):
 
     @property
     def _loop(self) -> _RunLoop:
-        """The loop that runs this scene's play calls, created on first use."""
+        """The loop that runs this scene's play calls.
+
+        render() and evaluate() choose it; a play outside them produces output
+        as a render does, so it creates the render loop (and render() goes on
+        with it).
+        """
         if self._run_loop is None:
             self._run_loop = _RunLoop(
                 self,
@@ -730,7 +754,19 @@ class Manager(Generic[SceneT]):
                 drawer=_TargetDrawer(self),
                 cache=_SegmentCache(self),
             )
+            markers, self._early_markers = self._early_markers, []
+            for marker in markers:
+                self._run_loop.marker(marker)
         return self._run_loop
+
+    def _marker(self, marker: _Section | _Caption | _Sound) -> None:
+        """Pass a section, caption or sound call to the run's loop; before a
+        run, keep it for the loop the run chooses.
+        """
+        if self._run_loop is None:
+            self._early_markers.append(marker)
+        else:
+            self._run_loop.marker(marker)
 
     def _update_skipping_status(self) -> None:
         """Set :attr:`skip_animations` for the next play, for old renderer callers.
@@ -816,7 +852,7 @@ class Manager(Generic[SceneT]):
         skip_animations
             Whether animation output in this section should be skipped.
         """
-        self._loop.marker(_Section(name, section_type, skip_animations))
+        self._marker(_Section(name, section_type, skip_animations))
 
     def add_subcaption(
         self, content: str, duration: float = 1, offset: float = 0
@@ -833,7 +869,7 @@ class Manager(Generic[SceneT]):
             The offset in seconds from the current scene time.
         """
         start = float(self.time + offset)
-        self._loop.marker(_Caption(content, start, start + float(duration)))
+        self._marker(_Caption(content, start, start + float(duration)))
 
     def add_sound(
         self,
@@ -858,12 +894,4 @@ class Manager(Generic[SceneT]):
             Additional arguments forwarded to
             :meth:`~manim.scene.scene_file_writer.SceneFileWriter.add_sound`.
         """
-        self._loop.marker(
-            _Sound(
-                sound_file,
-                self.time + time_offset,
-                gain,
-                dict(kwargs),
-                in_output=self._loop.in_output,
-            )
-        )
+        self._marker(_Sound(sound_file, self.time + time_offset, gain, dict(kwargs)))
