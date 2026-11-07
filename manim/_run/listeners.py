@@ -3,17 +3,21 @@
 from __future__ import annotations
 
 import datetime
+import platform
 from typing import TYPE_CHECKING
 
 import srt
+from tqdm import tqdm
 
 from .. import config, logger
 from .._config.video_encoder import video_encoder_fingerprint
+from ..animation.animation import Wait
 from ..utils.hashing import get_hash_from_play_call
+from .frames import frame_count
 from .loop import _Caption, _RunListener, _Section, _Sound
 
 if TYPE_CHECKING:
-    from tqdm import tqdm
+    from collections.abc import Callable
 
     from ..manager import Manager
     from .loop import _Frame, _Play
@@ -149,7 +153,11 @@ class _Preview(_RunListener):
 
 
 class _Progress(_RunListener):
-    """Show a progress bar for each play, except for frozen waits."""
+    """Show a progress bar for each play, except for frozen waits.
+
+    The bar counts the play's frames, as the run loop steps through them; a play
+    whose frames are not observed jumps to its last frame in one step.
+    """
 
     def __init__(self, manager: Manager) -> None:
         self._manager = manager
@@ -159,19 +167,37 @@ class _Progress(_RunListener):
         if play.frozen:
             # A frozen wait has a single frame; a bar would stop at 1/N.
             return
-        scene = self._manager.scene
-        self._bar = scene._get_animation_time_progression(
-            list(play.animations), play.run_time
+        stop_condition = _stop_condition(play)
+        if stop_condition is not None:
+            # Ends when the condition holds: show the frames without a total.
+            description = f"Waiting for {stop_condition.__name__}"
+            total = None
+        else:
+            animations = play.animations
+            if len(animations) == 1 and isinstance(animations[0], Wait):
+                description = f"Waiting {play.index}"
+            else:
+                description = f"Animation {play.index}" + "".join(
+                    [": ", str(animations[0]), ", etc." if len(animations) > 1 else ""]
+                    if animations
+                    else []
+                )
+            total = frame_count(play.run_time, self._manager.session_spec.frame_rate)
+        self._bar = tqdm(
+            total=total,
+            desc=description,
+            leave=config["progress_bar"] == "leave",
+            ascii=True if platform.system() == "Windows" else None,
+            disable=config["progress_bar"] == "none",
         )
-        scene.time_progression = self._bar
+        self._manager.scene.time_progression = self._bar
 
     def frame(self, frame: _Frame) -> None:
-        bar = self._bar
-        # A skipped play's bar has a single step; stop-condition waits have none.
-        if bar is not None and (
-            bar.total is None or bar.total < 0 or bar.n < bar.total
-        ):
-            bar.update(1)
+        if self._bar is not None:
+            # The frames of the play up to and including this one.
+            self._bar.update(
+                frame.index + frame.repeat - frame.play.first_frame - self._bar.n
+            )
 
     def play_finished(self, play: _Play, end_frame: int) -> None:
         if self._bar is not None:
@@ -180,3 +206,10 @@ class _Progress(_RunListener):
 
     def play_failed(self, play: _Play) -> None:
         self.play_finished(play, 0)
+
+
+def _stop_condition(play: _Play) -> Callable[[], bool] | None:
+    """The stop condition of a play that is a single wait with one, else None."""
+    if len(play.animations) == 1 and isinstance(play.animations[0], Wait):
+        return play.animations[0].stop_condition
+    return None

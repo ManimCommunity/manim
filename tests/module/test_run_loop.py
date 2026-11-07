@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 
 from manim import LEFT, RIGHT, Dot, Manager, Scene, Square, tempconfig
+from manim._run import listeners
 from manim.renderer.cairo.renderer import CairoRenderer
 
 SETTINGS = {
@@ -69,8 +70,7 @@ def test_a_frozen_wait_shows_no_progress_bar(tmp_path):
 
     with tempconfig({**SETTINGS, "media_dir": str(tmp_path)}):
         scene = Frozen()
-        progression = patch.object(scene, "_get_animation_time_progression")
-        with progression as bar:
+        with patch.object(listeners, "tqdm") as bar:
             Manager(scene).render()
     bar.assert_not_called()
 
@@ -119,18 +119,18 @@ def test_a_failed_play_closes_its_progress_bar(tmp_path):
                 self.play(FailsHalfway(Square()), run_time=1)
 
     bars = []
+    original = listeners.tqdm
+
+    def progression(*args, **kwargs):
+        bar = original(*args, **kwargs)
+        bar.close = Mock(wraps=bar.close)
+        bars.append(bar)
+        return bar
+
     with tempconfig({**SETTINGS, "media_dir": str(tmp_path)}):
         scene = Fails()
-        original = scene._get_animation_time_progression
-
-        def progression(*args, **kwargs):
-            bar = original(*args, **kwargs)
-            bar.close = Mock(wraps=bar.close)
-            bars.append(bar)
-            return bar
-
-        scene._get_animation_time_progression = progression
-        Manager(scene).render()
+        with patch.object(listeners, "tqdm", progression):
+            Manager(scene).render()
     [bar] = bars
     bar.close.assert_called_once_with()
 
@@ -178,3 +178,28 @@ def test_skipped_plays_step_only_when_something_runs_per_frame(
     assert len(steps) == (4 if with_updater else 1)
     np.testing.assert_allclose(skipped.square.points, full.square.points)
     assert skipped.time == full.time
+
+
+@pytest.mark.parametrize("skip", [False, True])
+def test_a_progress_bar_counts_the_frames_of_its_play(tmp_path, skip):
+    # 0.3 s at 10 fps: 3 frames, whether stepped through or skipped to the end.
+    bars = []
+    original = listeners.tqdm
+
+    def progression(*args, **kwargs):
+        bars.append(original(*args, **kwargs))
+        return bars[-1]
+
+    class Plays(Scene):
+        def construct(self):
+            self.play(Square().animate.shift(RIGHT), run_time=0.3)
+
+    # A disabled bar does not count, so show it.
+    settings = {**SETTINGS, "frame_rate": 10, "progress_bar": "display"}
+    with (
+        tempconfig({**settings, "media_dir": str(tmp_path)}),
+        patch.object(listeners, "tqdm", progression),
+    ):
+        Manager(Plays(skip_animations=skip)).render()
+    [bar] = bars
+    assert (bar.total, bar.n) == (3, 3)
