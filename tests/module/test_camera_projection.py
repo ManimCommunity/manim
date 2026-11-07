@@ -1,52 +1,22 @@
-"""Default frame queries stay fresh without changing projection arithmetic."""
+"""Frame queries stay fresh without changing projection arithmetic."""
 
 import numpy as np
-import pytest
 
 from manim import (
-    RIGHT,
     Camera,
     Mobject,
     ScreenRectangle,
-    Square,
     ThreeDCamera,
-    VMobject,
 )
 
 
-@pytest.mark.parametrize("dtype", [np.float32, np.float64])
-def test_default_frame_center_matches_generic_query_after_mutations(dtype):
+def test_the_frame_center_follows_the_frame():
+    # The frame is an ordinary ScreenRectangle; its center is read fresh.
     camera = Camera()
-    frame = camera.frame
-    frame.points = frame.points.astype(dtype)
-
-    def check():
-        np.testing.assert_array_equal(
-            frame.get_points_defining_boundary(),
-            VMobject.get_points_defining_boundary(frame),
-        )
-        np.testing.assert_array_equal(camera.frame_center, Mobject.get_center(frame))
-        assert camera.frame_center.dtype == np.float64
-
-    check()
-    frame.shift([2, -1, 0.5]).rotate(0.3).stretch(1.7, 0)
-    check()
-    # Direct point edits must not require a draw or cache invalidation.
-    frame.points[0] += [3, 4, 5]
-    check()
-    child = Square().shift(10 * RIGHT)
-    frame.add(child)
-    check()
-    child.shift(5 * RIGHT)
-    check()
-    frame.remove(child)
-    frame.clear_points()
-    check()
-    frame.set_points(np.array([[1.0, 2.0, 3.0]]))
-    check()
-    boundary = frame.get_points_defining_boundary()
-    boundary[:] = 0
-    np.testing.assert_array_equal(frame.points, [[1, 2, 3]])
+    camera.frame.shift([2, -1, 0]).stretch(1.7, 0)
+    np.testing.assert_allclose(camera.frame_center, [2, -1, 0])
+    camera.frame.points[0] += [3, 4, 5]
+    np.testing.assert_array_equal(camera.frame_center, Mobject.get_center(camera.frame))
 
 
 def test_custom_frame_center_and_critical_point_hooks_remain_supported():

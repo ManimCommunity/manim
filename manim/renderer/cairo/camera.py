@@ -42,29 +42,6 @@ if TYPE_CHECKING:
     )
 
 
-class _CameraFrame(ScreenRectangle):
-    """Frame whose center is computed directly from its boundary points."""
-
-    def get_points_defining_boundary(self) -> Point3D_Array:
-        if self.submobjects or len(self.points) <= 1:
-            return super().get_points_defining_boundary()
-        # Use VMobject's boundary anchors directly for a frame without submobjects.
-        # These also give the bounds when the frame has been deformed.
-        curves = self.points.reshape(
-            -1, self.n_points_per_cubic_curve, self.points.shape[1]
-        )
-        return curves[:, [0, -1], :].reshape(-1, self.points.shape[1])
-
-    def get_center(self) -> Point3D:
-        points = self.get_points_defining_boundary()
-        if len(points) == 0:
-            return np.zeros(self.dim)
-        # Projecting many small mobjects asks for this center repeatedly. Reduce
-        # all axes together instead of the generic per-axis critical-point path.
-        points = points[:, : self.dim]
-        return ((points.min(axis=0) + points.max(axis=0)) / 2).astype(float, copy=False)
-
-
 class Camera:
     """Configure the camera view and background for Cairo rendering.
 
@@ -110,7 +87,7 @@ class Camera:
             )
             if resolved_height <= 0 or resolved_width <= 0:
                 raise ValueError("Camera frame dimensions must be positive.")
-            frame = _CameraFrame(
+            frame = ScreenRectangle(
                 aspect_ratio=resolved_width / resolved_height,
                 height=resolved_height,
             )
