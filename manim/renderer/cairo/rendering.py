@@ -89,7 +89,6 @@ class _CairoDrawingContext:
                 f"Displaying an object of class {type(mobject).__name__} is not supported",
             )
 
-        self.camera._prepare_for_render()
         with self.camera._drawing():
             to_display = self.camera.get_mobjects_to_display(
                 mobjects,

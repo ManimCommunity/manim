@@ -302,9 +302,6 @@ class Camera:
             )
         return bounds
 
-    def _prepare_for_render(self) -> None:
-        """Update derived camera values before drawing."""
-
     @contextlib.contextmanager
     def _drawing(self) -> Iterator[None]:
         """Scope in which one frame is drawn; the camera does not change in it."""
@@ -419,10 +416,6 @@ class ThreeDCamera(Camera):
         self.fixed_orientation_mobjects: dict[Mobject, Callable[[], Point3D]] = {}
         self.fixed_in_frame_mobjects: set[Mobject] = set()
         self._view: tuple[Point3D, float, float, MatrixMN] | None = None
-        self.reset_rotation_matrix()
-
-    def _prepare_for_render(self) -> None:
-        self.reset_rotation_matrix()
 
     @contextlib.contextmanager
     def _drawing(self) -> Iterator[None]:
@@ -650,20 +643,29 @@ class ThreeDCamera(Camera):
         self.zoom_tracker.set_value(value)
 
     def reset_rotation_matrix(self) -> None:
-        """Sets the value of self.rotation_matrix to
-        the matrix corresponding to the current position of the camera
+        """Do nothing: the rotation matrix is computed from the angles when read.
+
+        Kept for code that called it after changing the angles.
         """
-        self.rotation_matrix = self.generate_rotation_matrix()
 
     def get_rotation_matrix(self) -> MatrixMN:
-        """Returns the matrix corresponding to the current position of the camera.
+        """Return the rotation matrix for the camera's current angles.
 
         Returns
         -------
-        np.array
-            The matrix corresponding to the current position of the camera.
+        numpy.ndarray
+            The rotation matrix, computed from the angle trackers when called.
         """
-        return self.rotation_matrix
+        return self.generate_rotation_matrix()
+
+    @property
+    def rotation_matrix(self) -> MatrixMN:
+        """The rotation matrix for the camera's current angles (read-only).
+
+        Change the angle trackers, or use setters such as :meth:`set_theta`, to
+        rotate the camera.
+        """
+        return self.get_rotation_matrix()
 
     def generate_rotation_matrix(self) -> MatrixMN:
         """Generates a rotation matrix based off the current position of the camera.
