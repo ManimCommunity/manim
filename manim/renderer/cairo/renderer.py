@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterable
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Self
 
 from PIL import Image
 
@@ -52,19 +52,20 @@ class CairoRenderer:
         if camera is not None and camera_class is not None:
             raise ValueError("Pass either camera or camera_class, not both.")
         self._file_writer_class = file_writer_class
-        camera_cls = camera_class if camera_class is not None else Camera
-        self.camera = camera if camera is not None else camera_cls()
+        if camera is None:
+            camera = Camera() if camera_class is None else camera_class()
+        self.camera = camera
         self._original_skipping_status = skip_animations
         self.skip_animations = skip_animations
         self.animations_hashes: list[str | None] = []
         self.num_plays = 0
         self.time = 0.0
-        self._frame_rate = float(config["frame_rate"])
+        self._frame_rate = config.frame_rate
         settings = _raster_settings or _CairoRasterSettings(
-            pixel_width=int(config["pixel_width"]),
-            pixel_height=int(config["pixel_height"]),
-            base_pixel_width=int(config["pixel_width"]),
-            base_pixel_height=int(config["pixel_height"]),
+            pixel_width=config.pixel_width,
+            pixel_height=config.pixel_height,
+            base_pixel_width=config.pixel_width,
+            base_pixel_height=config.pixel_height,
         )
         # Image files read for this renderer, shared by all its targets.
         self._image_files = _ImageFiles()
@@ -86,7 +87,7 @@ class CairoRenderer:
         file_writer_settings: _SceneFileWriterSettings,
     ) -> None:
         self._ensure_open()
-        self.file_writer: Any = self._file_writer_class(file_writer_settings)
+        self.file_writer = self._file_writer_class(file_writer_settings)
 
     def play(
         self,
@@ -104,7 +105,7 @@ class CairoRenderer:
             hash_current_animation = None
             self.time += scene.duration
         else:
-            if config["disable_caching"]:
+            if config.disable_caching:
                 logger.info("Caching disabled.")
                 hash_current_animation = f"uncached_{self.num_plays:05}"
             else:
@@ -423,6 +424,12 @@ class CairoRenderer:
                 self.static_image = None
                 self.update_frame(scene)
             self.file_writer.save_image(self.get_frame())
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(self, *exc_info: object) -> None:
+        self.close()
 
     def close(self) -> None:
         """Release all Cairo targets and static pixels; subsequent drawing fails."""

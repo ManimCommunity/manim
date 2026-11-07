@@ -1011,15 +1011,13 @@ class Mobject:
         Pass a ``camera`` to select the view, or omit it to create a default
         :class:`.Camera`. To use a scene's current view, pass ``camera=scene.camera``.
         """
+        # Import here: the camera and renderer modules import this module.
         from manim.renderer.cairo import CairoRenderer
         from manim.renderer.cairo.camera import Camera
 
-        renderer = CairoRenderer(camera=Camera() if camera is None else camera)
-        try:
+        with CairoRenderer(camera=Camera() if camera is None else camera) as renderer:
             renderer.render_mobjects([self])
             return renderer.get_image()
-        finally:
-            renderer.close()
 
     def show(self, camera: Camera | None = None) -> None:
         self.get_image(camera=camera).show()

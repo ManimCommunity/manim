@@ -464,3 +464,10 @@ def test_auto_zoom_to_a_point_needs_a_margin():
     assert camera.frame.height == pytest.approx(1)
     camera.auto_zoom([Square()], animate=False)
     assert camera.frame.height == pytest.approx(2)
+
+
+def test_a_cairo_renderer_closes_at_the_end_of_a_with_block():
+    with CairoRenderer() as renderer:
+        renderer.render_mobjects([Square()])
+    with pytest.raises(RuntimeError, match="closed"):
+        renderer.render_mobjects([Square()])
