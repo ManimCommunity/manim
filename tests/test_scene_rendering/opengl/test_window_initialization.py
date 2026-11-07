@@ -39,6 +39,22 @@ def test_windows_activation_binds_native_context_before_updating_pyglet(
     calls.bind.assert_called_once_with(2, 1)
 
 
+def test_windows_activation_fails_loudly_without_the_native_context(monkeypatch):
+    # The native context is a private Pyglet attribute; if a Pyglet version
+    # drops it, activation must say so instead of failing obscurely.
+    from manim.renderer.opengl import window as window_module
+
+    bind = Mock()
+    context = SimpleNamespace(canvas=SimpleNamespace(hdc=2), set_current=Mock())
+    monkeypatch.setattr(window_module.sys, "platform", "win32")
+    monkeypatch.setattr(
+        window_module.gl, "wgl", SimpleNamespace(wglMakeCurrent=bind), raising=False
+    )
+    with pytest.raises(RuntimeError, match="native WGL context"):
+        window_module._activate_pyglet_context(context)
+    bind.assert_not_called()
+
+
 @pytest.mark.parametrize("operation", ["snapshot", "render"])
 def test_first_preview_after_offscreen_retirement(tmp_path, operation):
     # A previous preview can cache WGL function pointers and conceal this failure.

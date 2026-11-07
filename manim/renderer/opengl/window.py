@@ -23,8 +23,17 @@ def _activate_pyglet_context(context: Any) -> None:
         from pyglet.gl import wgl
 
         # glcontext can change the native binding without updating Pyglet's cache.
-        # set_current() alone may then skip the wglMakeCurrent call we need.
-        if not wgl.wglMakeCurrent(context.canvas.hdc, context._context):
+        # set_current() alone may then skip the wglMakeCurrent call we need: it
+        # makes the context current only if Pyglet thinks it is not. Pyglet has no
+        # public handle to the native context, so this reads the one set_current()
+        # itself uses (pyglet.gl.win32._BaseWin32Context._context).
+        native = getattr(context, "_context", None)
+        if native is None:
+            raise RuntimeError(
+                "Cannot activate the window's OpenGL context: this Pyglet version "
+                "does not keep the native WGL context in Win32Context._context."
+            )
+        if not wgl.wglMakeCurrent(context.canvas.hdc, native):
             raise RuntimeError("Failed to activate the window's OpenGL context.")
     context.set_current()
 
