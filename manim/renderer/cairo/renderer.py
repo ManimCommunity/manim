@@ -283,9 +283,13 @@ class CairoRenderer:
         mobjects: Iterable[Mobject] | None = None,
         include_submobjects: bool = True,
         ignore_skipping: bool = True,
-        **kwargs: Any,
+        *,
+        excluded_mobjects: list[Mobject] | None = None,
     ) -> None:
-        """Render one scene state into the owned Cairo target."""
+        """Render one scene state into the owned Cairo target.
+
+        ``excluded_mobjects`` and their families are left out of the frame.
+        """
         self._ensure_open()
         if self.skip_animations and not ignore_skipping:
             return
@@ -300,7 +304,7 @@ class CairoRenderer:
             camera=self.camera,
             mobjects=mobjects,
             include_submobjects=include_submobjects,
-            excluded_mobjects=kwargs.get("excluded_mobjects"),
+            excluded_mobjects=excluded_mobjects,
         )
 
     def render_mobjects(

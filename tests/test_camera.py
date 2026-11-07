@@ -395,3 +395,16 @@ def test_3d_camera_computes_its_view_once_per_frame(monkeypatch):
         finally:
             renderer.close()
     assert len(reads) <= 2
+
+
+def test_update_frame_leaves_out_excluded_mobjects():
+    with tempconfig({"pixel_width": 16, "pixel_height": 8}):
+        renderer = CairoRenderer()
+        square = Square(fill_opacity=1, color=RED).scale(4)
+        try:
+            renderer.update_frame(None, mobjects=[square], excluded_mobjects=[square])
+            assert np.all(renderer.get_frame()[..., :3] == 0)
+            renderer.update_frame(None, mobjects=[square])
+            assert np.any(renderer.get_frame()[..., 0] > 0)
+        finally:
+            renderer.close()
