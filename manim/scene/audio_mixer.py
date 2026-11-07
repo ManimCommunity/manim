@@ -87,9 +87,12 @@ def _probe_unchanged(path: str, mtime_ns: int, size: int) -> float | None:
 
 
 def _decode(path: Path) -> np.ndarray:
-    """Decode the first audio stream of ``path`` to float32 stereo samples.
+    """Decode the first audio stream of ``path`` to 16-bit stereo samples.
 
-    The result has shape ``(2, n)`` at :data:`SAMPLE_RATE`. Mono sources are copied
+    The result has shape ``(2, n)`` at :data:`SAMPLE_RATE`, as ``int16``: decoded
+    sounds stay in memory while the movie and its sections are assembled, and
+    16 bits take half the memory of floats (as pydub did). The mixer converts
+    the samples it needs block by block; see :func:`_to_float`. Mono sources are copied
     to both channels at full level; sources with more than two channels are
     downmixed by libswresample.
 
@@ -103,7 +106,7 @@ def _decode(path: Path) -> np.ndarray:
             stream = container.streams.audio[0]
             layout = "mono" if stream.codec_context.channels == 1 else LAYOUT
             resampler = av.AudioResampler(
-                format="fltp", layout=layout, rate=SAMPLE_RATE
+                format="s16p", layout=layout, rate=SAMPLE_RATE
             )
             chunks = [
                 resampled.to_ndarray()
@@ -117,14 +120,24 @@ def _decode(path: Path) -> np.ndarray:
     samples = (
         np.concatenate(chunks, axis=1)
         if chunks
-        else np.zeros((channels, 0), dtype=np.float32)
+        else np.zeros((channels, 0), dtype=np.int16)
     )
     if channels == 1:
         samples = np.repeat(samples, 2, axis=0)
-    return samples.astype(np.float32, copy=False)
+    return samples.astype(np.int16, copy=False)
+
+
+_INT16_SCALE = 2**15
+"""Samples of 16-bit audio per unit of level: int16 covers ``[-1, 1)``."""
+
+
+def _to_float(samples: np.ndarray) -> np.ndarray:
+    """Convert 16-bit samples to float32 in ``[-1, 1)``."""
+    return samples.astype(np.float32) / _INT16_SCALE
 
 
 def _db_to_factor(gain: float) -> float:
+    """The amplitude factor of a gain in decibels: ``20 * log10(factor) == gain``."""
     return float(10 ** (gain / 20))
 
 
@@ -217,9 +230,9 @@ class _SoundMix:
                     if sound.gain_to_background is not None:
                         region *= _db_to_factor(sound.gain_to_background)
                     offset = source_start + low - movie_start
-                    source = samples[:, offset : offset + high - low]
+                    source = _to_float(samples[:, offset : offset + high - low])
                     if sound.gain is not None:
-                        source = source * _db_to_factor(sound.gain)
+                        source *= _db_to_factor(sound.gain)
                     region += source
             np.clip(block, -1.0, 1.0, out=block)
             yield block

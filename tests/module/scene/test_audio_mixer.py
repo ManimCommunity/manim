@@ -12,6 +12,7 @@ from manim.scene.audio_mixer import (
     _probe_duration,
     _Sound,
     _SoundMix,
+    _to_float,
 )
 from tests.helpers import audio
 
@@ -31,7 +32,15 @@ def samples(seconds: float) -> int:
 def test_decode_copies_mono_to_both_channels_at_full_level(tmp_path):
     # libswresample's mono-to-stereo upmix lowers the level by 3 dB.
     decoded = _decode(write_wav(tmp_path / "mono.wav", value=0.5))
-    np.testing.assert_allclose(decoded, 0.5, atol=1e-4)
+    np.testing.assert_allclose(_to_float(decoded), 0.5, atol=1e-4)
+
+
+def test_decoded_sounds_are_kept_with_16_bits(tmp_path):
+    # Sounds stay in memory while the movie is assembled: half the memory of
+    # float32 samples.
+    decoded = _decode(write_wav(tmp_path / "mono.wav", value=0.5))
+    assert decoded.dtype == np.int16
+    assert decoded.shape[0] == 2
 
 
 def test_audio_that_cannot_be_decoded_raises_a_value_error(tmp_path):
