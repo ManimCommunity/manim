@@ -79,6 +79,7 @@ class ThreeDCamera(Camera):
         self.zoom_tracker = ValueTracker(self.zoom)
         self.fixed_orientation_mobjects: dict[Mobject, Callable[[], Point3D]] = {}
         self.fixed_in_frame_mobjects: set[Mobject] = set()
+        self._fixed_in_frame_mobject_roots: dict[Mobject, bool] = {}
         self.reset_rotation_matrix()
 
     @property
@@ -90,6 +91,7 @@ class ThreeDCamera(Camera):
         self._frame_center.move_to(point)
 
     def capture_mobjects(self, mobjects: Iterable[Mobject], **kwargs: Any) -> None:
+        self._refresh_fixed_in_frame_mobjects()
         self.reset_rotation_matrix()
         super().capture_mobjects(mobjects, **kwargs)
 
@@ -427,8 +429,7 @@ class ThreeDCamera(Camera):
         **mobjects
             The mobject to fix in frame.
         """
-        for mobject in extract_mobject_family_members(mobjects):
-            self.fixed_in_frame_mobjects.add(mobject)
+        self._set_fixed_in_frame_mobjects(mobjects, fixed=True)
 
     def remove_fixed_orientation_mobjects(self, *mobjects: Mobject) -> None:
         """If a mobject was fixed in its orientation by passing it through
@@ -454,6 +455,34 @@ class ThreeDCamera(Camera):
         mobjects
             The mobjects which need not be fixed in frame any longer.
         """
-        for mobject in extract_mobject_family_members(mobjects):
-            if mobject in self.fixed_in_frame_mobjects:
-                self.fixed_in_frame_mobjects.remove(mobject)
+        self._set_fixed_in_frame_mobjects(mobjects, fixed=False)
+
+    def _set_fixed_in_frame_mobjects(
+        self, mobjects: Iterable[Mobject], *, fixed: bool
+    ) -> None:
+        for mobject in mobjects:
+            # A later registration replaces earlier decisions within its family.
+            for member in extract_mobject_family_members((mobject,)):
+                self._fixed_in_frame_mobject_roots.pop(member, None)
+            self._fixed_in_frame_mobject_roots[mobject] = fixed
+        self._refresh_fixed_in_frame_mobjects()
+
+    def _refresh_fixed_in_frame_mobjects(self) -> None:
+        # Retain roots rather than replaced descendants, expanding after updaters
+        # have run. Registration order preserves nested unfix/refix behavior.
+        self.fixed_in_frame_mobjects.clear()
+        registered_family: set[Mobject] = set()
+        unfixed_families: dict[Mobject, list[Mobject]] = {}
+        for root, fixed in self._fixed_in_frame_mobject_roots.items():
+            family = extract_mobject_family_members((root,))
+            if fixed:
+                registered_family.update(family)
+                self.fixed_in_frame_mobjects.update(family)
+            else:
+                self.fixed_in_frame_mobjects.difference_update(family)
+                unfixed_families[root] = family
+
+        # Detached exclusions must not keep expired children alive either.
+        for root, family in unfixed_families.items():
+            if registered_family.isdisjoint(family):
+                del self._fixed_in_frame_mobject_roots[root]
