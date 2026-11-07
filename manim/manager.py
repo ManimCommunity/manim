@@ -204,17 +204,23 @@ class Manager(Generic[SceneT]):
             except BaseException as error:
                 failures.append(error)
 
+        def report(start: int) -> None:
+            # The first failure is raised instead, unless a render failure is.
+            for index, failure in enumerate(failures[start:], start):
+                if failure_message is not None:
+                    logger.error(failure_message, exc_info=failure)
+                elif index > 0:
+                    logger.error("Additional Manager cleanup failure", exc_info=failure)
+
         if self._file_writer is not None:
             cleanup(self._file_writer.abort_encode_jobs)
         cleanup(self.renderer.close)
-        # Report the failures while the log file is still open.
-        if failure_message is not None:
-            for failure in failures:
-                logger.error(failure_message, exc_info=failure)
-        else:
-            for secondary in failures[1:]:
-                logger.error("Additional Manager cleanup failure", exc_info=secondary)
+        # Report these while the log file is still open; a failure to close it
+        # can only go to the remaining handlers.
+        report(0)
+        reported = len(failures)
         cleanup(self._close_log_handler)
+        report(reported)
         self._state = _State.CLOSE_FAILED if failures else _State.CLOSED
         if failures and failure_message is None:
             raise failures[0]

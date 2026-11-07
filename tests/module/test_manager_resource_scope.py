@@ -195,3 +195,26 @@ def test_a_failed_close_after_a_render_is_not_cleaned_up_again(
     manager.close()
     assert manager._state is _State.CLOSED
 
+
+def test_a_failure_to_close_the_log_after_a_failed_render_is_logged(
+    managed_scene, monkeypatch
+):
+    records = []
+    recorder = logging.Handler()
+    recorder.emit = records.append
+    logger.addHandler(recorder)
+    monkeypatch.setattr(managed_scene, "construct", Mock(side_effect=ValueError))
+    manager = Manager(managed_scene)
+    monkeypatch.setattr(
+        manager, "_close_log_handler", Mock(side_effect=OSError("disk full"))
+    )
+    try:
+        with pytest.raises(ValueError):
+            manager.render()
+    finally:
+        logger.removeHandler(recorder)
+        monkeypatch.undo()
+    assert [str(r.exc_info[1]) for r in records if r.exc_info] == ["disk full"]
+    assert manager._state is _State.CLOSE_FAILED
+    manager.close()
+    assert manager._state is _State.CLOSED
