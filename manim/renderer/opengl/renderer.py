@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import contextlib
+import dataclasses
 import itertools as it
 import threading
 import time
@@ -55,6 +56,16 @@ __all__ = ["OpenGLRenderer"]
 
 # Remember the active Manim renderer on each thread so captures can restore it.
 _active_context = threading.local()
+
+
+@dataclasses.dataclass(frozen=True)
+class _SceneSettings:
+    """What an OpenGL renderer draws a scene with, saved when it is bound to it."""
+
+    pixel_size: tuple[int, int]
+    wireframe: bool
+    #: The preview window to open, if any.
+    window: _WindowSettings | None
 
 
 class OpenGLRenderer:
@@ -156,17 +167,35 @@ class OpenGLRenderer:
         self._ensure_not_closed()
         if hasattr(self, "scene"):
             raise RuntimeError("This renderer is already bound to a Scene.")
+        self.background_color = config["background_color"]
+        self._bind(
+            scene,
+            _SceneSettings(
+                pixel_size=(int(config.pixel_width), int(config.pixel_height)),
+                wireframe=config.enable_wireframe,
+                window=(
+                    _WindowSettings.from_config(config)
+                    if self.should_create_window(session_spec)
+                    else None
+                ),
+            ),
+        )
+
+    def _bind(self, scene: Scene, settings: _SceneSettings) -> None:
         self.partial_movie_files: list[str | None] = []
         self.scene = scene
+        self._settings = settings
 
-        self.background_color = config["background_color"]
-        self._pixel_size = (int(config.pixel_width), int(config.pixel_height))
-        self._wireframe = config.enable_wireframe
-        self._window_settings = (
-            _WindowSettings.from_config(config)
-            if self.should_create_window(session_spec)
-            else None
-        )
+    @classmethod
+    def _image_renderer(cls, of: OpenGLRenderer) -> OpenGLRenderer:
+        """An offscreen renderer drawing images of ``of``'s scene as ``of`` would:
+        same camera, background and settings, but no window.
+        """
+        renderer = cls()
+        renderer.camera = of.camera
+        renderer.background_color = of.background_color
+        renderer._bind(of.scene, dataclasses.replace(of._settings, window=None))
+        return renderer
 
     def _ensure_not_closed(self) -> None:
         if self._closed or self._retiring:
@@ -197,10 +226,10 @@ class OpenGLRenderer:
         resources = contextlib.ExitStack()
         try:
             window = None
-            if self._window_settings is not None:
+            if self._settings.window is not None:
                 from .window import Window
 
-                window = Window(self, _settings=self._window_settings)
+                window = Window(self, _settings=self._settings.window)
                 resources.callback(window.close)
                 # Closing the window also releases its context and default framebuffer.
                 context = window.ctx
@@ -211,7 +240,9 @@ class OpenGLRenderer:
                 except Exception:
                     context = moderngl.create_context(standalone=True, backend="egl")
                 resources.callback(context.release)
-                frame = self.get_frame_buffer_object(context, 0, size=self._pixel_size)
+                frame = self.get_frame_buffer_object(
+                    context, 0, size=self._settings.pixel_size
+                )
                 for color in frame.color_attachments:
                     resources.callback(color.release)
                 if frame.depth_attachment is not None:
@@ -219,7 +250,7 @@ class OpenGLRenderer:
                 resources.callback(frame.release)
                 frame.use()
             context.enable(moderngl.BLEND)
-            context.wireframe = self._wireframe
+            context.wireframe = self._settings.wireframe
             context.blend_func = (
                 moderngl.SRC_ALPHA,
                 moderngl.ONE_MINUS_SRC_ALPHA,
@@ -799,13 +830,7 @@ class OpenGLRenderer:
                 raise RuntimeError(
                     "GPU-backed meshes require a live OpenGL context for inspection."
                 )
-            temporary = OpenGLRenderer()
-            temporary.scene = scene
-            temporary.camera = self.camera
-            temporary._background_color = self._background_color.copy()
-            temporary._pixel_size = self._pixel_size
-            temporary._wireframe = self._wireframe
-            temporary._window_settings = None
+            temporary = OpenGLRenderer._image_renderer(self)
             self._capturing_image = True
             try:
                 try:

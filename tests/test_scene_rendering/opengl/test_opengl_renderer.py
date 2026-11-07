@@ -153,3 +153,16 @@ def test_pixel_coords_to_space_coords(config, using_opengl_renderer):
         renderer.pixel_coords_to_space_coords(px, py, top_left=True)
         == np.array([ex, -ey, ez])
     ).all()
+
+
+def test_scene_images_are_drawn_with_the_scene_settings(config, using_opengl_renderer):
+    # Without an open context, images are drawn by an offscreen renderer that
+    # takes the scene renderer's size, camera and background, and no window.
+    config.live_preview = False
+    config.pixel_width, config.pixel_height = 64, 36
+    scene = SquareToCircle()
+    scene.renderer.background_color = "#FF0000"
+    image = scene.get_image()
+    assert image.size == (64, 36)
+    assert image.getpixel((0, 0))[:3] == (255, 0, 0)
+    assert scene.renderer._context is None
