@@ -21,21 +21,13 @@ def __getattr__(name: str) -> Any:
     if name not in __all__:
         raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
-    value: Any
-    if name == "CairoRenderer":
-        from .renderer import CairoRenderer
+    # Import on first use: the renderer and cameras import much of manim.
+    import importlib
 
-        value = CairoRenderer
-    else:
-        from .camera import Camera, MovingCamera, MultiCamera, ThreeDCamera
-
-        camera_classes: dict[str, Any] = {
-            "Camera": Camera,
-            "MovingCamera": MovingCamera,
-            "MultiCamera": MultiCamera,
-            "ThreeDCamera": ThreeDCamera,
-        }
-        value = camera_classes[name]
+    module = importlib.import_module(
+        ".renderer" if name == "CairoRenderer" else ".camera", __name__
+    )
+    value: Any = getattr(module, name)
 
     globals()[name] = value
     return value

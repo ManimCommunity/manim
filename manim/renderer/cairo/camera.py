@@ -74,7 +74,7 @@ class Camera:
         if frame is None:
             if frame_width is None:
                 resolved_width = (
-                    float(config["frame_width"])
+                    config.frame_width
                     if frame_height is None
                     else frame_height * config.aspect_ratio
                 )
@@ -109,14 +109,14 @@ class Camera:
             self.frame_center = frame_center
 
         self._background_color = ManimColor(
-            config["background_color"]
-            if background_color is None
-            else background_color,
+            background_color
+            if background_color is not None
+            else config.background_color
         )
         self._background_opacity = (
-            config["background_opacity"]
-            if background_opacity is None
-            else background_opacity
+            background_opacity
+            if background_opacity is not None
+            else config.background_opacity
         )
 
     @property
