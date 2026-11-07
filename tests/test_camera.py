@@ -15,6 +15,7 @@ from manim import (
     UP,
     Camera,
     CapStyleType,
+    Dot,
     ImageMobject,
     ImageMobjectFromCamera,
     LineJointType,
@@ -450,3 +451,16 @@ def test_moving_camera_classes_are_deprecated(manim_caplog):
     manim_caplog.clear()
     ZoomedScene()
     assert "deprecated" not in manim_caplog.text
+
+
+def test_auto_zoom_to_a_point_needs_a_margin():
+    # Zooming to a mobject without size gave the frame no size, and every
+    # later zoom divided by it.
+    camera = Camera()
+    with pytest.raises(ValueError, match="without width or height"):
+        camera.auto_zoom([Dot().scale(0)], animate=False)
+    assert camera.frame.width > 0
+    camera.auto_zoom([Dot().scale(0)], margin=1, animate=False)
+    assert camera.frame.height == pytest.approx(1)
+    camera.auto_zoom([Square()], animate=False)
+    assert camera.frame.height == pytest.approx(2)

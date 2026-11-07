@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Any, Literal, overload
 import numpy as np
 
 from manim._config import config
-from manim.constants import DEGREES, DOWN, LEFT, ORIGIN, OUT, RIGHT, UP
+from manim.constants import DEGREES, DOWN, LEFT, ORIGIN, OUT, RIGHT
 from manim.mobject.frame import ScreenRectangle
 from manim.mobject.mobject import Mobject, _AnimationBuilder
 from manim.mobject.three_d.three_d_utils import (
@@ -231,19 +231,33 @@ class Camera:
         only_mobjects_in_frame: bool = False,
         animate: bool = True,
     ) -> _AnimationBuilder | Mobject:
-        """Move and resize the frame to contain the supplied 2D mobjects."""
-        (
-            left,
-            right,
-            top,
-            bottom,
-        ) = self._get_bounding_box(mobjects, only_mobjects_in_frame)
+        """Move and resize the frame to contain the supplied 2D mobjects.
+
+        The frame keeps its aspect ratio and fits the mobjects' bounding box in
+        the direction that needs the larger frame; ``margin`` is added to that
+        width or height (in total, not on each side).
+
+        Raises
+        ------
+        ValueError
+            If the mobjects have neither width nor height and ``margin`` is not
+            positive: the frame would have no size.
+        """
+        left, right, top, bottom = self._get_bounding_box(
+            mobjects, only_mobjects_in_frame
+        )
         x = (left + right) / 2
         y = (top + bottom) / 2
-        new_width = abs(left - right)
-        new_height = abs(top - bottom)
+        new_width = right - left
+        new_height = top - bottom
+        if max(new_width, new_height) + margin <= 0:
+            raise ValueError(
+                "Camera.auto_zoom() cannot zoom to mobjects without width or "
+                "height unless margin is positive."
+            )
         target = self.frame.animate if animate else self.frame
-        if new_width / self.frame.width > new_height / self.frame.height:
+        # Compare new_width / width with new_height / height without dividing.
+        if new_width * self.frame.height > new_height * self.frame.width:
             return target.set_x(x).set_y(y).set(width=new_width + margin)
         return target.set_x(x).set_y(y).set(height=new_height + margin)
 
@@ -259,10 +273,10 @@ class Camera:
             ):
                 continue
             mobject_bounds = (
-                float(mobject.get_critical_point(LEFT)[0]),
-                float(mobject.get_critical_point(RIGHT)[0]),
-                float(mobject.get_critical_point(UP)[1]),
-                float(mobject.get_critical_point(DOWN)[1]),
+                float(mobject.get_left()[0]),
+                float(mobject.get_right()[0]),
+                float(mobject.get_top()[1]),
+                float(mobject.get_bottom()[1]),
             )
             if bounds is None:
                 bounds = mobject_bounds
