@@ -456,7 +456,6 @@ def _determine_graph_layout(
     layout_scale: float | tuple[float, float, float] = 2,
     layout_config: dict[str, Any] | None = None,
 ) -> dict[Hashable, Point3DLike]:
-    import networkx as nx
 
     if layout_config is None:
         layout_config = {}
