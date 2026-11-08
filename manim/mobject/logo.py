@@ -12,7 +12,7 @@ from manim.animation.updaters.update import UpdateFromAlphaFunc
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square, Triangle
 from manim.mobject.mobject import Mobject
-from manim.typing import Point3DLike, Vector3D, Vector3DLike
+from manim.typing import Vector3D
 
 from .. import constants as cst
 from ..animation.animation import override_animation
@@ -184,14 +184,7 @@ class ManimBanner(VGroup):
         # and thus not yet added to the submobjects of self.
         self.anim = anim
 
-    def scale(
-        self,
-        scale_factor: float,
-        scale_stroke: bool = False,
-        *,
-        about_point: Point3DLike | None = None,
-        about_edge: Vector3DLike | None = None,
-    ) -> Self:
+    def scale(self, scale_factor: float, scale_stroke: bool = False, **kwargs) -> Self:
         """Scale the banner by the specified scale factor.
 
         Parameters
@@ -215,15 +208,8 @@ class ManimBanner(VGroup):
         self.scale_factor *= scale_factor
         # Note: self.anim is only added to self after expand()
         if self.anim not in self.submobjects:
-            self.anim.scale(
-                scale_factor,
-                scale_stroke,
-                about_point=about_point,
-                about_edge=about_edge,
-            )
-        super().scale(
-            scale_factor, scale_stroke, about_point=about_point, about_edge=about_edge
-        )
+            self.anim.scale(scale_factor, scale_stroke, **kwargs)
+        super().scale(scale_factor, scale_stroke, **kwargs)
         return self
 
     @override_animation(Create)
@@ -327,12 +313,12 @@ class ManimBanner(VGroup):
             for letter in mob.anim:
                 if mob.square.get_center()[0] > letter.get_center()[0]:
                     letter.set_opacity(1)
-                    self.add_to_back(letter)
+                    mob.add_to_back(letter)
 
             # Finish animation
             if alpha == 1:
-                self.remove(*[self.anim])
-                self.add_to_back(self.anim)
+                mob.remove(*[mob.anim])
+                mob.add_to_back(mob.anim)
                 mob.shapes.set_z_index(0)
                 mob.shapes.save_state()
                 mob.M.save_state()
