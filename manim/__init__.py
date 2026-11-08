@@ -23,6 +23,8 @@ from ._config import *
 from .utils.commands import *
 
 # isort: on
+import sys as _sys
+
 import numpy as np
 
 from .animation.animation import *
@@ -107,15 +109,16 @@ from .utils.space_ops import *
 from .utils.tex import *
 from .utils.tex_templates import *
 
-try:
-    from IPython import get_ipython
+if "IPython" in _sys.modules:
+    try:
+        from IPython.core.getipython import get_ipython
 
-    from .utils.ipython_magic import ManimMagic
-except ImportError:
-    pass
-else:
-    ipy = get_ipython()
-    if ipy is not None:
-        ipy.register_magics(ManimMagic)
+        from .utils.ipython_magic import ManimMagic
+    except ImportError:
+        pass
+    else:
+        ipy = get_ipython()
+        if ipy is not None:
+            ipy.register_magics(ManimMagic)
 
 from .plugins import *
