@@ -12,11 +12,12 @@ from collections.abc import Hashable, Iterable, Sequence
 from copy import copy
 from typing import TYPE_CHECKING, Any, Literal, Protocol, Self, cast
 
-import networkx as nx
 import numpy as np
 
 if TYPE_CHECKING:
     from typing import TypeAlias
+
+    import networkx as nx
 
     from manim.scene.scene import Scene
     from manim.typing import Point3D, Point3DLike
@@ -287,6 +288,8 @@ def _partite_layout(
     partitions: Sequence[Sequence[Hashable]] | None = None,
     **kwargs: Any,
 ) -> dict[Hashable, Point3D]:
+    import networkx as nx
+
     if partitions is None or len(partitions) == 0:
         raise ValueError(
             "The partite layout requires partitions parameter to contain the partition of the vertices",
@@ -308,6 +311,8 @@ def _partite_layout(
 
 
 def _random_layout(nx_graph: NxGraph, scale: float = 2, **kwargs: Any):
+    import networkx as nx
+
     # the random layout places coordinates in [0, 1)
     # we need to rescale manually afterwards...
     auto_layout = nx.layout.random_layout(nx_graph, **kwargs)
@@ -323,6 +328,8 @@ def _tree_layout(
     vertex_spacing: tuple | None = None,
     orientation: str = "down",
 ):
+    import networkx as nx
+
     if root_vertex is None:
         raise ValueError("The tree layout requires the root_vertex parameter")
     if not nx.is_tree(T):
@@ -427,18 +434,20 @@ LayoutName = Literal[
     "tree",
 ]
 
-_layouts: dict[LayoutName, LayoutFunction] = {
-    "circular": cast(LayoutFunction, nx.layout.circular_layout),
-    "kamada_kawai": cast(LayoutFunction, nx.layout.kamada_kawai_layout),
-    "partite": cast(LayoutFunction, _partite_layout),
-    "planar": cast(LayoutFunction, nx.layout.planar_layout),
-    "random": cast(LayoutFunction, _random_layout),
-    "shell": cast(LayoutFunction, nx.layout.shell_layout),
-    "spectral": cast(LayoutFunction, nx.layout.spectral_layout),
-    "spiral": cast(LayoutFunction, nx.layout.spiral_layout),
-    "spring": cast(LayoutFunction, nx.layout.spring_layout),
-    "tree": cast(LayoutFunction, _tree_layout),
-}
+
+def _get_layouts() -> dict[LayoutName, LayoutFunction]:
+    return {
+        "circular": cast(LayoutFunction, nx.layout.circular_layout),
+        "kamada_kawai": cast(LayoutFunction, nx.layout.kamada_kawai_layout),
+        "partite": cast(LayoutFunction, _partite_layout),
+        "planar": cast(LayoutFunction, nx.layout.planar_layout),
+        "random": cast(LayoutFunction, _random_layout),
+        "shell": cast(LayoutFunction, nx.layout.shell_layout),
+        "spectral": cast(LayoutFunction, nx.layout.spectral_layout),
+        "spiral": cast(LayoutFunction, nx.layout.spiral_layout),
+        "spring": cast(LayoutFunction, nx.layout.spring_layout),
+        "tree": cast(LayoutFunction, _tree_layout),
+    }
 
 
 def _determine_graph_layout(
@@ -447,8 +456,12 @@ def _determine_graph_layout(
     layout_scale: float | tuple[float, float, float] = 2,
     layout_config: dict[str, Any] | None = None,
 ) -> dict[Hashable, Point3DLike]:
+    import networkx as nx
+
     if layout_config is None:
         layout_config = {}
+
+    _layouts = _get_layouts()
 
     if isinstance(layout, dict):
         return layout
@@ -1565,6 +1578,8 @@ class Graph(GenericGraph):
 
     @staticmethod
     def _empty_networkx_graph() -> nx.Graph:
+        import networkx as nx
+
         return nx.Graph()
 
     def _populate_edge_dict(
@@ -1773,6 +1788,8 @@ class DiGraph(GenericGraph):
 
     @staticmethod
     def _empty_networkx_graph() -> nx.DiGraph:
+        import networkx as nx
+
         return nx.DiGraph()
 
     def _populate_edge_dict(
