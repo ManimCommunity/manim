@@ -436,6 +436,8 @@ LayoutName = Literal[
 
 
 def _get_layouts() -> dict[LayoutName, LayoutFunction]:
+    import networkx as nx
+
     return {
         "circular": cast(LayoutFunction, nx.layout.circular_layout),
         "kamada_kawai": cast(LayoutFunction, nx.layout.kamada_kawai_layout),
@@ -456,7 +458,6 @@ def _determine_graph_layout(
     layout_scale: float | tuple[float, float, float] = 2,
     layout_config: dict[str, Any] | None = None,
 ) -> dict[Hashable, Point3DLike]:
-
     if layout_config is None:
         layout_config = {}
 
