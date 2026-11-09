@@ -12,7 +12,7 @@ from manim import Manager, Scene, tempconfig
 from manim._config.output import OutputFormat
 from manim.animation.animation import Wait
 from manim.constants import RendererType
-from manim.renderer.protocol import RendererCapabilities
+from manim.renderer.protocol import RendererCapabilities, RendererState
 from manim.scene.scene import SceneInteractRerun
 from manim.utils.exceptions import EndSceneEarlyException, RerunSceneException
 
@@ -224,7 +224,7 @@ def test_manager_render_retires_rerun_without_finishing_scene(dry_run, monkeypat
     assert manager.render() is True
 
     assert scene.renderer.num_plays == 3
-    assert scene.renderer._closed
+    assert scene.renderer.state is RendererState.CLOSED
     finish.assert_not_called()
     assert lifecycle == []
 

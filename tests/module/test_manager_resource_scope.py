@@ -7,6 +7,7 @@ import pytest
 
 from manim import Manager, Scene, logger, tempconfig
 from manim.manager import _State
+from manim.renderer.protocol import RendererState
 
 
 @pytest.fixture(params=["cairo", "opengl"])
@@ -39,9 +40,9 @@ def test_nested_inspection_scopes_retire_only_at_outer_exit(managed_scene):
     with manager:
         with manager:
             scene.render()
-        assert not scene.renderer._closed
+        assert scene.renderer.state is not RendererState.CLOSED
         assert scene.renderer.get_frame().shape == (32, 64, 4)
-    assert scene.renderer._closed
+    assert scene.renderer.state is RendererState.CLOSED
     assert manager._scope_depth == 0
 
 
@@ -52,7 +53,7 @@ def test_a_failure_in_a_nested_scope_leaves_the_manager_open(managed_scene):
         with pytest.raises(ValueError), manager:
             raise ValueError("handled by the enclosing block")
         assert scene.renderer.get_frame().shape == (32, 64, 4)
-    assert scene.renderer._closed
+    assert scene.renderer.state is RendererState.CLOSED
 
 
 def test_render_log_is_scoped_and_context_exit_retires_backend(
@@ -75,8 +76,8 @@ def test_render_log_is_scoped_and_context_exit_retires_backend(
             assert manager._log_handler is None
             assert opened[0].stream is None
             assert external in logger.handlers
-            assert not scene.renderer._closed
-        assert scene.renderer._closed
+            assert scene.renderer.state is not RendererState.CLOSED
+        assert scene.renderer.state is RendererState.CLOSED
         assert manager._state is _State.CLOSED
         assert external in logger.handlers
         assert "inside managed setup" in scene._log_file_path.read_text()
@@ -98,7 +99,7 @@ def test_render_failure_retires_backend_and_log(managed_scene, monkeypatch):
     with pytest.raises(KeyboardInterrupt) as caught:
         scene.render()
     assert caught.value is failure
-    assert scene.renderer._closed
+    assert scene.renderer.state is RendererState.CLOSED
     assert scene.manager._state is _State.CLOSED
     assert handler[0] not in logger.handlers
     assert handler[0].stream is None
@@ -116,7 +117,7 @@ def test_scene_renderer_binding_cannot_be_replaced(managed_scene):
         scene.render()
         assert manager.renderer is renderer
         assert renderer.get_frame().shape == (32, 64, 4)
-    assert renderer._closed
+    assert renderer.state is RendererState.CLOSED
 
 
 def test_play_after_render_in_scope_keeps_the_render_log(managed_scene, monkeypatch):

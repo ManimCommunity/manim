@@ -26,7 +26,7 @@ from manim.utils.exceptions import EndSceneEarlyException
 
 from ...constants import *
 from ...scene.scene_file_writer import SceneFileWriter
-from ..protocol import RendererCapabilities
+from ..protocol import RendererCapabilities, RendererState
 from .shader import Mesh, Shader, shader_program_cache
 from .vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_fill,
@@ -140,8 +140,7 @@ class OpenGLRenderer:
         self._frame_buffer_object: Framebuffer | None = None
         self._context_thread: int | None = None
         self._capturing_image = False
-        self._closed = False
-        self._retiring = False
+        self._state = RendererState.UNOPENED
         self._resources = contextlib.ExitStack()
         self._textures: list[moderngl.Texture] = []
         self._previous_renderer: weakref.ReferenceType[OpenGLRenderer] | None = None
@@ -197,9 +196,14 @@ class OpenGLRenderer:
         renderer._bind(of.scene, dataclasses.replace(of._settings, window=None))
         return renderer
 
+    @property
+    def state(self) -> RendererState:
+        """Where the renderer is in its life (read-only)."""
+        return self._state
+
     def _ensure_not_closed(self) -> None:
-        if self._closed or self._retiring:
-            raise RuntimeError("The OpenGL renderer is closed or retiring.")
+        if not self._state.accepts_work:
+            raise RuntimeError(f"The OpenGL renderer is {self._state.value}.")
 
     def open(self) -> None:
         """Create or activate the scene's OpenGL context.
@@ -276,6 +280,7 @@ class OpenGLRenderer:
         self._resources = resources.pop_all()
         self._previous_renderer = previous
         _active_context.renderer = weakref.ref(self)
+        self._state = RendererState.OPEN
 
     def _activate_context(self) -> None:
         if self.window is not None:
@@ -311,7 +316,7 @@ class OpenGLRenderer:
         a temporary context; GPU-backed meshes require their original context
         to remain open.
         """
-        if self._closed:
+        if self._state is RendererState.CLOSED:
             return
         if self._capturing_image:
             raise RuntimeError("Cannot close OpenGL resources during image capture.")
@@ -320,7 +325,7 @@ class OpenGLRenderer:
                 "OpenGL resources must be closed on their owning thread."
             )
         if self._context is None:
-            self._closed = True
+            self._state = RendererState.CLOSED
             return
         current = getattr(_active_context, "renderer", None)
         previous = (
@@ -346,7 +351,7 @@ class OpenGLRenderer:
         )
         if self._context is not None and host_alive:
             self._activate_context()
-        self._retiring = True
+        self._state = RendererState.CLOSING
         for name, program in list(shader_program_cache.items()):
             if program.ctx is self._context:
                 del shader_program_cache[name]
@@ -377,13 +382,13 @@ class OpenGLRenderer:
             self._resources.callback(
                 self._context.release if self.window is None else self.window.close
             )
+            self._state = RendererState.CLOSE_FAILED
         else:
             self._context = None
             self._frame_buffer_object = None
             self._context_thread = None
             self.window = None
-            self._retiring = False
-            self._closed = True
+            self._state = RendererState.CLOSED
         _active_context.renderer = None
         release(lambda: self._restore_renderer(previous))
         if failures:
@@ -398,8 +403,7 @@ class OpenGLRenderer:
         prior = reference() if reference is not None else None
         if (
             prior is not None
-            and not prior._closed
-            and not prior._retiring
+            and prior._state is RendererState.OPEN
             and prior._context is not None
             and not isinstance(prior._context.mglo, moderngl.InvalidObject)
             and (prior.window is None or prior.window._window.context is not None)

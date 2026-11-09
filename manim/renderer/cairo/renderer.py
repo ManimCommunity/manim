@@ -14,7 +14,7 @@ from ...mobject.types.image_mobject import ImageMobjectFromCamera
 from ...scene.scene_file_writer import SceneFileWriter
 from ...utils.exceptions import EndSceneEarlyException
 from ...utils.iterables import list_update
-from ..protocol import RendererCapabilities
+from ..protocol import RendererCapabilities, RendererState
 from .camera import Camera, MultiCamera
 from .rendering import _CairoDrawingContext
 from .target import _CairoRasterSettings, _CairoRenderTarget, _ImageFiles
@@ -74,14 +74,21 @@ class CairoRenderer:
         self._camera_view_pixels: dict[int, RGBAPixelArray] = {}
         self.static_image: RGBAPixelArray | None = None
         self._render_all_mobjects = False
-        self._closed = False
+        self._state = RendererState.UNOPENED
+
+    @property
+    def state(self) -> RendererState:
+        """Where the renderer is in its life (read-only)."""
+        return self._state
 
     def _ensure_open(self) -> None:
-        if self._closed:
-            raise RuntimeError("The Cairo renderer is closed.")
+        """Check that the renderer is not closed."""
+        if not self._state.accepts_work:
+            raise RuntimeError(f"The Cairo renderer is {self._state.value}.")
 
     def _get_target(self) -> _CairoRenderTarget:
         self._ensure_open()
+        self._state = RendererState.OPEN
         if self._target is None:
             self._target = _CairoRenderTarget(self._raster_settings, self._image_files)
         return self._target
@@ -449,12 +456,13 @@ class CairoRenderer:
         renderer before :meth:`.Scene.setup` runs.
         """
         self._ensure_open()
+        self._state = RendererState.OPEN
 
     def close(self) -> None:
         """Close the renderer and release its image buffers and drawing contexts."""
-        if self._closed:
+        if self._state is RendererState.CLOSED:
             return
-        self._closed = True
+        self._state = RendererState.CLOSED
         if self._target is not None:
             self._target.close()
         for target in self._sub_targets.values():

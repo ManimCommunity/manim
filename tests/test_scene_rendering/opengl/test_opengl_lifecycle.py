@@ -9,6 +9,7 @@ from PIL import Image
 
 from manim import BLUE, RED, Scene, Square, tempconfig
 from manim.renderer.opengl.shader import shader_program_cache
+from manim.renderer.protocol import RendererState
 
 
 @pytest.fixture
@@ -115,7 +116,7 @@ def test_cold_snapshot_never_opens_preview_and_restores_previous_host(
     pixels = np.asarray(second.get_image())
     assert pixels.shape == (32, 64, 4)
     assert second.renderer._context is None
-    assert second.renderer._closed
+    assert second.renderer.state is RendererState.CLOSED
     assert second.renderer.window is None
     assert second.manager._file_writer is None
     window.assert_not_called()
