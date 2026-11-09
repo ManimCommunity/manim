@@ -73,9 +73,14 @@ class _State(enum.Enum):
     CLOSE_FAILED = "close failed"
 
     @property
+    def has_run(self) -> bool:
+        """Whether the scene was rendered or evaluated; it runs only once."""
+        return self in (_State.RENDERED, _State.EVALUATED)
+
+    @property
     def usable(self) -> bool:
         """Whether the Manager can play, give out its writer or enter a block."""
-        return self in (_State.OPEN, _State.RENDERED, _State.EVALUATED)
+        return self is _State.OPEN or self.has_run
 
 
 @dataclass(frozen=True, eq=False)
@@ -324,10 +329,19 @@ class Manager(Generic[SceneT]):
                 )
             finally:
                 self._creating_file_writer = False
-            # Output has started: the section, caption and sound calls made so
-            # far go to the render loop, and so to this writer.
-            _ = self._loop
+            self._start_output()
         return self._file_writer
+
+    def _start_output(self) -> None:
+        """Start producing output: run the scene's plays with the render loop.
+
+        Called once, when the file writer is created (by render(), a play outside
+        a run, or the file_writer property). The section, caption and sound calls
+        made so far go to the render loop, and so to the writer; the scene can no
+        longer be evaluated.
+        """
+        if self._run_loop is None:
+            self._use_loop(self._render_loop())
 
     @property
     def output_spec(self) -> OutputSpec:
@@ -546,7 +560,7 @@ class Manager(Generic[SceneT]):
         # An evaluated scene says so, also for a run from inside the evaluation.
         self._mode.check(what)
         self._validate_execution()
-        if self._state in (_State.RENDERED, _State.EVALUATED):
+        if self._state.has_run:
             raise RuntimeError(
                 "A Manager renders or evaluates its scene only once. Construct a "
                 "new Scene to run it again."
@@ -556,10 +570,8 @@ class Manager(Generic[SceneT]):
         """Run setup(), construct() and tear_down(), with ``loop`` running the
         scene's plays; the markers made before go to it first.
         """
-        self._run_loop = loop
-        markers, self._early_markers = self._early_markers, []
-        for marker in markers:
-            loop.marker(marker)
+        if self._run_loop is not loop:
+            self._use_loop(loop)
         self.setup()
         # Only a construction boundary is a normal early scene end.
         with contextlib.suppress(EndSceneEarlyException):
@@ -756,18 +768,27 @@ class Manager(Generic[SceneT]):
         with it).
         """
         if self._run_loop is None:
-            self._run_loop = _RunLoop(
-                self,
-                listeners=[_Encoder(self), _Preview(self), _Progress(self)],
-                selection=_OutputSelection(self),
-                drawer=_TargetDrawer(self),
-                cache=_SegmentCache(self),
-                mode=_RENDER,
-            )
-            markers, self._early_markers = self._early_markers, []
-            for marker in markers:
-                self._run_loop.marker(marker)
+            self._start_output()
+        assert self._run_loop is not None
         return self._run_loop
+
+    def _render_loop(self) -> _RunLoop:
+        """A new loop that renders: it encodes, previews and reuses cached plays."""
+        return _RunLoop(
+            self,
+            listeners=[_Encoder(self), _Preview(self), _Progress(self)],
+            selection=_OutputSelection(self),
+            drawer=_TargetDrawer(self),
+            cache=_SegmentCache(self),
+            mode=_RENDER,
+        )
+
+    def _use_loop(self, loop: _RunLoop) -> None:
+        """Run the scene's plays with ``loop``; the markers made before go to it."""
+        self._run_loop = loop
+        markers, self._early_markers = self._early_markers, []
+        for marker in markers:
+            loop.marker(marker)
 
     def _marker(self, marker: _Section | _Caption | _Sound) -> None:
         """Pass a section, caption or sound call to the run's loop; before a
