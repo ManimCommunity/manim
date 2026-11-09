@@ -10,9 +10,7 @@ import srt
 from tqdm import tqdm
 
 from .. import config, logger
-from .._config.video_encoder import video_encoder_fingerprint
 from ..animation.animation import Wait
-from ..utils.hashing import get_hash_from_play_call
 from .frames import frame_count
 from .loop import _Caption, _RunListener, _Section, _Sound
 
@@ -24,16 +22,12 @@ if TYPE_CHECKING:
 
 __all__: list[str] = []
 
-_CLOCK_VERSION = "sample-v3"
-"""Part of every cache key. Change it when a play could give different frames
-from the same scene state, so that older cached movies are not reused."""
-
 
 class _Encoder(_RunListener):
-    """Write the frames of each play in the output to the file writer.
+    """Write the frames of each drawn play to the file writer.
 
-    A play whose partial movie file is already cached is not drawn or encoded
-    again; its cached file is used instead.
+    A play whose partial movie file is already cached (see :class:`._SegmentCache`)
+    is not drawn or encoded again; its cached file is used instead.
     """
 
     def __init__(self, manager: Manager) -> None:
@@ -43,59 +37,14 @@ class _Encoder(_RunListener):
     def play_started(self, play: _Play) -> None:
         manager = self._manager
         writer = manager.file_writer
-        key = self._cache_key(play)
-        # When a wait with a stop condition stops can depend on state that the
-        # cache key does not include, so such waits are always rendered again.
-        if (
-            key is not None
-            and not config.disable_caching
-            and manager.scene.stop_condition is None
-            and writer.is_already_cached(key)
-        ):
-            logger.info(
-                f"Animation {play.index} : Using cached data (hash : %(key)s)",
-                {"key": key},
-            )
-            manager.skip_animations = True
-        self._writing = play.in_output and not manager.skip_animations
-        writer.add_partial_movie_file(key)
-        manager._execution.animations_hashes.append(key)
+        self._writing = play.drawn
+        writer.add_partial_movie_file(play.cache_key)
+        manager._execution.animations_hashes.append(play.cache_key)
         logger.debug(
             "List of the first few animation hashes of the scene: %(h)s",
             {"h": str(manager._execution.animations_hashes[:5])},
         )
         writer.begin_animation(self._writing, animation_index=play.index)
-
-    def _cache_key(self, play: _Play) -> str | None:
-        manager = self._manager
-        if not play.in_output:
-            logger.debug(f"Skipping animation {play.index}")
-            return None
-        if config.disable_caching:
-            logger.info("Caching disabled.")
-            return f"uncached_{play.index:05}"
-        scene = manager.scene
-        backend, drawing_state = manager.renderer._animation_cache_identity(scene)
-        return get_hash_from_play_call(
-            scene,
-            manager.camera,
-            list(play.animations),
-            scene.mobjects,
-            backend=backend,
-            encoder_fingerprint=video_encoder_fingerprint(
-                manager.session_spec.video_encoder
-            ),
-            renderer_state={
-                "drawing": drawing_state,
-                "execution": {
-                    "clock": _CLOCK_VERSION,
-                    # Plays can read the scene time, so the same inputs at another
-                    # time can give other frames.
-                    "time": manager.time,
-                    "frame_rate": manager.session_spec.frame_rate,
-                },
-            },
-        )
 
     def frame(self, frame: _Frame) -> None:
         manager = self._manager
@@ -143,7 +92,7 @@ class _Preview(_RunListener):
     def frame(self, frame: _Frame) -> None:
         manager = self._manager
         scene = manager.scene
-        if manager.skip_animations or scene.skip_animation_preview:
+        if not frame.play.drawn or scene.skip_animation_preview:
             return
         frame.draw()
         if frame.play.frozen:

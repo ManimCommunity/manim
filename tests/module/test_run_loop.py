@@ -203,3 +203,32 @@ def test_a_progress_bar_counts_the_frames_of_its_play(tmp_path, skip):
         Manager(Plays(skip_animations=skip)).render()
     [bar] = bars
     assert (bar.total, bar.n) == (3, 3)
+
+
+def test_a_cached_play_is_known_as_not_drawn_before_any_listener(tmp_path):
+    # Whether a play is drawn used to be decided by the encoder, which marked a
+    # cached play by setting manager.skip_animations; listeners before it saw the
+    # play as drawn. Now the play says so itself, before the listeners hear of it.
+    from manim._run.loop import _RunListener
+
+    seen = []
+
+    class First(_RunListener):
+        def __init__(self, manager):
+            self.manager = manager
+
+        def play_started(self, play):
+            seen.append(self.manager.skip_animations)
+
+    class Once(Scene):
+        def construct(self):
+            self.play(Square().animate.shift(RIGHT), run_time=0.5)
+
+    settings = {**SETTINGS, "format": "mp4", "disable_caching": False}
+    with tempconfig({**settings, "media_dir": str(tmp_path)}):
+        Manager(Once()).render()  # fills the cache
+        manager = Manager(Once())
+        loop = manager._loop
+        loop.listeners = (First(manager), *loop.listeners)
+        manager.render()
+    assert seen == [True]

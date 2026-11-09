@@ -5,7 +5,7 @@ from unittest.mock import Mock, call
 
 import numpy as np
 
-import manim._run.listeners as listeners_module
+import manim._run.cache as cache_module
 from manim import Manager, tempconfig
 from manim._run.loop import _RunLoop
 from manim.renderer._execution import _RendererExecutionView
@@ -117,8 +117,8 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
     encoder = object()
     fingerprint = Mock(return_value="encoder-token")
     hash_play = Mock(return_value="cache-key")
-    monkeypatch.setattr(listeners_module, "video_encoder_fingerprint", fingerprint)
-    monkeypatch.setattr(listeners_module, "get_hash_from_play_call", hash_play)
+    monkeypatch.setattr(cache_module, "video_encoder_fingerprint", fingerprint)
+    monkeypatch.setattr(cache_module, "get_hash_from_play_call", hash_play)
 
     class FakeScene:
         def __init__(self):

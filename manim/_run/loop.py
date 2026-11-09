@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from ..mobject.opengl.opengl_mobject import OpenGLMobject
     from ..scene.scene import Scene
     from ..typing import RGBAPixelArray
+    from .cache import _SegmentCache
     from .selection import _OutputSelection
 
 __all__: list[str] = []
@@ -38,6 +39,17 @@ class _Play:
     """Whether the play is a frozen wait: one frame shown for its whole duration."""
     in_output: bool
     """Whether the play is part of the rendered output."""
+    cache_key: str | None = None
+    """The key of the play's partial movie file, if the play is in the output."""
+    cached: bool = False
+    """Whether the play's partial movie file is cached, so its frames are reused."""
+
+    @property
+    def drawn(self) -> bool:
+        """Whether the play's frames are drawn: it is in the output and not
+        cached. Decided before the listeners hear of the play.
+        """
+        return self.in_output and not self.cached
 
 
 @dataclass(frozen=True, slots=True)
@@ -109,10 +121,10 @@ class _Frame:
 class _RunListener:
     """Something that reacts to what happens during a run.
 
-    Listeners must not change the scene's mobjects or call back into the loop.
-    They run in a fixed order. The encoder runs before the preview and the
-    progress bar and marks a cached play by setting ``skip_animations``, which
-    the listeners after it read. Every method does nothing unless overridden.
+    Listeners must not change the scene's mobjects, call back into the loop,
+    or decide anything for other listeners: what a play is, including whether it
+    is drawn, is decided before they hear of it (see :class:`_Play`). Every
+    method does nothing unless overridden.
     """
 
     def play_started(self, play: _Play) -> None:
@@ -176,11 +188,15 @@ class _RunLoop:
         listeners: Sequence[_RunListener],
         selection: _OutputSelection,
         drawer: _TargetDrawer,
+        cache: _SegmentCache | None = None,
     ) -> None:
         self.manager = manager
         self.listeners = tuple(listeners)
         self.selection = selection
         self.drawer = drawer
+        self.cache = cache
+        """Where the partial movie files of earlier renders are, if the run
+        reuses them."""
 
     def play(
         self, *args: Animation | Mobject | _AnimationBuilder, **kwargs: Any
@@ -190,7 +206,6 @@ class _RunLoop:
         state = manager._execution
         index = manager.num_plays
         in_output = self.selection.start_play(index)
-        manager.skip_animations = not in_output
         scene.compile_animation_data(*args, **kwargs)
         assert scene.animations is not None
         play = _Play(
@@ -201,6 +216,11 @@ class _RunLoop:
             frozen=scene.is_current_animation_frozen_frame(),
             in_output=in_output,
         )
+        if self.cache is not None:
+            play = self.cache.look_up(play)
+        # For code outside the loop that asks whether the current play draws,
+        # such as the renderers' add_frame(); listeners read play.drawn.
+        manager.skip_animations = not play.drawn
         started: list[_RunListener] = []
         try:
             for listener in self.listeners:
@@ -235,7 +255,7 @@ class _RunLoop:
         scene.duration = scene.get_run_time(scene.animations)
         rate = self.manager.session_spec.frame_rate
         count = frame_count(scene.duration, rate)
-        if count and self._unobserved(scene):
+        if count and self._unobserved(play, scene):
             # Only the end state matters: go to the last frame in one step, at
             # the same scene time as when stepping through every frame.
             state.frame += count - 1
@@ -257,14 +277,14 @@ class _RunLoop:
             animation.clean_up_from_scene(scene)
         scene.update_mobjects(0)
 
-    def _unobserved(self, scene: Scene) -> bool:
+    def _unobserved(self, play: _Play, scene: Scene) -> bool:
         """Whether nothing can see the frames between a play's start and end.
 
         True when the frames are not drawn (the play is left out of the output
         or reused from the cache) and no code runs per frame: no updaters, no
         stop condition. The play then only needs its last frame.
         """
-        if not self.manager.skip_animations or scene.stop_condition is not None:
+        if play.drawn or scene.stop_condition is not None:
             return False
         if scene.updaters or scene.always_update_mobjects or scene.meshes:
             return False

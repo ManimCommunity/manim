@@ -90,7 +90,7 @@ def test_cached_play_goes_to_its_last_frame(scene, monkeypatch):
             super().finish()
 
     monkeypatch.setattr(
-        "manim._run.listeners.get_hash_from_play_call", lambda *a, **k: "hit"
+        "manim._run.cache.get_hash_from_play_call", lambda *a, **k: "hit"
     )
     monkeypatch.setattr(manager.file_writer, "is_already_cached", lambda _: True)
     with tempconfig({"disable_caching": False}):

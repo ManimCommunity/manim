@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from . import config, logger
 from ._config.logger_utils import set_file_logger
+from ._run.cache import _SegmentCache
 from ._run.listeners import _Encoder, _Preview, _Progress
 from ._run.loop import _Caption, _RunLoop, _Section, _Sound, _TargetDrawer
 from ._run.selection import _OutputSelection
@@ -582,6 +583,7 @@ class Manager(Generic[SceneT]):
                 listeners=[_Encoder(self), _Preview(self), _Progress(self)],
                 selection=_OutputSelection(self),
                 drawer=_TargetDrawer(self),
+                cache=_SegmentCache(self),
             )
         return self._run_loop
 
