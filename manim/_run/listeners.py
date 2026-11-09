@@ -55,7 +55,7 @@ class _Encoder(_RunListener):
         ):
             manager.file_writer.write_frame(frame.pixels(), repeat=frame.repeat)
 
-    def play_finished(self, play: _Play, end_frame: int) -> None:
+    def play_finished(self, play: _Play) -> None:
         self._manager.file_writer.end_animation(self._writing)
         self._writing = False
 
@@ -148,13 +148,13 @@ class _Progress(_RunListener):
                 frame.index + frame.repeat - frame.play.first_frame - self._bar.n
             )
 
-    def play_finished(self, play: _Play, end_frame: int) -> None:
+    def play_finished(self, play: _Play) -> None:
         if self._bar is not None:
             self._bar.close()
             self._bar = None
 
     def play_failed(self, play: _Play) -> None:
-        self.play_finished(play, 0)
+        self.play_finished(play)
 
 
 def _stop_condition(play: _Play) -> Callable[[], bool] | None:

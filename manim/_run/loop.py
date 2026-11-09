@@ -133,7 +133,7 @@ class _RunListener:
     def frame(self, frame: _Frame) -> None:
         """The scene shows the state of ``frame``; time is at the frame's start."""
 
-    def play_finished(self, play: _Play, end_frame: int) -> None:
+    def play_finished(self, play: _Play) -> None:
         """The play's animations have finished and were cleaned up."""
 
     def play_failed(self, play: _Play) -> None:
@@ -245,7 +245,7 @@ class _RunLoop:
                 listener.play_failed(play)
             raise
         for listener in self.listeners:
-            listener.play_finished(play, state.frame)
+            listener.play_finished(play)
         manager.num_plays += 1
 
     def _step(self, play: _Play) -> None:
