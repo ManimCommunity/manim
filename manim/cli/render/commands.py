@@ -122,7 +122,7 @@ def render(**kwargs: Any) -> ClickArgs | dict[str, Any]:
                     with scene._get_manager() as manager:
                         # Through Scene.render(), so that overrides still run;
                         # the timeline is an extra output of the same render.
-                        manager._capture_timeline = timeline_output is not None
+                        manager.capture_timeline = timeline_output is not None
                         rerun = scene.render()
                     if timeline_output is not None and not rerun:
                         manager.timeline.write(timeline_output)

@@ -175,8 +175,13 @@ class Manager(Generic[SceneT]):
         self._run_loop: _RunLoop | None = None
         self._early_markers: list[_Section | _Caption | _Sound] = []
         self._timeline: Timeline | None = None
-        # The default of render(capture_timeline=...), set by the CLI.
-        self._capture_timeline = False
+        self.capture_timeline = False
+        """Whether :meth:`render` captures a timeline when it is not told.
+
+        Set it to capture the timeline of a render started elsewhere, for example
+        by :meth:`.Scene.render`, which a scene can override without passing
+        ``capture_timeline`` on; the command line's ``--timeline-output`` does.
+        """
         scene.manager = self
 
     def _ensure_usable(self) -> None:
@@ -432,7 +437,7 @@ class Manager(Generic[SceneT]):
         capture_timeline
             Whether to record the scene's play, wait, section, caption, and sound
             calls. After a successful render, the result is available as
-            :attr:`timeline`.
+            :attr:`timeline`. If not given, :attr:`capture_timeline` decides.
 
         Returns
         -------
@@ -457,7 +462,7 @@ class Manager(Generic[SceneT]):
             rerun = False
             try:
                 if capture_timeline is None:
-                    capture_timeline = self._capture_timeline
+                    capture_timeline = self.capture_timeline
                 self._run(self._loop, capture_timeline)
             except RerunSceneException:
                 # The caller will create a fresh Scene for the rerun.

@@ -312,3 +312,23 @@ def test_a_handled_play_failure_leaves_no_entry():
     assert rendered == [("wait", 0, 0.25), ("wait", 0.25, 0.5)]
     evaluated = entries(lambda manager: manager.evaluate(capture_timeline=True))
     assert [entry[0] for entry in evaluated] == ["wait", "wait"]
+
+
+def test_a_render_captures_a_timeline_when_the_manager_is_told_to(tmp_path):
+    # For renders started by Scene.render(), which a scene may override without
+    # passing capture_timeline on, as the command line's --timeline-output does.
+    class Overridden(Scene):
+        def construct(self):
+            self.wait(0.25)
+
+        def render(self, preview=False):
+            return super().render(preview)
+
+    with tempconfig({"format": "none", "media_dir": str(tmp_path), "frame_rate": 4}):
+        scene = Overridden()
+        manager = scene._get_manager()
+        manager.capture_timeline = True
+        scene.render()
+    assert [entry["kind"] for entry in manager.timeline.to_dict()["entries"]] == [
+        "wait"
+    ]
