@@ -234,8 +234,13 @@ class _RunLoop:
         mode: _RunMode,
         cache: _SegmentCache | None = None,
     ) -> None:
+        from .record import _RunRecord
+
         self.manager = manager
-        self.listeners = tuple(listeners)
+        self.record = _RunRecord(manager, mode.timeline_mode)
+        """The record of this run's calls, from which a timeline is exported. It
+        listens first, so the other listeners see a play after it is recorded."""
+        self.listeners = (self.record, *listeners)
         self.selection = selection
         self.drawer = drawer
         self.cache = cache

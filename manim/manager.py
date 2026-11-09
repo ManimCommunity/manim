@@ -22,7 +22,6 @@ from ._run.loop import (
     _TargetDrawer,
 )
 from ._run.mode import _EvaluationRun, _RunMode
-from ._run.record import _RunRecord
 from ._run.selection import _OutputSelection
 from .scene.section import DefaultSectionType
 from .utils.exceptions import EndSceneEarlyException, RerunSceneException
@@ -175,7 +174,6 @@ class Manager(Generic[SceneT]):
         # outside them (which renders); markers made before it are kept for it.
         self._run_loop: _RunLoop | None = None
         self._early_markers: list[_Section | _Caption | _Sound] = []
-        self._record: _RunRecord | None = None
         self._timeline: Timeline | None = None
         # The default of render(capture_timeline=...), set by the CLI.
         self._capture_timeline = False
@@ -460,7 +458,7 @@ class Manager(Generic[SceneT]):
             try:
                 if capture_timeline is None:
                     capture_timeline = self._capture_timeline
-                self._run(self._loop, self._loop_record(), capture_timeline)
+                self._run(self._loop, capture_timeline)
             except RerunSceneException:
                 # The caller will create a fresh Scene for the rerun.
                 # Report any encoder errors before allowing that restart.
@@ -559,9 +557,8 @@ class Manager(Generic[SceneT]):
         if times and on_frame is None:
             raise ValueError("Pass on_frame to receive the frames of frame_times.")
         self._state = _State.EVALUATED
-        record = self._record = _RunRecord(self, "evaluate")
         meshes = _MeshGuard(self)
-        listeners: list[_RunListener] = [record, meshes, _Progress(self)]
+        listeners: list[_RunListener] = [meshes, _Progress(self)]
         if on_frame is not None:
             listeners.append(_FrameRequests(self, times, on_frame))
         loop = _RunLoop(
@@ -574,7 +571,7 @@ class Manager(Generic[SceneT]):
         try:
             with self.renderer._scene_images():
                 meshes.check()
-                self._run(loop, record, capture_timeline)
+                self._run(loop, capture_timeline)
                 meshes.check()
         except BaseException:
             self._cleanup_after_failure()
@@ -597,16 +594,17 @@ class Manager(Generic[SceneT]):
                 "new Scene to run it again."
             )
 
-    def _run(self, loop: _RunLoop, record: _RunRecord, capture: bool) -> None:
-        """Run setup(), construct() and tear_down(), with ``loop`` running the
-        scene's plays and ``record`` (one of its listeners) recording them; with
-        ``capture``, export the record as :attr:`timeline`.
+    def _run(self, loop: _RunLoop, capture: bool) -> None:
+        """Run setup(), construct() and tear_down(), with ``loop`` running and
+        recording the scene's plays; with ``capture``, export the loop's record
+        as :attr:`timeline`.
 
         The markers made before the run go to the loop first; they are recorded
         without a source location.
         """
         if self._run_loop is not loop:
             self._use_loop(loop)
+        record = loop.record
         record.start(capture)
         self.setup()
         ended_early = False
@@ -801,11 +799,6 @@ class Manager(Generic[SceneT]):
 
         return rollback
 
-    def _loop_record(self) -> _RunRecord:
-        _ = self._loop
-        assert self._record is not None
-        return self._record
-
     @property
     def _loop(self) -> _RunLoop:
         """The loop that runs this scene's play calls.
@@ -821,10 +814,9 @@ class Manager(Generic[SceneT]):
 
     def _render_loop(self) -> _RunLoop:
         """A new loop that renders: it encodes, previews and reuses cached plays."""
-        self._record = _RunRecord(self, "render")
         return _RunLoop(
             self,
-            listeners=[self._record, _Encoder(self), _Preview(self), _Progress(self)],
+            listeners=[_Encoder(self), _Preview(self), _Progress(self)],
             selection=_OutputSelection(self),
             drawer=_TargetDrawer(self),
             cache=_SegmentCache(self),
