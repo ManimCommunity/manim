@@ -20,6 +20,10 @@ from tests.helpers import audio
 write_wav = partial(audio.write_wav, seconds=1.0, value=0.25, rate=SAMPLE_RATE)
 
 
+def sound(path, start, **gains):
+    return _Sound(str(path), path, start, **gains)
+
+
 def mix(sounds, intervals):
     sound_mix = _SoundMix(sounds, intervals)
     return np.concatenate(list(sound_mix.blocks(0, sound_mix.duration)), axis=1)
@@ -81,7 +85,7 @@ def test_a_sound_file_is_probed_again_only_after_it_changes(tmp_path, monkeypatc
 
 def test_gain_is_in_decibels(tmp_path):
     beep = write_wav(tmp_path / "beep.wav", value=0.25)
-    track = mix([_Sound(beep, 0.0), _Sound(beep, 0.0, gain=-6.0206)], [(0.0, 1.0)])
+    track = mix([sound(beep, 0.0), sound(beep, 0.0, gain=-6.0206)], [(0.0, 1.0)])
     np.testing.assert_allclose(track, 0.25 + 0.125, atol=1e-4)
 
 
@@ -89,7 +93,10 @@ def test_gain_to_background_only_affects_earlier_sounds(tmp_path):
     first = write_wav(tmp_path / "first.wav", value=0.4)
     second = write_wav(tmp_path / "second.wav", value=0.2, seconds=0.5)
     track = mix(
-        [_Sound(first, 0.0), _Sound(second, 0.25, gain_to_background=-6.0206)],
+        [
+            sound(first, 0.0),
+            sound(second, 0.25, gain_to_background=-6.0206),
+        ],
         [(0.0, 1.0)],
     )
 
@@ -103,7 +110,7 @@ def test_gain_to_background_only_affects_earlier_sounds(tmp_path):
 def test_excluded_interval_cuts_a_sound_that_runs_through_it(tmp_path):
     long = write_wav(tmp_path / "long.wav", seconds=3.0)
     # Scene seconds [1, 2) are excluded.
-    track = mix([_Sound(long, 0.5)], [(0.0, 1.0), (2.0, 3.0)])
+    track = mix([sound(long, 0.5)], [(0.0, 1.0), (2.0, 3.0)])
 
     assert track.shape == (2, samples(2.0))
     assert np.all(track[:, : samples(0.5)] == 0)
@@ -112,7 +119,7 @@ def test_excluded_interval_cuts_a_sound_that_runs_through_it(tmp_path):
 
 def test_negative_start_cuts_the_head(tmp_path):
     beep = write_wav(tmp_path / "beep.wav", seconds=1.0)
-    track = mix([_Sound(beep, -0.75)], [(0.0, 1.0)])
+    track = mix([sound(beep, -0.75)], [(0.0, 1.0)])
     np.testing.assert_allclose(track[:, : samples(0.25)], 0.25)
     assert np.all(track[:, samples(0.25) :] == 0)
 

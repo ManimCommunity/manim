@@ -16,6 +16,7 @@ from manim.renderer._execution import _ExecutionState
 from manim.renderer.protocol import RendererCapabilities, RendererState
 from manim.scene.scene import SceneInteractRerun
 from manim.utils.exceptions import EndSceneEarlyException, RerunSceneException
+from tests.helpers.audio import write_wav
 
 
 def test_manager_attaches_to_existing_scene(dry_run):
@@ -395,23 +396,35 @@ def test_scene_add_subcaption_records_placement(dry_run):
     ]
 
 
-def test_scene_add_sound_passes_placement_to_the_writer(dry_run, monkeypatch):
+def test_scene_add_sound_passes_placement_to_the_writer(dry_run, monkeypatch, tmp_path):
+    bell = write_wav(tmp_path / "bell.wav", seconds=0.1)
     scene = Scene()
     file_writer = scene.renderer.file_writer
     monkeypatch.setattr(file_writer, "add_sound", Mock())
     scene.renderer.time = 2.5
 
-    scene.add_sound("bell.wav", time_offset=0.25, gain=-3, gain_to_background=-6)
+    scene.add_sound(str(bell), time_offset=0.25, gain=-3, gain_to_background=-6)
 
     assert isinstance(scene.manager, Manager)
-    file_writer.add_sound.assert_called_once_with(
-        "bell.wav", 2.75, -3, gain_to_background=-6
-    )
+    [sound] = file_writer.add_sound.call_args.args
+    assert (sound.file, sound.path, sound.start) == (str(bell), bell, 2.75)
+    assert (sound.gain, sound.gain_to_background) == (-3, -6)
 
     # Sounds in skipped sections still reach the writer; assembly cuts them.
     file_writer.add_sound.reset_mock()
     scene.next_section("skipped", skip_animations=True)
-    scene.add_sound("skipped.wav")
-    file_writer.add_sound.assert_called_once_with(
-        "skipped.wav", 2.5, None, gain_to_background=None
-    )
+    scene.add_sound(str(bell))
+    [sound] = file_writer.add_sound.call_args.args
+    assert (sound.start, sound.gain, sound.gain_to_background) == (2.5, None, None)
+
+
+def test_a_missing_sound_file_fails_at_the_call_in_every_run(dry_run):
+    # Earlier, an evaluation did not check sound files unless it captured a
+    # timeline, so the same scene failed only when rendered.
+    class Missing(Scene):
+        def construct(self):
+            self.add_sound("missing-file.wav")
+
+    for run in ("render", "evaluate"):
+        with pytest.raises(OSError, match="missing-file"):
+            getattr(Manager(Missing()), run)()

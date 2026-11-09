@@ -6,6 +6,7 @@ import pytest
 
 import manim
 from manim import Scene, config, tempconfig
+from manim.scene import audio_mixer
 from manim.scene import scene_file_writer as writer_module
 
 
@@ -66,9 +67,9 @@ def test_writer_uses_captured_assets_root(tmp_path, monkeypatch):
         config.assets_dir = changed_assets
 
         probe = Mock(return_value=1.0)
-        monkeypatch.setattr(writer_module, "_probe_duration", probe)
+        monkeypatch.setattr(audio_mixer, "_probe_duration", probe)
 
-        writer.add_sound("tone", 0.0)
+        scene.add_sound("tone")
 
     probe.assert_called_once_with(sound_path)
     assert [sound.path for sound in writer._sounds] == [sound_path]

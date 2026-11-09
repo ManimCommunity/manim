@@ -19,6 +19,8 @@ from pathlib import Path
 import av
 import numpy as np
 
+from ..utils.sounds import get_full_sound_file_path
+
 SAMPLE_RATE = 48_000
 """Sample rate of mixed audio, in Hz."""
 
@@ -30,12 +32,18 @@ _BLOCK_SIZE = SAMPLE_RATE  # one second of samples per mixed block
 
 @dataclass(frozen=True, slots=True)
 class _Sound:
-    """A sound placed on the scene clock.
+    """A sound added to a scene, placed on the scene clock.
+
+    One record per ``add_sound()`` call, from the call to the mix: the run loop
+    passes it to its listeners, the timeline records it, the file writer keeps
+    it and the mixer plays it. Make it with :meth:`at`, which checks the file.
 
     Attributes
     ----------
+    file
+        The sound file as the scene named it, which timelines record.
     path
-        Resolved path of the sound file.
+        The file's resolved path, which is read.
     start
         Scene time in seconds at which the sound starts. May be negative, in which
         case the part before zero is never heard.
@@ -45,10 +53,39 @@ class _Sound:
         Gain applied to all previously added sounds while this one plays, in dB.
     """
 
+    file: str
     path: Path
     start: float
     gain: float | None = None
     gain_to_background: float | None = None
+
+    @classmethod
+    def at(
+        cls,
+        file: str | os.PathLike[str],
+        start: float,
+        assets_dir: Path,
+        gain: float | None = None,
+        gain_to_background: float | None = None,
+    ) -> _Sound:
+        """The sound of ``file`` at scene time ``start``, with the file found
+        directly or in ``assets_dir`` and checked to hold audio.
+
+        Raises
+        ------
+        OSError
+            If the sound file does not exist.
+        ValueError
+            If the sound file cannot be read as audio.
+        """
+        path = get_full_sound_file_path(file, assets_dir)
+        _probe_duration(path)
+        return cls(str(file), path, float(start), gain, gain_to_background)
+
+    @property
+    def duration(self) -> float | None:
+        """The sound's duration in seconds, from its file's headers, if they say."""
+        return _probe_duration(self.path)
 
 
 def _probe_duration(path: Path) -> float | None:

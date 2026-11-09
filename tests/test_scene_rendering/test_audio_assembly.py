@@ -295,11 +295,12 @@ def test_the_sound_mix_follows_sounds_and_spans_added_after_it_was_made(tmp_path
     with tempconfig(
         {"format": "mp4", "media_dir": str(tmp_path / "media"), "progress_bar": "none"}
     ):
-        writer = Scene()._get_manager().file_writer
-        writer.add_sound(beep, 0.0)
+        scene = Scene()
+        writer = scene._get_manager().file_writer
+        scene.add_sound(beep)
         writer.add_movie_interval(0.0, 1.0)
         first = writer._sound_mix
-        writer.add_sound(beep, 1.5)
+        scene.add_sound(beep, time_offset=1.5)
         writer.add_movie_interval(1.0, 2.0)
         second = writer._sound_mix
     assert first.duration == pytest.approx(1.0)

@@ -14,6 +14,7 @@ from manim import (
     tempconfig,
 )
 from manim.manager import _State
+from tests.helpers.audio import write_wav
 
 
 class TraceScene(Scene):
@@ -98,13 +99,18 @@ def test_real_evaluation_matches_uncached_render(settings, monkeypatch):
     reject.assert_not_called()
 
 
-def test_declarations_do_not_open_media_logs_or_decode_audio(settings, monkeypatch):
+def test_declarations_do_not_open_media_logs_or_decode_audio(
+    settings, monkeypatch, tmp_path_factory
+):
+    # The sound file is checked at the call but never decoded.
+    beep = write_wav(tmp_path_factory.mktemp("sounds") / "beep.wav", seconds=0.1)
+
     class Declarations(Scene):
         def construct(self):
             self.next_section("not skipped", skip_animations=True)
             self.wait(0.3, frozen_frame=False)
             self.add_subcaption("caption", duration=0.5)
-            self.add_sound("missing-file.wav", time_offset=0.25, gain=-3)
+            self.add_sound(str(beep), time_offset=0.25, gain=-3)
 
     with tempconfig(
         {"format": "mp4", "log_to_file": True, "log_dir": str(settings / "logs")}

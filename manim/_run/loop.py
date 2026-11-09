@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
+from ..scene.audio_mixer import _Sound
 from .frames import frame_count
 
 if TYPE_CHECKING:
@@ -67,14 +68,6 @@ class _Caption:
     content: str
     start: float
     end: float
-
-
-@dataclass(frozen=True, slots=True)
-class _Sound:
-    file: str
-    start: float
-    gain: float | None
-    gain_to_background: float | None
 
 
 class _Frame:

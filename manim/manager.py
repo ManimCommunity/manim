@@ -511,8 +511,7 @@ class Manager(Generic[SceneT]):
         animation steps and clock as rendering. Movie caches, animation ranges,
         and skip flags are ignored, so every play runs. Only the frames requested
         with ``frame_times`` are drawn. Section, subcaption, and sound calls have
-        no effect. With ``capture_timeline``, each sound's duration is read from
-        its file, so the file must exist and be readable, as in a render.
+        no effect, but ``add_sound()`` still checks its file, as in a render.
 
         Parameters
         ----------
@@ -974,5 +973,13 @@ class Manager(Generic[SceneT]):
             Gain applied to all previously added sounds while this one plays,
             in dB.
         """
-        start = self.time + time_offset
-        self._marker(_Sound(str(sound_file), start, gain, gain_to_background))
+        # The file is found and checked now, in every run: a missing or unreadable
+        # file is an error at the call that names it.
+        sound = _Sound.at(
+            sound_file,
+            self.time + time_offset,
+            self.scene.file_writer_settings.assets_dir,
+            gain,
+            gain_to_background,
+        )
+        self._marker(sound)

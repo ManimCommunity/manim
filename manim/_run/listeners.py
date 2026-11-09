@@ -83,12 +83,7 @@ class _Encoder(_RunListener):
                 )
             )
         else:
-            writer.add_sound(
-                marker.file,
-                marker.start,
-                marker.gain,
-                gain_to_background=marker.gain_to_background,
-            )
+            writer.add_sound(marker)
 
     def run_finished(self, ended_early: bool) -> None:
         self._manager.file_writer.end_scene(self._manager.time)

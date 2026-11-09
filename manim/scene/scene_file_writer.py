@@ -31,12 +31,10 @@ from .._config.output_plan import OutputPlan
 from .._config.video_encoder import VideoEncoderSpec
 from ..utils.caching import prune_segment_cache
 from ..utils.file_ops import modify_atime
-from ..utils.sounds import get_full_sound_file_path
 from .audio_mixer import (
     LAYOUT,
     SAMPLE_RATE,
     _movie_time,
-    _probe_duration,
     _Sound,
     _SoundMix,
 )
@@ -407,33 +405,17 @@ class SceneFileWriter:
             self.sections[-1].partial_movie_files.append(new_partial_movie_file)
 
     # Sound
-    def add_sound(
-        self,
-        sound_file: StrPath,
-        time: float,
-        gain: float | None = None,
-        gain_to_background: float | None = None,
-    ) -> None:
-        """Add a sound at a scene time.
-
-        The file is checked now and decoded when the movie is assembled.
+    def add_sound(self, sound: _Sound) -> None:
+        """Add a sound to the movie's mix; it is decoded when the movie is
+        assembled.
 
         Parameters
         ----------
-        sound_file
-            The path to the sound file, absolute or relative to the assets
-            directory.
-        time
-            The scene time in seconds at which the sound starts.
-        gain
-            Gain applied to the sound, in dB.
-        gain_to_background
-            Gain applied to all previously added sounds while this one plays,
-            in dB.
+        sound
+            The sound, as :meth:`.Scene.add_sound` made it (see
+            :meth:`._Sound.at`).
         """
-        file_path = get_full_sound_file_path(sound_file, self.settings.assets_dir)
-        _probe_duration(file_path)
-        self._sounds.append(_Sound(file_path, time, gain, gain_to_background))
+        self._sounds.append(sound)
         self.__dict__.pop("_sound_mix", None)
 
     @cached_property
@@ -1004,7 +986,7 @@ class SceneFileWriter:
         spans: list[tuple[str, float, float | None]] = []
         if not self.output_spec.is_gif:
             for sound in self._sounds:
-                duration = _probe_duration(sound.path)
+                duration = sound.duration
                 spans.append(
                     (
                         f"Sound {str(sound.path)!r}",
