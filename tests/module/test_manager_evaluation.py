@@ -139,7 +139,7 @@ def test_unsupported_requests_raise(settings, demand):
 
     scene = Unsupported()
     manager = Manager(scene)
-    with pytest.raises(RuntimeError, match="during evaluation"):
+    with pytest.raises(RuntimeError, match="in an evaluated scene"):
         manager.evaluate()
     assert manager._state is _State.CLOSED
     assert manager._file_writer is None
@@ -173,7 +173,8 @@ def test_evaluation_failure_preserves_primary_exception(settings):
     assert caught.value is error
     assert manager._state is _State.CLOSED
     assert manager._file_writer is None
-    assert not manager._evaluating
+    # The run stays an evaluation: the scene can still not produce media.
+    assert manager._mode.name == "evaluation"
 
 
 def test_images_after_evaluation_do_not_advance_time(settings):
@@ -188,7 +189,7 @@ def test_images_after_evaluation_do_not_advance_time(settings):
 def test_a_scene_can_be_evaluated_once(settings):
     with Manager(Scene()) as manager:
         manager.evaluate()
-        with pytest.raises(RuntimeError, match="only once"):
+        with pytest.raises(RuntimeError, match="in an evaluated scene"):
             manager.evaluate()
 
 
@@ -235,7 +236,7 @@ def test_a_scene_with_output_cannot_be_evaluated(settings):
 def test_an_evaluated_scene_cannot_be_rendered(settings):
     with Manager(Scene()) as manager:
         manager.evaluate()
-        with pytest.raises(RuntimeError, match="only once"):
+        with pytest.raises(RuntimeError, match="in an evaluated scene"):
             manager.render()
 
 
@@ -282,3 +283,18 @@ def test_rendered_frames_hash_by_identity():
     twin = RenderedFrame(frame.image, 0, 0, 0)
     assert {frame, twin} == {frame, twin}
     assert frame != twin
+
+
+def test_a_play_after_an_evaluation_produces_no_output(settings, tmp_path):
+    # The evaluating flag only covered evaluate() itself: a play afterwards, in
+    # a ``with manager:`` block, created a file writer and opened the log file.
+    output = {"format": "mp4", "log_to_file": True, "log_dir": str(tmp_path / "logs")}
+    with tempconfig(output):
+        scene = TraceScene()
+    with Manager(scene) as manager:
+        manager.evaluate()
+        scene.wait(0.25)
+        assert manager._file_writer is None
+        assert manager._log_handler is None
+        with pytest.raises(RuntimeError, match="in an evaluated scene"):
+            manager.file_writer

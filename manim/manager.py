@@ -22,6 +22,7 @@ from ._run.loop import (
     _Sound,
     _TargetDrawer,
 )
+from ._run.mode import _EvaluationRun, _RunMode
 from ._run.selection import _OutputSelection
 from .scene.section import DefaultSectionType
 from .utils.exceptions import EndSceneEarlyException, RerunSceneException
@@ -48,6 +49,9 @@ if TYPE_CHECKING:
     from .typing import RGBAPixelArray
 
 __all__ = ["Manager", "RenderedFrame"]
+
+#: The mode of renders; it keeps no state, so all runs share it.
+_RENDER = _RunMode()
 
 SceneT = TypeVar("SceneT", bound="Scene")
 
@@ -165,7 +169,6 @@ class Manager(Generic[SceneT]):
         # outside them (which renders); markers made before it are kept for it.
         self._run_loop: _RunLoop | None = None
         self._early_markers: list[_Section | _Caption | _Sound] = []
-        self._evaluating = False
         scene.manager = self
 
     def _ensure_usable(self) -> None:
@@ -195,7 +198,7 @@ class Manager(Generic[SceneT]):
             self.close()
 
     def _open_log_handler(self) -> None:
-        if self._evaluating or self._log_handler is not None:
+        if not self._mode.writes_log or self._log_handler is not None:
             return
         path = self.scene._log_file_path
         if path is not None:
@@ -306,7 +309,7 @@ class Manager(Generic[SceneT]):
 
     def _ensure_file_writer(self) -> SceneFileWriter:
         """Return the scene's file writer, creating it if there is none yet."""
-        self._ensure_not_evaluating("Media output")
+        self._mode.check("Media output")
         if self._file_writer is None:
             if not self._state.usable:
                 raise RuntimeError(
@@ -521,8 +524,8 @@ class Manager(Generic[SceneT]):
             listeners=listeners,
             selection=_OutputSelection.everything(self),
             drawer=_SceneImageDrawer(self),
+            mode=_EvaluationRun(),
         )
-        self._evaluating = True
         try:
             with self.renderer._scene_images():
                 meshes.check()
@@ -531,18 +534,17 @@ class Manager(Generic[SceneT]):
         except BaseException:
             self._cleanup_after_failure()
             raise
-        finally:
-            self._evaluating = False
         # As in render(): a failure to close is not an evaluation failure.
         self._finish_resource_scope()
 
     def _check_run(self, what: str) -> None:
         """Check that the scene can be rendered or evaluated, as ``what``.
 
-        A Manager runs its scene once, by render() or evaluate(), and not
-        from inside an evaluation.
+        A Manager runs its scene once, by render() or evaluate(), so this also
+        rejects a run from inside another.
         """
-        self._ensure_not_evaluating(what)
+        # An evaluated scene says so, also for a run from inside the evaluation.
+        self._mode.check(what)
         self._validate_execution()
         if self._state in (_State.RENDERED, _State.EVALUATED):
             raise RuntimeError(
@@ -564,9 +566,14 @@ class Manager(Generic[SceneT]):
             self.construct()
         self.tear_down()
 
-    def _ensure_not_evaluating(self, what: str) -> None:
-        if self._evaluating:
-            raise RuntimeError(f"{what} is unavailable during evaluation.")
+    @property
+    def _mode(self) -> _RunMode:
+        """What the scene's run produces: a render, unless it is evaluated.
+
+        Before a run, the mode is a render: a play outside render() and
+        evaluate() produces output as a render does.
+        """
+        return _RENDER if self._run_loop is None else self._run_loop.mode
 
     def _finish_resource_scope(self) -> None:
         if self._scope_depth == 0:
@@ -701,6 +708,12 @@ class Manager(Generic[SceneT]):
             raise
 
     def _play_rollback(self) -> Callable[[], None]:
+        """Return a callback that undoes what a failed play did to the run's
+        output; what that is depends on the run (see :class:`._RunMode`).
+        """
+        return self._mode.rollback(self)
+
+    def _output_rollback(self) -> Callable[[], None]:
         """Return a callback that undoes the output bookkeeping of a failed play.
 
         The callback stops the play's encode job, drops its partial movie entry
@@ -710,10 +723,6 @@ class Manager(Generic[SceneT]):
         their failures are reported as usual.
         Changes the play made to mobjects are kept.
         """
-        if self._evaluating:
-            # Evaluation produces no output to keep consistent, and the clock
-            # stays where the mobjects were left, for inspection after a failure.
-            return lambda: None
         writer = self.file_writer
         state = self._execution
         frame, time_offset = state.frame, state.time_offset
@@ -753,6 +762,7 @@ class Manager(Generic[SceneT]):
                 selection=_OutputSelection(self),
                 drawer=_TargetDrawer(self),
                 cache=_SegmentCache(self),
+                mode=_RENDER,
             )
             markers, self._early_markers = self._early_markers, []
             for marker in markers:
@@ -827,13 +837,7 @@ class Manager(Generic[SceneT]):
         listeners; ``frame`` can then be None for the scene's current state.
         """
         self._validate_execution()
-        if self._evaluating:
-            self._loop.add_frames(frame, num_frames)
-            return
-        assert frame is not None
-        self._execution.frame += num_frames
-        if not self.skip_animations:
-            self.file_writer.write_frame(frame, repeat=num_frames)
+        self._mode.add_frames(self, frame, num_frames)
 
     def next_section(
         self,

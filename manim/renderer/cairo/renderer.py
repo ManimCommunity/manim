@@ -348,9 +348,9 @@ class CairoRenderer(_RendererExecutionView):
     def freeze_current_frame(self, duration: float) -> None:
         self._ensure_open()
         manager = self._scene._get_manager()
-        # Evaluation draws frames only when they are requested, without a target.
+        # An evaluation draws frames only when they are requested, without a target.
         manager._legacy_add_frame(
-            None if manager._evaluating else self.get_frame(),
+            self.get_frame() if manager._mode.draws_added_frames else None,
             frame_count(duration, self._scene.session_spec.frame_rate),
         )
 

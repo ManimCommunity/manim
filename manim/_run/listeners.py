@@ -110,7 +110,9 @@ class _MeshGuard(_RunListener):
 
     def check(self) -> None:
         if self._manager.scene.meshes:
-            raise RuntimeError("GPU-backed meshes are unsupported during evaluation.")
+            raise RuntimeError(
+                "GPU-backed meshes are unsupported in an evaluated scene."
+            )
 
     def play_started(self, play: _Play) -> None:
         self.check()

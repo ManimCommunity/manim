@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     from ..scene.scene import Scene
     from ..typing import RGBAPixelArray
     from .cache import _SegmentCache
+    from .mode import _RunMode
     from .selection import _OutputSelection
 
 __all__: list[str] = []
@@ -227,6 +228,7 @@ class _RunLoop:
         listeners: Sequence[_RunListener],
         selection: _OutputSelection,
         drawer: _Drawer,
+        mode: _RunMode,
         cache: _SegmentCache | None = None,
     ) -> None:
         self.manager = manager
@@ -236,6 +238,8 @@ class _RunLoop:
         self.cache = cache
         """Where the partial movie files of earlier renders are, if the run
         reuses them."""
+        self.mode = mode
+        """What the run produces: a render or an evaluation."""
 
     def play(
         self, *args: Animation | Mobject | _AnimationBuilder, **kwargs: Any
