@@ -232,3 +232,10 @@ def test_a_cached_play_is_known_as_not_drawn_before_any_listener(tmp_path):
         loop.listeners = (First(manager), *loop.listeners)
         manager.render()
     assert seen == [True]
+
+
+def test_get_time_progression_is_deprecated(manim_caplog):
+    with tempconfig(SETTINGS):
+        bar = Scene().get_time_progression(1, "x")
+    assert "get_time_progression has been deprecated" in manim_caplog.text
+    assert bar.total == 4  # 1 s at 4 fps, as before

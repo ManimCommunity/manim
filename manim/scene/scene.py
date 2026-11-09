@@ -66,6 +66,7 @@ from ..renderer.opengl.renderer import OpenGLRenderer
 from ..renderer.opengl.shader import Object3D
 from ..scene.scene_file_writer import _SceneFileWriterSettings
 from ..utils import opengl, space_ops
+from ..utils.deprecation import deprecated
 from ..utils.exceptions import RerunSceneException
 from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
@@ -1109,58 +1110,9 @@ class Scene:
 
         return animations
 
-    def _get_animation_time_progression(
-        self, animations: list[Animation], duration: float
-    ) -> tqdm[float]:
-        """
-        You will hardly use this when making your own animations.
-        This method is for Manim's internal use.
-
-        Uses :func:`~.get_time_progression` to obtain a
-        CommandLine ProgressBar whose ``fill_time`` is
-        dependent on the qualities of the passed Animation,
-
-        Parameters
-        ----------
-        animations
-            The list of animations to get
-            the time progression for.
-
-        duration
-            duration of wait time
-
-        Returns
-        -------
-        time_progression
-            The CommandLine Progress Bar.
-        """
-        if len(animations) == 1 and isinstance(animations[0], Wait):
-            stop_condition = animations[0].stop_condition
-            if stop_condition is not None:
-                time_progression = self.get_time_progression(
-                    duration,
-                    f"Waiting for {stop_condition.__name__}",
-                    n_iterations=-1,  # So it doesn't show % progress
-                    override_skip_animations=True,
-                )
-            else:
-                time_progression = self.get_time_progression(
-                    duration,
-                    f"Waiting {self.renderer.num_plays}",
-                )
-        else:
-            time_progression = self.get_time_progression(
-                duration,
-                "".join(
-                    [
-                        f"Animation {self.renderer.num_plays}: ",
-                        str(animations[0]),
-                        (", etc." if len(animations) > 1 else ""),
-                    ],
-                ),
-            )
-        return time_progression
-
+    @deprecated(
+        message="The progress bars of plays are made by the Manager's run loop.",
+    )
     def get_time_progression(
         self,
         run_time: float,

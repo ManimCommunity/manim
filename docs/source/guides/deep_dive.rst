@@ -993,11 +993,12 @@ the animation and requests a frame at each time stamp. Here is how it does that:
   :meth:`.Scene.get_run_time`. This method basically takes the maximum
   ``run_time`` attribute of all of the animations passed to the
   :meth:`.Scene.play` call.
-- The time stamps of the frames are ``np.arange(0, run_time, 1 / frame_rate)``:
-  relative to the start of the play, starting at 0 and stopping before the total
-  run time. The progress bar listener shows a ``tqdm``
-  `progress bar <https://tqdm.github.io>`__ for them, created by
-  :meth:`.Scene.get_time_progression` and stored in ``scene.time_progression``.
+- The time stamps of the frames are ``i / frame_rate`` for ``i = 0, 1, ...``,
+  relative to the start of the play, for every frame that starts before the total
+  run time (see ``manim._run.frames.frame_count``, which allows for rounding, so
+  that 0.28 seconds at 25 fps are exactly 7 frames). The progress bar listener
+  shows a ``tqdm`` `progress bar <https://tqdm.github.io>`__ that counts them,
+  stored in ``scene.time_progression``.
 - Then the run loop goes through these time stamps: for each time stamp ``t``,
   :meth:`.Scene.update_to_time` is called, which ...
 

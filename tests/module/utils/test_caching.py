@@ -136,7 +136,6 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
             self.compile_animation_data = Mock()
             self.begin_animations = Mock()
             self.is_current_animation_frozen_frame = Mock(return_value=False)
-            self._get_animation_time_progression = Mock()
 
         def compile_animations(self, *args, **kwargs):
             return []
