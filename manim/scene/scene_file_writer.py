@@ -9,6 +9,7 @@ import shutil
 import warnings
 from contextlib import suppress
 from dataclasses import dataclass
+from fractions import Fraction
 from io import BytesIO
 from pathlib import Path
 from queue import Queue
@@ -44,6 +45,8 @@ from .section import DefaultSectionType, Section
 from .video_segment_encoder import VideoSegmentEncoder
 
 if TYPE_CHECKING:
+    from av.container.core import Chapter
+
     from manim.typing import RGBAPixelArray, StrPath
 
 
@@ -750,6 +753,7 @@ class SceneFileWriter:
         output_file: Path,
         create_gif: bool = False,
         includes_sound: bool = False,
+        chapters: list[Chapter] | None = None,
     ) -> None:
         output_file.parent.mkdir(parents=True, exist_ok=True)
         logger.debug(
@@ -775,6 +779,8 @@ class SceneFileWriter:
         output_container.metadata["comment"] = (
             f"Rendered with Manim Community v{__version__}"
         )
+        if chapters:
+            output_container.set_chapters(chapters)
         if create_gif:
             """The following solution was largely inspired from this comment
             https://github.com/imageio/imageio/issues/995#issuecomment-1580533018,
@@ -854,6 +860,33 @@ class SceneFileWriter:
         output_container.close()
         manifest.close()
 
+    def _section_chapters(self) -> list[Chapter]:
+        """Build chapter boundaries on the concatenated, encoded timeline."""
+        chapters: list[Chapter] = []
+        durations: dict[str, int] = {}
+        position = 0
+        for section in self.sections:
+            start = position
+            for path in section.get_clean_partial_movie_files():
+                if path not in durations:
+                    with av.open(path) as segment:
+                        # The concat demuxer advances by each container's duration.
+                        # Use encoded timestamps, not the scene's requested run time.
+                        assert segment.duration is not None
+                        durations[path] = segment.duration
+                position += durations[path]
+            if position > start:
+                chapters.append(
+                    {
+                        "id": len(chapters),
+                        "start": start,
+                        "end": position,
+                        "time_base": Fraction(1, av.time_base),
+                        "metadata": {"title": section.name},
+                    }
+                )
+        return chapters
+
     def combine_to_movie(self) -> None:
         """Used internally by Manim to combine the separate
         partial movie files that make up a Scene into a single
@@ -881,6 +914,11 @@ class SceneFileWriter:
             movie_file_path,
             self.output_spec.is_gif,
             self.includes_sound,
+            chapters=(
+                self._section_chapters()
+                if self.output_spec.save_sections and movie_file_path.suffix == ".mp4"
+                else None
+            ),
         )
 
         # handle sound
@@ -927,6 +965,7 @@ class SceneFileWriter:
                 output_container = av.open(
                     str(temp_file_path), mode="w", options=av_options
                 )
+                output_container.set_chapters(video_input.chapters())
                 output_video_stream = output_container.add_stream_from_template(
                     template=video_stream
                 )

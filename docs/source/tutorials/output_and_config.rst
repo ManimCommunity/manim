@@ -302,6 +302,11 @@ main movie assembly and can help diagnose concatenation problems. Section assemb
 does not overwrite this diagnostic list.
 
 As you can see each section receives their own output video in the ``sections`` directory.
+For MP4 output, ``--save_sections`` also embeds the nonempty section names as
+chapter markers in the complete scene video. Players and editors that support
+MP4 chapters can use these markers to navigate between sections. Chapter times
+follow the encoded video, including cached segments; empty and skipped sections
+do not create markers. Adding audio preserves the chapters.
 Section names are normalized into safe filename components, while the original names
 are retained in the JSON index. The JSON file contains some useful information for
 each section:
