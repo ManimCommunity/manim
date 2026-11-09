@@ -110,7 +110,9 @@ class Manager(Generic[SceneT]):
         if scene.manager is not None:
             raise ValueError("A manager is already attached to this scene.")
         self.scene = scene
-        self._execution = scene.renderer._claim_execution(self)
+        self._execution = scene.renderer._claim_execution(
+            self, frame_rate=scene.session_spec.frame_rate
+        )
         self._file_writer: SceneFileWriter | None = None
         self._creating_file_writer = False
         self._log_handler: FileHandler | None = None
@@ -122,7 +124,6 @@ class Manager(Generic[SceneT]):
         self._log_started = False
         self._state = _State.OPEN
         self._scope_depth = 0
-        self._execution.frame_rate = self.session_spec.frame_rate
         self._run_loop: _RunLoop | None = None
         scene.manager = self
 
@@ -318,6 +319,13 @@ class Manager(Generic[SceneT]):
     @skip_animations.setter
     def skip_animations(self, value: bool) -> None:
         self._execution.skip_animations = value
+
+    @property
+    def _skips_all_plays(self) -> bool:
+        """Whether every play is left out of the output, as for
+        ``Scene(skip_animations=True)``.
+        """
+        return self.renderer._skips_all_plays
 
     def _validate_execution(self) -> None:
         self._ensure_usable()

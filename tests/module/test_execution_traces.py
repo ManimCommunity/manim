@@ -24,7 +24,7 @@ def test_animation_clock_trace(backend, duration, skip):
     ):
         scene = Scene(skip_animations=skip)
         # OpenGL historically ignores Scene's skip_animations constructor argument.
-        scene.renderer._original_skipping_status = skip
+        scene.renderer._skips_all_plays = skip
         scene.add(Square())
 
         class Probe(Animation):
@@ -78,7 +78,7 @@ def test_frozen_wait_clock_trace(backend, skip):
         }
     ):
         scene = Scene(skip_animations=skip)
-        scene.renderer._original_skipping_status = skip
+        scene.renderer._skips_all_plays = skip
         with scene._get_manager():
             # A frozen wait takes whole frames, as many as a stepped one: 2, not 0.3 s.
             scene.wait(0.3, frozen_frame=True)

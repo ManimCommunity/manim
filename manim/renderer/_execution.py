@@ -10,37 +10,35 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
+from .. import config
+
 if TYPE_CHECKING:
     from manim.manager import Manager
 
 
 @dataclass
 class _ExecutionState:
-    """Animation clock, counters, and cache/skip state for one scene."""
+    """The animation clock and the play counters of one scene."""
 
+    frame_rate: float
+    """Frames per second of the clock: the scene's session frame rate."""
     frame: int = 0
     """The number of frames played so far: the clock."""
-    frame_rate: float | None = None
-    """Set by the manager that takes over this state."""
     time_offset: float = 0.0
     """Added to the frame time; only assigning :attr:`time` changes it."""
     num_plays: int = 0
     skip_animations: bool = False
-    original_skipping_status: bool = False
+    """Whether the current play draws no frames (see :attr:`._Play.drawn`)."""
     animations_hashes: list[str | None] = field(default_factory=list)
 
     @property
     def time(self) -> float:
         """The elapsed animation time in seconds."""
-        if self.frame_rate is None:
-            return self.time_offset
         return self.time_offset + self.frame / self.frame_rate
 
     @time.setter
     def time(self, value: float) -> None:
-        self.time_offset = value - (
-            0.0 if self.frame_rate is None else self.frame / self.frame_rate
-        )
+        self.time_offset = value - self.frame / self.frame_rate
 
 
 class _RendererExecutionView:
@@ -48,10 +46,14 @@ class _RendererExecutionView:
 
     def _initialize_execution(self, skip_animations: bool) -> None:
         self._execution_owner: Manager | None = None
+        # The configured frame rate, which the scene's session saves; the
+        # Manager checks that they agree before it runs anything.
         self._pending_execution: _ExecutionState | None = _ExecutionState(
-            skip_animations=skip_animations,
-            original_skipping_status=skip_animations,
+            frame_rate=float(config.frame_rate), skip_animations=skip_animations
         )
+        #: Whether the scene leaves every play out of the output, as
+        #: ``Scene(skip_animations=True)`` asks; the Manager reads it.
+        self._skips_all_plays = skip_animations
 
     @property
     def _execution_state(self) -> _ExecutionState:
@@ -60,9 +62,11 @@ class _RendererExecutionView:
         assert self._pending_execution is not None
         return self._pending_execution
 
-    def _claim_execution(self, manager: Manager) -> _ExecutionState:
+    def _claim_execution(self, manager: Manager, frame_rate: float) -> _ExecutionState:
+        """Hand the state to ``manager``, whose clock runs at ``frame_rate``."""
         assert self._execution_owner is None
         state = self._execution_state
+        state.frame_rate = frame_rate
         self._execution_owner = manager
         self._pending_execution = None
         return state
@@ -90,14 +94,6 @@ class _RendererExecutionView:
     @skip_animations.setter
     def skip_animations(self, value: bool) -> None:
         self._execution_state.skip_animations = value
-
-    @property
-    def _original_skipping_status(self) -> bool:
-        return self._execution_state.original_skipping_status
-
-    @_original_skipping_status.setter
-    def _original_skipping_status(self, value: bool) -> None:
-        self._execution_state.original_skipping_status = value
 
     @property
     def animations_hashes(self) -> list[str | None]:

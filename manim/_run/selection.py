@@ -31,7 +31,7 @@ class _OutputSelection:
         """Return whether the play with this index is part of the output."""
         manager = self._manager
         return not (
-            manager._execution.original_skipping_status
+            manager._skips_all_plays
             or manager.output_spec.is_still
             or self._section_skipped
             or index < config.from_animation_number

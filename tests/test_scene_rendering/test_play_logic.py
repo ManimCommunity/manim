@@ -46,7 +46,7 @@ def test_t_values_with_skip_animations(config, using_temp_config, disabling_cach
     """Skipped plays without updaters go to their end in one step."""
     scene = SquareToCircle()
     scene.update_to_time = Mock()
-    scene.renderer._original_skipping_status = True
+    scene.renderer._skips_all_plays = True
     scene.render()
     assert scene.update_to_time.call_count == 1
 

@@ -120,7 +120,7 @@ def test_skipped_stop_wait_is_stepped_like_a_rendered_one(scene):
     """A skipped stop condition must observe per-frame times, not jump to the end."""
     manager = scene._get_manager()
     manager.time = 2
-    scene.renderer._original_skipping_status = True
+    scene.renderer._skips_all_plays = True
     stops = []
 
     def stop():
@@ -130,3 +130,13 @@ def test_skipped_stop_wait_is_stepped_like_a_rendered_one(scene):
     scene.wait(1, stop_condition=stop)
     assert stops == [2.25, 2.5, 2.75, 3]
     assert scene.time == 3
+
+
+def test_the_clock_runs_at_the_frame_rate_from_the_start(scene):
+    # The state used to have no frame rate until a Manager took it over, so
+    # time ignored frames before then; it now starts with the configured rate.
+    renderer = scene.renderer
+    state = renderer._execution_state
+    assert state.frame_rate == 4
+    state.frame = 2
+    assert renderer.time == 0.5

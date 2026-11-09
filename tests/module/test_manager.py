@@ -70,7 +70,7 @@ def test_manager_rejects_explicit_video_for_scene_without_play_calls(
 ):
     config.format = output_format
     renderer = Mock()
-    renderer._claim_execution.return_value = _ExecutionState()
+    renderer._claim_execution.return_value = _ExecutionState(frame_rate=60.0)
     renderer.capabilities = RendererCapabilities()
     renderer.num_plays = 0
     scene = Scene(renderer)
@@ -88,7 +88,7 @@ def test_manager_rejects_explicit_video_for_scene_without_play_calls(
 def test_manager_warns_when_automatic_video_falls_back_to_still(config):
     config.format = "auto"
     renderer = Mock()
-    renderer._claim_execution.return_value = _ExecutionState()
+    renderer._claim_execution.return_value = _ExecutionState(frame_rate=60.0)
     renderer.capabilities = RendererCapabilities()
     renderer.num_plays = 0
     scene = Scene(renderer)
