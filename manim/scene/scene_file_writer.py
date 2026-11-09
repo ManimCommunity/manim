@@ -44,6 +44,9 @@ from ..utils.sounds import get_full_sound_file_path
 from .section import DefaultSectionType, Section
 from .video_segment_encoder import VideoSegmentEncoder
 
+# PyAV added the chapter API in 16.0; older versions render without chapters.
+_SUPPORTS_CHAPTERS = hasattr(av.container.OutputContainer, "set_chapters")
+
 if TYPE_CHECKING:
     from av.container.core import Chapter
 
@@ -779,7 +782,7 @@ class SceneFileWriter:
         output_container.metadata["comment"] = (
             f"Rendered with Manim Community v{__version__}"
         )
-        if chapters:
+        if chapters and _SUPPORTS_CHAPTERS:
             output_container.set_chapters(chapters)
         if create_gif:
             """The following solution was largely inspired from this comment
@@ -916,7 +919,9 @@ class SceneFileWriter:
             self.includes_sound,
             chapters=(
                 self._section_chapters()
-                if self.output_spec.save_sections and movie_file_path.suffix == ".mp4"
+                if _SUPPORTS_CHAPTERS
+                and self.output_spec.save_sections
+                and movie_file_path.suffix == ".mp4"
                 else None
             ),
         )
@@ -965,7 +970,8 @@ class SceneFileWriter:
                 output_container = av.open(
                     str(temp_file_path), mode="w", options=av_options
                 )
-                output_container.set_chapters(video_input.chapters())
+                if _SUPPORTS_CHAPTERS:
+                    output_container.set_chapters(video_input.chapters())
                 output_video_stream = output_container.add_stream_from_template(
                     template=video_stream
                 )

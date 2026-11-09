@@ -108,6 +108,10 @@ def test_skip_animations(tmp_path, manim_cfg_file, simple_scenes_path):
     assert exit_code == 0, err
 
 
+@pytest.mark.skipif(
+    not hasattr(av.container.OutputContainer, "set_chapters"),
+    reason="PyAV < 16 has no chapter API",
+)
 @pytest.mark.parametrize("with_sound", [False, True])
 @pytest.mark.parametrize("save_sections", [False, True])
 def test_mp4_section_chapters(config, tmp_path, with_sound, save_sections):
