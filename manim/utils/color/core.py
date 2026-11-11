@@ -880,7 +880,9 @@ class ManimColor:
             array.
         """
         rgb = colorsys.hsv_to_rgb(*hsv)
-        return cls._from_internal(ManimColor(rgb, alpha)._internal_value)
+        # colorsys passes integer inputs through (e.g. ``(0, 1, 1)`` gives
+        # ``(1, 0, 0)``), which ManimColor would read as 0-255 values.
+        return cls._from_internal(cls._internal_from_rgb(rgb, alpha))
 
     @classmethod
     def from_hsl(cls, hsl: FloatHSLLike, alpha: float = 1.0) -> Self:
@@ -900,7 +902,7 @@ class ManimColor:
             array.
         """
         rgb = colorsys.hls_to_rgb(hsl[0], hsl[2], hsl[1])
-        return cls._from_internal(ManimColor(rgb, alpha)._internal_value)
+        return cls._from_internal(cls._internal_from_rgb(rgb, alpha))
 
     @overload
     @classmethod
