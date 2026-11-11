@@ -22,6 +22,7 @@ from manim import (
     Mobject,
     MovingCamera,
     MultiCamera,
+    Rectangle,
     Scene,
     Square,
     ThreeDCamera,
@@ -457,13 +458,24 @@ def test_auto_zoom_to_a_point_needs_a_margin():
     # Zooming to a mobject without size gave the frame no size, and every
     # later zoom divided by it.
     camera = Camera()
-    with pytest.raises(ValueError, match="without width or height"):
+    with pytest.raises(ValueError, match="use a larger margin"):
         camera.auto_zoom([Dot().scale(0)], animate=False)
     assert camera.frame.width > 0
     camera.auto_zoom([Dot().scale(0)], margin=1, animate=False)
     assert camera.frame.height == pytest.approx(1)
     camera.auto_zoom([Square()], animate=False)
     assert camera.frame.height == pytest.approx(2)
+
+
+def test_auto_zoom_checks_the_side_it_fits():
+    # The frame fits this rectangle's height, which a margin of -1.2 makes
+    # negative, although the width plus the margin is still positive.
+    camera = Camera()
+    with pytest.raises(ValueError, match="height of -0.2"):
+        camera.auto_zoom([Rectangle(width=1.5, height=1)], margin=-1.2, animate=False)
+    assert camera.frame.height == pytest.approx(config.frame_height)
+    camera.auto_zoom([Rectangle(width=1.5, height=1)], margin=-0.5, animate=False)
+    assert camera.frame.height == pytest.approx(0.5)
 
 
 def test_a_cairo_renderer_closes_at_the_end_of_a_with_block():

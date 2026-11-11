@@ -240,26 +240,27 @@ class Camera:
         Raises
         ------
         ValueError
-            If the mobjects have neither width nor height and ``margin`` is not
-            positive: the frame would have no size.
+            If the fitted width or height plus ``margin`` is not positive, for
+            example for mobjects without size and no positive margin.
         """
         left, right, top, bottom = self._get_bounding_box(
             mobjects, only_mobjects_in_frame
         )
         x = (left + right) / 2
         y = (top + bottom) / 2
-        new_width = right - left
-        new_height = top - bottom
-        if max(new_width, new_height) + margin <= 0:
+        # Fit the side that needs the larger frame; compare new_width / width
+        # with new_height / height without dividing.
+        if (right - left) * self.frame.height > (top - bottom) * self.frame.width:
+            side, size = "width", right - left + margin
+        else:
+            side, size = "height", top - bottom + margin
+        if size <= 0:
             raise ValueError(
-                "Camera.auto_zoom() cannot zoom to mobjects without width or "
-                "height unless margin is positive."
+                f"Camera.auto_zoom() would give the frame a {side} of {size:g}; "
+                "use a larger margin."
             )
         target = self.frame.animate if animate else self.frame
-        # Compare new_width / width with new_height / height without dividing.
-        if new_width * self.frame.height > new_height * self.frame.width:
-            return target.set_x(x).set_y(y).set(width=new_width + margin)
-        return target.set_x(x).set_y(y).set(height=new_height + margin)
+        return target.set_x(x).set_y(y).set(**{side: size})
 
     def _get_bounding_box(
         self,
