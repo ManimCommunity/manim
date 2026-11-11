@@ -14,6 +14,8 @@ from typing import TYPE_CHECKING, Any, Literal, Protocol, Self, cast
 
 import numpy as np
 
+from manim.utils.importing import lazy_import
+
 if TYPE_CHECKING:
     from typing import TypeAlias
 
@@ -23,6 +25,8 @@ if TYPE_CHECKING:
     from manim.typing import Point3D, Point3DLike
 
     NxGraph: TypeAlias = nx.classes.graph.Graph | nx.classes.digraph.DiGraph
+else:
+    nx = lazy_import("networkx")
 
 from manim.animation.composition import AnimationGroup
 from manim.animation.creation import Create, Uncreate
@@ -288,8 +292,6 @@ def _partite_layout(
     partitions: Sequence[Sequence[Hashable]] | None = None,
     **kwargs: Any,
 ) -> dict[Hashable, Point3D]:
-    import networkx as nx
-
     if partitions is None or len(partitions) == 0:
         raise ValueError(
             "The partite layout requires partitions parameter to contain the partition of the vertices",
@@ -311,8 +313,6 @@ def _partite_layout(
 
 
 def _random_layout(nx_graph: NxGraph, scale: float = 2, **kwargs: Any):
-    import networkx as nx
-
     # the random layout places coordinates in [0, 1)
     # we need to rescale manually afterwards...
     auto_layout = nx.layout.random_layout(nx_graph, **kwargs)
@@ -328,8 +328,6 @@ def _tree_layout(
     vertex_spacing: tuple | None = None,
     orientation: str = "down",
 ):
-    import networkx as nx
-
     if root_vertex is None:
         raise ValueError("The tree layout requires the root_vertex parameter")
     if not nx.is_tree(T):
@@ -436,8 +434,6 @@ LayoutName = Literal[
 
 
 def _get_layouts() -> dict[LayoutName, LayoutFunction]:
-    import networkx as nx
-
     return {
         "circular": cast(LayoutFunction, nx.layout.circular_layout),
         "kamada_kawai": cast(LayoutFunction, nx.layout.kamada_kawai_layout),
@@ -1578,8 +1574,6 @@ class Graph(GenericGraph):
 
     @staticmethod
     def _empty_networkx_graph() -> nx.Graph:
-        import networkx as nx
-
         return nx.Graph()
 
     def _populate_edge_dict(
@@ -1788,8 +1782,6 @@ class DiGraph(GenericGraph):
 
     @staticmethod
     def _empty_networkx_graph() -> nx.DiGraph:
-        import networkx as nx
-
         return nx.DiGraph()
 
     def _populate_edge_dict(
