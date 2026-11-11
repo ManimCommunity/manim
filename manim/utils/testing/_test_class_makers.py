@@ -28,7 +28,7 @@ def _make_test_scene_class(
             # Manim hack to render the very last frame (normally the last frame is not the very end of the animation)
             if self.animations is not None:
                 self.update_to_time(self.get_run_time(self.animations))
-                self.renderer.render(self, 1, self.moving_mobjects)
+                self._get_manager()._render_preview_frame(1)
 
     return _TestedScene
 

@@ -14,9 +14,11 @@ def test_render(using_temp_config, disabling_caching):
     scene = SquareToCircle()
     renderer = scene.renderer
     renderer.update_frame = Mock(wraps=renderer.update_frame)
-    renderer.add_frame = Mock(wraps=renderer.add_frame)
+    writer = scene._get_manager().file_writer
+    writer.write_frame = Mock(wraps=writer.write_frame)
     scene.render()
-    assert renderer.add_frame.call_count == config["frame_rate"]
+    assert writer.write_frame.call_count == config["frame_rate"]
+    # One draw per frame; the final state is drawn only if it is read.
     assert renderer.update_frame.call_count == config["frame_rate"]
     assert_file_exists(renderer.file_writer.final_file_path)
     assert config.output_file == ""
@@ -88,7 +90,7 @@ def test_hash_logic_is_not_called_when_caching_is_disabled(
     using_temp_config,
     disabling_caching,
 ):
-    with patch("manim.renderer.cairo.renderer.get_hash_from_play_call") as mocked:
+    with patch("manim._run.cache.get_hash_from_play_call") as mocked:
         scene = SquareToCircle()
         scene.render()
         mocked.assert_not_called()
@@ -96,10 +98,10 @@ def test_hash_logic_is_not_called_when_caching_is_disabled(
 
 
 def test_hash_logic_is_called_when_caching_is_enabled(using_temp_config):
-    from manim.renderer.cairo.renderer import get_hash_from_play_call
+    from manim._run.cache import get_hash_from_play_call
 
     with patch(
-        "manim.renderer.cairo.renderer.get_hash_from_play_call",
+        "manim._run.cache.get_hash_from_play_call",
         wraps=get_hash_from_play_call,
     ) as mocked:
         scene = SquareToCircle()
@@ -167,3 +169,44 @@ def test_handled_play_failure_does_not_hide_an_earlier_encoder_failure(
         with pytest.raises(RuntimeError) as caught:
             scene.render()
     assert caught.value is earlier
+
+
+class _FillsACircle(Scene):
+    def construct(self):
+        circle = Circle()
+        self.add(circle)
+        self.play(circle.animate.set_fill(RED, opacity=1), run_time=0.2)
+
+
+def test_last_frame_is_drawn_after_a_cached_render(using_temp_config):
+    def last_frame():
+        scene = _FillsACircle()
+        with scene._get_manager() as manager:
+            manager.render()
+            return scene.renderer.get_frame().copy()
+
+    cold = last_frame()
+    warm = last_frame()
+    assert cold.any()
+    np.testing.assert_array_equal(warm, cold)
+
+
+class _FreezesBetweenPlays(Scene):
+    def construct(self):
+        self.play(Create(Circle()), run_time=0.2)
+        self.renderer.freeze_current_frame(1)
+        self.play(Create(Square()), run_time=0.2)
+
+
+def test_frames_added_between_plays_advance_time_independently_of_the_cache(
+    using_temp_config,
+):
+    def times():
+        scene = _FreezesBetweenPlays()
+        scene.render()
+        return scene.renderer.time, list(scene.renderer.animations_hashes)
+
+    cold = times()
+    warm = times()
+    assert cold[0] == pytest.approx(1.4)
+    assert warm == cold

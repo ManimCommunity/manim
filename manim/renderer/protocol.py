@@ -1,4 +1,4 @@
-"""What every renderer declares: its features and where it is in its life."""
+"""Renderer capabilities, lifecycle state, and drawing methods used by Manager."""
 
 from __future__ import annotations
 
@@ -6,7 +6,12 @@ __all__ = ["Renderer", "RendererCapabilities", "RendererState"]
 
 import enum
 from dataclasses import dataclass
-from typing import ClassVar, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Any, ClassVar, Protocol, runtime_checkable
+
+if TYPE_CHECKING:
+    from manim.mobject.mobject import Mobject
+    from manim.scene.scene import Scene
+    from manim.typing import RGBAPixelArray
 
 
 class RendererState(enum.Enum):
@@ -66,3 +71,28 @@ class Renderer(Protocol):
     def close(self) -> None:
         """Release the drawing resources; the renderer does not draw afterwards."""
         ...
+
+
+class _AnimationRenderer(Protocol):
+    """Draw frames and display them in a preview window at Manager's request.
+
+    Manager prepares animations, checks the cache, advances animation time, and
+    sends frames to the writer. The renderer prepares its drawing resources and
+    uses wall-clock time to pace its live preview.
+    """
+
+    def _animation_cache_identity(self, scene: Scene) -> tuple[str, Any]: ...
+
+    def _start_animation(self) -> None: ...
+
+    def _prepare_animation(self, scene: Scene) -> None: ...
+
+    def render(
+        self, scene: Scene, frame_offset: float, moving_mobjects: list[Mobject], /
+    ) -> None: ...
+
+    def get_frame(self) -> RGBAPixelArray: ...
+
+    def _present_frame(self, scene: Scene, frame_offset: float) -> None: ...
+
+    def _present_frozen_frame(self, scene: Scene, duration: float) -> None: ...
