@@ -1237,6 +1237,13 @@ class Scene:
         kwargs
             All other keywords are passed to the renderer.
 
+        Raises
+        ------
+        RuntimeError
+            If called while another play or wait call is running, for example
+            from an updater. Earlier versions overwrote the running play's
+            animations instead.
+
         """
         # If we are in interactive embedded mode, make sure this is running on the main thread (required for OpenGL)
         if (

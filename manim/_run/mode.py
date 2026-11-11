@@ -8,7 +8,7 @@ instead of checking a flag in each place.
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 if TYPE_CHECKING:
     from ..manager import Manager
@@ -22,6 +22,8 @@ class _RunMode:
 
     #: The name of the mode in messages, such as "evaluation".
     name = "render"
+    #: The run's ``mode`` in an exported timeline (see :doc:`/guides/timeline`).
+    timeline_mode: Literal["render", "evaluate"] = "render"
     #: Whether the run writes the scene's log file.
     writes_log = True
     #: Whether frames added outside of a play must be drawn when they are added.
@@ -63,6 +65,7 @@ class _EvaluationRun(_RunMode):
     """
 
     name = "evaluation"
+    timeline_mode: Literal["render", "evaluate"] = "evaluate"
     writes_log = False
     draws_added_frames = False
 

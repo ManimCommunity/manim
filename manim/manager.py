@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import contextlib
 import enum
 import math
 from dataclasses import dataclass
@@ -46,6 +45,7 @@ if TYPE_CHECKING:
     from .renderer.opengl.renderer import OpenGLRenderer
     from .scene.scene import Scene
     from .scene.scene_file_writer import SceneFileWriter
+    from .timeline import Timeline
     from .typing import RGBAPixelArray
 
 __all__ = ["Manager", "RenderedFrame"]
@@ -174,6 +174,14 @@ class Manager(Generic[SceneT]):
         # outside them (which renders); markers made before it are kept for it.
         self._run_loop: _RunLoop | None = None
         self._early_markers: list[_Section | _Caption | _Sound] = []
+        self._timeline: Timeline | None = None
+        self.capture_timeline = False
+        """Whether :meth:`render` captures a timeline when it is not told.
+
+        Set it to capture the timeline of a render started elsewhere, for example
+        by :meth:`.Scene.render`, which a scene can override without passing
+        ``capture_timeline`` on; the command line's ``--timeline-output`` does.
+        """
         scene.manager = self
 
     def _ensure_usable(self) -> None:
@@ -403,7 +411,9 @@ class Manager(Generic[SceneT]):
                 "under the desired configuration before executing it."
             )
 
-    def render(self, preview: bool = False) -> bool:
+    def render(
+        self, preview: bool = False, *, capture_timeline: bool | None = None
+    ) -> bool:
         """Run the complete render lifecycle for the managed scene.
 
         The lifecycle invokes :meth:`setup`, :meth:`construct`,
@@ -424,6 +434,10 @@ class Manager(Generic[SceneT]):
         ----------
         preview
             Whether the rendered media should be opened after rendering.
+        capture_timeline
+            Whether to record the scene's play, wait, section, caption, and sound
+            calls. After a successful render, the result is available as
+            :attr:`timeline`. If not given, :attr:`capture_timeline` decides.
 
         Returns
         -------
@@ -440,13 +454,16 @@ class Manager(Generic[SceneT]):
 
         self._state = _State.RENDERED
         try:
+            self._timeline = None
             self._open_log_handler()
             self.renderer.open()
             # User setup() code can use the writer.
             self._ensure_file_writer()
             rerun = False
             try:
-                self._run(self._loop)
+                if capture_timeline is None:
+                    capture_timeline = self.capture_timeline
+                self._run(self._loop, capture_timeline)
             except RerunSceneException:
                 # The caller will create a fresh Scene for the rerun.
                 # Report any encoder errors before allowing that restart.
@@ -470,9 +487,21 @@ class Manager(Generic[SceneT]):
         self._finish_resource_scope()
         return rerun
 
+    @property
+    def timeline(self) -> Timeline:
+        """The timeline recorded by a successful call to :meth:`evaluate` or
+        :meth:`render` with ``capture_timeline=True``.
+
+        Raises ``RuntimeError`` if no timeline has been recorded.
+        """
+        if self._timeline is None:
+            raise RuntimeError("No completed timeline capture is available.")
+        return self._timeline
+
     def evaluate(
         self,
         *,
+        capture_timeline: bool = False,
         frame_times: Iterable[float] = (),
         on_frame: Callable[[RenderedFrame], object] | None = None,
     ) -> None:
@@ -486,6 +515,10 @@ class Manager(Generic[SceneT]):
 
         Parameters
         ----------
+        capture_timeline
+            Whether to record the scene's play, wait, section, caption, and sound
+            calls. After a successful evaluation, the result is available as
+            :attr:`timeline`.
         frame_times
             Times in seconds at which to draw the frame that a render would show.
             Each frame is drawn when evaluation reaches it and passed to
@@ -543,7 +576,7 @@ class Manager(Generic[SceneT]):
         try:
             with self.renderer._scene_images():
                 meshes.check()
-                self._run(loop)
+                self._run(loop, capture_timeline)
                 meshes.check()
         except BaseException:
             self._cleanup_after_failure()
@@ -566,17 +599,29 @@ class Manager(Generic[SceneT]):
                 "new Scene to run it again."
             )
 
-    def _run(self, loop: _RunLoop) -> None:
-        """Run setup(), construct() and tear_down(), with ``loop`` running the
-        scene's plays; the markers made before go to it first.
+    def _run(self, loop: _RunLoop, capture: bool) -> None:
+        """Run setup(), construct() and tear_down(), with ``loop`` running and
+        recording the scene's plays; with ``capture``, export the loop's record
+        as :attr:`timeline`.
+
+        The markers made before the run go to the loop first; they are recorded
+        without a source location.
         """
         if self._run_loop is not loop:
             self._use_loop(loop)
+        record = loop.record
+        record.start(capture)
         self.setup()
-        # Only a construction boundary is a normal early scene end.
-        with contextlib.suppress(EndSceneEarlyException):
+        ended_early = False
+        try:
             self.construct()
+        except EndSceneEarlyException:
+            # Only a construction boundary is a normal early scene end.
+            ended_early = True
         self.tear_down()
+        loop.finish(ended_early=ended_early)
+        if capture:
+            self._timeline = record.timeline()
 
     @property
     def _mode(self) -> _RunMode:
