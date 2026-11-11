@@ -1020,6 +1020,9 @@ class Mobject:
             return renderer.get_image()
 
     def show(self, camera: Camera | None = None) -> None:
+        """Draw this mobject as :meth:`get_image` does and open the image in PIL's
+        image viewer.
+        """
         self.get_image(camera=camera).show()
 
     def save_image(self, name: str | None = None) -> None:

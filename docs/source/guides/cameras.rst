@@ -184,7 +184,9 @@ There are two independent controls:
 * The display mobject selects where that view appears in the primary scene, as a
   "picture-in-picture" display. This mobject can be manipulated like any other.
 
-For example, this scene places two detail views above the original objects::
+For example, this scene places two detail views above the original objects:
+
+.. manim:: TwoCameraViews
 
     class TwoCameraViews(Scene):
         def __init__(self, *, camera_class: type[Camera] = MultiCamera, **kwargs):
