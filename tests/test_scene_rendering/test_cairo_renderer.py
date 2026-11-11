@@ -107,3 +107,63 @@ def test_hash_logic_is_called_when_caching_is_enabled(using_temp_config):
         mocked.assert_called_once()
         assert mocked.call_args.kwargs["backend"] == "cairo"
         assert mocked.call_args.kwargs["encoder_fingerprint"] != "none"
+
+
+class _FailHalfway(Animation):
+    def interpolate_mobject(self, alpha):
+        if alpha > 0.5:
+            raise RuntimeError("failed halfway")
+
+
+class _RecoversFromFailedPlays(Scene):
+    def construct(self):
+        self.play(Create(Circle()), run_time=0.2)
+        with pytest.raises(ValueError, match="no animations"):
+            self.play()
+        with pytest.raises(RuntimeError, match="failed halfway"):
+            self.play(_FailHalfway(Square()), run_time=0.4)
+        # Fails after all of its frames were played.
+        with pytest.raises(RuntimeError, match="no subcaptions"):
+            self.play(Create(Square()), run_time=0.2, subcaption="caption")
+        self.play(Create(Square()), run_time=0.2)
+
+    def add_subcaption(self, *args, **kwargs):
+        raise RuntimeError("no subcaptions")
+
+
+def test_scene_continues_after_a_handled_play_failure(
+    using_temp_config, disabling_caching
+):
+    scene = _RecoversFromFailedPlays()
+    scene.render()
+
+    writer = scene.renderer.file_writer
+    assert scene.renderer.num_plays == 2
+    assert scene.renderer.time == pytest.approx(0.4)
+    assert len(writer.partial_movie_files) == 2
+    assert_file_exists(writer.final_file_path)
+
+
+def test_handled_play_failure_does_not_hide_an_earlier_encoder_failure(
+    using_temp_config, disabling_caching, monkeypatch
+):
+    from manim.scene.scene_file_writer import SceneFileWriter
+
+    earlier = RuntimeError("earlier segment failed")
+
+    class FailsAfterAnEncodedPlay(Scene):
+        def construct(self):
+            self.play(Create(Circle()), run_time=0.2)
+            # The first play's segment is in flight; let it fail on join.
+            [job] = self.renderer.file_writer._inflight_encode_jobs
+            monkeypatch.setattr(job, "join", Mock(side_effect=earlier))
+            with pytest.raises(RuntimeError, match="failed halfway"):
+                self.play(_FailHalfway(Square()), run_time=0.4)
+
+    monkeypatch.setattr(SceneFileWriter, "combine_to_movie", Mock())
+    # Only with parallel encoders is the first segment still in flight.
+    with tempconfig({"max_inflight_encoders": 3}):
+        scene = FailsAfterAnEncodedPlay()
+        with pytest.raises(RuntimeError) as caught:
+            scene.render()
+    assert caught.value is earlier

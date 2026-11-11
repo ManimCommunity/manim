@@ -3,16 +3,23 @@
 from __future__ import annotations
 
 import datetime
-from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
+import enum
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 import srt
 
 from . import logger
+from ._config.logger_utils import set_file_logger
 from .scene.section import DefaultSectionType
 from .utils.exceptions import EndSceneEarlyException, RerunSceneException
 from .utils.file_ops import open_media_file
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+    from logging import FileHandler
+    from logging.handlers import MemoryHandler
+    from types import TracebackType
+
     from PIL.Image import Image
 
     from ._config.output import OutputSpec
@@ -31,20 +38,40 @@ __all__ = ["Manager"]
 SceneT = TypeVar("SceneT", bound="Scene")
 
 
-class Manager(Generic[SceneT]):
-    """Coordinate the render lifecycle for a single scene.
+class _State(enum.Enum):
+    """Where a :class:`Manager` is in its life.
 
-    A manager is attached to exactly one :class:`~manim.scene.scene.Scene`. It
-    coordinates the scene lifecycle, delegates animation playback to the current
-    renderer, and routes section, subcaption, and audio operations to the current
-    file writer. Calling :meth:`~manim.scene.scene.Scene.render` creates a manager
-    lazily when one has not already been attached.
+    ``OPEN`` -> ``RENDERED`` (by :meth:`Manager.render`) -> ``CLOSING`` ->
+    ``CLOSED``; a Manager can be closed from ``OPEN`` too. If closing fails, the
+    Manager is ``CLOSE_FAILED``: it refuses everything but another close().
+    """
+
+    OPEN = "open"
+    RENDERED = "rendered"
+    CLOSING = "closing"
+    CLOSED = "closed"
+    CLOSE_FAILED = "close failed"
+
+    @property
+    def usable(self) -> bool:
+        """Whether the Manager can play, give out its writer or enter a block."""
+        return self in (_State.OPEN, _State.RENDERED)
+
+
+class Manager(Generic[SceneT]):
+    """Run a scene's rendering steps and clean up its resources.
+
+    Each manager works with one :class:`~manim.scene.scene.Scene`. It calls the
+    scene's setup, construct, and tear-down hooks, delegates animation playback to
+    the renderer, and uses a file writer for sections, subcaptions, and audio.
+    Calling :meth:`~manim.scene.scene.Scene.render` creates a manager if needed
+    and stores it in ``scene.manager``.
 
     Parameters
     ----------
     scene
-        The scene coordinated by this manager. A scene that already has a manager
-        cannot be attached to another one.
+        The scene to render. Reuse ``scene.manager`` if a manager is already
+        attached.
 
     Attributes
     ----------
@@ -53,11 +80,14 @@ class Manager(Generic[SceneT]):
 
     Notes
     -----
-    This class is the coordination boundary for an incremental render-flow
-    refactor. Renderer, camera, clock, and output ownership still remain on the
-    scene and renderer for compatibility. The :attr:`renderer`, :attr:`camera`,
-    :attr:`file_writer`, :attr:`time`, :attr:`num_plays`, and
-    :attr:`skip_animations` properties are forwarding views for now.
+    Output settings are saved during scene construction. The manager creates
+    the file writer when first requested and makes it available before
+    :meth:`~manim.scene.scene.Scene.setup` runs.
+
+    Rendering normally closes the renderer before returning. Use a
+    ``with manager:`` block to keep its resources available after a successful
+    render, for example to read the last-rendered frame. The block closes them
+    when it ends.
 
     Examples
     --------
@@ -65,7 +95,7 @@ class Manager(Generic[SceneT]):
     is called. It can also be attached explicitly::
 
         scene = Scene()
-        manager = Manager(scene)
+        manager = scene.manager or Manager(scene)
         manager.render()
     """
 
@@ -73,11 +103,135 @@ class Manager(Generic[SceneT]):
         if scene.manager is not None:
             raise ValueError("A manager is already attached to this scene.")
         self.scene = scene
+        self._file_writer: SceneFileWriter | None = None
+        self._creating_file_writer = False
+        self._log_handler: FileHandler | None = None
+        # Messages logged before the log file is opened, see Scene.__init__.
+        self._log_buffer: MemoryHandler | None = scene._log_buffer
+        scene._log_buffer = None
+        # The first handler starts a new log file; later ones append to it, so
+        # a play() after render() in a ``with manager:`` block keeps the log.
+        self._log_started = False
+        self._state = _State.OPEN
+        self._scope_depth = 0
         scene.manager = self
+
+    def _ensure_usable(self) -> None:
+        if not self._state.usable:
+            raise RuntimeError(
+                f"The Manager cannot be used: it is {self._state.value}."
+            )
+
+    def __enter__(self) -> Manager[SceneT]:
+        self._ensure_usable()
+        self._scope_depth += 1
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        self._scope_depth -= 1
+        # An enclosing block may handle the error and keep using the Manager.
+        if self._scope_depth > 0:
+            return
+        if exc is not None:
+            self._cleanup_after_failure()
+        else:
+            self.close()
+
+    def _open_log_handler(self) -> None:
+        if self._log_handler is not None:
+            return
+        path = self.scene._log_file_path
+        if path is not None:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            # Stop buffering first, so that the file's opening message is not
+            # buffered and written twice.
+            buffer = self._log_buffer
+            if buffer is not None:
+                logger.removeHandler(buffer)
+            self._log_handler = set_file_logger(
+                path, mode="a" if self._log_started else "w"
+            )
+            self._log_started = True
+            if buffer is not None:
+                buffer.setTarget(self._log_handler)
+                self._drop_log_buffer()
+
+    def _drop_log_buffer(self) -> None:
+        """Stop buffering messages; write those buffered to the log file, if open."""
+        buffer, self._log_buffer = self._log_buffer, None
+        if buffer is not None:
+            logger.removeHandler(buffer)
+            buffer.close()  # flushes to its target, if any
+
+    def _close_log_handler(self) -> None:
+        self._drop_log_buffer()
+        handler = self._log_handler
+        if handler is not None:
+            logger.removeHandler(handler)
+            handler.close()
+            self._log_handler = None
+
+    def close(self) -> None:
+        """Stop encoding jobs, close the renderer, and close the scene's log file.
+
+        This discards any unfinished segment and waits for queued encoding jobs.
+        It removes the log handler created by this manager, leaving other handlers
+        in place. Rendering calls this automatically, or at the end of an enclosing
+        ``with manager:`` block after a successful render.
+        """
+        self._close()
+
+    def _close(self, failure_message: str | None = None) -> None:
+        """Close as :meth:`close` does; log cleanup failures as ``failure_message``
+        instead of raising the first one, if given.
+
+        A failed close leaves the Manager ``CLOSE_FAILED``; it can be retried.
+        """
+        if self._state in (_State.CLOSING, _State.CLOSED):
+            return
+        self._state = _State.CLOSING
+        # Attempt every cleanup even on KeyboardInterrupt/SystemExit, then reraise.
+        failures: list[BaseException] = []
+
+        def cleanup(callback: Callable[[], Any]) -> None:
+            try:
+                callback()
+            except BaseException as error:
+                failures.append(error)
+
+        def report(start: int) -> None:
+            # The first failure is raised instead, unless a render failure is.
+            for index, failure in enumerate(failures[start:], start):
+                if failure_message is not None:
+                    logger.error(failure_message, exc_info=failure)
+                elif index > 0:
+                    logger.error("Additional Manager cleanup failure", exc_info=failure)
+
+        if self._file_writer is not None:
+            cleanup(self._file_writer.abort_encode_jobs)
+        cleanup(self.renderer.close)
+        # Report these while the log file is still open; a failure to close it
+        # can only go to the remaining handlers.
+        report(0)
+        reported = len(failures)
+        cleanup(self._close_log_handler)
+        report(reported)
+        self._state = _State.CLOSE_FAILED if failures else _State.CLOSED
+        if failures and failure_message is None:
+            raise failures[0]
+
+    def _cleanup_after_failure(self) -> None:
+        # A rendering exception is already propagating; cleanup must not replace it.
+        self._close("Failed to clean up resources after a render failure")
 
     @property
     def renderer(self) -> CairoRenderer | OpenGLRenderer:
-        """Return the scene's current renderer."""
+        """Return the renderer selected when the scene was created."""
         return self.scene.renderer
 
     @property
@@ -87,17 +241,41 @@ class Manager(Generic[SceneT]):
 
     @property
     def file_writer(self) -> SceneFileWriter:
-        """Return the current renderer's file writer."""
-        return cast("SceneFileWriter", self.renderer.file_writer)
+        """Return the scene's file writer, creating it on first access.
+
+        The writer uses ``scene.file_writer_settings``. :meth:`render` creates it
+        before calling :meth:`setup`; ``renderer.file_writer`` returns the same
+        writer. Both properties are read-only. To choose a custom writer class,
+        pass ``file_writer_class`` when constructing the renderer.
+        """
+        return self._ensure_file_writer()
+
+    def _ensure_file_writer(self) -> SceneFileWriter:
+        """Return the scene's file writer, creating it if there is none yet."""
+        if self._file_writer is None:
+            if not self._state.usable:
+                raise RuntimeError(
+                    "Cannot create output resources on a closed Manager."
+                )
+            if self._creating_file_writer:
+                raise RuntimeError("Recursive file writer creation is not supported.")
+            self._creating_file_writer = True
+            try:
+                self._file_writer = self.renderer._file_writer_class(
+                    self.scene.file_writer_settings
+                )
+            finally:
+                self._creating_file_writer = False
+        return self._file_writer
 
     @property
     def output_spec(self) -> OutputSpec:
-        """Return the immutable output intent captured for this session."""
+        """Return the output format and options saved for this scene."""
         return self.session_spec.output
 
     @property
     def session_spec(self) -> RenderSessionSpec:
-        """Return the immutable artifact, presentation, and execution intent."""
+        """Return the scene's saved output, preview, and execution settings."""
         return self.scene.session_spec
 
     @property
@@ -132,9 +310,17 @@ class Manager(Generic[SceneT]):
 
         The lifecycle invokes :meth:`setup`, :meth:`construct`,
         :meth:`tear_down`, and :meth:`post_construct`, in that order. Reaching a
-        configured animation boundary ends construction normally. Exceptions
-        raised while constructing the scene abort active encoding jobs before
-        they are propagated.
+        configured animation boundary ends construction normally. After a
+        successful render, the renderer closes before this method returns, or
+        when an enclosing ``with manager:`` block ends.
+
+        If setup, animation, output finalization, or opening the preview fails,
+        the manager stops encoding jobs and closes the renderer before raising
+        the original exception. This cleanup also applies to errors in
+        :meth:`tear_down`.
+
+        A manager renders its scene once; calling this method again raises
+        ``RuntimeError``.
 
         Parameters
         ----------
@@ -148,47 +334,62 @@ class Manager(Generic[SceneT]):
             ``False``. This matches the return value of
             :meth:`~manim.scene.scene.Scene.render`.
         """
+        self._ensure_usable()
+        if self._state is _State.RENDERED:
+            raise RuntimeError(
+                "A Manager renders its scene only once. Construct a new Scene to "
+                "render it again."
+            )
         presentation = self.session_spec.presentation
         open_after_render = preview or presentation.open_after_render
         if open_after_render and not self.output_spec.enabled:
             raise ValueError("Previewing after render requires a media artifact.")
 
-        self.setup()
+        self._state = _State.RENDERED
         try:
-            self.construct()
-        except EndSceneEarlyException:
-            # Reaching the configured animation boundary ends the scene normally.
-            pass
-        except RerunSceneException:
-            self.scene.remove(*self.scene.mobjects)
-            # TODO: The CairoRenderer does not have the method clear_screen().
-            self.renderer.clear_screen()  # type: ignore[union-attr]
-            self.num_plays = 0
-            # The rerun replaces the file writer; tear down its encode jobs so
-            # no worker is still writing a partial file the new writer may
-            # reuse. Encoder failures propagate: a rerun must not silently
-            # continue past corrupt output.
-            self.file_writer.abort_encode_jobs(reraise_encoder_failures=True)
-            return True
+            self._open_log_handler()
+            self.renderer.open()
+            # User setup() code can use the writer.
+            self._ensure_file_writer()
+            self.setup()
+            rerun = False
+            try:
+                self.construct()
+            except EndSceneEarlyException:
+                # Only a construction boundary is a normal early scene end.
+                pass
+            except RerunSceneException:
+                # The caller will create a fresh Scene for the rerun.
+                # Report any encoder errors before allowing that restart.
+                self.file_writer.abort_encode_jobs(reraise_encoder_failures=True)
+                rerun = True
+            if not rerun:
+                self.tear_down()
+                self.post_construct()
+                if open_after_render or presentation.show_in_file_browser:
+                    open_media_file(
+                        self.file_writer,
+                        preview=open_after_render,
+                        show_in_file_browser=presentation.show_in_file_browser,
+                    )
         except BaseException:
-            # A mid-play exception leaves an unsealed encode job whose
-            # non-daemon worker would hang the process at exit.
-            self.file_writer.abort_encode_jobs()
+            # An encoder waiting for more frames can prevent Python from exiting.
+            # Stop it while preserving the original rendering error.
+            self._cleanup_after_failure()
             raise
-        self.tear_down()
-        self.post_construct()
+        # Outside the try: a failure to close is not a render failure, so it is
+        # not cleaned up as one (which would close everything a second time).
+        self._finish_resource_scope()
+        return rerun
 
-        if open_after_render or presentation.show_in_file_browser:
-            open_media_file(
-                self.file_writer,
-                preview=open_after_render,
-                show_in_file_browser=presentation.show_in_file_browser,
-            )
-
-        return False
+    def _finish_resource_scope(self) -> None:
+        if self._scope_depth == 0:
+            self.close()
+        else:
+            self._close_log_handler()
 
     def get_image(self) -> Image:
-        """Materialize current state without entering a timed/output transaction."""
+        """Draw a fresh scene image; see :meth:`.Scene.get_image` for snapshot behavior."""
         return self.renderer._get_scene_image(self.scene)
 
     def setup(self) -> None:
@@ -203,8 +404,8 @@ class Manager(Generic[SceneT]):
         """Finalize output after scene construction and tear-down.
 
         This validates empty video output, asks the renderer to finish the scene,
-        and logs the number of played animations. It intentionally runs after
-        :meth:`tear_down` to preserve the established render lifecycle.
+        and logs the number of played animations. :meth:`tear_down` runs first,
+        so its changes to the scene are included in last-frame image output.
         """
         output = self.output_spec
         empty_video_output = self.num_plays == 0 and output.is_video
@@ -215,7 +416,6 @@ class Manager(Generic[SceneT]):
                 "Use --format=png to save its last frame.",
             )
 
-        # We have to reset these settings in case of multiple renders.
         self.renderer.scene_finished(self.scene)
 
         if (
@@ -248,6 +448,9 @@ class Manager(Generic[SceneT]):
     ) -> None:
         """Coordinate an animation request and its optional subcaption.
 
+        A play outside :meth:`render` and ``with manager:`` blocks appends to the
+        scene's log file and closes it again when it ends.
+
         Parameters
         ----------
         args
@@ -263,21 +466,86 @@ class Manager(Generic[SceneT]):
         kwargs
             Additional animation arguments forwarded to the renderer.
         """
-        start_time = self.time
-        self.renderer.play(self.scene, *args, **kwargs)
-        run_time = self.time - start_time
-
-        if subcaption:
-            if subcaption_duration is None:
-                subcaption_duration = run_time
-            # The start of the subcaption needs to be offset by the run time
-            # because it is added after the animation has already played.
-            # Route through Scene's public API to preserve its customization hook.
-            self.scene.add_subcaption(
-                content=subcaption,
-                duration=subcaption_duration,
-                offset=-run_time + subcaption_offset,
+        self._ensure_usable()
+        # Outside render() and ``with manager:`` blocks, which close the log
+        # file when they end, a play opens it (appending) and closes it again.
+        closes_log = self._log_handler is None and self._scope_depth == 0
+        self._open_log_handler()
+        try:
+            self._captioned_play(
+                subcaption, subcaption_duration, subcaption_offset, args, kwargs
             )
+        finally:
+            if closes_log:
+                self._close_log_handler()
+
+    def _captioned_play(
+        self,
+        subcaption: str | None,
+        subcaption_duration: float | None,
+        subcaption_offset: float,
+        args: tuple[Animation | Mobject | _AnimationBuilder, ...],
+        kwargs: dict[str, Any],
+    ) -> None:
+        start_time = self.time
+        rollback = self._play_rollback()
+        try:
+            self.renderer.play(self.scene, *args, **kwargs)
+            run_time = self.time - start_time
+
+            if subcaption:
+                if subcaption_duration is None:
+                    subcaption_duration = run_time
+                # Place the caption relative to the start of this play, through
+                # Scene's public API so its customization hook is preserved.
+                self.scene.add_subcaption(
+                    content=subcaption,
+                    duration=subcaption_duration,
+                    offset=-run_time + subcaption_offset,
+                )
+        except (EndSceneEarlyException, RerunSceneException):
+            # Leave early scene endings and rerun requests for the caller to handle.
+            raise
+        except BaseException:
+            # Discard only this play: the caller may handle the error and keep
+            # going, as in an interactive session. render() and the end of a
+            # ``with manager:`` block close the remaining resources.
+            rollback()
+            raise
+
+    def _play_rollback(self) -> Callable[[], None]:
+        """Return a callback that undoes the output bookkeeping of a failed play.
+
+        The callback stops the play's encode job, drops its partial movie entry
+        and animation hash, and restores the clock and the play count, so the
+        next play starts from the same output state as if the failed play had
+        never been called. Encode jobs of earlier plays keep running, so that
+        their failures are reported as usual.
+        Changes the play made to mobjects are kept.
+        """
+        writer = self.file_writer
+        renderer = self.renderer
+        time = self.time
+        num_plays = self.num_plays
+        num_files = len(writer.partial_movie_files)
+        section = writer.sections[-1] if writer.sections else None
+        num_section_files = len(section.partial_movie_files) if section else 0
+        num_hashes = len(renderer.animations_hashes)
+
+        def rollback() -> None:
+            try:
+                writer.abort_current_encode_job()
+            except BaseException:
+                logger.exception("Failed to stop the encoder of a failed play")
+            del writer.partial_movie_files[num_files:]
+            if section is not None:
+                del section.partial_movie_files[num_section_files:]
+            del renderer.animations_hashes[num_hashes:]
+            self.time = time
+            # The play may have failed after it was counted, e.g. in a subcaption.
+            self.num_plays = num_plays
+
+        return rollback
 
     def next_section(
         self,

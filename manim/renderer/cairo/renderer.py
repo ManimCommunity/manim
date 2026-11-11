@@ -14,7 +14,7 @@ from ...mobject.types.image_mobject import ImageMobjectFromCamera
 from ...scene.scene_file_writer import SceneFileWriter
 from ...utils.exceptions import EndSceneEarlyException
 from ...utils.iterables import list_update
-from ..protocol import RendererCapabilities
+from ..protocol import RendererCapabilities, RendererState
 from .camera import Camera, MultiCamera
 from .rendering import _CairoDrawingContext
 from .target import _CairoRasterSettings, _CairoRenderTarget, _ImageFiles
@@ -23,7 +23,6 @@ if TYPE_CHECKING:
     from manim._config.render_session import RenderSessionSpec
     from manim.animation.animation import Animation
     from manim.scene.scene import Scene
-    from manim.scene.scene_file_writer import _SceneFileWriterSettings
 
     from ...typing import RGBAPixelArray
 
@@ -33,9 +32,10 @@ __all__ = ["CairoRenderer"]
 class CairoRenderer:
     """A renderer using Cairo.
 
-    Cameras supplied to this renderer contain semantic view/projection state only.
-    CairoRenderer owns all pixel arrays, PyCairo contexts, nested targets, drawing,
-    static raster reuse, and readback.
+    The renderer draws the camera's view, including inset views, into image
+    buffers. It manages the PyCairo drawing contexts and caches images of
+    stationary mobjects. Construction saves the pixel dimensions; the buffers
+    are allocated on the first draw or request for pixels.
     """
 
     capabilities = RendererCapabilities(live_preview=False)
@@ -61,7 +61,7 @@ class CairoRenderer:
         self.num_plays = 0
         self.time = 0.0
         self._frame_rate = config.frame_rate
-        settings = _raster_settings or _CairoRasterSettings(
+        self._raster_settings = _raster_settings or _CairoRasterSettings(
             pixel_width=config.pixel_width,
             pixel_height=config.pixel_height,
             base_pixel_width=config.pixel_width,
@@ -69,25 +69,44 @@ class CairoRenderer:
         )
         # Image files read for this renderer, shared by all its targets.
         self._image_files = _ImageFiles()
-        self._target = _CairoRenderTarget(settings, self._image_files)
+        self._target: _CairoRenderTarget | None = None
         self._sub_targets: dict[int, _CairoRenderTarget] = {}
         self._camera_view_pixels: dict[int, RGBAPixelArray] = {}
         self.static_image: RGBAPixelArray | None = None
         self._render_all_mobjects = False
-        self._closed = False
+        self._state = RendererState.UNOPENED
+
+    @property
+    def state(self) -> RendererState:
+        """Where the renderer is in its life (read-only)."""
+        return self._state
 
     def _ensure_open(self) -> None:
-        if self._closed:
-            raise RuntimeError("The Cairo renderer is closed.")
+        """Check that the renderer is not closed."""
+        if not self._state.accepts_work:
+            raise RuntimeError(f"The Cairo renderer is {self._state.value}.")
+
+    def _get_target(self) -> _CairoRenderTarget:
+        self._ensure_open()
+        self._state = RendererState.OPEN
+        if self._target is None:
+            self._target = _CairoRenderTarget(self._raster_settings, self._image_files)
+        return self._target
 
     def init_scene(
         self,
         scene: Scene,
         session_spec: RenderSessionSpec,
-        file_writer_settings: _SceneFileWriterSettings,
     ) -> None:
         self._ensure_open()
-        self.file_writer = self._file_writer_class(file_writer_settings)
+        if hasattr(self, "_scene"):
+            raise RuntimeError("This renderer is already bound to a Scene.")
+        self._scene = scene
+
+    @property
+    def file_writer(self) -> SceneFileWriter:
+        """Return the scene manager's file writer, creating it if needed."""
+        return self._scene._get_manager().file_writer
 
     def play(
         self,
@@ -268,7 +287,7 @@ class CairoRenderer:
         try:
             self._render_camera(
                 camera=camera,
-                target=self._target,
+                target=self._get_target(),
                 mobjects=mobjects,
                 include_submobjects=include_submobjects,
                 excluded_mobjects=excluded_mobjects,
@@ -290,7 +309,7 @@ class CairoRenderer:
         *,
         excluded_mobjects: list[Mobject] | None = None,
     ) -> None:
-        """Render one scene state into the owned Cairo target.
+        """Draw the scene's current state into the renderer's image buffer.
 
         ``excluded_mobjects`` and their families are left out of the frame.
         """
@@ -299,10 +318,11 @@ class CairoRenderer:
             return
         if not mobjects:
             mobjects = list_update(scene.mobjects, scene.foreground_mobjects)
+        target = self._get_target()
         if self.static_image is not None:
-            self._target.set_pixels(self.static_image)
+            target.set_pixels(self.static_image)
         else:
-            self._target.reset(self.camera)
+            target.reset(self.camera)
 
         self._draw_frame(
             camera=self.camera,
@@ -317,10 +337,10 @@ class CairoRenderer:
         *,
         camera: Camera | None = None,
     ) -> None:
-        """Render explicit mobjects for direct image materialization."""
+        """Draw the supplied mobjects into the renderer's image buffer."""
         self._ensure_open()
         render_camera = self.camera if camera is None else camera
-        self._target.reset(render_camera)
+        self._get_target().reset(render_camera)
         self._draw_frame(camera=render_camera, mobjects=mobjects)
 
     def render(
@@ -335,13 +355,13 @@ class CairoRenderer:
         self.add_frame(self.get_frame())
 
     def get_frame(self) -> RGBAPixelArray:
-        """Return a fresh owned top-left-origin RGBA frame."""
-        return self._target.read_pixels()
+        """Copy the current image to an RGBA array, with row zero at the top."""
+        return self._get_target().read_pixels()
 
     def _get_scene_image(self, scene: Scene) -> Image.Image:
-        """Draw current state in an independent scope, even after raster cleanup."""
+        """Draw a snapshot with a temporary renderer at the existing resolution."""
         with CairoRenderer(
-            camera=self.camera, _raster_settings=self._target.settings
+            camera=self.camera, _raster_settings=self._raster_settings
         ) as renderer:
             renderer.render_mobjects(
                 list_update(scene.mobjects, scene.foreground_mobjects)
@@ -428,16 +448,49 @@ class CairoRenderer:
     def __exit__(self, *exc_info: object) -> None:
         self.close()
 
+    def open(self) -> None:
+        """Check that the renderer can draw.
+
+        Cairo creates its image buffers when it first draws, so there is nothing
+        to allocate here. The method exists so that callers can open any
+        renderer before :meth:`.Scene.setup` runs.
+        """
+        self._ensure_open()
+        self._state = RendererState.OPEN
+
     def close(self) -> None:
-        """Release all Cairo targets and static pixels; subsequent drawing fails."""
-        if self._closed:
+        """Close the renderer and release its image buffers and drawing contexts.
+
+        If releasing fails, for example on an interruption, the renderer is
+        ``CLOSE_FAILED`` and ``close()`` can be called again.
+        """
+        if self._state is RendererState.CLOSED:
             return
-        self._closed = True
-        self._target.close()
-        for target in self._sub_targets.values():
-            target.close()
-        self._sub_targets.clear()
+        self._state = RendererState.CLOSING
+        # Release everything before raising a failure or interruption. A target
+        # that did not close stays, so that calling close() again closes it.
+        failures: list[BaseException] = []
+
+        def release(target: _CairoRenderTarget) -> bool:
+            try:
+                target.close()
+            except BaseException as error:
+                failures.append(error)
+                return False
+            return True
+
+        if self._target is not None:
+            release(self._target)
+        for key, target in list(self._sub_targets.items()):
+            if release(target):
+                del self._sub_targets[key]
         self._camera_view_pixels.clear()
         self._image_files.clear()
         self.static_image = None
         self._render_all_mobjects = False
+        if failures:
+            self._state = RendererState.CLOSE_FAILED
+            for secondary in failures[1:]:
+                logger.error("Additional Cairo cleanup failure", exc_info=secondary)
+            raise failures[0]
+        self._state = RendererState.CLOSED

@@ -148,20 +148,38 @@ def parse_theme(parser: configparser.SectionProxy) -> Theme | None:
     return custom_theme
 
 
-def set_file_logger(log_file_path: Path) -> None:
-    """Add a file handler for one exact, already resolved log path.
+def set_file_logger(log_file_path: Path, mode: str = "w") -> logging.FileHandler:
+    """Add a file handler to Manim's logger at the given path.
 
     Parameters
     ----------
     log_file_path
         Exact path of the log file for this scene.
-    """
-    file_handler = logging.FileHandler(log_file_path, mode="w")
-    file_handler.setFormatter(JSONFormatter())
+    mode
+        The file mode: ``"w"`` starts a new log, ``"a"`` appends to it.
 
+    Returns
+    -------
+    logging.FileHandler
+        The attached handler. Remove it from the logger and close it when
+        logging for this scene ends.
+    """
+    file_handler = logging.FileHandler(log_file_path, mode=mode)
     logger = logging.getLogger("manim")
-    logger.addHandler(file_handler)
-    logger.info("Log file will be saved in %(logpath)s", {"logpath": log_file_path})
+    try:
+        file_handler.setFormatter(JSONFormatter())
+        logger.addHandler(file_handler)
+        logger.info("Log file will be saved in %(logpath)s", {"logpath": log_file_path})
+    except BaseException as error:
+        logger.removeHandler(file_handler)
+        try:
+            file_handler.close()
+        except BaseException as cleanup_error:
+            error.add_note(
+                f"Closing the new log handler also failed: {cleanup_error!r}"
+            )
+        raise
+    return file_handler
 
 
 class JSONFormatter(logging.Formatter):
@@ -173,11 +191,12 @@ class JSONFormatter(logging.Formatter):
 
     def format(self, record: logging.LogRecord) -> str:
         """Format the record in a custom JSON format."""
-        record_c = copy.deepcopy(record)
+        # A shallow copy: records with exceptions hold tracebacks, which cannot be
+        # deep-copied. The arguments are replaced, not changed in place.
+        record_c = copy.copy(record)
         if record_c.args:
             if isinstance(record_c.args, dict):
-                for arg in record_c.args:
-                    record_c.args[arg] = "<>"
+                record_c.args = dict.fromkeys(record_c.args, "<>")
             else:
                 record_c.args = ("<>",) * len(record_c.args)
         return json.dumps(
