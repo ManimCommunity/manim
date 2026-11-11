@@ -642,6 +642,9 @@ class ArrowVectorField(VectorField):
         rooted in the given point. Color and length fit the specifications of
         this vector field.
 
+        If the function has no finite value at the given point, for example
+        because of a division by zero, a zero vector is created there.
+
         Parameters
         ----------
         point
@@ -650,13 +653,16 @@ class ArrowVectorField(VectorField):
         """
         output = np.array(self.func(point))
         norm = np.linalg.norm(output)
-        if norm != 0:
+        is_defined = np.isfinite(norm)
+        if not is_defined:
+            output = np.zeros(3)
+        elif norm != 0:
             output *= self.length_func(norm) / norm
         vect = Vector(output, **self.vector_config)
         vect.shift(point)
         if self.single_color:
             vect.set_color(self.color)
-        else:
+        elif is_defined:
             vect.set_color(self.pos_to_color(point))
         return vect
 
