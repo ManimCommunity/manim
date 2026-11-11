@@ -85,6 +85,10 @@ class _ImageFiles:
             cached.flags.writeable = False
         return cached
 
+    def clear(self) -> None:
+        """Forget the images read so far."""
+        self._images.clear()
+
 
 class _CairoRenderTarget:
     """Own one top-left-origin RGBA target and its PyCairo context."""

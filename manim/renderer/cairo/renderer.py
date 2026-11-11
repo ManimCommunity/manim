@@ -441,5 +441,6 @@ class CairoRenderer:
             target.close()
         self._sub_targets.clear()
         self._camera_view_pixels.clear()
+        self._image_files.clear()
         self.static_image = None
         self._render_all_mobjects = False

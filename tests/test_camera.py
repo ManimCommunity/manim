@@ -439,6 +439,17 @@ def test_camera_views_share_the_image_files_read_for_the_frame(tmp_path, monkeyp
     assert len(reads) == 1
 
 
+def test_closing_a_renderer_releases_the_image_files_it_read(tmp_path):
+    path = tmp_path / "background.png"
+    Image.new("RGBA", (4, 4), (255, 0, 0, 255)).save(path)
+    with tempconfig({"pixel_width": 4, "pixel_height": 4}):
+        renderer = CairoRenderer(camera=Camera(background_image=str(path)))
+        renderer.render_mobjects([Square()])
+        assert renderer._image_files._images
+        renderer.close()
+    assert not renderer._image_files._images
+
+
 def test_moving_camera_classes_are_deprecated(manim_caplog):
     from manim import MovingCameraScene, ZoomedScene
 
