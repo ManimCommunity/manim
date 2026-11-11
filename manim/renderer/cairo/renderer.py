@@ -459,16 +459,38 @@ class CairoRenderer:
         self._state = RendererState.OPEN
 
     def close(self) -> None:
-        """Close the renderer and release its image buffers and drawing contexts."""
+        """Close the renderer and release its image buffers and drawing contexts.
+
+        If releasing fails, for example on an interruption, the renderer is
+        ``CLOSE_FAILED`` and ``close()`` can be called again.
+        """
         if self._state is RendererState.CLOSED:
             return
-        self._state = RendererState.CLOSED
+        self._state = RendererState.CLOSING
+        # Release everything before raising a failure or interruption. A target
+        # that did not close stays, so that calling close() again closes it.
+        failures: list[BaseException] = []
+
+        def release(target: _CairoRenderTarget) -> bool:
+            try:
+                target.close()
+            except BaseException as error:
+                failures.append(error)
+                return False
+            return True
+
         if self._target is not None:
-            self._target.close()
-        for target in self._sub_targets.values():
-            target.close()
-        self._sub_targets.clear()
+            release(self._target)
+        for key, target in list(self._sub_targets.items()):
+            if release(target):
+                del self._sub_targets[key]
         self._camera_view_pixels.clear()
         self._image_files.clear()
         self.static_image = None
         self._render_all_mobjects = False
+        if failures:
+            self._state = RendererState.CLOSE_FAILED
+            for secondary in failures[1:]:
+                logger.error("Additional Cairo cleanup failure", exc_info=secondary)
+            raise failures[0]
+        self._state = RendererState.CLOSED

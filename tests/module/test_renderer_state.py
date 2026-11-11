@@ -4,7 +4,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from manim import Scene, tempconfig
+from manim import Scene, Square, tempconfig
 from manim.renderer.cairo import CairoRenderer
 from manim.renderer.opengl.renderer import OpenGLRenderer
 from manim.renderer.protocol import Renderer, RendererState
@@ -56,3 +56,36 @@ def test_a_failed_opengl_close_can_be_retried():
             renderer.open()
         renderer.close()
         assert renderer.state is RendererState.CLOSED
+
+
+def test_a_failed_cairo_close_can_be_retried():
+    with tempconfig(SETTINGS):
+        renderer = CairoRenderer()
+        renderer.render_mobjects([Square()])
+        # The first close of the frame target is interrupted.
+        target = renderer._target
+        target_close = target.close
+        target.close = Mock(side_effect=[KeyboardInterrupt, None])
+        with pytest.raises(KeyboardInterrupt):
+            renderer.close()
+        assert renderer.state is RendererState.CLOSE_FAILED
+        with pytest.raises(RuntimeError, match="close failed"):
+            renderer.open()
+        assert not target._closed
+        target.close = target_close
+        renderer.close()
+        assert renderer.state is RendererState.CLOSED
+        assert target._closed
+
+
+def test_a_cairo_close_raises_the_first_failure_and_logs_the_others(manim_caplog):
+    with tempconfig(SETTINGS):
+        renderer = CairoRenderer()
+        renderer.render_mobjects([Square()])
+        renderer._target.close = Mock(side_effect=OSError("frame target"))
+        renderer._sub_targets["view"] = Mock(close=Mock(side_effect=OSError("view")))
+        with pytest.raises(OSError, match="frame target"):
+            renderer.close()
+    assert renderer.state is RendererState.CLOSE_FAILED
+    assert "Additional Cairo cleanup failure" in manim_caplog.text
+    assert "view" in renderer._sub_targets
