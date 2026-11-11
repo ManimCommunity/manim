@@ -340,16 +340,13 @@ class CairoRenderer:
 
     def _get_scene_image(self, scene: Scene) -> Image.Image:
         """Draw current state in an independent scope, even after raster cleanup."""
-        renderer = CairoRenderer(
+        with CairoRenderer(
             camera=self.camera, _raster_settings=self._target.settings
-        )
-        try:
+        ) as renderer:
             renderer.render_mobjects(
                 list_update(scene.mobjects, scene.foreground_mobjects)
             )
             return renderer.get_image()
-        finally:
-            renderer.close()
 
     def get_image(self) -> Image.Image:
         """Return the current target as a PIL image."""
