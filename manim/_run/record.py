@@ -223,10 +223,10 @@ class _RunRecord(_RunListener):
             values = {
                 "kind": "sound",
                 "start": float(marker.start),
-                "duration": None,
-                "file": str(marker.file),
+                "duration": marker.duration if self.capture else None,
+                "file": marker.file,
                 "gain": marker.gain,
-                "options": dict(marker.options),
+                "gain_to_background": marker.gain_to_background,
             }
         if self.capture:
             # A copy, so that later changes by scene code are not recorded.

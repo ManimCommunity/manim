@@ -39,9 +39,9 @@ rules described in :doc:`deep_dive`.
 
 Calls to ``next_section()``, ``add_subcaption()`` and ``add_sound()`` are
 allowed and produce no output. To record them together with the play and wait
-calls, use :doc:`timeline` capture. Sound files are only opened when the scene
-is rendered, so a missing or unreadable sound file goes unnoticed during
-evaluation.
+calls, use :doc:`timeline` capture. ``add_sound()`` checks the sound file when
+it is called, in an evaluation as in a render, so a missing or unreadable file
+fails at the call that names it.
 
 Inspection and failures
 -----------------------

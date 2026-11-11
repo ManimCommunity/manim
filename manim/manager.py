@@ -511,7 +511,7 @@ class Manager(Generic[SceneT]):
         animation steps and clock as rendering. Movie caches, animation ranges,
         and skip flags are ignored, so every play runs. Only the frames requested
         with ``frame_times`` are drawn. Section, subcaption, and sound calls have
-        no effect; sound files are not checked.
+        no effect, but ``add_sound()`` still checks its file, as in a render.
 
         Parameters
         ----------
@@ -898,9 +898,12 @@ class Manager(Generic[SceneT]):
         """Write frames and advance time for callers of CairoRenderer.add_frame.
 
         Like a play, the frames advance the clock whether or not they are part
-        of the output, so that scene time does not depend on the cache. During
-        evaluation, which writes no media, the frames go to the evaluation's
-        listeners; ``frame`` can then be None for the scene's current state.
+        of the output, so that scene time does not depend on the cache. Only
+        plays mark scene time as shown in the movie: frames added during a play
+        lie in its span, and frames added between plays are not written to a
+        movie, which has no open segment then. During evaluation, which writes
+        no media, the frames go to the evaluation's listeners; ``frame`` can then
+        be None for the scene's current state.
         """
         self._validate_execution()
         self._mode.add_frames(self, frame, num_frames)
@@ -929,6 +932,10 @@ class Manager(Generic[SceneT]):
     ) -> None:
         """Add a subcaption at the current scene time.
 
+        Parts of the scene left out of the output, by ``-n`` or a section with
+        ``skip_animations=True``, cut subcaptions like the video. Parts before the
+        start of the scene or after the end of the movie are cut with a warning.
+
         Parameters
         ----------
         content
@@ -946,22 +953,33 @@ class Manager(Generic[SceneT]):
         sound_file: str,
         time_offset: float = 0,
         gain: float | None = None,
-        **kwargs: Any,
+        gain_to_background: float | None = None,
     ) -> None:
-        """Add sound to the output at the current scene time.
+        """Add a sound at the current scene time.
 
-        No sound is added while the surrounding plays are left out of the output.
+        See :meth:`.Scene.add_sound` for how sounds are placed in the movie.
 
         Parameters
         ----------
         sound_file
-            The path to the sound file.
+            The path to the sound file, absolute or relative to the assets
+            directory.
         time_offset
-            The offset in seconds from the current scene time.
+            Seconds by which to move the start of the sound relative to the
+            current scene time.
         gain
-            The gain adjustment applied to the sound.
-        kwargs
-            Additional arguments forwarded to
-            :meth:`~manim.scene.scene_file_writer.SceneFileWriter.add_sound`.
+            Gain applied to the sound, in dB.
+        gain_to_background
+            Gain applied to all previously added sounds while this one plays,
+            in dB.
         """
-        self._marker(_Sound(sound_file, self.time + time_offset, gain, dict(kwargs)))
+        # The file is found and checked now, in every run: a missing or unreadable
+        # file is an error at the call that names it.
+        sound = _Sound.at(
+            sound_file,
+            self.time + time_offset,
+            self.scene.file_writer_settings.assets_dir,
+            gain,
+            gain_to_background,
+        )
+        self._marker(sound)
