@@ -12,16 +12,21 @@ from collections.abc import Hashable, Iterable, Sequence
 from copy import copy
 from typing import TYPE_CHECKING, Any, Literal, Protocol, Self, cast
 
-import networkx as nx
 import numpy as np
+
+from manim.utils.importing import lazy_import
 
 if TYPE_CHECKING:
     from typing import TypeAlias
+
+    import networkx as nx
 
     from manim.scene.scene import Scene
     from manim.typing import Point3D, Point3DLike
 
     NxGraph: TypeAlias = nx.classes.graph.Graph | nx.classes.digraph.DiGraph
+else:
+    nx = lazy_import("networkx")
 
 from manim.animation.composition import AnimationGroup
 from manim.animation.creation import Create, Uncreate
@@ -427,18 +432,20 @@ LayoutName = Literal[
     "tree",
 ]
 
-_layouts: dict[LayoutName, LayoutFunction] = {
-    "circular": cast(LayoutFunction, nx.layout.circular_layout),
-    "kamada_kawai": cast(LayoutFunction, nx.layout.kamada_kawai_layout),
-    "partite": cast(LayoutFunction, _partite_layout),
-    "planar": cast(LayoutFunction, nx.layout.planar_layout),
-    "random": cast(LayoutFunction, _random_layout),
-    "shell": cast(LayoutFunction, nx.layout.shell_layout),
-    "spectral": cast(LayoutFunction, nx.layout.spectral_layout),
-    "spiral": cast(LayoutFunction, nx.layout.spiral_layout),
-    "spring": cast(LayoutFunction, nx.layout.spring_layout),
-    "tree": cast(LayoutFunction, _tree_layout),
-}
+
+def _get_layouts() -> dict[LayoutName, LayoutFunction]:
+    return {
+        "circular": cast(LayoutFunction, nx.layout.circular_layout),
+        "kamada_kawai": cast(LayoutFunction, nx.layout.kamada_kawai_layout),
+        "partite": cast(LayoutFunction, _partite_layout),
+        "planar": cast(LayoutFunction, nx.layout.planar_layout),
+        "random": cast(LayoutFunction, _random_layout),
+        "shell": cast(LayoutFunction, nx.layout.shell_layout),
+        "spectral": cast(LayoutFunction, nx.layout.spectral_layout),
+        "spiral": cast(LayoutFunction, nx.layout.spiral_layout),
+        "spring": cast(LayoutFunction, nx.layout.spring_layout),
+        "tree": cast(LayoutFunction, _tree_layout),
+    }
 
 
 def _determine_graph_layout(
@@ -449,6 +456,8 @@ def _determine_graph_layout(
 ) -> dict[Hashable, Point3DLike]:
     if layout_config is None:
         layout_config = {}
+
+    _layouts = _get_layouts()
 
     if isinstance(layout, dict):
         return layout

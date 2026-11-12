@@ -10,7 +10,6 @@ import re
 from pathlib import Path
 from typing import Any, Literal, cast
 
-from bs4 import BeautifulSoup, Tag
 from pygments import highlight
 from pygments.formatters.html import HtmlFormatter
 from pygments.lexers import get_lexer_by_name, guess_lexer, guess_lexer_for_filename
@@ -182,6 +181,8 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         background_config: dict[str, Any] | None = None,
         paragraph_config: dict[str, Any] | None = None,
     ):
+        from bs4 import BeautifulSoup, Tag
+
         super().__init__()
 
         if code_file is not None:
