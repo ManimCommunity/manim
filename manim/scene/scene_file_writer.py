@@ -6,7 +6,7 @@ __all__ = ["SceneFileWriter"]
 
 import json
 import math
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 from contextlib import suppress
 from dataclasses import dataclass
 from datetime import timedelta
@@ -40,6 +40,9 @@ from .audio_mixer import (
 )
 from .section import DefaultSectionType, Section
 from .video_segment_encoder import VideoSegmentEncoder
+
+# PyAV added the chapter API in 16.0; older versions write movies without chapters.
+_SUPPORTS_CHAPTERS = hasattr(av.container.OutputContainer, "set_chapters")
 
 if TYPE_CHECKING:
     from manim.typing import RGBAPixelArray, StrPath
@@ -296,6 +299,7 @@ class SceneFileWriter:
         self.next_section(
             name="autocreated", type_=DefaultSectionType.NORMAL, skip_animations=False
         )
+        self._autocreated_section = self.sections[0]
 
     @property
     def output_name(self) -> Path:
@@ -756,6 +760,7 @@ class SceneFileWriter:
         output_file: Path,
         create_gif: bool = False,
         audio: Iterator[np.ndarray] | None = None,
+        chapters: Sequence[tuple[str, float, float]] = (),
     ) -> None:
         """Concatenate segments into ``output_file``, optionally adding audio.
 
@@ -770,6 +775,9 @@ class SceneFileWriter:
         audio
             Mixed float32 ``(2, n)`` sample blocks covering the artifact, as
             produced by the scene's sound mix. Ignored for GIFs.
+        chapters
+            ``(title, start, end)`` chapters in seconds of the artifact's time.
+            Written when PyAV supports chapters; ignored for GIFs.
         """
         output_file.parent.mkdir(parents=True, exist_ok=True)
         logger.debug(
@@ -792,6 +800,19 @@ class SceneFileWriter:
         output_container.metadata["comment"] = (
             f"Rendered with Manim Community v{__version__}"
         )
+        if chapters and not create_gif and _SUPPORTS_CHAPTERS:
+            output_container.set_chapters(
+                [
+                    {
+                        "id": index,
+                        "start": round(start * 1000),
+                        "end": round(end * 1000),
+                        "time_base": Fraction(1, 1000),
+                        "metadata": {"title": title},
+                    }
+                    for index, (title, start, end) in enumerate(chapters)
+                ]
+            )
         if create_gif:
             """The following solution was largely inspired from this comment
             https://github.com/imageio/imageio/issues/995#issuecomment-1580533018,
@@ -914,6 +935,7 @@ class SceneFileWriter:
             movie_file_path,
             self.output_spec.is_gif,
             audio=None if mix is None else mix.blocks(0, mix.duration),
+            chapters=self._chapters(),
         )
 
         self.print_file_ready_message(str(movie_file_path))
@@ -922,26 +944,58 @@ class SceneFileWriter:
                 # We have to modify the accessed time so if we have to clean the cache we remove the one used the longest.
                 modify_atime(file_path)
 
+    def _section_spans(self) -> list[tuple[Section, float, float]]:
+        """Return each section with the span of movie time it takes.
+
+        A section ends where the next one starts; parts of the scene left out of
+        the output take no movie time, so skipped sections have empty spans.
+        """
+        self.finish_last_section()
+        ends = [section.movie_start for section in self.sections[1:]]
+        ends.append(self._movie_time(math.inf))
+        return [
+            (section, section.movie_start, end)
+            for section, end in zip(self.sections, ends, strict=True)
+        ]
+
+    def _chapters(self) -> list[tuple[str, float, float]]:
+        """Return the movie's chapters: one per section that takes movie time.
+
+        A scene that does not start with :meth:`.Scene.next_section` begins in
+        the automatically created section; its chapter is titled after the
+        movie. It cannot be left out, as MP4 starts the first chapter at the
+        beginning of the movie.
+        """
+        spans = self._section_spans()
+        if [section for section, _, _ in spans] == [self._autocreated_section]:
+            # The scene has no sections of its own.
+            return []
+        return [
+            (
+                self.output_plan.output_stem
+                if section is self._autocreated_section
+                else section.name,
+                start,
+                end,
+            )
+            for section, start, end in spans
+            if start < end
+        ]
+
     def combine_to_section_videos(self) -> None:
         """Concatenate partial movie files for each section."""
-        self.finish_last_section()
         mix = self._sound_mix
         sections_index: list[dict[str, Any]] = []
-        for index, section in enumerate(self.sections):
+        for section, start, end in self._section_spans():
             # only if section does want to be saved
             if section.video is not None:
                 logger.info(f"Combining partial files for section '{section.name}'")
                 section_path = self.sections_output_dir / section.video
                 # A section video contains its part of the scene's sound mix.
-                end = (
-                    self.sections[index + 1].movie_start
-                    if index + 1 < len(self.sections)
-                    else self._movie_time(math.inf)
-                )
                 self.combine_files(
                     section.get_clean_partial_movie_files(),
                     section_path,
-                    audio=None if mix is None else mix.blocks(section.movie_start, end),
+                    audio=None if mix is None else mix.blocks(start, end),
                 )
                 sections_index.append(section.get_dict(self.sections_output_dir))
         section_index = self.output_plan.section_index
