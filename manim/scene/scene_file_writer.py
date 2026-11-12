@@ -948,9 +948,11 @@ class SceneFileWriter:
         """Return each section with the span of movie time it takes.
 
         A section ends where the next one starts; parts of the scene left out of
-        the output take no movie time, so skipped sections have empty spans.
+        the output take no movie time, so skipped and empty sections have empty
+        spans.
         """
-        self.finish_last_section()
+        if not self.sections:
+            return []
         ends = [section.movie_start for section in self.sections[1:]]
         ends.append(self._movie_time(math.inf))
         return [
@@ -966,9 +968,13 @@ class SceneFileWriter:
         movie. It cannot be left out, as MP4 starts the first chapter at the
         beginning of the movie.
         """
-        spans = self._section_spans()
+        spans = [
+            (section, start, end)
+            for section, start, end in self._section_spans()
+            if start < end
+        ]
         if [section for section, _, _ in spans] == [self._autocreated_section]:
-            # The scene has no sections of its own.
+            # No section of the scene's own takes movie time.
             return []
         return [
             (
@@ -979,11 +985,11 @@ class SceneFileWriter:
                 end,
             )
             for section, start, end in spans
-            if start < end
         ]
 
     def combine_to_section_videos(self) -> None:
         """Concatenate partial movie files for each section."""
+        self.finish_last_section()
         mix = self._sound_mix
         sections_index: list[dict[str, Any]] = []
         for section, start, end in self._section_spans():
