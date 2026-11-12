@@ -10,10 +10,13 @@ __all__ = ["Scene"]
 
 import copy
 import inspect
+import logging
+import logging.handlers
 import platform
 import random
 import threading
 import time
+import weakref
 from dataclasses import dataclass
 from pathlib import Path
 from queue import Queue
@@ -30,6 +33,7 @@ except ImportError:
     dearpygui_imported = False
 
 from collections.abc import Callable, Iterable, Sequence
+from types import FrameType
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -40,10 +44,9 @@ from watchdog.observers import Observer
 from manim import __version__
 from manim.data_structures import MethodWithArgs
 from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_mobject import OpenGLPoint
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 
 from .. import config, logger
-from .._config.logger_utils import set_file_logger
 from .._config.output_plan import (
     resolve_file_log_path,
     resolve_media_layout,
@@ -52,15 +55,18 @@ from .._config.output_plan import (
     resolve_requested_output_name,
 )
 from .._config.render_session import resolve_render_session
+from .._run.frames import frame_count
 from ..animation.animation import Animation, Wait, prepare_animation
-from ..camera.camera import Camera
 from ..constants import *
 from ..manager import Manager
-from ..renderer.cairo_renderer import CairoRenderer
-from ..renderer.opengl_renderer import OpenGLCamera, OpenGLMobject, OpenGLRenderer
-from ..renderer.shader import Object3D
+from ..renderer.cairo import CairoRenderer
+from ..renderer.cairo.camera import Camera
+from ..renderer.opengl.camera import OpenGLCamera
+from ..renderer.opengl.renderer import OpenGLRenderer
+from ..renderer.opengl.shader import Object3D
 from ..scene.scene_file_writer import _SceneFileWriterSettings
 from ..utils import opengl, space_ops
+from ..utils.deprecation import deprecated
 from ..utils.exceptions import RerunSceneException
 from ..utils.family import extract_mobject_family_members
 from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
@@ -68,8 +74,9 @@ from ..utils.iterables import list_difference_update, list_update
 from ..utils.module_ops import scene_classes_from_file
 
 if TYPE_CHECKING:
-    from types import FrameType
     from typing import Self, TypeAlias
+
+    from PIL.Image import Image
 
     from manim.typing import Point3D
 
@@ -88,6 +95,11 @@ if TYPE_CHECKING:
     - a :class:`~.SceneInteractRerun` object, indicating that the scene should
       render again.
     """
+
+
+def _detach_log_handler(handler: logging.Handler) -> None:
+    logger.removeHandler(handler)
+    handler.close()
 
 
 @dataclass
@@ -215,14 +227,14 @@ class Scene:
                 renderer = OpenGLRenderer()
 
         if renderer is None:
-            self.renderer: CairoRenderer | OpenGLRenderer = CairoRenderer(
+            self._renderer: CairoRenderer | OpenGLRenderer = CairoRenderer(
                 # TODO: Is it a suitable approach to make an instance of
                 # the self.camera_class here?
                 camera_class=self.camera_class,
                 skip_animations=self.skip_animations,
             )
         else:
-            self.renderer = renderer
+            self._renderer = renderer
         self.session_spec = resolve_render_session(
             config,
             self.renderer.capabilities,
@@ -262,13 +274,20 @@ class Scene:
             module_name=module_name,
             scene_name=scene_name,
         )
+        # Messages logged until the log file is opened, such as those of the
+        # constructor; the scene's Manager writes them to the file when it opens
+        # it, and drops them if it never does (as evaluation).
+        self._log_buffer: logging.handlers.MemoryHandler | None = None
         if self._log_file_path is not None:
-            self._log_file_path.parent.mkdir(parents=True, exist_ok=True)
-            set_file_logger(self._log_file_path)
+            self._log_buffer = logging.handlers.MemoryHandler(
+                capacity=10_000, flushLevel=logging.CRITICAL + 1
+            )
+            logger.addHandler(self._log_buffer)
+            # Detach it if the scene is never managed and goes away.
+            weakref.finalize(self, _detach_log_handler, self._log_buffer)
         self.renderer.init_scene(
             self,
             self.session_spec,
-            self.file_writer_settings,
         )
 
         self.mobjects: list[Mobject] = []
@@ -279,12 +298,22 @@ class Scene:
         np.random.seed(self.random_seed)  # noqa: NPY002 (only way to set seed globally)
 
     @property
+    def renderer(self) -> CairoRenderer | OpenGLRenderer:
+        """The renderer selected at construction, shared by this scene's plays.
+
+        This property is read-only. Choose a different renderer when creating
+        a new scene.
+        """
+        return self._renderer
+
+    @property
     def camera(self) -> Camera | OpenGLCamera:
         return self.renderer.camera
 
     @property
     def time(self) -> float:
-        """The time since the start of the scene."""
+        """Elapsed animation time in seconds, as reported by the scene's manager."""
+        # The renderer reads the clock of the scene's manager once there is one.
         return self.renderer.time
 
     def __deepcopy__(self, clone_from_id: dict[int, Any]) -> Scene:
@@ -292,12 +321,13 @@ class Scene:
         result = cls.__new__(cls)
         clone_from_id[id(self)] = result
         for k, v in self.__dict__.items():
-            if k in ["manager", "renderer", "time_progression"]:
+            if k in ["manager", "_renderer", "time_progression", "_log_buffer"]:
                 continue
             if k == "camera_class":
                 setattr(result, k, v)
             setattr(result, k, copy.deepcopy(v, clone_from_id))
         result.manager = None
+        result._log_buffer = None
 
         return result
 
@@ -318,6 +348,36 @@ class Scene:
             Whether an interactive rerun was requested.
         """
         return self._get_manager().render(preview)
+
+    def get_image(self) -> Image:
+        """Return a snapshot of the scene's current mobjects as a PIL image.
+
+        The snapshot uses the current camera view, including manual changes since
+        the last animation, and the pixel dimensions chosen when the renderer was
+        created. Call between animations or at an idle prompt::
+
+            self.add(Square())
+            self.get_image().save("checkpoint.png")
+
+        Notes
+        -----
+        A snapshot leaves animations, updaters, and scene time unchanged. It draws
+        the existing mobjects without calling :meth:`construct` or appending a
+        movie frame. After :meth:`play`, it shows the result of animation finish
+        and cleanup, which can differ from the last frame written to the video.
+
+        The returned image retains its pixels after the renderer is closed.
+        OpenGL snapshots must be requested on the thread that created the
+        rendering context.
+        """
+        return self._get_manager().get_image()
+
+    def show(self) -> None:
+        """Draw current state and open it with PIL's external image viewer.
+
+        In a notebook, display :meth:`get_image`'s result directly instead.
+        """
+        self.get_image().show()
 
     def _get_manager(self) -> Manager[Self]:
         """Return this scene's manager, creating it for legacy entry points."""
@@ -970,8 +1030,21 @@ class Scene:
                 or any(consider_moving(m) for m in mob.submobjects)
             )
 
+        if self.always_update_mobjects or self.updaters:
+            return list(self.mobjects)
+
         i = next((i for i, mob in enumerate(mobjects) if consider_moving(mob)), None)
-        return [] if i is None else mobjects[i:]
+        moving_mobjects = [] if i is None else mobjects[i:]
+        movement_indicators: list[Mobject] = getattr(
+            self.camera,
+            "get_mobjects_indicating_movement",
+            lambda: [],
+        )()
+        moving_family = extract_mobject_family_members(moving_mobjects)
+        if any(indicator in moving_family for indicator in movement_indicators):
+            # A camera control changes the projection of all scene mobjects.
+            return list_update(self.mobjects, moving_mobjects)
+        return moving_mobjects
 
     def get_moving_and_static_mobjects(
         self, animations: Iterable[Animation]
@@ -1037,58 +1110,9 @@ class Scene:
 
         return animations
 
-    def _get_animation_time_progression(
-        self, animations: list[Animation], duration: float
-    ) -> tqdm[float]:
-        """
-        You will hardly use this when making your own animations.
-        This method is for Manim's internal use.
-
-        Uses :func:`~.get_time_progression` to obtain a
-        CommandLine ProgressBar whose ``fill_time`` is
-        dependent on the qualities of the passed Animation,
-
-        Parameters
-        ----------
-        animations
-            The list of animations to get
-            the time progression for.
-
-        duration
-            duration of wait time
-
-        Returns
-        -------
-        time_progression
-            The CommandLine Progress Bar.
-        """
-        if len(animations) == 1 and isinstance(animations[0], Wait):
-            stop_condition = animations[0].stop_condition
-            if stop_condition is not None:
-                time_progression = self.get_time_progression(
-                    duration,
-                    f"Waiting for {stop_condition.__name__}",
-                    n_iterations=-1,  # So it doesn't show % progress
-                    override_skip_animations=True,
-                )
-            else:
-                time_progression = self.get_time_progression(
-                    duration,
-                    f"Waiting {self.renderer.num_plays}",
-                )
-        else:
-            time_progression = self.get_time_progression(
-                duration,
-                "".join(
-                    [
-                        f"Animation {self.renderer.num_plays}: ",
-                        str(animations[0]),
-                        (", etc." if len(animations) > 1 else ""),
-                    ],
-                ),
-            )
-        return time_progression
-
+    @deprecated(
+        message="The progress bars of plays are made by the Manager's run loop.",
+    )
     def get_time_progression(
         self,
         run_time: float,
@@ -1125,8 +1149,8 @@ class Scene:
         if self.renderer.skip_animations and not override_skip_animations:
             times: Iterable[float] = [run_time]
         else:
-            step = 1 / config["frame_rate"]
-            times = np.arange(0, run_time, step)
+            rate = config["frame_rate"]
+            times = [i / rate for i in range(frame_count(run_time, rate))]
         time_progression = tqdm(
             times,
             desc=description,
@@ -1213,6 +1237,13 @@ class Scene:
         kwargs
             All other keywords are passed to the renderer.
 
+        Raises
+        ------
+        RuntimeError
+            If called while another play or wait call is running, for example
+            from an updater. Earlier versions overwrote the running play's
+            animations instead.
+
         """
         # If we are in interactive embedded mode, make sure this is running on the main thread (required for OpenGL)
         if (
@@ -1252,10 +1283,11 @@ class Scene:
         duration
             The run time of the animation.
         stop_condition
-            A function without positional arguments that is evaluated every time
-            a frame is rendered. The animation only stops when the return value
-            of the function is truthy, or when the time specified in ``duration``
-            passes.
+            A function without positional arguments, evaluated after each animation
+            step. During normal playback, ``self.time`` then includes that step's
+            frame interval.
+            The wait ends when the function returns a truthy value or the requested
+            duration is reached.
         frozen_frame
             If True, updater functions are not evaluated, and the animation outputs
             a frozen frame. If False, updater functions are called and frames
@@ -1264,7 +1296,7 @@ class Scene:
 
         See also
         --------
-        :class:`.Wait`, :meth:`.should_mobjects_update`
+        :class:`.Wait`, :meth:`.should_update_mobjects`
         """
         duration = self.validate_run_time(duration, self.wait, "duration")
         self.play(
@@ -1314,10 +1346,10 @@ class Scene:
         *animations: Animation | Mobject | _AnimationBuilder,
         **play_kwargs: Any,
     ) -> Self | None:
-        """Given a list of animations, compile the corresponding
-        static and moving mobjects, and gather the animation durations.
+        """Prepare animations, their run time, and frozen-wait status for a play call.
 
-        This also begins the animations.
+        The manager starts the prepared animations afterward via
+        :meth:`begin_animations`.
 
         Parameters
         ----------
@@ -1330,10 +1362,8 @@ class Scene:
         Returns
         -------
         self, None
-            None if there is nothing to play, or self otherwise.
+            This scene, or ``None`` for a frozen wait.
         """
-        # NOTE TODO : returns statement of this method are wrong. It should return nothing, as it makes a little sense to get any information from this method.
-        # The return are kept to keep webgl renderer from breaking.
         if len(animations) == 0:
             raise ValueError("Called Scene.play with no animations")
 
@@ -1351,7 +1381,7 @@ class Scene:
                 self.update_mobjects(dt=0)  # Any problems with this?
                 self.stop_condition = self.animations[0].stop_condition
             else:
-                # Static image logic when the wait is static is done by the renderer, not here.
+                # Manager will draw one frame and repeat it for this wait.
                 self.animations[0].is_static_wait = True
                 return None
 
@@ -1365,8 +1395,7 @@ class Scene:
             animation.begin()
 
         if config.renderer == RendererType.CAIRO:
-            # Paint all non-moving objects onto the screen, so they don't
-            # have to be rendered every frame
+            # Identify mobjects whose pixels can be reused between frames.
             (
                 self.moving_mobjects,
                 self.static_mobjects,
@@ -1380,41 +1409,6 @@ class Scene:
             and len(self.animations) == 1
             and self.animations[0].is_static_wait
         )
-
-    def play_internal(self, skip_rendering: bool = False) -> None:
-        """
-        This method is used to prep the animations for rendering,
-        apply the arguments and parameters required to them,
-        render them, and write them to the video file.
-
-        Parameters
-        ----------
-        skip_rendering
-            Whether the rendering should be skipped, by default False
-        """
-        assert self.animations is not None
-        self.duration = self.get_run_time(self.animations)
-        self.time_progression = self._get_animation_time_progression(
-            self.animations,
-            self.duration,
-        )
-        for t in self.time_progression:
-            self.update_to_time(t)
-            if not skip_rendering and not self.skip_animation_preview:
-                self.renderer.render(self, t, self.moving_mobjects)
-            if self.stop_condition is not None and self.stop_condition():
-                self.time_progression.close()
-                break
-
-        for animation in self.animations:
-            animation.finish()
-            animation.clean_up_from_scene(self)
-        if not self.renderer.skip_animations:
-            self.update_mobjects(0)
-        # TODO: The OpenGLRenderer does not have the property static.image.
-        self.renderer.static_image = None  # type: ignore[union-attr]
-        # Closing the progress bar at the end of the play.
-        self.time_progression.close()
 
     def check_interactive_embed_is_valid(self) -> bool:
         assert isinstance(self.renderer, OpenGLRenderer)
@@ -1438,6 +1432,8 @@ class Scene:
 
     def interactive_embed(self) -> None:
         """Like embed(), but allows for screen interaction."""
+        if self.manager is not None:
+            self.manager._mode.check("Interactive preview")
         assert isinstance(self.camera, OpenGLCamera)
         assert isinstance(self.renderer, OpenGLRenderer)
         if not self.check_interactive_embed_is_valid():
@@ -1521,6 +1517,8 @@ class Scene:
     # from IPython.terminal.embed import InteractiveShellEmbed
 
     def interact(self, shell: Any, keyboard_thread: threading.Thread) -> None:
+        if self.manager is not None:
+            self.manager._mode.check("Interactive preview")
         assert isinstance(self.renderer, OpenGLRenderer)
         event_handler = RerunSceneHandler(self.queue)
         file_observer = Observer()
@@ -1577,7 +1575,7 @@ class Scene:
                 self.renderer.animation_start_time = 0
                 dt = time.time() - last_time
                 last_time = time.time()
-                self.renderer.render(self, dt, self.moving_mobjects)
+                self._get_manager()._render_preview_frame(dt)
                 self.update_mobjects(dt)
                 self.update_meshes(dt)
                 self.update_self(dt)
@@ -1600,6 +1598,8 @@ class Scene:
             self.renderer.window.destroy()
 
     def embed(self) -> None:
+        if self.manager is not None:
+            self.manager._mode.check("Interactive preview")
         assert isinstance(self.renderer, OpenGLRenderer)
         if not self.session_spec.presentation.live_preview:
             logger.warning("Called embed() while no live preview window is available.")
@@ -1609,7 +1609,7 @@ class Scene:
             return
 
         self.renderer.animation_start_time = 0
-        self.renderer.render(self, -1, self.moving_mobjects)
+        self._get_manager()._render_preview_frame(-1)
 
         # Configure IPython shell.
         from IPython.terminal.embed import InteractiveShellEmbed
@@ -1619,7 +1619,7 @@ class Scene:
         # Have the frame update after each command
         shell.events.register(
             "post_run_cell",
-            lambda *a, **kw: self.renderer.render(self, -1, self.moving_mobjects),
+            lambda *a, **kw: self._get_manager()._render_preview_frame(-1),
         )
 
         # Use the locals of the caller as the local namespace
@@ -1717,7 +1717,8 @@ class Scene:
         assert self.animations is not None
         for animation in self.animations:
             animation.update_mobjects(dt)
-            alpha = t / animation.run_time
+            # An animation that takes no time is complete from the start.
+            alpha = t / animation.run_time if animation.run_time > 0 else 1.0
             animation.interpolate(alpha)
         self.update_mobjects(dt)
         self.update_meshes(dt)
@@ -1770,21 +1771,39 @@ class Scene:
         sound_file: str,
         time_offset: float = 0,
         gain: float | None = None,
-        **kwargs: Any,
+        gain_to_background: float | None = None,
     ) -> None:
-        """
-        This method is used to add a sound to the animation.
+        """Add a sound to the scene, starting at the current scene time.
+
+        All sounds of a scene are mixed into one track, shared by the movie and its
+        section videos. Parts of the scene left out of the output, by ``-n`` or a
+        section with ``skip_animations=True``, cut the sound like the video. Parts
+        before the start of the scene or after its end are cut too; when the movie
+        is assembled, a warning names the sound.
+
+        Any format PyAV can decode is supported. The file is checked when the call
+        is made during a render or a timeline capture.
 
         Parameters
         ----------
-
         sound_file
-            The path to the sound file.
+            The path to the sound file, absolute or relative to the assets
+            directory.
         time_offset
-            The offset in the sound file after which
-            the sound can be played.
+            Seconds by which to move the start of the sound relative to the
+            current scene time. Negative values start it earlier.
         gain
-            Amplification of the sound.
+            Gain applied to the sound, in dB.
+        gain_to_background
+            Gain in dB applied to all previously added sounds while this one
+            plays, for example to lower music under a voice.
+
+        Raises
+        ------
+        OSError
+            If the sound file does not exist.
+        ValueError
+            If the sound file cannot be read as audio.
 
         Examples
         --------
@@ -1807,7 +1826,7 @@ class Scene:
 
         Download the resource for the previous example `here <https://github.com/ManimCommunity/manim/blob/main/docs/source/_static/click.wav>`_ .
         """
-        self._get_manager().add_sound(sound_file, time_offset, gain, **kwargs)
+        self._get_manager().add_sound(sound_file, time_offset, gain, gain_to_background)
 
     def on_mouse_motion(self, point: Point3D, d_point: Point3D) -> None:
         assert isinstance(self.camera, OpenGLCamera)
