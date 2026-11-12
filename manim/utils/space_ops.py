@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import itertools as it
+import math
 from collections.abc import Callable, Sequence
 from typing import TYPE_CHECKING
 
@@ -371,21 +372,36 @@ def rotation_matrix(
         :math:`4 \times 4` homogeneous transformation matrix, representing
         both the rotation and a null translation.
     """
-    np_axis = np.asarray(axis)
-    norm_a = np.linalg.norm(np_axis)
+    ax = axis[0]
+    ay = axis[1]
+    az = axis[2]
+    norm_a = math.hypot(ax, ay, az)
     if norm_a == 0:
         return np.eye(4 if homogeneous else 3)
 
-    ax, ay, az = np_axis / norm_a
-    c, s = np.cos(angle), np.sin(angle)
+    ax /= norm_a
+    ay /= norm_a
+    az /= norm_a
+    c, s = math.cos(angle), math.sin(angle)
     mc = 1 - c
+    mc_ax = mc * ax
+    mc_ay = mc * ay
+    mc_ax2 = mc_ax * ax
+    mc_ay2 = mc_ay * ay
+    mc_az2 = mc * az * az
+    mc_ax_ay = mc_ax * ay
+    mc_ax_az = mc_ax * az
+    mc_ay_az = mc_ay * az
+    s_ax = s * ax
+    s_ay = s * ay
+    s_az = s * az
 
     # See the docstrings for an explanation of this calculation
     inhomogeneous_rotation_matrix = np.array(
         [
-            [c + mc * ax * ax, mc * ax * ay - s * az, mc * ax * az + s * ay],
-            [mc * ax * ay + s * az, c + mc * ay * ay, mc * ay * az - s * ax],
-            [mc * ax * az - s * ay, mc * ay * az + s * ax, c + mc * az * az],
+            [c + mc_ax2, mc_ax_ay - s_az, mc_ax_az + s_ay],
+            [mc_ax_ay + s_az, c + mc_ay2, mc_ay_az - s_ax],
+            [mc_ax_az - s_ay, mc_ay_az + s_ax, c + mc_az2],
         ]
     )
     if not homogeneous:
