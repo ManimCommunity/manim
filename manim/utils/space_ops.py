@@ -372,9 +372,9 @@ def rotation_matrix(
         :math:`4 \times 4` homogeneous transformation matrix, representing
         both the rotation and a null translation.
     """
-    ax = axis[0]
-    ay = axis[1]
-    az = axis[2]
+    ax = float(axis[0])
+    ay = float(axis[1])
+    az = float(axis[2])
     norm_a = math.hypot(ax, ay, az)
     if norm_a == 0.0:
         return np.eye(4 if homogeneous else 3)
@@ -383,6 +383,8 @@ def rotation_matrix(
     ay /= norm_a
     az /= norm_a
     c, s = math.cos(angle), math.sin(angle)
+
+    # See the docstrings for an explanation of the following calculations
     mc = 1 - c
     mc_ax = mc * ax
     mc_ay = mc * ay
@@ -396,20 +398,23 @@ def rotation_matrix(
     s_ay = s * ay
     s_az = s * az
 
-    # See the docstrings for an explanation of this calculation
+    m_11, m_12, m_13 = c + mc_ax2, mc_ax_ay - s_az, mc_ax_az + s_ay
+    m_21, m_22, m_23 = mc_ax_ay + s_az, c + mc_ay2, mc_ay_az - s_ax
+    m_31, m_32, m_33 = mc_ax_az - s_ay, mc_ay_az + s_ax, c + mc_az2
+
     if not homogeneous:
         return np.array(
             [
-                [c + mc_ax2, mc_ax_ay - s_az, mc_ax_az + s_ay],
-                [mc_ax_ay + s_az, c + mc_ay2, mc_ay_az - s_ax],
-                [mc_ax_az - s_ay, mc_ay_az + s_ax, c + mc_az2],
+                [m_11, m_12, m_13],
+                [m_21, m_22, m_23],
+                [m_31, m_32, m_33],
             ]
         )
     return np.array(
         [
-            [c + mc_ax2, mc_ax_ay - s_az, mc_ax_az + s_ay, 0.0],
-            [mc_ax_ay + s_az, c + mc_ay2, mc_ay_az - s_ax, 0.0],
-            [mc_ax_az - s_ay, mc_ay_az + s_ax, c + mc_az2, 0.0],
+            [m_11, m_12, m_13, 0.0],
+            [m_21, m_22, m_23, 0.0],
+            [m_31, m_32, m_33, 0.0],
             [0.0, 0.0, 0.0, 1.0],
         ]
     )
