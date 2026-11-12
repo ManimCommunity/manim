@@ -376,7 +376,7 @@ def rotation_matrix(
     ay = axis[1]
     az = axis[2]
     norm_a = math.hypot(ax, ay, az)
-    if norm_a == 0:
+    if norm_a == 0.0:
         return np.eye(4 if homogeneous else 3)
 
     ax /= norm_a
