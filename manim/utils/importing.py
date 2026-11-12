@@ -3,6 +3,7 @@ import sys
 from types import ModuleType
 
 
+# TODO: Replace with proper lazy imports when switching to 3.15
 def lazy_import(name: str, package: str | None = None) -> ModuleType:
     specification = importlib.util.find_spec(name, package)
     if specification is None:
