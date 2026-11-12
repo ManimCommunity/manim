@@ -397,7 +397,7 @@ def rotation_matrix(
     s_az = s * az
 
     # See the docstrings for an explanation of this calculation
-    inhomogeneous_rotation_matrix = np.array(
+    inhomogeneous_rot_matrix = np.array(
         [
             [c + mc_ax2, mc_ax_ay - s_az, mc_ax_az + s_ay],
             [mc_ax_ay + s_az, c + mc_ay2, mc_ay_az - s_ax],
@@ -405,10 +405,10 @@ def rotation_matrix(
         ]
     )
     if not homogeneous:
-        return inhomogeneous_rotation_matrix
-    rotation_matrix = np.eye(4)
-    rotation_matrix[:3, :3] = inhomogeneous_rotation_matrix
-    return rotation_matrix
+        return inhomogeneous_rot_matrix
+    rot_matrix = np.eye(4)
+    rot_matrix[:3, :3] = inhomogeneous_rot_matrix
+    return rot_matrix
 
 
 def rotation_about_z(angle: float) -> np.ndarray:
