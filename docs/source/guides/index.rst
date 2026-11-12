@@ -7,6 +7,9 @@ Thematic Guides
    :glob:
 
    configuration
+   cameras
+   evaluation
+   timeline
    deep_dive
    using_text
    add_voiceovers

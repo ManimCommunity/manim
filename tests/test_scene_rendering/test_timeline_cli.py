@@ -1,0 +1,113 @@
+"""Save timelines with the CLI."""
+
+import json
+import os
+import subprocess
+import sys
+
+SOURCE = """from manim import *
+class Sample(Scene):
+    def construct(self):
+        self.next_section("start")
+        for _ in range(2):
+            self.wait(.3, frozen_frame=False)
+"""
+
+
+def run(command, cwd, timeout=60):
+    return subprocess.run(
+        command,
+        cwd=cwd,
+        stdin=subprocess.DEVNULL,
+        capture_output=True,
+        encoding="utf-8",
+        env={**os.environ, "PYTHONIOENCODING": "utf-8"},
+        timeout=timeout,
+    )
+
+
+def run_cli(tmp_path, source, output, *extra):
+    return run(
+        [
+            sys.executable,
+            "-m",
+            "manim",
+            "--fps",
+            "4",
+            "-r",
+            "32,16",
+            "--media_dir",
+            str(tmp_path / "media"),
+            "--timeline-output",
+            str(output),
+            str(source),
+            *extra,
+        ],
+        tmp_path,
+    )
+
+
+def test_dry_run_saves_the_timeline_of_a_render_without_media(tmp_path):
+    # --dry_run keeps its meaning: a render without media files. The timeline is
+    # an extra output of that render, with -n and skipped sections applied.
+    source = tmp_path / "scene.py"
+    source.write_text(SOURCE)
+    output = tmp_path / "report.json"
+    result = run_cli(tmp_path, source, output, "--dry_run", "-n", "1")
+    assert result.returncode == 0, result.stdout + result.stderr
+    data = json.loads(output.read_text())
+    assert data["mode"] == "render"
+    assert data["duration"] == 1
+    assert data["source"]["path"] == "scene.py"
+    waits = [entry for entry in data["entries"] if entry["kind"] == "wait"]
+    assert [wait["skipped"] for wait in waits] == [True, False]
+    assert not list((tmp_path / "media").rglob("*.mp4"))
+
+
+def test_render_saves_a_video_and_its_timeline(tmp_path):
+    source = tmp_path / "scene.py"
+    source.write_text(SOURCE)
+    output = tmp_path / "report.json"
+    result = run_cli(tmp_path, source, output)
+    assert result.returncode == 0, result.stdout + result.stderr
+    data = json.loads(output.read_text())
+    assert data["mode"] == "render"
+    assert [entry["kind"] for entry in data["entries"]] == ["section", "wait", "wait"]
+    assert list((tmp_path / "media").rglob("Sample.mp4"))
+
+
+def test_render_with_a_timeline_runs_the_scene_s_own_render(tmp_path):
+    source = tmp_path / "scene.py"
+    source.write_text(
+        SOURCE
+        + """
+    def render(self, *args, **kwargs):
+        rerun = super().render(*args, **kwargs)
+        Path("override-ran").write_text("yes")
+        return rerun
+"""
+    )
+    source.write_text("from pathlib import Path\n" + source.read_text())
+    output = tmp_path / "report.json"
+    result = run_cli(tmp_path, source, output)
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert json.loads(output.read_text())["mode"] == "render"
+    assert (tmp_path / "override-ran").read_text() == "yes"
+
+
+def test_failure_keeps_the_previous_report_and_batches_are_rejected(tmp_path):
+    source = tmp_path / "scene.py"
+    output = tmp_path / "report.json"
+    source.write_text(SOURCE)
+    assert run_cli(tmp_path, source, output, "--dry_run").returncode == 0
+    previous = output.read_bytes()
+    source.write_text(SOURCE + '        raise RuntimeError("broken")\n')
+    failed = run_cli(tmp_path, source, output, "--dry_run")
+    assert failed.returncode != 0
+    assert "broken" in failed.stdout + failed.stderr
+    assert output.read_bytes() == previous
+    source.write_text(SOURCE + "\nclass Another(Scene):\n    pass\n")
+    result = run_cli(tmp_path, source, output, "--dry_run", "Sample", "Another")
+    assert result.returncode != 0
+    assert "exactly one" in result.stdout + result.stderr
+    assert output.read_bytes() == previous

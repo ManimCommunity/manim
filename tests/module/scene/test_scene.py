@@ -57,7 +57,7 @@ def test_scene_time(dry_run):
     assert scene.time == 2
     scene.play(FadeIn(Circle()), run_time=0.5)
     assert pytest.approx(scene.time) == 2.5
-    scene.renderer._original_skipping_status = True
+    scene.renderer._skips_all_plays = True
     scene.play(FadeIn(Square()), run_time=5)  # this animation gets skipped.
     assert pytest.approx(scene.time) == 7.5
 

@@ -3,8 +3,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from manim.renderer.cairo_renderer import CairoRenderer
-from manim.renderer.opengl_renderer import OpenGLRenderer
+from manim.renderer.cairo import CairoRenderer
+from manim.renderer.opengl import OpenGLRenderer
 from manim.scene.scene import Scene
 from manim.scene.scene_file_writer import SceneFileWriter, _SceneFileWriterSettings
 from manim.typing import PixelArray, StrPath
@@ -28,7 +28,7 @@ def _make_test_scene_class(
             # Manim hack to render the very last frame (normally the last frame is not the very end of the animation)
             if self.animations is not None:
                 self.update_to_time(self.get_run_time(self.animations))
-                self.renderer.render(self, 1, self.moving_mobjects)
+                self._get_manager()._render_preview_frame(1)
 
     return _TestedScene
 

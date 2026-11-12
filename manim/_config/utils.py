@@ -1416,6 +1416,12 @@ class ManimConfig(MutableMapping):
                 cls.__bases__ = tuple(
                     conversion_dict.get(base, base) for base in cls.__bases__
                 )
+
+            from ..utils.hashing import invalidate_derived_attribute_names
+
+            # Rebasing changes which attributes the cache key must ignore, including
+            # for classes that only inherit from a rebased one.
+            invalidate_derived_attribute_names()
         except ImportError:
             # The renderer is set during the initial import of the
             # library for the first time. The imports above cause an
