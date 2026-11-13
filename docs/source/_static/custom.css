@@ -106,3 +106,53 @@ h6 {
 .manim-binder-button-wrapper {
     margin: 0px 10px;
 }
+
+/* Collapsible sidebar and table of contents (see collapsibleSidebars.js) */
+.drawer-toggle {
+    display: none;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--color-foreground-secondary);
+}
+
+.drawer-toggle svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.drawer-toggle-sidebar {
+    float: left;
+    margin: 1.5rem 1rem 1rem 0;
+}
+
+@media (width > 63em) {
+    .drawer-toggle-sidebar {
+        display: flex;
+    }
+
+    .sidebar-collapsed .sidebar-drawer {
+        display: none;
+    }
+
+    .sidebar-collapsed .content {
+        flex: 1;
+        min-width: 0;
+    }
+}
+
+@media (width > 82em) {
+    .drawer-toggle-toc {
+        display: flex;
+    }
+
+    .toc-collapsed .toc-drawer {
+        display: none;
+    }
+
+    .toc-collapsed .content {
+        flex: 1;
+        min-width: 0;
+    }
+}

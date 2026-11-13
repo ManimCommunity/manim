@@ -1,0 +1,13 @@
+{% extends "!page.html" %}
+
+{% block extrahead %}
+{{ super() }}
+<script>
+  // Restore drawers collapsed via _static/collapsibleSidebars.js before the first paint.
+  for (const name of ["sidebar", "toc"]) {
+    try {
+      document.documentElement.classList.toggle(`${name}-collapsed`, localStorage.getItem(`${name}-collapsed`) === "true");
+    } catch {}
+  }
+</script>
+{% endblock %}
