@@ -21,6 +21,15 @@ reStructured Text) files from scratch by reading and parsing all the
 Manim content. The process becomes much shorter the next time, as it
 rebuilds only the parts which have changed.
 
+Most of that time is spent rendering the examples and writing the HTML
+pages, both of which Sphinx can do in several processes at once. To use
+all of your CPU cores, pass ``-j auto`` to Sphinx (this is not available
+on Windows):
+
+.. code-block:: shell
+
+   make html O="-j auto"
+
 
 Sphinx library and extensions
 -----------------------------

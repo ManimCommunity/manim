@@ -76,12 +76,27 @@ directive:
         A list of methods, separated by spaces,
         that is rendered in a reference block after the source code.
 
+
+Parallel builds
+---------------
+
+The directive is safe for parallel reading, so the examples of
+different documents can be rendered at the same time by passing
+``-j <number of processes>`` (or ``-j auto``) to ``sphinx-build``.
+
+Every example is rendered to a file named after its scene and
+the document it is in, and each worker process keeps the
+intermediate files it writes while rendering (e.g., the output of
+LaTeX) in a directory of its own.
+
 """
 
 from __future__ import annotations
 
 import csv
+import hashlib
 import itertools as it
+import os
 import re
 import shutil
 import sys
@@ -105,7 +120,12 @@ if TYPE_CHECKING:
 __all__ = ["ManimDirective"]
 
 
-classnamedict: dict[str, int] = {}
+# The process which loaded this extension. Sphinx reads the documents of a
+# parallel build in worker processes forked from it.
+_main_pid: int | None = None
+
+# Subdirectory of the media directory holding the caches of those workers.
+_WORKER_CACHE_DIR = "parallel"
 
 
 class SetupMetadata(TypedDict):
@@ -213,13 +233,14 @@ class ManimDirective(Directive):
 
         from manim import config, tempconfig
 
-        global classnamedict
-
         clsname = self.arguments[0]
-        if clsname not in classnamedict:
-            classnamedict[clsname] = 1
-        else:
-            classnamedict[clsname] += 1
+        env = self.state.document.settings.env
+        # Output files are named after the scene and the document it is in,
+        # with a number for scenes sharing their name within a document. No
+        # state is shared between documents, which are possibly read by
+        # different processes or, in an incremental build, not read at all.
+        document_tag = hashlib.sha256(env.docname.encode()).hexdigest()[:8]
+        serial_number = env.new_serialno(f"manim-{clsname}") + 1
 
         hide_source = "hide_source" in self.options
         no_autoplay = "no_autoplay" in self.options
@@ -268,10 +289,24 @@ class ManimDirective(Directive):
         ]
         source_block = "\n".join(source_block_in)
 
-        config.media_dir = (Path(setup.confdir) / "media").absolute()  # type: ignore[attr-defined]
+        # Every document gets its own media directory (including the Tex/text
+        # caches and partial movie files), and the copied video gets a name that
+        # is unique within its output directory. This keeps documents independent
+        # of each other, so they can be read and rendered in parallel
+        # (``sphinx-build -j``) without processes clobbering each other's files.
+        config.media_dir = (Path(setup.confdir) / "media" / docname).absolute()  # type: ignore[attr-defined]
         config.images_dir = "{media_dir}/images"
         config.video_dir = "{media_dir}/videos/{quality}"
-        output_file = f"{clsname}-{classnamedict[clsname]}"
+        output_file = f"{clsname}-{document_tag}-{serial_number}"
+        # Scenes sharing their name must not share their cached segments.
+        config.partial_movie_dir = f"{{video_dir}}/partial_movie_files/{output_file}"
+        if os.getpid() != _main_pid:
+            # Caches of intermediate files are not written atomically, and
+            # the one of LaTeX is cleaned up after every compilation; they
+            # cannot be shared with the other workers of a parallel build.
+            worker_dir = f"{{media_dir}}/{_WORKER_CACHE_DIR}/{os.getpid()}"
+            config.tex_dir = f"{worker_dir}/Tex"
+            config.text_dir = f"{worker_dir}/texts"
         config.assets_dir = Path("_static")
         config.progress_bar = "none"
         config.verbosity = "WARNING"
@@ -315,24 +350,18 @@ class ManimDirective(Directive):
             render_namespace.pop("_manim_rendered_scene", None)
             raise RuntimeError(f"Error while rendering example {clsname}") from e
 
-        _write_rendering_stats(
-            clsname,
-            run_time,
-            self.state.document.settings.env.docname,
-        )
+        _write_rendering_stats(clsname, run_time, docname)
 
         # copy video file to output directory
         if not (save_as_gif or save_last_frame):
-            filename = filesrc.name
-            destfile = Path(dest_dir, filename)
-            shutil.copyfile(filesrc, destfile)
+            shutil.copyfile(filesrc, dest_dir / video_name)
         rendered_template = jinja2.Template(TEMPLATE).render(
             clsname=clsname,
             clsname_lowercase=clsname.lower(),
             hide_source=hide_source,
             filesrc_rel=Path(filesrc).relative_to(setup.confdir).as_posix(),  # type: ignore[attr-defined]
             no_autoplay=no_autoplay,
-            output_file=output_file,
+            video_name=video_name,
             save_last_frame=save_last_frame,
             save_as_gif=save_as_gif,
             source_block=source_block,
@@ -371,6 +400,9 @@ def _log_rendering_times(*args: tuple[Any]) -> None:
 
         # filter out empty lists caused by csv reader
         data = [row for row in data if row]
+        # The workers of a parallel build write their rows in no particular
+        # order. Sorting is stable: examples of a document keep their order.
+        data.sort(key=lambda row: row[0])
 
         max_file_length = max(len(row[0]) for row in data)
         for key, group_iter in it.groupby(data, key=lambda row: row[0]):
@@ -394,12 +426,28 @@ def _delete_rendering_times(*args: tuple[Any]) -> None:
         rendering_times_file_path.unlink()
 
 
+def _delete_worker_caches(app: Sphinx, exception: Exception | None) -> None:
+    """Remove the caches of the workers of a parallel build.
+
+    They are kept if the build failed, as they contain the files needed to
+    find out why an example could not be rendered, such as LaTeX logs.
+    """
+    if exception is None:
+        shutil.rmtree(
+            Path(app.confdir, "media", _WORKER_CACHE_DIR),
+            ignore_errors=True,
+        )
+
+
 def setup(app: Sphinx) -> SetupMetadata:
     app.add_node(
         SkipManimNode,
         html=(visit, depart),
         latex=(lambda a, b: None, lambda a, b: None),
     )
+
+    global _main_pid
+    _main_pid = os.getpid()
 
     setup.app = app  # type: ignore[attr-defined]
     setup.config = app.config  # type: ignore[attr-defined]
@@ -408,6 +456,7 @@ def setup(app: Sphinx) -> SetupMetadata:
     app.add_directive("manim", ManimDirective)
 
     app.connect("builder-inited", _delete_rendering_times)
+    app.connect("build-finished", _delete_worker_caches)
     app.connect("build-finished", _log_rendering_times)
 
     app.add_js_file("manim-binder.min.js")
@@ -421,7 +470,7 @@ def setup(app: Sphinx) -> SetupMetadata:
     )
 
     metadata: SetupMetadata = {
-        "parallel_read_safe": False,
+        "parallel_read_safe": True,
         "parallel_write_safe": True,
     }
     return metadata
@@ -444,7 +493,7 @@ TEMPLATE = r"""
         controls
         loop
         {{ '' if no_autoplay else 'autoplay' }}
-        src="./{{ output_file }}.mp4">
+        src="./{{ video_name }}">
     </video>
 
 {% elif save_as_gif %}

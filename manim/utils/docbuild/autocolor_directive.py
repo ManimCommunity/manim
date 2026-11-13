@@ -12,12 +12,14 @@ from manim import ManimColor
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
+    from sphinx.util.typing import ExtensionMetadata
 
 __all__ = ["ManimColorModuleDocumenter"]
 
 
-def setup(app: Sphinx) -> None:
+def setup(app: Sphinx) -> dict[str, bool]:
     app.add_directive("automanimcolormodule", ManimColorModuleDocumenter)
+    return {"parallel_read_safe": True, "parallel_write_safe": True}
 
 
 class ManimColorModuleDocumenter(Directive):

@@ -12,6 +12,7 @@ from manim.utils.docbuild.module_parsing import parse_module_attributes
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
+    from sphinx.util.typing import ExtensionMetadata
 
 __all__ = ["AliasAttrDocumenter"]
 
@@ -69,8 +70,9 @@ def smart_replace(base: str, alias: str, substitution: str) -> str:
     return base
 
 
-def setup(app: Sphinx) -> None:
+def setup(app: Sphinx) -> dict[str, bool]:
     app.add_directive("autoaliasattr", AliasAttrDocumenter)
+    return {"parallel_read_safe": True, "parallel_write_safe": True}
 
 
 class AliasAttrDocumenter(Directive):
