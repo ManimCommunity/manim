@@ -356,8 +356,23 @@ You can also skip rendering all animations belonging to a section like this:
         self.next_section()
         # play some animations that won't get skipped...
 
+The movie of a scene with sections also contains one chapter per section, named
+after it, with or without ``--save_sections``. Players and editors that support
+chapters can use them to jump between sections. Sections that take no time in the
+movie, because they are empty, skipped, or left out with ``-n``, get no chapter.
+Writing chapters requires PyAV 16.0 or newer; with older versions the movie is
+written without them. GIFs have no chapters.
 
+A scene that plays something before its first call to ``next_section`` starts in
+the automatically created section. Its chapter is named after the movie, as a
+chapter list starts at the beginning of the movie. To name it yourself, call
+``next_section`` at the start of ``construct``:
 
+.. code-block:: python
+
+    def construct(self):
+        self.next_section("introduction")
+        # play the first animations...
 
 Some command line flags
 ***********************
