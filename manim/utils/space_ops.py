@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from mapbox_earcut import triangulate_float32 as earcut
-from scipy.spatial.transform import Rotation
 
 from manim.constants import DOWN, OUT, PI, RIGHT, TAU, UP
 from manim.utils.iterables import adjacent_pairs
@@ -261,6 +260,8 @@ def rotation_matrix(
     axis: Vector3DLike,
     homogeneous: bool = False,
 ) -> np.ndarray:
+    from scipy.spatial.transform import Rotation
+
     """Rotation in R^3 about a specified axis of rotation."""
     inhomogeneous_rotation_matrix = Rotation.from_rotvec(
         angle * normalize(axis)

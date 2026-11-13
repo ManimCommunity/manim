@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from manim import PI, X_AXIS, Y_AXIS, Z_AXIS
+from manim import LEFT, PI, UR, X_AXIS, Y_AXIS, Z_AXIS
 from manim.utils.unit import Degrees, Munits, Percent, Pixels
 
 
@@ -29,3 +29,9 @@ def test_units(config):
 
     # Degrees should convert from degrees to radians
     np.testing.assert_allclose(180 * Degrees, PI)
+
+
+@pytest.mark.parametrize("axis", [LEFT, UR])
+def test_percent_rejects_unsupported_axes(axis):
+    with pytest.raises(ValueError, match="X_AXIS"):
+        Percent(axis)
