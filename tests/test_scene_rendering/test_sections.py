@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 from fractions import Fraction
 from pathlib import Path
@@ -193,6 +194,17 @@ def test_mp4_section_chapters(config, tmp_path, with_sound, save_sections):
                 (0, Fraction(267, 1000)),
                 (Fraction(267, 1000), Fraction(2, 5)),
             ]
+            if save_sections:
+                # Writing the chapters leaves the sections to the section videos,
+                # which skip the empty trailing section like the chapters do.
+                writer = scene.renderer.file_writer
+                index = json.loads(writer.output_plan.section_index.read_text())
+                assert [entry["name"] for entry in index] == [
+                    "开场：Introduction",
+                    "Conclusion",
+                ]
+                for entry in index:
+                    assert (writer.sections_output_dir / entry["video"]).exists()
 
 
 @requires_chapters

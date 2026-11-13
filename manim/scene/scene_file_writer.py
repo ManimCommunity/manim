@@ -356,7 +356,11 @@ class SceneFileWriter:
         return path
 
     def finish_last_section(self) -> None:
-        """Delete current section if it is empty."""
+        """Delete the current section if it is empty.
+
+        Called when a new section starts. The last section of the scene stays,
+        even when empty; the movie's outputs leave empty sections out.
+        """
         if len(self.sections) and self.sections[-1].is_empty():
             self.sections.pop()
 
@@ -951,8 +955,6 @@ class SceneFileWriter:
         the output take no movie time, so skipped and empty sections have empty
         spans.
         """
-        if not self.sections:
-            return []
         ends = [section.movie_start for section in self.sections[1:]]
         ends.append(self._movie_time(math.inf))
         return [
@@ -988,13 +990,15 @@ class SceneFileWriter:
         ]
 
     def combine_to_section_videos(self) -> None:
-        """Concatenate partial movie files for each section."""
-        self.finish_last_section()
+        """Concatenate partial movie files for each section.
+
+        Sections without plays, such as an empty last section, get no video.
+        """
         mix = self._sound_mix
         sections_index: list[dict[str, Any]] = []
         for section, start, end in self._section_spans():
             # only if section does want to be saved
-            if section.video is not None:
+            if section.video is not None and not section.is_empty():
                 logger.info(f"Combining partial files for section '{section.name}'")
                 section_path = self.sections_output_dir / section.video
                 # A section video contains its part of the scene's sound mix.
