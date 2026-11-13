@@ -2,7 +2,9 @@ name: Publish Release
 
 on:
   release:
-    types: [released]
+    # Releases (from main) and prereleases (from a preview/* branch); see
+    # docs/source/contributing/releasing.md.
+    types: [released, prereleased]
 
 jobs:
   release:
@@ -15,6 +17,20 @@ jobs:
 
     steps:
     - uses: actions/checkout@v7
+      with:
+        # The release check looks up the branches containing the tag.
+        fetch-depth: 0
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
+
+    - name: Check the release
+      env:
+        TAG: ${{ github.event.release.tag_name }}
+        KIND: ${{ github.event.release.prerelease && 'prerelease' || 'release' }}
+      run: |
+        uv run --no-project --python 3.13 --with click --with packaging \
+          scripts/release.py check-release "$TAG" --kind "$KIND"
 
     - name: Install dependencies
       run: sudo apt-get update && sudo apt-get install -y build-essential python3-dev libcairo2-dev libpango1.0-dev
@@ -23,9 +39,6 @@ jobs:
       uses: actions/setup-python@v7
       with:
         python-version: 3.13
-
-    - name: Install uv
-      uses: astral-sh/setup-uv@v7
 
     - name: Build and push release to PyPI
       run: |

@@ -5,7 +5,7 @@ on:
     branches:
       - main
   release:
-    types: [released]
+    types: [released, prereleased]
   pull_request:
     paths:
       - docker/**
@@ -24,8 +24,8 @@ permissions:
 
 env:
   IMAGE: manimcommunity/manim
-  # Only pushes to main and releases publish to Docker Hub. Pull requests and
-  # manual runs on other branches only build and verify the image.
+  # Only pushes to main, releases and prereleases publish to Docker Hub. Pull
+  # requests and manual runs on other branches only build and verify the image.
   PUBLISH: ${{ github.event_name == 'release' || (github.event_name != 'pull_request' && github.ref == 'refs/heads/main') }}
 
 jobs:
@@ -128,12 +128,19 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # main: latest; a release: stable and its tag; a prerelease (from a
+      # preview/* branch): preview and its tag.
       - name: Create and push manifest list
         working-directory: ${{ runner.temp }}/digests
+        env:
+          PRERELEASE: ${{ github.event.release.prerelease }}
         run: |
-          tags=(-t "$IMAGE:latest")
-          if [ "$GITHUB_EVENT_NAME" = release ]; then
-            tags+=(-t "$IMAGE:stable" -t "$IMAGE:$GITHUB_REF_NAME")
+          if [ "$GITHUB_EVENT_NAME" != release ]; then
+            tags=(-t "$IMAGE:latest")
+          elif [ "$PRERELEASE" = true ]; then
+            tags=(-t "$IMAGE:preview" -t "$IMAGE:$GITHUB_REF_NAME")
+          else
+            tags=(-t "$IMAGE:latest" -t "$IMAGE:stable" -t "$IMAGE:$GITHUB_REF_NAME")
           fi
           docker buildx imagetools create "${tags[@]}" \
             $(printf "$IMAGE@sha256:%s " *)
