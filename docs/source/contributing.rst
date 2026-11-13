@@ -45,3 +45,4 @@ Contributing can be confusing, so here are a few guides:
    contributing/testing
    contributing/performance
    contributing/internationalization
+   contributing/releasing
