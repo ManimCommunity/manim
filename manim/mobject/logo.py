@@ -4,7 +4,7 @@ from __future__ import annotations
 
 __all__ = ["ManimBanner"]
 
-from typing import Any, Self
+from typing import Self
 
 import svgelements as se
 
@@ -184,13 +184,21 @@ class ManimBanner(VGroup):
         # and thus not yet added to the submobjects of self.
         self.anim = anim
 
-    def scale(self, scale_factor: float, **kwargs: Any) -> Self:
+    def scale(self, scale_factor: float, scale_stroke: bool = False, **kwargs) -> Self:
         """Scale the banner by the specified scale factor.
 
         Parameters
         ----------
         scale_factor
             The factor used for scaling the banner.
+        scale_stroke
+            Boolean determining if each submobject's outline is scaled when the object
+            is scaled. If enabled, each submobject keeps its relative stroke width (for
+            example, a submobject with a 2px outline scaled by a factor of .5 will have
+            a 1px outline, while a submobject with 0px stroke remains at 0px).
+        kwargs
+            Additional keyword arguments passed to
+            :meth:`~.VMobject.scale`.
 
         Returns
         -------
@@ -200,8 +208,9 @@ class ManimBanner(VGroup):
         self.scale_factor *= scale_factor
         # Note: self.anim is only added to self after expand()
         if self.anim not in self.submobjects:
-            self.anim.scale(scale_factor, **kwargs)
-        return super().scale(scale_factor, **kwargs)
+            self.anim.scale(scale_factor, scale_stroke, **kwargs)
+        super().scale(scale_factor, scale_stroke, **kwargs)
+        return self
 
     @override_animation(Create)
     def create(self, run_time: float = 2) -> AnimationGroup:
@@ -283,7 +292,10 @@ class ManimBanner(VGroup):
 
         def shift(vector: Vector3D) -> None:
             self.shapes.restore()
+
+            assert self.M.saved_state is not None
             left_group.align_to(self.M.saved_state, cst.LEFT)
+
             if direction == "right":
                 self.shapes.shift(vector)
             elif direction == "center":
@@ -293,23 +305,27 @@ class ManimBanner(VGroup):
                 left_group.shift(-vector)
 
         def slide_and_uncover(mob: Mobject, alpha: float) -> None:
+            assert isinstance(mob, ManimBanner)
+
             shift(alpha * (m_shape_offset + shape_sliding_overshoot) * cst.RIGHT)
 
             # Add letters when they are covered
             for letter in mob.anim:
                 if mob.square.get_center()[0] > letter.get_center()[0]:
                     letter.set_opacity(1)
-                    self.add_to_back(letter)
+                    mob.add_to_back(letter)
 
             # Finish animation
             if alpha == 1:
-                self.remove(*[self.anim])
-                self.add_to_back(self.anim)
+                mob.remove(*[mob.anim])
+                mob.add_to_back(mob.anim)
                 mob.shapes.set_z_index(0)
                 mob.shapes.save_state()
                 mob.M.save_state()
 
         def slide_back(mob: Mobject, alpha: float) -> None:
+            assert isinstance(mob, ManimBanner)
+
             if alpha == 0:
                 m_clone.set_opacity(1)
                 m_clone.move_to(mob.anim[-1])
