@@ -8,6 +8,8 @@ on:
 jobs:
   build-and-publish-htmldocs:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
     - uses: actions/checkout@v7
 
@@ -48,40 +50,12 @@ jobs:
           path: ${{ github.workspace }}/docs/build/html-docs.tar.gz
           name: html-docs.tar.gz
 
-    - name: Install Dependency
-      run: pip install requests
-
-    - name: Get Upload URL
-      if: github.event == 'release'
-      id: create_release
-      shell: python
-      env:
-          access_token: ${{ secrets.GITHUB_TOKEN }}
-          tag_act: ${{ github.ref }}
-      run: |
-          import requests
-          import os
-          ref_tag = os.getenv('tag_act').split('/')[-1]
-          access_token = os.getenv('access_token')
-          headers = {
-              "Accept":"application/vnd.github.v3+json",
-              "Authorization": f"token {access_token}"
-          }
-          url = f"https://api.github.com/repos/ManimCommunity/manim/releases/tags/{ref_tag}"
-          c = requests.get(url,headers=headers)
-          upload_url=c.json()['upload_url']
-          with open(os.getenv('GITHUB_OUTPUT'), 'w') as f:
-            print(f"upload_url={upload_url}", file=f)
-            print(f"tag_name={ref_tag[1:]}", file=f)
-
+    # Manual runs only build the artifact; releases also attach it.
     - name: Upload Release Asset
-      if: github.event == 'release'
-      id: upload-release
-      uses: actions/upload-release-asset@v1
+      if: github.event_name == 'release'
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ github.workspace }}/docs/build/html-docs.tar.gz
-          asset_name: manim-htmldocs-${{ steps.create_release.outputs.tag_name }}.tar.gz
-          asset_content_type: application/gzip
+          TAG: ${{ github.event.release.tag_name }}
+      run: |
+        cp docs/build/html-docs.tar.gz "manim-htmldocs-${TAG#v}.tar.gz"
+        gh release upload "$TAG" "manim-htmldocs-${TAG#v}.tar.gz"
