@@ -13,6 +13,13 @@ build:
     - libpango1.0-dev
     - graphviz
 
+  jobs:
+    pre_build:
+      - nproc
+    build:
+      html:
+        - cd docs/source && python -m sphinx -T -j 4 -b html -d _build/doctrees -D language=en . $READTHEDOCS_OUTPUT/html
+
 python:
    install:
       - requirements: docs/rtd-requirements.txt

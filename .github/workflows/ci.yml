@@ -165,4 +165,4 @@ jobs:
 
       - name: Run doctests in rst files
         run: |
-          cd docs && uv run make doctest O=-tskip-manim
+          cd docs && uv run make doctest O="-tskip-manim -j auto"

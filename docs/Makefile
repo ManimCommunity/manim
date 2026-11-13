@@ -3,7 +3,9 @@
 
 # You can set these variables from the command line, and also
 # from the environment for the first two.
-SPHINXOPTS    ?=
+# Read and write in parallel by default (ignored on Windows, where Sphinx
+# does not support parallel builds).
+SPHINXOPTS    ?= -j auto
 SPHINXBUILD   ?= sphinx-build
 
 # Path base is the source directory
