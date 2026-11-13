@@ -58,23 +58,28 @@
     cursor: pointer;
 }
 
-p.rubric{
+p.rubric {
     text-transform: capitalize;
     font-size: 1.25rem;
     font-weight: bold;
 }
 
-.sig-param{
+.sig-param {
     color: var(--color-content-foreground);
 }
 
-dl.c .field-list dt, dl.cpp .field-list dt, dl.js .field-list dt, dl.py .field-list dt {
+dl.c .field-list dt,
+dl.cpp .field-list dt,
+dl.js .field-list dt,
+dl.py .field-list dt {
     text-transform: capitalize;
     font-weight: bold;
     font-size: var(--font-size--normal);
 }
 
-h4, h5, h6{
+h4,
+h5,
+h6 {
     text-transform: none;
 }
 
