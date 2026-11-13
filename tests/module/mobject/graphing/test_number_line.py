@@ -59,6 +59,69 @@ def test_whole_numbers_step_size_default_to_0_decimal_places():
     )
 
 
+@pytest.mark.parametrize(
+    ("x_range", "expected_decimal_places"),
+    [
+        pytest.param([-2, 2, 1.0], 1, id="whole-float-step"),
+        pytest.param([3.5, 7.5, 1], 1, id="fractional-start"),
+        pytest.param([3.5, 7.5], 1, id="default-step"),
+        pytest.param([-7.5, -3.5, 1], 1, id="negative-start"),
+        pytest.param([3.25, 5.25, 1], 2, id="quarter-start"),
+        pytest.param([3, 7.5, 1], 0, id="unused-fractional-end"),
+        pytest.param([0, 1e-4, 1e-5], 5, id="scientific-step"),
+        pytest.param([0, 1e-4, 2.5e-5], 6, id="scientific-fractional-step"),
+        pytest.param([1e-5, 2, 1], 5, id="scientific-start"),
+        pytest.param([1e-16, 2, 1], 16, id="tiny-start"),
+        pytest.param([0, 1.2, 0.1 + 0.2], 1, id="float-roundoff-step"),
+        pytest.param([0.1 + 0.2, 2, 1], 1, id="float-roundoff-start"),
+        pytest.param([0, 1, 1e-16], 16, id="tiny-step"),
+        pytest.param([1e20, 3e20, 1e20], 0, id="large-start-and-step"),
+        pytest.param([0, 1, 0.123456789012345], 15, id="significant-digits"),
+    ],
+)
+def test_decimal_places_from_range(x_range, expected_decimal_places):
+    axis = NumberLine(x_range=x_range, include_ticks=False)
+    assert axis.decimal_number_config["num_decimal_places"] == expected_decimal_places
+
+
+@pytest.mark.parametrize(
+    "x_range",
+    [[-64 / 9, 64 / 9, 1], [-3.5, 3.5, 1], [-3.5, 0, 1]],
+)
+def test_precision_uses_zero_for_ranges_whose_ticks_start_at_zero(x_range):
+    axis = NumberLine(x_range=x_range, include_numbers=True)
+    assert axis.decimal_number_config["num_decimal_places"] == 0
+    values = [number.get_value() for number in axis.numbers]
+    np.testing.assert_allclose(values, np.rint(values))
+    assert all(number.num_decimal_places == 0 for number in axis.numbers)
+
+
+@pytest.mark.parametrize("x_range", [[3.5, 7.5, 1], [0, 4e-5, 1e-5]])
+@pytest.mark.parametrize("decimal_places", [0, 3])
+def test_decimal_config_overrides_inferred_range_precision(x_range, decimal_places):
+    axis = NumberLine(
+        x_range=x_range,
+        decimal_number_config={"num_decimal_places": decimal_places},
+    )
+    assert axis.decimal_number_config["num_decimal_places"] == decimal_places
+
+
+@pytest.mark.parametrize(
+    ("x_range", "expected_values", "decimal_places"),
+    [
+        ([3.5, 7.5, 1], [3.5, 4.5, 5.5, 6.5, 7.5], 1),
+        ([0, 4e-5, 1e-5], [0, 1e-5, 2e-5, 3e-5, 4e-5], 5),
+        ([0, 1.2, 0.1 + 0.2], [0, 0.3, 0.6, 0.9, 1.2], 1),
+    ],
+)
+def test_number_labels_keep_decimal_precision(x_range, expected_values, decimal_places):
+    axis = NumberLine(x_range=x_range, include_numbers=True)
+    np.testing.assert_allclose(
+        [number.get_value() for number in axis.numbers], expected_values
+    )
+    assert all(number.num_decimal_places == decimal_places for number in axis.numbers)
+
+
 def test_add_labels():
     expected_label_length = 6
     num_line = NumberLine(x_range=[-4, 4])
