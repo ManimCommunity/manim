@@ -47,7 +47,21 @@ def get_module(file_name: Path) -> types.ModuleType:
             ext = file_name.suffix
             if ext != ".py":
                 raise ValueError(f"{file_name} is not a valid Manim python script.")
-            module_name = ".".join(file_name.with_suffix("").parts)
+
+            def _find_package_root(path: Path) -> Path:
+                """Find package root by walking up until no __init__.py"""
+                while path != path.parent:  # Stop at filesystem root
+                    if (path / "__init__.py").exists() or (
+                        path / "__init__.pyc"
+                    ).exists():
+                        path = path.parent
+                    else:
+                        return path
+                return path
+
+            package_root = _find_package_root(file_name.parent)
+            rel_path = file_name.relative_to(package_root)
+            module_name = ".".join(rel_path.with_suffix("").parts)
 
             warnings.filterwarnings(
                 "default",
@@ -59,7 +73,7 @@ def get_module(file_name: Path) -> types.ModuleType:
             if isinstance(spec, importlib.machinery.ModuleSpec):
                 module = importlib.util.module_from_spec(spec)
                 sys.modules[module_name] = module
-                sys.path.insert(0, str(file_name.parent.absolute()))
+                sys.path.insert(0, str(package_root))
                 assert spec.loader
                 spec.loader.exec_module(module)
                 return module
