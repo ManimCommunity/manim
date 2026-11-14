@@ -6,13 +6,21 @@
 
 from __future__ import annotations
 
+import functools
 import os
 import sys
 from datetime import datetime
 from pathlib import Path
 
+import sphinx.ext.autosummary
+
 import manim
 from manim.utils.docbuild.module_parsing import parse_module_attributes
+
+if hasattr(sphinx.ext.autosummary, "FakeDirective"):
+    sphinx.ext.autosummary.FakeDirective = functools.cache(
+        sphinx.ext.autosummary.FakeDirective
+    )
 
 # -- Path setup --------------------------------------------------------------
 # If extensions (or modules to document with autodoc) are in another directory,
