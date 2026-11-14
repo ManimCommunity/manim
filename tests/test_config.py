@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 from click.testing import CliRunner
 
-from manim import RIGHT, WHITE, Scene, Square, Tex, Text, Vector, tempconfig
+from manim import RIGHT, WHITE, ManimColor, Scene, Square, Tex, Text, Vector, tempconfig
 from manim._config.output import OutputFormat, OutputSpec
 from manim._config.render_session import resolve_render_session
 from manim._config.utils import ManimConfig
@@ -60,6 +60,34 @@ def test_max_files_cached_uses_minus_one_for_unlimited(config):
 
     with pytest.raises(ValueError, match="non-negative integer or -1"):
         config.max_files_cached = float("inf")
+
+
+_SET_BACKGROUND_COLOR = pytest.mark.parametrize(
+    "set_background_color",
+    [
+        lambda cfg, value: setattr(cfg, "background_color", value),
+        lambda cfg, value: cfg.__setitem__("background_color", value),
+        lambda cfg, value: cfg.update({"background_color": value}),
+    ],
+    ids=["attribute", "item", "update"],
+)
+
+
+@_SET_BACKGROUND_COLOR
+def test_background_color_is_normalized(set_background_color):
+    cfg = ManimConfig()
+    set_background_color(cfg, "#123456")
+    assert isinstance(cfg.background_color, ManimColor)
+    assert cfg.background_color == ManimColor("#123456")
+
+
+@_SET_BACKGROUND_COLOR
+def test_invalid_background_color_is_rejected(set_background_color):
+    cfg = ManimConfig()
+    cfg.background_color = "#123456"
+    with pytest.raises(ValueError, match="not found"):
+        set_background_color(cfg, "not_a_color")
+    assert cfg.background_color == ManimColor("#123456")
 
 
 def test_tempconfig_restores_renderer_class_bases(config):
