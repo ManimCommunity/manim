@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import itertools as it
+import math
 from collections.abc import Callable, Sequence
 from typing import TYPE_CHECKING
 
@@ -256,22 +257,90 @@ def rotation_matrix_transpose(angle: float, axis: Vector3DLike) -> np.ndarray:
 
 
 def rotation_matrix(
-    angle: float,
-    axis: Vector3DLike,
-    homogeneous: bool = False,
-) -> np.ndarray:
-    from scipy.spatial.transform import Rotation
+    angle: float, axis: Vector3DLike, homogeneous: bool = False
+) -> MatrixMN:
+    r"""Generate a rotation matrix in :math:`\mathbb{R}^3` at an ``angle``
+    about a specified ``axis`` of rotation.
 
-    """Rotation in R^3 about a specified axis of rotation."""
-    inhomogeneous_rotation_matrix = Rotation.from_rotvec(
-        angle * normalize(axis)
-    ).as_matrix()
+    .. note::
+        To produce a rotation of angle :math:`\theta` around a unit vector axis
+        :math:`\hat a = (a_x, \ a_y, \ a_z)`, let :math:`c = \cos \theta` and
+        :math:`s = \sin \theta`. The rotation matrix :math:`R` is given by:
+
+        .. math::
+            R = \begin{pmatrix}
+                c + (1-c)a_x^2 & (1-c)a_x a_y - sa_z & (1-c)a_x a_z + sa_y \\
+                (1-c)a_x a_y + sa_z & c + (1-c)a_y^2 & (1-c)a_y a_z - sa_x \\
+                (1-c)a_x a_z - sa_y & (1-c)a_y a_z + sa_x & c + (1-c)a_z^2
+            \end{pmatrix}
+
+    Parameters
+    ----------
+    angle
+        Angle of rotation about the axis.
+    axis
+        Vector representing the axis of rotation. If it's the null vector,
+        this function will simply return the identity matrix.
+    homogeneous
+        If ``True``, return a :math:`4 \times 4` homogeneous transformation matrix
+        including both the rotation and a null translation. Otherwise, simply
+        return a :math:`3 \times 3` transformation matrix representing only the
+        rotation. Default is ``False``.
+
+    Returns
+    -------
+    MatrixMN
+        The rotation matrix. If ``homogeneous`` is ``False``, it will be a
+        :math:`3 \times 3` rotation matrix. Otherwise it will be a
+        :math:`4 \times 4` homogeneous transformation matrix, representing
+        both the rotation and a null translation.
+    """
+    ax = float(axis[0])
+    ay = float(axis[1])
+    az = float(axis[2])
+    norm_a = math.hypot(ax, ay, az)
+    if norm_a == 0.0:
+        return np.eye(4 if homogeneous else 3)
+
+    ax /= norm_a
+    ay /= norm_a
+    az /= norm_a
+    c, s = math.cos(angle), math.sin(angle)
+
+    # See the docstrings for an explanation of the following calculations
+    mc = 1 - c
+    mc_ax = mc * ax
+    mc_ay = mc * ay
+    mc_ax2 = mc_ax * ax
+    mc_ay2 = mc_ay * ay
+    mc_az2 = mc * az * az
+    mc_ax_ay = mc_ax * ay
+    mc_ax_az = mc_ax * az
+    mc_ay_az = mc_ay * az
+    s_ax = s * ax
+    s_ay = s * ay
+    s_az = s * az
+
+    m_11, m_12, m_13 = c + mc_ax2, mc_ax_ay - s_az, mc_ax_az + s_ay
+    m_21, m_22, m_23 = mc_ax_ay + s_az, c + mc_ay2, mc_ay_az - s_ax
+    m_31, m_32, m_33 = mc_ax_az - s_ay, mc_ay_az + s_ax, c + mc_az2
+
     if not homogeneous:
-        return inhomogeneous_rotation_matrix
-    else:
-        rotation_matrix = np.eye(4)
-        rotation_matrix[:3, :3] = inhomogeneous_rotation_matrix
-        return rotation_matrix
+        return np.array(
+            [
+                [m_11, m_12, m_13],
+                [m_21, m_22, m_23],
+                [m_31, m_32, m_33],
+            ]
+        )
+    return np.array(
+        [
+            [m_11, m_12, m_13, 0.0],
+            [m_21, m_22, m_23, 0.0],
+            [m_31, m_32, m_33, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]
+    )
 
 
 def rotation_about_z(angle: float) -> np.ndarray:
