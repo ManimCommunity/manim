@@ -1038,6 +1038,24 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         anchor_angle_1 = inter + quadrant[0] * radius * line1.get_unit_vector()
         anchor_angle_2 = inter + quadrant[1] * radius * line2.get_unit_vector()
 
+        angle_1 = angle_of_vector(anchor_angle_1 - inter)
+        angle_2 = angle_of_vector(anchor_angle_2 - inter)
+
+        if not other_angle:
+            start_angle = angle_1
+            if angle_2 > angle_1:
+                angle_fin = angle_2 - angle_1
+            else:
+                angle_fin = 2 * np.pi - (angle_1 - angle_2)
+        else:
+            start_angle = angle_1
+            if angle_2 < angle_1:
+                angle_fin = -angle_1 + angle_2
+            else:
+                angle_fin = -2 * np.pi + (angle_2 - angle_1)
+
+        self.angle_value = angle_fin
+
         if elbow:
             anchor_middle = (
                 inter
@@ -1049,24 +1067,6 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
                 np.array([anchor_angle_1, anchor_middle, anchor_angle_2]),
             )
         else:
-            angle_1 = angle_of_vector(anchor_angle_1 - inter)
-            angle_2 = angle_of_vector(anchor_angle_2 - inter)
-
-            if not other_angle:
-                start_angle = angle_1
-                if angle_2 > angle_1:
-                    angle_fin = angle_2 - angle_1
-                else:
-                    angle_fin = 2 * np.pi - (angle_1 - angle_2)
-            else:
-                start_angle = angle_1
-                if angle_2 < angle_1:
-                    angle_fin = -angle_1 + angle_2
-                else:
-                    angle_fin = -2 * np.pi + (angle_2 - angle_1)
-
-            self.angle_value = angle_fin
-
             angle_mobject = Arc(
                 radius=radius,
                 angle=self.angle_value,
