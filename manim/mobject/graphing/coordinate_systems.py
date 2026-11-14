@@ -1404,21 +1404,21 @@ class CoordinateSystem:
                     self.add(ax, curve, area)
         """
         if x_range is None:
-            a = graph.t_min
-            b = graph.t_max
+            a = graph.t_range[0]
+            b = graph.t_range[1]
         else:
             a, b = x_range
         if bounded_graph is not None:
-            if bounded_graph.t_min > b:
+            if bounded_graph.t_range[0] > b:
                 raise ValueError(
-                    f"Ranges not matching: {bounded_graph.t_min} < {b}",
+                    f"Ranges not matching: {bounded_graph.t_range[0]} < {b}",
                 )
-            if bounded_graph.t_max < a:
+            if bounded_graph.t_range[1] < a:
                 raise ValueError(
-                    f"Ranges not matching: {bounded_graph.t_max} > {a}",
+                    f"Ranges not matching: {bounded_graph.t_range[1]} > {a}",
                 )
-            a = max(a, bounded_graph.t_min)
-            b = min(b, bounded_graph.t_max)
+            a = max(a, bounded_graph.t_range[0])
+            b = min(b, bounded_graph.t_range[1])
 
         if bounded_graph is None:
             points = (
