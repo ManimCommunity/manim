@@ -4,6 +4,7 @@ import colorsys
 
 import numpy as np
 import numpy.testing as nt
+import pytest
 
 from manim.utils.color import (
     BLACK,
@@ -129,6 +130,30 @@ def test_from_hsl() -> None:
     rgb = np.array([0x1 / 255, 0x2 / 255, 0x3 / 255])
 
     nt.assert_allclose(color.to_rgb(), rgb)
+
+
+@pytest.mark.parametrize(
+    ("hsv", "expected_hex"),
+    [
+        ((0, 1, 1), "#FF0000"),
+        ((0, 0, 1), "#FFFFFF"),
+        ((0.5, 1, 1), "#00FFFF"),
+        ((0, 0, 0), "#000000"),
+    ],
+)
+def test_from_hsv_with_integer_components(hsv, expected_hex) -> None:
+    nt.assert_equal(ManimColor.from_hsv(hsv).to_hex(), expected_hex)
+
+
+@pytest.mark.parametrize(
+    ("hsl", "expected_hex"),
+    [
+        ((0, 0, 1), "#FFFFFF"),
+        ((0, 0, 0), "#000000"),
+    ],
+)
+def test_from_hsl_with_integer_components(hsl, expected_hex) -> None:
+    nt.assert_equal(ManimColor.from_hsl(hsl).to_hex(), expected_hex)
 
 
 def test_invert() -> None:
