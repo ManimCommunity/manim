@@ -528,6 +528,9 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
         class.
     """
 
+    #: ``path_obj`` is only read to create :attr:`points`, which are in the cache key.
+    _hash_excluded_attributes = frozenset({"path_obj"})
+
     def __init__(
         self,
         path_obj: se.Path,
