@@ -91,6 +91,7 @@ class VectorScene(Scene):
             The NumberPlane object.
         """
         plane = NumberPlane(**kwargs)
+        self.plane = plane
         if animate:
             self.play(Create(plane, lag_ratio=0.5))
         self.add(plane)
@@ -162,10 +163,8 @@ class VectorScene(Scene):
             The Arrow representing the Vector.
         """
         return Arrow(
-            # TODO
-            # error: "VectorScene" has no attribute "plane"  [attr-defined]
-            self.plane.coords_to_point(0, 0),  # type: ignore[attr-defined]
-            self.plane.coords_to_point(*numerical_vector[:2]),  # type: ignore[attr-defined]
+            self.plane.coords_to_point(0, 0),
+            self.plane.coords_to_point(*numerical_vector[:2]),
             buff=0,
             **kwargs,
         )
