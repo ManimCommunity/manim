@@ -13,13 +13,6 @@ build:
     - libpango1.0-dev
     - graphviz
 
-  # TEMPORARY (debugging timeouts): abort sphinx before Read the Docs kills the
-  # build, so its output and a traceback of every thread (faulthandler) show up.
-  jobs:
-    build:
-      html:
-        - cd docs/source && python -u -X faulthandler -m sphinx -T -v -b html -d _build/doctrees -D language=en . $READTHEDOCS_OUTPUT/html
-
 python:
    install:
       - requirements: docs/rtd-requirements.txt
