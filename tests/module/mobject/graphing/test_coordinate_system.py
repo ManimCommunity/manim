@@ -88,18 +88,16 @@ def test_defaults_use_current_frame_size():
         np.testing.assert_allclose(plane.x_range, [-5, 5, 1])
 
 
-def test_axes_length_none_uses_unit_size():
-    """Check that passing ``None`` as length sizes the axis by its unit size."""
-    ax = Axes(
-        x_range=[-3, 3],
-        y_range=[-2, 2],
-        x_length=None,
-        y_length=None,
-        x_axis_config={"unit_size": 0.5},
-    )
-    assert (ax.x_length, ax.y_length) == (None, None)
-    assert ax.x_axis.get_unit_size() == pytest.approx(0.5)
-    assert ax.y_axis.get_unit_size() == pytest.approx(1)
+def test_axes_length_precedence():
+    """Check that an explicit length overrides ``unit_size``, which overrides the default length."""
+    ax = Axes(y_axis_config={"unit_size": 0.5})
+    assert ax.x_length == round(config.frame_width) - 2
+    assert ax.y_axis.get_unit_size() == pytest.approx(0.5)
+
+    ax = ThreeDAxes(x_length=4, axis_config={"unit_size": 0.5})
+    assert ax.x_axis.get_length() == pytest.approx(4)
+    assert ax.y_axis.get_unit_size() == pytest.approx(0.5)
+    assert ax.z_axis.get_unit_size() == pytest.approx(0.5)
 
 
 def test_dimension():
