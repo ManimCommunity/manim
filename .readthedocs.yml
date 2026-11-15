@@ -20,11 +20,20 @@ build:
       - free -m
     build:
       html:
-        # -j 4 rather than "auto": the build may see more CPUs than it gets,
-        # and its memory is limited. "timeout" stops Sphinx before Read the
-        # Docs' own limit, which discards the output of the command it kills;
-        # this way the log shows which documents were still being read.
-        - cd docs/source && timeout --verbose 1260 python -m sphinx -T -j 4 -b html -d _build/doctrees -D language=en . $READTHEDOCS_OUTPUT/html
+        # -j 4 rather than "auto": the build has 2 CPUs and 4 processes were
+        # faster than 2 in tests. Read the Docs discards the output of a
+        # command it kills at its time limit, so Sphinx is stopped earlier
+        # (with SIGABRT, which makes Python print where every process is) and
+        # the log is printed from a file, which hung processes cannot block.
+        - >-
+          cd docs/source &&
+          PYTHONUNBUFFERED=1 PYTHONFAULTHANDLER=1
+          timeout --verbose --signal=ABRT --kill-after=30 1000
+          python -m sphinx -T -j 4 -b html -d _build/doctrees -D language=en . $READTHEDOCS_OUTPUT/html
+          > ../sphinx.log 2>&1;
+          status=$?;
+          tail -n 2000 ../sphinx.log;
+          exit $status
 
 python:
    install:
