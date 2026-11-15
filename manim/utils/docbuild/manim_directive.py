@@ -292,7 +292,7 @@ class ManimDirective(Directive):
         output_file = f"{clsname}-{document_tag}-{serial_number}"
         # Scenes sharing their name must not share their cached segments.
         config.partial_movie_dir = f"{{video_dir}}/partial_movie_files/{output_file}"
-        config.assets_dir = Path("_static")
+        config.assets_dir = (Path(setup.confdir) / "_static").absolute()  # type: ignore[attr-defined]
         config.progress_bar = "none"
         config.verbosity = "WARNING"
 
