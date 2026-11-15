@@ -16,7 +16,7 @@ build:
   jobs:
     build:
       html:
-        - cd docs/source && python -u -X faulthandler -m sphinx -T -v -b html -d _build/doctrees -D language=en . $READTHEDOCS_OUTPUT/html
+        - cd docs/source && python -u -m sphinx -T -v -b html -d _build/doctrees -D language=en . $READTHEDOCS_OUTPUT/html
 
 python:
    install:
