@@ -38,7 +38,7 @@ jobs:
     - name: Build and package documentation
       run: |
         cd docs/
-        uv run make html O="-j auto"
+        uv run make html O="-j auto -v"
         cd build/html/
         tar -czvf ../html-docs.tar.gz *
 

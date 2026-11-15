@@ -5,7 +5,7 @@
 # from the environment for the first two.
 # Read and write in parallel by default (ignored on Windows, where Sphinx
 # does not support parallel builds).
-SPHINXOPTS    ?= -j auto
+SPHINXOPTS    ?= -j auto -v
 SPHINXBUILD   ?= sphinx-build
 
 # Path base is the source directory
