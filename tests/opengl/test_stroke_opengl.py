@@ -25,4 +25,3 @@ def test_set_stroke_family_kwarg(using_opengl_renderer):
     m.add(sub)
     m.set_stroke(width=5, family=False)
     assert m.stroke_width == 5
-
