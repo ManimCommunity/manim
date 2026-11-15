@@ -205,7 +205,3 @@ inheritance_edge_attrs = {
 html_js_files = ["responsiveSvg.js"]
 
 graphviz_output_format = "svg"
-
-
-def setup(app):
-    app.verbosity = max(2, app.verbosity)
