@@ -273,7 +273,10 @@ class OpenGLVMobject(OpenGLMobject):
         opacity=None,
         background=None,
         recurse=True,
+        family=None,
     ) -> Self:
+        if family is not None:
+            recurse = family
         if opacity is not None:
             self.stroke_opacity = opacity
         if recurse:

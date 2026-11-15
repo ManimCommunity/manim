@@ -16,3 +16,13 @@ def test_set_stroke(using_opengl_renderer):
     assert m.stroke_width == 2
     assert m.stroke_opacity == 0.8
     assert m.stroke_color.to_hex() == C.ORANGE.to_hex()
+
+
+def test_set_stroke_family_kwarg(using_opengl_renderer):
+    """Regression test for Issue #5136: OpenGLVMobject.set_stroke accepts family keyword argument."""
+    m = OpenGLVMobject()
+    sub = OpenGLVMobject()
+    m.add(sub)
+    m.set_stroke(width=5, family=False)
+    assert m.stroke_width == 5
+

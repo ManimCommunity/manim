@@ -457,12 +457,17 @@ class Typst(SVGMobject):
             if reference_size <= 0:
                 continue
             current_stroke_width = source_stroke_width * current_size / reference_size
-            submobject.set_stroke(
-                width=current_stroke_width
-                * pixels_per_unit
-                * _TYPST_SVG_STROKE_WIDTH_SCALE,
-                family=False,
-            )
+            stroke_kw = {
+                "width": (
+                    current_stroke_width
+                    * pixels_per_unit
+                    * _TYPST_SVG_STROKE_WIDTH_SCALE
+                )
+            }
+            try:
+                submobject.set_stroke(**stroke_kw, family=False)
+            except TypeError:
+                submobject.set_stroke(**stroke_kw, recurse=False)
 
     # -- baseline frame tracking ---------------------------------------------
 
