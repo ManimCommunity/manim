@@ -18,7 +18,7 @@ build:
   jobs:
     build:
       html:
-        - cd docs/source && timeout -s ABRT 1000 python -u -X faulthandler -m sphinx -T -v -b html -d _build/doctrees -D language=en . $READTHEDOCS_OUTPUT/html
+        - cd docs/source && python -u -X faulthandler -m sphinx -T -v -b html -d _build/doctrees -D language=en . $READTHEDOCS_OUTPUT/html
 
 python:
    install:
