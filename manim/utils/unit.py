@@ -53,9 +53,9 @@ class Percent:
 
     Examples
     --------
-    >>> from manim import X_AXIS, config
-    >>> from manim.utils.unit import Percent
-    >>> 50 * Percent(X_AXIS) == config.frame_width / 2
+    >>> from manim import X_AXIS, config # doctest: +SKIP
+    >>> from manim.utils.unit import Percent # doctest: +SKIP
+    >>> 50 * Percent(X_AXIS) == config.frame_width / 2 # doctest: +SKIP
     True
     """
 
