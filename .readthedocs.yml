@@ -19,6 +19,8 @@ build:
         - echo $PWD
         - ls
         - cd docs/source
+        - echo $PWD
+        - ls
         - python -m sphinx -T -v -b html -d _build/doctrees -D language=en . $READTHEDOCS_OUTPUT/html
 
 python:
