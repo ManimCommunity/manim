@@ -1,0 +1,3 @@
+default_stages: [pre-commit, pre-push]
+fail_fast: false
+repos: []
