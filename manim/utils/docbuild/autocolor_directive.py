@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import inspect
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypedDict
 
 from docutils import nodes
 from docutils.parsers.rst import Directive
@@ -16,8 +16,13 @@ if TYPE_CHECKING:
 __all__ = ["ManimColorModuleDocumenter"]
 
 
-def setup(app: Sphinx) -> None:
+def setup(app: Sphinx) -> SetupMetadata:
     app.add_directive("automanimcolormodule", ManimColorModuleDocumenter)
+
+    return {
+        "parallel_read_safe": True,
+        "parallel_write_safe": True,
+    }
 
 
 class ManimColorModuleDocumenter(Directive):
@@ -97,3 +102,8 @@ class ManimColorModuleDocumenter(Directive):
         tgroup += tbody
 
         return [table]
+
+
+class SetupMetadata(TypedDict):
+    parallel_read_safe: bool
+    parallel_write_safe: bool
