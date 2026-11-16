@@ -1,0 +1,58 @@
+{
+    "windows": {
+        "tinytex": [
+            "standalone",
+            "preview",
+            "doublestroke",
+            "count1to",
+            "multitoc",
+            "prelim2e",
+            "ragged2e",
+            "everysel",
+            "setspace",
+            "rsfs",
+            "relsize",
+            "ragged2e",
+            "fundus-calligra",
+            "microtype",
+            "wasysym",
+            "physics",
+            "dvisvgm",
+            "jknapltx",
+            "wasy",
+            "cm-super",
+            "babel-english",
+            "gnu-freefont",
+            "mathastext",
+            "cbfonts-fd"
+        ]
+    },
+    "macos": {
+        "tinytex": [
+            "standalone",
+            "preview",
+            "doublestroke",
+            "count1to",
+            "multitoc",
+            "prelim2e",
+            "ragged2e",
+            "everysel",
+            "setspace",
+            "rsfs",
+            "relsize",
+            "ragged2e",
+            "fundus-calligra",
+            "microtype",
+            "wasysym",
+            "physics",
+            "dvisvgm",
+            "jknapltx",
+            "wasy",
+            "cm-super",
+            "babel-english",
+            "gnu-freefont",
+            "mathastext",
+            "cbfonts-fd"
+        ]
+    }
+}
