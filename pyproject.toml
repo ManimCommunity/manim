@@ -9,4 +9,5 @@ dependencies = [
 [dependency-groups]
 dev = [
     "sphinx>=9.2.0",
+    "sphinx-copybutton>=0.5.2",
 ]
