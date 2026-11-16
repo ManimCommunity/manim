@@ -1,3 +1,0 @@
-jupyterlab
-sphinxcontrib-programoutput
-typst>=0.14
