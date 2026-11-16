@@ -6,14 +6,13 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-import os
-from pathlib import Path
 import sys
+from datetime import datetime
+from pathlib import Path
 
-
-project = 'Manim'
-copyright = '2026, The Manim Community Dev Team'
-author = 'The Manim Community Dev Team'
+project = "Manim"
+copyright = f"2020-{datetime.now().year}, The Manim Community Dev Team"  # noqa: A001
+author = "The Manim Community Dev Team"
 
 sys.path.insert(0, str(Path(__file__).parents[2].resolve()))
 
@@ -28,16 +27,15 @@ extensions = [
     "sphinx.ext.viewcode",
 ]
 
-templates_path = ['_templates']
+templates_path = ["_templates"]
 exclude_patterns = []
-
 
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'alabaster'
-html_static_path = ['_static']
+html_theme = "alabaster"
+html_static_path = ["_static"]
 
 # Autodoc
 autosummary_generate = True
