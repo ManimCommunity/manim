@@ -21,3 +21,4 @@ documentation for details.
    :caption: Contents:
 
    examples
+   reference
