@@ -6,11 +6,22 @@
 
 from __future__ import annotations
 
+import faulthandler
 import functools
 import os
 import sys
 from datetime import datetime
 from pathlib import Path
+
+# TEMPORARY (debugging timeouts): Read the Docs discards the output of a command
+# that gets killed, so dump the tracebacks of all threads and exit shortly
+# before the build time limit (20 min, ~100s of which are spent on setup).
+if os.environ.get("READTHEDOCS"):
+    faulthandler.dump_traceback_later(
+        int(os.environ.get("MANIM_DOCS_HANG_TIMEOUT", "1050")),
+        exit=True,
+        file=sys.stderr,
+    )
 
 import sphinx.ext.autosummary
 
