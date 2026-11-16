@@ -16,8 +16,17 @@ documentation for details.
       print(x)
 
 
+Here is a manim directive:
+
+.. manim:: HelloManimDirective
+
+   class HelloManimDirective(Scene):
+      def construct(self) -> None:
+         self.play(Create(Circle()))
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    examples
+   references

@@ -1740,6 +1740,7 @@ dependencies = [
     { name = "srt" },
     { name = "svgelements" },
     { name = "tqdm" },
+    { name = "types-docutils" },
     { name = "typing-extensions" },
     { name = "watchdog" },
 ]
@@ -1811,6 +1812,7 @@ requires-dist = [
     { name = "srt", specifier = ">=3.0.0" },
     { name = "svgelements", specifier = ">=1.9.0" },
     { name = "tqdm", specifier = ">=4.21.0" },
+    { name = "types-docutils", specifier = ">=0.23.0.20261107" },
     { name = "typing-extensions", specifier = ">=4.12.0" },
     { name = "typst", marker = "extra == 'typst'", specifier = ">=0.14" },
     { name = "watchdog", specifier = ">=2.0.0" },
@@ -4055,6 +4057,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/49/68/88a93a27141b50285e10dfe5fecebc1b1a6aec87dea66d9204435f84a76b/types_decorator-5.2.0.20260712.tar.gz", hash = "sha256:2890f05fe3c65546baf5000fd5f1eed4d1c95bae5516e23e1735b7b5a4dd98c6", size = 9374, upload-time = "2026-07-12T05:14:02.186Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/53/78/e66eac8df9960f60e3fd36802b472e47109450b5db540b998af32fc29553/types_decorator-5.2.0.20260712-py3-none-any.whl", hash = "sha256:5b572bb7acf6935cf888c6b058458df970ae80fb74ab4a8ada8c786491b3dead", size = 8186, upload-time = "2026-07-12T05:14:01.271Z" },
+]
+
+[[package]]
+name = "types-docutils"
+version = "0.23.0.20261107"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/5f/80/d19724558bad27983fa500f0e44f159e97031bbc842207995b66480baa21/types_docutils-0.23.0.20261107.tar.gz", hash = "sha256:9bb297fc33fe0f606c883217779a4f532ee023d7da852dcc244513c0f100228a", size = 58673, upload-time = "2026-11-07T07:55:19.171Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9e/26/5ffc9517119f08e530509af6296c6e8fff36176ef479ddb8f765fdfee8fd/types_docutils-0.23.0.20261107-py3-none-any.whl", hash = "sha256:47def8a8c78bff72d6aa86a6daaa0a49ef3911e1f538f911f1bbd8006f3e196e", size = 92176, upload-time = "2026-11-07T07:55:18.144Z" },
 ]
 
 [[package]]

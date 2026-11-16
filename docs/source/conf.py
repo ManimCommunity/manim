@@ -9,6 +9,7 @@
 import sys
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 project = "Manim"
 copyright = f"2020-{datetime.now().year}, The Manim Community Dev Team"  # noqa: A001
@@ -25,10 +26,11 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.napoleon",
     "sphinx.ext.viewcode",
+    "manim.utils.docbuild.manim_directive",
 ]
 
 templates_path = ["_templates"]
-exclude_patterns = []
+exclude_patterns: list[Any] = []
 
 
 # -- Options for HTML output -------------------------------------------------
