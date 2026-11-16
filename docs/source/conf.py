@@ -15,7 +15,7 @@ project = 'Manim'
 copyright = '2026, The Manim Community Dev Team'
 author = 'The Manim Community Dev Team'
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+sys.path.insert(0, str(Path(__file__).parents[2].resolve()))
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
