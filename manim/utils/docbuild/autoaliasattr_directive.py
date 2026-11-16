@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypedDict
 
 from docutils import nodes
 from docutils.parsers.rst import Directive
@@ -69,8 +69,13 @@ def smart_replace(base: str, alias: str, substitution: str) -> str:
     return base
 
 
-def setup(app: Sphinx) -> None:
+def setup(app: Sphinx) -> SetupMetadata:
     app.add_directive("autoaliasattr", AliasAttrDocumenter)
+
+    return {
+        "parallel_read_safe": True,
+        "parallel_write_safe": True,
+    }
 
 
 class AliasAttrDocumenter(Directive):
@@ -234,3 +239,8 @@ class AliasAttrDocumenter(Directive):
             module_attrs_section += data_container
 
         return [content]
+
+
+class SetupMetadata(TypedDict):
+    parallel_read_safe: bool
+    parallel_write_safe: bool
