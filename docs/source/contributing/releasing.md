@@ -1,7 +1,9 @@
 # Releasing Manim
 
-For maintainers. The tooling lives in `scripts/release.py`
-(`uv run python scripts/release.py --help`).
+This page is intended for maintainers and documents Manim's release process
+and infrastructure. The central tool is the release script which is located
+at `scripts/release.py`. The script documentation can be accessed via
+`uv run python scripts/release.py --help`.
 
 ## Overview
 
@@ -19,13 +21,17 @@ For maintainers. The tooling lives in `scripts/release.py`
 follow `main`.
 
 Publishing a GitHub release uploads the package to PyPI
-(`.github/workflows/python-publish.yml`). The workflow refuses unless the tag
-matches the version in `pyproject.toml`, the pre-release checkbox matches
-whether that version is a prerelease, and the tag is on `main` (releases) or a
-`preview/*` branch (prereleases). To run this check locally:
-`scripts/release.py check-release vX.Y.Z --kind release`.
+(`.github/workflows/python-publish.yml`) automatically. The corresponding
+workflow requires that the tag published via the release matches the version
+set in `pyproject.toml`. It will fail and not publish a version if this is not
+the case.
 
-## Making a release
+When creating the GitHub release, tick the _pre-release_ checkbox exactly
+when the version is a prerelease (e.g., `v0.30.0a1`). You also need to
+select the correct branch to tag: for stable releases, it needs to be placed
+on the `main` branch, for prereleases on a `preview/*` branch.
+
+## Checklist: making a release
 
 1. Open a PR `Prepare new release: vX.Y.Z` (label `release`) against `main`:
 
@@ -35,8 +41,8 @@ whether that version is a prerelease, and the tag is on `main` (releases) or a
    ```
 
    Edit the generated changelog as needed (rerunning keeps your edits) and
-   list it first in `docs/source/changelog.rst`. To list the release PR
-   itself, rerun with `--include-extra <PR number>`.
+   list it first in `docs/source/changelog.rst`. To include the release preparation
+   PR in the rendered changelog, rerun the changelog script with `--include-extra <PR number>`.
 2. Paste the output of `scripts/release.py export-changelog X.Y.Z` into the
    PR description for review.
 3. After merging, publish the GitHub release `vX.Y.Z` on `main` with those
@@ -44,7 +50,7 @@ whether that version is a prerelease, and the tag is on `main` (releases) or a
 
 ## Preview prereleases
 
-A preview branch ships alphas of the next minor version for testing, while
+A preview branch ships alphas of the next version for testing, while
 releases continue from `main` as usual.
 
 ### Starting a preview branch
@@ -87,6 +93,7 @@ git push upstream preview/v0.30.x
 
 ### Ending a preview cycle
 
-Once the preview branch's changes are on `main`, fold `preview.md` into the
-changelog of `X.Y.0` and delete it. Delete the branch, then deactivate the
-`preview` docs version or point it at the next preview branch.
+Once the preview branch's changes are on `main`, include the content from `preview.md`
+in the changelog of the new version, then delete `preview.md`.
+At that point, the preview branch can also be deleted. If you choose to do so, make sure
+to also deactivate the `preview` version of the documentation.
