@@ -1,0 +1,212 @@
+from __future__ import annotations
+
+from unittest.mock import Mock, patch
+
+import pytest
+
+from manim import *
+
+from ..assert_utils import assert_file_exists
+from .simple_scenes import *
+
+
+def test_render(using_temp_config, disabling_caching):
+    scene = SquareToCircle()
+    renderer = scene.renderer
+    renderer.update_frame = Mock(wraps=renderer.update_frame)
+    writer = scene._get_manager().file_writer
+    writer.write_frame = Mock(wraps=writer.write_frame)
+    scene.render()
+    assert writer.write_frame.call_count == config["frame_rate"]
+    # One draw per frame; the final state is drawn only if it is read.
+    assert renderer.update_frame.call_count == config["frame_rate"]
+    assert_file_exists(renderer.file_writer.final_file_path)
+    assert config.output_file == ""
+
+
+def test_automatic_output_uses_still_for_static_scene(using_temp_config):
+    scene = StaticScene()
+
+    scene.render()
+
+    assert scene.renderer.file_writer.output_spec.fallback_to_still is True
+    assert scene.renderer.file_writer.final_file_path.suffix == ".png"
+    assert_file_exists(scene.renderer.file_writer.final_file_path)
+
+
+def test_explicit_video_output_for_static_scene_fails(using_temp_config):
+    config.format = "mp4"
+    scene = StaticScene()
+
+    with pytest.raises(RuntimeError, match="explicitly requested MP4"):
+        scene.render()
+
+    assert not hasattr(scene.renderer.file_writer, "final_file_path")
+
+
+def test_skipping_status_with_from_to_and_up_to(using_temp_config, disabling_caching):
+    """Test if skip_animations is well updated when -n flag is passed"""
+    config.from_animation_number = 2
+    config.upto_animation_number = 6
+
+    class SceneWithMultipleCalls(Scene):
+        def construct(self):
+            number = Integer(0)
+            self.add(number)
+            for i in range(10):
+                self.play(Animation(Square()))
+
+                assert ((i >= 2) and (i <= 6)) or self.renderer.skip_animations
+
+    SceneWithMultipleCalls().render()
+
+
+@pytest.mark.xfail(reason="caching issue")
+def test_when_animation_is_cached(using_temp_config):
+    partial_movie_files = []
+    for _ in range(2):
+        # Render several times to generate a cache.
+        # In some edgy cases and on some OS, a same scene can produce
+        # a (finite, generally 2) number of different hash. In this case, the scene wouldn't be detected as cached, making the test fail.
+        scene = SquareToCircle()
+        scene.render()
+        partial_movie_files.append(scene.renderer.file_writer.partial_movie_files)
+    scene = SquareToCircle()
+    scene.update_to_time = Mock()
+    scene.render()
+    assert scene.renderer.file_writer.is_already_cached(
+        scene.renderer.animations_hashes[0],
+    )
+    # Check that the same partial movie files has been used (with he same hash).
+    # As there might have been several hashes, a list is used.
+    assert scene.renderer.file_writer.partial_movie_files in partial_movie_files
+    # Check that manim correctly skipped the animation.
+    scene.update_to_time.assert_called_once_with(1)
+    # Check that the output video has been generated.
+    assert_file_exists(scene.renderer.file_writer.final_file_path)
+
+
+def test_hash_logic_is_not_called_when_caching_is_disabled(
+    using_temp_config,
+    disabling_caching,
+):
+    with patch("manim._run.cache.get_hash_from_play_call") as mocked:
+        scene = SquareToCircle()
+        scene.render()
+        mocked.assert_not_called()
+        assert_file_exists(scene.renderer.file_writer.final_file_path)
+
+
+def test_hash_logic_is_called_when_caching_is_enabled(using_temp_config):
+    from manim._run.cache import get_hash_from_play_call
+
+    with patch(
+        "manim._run.cache.get_hash_from_play_call",
+        wraps=get_hash_from_play_call,
+    ) as mocked:
+        scene = SquareToCircle()
+        scene.render()
+        mocked.assert_called_once()
+        assert mocked.call_args.kwargs["backend"] == "cairo"
+        assert mocked.call_args.kwargs["encoder_fingerprint"] != "none"
+
+
+class _FailHalfway(Animation):
+    def interpolate_mobject(self, alpha):
+        if alpha > 0.5:
+            raise RuntimeError("failed halfway")
+
+
+class _RecoversFromFailedPlays(Scene):
+    def construct(self):
+        self.play(Create(Circle()), run_time=0.2)
+        with pytest.raises(ValueError, match="no animations"):
+            self.play()
+        with pytest.raises(RuntimeError, match="failed halfway"):
+            self.play(_FailHalfway(Square()), run_time=0.4)
+        # Fails after all of its frames were played.
+        with pytest.raises(RuntimeError, match="no subcaptions"):
+            self.play(Create(Square()), run_time=0.2, subcaption="caption")
+        self.play(Create(Square()), run_time=0.2)
+
+    def add_subcaption(self, *args, **kwargs):
+        raise RuntimeError("no subcaptions")
+
+
+def test_scene_continues_after_a_handled_play_failure(
+    using_temp_config, disabling_caching
+):
+    scene = _RecoversFromFailedPlays()
+    scene.render()
+
+    writer = scene.renderer.file_writer
+    assert scene.renderer.num_plays == 2
+    assert scene.renderer.time == pytest.approx(0.4)
+    assert len(writer.partial_movie_files) == 2
+    assert_file_exists(writer.final_file_path)
+
+
+def test_handled_play_failure_does_not_hide_an_earlier_encoder_failure(
+    using_temp_config, disabling_caching, monkeypatch
+):
+    from manim.scene.scene_file_writer import SceneFileWriter
+
+    earlier = RuntimeError("earlier segment failed")
+
+    class FailsAfterAnEncodedPlay(Scene):
+        def construct(self):
+            self.play(Create(Circle()), run_time=0.2)
+            # The first play's segment is in flight; let it fail on join.
+            [job] = self.renderer.file_writer._inflight_encode_jobs
+            monkeypatch.setattr(job, "join", Mock(side_effect=earlier))
+            with pytest.raises(RuntimeError, match="failed halfway"):
+                self.play(_FailHalfway(Square()), run_time=0.4)
+
+    monkeypatch.setattr(SceneFileWriter, "combine_to_movie", Mock())
+    # Only with parallel encoders is the first segment still in flight.
+    with tempconfig({"max_inflight_encoders": 3}):
+        scene = FailsAfterAnEncodedPlay()
+        with pytest.raises(RuntimeError) as caught:
+            scene.render()
+    assert caught.value is earlier
+
+
+class _FillsACircle(Scene):
+    def construct(self):
+        circle = Circle()
+        self.add(circle)
+        self.play(circle.animate.set_fill(RED, opacity=1), run_time=0.2)
+
+
+def test_last_frame_is_drawn_after_a_cached_render(using_temp_config):
+    def last_frame():
+        scene = _FillsACircle()
+        with scene._get_manager() as manager:
+            manager.render()
+            return scene.renderer.get_frame().copy()
+
+    cold = last_frame()
+    warm = last_frame()
+    assert cold.any()
+    np.testing.assert_array_equal(warm, cold)
+
+
+class _FreezesBetweenPlays(Scene):
+    def construct(self):
+        self.play(Create(Circle()), run_time=0.2)
+        self.renderer.freeze_current_frame(1)
+        self.play(Create(Square()), run_time=0.2)
+
+
+def test_frames_added_between_plays_advance_time_independently_of_the_cache(
+    using_temp_config,
+):
+    def times():
+        scene = _FreezesBetweenPlays()
+        scene.render()
+        return scene.renderer.time, list(scene.renderer.animations_hashes)
+
+    cold = times()
+    warm = times()
+    assert cold[0] == pytest.approx(1.4)
+    assert warm == cold

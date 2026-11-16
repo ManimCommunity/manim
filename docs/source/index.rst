@@ -11,7 +11,7 @@ Add your content using ``reStructuredText`` syntax. See the
 documentation for details.
 
 .. code-block:: python
-   
+
    def foo(x: int) -> None:
       print(x)
 
@@ -21,4 +21,3 @@ documentation for details.
    :caption: Contents:
 
    examples
-   reference
