@@ -6,7 +6,6 @@ from typing import TypedDict
 
 import sphinx.ext.autosummary
 from docutils.nodes import Node
-from docutils.parsers.rst import directives
 from sphinx.application import Sphinx
 from sphinx.util.docutils import SphinxDirective
 
@@ -30,41 +29,13 @@ class ManimDirective(SphinxDirective):
     has_content = True
     required_arguments = 1
     optional_arguments = 0
-    option_spec = {
-        "hide_source": bool,
-        "no_autoplay": bool,
-        "quality": lambda arg: directives.choice(
-            arg,
-            ("low", "medium", "high", "fourk"),
-        ),
-        "save_as_gif": bool,
-        "save_last_frame": bool,
-        "ref_modules": lambda arg: process_name_list(arg, "mod"),
-        "ref_classes": lambda arg: process_name_list(arg, "class"),
-        "ref_functions": lambda arg: process_name_list(arg, "func"),
-        "ref_methods": lambda arg: process_name_list(arg, "meth"),
-    }
     final_argument_whitespace = True
 
     def run(self) -> Sequence[Node]:
         return self.parse_text_to_nodes()  # type: ignore[no-any-return]
 
 
-def process_name_list(option_input: str, reference_type: str) -> list[str]:
-    r"""Reformats a string of space separated class names
-    as a list of strings containing valid Sphinx references.
 
-    Tests
-    -----
-
-    ::
-
-        >>> process_name_list("Tex TexTemplate", "class")
-        [':class:`~.Tex`', ':class:`~.TexTemplate`']
-        >>> process_name_list("Scene.play Mobject.rotate", "func")
-        [':func:`~.Scene.play`', ':func:`~.Mobject.rotate`']
-    """
-    return [f":{reference_type}:`~.{name}`" for name in option_input.split()]
 
 
 class SetupMetadata(TypedDict):
