@@ -237,7 +237,7 @@ dependencies = [
 ]
 
 [package.dev-dependencies]
-dev = [
+docs = [
     { name = "sphinx" },
     { name = "sphinx-copybutton" },
 ]
@@ -246,7 +246,7 @@ dev = [
 requires-dist = [{ name = "pre-commit", specifier = ">=4.7.0" }]
 
 [package.metadata.requires-dev]
-dev = [
+docs = [
     { name = "sphinx", specifier = ">=9.2.0" },
     { name = "sphinx-copybutton", specifier = ">=0.5.2" },
 ]

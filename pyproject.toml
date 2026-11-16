@@ -7,7 +7,7 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = [
+docs = [
     "sphinx>=9.2.0",
     "sphinx-copybutton>=0.5.2",
 ]
