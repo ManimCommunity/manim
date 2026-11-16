@@ -7,6 +7,10 @@ build:
   os: ubuntu-26.04
   tools:
     python: "3.14"
+  apt_packages:
+    # manimpango and pycairo ship no Linux wheels and are built from source
+    - libpango1.0-dev
+    - pkg-config
 
 sphinx:
   configuration: docs/source/conf.py
