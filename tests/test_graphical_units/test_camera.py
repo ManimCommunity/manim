@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from manim.utils.testing.frames_comparison import frames_comparison
-
 from manim import (
     BLUE,
     GREEN,
@@ -14,6 +12,7 @@ from manim import (
     Square,
     ZoomedScene,
 )
+from manim.utils.testing.frames_comparison import frames_comparison
 
 __module_test__ = "camera"
 

@@ -4,6 +4,7 @@ import colorsys
 
 import numpy as np
 import numpy.testing as nt
+
 from manim.utils.color import (
     BLACK,
     HSV,

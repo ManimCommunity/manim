@@ -1,6 +1,5 @@
-from manim.mobject.geometry.tips import ArrowTip, StealthTip
-
 from manim import ORIGIN, UR, Arrow, DashedLine, DashedVMobject, VGroup
+from manim.mobject.geometry.tips import ArrowTip, StealthTip
 
 
 def _collect_tips(mobject):

@@ -3,9 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import Mock, call
 
-from manim.utils import file_ops
-
 from manim import *
+from manim.utils import file_ops
 from tests.assert_utils import assert_dir_exists, assert_file_not_exists
 from tests.utils.video_tester import *
 

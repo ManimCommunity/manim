@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import numpy as np
+
 from manim.mobject.graphing.coordinate_systems import Axes
 
 

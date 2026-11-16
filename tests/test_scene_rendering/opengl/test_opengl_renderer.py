@@ -5,9 +5,9 @@ from unittest.mock import Mock
 
 import numpy as np
 import pytest
-from manim.renderer.opengl import OpenGLRenderer
 
 from manim import Square
+from manim.renderer.opengl import OpenGLRenderer
 from tests.assert_utils import assert_file_exists
 from tests.test_scene_rendering.simple_scenes import *
 

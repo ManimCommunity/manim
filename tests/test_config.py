@@ -6,6 +6,8 @@ from pathlib import Path
 import numpy as np
 import pytest
 from click.testing import CliRunner
+
+from manim import RIGHT, WHITE, Scene, Square, Tex, Text, Vector, tempconfig
 from manim._config.output import OutputFormat, OutputSpec
 from manim._config.render_session import resolve_render_session
 from manim._config.utils import ManimConfig
@@ -14,8 +16,6 @@ from manim.constants import RendererType
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.renderer.protocol import RendererCapabilities
-
-from manim import RIGHT, WHITE, Scene, Square, Tex, Text, Vector, tempconfig
 from tests.assert_utils import assert_dir_filled, assert_file_exists
 
 

@@ -5,11 +5,11 @@ from unittest.mock import Mock
 import moderngl
 import numpy as np
 import pytest
-from manim.renderer.opengl.shader import shader_program_cache
-from manim.renderer.protocol import RendererState
 from PIL import Image
 
 from manim import BLUE, RED, Scene, Square, tempconfig
+from manim.renderer.opengl.shader import shader_program_cache
+from manim.renderer.protocol import RendererState
 
 
 @pytest.fixture

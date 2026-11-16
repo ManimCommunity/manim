@@ -19,9 +19,9 @@ from collections.abc import Iterable, Sequence
 from typing import Any
 
 import numpy as np
-from manim.typing import Point3D, Vector3DLike
 
 from manim import *
+from manim.typing import Point3D, Vector3DLike
 
 # ─── Helper functions (from functions.py) ─────────────────────────────────────
 

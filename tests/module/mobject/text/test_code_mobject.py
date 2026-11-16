@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 from manim.mobject.text.code_mobject import Code
 from manim.utils.color.core import ManimColor
 

@@ -4,6 +4,7 @@ from unittest.mock import Mock, call
 import av
 import numpy as np
 import pytest
+
 from manim._config.video_encoder import VideoEncoderSpec
 from manim.scene.video_segment_encoder import VideoSegmentEncoder
 

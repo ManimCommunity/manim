@@ -3,11 +3,11 @@ from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
-from manim.scene import audio_mixer
-from manim.scene import scene_file_writer as writer_module
 
 import manim
 from manim import Scene, config, tempconfig
+from manim.scene import audio_mixer
+from manim.scene import scene_file_writer as writer_module
 
 
 def test_scene_resolves_consistent_writer_settings_with_empty_assets_root():

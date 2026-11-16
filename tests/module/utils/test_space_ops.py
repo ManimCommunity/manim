@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
+from scipy.spatial.transform import Rotation
+
 from manim.utils.space_ops import *
 from manim.utils.space_ops import shoelace
-from scipy.spatial.transform import Rotation
 
 
 def test_rotate_vector():

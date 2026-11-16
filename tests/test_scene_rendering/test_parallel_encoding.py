@@ -12,6 +12,8 @@ import av
 import numpy as np
 import pytest
 from click.testing import CliRunner
+
+from manim import FadeIn, Scene, Square, capture, tempconfig
 from manim._config import config
 from manim._config.output import OutputFormat, OutputSpec
 from manim._config.output_plan import (
@@ -25,8 +27,6 @@ from manim.cli.render.commands import render
 from manim.renderer.protocol import RendererState
 from manim.scene.scene_file_writer import SceneFileWriter, _SceneFileWriterSettings
 from manim.utils.exceptions import RerunSceneException
-
-from manim import FadeIn, Scene, Square, capture, tempconfig
 
 _ENCODER_THREAD_PREFIX = "partial-movie-encoder-"
 _VIDEO_OUTPUT = OutputSpec(

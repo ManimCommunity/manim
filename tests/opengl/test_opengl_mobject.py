@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
-from manim.mobject.opengl.opengl_geometry import OpenGLTriangle
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 from manim import PI
+from manim.mobject.opengl.opengl_geometry import OpenGLTriangle
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 
 def test_opengl_mobject_add(using_opengl_renderer):

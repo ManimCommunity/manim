@@ -4,9 +4,9 @@ from contextlib import redirect_stdout
 from io import StringIO
 
 import pytest
-from manim.mobject.text.text_mobject import MarkupText, Text
 
 from manim import RED, WHITE
+from manim.mobject.text.text_mobject import MarkupText, Text
 
 
 def test_font_size():

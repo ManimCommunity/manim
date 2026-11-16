@@ -3,6 +3,7 @@ from __future__ import annotations
 import numpy as np
 import numpy.testing as nt
 import pytest
+
 from manim.utils.color import (
     BLACK,
     BLUE,

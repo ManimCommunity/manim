@@ -4,6 +4,7 @@ from collections.abc import Callable
 from typing import Any, Self
 
 import pytest
+
 from manim.utils.deprecation import deprecated, deprecated_params
 
 

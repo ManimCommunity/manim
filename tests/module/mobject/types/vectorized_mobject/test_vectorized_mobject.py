@@ -2,7 +2,6 @@ from math import cos, sin
 
 import numpy as np
 import pytest
-from manim.constants import PI
 
 from manim import (
     Circle,
@@ -16,6 +15,7 @@ from manim import (
     VGroup,
     VMobject,
 )
+from manim.constants import PI
 
 
 def test_vmobject_add():

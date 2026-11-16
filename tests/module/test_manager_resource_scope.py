@@ -4,10 +4,10 @@ import logging
 from unittest.mock import Mock
 
 import pytest
-from manim.manager import _State
-from manim.renderer.protocol import RendererState
 
 from manim import Manager, Scene, logger, tempconfig
+from manim.manager import _State
+from manim.renderer.protocol import RendererState
 
 
 @pytest.fixture(params=["cairo", "opengl"])

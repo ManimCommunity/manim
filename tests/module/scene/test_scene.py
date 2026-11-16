@@ -3,7 +3,6 @@ from __future__ import annotations
 import datetime
 
 import pytest
-from manim.animation.animation import Wait
 
 from manim import (
     Circle,
@@ -17,6 +16,7 @@ from manim import (
     Square,
     Succession,
 )
+from manim.animation.animation import Wait
 
 
 def test_scene_add_remove(dry_run):

@@ -1,4 +1,5 @@
 import numpy as np
+
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.opengl.opengl_three_dimensions import OpenGLSurfaceMesh
 

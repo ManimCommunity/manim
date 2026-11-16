@@ -4,8 +4,6 @@ from types import SimpleNamespace
 
 import numpy as np
 import pytest
-from manim.renderer.cairo import CairoRenderer
-from manim.utils.color import color_to_int_rgba
 from PIL import Image
 
 from manim import (
@@ -32,6 +30,8 @@ from manim import (
     config,
     tempconfig,
 )
+from manim.renderer.cairo import CairoRenderer
+from manim.utils.color import color_to_int_rgba
 
 
 def test_camera_auto_zoom():

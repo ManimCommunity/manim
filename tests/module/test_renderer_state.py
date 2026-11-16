@@ -3,11 +3,11 @@
 from unittest.mock import Mock
 
 import pytest
+
+from manim import Scene, Square, tempconfig
 from manim.renderer.cairo import CairoRenderer
 from manim.renderer.opengl.renderer import OpenGLRenderer
 from manim.renderer.protocol import Renderer, RendererState
-
-from manim import Scene, Square, tempconfig
 
 
 @pytest.mark.parametrize("renderer_class", [CairoRenderer, OpenGLRenderer])

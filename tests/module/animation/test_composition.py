@@ -3,6 +3,7 @@ from __future__ import annotations
 from unittest.mock import MagicMock
 
 import pytest
+
 from manim.animation.animation import Animation, Wait
 from manim.animation.composition import AnimationGroup, LaggedStartMap, Succession
 from manim.animation.creation import Create, Write

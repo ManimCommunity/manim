@@ -2,7 +2,6 @@
 
 import numpy as np
 import pytest
-from manim.scene.scene_file_writer import SceneFileWriter
 
 from manim import (
     RIGHT,
@@ -14,6 +13,7 @@ from manim import (
     Square,
     tempconfig,
 )
+from manim.scene.scene_file_writer import SceneFileWriter
 
 FRAME_RATE = 4
 

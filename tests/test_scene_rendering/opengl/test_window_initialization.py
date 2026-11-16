@@ -7,6 +7,7 @@ from types import SimpleNamespace
 from unittest.mock import Mock
 
 import pytest
+
 from manim.renderer.opengl import OpenGLRenderer
 
 

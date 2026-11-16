@@ -10,9 +10,9 @@ from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
-from manim.utils.module_ops import get_module
 
 from manim import Manager, Scene, Timeline, tempconfig
+from manim.utils.module_ops import get_module
 from tests.helpers.audio import write_wav
 
 ROOT = Path(__file__).resolve().parents[2]

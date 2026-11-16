@@ -7,6 +7,8 @@ from unittest.mock import Mock, patch
 
 import pytest
 import srt
+
+from manim import Manager, Scene, tempconfig
 from manim._config.output import OutputFormat
 from manim.animation.animation import Wait
 from manim.constants import RendererType
@@ -14,8 +16,6 @@ from manim.renderer._execution import _ExecutionState
 from manim.renderer.protocol import RendererCapabilities, RendererState
 from manim.scene.scene import SceneInteractRerun
 from manim.utils.exceptions import EndSceneEarlyException, RerunSceneException
-
-from manim import Manager, Scene, tempconfig
 from tests.helpers.audio import write_wav
 
 

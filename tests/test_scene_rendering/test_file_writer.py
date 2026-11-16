@@ -4,9 +4,9 @@ from pathlib import Path
 import av
 import numpy as np
 import pytest
-from manim.utils.commands import capture, get_video_metadata
 
 from manim import DR, Circle, Create, Scene, Star, tempconfig
+from manim.utils.commands import capture, get_video_metadata
 
 
 class StarScene(Scene):

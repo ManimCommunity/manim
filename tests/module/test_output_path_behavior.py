@@ -5,6 +5,8 @@ from unittest.mock import Mock
 
 import numpy as np
 import pytest
+
+from manim import __version__
 from manim._config.output import OutputFormat, OutputSpec
 from manim._config.output_plan import (
     resolve_media_layout,
@@ -14,8 +16,6 @@ from manim._config.output_plan import (
 )
 from manim._config.video_encoder import resolve_video_encoder
 from manim.scene.scene_file_writer import SceneFileWriter, _SceneFileWriterSettings
-
-from manim import __version__
 
 
 def _make_writer(

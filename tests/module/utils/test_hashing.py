@@ -6,9 +6,9 @@ import json
 import weakref
 from zlib import crc32
 
-import manim.utils.hashing as hashing
 import numpy as np
 
+import manim.utils.hashing as hashing
 from manim import ImageMobject, Square, tempconfig
 
 ALREADY_PROCESSED_PLACEHOLDER = hashing._Memoizer.ALREADY_PROCESSED_PLACEHOLDER

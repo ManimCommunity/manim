@@ -4,10 +4,10 @@ from unittest.mock import Mock, patch
 
 import numpy as np
 import pytest
-from manim._run import listeners
-from manim.renderer.cairo.renderer import CairoRenderer
 
 from manim import LEFT, RIGHT, Dot, Manager, Scene, Square, tempconfig
+from manim._run import listeners
+from manim.renderer.cairo.renderer import CairoRenderer
 
 SETTINGS = {
     "renderer": "cairo",

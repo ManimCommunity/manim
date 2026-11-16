@@ -478,7 +478,7 @@ class MathTex(SingleStringMathTex):
                 first_match = match
                 first_match_start = len(match.group(1))
                 first_match_length = len(match.group(2))
-            elif match and len(match.group(1)) == first_match_start:  # noqa: SIM102
+            elif match and len(match.group(1)) == first_match_start:
                 # Break ties by looking at length of matches.
                 if first_match_length < len(match.group(2)):
                     first_match = match

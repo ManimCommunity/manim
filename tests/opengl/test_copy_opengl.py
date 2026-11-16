@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-
 from manim import BraceLabel
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 
 def test_opengl_mobject_copy(using_opengl_renderer):

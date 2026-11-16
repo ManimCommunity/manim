@@ -4,10 +4,10 @@ from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
-from manim.renderer.opengl import OpenGLRenderer
-from manim.scene.scene_file_writer import SceneFileWriter
 
 from manim import CairoRenderer, Manager, Scene, Wait, tempconfig
+from manim.renderer.opengl import OpenGLRenderer
+from manim.scene.scene_file_writer import SceneFileWriter
 
 
 @pytest.fixture

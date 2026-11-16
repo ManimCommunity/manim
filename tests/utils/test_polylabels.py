@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 from manim.utils.polylabel import Cell, Polygon, polylabel
 
 

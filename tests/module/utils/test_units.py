@@ -2,9 +2,9 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
-from manim.utils.unit import Degrees, Munits, Percent, Pixels
 
 from manim import LEFT, PI, UR, X_AXIS, Y_AXIS, Z_AXIS
+from manim.utils.unit import Degrees, Munits, Percent, Pixels
 
 
 def test_units(config):

@@ -4,6 +4,8 @@ from dataclasses import FrozenInstanceError
 from pathlib import Path
 
 import pytest
+
+from manim import Scene, __version__
 from manim._config.output import OutputFormat, OutputSpec
 from manim._config.output_plan import (
     MediaLayoutSpec,
@@ -14,8 +16,6 @@ from manim._config.output_plan import (
     resolve_requested_output_name,
 )
 from manim.cli.render.commands import _validate_scene_batch_output_name
-
-from manim import Scene, __version__
 
 
 def _layout(tmp_path: Path, *, sections: bool = False) -> MediaLayoutSpec:

@@ -3,8 +3,10 @@ from __future__ import annotations
 import os
 from unittest.mock import Mock, call
 
-import manim._run.cache as cache_module
 import numpy as np
+
+import manim._run.cache as cache_module
+from manim import Manager, tempconfig
 from manim._run.loop import _RunLoop
 from manim.renderer._execution import _RendererExecutionView
 from manim.utils import caching
@@ -12,8 +14,6 @@ from manim.utils.caching import (
     clear_segment_cache,
     prune_segment_cache,
 )
-
-from manim import Manager, tempconfig
 
 
 def test_prune_segment_cache_ignores_non_segments_and_hidden_files(tmp_path):

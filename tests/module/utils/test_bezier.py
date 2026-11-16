@@ -4,6 +4,7 @@ import numpy as np
 import numpy.testing as nt
 from _split_matrices import SPLIT_MATRICES
 from _subdivision_matrices import SUBDIVISION_MATRICES
+
 from manim.typing import ManimFloat
 from manim.utils.bezier import (
     _get_subdivision_matrix,

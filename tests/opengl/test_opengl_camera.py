@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import numpy as np
-from manim.renderer.opengl import OpenGLCamera
 
 from manim import DEGREES
+from manim.renderer.opengl import OpenGLCamera
 
 
 def test_camera_interpolate_angles(using_opengl_renderer):

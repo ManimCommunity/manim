@@ -1,4 +1,5 @@
 import pytest
+
 from manim.utils.tex import TexTemplate, _texcode_for_environment
 
 DEFAULT_BODY = r"""\documentclass[preview]{standalone}

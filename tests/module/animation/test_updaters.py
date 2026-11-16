@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from manim.animation.updaters.mobject_update_utils import turn_animation_into_updater
-
 from manim import UP, Circle, Dot, FadeIn, Square
+from manim.animation.updaters.mobject_update_utils import turn_animation_into_updater
 
 
 def test_turn_animation_into_updater_zero_run_time():

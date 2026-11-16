@@ -4,9 +4,9 @@ from types import SimpleNamespace
 from unittest.mock import Mock
 
 import pytest
-from manim.renderer.opengl.window_settings import _WindowSettings
 
 from manim import config, tempconfig
+from manim.renderer.opengl.window_settings import _WindowSettings
 
 
 class _StopBeforeNativeOpen(Exception):

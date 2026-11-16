@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import numpy as np
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 from manim import RIGHT, Circle
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
 
 def test_family(using_opengl_renderer):

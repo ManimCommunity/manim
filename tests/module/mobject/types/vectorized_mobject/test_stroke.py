@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import manim.utils.color as C
-from manim.mobject.vector_field import StreamLines
-
 from manim import ORIGIN, NumberPlane, VMobject
+from manim.mobject.vector_field import StreamLines
 
 
 def test_stroke_props_in_ctor():

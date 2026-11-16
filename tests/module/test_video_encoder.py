@@ -4,6 +4,7 @@ from dataclasses import replace
 from fractions import Fraction
 
 import pytest
+
 from manim._config.output import OutputFormat, OutputSpec
 from manim._config.video_encoder import (
     VideoEncoderSpec,

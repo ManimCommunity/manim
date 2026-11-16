@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 import pytest
+
 from manim.animation.creation import Uncreate
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.line import Line

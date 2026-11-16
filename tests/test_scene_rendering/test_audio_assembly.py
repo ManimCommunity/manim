@@ -6,9 +6,9 @@ import av
 import numpy as np
 import pytest
 import srt
-from manim.scene import scene_file_writer
 
 from manim import Manager, Scene, Square, tempconfig
+from manim.scene import scene_file_writer
 from tests.helpers.audio import write_wav
 
 

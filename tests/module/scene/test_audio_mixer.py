@@ -5,6 +5,7 @@ from functools import partial
 import av
 import numpy as np
 import pytest
+
 from manim.scene.audio_mixer import (
     SAMPLE_RATE,
     _decode,
@@ -13,7 +14,6 @@ from manim.scene.audio_mixer import (
     _SoundMix,
     _to_float,
 )
-
 from tests.helpers import audio
 
 # Sources at the mix rate are not resampled, so levels and positions are exact.

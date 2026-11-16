@@ -4,7 +4,6 @@ from unittest.mock import Mock
 
 import numpy as np
 import pytest
-from manim.manager import _State
 
 from manim import (
     Animation,
@@ -14,6 +13,7 @@ from manim import (
     ThreeDScene,
     tempconfig,
 )
+from manim.manager import _State
 from tests.helpers.audio import write_wav
 
 
@@ -281,8 +281,9 @@ def test_camera_queries_match_a_render(tmp_path):
 
 
 def test_rendered_frames_hash_by_identity():
-    from manim.manager import RenderedFrame
     from PIL import Image
+
+    from manim.manager import RenderedFrame
 
     frame = RenderedFrame(Image.new("RGBA", (1, 1)), 0, 0, 0)
     twin = RenderedFrame(frame.image, 0, 0, 0)
