@@ -1,0 +1,33 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.svg.rst:2
+msgid "svg"
+msgstr ""
+
+#: ../../../manim/mobject/svg/__init__.py:docstring of manim.mobject.svg:1
+msgid "Mobjects related to SVG images."
+msgstr ""
+
+#: ../../../manim/mobject/svg/__init__.py:docstring of manim.mobject.svg:4
+msgid "Modules"
+msgstr ""
+
+#: ../../../manim/mobject/svg/__init__.py:docstring of manim.mobject.svg:13:<autosummary>:1
+msgid "Mobject representing curly braces."
+msgstr ""
+
+#: ../../../manim/mobject/svg/__init__.py:docstring of manim.mobject.svg:13:<autosummary>:1
+msgid "Utility functions for parsing SVG styles."
+msgstr ""
+
+#: ../../../manim/mobject/svg/__init__.py:docstring of manim.mobject.svg:13:<autosummary>:1
+msgid "Mobjects generated from an SVG file."
+msgstr ""
+
+

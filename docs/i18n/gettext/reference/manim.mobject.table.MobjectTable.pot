@@ -1,0 +1,73 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.table.MobjectTable.rst:2
+msgid "MobjectTable"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.MobjectTable.rst:4
+msgid "Qualified name: ``manim.mobject.table.MobjectTable``"
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.MobjectTable:1
+msgid "Bases: :py:class:`manim.mobject.table.Table`"
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.MobjectTable:1
+msgid "A specialized :class:`~.Table` mobject for use with :class:`~.Mobject`."
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.MobjectTable:4
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.MobjectTable:26
+msgid "Special case of :class:`~.Table` with ``element_to_mobject`` set to an identity function. Here, every item in ``table`` must already be of type :class:`~.Mobject`."
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.MobjectTable:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.MobjectTable:29
+msgid "A 2D array or list of lists. Content of the table must be of type :class:`~.Mobject`."
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.MobjectTable:30
+msgid "The :class:`~.Mobject` class applied to the table entries. Set as ``lambda m : m`` to return itself."
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.MobjectTable:31
+msgid "Additional arguments to be passed to :class:`~.Table`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.MobjectTable.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.MobjectTable.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.MobjectTable.rst:32:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.MobjectTable.rst:32:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.MobjectTable.rst:32:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.MobjectTable.rst:32:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+

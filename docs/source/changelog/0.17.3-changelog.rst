@@ -1,0 +1,207 @@
+*******
+v0.17.3
+*******
+
+:Date: April 06, 2023
+
+Contributors
+============
+
+A total of 35 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Alex Lembcke
+* Benjamin Hackl
+* DegrangeM +
+* Elyanah Aco +
+* Francisco Manríquez Novoa
+* Fredrik Lundström +
+* Frédéric Crozatier
+* Ikko Eltociear Ashimine +
+* ItIsJoeyG +
+* JinchuLi2002 +
+* Kevin Lubick
+* KingAndCross +
+* M. A. Ali +
+* Matthew Lee +
+* Max Coplan +
+* Naveen M K
+* NotWearingPants
+* Oscar Rangel +
+* Papierkorb2292 +
+* Phoenix2157 +
+* Tristan Schulz
+* ciobaca +
+* coreyp1 +
+* davidot +
+* icedcoffeeee
+* karpfediem +
+* vahndi
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Benjamin Hackl
+* Fredrik Lundström
+* Frédéric Crozatier
+* Hugues Devimeux
+* Kevin Lubick
+* KingAndCross
+* Matthew Lee
+* Naveen M K
+* Tristan Schulz
+* coreyp1
+* davidot
+* strager
+
+Pull requests merged
+====================
+
+A total of 42 pull requests were merged for this release.
+
+Deprecated classes and functions
+--------------------------------
+
+* :pr:`3103`: Removed deprecated function ``OpenGLSurface.set_fill_by_value``
+
+
+New features
+------------
+
+* :pr:`2974`: Added :class:`.DiGraph`, a mobject representing directed graphs
+
+
+* :pr:`3042`: Added :meth:`.Scene.replace` and use in :class:`.ReplacementTransform`
+
+* :pr:`3155`: Added support for individualized radius values in :meth:`.Polygram.round_corners`
+
+
+* :pr:`3159`: Added :meth:`.set_opacity_by_tex` method for setting the opacity of parts of Tex mobjects
+
+
+* :pr:`3201`: New tip shape :class:`.StealthTip`, allow specifying tip shape of :class:`.NumberLine`
+
+
+Enhancements
+------------
+
+* :pr:`3046`: Add warning if font is not found for Text, Code, and MarkupText
+
+
+* :pr:`3083`: Minor performance improvement in :mod:`.bezier` with preallocating array
+
+
+* :pr:`3092`: Improved :meth:`.Mobject.add` performance by checking for redundancy only once
+
+
+* :pr:`3134`: Performance: Store color data of ``OpenGLSurface`` to prevent OpenGL embed lag
+
+
+* :pr:`3180`: Performance: Speed up width/height/depth calculations by reducing copying
+
+
+* :pr:`3181`: Improved creation time for large :class:`.Text` mobjects
+
+
+* :pr:`3182`: Reduce memory allocations when building :class:`.SVGMobject`
+
+
+* :pr:`3191`: Fixed OpenGL rendering in named threads
+
+
+Fixed bugs
+----------
+
+* :pr:`3015`: Fixed bug with ``label_constructor`` in :meth:`.NumberLine.add_labels`
+
+
+* :pr:`3095`: Fixed ``get_axis_labels`` for :class:`.Axes` and :class:`.ThreeDAxes`
+
+
+* :pr:`3106`: Fixed ignored ``depth_test`` argument for ``OpenGLVMobjects``
+
+
+* :pr:`3149`: Allow to use ``call_updater=True`` in :meth:`.Mobject.add_updater` with non-timebased updaters too
+
+
+* :pr:`3152`: Fixed behavior of :class:`.Wait` and :meth:`.Scene.wait` with specified ``stop_condition``
+
+
+* :pr:`3163`: Fixed :class:`.BraceLabel` not passing additional keyword arguments to :class:`.Brace`
+
+
+* :pr:`3195`: Fixed :class:`.Axes` scaling for :meth:`.plot_implicit_curve`
+
+
+Documentation-related changes
+-----------------------------
+
+* :pr:`3105`: Converted types specified in docstrings to proper type hints in :mod:`.three_dimensions`
+
+
+* :pr:`3108`: Clarified documentation for ``--resolution`` command line flag
+
+
+* :pr:`3109`: Clean-up, type-hints and documentation for :mod:`.three_dimensions`
+
+
+* :pr:`3124`: Fixed docstring of :meth:`.ThreeDCamera.get_value_trackers`
+
+
+* :pr:`3126`: Fixed dead links to troubleshooting page
+
+
+* :pr:`3137`: Fixed example using ``reverse=True`` with :class:`.Write`
+
+
+* :pr:`3160`: Fixed a typo
+
+
+* :pr:`3189`: Corrected the hinted return type for :func:`angle_between_vectors`
+
+
+* :pr:`3199`: Updated ``winget`` command for installing MiKTeX in documentation
+
+
+* :pr:`3204`: Fixed docstring formatting of :meth:`.Scene.replace` and improved its error handling
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* :pr:`3144`: Fixed typo in ``stripUntranslatable.awk``
+
+
+* :pr:`3154`: Bump ipython from 8.7.0 to 8.10.0
+
+
+* :pr:`3156`: CI: Remove actions using self-hosted runners
+
+
+* :pr:`3164`: Bump markdown-it-py from 2.1.0 to 2.2.0
+
+
+* :pr:`3165`: Removed deprecated keyword argument in :meth:`.Mobject.align_to`
+
+
+* :pr:`3166`: Made :class:`.ArrowTriangleTip`, :class:`.ArrowTriangleFilledTip` available to module namespace
+
+
+* :pr:`3179`: Fixed deprecation warning in :class:`.ParametricFunction` with ``use_vectorized=True``
+
+
+* :pr:`3186`: Updated extlinks to work with latest version of Sphinx
+
+
+* :pr:`3196`: CI: updated PATH for recent changed in TinyTex
+
+
+* :pr:`3200`: Made import from ``moderngl`` compatible with more recent versions
+
+
+New releases
+------------
+
+* :pr:`3198`: Prepare new release: v0.17.3

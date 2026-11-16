@@ -1,0 +1,49 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.graphing.probability.SampleSpace.rst:2
+msgid "SampleSpace"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.probability.SampleSpace.rst:4
+msgid "Qualified name: ``manim.mobject.graphing.probability.SampleSpace``"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.SampleSpace:1
+msgid "Bases: :py:class:`manim.mobject.geometry.polygram.Rectangle`"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.SampleSpace:2
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.probability.SampleSpace.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.probability.SampleSpace.rst:34
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.probability.SampleSpace.rst:45:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.probability.SampleSpace.rst:45:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.probability.SampleSpace.rst:45:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.probability.SampleSpace.rst:45:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+

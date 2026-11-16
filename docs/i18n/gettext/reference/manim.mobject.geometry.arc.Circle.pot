@@ -1,0 +1,117 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.geometry.arc.Circle.rst:2
+msgid "Circle"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.Circle.rst:4
+msgid "Qualified name: ``manim.mobject.geometry.arc.Circle``"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle:1
+msgid "Bases: :py:class:`manim.mobject.geometry.arc.Arc`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle:1
+msgid "A circle."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle:0
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle.from_three_points:0
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle.point_at_angle:0
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle.surround:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle:3
+msgid "The color of the shape."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle:4
+msgid "Additional arguments to be passed to :class:`Arc`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle:7
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle.point_at_angle:9
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle.surround:9
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.Circle.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.Circle.rst:22:<autosummary>:1
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle.from_three_points:1
+msgid "Returns a circle passing through the specified three points."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.Circle.rst:22:<autosummary>:1
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle.point_at_angle:1
+msgid "Returns the position of a point on the circle."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.Circle.rst:22:<autosummary>:1
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle.surround:1
+msgid "Modifies a circle so that it surrounds a given mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.Circle.rst:24
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle.from_three_points:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle.from_three_points:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle.from_three_points:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle.from_three_points:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle.from_three_points:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle.from_three_points:5
+msgid "Example"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle.point_at_angle:3
+msgid "The angle of the point along the circle in radians."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle.point_at_angle:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle.point_at_angle:5
+msgid "The location of the point along the circle's circumference."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle.point_at_angle:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle.surround:3
+msgid "The mobject that the circle will be surrounding."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Circle.surround:5
+msgid "Scales the circle with respect to the mobject. A `buffer_factor` < 1 makes the circle smaller than the mobject."
+msgstr ""
+
+

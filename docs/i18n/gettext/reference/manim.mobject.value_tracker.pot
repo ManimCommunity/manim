@@ -1,0 +1,25 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.value_tracker.rst:2
+msgid "value\\_tracker"
+msgstr ""
+
+#: ../../../manim/mobject/value_tracker.py:docstring of manim.mobject.value_tracker:1
+msgid "Simple mobjects that can be used for storing (and updating) a value."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.value_tracker.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.value_tracker.rst:22:<autosummary>:1
+msgid "Tracks a complex-valued parameter."
+msgstr ""
+
+

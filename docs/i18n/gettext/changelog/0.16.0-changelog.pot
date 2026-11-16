@@ -1,0 +1,501 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/changelog/0.16.0-changelog.rst:3
+msgid "v0.16.0"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:0
+msgid "Date"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:5
+msgid "July 13, 2022"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:8
+msgid "Contributors"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:10
+msgid "A total of 44 people contributed to this release. People with a '+' by their names authored a patch for the first time."
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:14
+#: ../../source/changelog/0.16.0-changelog.rst:51
+msgid "Alex Lembcke"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:15
+msgid "Baroudi Aymen +"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:16
+#: ../../source/changelog/0.16.0-changelog.rst:52
+msgid "Benjamin Hackl"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:17
+msgid "Charalampos Georgiou +"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:18
+msgid "Cindy Park +"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:19
+msgid "Ejar +"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:20
+msgid "Francesco Frassinelli +"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:21
+msgid "Francisco Manríquez Novoa +"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:22
+msgid "Jacob Evan Shreve +"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:23
+msgid "Jaime Santos +"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:24
+#: ../../source/changelog/0.16.0-changelog.rst:58
+msgid "Jonathan Alpert"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:25
+msgid "Joshua Mankelow +"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:26
+msgid "Kevin Lubick +"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:27
+#: ../../source/changelog/0.16.0-changelog.rst:60
+msgid "Laith Bahodi"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:28
+msgid "Lingren Kong +"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:29
+msgid "Logen +"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:30
+#: ../../source/changelog/0.16.0-changelog.rst:61
+msgid "Naveen M K"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:31
+msgid "Noam Zaks"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:32
+msgid "Pedro Lamkowski +"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:33
+#: ../../source/changelog/0.16.0-changelog.rst:64
+msgid "Raghav Goel"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:34
+msgid "Simeon Widdis"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:35
+#: ../../source/changelog/0.16.0-changelog.rst:66
+msgid "Sparsh Goenka"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:36
+msgid "TornaxO7 +"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:37
+msgid "Tristan Schulz +"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:38
+msgid "WillSoltas"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:39
+#: ../../source/changelog/0.16.0-changelog.rst:69
+msgid "ad_chaos"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:40
+msgid "conor-oneill-2 +"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:41
+msgid "fcrozatier +"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:42
+msgid "mooncaker816 +"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:43
+msgid "niklebedenko +"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:44
+msgid "nyabkun +"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:45
+msgid "quark67"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:48
+msgid "The patches included in this release have been reviewed by the following contributors."
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:53
+msgid "Darylgolden"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:54
+msgid "Francesco Frassinelli"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:55
+msgid "Francisco Manríquez Novoa"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:56
+msgid "Gianluca Gippetto"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:57
+msgid "Jan-Hendrik Müller"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:59
+msgid "Kevin Lubick"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:62
+msgid "Pedro Lamkowski"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:63
+msgid "Philipp Imhof"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:65
+msgid "Ryan McCauley"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:67
+msgid "TornaxO7"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:68
+msgid "Tristan Schulz"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:70
+msgid "hickmott99"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:73
+msgid "Pull requests merged"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:75
+msgid "A total of 56 pull requests were merged for this release."
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:78
+msgid "Highlights"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:82
+msgid ":pr:`2550`: New thematic guide: a deep dive into the internals of the library"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:81
+msgid "This new :doc:`thematic guide </guides/deep_dive>` aims to be a comprehensive walkthrough describing all the things that Manim does when you run it to produce a video."
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:84
+msgid ":pr:`2732`: Improved overall structure of deployed documentation; added a dedicated :doc:`FAQ section </faq/index>`"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:90
+msgid ":pr:`2749`: Added :class:`.ChangeSpeed`, an animation wrapper that allows to smoothly change the speed at which an animation is played"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:88
+msgid "The speed of any animation can be changed by wrapping the animation with :class:`.ChangeSpeed` and passing a dictionary as ``speedinfo`` whose keys are the relative animation run time stamps and whose values are the absolute speed factors; e.g., ``{0.5: 2, 0.75: 0.25}`` smoothly speeds up the animation by a factor of 2 once it has been completed to 50%, and then it is smoothly slowed down to 1/4 of the default run speed after 75% of the animation are completed. The ``run_time`` of the animation will be adjusted to match the changed play speed."
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:90
+msgid "It is also possible to add time-based updaters that respect the change in speed, use the auxiliary :meth:`.ChangeSpeed.add_updater` method to do so."
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:93
+msgid "New features"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:95
+msgid ":pr:`2667`: Made FFmpeg executable path configurable"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:98
+msgid ":pr:`2739`: Added vectorized plotting functionality via keyword argument ``use_vectorized`` to improve performance"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:102
+msgid "Enhancements"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:104
+msgid ":pr:`2186`: Enabled filling color by value for :class:`.OpenGLSurface`, replaced ``colors`` keyword argument of :meth:`.Surface.set_fill_by_value`  with ``colorscale``"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:107
+msgid ":pr:`2288`: Added warning when attempting to add same mobject as child twice"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:112
+msgid ":pr:`2707`: Fixed missing ``get_nth_curve_length_pieces`` method of :class:`.OpenGLVMobject`"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:111
+msgid "Removed duplicate definition of ``get_curve_functions_with_lengths`` in ``OpenGLVMobject``"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:112
+msgid "Added definition of ``get_nth_curve_length_pieces`` to ``OpenGLVMobject``"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:114
+msgid ":pr:`2709`: Improved the look of the brackets of :class:`.Matrix`"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:117
+msgid ":pr:`2714`: Fixed :meth:`.OpenGLVMobject.pointwise_become_partial` to improve stroke rendering"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:120
+msgid ":pr:`2727`: Slight performance improvement for :class:`.ArrowVectorField` and Bézier curve computation"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:123
+msgid ":pr:`2728`: Added :meth:`.VectorField.fit_to_coordinate_system` to fit a vector field to a given coordinate system"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:126
+msgid ":pr:`2730`: Added note to let users find documentation of default CLI subcommand easier"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:129
+msgid ":pr:`2746`: Installed ghostscript in the docker image"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:132
+msgid ":pr:`2841`: Added :func:`.split_quadratic_bezier` and :func:`.subdivide_quadratic_bezier`"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:135
+msgid ":pr:`2842`: CLI: Moved functionality from ``manim new`` to ``manim init`` and added deprecation warning for ``manim new``"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:138
+msgid ":pr:`2866`: Reorganize test files to match library module structure"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:142
+msgid "Fixed bugs"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:144
+msgid ":pr:`2567`: Use tempconfig for every scene render"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:147
+msgid ":pr:`2638`: Fixed :meth:`BarChart.change_bar_values`  not updating when height is 0"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:150
+msgid ":pr:`2661`: Fixed tip resize functionality for :class:`.Axes` to match documentation"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:153
+msgid ":pr:`2703`: Default to utf-8 when reading files in :class:`.Code`"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:156
+msgid ":pr:`2721`: Fixed bad text slicing for lines in :class:`.Paragraph`"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:159
+msgid ":pr:`2725`: Fixed wrong indentation in :class:`.Code`"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:162
+msgid ":pr:`2734`: Fixed OpenGL segfaults when running :meth:`.Scene.play` or :meth:`.Scene.wait` in interactive mode"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:165
+msgid ":pr:`2753`: Fixed multiplatform builds for docker images in pipeline"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:168
+msgid ":pr:`2757`: Added missing ``__init__.py`` file in :mod:`.docbuild` module"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:171
+msgid ":pr:`2770`: Fixed bug in :meth:`.VMobject.proportion_from_point` that caused proportions greater than 1 to be returned"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:174
+msgid ":pr:`2826`: Fixed leaked mobjects coming from :class:`.TransformMatchingAbstractBase`"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:177
+msgid ":pr:`2870`: Fixed issue with ``manim init scene SCENE_NAME filename.py`` and removed necessity of ``main.py`` to be present in working directory"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:181
+msgid "Documentation-related changes"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:183
+msgid ":pr:`2704`: Updated URL to Pango Markup formatting page"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:186
+msgid ":pr:`2716`: Improved the order of the reference manuals"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:189
+msgid ":pr:`2720`: Fixed typo in docstring of :class:`.Angle`"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:192
+msgid ":pr:`2722`: Fixed typos in docstrings of classes in :mod:`.mobject.table`"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:195
+msgid ":pr:`2726`: Edited note on :class:`.NumberPlane` length and added another example"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:198
+msgid ":pr:`2740`: Fixed documentation of :meth:`.Cylinder.get_direction`"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:201
+msgid ":pr:`2755`: Fixed docstring of  :meth:`.VMobject.get_end_anchors`"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:204
+msgid ":pr:`2760`: Removed ``cmake`` from the MacOS installation section"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:207
+msgid ":pr:`2767`: Added more questions and answers to FAQ section, new :doc:`OpenGL FAQ </faq/opengl>`"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:210
+msgid ":pr:`2771`: Added documentation and testing for ``path_func`` keyword argument of :class:`.Transform`"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:213
+msgid ":pr:`2828`: Removed suggestion issue template, added FAQ answer regarding proposing new features"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:216
+msgid ":pr:`2849`: Added example for ``path_arc`` keyword argument of :class:`.Transform`"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:219
+msgid ":pr:`2851`: Added an example on constructing a (neural) network using a partite :class:`.Graph`"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:222
+msgid ":pr:`2855`: Added implicit ``docker.io/`` URL base in reference to docker images"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:225
+msgid ":pr:`2861`: Added docstring for :meth:`.CoordinateSystem.plot_parametric_curve`"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:229
+msgid "Changes concerning the testing system"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:231
+msgid ":pr:`2743`: Replaced ``assert`` statements with with assertion functions from ``np.testing``"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:235
+msgid "Changes to our development infrastructure"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:237
+msgid ":pr:`2700`: CI: updated Python versions"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:240
+msgid ":pr:`2701`: CI: added a workflow to publish docker image after releases and commits to main branch"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:244
+msgid "Code quality improvements and similar refactors"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:246
+msgid ":pr:`2680`: Increased minimum required version of ``numpy`` to 1.19"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:249
+msgid ":pr:`2687`: Migrated from ``os.path`` to ``pathlib`` in :class:`.SVGMobject` and other locations"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:252
+msgid ":pr:`2715`: Updated deprecated ``pillow`` constants"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:255
+msgid ":pr:`2735`: Bump pyjwt from 2.3.0 to 2.4.0"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:258
+msgid ":pr:`2748`: Bump pillow from 9.1.0 to 9.1.1"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:261
+msgid ":pr:`2751`: Fixed flake C417 and improved a comment"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:264
+msgid ":pr:`2825`: Bump notebook from 6.4.11 to 6.4.12"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:267
+msgid ":pr:`2864`: Updated lockfile"
+msgstr ""
+
+#: ../../source/changelog/0.16.0-changelog.rst:271
+msgid "New releases"
+msgstr ""
+
+

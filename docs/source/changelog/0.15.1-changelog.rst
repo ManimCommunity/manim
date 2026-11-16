@@ -1,0 +1,75 @@
+*******
+v0.15.1
+*******
+
+:Date: March 08, 2022
+
+Contributors
+============
+
+A total of 9 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Benjamin Hackl
+* Nicolai Weitkemper
+* Yuchen +
+* ad_chaos
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Alex Lembcke
+* Benjamin Hackl
+* Darylgolden
+* Naveen M K
+* Raghav Goel
+* ad_chaos
+* icedcoffeeee
+
+Pull requests merged
+====================
+
+A total of 9 pull requests were merged for this release.
+
+Enhancements
+------------
+
+* :pr:`2602`: Support groups in :class:`.TransformMatchingTex`
+
+
+Fixed bugs
+----------
+
+* :pr:`2594`: Fixed render flow issues with introducer animations
+
+
+* :pr:`2584`: Fixed bug with invalid color type ``None``
+
+
+* :pr:`2587`: Fixed bug with rendering Tex string that contain ``%``
+
+
+* :pr:`2593`: Fixed bug with displaying images in Jupyter Notebooks when ``config.media_embed`` is set to ``False``
+
+
+Documentation-related changes
+-----------------------------
+
+* :pr:`2570`: Refactored docstrings in :mod:`.coordinate_systems`
+
+
+* :pr:`2603`: Reduced the number of warnings during documentation build
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* :pr:`2578`: Fixed incorrect type hint for color property of :class:`.Text`
+
+
+New releases
+------------
+
+* :pr:`2596`: Prepared bugfix release v0.15.1

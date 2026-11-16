@@ -1,0 +1,65 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.Torus.rst:2
+msgid "Torus"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.Torus.rst:4
+msgid "Qualified name: ``manim.mobject.three\\_d.three\\_dimensions.Torus``"
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Torus:1
+msgid "Bases: :py:class:`manim.mobject.three_d.three_dimensions.Surface`"
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Torus:1
+msgid "A torus."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Torus:4
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Torus:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Torus:15
+msgid "Distance from the center of the tube to the center of the torus."
+msgstr ""
+
+#: ../../../manim/mobject/three_d/three_dimensions.py:docstring of manim.mobject.three_d.three_dimensions.Torus:17
+msgid "Radius of the tube."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.Torus.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.Torus.rst:22
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.Torus.rst:33:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.Torus.rst:33:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.Torus.rst:33:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.three_d.three_dimensions.Torus.rst:33:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+

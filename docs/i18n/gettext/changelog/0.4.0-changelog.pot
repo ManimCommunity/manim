@@ -1,0 +1,193 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/changelog/0.4.0-changelog.rst:3
+msgid "v0.4.0"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:0
+msgid "Date"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:5
+msgid "March 3, 2021"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:7
+msgid "The changes since Manim Community release v0.3.0 are listed below."
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:10
+msgid "Breaking Changes"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:12
+msgid ":pr:`915`: Manim's SVG engine has been reworked and is able to handle a wider variations of SVG files. In particular: fill and stroke properties are now retained from the original files. Breaking change: ``VMobjectFromSVGPathstring`` is deprecated and has been renamed to ``SVGPathMobject``."
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:16
+msgid "New Features"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:18
+msgid ":pr:`1026`: Add 3D Mobjects: :class:`~.Cone`, :class:`~.Cylinder`, :class:`~.Line3D`, :class:`~.Arrow3D` and :class:`~.Torus`"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:19
+msgid ":pr:`1047`: Add documentation and examples for :class:`~.Matrix`"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:20
+msgid ":pr:`1044`: ``register_font`` is available for macOS"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:21
+msgid ":pr:`995`: Add generic :func:`~.Mobject.set` method and compatibility layer between properties and ``get_*``/``set_*`` methods"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:24
+msgid "Bugfixes and Enhancements"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:26
+msgid ":pr:`981`: Fixed hot reload functionality for the WebGL renderer on Windows"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:27
+msgid ":pr:`1053`: Repair links to source code in stable version of documentation"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:28
+msgid ":pr:`1067`: Add ManimPango to ReadTheDocs requirements"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:29
+msgid ":pr:`1058`: Replace ``<color>`` syntax by Pango's ``<span foreground>`` for coloring parts of :class:`~.MarkupText` and allow using colors for underline, overline and strikethrough in MarkupText"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:30
+msgid ":pr:`1063`: Fix documentation related to ``.animate``"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:31
+msgid ":pr:`1065`: Remove duplicate word 'vector'"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:32
+msgid ":pr:`1060`: Update Linux installation instructions to mention the installation of Pango"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:33
+msgid ":pr:`1050`: Ensure that the user-supplied stroke color and width gets applied to :class:`~.Cross`"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:34
+msgid ":pr:`1059`: More descriptive error when accessing an unhandled mobject attribute"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:35
+msgid ":pr:`1048`: Use absolute path in ``make_and_open_docs.py``"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:36
+msgid ":pr:`1000`: Remove ``MovingCameraScene.setup`` and ``MovingCameraScene.camera_frame``"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:37
+msgid ":pr:`1051`: Corrections for setting stroke related attributes on :class:`~.VMobject`"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:38
+msgid ":pr:`1043`: Make :class:`~.CubicBezier` explicitly accept four points"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:39
+msgid ":pr:`1046`: Use any version of ``importlib-metadata``"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:40
+msgid ":pr:`1030`: Parse ``.log`` file and try to print LaTeX errors if compilation fails"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:41
+msgid ":pr:`1015`: Documentation: Add more explicit instructions related to ``tlmgr``"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:42
+msgid ":pr:`1028`: Documentation: Update installation guide on mac with Apple Silicon"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:43
+msgid ":pr:`1032`: Remove ``Square.side_length`` property"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:44
+msgid ":pr:`1031`: Fix link to wikipedia vector graphics page"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:45
+msgid ":pr:`1021`: Documentation: Added example to :class:`~.CubicBezier`"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:46
+msgid ":pr:`1017`: Added ``progress_bar`` to ``digest_args`` to fix the ``--progress_bar`` CLI flag"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:47
+msgid ":pr:`1018`: Remove redundancy in :class:`~.FunctionGraph` arguments"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:48
+msgid ":pr:`1024`: Migrate ``width`` / ``height`` / ``depth`` to properties"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:49
+msgid ":pr:`1022`: Fix ``-p`` flag when passing ``-s``"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:50
+msgid ":pr:`1008`: CI pipeline: fix release asset upload"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:51
+msgid ":pr:`983`: Make sure last frame for animations with updaters is correct"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:52
+msgid ":pr:`984`: Add manim version to CLI output, append version name for generated ``.gif`` and ``.png`` files, add version to metadata of rendered videos, change dark blue terminal text to default green"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:53
+msgid ":pr:`993`: Fix setting Mobject color to a gradient by passing a list of colors in :meth:`~.VMobject.set_color`"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:54
+msgid ":pr:`1003`: Fix animation :class:`~.GrowArrow`"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:55
+msgid ":pr:`1010`: Disable STDIN interaction for ffmpeg concat."
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:56
+msgid ":pr:`969`: Fix the ``--tex_template`` CLI flag"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:57
+msgid ":pr:`989`: Fix the ``manim cfg export`` subcommand"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:58
+msgid ":pr:`1005`: Fix the feature where ``-`` is used as the filename"
+msgstr ""
+
+#: ../../source/changelog/0.4.0-changelog.rst:59
+msgid ":pr:`998`: Allow using hexadecimal color codes with 3 characters"
+msgstr ""
+
+

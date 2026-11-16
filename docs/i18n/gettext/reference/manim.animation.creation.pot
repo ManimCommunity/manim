@@ -1,0 +1,61 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.animation.creation.rst:2
+msgid "creation"
+msgstr ""
+
+#: ../../../manim/animation/creation.py:docstring of manim.animation.creation:1
+msgid "Animate the display or removal of a mobject from a scene."
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.rst:40:<autosummary>:1
+msgid "Show a :class:`~.Text` letter by letter on the scene."
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.rst:40:<autosummary>:1
+msgid "Show a :class:`~.Text` word by word on the scene."
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.rst:40:<autosummary>:1
+msgid "Incrementally show a VMobject."
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.rst:40:<autosummary>:1
+msgid "Draw the border first and then show the fill."
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.rst:40:<autosummary>:1
+msgid "Show one submobject at a time, leaving all previous ones displayed on screen."
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.rst:40:<autosummary>:1
+msgid "Abstract class for Animations that show the VMobject partially."
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.rst:40:<autosummary>:1
+msgid "Show one submobject at a time, removing all previously displayed ones from screen."
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.rst:40:<autosummary>:1
+msgid "Create the Mobject with sub-Mobjects flying in on spiral trajectories."
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.rst:40:<autosummary>:1
+msgid "Like :class:`Create` but in reverse."
+msgstr ""
+
+#: ../../source/reference/manim.animation.creation.rst:40:<autosummary>:1
+msgid "Simulate erasing by hand a :class:`~.Text` or a :class:`~.VMobject`."
+msgstr ""
+
+

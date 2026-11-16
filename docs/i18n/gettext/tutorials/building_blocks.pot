@@ -1,0 +1,221 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/tutorials/building_blocks.rst:3
+msgid "Manim's building blocks"
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:5
+msgid "This document explains the building blocks of manim and will give you all the necessary tools to start producing your own videos."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:8
+msgid "Essentially, manim puts at your disposal three different concepts that you can orchestrate together to produce mathematical animations: the **mathematical object** (or **mobject** for short), the **animation**, and the **scene**.  As we will see in the following sections, each of these three concepts is implemented in manim as a separate class: the :class:`.Mobject`, :class:`.Animation`, and :class:`.Scene` classes."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:15
+msgid "It is recommended that you read the tutorials :doc:`quickstart` and :doc:`output_and_config` before reading this page."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:21
+msgid "Mobjects"
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:23
+msgid "Mobjects are the basic building blocks for all manim animations.  Each class that derives from :class:`.Mobject` represents an object that can be displayed on the screen.  For example, simple shapes such as :class:`.Circle`, :class:`.Arrow`, and :class:`.Rectangle` are all mobjects.  More complicated constructs such as :class:`.Axes`, :class:`.FunctionGraph`, or :class:`.BarChart` are mobjects as well."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:30
+msgid "If you try to display an instance of :class:`.Mobject` on the screen, you will only see an empty frame.  The reason is that the :class:`.Mobject` class is an abstract base class of all other mobjects, i.e. it does not have any pre-determined visual shape that can be displayed on the screen.  It is only the skeleton of a thing that *could* be displayed.  Therefore, you will rarely need to use plain instances of :class:`.Mobject`; instead, you will most likely create instances of its derived classes.  One of these derived classes is :class:`.VMobject`.  The ``V`` stands for Vectorized Mobject.  In essence, a vmobject is a mobject that uses `vector graphics <https://en.wikipedia.org/wiki/Vector_graphics>`_ to be displayed.  Most of the time, you will be dealing with vmobjects, though we will continue to use the term \"mobject\" to refer to the class of shapes that can be displayed on the screen, as it is more general."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:44
+msgid "Any object that can be displayed on the screen is a ``mobject``, even if it is not necessarily *mathematical* in nature."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:47
+msgid "To see examples of classes derived from :class:`.Mobject`, see the :mod:`.geometry` module.  Most of these are in fact derived from :class:`.VMobject` as well."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:53
+msgid "Creating and displaying mobjects"
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:55
+msgid "As explained in :doc:`quickstart`, usually all of the code in a manim script is put inside the :meth:`.construct` method of a :class:`.Scene` class. To display a mobject on the screen, call the :meth:`~.Scene.add` method of the containing :class:`.Scene`.  This is the principal way of displaying a mobject on the screen when it is not being animated.  To remove a mobject from the screen, simply call the :meth:`~.Scene.remove` method from the containing :class:`.Scene`."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:75
+msgid "Placing mobjects"
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:77
+msgid "Let's define a new :class:`.Scene` called ``Shapes`` and :meth:`~.Scene.add` some mobjects to it.  This script generates a static picture that displays a circle, a square, and a triangle:"
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:96
+msgid "By default, mobjects are placed at the center of coordinates, or *origin*, when they are first created.  They are also given some default colors.  Further, the ``Shapes`` scene places the mobjects by using the :meth:`.shift` method.  The square is shifted one unit in the ``UP`` direction from the origin, while the circle and triangle are shifted one unit ``LEFT`` and ``RIGHT``, respectively."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:102
+msgid "Unlike other graphics software, manim places the center of coordinates at the center of the screen.  The positive vertical direction is up, and the positive horizontal direction is right. See also the constants ``ORIGIN``, ``UP``, ``DOWN``, ``LEFT``, ``RIGHT``, and others, defined in the :mod:`.constants` module."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:108
+msgid "There are many other possible ways to place mobjects on the screen, for example :meth:`.move_to`, :meth:`.next_to`, and :meth:`.align_to`.  The next scene ``MobjectPlacement`` uses all three."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:130
+msgid "The :meth:`.move_to` method uses absolute units (measured relative to the ``ORIGIN``), while :meth:`.next_to` uses relative units (measured from the mobject passed as the first argument).  :meth:`align_to` uses ``LEFT`` not as measuring units but as a way to determine the border to use for alignment.  The coordinates of the borders of a mobject are determined using an imaginary bounding box around it."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:137
+msgid "Many methods in manim can be chained together.  For example the two lines"
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:145
+msgid "can be replaced by"
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:151
+msgid "Technically, this is possible because most methods calls return the modified mobject."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:155
+msgid "Styling mobjects"
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:157
+msgid "The following scene changes the default aesthetics of the mobjects."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:174
+msgid "This scene uses two of the main functions that change the visual style of a mobject: :meth:`.set_stroke` and :meth:`.set_fill`.  The former changes the visual style of the mobject's border while the latter changes the style of the interior.  By default, most mobjects have a fully transparent interior so you must specify the ``opacity`` parameter to display the color.  An opacity of ``1.0`` means fully opaque, while ``0.0`` means fully transparent."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:181
+msgid "Only instances of :class:`.VMobject` implement :meth:`.set_stroke` and :meth:`.set_fill`.  Instances of :class:`.Mobject` implement :meth:`.~Mobject.set_color` instead.  The vast majority of pre-defined classes are derived from :class:`.VMobject` so it is usually safe to assume that you have access to :meth:`.set_stroke` and :meth:`.set_fill`."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:189
+msgid "Mobject on-screen order"
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:191
+msgid "The next scene is exactly the same as the ``MobjectStyling`` scene from the previous section, except for exactly one line."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:209
+msgid "The only difference here (besides the scene name) is the order in which the mobjects are added to the scene.  In ``MobjectStyling``, we added them as ``add(circle, square, triangle)``, whereas in ``MobjectZOrder`` we add them as ``add(triangle, square, circle)``."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:214
+msgid "As you can see, the order of the arguments of :meth:`~.Scene.add` determines the order that the mobjects are displayed on the screen, with the left-most arguments being put in the back."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:221
+msgid "Animations"
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:223
+msgid "At the heart of manim is animation.  Generally, you can add an animation to your scene by calling the :meth:`~.Scene.play` method."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:243
+msgid "Put simply, animations are procedures that interpolate between two mobjects. For example, :code:`FadeIn(square)` starts with a fully transparent version of :code:`square` and ends with a fully opaque version, interpolating between them by gradually increasing the opacity.  :class:`.FadeOut` works in the opposite way: it interpolates from fully opaque to fully transparent.  As another example, :class:`.Rotate` starts with the mobject passed to it as argument, and ends with the same object but rotated by a certain amount, this time interpolating the mobject's angle instead of its opacity."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:254
+msgid "Animating methods"
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:256
+msgid "Any property of a mobject that can be changed can be animated.  In fact, any method that changes a mobject's property can be used as an animation, through the use of :meth:`.animate`."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:276
+msgid ":meth:`.animate` is a property of all mobjects that animates the methods that come afterward. For example, :code:`square.set_fill(WHITE)` sets the fill color of the square, while :code:`square.animate.set_fill(WHITE)` animates this action."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:281
+msgid "Animation run time"
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:283
+msgid "By default, any animation passed to :meth:`play` lasts for exactly one second. Use the :code:`run_time` argument to control the duration."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:296
+msgid "Creating a custom animation"
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:298
+msgid "Even though Manim has many built-in animations, you will find times when you need to smoothly animate from one state of a :class:`~.Mobject` to another. If you find yourself in that situation, then you can define your own custom animation. You start by extending the :class:`~.Animation` class and overriding its :meth:`~.Animation.interpolate_mobject`. The :meth:`~.Animation.interpolate_mobject` method receives alpha as a parameter that starts at 0 and changes throughout the animation. So, you just have to manipulate self.mobject inside Animation according to the alpha value in its interpolate_mobject method. Then you get all the benefits of :class:`~.Animation` such as playing it for different run times or using different rate functions."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:305
+msgid "Let's say you start with a number and want to create a :class:`~.Transform` animation that transforms it to a target number. You can do it using :class:`~.FadeTransform`, which will fade out the starting number and fade in the target number. But when we think about transforming a number from one to another, an intuitive way of doing it is by incrementing or decrementing it smoothly. Manim has a feature that allows you to customize this behavior by defining your own custom animation."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:310
+msgid "You can start by creating your own ``Count`` class that extends :class:`~.Animation`. The class can have a constructor with three arguments, a :class:`~.DecimalNumber` Mobject, start, and end. The constructor will pass the :class:`~.DecimalNumber` Mobject to the super constructor (in this case, the :class:`~.Animation` constructor) and will set start and end."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:314
+msgid "The only thing that you need to do is to define how you want it to look at every step of the animation. Manim provides you with the alpha value in the :meth:`~.Animation.interpolate_mobject` method based on frame rate of video, rate function, and run time of animation played. The alpha parameter holds a value between 0 and 1 representing the step of the currently playing animation. For example, 0 means the beginning of the animation, 0.5 means halfway through the animation, and 1 means the end of the animation."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:319
+msgid "In the case of the ``Count`` animation, you just have to figure out a way to determine the number to display at the given alpha value and then set that value in the :meth:`~.Animation.interpolate_mobject` method of the ``Count`` animation. Suppose you are starting at 50 and incrementing until the :class:`~.DecimalNumber` reaches 100 at the end of the animation."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:322
+msgid "If alpha is 0, you want the value to be 50."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:323
+msgid "If alpha is 0.5, you want the value to be 75."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:324
+msgid "If alpha is 1, you want the value to be 100."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:326
+msgid "Generally, you start with the starting number and add only some part of the value to be increment according to the alpha value. So, the logic of calculating the number to display at each step will be ``50 + alpha * (100 - 50)``. Once you set the calculated value for the :class:`~.DecimalNumber`, you are done."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:330
+msgid "Once you have defined your ``Count`` animation, you can play it in your :class:`~.Scene` for any duration you want for any :class:`~.DecimalNumber` with any rate function."
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:367
+msgid "Using coordinates of a mobject"
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:369
+msgid "Mobjects contain points that define their boundaries. These points can be used to add other mobjects respectively to each other, e.g. by methods like :meth:`~.Mobject.get_center` , :meth:`~.Mobject.get_top` and :meth:`~.Mobject.get_start`. Here is an example of some important coordinates:"
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:401
+msgid "Transforming mobjects into other mobjects"
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:402
+msgid "It is also possible to transform a mobject into another mobject like this:"
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:413
+msgid "The Transform function maps points of the previous mobject to the points of the next mobject. This might result in strange behaviour, e.g. when the dots of one mobject are arranged clockwise and the other points are arranged counterclockwise. Here it might help to use the `flip` function and reposition the points via the `roll <https://numpy.org/doc/stable/reference/generated/numpy.roll.html>`_ function of numpy:"
+msgstr ""
+
+#: ../../source/tutorials/building_blocks.rst:439
+msgid "Scenes"
+msgstr ""
+
+

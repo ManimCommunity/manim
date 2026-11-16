@@ -1,0 +1,452 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/changelog/0.11.0-changelog.rst:3
+msgid "v0.11.0"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:0
+msgid "Date"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:5
+msgid "October 02, 2021"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:8
+msgid "Contributors"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:10
+msgid "A total of 31 people contributed to this release. People with a '+' by their names authored a patch for the first time."
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:14
+#: ../../source/changelog/0.11.0-changelog.rst:40
+msgid "Aathish Sivasubrahmanian"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:15
+#: ../../source/changelog/0.11.0-changelog.rst:41
+msgid "Benjamin Hackl"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:16
+msgid "Charlie +"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:17
+msgid "Christopher Besch +"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:18
+#: ../../source/changelog/0.11.0-changelog.rst:43
+msgid "Darylgolden"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:19
+msgid "Evan Boehs +"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:20
+#: ../../source/changelog/0.11.0-changelog.rst:45
+msgid "GameDungeon"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:21
+#: ../../source/changelog/0.11.0-changelog.rst:46
+msgid "Hugues Devimeux"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:22
+msgid "Jerónimo Squartini"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:23
+#: ../../source/changelog/0.11.0-changelog.rst:49
+msgid "Laith Bahodi"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:24
+msgid "Meredith Espinosa +"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:25
+#: ../../source/changelog/0.11.0-changelog.rst:51
+msgid "Mysaa"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:26
+#: ../../source/changelog/0.11.0-changelog.rst:52
+msgid "Naveen M K"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:27
+msgid "Nicolai Weitkemper +"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:28
+#: ../../source/changelog/0.11.0-changelog.rst:54
+msgid "Oliver"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:29
+#: ../../source/changelog/0.11.0-changelog.rst:56
+msgid "Ryan McCauley"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:30
+msgid "Tim +"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:31
+#: ../../source/changelog/0.11.0-changelog.rst:59
+msgid "icedcoffeeee"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:32
+msgid "imadjamil +"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:33
+msgid "leleogere +"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:34
+msgid "Максим Заякин +"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:37
+msgid "The patches included in this release have been reviewed by the following contributors."
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:42
+msgid "Charlie"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:44
+msgid "Evan Boehs"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:47
+msgid "Jan-Hendrik Müller"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:48
+msgid "Jason Villanueva"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:50
+msgid "Mark Miller"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:53
+msgid "Nicolai Weitkemper"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:55
+msgid "Raghav Goel"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:57
+msgid "Skaft"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:58
+msgid "friedkeenan"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:60
+msgid "leleogere"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:63
+msgid "Pull requests merged"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:65
+msgid "A total of 55 pull requests were merged for this release."
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:68
+msgid "Breaking changes"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:71
+msgid ":pr:`1990`: Changed and improved the implementation of :meth:`.CoordinateSystem.get_area` to work without Riemann rectangles"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:71
+msgid "This changes how :meth:`.CoordinateSystem.get_area` is implemented. To mimic the old behavior (tiny Riemann rectangles), use :meth:`.CoordinateSystem.get_riemann_rectangles` with a small value for ``dx``."
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:74
+msgid ":pr:`2095`: Changed angles for polar coordinates to use math convention"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:74
+msgid "This PR switches the parameter names ``phi`` and ``theta`` in :func:`cartesian_to_spherical` and :func:`spherical_to_cartesian` to align with the `usual definition in mathematics <https://user-images.githubusercontent.com/83535735/131709630-87290522-7747-4b21-9411-dd3d35ebaf0f.png>`__."
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:77
+msgid "Highlights"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:80
+msgid ":pr:`2094`: Implemented :class:`~.ImplicitFunction` and :meth:`.CoordinateSystem.get_implicit_curve` for plotting implicit curves"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:80
+msgid "An :class:`~.ImplicitFunction` that plots the points :math:`(x, y)` which satisfy some equation :math:`f(x,y) = 0`."
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:82
+msgid ":pr:`2075`: Implemented :meth:`.Mobject.set_default`, a mechanism for changing default values of keyword arguments"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:87
+msgid ":pr:`1998`: Added support for Boolean Operations on VMobjects"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:86
+msgid "This PR introduces boolean operations for :class:`~.VMobject`; see details and examples at :class:`~.Union`, :class:`~.Difference`, :class:`~.Intersection` and :class:`~.Exclusion`."
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:90
+msgid "Deprecated classes and functions"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:92
+msgid ":pr:`2123`: Renamed ``distance`` parameter of :class:`.ThreeDScene` and :class:`.ThreeDCamera` to ``focal_distance``"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:95
+msgid ":pr:`2102`: Deprecated :class:`~.SampleSpaceScene` and :class:`~.ReconfigurableScene`"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:98
+msgid ":pr:`2061`: Removed deprecated ``u_min``, ``u_max``, ``v_min``, ``v_max`` in :class:`~.Surface`"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:101
+msgid ":pr:`2024`: Deprecated redundant methods :meth:`.Mobject.rotate_in_place`, :meth:`.Mobject.scale_in_place`, :meth:`.Mobject.scale_about_point`"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:104
+msgid ":pr:`1991`: Deprecated :meth:`.VMobject.get_points`"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:108
+msgid "New features"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:110
+msgid ":pr:`2118`: Added 3D support for :class:`~.ArrowVectorField` and :class:`~.StreamLines`"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:113
+msgid ":pr:`1469`: Added :meth:`.VMobject.proportion_from_point` to measure the proportion of points along a Bezier curve"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:117
+msgid "Enhancements"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:119
+msgid ":pr:`2111`: Improved setting of OpenGL colors"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:122
+msgid ":pr:`2113`: Added OpenGL compatibility to :meth:`.ThreeDScene.begin_ambient_camera_rotation` and :meth:`.ThreeDScene.move_camera`"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:125
+msgid ":pr:`2016`: Added OpenGL support for :mod:`~.mobject.boolean_ops`"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:128
+msgid ":pr:`2084`: Added :meth:`~Table.get_highlighted_cell` and fixed :meth:`~Table.add_highlighted_cell`"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:131
+msgid ":pr:`2013`: Removed unnecessary check in :class:`~.TransformMatchingAbstractBase`"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:134
+msgid ":pr:`1971`: Added OpenGL support for :class:`~.StreamLines`"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:137
+msgid ":pr:`2041`: Added config option to enable OpenGL wireframe for debugging"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:141
+msgid "Fixed bugs"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:143
+msgid ":pr:`2070`: Fixed :meth:`~OpenGLRenderer.get_frame` when window is created"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:146
+msgid ":pr:`2071`: Fixed :class:`~AnimationGroup` OpenGL compatibility"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:149
+msgid ":pr:`2108`: Fixed swapped axis step values in :class:`~.NumberPlane`"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:152
+msgid ":pr:`2072`: Added OpenGL compatibility for :class:`~.Cube`."
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:155
+msgid ":pr:`2060`: Fixed OpenGL compatibility issue for meth:`~Line.set_opacity`"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:158
+msgid ":pr:`2037`: Fixed return value of :meth:`~.OpenGLMobject.apply_complex_function`"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:161
+msgid ":pr:`2039`: Added OpenGL compatibility for :meth:`~Cylinder.add_bases`."
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:164
+msgid ":pr:`2066`: Fixed error raised by logging when cache is full"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:167
+msgid ":pr:`2026`: Fixed OpenGL shift animation for :class:`~.Text`"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:170
+msgid ":pr:`2028`: Fixed OpenGL overriding SVG fill color"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:173
+msgid ":pr:`2043`: Fixed bug where :meth:`.NumberLine.add_labels`  cannot accept non-mobject labels"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:176
+msgid ":pr:`2011`: Fixed ``-a`` flag for OpenGL rendering"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:179
+msgid ":pr:`1994`: Fix :meth:`~.input_to_graph_point` when passing a line graph (from :meth:`.Axes.get_line_graph`)"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:182
+msgid ":pr:`2017`: Avoided using deprecated ``get_points`` method and fixed :class:`~.OpenGLPMPoint` color"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:186
+msgid "Documentation-related changes"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:188
+msgid ":pr:`2131`: Copyedited the configuration tutorial in the documentation"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:191
+msgid ":pr:`2120`: Changed ``manim_directive`` to use a clean configuration via ``tempconfig``"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:194
+msgid ":pr:`2122`: Fixed broken links in inheritance graphs by moving them to ``reference.rst``"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:197
+msgid ":pr:`2115`: Improved docstring of :meth:`.PMobject.add_points`"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:200
+msgid ":pr:`2116`: Made type hint for ``line_spacing`` argument of :class:`~.Paragraph` more accurate"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:203
+msgid ":pr:`2117`: Changed the way the background color was set in a documentation example to avoid leaking the setting to other examples"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:206
+msgid ":pr:`2101`: Added note that translation process is not ready"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:209
+msgid ":pr:`2055`: Fixed parameter types of :meth:`.Graph.add_edges` and :meth:`.Graph.add_vertices`"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:212
+msgid ":pr:`862`: Prepared documentation for translation (still work in progress)"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:215
+msgid ":pr:`2035`: Fixed broken link in README"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:218
+msgid ":pr:`2020`:  Corrected paths to user-wide configuration files for MacOS and Linux"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:222
+msgid "Changes concerning the testing system"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:224
+msgid ":pr:`2008`: Reuse CLI flag tests for OpenGL"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:227
+msgid ":pr:`2080`: Reused :class:`~.Mobject` tests for :class:`~.OpenGLMobject`"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:231
+msgid "Changes to our development infrastructure"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:233
+msgid ":pr:`2004`: Cancel previous workflows in the same branch in Github Actions"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:237
+msgid "Code quality improvements and similar refactors"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:239
+msgid ":pr:`2050`: Make colour aliases IDE-friendly"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:242
+msgid ":pr:`2126`: Fixed whitespace in info message issued by :meth:`.SceneFileWriter.clean_cache`"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:245
+msgid ":pr:`2124`: Upgraded several dependencies (in particular: ``skia-pathops``)"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:248
+msgid ":pr:`2001`: Fixed several warnings issued by LGTM"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:251
+msgid ":pr:`2064`: Removed duplicate insert shader directory"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:254
+msgid ":pr:`2027`: Improved wording in info message issued by :meth:`.SceneFileWriter.clean_cache`"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:257
+msgid ":pr:`1968`: Sharpened Flake8 configuration and fixed resulting warnings"
+msgstr ""
+
+#: ../../source/changelog/0.11.0-changelog.rst:261
+msgid "New releases"
+msgstr ""
+
+

@@ -1,0 +1,123 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/installation/linux.rst:2
+msgid "Linux"
+msgstr ""
+
+#: ../../source/installation/linux.rst:4
+msgid "The installation instructions depend on your particular operating system and package manager. If you happen to know exactly what you are doing, you can also simply ensure that your system has:"
+msgstr ""
+
+#: ../../source/installation/linux.rst:8
+msgid "a reasonably recent version of Python 3 (3.7–3.10),"
+msgstr ""
+
+#: ../../source/installation/linux.rst:9
+msgid "with working Cairo bindings in the form of `pycairo <https://cairographics.org/pycairo/>`__,"
+msgstr ""
+
+#: ../../source/installation/linux.rst:11
+msgid "FFmpeg accessible from the command line as ``ffmpeg``,"
+msgstr ""
+
+#: ../../source/installation/linux.rst:12
+msgid "and `Pango <https://pango.gnome.org>`__ headers."
+msgstr ""
+
+#: ../../source/installation/linux.rst:14
+msgid "Then, installing Manim is just a matter of running:"
+msgstr ""
+
+#: ../../source/installation/linux.rst:22
+msgid "In light of the current efforts of migrating to rendering via OpenGL, this list might be incomplete. Please `let us know <https://github.com/ManimCommunity/manim/issues/new/choose>` if you ran into missing dependencies while installing."
+msgstr ""
+
+#: ../../source/installation/linux.rst:27
+msgid "In any case, we have also compiled instructions for several common combinations of operating systems and package managers below."
+msgstr ""
+
+#: ../../source/installation/linux.rst:31
+msgid "Required Dependencies"
+msgstr ""
+
+#: ../../source/installation/linux.rst:34
+msgid "apt – Ubuntu / Mint / Debian"
+msgstr ""
+
+#: ../../source/installation/linux.rst:36
+msgid "To first update your sources, and then install Cairo, Pango, and FFmpeg simply run:"
+msgstr ""
+
+#: ../../source/installation/linux.rst:44
+msgid "If you don't have python3-pip installed, install it via:"
+msgstr ""
+
+#: ../../source/installation/linux.rst:50
+msgid "Then, to install Manim, run:"
+msgstr ""
+
+#: ../../source/installation/linux.rst:56
+#: ../../source/installation/linux.rst:90
+#: ../../source/installation/linux.rst:123
+msgid "Continue by reading the :ref:`optional dependencies <linux-optional-dependencies>` section."
+msgstr ""
+
+#: ../../source/installation/linux.rst:60
+msgid "dnf – Fedora / CentOS / RHEL"
+msgstr ""
+
+#: ../../source/installation/linux.rst:62
+msgid "To install Cairo and Pango:"
+msgstr ""
+
+#: ../../source/installation/linux.rst:68
+msgid "In order to successfully build the ``pycairo`` wheel, you will also need the Python development headers:"
+msgstr ""
+
+#: ../../source/installation/linux.rst:75
+msgid "FFmpeg is only available via the RPMfusion repository which you have to configure first – please consult https://rpmfusion.org/Configuration/ for instructions. Then, install FFmpeg:"
+msgstr ""
+
+#: ../../source/installation/linux.rst:83
+msgid "At this point you have all required dependencies and can install Manim by running:"
+msgstr ""
+
+#: ../../source/installation/linux.rst:94
+msgid "pacman – Arch / Manjaro"
+msgstr ""
+
+#: ../../source/installation/linux.rst:98
+msgid "Thanks to *groctel*, there is a `dedicated Manim package on the AUR! <https://aur.archlinux.org/packages/manim/>`"
+msgstr ""
+
+#: ../../source/installation/linux.rst:101
+msgid "If you don't want to use the packaged version from AUR, here is what you need to do manually: Update your package sources, then install Cairo, Pango, and FFmpeg:"
+msgstr ""
+
+#: ../../source/installation/linux.rst:110
+msgid "If you don't have ``python-pip`` installed, get it by running:"
+msgstr ""
+
+#: ../../source/installation/linux.rst:116
+msgid "then simply install Manim via:"
+msgstr ""
+
+#: ../../source/installation/linux.rst:130
+msgid "Optional Dependencies"
+msgstr ""
+
+#: ../../source/installation/linux.rst:132
+msgid "In order to make use of Manim's interface to LaTeX for, e.g., rendering equations, LaTeX has to be installed as well. Note that this is an optional dependency: if you don't intend to use LaTeX, you don't have to install it."
+msgstr ""
+
+#: ../../source/installation/linux.rst:136
+msgid "You can use whichever LaTeX distribution you like or whichever is easiest to install with your package manager. Usually, `TeX Live <https://www.tug.org/texlive/>`__ is a good candidate if you don't care too much about disk space."
+msgstr ""
+
+

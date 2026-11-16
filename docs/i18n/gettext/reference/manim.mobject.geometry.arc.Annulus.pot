@@ -1,0 +1,80 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.geometry.arc.Annulus.rst:2
+msgid "Annulus"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.Annulus.rst:4
+msgid "Qualified name: ``manim.mobject.geometry.arc.Annulus``"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Annulus:1
+msgid "Bases: :py:class:`manim.mobject.geometry.arc.Circle`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Annulus:1
+msgid "Region between two concentric :class:`Circles <.Circle>`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Annulus:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Annulus:3
+msgid "The radius of the inner :class:`Circle`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Annulus:4
+msgid "The radius of the outer :class:`Circle`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Annulus:5
+msgid "Additional arguments to be passed to :class:`Annulus`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Annulus:8
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.Annulus.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.Annulus.rst:21:<autosummary>:1
+#: ../../source/reference/manim.mobject.geometry.arc.Annulus.rst:21:<autosummary>:1
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Annulus.generate_points:1
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Annulus.generate_points:1
+msgid "Initializes :attr:`points` and therefore the shape."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.Annulus.rst:23
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Annulus.generate_points:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Annulus.generate_points:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Annulus.generate_points:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Annulus.generate_points:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.Annulus.generate_points:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+

@@ -1,0 +1,65 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference_index/mobjects.rst:2
+msgid "Mobjects"
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:22:<autosummary>:1
+msgid "Special rectangles."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:22:<autosummary>:1
+msgid "Various geometric Mobjects."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:22:<autosummary>:1
+msgid "Mobjects used to represent mathematical graphs (think graph theory, not plotting)."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:22:<autosummary>:1
+msgid "Coordinate systems and function graphing related mobjects."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:22:<autosummary>:1
+msgid "Utilities for Manim's logo and banner."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:22:<autosummary>:1
+msgid "Mobjects representing matrices."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:22:<autosummary>:1
+msgid "Base classes for objects that can be displayed."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:22:<autosummary>:1
+msgid "Mobjects related to SVG images."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:22:<autosummary>:1
+msgid "Mobjects representing tables."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:22:<autosummary>:1
+msgid "Mobjects used to display Text using Pango or LaTeX."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:22:<autosummary>:1
+msgid "Three-dimensional mobjects."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:22:<autosummary>:1
+msgid "Specialized mobject base classes."
+msgstr ""
+
+#: ../../source/reference_index/mobjects.rst:22:<autosummary>:1
+msgid "Simple mobjects that can be used for storing (and updating) a value."
+msgstr ""
+
+

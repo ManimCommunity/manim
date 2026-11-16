@@ -1,0 +1,218 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.utils.iterables.rst:2
+msgid "iterables"
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables:1
+msgid "Operations on iterables."
+msgstr ""
+
+#: ../../source/reference/manim.utils.iterables.rst:20
+msgid "Functions"
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.adjacent_n_tuples:1
+msgid "Returns the Sequence objects cyclically split into n length tuples."
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.adjacent_n_tuples:6
+msgid "alias with n=2"
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.adjacent_n_tuples:9
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.adjacent_pairs:6
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.batch_by_property:8
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.concatenate_lists:4
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.list_difference_update:4
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.list_update:6
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.listify:4
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.make_even:10
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.make_even_by_cycling:10
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.remove_nones:4
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_array:13
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_preserving_order:16
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_with_interpolation:16
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.tuplify:4
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.uniq_chain:5
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.adjacent_n_tuples:10
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.adjacent_pairs:7
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.batch_by_property:9
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.concatenate_lists:5
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.list_difference_update:5
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.list_update:7
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.listify:5
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.make_even:11
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.make_even_by_cycling:11
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.remove_nones:5
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_array:14
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_preserving_order:17
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_with_interpolation:17
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.tuplify:5
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.uniq_chain:6
+msgid "Normal usage::"
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.adjacent_n_tuples:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.adjacent_pairs:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.all_elements_are_instances:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.batch_by_property:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.concatenate_lists:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.list_difference_update:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.list_update:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.make_even:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.make_even_by_cycling:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.remove_list_redundancies:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.remove_nones:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_array:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_preserving_order:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_with_interpolation:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.stretch_array_to_length:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.uniq_chain:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.adjacent_n_tuples:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.adjacent_pairs:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.all_elements_are_instances:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.batch_by_property:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.concatenate_lists:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.list_difference_update:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.list_update:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.listify:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.make_even:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.make_even_by_cycling:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.remove_list_redundancies:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.remove_nones:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_array:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_preserving_order:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_with_interpolation:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.stretch_array_to_length:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.tuplify:0
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.uniq_chain:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.adjacent_pairs:1
+msgid "Alias for ``adjacent_n_tuples(objects, 2)``."
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.all_elements_are_instances:1
+msgid "Returns ``True`` if all elements of iterable are instances of Class. False otherwise."
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.batch_by_property:1
+msgid "Takes in a Sequence, and returns a list of tuples, (batch, prop) such that all items in a batch have the same output when put into the Callable property_func, and such that chaining all these batches together would give the original Sequence (i.e. order is preserved)."
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.concatenate_lists:1
+msgid "Combines the Iterables provided as arguments into one list."
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.list_difference_update:1
+msgid "Returns a list containing all the elements of l1 not in l2."
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.list_update:3
+msgid "Used instead of ``set.update()`` to maintain order,"
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.list_update:2
+msgid "making sure duplicates are removed from l1, not l2. Removes overlap of l1 and l2 and then concatenates l2 unchanged."
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.listify:1
+msgid "Converts obj to a list intelligently."
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.make_even:2
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.make_even_by_cycling:2
+msgid "Extends the shorter of the two iterables with duplicate values until its"
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.make_even:2
+msgid "length is equal to the longer iterable (favours earlier elements)."
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.make_even:7
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_preserving_order:10
+msgid "cycles elements instead of favouring earlier ones"
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.make_even_by_cycling:2
+msgid "length is equal to the longer iterable (cycles over shorter iterable)."
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.make_even_by_cycling:7
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_array:7
+msgid "favours earlier elements instead of cycling them"
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.remove_list_redundancies:1
+msgid "Used instead of ``list(set(l))`` to maintain order. Keeps the last occurrence of each element."
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.remove_nones:1
+msgid "Removes elements where bool(x) evaluates to False."
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_array:2
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_preserving_order:5
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_with_interpolation:5
+msgid "Extends/truncates nparray so that ``len(result) == length``."
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_array:2
+msgid "The elements of nparray are cycled to achieve the desired length."
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_array:10
+msgid "similar cycling behaviour for balancing 2 iterables"
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_preserving_order:2
+msgid "The elements of nparray are duplicated to achieve the desired length (favours earlier elements)."
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_preserving_order:5
+msgid "Constructs a zeroes array of length if nparray is empty."
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_preserving_order:13
+msgid "similar earlier-favouring behaviour for balancing 2 iterables"
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_with_interpolation:2
+msgid "New elements are interpolated to achieve the desired length."
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_with_interpolation:4
+msgid "Note that if nparray's length changes, its dtype may too (e.g. int -> float: see Examples)"
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_with_interpolation:10
+msgid "cycles elements instead of interpolating"
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.resize_with_interpolation:13
+msgid "favours earlier elements instead of interpolating"
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.tuplify:1
+msgid "Converts obj to a tuple intelligently."
+msgstr ""
+
+#: ../../../manim/utils/iterables.py:docstring of manim.utils.iterables.uniq_chain:2
+msgid "Returns a generator that yields all unique elements of the Iterables"
+msgstr ""
+
+

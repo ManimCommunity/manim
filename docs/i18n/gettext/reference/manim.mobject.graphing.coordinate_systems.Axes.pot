@@ -1,0 +1,209 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.graphing.coordinate_systems.Axes.rst:2
+msgid "Axes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.coordinate_systems.Axes.rst:4
+msgid "Qualified name: ``manim.mobject.graphing.coordinate\\_systems.Axes``"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes:1
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VGroup`, :py:class:`manim.mobject.graphing.coordinate_systems.CoordinateSystem`"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes:1
+msgid "Creates a set of axes."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes:0
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:0
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.plot_line_graph:0
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.point_to_coords:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes:3
+msgid "The ``(x_min, x_max, x_step)`` values of the x-axis."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes:4
+msgid "The ``(y_min, y_max, y_step)`` values of the y-axis."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes:5
+msgid "The length of the x-axis."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes:6
+msgid "The length of the y-axis."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes:7
+msgid "Arguments to be passed to :class:`~.NumberLine` that influences both axes."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes:8
+msgid "Arguments to be passed to :class:`~.NumberLine` that influence the x-axis."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes:9
+msgid "Arguments to be passed to :class:`~.NumberLine` that influence the y-axis."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes:10
+msgid "Whether or not to include the tips on both axes."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes:11
+msgid "Additional arguments to be passed to :class:`CoordinateSystem` and :class:`~.VGroup`."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes:14
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:16
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.plot_line_graph:21
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.point_to_coords:11
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.coordinate_systems.Axes.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.coordinate_systems.Axes.rst:23:<autosummary>:1
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:1
+msgid "Accepts coordinates from the axes and returns a point with respect to the scene."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.coordinate_systems.Axes.rst:23:<autosummary>:1
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.get_axes:1
+msgid "Gets the axes."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.coordinate_systems.Axes.rst:23:<autosummary>:1
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.plot_line_graph:1
+msgid "Draws a line graph."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.coordinate_systems.Axes.rst:23:<autosummary>:1
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.point_to_coords:1
+msgid "Accepts a point from the scene and returns its coordinates with respect to the axes."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.coordinate_systems.Axes.rst:25
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:3
+msgid "The coordinates. Each coord is passed as a separate argument: ``ax.coords_to_point(1, 2, 3)``.  Also accepts a list of coordinates  ``ax.coords_to_point( [x_0, x_1, ...], [y_0, y_1, ...], ... )``  ``ax.coords_to_point( [[x_0, y_0, z_0], [x_1, y_1, z_1]] )``"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:3
+msgid "The coordinates. Each coord is passed as a separate argument: ``ax.coords_to_point(1, 2, 3)``."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:5
+msgid "Also accepts a list of coordinates"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:7
+msgid "``ax.coords_to_point( [x_0, x_1, ...], [y_0, y_1, ...], ... )``"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:9
+msgid "``ax.coords_to_point( [[x_0, y_0, z_0], [x_1, y_1, z_1]] )``"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:0
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.get_axes:0
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.plot_line_graph:0
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.point_to_coords:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:11
+msgid "A point with respect to the scene's coordinate system. The shape of the array will be similar to the shape of the input."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.coords_to_point:0
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.get_axes:0
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.plot_line_graph:0
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.point_to_coords:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.get_axes:3
+msgid "A pair of axes."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.plot_line_graph:3
+msgid "The graph connects the vertices formed from zipping ``x_values``, ``y_values`` and ``z_values``. Also adds :class:`Dots <.Dot>` at the vertices if ``add_vertex_dots`` is set to ``True``."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.plot_line_graph:7
+msgid "Iterable of values along the x-axis."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.plot_line_graph:8
+msgid "Iterable of values along the y-axis."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.plot_line_graph:9
+msgid "Iterable of values (zeros if z_values is None) along the z-axis."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.plot_line_graph:10
+msgid "Color for the line graph."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.plot_line_graph:11
+msgid "Whether or not to add :class:`~.Dot` at each vertex."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.plot_line_graph:12
+msgid "Radius for the :class:`~.Dot` at each vertex."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.plot_line_graph:13
+msgid "Style arguments to be passed into :class:`~.Dot` at each vertex."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.plot_line_graph:14
+msgid "Additional arguments to be passed into :class:`~.VMobject`."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.plot_line_graph:16
+msgid "A VDict containing both the line and dots (if specified). The line can be accessed with: ``line_graph[\"line_graph\"]``. The dots can be accessed with: ``line_graph[\"vertex_dots\"]``."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.Axes.point_to_coords:3
+msgid "The point, i.e. ``RIGHT`` or ``[0, 1, 0]``. Also accepts a list of points as ``[RIGHT, [0, 1, 0]]``."
+msgstr ""
+
+

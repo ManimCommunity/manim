@@ -1,0 +1,61 @@
+*******
+v0.17.2
+*******
+
+:Date: December 26, 2022
+
+Contributors
+============
+
+A total of 5 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* CaftBotti +
+* Tristan Schulz
+* lgtm-com[bot] +
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Benjamin Hackl
+* Naveen M K
+* Tristan Schulz
+
+Pull requests merged
+====================
+
+A total of 7 pull requests were merged for this release.
+
+Fixed bugs
+----------
+
+* :pr:`3089`: Fixed OpenGL mobjects like :class:`.Surface` by reordering init calls
+
+
+Documentation-related changes
+-----------------------------
+
+* :pr:`3073`: Fixed typo: "Whetherer" to "Whether"
+
+
+* :pr:`3074`: Fixed typo in a comment
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* :pr:`3024`: Add CodeQL workflow for GitHub code scanning
+
+
+* :pr:`3079`: Updated CI syntax for runner version >= 2.298.2
+
+
+* :pr:`3084`: Properly setup CodeQL
+
+
+New releases
+------------
+
+* :pr:`3090`: Prepared new Hotfix Release: ``v0.17.2``

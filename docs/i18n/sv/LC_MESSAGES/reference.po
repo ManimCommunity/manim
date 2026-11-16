@@ -1,0 +1,48 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: 031f65d9b7a2e83b265c23f1c4450271\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Crowdin-Project: 031f65d9b7a2e83b265c23f1c4450271\n"
+"X-Crowdin-Project-ID: 1\n"
+"X-Crowdin-Language: sv\n"
+"X-Crowdin-File: /[ManimCommunity.manim] main/docs/i18n/gettext/reference.pot\n"
+"X-Crowdin-File-ID: 5183\n"
+"Language-Team: Swedish\n"
+"Language: sv_SE\n"
+"PO-Revision-Date: 2021-11-06 12:30\n"
+
+#: ../../source/reference.rst:2
+msgid "Reference Manual"
+msgstr "Referensmanual"
+
+#: ../../source/reference.rst:4
+msgid "This reference manual details modules, functions, and variables included in Manim, describing what they are and what they do.  For learning how to use Manim, see :doc:`tutorials`.  For a list of changes since the last release, see the :doc:`changelog`."
+msgstr "Denna referensmanual innehåller moduler, funktioner och variabler som inkluderas in Manim och beskriver de är och vad de gör. For att lära dig hur man använder Manim, se :doc:`tutorials`. For en lista över förändringar sedan den senaste utgåvan, se :doc:`förändringsrapporten`."
+
+#: ../../source/reference.rst:9
+msgid "The pages linked to here are currently a work in progress."
+msgstr "De sidor som dessa länkar leder till är fortfarande under aktiv påbyggnad."
+
+#: ../../source/reference.rst:12
+msgid "Inheritance Graphs"
+msgstr "Grafer för arv"
+
+#: ../../source/reference.rst:15
+msgid "Animations"
+msgstr "Animationer"
+
+#: ../../source/reference.rst:35
+msgid "Cameras"
+msgstr "Kameror"
+
+#: ../../source/reference.rst:47
+msgid "Mobjects"
+msgstr "Mobjekt"
+
+#: ../../source/reference.rst:84
+msgid "Scenes"
+msgstr "Scener"
+

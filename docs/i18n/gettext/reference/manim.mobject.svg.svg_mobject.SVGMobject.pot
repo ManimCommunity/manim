@@ -1,0 +1,108 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:2
+msgid "SVGMobject"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:4
+msgid "Qualified name: ``manim.mobject.svg.svg\\_mobject.SVGMobject``"
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject:1
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject:1
+msgid "A SVGMobject is a Vector Mobject constructed from an SVG (or XDV) file."
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject:3
+msgid "SVGMobjects are constructed from the XML data within the SVG file structure. As such, subcomponents from the XML data can be accessed via the submobjects attribute. There is varying amounts of support for SVG elements, experiment with SVG files at your own peril."
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject:9
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject:16
+msgid "The file's path name. When possible, the full path is preferred but a relative path may be used as well. Relative paths are relative to the directory specified by the `--assets_dir` command line argument."
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject:21
+msgid "Whether the SVGMobject should be centered to the origin. Defaults to `True`."
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject:23
+msgid "Specify the final height of the SVG file. Defaults to 2 units."
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject:25
+msgid "Specify the width the SVG file should occupy. Defaults to `None`."
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject:27
+msgid "Whether the hierarchies of VGroups generated should be flattened. Defaults to `True`."
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject:29
+msgid "The stroke width of the outer edge of an SVG path element. Defaults to `4`."
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject:31
+msgid "Specifies the opacity of the image. `1` is opaque, `0` is transparent. Defaults to `1`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:23:<autosummary>:1
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:23:<autosummary>:1
+msgid "Called by the Mobject abstract base class."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:23:<autosummary>:1
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.init_colors:1
+msgid "Initializes the colors."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.svg_mobject.SVGMobject.rst:25
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.generate_points:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.generate_points:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.generate_points:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.generate_points:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.generate_points:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.generate_points:1
+#: ../../../manim/mobject/svg/svg_mobject.py:docstring of manim.mobject.svg.svg_mobject.SVGMobject.generate_points:1
+msgid "Called by the Mobject abstract base class. Responsible for generating the SVGMobject's points from XML tags, populating self.mobjects, and any submobjects within self.mobjects."
+msgstr ""
+
+

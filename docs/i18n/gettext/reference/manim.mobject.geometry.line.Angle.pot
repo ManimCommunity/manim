@@ -1,0 +1,177 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.geometry.line.Angle.rst:2
+msgid "Angle"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.line.Angle.rst:4
+msgid "Qualified name: ``manim.mobject.geometry.line.Angle``"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle:1
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle:1
+msgid "A circular arc or elbow-type mobject representing an angle of two lines."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle:0
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.from_three_points:0
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.get_value:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle:3
+msgid "The first line."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle:4
+msgid "The second line."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle:5
+msgid "The radius of the :class:`Arc`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle:6
+msgid "A sequence of two :class:`int` numbers determining which of the 4 quadrants should be used. The first value indicates whether to anchor the arc on the first line closer to the end point (1) or start point (-1), and the second value functions similarly for the end (1) or start (-1) of the second line. Possibilities: (1,1), (-1,1), (1,-1), (-1,-1)."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle:12
+msgid "Toggles between the two possible angles defined by two points and an arc center. If set to False (default), the arc will always go counterclockwise from the point on line1 until the point on line2 is reached. If set to True, the angle will go clockwise from line1 to line2."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle:15
+msgid "Allows for a :class:`Dot` in the arc. Mainly used as an convention to indicate a right angle. The dot can be customized in the next three parameters."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle:18
+msgid "The radius of the :class:`Dot`. If not specified otherwise, this radius will be 1/10 of the arc radius."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle:20
+msgid "Relative distance from the center to the arc: 0 puts the dot in the center and 1 on the arc itself."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle:22
+msgid "The color of the :class:`Dot`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle:24
+msgid "Produces an elbow-type mobject indicating a right angle, see :class:`RightAngle` for more information and a shorthand."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle:27
+msgid "Further keyword arguments that are passed to the constructor of :class:`Arc` or :class:`Elbow`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle:30
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.from_three_points:15
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.get_lines:7
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.get_value:9
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle:31
+msgid "The first example shows some right angles with a dot in the middle while the second example shows all 8 possible angles defined by two lines."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.line.Angle.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.line.Angle.rst:22:<autosummary>:1
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.from_three_points:1
+msgid "The angle between the lines AB and BC."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.line.Angle.rst:22:<autosummary>:1
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.get_lines:1
+msgid "Get the lines forming an angle of the :class:`Angle` class."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.line.Angle.rst:22:<autosummary>:1
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.get_value:1
+msgid "Get the value of an angle of the :class:`Angle` class."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.line.Angle.rst:24
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.from_three_points:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.from_three_points:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.from_three_points:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.from_three_points:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.from_three_points:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.from_three_points:3
+msgid "This constructs the angle :math:`\\angle ABC`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.from_three_points:5
+msgid "The endpoint of the first angle leg"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.from_three_points:6
+msgid "The vertex of the angle"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.from_three_points:7
+msgid "The endpoint of the second angle leg"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.from_three_points:8
+msgid "Further keyword arguments are passed to :class:`.Angle`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.from_three_points:0
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.get_lines:0
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.get_value:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.from_three_points:10
+msgid "Angle(line1, line2, radius=0.5, quadrant=(-1,1), stroke_width=8), Angle(line1, line2, radius=0.7, quadrant=(-1,-1), color=RED, other_angle=True),"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.from_three_points:0
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.get_lines:0
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.get_value:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.get_lines:3
+msgid "A :class:`~.VGroup` containing the lines that form the angle of the :class:`Angle` class."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.get_value:3
+msgid "A boolean to decide the unit (deg/rad) in which the value of the angle is returned."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/line.py:docstring of manim.mobject.geometry.line.Angle.get_value:5
+msgid "The value in degrees/radians of an angle of the :class:`Angle` class."
+msgstr ""
+
+

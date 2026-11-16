@@ -1,0 +1,682 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:2
+msgid "Scene"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:4
+msgid "Qualified name: ``manim.scene.scene.Scene``"
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene:1
+msgid "Bases: :py:class:`object`"
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene:1
+msgid "A Scene is the canvas of your animation."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene:3
+msgid "The primary role of :class:`Scene` is to provide the user with tools to manage mobjects and animations.  Generally speaking, a manim script consists of a class that derives from :class:`Scene` whose :meth:`Scene.construct` method is overridden by the user's code."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene:8
+msgid "Mobjects are displayed on screen by calling :meth:`Scene.add` and removed from screen by calling :meth:`Scene.remove`.  All mobjects currently on screen are kept in :attr:`Scene.mobjects`.  Animations are played by calling :meth:`Scene.play`."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene:12
+msgid "A :class:`Scene` is rendered internally by calling :meth:`Scene.render`.  This in turn calls :meth:`Scene.setup`, :meth:`Scene.construct`, and :meth:`Scene.tear_down`, in that order."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene:16
+msgid "It is not recommended to override the ``__init__`` method in user Scenes.  For code that should be ran before a Scene is rendered, use :meth:`Scene.setup` instead."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene:20
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_sound:12
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_subcaption:12
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.construct:14
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene:21
+msgid "Override the :meth:`Scene.construct` method with your code."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add:1
+msgid "Mobjects will be displayed, from background to foreground in the order with which they are added."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_foreground_mobject:1
+msgid "Adds a single mobject to the foreground, and internally to the list foreground_mobjects, and mobjects."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_foreground_mobjects:1
+msgid "Adds mobjects to the foreground, and internally to the list foreground_mobjects, and mobjects."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_sound:1
+msgid "This method is used to add a sound to the animation."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_subcaption:1
+msgid "Adds an entry in the corresponding subcaption file at the current time stamp."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_updater:1
+msgid "Add an update function to the scene."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.begin_animations:1
+msgid "Start the animations of the scene."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.bring_to_back:1
+msgid "Removes the mobject from the scene and adds them to the back of the scene."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.bring_to_front:1
+msgid "Adds the passed mobjects to the scene again, pushing them to he front of the scene."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.clear:1
+msgid "Removes all mobjects present in self.mobjects and self.foreground_mobjects from the scene."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.compile_animation_data:1
+msgid "Given a list of animations, compile the corresponding static and moving mobjects, and gather the animation durations."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.compile_animations:1
+msgid "Creates _MethodAnimations from any _AnimationBuilders and updates animation kwargs with kwargs passed to play()."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.construct:1
+msgid "Add content to the Scene."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_attrs:1
+msgid "Gets attributes of a scene given the attribute's identifier/name."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+msgid "Returns list of family-members of all mobjects in scene."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_moving_mobjects:1
+msgid "Gets all moving mobjects in the passed animation(s)."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_restructured_mobject_list:1
+msgid "Given a list of mobjects and a list of mobjects to be removed, this filters out the removable mobjects from the list of mobjects."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_run_time:1
+msgid "Gets the total run time for a list of animations."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+msgid "You will hardly use this when making your own animations."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_top_level_mobjects:1
+msgid "Returns all mobjects which are not submobjects."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.interactive_embed:1
+msgid "Like embed(), but allows for screen interaction."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.is_current_animation_frozen_frame:1
+msgid "Returns whether the current animation produces a static frame (generally a Wait)."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+msgid "Create separation here; the last section gets finished and a new one gets created."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.pause:1
+msgid "Pauses the scene (i.e., displays a frozen frame)."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.play:1
+msgid "Plays an animation in this scene."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.play_internal:1
+msgid "This method is used to prep the animations for rendering, apply the arguments and parameters required to them, render them, and write them to the video file."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove:1
+msgid "Removes mobjects in the passed list of mobjects from the scene and the foreground, by removing them from \"mobjects\" and \"foreground_mobjects\""
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_foreground_mobject:1
+msgid "Removes a single mobject from the foreground, and internally from the list foreground_mobjects."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_foreground_mobjects:1
+msgid "Removes mobjects from the foreground, and internally from the list foreground_mobjects."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_updater:1
+msgid "Remove an update function from the scene."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.render:1
+msgid "Renders this Scene."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.restructure_mobjects:4
+msgid "tl:wr"
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.setup:1
+msgid "This is meant to be implemented by any scenes which are commonly subclassed, and have some common setup involved before the construct method is called."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.should_update_mobjects:1
+msgid "Returns True if the mobjects of this scene should be updated."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.tear_down:1
+msgid "This is meant to be implemented by any scenes which are commonly subclassed, and have some common method to be invoked before the scene ends."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.update_mobjects:1
+msgid "Begins updating all mobjects in the Scene."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.update_self:1
+msgid "Run all scene updater functions."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.wait:1
+msgid "Plays a \"no operation\" animation."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:74:<autosummary>:1
+msgid "Like a wrapper for wait()."
+msgstr ""
+
+#: ../../source/reference/manim.scene.scene.Scene.rst:76
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_foreground_mobject:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_foreground_mobjects:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_sound:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_subcaption:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_updater:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.bring_to_back:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.bring_to_front:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.compile_animation_data:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.compile_animations:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_attrs:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_moving_mobjects:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_restructured_mobject_list:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_run_time:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_time_progression:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.next_section:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.pause:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.play:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.play_internal:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_foreground_mobject:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_foreground_mobjects:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_updater:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.render:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.restructure_mobjects:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.update_mobjects:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.update_self:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.wait:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.wait_until:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add:4
+msgid "Mobjects to add."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_foreground_mobject:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_foreground_mobjects:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.bring_to_back:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.bring_to_front:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.clear:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.compile_animation_data:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.compile_animations:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_attrs:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_mobject_family_members:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_moving_mobjects:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_restructured_mobject_list:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_run_time:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_time_progression:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_top_level_mobjects:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_foreground_mobject:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_foreground_mobjects:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.restructure_mobjects:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add:7
+msgid "The same scene after adding the Mobjects in."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_foreground_mobject:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_foreground_mobjects:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_subcaption:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_updater:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.begin_animations:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.bring_to_back:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.bring_to_front:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.clear:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.compile_animation_data:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.compile_animations:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_attrs:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_mobject_family_members:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_moving_mobjects:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_restructured_mobject_list:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_run_time:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_time_progression:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_top_level_mobjects:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.is_current_animation_frozen_frame:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.next_section:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_foreground_mobject:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_foreground_mobjects:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_updater:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.restructure_mobjects:0
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.should_update_mobjects:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_foreground_mobject:4
+msgid "The Mobject to add to the foreground."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_foreground_mobject:7
+msgid "The Scene, with the foreground mobject added."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_foreground_mobjects:4
+msgid "The Mobjects to add to the foreground."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_foreground_mobjects:7
+msgid "The Scene, with the foreground mobjects added."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_sound:3
+msgid "The path to the sound file."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_sound:5
+msgid "The offset in the sound file after which the sound can be played."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_sound:8
+msgid "Amplification of the sound."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_sound:29
+msgid "Download the resource for the previous example `here <https://github.com/ManimCommunity/manim/blob/main/docs/source/_static/click.wav>`_ ."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_subcaption:4
+msgid "The current time stamp is obtained from ``Scene.renderer.time``."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_subcaption:6
+msgid "The subcaption content."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_subcaption:7
+msgid "The duration (in seconds) for which the subcaption is shown."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_subcaption:8
+msgid "This offset (in seconds) is added to the starting time stamp of the subcaption."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_subcaption:13
+msgid "This example illustrates both possibilities for adding subcaptions to Manimations::"
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_updater:3
+msgid "The scene updater functions are run every frame, and they are the last type of updaters to run."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_updater:8
+msgid "When using the Cairo renderer, scene updaters that modify mobjects are not detected in the same way that mobject updaters are. To be more concrete, a mobject only modified via a scene updater will not necessarily be added to the list of *moving mobjects* and thus might not be updated every frame."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_updater:15
+msgid "TL;DR: Use mobject updaters to update mobjects."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.add_updater:17
+msgid "The updater function. It takes a float, which is the time difference since the last update (usually equal to the frame rate)."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.bring_to_back:4
+msgid "The mobject(s) to push to the back of the scene."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.bring_to_back:7
+msgid "The Scene, with the mobjects pushed to the back of the scene."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.bring_to_front:4
+msgid "The mobject(s) to bring to the front of the scene."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.bring_to_front:7
+msgid "The Scene, with the mobjects brought to the front of the scene."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.clear:4
+msgid "The Scene, with all of its mobjects in self.mobjects and self.foreground_mobjects removed."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.compile_animation_data:4
+msgid "This also begins the animations."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.compile_animation_data:6
+msgid "Whether the rendering should be skipped, by default False"
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.compile_animation_data:9
+msgid "None if there is nothing to play, or self otherwise."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.compile_animations:4
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.compile_animations:8
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.play:3
+msgid "Animations to be played."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.compile_animations:6
+msgid "Configuration for the call to play()."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.compile_animations:9
+msgid "Tuple[:class:`Animation`]"
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.construct:3
+msgid "From within :meth:`Scene.construct`, display mobjects on screen by calling :meth:`Scene.add` and remove them from screen by calling :meth:`Scene.remove`. All mobjects currently on screen are kept in :attr:`Scene.mobjects`.  Play animations by calling :meth:`Scene.play`."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.construct:9
+msgid "Notes"
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.construct:10
+msgid "Initialization code should go in :meth:`Scene.setup`.  Termination code should go in :meth:`Scene.tear_down`."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.construct:15
+msgid "A typical manim script includes a class derived from :class:`Scene` with an overridden :meth:`Scene.contruct` method:"
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_attrs:3
+msgid "Name(s) of the argument(s) to return the attribute of."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_attrs:6
+msgid "List of attributes of the passed identifiers."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_mobject_family_members:1
+msgid "Returns list of family-members of all mobjects in scene. If a Circle() and a VGroup(Rectangle(),Triangle()) were added, it returns not only the Circle(), Rectangle() and Triangle(), but also the VGroup() object."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_mobject_family_members:6
+msgid "List of mobject family members."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_moving_mobjects:3
+msgid "The animations to check for moving mobjects."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_moving_mobjects:6
+msgid "The list of mobjects that could be moving in the Animation(s)"
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_restructured_mobject_list:4
+msgid "The Mobjects to check."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_restructured_mobject_list:6
+msgid "The list of mobjects to remove."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_restructured_mobject_list:9
+msgid "The list of mobjects with the mobjects to remove removed."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_run_time:3
+msgid "A list of the animations whose total ``run_time`` is to be calculated."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_run_time:7
+msgid "The total ``run_time`` of all of the animations in the list."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_time_progression:1
+msgid "You will hardly use this when making your own animations. This method is for Manim's internal use."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_time_progression:4
+msgid "Returns a CommandLine ProgressBar whose ``fill_time`` is dependent on the ``run_time`` of an animation, the iterations to perform in that animation and a bool saying whether or not to consider the skipped animations."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_time_progression:10
+msgid "The ``run_time`` of the animation."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_time_progression:12
+msgid "The number of iterations in the animation."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_time_progression:14
+msgid "Whether or not to show skipped animations in the progress bar."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_time_progression:17
+msgid "The CommandLine Progress Bar."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.get_top_level_mobjects:3
+msgid "List of top level mobjects."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.next_section:1
+msgid "Create separation here; the last section gets finished and a new one gets created. ``skip_animations`` skips the rendering of all animations in this section. Refer to :doc:`the documentation</tutorials/output_and_config>` on how to use sections."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.pause:3
+msgid "This is an alias for :meth:`.wait` with ``frozen_frame`` set to ``True``."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.pause:6
+msgid "The duration of the pause."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.play:4
+msgid "The content of the external subcaption that should be added during the animation."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.play:6
+msgid "The duration for which the specified subcaption is added. If ``None`` (the default), the run time of the animation is taken."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.play:9
+msgid "An offset (in seconds) for the start time of the added subcaption."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.play:11
+msgid "All other keywords are passed to the renderer."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.play_internal:5
+msgid "Animation or mobject with mobject method and params"
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.play_internal:6
+msgid "named parameters affecting what was passed in ``args``, e.g. ``run_time``, ``lag_ratio`` and so on."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove:5
+msgid "The mobjects to remove."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_foreground_mobject:4
+msgid "The mobject to remove from the foreground."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_foreground_mobject:7
+msgid "The Scene, with the foreground mobject removed."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_foreground_mobjects:4
+msgid "The mobject(s) to remove from the foreground."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_foreground_mobjects:7
+msgid "The Scene, with the foreground mobjects removed."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.remove_updater:3
+msgid "The updater function to be removed."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.render:3
+msgid "If true, opens scene in a file viewer."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.restructure_mobjects:2
+msgid "If your scene has a Group(), and you removed a mobject from the Group, this dissolves the group and puts the rest of the mobjects directly in self.mobjects or self.foreground_mobjects."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.restructure_mobjects:6
+msgid "In cases where the scene contains a group, e.g. Group(m1, m2, m3), but one of its submobjects is removed, e.g. scene.remove(m1), the list of mobjects will be edited to contain other submobjects, but not m1, e.g. it will now insert m2 and m3 to where the group once was."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.restructure_mobjects:11
+msgid "The Mobject to remove."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.restructure_mobjects:13
+msgid "The list of mobjects (\"mobjects\", \"foreground_mobjects\" etc) to remove from."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.restructure_mobjects:15
+msgid "Whether the mobject's families should be recursively extracted."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.restructure_mobjects:18
+msgid "The Scene mobject with restructured Mobjects."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.should_update_mobjects:3
+msgid "In particular, this checks whether"
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.should_update_mobjects:5
+msgid "the :attr:`always_update_mobjects` attribute of :class:`.Scene` is set to ``True``,"
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.should_update_mobjects:7
+msgid "the :class:`.Scene` itself has time-based updaters attached,"
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.should_update_mobjects:8
+msgid "any mobject in this :class:`.Scene` has time-based updaters attached."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.should_update_mobjects:10
+msgid "This is only called when a single Wait animation is played."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.update_mobjects:3
+msgid "Change in time between updates. Defaults (mostly) to 1/frames_per_second"
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.update_self:3
+msgid "Among all types of update functions (mobject updaters, mesh updaters, scene updaters), scene update functions are called last."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.update_self:6
+msgid "Scene time since last update."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.wait:3
+msgid "The run time of the animation."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.wait:4
+msgid "A function without positional arguments that is evaluated every time a frame is rendered. The animation only stops when the return value of the function is truthy. Overrides any value passed to ``duration``."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.wait:7
+msgid "If True, updater functions are not evaluated, and the animation outputs a frozen frame. If False, updater functions are called and frames are rendered as usual. If None (the default), the scene tries to determine whether or not the frame is frozen on its own."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.wait_until:1
+msgid "Like a wrapper for wait(). You pass a function that determines whether to continue waiting, and a max wait time if that is never fulfilled."
+msgstr ""
+
+#: ../../../manim/scene/scene.py:docstring of manim.scene.scene.Scene.wait_until:5
+msgid "The function whose boolean return value determines whether to continue waiting"
+msgstr ""
+
+

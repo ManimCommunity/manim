@@ -1,0 +1,54 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PointCloudDot.rst:2
+msgid "PointCloudDot"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PointCloudDot.rst:4
+msgid "Qualified name: ``manim.mobject.types.point\\_cloud\\_mobject.PointCloudDot``"
+msgstr ""
+
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PointCloudDot:1
+msgid "Bases: :py:class:`manim.mobject.types.point_cloud_mobject.Mobject1D`"
+msgstr ""
+
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PointCloudDot:1
+msgid "A disc made of a cloud of Dots .. rubric:: Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PointCloudDot.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PointCloudDot.rst:21:<autosummary>:1
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PointCloudDot.generate_points:1
+msgid "Initializes :attr:`points` and therefore the shape."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.point_cloud_mobject.PointCloudDot.rst:23
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PointCloudDot.generate_points:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PointCloudDot.generate_points:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PointCloudDot.generate_points:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/types/point_cloud_mobject.py:docstring of manim.mobject.types.point_cloud_mobject.PointCloudDot.generate_points:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+

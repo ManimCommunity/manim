@@ -1,0 +1,179 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.text.code_mobject.Code.rst:2
+msgid "Code"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.code_mobject.Code.rst:4
+msgid "Qualified name: ``manim.mobject.text.code\\_mobject.Code``"
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:1
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VGroup`"
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:1
+msgid "A highlighted source code listing."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:3
+msgid "An object ``listing`` of :class:`.Code` is a :class:`.VGroup` consisting of three objects:"
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:6
+msgid "The background, ``listing.background_mobject``. This is either a :class:`.Rectangle` (if the listing has been initialized with ``background=\"rectangle\"``, the default option) or a :class:`.VGroup` resembling a window (if ``background=\"window\"`` has been passed)."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:11
+msgid "The line numbers, ``listing.line_numbers`` (a :class:`.Paragraph` object)."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:14
+msgid "The highlighted code itself, ``listing.code`` (a :class:`.Paragraph` object)."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:19
+msgid "Using a :class:`.Transform` on text with leading whitespace (and in this particular case: code) can look `weird <https://github.com/3b1b/manim/issues/1067>`_. Consider using :meth:`remove_invisible_chars` to resolve this issue."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:25
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:26
+msgid "Normal usage::"
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:39
+msgid "We can also render code passed as a string (but note that the language has to be specified in this case):"
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:60
+msgid "Name of the code file to display."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:62
+msgid "If ``file_name`` is not specified, a code string can be passed directly."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:65
+msgid "Number of space characters corresponding to a tab character. Defaults to 3."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:67
+msgid "Amount of space between lines in relation to font size. Defaults to 0.3, which means 30% of font size."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:69
+msgid "A number which scales displayed code. Defaults to 24."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:71
+msgid "The name of the text font to be used. Defaults to ``\"Monospac821 BT\"``."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:73
+msgid "Stroke width for text. 0 is recommended, and the default."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:75
+msgid "Inner margin of text from the background. Defaults to 0.3."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:77
+msgid "\"Indentation chars\" refers to the spaces/tabs at the beginning of a given code line. Defaults to ``\"    \"`` (spaces)."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:79
+msgid "Defines the background's type. Currently supports only ``\"rectangle\"`` (default) and ``\"window\"``."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:81
+msgid "Defines the stroke width of the background. Defaults to 1."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:83
+msgid "Defines the stroke color for the background. Defaults to ``WHITE``."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:85
+msgid "Defines the corner radius for the background. Defaults to 0.2."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:87
+msgid "Defines whether line numbers should be inserted in displayed code. Defaults to ``True``."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:89
+msgid "Defines the first line's number in the line count. Defaults to 1."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:91
+msgid "Defines the spacing between line numbers and displayed code. Defaults to 0.4."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:93
+msgid "Defines the style type of displayed code. You can see possible names of styles in with :attr:`styles_list`. Defaults to ``\"vim\"``."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:95
+msgid "Specifies the programming language the given code was written in. If ``None`` (the default), the language will be automatically detected. For the list of possible options, visit https://pygments.org/docs/lexers/ and look for 'aliases or short names'."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:100
+msgid "Defines whether to generate highlighted html code to the folder `assets/codes/generated_html_files`. Defaults to `False`."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:105
+msgid "The background of the code listing."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:0
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:0
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:0
+msgid "type"
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:111
+msgid "The line numbers for the code listing. Empty, if ``insert_line_no=False`` has been specified."
+msgstr ""
+
+#: ../../../manim/mobject/text/code_mobject.py:docstring of manim.mobject.text.code_mobject.Code:118
+msgid "The highlighted code."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.code_mobject.Code.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.code_mobject.Code.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.code_mobject.Code.rst:33:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.code_mobject.Code.rst:33:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.code_mobject.Code.rst:33:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.code_mobject.Code.rst:33:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+

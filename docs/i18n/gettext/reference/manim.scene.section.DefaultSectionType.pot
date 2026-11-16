@@ -1,0 +1,37 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.scene.section.DefaultSectionType.rst:2
+msgid "DefaultSectionType"
+msgstr ""
+
+#: ../../source/reference/manim.scene.section.DefaultSectionType.rst:4
+msgid "Qualified name: ``manim.scene.section.DefaultSectionType``"
+msgstr ""
+
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.DefaultSectionType:1
+msgid "Bases: :py:class:`str`, :py:class:`enum.Enum`"
+msgstr ""
+
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.DefaultSectionType:1
+msgid "The type of a section can be used for third party applications. A presentation system could for example use the types to created loops."
+msgstr ""
+
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.DefaultSectionType:5
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/scene/section.py:docstring of manim.scene.section.DefaultSectionType:6
+msgid "This class can be reimplemented for more types::"
+msgstr ""
+
+#: ../../source/reference/manim.scene.section.DefaultSectionType.rst:16
+msgid "Attributes"
+msgstr ""
+
+

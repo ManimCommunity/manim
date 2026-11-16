@@ -1,0 +1,83 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.animation.transform_matching_parts.TransformMatchingAbstractBase.rst:2
+msgid "TransformMatchingAbstractBase"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform_matching_parts.TransformMatchingAbstractBase.rst:4
+msgid "Qualified name: ``manim.animation.transform\\_matching\\_parts.TransformMatchingAbstractBase``"
+msgstr ""
+
+#: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase:1
+msgid "Bases: :py:class:`manim.animation.composition.AnimationGroup`"
+msgstr ""
+
+#: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase:1
+msgid "Abstract base class for transformations that keep track of matching parts."
+msgstr ""
+
+#: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase:3
+msgid "Subclasses have to implement the two static methods :meth:`~.TransformMatchingAbstractBase.get_mobject_parts` and :meth:`~.TransformMatchingAbstractBase.get_mobject_key`."
+msgstr ""
+
+#: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase:7
+msgid "Basically, this transformation first maps all submobjects returned by the ``get_mobject_parts`` method to certain keys by applying the ``get_mobject_key`` method. Then, submobjects with matching keys are transformed into each other."
+msgstr ""
+
+#: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase:0
+#: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase.clean_up_from_scene:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase:12
+msgid "The starting :class:`~.Mobject`."
+msgstr ""
+
+#: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase:13
+msgid "The target :class:`~.Mobject`."
+msgstr ""
+
+#: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase:14
+msgid "Controls whether submobjects without a matching key are transformed into each other by using :class:`~.Transform`. Default: ``False``."
+msgstr ""
+
+#: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase:16
+msgid "Controls whether submobjects without a matching key are transformed into each other by using :class:`~.FadeTransform`. Default: ``False``."
+msgstr ""
+
+#: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase:18
+msgid "Optional. A dictionary mapping keys belonging to some of the starting mobject's submobjects (i.e., the return values of the ``get_mobject_key`` method) to some keys belonging to the target mobject's submobjects that should be transformed although the keys don't match."
+msgstr ""
+
+#: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase:22
+msgid "All further keyword arguments are passed to the submobject transformations."
+msgstr ""
+
+#: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase:26
+msgid "If neither ``transform_mismatches`` nor ``fade_transform_mismatches`` are set to ``True``, submobjects without matching keys in the starting mobject are faded out in the direction of the unmatched submobjects in the target mobject, and unmatched submobjects in the target mobject are faded in from the direction of the unmatched submobjects in the start mobject."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform_matching_parts.TransformMatchingAbstractBase.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase.clean_up_from_scene:1:<autosummary>:1
+#: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase.clean_up_from_scene:1
+msgid "Clean up the :class:`~.Scene` after finishing the animation."
+msgstr ""
+
+#: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase.clean_up_from_scene:3
+msgid "This includes to :meth:`~.Scene.remove` the Animation's :class:`~.Mobject` if the animation is a remover."
+msgstr ""
+
+#: ../../../manim/animation/transform_matching_parts.py:docstring of manim.animation.transform_matching_parts.TransformMatchingAbstractBase.clean_up_from_scene:6
+msgid "The scene the animation should be cleaned up from."
+msgstr ""
+
+

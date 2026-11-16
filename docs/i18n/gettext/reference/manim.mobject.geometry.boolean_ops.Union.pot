@@ -1,0 +1,73 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.geometry.boolean_ops.Union.rst:2
+msgid "Union"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.boolean_ops.Union.rst:4
+msgid "Qualified name: ``manim.mobject.geometry.boolean\\_ops.Union``"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/boolean_ops.py:docstring of manim.mobject.geometry.boolean_ops.Union:1
+msgid "Bases: :py:class:`manim.mobject.geometry.boolean_ops._BooleanOps`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/boolean_ops.py:docstring of manim.mobject.geometry.boolean_ops.Union:1
+msgid "Union of two or more :class:`~.VMobject` s. This returns the common region of the :class:`~VMobject` s."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/boolean_ops.py:docstring of manim.mobject.geometry.boolean_ops.Union:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/boolean_ops.py:docstring of manim.mobject.geometry.boolean_ops.Union:4
+msgid "The :class:`~.VMobject` s to find the union of."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/boolean_ops.py:docstring of manim.mobject.geometry.boolean_ops.Union:0
+msgid "Raises"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/boolean_ops.py:docstring of manim.mobject.geometry.boolean_ops.Union:6
+msgid "If less than 2 :class:`~.VMobject` s are passed."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/boolean_ops.py:docstring of manim.mobject.geometry.boolean_ops.Union:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/boolean_ops.py:docstring of manim.mobject.geometry.boolean_ops.Union:9
+msgid "Example"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.boolean_ops.Union.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.boolean_ops.Union.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.boolean_ops.Union.rst:32:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.boolean_ops.Union.rst:32:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.boolean_ops.Union.rst:32:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.boolean_ops.Union.rst:32:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+

@@ -1,0 +1,106 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.animation.transform.FadeTransform.rst:2
+msgid "FadeTransform"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.FadeTransform.rst:4
+msgid "Qualified name: ``manim.animation.transform.FadeTransform``"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform:1
+msgid "Bases: :py:class:`manim.animation.transform.Transform`"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform:1
+msgid "Fades one mobject into another."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform:0
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform.clean_up_from_scene:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform:3
+msgid "The starting :class:`~.Mobject`."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform:4
+msgid "The target :class:`~.Mobject`."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform:5
+msgid "Controls whether the target :class:`~.Mobject` is stretched during the animation. Default: ``True``."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform:7
+msgid "If the target mobject is not stretched automatically, this allows to adjust the initial scale of the target :class:`~.Mobject` while it is shifted in. Setting this to 0, 1, and 2, respectively, matches the length of the target with the length of the starting :class:`~.Mobject` in x, y, and z direction, respectively."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform:12
+msgid "Further keyword arguments are passed to the parent class."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform:15
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.FadeTransform.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.FadeTransform.rst:24:<autosummary>:1
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform.begin:1
+msgid "Initial setup for the animation."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.FadeTransform.rst:24:<autosummary>:1
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform.clean_up_from_scene:1
+msgid "Clean up the :class:`~.Scene` after finishing the animation."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.FadeTransform.rst:24:<autosummary>:1
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform.get_all_mobjects:1
+msgid "Get all mobjects involved in the animation."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.FadeTransform.rst:24:<autosummary>:1
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform.ghost_to:1
+msgid "Replaces the source by the target and sets the opacity to 0."
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.FadeTransform.rst:26
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform.begin:3
+msgid "The mobject to which this animation is bound is a group consisting of both the starting and the ending mobject. At the start, the ending mobject replaces the starting mobject (and is completely faded). In the end, it is set to be the other way around."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform.clean_up_from_scene:3
+msgid "This includes to :meth:`~.Scene.remove` the Animation's :class:`~.Mobject` if the animation is a remover."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform.clean_up_from_scene:6
+msgid "The scene the animation should be cleaned up from."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform.get_all_mobjects:3
+msgid "Ordering must match the ordering of arguments to interpolate_submobject"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform.get_all_mobjects:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.FadeTransform.get_all_mobjects:5
+msgid "The sequence of mobjects."
+msgstr ""
+
+

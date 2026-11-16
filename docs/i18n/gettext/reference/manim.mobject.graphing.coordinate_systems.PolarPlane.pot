@@ -1,0 +1,206 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.graphing.coordinate_systems.PolarPlane.rst:2
+msgid "PolarPlane"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.coordinate_systems.PolarPlane.rst:4
+msgid "Qualified name: ``manim.mobject.graphing.coordinate\\_systems.PolarPlane``"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:1
+msgid "Bases: :py:class:`manim.mobject.graphing.coordinate_systems.Axes`"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:1
+msgid "Creates a polar plane with background lines."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:0
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.add_coordinates:0
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.get_coordinate_labels:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:3
+msgid "The number of divisions in the azimuth (also known as the `angular coordinate` or `polar angle`). If ``None`` is specified then it will use the default specified by ``azimuth_units``:  - ``\"PI radians\"`` or ``\"TAU radians\"``: 20 - ``\"degrees\"``: 36 - ``\"gradians\"``: 40 - ``None``: 1  A non-integer value will result in a partial division at the end of the circle."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:3
+msgid "The number of divisions in the azimuth (also known as the `angular coordinate` or `polar angle`). If ``None`` is specified then it will use the default specified by ``azimuth_units``:"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:6
+msgid "``\"PI radians\"`` or ``\"TAU radians\"``: 20"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:7
+msgid "``\"degrees\"``: 36"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:8
+msgid "``\"gradians\"``: 40"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:9
+msgid "``None``: 1"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:11
+msgid "A non-integer value will result in a partial division at the end of the circle."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:12
+msgid "The diameter of the plane."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:13
+msgid "The distance between faded radius lines."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:14
+msgid "The maximum value of the radius."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:15
+msgid "Specifies a default labelling system for the azimuth. Choices are:  - ``\"PI radians\"``: Fractional labels in the interval :math:`\\left[0, 2\\pi\\right]` with :math:`\\pi` as a constant. - ``\"TAU radians\"``: Fractional labels in the interval :math:`\\left[0, \\tau\\right]` (where :math:`\\tau = 2\\pi`) with :math:`\\tau` as a constant. - ``\"degrees\"``: Decimal labels in the interval :math:`\\left[0, 360\\right]` with a degree (:math:`^{\\circ}`) symbol. - ``\"gradians\"``: Decimal labels in the interval :math:`\\left[0, 400\\right]` with a superscript \"g\" (:math:`^{g}`). - ``None``: Decimal labels in the interval :math:`\\left[0, 1\\right]`."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:15
+msgid "Specifies a default labelling system for the azimuth. Choices are:"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:17
+msgid "``\"PI radians\"``: Fractional labels in the interval :math:`\\left[0, 2\\pi\\right]` with :math:`\\pi` as a constant."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:18
+msgid "``\"TAU radians\"``: Fractional labels in the interval :math:`\\left[0, \\tau\\right]` (where :math:`\\tau = 2\\pi`) with :math:`\\tau` as a constant."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:19
+msgid "``\"degrees\"``: Decimal labels in the interval :math:`\\left[0, 360\\right]` with a degree (:math:`^{\\circ}`) symbol."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:20
+msgid "``\"gradians\"``: Decimal labels in the interval :math:`\\left[0, 400\\right]` with a superscript \"g\" (:math:`^{g}`)."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:21
+msgid "``None``: Decimal labels in the interval :math:`\\left[0, 1\\right]`."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:22
+msgid "If the ``azimuth_units`` choice has fractional labels, choose whether to combine the constant in a compact form :math:`\\tfrac{xu}{y}` as opposed to :math:`\\tfrac{x}{y}u`, where :math:`u` is the constant."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:25
+msgid "The angle offset of the azimuth, expressed in radians."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:26
+msgid "The direction of the azimuth.  - ``\"CW\"``: Clockwise. - ``\"CCW\"``: Anti-clockwise."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:26
+msgid "The direction of the azimuth."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:28
+msgid "``\"CW\"``: Clockwise."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:29
+msgid "``\"CCW\"``: Anti-clockwise."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:30
+msgid "The buffer for the azimuth labels."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:31
+msgid "The font size of the azimuth labels."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:32
+msgid "The axis config for the radius."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane:35
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.coordinate_systems.PolarPlane.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.coordinate_systems.PolarPlane.rst:25:<autosummary>:1
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.add_coordinates:1
+msgid "Adds the coordinates."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.coordinate_systems.PolarPlane.rst:25:<autosummary>:1
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.get_axes:1
+msgid "Gets the axes."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.coordinate_systems.PolarPlane.rst:25:<autosummary>:1
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.get_coordinate_labels:1
+msgid "Gets labels for the coordinates"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.coordinate_systems.PolarPlane.rst:27
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.add_coordinates:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.add_coordinates:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.add_coordinates:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.add_coordinates:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.add_coordinates:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.add_coordinates:3
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.get_coordinate_labels:3
+msgid "Iterable of values along the radius, by default None."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.add_coordinates:4
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.get_coordinate_labels:4
+msgid "Iterable of values along the azimuth, by default None."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.get_axes:0
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.get_coordinate_labels:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.get_axes:3
+msgid "A pair of axes."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.get_axes:0
+#: ../../../manim/mobject/graphing/coordinate_systems.py:docstring of manim.mobject.graphing.coordinate_systems.PolarPlane.get_coordinate_labels:0
+msgid "Return type"
+msgstr ""
+
+

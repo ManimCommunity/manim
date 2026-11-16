@@ -1,0 +1,81 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.svg.brace.ArcBrace.rst:2
+msgid "ArcBrace"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.ArcBrace.rst:4
+msgid "Qualified name: ``manim.mobject.svg.brace.ArcBrace``"
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.ArcBrace:1
+msgid "Bases: :py:class:`manim.mobject.svg.brace.Brace`"
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.ArcBrace:1
+msgid "Creates a :class:`~Brace` that wraps around an :class:`~.Arc`."
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.ArcBrace:3
+msgid "The direction parameter allows the brace to be applied from outside or inside the arc."
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.ArcBrace:7
+msgid "The :class:`ArcBrace` is smaller for arcs with smaller radii."
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.ArcBrace:10
+msgid "The :class:`ArcBrace` is initially a vertical :class:`Brace` defined by the length of the :class:`~.Arc`, but is scaled down to match the start and end angles. An exponential function is then applied after it is shifted based on the radius of the arc."
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.ArcBrace:15
+msgid "The scaling effect is not applied for arcs with radii smaller than 1 to prevent over-scaling."
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.ArcBrace:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.ArcBrace:18
+msgid "The :class:`~.Arc` that wraps around the :class:`Brace` mobject."
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.ArcBrace:19
+msgid "The direction from which the brace faces the arc. ``LEFT`` for inside the arc, and ``RIGHT`` for the outside."
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace.ArcBrace:23
+msgid "Example"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.ArcBrace.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.ArcBrace.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.ArcBrace.rst:32:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.ArcBrace.rst:32:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.ArcBrace.rst:32:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.ArcBrace.rst:32:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+

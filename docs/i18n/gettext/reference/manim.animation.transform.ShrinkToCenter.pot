@@ -1,0 +1,37 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.animation.transform.ShrinkToCenter.rst:2
+msgid "ShrinkToCenter"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.ShrinkToCenter.rst:4
+msgid "Qualified name: ``manim.animation.transform.ShrinkToCenter``"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ShrinkToCenter:1
+msgid "Bases: :py:class:`manim.animation.transform.ScaleInPlace`"
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ShrinkToCenter:1
+msgid "Animation that makes a mobject shrink to center."
+msgstr ""
+
+#: ../../../manim/animation/transform.py:docstring of manim.animation.transform.ShrinkToCenter:4
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.ShrinkToCenter.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.animation.transform.ShrinkToCenter.rst:21
+msgid "Attributes"
+msgstr ""
+
+

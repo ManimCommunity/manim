@@ -1,0 +1,21 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.animation.updaters.update.rst:2
+msgid "update"
+msgstr ""
+
+#: ../../../manim/animation/updaters/update.py:docstring of manim.animation.updaters.update:1
+msgid "Animations that update mobjects."
+msgstr ""
+
+#: ../../source/reference/manim.animation.updaters.update.rst:15
+msgid "Classes"
+msgstr ""
+
+

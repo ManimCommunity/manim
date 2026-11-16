@@ -1,0 +1,134 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.graphing.probability.BarChart.rst:2
+msgid "BarChart"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.probability.BarChart.rst:4
+msgid "Qualified name: ``manim.mobject.graphing.probability.BarChart``"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart:1
+msgid "Bases: :py:class:`manim.mobject.graphing.coordinate_systems.Axes`"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart:1
+msgid "Creates a bar chart. Inherits from :class:`~.Axes`, so it shares its methods and attributes. Each axis inherits from :class:`~.NumberLine`, so pass in ``x_axis_config``/``y_axis_config`` to control their attributes."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart:0
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart.change_bar_values:0
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart.get_bar_labels:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart:5
+msgid "A sequence of values that determines the height of each bar. Accepts negative values."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart:6
+msgid "A sequence of names for each bar. Does not have to match the length of ``values``."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart:7
+msgid "The y_axis range of values. If ``None``, the range will be calculated based on the min/max of ``values`` and the step will be calculated based on ``y_length``."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart:9
+msgid "The length of the x-axis. If ``None``, it is automatically calculated based on the number of values and the width of the screen."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart:11
+msgid "The length of the y-axis."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart:12
+msgid "The color for the bars. Accepts a sequence of colors (can contain just one item). If the length of``bar_colors`` does not match that of ``values``, intermediate colors will be automatically determined."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart:15
+msgid "The length of a bar. Must be between 0 and 1."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart:16
+msgid "The fill opacity of the bars."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart:17
+msgid "The stroke width of the bars."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart:20
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart.change_bar_values:8
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart.get_bar_labels:10
+msgid "Examples"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.probability.BarChart.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.probability.BarChart.rst:21:<autosummary>:1
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart.change_bar_values:1
+msgid "Updates the height of the bars of the chart."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.probability.BarChart.rst:21:<autosummary>:1
+msgid "Annotates each bar with its corresponding value."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.graphing.probability.BarChart.rst:23
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart.change_bar_values:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart.change_bar_values:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart.change_bar_values:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart.change_bar_values:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart.change_bar_values:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart.change_bar_values:3
+msgid "The values that will be used to update the height of the bars. Does not have to match the number of bars."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart.change_bar_values:5
+msgid "Whether to re-initalize the colors of the bars based on ``self.bar_colors``."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart.get_bar_labels:1
+msgid "Annotates each bar with its corresponding value. Use ``self.bar_labels`` to access the labels after creation."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart.get_bar_labels:4
+msgid "The color of each label. By default ``None`` and is based on the parent's bar color."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart.get_bar_labels:5
+msgid "The font size of each label."
+msgstr ""
+
+#: ../../../manim/mobject/graphing/probability.py:docstring of manim.mobject.graphing.probability.BarChart.get_bar_labels:6
+msgid "The distance from each label to its bar. By default 0.4."
+msgstr ""
+
+

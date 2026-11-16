@@ -1,0 +1,73 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.geometry.boolean_ops.Intersection.rst:2
+msgid "Intersection"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.boolean_ops.Intersection.rst:4
+msgid "Qualified name: ``manim.mobject.geometry.boolean\\_ops.Intersection``"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/boolean_ops.py:docstring of manim.mobject.geometry.boolean_ops.Intersection:1
+msgid "Bases: :py:class:`manim.mobject.geometry.boolean_ops._BooleanOps`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/boolean_ops.py:docstring of manim.mobject.geometry.boolean_ops.Intersection:1
+msgid "Find the intersection of two :class:`~.VMobject` s. This keeps the parts covered by both :class:`~.VMobject` s."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/boolean_ops.py:docstring of manim.mobject.geometry.boolean_ops.Intersection:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/boolean_ops.py:docstring of manim.mobject.geometry.boolean_ops.Intersection:4
+msgid "The :class:`~.VMobject` to find the intersection."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/boolean_ops.py:docstring of manim.mobject.geometry.boolean_ops.Intersection:0
+msgid "Raises"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/boolean_ops.py:docstring of manim.mobject.geometry.boolean_ops.Intersection:6
+msgid "If less the 2 :class:`~.VMobject` are passed."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/boolean_ops.py:docstring of manim.mobject.geometry.boolean_ops.Intersection:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/boolean_ops.py:docstring of manim.mobject.geometry.boolean_ops.Intersection:9
+msgid "Example"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.boolean_ops.Intersection.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.boolean_ops.Intersection.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.boolean_ops.Intersection.rst:32:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.boolean_ops.Intersection.rst:32:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.boolean_ops.Intersection.rst:32:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.boolean_ops.Intersection.rst:32:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+

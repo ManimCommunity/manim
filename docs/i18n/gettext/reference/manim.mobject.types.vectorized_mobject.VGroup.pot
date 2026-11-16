@@ -1,0 +1,95 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VGroup.rst:2
+msgid "VGroup"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VGroup.rst:4
+msgid "Qualified name: ``manim.mobject.types.vectorized\\_mobject.VGroup``"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup:1
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup:1
+msgid "A group of vectorized mobjects."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup:3
+msgid "This can be used to group multiple :class:`~.VMobject` instances together in order to scale, move, ... them together."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup:7
+msgid "Notes"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup:8
+msgid "When adding the same mobject more than once, repetitions are ignored. Use :meth:`.Mobject.copy` to create a separate copy which can then be added to the group."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup:13
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:11
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup:14
+msgid "To add :class:`~.VMobject`s to a :class:`~.VGroup`, you can either use the :meth:`~.VGroup.add` method, or use the `+` and `+=` operators. Similarly, you can subtract elements of a VGroup via :meth:`~.VGroup.remove` method, or `-` and `-=` operators:"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VGroup.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VGroup.rst:20:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:1
+msgid "Checks if all passed elements are an instance of VMobject and then add them to submobjects"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VGroup.rst:22
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:3
+msgid "List of VMobject to add"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VGroup.add:0
+msgid "Raises"
+msgstr ""
+
+

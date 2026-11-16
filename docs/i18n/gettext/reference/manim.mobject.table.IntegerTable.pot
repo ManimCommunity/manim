@@ -1,0 +1,73 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.table.IntegerTable.rst:2
+msgid "IntegerTable"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.IntegerTable.rst:4
+msgid "Qualified name: ``manim.mobject.table.IntegerTable``"
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.IntegerTable:1
+msgid "Bases: :py:class:`manim.mobject.table.Table`"
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.IntegerTable:1
+msgid "A specialized :class:`~.Table` mobject for use with :class:`~.Integer`."
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.IntegerTable:4
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.IntegerTable:24
+msgid "Special case of :class:`~.Table` with `element_to_mobject` set to :class:`~.Integer`. Will round if there are decimal entries in the table."
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.IntegerTable:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.IntegerTable:27
+msgid "A 2d array or list of lists. Content of the table has to be valid input for :class:`~.Integer`."
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.IntegerTable:29
+msgid "The :class:`~.Mobject` class applied to the table entries. Set as :class:`~.Integer`."
+msgstr ""
+
+#: ../../../manim/mobject/table.py:docstring of manim.mobject.table.IntegerTable:30
+msgid "Additional arguments to be passed to :class:`~.Table`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.IntegerTable.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.IntegerTable.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.IntegerTable.rst:32:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.IntegerTable.rst:32:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.IntegerTable.rst:32:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.table.IntegerTable.rst:32:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+

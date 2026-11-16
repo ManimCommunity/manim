@@ -1,0 +1,249 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.text.text_mobject.MarkupText.rst:2
+msgid "MarkupText"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.text_mobject.MarkupText.rst:4
+msgid "Qualified name: ``manim.mobject.text.text\\_mobject.MarkupText``"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:1
+msgid "Bases: :py:class:`manim.mobject.svg.svg_mobject.SVGMobject`"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:1
+msgid "Display (non-LaTeX) text rendered using `Pango <https://pango.gnome.org/>`_."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:3
+msgid "Text objects behave like a :class:`.VGroup`-like iterable of all characters in the given text. In particular, slicing is possible."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:6
+msgid "**What is PangoMarkup?**"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:8
+msgid "PangoMarkup is a small markup language like html and it helps you avoid using \"range of characters\" while coloring or styling a piece a Text. You can use this language with :class:`~.MarkupText`."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:12
+msgid "A simple example of a marked-up string might be::"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:16
+msgid "and it can be used with :class:`~.MarkupText` as"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:26
+msgid "A more elaborate example would be:"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:42
+msgid "PangoMarkup can also contain XML features such as numeric character entities such as ``&#169;`` for © can be used too."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:45
+msgid "The most general markup tag is ``<span>``, then there are some convenience tags."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:48
+msgid "Here is a list of supported tags:"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:50
+msgid "``<b>bold</b>``, ``<i>italic</i>`` and ``<b><i>bold+italic</i></b>``"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:51
+msgid "``<ul>underline</ul>`` and ``<s>strike through</s>``"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:52
+msgid "``<tt>typewriter font</tt>``"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:53
+msgid "``<big>bigger font</big>`` and ``<small>smaller font</small>``"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:54
+msgid "``<sup>superscript</sup>`` and ``<sub>subscript</sub>``"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:55
+msgid "``<span underline=\"double\" underline_color=\"green\">double underline</span>``"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:56
+msgid "``<span underline=\"error\">error underline</span>``"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:57
+msgid "``<span overline=\"single\" overline_color=\"green\">overline</span>``"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:58
+msgid "``<span strikethrough=\"true\" strikethrough_color=\"red\">strikethrough</span>``"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:59
+msgid "``<span font_family=\"sans\">temporary change of font</span>``"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:60
+msgid "``<span foreground=\"red\">temporary change of color</span>``"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:61
+msgid "``<span fgcolor=\"red\">temporary change of color</span>``"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:62
+msgid "``<gradient from=\"YELLOW\" to=\"RED\">temporary gradient</gradient>``"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:64
+msgid "For ``<span>`` markup, colors can be specified either as hex triples like ``#aabbcc`` or as named CSS colors like ``AliceBlue``. The ``<gradient>`` tag is handled by Manim rather than Pango, and supports hex triplets or Manim constants like ``RED`` or ``RED_A``. If you want to use Manim constants like ``RED_A`` together with ``<span>``, you will need to use Python's f-String syntax as follows::"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:76
+msgid "If your text contains ligatures, the :class:`MarkupText` class may incorrectly determine the first and last letter when creating the gradient. This is due to the fact that ``fl`` are two separate characters, but might be set as one single glyph - a ligature. If your language does not depend on ligatures, consider setting ``disable_ligatures`` to ``True``. If you must use ligatures, the ``gradient`` tag supports an optional attribute ``offset`` which can be used to compensate for that error."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:84
+msgid "For example:"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:86
+msgid "``<gradient from=\"RED\" to=\"YELLOW\" offset=\"1\">example</gradient>`` to *start* the gradient one letter earlier"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:87
+msgid "``<gradient from=\"RED\" to=\"YELLOW\" offset=\",1\">example</gradient>`` to *end* the gradient one letter earlier"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:88
+msgid "``<gradient from=\"RED\" to=\"YELLOW\" offset=\"2,1\">example</gradient>`` to *start* the gradient two letters earlier and *end* it one letter earlier"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:90
+msgid "Specifying a second offset may be necessary if the text to be colored does itself contain ligatures. The same can happen when using HTML entities for special chars."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:94
+msgid "When using ``underline``, ``overline`` or ``strikethrough`` together with ``<gradient>`` tags, you will also need to use the offset, because underlines are additional paths in the final :class:`SVGMobject`. Check out the following example."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:99
+msgid "Escaping of special characters: ``>`` **should** be written as ``&gt;`` whereas ``<`` and ``&`` *must* be written as ``&lt;`` and ``&amp;``."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:103
+msgid "You can find more information about Pango markup formatting at the corresponding documentation page: `Pango Markup <https://docs.gtk.org/Pango/pango_markup.html>`_. Please be aware that not all features are supported by this class and that the ``<gradient>`` tag mentioned above is not supported by Pango."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:109
+msgid "The text that needs to be created as mobject."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:110
+msgid "The fill opacity, with 1 meaning opaque and 0 meaning transparent."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:111
+msgid "Stroke width."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:112
+msgid "Font size."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:113
+msgid "Line spacing."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:114
+msgid "Global font setting for the entire text. Local overrides are possible."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:115
+msgid "Global slant setting, e.g. `NORMAL` or `ITALIC`. Local overrides are possible."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:116
+msgid "Global weight setting, e.g. `NORMAL` or `BOLD`. Local overrides are possible."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:117
+msgid "Global gradient setting. Local overrides are possible."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:119
+msgid "The text displayed in form of a :class:`.VGroup`-like mobject."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:123
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:224
+msgid "As :class:`MarkupText` uses Pango to render text, rendering non-English characters is easily possible:"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:243
+msgid "You can justify the text by passing :attr:`justify` parameter."
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:278
+msgid "Tests"
+msgstr ""
+
+#: ../../../manim/mobject/text/text_mobject.py:docstring of manim.mobject.text.text_mobject.MarkupText:279
+msgid "Check that the creation of :class:`~.MarkupText` works::"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.text_mobject.MarkupText.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.text_mobject.MarkupText.rst:21
+msgid "Attributes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.text_mobject.MarkupText.rst:33:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.text_mobject.MarkupText.rst:33:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.text_mobject.MarkupText.rst:33:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.text.text_mobject.MarkupText.rst:33:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+

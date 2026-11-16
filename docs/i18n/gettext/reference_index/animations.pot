@@ -1,0 +1,65 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference_index/animations.rst:2
+msgid "Animations"
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:23:<autosummary>:1
+msgid "Animate mobjects."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:23:<autosummary>:1
+msgid "Animation of a mobject boundary and tracing of points."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:23:<autosummary>:1
+msgid "Tools for displaying multiple animations at once."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:23:<autosummary>:1
+msgid "Animate the display or removal of a mobject from a scene."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:23:<autosummary>:1
+msgid "Fading in and out of view."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:23:<autosummary>:1
+msgid "Animations that introduce mobjects to scene by growing them from points."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:23:<autosummary>:1
+msgid "Animations drawing attention to particular mobjects."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:23:<autosummary>:1
+msgid "Animations related to movement."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:23:<autosummary>:1
+msgid "Animations for changing numbers."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:23:<autosummary>:1
+msgid "Animations related to rotation."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:23:<autosummary>:1
+msgid "Utilities for modifying the speed at which animations are played."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:23:<autosummary>:1
+msgid "Animations transforming one mobject into another."
+msgstr ""
+
+#: ../../source/reference_index/animations.rst:23:<autosummary>:1
+msgid "Animations that try to transform Mobjects while keeping track of identical parts."
+msgstr ""
+
+

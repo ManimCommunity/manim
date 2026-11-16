@@ -1,0 +1,124 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.geometry.arc.TipableVMobject.rst:2
+msgid "TipableVMobject"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.TipableVMobject.rst:4
+msgid "Qualified name: ``manim.mobject.geometry.arc.TipableVMobject``"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject:1
+msgid "Bases: :py:class:`manim.mobject.types.vectorized_mobject.VMobject`"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject:1
+msgid "Meant for shared functionality between Arc and Line. Functionality can be classified broadly into these groups:"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject:7
+msgid "Adding, Creating, Modifying tips"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject:5
+msgid "add_tip calls create_tip, before pushing the new tip"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject:6
+msgid "into the TipableVMobject's list of submobjects"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject:7
+msgid "stylistic and positional configuration"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject:11
+msgid "Checking for tips"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject:11
+msgid "Boolean checks for whether the TipableVMobject has a tip"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject:11
+msgid "and a starting tip"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject:15
+msgid "Getters"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject:15
+msgid "Straightforward accessors, returning information pertaining"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject:15
+msgid "to the TipableVMobject instance's tip(s), its length etc"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.TipableVMobject.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.TipableVMobject.rst:36:<autosummary>:1
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject.add_tip:1
+msgid "Adds a tip to the TipableVMobject instance, recognising that the endpoints might need to be switched if it's a 'starting tip' or not."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.TipableVMobject.rst:36:<autosummary>:1
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject.create_tip:1
+msgid "Stylises the tip, positions it spatially, and returns the newly instantiated tip to the caller."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.TipableVMobject.rst:36:<autosummary>:1
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject.get_end:1
+msgid "Returns the point, where the stroke that surrounds the :class:`~.Mobject` ends."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.TipableVMobject.rst:36:<autosummary>:1
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject.get_start:1
+msgid "Returns the point, where the stroke that surrounds the :class:`~.Mobject` starts."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.TipableVMobject.rst:36:<autosummary>:1
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject.get_tip:1
+msgid "Returns the TipableVMobject instance's (first) tip, otherwise throws an exception."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.TipableVMobject.rst:36:<autosummary>:1
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject.get_tips:1
+msgid "Returns a VGroup (collection of VMobjects) containing the TipableVMObject instance's tips."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.TipableVMobject.rst:36:<autosummary>:1
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject.get_unpositioned_tip:1
+msgid "Returns a tip that has been stylistically configured, but has not yet been given a position in space."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.geometry.arc.TipableVMobject.rst:38
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject.add_tip:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject.add_tip:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject.add_tip:1:<autosummary>:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../../manim/mobject/geometry/arc.py:docstring of manim.mobject.geometry.arc.TipableVMobject.add_tip:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+

@@ -1,0 +1,475 @@
+******
+v0.6.0
+******
+
+:Date: May 02, 2021
+
+Contributors
+============
+
+A total of 40 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Abel Aebker
+* Abhijith Muthyala
+* Adam Ryczkowski +
+* Alex Lembcke +
+* Anton Ballmaier
+* Aron
+* Benjamin Hackl
+* Darylgolden
+* Deniz Hasler +
+* Devin Neal
+* Elisha Hollander +
+* Erik Tastepe +
+* Jan-Hendrik Müller
+* Jason Villanueva
+* Laith Bahodi
+* Mark Miller
+* Mohammad Al-Fetyani
+* Naveen M K
+* Newell Jensen +
+* Nidhal Baccouri +
+* Nikhil Garuda +
+* Peilonrayz +
+* Raghav Goel
+* Ricky Chon +
+* friedkeenan
+* kamilczerwinski22 +
+* sparshg
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Aathish Sivasubrahmanian
+* Abel Aebker
+* Abhijith Muthyala
+* Adam Ryczkowski
+* Alex Lembcke
+* Anton Ballmaier
+* Aron
+* Benjamin Hackl
+* Darylgolden
+* Deniz Hasler
+* Devin Neal
+* Elisha Hollander
+* GameDungeon
+* Hugues Devimeux
+* Jan-Hendrik Müller
+* Jason Villanueva
+* KingWampy
+* Laith Bahodi
+* Mark Miller
+* Mohammad Al-Fetyani
+* Naveen M K
+* Nidhal Baccouri
+* Nikhil Garuda
+* Oliver
+* Philipp Imhof
+* Raghav Goel
+* Ricky Chon
+* friedkeenan
+* sparshg
+
+Pull requests merged
+====================
+
+A total of 112 pull requests were merged for this release.
+
+Breaking changes
+----------------
+
+* :pr:`1347`: Restructure vector_field module and add documentation
+   :class`~.VectorField` is renamed to :class:`~.ArrowVectorField` and a new class :class:`~.VectorField` is added as a superclass for :class:`~.ArrowVectorField` and :class:`~.StreamLines`. :class:`~.AnimatedStreamLines` is removed. It's functionality is moved to :class:`~.StreamLines`. Added a lot of new options when working with vector fields. :class:`~.ShowPassingFlashWithThinningStrokeWidth` was moved to the indication module.
+
+* :pr:`1161`: Upgrades to CoordinateSystem and graphing.
+   Breaking changes were introduced to :class:`~.Axes`, :class:`~.ThreeDAxes`, :class:`~.NumberPlane` and :class:`~.NumberLine`
+   All the above now use lists to construct their ranges as opposed to explicitly defining these values. `x_range` has replaced `x_min`, `x_max` and defining the step is much easier with `x_step` --> ``x_range``  :  ``[x_min, x_max, x_step]``. There were also many upgrades to these classes which improve their functionality and appearance.
+
+   ``NumberLineOld`` was introduced to continue support for :class:`~.GraphScene`, although we are moving away from GraphScene and intend to deprecate it in a future release.
+
+* :pr:`1013`: Refactored the Command Line Interface to use Click instead of Argparse
+   This change breaks the CLI API to organize the structure of Manim Community's commands, options, and arguments.
+
+   To be more in line with POSIX compliant CLI conventions, options for commands are given *BEFORE* their arguments.
+   In Argparse: ``manim basic.py -p -ql``
+   With Click: ``manim -p -ql basic.py``
+
+   Although this is primarily a refactor and most of the common options are still there, some options have been added/removed. Use the ``manim`` command's ``--help`` option, or simply run the command without providing options/arguments to view the help page with the full list of subcommands/options/arguments.
+
+   - Added a ``--fps``/``--frame_rate`` option which allows for custom fps that don't have to be integer (i.e. 29.97, 23.98, etc.). Users no longer have to specify the FPS from within a config file. Additionally, the ``--webgl_renderer_fps`` option has been removed. Use ``--fps`` or ``--frame_rate`` instead.
+   - Added a ``--renderer`` option which you can use to select your choice of renderer (e.g. ``--renderer=opengl``). There are currently *THREE* renderers to choose from!
+   - Removed the ``--background_color`` option. Reassigned the ``--background_color`` option's shorthand ``-c`` to ``--config_file``.
+   - Removed the ``--leave_progress_bars`` option. Use ``--progress_bars=leave`` instead.
+   - Removed the deprecated render quality flags, in particular: ``-l``, ``-m``, ``-h``, ``-k``.
+   - Removed the ``--sound`` option. It lost support long ago with the removal of SoX.
+
+Deprecated classes and functions
+--------------------------------
+
+* :pr:`1431`: Fix CLI bugs
+   - Fixed conflict with ``-f`` which was previously assigned to both ``--show_in_file_browser`` and ``--format`` by removing ``-f`` from ``--format``. A warning is issued that ``-f`` will soon move to ``--format``.
+   - Added back in flags to render the files as gif/last frame. Deprecated them in favor of ``--format``.
+   - Fixed the broken ``--output_file``/``-o`` option.
+   - Fixed an issue where the ``-qh`` quality option was interpreted as ``-q`` ``-h``, prompting the help page.
+
+* :pr:`1354`: Refactored a few functions in space_ops.py, deprecated :func:`~.angle_between`
+
+
+* :pr:`1370`: Remove TexMobject and TextMobject
+   TexMobject and TextMobject have been deprecated for a while, they are now fully removed. Use Tex or MathTex instead.
+
+* :pr:`1349`: Removed the deprecated ``SmallDot`` mobject
+
+
+* :pr:`1259`: Removed deprecated CairoText class
+
+New features
+------------
+
+* :pr:`1386`: Implement utility methods for adding/removing vertices and edges of graphs; allow custom mobjects as vertices
+
+
+* :pr:`1385`: Added :meth:`~.Axes.get_line_graph` for plotting a line graph
+   Added :meth:`~.Axes.get_line_graph` that returns a line graph from lists of points along x, y and z (optional) axes.
+
+* :pr:`1381`: Hot reloading for the OpenGL renderer
+   Rerun scene when the input file is modified
+
+* :pr:`1383`: Overhaul of the :mod:`~.animation.indication` module interfaces
+   - Added class `Circumscribe` combining functionality of `CircleIndicate`, `AnimationOnSurroundingRectangle`, `ShowPassingFlashAround`, `ShowCreationThenDestructionAround`, `ShowCreationThenFadeAround`, which have all been deprecated.
+   - Changes to `Flash`: `flash_radius` parameter now defines inner radius of the animation. Added new parameter `time_width`.
+   - `ShowCreationThenDestruction` has been deprecated in favor of `ShowPassingFlash`
+   - Changes to `ApplyWave`: New implementation giving more flexibility with new parameters `wave_func`, `time_width` and`ripples`
+   - Renamed `WiggleOutThenIn` to `Wiggle` (`WiggleOutThenIn` has been deprecated)
+   - Added documentation and examples to all the above
+   - Other minor enhancements and bug-fixes
+
+* :pr:`1348`: Added :class:`~.Polyhedron`, and platonic solids :class:`~.Tetrahedron`, :class:`~.Octahedron`, :class:`~.Icosahedron` and :class:`~.Dodecahedron`
+
+
+* :pr:`1285`: Add :meth:`~.Scene.interactive_embed` for OpenGL rendering
+   :meth:`~.Scene.interactive_embed` allows interaction with Scene via mouse and keyboard as well as dynamic commands via an iPython terminal.
+
+* :pr:`1261`: Render image automatically if no animation is played in a scene
+   - If no animations in scene and asked to preview/render a video, preview/render an image instead of raising a confusing error.
+
+* :pr:`1200`: Add text and SVG mobjects to OpenGL
+   Added OpenGL-compatible text and SVG mobjects
+
+Enhancements
+------------
+
+* :pr:`1398`: Fix and enhance `Mobject.arrange_in_grid`
+   `arrange_in_grid` now actually arranges submobjects in a grid. Added new parameters `buff`, `cell_alignment`, `row_alignments`, `col_alignments`, `row_heights`, `col_widths`, `flow_order`.
+
+* :pr:`1407`: Fix bug and rename :meth:`vector_coordinate_label` to :meth:`~.Vector.coordinate_label` and move it to :class:`geometry.py`
+
+
+* :pr:`1380`: Allow image objects as background images
+
+
+* :pr:`1391`: Add `path_arc` support to `.animate` syntax
+   The parameter `path_arc` of :class:`~.Transform` now works with the `.animate` syntax
+
+* :pr:`1364`: Added :meth:`~.Mobject.match_points`
+   - Added :func:`~.Mobject.match_points`, which transforms the points, positions and submobjects of a Mobject to match that of the other while keeping style unchanged.
+
+* :pr:`1363`: Change of TeX compiler and output file format
+
+
+* :pr:`1359`: Make FILE a required argument
+   * Make `FILE` a required argument, `manim/cli/render/commands.py`:L30
+
+* :pr:`1304`: Improve Tex string splitting at double braces: only split for double brace groups
+
+
+* :pr:`1340`: Add OpenGL support to the new transform animations
+   Made `FadeTransform`, `FadeTransformPieces`, `TransformMatchingShapes` and `TransformMatchingTex` compatible with OpenGL rendering.
+
+* :pr:`1343`: Make TexTemplate() simple, but keep Tex()'s default template
+   TexTemplate() now returns a simple tex template.
+
+* :pr:`1321`: Add OpenGL support to :class:`~.AnimationGroup`
+
+
+* :pr:`1302`: Raise appropriate errors in :meth:`~.VMobject.point_from_proportion`
+   - Raise an error if the ``alpha`` argument is not between 0 and 1.
+   - Raise an error if the :class:`~.VMobject` has no points.
+
+* :pr:`1315`: Fix performance issues with :meth:`~.VMobject.get_arc_length`, stemming from :pr:`1274`
+
+
+* :pr:`1320`: Add `jpeg` extension to the default image extensions
+
+
+* :pr:`1234`: Added new method :meth:`~.Mobject.get_midpoint`
+   Implemented :meth:`~.Mobject.get_midpoint` to return the point that is the middle of the stroke line of an mobject.
+
+* :pr:`1237`: Notify user if they are using an outdated version of Manim
+
+
+* :pr:`1308`: Improved :class:`~.ManimBanner` animations
+
+
+* :pr:`1275`: Add SVG <line> element support to :class:`~.SVGMobject`
+
+
+* :pr:`1238`: Add parameter ``about_point`` for :meth:`~.Mobject.rotate`
+
+
+* :pr:`1260`: Change Brace from Tex to SVG (#1258)
+
+
+* :pr:`1122`: Support for specifying the interpolation algorithms for individual ImageMobjects
+
+
+* :pr:`1283`: Set default value of keyword ``random_seed`` in :class:`~.Scene` to ``None`` (was 0 and fixed before)
+
+
+* :pr:`1220`: Added sanity checks to :meth:`~.Mobject.add_to_back` for Mobjects
+   Add Mobject `add_to_back` sanity checks:
+   - Raises ValueError when Mobject tries to add itself
+   - Raises TypeError when a non-Mobject is added
+   - Filters out incoming duplicate submobjects if at least one instance of that submobject exists in the list
+
+* :pr:`1249`: Set corners of :class:`~.Rectangle` in counterclockwise direction
+   This improves the look of transformations between rectangles and other simple mobjects.
+
+* :pr:`1248`: Add Copy function to TexTemplate
+
+
+Fixed bugs
+----------
+
+* :pr:`1368`: Added a check to ensure checking for the latest version was successful
+
+
+* :pr:`1413`: Prevent duplication of the same mobject when adding to submobjects via :meth:`~.Mobject.add_to_back`
+   Fixes #1412
+
+* :pr:`1395`: SVG transforms now handle exponent notation (6.02e23)
+
+
+* :pr:`1355`: Rewrite `put_start_and_end_on` to work in 3D
+
+
+* :pr:`1346`: Fixed errors introduced by stray print in :class:`~.MathTex`
+
+
+* :pr:`1305`: Automatically remove long tick marks not within the range of the :class:`~NumberLine`
+
+
+* :pr:`1296`: Fix random pipeline TeX failures
+
+
+* :pr:`1274`: Fix :meth:`~.VMobject.point_from_proportion` to account for the length of curves.
+   - Add :meth:`~.VMobject.get_nth_curve_function_with_length` and associated functions.
+   - Change :meth:`~.VMobject.point_from_proportion` to use these functions to account for curve length.
+
+Documentation-related changes
+-----------------------------
+
+* :pr:`1430`: Un-deprecated GraphScene (will be deprecated later), fixed an old-style call to NumberPlane
+   - More work is required in order to fully replace `GraphScene` via `Axes`, thus `GraphScene` is not deprecated yet.
+   - Fixed one example in which the old `NumberPlane` syntax was used.
+
+* :pr:`1425`: Added a "How to Cite Manim" section to the Readme
+
+
+* :pr:`1387`: Added Guide to Contribute Examples from GitHub Wiki to Documentation
+   Added a Guide
+
+* :pr:`1424`: Fixed all current docbuild warnings
+
+
+* :pr:`1389`: Adding Admonitions Tutorial to docs
+
+
+* :pr:`1341`: Reduce complexity of ThreeDSurfacePlot example
+
+
+* :pr:`1362`: Quick reference to modules
+
+
+* :pr:`1376`: Add flake8 and isort in docs
+   added 'flake8' and 'isort' usages to docs
+
+* :pr:`1360`: Grammatical error corrections in documentation
+   changed a few sentences in docs/source
+
+* :pr:`1351`: Some more typehints
+
+
+* :pr:`1358`: Fixed link to installation instructions for developers
+
+
+* :pr:`1338`: Added documentation guidelines for type hints
+
+
+* :pr:`1342`: Multiple ValueTracker example for docs
+
+
+* :pr:`1210`: Added tutorial chapter on coordinates of an mobject
+
+
+* :pr:`1335`: Added import statements to examples in documentation
+
+
+* :pr:`1245`: Added filled angle Example
+
+
+* :pr:`1328`: Docs: Update Brace example
+
+
+* :pr:`1326`: Improve documentation of :class:`~.ManimMagic` (in particular: fix documented order of CLI flags)
+
+
+* :pr:`1323`: Blacken Docs Strings
+
+
+* :pr:`1300`: Added typehints for :class:`~.ValueTracker`
+
+
+* :pr:`1301`: Added further docstrings and typehints to :class:`~.Mobject`
+
+
+* :pr:`1298`: Add double backquotes for rst code samples (value_tracker.py)
+
+
+* :pr:`1297`: Change docs to use viewcode extension instead of linkcode
+   Switched ``sphinx.ext.linkcode`` to ``sphinx.ext.viewcode`` and removed ``linkcode_resolve`` in ``conf.py``.
+
+* :pr:`1246`: Added docstrings for :class:`~.ValueTracker`
+
+
+* :pr:`1251`: Switch documentation from guzzle-sphinx-theme to furo
+
+
+* :pr:`1232`: Further docstrings and examples for :class:`~.Mobject`
+
+
+* :pr:`1291`: Grammar improvements in README.md
+
+
+* :pr:`1269`: Add documentation about :meth:`~.set_color_by_tex`
+
+
+* :pr:`1284`: Updated readme by providing the correct link to the example_scenes
+
+
+* :pr:`1029`: Added example jupyter notebook into the examples folders
+
+
+* :pr:`1279`: Added sphinx requirements to pyproject.toml
+   New contributors who wanted to build the sphinx documentation had an extra step that could be removed by making use of ``poetry install``. This removes the developer's need for ``pip install -r requirements.txt``.
+
+* :pr:`1268`: Added documentation explaining the differences between manim versions
+
+
+* :pr:`1247`: Added warning for the usage of `animate`
+
+
+* :pr:`1242`: Added an example for the manim colormap
+
+
+* :pr:`1239`: Add TinyTex installation instructions
+
+
+* :pr:`1231`: Improve changelog generation script
+
+
+Changes concerning the testing system
+-------------------------------------
+
+* :pr:`1299`: Red pixels (different value) now appear over green pixels (same value) in GraphicalUnitTest
+
+
+Changes to our development infrastructure
+-----------------------------------------
+
+* :pr:`1436`: Cache poetry venv with `pyproject.toml` hash in key
+   Cache poetry venv with `pyproject.toml` hash in key
+
+* :pr:`1435`: CI: Update poetry cache when new version is released
+   Fix `test_version` failure in CI when using cached poetry venv
+
+* :pr:`1427`: Add URL's to pyproject.toml
+
+
+* :pr:`1421`: Updated changelog generator's labels and removed pre-commit bot from changelog
+
+
+* :pr:`1339`: CI: Fix macOS installation error from creating file in read-only file system
+
+
+* :pr:`1257`: CI: Caching ffmpeg, tinytex dependencies and poetry venv
+   CI: Caching ffmpeg, tinytex dependencies and poetry venv
+
+* :pr:`1294`: Added mixed-line-ending to .pre-commit-config.yaml
+
+
+* :pr:`1278`: Fixed flake8 errors and removed linter/formatter workflows
+
+
+* :pr:`1270`: Added isort to pre_commit file
+
+
+* :pr:`1263`: CI: Turn off experimental installer for poetry to fix installation errors
+   - Turn off experimental installer for poetry to prevent manim installation errors for packages.
+   - Downgrade py39 to py38 for flake checks as `pip` does not enjoy py39, along with `poetry`.
+
+* :pr:`1255`: CI: Fix macOS pipeline failure
+   Update `ci.yml` to update and upgrade brew if necessary before installing dependencies, and remove the unsupported `dvisvgm.86_64-darwin` package.
+
+* :pr:`1254`: Removed the comment warning that GitHub doesn't allow uploading video in the issue templates.
+
+
+* :pr:`1216`: Use actions/checkout for cloning repository; black-checks
+
+
+* :pr:`1235`: Fixed version of decorator at <5.0.0
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* :pr:`1411`: Change `Union[float, int]` to just `float` according to PEP 484
+
+
+* :pr:`1241`: Type Annotations: Fixing errors showing up in static type checking tool mypy
+
+
+* :pr:`1319`: Fix mean/meant typo
+   Fix typo in docs
+
+* :pr:`1313`: Singular typo fix on the Quickstart page in documentation
+
+
+* :pr:`1292`: Remove unnecessary imports from files
+   Imports reduced in a bunch of files
+
+* :pr:`1295`: Fix grammar and typos in the CODE OF CONDUCT
+
+
+* :pr:`1293`: Minor fixes - reduce lines
+   Remove unnecessary lines
+
+* :pr:`1281`: Remove all Carriage Return characters in our files
+
+
+* :pr:`1178`: Format Imports using Isort
+
+
+* :pr:`1233`: Fix deprecation warning for ``--use_opengl_renderer`` and ``--use_webgl_renderer``
+
+
+* :pr:`1282`: Fix typing hints in vectorized_mobject.py based on mypy
+
+
+New releases
+------------
+
+* :pr:`1434`: Prepare v0.6.0

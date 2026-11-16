@@ -1,0 +1,102 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.utils.simple_functions.rst:2
+msgid "simple\\_functions"
+msgstr ""
+
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions:1
+msgid "A collection of simple functions."
+msgstr ""
+
+#: ../../source/reference/manim.utils.simple_functions.rst:20
+msgid "Functions"
+msgstr ""
+
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.binary_search:1
+msgid "Searches for a value in a range by repeatedly dividing the range in half."
+msgstr ""
+
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.binary_search:3
+msgid "To be more precise, performs numerical binary search to determine the input to ``function``, between the bounds given, that outputs ``target`` to within ``tolerance`` (default of 0.0001). Returns ``None`` if no input can be found within the bounds."
+msgstr ""
+
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.binary_search:9
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.clip:8
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.get_parameters:5
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.binary_search:10
+msgid "Consider the polynomial :math:`x^2 + 3x + 1` where we search for a target value of :math:`11`. An exact solution is :math:`x = 2`."
+msgstr ""
+
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.binary_search:22
+msgid "Searching in the interval :math:`[0, 5]` for a target value of :math:`71` does not yield a solution::"
+msgstr ""
+
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.binary_search:0
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.choose:0
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.get_parameters:0
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.sigmoid:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.binary_search:0
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.choose:0
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.get_parameters:0
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.sigmoid:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.choose:1
+msgid "The binomial coefficient n choose k."
+msgstr ""
+
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.choose:3
+msgid ":math:`\\binom{n}{k}` describes the number of possible choices of :math:`k` elements from a set of :math:`n` elements."
+msgstr ""
+
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.choose:7
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.sigmoid:7
+msgid "References"
+msgstr ""
+
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.choose:8
+msgid "https://en.wikipedia.org/wiki/Combination"
+msgstr ""
+
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.choose:9
+msgid "https://docs.scipy.org/doc/scipy/reference/generated/scipy.special.comb.html"
+msgstr ""
+
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.clip:1
+msgid "Clips ``a`` to the interval [``min_a``, ``max_a``]."
+msgstr ""
+
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.clip:3
+msgid "Accepts any comparable objects (i.e. those that support <, >). Returns ``a`` if it is between ``min_a`` and ``max_a``. Otherwise, whichever of ``min_a`` and ``max_a`` is closest."
+msgstr ""
+
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.get_parameters:1
+msgid "Return the parameters of ``function`` as an ordered mapping of parameters' names to their corresponding ``Parameter`` objects."
+msgstr ""
+
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.sigmoid:1
+msgid "Returns the output of the logistic function."
+msgstr ""
+
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.sigmoid:3
+msgid "The logistic function, a common example of a sigmoid function, is defined as :math:`\\frac{1}{1 + e^{-x}}`."
+msgstr ""
+
+#: ../../../manim/utils/simple_functions.py:docstring of manim.utils.simple_functions.sigmoid:8
+msgid "https://en.wikipedia.org/wiki/Sigmoid_function"
+msgstr ""
+
+

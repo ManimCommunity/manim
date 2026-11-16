@@ -1,0 +1,21 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.camera.three_d_camera.rst:2
+msgid "three\\_d\\_camera"
+msgstr ""
+
+#: ../../../manim/camera/three_d_camera.py:docstring of manim.camera.three_d_camera:1
+msgid "A camera that can be positioned and oriented in three-dimensional space."
+msgstr ""
+
+#: ../../source/reference/manim.camera.three_d_camera.rst:15
+msgid "Classes"
+msgstr ""
+
+

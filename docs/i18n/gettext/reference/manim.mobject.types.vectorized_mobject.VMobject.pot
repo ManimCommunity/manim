@@ -1,0 +1,751 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:2
+msgid "VMobject"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:4
+msgid "Qualified name: ``manim.mobject.types.vectorized\\_mobject.VMobject``"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:1
+msgid "Bases: :py:class:`manim.mobject.mobject.Mobject`"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:1
+msgid "A vectorized mobject."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_cubic_bezier_curve_to:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_line_to:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_quadratic_bezier_curve_to:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_smooth_curve_to:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.align_points:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.change_anchor_mode:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.consider_points_equals_2d:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.force_direction:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.gen_cubic_bezier_tuples_from_points:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_arc_length:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_curve_functions_with_lengths:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_function:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_function_with_length:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_length:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_length_pieces:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_points:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_subcurve:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.insert_n_curves:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.insert_n_curves_to_point_list:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.point_from_proportion:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.pointwise_become_partial:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.proportion_from_point:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.rotate:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.rotate_sheen_direction:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.scale_handle_to_anchor_distances:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_anchors_and_handles:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_fill:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_points_as_corners:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_sheen:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_sheen_direction:0
+msgid "Parameters"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:3
+msgid "The purpose of background stroke is to have something that won't overlap fill, e.g.  For text against some textured background."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:6
+msgid "When a color c is set, there will be a second color computed based on interpolating c to WHITE by with sheen_factor, and the display will gradient to this secondary color in the direction of sheen_direction."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:10
+msgid "Indicates that it will not be displayed, but that it should count in parent mobject's path"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject:12
+msgid "This is within a pixel"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:14
+msgid "Methods"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_cubic_bezier_curve_to:1
+msgid "Add cubic bezier curve to the path."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_line_to:1
+msgid "Add a straight line from the last point of VMobject to the given point."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_quadratic_bezier_curve_to:1
+msgid "Add Quadratic bezier curve to the path."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+msgid "Creates a smooth curve from given points and add it to the VMobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.align_points:1
+msgid "Adds points to self and vmobject so that they both have the same number of subpaths, with corresponding subpaths each containing the same number of points."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+msgid "Changes the anchor mode of the bezier curves."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.consider_points_equals_2d:1
+msgid "Determine if two points are close enough to be considered equal."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.force_direction:1
+msgid "Makes sure that points are either directed clockwise or counterclockwise."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.gen_cubic_bezier_tuples_from_points:1
+msgid "Returns the bezier tuples from an array of points."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+msgid "First arg can be either a color, or a tuple/list of colors."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_anchors:1
+msgid "Returns the anchors of the curves forming the VMobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_anchors_and_handles:1
+msgid "Returns anchors1, handles1, handles2, anchors2, where (anchors1[i], handles1[i], handles2[i], anchors2[i]) will be four points defining a cubic bezier curve for any i in range(0, len(anchors1))"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_arc_length:1
+msgid "Return the approximated length of the whole curve."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_color:1
+msgid "Returns the color of the :class:`~.Mobject`"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_curve_functions:1
+msgid "Gets the functions for the curves of the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_curve_functions_with_lengths:1
+msgid "Gets the functions and lengths of the curves for the mobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+msgid "Uses :func:`~.space_ops.shoelace_direction` to calculate the direction."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_end_anchors:1
+msgid "Return the end anchors of the bezier curves."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_cubic_bezier_curve_to:1:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.fill_color:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_fill_color:1
+msgid "If there are multiple colors (for gradient) this returns the first one"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_fill_opacity:1
+msgid "If there are multiple opacities, this returns the first"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_function:1
+msgid "Returns the expression of the nth curve."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_function_with_length:1
+msgid "Returns the expression of the nth curve along with its (approximate) length."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_length:1
+msgid "Returns the (approximate) length of the nth curve."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_length_pieces:1
+msgid "Returns the array of short line lengths used for length approximation."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_points:1
+msgid "Returns the points defining the nth curve of the vmobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_num_curves:1
+msgid "Returns the number of curves of the vmobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+msgid "The simplest :class:`~.Mobject` to be transformed to or from self."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_start_anchors:1
+msgid "Returns the start anchors of the bezier curves."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+msgid "Returns the subcurve of the VMobject between the interval [a, b]."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_subpaths:1
+msgid "Returns subpaths formed by the curves of the VMobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.init_colors:1
+msgid "Initializes the colors."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.insert_n_curves:1
+msgid "Inserts n curves to the bezier curves of the vmobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.insert_n_curves_to_point_list:1
+msgid "Given an array of k points defining a bezier curves (anchors and handles), returns points defining exactly k + n bezier curves."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.point_from_proportion:1
+msgid "Gets the point at a proportion along the path of the :class:`VMobject`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+msgid "Given two bounds a and b, transforms the points of the self vmobject into the points of the vmobject passed as parameter with respect to the bounds."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.proportion_from_point:1
+msgid "Returns the proportion along the path of the :class:`VMobject` a particular given point is at."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.reverse_direction:1
+msgid "Reverts the point direction by inverting the point order."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.rotate:1
+msgid "Rotates the :class:`~.Mobject` about a certain point."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.rotate_sheen_direction:1
+msgid "Rotates the direction of the applied sheen."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+msgid "If the distance between a given handle point H and its associated anchor point A is d, then it changes H to be a distances factor*d away from A, but so that the line from A to H doesn't change."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_anchors_and_handles:1
+msgid "Given two sets of anchors and handles, process them to set them as anchors and handles of the VMobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+msgid "Condition is function which takes in one arguments, (x, y, z)."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_fill:1
+msgid "Set the fill color and fill opacity of a :class:`VMobject`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_points_as_corners:1
+msgid "Given an array of points, set them as corner of the vmobject."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_sheen:1
+msgid "Applies a color gradient from a direction."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:114:<autosummary>:1
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_sheen_direction:1
+msgid "Sets the direction of the applied sheen."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.types.vectorized_mobject.VMobject.rst:116
+msgid "Attributes"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_cubic_bezier_curve_to:1:<autosummary>:1
+msgid "Used to animate the application of any method of :code:`self`."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_cubic_bezier_curve_to:1:<autosummary>:1
+msgid "The depth of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_cubic_bezier_curve_to:1:<autosummary>:1
+msgid "The height of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_cubic_bezier_curve_to:1:<autosummary>:1
+msgid "The width of the mobject."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_cubic_bezier_curve_to:3
+msgid "NOTE : the first anchor is not a parameter as by default the end of the last sub-path!"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_cubic_bezier_curve_to:5
+msgid "first handle"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_cubic_bezier_curve_to:7
+msgid "second handle"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_cubic_bezier_curve_to:9
+msgid "anchor"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_cubic_bezier_curve_to:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_line_to:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_quadratic_bezier_curve_to:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_smooth_curve_to:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.align_points:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.change_anchor_mode:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.consider_points_equals_2d:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.gen_cubic_bezier_tuples_from_points:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_anchors:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_anchors_and_handles:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_arc_length:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_curve_functions:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_curve_functions_with_lengths:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_direction:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_end_anchors:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_function:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_function_with_length:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_length:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_length_pieces:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_points:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_num_curves:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_start_anchors:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_subcurve:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_subpaths:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.insert_n_curves:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.insert_n_curves_to_point_list:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.point_from_proportion:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.pointwise_become_partial:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.proportion_from_point:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.reverse_direction:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.scale_handle_to_anchor_distances:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_anchors_and_handles:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_fill:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_points_as_corners:0
+msgid "Returns"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_cubic_bezier_curve_to:12
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_line_to:6
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_quadratic_bezier_curve_to:3
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_smooth_curve_to:7
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.align_points:9
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.change_anchor_mode:5
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.insert_n_curves:5
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.pointwise_become_partial:11
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.scale_handle_to_anchor_distances:11
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_anchors_and_handles:9
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_fill:7
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_points_as_corners:9
+msgid "``self``"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_cubic_bezier_curve_to:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_line_to:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_quadratic_bezier_curve_to:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_smooth_curve_to:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.align_points:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.change_anchor_mode:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.consider_points_equals_2d:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.gen_cubic_bezier_tuples_from_points:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_anchors:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_anchors_and_handles:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_arc_length:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_curve_functions:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_curve_functions_with_lengths:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_direction:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_end_anchors:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_function:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_function_with_length:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_length:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_length_pieces:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_points:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_num_curves:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_start_anchors:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_subcurve:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_subpaths:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.insert_n_curves:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.insert_n_curves_to_point_list:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.point_from_proportion:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.pointwise_become_partial:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.proportion_from_point:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.reverse_direction:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.scale_handle_to_anchor_distances:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_anchors_and_handles:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_fill:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_points_as_corners:0
+msgid "Return type"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_line_to:3
+msgid "end of the straight line."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_smooth_curve_to:1
+msgid "Creates a smooth curve from given points and add it to the VMobject. If two points are passed in, the first is interpreted as a handle, the second as an anchor."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_smooth_curve_to:4
+msgid "Points (anchor and handle, or just anchor) to add a smooth curve from"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_smooth_curve_to:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.point_from_proportion:0
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.proportion_from_point:0
+msgid "Raises"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.add_smooth_curve_to:10
+msgid "If 0 or more than 2 points are given."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.align_points:4
+msgid "Points are added either by subdividing curves evenly along the subpath, or by creating new subpaths consisting of a single point repeated."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.align_points:7
+msgid "The object to align points with."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.change_anchor_mode:1
+msgid "Changes the anchor mode of the bezier curves. This will modify the handles."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.change_anchor_mode:3
+msgid "There can be only two modes, \"jagged\", and \"smooth\"."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.consider_points_equals_2d:3
+msgid "This uses the algorithm from np.isclose(), but expanded here for the 2D point case. NumPy is overkill for such a small question. :param p0: first point :type p0: np.ndarray :param p1: second point :type p1: np.ndarray"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.consider_points_equals_2d:10
+msgid "whether two points considered close."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.force_direction:4
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_direction:13
+msgid "Either ``\"CW\"`` or ``\"CCW\"``."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.gen_cubic_bezier_tuples_from_points:3
+msgid "self.points is a list of the anchors and handles of the bezier curves of the mobject (ie [anchor1, handle1, handle2, anchor2, anchor3 ..]) This algorithm basically retrieve them by taking an element every n, where n is the number of control points of the bezier curve."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.gen_cubic_bezier_tuples_from_points:8
+msgid "Points from which control points will be extracted."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.gen_cubic_bezier_tuples_from_points:11
+msgid "Bezier control points."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.generate_rgbas_array:1
+msgid "First arg can be either a color, or a tuple/list of colors. Likewise, opacity can either be a float, or a tuple of floats. If self.sheen_factor is not zero, and only one color was passed in, a second slightly light color will automatically be added for the gradient"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_anchors:3
+msgid "The anchors."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_anchors_and_handles:6
+msgid "Iterable of the anchors and handles."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_arc_length:3
+msgid "Number of sample points per curve used to approximate the length. More points result in a better approximation."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_arc_length:5
+msgid "The length of the :class:`VMobject`."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_curve_functions:3
+msgid "The functions for the curves."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_curve_functions_with_lengths:3
+msgid "The keyword arguments passed to :meth:`get_nth_curve_function_with_length`"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_curve_functions_with_lengths:5
+msgid "The functions and lengths of the curves."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_direction:1
+msgid "Uses :func:`~.space_ops.shoelace_direction` to calculate the direction. The direction of points determines in which direction the object is drawn, clockwise or counterclockwise."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_direction:6
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.reverse_direction:7
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.rotate_sheen_direction:9
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_fill:11
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_sheen:11
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_sheen_direction:7
+msgid "Examples"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_direction:7
+msgid "The default direction of a :class:`~.Circle` is counterclockwise::"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_end_anchors:3
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_start_anchors:3
+msgid "Starting anchors"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_function:3
+msgid "index of the desired curve."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_function:6
+msgid "expression of the nth bezier curve."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_function_with_length:3
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_length:3
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_length_pieces:3
+msgid "The index of the desired curve."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_function_with_length:4
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_length:4
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_length_pieces:4
+msgid "The number of points to sample to find the length."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_function_with_length:6
+msgid "* **curve** (*typing.Callable[[float], np.ndarray]*) -- The function for the nth curve. * **length** (:class:`float`) -- The length of the nth curve."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_function_with_length:6
+msgid "**curve** (*typing.Callable[[float], np.ndarray]*) -- The function for the nth curve."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_function_with_length:7
+msgid "**length** (:class:`float`) -- The length of the nth curve."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_length:6
+msgid "**length** -- The length of the nth curve."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_length_pieces:6
+msgid "The short length-pieces of the nth curve."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_points:3
+msgid "index of the desired bezier curve."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_nth_curve_points:6
+msgid "points defininf the nth bezier curve (anchors, handles)"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_num_curves:3
+msgid "number of curves. of the vmobject."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_point_mobject:1
+msgid "The simplest :class:`~.Mobject` to be transformed to or from self. Should by a point of the appropriate type"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_subcurve:1
+msgid "Returns the subcurve of the VMobject between the interval [a, b]. The curve is a VMobject itself."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_subcurve:4
+msgid "The lower bound."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_subcurve:5
+msgid "The upper bound."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_subcurve:7
+msgid "The subcurve between of [a, b]"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_subpaths:3
+msgid "Subpaths are ranges of curves with each pair of consecutive curves having their end/start points coincident."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.get_subpaths:5
+msgid "subpaths."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.init_colors:3
+msgid "Gets called upon creation. This is an empty method that can be implemented by subclasses."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.insert_n_curves:3
+msgid "Number of curves to insert."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.insert_n_curves_to_point_list:3
+msgid "Number of desired curves."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.insert_n_curves_to_point_list:5
+msgid "Starting points."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.insert_n_curves_to_point_list:8
+msgid "Points generated."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.point_from_proportion:3
+msgid "The proportion along the the path of the :class:`VMobject`."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.point_from_proportion:5
+msgid "The point on the :class:`VMobject`."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.point_from_proportion:8
+msgid "If ``alpha`` is not between 0 and 1."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.point_from_proportion:9
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.proportion_from_point:10
+msgid "If the :class:`VMobject` has no points."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.pointwise_become_partial:1
+msgid "Given two bounds a and b, transforms the points of the self vmobject into the points of the vmobject passed as parameter with respect to the bounds. Points here stand for control points of the bezier curves (anchors and handles)"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.pointwise_become_partial:4
+msgid "The vmobject that will serve as a model."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.pointwise_become_partial:6
+msgid "upper-bound."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.pointwise_become_partial:8
+msgid "lower-bound"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.proportion_from_point:4
+msgid "The Cartesian coordinates of the point which may or may not lie on the :class:`VMobject`"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.proportion_from_point:6
+msgid "The proportion along the path of the :class:`VMobject`."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.proportion_from_point:9
+msgid "If ``point`` does not lie on the curve."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.reverse_direction:3
+msgid "Returns self."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.rotate_sheen_direction:3
+msgid "Angle by which the direction of sheen is rotated."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.rotate_sheen_direction:5
+msgid "Axis of rotation."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.rotate_sheen_direction:10
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_sheen_direction:8
+msgid "Normal usage::"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.scale_handle_to_anchor_distances:1
+msgid "If the distance between a given handle point H and its associated anchor point A is d, then it changes H to be a distances factor*d away from A, but so that the line from A to H doesn't change. This is mostly useful in the context of applying a (differentiable) function, to preserve tangency properties.  One would pull all the handles closer to their anchors, apply the function then push them out again."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.scale_handle_to_anchor_distances:9
+msgid "The factor used for scaling."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_anchors_and_handles:4
+msgid "anchors1[i], handles1[i], handles2[i] and anchors2[i] define the i-th bezier curve of the vmobject. There are four hardcoded parameters and this is a problem as it makes the number of points per cubic curve unchangeable from 4 (two anchors and two handles)."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_color:1
+msgid "Condition is function which takes in one arguments, (x, y, z). Here it just recurses to submobjects, but in subclasses this should be further implemented based on the the inner workings of color"
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_fill:3
+msgid "Fill color of the :class:`VMobject`."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_fill:4
+msgid "Fill opacity of the :class:`VMobject`."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_fill:5
+msgid "If ``True``, the fill color of all submobjects is also set."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_points_as_corners:3
+msgid "To achieve that, this algorithm sets handles aligned with the anchors such that the resultant bezier curve will be the segment between the two anchors."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_points_as_corners:6
+msgid "Array of points that will be set as corners."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_sheen:3
+msgid "The extent of lustre/gradient to apply. If negative, the gradient starts from black, if positive the gradient starts from white and changes to the current color."
+msgstr ""
+
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_sheen:7
+#: ../../../manim/mobject/types/vectorized_mobject.py:docstring of manim.mobject.types.vectorized_mobject.VMobject.set_sheen_direction:3
+msgid "Direction from where the gradient is applied."
+msgstr ""
+
+

@@ -1,0 +1,41 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference.rst:2
+msgid "Reference Manual"
+msgstr ""
+
+#: ../../source/reference.rst:4
+msgid "This reference manual details modules, functions, and variables included in Manim, describing what they are and what they do.  For learning how to use Manim, see :doc:`tutorials/index`.  For a list of changes since the last release, see the :doc:`changelog`."
+msgstr ""
+
+#: ../../source/reference.rst:9
+msgid "The pages linked to here are currently a work in progress."
+msgstr ""
+
+#: ../../source/reference.rst:12
+msgid "Inheritance Graphs"
+msgstr ""
+
+#: ../../source/reference.rst:15
+msgid "Animations"
+msgstr ""
+
+#: ../../source/reference.rst:38
+msgid "Cameras"
+msgstr ""
+
+#: ../../source/reference.rst:50
+msgid "Mobjects"
+msgstr ""
+
+#: ../../source/reference.rst:88
+msgid "Scenes"
+msgstr ""
+
+

@@ -1,0 +1,25 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference_index/configuration.rst:2
+msgid "Configuration"
+msgstr ""
+
+#: ../../source/reference_index/configuration.rst:5
+msgid "Module Index"
+msgstr ""
+
+#: ../../source/reference_index/configuration.rst:14:<autosummary>:1
+msgid "Set the global config and logger."
+msgstr ""
+
+#: ../../source/reference_index/configuration.rst:14:<autosummary>:1
+msgid "Utilities to create and set the config."
+msgstr ""
+
+

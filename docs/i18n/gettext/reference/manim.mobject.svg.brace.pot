@@ -1,0 +1,33 @@
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Manim \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../source/reference/manim.mobject.svg.brace.rst:2
+msgid "brace"
+msgstr ""
+
+#: ../../../manim/mobject/svg/brace.py:docstring of manim.mobject.svg.brace:1
+msgid "Mobject representing curly braces."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.rst:15
+msgid "Classes"
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.rst:28:<autosummary>:1
+msgid "Creates a :class:`~Brace` that wraps around an :class:`~.Arc`."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.rst:28:<autosummary>:1
+msgid "Takes a mobject and draws a brace adjacent to it."
+msgstr ""
+
+#: ../../source/reference/manim.mobject.svg.brace.rst:28:<autosummary>:1
+msgid "Similar to Brace, but instead of taking a mobject it uses 2 points to place the brace."
+msgstr ""
+
+
