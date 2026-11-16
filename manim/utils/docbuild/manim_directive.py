@@ -4,10 +4,9 @@ from collections.abc import Sequence
 from typing import TypedDict
 
 from docutils.nodes import Node
-from sphinx import directives
+from docutils.parsers.rst import directives
 from sphinx.application import Sphinx
 from sphinx.util.docutils import SphinxDirective
-from docutils.parsers.rst import directives
 
 
 def setup(app: Sphinx) -> SetupMetadata:
@@ -41,7 +40,7 @@ class ManimDirective(SphinxDirective):
     final_argument_whitespace = True
 
     def run(self) -> Sequence[Node]:
-        return self.parse_content_to_nodes()
+        return self.parse_content_to_nodes()  # type: ignore[no-any-return]
 
 
 def process_name_list(option_input: str, reference_type: str) -> list[str]:
