@@ -101,7 +101,6 @@ import shutil
 import sys
 import textwrap
 from pathlib import Path
-from timeit import timeit
 from typing import TYPE_CHECKING, Any, TypedDict
 
 import jinja2
@@ -111,6 +110,7 @@ from docutils.statemachine import StringList
 
 from manim import QUALITIES
 from manim import __version__ as manim_version
+from manim.utils.docbuild._render_worker import render_example, shutdown
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
@@ -222,8 +222,6 @@ class ManimDirective(Directive):
             )
             return [node]
 
-        from manim import config, tempconfig
-
         clsname = self.arguments[0]
         env = self.state.document.settings.env
         docname = env.docname
@@ -286,15 +284,19 @@ class ManimDirective(Directive):
         # is unique within its output directory. This keeps documents independent
         # of each other, so they can be read and rendered in parallel
         # (``sphinx-build -j``) without processes clobbering each other's files.
-        config.media_dir = (Path(setup.confdir) / "media" / docname).absolute()  # type: ignore[attr-defined]
-        config.images_dir = "{media_dir}/images"
-        config.video_dir = "{media_dir}/videos/{quality}"
         output_file = f"{clsname}-{document_tag}-{serial_number}"
-        # Scenes sharing their name must not share their cached segments.
-        config.partial_movie_dir = f"{{video_dir}}/partial_movie_files/{output_file}"
-        config.assets_dir = (Path(setup.confdir) / "_static").absolute()  # type: ignore[attr-defined]
-        config.progress_bar = "none"
-        config.verbosity = "WARNING"
+        global_config = {
+            "media_dir": (Path(setup.confdir) / "media" / docname).absolute(),  # type: ignore[attr-defined]
+            "images_dir": "{media_dir}/images",
+            "video_dir": "{media_dir}/videos/{quality}",
+            # Scenes sharing their name must not share their cached segments.
+            "partial_movie_dir": f"{{video_dir}}/partial_movie_files/{output_file}",
+            "assets_dir": (Path(setup.confdir) / "_static").absolute(),  # type: ignore[attr-defined]
+            "progress_bar": "none",
+            "verbosity": "WARNING",
+            # Project-wide settings from ``manim_render_config`` in conf.py.
+            **setup.config.manim_render_config,  # type: ignore[attr-defined]
+        }
 
         example_config = {
             "frame_rate": frame_rate,
@@ -315,25 +317,16 @@ class ManimDirective(Directive):
                 line[4:] for line in user_code if line.startswith((">>> ", "... "))
             ]
 
-        code = [
-            "from manim import *",
-            *user_code,
-            f"_manim_rendered_scene = {clsname}()",
-            "_manim_rendered_scene.render()",
-        ]
-        render_namespace = globals()
-
-        try:
-            with tempconfig(example_config):
-                run_time = timeit(
-                    lambda: exec("\n".join(code), render_namespace),
-                    number=1,
-                )
-                rendered_scene = render_namespace.pop("_manim_rendered_scene")
-                filesrc = rendered_scene.renderer.file_writer.final_file_path
-        except Exception as e:
-            render_namespace.pop("_manim_rendered_scene", None)
-            raise RuntimeError(f"Error while rendering example {clsname}") from e
+        # Rendered in a separate worker process with a timeout, see
+        # ``_render_worker`` for the reasons.
+        result = render_example(
+            clsname,
+            "\n".join(user_code),
+            global_config=global_config,
+            example_config=example_config,
+        )
+        filesrc = result.file_path
+        run_time = result.run_time
 
         _write_rendering_stats(clsname, run_time, docname)
 
@@ -423,10 +416,15 @@ def setup(app: Sphinx) -> SetupMetadata:
     setup.config = app.config  # type: ignore[attr-defined]
     setup.confdir = app.confdir  # type: ignore[attr-defined]
 
+    # Manim config values applied to every rendered example, e.g. to limit the
+    # memory used by the video encoder: ``{"video_encoder_options": {...}}``.
+    app.add_config_value("manim_render_config", {}, "env", dict)
+
     app.add_directive("manim", ManimDirective)
 
     app.connect("builder-inited", _delete_rendering_times)
     app.connect("build-finished", _log_rendering_times)
+    app.connect("build-finished", shutdown)
 
     app.add_js_file("manim-binder.min.js")
     app.add_js_file(

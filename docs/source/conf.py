@@ -80,6 +80,14 @@ autosummary_generate = True
 
 myst_enable_extensions = ["colon_fence", "amsmath", "deflist"]
 
+# Manim config applied to every example rendered by the manim directive.
+# libx264 buffers up to ``rc-lookahead`` frames (40 by default) for rate
+# control, which takes several hundred MB at 1080p; 10 frames halve the
+# encoder's memory with practically the same file size.
+manim_render_config = {
+    "video_encoder_options": {"rc-lookahead": "10"},
+}
+
 # redirects (for moved / deleted pages)
 redirects = {
     "installation/linux": "uv.html",
