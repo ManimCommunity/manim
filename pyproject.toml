@@ -45,7 +45,6 @@ dependencies = [
     "srt>=3.0.0",
     "svgelements>=1.9.0",
     "tqdm>=4.21.0",
-    "types-docutils>=0.23.0.20261107",
     "typing-extensions>=4.12.0",
     "watchdog>=2.0.0",
 ]
@@ -79,29 +78,27 @@ typst = [
 
 [dependency-groups]
 dev = [
+    "furo>=2024.8.6",
     "matplotlib>=3.9.4",
+    "myst-parser>=3.0.1",
     "pre-commit>=4.1.0",
     "pytest>=8.3.4",
     "pytest-cov>=6.0.0",
     "pytest-xdist>=2.2,<3.0",
     "ruff>=0.14.7",
-    "types-decorator>=5.1.8.20250121",
-    "types-pillow>=10.2.0.20240822",
-    "types-pygments>=2.19.0.20250107",
-    "psutil>=6.1.1",
-    "requests>=2.32.3",
-]
-docs = [
-    "furo>=2024.8.6",
-    "myst-parser>=3.0.1",
     "sphinx>=7.4.7",
     "sphinx-copybutton>=0.5.2",
     "sphinx-design>=0.6.1",
     "sphinx-reredirects>=0.1.5",
     "sphinxcontrib-programoutput>=0.18",
     "sphinxext-opengraph>=0.9.1",
+    "types-decorator>=5.1.8.20250121",
+    "types-pillow>=10.2.0.20240822",
+    "types-pygments>=2.19.0.20250107",
+    "psutil>=6.1.1",
+    "requests>=2.32.3",
+    "types-docutils>=0.23.0.20261107",
 ]
-
 
 [build-system]
 requires = ["uv_build>=0.12.1,<0.13.0"]

@@ -1740,7 +1740,6 @@ dependencies = [
     { name = "srt" },
     { name = "svgelements" },
     { name = "tqdm" },
-    { name = "types-docutils" },
     { name = "typing-extensions" },
     { name = "watchdog" },
 ]
@@ -1759,7 +1758,9 @@ typst = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "furo" },
     { name = "matplotlib" },
+    { name = "myst-parser" },
     { name = "pre-commit" },
     { name = "psutil" },
     { name = "pytest" },
@@ -1767,13 +1768,6 @@ dev = [
     { name = "pytest-xdist" },
     { name = "requests" },
     { name = "ruff" },
-    { name = "types-decorator" },
-    { name = "types-pillow" },
-    { name = "types-pygments" },
-]
-docs = [
-    { name = "furo" },
-    { name = "myst-parser" },
     { name = "sphinx", version = "9.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "sphinx", version = "9.1.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.12.*'" },
     { name = "sphinx", version = "9.2.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.13'" },
@@ -1782,6 +1776,10 @@ docs = [
     { name = "sphinx-reredirects" },
     { name = "sphinxcontrib-programoutput" },
     { name = "sphinxext-opengraph" },
+    { name = "types-decorator" },
+    { name = "types-docutils" },
+    { name = "types-pillow" },
+    { name = "types-pygments" },
 ]
 
 [package.metadata]
@@ -1812,7 +1810,6 @@ requires-dist = [
     { name = "srt", specifier = ">=3.0.0" },
     { name = "svgelements", specifier = ">=1.9.0" },
     { name = "tqdm", specifier = ">=4.21.0" },
-    { name = "types-docutils", specifier = ">=0.23.0.20261107" },
     { name = "typing-extensions", specifier = ">=4.12.0" },
     { name = "typst", marker = "extra == 'typst'", specifier = ">=0.14" },
     { name = "watchdog", specifier = ">=2.0.0" },
@@ -1821,7 +1818,9 @@ provides-extras = ["gui", "jupyterlab", "typst"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "furo", specifier = ">=2024.8.6" },
     { name = "matplotlib", specifier = ">=3.9.4" },
+    { name = "myst-parser", specifier = ">=3.0.1" },
     { name = "pre-commit", specifier = ">=4.1.0" },
     { name = "psutil", specifier = ">=6.1.1" },
     { name = "pytest", specifier = ">=8.3.4" },
@@ -1829,19 +1828,16 @@ dev = [
     { name = "pytest-xdist", specifier = ">=2.2,<3.0" },
     { name = "requests", specifier = ">=2.32.3" },
     { name = "ruff", specifier = ">=0.14.7" },
-    { name = "types-decorator", specifier = ">=5.1.8.20250121" },
-    { name = "types-pillow", specifier = ">=10.2.0.20240822" },
-    { name = "types-pygments", specifier = ">=2.19.0.20250107" },
-]
-docs = [
-    { name = "furo", specifier = ">=2024.8.6" },
-    { name = "myst-parser", specifier = ">=3.0.1" },
     { name = "sphinx", specifier = ">=7.4.7" },
     { name = "sphinx-copybutton", specifier = ">=0.5.2" },
     { name = "sphinx-design", specifier = ">=0.6.1" },
     { name = "sphinx-reredirects", specifier = ">=0.1.5" },
     { name = "sphinxcontrib-programoutput", specifier = ">=0.18" },
     { name = "sphinxext-opengraph", specifier = ">=0.9.1" },
+    { name = "types-decorator", specifier = ">=5.1.8.20250121" },
+    { name = "types-docutils", specifier = ">=0.23.0.20261107" },
+    { name = "types-pillow", specifier = ">=10.2.0.20240822" },
+    { name = "types-pygments", specifier = ">=2.19.0.20250107" },
 ]
 
 [[package]]
