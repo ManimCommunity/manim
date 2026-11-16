@@ -38,5 +38,5 @@ html_theme = "alabaster"
 html_static_path = ["_static"]
 
 # Autodoc
-autosummary_generate = True
+autosummary_generate = False
 autodoc_default_options = {"members": True, "show-inheritance": True}
