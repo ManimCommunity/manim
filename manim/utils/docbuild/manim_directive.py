@@ -35,9 +35,6 @@ class ManimDirective(SphinxDirective):
         return self.parse_text_to_nodes()  # type: ignore[no-any-return]
 
 
-
-
-
 class SetupMetadata(TypedDict):
     parallel_read_safe: bool
     parallel_write_safe: bool
