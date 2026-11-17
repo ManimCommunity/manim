@@ -12,6 +12,14 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+# TEMPORARY (debugging stuck Read the Docs builds): docs/rtd_watchdog.sh sends
+# SIGUSR1 to get the stacks of all threads when the build stops progressing.
+if os.environ.get("READTHEDOCS"):
+    import faulthandler
+    import signal
+
+    faulthandler.register(signal.SIGUSR1, all_threads=True)
+
 import sphinx.ext.autosummary
 
 import manim

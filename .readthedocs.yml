@@ -13,12 +13,16 @@ build:
     - libpango1.0-dev
     - graphviz
 
-  # TEMPORARY (debugging timeouts): abort sphinx before Read the Docs kills the
-  # build, so its output and a traceback of every thread (faulthandler) show up.
+  # TEMPORARY (debugging stuck builds): report machine details and the state of
+  # the build to ntfy.sh, as Read the Docs keeps no output of a stuck command.
+  # The sphinx output is also written to /tmp/sphinx.log for the watchdog.
   jobs:
+    pre_build:
+      - bash docs/rtd_watchdog.sh info
+      - bash docs/rtd_watchdog.sh start
     build:
       html:
-        - cd docs/source && python -u -X faulthandler -m sphinx -T -v -b html -d _build/doctrees -D language=en . $READTHEDOCS_OUTPUT/html
+        - bash -c 'set -o pipefail; cd docs/source && python -u -X faulthandler -m sphinx -T -v -b html -d _build/doctrees -D language=en . "$READTHEDOCS_OUTPUT/html" 2>&1 | tee /tmp/sphinx.log'
 
 python:
    install:

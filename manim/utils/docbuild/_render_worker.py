@@ -38,6 +38,7 @@ import faulthandler
 import gc
 import multiprocessing as mp
 import os
+import signal
 import sys
 import time
 import traceback
@@ -134,6 +135,9 @@ def _worker_main(conn: Any) -> None:
     # Tracebacks of all threads when the parent sends SIGABRT before killing
     # us, or on a fatal native error.
     faulthandler.enable(file=sys.stderr, all_threads=True)
+    # Thread stacks on demand (``kill -USR1 <pid>``), without stopping.
+    if hasattr(faulthandler, "register") and hasattr(signal, "SIGUSR1"):
+        faulthandler.register(signal.SIGUSR1, file=sys.stderr, all_threads=True)
     while True:
         try:
             job = conn.recv()
@@ -192,8 +196,6 @@ class _Worker:
         return payload
 
     def _dump_and_kill(self) -> None:
-        import signal
-
         if self.process.is_alive() and hasattr(signal, "SIGABRT"):
             # faulthandler in the worker prints all thread stacks on SIGABRT.
             os.kill(self.process.pid, signal.SIGABRT)
