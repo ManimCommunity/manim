@@ -22,7 +22,7 @@ build:
       - bash docs/rtd_watchdog.sh start
     build:
       html:
-        - bash -c 'set -o pipefail; cd docs/source && python -u -X faulthandler -m sphinx -T -v -b html -d _build/doctrees -D language=en . "$READTHEDOCS_OUTPUT/html" 2>&1 | tee /tmp/sphinx.log'
+        - bash docs/rtd_watchdog.sh sphinx
 
 python:
    install:

@@ -7,6 +7,11 @@
 #
 #   rtd_watchdog.sh info    print (and send) details about the build machine
 #   rtd_watchdog.sh start   start the reporter in the background and return
+#   rtd_watchdog.sh sphinx  run the Sphinx HTML build, also logging to $LOG
+#
+# (The Sphinx call lives here because Read the Docs runs job commands as
+# `/bin/sh -c '<command>'` without escaping, so a command cannot contain
+# single quotes, and /bin/sh is dash, which has no `pipefail`.)
 #
 # The reporter sends a status line every $INTERVAL seconds (container memory,
 # pressure, processes, last lines of the Sphinx log). When the Sphinx log has
@@ -123,8 +128,14 @@ case "$1" in
     loop)
         loop
         ;;
+    sphinx)
+        cd docs/source || exit 1
+        set -o pipefail
+        python -u -X faulthandler -m sphinx -T -v -b html -d _build/doctrees \
+            -D language=en . "$READTHEDOCS_OUTPUT/html" 2>&1 | tee "$LOG"
+        ;;
     *)
-        echo "usage: $0 info|start" >&2
+        echo "usage: $0 info|start|sphinx" >&2
         exit 2
         ;;
 esac
