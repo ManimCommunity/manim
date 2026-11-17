@@ -40,6 +40,8 @@ __all__ = [
     "rotate_vector",
     "thick_diagonal",
     "rotation_matrix",
+    "rotation_matrix_transpose",
+    "rotation_matrix_zxz",
     "rotation_about_z",
     "z_to_vector",
     "angle_of_vector",
@@ -251,9 +253,25 @@ def rotation_matrix_from_quaternion(quat: np.ndarray) -> np.ndarray:
 
 
 def rotation_matrix_transpose(angle: float, axis: Vector3DLike) -> np.ndarray:
-    if all(np.array(axis)[:2] == np.zeros(2)):
-        return rotation_about_z(angle * np.sign(axis[2])).T
-    return rotation_matrix(angle, axis).T
+    """Return the transpose of :func:`rotation_matrix` for ``angle`` and ``axis``.
+
+    A rotation's transpose is its inverse, so this is the rotation by
+    ``-angle`` about the same axis. Use it with row vectors, as in
+    ``points @ rotation_matrix_transpose(angle, axis)``.
+
+    Parameters
+    ----------
+    angle
+        The angle of rotation, in radians.
+    axis
+        The rotation axis. It does not need to be normalized.
+
+    Returns
+    -------
+    numpy.ndarray
+        A 3-by-3 rotation matrix.
+    """
+    return rotation_matrix(-angle, axis)
 
 
 def rotation_matrix(
@@ -343,6 +361,36 @@ def rotation_matrix(
     )
 
 
+def rotation_matrix_zxz(a: float, b: float, c: float) -> MatrixMN:
+    """Build a 3D rotation from Z–X–Z Euler angles.
+
+    The matrix is ``Rz(a) @ Rx(b) @ Rz(c)``. For column vectors, the
+    rightmost rotation acts first. The entries are computed directly,
+    without building the three component matrices.
+
+    Parameters
+    ----------
+    a, b, c
+        Angles in radians for the left Z, middle X, and right Z factors,
+        respectively.
+
+    Returns
+    -------
+    numpy.ndarray
+        A 3-by-3 rotation matrix.
+    """
+    ca, sa = math.cos(a), math.sin(a)
+    cb, sb = math.cos(b), math.sin(b)
+    cc, sc = math.cos(c), math.sin(c)
+    return np.array(
+        [
+            [ca * cc - sa * cb * sc, -ca * sc - sa * cb * cc, sa * sb],
+            [sa * cc + ca * cb * sc, -sa * sc + ca * cb * cc, -ca * sb],
+            [sb * sc, sb * cc, cb],
+        ]
+    )
+
+
 def rotation_about_z(angle: float) -> np.ndarray:
     """Returns a rotation matrix for a given angle.
 
@@ -356,12 +404,12 @@ def rotation_about_z(angle: float) -> np.ndarray:
     np.ndarray
         Gives back the rotated matrix.
     """
-    c, s = np.cos(angle), np.sin(angle)
+    c, s = math.cos(angle), math.sin(angle)
     return np.array(
         [
-            [c, -s, 0],
-            [s, c, 0],
-            [0, 0, 1],
+            [c, -s, 0.0],
+            [s, c, 0.0],
+            [0.0, 0.0, 1.0],
         ]
     )
 

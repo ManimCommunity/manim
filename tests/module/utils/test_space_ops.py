@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 from scipy.spatial.transform import Rotation
 
+from manim.constants import IN, OUT, RIGHT
 from manim.utils.space_ops import *
 from manim.utils.space_ops import shoelace
 
@@ -53,6 +54,34 @@ def test_rotation_matrices():
             ]
         ),
     )
+
+
+@pytest.mark.parametrize(
+    "axis",
+    [OUT, IN, 2 * OUT, RIGHT, np.array([1.0, -2.0, 3.0]), np.zeros(3)],
+)
+def test_rotation_matrix_transpose_is_inverse(axis):
+    angle = 0.7
+    np.testing.assert_allclose(
+        rotation_matrix_transpose(angle, axis),
+        rotation_matrix(angle, axis).T,
+        atol=1e-12,
+    )
+
+
+@pytest.mark.parametrize(
+    ("a", "b", "c"),
+    [
+        (0.0, 0.0, 0.0),
+        (0.4, 0.0, 0.0),
+        (0.0, -1.1, 0.0),
+        (0.0, 0.0, 2.3),
+        (0.4, -1.1, 2.3),
+    ],
+)
+def test_rotation_matrix_zxz_matches_product(a, b, c):
+    expected = rotation_about_z(a) @ rotation_matrix(b, RIGHT) @ rotation_about_z(c)
+    np.testing.assert_allclose(rotation_matrix_zxz(a, b, c), expected, atol=1e-12)
 
 
 @pytest.mark.parametrize(

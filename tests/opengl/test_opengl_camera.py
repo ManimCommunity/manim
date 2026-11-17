@@ -2,8 +2,40 @@ from __future__ import annotations
 
 import numpy as np
 
-from manim import DEGREES
+from manim import DEGREES, RIGHT, Scene
 from manim.renderer.opengl import OpenGLCamera
+from manim.utils import opengl
+from manim.utils.space_ops import rotation_about_z, rotation_matrix
+
+
+def test_inverse_rotation_matrix_preserves_opengl_euler_convention(
+    using_opengl_renderer,
+):
+    theta, phi, gamma = np.array([-37, 62, 18]) * DEGREES
+    camera = OpenGLCamera().set_euler_angles(theta, phi, gamma)
+    expected = (
+        rotation_about_z(theta) @ rotation_matrix(phi, RIGHT) @ rotation_about_z(gamma)
+    ).T
+    np.testing.assert_allclose(camera.inverse_rotation_matrix, expected, atol=1e-12)
+
+
+def test_horizontal_orbit_drag_preserves_camera_target(using_opengl_renderer):
+    scene = Scene()
+    camera = scene.camera
+    assert isinstance(camera, OpenGLCamera)
+    camera.set_position(np.array([3.0, 2.0, 1.0]))
+    target = scene.camera_target = np.array([1.0, 1.0, 0.0])
+    yaw = 0.4
+    expected = (
+        opengl.translation_matrix(*target)
+        @ opengl.z_rotation_matrix(-yaw)
+        @ opengl.translation_matrix(*-target)
+        @ camera.model_matrix
+    )
+
+    scene.mouse_drag_orbit_controls(np.zeros(3), np.array([yaw, 0.0, 0.0]), 1, 0)
+
+    np.testing.assert_allclose(camera.model_matrix, expected, atol=1e-12)
 
 
 def test_camera_interpolate_angles(using_opengl_renderer):

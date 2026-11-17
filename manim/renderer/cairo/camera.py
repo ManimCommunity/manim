@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Any, Literal, overload
 import numpy as np
 
 from manim._config import config
-from manim.constants import DEGREES, DOWN, LEFT, ORIGIN, OUT, RIGHT
+from manim.constants import DEGREES, DOWN, LEFT, ORIGIN, OUT
 from manim.mobject.frame import ScreenRectangle
 from manim.mobject.mobject import Mobject, _AnimationBuilder
 from manim.mobject.three_d.three_d_utils import (
@@ -30,7 +30,7 @@ from manim.utils.color import WHITE, ManimColor, ParsableManimColor, get_shaded_
 from manim.utils.deprecation import deprecated
 from manim.utils.family import extract_mobject_family_members
 from manim.utils.iterables import list_difference_update
-from manim.utils.space_ops import rotation_about_z, rotation_matrix
+from manim.utils.space_ops import rotation_matrix_zxz
 
 if TYPE_CHECKING:
     from manim.typing import (
@@ -665,25 +665,22 @@ class ThreeDCamera(Camera):
         return self.get_rotation_matrix()
 
     def generate_rotation_matrix(self) -> MatrixMN:
-        """Generates a rotation matrix based off the current position of the camera.
+        """Compute the rotation from world axes to camera axes.
+
+        For column vectors, the matrix is
+        ``Rz(gamma) @ Rx(-phi) @ Rz(-theta - pi / 2)`` using the current
+        angle trackers. :meth:`project_points` centers points before applying
+        this rotation, and applies perspective and zoom afterwards.
 
         Returns
         -------
-        np.array
-            The matrix corresponding to the current position of the camera.
+        numpy.ndarray
+            The 3-by-3 rotation matrix, without translation or scaling.
         """
         phi = self.get_phi()
         theta = self.get_theta()
         gamma = self.get_gamma()
-        matrices = [
-            rotation_about_z(-theta - 90 * DEGREES),
-            rotation_matrix(-phi, RIGHT),
-            rotation_about_z(gamma),
-        ]
-        result = np.identity(3)
-        for matrix in matrices:
-            result = np.dot(matrix, result)
-        return result
+        return rotation_matrix_zxz(gamma, -phi, -theta - 90 * DEGREES)
 
     def project_points(self, points: Point3D_Array) -> Point3D_Array:
         """Applies the current rotation_matrix as a projection
