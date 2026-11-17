@@ -22,7 +22,7 @@ build:
       - bash docs/rtd_watchdog.sh start
     build:
       html:
-        - bash docs/rtd_watchdog.sh sphinx
+        - MANIM_RTD_SPHINX_QUIET=1 bash docs/rtd_watchdog.sh sphinx
 
 python:
    install:
