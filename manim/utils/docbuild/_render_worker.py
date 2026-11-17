@@ -189,16 +189,17 @@ class _Worker:
             ) from None
         self.renders += 1
         self.rss_mb = rss_mb
-        if status != "ok":
+        if status != "ok" or not isinstance(payload, RenderResult):
             raise RenderError(
                 f"Error while rendering example {job.clsname}:\n{payload}"
             )
         return payload
 
     def _dump_and_kill(self) -> None:
-        if self.process.is_alive() and hasattr(signal, "SIGABRT"):
+        pid = self.process.pid
+        if pid is not None and self.process.is_alive() and hasattr(signal, "SIGABRT"):
             # faulthandler in the worker prints all thread stacks on SIGABRT.
-            os.kill(self.process.pid, signal.SIGABRT)
+            os.kill(pid, signal.SIGABRT)
             self.process.join(10)
         if self.process.is_alive():
             self.process.kill()
