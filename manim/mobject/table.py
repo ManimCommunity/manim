@@ -639,6 +639,41 @@ class Table(VGroup):
         else:
             return self.elements
 
+    def get_entry(self, pos: Sequence[int]) -> VMobject:
+        """Return one specific entry of the table (including labels).
+
+        This is a shorthand for :meth:`get_entries` with ``pos`` set, and always
+        returns a single :class:`~.VMobject`.
+
+        Parameters
+        ----------
+        pos
+            The position of the entry on the table. ``(1,1)`` being the top left entry
+            of the table.
+
+        Returns
+        -------
+        :class:`~.VMobject`
+            The entry at the given position.
+
+        Examples
+        --------
+
+        .. manim:: GetEntryExample
+            :save_last_frame:
+
+            class GetEntryExample(Scene):
+                def construct(self):
+                    table = Table(
+                        [["First", "Second"],
+                        ["Third","Fourth"]],
+                        row_labels=[Text("R1"), Text("R2")],
+                        col_labels=[Text("C1"), Text("C2")])
+                    table.get_entry((2,2)).set_color(RED)
+                    self.add(table)
+        """
+        return self.get_entries(pos)  # type: ignore[return-value]
+
     def get_entries_without_labels(
         self,
         pos: Sequence[int] | None = None,

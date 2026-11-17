@@ -96,3 +96,12 @@ def test_empty_label_iterables_are_treated_as_absent():
 
     assert len(table_without_col_labels.get_row_labels()) == 2
     assert len(table_without_col_labels.get_col_labels()) == 0
+
+
+def test_get_entry():
+    """``get_entry`` returns the same single entry as ``get_entries(pos)``."""
+    table = Table([["A", "B"], ["C", "D"]])
+
+    for pos in [(1, 1), (1, 2), (2, 1), (2, 2)]:
+        assert table.get_entry(pos) is table.get_entries(pos)
+    assert table.get_entry((2, 2)) is table.get_entries()[3]
