@@ -9,6 +9,14 @@
 #   rtd_watchdog.sh start   start the reporter in the background and return
 #   rtd_watchdog.sh sphinx  run the Sphinx HTML build, also logging to $LOG
 #
+# With MANIM_RTD_SPHINX_QUIET=1 (a project env var on Read the Docs), the
+# Sphinx output only goes to $LOG, and the command prints just its tail
+# when done, which keeps the output stream of the build command tiny.
+#
+# In every mode, the sphinx command writes a marker file when it is done,
+# so the watchdog can report what (if anything) still holds the stdout/
+# stderr of the build command, i.e. what Read the Docs is waiting for.
+#
 # (The Sphinx call lives here because Read the Docs runs job commands as
 # `/bin/sh -c '<command>'` without escaping, so a command cannot contain
 # single quotes, and /bin/sh is dash, which has no `pipefail`.)
@@ -28,6 +36,8 @@ INTERVAL=${MANIM_RTD_WATCHDOG_INTERVAL:-30}
 STALL=${MANIM_RTD_WATCHDOG_STALL:-180}
 MAX_RUNTIME=${MANIM_RTD_WATCHDOG_MAX_RUNTIME:-2700}
 BUILD="${READTHEDOCS_VERSION:-local}@${READTHEDOCS_GIT_COMMIT_HASH:0:8}"
+STATE=/tmp/watchdog-state
+mkdir -p "$STATE"
 
 send() {  # send <title> <message>
     printf '%s' "$2" | head -c 3900 |
@@ -75,6 +85,41 @@ status() {
     tail -n 4 "$LOG" 2>/dev/null | cut -c1-300
 }
 
+pipe_holders() {
+    # Every process with an open fd on the stdout/stderr pipe(s) of the sphinx
+    # build command (recorded in $STATE/pipes when it started). As long as any
+    # process holds them, `docker exec` (and thus Read the Docs) keeps waiting.
+    local pipes pid fd target
+    pipes=$(tr '\n' ' ' < "$STATE/pipes" 2>/dev/null)
+    echo "exec pipes: ${pipes:-unknown}"
+    [ -n "$pipes" ] || return
+    for fd in /proc/[0-9]*/fd/*; do
+        target=$(readlink "$fd" 2>/dev/null) || continue
+        case " $pipes " in *" $target "*) ;; *) continue ;; esac
+        pid=${fd#/proc/}; pid=${pid%%/*}
+        echo "  pid=$pid fd=${fd##*/} -> $target  ppid=$(awk '/^PPid:/ {print $2}' /proc/$pid/status 2>/dev/null)" \
+             "state=$(awk '/^State:/ {print $2}' /proc/$pid/status 2>/dev/null)" \
+             "cmd=$(tr '\0' ' ' < /proc/$pid/cmdline 2>/dev/null | cut -c1-120)"
+    done
+}
+
+exit_report() {  # sent once the sphinx command has finished
+    local out=/tmp/watchdog-exit.txt
+    {
+        echo "sphinx command finished: $(cat "$STATE/done" 2>/dev/null)"
+        echo; echo "== holders of the build command's stdout/stderr"
+        pipe_holders
+        echo; echo "== all processes"
+        ps -eo pid,ppid,pgid,sid,stat,etimes,wchan:22,args | cut -c1-200
+        echo; echo "== open fds of every process"
+        for p in /proc/[0-9]*; do
+            echo "-- ${p#/proc/} $(tr '\0' ' ' < "$p/cmdline" 2>/dev/null | cut -c1-100)"
+            ls -l "$p/fd" 2>/dev/null | awk 'NR > 1 {print "   ", $(NF-2), $(NF-1), $NF}'
+        done
+    } > "$out" 2>&1
+    attach "SPHINX EXITED $BUILD" "exit-report.txt" "$out"
+}
+
 dump_stacks() {
     local out=/tmp/watchdog-dump.txt
     # SIGUSR1 only goes to processes that handle it; for the others, the
@@ -87,6 +132,8 @@ dump_stacks() {
     sleep 5
     {
         status "$1"
+        echo; echo "== holders of the build command's stdout/stderr"
+        pipe_holders
         echo; echo "== threads (kernel state)"
         ps -eLo pid,tid,stat,etimes,pcpu,wchan:32,comm | grep -v -e "ps -eLo"
         echo; echo "== memory.stat"; cgroup_file memory.stat memory.stat
@@ -97,7 +144,7 @@ dump_stacks() {
 }
 
 loop() {
-    local start last_size=-1 last_change last_dump=-100000 now size
+    local start last_size=-1 last_change last_dump=-100000 now size exit_reported=
     start=$(date +%s); last_change=$start
     send "watchdog started $BUILD" "$(machine_info 2>&1 | head -c 3800)"
     while :; do
@@ -108,6 +155,9 @@ loop() {
             last_size=$size; last_change=$(date +%s)
         fi
         send "$BUILD t=${now}s" "$(status "$now" 2>&1)"
+        if [ -z "$exit_reported" ] && [ -e "$STATE/done" ]; then
+            sleep 5; exit_report; exit_reported=1
+        fi
         if (( $(date +%s) - last_change >= STALL && now - last_dump >= 300 )); then
             dump_stacks "$now"; last_dump=$now
         fi
@@ -129,10 +179,33 @@ case "$1" in
         loop
         ;;
     sphinx)
+        # Remember the pipes RTD reads this command's output from.
+        echo "$(readlink /proc/$$/fd/1) $(readlink /proc/$$/fd/2)" > "$STATE/pipes"
+        rm -f "$STATE/done"
         cd docs/source || exit 1
-        set -o pipefail
-        python -u -X faulthandler -m sphinx -T -v -b html -d _build/doctrees \
-            -D language=en . "$READTHEDOCS_OUTPUT/html" 2>&1 | tee "$LOG"
+        sphinx=(python -u -X faulthandler -m sphinx -T -v -b html
+                -d _build/doctrees -D language=en . "$READTHEDOCS_OUTPUT/html")
+        start=$(date +%s)
+        if [ "${MANIM_RTD_SPHINX_QUIET:-}" = "1" ]; then
+            # Nothing but the tail goes to RTD; no process started by sphinx
+            # inherits the command's stdout/stderr.
+            "${sphinx[@]}" < /dev/null > "$LOG" 2>&1
+            rc=$?
+            echo "sphinx exited with $rc after $(( $(date +%s) - start ))s; last 60 lines of $LOG:"
+            tail -n 60 "$LOG"
+        else
+            # The marker is written as soon as python exits, even if `tee`
+            # (and so this command) is kept alive by something else holding
+            # the pipe, so the watchdog can report who that is.
+            set -o pipefail
+            { readlink "/proc/$BASHPID/fd/1" >> "$STATE/pipes"
+              "${sphinx[@]}"; py_rc=$?
+              echo "python-exited rc=$py_rc secs=$(( $(date +%s) - start ))" > "$STATE/done"
+              exit $py_rc; } 2>&1 | tee "$LOG"
+            rc=$?
+        fi
+        echo "rc=$rc secs=$(( $(date +%s) - start )) quiet=${MANIM_RTD_SPHINX_QUIET:-0}" > "$STATE/done"
+        exit $rc
         ;;
     *)
         echo "usage: $0 info|start|sphinx" >&2
