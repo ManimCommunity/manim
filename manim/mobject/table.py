@@ -672,7 +672,7 @@ class Table(VGroup):
                     table.get_entry((2,2)).set_color(RED)
                     self.add(table)
         """
-        return self.get_entries(pos)  # type: ignore[return-value]
+        return self.get_entries(pos)
 
     def get_entries_without_labels(
         self,
