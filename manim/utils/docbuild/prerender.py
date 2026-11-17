@@ -138,9 +138,18 @@ def main(argv: list[str] | None = None) -> int:
         metavar="I/N",
         help="render only the I-th of N chunks of the collected examples",
     )
+    parser.add_argument(
+        "--jobs",
+        type=int,
+        default=1,
+        metavar="J",
+        help="render the chunk with J processes in parallel (default: 1)",
+    )
     args = parser.parse_args(argv)
     prerender_dir: Path = args.prerender_dir.absolute()
     index, total = args.chunk
+    if args.jobs > 1:
+        return _run_parallel(prerender_dir, index, total, args.jobs)
 
     job_files = sorted((prerender_dir / "jobs").glob("*.json"))
     # Interleave, so every chunk gets a mix of short and long examples.
@@ -190,6 +199,39 @@ def main(argv: list[str] | None = None) -> int:
         flush=True,
     )
     return 0
+
+
+def _run_parallel(prerender_dir: Path, index: int, total: int, jobs: int) -> int:
+    """Split chunk ``index/total`` into ``jobs`` sub-chunks rendered in parallel.
+
+    Sub-chunk ``j`` of ``jobs`` of chunk ``index/total`` is chunk
+    ``(j - 1) * total + index`` of ``jobs * total``, so every process renders
+    an interleaved selection and the union is exactly the original chunk.
+    """
+    import subprocess
+
+    start = time.perf_counter()
+    processes = [
+        subprocess.Popen(
+            [
+                sys.executable,
+                "-m",
+                "manim.utils.docbuild.prerender",
+                str(prerender_dir),
+                "--chunk",
+                f"{(j - 1) * total + index}/{jobs * total}",
+            ],
+            stdin=subprocess.DEVNULL,
+        )
+        for j in range(1, jobs + 1)
+    ]
+    exit_codes = [process.wait() for process in processes]
+    print(
+        f"chunk {index}/{total} done in {time.perf_counter() - start:.0f}s "
+        f"with {jobs} processes, exit codes {exit_codes}",
+        flush=True,
+    )
+    return max(exit_codes)
 
 
 if __name__ == "__main__":
