@@ -16,13 +16,24 @@ build:
   # TEMPORARY (debugging stuck builds): report machine details and the state of
   # the build to ntfy.sh, as Read the Docs keeps no output of a stuck command.
   # The sphinx output is also written to /tmp/sphinx.log for the watchdog.
+  #
+  # The examples are rendered ahead of the HTML build, in several short
+  # commands (see manim/utils/docbuild/prerender.py): collect the examples,
+  # render them in chunks, then build the HTML using the rendered results.
   jobs:
     pre_build:
       - bash docs/rtd_watchdog.sh info
       - bash docs/rtd_watchdog.sh start
+      - bash docs/rtd_watchdog.sh run docs/source python -m sphinx -T -t manim-collect -b html -d /tmp/collect/doctrees . /tmp/collect/html
+      - bash docs/rtd_watchdog.sh run docs/source python -m manim.utils.docbuild.prerender media/_prerender --chunk 1/6
+      - bash docs/rtd_watchdog.sh run docs/source python -m manim.utils.docbuild.prerender media/_prerender --chunk 2/6
+      - bash docs/rtd_watchdog.sh run docs/source python -m manim.utils.docbuild.prerender media/_prerender --chunk 3/6
+      - bash docs/rtd_watchdog.sh run docs/source python -m manim.utils.docbuild.prerender media/_prerender --chunk 4/6
+      - bash docs/rtd_watchdog.sh run docs/source python -m manim.utils.docbuild.prerender media/_prerender --chunk 5/6
+      - bash docs/rtd_watchdog.sh run docs/source python -m manim.utils.docbuild.prerender media/_prerender --chunk 6/6
     build:
       html:
-        - MANIM_RTD_SPHINX_QUIET=1 bash docs/rtd_watchdog.sh sphinx
+        - MANIM_RTD_SPHINX_OPTS=-tmanim-use-prerendered bash docs/rtd_watchdog.sh sphinx
 
 python:
    install:

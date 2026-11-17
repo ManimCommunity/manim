@@ -8,6 +8,10 @@
 #   rtd_watchdog.sh info    print (and send) details about the build machine
 #   rtd_watchdog.sh start   start the reporter in the background and return
 #   rtd_watchdog.sh sphinx  run the Sphinx HTML build, also logging to $LOG
+#                           (extra options from $MANIM_RTD_SPHINX_OPTS)
+#   rtd_watchdog.sh run DIR CMD...
+#                           run CMD in DIR, also logging to $LOG (used for
+#                           the steps before the Sphinx build)
 #
 # With MANIM_RTD_SPHINX_QUIET=1 (a project env var on Read the Docs), the
 # Sphinx output only goes to $LOG, and the command prints just its tail
@@ -183,7 +187,8 @@ case "$1" in
         echo "$(readlink /proc/$$/fd/1) $(readlink /proc/$$/fd/2)" > "$STATE/pipes"
         rm -f "$STATE/done"
         cd docs/source || exit 1
-        sphinx=(python -u -X faulthandler -m sphinx -T -v -b html
+        # shellcheck disable=SC2206  # word splitting of the options is intended
+        sphinx=(python -u -X faulthandler -m sphinx -T -v -b html ${MANIM_RTD_SPHINX_OPTS:-}
                 -d _build/doctrees -D language=en . "$READTHEDOCS_OUTPUT/html")
         start=$(date +%s)
         if [ "${MANIM_RTD_SPHINX_QUIET:-}" = "1" ]; then
@@ -207,8 +212,15 @@ case "$1" in
         echo "rc=$rc secs=$(( $(date +%s) - start )) quiet=${MANIM_RTD_SPHINX_QUIET:-0}" > "$STATE/done"
         exit $rc
         ;;
+    run)
+        cd "$2" || exit 1
+        shift 2
+        echo "== $(date -u +%T) $*" >> "$LOG"
+        set -o pipefail
+        "$@" < /dev/null 2>&1 | tee -a "$LOG"
+        ;;
     *)
-        echo "usage: $0 info|start|sphinx" >&2
+        echo "usage: $0 info|start|sphinx|run DIR CMD..." >&2
         exit 2
         ;;
 esac

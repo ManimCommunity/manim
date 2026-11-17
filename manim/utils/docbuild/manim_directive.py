@@ -111,6 +111,7 @@ from docutils.statemachine import StringList
 from manim import QUALITIES
 from manim import __version__ as manim_version
 from manim.utils.docbuild._render_worker import render_example, shutdown
+from manim.utils.docbuild.prerender import load_result, write_job
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
@@ -317,14 +318,28 @@ class ManimDirective(Directive):
                 line[4:] for line in user_code if line.startswith((">>> ", "... "))
             ]
 
-        # Rendered in a separate worker process with a timeout, see
-        # ``_render_worker`` for the reasons.
-        result = render_example(
-            clsname,
-            "\n".join(user_code),
-            global_config=global_config,
-            example_config=example_config,
-        )
+        code = "\n".join(user_code)
+        tags = env.app.builder.tags
+        prerender_dir = Path(setup.confdir) / "media" / "_prerender"  # type: ignore[attr-defined]
+        if "manim-collect" in tags:
+            # Only record the example, see ``prerender`` for the workflow.
+            write_job(prerender_dir, clsname, code, global_config, example_config)
+            return []
+
+        result = None
+        if "manim-use-prerendered" in tags:
+            result = load_result(
+                prerender_dir, clsname, code, global_config, example_config
+            )
+        if result is None:
+            # Rendered in a separate worker process with a timeout, see
+            # ``_render_worker`` for the reasons.
+            result = render_example(
+                clsname,
+                code,
+                global_config=global_config,
+                example_config=example_config,
+            )
         filesrc = result.file_path
         run_time = result.run_time
 
