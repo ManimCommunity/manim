@@ -14,7 +14,6 @@ from datetime import datetime
 from pathlib import Path
 
 from sphinx.application import Sphinx
-from sphinx.errors import SphinxError
 
 import manim
 from manim.utils.docbuild.module_parsing import parse_module_attributes
@@ -206,7 +205,9 @@ graphviz_output_format = "svg"
 
 def setup(app: Sphinx) -> None:
     log_ntfy("build-started")
-    app.connect("html-collect-pages", lambda *args, **kwargs: log_ntfy("html-collect-pages"))
+    app.connect(
+        "html-collect-pages", lambda *args, **kwargs: log_ntfy("html-collect-pages")
+    )
     app.connect("build-finished", lambda *args, **kwargs: log_ntfy("build-finished"))
 
 
