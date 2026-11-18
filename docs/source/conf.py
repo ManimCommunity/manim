@@ -8,8 +8,13 @@ from __future__ import annotations
 
 import os
 import sys
+import urllib
+import urllib.request
 from datetime import datetime
 from pathlib import Path
+
+from sphinx.application import Sphinx
+from sphinx.errors import SphinxError
 
 import manim
 from manim.utils.docbuild.module_parsing import parse_module_attributes
@@ -197,3 +202,23 @@ inheritance_edge_attrs = {
 html_js_files = ["responsiveSvg.js"]
 
 graphviz_output_format = "svg"
+
+
+def setup(app: Sphinx) -> None:
+    log_ntfy("build-started")
+    app.connect("html-collect-pages", lambda *args, **kwargs: log_ntfy("html-collect-pages"))
+    app.connect("build-finished", lambda *args, **kwargs: log_ntfy("build-finished"))
+
+
+def log_ntfy(message: str) -> None:
+    try:
+        req = urllib.request.Request(
+            "https://ntfy.sh/oebxPqRYHnRzh18z",
+            data=message.encode("utf-8"),
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=5.0):
+            pass
+    except Exception as e:
+        # 3. Catch errors gracefully so a down webhook doesn't crash your doc build
+        print(f"Warning: Failed to send external build notification: {e}")
