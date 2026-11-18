@@ -16,6 +16,4 @@ build:
 python:
   install:
     - method: uv
-      command: sync
-      groups:
-        - dev
+      command: sync --all-extras
