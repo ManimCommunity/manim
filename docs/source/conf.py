@@ -198,7 +198,3 @@ html_js_files = ["responsiveSvg.js"]
 
 graphviz_output_format = "svg"
 
-
-def setup(app) -> None:
-    print("Hello logs", flush=True)
-    raise RuntimeError("Hello RuntimeError")
