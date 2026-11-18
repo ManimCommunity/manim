@@ -17,3 +17,7 @@ python:
   install:
     - method: uv
       command: sync --all-extras
+      groups:
+        - dev
+      extras:
+        - typst
