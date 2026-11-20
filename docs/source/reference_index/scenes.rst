@@ -7,6 +7,7 @@ Scenes
    :toctree: ../reference
 
    manager
+   timeline
    ~scene.moving_camera_scene
    ~scene.section
    ~scene.scene

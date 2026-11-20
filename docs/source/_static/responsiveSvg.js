@@ -1,19 +1,23 @@
-
 window.addEventListener("load", function () {
-    const styleElements = []
-    const colorSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const diagrams = document.querySelectorAll("object.inheritance.graphviz");
+    const colorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
-    for (let diagram of diagrams) {
-        style = document.createElement('style');
-        styleElements.push(style);
-        console.log(diagram);
-        diagram.contentDocument.firstElementChild.appendChild(style);
+    function getDark() {
+        // Furo's explicit theme takes precedence over the OS preference.
+        let theme = document.body.dataset.theme;
+        if (!theme) {
+            try {
+                theme = localStorage.getItem("theme");
+            } catch {
+                // Storage may be blocked; fall back to the OS preference.
+            }
+        }
+        return theme === "dark" || (theme !== "light" && colorSchemeQuery.matches);
     }
 
-    function setColorScheme(e) {
+    function setColorScheme() {
         let colors, additions = "";
-        if (e.matches) {
+        if (getDark()) {
             // Dark
             colors = {
                 text: "#e07a5f",
@@ -33,10 +37,19 @@ window.addEventListener("load", function () {
             .node polygon {
                 filter: drop-shadow(0 1px 3px #0002);
             }
-            `
+            `;
         }
-        for (let style of styleElements) {
-            style.innerHTML = `
+        for (const diagram of diagrams) {
+            const svgRoot = diagram.contentDocument?.documentElement;
+            if (!svgRoot) continue;
+
+            let style = svgRoot.querySelector("style[data-manim-theme]");
+            if (!style) {
+                style = document.createElementNS("http://www.w3.org/2000/svg", "style");
+                style.setAttribute("data-manim-theme", "");
+                svgRoot.appendChild(style);
+            }
+            style.textContent = `
                 svg {
                     background-color: ${colors.background};
                 }
@@ -62,6 +75,15 @@ window.addEventListener("load", function () {
         }
     }
 
-    setColorScheme(colorSchemeQuery);
+    for (const diagram of diagrams) {
+        diagram.addEventListener("load", setColorScheme);
+    }
+    setColorScheme();
+
+    const observer = new MutationObserver(setColorScheme);
+    observer.observe(document.body, {
+        attributes: true,
+        attributeFilter: ["data-theme"],
+    });
     colorSchemeQuery.addEventListener("change", setColorScheme);
 });

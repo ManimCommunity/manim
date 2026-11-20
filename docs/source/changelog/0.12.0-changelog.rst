@@ -246,7 +246,7 @@ Code quality improvements and similar refactors
 
 * :pr:`2200`: Addressed some maintenance TODOs
    - Changed an `Exception` to `ValueError`
-   - Fixed :meth:`.MappingCamera.points_to_pixel_coords` by adding the ``mobject`` argument of the parent
+   - Fixed ``MappingCamera.points_to_pixel_coords`` by adding the ``mobject`` argument of the parent
    - Rounded up width in :class:`.SplitScreenCamera`
    - Added docstring to :meth:`.Camera.capture_mobject`
 

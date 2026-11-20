@@ -35,6 +35,10 @@ changelog:
       labels:
         - pr:bugfix
 
+    - title: "Performance ⚡"
+      labels:
+        - performance
+
     - title: "Deprecations & Removals ⚠️"
       labels:
         - pr:deprecation
@@ -60,6 +64,10 @@ changelog:
     - title: "Type Hints 📝"
       labels:
         - typehints
+
+    - title: "Dependencies 📦"
+      labels:
+        - dependencies
 
     # Catch-all (must be last)
     - title: "Other Changes"

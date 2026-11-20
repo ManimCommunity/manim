@@ -13,6 +13,17 @@ build:
     - libpango1.0-dev
     - graphviz
 
+  # The examples are rendered in a first pass that writes no pages (the dummy
+  # builder only reads them), into the cache of the HTML output directory.
+  # The HTML build then takes every example from that cache, see
+  # manim.utils.docbuild.manim_directive.
+  jobs:
+    pre_build:
+      - cd docs/source && python -m sphinx -T -j auto -b dummy -d /tmp/manim-render/doctrees -D manim_cache=$READTHEDOCS_OUTPUT/html/_manim . /tmp/manim-render/out
+    build:
+      html:
+        - cd docs/source && python -m sphinx -T -j auto -b html -d _build/doctrees -D language=en . $READTHEDOCS_OUTPUT/html
+
 python:
    install:
       - requirements: docs/rtd-requirements.txt

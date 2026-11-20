@@ -42,7 +42,7 @@ def tex_to_svg_file(
     Parameters
     ----------
     expression
-        String containing the TeX expression to be rendered, e.g. ``\\sqrt{2}`` or ``foo``
+        String containing the TeX expression to be rendered, e.g. ``\sqrt{2}`` or ``foo``
     environment
         The string containing the environment in which the expression should be typeset, e.g. ``align*``
     tex_template
@@ -84,7 +84,7 @@ def generate_tex_file(
     Parameters
     ----------
     expression
-        String containing the TeX expression to be rendered, e.g. ``\\sqrt{2}`` or ``foo``
+        String containing the TeX expression to be rendered, e.g. ``\sqrt{2}`` or ``foo``
     environment
         The string containing the environment in which the expression should be typeset, e.g. ``align*``
     tex_template
