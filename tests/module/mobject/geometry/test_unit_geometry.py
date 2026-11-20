@@ -19,6 +19,7 @@ from manim import (
     Line,
     Polygon,
     Polygram,
+    RightAngle,
     Sector,
     Square,
     SurroundingRectangle,
@@ -295,7 +296,48 @@ def test_Circle_point_at_angle():
     np.testing.assert_array_almost_equal(p_reflected_0, reflected_start, decimal=5)
 
 
-def test_angle_parallel_lines_returns_empty():
+@pytest.mark.parametrize(("degrees", "expected"), [(False, np.pi / 2), (True, 90)])
+def test_right_angle_get_value(degrees, expected):
+    angle = RightAngle(Line(ORIGIN, RIGHT), Line(ORIGIN, UP))
+
+    assert angle.get_value(degrees=degrees) == pytest.approx(expected)
+
+
+@pytest.mark.parametrize(
+    ("other_angle", "expected"), [(False, np.pi / 4), (True, -7 * np.pi / 4)]
+)
+def test_elbow_angle_get_value(other_angle, expected):
+    angle = Angle(
+        Line(ORIGIN, RIGHT),
+        Line(ORIGIN, RIGHT + UP),
+        elbow=True,
+        other_angle=other_angle,
+    )
+
+    assert angle.get_value() == pytest.approx(expected)
+    assert angle.get_value(degrees=True) == pytest.approx(expected / DEGREES)
+
+
+@pytest.mark.parametrize("quadrant", [(1, 1), (1, -1), (-1, 1), (-1, -1)])
+@pytest.mark.parametrize("other_angle", [False, True])
+@pytest.mark.parametrize(
+    ("angle_class", "line_end"), [(Angle, UP), (Angle, UP + RIGHT), (RightAngle, UP)]
+)
+def test_elbow_angle_value_matches_arc(quadrant, other_angle, line_end, angle_class):
+    vertex = np.array([2, -1, 0])
+    lines = (
+        Line(vertex - RIGHT, vertex + RIGHT),
+        Line(vertex - line_end, vertex + line_end),
+    )
+    arc = Angle(*lines, quadrant=quadrant, other_angle=other_angle)
+    kwargs = {"elbow": True} if angle_class is Angle else {}
+    elbow = angle_class(*lines, quadrant=quadrant, other_angle=other_angle, **kwargs)
+
+    assert elbow.get_value() == pytest.approx(arc.get_value())
+
+
+@pytest.mark.parametrize("angle_class", [Angle, RightAngle])
+def test_angle_parallel_lines_returns_empty(angle_class):
     # Regression test for https://github.com/ManimCommunity/manim/issues/1930
     # When two lines are parallel or collinear, line_intersection raises
     # ValueError.  Angle should gracefully become an empty Mobject instead
@@ -303,24 +345,25 @@ def test_angle_parallel_lines_returns_empty():
     # Collinear lines (infinitely many intersections)
     l1 = Line(LEFT, RIGHT)
     l2 = Line(LEFT * 0.5, RIGHT * 0.5)
-    angle = Angle(l1, l2)
+    angle = angle_class(l1, l2)
     assert not angle.has_points()
     assert angle.get_value() == 0
 
     # Parallel but non-collinear lines (no intersection)
     l3 = Line(UP, UP + RIGHT)
     l4 = Line(DOWN, DOWN + RIGHT)
-    angle2 = Angle(l3, l4)
+    angle2 = angle_class(l3, l4)
     assert not angle2.has_points()
     assert angle2.get_value() == 0
 
 
-def test_angle_non_xy_lines_raise():
+@pytest.mark.parametrize("angle_class", [Angle, RightAngle])
+def test_angle_non_xy_lines_raise(angle_class):
     l1 = Line([0, 0, 1], [1, 0, 1])
     l2 = Line([0, 0, 1], [0, 1, 1])
 
     with pytest.raises(ValueError, match="xy-plane"):
-        Angle(l1, l2)
+        angle_class(l1, l2)
 
 
 def test_round_corners_collinear_points_stays_finite():
