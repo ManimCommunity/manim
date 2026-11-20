@@ -103,6 +103,18 @@ class _Render:
     seconds: float | None
 
 
+def _references(role: str, names: str | None) -> list[str]:
+    return [f":{role}:`~.{name}`" for name in (names or "").split()]
+
+
+def _renders(env: BuildEnvironment) -> list[_Render]:
+    """The examples of this build, kept with the environment (see setup)."""
+    renders: list[_Render] = env.domaindata.setdefault("manim", {}).setdefault(
+        "renders", []
+    )
+    return renders
+
+
 class ManimDirective(SphinxDirective):
     has_content = True
     required_arguments = 1
@@ -112,15 +124,15 @@ class ManimDirective(SphinxDirective):
         "hide_source": flag,
         "no_autoplay": flag,
         "quality": lambda arg: choice(
-            arg,
+            arg or "",
             [q.removesuffix("_quality") for q in QUALITIES],
         ),
         "save_as_gif": flag,
         "save_last_frame": flag,
-        "ref_modules": lambda args: [f":mod:`~.{arg}`" for arg in args.split()],
-        "ref_classes": lambda args: [f":class:`~.{arg}`" for arg in args.split()],
-        "ref_functions": lambda args: [f":func:`~.{arg}`" for arg in args.split()],
-        "ref_methods": lambda args: [f":meth:`~.{arg}`" for arg in args.split()],
+        "ref_modules": lambda arg: _references("mod", arg),
+        "ref_classes": lambda arg: _references("class", arg),
+        "ref_functions": lambda arg: _references("func", arg),
+        "ref_methods": lambda arg: _references("meth", arg),
     }
 
     def run(self) -> list[nodes.Element]:
@@ -227,9 +239,7 @@ class ManimDirective(SphinxDirective):
         self._record(clsname, seconds)
 
     def _record(self, clsname: str, seconds: float | None) -> None:
-        renders: list[_Render] = getattr(self.env, "manim_renders", [])
-        renders.append(_Render(self.env.docname, clsname, seconds))
-        self.env.manim_renders = renders  # type: ignore[attr-defined]
+        _renders(self.env).append(_Render(self.env.docname, clsname, seconds))
 
 
 def _cache_dir(env: BuildEnvironment) -> Path:
@@ -241,21 +251,17 @@ def _merge_renders(
     app: Sphinx, env: BuildEnvironment, docnames: set[str], other: BuildEnvironment
 ) -> None:
     """Collect the examples of the documents a parallel reader process read."""
-    renders = getattr(env, "manim_renders", [])
-    renders.extend(
-        render
-        for render in getattr(other, "manim_renders", [])
-        if render.docname in docnames
+    _renders(env).extend(
+        render for render in _renders(other) if render.docname in docnames
     )
-    env.manim_renders = renders  # type: ignore[attr-defined]
 
 
 def _reset_renders(app: Sphinx, env: BuildEnvironment, docnames: list[str]) -> None:
-    env.manim_renders = []  # type: ignore[attr-defined]
+    _renders(env).clear()
 
 
 def _report_renders(app: Sphinx, exception: Exception | None) -> None:
-    examples: list[_Render] = getattr(app.env, "manim_renders", [])
+    examples = _renders(app.env)
     rendered = sorted(
         (example for example in examples if example.seconds is not None),
         key=lambda example: example.seconds or 0.0,
