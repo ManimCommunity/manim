@@ -326,20 +326,23 @@ class _CairoDrawingContext:
             image_mobject.points,
         )
         int_target_coords = target_coords.astype(np.int64)
-        shift_vector = np.array(
-            [
-                min(x for x, _ in int_target_coords),
-                min(y for _, y in int_target_coords),
-            ],
+        settings = self.target.settings
+        # Only rasterize the part of the image that lies inside the frame: the
+        # cost of the perspective transform below grows with the size of its
+        # output, which can exceed the frame by orders of magnitude when the
+        # camera is zoomed in on the image.
+        shift_vector = np.maximum(int_target_coords.min(axis=0), 0)
+        upper_bounds = np.minimum(
+            int_target_coords.max(axis=0),
+            (settings.pixel_width, settings.pixel_height),
         )
-        target_coords -= shift_vector
-        int_target_coords -= shift_vector
         target_size = (
-            max(x for x, _ in int_target_coords),
-            max(y for _, y in int_target_coords),
+            int(upper_bounds[0] - shift_vector[0]),
+            int(upper_bounds[1] - shift_vector[1]),
         )
         if min(target_size) <= 0:
             return
+        target_coords -= shift_vector
 
         ordered_vertices = [target_coords[index] for index in (0, 1, 3, 2)]
         sides = [
@@ -384,7 +387,6 @@ class _CairoDrawingContext:
             data=coefficients,
             resample=image_mobject.resampling_algorithm,
         )
-        settings = self.target.settings
         full_image = Image.new(
             "RGBA",
             (settings.pixel_width, settings.pixel_height),
