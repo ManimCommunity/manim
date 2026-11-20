@@ -11,6 +11,7 @@ from click.testing import CliRunner
 from manim import __version__, capture
 from manim.__main__ import main
 from manim.cli.checkhealth.checks import HEALTH_CHECKS
+from manim.cli.init.commands import update_cfg
 
 
 def test_manim_version():
@@ -147,6 +148,15 @@ def test_manim_init_project(tmp_path):
         assert not result.exception
         assert (Path(tmp_dir) / "testproject/main.py").exists()
         assert (Path(tmp_dir) / "testproject/manim.cfg").exists()
+
+
+def test_update_cfg_writes_utf8(tmp_path):
+    cfg_file = tmp_path / "manim.cfg"
+    cfg_file.write_text("[CLI]\nframe_rate = 30\n", encoding="utf-8")
+
+    update_cfg({"scene_names": "動画Scene"}, cfg_file)
+
+    assert "scene_names = 動画Scene" in cfg_file.read_text(encoding="utf-8")
 
 
 def test_manim_init_scene(tmp_path):
