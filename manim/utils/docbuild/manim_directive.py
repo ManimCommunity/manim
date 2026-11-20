@@ -317,7 +317,10 @@ def setup(app: Sphinx) -> ExtensionMetadata:
     }
 
 
-_TEMPLATE = jinja2.Template(r"""
+# Values are HTML-escaped unless marked ``safe``: the reST parts of the
+# template (code blocks, references) must be inserted as they are.
+_TEMPLATE = jinja2.Template(
+    r"""
 {% if not hide_source %}
 .. raw:: html
 
@@ -346,17 +349,17 @@ _TEMPLATE = jinja2.Template(r"""
 
     from manim import *
 
-{{ source_code | indent(4, first=True) }}
+{{ source_code | indent(4, first=True) | safe }}
 
 .. raw:: html
 
     <pre data-manim-binder data-manim-classname="{{ clsname }}">
-{{ code | e | indent(4, first=True) }}
+{{ code | indent(4, first=True) }}
     </pre>
 
 {% endif %}
 {% if not hide_source and references %}
-References: {{ references | join(" ") }}
+References: {{ references | join(" ") | safe }}
 
 {% endif %}
 {% if not hide_source %}
@@ -365,4 +368,6 @@ References: {{ references | join(" ") }}
     </div>
 
 {% endif %}
-""")
+""",
+    autoescape=True,
+)
