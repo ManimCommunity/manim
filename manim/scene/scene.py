@@ -1690,7 +1690,7 @@ class Scene:
             dpg.add_separator()
             if len(self.widgets) != 0:
                 with dpg.collapsing_header(
-                    label=f"{config['scene_names'][0]} widgets",
+                    label=f"{config.scene_names[0]} widgets",
                     default_open=True,
                 ):
                     for widget_config in self.widgets:
