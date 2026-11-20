@@ -1222,6 +1222,10 @@ class Arrow3D(Line3D):
         The color of the arrow.
     resolution
         The resolution of the arrow line.
+    tip_resolution
+        The resolution of the conical tip. The tip is much smaller than the
+        shaft, so it defaults to a lower resolution to keep its mesh density
+        proportionate to its size.
 
     Examples
     --------
@@ -1249,6 +1253,7 @@ class Arrow3D(Line3D):
         base_radius: float = 0.08,
         color: ParsableManimColor = WHITE,
         resolution: int | tuple[int, int] = 24,
+        tip_resolution: int | tuple[int, int] = 8,
         **kwargs: Any,
     ) -> None:
         super().__init__(
@@ -1270,6 +1275,7 @@ class Arrow3D(Line3D):
             direction=self.direction,
             base_radius=base_radius,
             height=height,
+            resolution=tip_resolution,
             **kwargs,
         )
         np_end = np.asarray(end, dtype=np.float64)
