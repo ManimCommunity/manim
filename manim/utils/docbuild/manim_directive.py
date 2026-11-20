@@ -171,9 +171,10 @@ class ManimDirective(SphinxDirective):
         uri = None
         if output.exists():
             # The cache is the ``_manim`` directory of the site, also when a
-            # render-only pass writes it from elsewhere (``manim_cache``).
-            page = self.env.app.builder.get_target_uri(self.env.docname)
-            uri = relative_uri(page, f"_manim/{output.name}")
+            # render-only pass writes it from elsewhere (``manim_cache``). The
+            # link is relative to the page's HTML file, and does not depend on
+            # the builder, as a later HTML build may reuse this page's doctree.
+            uri = relative_uri(f"{self.env.docname}.html", f"_manim/{output.name}")
 
         rst = _TEMPLATE.render(
             id=clsname.lower(),
