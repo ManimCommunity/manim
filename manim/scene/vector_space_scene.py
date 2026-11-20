@@ -139,10 +139,8 @@ class VectorScene(Scene):
         axes.fade(axes_dimness)
         self.add(axes)
 
-        # TODO
-        # error: Missing positional argument "scene" in call to "update_frame" of "CairoRenderer"  [call-arg]
-        self.renderer.update_frame()  # type: ignore[call-arg]
-        self.renderer.camera = Camera(self.renderer.get_frame())
+        self.renderer.update_frame(self)
+        cast(Camera, self.renderer.camera).set_background(self.renderer.get_frame())
         self.clear()
 
     def get_vector(self, numerical_vector: Vector3DLike, **kwargs: Any) -> Arrow:
