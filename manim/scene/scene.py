@@ -1665,7 +1665,7 @@ class Scene:
             self.queue.put(SceneInteractContinue("gui"))
 
         def scene_selection_callback(sender: Any, data: Any) -> None:
-            config.scene_names = (dpg.get_value(sender),)
+            config.scene_names = [dpg.get_value(sender)]
             self.queue.put(SceneInteractRerun("gui"))
 
         scene_classes = scene_classes_from_file(Path(config.input_file), full_list=True)  # type: ignore[call-overload]
