@@ -6,7 +6,8 @@ from unittest.mock import Mock
 import numpy as np
 import pytest
 
-from manim.renderer.opengl_renderer import OpenGLRenderer
+from manim import Square
+from manim.renderer.opengl import OpenGLRenderer
 from tests.assert_utils import assert_file_exists
 from tests.test_scene_rendering.simple_scenes import *
 
@@ -34,10 +35,11 @@ def test_live_preview_opengl_render_with_movies(
     scene = SquareToCircle()
     renderer = scene.renderer
     renderer.update_frame = Mock(wraps=renderer.update_frame)
-    scene.render()
-    assert renderer.window is not None
-    assert_file_exists(renderer.file_writer.final_file_path)
-    renderer.window.close()
+    with scene._get_manager():
+        scene.render()
+        assert renderer.window is not None
+        assert_file_exists(renderer.file_writer.final_file_path)
+    assert renderer.window is None
 
 
 @pytest.mark.skipif(
@@ -52,9 +54,10 @@ def test_live_preview_opengl_render_with_image_sequence(
     scene = SquareToCircle()
     renderer = scene.renderer
     renderer.update_frame = Mock(wraps=renderer.update_frame)
-    scene.render()
-    assert renderer.window is not None
-    renderer.window.close()
+    with scene._get_manager():
+        scene.render()
+        assert renderer.window is not None
+    assert renderer.window is None
 
 
 def test_get_frame_with_live_preview_disabled(config, using_opengl_renderer):
@@ -86,6 +89,8 @@ def test_get_frame_with_live_preview_enabled(config, using_opengl_renderer):
     assert config.live_preview is True
 
     renderer = scene.renderer
+    assert renderer.window is None
+    renderer.open()
     assert renderer.window is not None
     assert not renderer.file_writer.output_spec.enabled
     renderer.update_frame(scene)
@@ -96,7 +101,16 @@ def test_get_frame_with_live_preview_enabled(config, using_opengl_renderer):
     assert renderer.get_pixel_shape()[1] == frame.shape[0]
     assert frame.dtype == np.uint8
     assert frame.flags.c_contiguous
-    renderer.window.close()
+    try:
+        elapsed = renderer.animation_elapsed_time
+        scene.add(Square(fill_opacity=1))
+        image = scene.get_image()
+        assert image.size == renderer.get_pixel_shape()
+        assert not np.array_equal(image, frame)
+        np.testing.assert_array_equal(renderer.get_frame(), frame)
+        assert renderer.animation_elapsed_time == elapsed
+    finally:
+        renderer.window.close()
 
 
 def test_render_without_frame_output_skips_gpu_readback(
@@ -139,3 +153,16 @@ def test_pixel_coords_to_space_coords(config, using_opengl_renderer):
         renderer.pixel_coords_to_space_coords(px, py, top_left=True)
         == np.array([ex, -ey, ez])
     ).all()
+
+
+def test_scene_images_are_drawn_with_the_scene_settings(config, using_opengl_renderer):
+    # Without an open context, images are drawn by an offscreen renderer that
+    # takes the scene renderer's size, camera and background, and no window.
+    config.live_preview = False
+    config.pixel_width, config.pixel_height = 64, 36
+    scene = SquareToCircle()
+    scene.renderer.background_color = "#FF0000"
+    image = scene.get_image()
+    assert image.size == (64, 36)
+    assert image.getpixel((0, 0))[:3] == (255, 0, 0)
+    assert scene.renderer._context is None

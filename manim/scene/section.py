@@ -51,6 +51,9 @@ class Section:
             Skip rendering the animations in this section when ``True``.
         partial_movie_files
             Animations belonging to this section.
+        movie_start
+            Time in seconds at which the section starts in the scene's movie.
+            Parts of the scene left out of the output take no movie time.
 
     See Also
     --------
@@ -60,7 +63,12 @@ class Section:
     """
 
     def __init__(
-        self, type_: str, video: str | None, name: str, skip_animations: bool
+        self,
+        type_: str,
+        video: str | None,
+        name: str,
+        skip_animations: bool,
+        movie_start: float = 0.0,
     ) -> None:
         self.type_ = type_
         # None when not to be saved -> still keeps section alive
@@ -68,6 +76,7 @@ class Section:
         self.name = name
         self.skip_animations = skip_animations
         self.partial_movie_files: list[str | None] = []
+        self.movie_start = movie_start
 
     def is_empty(self) -> bool:
         """Check whether this section is empty.

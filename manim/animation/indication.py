@@ -108,7 +108,7 @@ class FocusOn(Transform):
         self.opacity = opacity
         remover = True
         starting_dot = Dot(
-            radius=config["frame_x_radius"] + config["frame_y_radius"],
+            radius=config.frame_x_radius + config.frame_y_radius,
             stroke_width=0,
             fill_color=self.color,
             fill_opacity=0,

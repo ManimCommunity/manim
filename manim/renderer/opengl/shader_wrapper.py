@@ -25,7 +25,7 @@ __all__ = ["ShaderWrapper"]
 logger = logging.getLogger("manim")
 
 
-def get_shader_dir():
+def get_shader_dir() -> Path:
     return Path(__file__).parent / "shaders"
 
 
@@ -47,6 +47,12 @@ _ShaderData: TypeAlias = npt.NDArray[_ShaderDType]
 
 
 class ShaderWrapper:
+    #: Vertex buffers, index buffers and uniforms are copied from the mobject when it
+    #: is drawn. The mobject's own values are already part of the cache key, so the key
+    #: leaves these copies out. ``program_code`` stays in the key, because
+    #: :meth:`.OpenGLMobject.set_color_by_code` changes it.
+    _hash_excluded_attributes = frozenset({"vert_data", "vert_indices", "uniforms"})
+
     def __init__(
         self,
         vert_data: _ShaderData = None,
@@ -58,7 +64,7 @@ class ShaderWrapper:
         texture_paths: Mapping[str, Path | str] | None = None,
         depth_test: bool = False,
         render_primitive: int | str = moderngl.TRIANGLE_STRIP,
-    ):
+    ) -> None:
         self.vert_data: _ShaderData = vert_data
         self.vert_indices: Sequence[int] | None = vert_indices
         self.vert_attributes: tuple[str, ...] | None = vert_data.dtype.names
@@ -70,8 +76,8 @@ class ShaderWrapper:
         self.init_program_code()
         self.refresh_id()
 
-    def copy(self):
-        result = copy.copy(self)
+    def copy(self) -> Self:
+        result: Self = copy.copy(self)
         result.vert_data = np.array(self.vert_data)
         if result.vert_indices is not None:
             result.vert_indices = np.array(self.vert_indices)
@@ -96,7 +102,7 @@ class ShaderWrapper:
     def get_program_id(self) -> int:
         return self.program_id
 
-    def create_id(self):
+    def create_id(self) -> str:
         # A unique id for a shader
         return "|".join(
             map(
@@ -115,7 +121,7 @@ class ShaderWrapper:
         self.program_id: int = self.create_program_id()
         self.id: str = self.create_id()
 
-    def create_program_id(self):
+    def create_program_id(self) -> int:
         return hash(
             "".join(
                 self.program_code[f"{name}_shader"] or ""
@@ -123,7 +129,7 @@ class ShaderWrapper:
             ),
         )
 
-    def init_program_code(self):
+    def init_program_code(self) -> None:
         def get_code(name: str) -> str | None:
             return get_shader_code_from_file(
                 self.shader_folder / f"{name}.glsl",
@@ -135,7 +141,7 @@ class ShaderWrapper:
             "fragment_shader": get_code("frag"),
         }
 
-    def get_program_code(self):
+    def get_program_code(self) -> dict[str, str | None]:
         return self.program_code
 
     def replace_code(self, old: str, new: str) -> None:
@@ -151,10 +157,10 @@ class ShaderWrapper:
             return self
         if self.vert_indices is not None:
             num_verts = len(self.vert_data)
-            indices_list = [self.vert_indices]
+            indices_list = [np.asarray(self.vert_indices)]
             data_list = [self.vert_data]
             for sw in shader_wrappers:
-                indices_list.append(sw.vert_indices + num_verts)
+                indices_list.append(np.asarray(sw.vert_indices) + num_verts)
                 data_list.append(sw.vert_data)
                 num_verts += len(sw.vert_data)
             self.vert_indices = np.hstack(indices_list)
@@ -167,7 +173,7 @@ class ShaderWrapper:
 
 
 # For caching
-filename_to_code_map: dict = {}
+filename_to_code_map: dict[Path, str] = {}
 
 
 def get_shader_code_from_file(filename: Path) -> str | None:

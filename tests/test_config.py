@@ -453,15 +453,17 @@ def test_transparent(config):
     config.dry_run = True
 
     scene = MyScene()
-    scene.render()
-    frame = scene.renderer.get_frame()
+    with scene._get_manager():
+        scene.render()
+        frame = scene.renderer.get_frame()
     np.testing.assert_allclose(frame[0, 0], [0, 0, 0, 255])
 
     config.transparent = True
 
     scene = MyScene()
-    scene.render()
-    frame = scene.renderer.get_frame()
+    with scene._get_manager():
+        scene.render()
+        frame = scene.renderer.get_frame()
     np.testing.assert_allclose(frame[0, 0], [0, 0, 0, 0])
 
 
@@ -470,8 +472,9 @@ def test_transparent_by_background_opacity(config, dry_run):
     assert config.transparent is True
 
     scene = MyScene()
-    scene.render()
-    frame = scene.renderer.get_frame()
+    with scene._get_manager():
+        scene.render()
+        frame = scene.renderer.get_frame()
     np.testing.assert_allclose(frame[0, 0], [0, 0, 0, 127])
     assert config.transparent is True
 
@@ -483,8 +486,9 @@ def test_background_color(config):
     config.dry_run = True
 
     scene = MyScene()
-    scene.render()
-    frame = scene.renderer.get_frame()
+    with scene._get_manager():
+        scene.render()
+        frame = scene.renderer.get_frame()
     np.testing.assert_allclose(frame[0, 0], [255, 255, 255, 255])
 
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from manim import DiGraph, Graph, LabeledLine, Scene, Text, tempconfig
-from manim.mobject.graph import _layouts
+from manim.mobject.graph import _get_layouts
 
 
 def test_graph_creation():
@@ -137,10 +137,10 @@ def test_graph_accepts_labeledline_as_edge_type():
 
 def test_custom_animation_mobject_list():
     G = Graph([1, 2, 3], [(1, 2), (2, 3)])
-    scene = Scene()
-    scene.add(G)
-    assert scene.mobjects == [G]
     with tempconfig({"dry_run": True, "quality": "low_quality"}):
+        scene = Scene()
+        scene.add(G)
+        assert scene.mobjects == [G]
         scene.play(G.animate.add_vertices(4))
         assert str(G) == "Undirected graph on 4 vertices and 2 edges"
         assert scene.mobjects == [G]
@@ -160,6 +160,7 @@ def test_custom_graph_layout_dict():
 
 
 def test_graph_layouts():
+    _layouts = _get_layouts()
     for layout in (layout for layout in _layouts if layout not in ["tree", "partite"]):
         G = Graph([1, 2, 3], [(1, 2), (2, 3)], layout=layout)
         assert str(G) == "Undirected graph on 3 vertices and 2 edges"
@@ -206,6 +207,7 @@ def test_custom_graph_layout_function_with_kwargs():
 
 
 def test_graph_change_layout():
+    _layouts = _get_layouts()
     for layout in (layout for layout in _layouts if layout not in ["tree", "partite"]):
         G = Graph([1, 2, 3], [(1, 2), (2, 3)])
         G.change_layout(layout=layout)

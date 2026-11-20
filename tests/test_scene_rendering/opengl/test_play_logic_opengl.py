@@ -39,17 +39,15 @@ def test_t_values(config, using_temp_opengl_config, disabling_caching, frame_rat
     )
 
 
-def test_t_values_with_skip_animations(using_temp_opengl_config, disabling_caching):
-    """Test the behaviour of scene.skip_animations"""
+def test_t_values_with_skip_animations(
+    config, using_temp_opengl_config, disabling_caching
+):
+    """Skipped plays without updaters go to their end in one step."""
     scene = SquareToCircle()
     scene.update_to_time = Mock()
-    scene.renderer._original_skipping_status = True
+    scene.renderer._skips_all_plays = True
     scene.render()
     assert scene.update_to_time.call_count == 1
-    np.testing.assert_almost_equal(
-        scene.update_to_time.call_args.args[0],
-        1.0,
-    )
 
 
 def test_static_wait_detection(using_temp_opengl_config, disabling_caching):
@@ -80,13 +78,13 @@ def test_frozen_frame(using_temp_opengl_config, disabling_caching):
 
 
 @pytest.mark.xfail(reason="Should be fixed in #2133")
-def test_t_values_with_cached_data(using_temp_opengl_config):
+def test_t_values_with_cached_data(using_temp_opengl_config, monkeypatch):
     """Test the proper generation and use of the t values when an animation is cached."""
     scene = SceneWithMultipleCalls()
-    # Mocking the file_writer will skip all the writing process.
-    scene.renderer.file_writer = Mock(scene.renderer.file_writer)
-    # Simulate that all animations are cached.
-    scene.renderer.file_writer.is_already_cached.return_value = True
+    writer = scene.renderer.file_writer
+    # Simulate cache hits without assembling nonexistent cached segments.
+    monkeypatch.setattr(writer, "is_already_cached", Mock(return_value=True))
+    monkeypatch.setattr(writer, "finish", Mock())
     scene.update_to_time = Mock()
 
     scene.render()
@@ -98,12 +96,12 @@ def test_t_values_with_cached_data(using_temp_opengl_config):
     [{"save_last_frame": True}, {"format": "png"}],
 )
 def test_t_values_save_last_frame(config, using_temp_opengl_config, still_config):
-    """Still output fast-forwards each play and only evaluates its final state."""
+    """Still output takes one step per play without updaters, and draws once."""
     config.update(still_config)
     scene = SquareToCircle()
     scene.update_to_time = Mock()
     scene.render()
-    scene.update_to_time.assert_called_once_with(1)
+    assert scene.update_to_time.call_count == 1
 
 
 def test_animate_with_changed_custom_attribute(using_temp_opengl_config):

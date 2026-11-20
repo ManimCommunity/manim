@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from manim import FadeIn, Scene
+from manim import Animation, FadeIn, Scene, Square
 
 
 def test_animation_zero_total_run_time():
@@ -55,3 +55,16 @@ def test_wait_until_invalid_max_time(max_time):
     test_scene = Scene()
     with pytest.raises(ValueError, match="The max_time must be a positive number."):
         test_scene.wait_until(lambda: True, max_time)
+
+
+def test_an_animation_without_run_time_is_complete_during_the_play():
+    alphas = []
+
+    class Records(Animation):
+        def interpolate(self, alpha):
+            alphas.append(alpha)
+
+    Scene().play(Records(Square(), run_time=0), FadeIn(Square(), run_time=1))
+    # After begin() sets the start state, every frame shows the end state.
+    assert alphas[0] == 0
+    assert alphas[1:] == [1] * (len(alphas) - 1)

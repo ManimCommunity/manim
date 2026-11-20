@@ -67,7 +67,7 @@ class AnimationGroup(Animation):
             mobjects = remove_list_redundancies(
                 [anim.mobject for anim in self.animations if not anim.is_introducer()],
             )
-            if config["renderer"] == RendererType.OPENGL:
+            if config.renderer == RendererType.OPENGL:
                 self.group: Group | VGroup | OpenGLGroup | OpenGLVGroup = OpenGLGroup(
                     *mobjects
                 )

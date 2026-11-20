@@ -497,11 +497,11 @@ Special Camera Settings
 
 .. manim:: FollowingGraphCamera
     :ref_modules: manim.scene.moving_camera_scene
-    :ref_classes: MovingCameraScene MoveAlongPath Restore
+    :ref_classes: MoveAlongPath Restore
     :ref_methods: Axes.plot Mobject.add_updater
 
 
-    class FollowingGraphCamera(MovingCameraScene):
+    class FollowingGraphCamera(Scene):
         def construct(self):
             self.camera.frame.save_state()
 

@@ -1,4 +1,6 @@
-from manim import DEGREES, Circle, Square, ThreeDScene
+import pytest
+
+from manim import DEGREES, Camera, Circle, Square, ThreeDScene, tempconfig
 
 
 def test_fixed_mobjects():
@@ -24,3 +26,18 @@ def test_set_to_default_angled_camera_orientation():
 
     assert scene.camera.get_phi() == 45 * DEGREES
     assert scene.camera.get_theta() == -135 * DEGREES
+
+
+def test_3d_scenes_need_a_camera_with_an_orientation():
+    with pytest.raises(TypeError, match="Expected a ThreeDCamera"):
+        ThreeDScene(camera_class=Camera)
+
+
+@pytest.mark.parametrize("shown", [False, True])
+def test_move_camera_keeps_the_frame_only_if_it_was_shown(shown):
+    with tempconfig({"dry_run": True}):
+        scene = ThreeDScene()
+        if shown:
+            scene.add(scene.camera.frame)
+        scene.move_camera(frame_center=(1, 0, 0), run_time=0.1)
+        assert (scene.camera.frame in scene.mobjects) == shown
