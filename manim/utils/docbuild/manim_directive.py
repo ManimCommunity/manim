@@ -67,6 +67,7 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import shutil
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -205,10 +206,11 @@ class ManimDirective(SphinxDirective):
     def _render(
         self, clsname: str, code: str, example_config: dict[str, Any], output: Path
     ) -> None:
-        # Each example renders in a media directory of its own and is moved
-        # into the cache when done, so parallel processes never share files,
-        # and an interrupted render leaves nothing in the cache.
-        # The same example can be on pages read by different processes.
+        # Each example renders in a media directory of its own, next to the
+        # build's output directory, and its output is moved into the cache
+        # when done: parallel processes never share files (the same example
+        # can be on pages read by different processes), and an interrupted
+        # render leaves nothing in the cache.
         media_dir = Path(
             self.env.app.outdir, "..", "manim_media", self.env.docname, output.stem
         ).resolve()
@@ -235,7 +237,10 @@ class ManimDirective(SphinxDirective):
             ) from error
         seconds = time.perf_counter() - start
         output.parent.mkdir(parents=True, exist_ok=True)
-        partial.with_suffix(output.suffix).replace(output)
+        # The cache can be on another file system (see ``manim_cache``).
+        temporary = output.with_name(f".{output.name}")
+        shutil.move(partial.with_suffix(output.suffix), temporary)
+        temporary.replace(output)
         self._record(clsname, seconds)
 
     def _record(self, clsname: str, seconds: float | None) -> None:
