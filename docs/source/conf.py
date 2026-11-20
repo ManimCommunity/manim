@@ -12,14 +12,6 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-# TEMPORARY (debugging stuck Read the Docs builds): docs/rtd_watchdog.sh sends
-# SIGUSR1 to get the stacks of all threads when the build stops progressing.
-if os.environ.get("READTHEDOCS"):
-    import faulthandler
-    import signal
-
-    faulthandler.register(signal.SIGUSR1, all_threads=True)
-
 import sphinx.ext.autosummary
 
 import manim
@@ -76,11 +68,11 @@ autosummary_generate = True
 
 myst_enable_extensions = ["colon_fence", "amsmath", "deflist"]
 
-# Manim config applied to every example rendered by the manim directive.
-# libx264 buffers up to ``rc-lookahead`` frames (40 by default) for rate
-# control, which takes several hundred MB at 1080p; 10 frames halve the
-# encoder's memory with practically the same file size.
-manim_render_config = {
+# Manim config applied to every example rendered by the manim directive, see
+# manim.utils.docbuild.manim_directive. libx264 buffers up to ``rc-lookahead``
+# frames (40 by default) for rate control, which takes several hundred MB at
+# 1080p; 10 frames halve the encoder's memory with practically the same size.
+manim_config = {
     "video_encoder_options": {"rc-lookahead": "10"},
 }
 

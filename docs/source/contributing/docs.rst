@@ -21,14 +21,18 @@ reStructured Text) files from scratch by reading and parsing all the
 Manim content. The process becomes much shorter the next time, as it
 rebuilds only the parts which have changed.
 
-Most of that time is spent rendering the examples and writing the HTML
-pages, both of which Sphinx can do in several processes at once. To use
-all of your CPU cores, pass ``-j auto`` to Sphinx (this is not available
-on Windows):
+Most of that time is spent rendering the examples. Rendered examples are
+cached in ``build/html/_manim`` and only rendered again when their code or
+configuration changes, so a rebuild after editing a page takes seconds.
+``make clean`` empties the cache as well.
+
+On macOS and Linux, Sphinx reads, renders and writes with all of your CPU
+cores (``-j auto``, Sphinx does not support parallel builds on Windows). To
+build without rendering any examples, which shows their code only, run:
 
 .. code-block:: shell
 
-   make html O="-j auto"
+   make html O="-D manim_render=0"
 
 
 Sphinx library and extensions
