@@ -50,7 +50,8 @@ jobs:
           path: ${{ github.workspace }}/docs/build/html-docs.tar.gz
           name: html-docs.tar.gz
 
-    # Manual runs only build the artifact; releases also attach it.
+    # For releases, attach the HTML docs archive to the GitHub release;
+    # manual runs only build it.
     - name: Upload Release Asset
       if: github.event_name == 'release'
       env:

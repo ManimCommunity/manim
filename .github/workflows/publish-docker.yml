@@ -128,8 +128,10 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # main: latest; a release: stable and its tag; a prerelease (from a
-      # preview/* branch): preview and its tag.
+      # Docker tags pushed for each event:
+      #   push to main:  latest
+      #   release:       stable, vX.Y.Z
+      #   prerelease:    preview, vX.Y.ZaN
       - name: Create and push manifest list
         working-directory: ${{ runner.temp }}/digests
         env:
@@ -140,10 +142,12 @@ jobs:
           elif [ "$PRERELEASE" = true ]; then
             tags=(-t "$IMAGE:preview" -t "$IMAGE:$GITHUB_REF_NAME")
           else
-            tags=(-t "$IMAGE:latest" -t "$IMAGE:stable" -t "$IMAGE:$GITHUB_REF_NAME")
+            tags=(-t "$IMAGE:stable" -t "$IMAGE:$GITHUB_REF_NAME")
           fi
           docker buildx imagetools create "${tags[@]}" \
             $(printf "$IMAGE@sha256:%s " *)
+          # The first tag, e.g. manimcommunity/manim:stable, for the next step.
+          echo "IMAGE_TAG=${tags[1]}" >> "$GITHUB_ENV"
 
       - name: Inspect image
-        run: docker buildx imagetools inspect "$IMAGE:latest"
+        run: docker buildx imagetools inspect "$IMAGE_TAG"

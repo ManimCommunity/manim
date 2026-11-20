@@ -26,11 +26,6 @@ workflow requires that the tag published via the release matches the version
 set in `pyproject.toml`. It will fail and not publish a version if this is not
 the case.
 
-When creating the GitHub release, tick the _pre-release_ checkbox exactly
-when the version is a prerelease (e.g., `v0.30.0a1`). You also need to
-select the correct branch to tag: for stable releases, it needs to be placed
-on the `main` branch, for prereleases on a `preview/*` branch.
-
 ## Checklist: making a release
 
 1. Open a PR `Prepare new release: vX.Y.Z` (label `release`) against `main`:
@@ -45,8 +40,8 @@ on the `main` branch, for prereleases on a `preview/*` branch.
    PR in the rendered changelog, rerun the changelog script with `--include-extra <PR number>`.
 2. Paste the output of `scripts/release.py export-changelog X.Y.Z` into the
    PR description for review.
-3. After merging, publish the GitHub release `vX.Y.Z` on `main` with those
-   notes.
+3. After merging, publish the GitHub release `vX.Y.Z` with target `main`,
+   leave *Set as a pre-release* unticked, and use those notes.
 
 ## Preview prereleases
 
@@ -61,8 +56,8 @@ git push upstream preview/v0.30.x
 ```
 
 On Read the Docs, activate the version `preview/v0.30.x` and set its slug
-to `preview`. It rebuilds on every push to the branch; `stable` is never
-moved to a prerelease.
+to `preview`. It rebuilds on every push to the branch. The `stable` version of
+the documentation always points to the latest stable release.
 
 ### Merging `main` into the preview branch
 
