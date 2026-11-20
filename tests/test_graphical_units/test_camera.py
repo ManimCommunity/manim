@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import numpy as np
+
 from manim import (
     BLUE,
     GREEN,
     RED,
     RIGHT,
     Dot,
+    ImageMobject,
     MultiCamera,
     NumberPlane,
     Scene,
@@ -39,3 +42,14 @@ def test_zoomed_camera_view(scene: ZoomedScene):
     scene.add(square, dot)
     scene.activate_zooming(animate=False)
     scene.play(dot.animate.shift(RIGHT))
+
+
+@frames_comparison(base_scene=_ZoomedCameraControlScene)
+def test_zoomed_camera_image(scene: ZoomedScene):
+    # The zoomed camera sees a small part of an image that is, in its pixel
+    # coordinates, much larger than the frame.
+    image = ImageMobject(np.uint8([[0, 100, 30, 200], [255, 0, 5, 33]]))
+    image.height = 7
+    scene.add(image)
+    scene.activate_zooming(animate=False)
+    scene.play(scene.zoomed_camera.frame.animate.shift(RIGHT))

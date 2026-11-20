@@ -329,7 +329,7 @@ class LabeledPolygram(Polygram):
                 polygram = LabeledPolygram(
                     *array,
                     label=Text('USA', font='sans-serif'),
-                    precision=0.01,
+                    precision=0.1,
                     fill_color=BLUE,
                     stroke_width=0,
                     fill_opacity=0.75
