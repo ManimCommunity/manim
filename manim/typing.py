@@ -162,7 +162,7 @@ Its components describe, in order, the intensity of Red, Green, and
 Blue in the represented color.
 """
 
-FloatRGBLike: TypeAlias = FloatRGB | tuple[float, float, float]
+FloatRGBLike: TypeAlias = FloatRGB | tuple[float, float, float] | list[float]
 """``shape: (3,)``
 
 An array of 3 floats between 0 and 1, representing a color in RGB
@@ -197,7 +197,7 @@ Its components describe, in order, the intensity of Red, Green, and
 Blue in the represented color.
 """
 
-IntRGBLike: TypeAlias = IntRGB | tuple[int, int, int]
+IntRGBLike: TypeAlias = IntRGB | tuple[int, int, int] | list[int]
 """``shape: (3,)``
 
 An array of 3 integers between 0 and 255, representing a color in RGB
@@ -217,7 +217,7 @@ Its components describe, in order, the intensity of Red, Green, Blue
 and Alpha (opacity) in the represented color.
 """
 
-FloatRGBALike: TypeAlias = FloatRGBA | tuple[float, float, float, float]
+FloatRGBALike: TypeAlias = FloatRGBA | tuple[float, float, float, float] | list[float]
 """``shape: (4,)``
 
 An array of 4 floats between 0 and 1, representing a color in RGBA
@@ -252,7 +252,7 @@ Its components describe, in order, the intensity of Red, Green, Blue
 and Alpha (opacity) in the represented color.
 """
 
-IntRGBALike: TypeAlias = IntRGBA | tuple[int, int, int, int]
+IntRGBALike: TypeAlias = IntRGBA | tuple[int, int, int, int] | list[int]
 """``shape: (4,)``
 
 An array of 4 integers between 0 and 255, representing a color in RGBA
@@ -349,7 +349,7 @@ Point2D: TypeAlias = npt.NDArray[PointDType]
 A NumPy array representing a 2-dimensional point: ``[float, float]``.
 """
 
-Point2DLike: TypeAlias = Point2D | tuple[float, float]
+Point2DLike: TypeAlias = Point2D | tuple[float, float] | list[float]
 """``shape: (2,)``
 
 A 2-dimensional point: ``[float, float]``.
@@ -461,7 +461,7 @@ A NumPy array representing a 2-dimensional vector: ``[float, float]``.
     VMobjects!
 """
 
-Vector2DLike: TypeAlias = npt.NDArray[PointDType] | tuple[float, float]
+Vector2DLike: TypeAlias = npt.NDArray[PointDType] | tuple[float, float] | list[float]
 """``shape: (2,)``
 
 A 2-dimensional vector: ``[float, float]``.
@@ -500,7 +500,9 @@ A NumPy array representing a 3-dimensional vector: ``[float, float, float]``.
     VMobjects!
 """
 
-Vector3DLike: TypeAlias = npt.NDArray[PointDType] | tuple[float, float, float]
+Vector3DLike: TypeAlias = (
+    npt.NDArray[PointDType] | tuple[float, float, float] | list[float]
+)
 """``shape: (3,)``
 
 A 3-dimensional vector: ``[float, float, float]``.
