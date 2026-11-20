@@ -64,7 +64,7 @@ On Read the Docs, activate the version `preview/v0.30.x` and set its slug
 to `preview`. It rebuilds on every push to the branch; `stable` is never
 moved to a prerelease.
 
-### Merging `main` into it
+### Merging `main` into the preview branch
 
 Do this regularly, as a merge commit pushed directly (a squashed PR would
 make every later merge conflict again):
