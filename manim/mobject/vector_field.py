@@ -9,7 +9,6 @@ __all__ = [
 ]
 
 import itertools as it
-import random
 from collections.abc import Callable, Iterable, Sequence
 from math import ceil, floor
 from typing import TYPE_CHECKING, Any, Self
@@ -833,13 +832,14 @@ class StreamLines(VectorField):
         self.stroke_width = stroke_width
 
         half_noise = self.noise_factor / 2
-        rng = np.random.default_rng(0)
+        # Keep geometry, creation order and flow phases reproducible together.
+        self._rng = np.random.default_rng(0)
         start_points = np.array(
             [
                 (x - half_noise) * RIGHT
                 + (y - half_noise) * UP
                 + (z - half_noise) * OUT
-                + self.noise_factor * rng.random(3)
+                + self.noise_factor * self._rng.random(3)
                 for n in range(self.n_repeats)
                 for x in np.arange(*self.x_range)
                 for y in np.arange(*self.y_range)
@@ -966,7 +966,7 @@ class StreamLines(VectorField):
         animations = [
             Create(line, run_time=run_time, **kwargs) for line in self.stream_lines
         ]
-        random.shuffle(animations)
+        self._rng.shuffle(animations)
         return AnimationGroup(*animations, lag_ratio=lag_ratio)
 
     def start_animation(
@@ -1020,7 +1020,7 @@ class StreamLines(VectorField):
             )
             line.anim = anim
             anim.begin()
-            line.time = random.random() * self.virtual_time
+            line.time = self._rng.random() * self.virtual_time
             if warm_up:
                 line.time *= -1
             # error: Argument 1 to "add" of "VGroup" has incompatible type "OpenGLMobject"; expected "VMobject | Iterable[VMobject]"  [arg-type]
