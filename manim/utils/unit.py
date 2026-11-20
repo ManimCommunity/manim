@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import numpy as np
 
+from manim.utils.deprecation import deprecated
+
 from .. import config, constants
 from ..typing import Vector3D
 
@@ -18,6 +20,14 @@ class _PixelUnits:
         return val * config.frame_width / config.pixel_width
 
 
+@deprecated(
+    since="v0.22.2",
+    until="v0.24.0",
+    message=(
+        "Use Camera.frame directly instead. "
+        "For example, 25 * Percent(Y_AXIS) may be replaced by 0.25 * self.camera.frame.height."
+    ),
+)
 class Percent:
     """A percentage of the frame width or height.
 
@@ -43,9 +53,9 @@ class Percent:
 
     Examples
     --------
-    >>> from manim import X_AXIS, config
-    >>> from manim.utils.unit import Percent
-    >>> 50 * Percent(X_AXIS) == config.frame_width / 2
+    >>> from manim import X_AXIS, config  # doctest: +SKIP
+    >>> from manim.utils.unit import Percent  # doctest: +SKIP
+    >>> 50 * Percent(X_AXIS) == config.frame_width / 2  # doctest: +SKIP
     True
     """
 
