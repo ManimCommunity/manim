@@ -1552,7 +1552,7 @@ class Scene:
                     # # TODO: This option only makes sense if interactive_embed() is run at the
                     # # end of a scene by default.
                     # if "upto_animation_number" in action.kwargs:
-                    #     config["upto_animation_number"] = action.kwargs[
+                    #     config.upto_animation_number = action.kwargs[
                     #         "upto_animation_number"
                     #     ]
 
