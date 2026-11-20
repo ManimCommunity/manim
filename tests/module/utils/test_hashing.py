@@ -9,7 +9,7 @@ from zlib import crc32
 import numpy as np
 
 import manim.utils.hashing as hashing
-from manim import ImageMobject, Square, tempconfig
+from manim import ImageMobject, Square, Text, tempconfig
 
 ALREADY_PROCESSED_PLACEHOLDER = hashing._Memoizer.ALREADY_PROCESSED_PLACEHOLDER
 _CACHE_IDENTITY = {
@@ -296,6 +296,17 @@ def test_reading_a_cached_property_does_not_change_the_key():
     assert hashing.get_json(untouched) == hashing.get_json(read)
     # The state the value is derived from still participates in the key.
     assert hashing.get_json(Derived(4)) != hashing.get_json(untouched)
+
+
+def test_svg_path_key_ignores_the_parsed_path():
+    text = Text("ab")
+    other = Text("ab")
+    for glyph in other:
+        glyph.path_obj = None
+    assert hashing.get_json(text) == hashing.get_json(other)
+
+    other[0].points[0, 0] += 1e-6
+    assert hashing.get_json(text) != hashing.get_json(other)
 
 
 def test_opengl_camera_key_ignores_its_derived_view_matrices():
