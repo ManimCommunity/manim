@@ -442,6 +442,18 @@ class Arc(TipableVMobject):
             angle_of_vector(self.points[-1] - self.get_arc_center()) % TAU,
         )
 
+    def reset_endpoints_based_on_tip(self, tip: tips.ArrowTip, at_start: bool) -> Self:
+        total = self.get_arc_length()
+        cut = tip.length
+        if total == 0 or cut >= total:
+            return self
+        original = self.copy()
+        if at_start:
+            self.pointwise_become_partial(original, cut / total, 1)
+        else:
+            self.pointwise_become_partial(original, 0, (total - cut) / total)
+        return self
+
 
 class ArcBetweenPoints(Arc):
     """Inherits from Arc and additionally takes 2 points between which the arc is spanned.

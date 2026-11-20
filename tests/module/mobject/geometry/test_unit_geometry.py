@@ -11,9 +11,11 @@ from manim import (
     GREEN,
     LEFT,
     ORIGIN,
+    PI,
     RIGHT,
     UP,
     Angle,
+    Arc,
     BackgroundRectangle,
     Circle,
     Line,
@@ -336,3 +338,39 @@ def test_round_corners_collinear_points_stays_finite():
         # The rounded corner is bounded by half the shorter adjacent edge, so
         # no coordinate should blow up beyond the original extent.
         assert np.max(np.abs(poly.points)) <= 1.0
+
+
+@pytest.mark.parametrize(
+    ("angle", "at_start"),
+    [
+        (PI / 2, False),  # plain 90° arc, as in #1801
+        (PI / 2, True),  # tip at the start, as in CurvedDoubleArrow
+        (-PI / 2, False),  # clockwise arc
+        (1.9 * PI, False),  # near-closed arc (~342°), as in #3448
+    ],
+)
+def test_arc_tip_keeps_arc_on_circle(angle, at_start):
+    # Regression test for https://github.com/ManimCommunity/manim/issues/1801
+    # Adding a tip used to re-fit the arc between new endpoints, bending it
+    # off its original circle.
+    radius = 3.0
+    arc = Arc(radius=radius, start_angle=0, angle=angle)
+    arc.add_tip(tip_length=0.35, at_start=at_start)
+
+    distances = [
+        np.linalg.norm(arc.point_from_proportion(a) - arc.get_arc_center())
+        for a in np.linspace(0, 1, 200)
+    ]
+    # Arcs are cubic Bézier approximations, so long arcs sit ~1e-5 off the
+    # circle even without a tip. The bug this guards against was ~1e-1.
+    np.testing.assert_allclose(distances, radius, atol=1e-4, rtol=0)
+
+
+@pytest.mark.parametrize("at_start", [False, True])
+def test_arc_tip_longer_than_arc_leaves_arc_unchanged(at_start):
+    # A tip at least as long as the arc can't be trimmed off it, so the arc
+    # is left as it was instead of collapsing or reversing.
+    arc = Arc(radius=1, angle=PI / 2)
+    before = arc.points.copy()
+    arc.add_tip(tip_length=5, at_start=at_start)
+    np.testing.assert_allclose(arc.points, before)
