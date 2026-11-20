@@ -71,7 +71,7 @@ def update_cfg(cfg_dict: dict[str, Any], project_cfg_path: Path) -> None:
         Path of the ``manim.cfg`` file.
     """
     config = configparser.ConfigParser()
-    config.read(project_cfg_path)
+    config.read(project_cfg_path, encoding="utf-8")
     cli_config = config["CLI"]
     for key, value in cfg_dict.items():
         if key == "resolution":
@@ -80,7 +80,7 @@ def update_cfg(cfg_dict: dict[str, Any], project_cfg_path: Path) -> None:
         else:
             cli_config[key] = str(value)
 
-    with project_cfg_path.open("w") as conf:
+    with project_cfg_path.open("w", encoding="utf-8") as conf:
         config.write(conf)
 
 
