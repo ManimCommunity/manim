@@ -281,6 +281,19 @@ def test_ImageInterpolation(scene):
     scene.wait()
 
 
+@frames_comparison
+def test_ImageMobject_partially_off_frame(scene):
+    # Only the part of an image inside the frame is rasterized. That part has
+    # to look the same as if the whole image had been.
+    img = ImageMobject(
+        np.uint8([[63, 0, 0, 0], [0, 127, 0, 0], [0, 0, 191, 0], [0, 0, 0, 255]]),
+    )
+    img.height = 12
+    img.rotate(PI / 6).shift(3 * RIGHT + UP)
+    scene.add(img)
+    scene.wait()
+
+
 def test_ImageMobject_points_length():
     file_path = get_svg_resource("tree_img_640x351.png")
     im1 = ImageMobject(file_path)
