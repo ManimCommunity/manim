@@ -1354,7 +1354,7 @@ wheels = [
 
 [[package]]
 name = "manim"
-version = "0.22.1"
+version = "0.30.0a1"
 source = { editable = "." }
 dependencies = [
     { name = "av" },
