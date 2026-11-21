@@ -390,15 +390,40 @@ def _find_pull_request_blocks(
     return blocks
 
 
+_WHATS_CHANGED = re.compile(r"^#{1,6} What's Changed\s*$", re.MULTILINE)
+_DATE = re.compile(r"^Date\r?\n: .*\r?\n", re.MULTILINE)
+_TITLE = re.compile(r"^# .*\r?\n", re.MULTILINE)
+
+
+def _split_preamble(changelog: str) -> tuple[str, str, str]:
+    """Split a changelog into its header, its prose and its release notes.
+
+    The header ends after the date (or the title, if there is no date); the
+    prose is the text from there to the "What's Changed" heading, which starts
+    the release notes. Without that heading, everything is header.
+    """
+    notes = _WHATS_CHANGED.search(changelog)
+    if notes is None:
+        return changelog, "", ""
+    head = changelog[: notes.start()]
+    header_end = _DATE.search(head) or _TITLE.search(head)
+    split = header_end.end() if header_end else 0
+    return head[:split], head[split:], changelog[notes.start() :]
+
+
 def merge_changelog(generated: str, existing: str) -> str:
-    """Merge existing PR note edits into a newly generated changelog.
+    """Merge existing edits into a newly generated changelog.
 
     The generated changelog controls which PRs are present, their ordering, and
     their category headings. For every PR that is present in both versions, its
     existing list item (including indented descriptions) is retained. Thus,
     deleted entries are restored and label changes move entries to their newly
-    generated categories without discarding copy edits.
+    generated categories without discarding copy edits. Prose written between
+    the date and the "What's Changed" heading (a summary, highlights) is kept.
     """
+    header, generated_prose, generated = _split_preamble(generated)
+    _, existing_prose, _ = _split_preamble(existing)
+    prose = existing_prose if existing_prose.strip() else generated_prose
     generated_lines = generated.splitlines(keepends=True)
     existing_lines = existing.splitlines(keepends=True)
     existing_blocks = {
@@ -417,7 +442,7 @@ def merge_changelog(generated: str, existing: str) -> str:
             merged.append(existing_block)
         previous_end = end
     merged.extend(generated_lines[previous_end:])
-    return "".join(merged)
+    return header + prose + "".join(merged)
 
 
 def convert_to_myst(body: str) -> str:
@@ -491,8 +516,11 @@ description: Changelog for {title}
 """
 
 
-def convert_to_github(body: str) -> str:
-    """Convert the MyST roles used by changelogs to GitHub Markdown."""
+def convert_to_github(body: str, docs_version: str = "stable") -> str:
+    """Convert the MyST roles used by changelogs to GitHub Markdown.
+
+    ``{doc}`` roles link into the documentation version ``docs_version``.
+    """
     body = re.sub(
         r"\{pr\}`(\d+)`",
         rf"https://github.com/{REPO}/pull/\1",
@@ -505,21 +533,36 @@ def convert_to_github(body: str) -> str:
     )
     body = re.sub(r"\{user\}`([a-zA-Z0-9_-]+)`", r"@\1", body)
     body = re.sub(r"\{class\}`\.?(.*?)`", r"`\1`", body)
-    body = re.sub(r"\{doc\}`([^`]*?)`", _convert_doc_role, body)
+    body = re.sub(
+        r"\{doc\}`([^`]*?)`",
+        lambda match: _convert_doc_role(match, docs_version),
+        body,
+    )
     return body
 
 
-def _convert_doc_role(match: re.Match[str]) -> str:
-    """Convert a MyST ``{doc}`` role to a link into the stable documentation."""
+def _convert_doc_role(match: re.Match[str], docs_version: str) -> str:
+    """Convert a MyST ``{doc}`` role to a link into the documentation."""
     content = match.group(1)
     titled = re.fullmatch(r"(.*?)\s*<(.+)>", content)
     title, target = (titled.group(1), titled.group(2)) if titled else (None, content)
     path = target.strip().lstrip("/")
-    return f"[{title or path}](https://docs.manim.community/en/stable/{path}.html)"
+    url = f"https://docs.manim.community/en/{docs_version}/{path}.html"
+    return f"[{title or path}]({url})"
 
 
-def format_github_release_notes(version: str, content: str) -> str:
-    """Create a GitHub release body from a documentation changelog."""
+def format_github_release_notes(
+    version: str,
+    content: str,
+    *,
+    docs_version: str = "stable",
+    changelog_page: str | None = None,
+) -> str:
+    """Create a GitHub release body from a documentation changelog.
+
+    Links go to the documentation version ``docs_version``; the rendered
+    changelog is ``changelog/<changelog_page>`` (by default VERSION's page).
+    """
     content = re.sub(r"\A---\r?\n.*?\r?\n---\r?\n", "", content, flags=re.DOTALL)
     lines = content.splitlines()
 
@@ -534,9 +577,10 @@ def format_github_release_notes(version: str, content: str) -> str:
     while lines and not lines[0].strip():
         lines.pop(0)
 
-    body = convert_to_github("\n".join(lines)).rstrip()
+    body = convert_to_github("\n".join(lines), docs_version).rstrip()
+    page = changelog_page or f"{version}-changelog"
     changelog_url = (
-        f"https://docs.manim.community/en/stable/changelog/{version}-changelog.html"
+        f"https://docs.manim.community/en/{docs_version}/changelog/{page}.html"
     )
     return f"See [our rendered changelog]({changelog_url}).\n\n{body}\n"
 
@@ -602,7 +646,7 @@ def update_preview_changelog(content: str, version: str, section: str) -> str:
     """Put the section of VERSION into the preview changelog CONTENT.
 
     A new prerelease goes on top; the section of a prerelease already listed
-    is replaced in place, keeping the edits of its PR entries.
+    is replaced in place, keeping its prose and the edits of its PR entries.
     """
     intro, sections = split_preview_changelog(content or PREVIEW_INTRO)
     if version in sections:
@@ -623,15 +667,15 @@ def preview_section(content: str, version: str) -> str:
 
 def format_github_prerelease_notes(version: str, content: str) -> str:
     """Create the GitHub release body of a prerelease from the preview changelog."""
-    notes = format_github_release_notes(version, preview_section(content, version))
-    stable = (
-        f"https://docs.manim.community/en/stable/changelog/{version}-changelog.html"
+    notes = format_github_release_notes(
+        version,
+        preview_section(content, version),
+        docs_version="preview",
+        changelog_page="preview",
     )
-    preview = "https://docs.manim.community/en/preview/changelog/preview.html"
     install = (
         f"Install it with `pip install --pre manim` or `pip install manim=={version}`."
     )
-    notes = notes.replace(stable, preview, 1)
     return f"This is a preview prerelease. {install}\n\n{notes}"
 
 
