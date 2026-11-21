@@ -43,6 +43,7 @@ from ..utils.iterables import (
 from ..utils.paths import straight_path
 from ..utils.simple_functions import clip
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
+from .fields import ArrayField, _check_no_replaced_fields, _is_frozen
 
 if TYPE_CHECKING:
     from typing import Self, TypeAlias
@@ -85,13 +86,17 @@ class Mobject:
     submobjects : List[:class:`Mobject`]
         The contained objects.
     points : :class:`numpy.ndarray`
-        The points of the objects.
+        The points of the objects. The array is read-only: to change the points,
+        assign a new array.
 
         .. seealso::
 
             :class:`~.VMobject`
 
     """
+
+    points: ArrayField[Point3D_Array] = ArrayField(np.float64)
+    _hash_excluded_attributes = frozenset({"_field_versions"})
 
     original_id: str
     _original__init__: Callable[..., None]
@@ -103,6 +108,7 @@ class Mobject:
     @classmethod
     def __init_subclass__(cls, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
+        _check_no_replaced_fields(cls)
 
         cls.animation_overrides = {}
         cls._add_intrinsic_animation_overrides()
@@ -460,9 +466,27 @@ class Mobject:
         cls = self.__class__
         result = cls.__new__(cls)
         clone_from_id[id(self)] = result
+        attributes = result.__dict__
         for k, v in self.__dict__.items():
-            setattr(result, k, copy.deepcopy(v, clone_from_id))
+            # Frozen field arrays cannot change, so the copy shares them. Writing to
+            # __dict__ directly keeps field versions.
+            if _is_frozen(v):
+                attributes[k] = v
+            elif k == "_field_versions":
+                attributes[k] = v.copy()
+            else:
+                attributes[k] = copy.deepcopy(v, clone_from_id)
         result.original_id = str(id(self))
+        return result
+
+    def __copy__(self) -> Self:
+        cls = self.__class__
+        result = cls.__new__(cls)
+        result.__dict__.update(self.__dict__)
+        # The versions belong to the copy: assigning a field of one must not change
+        # the version of the other's.
+        if "_field_versions" in self.__dict__:
+            result.__dict__["_field_versions"] = self.__dict__["_field_versions"].copy()
         return result
 
     def __repr__(self) -> str:

@@ -15,7 +15,9 @@ def test_the_frame_center_follows_the_frame():
     camera = Camera()
     camera.frame.shift([2, -1, 0]).stretch(1.7, 0)
     np.testing.assert_allclose(camera.frame_center, [2, -1, 0])
-    camera.frame.points[0] += [3, 4, 5]
+    points = camera.frame.points.copy()
+    points[0] += [3, 4, 5]
+    camera.frame.points = points
     np.testing.assert_array_equal(camera.frame_center, Mobject.get_center(camera.frame))
 
 

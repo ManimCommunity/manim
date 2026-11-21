@@ -13,3 +13,4 @@ Thematic Guides
    deep_dive
    using_text
    add_voiceovers
+   upgrading
