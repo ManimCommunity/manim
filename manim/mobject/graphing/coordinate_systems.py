@@ -1883,9 +1883,11 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
     y_range
         The ``(y_min, y_max, y_step)`` values of the y-axis.
     x_length
-        The length of the x-axis.
+        The length of the x-axis. Defaults to ``round(config.frame_width) - 2``
+        unless ``unit_size`` is set in ``axis_config`` or ``x_axis_config``.
     y_length
-        The length of the y-axis.
+        The length of the y-axis. Defaults to ``round(config.frame_height) - 2``
+        unless ``unit_size`` is set in ``axis_config`` or ``y_axis_config``.
     axis_config
         Arguments to be passed to :class:`~.NumberLine` that influences both axes.
     x_axis_config
@@ -1932,8 +1934,8 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         self,
         x_range: Sequence[float] | None = None,
         y_range: Sequence[float] | None = None,
-        x_length: float | None = round(config.frame_width) - 2,
-        y_length: float | None = round(config.frame_height) - 2,
+        x_length: float | None = None,
+        y_length: float | None = None,
         axis_config: dict | None = None,
         x_axis_config: dict | None = None,
         y_axis_config: dict | None = None,
@@ -1989,6 +1991,12 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         else:
             self.y_axis_config["exclude_origin_tick"] = False
 
+        default_x_length, default_y_length = self._get_default_lengths()
+        if self.x_length is None and self.x_axis_config.get("unit_size") is None:
+            self.x_length = default_x_length
+        if self.y_length is None and self.y_axis_config.get("unit_size") is None:
+            self.y_length = default_y_length
+
         self.x_axis = self._create_axis(self.x_range, self.x_axis_config, self.x_length)
         self.y_axis = self._create_axis(self.y_range, self.y_axis_config, self.y_length)
 
@@ -2042,6 +2050,9 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         ):
             if passed_config is not None:
                 update_dict_recursively(default_config, passed_config)
+
+    def _get_default_lengths(self) -> tuple[float, float]:
+        return round(config.frame_width) - 2, round(config.frame_height) - 2
 
     def _create_axis(
         self,
@@ -2423,11 +2434,14 @@ class ThreeDAxes(Axes):
     z_range
         The ``[z_min, z_max, z_step]`` values of the z-axis.
     x_length
-        The length of the x-axis.
+        The length of the x-axis. Defaults to ``config.frame_height + 2.5``
+        unless ``unit_size`` is set in ``axis_config`` or ``x_axis_config``.
     y_length
-        The length of the y-axis.
+        The length of the y-axis. Defaults to ``config.frame_height + 2.5``
+        unless ``unit_size`` is set in ``axis_config`` or ``y_axis_config``.
     z_length
-        The length of the z-axis.
+        The length of the z-axis. Defaults to ``config.frame_height - 1.5``
+        unless ``unit_size`` is set in ``axis_config`` or ``z_axis_config``.
     z_axis_config
         Arguments to be passed to :class:`~.NumberLine` that influence the z-axis.
     z_normal
@@ -2449,9 +2463,9 @@ class ThreeDAxes(Axes):
         x_range: Sequence[float] | None = (-6, 6, 1),
         y_range: Sequence[float] | None = (-5, 5, 1),
         z_range: Sequence[float] | None = (-4, 4, 1),
-        x_length: float | None = config.frame_height + 2.5,
-        y_length: float | None = config.frame_height + 2.5,
-        z_length: float | None = config.frame_height - 1.5,
+        x_length: float | None = None,
+        y_length: float | None = None,
+        z_length: float | None = None,
         z_axis_config: dict[str, Any] | None = None,
         z_normal: Vector3DLike = DOWN,
         num_axis_pieces: int = 20,
@@ -2493,6 +2507,9 @@ class ThreeDAxes(Axes):
         else:
             self.z_axis_config["exclude_origin_tick"] = False
 
+        if self.z_length is None and self.z_axis_config.get("unit_size") is None:
+            self.z_length = config.frame_height - 1.5
+
         z_axis = self._create_axis(self.z_range, self.z_axis_config, self.z_length)
 
         # [ax.x_min, ax.x_max] used to account for LogBase() scaling
@@ -2515,6 +2532,9 @@ class ThreeDAxes(Axes):
         if config.renderer == RendererType.CAIRO:
             self._add_3d_pieces()
             self._set_axis_shading()
+
+    def _get_default_lengths(self) -> tuple[float, float]:
+        return config.frame_height + 2.5, config.frame_height + 2.5
 
     def _add_3d_pieces(self) -> None:
         for axis in self.axes:
@@ -2699,8 +2719,10 @@ class NumberPlane(Axes):
     ----------
     x_range
         The ``[x_min, x_max, x_step]`` values of the plane in the horizontal direction.
+        Defaults to ``(-config.frame_x_radius, config.frame_x_radius, 1)``.
     y_range
         The ``[y_min, y_max, y_step]`` values of the plane in the vertical direction.
+        Defaults to ``(-config.frame_y_radius, config.frame_y_radius, 1)``.
     x_length
         The width of the plane.
     y_length
@@ -2761,16 +2783,8 @@ class NumberPlane(Axes):
 
     def __init__(
         self,
-        x_range: Sequence[float] | None = (
-            -config["frame_x_radius"],
-            config["frame_x_radius"],
-            1,
-        ),
-        y_range: Sequence[float] | None = (
-            -config["frame_y_radius"],
-            config["frame_y_radius"],
-            1,
-        ),
+        x_range: Sequence[float] | None = None,
+        y_range: Sequence[float] | None = None,
         x_length: float | None = None,
         y_length: float | None = None,
         background_line_style: dict[str, Any] | None = None,
@@ -2779,6 +2793,11 @@ class NumberPlane(Axes):
         make_smooth_after_applying_functions: bool = True,
         **kwargs: dict[str, Any],
     ):
+        if x_range is None:
+            x_range = (-config.frame_x_radius, config.frame_x_radius, 1)
+        if y_range is None:
+            y_range = (-config.frame_y_radius, config.frame_y_radius, 1)
+
         # configs
         self.axis_config: dict[str, Any] = {
             "stroke_width": 2,
@@ -2787,6 +2806,7 @@ class NumberPlane(Axes):
             "line_to_number_buff": SMALL_BUFF,
             "label_direction": DR,
             "font_size": 24,
+            "unit_size": 1,
         }
         self.y_axis_config: dict[str, Any] = {"label_direction": DR}
         self.background_line_style: dict[str, Any] = {
@@ -2979,7 +2999,7 @@ class PolarPlane(Axes):
         The distance between faded radius lines.
 
     radius_max
-        The maximum value of the radius.
+        The maximum value of the radius. Defaults to ``config.frame_y_radius``.
 
     azimuth_units
         Specifies a default labelling system for the azimuth. Choices are:
@@ -3032,7 +3052,7 @@ class PolarPlane(Axes):
 
     def __init__(
         self,
-        radius_max: float = config["frame_y_radius"],
+        radius_max: float | None = None,
         size: float | None = None,
         radius_step: float = 1,
         azimuth_step: float | None = None,
@@ -3049,6 +3069,9 @@ class PolarPlane(Axes):
         make_smooth_after_applying_functions: bool = True,
         **kwargs: Any,
     ):
+        if radius_max is None:
+            radius_max = config.frame_y_radius
+
         # error catching
         if azimuth_units in ["PI radians", "TAU radians", "degrees", "gradians", None]:
             self.azimuth_units = azimuth_units
@@ -3070,6 +3093,7 @@ class PolarPlane(Axes):
             "line_to_number_buff": SMALL_BUFF,
             "label_direction": DL,
             "font_size": 24,
+            "unit_size": 1,
         }
 
         self.background_line_style = {

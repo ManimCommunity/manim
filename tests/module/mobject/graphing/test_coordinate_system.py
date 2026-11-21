@@ -71,6 +71,35 @@ def test_initial_config():
         assert cs.y_range[1] == 200
 
 
+def test_defaults_use_current_frame_size():
+    """Check that default sizes are computed from the config at creation time."""
+    with tempconfig({"frame_width": 20, "frame_height": 10}):
+        ax = Axes()
+        assert (ax.x_length, ax.y_length) == (18, 8)
+
+        ax = ThreeDAxes()
+        assert (ax.x_length, ax.y_length, ax.z_length) == (12.5, 12.5, 8.5)
+
+        plane = NumberPlane()
+        np.testing.assert_allclose(plane.x_range, [-10, 10, 1])
+        np.testing.assert_allclose(plane.y_range, [-5, 5, 1])
+
+        plane = PolarPlane()
+        np.testing.assert_allclose(plane.x_range, [-5, 5, 1])
+
+
+def test_axes_length_precedence():
+    """Check that an explicit length overrides ``unit_size``, which overrides the default length."""
+    ax = Axes(y_axis_config={"unit_size": 0.5})
+    assert ax.x_length == round(config.frame_width) - 2
+    assert ax.y_axis.get_unit_size() == pytest.approx(0.5)
+
+    ax = ThreeDAxes(x_length=4, axis_config={"unit_size": 0.5})
+    assert ax.x_axis.get_length() == pytest.approx(4)
+    assert ax.y_axis.get_unit_size() == pytest.approx(0.5)
+    assert ax.z_axis.get_unit_size() == pytest.approx(0.5)
+
+
 def test_dimension():
     """Check that objects have the correct dimension."""
     assert Axes().dimension == 2
