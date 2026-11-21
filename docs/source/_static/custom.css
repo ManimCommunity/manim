@@ -107,7 +107,10 @@ h6 {
     margin: 0px 10px;
 }
 
-/* Collapsible sidebar and table of contents (see collapsibleSidebars.js) */
+:root {
+    --collapsed-layout-width: 82em;
+}
+
 .drawer-toggle {
     display: none;
     padding: 0;
@@ -136,6 +139,11 @@ h6 {
         display: none;
     }
 
+    .sidebar-collapsed .main {
+        max-width: var(--collapsed-layout-width);
+        margin-inline: auto;
+    }
+
     .sidebar-collapsed .content {
         flex: 1;
         min-width: 0;
@@ -149,6 +157,18 @@ h6 {
 
     .toc-collapsed .toc-drawer {
         display: none;
+    }
+
+    .toc-collapsed .sidebar-drawer {
+        width: calc((100% - var(--collapsed-layout-width)) / 2 + 15em);
+    }
+
+    .toc-collapsed .main {
+        max-width: calc(var(--collapsed-layout-width) - 15em);
+    }
+
+    .sidebar-collapsed.toc-collapsed .main {
+        max-width: var(--collapsed-layout-width);
     }
 
     .toc-collapsed .content {
