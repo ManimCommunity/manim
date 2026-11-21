@@ -151,6 +151,7 @@ OpenGL shaders moved from `manim/renderer/shaders` to
 
 #### Infrastructure & Build 🔨
 * Support preview prereleases from `preview/*` branches by {user}`behackl` in {pr}`5130`
+* Keep changelog prose on regeneration, and link prerelease notes to the preview docs by {user}`behackl` in {pr}`5152`
 
 #### Code Quality & Refactoring 🧹
 * Use attribute access for global config in scene and animation by {user}`Hangeerh` in {pr}`5138`
