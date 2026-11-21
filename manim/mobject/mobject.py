@@ -102,6 +102,10 @@ class Mobject:
 
     points: ArrayField[Point3D_Array] = ArrayField(np.float64)
     z_index: Field[float] = Field()
+    fixed_in_frame: Field[bool] = Field()
+    #: ``None``, or the function giving the point the mobject keeps facing the camera
+    #: from (see :meth:`fix_orientation`).
+    fixed_orientation: Field[Callable[[], Point3D] | None] = Field()
     # uid depends on construction order; versions on edit history.
     _hash_excluded_attributes = frozenset({"uid", "_field_versions"})
 
@@ -134,6 +138,8 @@ class Mobject:
         self.dim = dim
         self.target = target
         self.z_index = z_index
+        self.fixed_in_frame = False
+        self.fixed_orientation = None
         self.point_hash = None
         self.submobjects: list[Mobject] = []
         self.updaters: list[_Updater] = []
@@ -3571,6 +3577,67 @@ class Mobject:
             for submob in self.submobjects:
                 submob.set_z_index(z_index_value, family=family)
         self.z_index = z_index_value
+        return self
+
+    def fix_in_frame(self) -> Self:
+        """Keep the mobject and its family in place on screen when the camera moves.
+
+        They are drawn as if the camera were at its default position: centered at
+        the origin, with the default frame size, without rotation or zoom. Useful
+        for titles and labels in scenes with a moving or rotating camera.
+
+        See Also
+        --------
+        :meth:`unfix_from_frame`, :meth:`.ThreeDScene.add_fixed_in_frame_mobjects`
+        """
+        for mob in self.get_family():
+            mob.fixed_in_frame = True
+        return self
+
+    def unfix_from_frame(self) -> Self:
+        """Undo :meth:`fix_in_frame` for the mobject and its family."""
+        for mob in self.get_family():
+            mob.fixed_in_frame = False
+        return self
+
+    def fix_orientation(
+        self,
+        center_func: Callable[[], Point3D] | None = None,
+        use_static_center_func: bool = False,
+    ) -> Self:
+        """Keep the mobject and its family facing the camera when it rotates.
+
+        The mobject moves with the point returned by ``center_func`` (by default its
+        current center) but is not rotated with the scene.
+
+        Parameters
+        ----------
+        center_func
+            The function returning the point the mobject moves with.
+        use_static_center_func
+            Without ``center_func``: use the center at the time of this call instead
+            of following the mobject's center.
+
+        See Also
+        --------
+        :meth:`unfix_orientation`, :meth:`.ThreeDScene.add_fixed_orientation_mobjects`
+        """
+        if center_func is None:
+            if use_static_center_func:
+                center = self.get_center()
+
+                def center_func() -> Point3D:
+                    return center
+            else:
+                center_func = self.get_center
+        for mob in self.get_family():
+            mob.fixed_orientation = center_func
+        return self
+
+    def unfix_orientation(self) -> Self:
+        """Undo :meth:`fix_orientation` for the mobject and its family."""
+        for mob in self.get_family():
+            mob.fixed_orientation = None
         return self
 
     def set_z_index_by_z_Point3D(self) -> Self:

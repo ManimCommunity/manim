@@ -13,6 +13,7 @@ from manim import (
     RED,
     RIGHT,
     UP,
+    UR,
     Camera,
     CapStyleType,
     Dot,
@@ -494,3 +495,17 @@ def test_a_cairo_renderer_closes_at_the_end_of_a_with_block():
         renderer.render_mobjects([Square()])
     with pytest.raises(RuntimeError, match="closed"):
         renderer.render_mobjects([Square()])
+
+
+def test_mobjects_fixed_in_frame_stay_put_when_the_camera_moves():
+    with tempconfig({"pixel_width": 64, "pixel_height": 36}):
+        renderer = CairoRenderer(camera=MovingCamera())
+        hud = Square(1, fill_opacity=1, stroke_width=0).to_corner(UR).fix_in_frame()
+        try:
+            renderer.render_mobjects([hud])
+            before = renderer.get_frame().copy()
+            renderer.camera.frame.scale(0.5).shift(LEFT)
+            renderer.render_mobjects([hud])
+            np.testing.assert_array_equal(renderer.get_frame(), before)
+        finally:
+            renderer.close()

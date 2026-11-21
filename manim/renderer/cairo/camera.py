@@ -322,8 +322,21 @@ class Camera:
         points: Point3D_Array,
     ) -> Point3D_Array:
         """Project the mobject's points for display."""
+        return self._place(points, mobject.fixed_in_frame, _orientation_center(mobject))
+
+    def _place(
+        self,
+        points: Point3D_Array,
+        fixed_in_frame: bool,
+        orientation_center: Point3D | None,
+    ) -> Point3D_Array:
+        """Project points for display, as fixed in frame or facing the camera."""
         if not np.all(np.isfinite(points)):
             return np.zeros((1, 3))
+        if fixed_in_frame:
+            # Drawn as if the frame were at its default position and size.
+            scale = self.frame_width / config.frame_width
+            return self.frame_center + scale * points
         return points
 
 
@@ -734,24 +747,23 @@ class ThreeDCamera(Camera):
         """
         return self.project_points(point.reshape((1, 3)))[0, :]
 
-    def transform_points_pre_display(
+    def _place(
         self,
-        mobject: Mobject,
         points: Point3D_Array,
-    ) -> Point3D_Array:  # TODO: Write Docstrings for this Method.
-        points = super().transform_points_pre_display(mobject, points)
-        fixed_orientation = mobject in self.fixed_orientation_mobjects
-        fixed_in_frame = mobject in self.fixed_in_frame_mobjects
-
+        fixed_in_frame: bool,
+        orientation_center: Point3D | None,
+    ) -> Point3D_Array:
+        if not np.all(np.isfinite(points)):
+            return np.zeros((1, 3))
+        # The view transform of this camera is centered at the origin, so points
+        # fixed in frame are drawn where they are.
         if fixed_in_frame:
             return points
-        if fixed_orientation:
-            center_func = self.fixed_orientation_mobjects[mobject]
-            center = center_func()
-            new_center = self.project_point(center)
-            return points + (new_center - center)
-        else:
-            return self.project_points(points)
+        if orientation_center is not None:
+            return points + (
+                self.project_point(orientation_center) - orientation_center
+            )
+        return self.project_points(points)
 
     def add_fixed_orientation_mobjects(
         self,
@@ -790,6 +802,7 @@ class ThreeDCamera(Camera):
                 func = get_static_center_func(mobject)
             else:
                 func = mobject.get_center
+            mobject.fix_orientation(func)
             for submob in mobject.get_family():
                 self.fixed_orientation_mobjects[submob] = func
 
@@ -806,6 +819,8 @@ class ThreeDCamera(Camera):
         **mobjects
             The mobject to fix in frame.
         """
+        for mobject in mobjects:
+            mobject.fix_in_frame()
         for mobject in extract_mobject_family_members(mobjects):
             self.fixed_in_frame_mobjects.add(mobject)
 
@@ -819,6 +834,8 @@ class ThreeDCamera(Camera):
         mobjects
             The mobjects whose orientation need not be fixed any longer.
         """
+        for mobject in mobjects:
+            mobject.unfix_orientation()
         for mobject in extract_mobject_family_members(mobjects):
             if mobject in self.fixed_orientation_mobjects:
                 del self.fixed_orientation_mobjects[mobject]
@@ -833,6 +850,13 @@ class ThreeDCamera(Camera):
         mobjects
             The mobjects which need not be fixed in frame any longer.
         """
+        for mobject in mobjects:
+            mobject.unfix_from_frame()
         for mobject in extract_mobject_family_members(mobjects):
             if mobject in self.fixed_in_frame_mobjects:
                 self.fixed_in_frame_mobjects.remove(mobject)
+
+
+def _orientation_center(mobject: Mobject) -> Point3D | None:
+    center_func = mobject.fixed_orientation
+    return None if center_func is None else center_func()
