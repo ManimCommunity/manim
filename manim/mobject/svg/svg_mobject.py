@@ -126,7 +126,7 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         self.fill_opacity = fill_opacity  # type: ignore[assignment]
         self.stroke_color = stroke_color
         self.stroke_opacity = stroke_opacity  # type: ignore[assignment]
-        self.stroke_width = stroke_width  # type: ignore[assignment]
+        self.stroke_width = stroke_width
         self.id_to_vgroup_dict: dict[str, VGroup] = {}
         if self.stroke_width is None:
             self.stroke_width = 0

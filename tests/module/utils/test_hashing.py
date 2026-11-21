@@ -265,10 +265,12 @@ def test_play_hash_includes_mobject_pixels_but_not_camera_pixels():
     mobject = ImageMobject(np.zeros((8, 8, 4), dtype=np.uint8))
 
     original = _play_hash(scene, camera, [], [mobject])
-    mobject.pixel_array[4, 4, 0] ^= 1
+    pixels = mobject.pixel_array.copy()
+    pixels[4, 4, 0] ^= 1
+    mobject.pixel_array = pixels
     assert _play_hash(scene, camera, [], [mobject]) != original
 
-    mobject.pixel_array[4, 4, 0] ^= 1
+    mobject.pixel_array = np.zeros((8, 8, 4), dtype=np.uint8)
     camera.pixel_array[0] ^= 1
     assert _play_hash(scene, camera, [], [mobject]) == original
 

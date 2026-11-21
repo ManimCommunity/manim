@@ -15,6 +15,7 @@ from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 
 from ..._config import config
 from ...constants import *
+from ...mobject.fields import ArrayField, Field
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
 from ...utils.color import (
@@ -60,6 +61,8 @@ class AbstractImageMobject(Mobject):
         e.g. the ``--quality low`` or ``--quality medium`` flag for faster rendering
         won't effect the position of the image on the screen.
     """
+
+    resampling_algorithm: Field[Resampling] = Field()
 
     def __init__(
         self,
@@ -183,6 +186,8 @@ class ImageMobject(AbstractImageMobject):
                 group.arrange()
                 self.add(group)
     """
+
+    pixel_array: ArrayField[PixelArray] = ArrayField()
 
     def __init__(
         self,

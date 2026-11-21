@@ -43,7 +43,7 @@ from ..utils.iterables import (
 from ..utils.paths import straight_path
 from ..utils.simple_functions import clip
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
-from .fields import ArrayField, _check_no_replaced_fields, _is_frozen
+from .fields import ArrayField, Field, _check_no_replaced_fields, _is_frozen
 
 if TYPE_CHECKING:
     from typing import Self, TypeAlias
@@ -96,6 +96,7 @@ class Mobject:
     """
 
     points: ArrayField[Point3D_Array] = ArrayField(np.float64)
+    z_index: Field[float] = Field()
     _hash_excluded_attributes = frozenset({"_field_versions"})
 
     original_id: str

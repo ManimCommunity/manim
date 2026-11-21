@@ -5,7 +5,7 @@ import copy
 import numpy as np
 import pytest
 
-from manim import RIGHT, Mobject, Square
+from manim import RIGHT, ImageMobject, Mobject, Square
 from manim.mobject.fields import ArrayField, Field, field_version
 from manim.utils.hashing import get_json
 
@@ -124,6 +124,15 @@ def test_a_shallow_copy_has_its_own_versions():
     assert field_version(shallow, "points") != version
 
 
+def test_style_and_pixel_arrays_are_read_only():
+    square = Square().set_fill(opacity=1)
+    image = ImageMobject(np.zeros((2, 2, 4), dtype=np.uint8))
+
+    for array in (square.fill_rgbas, square.stroke_rgbas, image.pixel_array):
+        with pytest.raises(ValueError, match="read-only"):
+            array[0] = 1
+
+
 def test_replacing_a_field_by_a_class_attribute_raises():
     with pytest.raises(TypeError, match=r"Shifted\.points replaces the field"):
 
@@ -136,3 +145,10 @@ def test_redefining_a_field_in_a_subclass_is_allowed():
         points: ArrayField[np.ndarray] = ArrayField(np.float64)
 
     assert Precise().points.dtype == np.float64
+
+
+def test_replacing_a_style_field_by_a_class_attribute_raises():
+    with pytest.raises(TypeError, match=r"Thick\.stroke_width replaces the field"):
+
+        class Thick(Square):
+            stroke_width = 20

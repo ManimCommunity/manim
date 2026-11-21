@@ -22,6 +22,7 @@ from PIL.Image import Image
 
 from manim._config import config
 from manim.constants import *
+from manim.mobject.fields import ArrayField, Field
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -103,7 +104,17 @@ class VMobject(Mobject):
         for options.
     """
 
-    sheen_factor = 0.0
+    fill_rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
+    stroke_rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
+    background_stroke_rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
+    stroke_width: Field[float] = Field()
+    background_stroke_width: Field[float] = Field()
+    sheen_factor: Field[float] = Field()
+    sheen_direction: ArrayField[Vector3D] = ArrayField(np.float64)
+    joint_type: Field[LineJointType] = Field()
+    cap_style: Field[CapStyleType] = Field()
+    shade_in_3d: Field[bool] = Field()
+    background_image: Field[Image | str | None] = Field()
     target: VMobject
 
     def __init__(
@@ -260,7 +271,7 @@ class VMobject(Mobject):
         opacity: float | None = None,
     ) -> Self:
         rgbas = self.generate_rgbas_array(color, opacity)
-        if not hasattr(self, array_name):
+        if array_name not in self.__dict__:
             setattr(self, array_name, rgbas)
             return self
         # Match up current rgbas array with the newly calculated
@@ -568,10 +579,9 @@ class VMobject(Mobject):
         return self
 
     def get_fill_rgbas(self) -> FloatRGBA_Array:
-        try:
-            return self.fill_rgbas
-        except AttributeError:
+        if "fill_rgbas" not in self.__dict__:
             return np.zeros((1, 4))
+        return self.fill_rgbas
 
     def get_fill_color(self) -> ManimColor:
         """
@@ -601,16 +611,11 @@ class VMobject(Mobject):
         return self.get_fill_rgbas()[:, 3]
 
     def get_stroke_rgbas(self, background: bool = False) -> FloatRGBA_Array:
-        try:
-            if background:
-                self.background_stroke_rgbas: FloatRGBA_Array
-                rgbas = self.background_stroke_rgbas
-            else:
-                self.stroke_rgbas: FloatRGBA_Array
-                rgbas = self.stroke_rgbas
-            return rgbas
-        except AttributeError:
+        name = "background_stroke_rgbas" if background else "stroke_rgbas"
+        if name not in self.__dict__:
             return np.zeros((1, 4))
+        rgbas: FloatRGBA_Array = getattr(self, name)
+        return rgbas
 
     def get_stroke_color(self, background: bool = False) -> ManimColor | None:
         return self.get_stroke_colors(background)[0]

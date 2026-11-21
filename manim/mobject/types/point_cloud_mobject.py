@@ -13,6 +13,7 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_point_cloud_mobject import OpenGLPMobject
 
 from ...constants import *
+from ...mobject.fields import Field
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
 from ...utils.color import (
@@ -72,6 +73,8 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
                 self.add(pG)
 
     """
+
+    stroke_width: Field[float] = Field()
 
     def __init__(self, stroke_width: int = DEFAULT_STROKE_WIDTH, **kwargs: Any) -> None:
         self.stroke_width = stroke_width
