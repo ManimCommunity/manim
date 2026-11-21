@@ -7,6 +7,10 @@ This script provides commands for preparing and managing Manim releases:
 - Export documentation changelogs as GitHub-flavored release notes
 - Update CITATION.cff with new version information
 - Fetch existing release notes for documentation
+- Collect the changelog of preview prereleases (vX.Y.ZaN) in one page
+- Check that a GitHub release may publish the version in pyproject.toml
+
+See docs/source/contributing/releasing.md for the release process.
 
 Usage:
     # Generate changelog for an upcoming release
@@ -27,6 +31,15 @@ Usage:
     # Fetch existing release changelogs for documentation
     uv run python scripts/release.py fetch-releases
 
+    # On a preview branch: add the section of a prerelease to the preview
+    # changelog (docs/source/changelog/preview.md), and export it
+    uv run python scripts/release.py changelog --base v0.30.0a1 --version 0.30.0a2 \
+        --head preview/v0.30.x
+    uv run python scripts/release.py export-changelog 0.30.0a2
+
+    # Check a release before publishing it (run by the Publish Release workflow)
+    uv run python scripts/release.py check-release v0.30.0a2 --kind prerelease
+
 Requirements:
     - gh CLI installed and authenticated
     - Python 3.11+
@@ -43,6 +56,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import click
+from packaging.version import InvalidVersion, Version
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -58,6 +72,10 @@ REPO_ROOT = SCRIPT_DIR.parent
 CHANGELOG_DIR = REPO_ROOT / "docs" / "source" / "changelog"
 CITATION_TEMPLATE = SCRIPT_DIR / "TEMPLATE.cff"
 CITATION_FILE = REPO_ROOT / "CITATION.cff"
+PYPROJECT_FILE = REPO_ROOT / "pyproject.toml"
+# The sections of all prereleases of the next version, newest first.
+PREVIEW_CHANGELOG = CHANGELOG_DIR / "preview.md"
+PREVIEW_BRANCH_PREFIX = "preview/"
 
 # Minimum version for fetching historical releases
 DEFAULT_MIN_VERSION = "0.18.0"
@@ -102,9 +120,21 @@ def run_gh(
 
 
 def get_release_tags() -> list[str]:
-    """Get all published release tags from GitHub, newest first."""
+    """Get all published release tags from GitHub, newest first.
+
+    Prereleases are left out: their changelog is the preview changelog.
+    """
     result = run_gh(
-        ["release", "list", "--repo", REPO, "--limit", "100", "--json", "tagName"],
+        [
+            "release",
+            "list",
+            "--repo",
+            REPO,
+            "--limit",
+            "100",
+            "--json",
+            "tagName,isPrerelease",
+        ],
         check=False,
     )
     if result.returncode != 0 or not result.stdout.strip():
@@ -112,7 +142,7 @@ def get_release_tags() -> list[str]:
 
     try:
         data = json.loads(result.stdout)
-        return [item["tagName"] for item in data]
+        return [item["tagName"] for item in data if not item.get("isPrerelease")]
     except (json.JSONDecodeError, KeyError):
         return []
 
@@ -179,20 +209,24 @@ def get_pull_request_release_note(number: int) -> str:
     return f"* {title} by @{author} in {url}"
 
 
-def generate_release_notes(head_tag: str, base_tag: str) -> str:
+def generate_release_notes(
+    head_tag: str, base_tag: str, target: str | None = None
+) -> str:
     """
     Generate release notes using GitHub's API.
 
-    This respects .github/release.yml for PR categorization.
+    This respects .github/release.yml for PR categorization. ``target`` is the
+    branch or commit the notes run up to while ``head_tag`` does not exist yet
+    (by default, GitHub's default branch).
     """
+    fields = [f"tag_name={head_tag}", f"previous_tag_name={base_tag}"]
+    if target is not None:
+        fields.append(f"target_commitish={target}")
     result = run_gh(
         [
             "api",
             f"repos/{REPO}/releases/generate-notes",
-            "--field",
-            f"tag_name={head_tag}",
-            "--field",
-            f"previous_tag_name={base_tag}",
+            *(argument for field in fields for argument in ("--field", field)),
             "--jq",
             ".body",
         ]
@@ -218,25 +252,25 @@ def version_from_tag(tag: str) -> str:
     return tag[1:] if tag.startswith("v") else tag
 
 
-def parse_version(version: str) -> tuple[int, ...]:
-    """Parse version string into comparable tuple."""
-    # Handle post-releases like '0.18.0.post0'
-    version = version.replace(".post", "-post")
-    parts = []
-    for part in version.replace("-", ".").split("."):
-        try:
-            parts.append(int(part))
-        except ValueError:
-            continue
-    # Pad to at least 3 components
-    while len(parts) < 3:
-        parts.append(0)
-    return tuple(parts)
+def parse_version(version: str) -> Version:
+    """Parse a version (PEP 440), with or without the 'v' of its tag."""
+    try:
+        return Version(version_from_tag(version))
+    except InvalidVersion as error:
+        raise click.ClickException(f"Not a valid version: {version}") from error
 
 
 def version_gte(version: str, min_version: str) -> bool:
     """Check if version >= min_version."""
     return parse_version(version) >= parse_version(min_version)
+
+
+def project_version() -> Version:
+    """The version in pyproject.toml."""
+    import tomllib
+
+    pyproject = tomllib.loads(PYPROJECT_FILE.read_text())
+    return parse_version(pyproject["project"]["version"])
 
 
 # =============================================================================
@@ -508,6 +542,152 @@ def format_github_release_notes(version: str, content: str) -> str:
 
 
 # =============================================================================
+# Preview Changelog
+# =============================================================================
+#
+# The prereleases of the next version (vX.Y.ZaN, from a preview/* branch) share
+# one changelog page: a level-two section per prerelease, newest on top. The
+# generated notes' own level-two headings ("What's Changed", "New
+# Contributors") become level three, and their categories level four.
+
+PREVIEW_INTRO = """\
+---
+short-title: Preview
+description: Changelog of the preview prereleases
+---
+
+# Preview
+
+The prereleases of the next version, newest first. They are published from a
+`preview/*` branch and installed with `pip install --pre manim`; see
+{doc}`/contributing/releasing`.
+"""
+
+_PREVIEW_SECTION = re.compile(r"^## v(\S+)\s*$", re.MULTILINE)
+
+
+def _nest(body: str) -> str:
+    """Move the headings of release notes one level down, into a section."""
+    return re.sub(r"^(#{1,5}) ", r"#\1 ", body, flags=re.MULTILINE)
+
+
+def _unnest(section: str) -> str:
+    """Undo :func:`_nest`; the section's own heading becomes the page title."""
+    return re.sub(r"^#(#{1,5}) ", r"\1 ", section, flags=re.MULTILINE)
+
+
+def format_preview_section(version: str, body: str, date: str | None = None) -> str:
+    """Create the preview changelog section of the prerelease VERSION."""
+    date_section = f"Date\n: {date}\n\n" if date else ""
+    body = _nest(convert_to_myst(body)).strip()
+    return f"## v{version}\n\n{date_section}{body}\n"
+
+
+def split_preview_changelog(content: str) -> tuple[str, dict[str, str]]:
+    """Split the preview changelog into its introduction and its sections.
+
+    The sections are keyed by version and keep the order of the file.
+    """
+    matches = list(_PREVIEW_SECTION.finditer(content))
+    if not matches:
+        return content, {}
+    sections = {}
+    for match, following in zip(matches, [*matches[1:], None], strict=True):
+        end = following.start() if following else len(content)
+        sections[match.group(1)] = content[match.start() : end].strip() + "\n"
+    return content[: matches[0].start()], sections
+
+
+def update_preview_changelog(content: str, version: str, section: str) -> str:
+    """Put the section of VERSION into the preview changelog CONTENT.
+
+    A new prerelease goes on top; the section of a prerelease already listed
+    is replaced in place, keeping the edits of its PR entries.
+    """
+    intro, sections = split_preview_changelog(content or PREVIEW_INTRO)
+    if version in sections:
+        merged = merge_changelog(_unnest(section), _unnest(sections[version]))
+        sections[version] = _nest(merged)
+    else:
+        sections = {version: section, **sections}
+    return intro.rstrip() + "\n\n" + "\n".join(sections.values())
+
+
+def preview_section(content: str, version: str) -> str:
+    """The section of VERSION in the preview changelog CONTENT, as a page."""
+    _, sections = split_preview_changelog(content)
+    if version not in sections:
+        raise click.ClickException(f"No section for v{version} in {PREVIEW_CHANGELOG}")
+    return _unnest(sections[version])
+
+
+def format_github_prerelease_notes(version: str, content: str) -> str:
+    """Create the GitHub release body of a prerelease from the preview changelog."""
+    notes = format_github_release_notes(version, preview_section(content, version))
+    stable = (
+        f"https://docs.manim.community/en/stable/changelog/{version}-changelog.html"
+    )
+    preview = "https://docs.manim.community/en/preview/changelog/preview.html"
+    install = (
+        f"Install it with `pip install --pre manim` or `pip install manim=={version}`."
+    )
+    notes = notes.replace(stable, preview, 1)
+    return f"This is a preview prerelease. {install}\n\n{notes}"
+
+
+# =============================================================================
+# Release Checks
+# =============================================================================
+
+
+def release_problems(
+    tag: str, version: Version, prerelease: bool, branches: Sequence[str]
+) -> list[str]:
+    """What keeps the GitHub release TAG from publishing VERSION.
+
+    VERSION is the version in pyproject.toml at the tag, ``prerelease`` the
+    release's flag on GitHub, ``branches`` the branches containing the tag.
+    """
+    problems = []
+    if tag != f"v{version}":
+        problems.append(
+            f"the tag {tag} is not v{version}, the version in pyproject.toml"
+        )
+    if prerelease != version.is_prerelease:
+        kind = "a prerelease" if version.is_prerelease else "not a prerelease"
+        marked = "marked" if prerelease else "not marked"
+        problems.append(f"{version} is {kind}, but the release is {marked} as one")
+    if version.is_prerelease:
+        if not any(branch.startswith(PREVIEW_BRANCH_PREFIX) for branch in branches):
+            problems.append(
+                f"the prerelease {tag} is not on a {PREVIEW_BRANCH_PREFIX}* branch"
+            )
+    elif "main" not in branches:
+        problems.append(f"the release {tag} is not on main")
+    return problems
+
+
+def branches_containing(ref: str) -> list[str]:
+    """The remote branches containing REF, without their remote's name."""
+    result = subprocess.run(
+        [
+            "git",
+            "branch",
+            "--remotes",
+            "--format=%(refname:lstrip=3)",
+            "--contains",
+            ref,
+        ],
+        capture_output=True,
+        text=True,
+        cwd=REPO_ROOT,
+    )
+    if result.returncode != 0:
+        raise click.ClickException(f"git branch --contains {ref}: {result.stderr}")
+    return result.stdout.split()
+
+
+# =============================================================================
 # File Operations
 # =============================================================================
 
@@ -565,7 +745,12 @@ def cli(ctx: click.Context, dry_run: bool) -> None:
 @click.option(
     "--version", "version", required=True, help="New version number (e.g., 0.20.0)"
 )
-@click.option("--head", default="main", help="Head ref for comparison (default: main)")
+@click.option(
+    "--head",
+    default="main",
+    help="Branch the release is made from (default: main; a preview/* branch "
+    "for prereleases)",
+)
 @click.option("--title", help="Custom changelog title (default: vX.Y.Z)")
 @click.option(
     "--include-extra",
@@ -595,17 +780,49 @@ def changelog(
     Uses GitHub's release notes API with .github/release.yml categorization.
     """
     dry_run = ctx.obj["dry_run"]
+    version = version_from_tag(version)
     base_tag = normalize_tag(base)
-    head_tag = normalize_tag(head) if head != "main" else normalize_tag(version)
+    head_tag = normalize_tag(version)
+    prerelease = parse_version(version).is_prerelease
+    if prerelease and not head.startswith(PREVIEW_BRANCH_PREFIX):
+        raise click.ClickException(
+            f"{version} is a prerelease: pass its {PREVIEW_BRANCH_PREFIX}* branch "
+            "as --head"
+        )
 
     click.echo(f"Generating changelog for v{version}...")
     click.echo(f"  Comparing: {base_tag} → {head}")
 
-    body = generate_release_notes(head_tag, base_tag)
+    body = generate_release_notes(head_tag, base_tag, target=head)
     if extra_prs:
         click.echo(f"  Including extra PRs: {', '.join(f'#{pr}' for pr in extra_prs)}")
         body = include_extra_pull_requests(body, extra_prs)
     date = datetime.now().strftime("%B %d, %Y")
+
+    if prerelease:
+        if title or also_update_citation:
+            raise click.ClickException(
+                "--title and --update-citation are for releases, not prereleases"
+            )
+        section = format_preview_section(version, body, date=date)
+        existing = PREVIEW_CHANGELOG.read_text() if PREVIEW_CHANGELOG.exists() else ""
+        content = update_preview_changelog(existing, version, section)
+        if dry_run:
+            click.echo()
+            click.secho("[DRY RUN]", fg="yellow", bold=True)
+            click.echo(f"  Would save: {PREVIEW_CHANGELOG}")
+            click.echo()
+            click.echo("--- Generated section ---")
+            click.echo(section)
+            return
+        PREVIEW_CHANGELOG.write_text(content)
+        click.secho(f"  ✓ Saved: {PREVIEW_CHANGELOG}", fg="green")
+        click.echo()
+        click.echo("Next steps:")
+        click.echo("  • Review and edit the new section as needed")
+        click.echo("  • List changelog/preview first in docs/source/changelog.rst")
+        return
+
     content = format_changelog(version, body, date=date, title=title)
     filepath = CHANGELOG_DIR / f"{version}-changelog.md"
 
@@ -643,8 +860,17 @@ def export_changelog(version: str) -> None:
     """Export VERSION's changelog as GitHub-flavored release notes.
 
     The output is written to stdout for pasting or piping to another command.
+    For a prerelease, its section of the preview changelog is exported.
     """
     version = version_from_tag(version)
+    if parse_version(version).is_prerelease:
+        if not PREVIEW_CHANGELOG.exists():
+            raise click.ClickException(f"Changelog not found: {PREVIEW_CHANGELOG}")
+        click.echo(
+            format_github_prerelease_notes(version, PREVIEW_CHANGELOG.read_text()),
+            nl=False,
+        )
+        return
     filepath = CHANGELOG_DIR / f"{version}-changelog.md"
     if not filepath.exists():
         raise click.ClickException(f"Changelog not found: {filepath}")
@@ -653,6 +879,34 @@ def export_changelog(version: str) -> None:
         format_github_release_notes(version, filepath.read_text()),
         nl=False,
     )
+
+
+@cli.command("check-release")
+@click.argument("tag")
+@click.option(
+    "--kind",
+    type=click.Choice(["release", "prerelease"]),
+    required=True,
+    help="How the release is marked on GitHub",
+)
+def check_release(tag: str, kind: str) -> None:
+    """Check that the GitHub release TAG may publish the checked-out version.
+
+    The tag must name the version in pyproject.toml; prereleases (PEP 440:
+    a, b, rc, dev) must be marked as such on GitHub and be on a preview/*
+    branch, releases on main. Run by the Publish Release workflow.
+    """
+    problems = release_problems(
+        tag,
+        project_version(),
+        prerelease=kind == "prerelease",
+        branches=branches_containing(f"refs/tags/{tag}^{{commit}}"),
+    )
+    for problem in problems:
+        click.echo(f"::error::{problem}")
+    if problems:
+        sys.exit(1)
+    click.secho(f"✓ {tag} may be published as a {kind}", fg="green")
 
 
 @cli.command()

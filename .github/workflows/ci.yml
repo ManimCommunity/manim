@@ -8,9 +8,11 @@ on:
   push:
     branches:
       - main
+      - "preview/**"
   pull_request:
     branches:
       - main
+      - "preview/**"
 
 jobs:
   test:

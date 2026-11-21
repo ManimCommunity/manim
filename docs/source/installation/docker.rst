@@ -10,7 +10,10 @@ For our image ``manimcommunity/manim``, there are the following tags:
 - ``stable``: the latest released version (according to
   `the releases page <https://github.com/ManimCommunity/manim/releases>`__),
 - ``vX.Y.Z``: any particular released version (according to
-  `the releases page <https://github.com/ManimCommunity/manim/releases>`__).
+  `the releases page <https://github.com/ManimCommunity/manim/releases>`__),
+- ``preview``: the latest prerelease, such as ``v0.30.0a1``, built from a
+  preview branch to try out the next version before it is released,
+- ``vX.Y.ZaN``: any particular prerelease.
 
 .. note::
 
