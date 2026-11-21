@@ -528,3 +528,51 @@ def test_a_masked_stroke_keeps_its_opacity():
     # Over the black background, the white image shows as bright as the stroke is
     # opaque.
     assert 0 < faint[18, 32, 0] < opaque[18, 32, 0] / 2
+
+
+def _frame_of(mobjects, renderer):
+    renderer.render_mobjects(mobjects)
+    return renderer.get_frame().copy()
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        lambda square: square.shift(RIGHT),
+        lambda square: setattr(square, "tolerance_for_point_equality", 0.5),
+        lambda square: square.fix_in_frame(),
+    ],
+    ids=["points", "tolerance", "fixed in frame"],
+)
+def test_redrawn_frames_follow_changes(change):
+    with tempconfig({"pixel_width": 64, "pixel_height": 36}):
+        square = Square(fill_opacity=1)
+        renderer = CairoRenderer(camera=MovingCamera())
+        renderer.camera.frame.shift(LEFT)
+        fresh = CairoRenderer(camera=MovingCamera())
+        fresh.camera.frame.shift(LEFT)
+        try:
+            before = _frame_of([square], renderer)
+            assert np.array_equal(_frame_of([square], renderer), before)
+            change(square)
+            np.testing.assert_array_equal(
+                _frame_of([square], renderer), _frame_of([square], fresh)
+            )
+        finally:
+            renderer.close()
+            fresh.close()
+
+
+def test_paths_of_mobjects_without_a_key_are_not_reused():
+    class Wobbly(VMobject):
+        _drawn_from_fields = False
+
+    with tempconfig({"pixel_width": 64, "pixel_height": 36}):
+        shape = Wobbly(fill_opacity=1)
+        shape.points = Square().points
+        renderer = CairoRenderer(camera=Camera())
+        try:
+            _frame_of([shape], renderer)
+            assert not renderer._target.path_cache._current
+        finally:
+            renderer.close()

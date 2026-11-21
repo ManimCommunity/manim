@@ -34,7 +34,8 @@ from manim.utils._path_points import (
 )
 from manim.utils.space_ops import cross2d
 
-from .target import _CairoRenderTarget
+from .camera import Camera
+from .target import _CairoRenderTarget, _PathCache
 
 if TYPE_CHECKING:
     from manim.typing import (
@@ -43,7 +44,6 @@ if TYPE_CHECKING:
         RGBAPixelArray,
     )
 
-    from .camera import Camera
 
 _LINE_JOIN_MAP = {
     LineJointType.AUTO: cairo.LineJoin.MITER,  # cairo default; TODO: this could be improved
@@ -76,6 +76,7 @@ class _CairoDrawingContext:
         self.camera = camera
         self.target = target
         self.image_resolver = image_resolver
+        self._path_cache: _PathCache | None = None
 
     def draw(
         self,
@@ -85,6 +86,14 @@ class _CairoDrawingContext:
         excluded_mobjects: list[Mobject] | None = None,
     ) -> None:
         self.target._ensure_open()
+        # Paths can be cached only if the camera draws points where they are.
+        self._path_cache = (
+            self.target.path_cache
+            if type(self.camera)._place is Camera._place
+            else None
+        )
+        if self._path_cache is not None:
+            self._path_cache.next_generation()
         with self.camera._drawing():
             nodes = self.camera._sort_for_display(
                 extract(
@@ -131,14 +140,32 @@ class _CairoDrawingContext:
         # variants, so an early return must not leave another node's path
         # behind to be painted in this node's style.
         context.new_path()
+        cache = self._path_cache
+        key = node.key
+        if cache is not None and key is not None:
+            matrix = context.get_matrix()
+            view = (matrix.xx, matrix.yy, matrix.x0, matrix.y0)
+            cached = cache.get(key, view)
+            if cached is not None:
+                context.append_path(cached)
+                return
+            if self._build_cairo_context_path(context, node, path):
+                cache.put(key, view, context.copy_path())
+            return
+        self._build_cairo_context_path(context, node, path)
+
+    def _build_cairo_context_path(
+        self, context: cairo.Context, node: RNode, path: RPath
+    ) -> bool:
+        """Set the context's path to the node's path; return whether it did."""
         points = self.camera._display_points(node, path.points)
         if len(points) == 0:
-            return
+            return False
 
         nppcc = 4
         split_indices = subpath_split_indices(points, path.tolerance, n_dims=2)
         if len(split_indices) == 0:
-            return
+            return False
 
         points_xy = points[:, :2].ravel()
         move_to = context.move_to
@@ -175,6 +202,7 @@ class _CairoDrawingContext:
                 path.tolerance,
             ):
                 close_path()
+        return True
 
     def _set_cairo_context_color(
         self,
