@@ -22,7 +22,7 @@ from PIL.Image import Image
 from manim._config import config
 from manim.constants import *
 from manim.mobject.fields import ArrayField, Field
-from manim.mobject.mobject import Mobject
+from manim.mobject.mobject import Mobject, _interpolated
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
@@ -1945,13 +1945,10 @@ class VMobject(Mobject):
             setattr(
                 self,
                 attr,
-                interpolate(getattr(mobject1, attr), getattr(mobject2, attr), alpha),
+                _interpolated(
+                    getattr(mobject1, attr), getattr(mobject2, attr), alpha, interpolate
+                ),
             )
-            if alpha == 1.0:
-                val = getattr(mobject2, attr)
-                if isinstance(val, np.ndarray):
-                    val = val.copy()
-                setattr(self, attr, val)
         return self
 
     def pointwise_become_partial(
@@ -1994,7 +1991,8 @@ class VMobject(Mobject):
         # - A start, which is some ending portion of an inner cubic.
         # - An end, which is the starting portion of a later inner cubic.
         if a <= 0 and b >= 1:
-            self.set_points(vmobject.points)
+            # The value itself, so that repeated calls keep the version.
+            self.points = vmobject.points
             return self
         num_curves = vmobject.get_num_curves()
         if num_curves == 0:

@@ -78,6 +78,19 @@ _Updater: TypeAlias = _NonTimeBasedUpdater | _TimeBasedUpdater
 _uids = it.count(1)
 
 
+def _interpolated(
+    start: Any, end: Any, alpha: float, func: Callable[[Any, Any, float], Any]
+) -> Any:
+    """``func(start, end, alpha)``, but the end value itself where nothing is
+    interpolated, so assigning it keeps a field's version (and shares the value).
+    """
+    if alpha == 1 or start is end:
+        return end
+    if alpha == 0:
+        return start
+    return func(start, end, alpha)
+
+
 # Values of these types cannot be modified, so copies share them.
 _IMMUTABLE_TYPES = (
     int,
@@ -3383,7 +3396,7 @@ class Mobject:
         :class:`~.Transform`, :meth:`~.VMobject.align_points`, :meth:`~.VMobject.interpolate_color`
 
         """
-        self.points = path_func(mobject1.points, mobject2.points, alpha)
+        self.points = _interpolated(mobject1.points, mobject2.points, alpha, path_func)
         self.interpolate_color(mobject1, mobject2, alpha)
         return self
 

@@ -5,7 +5,7 @@ import copy
 import numpy as np
 import pytest
 
-from manim import RIGHT, ImageMobject, Mobject, Square
+from manim import RED, RIGHT, Circle, ImageMobject, Mobject, Square, VMobject
 from manim.mobject.fields import ArrayField, Field, field_version
 from manim.utils.hashing import get_json
 
@@ -179,3 +179,37 @@ def test_svg_paths_share_their_parsed_path():
 
     path = VMobjectFromSVGPath(se.Path("M 0 0 L 1 0 L 1 1 Z"))
     assert path.copy().path_obj is path.path_obj
+
+
+def test_animation_steps_that_change_nothing_keep_versions():
+    start, end = Square(), Circle().set_color(RED)
+    start.align_data(end)
+    moving = start.copy()
+
+    moving.interpolate(start, end, 1)
+    versions = {name: field_version(moving, name) for name in ("points", "fill_rgbas")}
+    moving.interpolate(start, end, 1)
+    assert {name: field_version(moving, name) for name in versions} == versions
+
+    moving.stroke_width = 2.5
+    version = field_version(moving, "stroke_width")
+    moving.stroke_width = float("2.5")  # equal, but another object
+    assert field_version(moving, "stroke_width") == version
+
+    partial = VMobject()
+    partial.pointwise_become_partial(end, 0, 1)
+    points_version = field_version(partial, "points")
+    partial.pointwise_become_partial(end, 0, 1)
+    assert field_version(partial, "points") == points_version
+
+
+def test_the_end_of_an_interpolation_cannot_be_written_through_the_start():
+    start, end = Square(), Circle()
+    start.align_data(end)
+    moving = start.copy()
+
+    moving.interpolate(start, end, 1)
+
+    assert moving.points is end.points
+    with pytest.raises(ValueError, match="read-only"):
+        moving.points[0] = [9, 9, 9]

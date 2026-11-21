@@ -25,6 +25,10 @@ T = TypeVar("T")
 # this field had before, which is all a reader needs.
 _next_version = itertools.count(1).__next__
 
+_UNSET: Any = object()
+# Types whose equal values are interchangeable and cheap to compare.
+_EQ_TYPES = (int, float, bool, str)
+
 
 class _Owner(np.ndarray):
     """Holds the data of a frozen field array; never handed out.
@@ -119,6 +123,13 @@ class ArrayField(Field[T]):
 
 def _store(obj: object, name: str, value: Any) -> None:
     attributes = obj.__dict__
+    old = attributes.get(name, _UNSET)
+    # Assigning the value the field holds, or an equal number, flag or string, is
+    # not a change: keep the version. Arrays are compared by identity only.
+    if old is value or (
+        type(old) is type(value) and type(value) in _EQ_TYPES and old == value
+    ):
+        return
     attributes[name] = value
     try:
         attributes["_field_versions"][name] = _next_version()
