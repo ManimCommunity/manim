@@ -30,6 +30,3 @@ python:
       command: sync
       groups:
         - docs
-      extras:
-        - jupyterlab
-        - typst

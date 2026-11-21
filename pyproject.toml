@@ -93,6 +93,7 @@ dev = [
 ]
 docs = [
     "furo>=2024.8.6",
+    "jupyterlab>=4.3.4",
     "myst-parser>=3.0.1",
     "sphinx>=7.4.7",
     "sphinx-copybutton>=0.5.2",
@@ -100,6 +101,7 @@ docs = [
     "sphinx-reredirects>=0.1.5",
     "sphinxcontrib-programoutput>=0.18",
     "sphinxext-opengraph>=0.9.1",
+    "typst>=0.14",
 ]
 
 [build-system]
