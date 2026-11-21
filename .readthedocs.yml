@@ -25,8 +25,8 @@ build:
         - cd docs/source && python -m sphinx -T -j auto -b html -d _build/doctrees -D language=en . $READTHEDOCS_OUTPUT/html
 
 python:
-   install:
-      - requirements: docs/rtd-requirements.txt
-      - requirements: docs/requirements.txt
-      - method: pip
-        path: .
+  install:
+    - method: uv
+      command: sync
+      groups:
+        - docs

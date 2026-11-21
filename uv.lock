@@ -1398,6 +1398,7 @@ typst = [
 [package.dev-dependencies]
 dev = [
     { name = "furo" },
+    { name = "jupyterlab" },
     { name = "matplotlib" },
     { name = "myst-parser" },
     { name = "pre-commit" },
@@ -1416,6 +1417,19 @@ dev = [
     { name = "types-decorator" },
     { name = "types-pillow" },
     { name = "types-pygments" },
+    { name = "typst" },
+]
+docs = [
+    { name = "furo" },
+    { name = "jupyterlab" },
+    { name = "myst-parser" },
+    { name = "sphinx" },
+    { name = "sphinx-copybutton" },
+    { name = "sphinx-design" },
+    { name = "sphinx-reredirects" },
+    { name = "sphinxcontrib-programoutput" },
+    { name = "sphinxext-opengraph" },
+    { name = "typst" },
 ]
 
 [package.metadata]
@@ -1455,6 +1469,7 @@ provides-extras = ["gui", "jupyterlab", "typst"]
 [package.metadata.requires-dev]
 dev = [
     { name = "furo", specifier = ">=2024.8.6" },
+    { name = "jupyterlab", specifier = ">=4.3.4" },
     { name = "matplotlib", specifier = ">=3.9.4" },
     { name = "myst-parser", specifier = ">=3.0.1" },
     { name = "pre-commit", specifier = ">=4.1.0" },
@@ -1473,6 +1488,19 @@ dev = [
     { name = "types-decorator", specifier = ">=5.1.8.20250121" },
     { name = "types-pillow", specifier = ">=10.2.0.20240822" },
     { name = "types-pygments", specifier = ">=2.19.0.20250107" },
+    { name = "typst", specifier = ">=0.14" },
+]
+docs = [
+    { name = "furo", specifier = ">=2024.8.6" },
+    { name = "jupyterlab", specifier = ">=4.3.4" },
+    { name = "myst-parser", specifier = ">=3.0.1" },
+    { name = "sphinx", specifier = ">=7.4.7" },
+    { name = "sphinx-copybutton", specifier = ">=0.5.2" },
+    { name = "sphinx-design", specifier = ">=0.6.1" },
+    { name = "sphinx-reredirects", specifier = ">=0.1.5" },
+    { name = "sphinxcontrib-programoutput", specifier = ">=0.18" },
+    { name = "sphinxext-opengraph", specifier = ">=0.9.1" },
+    { name = "typst", specifier = ">=0.14" },
 ]
 
 [[package]]
