@@ -74,6 +74,9 @@ _NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
 _Updater: TypeAlias = _NonTimeBasedUpdater | _TimeBasedUpdater
 
 
+_uids = it.count(1)
+
+
 class Mobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
 
@@ -85,6 +88,8 @@ class Mobject:
     ----------
     submobjects : List[:class:`Mobject`]
         The contained objects.
+    uid : :class:`int`
+        Identifies the mobject within the running process; copies get a new one.
     points : :class:`numpy.ndarray`
         The points of the objects. The array is read-only: to change the points,
         assign a new array.
@@ -97,7 +102,8 @@ class Mobject:
 
     points: ArrayField[Point3D_Array] = ArrayField(np.float64)
     z_index: Field[float] = Field()
-    _hash_excluded_attributes = frozenset({"_field_versions"})
+    # uid depends on construction order; versions on edit history.
+    _hash_excluded_attributes = frozenset({"uid", "_field_versions"})
 
     original_id: str
     _original__init__: Callable[..., None]
@@ -123,6 +129,7 @@ class Mobject:
         target: Mobject | None = None,
         z_index: float = 0,
     ):
+        self.uid = next(_uids)
         self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
         self.target = target
@@ -478,6 +485,7 @@ class Mobject:
             else:
                 attributes[k] = copy.deepcopy(v, clone_from_id)
         result.original_id = str(id(self))
+        result.uid = next(_uids)
         return result
 
     def __copy__(self) -> Self:
@@ -488,6 +496,7 @@ class Mobject:
         # the version of the other's.
         if "_field_versions" in self.__dict__:
             result.__dict__["_field_versions"] = self.__dict__["_field_versions"].copy()
+        result.uid = next(_uids)
         return result
 
     def __repr__(self) -> str:

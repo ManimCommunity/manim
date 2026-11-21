@@ -124,6 +124,13 @@ def test_a_shallow_copy_has_its_own_versions():
     assert field_version(shallow, "points") != version
 
 
+@pytest.mark.parametrize("copy_function", [copy.copy, copy.deepcopy])
+def test_copies_get_a_new_uid(copy_function):
+    square = Square()
+    assert copy_function(square).uid != square.uid
+    assert Square().uid != square.uid
+
+
 def test_style_and_pixel_arrays_are_read_only():
     square = Square().set_fill(opacity=1)
     image = ImageMobject(np.zeros((2, 2, 4), dtype=np.uint8))
