@@ -31,7 +31,7 @@ from typing_extensions import (
     override,
 )
 
-from manim import config, logger
+from manim._config import config, logger
 from manim.constants import *
 from manim.data_structures import MethodWithArgs
 from manim.renderer.opengl.shader_wrapper import get_colormap_code

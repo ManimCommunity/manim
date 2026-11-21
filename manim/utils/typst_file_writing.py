@@ -11,7 +11,7 @@ from __future__ import annotations
 import hashlib
 from pathlib import Path
 
-from manim import config, logger
+from manim._config import config, logger
 
 __all__ = ["typst_to_svg_file"]
 

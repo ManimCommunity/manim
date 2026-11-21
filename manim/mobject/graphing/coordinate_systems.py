@@ -18,7 +18,7 @@ from typing import TYPE_CHECKING, Any, Self, TypeVar, overload
 
 import numpy as np
 
-from manim import config
+from manim._config import config
 from manim.constants import *
 from manim.mobject.geometry.arc import Circle, Dot
 from manim.mobject.geometry.line import Arrow, DashedLine, Line

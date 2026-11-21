@@ -8,13 +8,13 @@ from typing import Self
 
 import svgelements as se
 
+import manim.constants as cst
 from manim.animation.updaters.update import UpdateFromAlphaFunc
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square, Triangle
 from manim.mobject.mobject import Mobject
 from manim.typing import Vector3D
 
-from .. import constants as cst
 from ..animation.animation import override_animation
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create, SpiralIn

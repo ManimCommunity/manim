@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING, Any, Literal, Self
 
 import numpy as np
 
-from manim import config, logger
+from manim._config import config, logger
 from manim.constants import *
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square

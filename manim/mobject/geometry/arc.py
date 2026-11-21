@@ -899,7 +899,7 @@ class LabeledDot(Dot):
         **kwargs: Any,
     ) -> None:
         if isinstance(label, str):
-            from manim import MathTex
+            from manim.mobject.text.tex_mobject import MathTex
 
             rendered_label: VMobject = MathTex(label, color=BLACK)
         else:

@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
-from . import config, logger
+from ._config import config, logger
 from ._config.logger_utils import set_file_logger
 from ._run.cache import _SegmentCache
 from ._run.listeners import _Encoder, _FrameRequests, _MeshGuard, _Preview, _Progress
@@ -39,6 +39,7 @@ if TYPE_CHECKING:
     from ._config.render_session import RenderSessionSpec
     from .animation.animation import Animation
     from .mobject.mobject import Mobject, _AnimationBuilder
+    from .renderer._execution import _ExecutionState
     from .renderer.cairo import CairoRenderer
     from .renderer.cairo.camera import Camera
     from .renderer.opengl.camera import OpenGLCamera
@@ -156,7 +157,7 @@ class Manager(Generic[SceneT]):
         if scene.manager is not None:
             raise ValueError("A manager is already attached to this scene.")
         self.scene = scene
-        self._execution = scene.renderer._claim_execution(
+        self._execution: _ExecutionState = scene.renderer._claim_execution(
             self, frame_rate=scene.session_spec.frame_rate
         )
         self._file_writer: SceneFileWriter | None = None

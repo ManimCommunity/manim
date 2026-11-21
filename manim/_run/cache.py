@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import replace
 from typing import TYPE_CHECKING
 
-from .. import config, logger
+from .._config import config, logger
 from .._config.video_encoder import video_encoder_fingerprint
 from ..utils.hashing import get_hash_from_play_call
 

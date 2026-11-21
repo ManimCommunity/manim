@@ -14,7 +14,7 @@ import numpy as np
 from moderngl import Framebuffer
 from PIL import Image
 
-from manim import config, logger
+from manim._config import config, logger
 from manim.mobject.opengl.opengl_mobject import (
     OpenGLMobject,
 )

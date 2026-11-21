@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
 
-from manim import __version__
+from manim._version import __version__
 
 from .output import OutputFormat, OutputSpec
 

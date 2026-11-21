@@ -6,8 +6,7 @@ __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 
 from typing import Any, Self
 
-from manim import logger
-from manim._config import config
+from manim._config import config, logger
 from manim.constants import (
     DOWN,
     LEFT,

@@ -9,7 +9,7 @@ from typing import Any, Self
 import moderngl
 import numpy as np
 
-from manim import config
+from manim._config import config
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 from manim.renderer.opengl.shader_wrapper import ShaderWrapper

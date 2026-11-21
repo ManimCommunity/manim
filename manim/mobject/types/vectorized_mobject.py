@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 import numpy as np
 from PIL.Image import Image
 
-from manim import config
+from manim._config import config
 from manim.constants import *
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL

@@ -41,12 +41,12 @@ from tqdm import tqdm
 from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
-from manim import __version__
+from manim._version import __version__
 from manim.data_structures import MethodWithArgs
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 
-from .. import config, logger
+from .._config import config, logger
 from .._config.output_plan import (
     resolve_file_log_path,
     resolve_media_layout,

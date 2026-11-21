@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from docutils import nodes
 from docutils.parsers.rst import Directive
 
-from manim import ManimColor
+from manim.utils.color import ManimColor
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
