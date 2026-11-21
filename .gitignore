@@ -59,7 +59,6 @@ docs/build/
 docs/source/_autosummary/
 docs/source/reference/
 docs/source/_build/
-docs/rendering_times.csv
 #i18n
 docs/i18n/gettext/.doctrees
 docs/i18n/**/*.mo

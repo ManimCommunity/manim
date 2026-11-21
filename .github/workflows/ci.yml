@@ -8,9 +8,11 @@ on:
   push:
     branches:
       - main
+      - "preview/**"
   pull_request:
     branches:
       - main
+      - "preview/**"
 
 jobs:
   test:
@@ -165,4 +167,4 @@ jobs:
 
       - name: Run doctests in rst files
         run: |
-          cd docs && uv run make doctest O=-tskip-manim
+          cd docs && uv run make doctest O="-D manim_render=0"

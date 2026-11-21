@@ -3,7 +3,8 @@
 import numpy as np
 import pytest
 
-from manim import ThreeDCamera
+from manim import DEGREES, RIGHT, ThreeDCamera
+from manim.utils.space_ops import rotation_about_z, rotation_matrix
 
 
 def test_projection_follows_the_angles_without_drawing():
@@ -16,6 +17,17 @@ def test_projection_follows_the_angles_without_drawing():
     np.testing.assert_array_equal(
         camera.rotation_matrix, camera.generate_rotation_matrix()
     )
+
+
+def test_rotation_matrix_preserves_cairo_euler_convention():
+    theta, phi, gamma = np.array([-37, 62, 18]) * DEGREES
+    camera = ThreeDCamera(theta=theta, phi=phi, gamma=gamma)
+    expected = (
+        rotation_about_z(gamma)
+        @ rotation_matrix(-phi, RIGHT)
+        @ rotation_about_z(-theta - 90 * DEGREES)
+    )
+    np.testing.assert_allclose(camera.generate_rotation_matrix(), expected, atol=1e-12)
 
 
 def test_rotation_matrix_is_read_only():

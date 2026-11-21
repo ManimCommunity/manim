@@ -20,10 +20,8 @@ from manim.utils.paths import straight_path
 from manim.utils.simple_functions import clip
 from manim.utils.space_ops import (
     angle_of_vector,
-    quaternion_from_angle_axis,
-    quaternion_mult,
     rotation_matrix_transpose,
-    rotation_matrix_transpose_from_quaternion,
+    rotation_matrix_zxz,
 )
 
 if TYPE_CHECKING:
@@ -190,17 +188,19 @@ class OpenGLCamera(OpenGLMobject):
         return self
 
     def refresh_rotation_matrix(self) -> Self:
-        """Refresh the camera's inverse rotation matrix based on its Euler angles."""
-        # Rotate based on camera orientation
+        """Update the rotation that takes world-space vectors into camera space.
+
+        The camera's Euler angles define its orientation as
+        ``Rz(theta) @ Rx(phi) @ Rz(gamma)``. Its transpose is the inverse
+        rotation, which is stored in :attr:`inverse_rotation_matrix`.
+
+        Returns
+        -------
+        Self
+            This camera, for method chaining.
+        """
         theta, phi, gamma = self.euler_angles
-        quat = quaternion_mult(
-            quaternion_from_angle_axis(theta, OUT, axis_normalized=True),
-            quaternion_from_angle_axis(phi, RIGHT, axis_normalized=True),
-            quaternion_from_angle_axis(gamma, OUT, axis_normalized=True),
-        )
-        self.inverse_rotation_matrix = rotation_matrix_transpose_from_quaternion(
-            np.asarray(quat, dtype=float)
-        )
+        self.inverse_rotation_matrix = rotation_matrix_zxz(theta, phi, gamma).T
         return self
 
     @override
@@ -238,10 +238,7 @@ class OpenGLCamera(OpenGLMobject):
         Fz = new_rot_T[2]
         phi = np.arccos(Fz[2])
         theta = angle_of_vector(Fz[:2]) + PI / 2
-        partial_rot_T = np.dot(
-            rotation_matrix_transpose(phi, RIGHT),
-            rotation_matrix_transpose(theta, OUT),
-        )
+        partial_rot_T = rotation_matrix_zxz(theta, phi, 0.0).T
         gamma = angle_of_vector(np.dot(partial_rot_T, new_rot_T.T)[:, 0])
         self.set_euler_angles(theta, phi, gamma)
         return self

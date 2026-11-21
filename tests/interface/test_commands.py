@@ -11,6 +11,7 @@ from click.testing import CliRunner
 from manim import __version__, capture
 from manim.__main__ import main
 from manim.cli.checkhealth.checks import HEALTH_CHECKS
+from manim.cli.init.commands import update_cfg
 
 
 def test_manim_version():
@@ -123,6 +124,22 @@ Made with <3 by Manim Community developers.
     assert dedent(expected_output) == result.output
 
 
+def test_manim_cfg_write_keeps_utf8_values(tmp_path):
+    command = ["cfg", "write", "--level", "cwd", "--open"]
+    runner = CliRunner()
+    with (
+        runner.isolated_filesystem(temp_dir=tmp_path) as tmp_dir,
+        patch("manim.cli.cfg.group.open_file"),
+    ):
+        cfg_file = Path(tmp_dir) / "manim.cfg"
+        cfg_file.write_text(
+            "[CLI]\n# 解像度と出力先の設定\nmedia_dir = ./動画\n", encoding="utf-8"
+        )
+        result = runner.invoke(main, command, prog_name="manim")
+        assert not result.exception
+        assert "media_dir = ./動画" in cfg_file.read_text(encoding="utf-8")
+
+
 def test_manim_init_project(tmp_path):
     command = ["init", "project", "--default", "testproject"]
     runner = CliRunner()
@@ -131,6 +148,15 @@ def test_manim_init_project(tmp_path):
         assert not result.exception
         assert (Path(tmp_dir) / "testproject/main.py").exists()
         assert (Path(tmp_dir) / "testproject/manim.cfg").exists()
+
+
+def test_update_cfg_writes_utf8(tmp_path):
+    cfg_file = tmp_path / "manim.cfg"
+    cfg_file.write_text("[CLI]\nframe_rate = 30\n", encoding="utf-8")
+
+    update_cfg({"scene_names": "動画Scene"}, cfg_file)
+
+    assert "scene_names = 動画Scene" in cfg_file.read_text(encoding="utf-8")
 
 
 def test_manim_init_scene(tmp_path):
