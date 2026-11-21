@@ -5,17 +5,25 @@ description: Changelog of the preview prereleases
 
 # Preview
 
-The prereleases of the next version, newest first. They are published from a
-`preview/*` branch and installed with `pip install --pre manim`; see
-{doc}`/contributing/releasing`.
+This page holds a detailed overview of the changes included
+in Manim's latest prerelease line which can be installed via
+`pip install --pre manim`. The corresponding source version
+can be found [in our repository](https://github.com/ManimCommunity/manim)
+on a `preview/...` branch.
+
+The current preview line is for
+[the v0.30.0 release](https://github.com/ManimCommunity/manim/tree/preview/v0.30.0)
+which fundamentally reworks how scenes are rendered. Please try it with your
+scenes and [report problems on GitHub](https://github.com/ManimCommunity/manim/issues)
+/ share your thoughts [in our Discord](https://manim.community/discord).
 
 ## v0.30.0a1
 
 Date
 : November 21, 2026
 
-The first preview of v0.30.0, which reworks how scenes are rendered. Please
-try it with your scenes and [report problems](https://github.com/ManimCommunity/manim/issues).
+The first preview of v0.30.0 features a restructured rendering pipeline
+and changes to bring the cairo and the OpenGL renderers closer together.
 
 ### Highlights
 
