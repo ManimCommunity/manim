@@ -159,3 +159,23 @@ def test_replacing_a_style_field_by_a_class_attribute_raises():
 
         class Thick(Square):
             stroke_width = 20
+
+
+def test_copies_share_only_values_that_cannot_change():
+    square = Square()
+    square.label = "corner"
+    square.tags = ["a"]
+    copied = square.copy()
+
+    assert copied.label is square.label
+    assert copied.tags == square.tags
+    assert copied.tags is not square.tags
+
+
+def test_svg_paths_share_their_parsed_path():
+    import svgelements as se
+
+    from manim.mobject.svg.svg_mobject import VMobjectFromSVGPath
+
+    path = VMobjectFromSVGPath(se.Path("M 0 0 L 1 0 L 1 1 Z"))
+    assert path.copy().path_obj is path.path_obj

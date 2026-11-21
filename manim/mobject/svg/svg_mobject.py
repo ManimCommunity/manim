@@ -528,6 +528,9 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
         class.
     """
 
+    # The parsed path is only read (in generate_points); copies share it.
+    _shared_on_copy = frozenset({"path_obj"})
+
     def __init__(
         self,
         path_obj: se.Path,

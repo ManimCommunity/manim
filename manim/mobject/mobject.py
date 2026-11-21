@@ -6,6 +6,7 @@ __all__ = ["Mobject", "Group", "override_animate"]
 
 
 import copy
+import enum
 import inspect
 import itertools as it
 import math
@@ -77,6 +78,20 @@ _Updater: TypeAlias = _NonTimeBasedUpdater | _TimeBasedUpdater
 _uids = it.count(1)
 
 
+# Values of these types cannot be modified, so copies share them.
+_IMMUTABLE_TYPES = (
+    int,
+    float,
+    complex,
+    str,
+    bytes,
+    type(None),
+    enum.Enum,
+    np.generic,
+    ManimColor,
+)
+
+
 class Mobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
 
@@ -112,6 +127,10 @@ class Mobject:
     _drawn_from_fields: ClassVar[bool] = True
     # uid depends on construction order; versions on edit history.
     _hash_excluded_attributes = frozenset({"uid", "_field_versions"})
+
+    #: Attributes whose values are never modified after construction, so copies of
+    #: the mobject share them instead of copying them.
+    _shared_on_copy: ClassVar[frozenset[str]] = frozenset()
 
     original_id: str
     _original__init__: Callable[..., None]
@@ -485,10 +504,12 @@ class Mobject:
         result = cls.__new__(cls)
         clone_from_id[id(self)] = result
         attributes = result.__dict__
+        shared = cls._shared_on_copy
+        # Values that cannot change are shared with the copy: immutable scalars,
+        # frozen field arrays and the attributes a class lists in _shared_on_copy.
+        # Writing to __dict__ directly keeps field versions.
         for k, v in self.__dict__.items():
-            # Frozen field arrays cannot change, so the copy shares them. Writing to
-            # __dict__ directly keeps field versions.
-            if _is_frozen(v):
+            if isinstance(v, _IMMUTABLE_TYPES) or k in shared or _is_frozen(v):
                 attributes[k] = v
             elif k == "_field_versions":
                 attributes[k] = v.copy()
