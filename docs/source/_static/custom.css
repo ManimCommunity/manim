@@ -113,6 +113,7 @@ h6 {
 
 .drawer-toggle {
     display: none;
+    align-items: center;
     padding: 0;
     border: none;
     background: none;
@@ -120,14 +121,37 @@ h6 {
     color: var(--color-foreground-secondary);
 }
 
+.drawer-toggle:hover {
+    color: var(--color-foreground-primary);
+}
+
 .drawer-toggle svg {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.drawer-toggle .when-collapsed,
+.sidebar-collapsed .drawer-toggle-sidebar .when-shown,
+.toc-collapsed .drawer-toggle-toc .when-shown {
+    display: none;
+}
+
+.sidebar-collapsed .drawer-toggle-sidebar .when-collapsed,
+.toc-collapsed .drawer-toggle-toc .when-collapsed {
+    display: inline;
+}
+
+/* In the content's left padding (3em), level with the page icons, so that
+   it does not push the title aside. */
+.content {
+    position: relative;
 }
 
 .drawer-toggle-sidebar {
-    float: left;
-    margin: 1.5rem 1rem 1rem 0;
+    position: absolute;
+    top: 1.5rem;
+    left: 0.75rem;
+    height: 1.5rem;
 }
 
 @media (width > 63em) {
