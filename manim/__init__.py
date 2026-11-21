@@ -35,6 +35,7 @@ from .animation.updaters.mobject_update_utils import *
 from .animation.updaters.update import *
 from .constants import *
 from .manager import *
+from .material import *
 from .mobject.frame import *
 from .mobject.geometry.arc import *
 from .mobject.geometry.boolean_ops import *

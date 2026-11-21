@@ -26,6 +26,7 @@ from manim import (
     VGroup,
     VMobject,
 )
+from manim.renderer.extract import extract
 from manim.utils.bezier import bezier
 from manim.utils.color import color_to_rgba
 
@@ -203,6 +204,7 @@ def test_draw_order_is_family_order_stably_sorted_by_z_index(dry_run):
     # Groups without points are not drawn; foreground mobjects come last only among
     # mobjects with the same z_index.
     assert drawn == [d, c, a, foreground, b]
+    assert [node.uid for node in extract(scene.mobjects)] == [m.uid for m in drawn]
 
 
 # Point clouds and images

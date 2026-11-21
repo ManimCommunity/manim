@@ -19,6 +19,10 @@ _CLOCK_VERSION = "sample-v3"
 """Part of every cache key. Change it when a play could give different frames
 from the same scene state, so that older cached movies are not reused."""
 
+_DRAWING_VERSION = 1
+"""Part of every cache key. Raise it when an unchanged scene is drawn differently,
+so that movies cached before are not reused."""
+
 
 class _SegmentCache:
     """The partial movie files of a render, keyed by what each play shows.
@@ -72,6 +76,7 @@ class _SegmentCache:
                 "drawing": drawing_state,
                 "execution": {
                     "clock": _CLOCK_VERSION,
+                    "drawing": _DRAWING_VERSION,
                     # Plays can read the scene time, so the same inputs at another
                     # time can give other frames.
                     "time": manager.time,

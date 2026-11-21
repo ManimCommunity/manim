@@ -115,6 +115,7 @@ class VMobject(Mobject):
     cap_style: Field[CapStyleType] = Field()
     shade_in_3d: Field[bool] = Field()
     background_image: Field[Image | str | None] = Field()
+    tolerance_for_point_equality: Field[float] = Field()
     target: VMobject
 
     def __init__(
@@ -791,13 +792,9 @@ class VMobject(Mobject):
         self.color_using_background_image(vmobject.get_background_image())
         return self
 
-    def set_shade_in_3d(
-        self, value: bool = True, z_index_as_group: bool = False
-    ) -> Self:
+    def set_shade_in_3d(self, value: bool = True) -> Self:
         for submob in self.get_family():
             submob.shade_in_3d = value
-            if z_index_as_group:
-                submob.z_index_group = self
         return self
 
     def set_points(self, points: Point3DLike_Array) -> Self:

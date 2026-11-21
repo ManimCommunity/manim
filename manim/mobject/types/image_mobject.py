@@ -63,6 +63,8 @@ class AbstractImageMobject(Mobject):
     """
 
     resampling_algorithm: Field[Resampling] = Field()
+    # Subclasses compute their pixels in get_pixel_array().
+    _drawn_from_fields = False
 
     def __init__(
         self,
@@ -188,6 +190,7 @@ class ImageMobject(AbstractImageMobject):
     """
 
     pixel_array: ArrayField[PixelArray] = ArrayField()
+    _drawn_from_fields = True
 
     def __init__(
         self,

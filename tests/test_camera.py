@@ -19,6 +19,7 @@ from manim import (
     Dot,
     ImageMobject,
     ImageMobjectFromCamera,
+    Line,
     LineJointType,
     Mobject,
     MovingCamera,
@@ -184,7 +185,7 @@ def test_nested_view_preserves_square_geometry():
             renderer.render_mobjects(
                 [Square(fill_color="#ffffff", fill_opacity=1, stroke_width=0), view]
             )
-            pixels = renderer._sub_targets[id(view)].read_pixels()
+            pixels = renderer._sub_targets[view.uid].read_pixels()
             rows, columns = np.where(pixels[:, :, 0] > 128)
             assert len(rows) > 0
             assert np.ptp(columns) == pytest.approx(np.ptp(rows), abs=1)
@@ -509,3 +510,21 @@ def test_mobjects_fixed_in_frame_stay_put_when_the_camera_moves():
             np.testing.assert_array_equal(renderer.get_frame(), before)
         finally:
             renderer.close()
+
+
+def test_a_masked_stroke_keeps_its_opacity():
+    def frame_of(opacity):
+        line = Line(LEFT, RIGHT).set_stroke(RED, width=40, opacity=opacity)
+        line.color_using_background_image(Image.new("RGBA", (64, 36), "white"))
+        renderer = CairoRenderer(camera=Camera())
+        try:
+            renderer.render_mobjects([line])
+            return renderer.get_frame().copy()
+        finally:
+            renderer.close()
+
+    with tempconfig({"pixel_width": 64, "pixel_height": 36}):
+        faint, opaque = frame_of(0.2), frame_of(1)
+    # Over the black background, the white image shows as bright as the stroke is
+    # opaque.
+    assert 0 < faint[18, 32, 0] < opaque[18, 32, 0] / 2

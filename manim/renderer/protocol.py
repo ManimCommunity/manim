@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-__all__ = ["Renderer", "RendererCapabilities", "RendererState"]
+__all__ = ["CapabilityError", "Renderer", "RendererCapabilities", "RendererState"]
 
 import enum
 from dataclasses import dataclass
@@ -12,6 +12,14 @@ if TYPE_CHECKING:
     from manim.mobject.mobject import Mobject
     from manim.scene.scene import Scene
     from manim.typing import RGBAPixelArray
+
+
+class CapabilityError(Exception):
+    """A renderer was asked to draw something it cannot draw.
+
+    Raised instead of drawing it differently, so that no renderer silently shows
+    something else than another.
+    """
 
 
 class RendererState(enum.Enum):

@@ -17,7 +17,7 @@ from collections.abc import Callable, Iterable, Iterator, MutableSet, Sequence
 from contextlib import suppress
 from functools import partialmethod, reduce
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 import numpy as np
 
@@ -106,6 +106,10 @@ class Mobject:
     #: ``None``, or the function giving the point the mobject keeps facing the camera
     #: from (see :meth:`fix_orientation`).
     fixed_orientation: Field[Callable[[], Point3D] | None] = Field()
+    #: Whether the mobject is drawn from its fields alone. A class that draws from
+    #: other state (computed pixels, another camera's view) sets this to ``False``,
+    #: and renderers then draw it anew every frame.
+    _drawn_from_fields: ClassVar[bool] = True
     # uid depends on construction order; versions on edit history.
     _hash_excluded_attributes = frozenset({"uid", "_field_versions"})
 
@@ -2593,9 +2597,8 @@ class Mobject:
         )
 
     def get_z_index_reference_point(self) -> Point3D:
-        # TODO, better place to define default z_index_group?
-        z_index_group = getattr(self, "z_index_group", self)
-        return z_index_group.get_center()
+        """The point by which a camera with perspective orders the mobject by depth."""
+        return self.get_center()
 
     def has_points(self) -> bool:
         """Check if :class:`~.Mobject` contains points."""

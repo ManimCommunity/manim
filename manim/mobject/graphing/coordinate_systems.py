@@ -2434,11 +2434,7 @@ class ThreeDAxes(Axes):
         The direction of the normal.
     num_axis_pieces
         The number of pieces used to construct the axes.
-    light_source
-        The direction of the light source.
     depth
-        Currently non-functional.
-    gloss
         Currently non-functional.
     kwargs
         Additional arguments to be passed to :class:`Axes`.
@@ -2455,10 +2451,8 @@ class ThreeDAxes(Axes):
         z_axis_config: dict[str, Any] | None = None,
         z_normal: Vector3DLike = DOWN,
         num_axis_pieces: int = 20,
-        light_source: Point3DLike = 9 * DOWN + 7 * LEFT + 10 * OUT,
         # opengl stuff (?)
         depth: Any = None,
-        gloss: float = 0.5,
         **kwargs: dict[str, Any],
     ):
         super().__init__(
@@ -2481,8 +2475,6 @@ class ThreeDAxes(Axes):
 
         self.z_normal = z_normal
         self.num_axis_pieces = num_axis_pieces
-
-        self.light_source = np.array(light_source)
 
         self.dimension = 3
 
@@ -2514,7 +2506,6 @@ class ThreeDAxes(Axes):
 
         if config.renderer == RendererType.CAIRO:
             self._add_3d_pieces()
-            self._set_axis_shading()
 
     def _add_3d_pieces(self) -> None:
         for axis in self.axes:
@@ -2522,20 +2513,6 @@ class ThreeDAxes(Axes):
             axis.add(axis.pieces)
             axis.set_stroke(width=0, family=False)
             axis.set_shade_in_3d(True)
-
-    def _set_axis_shading(self) -> None:
-        def make_func(axis):
-            vect = self.light_source
-            return lambda: (
-                axis.get_edge_center(-vect),
-                axis.get_edge_center(vect),
-            )
-
-        for axis in self:
-            for submob in axis.family_members_with_points():
-                submob.get_gradient_start_and_end_points = make_func(axis)
-                submob.get_unit_normal = lambda a: np.ones(3)
-                submob.set_sheen(0.2)
 
     def get_y_axis_label(
         self,
