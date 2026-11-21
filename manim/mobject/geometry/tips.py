@@ -13,6 +13,7 @@ __all__ = [
     "StealthTip",
 ]
 
+from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -47,7 +48,7 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
         >>> tip = ArrowTip()
         Traceback (most recent call last):
         ...
-        NotImplementedError: Has to be implemented in inheriting subclasses.
+        TypeError: Can't instantiate abstract class ArrowTip...
 
     Instead, use one of the pre-defined ones, or make
     a custom one like this:
@@ -112,8 +113,9 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
                 self.add(*big_arrows, *small_arrows, *labels)
     """
 
+    @abstractmethod
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        raise NotImplementedError("Has to be implemented in inheriting subclasses.")
+        super().__init__(*args, **kwargs)
 
     @property
     def base(self) -> Point3D:
@@ -218,9 +220,7 @@ class StealthTip(ArrowTip):
         **kwargs: Any,
     ):
         self.start_angle = start_angle
-        VMobject.__init__(
-            self, fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs
-        )
+        super().__init__(fill_opacity=fill_opacity, stroke_width=stroke_width, **kwargs)
         self.set_points_as_corners(
             np.array(
                 [
