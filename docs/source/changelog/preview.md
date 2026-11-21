@@ -161,6 +161,9 @@ OpenGL shaders moved from `manim/renderer/shaders` to
 * Fix typing in `logo.py` by {user}`Kayyz1603` in {pr}`5112`
 * Fix return type of invert_image by {user}`GniLudio` in {pr}`5132`
 
+#### Other Changes
+* Prepare preview prerelease: `v0.30.0a1` by {user}`behackl` in {pr}`5154`
+
 ### New Contributors
 * {user}`manan21bhalla` made their first contribution in {pr}`5098`
 * {user}`Mist-wu` made their first contribution in {pr}`5125`
