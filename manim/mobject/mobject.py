@@ -2874,6 +2874,7 @@ class Mobject:
 
 
         """
+        # Import here: manim.mobject.geometry.line imports this module.
         from manim.mobject.geometry.line import Line
 
         mobs = self.submobjects.copy()
@@ -3620,6 +3621,7 @@ class _AnimationBuilder:
         return update_target
 
     def build(self) -> Animation:
+        # Import here: manim.animation.transform imports this module.
         from ..animation.transform import _MethodAnimation
 
         anim = self.overridden_animation or _MethodAnimation(self.mobject, self.methods)

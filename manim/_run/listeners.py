@@ -148,6 +148,7 @@ class _FrameRequests(_RunListener):
         self._on_frame = on_frame
 
     def frame(self, frame: _Frame) -> None:
+        # Import here: manim.manager imports this module.
         from ..manager import RenderedFrame
 
         offset = self._manager._execution.time_offset

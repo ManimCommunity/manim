@@ -21,6 +21,7 @@ from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.text.text_mobject import Paragraph
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.typing import StrPath
 from manim.utils.color import BLACK, WHITE
@@ -223,8 +224,6 @@ class Code(VMobject, metaclass=ConvertToOpenGL):
         foreground_color = (
             BLACK if default_text_color is None else f"#{default_text_color}"
         )
-
-        from manim.mobject.text.text_mobject import Paragraph
 
         # Paragraph cannot render input consisting entirely of whitespace, but
         # such lines contain no visible glyphs and can safely be represented as empty.

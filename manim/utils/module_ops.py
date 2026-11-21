@@ -69,6 +69,7 @@ def get_module(file_name: Path) -> types.ModuleType:
 
 
 def get_scene_classes_from_module(module: types.ModuleType) -> list[type[Scene]]:
+    # Import here: manim.scene.scene imports this module.
     from ..scene.scene import Scene
 
     def is_child_scene(obj: Any, module: types.ModuleType) -> bool:
