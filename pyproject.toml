@@ -75,6 +75,9 @@ jupyterlab = [
 typst = [
     "typst>=0.14",
 ]
+tectonic = [
+    "tecto>=0.16.9",
+]
 
 [dependency-groups]
 dev = [

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from enum import Enum, StrEnum
 from typing import TypedDict
 
 import numpy as np
@@ -273,6 +273,27 @@ class RendererType(Enum):
 
     CAIRO = "cairo"  #: A renderer based on the cairo backend.
     OPENGL = "opengl"  #: An OpenGL-based renderer.
+
+
+class TexOutputFormat(StrEnum):
+    DVI = ".dvi"
+    XDV = ".xdv"
+    PDF = ".pdf"
+
+
+class TexCompiler(StrEnum):
+    LATEX = "latex"
+    PDFLATEX = "pdflatex"
+    LUALATEX = "lualatex"
+    XELATEX = "xelatex"
+    TECTONIC = "tectonic"
+
+    @property
+    def output_formats(self) -> list[TexOutputFormat]:
+        if self in (TexCompiler.XELATEX, TexCompiler.TECTONIC):
+            return [TexOutputFormat.PDF, TexOutputFormat.XDV]
+        else:
+            return [TexOutputFormat.DVI, TexOutputFormat.PDF]
 
 
 class LineJointType(Enum):
