@@ -347,6 +347,7 @@ class Mobject:
                     group.animate.shift(RIGHT),
                     mobject1.animate.set_opacity(0.5),
                 )
+
             is also discouraged.
 
         Keyword arguments that can be passed to :meth:`.Scene.play` can be passed
