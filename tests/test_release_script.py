@@ -320,3 +320,87 @@ def test_changelog_notes_run_up_to_the_release_branch(monkeypatch):
     assert release.generate_release_notes("v2.0.0a2", "v2.0.0a1", "preview/v2.0.x")
     assert "target_commitish=preview/v2.0.x" in calls[0]
     assert "tag_name=v2.0.0a2" in calls[0]
+
+
+def test_regenerating_a_changelog_keeps_its_prose():
+    existing = """---
+short-title: v1.4.2
+description: Changelog for v1.4.2
+---
+
+# v1.4.2
+
+Date
+: January 02, 2030
+
+A summary written by hand.
+
+### Highlights
+- A highlight.
+
+## What's Changed
+### Bug Fixes
+* Edited note in {pr}`1`
+"""
+    generated = """---
+short-title: v1.4.2
+description: Changelog for v1.4.2
+---
+
+# v1.4.2
+
+Date
+: January 03, 2030
+
+## What's Changed
+### Bug Fixes
+* Generated note in {pr}`1`
+* New note in {pr}`2`
+"""
+
+    merged = merge_changelog(generated, existing)
+
+    assert "A summary written by hand.\n\n### Highlights\n- A highlight.\n" in merged
+    assert merged.index("January 03, 2030") < merged.index("A summary")
+    assert merged.index("A summary") < merged.index("## What's Changed")
+    assert "Edited note" in merged
+    assert "New note" in merged
+    assert "January 02, 2030" not in merged
+
+
+def test_regenerating_a_preview_section_keeps_its_prose():
+    section = release.format_preview_section("2.0.0a1", GENERATED_NOTES, "May 1, 2030")
+    content = release.update_preview_changelog("", "2.0.0a1", section)
+    content = content.replace(
+        "### What's Changed",
+        "A summary.\n\n### Highlights\n- Faster.\n\n### What's Changed",
+    )
+
+    regenerated = release.update_preview_changelog(
+        content,
+        "2.0.0a1",
+        release.format_preview_section("2.0.0a1", GENERATED_NOTES, "May 2, 2030"),
+    )
+
+    _, sections = release.split_preview_changelog(regenerated)
+    assert (
+        "A summary.\n\n### Highlights\n- Faster.\n\n### What's Changed"
+        in (sections["2.0.0a1"])
+    )
+    assert sections["2.0.0a1"].count("### What's Changed") == 1
+
+
+def test_prerelease_notes_link_to_the_preview_documentation():
+    section = release.format_preview_section("2.0.0a1", GENERATED_NOTES)
+    content = release.update_preview_changelog("", "2.0.0a1", section)
+    content = content.replace(
+        "### What's Changed", "See {doc}`/guides/evaluation`.\n\n### What's Changed"
+    )
+
+    notes = release.format_github_prerelease_notes("2.0.0a1", content)
+
+    assert (
+        "[guides/evaluation](https://docs.manim.community/en/preview/guides/evaluation.html)"
+        in notes
+    )
+    assert "/en/stable/" not in notes
