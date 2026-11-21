@@ -10,21 +10,31 @@
     };
     const arrow = (points) => `<path d="${points}"/>`;
     const icon = (body, state) =>
-        `<svg class="when-${state}" viewBox="0 0 24 24" fill="none" stroke="currentColor" ` +
+        `<svg${state ? ` class="when-${state}"` : ""} viewBox="0 0 24 24" fill="none" stroke="currentColor" ` +
         `stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
+
+    const hide = { sidebar: panel("left") + arrow("M16 15l-3-3 3-3"), toc: panel("right") + arrow("M8 9l3 3-3 3") };
+    const show = { sidebar: panel("left") + arrow("M13 9l3 3-3 3"), toc: panel("right") + arrow("M11 15l-3-3 3-3") };
+
+    // On narrower screens furo shows its own buttons, which open the drawers
+    // as overlays. Give them the same icons as the buttons below, so that the
+    // drawer toggles look alike at every width.
+    for (const [selector, name] of [[".nav-overlay-icon", "sidebar"], [".toc-overlay-icon", "toc"]]) {
+        for (const iconSpan of document.querySelectorAll(`${selector} .icon`)) {
+            iconSpan.innerHTML = icon(show[name]);
+        }
+    }
 
     const items = [
         {
             name: "sidebar",
             label: "navigation sidebar",
-            icons: icon(panel("left") + arrow("M16 15l-3-3 3-3"), "shown") +
-                icon(panel("left") + arrow("M13 9l3 3-3 3"), "collapsed"),
+            icons: icon(hide.sidebar, "shown") + icon(show.sidebar, "collapsed"),
         },
         {
             name: "toc",
             label: "table of contents",
-            icons: icon(panel("right") + arrow("M8 9l3 3-3 3"), "shown") +
-                icon(panel("right") + arrow("M11 15l-3-3 3-3"), "collapsed"),
+            icons: icon(hide.toc, "shown") + icon(show.toc, "collapsed"),
         },
     ];
     const content = document.querySelector(".content");
