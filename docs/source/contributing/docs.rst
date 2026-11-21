@@ -9,6 +9,13 @@ When you clone the Manim repository from GitHub, you can access the
 ``docs/`` folder which contains the necessary files to build the
 documentation.
 
+The Python packages needed to build the documentation can be installed using the `docs` or `dev` groups:
+
+.. code-block:: shell
+
+   uv sync --group docs
+
+
 To build the docs locally, open a CLI, enter the ``docs/`` folder with the
 ``cd`` command and execute the following depending on your OS:
 
