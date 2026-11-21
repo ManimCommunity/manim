@@ -1417,6 +1417,16 @@ dev = [
     { name = "types-pillow" },
     { name = "types-pygments" },
 ]
+docs = [
+    { name = "furo" },
+    { name = "myst-parser" },
+    { name = "sphinx" },
+    { name = "sphinx-copybutton" },
+    { name = "sphinx-design" },
+    { name = "sphinx-reredirects" },
+    { name = "sphinxcontrib-programoutput" },
+    { name = "sphinxext-opengraph" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -1473,6 +1483,16 @@ dev = [
     { name = "types-decorator", specifier = ">=5.1.8.20250121" },
     { name = "types-pillow", specifier = ">=10.2.0.20240822" },
     { name = "types-pygments", specifier = ">=2.19.0.20250107" },
+]
+docs = [
+    { name = "furo", specifier = ">=2024.8.6" },
+    { name = "myst-parser", specifier = ">=3.0.1" },
+    { name = "sphinx", specifier = ">=7.4.7" },
+    { name = "sphinx-copybutton", specifier = ">=0.5.2" },
+    { name = "sphinx-design", specifier = ">=0.6.1" },
+    { name = "sphinx-reredirects", specifier = ">=0.1.5" },
+    { name = "sphinxcontrib-programoutput", specifier = ">=0.18" },
+    { name = "sphinxext-opengraph", specifier = ">=0.9.1" },
 ]
 
 [[package]]
