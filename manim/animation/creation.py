@@ -515,6 +515,10 @@ class ShowIncreasingSubsets(Animation):
     ) -> None:
         self.all_submobs = list(group.submobjects)
         self.int_func = int_func
+        # kept to show each submobject again with its own opacity
+        self.all_submob_opacities = [
+            self._get_opacities(mobj) for mobj in self.all_submobs
+        ]
         for mobj in self.all_submobs:
             mobj.set_opacity(0)
         super().__init__(
@@ -523,6 +527,66 @@ class ShowIncreasingSubsets(Animation):
             reverse_rate_function=reverse_rate_function,
             **kwargs,
         )
+
+    def begin(self) -> None:
+        # Another animation may have shown the submobjects again since they
+        # were hidden, for example the previous one in a Succession
+        for i, mobj in enumerate(self.all_submobs):
+            opacities = self._get_opacities(mobj)
+            if opacities is not None:
+                self.all_submob_opacities[i] = opacities
+        super().begin()
+
+    @staticmethod
+    def _get_opacities(mobj: Mobject) -> list[tuple[np.ndarray, ...]] | None:
+        """Return the fill and stroke opacities of each member of the family of
+        ``mobj``, or ``None`` if ``mobj`` is not a vectorized mobject or is
+        fully transparent, as it is after another animation hid it.
+        """
+        if isinstance(mobj, VMobject):
+            opacities = [
+                (
+                    mob.get_fill_opacities().copy(),
+                    mob.get_stroke_opacities().copy(),
+                    mob.get_stroke_opacities(background=True).copy(),
+                )
+                for mob in mobj.get_family()
+            ]
+        elif isinstance(mobj, OpenGLVMobject):
+            opacities = [
+                (mob.get_fill_opacities().copy(), mob.get_stroke_opacities().copy())
+                for mob in mobj.get_family()
+            ]
+        else:
+            return None
+        if not any(
+            values.any() for mob_opacities in opacities for values in mob_opacities
+        ):
+            return None
+        return opacities
+
+    def _show_submobject(self, index: int) -> None:
+        """Show the submobject at ``index`` with the opacity it had before it
+        was hidden.
+        """
+        mobj = self.all_submobs[index]
+        opacities = self.all_submob_opacities[index]
+        if opacities is None:
+            mobj.set_opacity(1)
+            return
+        # zip stops early if an updater changed the family in the meantime
+        for mob, mob_opacities in zip(mobj.get_family(), opacities, strict=False):
+            # a single opacity is passed as a number, as set_opacity does
+            values = [float(v[0]) if len(v) == 1 else tuple(v) for v in mob_opacities]
+            if isinstance(mob, VMobject):
+                fill, stroke, background_stroke = values
+                mob.set_fill(opacity=fill, family=False)
+                mob.set_stroke(opacity=stroke, family=False)
+                mob.set_stroke(opacity=background_stroke, background=True, family=False)
+            else:
+                fill, stroke = values
+                mob.set_fill(opacity=fill, recurse=False)
+                mob.set_stroke(opacity=stroke, recurse=False)
 
     def interpolate_mobject(self, alpha: float) -> None:
         n_submobs = len(self.all_submobs)
@@ -535,8 +599,8 @@ class ShowIncreasingSubsets(Animation):
         self.update_submobject_list(index)
 
     def update_submobject_list(self, index: int) -> None:
-        for mobj in self.all_submobs[:index]:
-            mobj.set_opacity(1)
+        for i in range(len(self.all_submobs[:index])):
+            self._show_submobject(i)
         for mobj in self.all_submobs[index:]:
             mobj.set_opacity(0)
 
@@ -647,7 +711,7 @@ class ShowSubmobjectsOneByOne(ShowIncreasingSubsets):
         for mobj in current_submobjects[:-1]:
             mobj.set_opacity(0)
         if len(current_submobjects) > 0:
-            current_submobjects[-1].set_opacity(1)
+            self._show_submobject(len(current_submobjects) - 1)
 
 
 # TODO, this is broken...
@@ -765,8 +829,8 @@ class TypeWithCursor(AddTextLetterByLetter):
         super().clean_up_from_scene(scene)
 
     def update_submobject_list(self, index: int) -> None:
-        for mobj in self.all_submobs[:index]:
-            mobj.set_opacity(1)
+        for i in range(len(self.all_submobs[:index])):
+            self._show_submobject(i)
 
         for mobj in self.all_submobs[index:]:
             mobj.set_opacity(0)
