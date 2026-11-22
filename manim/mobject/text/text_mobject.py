@@ -360,6 +360,7 @@ class Text(SVGMobject):
                 self.add(text)
 
     .. manim:: TextColorExample
+        :title: Example: TextColor
         :hide_levels: 1
         :save_last_frame:
 
@@ -370,6 +371,7 @@ class Text(SVGMobject):
                 self.add(text1, text2)
 
     .. manim:: TextItalicAndBoldExample
+        :title: Example: TextItalicAndBold
         :hide_levels: 1
         :save_last_frame:
 
@@ -901,6 +903,7 @@ class MarkupText(SVGMobject):
     and it can be used with :class:`~.MarkupText` as
 
     .. manim:: MarkupExample
+        :title: Example: Markup
         :hide_levels: 1
         :save_last_frame:
 
@@ -912,6 +915,7 @@ class MarkupText(SVGMobject):
     A more elaborate example would be:
 
     .. manim:: MarkupElaborateExample
+        :title: Example: MarkupElaborate
         :hide_levels: 1
         :save_last_frame:
 
@@ -1027,6 +1031,7 @@ class MarkupText(SVGMobject):
     ---------
 
     .. manim:: BasicMarkupExample
+        :title: Example: BasicMarkup
         :hide_levels: 1
         :save_last_frame:
 
@@ -1043,6 +1048,7 @@ class MarkupText(SVGMobject):
                 self.add(group)
 
     .. manim:: ColorExample
+        :title: Example: Color
         :hide_levels: 1
         :save_last_frame:
 
@@ -1072,6 +1078,7 @@ class MarkupText(SVGMobject):
                 self.add(group)
 
     .. manim:: UnderlineExample
+        :title: Example: Underline
         :hide_levels: 1
         :save_last_frame:
 
@@ -1096,6 +1103,7 @@ class MarkupText(SVGMobject):
                 self.add(group)
 
     .. manim:: FontExample
+        :title: Example: Font
         :hide_levels: 1
         :save_last_frame:
 
@@ -1113,6 +1121,7 @@ class MarkupText(SVGMobject):
                 self.add(group)
 
     .. manim:: NewlineExample
+        :title: Example: Newline
         :hide_levels: 1
         :save_last_frame:
 
@@ -1122,6 +1131,7 @@ class MarkupText(SVGMobject):
                 self.add(text)
 
     .. manim:: NoLigaturesExample
+        :title: Example: NoLigatures
         :hide_levels: 1
         :save_last_frame:
 

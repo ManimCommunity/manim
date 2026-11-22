@@ -696,6 +696,7 @@ class Blink(Succession):
     --------
 
     .. manim:: BlinkingExample
+        :title: Example: Blinking
         :hide_levels: 1
 
         class BlinkingExample(Scene):

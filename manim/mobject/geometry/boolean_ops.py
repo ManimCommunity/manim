@@ -164,6 +164,7 @@ class Union(_BooleanOps):
     Example
     -------
     .. manim:: UnionExample
+        :title: Example: Union
         :hide_levels: 1
         :save_last_frame:
 
@@ -204,6 +205,7 @@ class Difference(_BooleanOps):
     Example
     -------
     .. manim:: DifferenceExample
+        :title: Example: Difference
         :hide_levels: 1
         :save_last_frame:
 
@@ -247,6 +249,7 @@ class Intersection(_BooleanOps):
     Example
     -------
     .. manim:: IntersectionExample
+        :title: Example: Intersection
         :hide_levels: 1
         :save_last_frame:
 
@@ -301,6 +304,7 @@ class Exclusion(_BooleanOps):
     Example
     -------
     .. manim:: IntersectionExample
+        :title: Example: Intersection
         :hide_levels: 1
         :save_last_frame:
 

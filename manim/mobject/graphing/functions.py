@@ -86,6 +86,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         of the discontinuities manually. See the following example for guidance.
 
     .. manim:: DiscontinuousExample
+        :title: Example: Discontinuous
         :hide_levels: 1
         :save_last_frame:
 
@@ -284,6 +285,7 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
         Examples
         --------
         .. manim:: ImplicitFunctionExample
+            :title: Example: ImplicitFunction
             :hide_levels: 1
             :save_last_frame:
 

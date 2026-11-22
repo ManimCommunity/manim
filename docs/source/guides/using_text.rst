@@ -83,6 +83,7 @@ You can set a different font using :attr:`~.Text.font`.
 
 
 .. manim:: FontsExample
+    :title: Example: Fonts
     :hide_levels: 1
     :save_last_frame:
 
@@ -102,6 +103,7 @@ Weight specifies the boldness of a font. You can see a list of weights in
 :class:`manimpango.Weight`.
 
 .. manim:: SlantsExample
+    :title: Example: Slants
     :hide_levels: 1
     :save_last_frame:
 
@@ -163,6 +165,7 @@ as explained in :ref:`iterating-text`.
   and the values should be the color from :class:`~.Color`:
 
 .. manim:: Textt2cExample
+    :title: Example: Textt2c
     :hide_levels: 1
     :save_last_frame:
 
@@ -183,6 +186,7 @@ You can add a gradient using :attr:`~.Text.gradient`. The value must
 be an iterable of any length:
 
 .. manim:: GradientExample
+    :title: Example: Gradient
     :hide_levels: 1
     :save_last_frame:
 
@@ -196,6 +200,7 @@ characters of the text. It shares a similar syntax to :ref:`the
 interface for colors <using-colors>`:
 
 .. manim:: t2gExample
+    :title: Example: t2g
     :hide_levels: 1
     :save_last_frame:
 

@@ -171,6 +171,7 @@ class Table(VGroup):
                 self.add(g)
 
     .. manim:: BackgroundRectanglesExample
+        :title: Example: BackgroundRectangles
         :hide_levels: 1
         :save_last_frame:
 
@@ -435,6 +436,7 @@ class Table(VGroup):
         --------
 
         .. manim:: GetHorizontalLinesExample
+            :title: Example: GetHorizontalLines
             :hide_levels: 1
             :save_last_frame:
 
@@ -462,6 +464,7 @@ class Table(VGroup):
         --------
 
         .. manim:: GetVerticalLinesExample
+            :title: Example: GetVerticalLines
             :hide_levels: 1
             :save_last_frame:
 
@@ -489,6 +492,7 @@ class Table(VGroup):
         --------
 
         .. manim:: GetColumnsExample
+            :title: Example: GetColumns
             :hide_levels: 1
             :save_last_frame:
 
@@ -521,6 +525,7 @@ class Table(VGroup):
         --------
 
         .. manim:: GetRowsExample
+            :title: Example: GetRows
             :hide_levels: 1
             :save_last_frame:
 
@@ -548,6 +553,7 @@ class Table(VGroup):
         --------
 
         .. manim:: SetColumnColorsExample
+            :title: Example: SetColumnColors
             :hide_levels: 1
             :save_last_frame:
 
@@ -578,6 +584,7 @@ class Table(VGroup):
         --------
 
         .. manim:: SetRowColorsExample
+            :title: Example: SetRowColors
             :hide_levels: 1
             :save_last_frame:
 
@@ -619,6 +626,7 @@ class Table(VGroup):
         --------
 
         .. manim:: GetEntriesExample
+            :title: Example: GetEntries
             :hide_levels: 1
             :save_last_frame:
 
@@ -672,6 +680,7 @@ class Table(VGroup):
         --------
 
         .. manim:: GetEntriesWithoutLabelsExample
+            :title: Example: GetEntriesWithoutLabels
             :hide_levels: 1
             :save_last_frame:
 
@@ -707,6 +716,7 @@ class Table(VGroup):
         --------
 
         .. manim:: GetRowLabelsExample
+            :title: Example: GetRowLabels
             :hide_levels: 1
             :save_last_frame:
 
@@ -738,6 +748,7 @@ class Table(VGroup):
         --------
 
         .. manim:: GetColLabelsExample
+            :title: Example: GetColLabels
             :hide_levels: 1
             :save_last_frame:
 
@@ -769,6 +780,7 @@ class Table(VGroup):
         --------
 
         .. manim:: GetLabelsExample
+            :title: Example: GetLabels
             :hide_levels: 1
             :save_last_frame:
 
@@ -819,6 +831,7 @@ class Table(VGroup):
         --------
 
         .. manim:: GetCellExample
+            :title: Example: GetCell
             :hide_levels: 1
             :save_last_frame:
 
@@ -879,6 +892,7 @@ class Table(VGroup):
         --------
 
         .. manim:: GetHighlightedCellExample
+            :title: Example: GetHighlightedCell
             :hide_levels: 1
             :save_last_frame:
 
@@ -919,6 +933,7 @@ class Table(VGroup):
         --------
 
         .. manim:: AddHighlightedCellExample
+            :title: Example: AddHighlightedCell
             :hide_levels: 1
             :save_last_frame:
 
@@ -973,6 +988,7 @@ class Table(VGroup):
         --------
 
         .. manim:: CreateTableExample
+            :title: Example: CreateTable
             :hide_levels: 1
 
             class CreateTableExample(Scene):
@@ -1031,6 +1047,7 @@ class MathTable(Table):
     --------
 
     .. manim:: MathTableExample
+        :title: Example: MathTable
         :hide_levels: 1
         :save_last_frame:
 
@@ -1080,6 +1097,7 @@ class MobjectTable(Table):
     --------
 
     .. manim:: MobjectTableExample
+        :title: Example: MobjectTable
         :hide_levels: 1
         :save_last_frame:
 
@@ -1133,6 +1151,7 @@ class IntegerTable(Table):
     --------
 
     .. manim:: IntegerTableExample
+        :title: Example: IntegerTable
         :hide_levels: 1
         :save_last_frame:
 
@@ -1184,6 +1203,7 @@ class DecimalTable(Table):
     --------
 
     .. manim:: DecimalTableExample
+        :title: Example: DecimalTable
         :hide_levels: 1
         :save_last_frame:
 

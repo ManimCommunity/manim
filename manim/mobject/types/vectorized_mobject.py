@@ -378,6 +378,7 @@ class VMobject(Mobject):
         Examples
         --------
         .. manim:: CapStyleExample
+            :title: Example: CapStyle
             :hide_levels: 1
             :save_last_frame:
 
@@ -519,6 +520,7 @@ class VMobject(Mobject):
         --------
 
         .. manim:: MobjectScaleExample
+            :title: Example: MobjectScale
             :hide_levels: 1
             :save_last_frame:
 
@@ -1136,6 +1138,7 @@ class VMobject(Mobject):
         Examples
         --------
         .. manim:: PointsAsCornersExample
+            :title: Example: PointsAsCorners
             :hide_levels: 1
             :save_last_frame:
 
@@ -2317,6 +2320,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         iterable must be an instance of `VMobject`. This is demonstrated below:
 
         .. manim:: AddIterableToVGroupExample
+            :title: Example: AddIterableToVGroup
             :hide_levels: 1
             :save_last_frame:
 
@@ -2799,6 +2803,7 @@ class CurvesAsSubmobjects(VGroup):
     Examples
     --------
     .. manim:: LineGradientExample
+        :title: Example: LineGradient
         :hide_levels: 1
         :save_last_frame:
 
@@ -2892,6 +2897,7 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
     Examples
     --------
     .. manim:: DashedVMobjectExample
+        :title: Example: DashedVMobject
         :hide_levels: 1
         :save_last_frame:
 

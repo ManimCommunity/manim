@@ -29,6 +29,7 @@ class SurroundingRectangle(RoundedRectangle):
     Examples
     --------
     .. manim:: SurroundingRectExample
+        :title: Example: SurroundingRect
         :hide_levels: 1
         :save_last_frame:
 

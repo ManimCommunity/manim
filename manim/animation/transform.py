@@ -326,6 +326,7 @@ class ClockwiseTransform(Transform):
     --------
 
     .. manim:: ClockwiseExample
+        :title: Example: Clockwise
         :hide_levels: 1
 
         class ClockwiseExample(Scene):
@@ -418,6 +419,7 @@ class MoveToTarget(Transform):
     --------
 
     .. manim:: MoveToTargetExample
+        :title: Example: MoveToTarget
         :hide_levels: 1
 
         class MoveToTargetExample(Scene):
@@ -553,6 +555,7 @@ class FadeToColor(ApplyMethod):
     --------
 
     .. manim:: FadeToColorExample
+        :title: Example: FadeToColor
         :hide_levels: 1
 
         class FadeToColorExample(Scene):
@@ -572,6 +575,7 @@ class ScaleInPlace(ApplyMethod):
     --------
 
     .. manim:: ScaleInPlaceExample
+        :title: Example: ScaleInPlace
         :hide_levels: 1
 
         class ScaleInPlaceExample(Scene):
@@ -591,6 +595,7 @@ class ShrinkToCenter(ScaleInPlace):
     --------
 
     .. manim:: ShrinkToCenterExample
+        :title: Example: ShrinkToCenter
         :hide_levels: 1
 
         class ShrinkToCenterExample(Scene):
@@ -612,6 +617,7 @@ class Restore(ApplyMethod):
     --------
 
     .. manim:: RestoreExample
+        :title: Example: Restore
         :hide_levels: 1
 
         class RestoreExample(Scene):
@@ -662,6 +668,7 @@ class ApplyMatrix(ApplyPointwiseFunction):
     --------
 
     .. manim:: ApplyMatrixExample
+        :title: Example: ApplyMatrix
         :hide_levels: 1
 
         class ApplyMatrixExample(Scene):

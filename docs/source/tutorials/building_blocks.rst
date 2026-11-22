@@ -264,6 +264,7 @@ method that changes a mobject's property can be used as an animation, through
 the use of :meth:`.animate`.
 
 .. manim:: AnimateExample
+    :title: Example: Animate
     :hide_levels: 1
     :ref_classes: Animation
 
@@ -345,6 +346,7 @@ Once you set the calculated value for the :class:`~.DecimalNumber`, you are done
 Once you have defined your ``Count`` animation, you can play it in your :class:`~.Scene` for any duration you want for any :class:`~.DecimalNumber` with any rate function.
 
 .. manim:: CountingScene
+    :title: Example: Counting
     :ref_classes: Animation DecimalNumber
     :ref_methods: Animation.interpolate_mobject Scene.play
 
@@ -387,6 +389,7 @@ e.g. by methods like :meth:`~.Mobject.get_center` , :meth:`~.Mobject.get_top`
 and :meth:`~.Mobject.get_start`. Here is an example of some important coordinates:
 
 .. manim:: MobjectExample
+    :title: Example: Mobject
     :hide_levels: 1
     :save_last_frame:
 

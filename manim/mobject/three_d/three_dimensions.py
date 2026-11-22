@@ -263,6 +263,7 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         Examples
         --------
         .. manim:: FillByValueExample
+            :title: Example: FillByValue
             :hide_levels: 1
             :save_last_frame:
 
@@ -507,6 +508,7 @@ class Dot3D(Sphere):
     --------
 
     .. manim:: Dot3DExample
+        :title: Example: Dot3D
         :hide_levels: 1
         :save_last_frame:
 
@@ -552,6 +554,7 @@ class Cube(VGroup):
     --------
 
     .. manim:: CubeExample
+        :title: Example: Cube
         :hide_levels: 1
         :save_last_frame:
 
@@ -1140,6 +1143,7 @@ class Line3D(Cylinder):
         Examples
         --------
         .. manim:: ParallelLineExample
+            :title: Example: ParallelLine
             :hide_levels: 1
             :save_last_frame:
 
@@ -1189,6 +1193,7 @@ class Line3D(Cylinder):
         Examples
         --------
         .. manim:: PerpLineExample
+            :title: Example: PerpLine
             :hide_levels: 1
             :save_last_frame:
 

@@ -215,6 +215,7 @@ class Succession(AnimationGroup):
     Examples
     --------
     .. manim:: SuccessionExample
+        :title: Example: Succession
         :hide_levels: 1
 
         class SuccessionExample(Scene):
@@ -315,6 +316,7 @@ class LaggedStart(AnimationGroup):
     Examples
     --------
     .. manim:: LaggedStartExample
+        :title: Example: LaggedStart
         :hide_levels: 1
 
         class LaggedStartExample(Scene):
@@ -379,6 +381,7 @@ class LaggedStartMap(LaggedStart):
     Examples
     --------
     .. manim:: LaggedStartMapExample
+        :title: Example: LaggedStartMap
         :hide_levels: 1
 
         class LaggedStartMapExample(Scene):

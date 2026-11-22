@@ -44,6 +44,7 @@ class Label(VGroup):
     Examples
     --------
     .. manim:: LabelExample
+        :title: Example: Label
         :hide_levels: 1
         :save_last_frame:
         :quality: high
@@ -139,6 +140,7 @@ class LabeledLine(Line):
     Examples
     --------
     .. manim:: LabeledLineExample
+        :title: Example: LabeledLine
         :hide_levels: 1
         :save_last_frame:
         :quality: high
@@ -211,6 +213,7 @@ class LabeledArrow(LabeledLine, Arrow):
     Examples
     --------
     .. manim:: LabeledArrowExample
+        :title: Example: LabeledArrow
         :hide_levels: 1
         :save_last_frame:
         :quality: high
@@ -261,6 +264,7 @@ class LabeledPolygram(Polygram):
     Examples
     --------
     .. manim:: LabeledPolygramExample
+        :title: Example: LabeledPolygram
         :hide_levels: 1
         :save_last_frame:
         :quality: high
@@ -301,6 +305,7 @@ class LabeledPolygram(Polygram):
                 self.add(circle)
 
     .. manim:: LabeledCountryExample
+        :title: Example: LabeledCountry
         :save_last_frame:
         :quality: high
 

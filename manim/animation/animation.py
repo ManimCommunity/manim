@@ -660,6 +660,7 @@ class Add(Animation):
     --------
 
     .. manim:: DefaultAddScene
+        :title: Example: DefaultAdd
         :hide_levels: 1
 
         class DefaultAddScene(Scene):
@@ -684,6 +685,7 @@ class Add(Animation):
                 self.wait()
 
     .. manim:: AddWithRunTimeScene
+        :title: Example: AddWithRunTime
         :hide_levels: 1
 
         class AddWithRunTimeScene(Scene):
@@ -753,6 +755,7 @@ def override_animation(
     --------
 
     .. manim:: OverrideAnimationExample
+        :title: Example: OverrideAnimation
 
         class MySquare(Square):
             @override_animation(FadeIn)

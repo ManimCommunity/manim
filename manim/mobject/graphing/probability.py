@@ -254,6 +254,7 @@ class BarChart(Axes):
     Examples
     --------
     .. manim:: BarChartExample
+        :title: Example: BarChart
         :hide_levels: 1
         :save_last_frame:
 
@@ -458,6 +459,7 @@ class BarChart(Axes):
         Examples
         --------
         .. manim:: GetBarLabelsExample
+            :title: Example: GetBarLabels
             :hide_levels: 1
             :save_last_frame:
 
@@ -504,6 +506,7 @@ class BarChart(Axes):
         Examples
         --------
         .. manim:: ChangeBarValuesExample
+            :title: Example: ChangeBarValues
             :hide_levels: 1
             :save_last_frame:
 

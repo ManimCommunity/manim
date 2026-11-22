@@ -1847,6 +1847,7 @@ class OpenGLCurvesAsSubmobjects(OpenGLVGroup):
     Examples
     --------
     .. manim:: LineGradientExample
+        :title: Example: LineGradient
         :hide_levels: 1
         :save_last_frame:
 
@@ -1874,6 +1875,7 @@ class OpenGLDashedVMobject(OpenGLVMobject):
     Examples
     --------
     .. manim:: DashedVMobjectExample
+        :title: Example: DashedVMobject
         :hide_levels: 1
         :save_last_frame:
 

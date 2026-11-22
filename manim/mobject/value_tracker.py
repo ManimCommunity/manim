@@ -32,6 +32,7 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
     Examples
     --------
     .. manim:: ValueTrackerExample
+        :title: Example: ValueTracker
         :hide_levels: 1
 
         class ValueTrackerExample(Scene):
@@ -64,6 +65,7 @@ class ValueTracker(Mobject, metaclass=ConvertToOpenGL):
         ValueTracker is added to the scene by ``add``
 
     .. manim:: ValueTrackerExample
+        :title: Example: ValueTracker
         :hide_levels: 1
 
         class ValueTrackerExample(Scene):
@@ -217,6 +219,7 @@ class ComplexValueTracker(ValueTracker):
     Examples
     --------
     .. manim:: ComplexValueTrackerExample
+        :title: Example: ComplexValueTracker
         :hide_levels: 1
 
         class ComplexValueTrackerExample(Scene):

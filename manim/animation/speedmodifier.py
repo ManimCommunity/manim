@@ -39,6 +39,7 @@ class ChangeSpeed(Animation):
     --------
 
     .. manim:: SpeedModifierExample
+        :title: Example: SpeedModifier
         :hide_levels: 1
 
         class SpeedModifierExample(Scene):
@@ -58,6 +59,7 @@ class ChangeSpeed(Animation):
                 )
 
     .. manim:: SpeedModifierUpdaterExample
+        :title: Example: SpeedModifierUpdater
         :hide_levels: 1
 
         class SpeedModifierUpdaterExample(Scene):

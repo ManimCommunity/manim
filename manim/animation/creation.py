@@ -153,6 +153,7 @@ class Create(ShowPartial):
     Examples
     --------
     .. manim:: CreateScene
+        :title: Example: Create
         :hide_levels: 1
 
         class CreateScene(Scene):
@@ -502,6 +503,7 @@ class ShowIncreasingSubsets(Animation):
     --------
 
     .. manim:: ShowIncreasingSubsetsScene
+        :title: Example: ShowIncreasingSubsets
         :hide_levels: 1
 
         class ShowIncreasingSubsetsScene(Scene):
@@ -706,6 +708,7 @@ class TypeWithCursor(AddTextLetterByLetter):
     --------
 
     .. manim:: InsertingTextExample
+        :title: Example: InsertingText
         :hide_levels: 1
         :ref_classes: Blink
 
@@ -817,6 +820,7 @@ class UntypeWithCursor(TypeWithCursor):
     --------
 
     .. manim:: DeletingTextExample
+        :title: Example: DeletingText
         :hide_levels: 1
         :ref_classes: Blink
 

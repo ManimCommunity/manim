@@ -365,6 +365,7 @@ Plotting with Manim
 
 
 .. manim:: ArgMinExample
+   :title: Example: ArgMin
    :hide_levels: 1
 
    class ArgMinExample(Scene):

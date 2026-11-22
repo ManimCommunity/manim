@@ -5,6 +5,7 @@ Examples
 --------
 
 .. manim:: UseZoomedScene
+    :title: Example: UseZoomed
     :hide_levels: 1
 
     class UseZoomedScene(ZoomedScene):

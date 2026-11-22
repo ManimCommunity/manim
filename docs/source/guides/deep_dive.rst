@@ -56,6 +56,7 @@ faded out.
 Actually rendering the code yields the following video:
 
 .. manim:: ToyExample
+    :title: Example: Toy
     :hide_source:
 
     class ToyExample(Scene):

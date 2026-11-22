@@ -3,6 +3,7 @@ Please find a standard list at https://easings.net/. Here is a picture
 for the non-standard ones
 
 .. manim:: RateFuncExample
+    :title: Example: RateFunc
     :hide_levels: 1
     :save_last_frame:
 
@@ -55,6 +56,7 @@ There are primarily 3 kinds of standard easing functions:
     On the other hand, the non-standard functions, which are used more commonly, are exported and can be used directly.
 
 .. manim:: RateFunctions1Example
+    :title: Example: RateFunctions1
     :hide_levels: 1
 
     class RateFunctions1Example(Scene):

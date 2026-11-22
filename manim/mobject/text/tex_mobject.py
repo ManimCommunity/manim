@@ -664,6 +664,7 @@ class BulletedList(Tex):
     --------
 
     .. manim:: BulletedListExample
+        :title: Example: BulletedList
         :hide_levels: 1
         :save_last_frame:
 
@@ -727,6 +728,7 @@ class Title(Tex):
     Examples
     --------
     .. manim:: TitleExample
+        :title: Example: Title
         :save_last_frame:
 
         import manim

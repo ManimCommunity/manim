@@ -53,6 +53,7 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
     a custom one like this:
 
     .. manim:: CustomTipExample
+        :title: Example: CustomTip
 
         >>> from manim import RegularPolygon, Arrow
         >>> class MyCustomArrowTip(ArrowTip, RegularPolygon):

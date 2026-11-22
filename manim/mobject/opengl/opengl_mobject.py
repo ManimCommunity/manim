@@ -470,6 +470,7 @@ class OpenGLMobject:
         --------
 
         .. manim:: AnimateExample
+            :title: Example: Animate
             :hide_levels: 1
 
             class AnimateExample(Scene):
@@ -483,6 +484,7 @@ class OpenGLMobject:
 
 
         .. manim:: AnimateChainExample
+            :title: Example: AnimateChain
             :hide_levels: 1
 
             class AnimateChainExample(Scene):
@@ -493,6 +495,7 @@ class OpenGLMobject:
                     self.play(Uncreate(s))
 
         .. manim:: AnimateWithArgsExample
+            :title: Example: AnimateWithArgs
             :hide_levels: 1
 
             class AnimateWithArgsExample(Scene):
@@ -532,6 +535,7 @@ class OpenGLMobject:
         Examples
         --------
         .. manim:: WidthExample
+            :title: Example: Width
             :hide_levels: 1
 
             class WidthExample(Scene):
@@ -570,6 +574,7 @@ class OpenGLMobject:
         Examples
         --------
         .. manim:: HeightExample
+            :title: Example: Height
             :hide_levels: 1
 
             class HeightExample(Scene):
@@ -721,6 +726,7 @@ class OpenGLMobject:
         Examples
         --------
         .. manim:: MatchPointsScene
+            :title: Example: MatchPoints
             :hide_levels: 1
 
             class MatchPointsScene(Scene):
@@ -1478,6 +1484,7 @@ class OpenGLMobject:
         --------
 
         .. manim:: ShuffleSubmobjectsExample
+            :title: Example: ShuffleSubmobjects
             :hide_levels: 1
 
             class ShuffleSubmobjectsExample(Scene):
@@ -1507,6 +1514,7 @@ class OpenGLMobject:
         --------
 
         .. manim:: InvertSumobjectsExample
+            :title: Example: InvertSumobjects
             :hide_levels: 1
 
             class InvertSumobjectsExample(Scene):
@@ -1766,6 +1774,7 @@ class OpenGLMobject:
         --------
 
         .. manim:: MobjectScaleExample
+            :title: Example: MobjectScale
             :hide_levels: 1
             :save_last_frame:
 
@@ -1826,6 +1835,7 @@ class OpenGLMobject:
         --------
 
         .. manim:: FlipExample
+            :title: Example: Flip
             :hide_levels: 1
             :save_last_frame:
 
@@ -1882,6 +1892,7 @@ class OpenGLMobject:
         -------
 
         .. manim:: ApplyFuncExample
+            :title: Example: ApplyFunc
             :hide_levels: 1
 
             class ApplyFuncExample(Scene):
@@ -2870,6 +2881,7 @@ class OpenGLMobject:
         Examples
         --------
         .. manim:: BecomeScene
+            :title: Example: Become
             :hide_levels: 1
 
             class BecomeScene(Scene):
@@ -3273,6 +3285,7 @@ def override_animate(method: types.FunctionType) -> _OverrideAnimateDecorator:
     --------
 
     .. manim:: AnimationOverrideExample
+        :title: Example: AnimationOverride
 
         class CircleWithContent(VGroup):
             def __init__(self, content):

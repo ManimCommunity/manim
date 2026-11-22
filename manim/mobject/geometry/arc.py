@@ -311,6 +311,7 @@ class Arc(TipableVMobject):
     A simple arc of angle Pi.
 
     .. manim:: ArcExample
+        :title: Example: Arc
         :hide_levels: 1
         :save_last_frame:
 
@@ -451,6 +452,7 @@ class ArcBetweenPoints(Arc):
     Example
     -------
     .. manim:: ArcBetweenPointsExample
+      :title: Example: ArcBetweenPoints
       :hide_levels: 1
 
       class ArcBetweenPointsExample(Scene):
@@ -527,6 +529,7 @@ class TangentialArc(ArcBetweenPoints):
     Examples
     --------
     .. manim:: TangentialArcExample
+        :title: Example: TangentialArc
         :hide_levels: 1
         :save_last_frame:
 
@@ -649,6 +652,7 @@ class Circle(Arc):
     Examples
     --------
     .. manim:: CircleExample
+        :title: Example: Circle
         :hide_levels: 1
         :save_last_frame:
 
@@ -745,6 +749,7 @@ class Circle(Arc):
         Examples
         --------
         .. manim:: PointAtAngleExample
+            :title: Example: PointAtAngle
             :hide_levels: 1
             :save_last_frame:
 
@@ -773,6 +778,7 @@ class Circle(Arc):
         Example
         -------
         .. manim:: CircleFromPointsExample
+            :title: Example: CircleFromPoints
             :hide_levels: 1
             :save_last_frame:
 
@@ -816,6 +822,7 @@ class Dot(Circle):
     Examples
     --------
     .. manim:: DotExample
+        :title: Example: Dot
         :hide_levels: 1
         :save_last_frame:
 
@@ -940,6 +947,7 @@ class Ellipse(Circle):
     Examples
     --------
     .. manim:: EllipseExample
+        :title: Example: Ellipse
         :hide_levels: 1
         :save_last_frame:
 
@@ -981,6 +989,7 @@ class AnnularSector(Arc):
     Examples
     --------
     .. manim:: AnnularSectorExample
+        :title: Example: AnnularSector
         :hide_levels: 1
         :save_last_frame:
 
@@ -1085,6 +1094,7 @@ class Annulus(Circle):
     Examples
     --------
     .. manim:: AnnulusExample
+        :title: Example: Annulus
         :hide_levels: 1
         :save_last_frame:
 
@@ -1133,6 +1143,7 @@ class CubicBezier(VMobject, metaclass=ConvertToOpenGL):
     Example
     -------
     .. manim:: BezierSplineExample
+        :title: Example: BezierSpline
         :hide_levels: 1
         :save_last_frame:
 
@@ -1353,6 +1364,7 @@ class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
     need to be drawn, in which case they can be passed as invisible.
 
     .. manim:: ArcPolygonExample
+        :title: Example: ArcPolygon
         :hide_levels: 1
 
         class ArcPolygonExample(Scene):

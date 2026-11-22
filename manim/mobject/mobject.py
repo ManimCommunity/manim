@@ -372,6 +372,7 @@ class Mobject:
         --------
 
         .. manim:: AnimateExample
+            :title: Example: Animate
             :hide_levels: 1
 
             class AnimateExample(Scene):
@@ -385,6 +386,7 @@ class Mobject:
 
 
         .. manim:: AnimateChainExample
+            :title: Example: AnimateChain
             :hide_levels: 1
 
             class AnimateChainExample(Scene):
@@ -395,6 +397,7 @@ class Mobject:
                     self.play(Uncreate(s))
 
         .. manim:: AnimateWithArgsExample
+            :title: Example: AnimateWithArgs
             :hide_levels: 1
 
             class AnimateWithArgsExample(Scene):
@@ -447,6 +450,7 @@ class Mobject:
         -------
 
             .. manim:: AlwaysExample
+                :title: Example: Always
                 :hide_levels: 1
 
                 class AlwaysExample(Scene):
@@ -919,6 +923,7 @@ class Mobject:
         Examples
         --------
         .. manim:: WidthExample
+            :title: Example: Width
             :hide_levels: 1
 
             class WidthExample(Scene):
@@ -956,6 +961,7 @@ class Mobject:
         Examples
         --------
         .. manim:: HeightExample
+            :title: Example: Height
             :hide_levels: 1
 
             class HeightExample(Scene):
@@ -1464,6 +1470,7 @@ class Mobject:
         --------
 
         .. manim:: MobjectScaleExample
+            :title: Example: MobjectScale
             :hide_levels: 1
             :save_last_frame:
 
@@ -1533,6 +1540,7 @@ class Mobject:
         --------
 
         .. manim:: RotateMethodExample
+            :title: Example: RotateMethod
             :hide_levels: 1
             :save_last_frame:
 
@@ -1577,6 +1585,7 @@ class Mobject:
         --------
 
         .. manim:: FlipExample
+            :title: Example: Flip
             :hide_levels: 1
             :save_last_frame:
 
@@ -1670,6 +1679,7 @@ class Mobject:
         -------
 
         .. manim:: ApplyFuncExample
+            :title: Example: ApplyFunc
             :hide_levels: 1
 
             class ApplyFuncExample(Scene):
@@ -1785,6 +1795,7 @@ class Mobject:
         --------
 
         .. manim:: ToCornerExample
+            :title: Example: ToCorner
             :hide_levels: 1
             :save_last_frame:
 
@@ -1815,6 +1826,7 @@ class Mobject:
         --------
 
         .. manim:: ToEdgeExample
+            :title: Example: ToEdge
             :hide_levels: 1
             :save_last_frame:
 
@@ -3084,6 +3096,7 @@ class Mobject:
         --------
 
         .. manim:: InvertSumobjectsExample
+            :title: Example: InvertSumobjects
             :hide_levels: 1
 
             class InvertSumobjectsExample(Scene):
@@ -3108,6 +3121,7 @@ class Mobject:
         --------
 
         .. manim:: ArrangeSumobjectsExample
+            :title: Example: ArrangeSumobjects
             :hide_levels: 1
             :save_last_frame:
 
@@ -3134,6 +3148,7 @@ class Mobject:
         --------
 
         .. manim:: ShuffleSubmobjectsExample
+            :title: Example: ShuffleSubmobjects
             :hide_levels: 1
 
             class ShuffleSubmobjectsExample(Scene):
@@ -3314,6 +3329,7 @@ class Mobject:
         --------
 
         .. manim:: InterpolateExample
+            :title: Example: Interpolate
             :hide_levels: 1
             :save_last_frame:
 
@@ -3391,6 +3407,7 @@ class Mobject:
         Examples
         --------
         .. manim:: BecomeScene
+            :title: Example: Become
             :hide_levels: 1
 
             class BecomeScene(Scene):
@@ -3493,6 +3510,7 @@ class Mobject:
         Examples
         --------
         .. manim:: MatchPointsScene
+            :title: Example: MatchPoints
             :hide_levels: 1
 
             class MatchPointsScene(Scene):
@@ -3698,6 +3716,7 @@ def override_animate(
     --------
 
     .. manim:: AnimationOverrideExample
+        :title: Example: AnimationOverride
 
         class CircleWithContent(VGroup):
             def __init__(self, content):

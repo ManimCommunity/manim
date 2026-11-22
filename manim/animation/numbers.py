@@ -35,6 +35,7 @@ class ChangingDecimal(Animation):
     --------
 
     .. manim:: ChangingDecimalExample
+        :title: Example: ChangingDecimal
         :hide_levels: 1
 
         class ChangingDecimalExample(Scene):
@@ -86,6 +87,7 @@ class ChangeDecimalToValue(ChangingDecimal):
     --------
 
     .. manim:: ChangeDecimalToValueExample
+        :title: Example: ChangeDecimalToValue
         :hide_levels: 1
 
         class ChangeDecimalToValueExample(Scene):

@@ -147,6 +147,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
                 self.add(g)
 
     .. manim:: BackgroundRectanglesExample
+        :title: Example: BackgroundRectangles
         :hide_levels: 1
         :save_last_frame:
 
@@ -296,6 +297,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         --------
 
         .. manim:: GetColumnsExample
+            :title: Example: GetColumns
             :hide_levels: 1
             :save_last_frame:
 
@@ -329,6 +331,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         --------
 
         .. manim:: SetColumnColorsExample
+            :title: Example: SetColumnColors
             :hide_levels: 1
             :save_last_frame:
 
@@ -355,6 +358,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         --------
 
         .. manim:: GetRowsExample
+            :title: Example: GetRows
             :hide_levels: 1
             :save_last_frame:
 
@@ -383,6 +387,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         --------
 
         .. manim:: SetRowColorsExample
+            :title: Example: SetRowColors
             :hide_levels: 1
             :save_last_frame:
 
@@ -432,6 +437,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         --------
 
         .. manim:: GetEntriesExample
+            :title: Example: GetEntries
             :hide_levels: 1
             :save_last_frame:
 
@@ -458,6 +464,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         --------
 
         .. manim:: GetBracketsExample
+            :title: Example: GetBrackets
             :hide_levels: 1
             :save_last_frame:
 
@@ -480,6 +487,7 @@ class DecimalMatrix(Matrix):
     --------
 
     .. manim:: DecimalMatrixExample
+        :title: Example: DecimalMatrix
         :hide_levels: 1
         :save_last_frame:
 
@@ -527,6 +535,7 @@ class IntegerMatrix(Matrix):
     --------
 
     .. manim:: IntegerMatrixExample
+        :title: Example: IntegerMatrix
         :hide_levels: 1
         :save_last_frame:
 
@@ -565,6 +574,7 @@ class MobjectMatrix(Matrix):
     --------
 
     .. manim:: MobjectMatrixExample
+        :title: Example: MobjectMatrix
         :hide_levels: 1
         :save_last_frame:
 

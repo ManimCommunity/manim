@@ -51,6 +51,7 @@ class LayoutFunction(Protocol):
     Here is an example that arranges nodes in an n x m grid in sorted order.
 
     .. manim:: CustomLayoutExample
+        :title: Example: CustomLayout
         :hide_levels: 1
         :save_last_frame:
 

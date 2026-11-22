@@ -26,6 +26,7 @@ In the ordinary Cairo :class:`.Camera`, the frame is an actual mobject called
 ``frame``. You can modify or animate this frame like any other mobject:
 
 .. manim:: CameraExample
+    :title: Example: Camera
     :hide_levels: 1
 
     class CameraExample(Scene):
@@ -39,6 +40,7 @@ A smaller frame zooms in; a larger frame shows more of the scene. Save and resto
 frame with the usual mobject operations:
 
 .. manim:: CameraRestoreExample
+    :title: Example: CameraRestore
     :hide_levels: 1
 
     class CameraRestoreExample(Scene):
