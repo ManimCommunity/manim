@@ -20,7 +20,7 @@ scenes and [report problems on GitHub](https://github.com/ManimCommunity/manim/i
 ## v0.30.0a1
 
 Date
-: November 21, 2026
+: November 22, 2026
 
 The first preview of v0.30.0 features a restructured rendering pipeline
 and changes to bring the cairo and the OpenGL renderers closer together.
@@ -148,10 +148,13 @@ OpenGL shaders moved from `manim/renderer/shaders` to
 
 #### Documentation 📚
 * Speed up the documentation build and cache rendered examples by {user}`GniLudio` in {pr}`5133`
+* Fix docbuild warnings by {user}`GniLudio` in {pr}`5155`
+* Make side drawer and toc always collapsible by {user}`GniLudio` in {pr}`5131`
 
 #### Infrastructure & Build 🔨
 * Support preview prereleases from `preview/*` branches by {user}`behackl` in {pr}`5130`
 * Keep changelog prose on regeneration, and link prerelease notes to the preview docs by {user}`behackl` in {pr}`5152`
+* Use uv for the readthedocs build by {user}`GniLudio` in {pr}`5153`
 
 #### Code Quality & Refactoring 🧹
 * Use attribute access for global config in scene and animation by {user}`Hangeerh` in {pr}`5138`
