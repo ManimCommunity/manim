@@ -178,6 +178,7 @@ latex_engine = "lualatex"
 extlinks = {
     "issue": ("https://github.com/ManimCommunity/manim/issues/%s", "#%s"),
     "pr": ("https://github.com/ManimCommunity/manim/pull/%s", "PR #%s"),
+    "stack": ("https://github.com/ManimCommunity/manim/stack/%s", "Stack #%s"),
     "user": ("https://github.com/%s", "@%s"),
 }
 
