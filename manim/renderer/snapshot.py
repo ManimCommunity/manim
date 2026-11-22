@@ -47,6 +47,7 @@ from typing import TYPE_CHECKING, NamedTuple, TypeAlias
 from manim.appearance.material import PbrMaterial, UnlitMaterial
 
 if TYPE_CHECKING:
+    import numpy as np
     from PIL.Image import Image, Resampling
 
     from manim.constants import CapStyleType, LineJointType
@@ -71,6 +72,7 @@ __all__ = [
     "RCameraView",
     "RImage",
     "RLinearGradient",
+    "RMesh",
     "RNode",
     "RPaint",
     "RPath",
@@ -205,7 +207,28 @@ class RCameraView(NamedTuple):
     camera_id: CameraId
 
 
-Payload = RPath | RPoints | RImage | RCameraView
+class RMesh(NamedTuple):
+    """A triangle mesh (:class:`~.MeshMobject`).
+
+    Slots: ``"geometry"`` (``points``, ``triangles``), ``"rgbas"``, ``"uvs"``,
+    ``"texture"``, ``"material"``.
+    """
+
+    points: Point3D_Array
+    #: Vertex indices, three per triangle.
+    triangles: np.ndarray
+    #: One color for the whole mesh, or one per vertex.
+    rgbas: FloatRGBA_Array
+    #: Texture coordinates per vertex; empty without a texture.
+    uvs: np.ndarray
+    #: RGBA pixels; empty without a texture.
+    texture: PixelArray
+    material: Material
+    #: Whether the mesh's fragments hide each other and what is behind them.
+    depth_test: bool
+
+
+Payload = RPath | RPoints | RImage | RCameraView | RMesh
 
 
 # Placements: how a node is placed in the view.

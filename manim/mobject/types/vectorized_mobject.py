@@ -1803,6 +1803,11 @@ class VMobject(Mobject):
         --------
         :meth:`~.Mobject.interpolate`, :meth:`~.Mobject.align_data`
         """
+        if not isinstance(vmobject, VMobject):
+            raise ValueError(
+                f"A {type(self).__name__} cannot be transformed into a "
+                f"{type(vmobject).__name__}: only into another vectorized mobject."
+            )
         self.align_rgbas(vmobject)
         # TODO: This shortcut can be a bit over eager. What if they have the same length, but different subpath lengths?
         if self.get_num_points() == vmobject.get_num_points():

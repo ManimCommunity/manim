@@ -15,6 +15,7 @@ import numpy as np
 
 from manim.appearance.material import UnlitMaterial
 from manim.mobject.mobject import Mobject
+from manim.mobject.three_d.mesh import MeshMobject
 from manim.mobject.types.image_mobject import (
     AbstractImageMobject,
     ImageMobjectFromCamera,
@@ -31,6 +32,7 @@ from manim.renderer.snapshot import (
     RCameraView,
     RImage,
     RLinearGradient,
+    RMesh,
     RNode,
     RPaint,
     RPath,
@@ -180,6 +182,16 @@ def _payload(mobject: Mobject) -> tuple[Payload | None, dict[str, tuple[str, ...
     """The payload of ``mobject`` and the fields each of its slots is made from."""
     if isinstance(mobject, VMobject):
         return _path(mobject), _PATH_SLOTS
+    if isinstance(mobject, MeshMobject):
+        return RMesh(
+            mobject.points,
+            mobject.triangles,
+            mobject.rgbas,
+            mobject.uvs,
+            mobject.texture,
+            mobject.material,
+            mobject.depth_test,
+        ), _MESH_SLOTS
     if isinstance(mobject, PMobject):
         return RPoints(mobject.points, mobject.rgbas, mobject.stroke_width), {
             "geometry": ("points",),
@@ -202,6 +214,14 @@ def _payload(mobject: Mobject) -> tuple[Payload | None, dict[str, tuple[str, ...
         f"Displaying an object of class {type(mobject).__name__} is not supported"
     )
 
+
+_MESH_SLOTS: dict[str, tuple[str, ...]] = {
+    "geometry": ("points", "triangles"),
+    "rgbas": ("rgbas",),
+    "uvs": ("uvs",),
+    "texture": ("texture",),
+    "material": ("material",),
+}
 
 # The fields each slot of a path is made from. A gradient's ends come from the points.
 _PATH_SLOTS: dict[str, tuple[str, ...]] = {

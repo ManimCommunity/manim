@@ -21,12 +21,15 @@ import numpy as np
 from PIL.Image import Resampling
 
 from manim._config import config
+from manim.material import Pbr
+from manim.renderer._lighting import AMBIENT, DEFAULT_LIGHT_INTENSITY
 from manim.renderer._paint import paint_colors, shows
 from manim.renderer.cairo.camera import ThreeDCamera
 from manim.renderer.snapshot import (
     LegacyShaded,
     RCameraView,
     RImage,
+    RMesh,
     RNode,
     RPath,
     RPoints,
@@ -38,6 +41,7 @@ from .winding_fill import WindingFill
 
 if TYPE_CHECKING:
     from manim.renderer.cairo.camera import Camera
+    from manim.renderer.snapshot import Material
 
     from .renderer import OpenGLRenderer, _CameraView
 
@@ -61,6 +65,9 @@ _STROKE_DTYPE = [
 ]
 _STROKE_FORMAT = "3f 3f 3f 3f 1f 4f"
 _POINT_DTYPE = [("point", np.float32, (3,)), ("color", np.float32, (4,))]
+_MESH_DTYPE = np.dtype(
+    [("point", "f4", 3), ("normal", "f4", 3), ("color", "f4", 4), ("uv", "f4", 2)]
+)
 _IMAGE_DTYPE = [("point", np.float32, (3,)), ("uv", np.float32, (2,))]
 # Two triangles over an image's corners, stored as upper left, upper right, lower
 # left, lower right; texture rows start at the top.
@@ -343,6 +350,7 @@ class SnapshotDrawing:
         self._geometry = _GeometryCache()
         self._fill = WindingFill(renderer)
         self._textures = _TextureCache(renderer)
+        self._normals = _NormalCache()
 
     def release(self) -> None:
         self._fill.release()
@@ -362,6 +370,7 @@ class SnapshotDrawing:
         self._placed_targets: dict[str, DrawTarget] = {"normal": target}
         self._geometry.next_frame()
         self._textures.next_frame()
+        self._normals.next_frame()
         nodes = list(nodes)
         paths = [node for node in nodes if isinstance(node.payload, RPath)]
         self._target = target
@@ -391,6 +400,8 @@ class SnapshotDrawing:
                 payload = payload._replace(points=payload.points + shift)
             if isinstance(payload, RPoints):
                 self._draw_points(payload)
+            elif isinstance(payload, RMesh):
+                self._draw_mesh(node, payload)
             elif isinstance(payload, RImage):
                 self._draw_image(node, payload)
             elif isinstance(payload, RCameraView) and views:
@@ -473,8 +484,76 @@ class SnapshotDrawing:
         base = int(config["pixel_width"]) + int(config["pixel_height"])
         return 1 + (stroke_width - 1) * base / sum(self._target.size)
 
+    def _draw_mesh(self, node: RNode, mesh: RMesh) -> None:
+        count = len(mesh.points)
+        if count == 0 or len(mesh.triangles) == 0:
+            return
+        vertices = np.zeros(count, dtype=_MESH_DTYPE)
+        vertices["point"] = mesh.points
+        vertices["normal"] = self._normals.get(node, mesh)
+        rgbas = np.asarray(mesh.rgbas)
+        vertices["color"] = (
+            rgbas if len(rgbas) == count else np.resize(rgbas, (count, 4))
+        )
+        texture = None
+        if len(mesh.uvs) == count:
+            texture = self._textures.get(node, "texture", mesh.texture)
+        if texture is not None:
+            vertices["uv"] = mesh.uvs
+            texture.use(0)
+        indices = np.ascontiguousarray(mesh.triangles, dtype="i4")
+        if mesh.depth_test and (rgbas[:, 3] < 1).any():
+            # Translucent: show only the front-most layer of the mesh, so that how
+            # its triangles are ordered does not show.
+            framebuffer = self._target.framebuffer
+            framebuffer.color_mask = False, False, False, False
+            try:
+                self._pass(
+                    "mesh", vertices, "3f 3f 4f 2f", moderngl.TRIANGLES, indices, True
+                )
+            finally:
+                framebuffer.color_mask = True, True, True, True
+        self._pass(
+            "mesh",
+            vertices,
+            "3f 3f 4f 2f",
+            moderngl.TRIANGLES,
+            indices=indices,
+            depth_test=mesh.depth_test,
+            has_texture=float(texture is not None),
+            image=0,
+            **self._lighting(node, mesh.material),
+        )
+
+    def _lighting(self, node: RNode, material: Material) -> dict[str, Any]:
+        """The lighting uniforms of the mesh shader (see ``include/lighting.glsl``).
+
+        Meshes are lit by the light of a :class:`.ThreeDCamera`; under other cameras,
+        and when fixed in frame, they show their base colors.
+        """
+        view = self._base_target.view
+        light = view.light_source
+        if not isinstance(material, Pbr) or light is None or node.fixed_in_frame:
+            return {"lit": 0.0}
+        return {
+            "lit": 1.0,
+            "roughness": material.roughness,
+            "metallic": material.metallic,
+            "emissive": material.emissive,
+            "ambient": AMBIENT,
+            "light_position": tuple(light),
+            "light_rgb": (1.0, 1.0, 1.0),
+            "light_intensity": DEFAULT_LIGHT_INTENSITY,
+            "eye_position": tuple(view.eye),
+        }
+
     def _draw_image(self, node: RNode, image: RImage) -> None:
-        texture = self._textures.get(node, image)
+        texture = self._textures.get(
+            node,
+            "pixels",
+            image.pixel_array,
+            nearest=image.resampling_algorithm == Resampling.NEAREST,
+        )
         if texture is None:
             return
         self._draw_quad(image.points, texture)
@@ -499,9 +578,15 @@ class SnapshotDrawing:
         vertices: np.ndarray,
         layout: str,
         primitive: int,
+        indices: np.ndarray | None = None,
+        depth_test: bool = False,
         **uniforms: float,
     ) -> None:
-        """Draw ``vertices`` with a shader, blending into the frame."""
+        """Draw ``vertices`` with a shader, blending into the frame.
+
+        ``indices`` picks vertices by index. With ``depth_test``, fragments behind
+        earlier ones drawn with a depth test are hidden.
+        """
         renderer = self._renderer
         context = renderer.context
         shader = Shader(context, name=shader_name)
@@ -512,21 +597,30 @@ class SnapshotDrawing:
         for name, value in uniforms.items():
             shader.set_uniform(name, value)
         buffer = context.buffer(vertices.tobytes())
+        index_buffer = None if indices is None else context.buffer(indices.tobytes())
         try:
             array = context.vertex_array(
                 shader.shader_program,
                 [(buffer, layout, *vertices.dtype.names)],
+                index_buffer=index_buffer,
             )
             try:
-                context.disable(moderngl.DEPTH_TEST)
+                if depth_test:
+                    context.enable(moderngl.DEPTH_TEST)
+                    context.depth_func = "<="
+                else:
+                    context.disable(moderngl.DEPTH_TEST)
                 context.enable(moderngl.BLEND)
                 context.blend_func = (moderngl.SRC_ALPHA, moderngl.ONE_MINUS_SRC_ALPHA)
                 self._target.framebuffer.use()
                 array.render(primitive)
             finally:
                 array.release()
+                context.disable(moderngl.DEPTH_TEST)
         finally:
             buffer.release()
+            if index_buffer is not None:
+                index_buffer.release()
 
     def _tolerance(self) -> float:
         """The conversion tolerance in scene units, rounded down to a power of two.
@@ -751,6 +845,43 @@ def _background_width(path: RPath) -> float:
     return 0.0 if path.background_stroke is None else path.background_stroke.width
 
 
+class _NormalCache:
+    """Vertex normals of meshes by uid, kept while their ``"geometry"`` slot (points
+    and triangles) keeps its version.
+    """
+
+    def __init__(self) -> None:
+        self._current: dict[int, tuple[int, np.ndarray]] = {}
+        self._previous: dict[int, tuple[int, np.ndarray]] = {}
+
+    def next_frame(self) -> None:
+        self._previous, self._current = self._current, {}
+
+    def get(self, node: RNode, mesh: RMesh) -> np.ndarray:
+        key = node.versions.get("geometry", 0)
+        entry = self._current.get(node.uid) or self._previous.get(node.uid)
+        if entry is None or entry[0] != key:
+            entry = (key, vertex_normals(mesh.points, mesh.triangles))
+        self._current[node.uid] = entry
+        return entry[1]
+
+
+def vertex_normals(points: np.ndarray, triangles: np.ndarray) -> np.ndarray:
+    """Unit normals at the vertices: the sum of the normals of their triangles,
+    weighted by area. Vertices without a direction get ``(0, 0, 1)``.
+    """
+    corners = points[triangles]
+    faces = np.cross(corners[:, 1] - corners[:, 0], corners[:, 2] - corners[:, 0])
+    normals = np.zeros_like(points, dtype=float)
+    for i in range(3):
+        np.add.at(normals, triangles[:, i], faces)
+    lengths = np.linalg.norm(normals, axis=1)
+    flat = lengths < 1e-12
+    normals[flat] = (0, 0, 1)
+    lengths[flat] = 1
+    return normals / lengths[:, None]
+
+
 class _TextureCache:
     """Image textures by uid, kept while the image is drawn in consecutive frames."""
 
@@ -765,18 +896,22 @@ class _TextureCache:
             texture.release()
         self._previous, self._current = self._current, {}
 
-    def get(self, node: RNode, image: RImage) -> moderngl.Texture | None:
-        """The texture of the image; made anew if the node has no key or its
-        ``"pixels"`` slot changed.
+    def get(
+        self, node: RNode, slot: str, pixels: np.ndarray, nearest: bool = False
+    ) -> moderngl.Texture | None:
+        """The texture of ``pixels``, the value of the node's slot ``slot``; made
+        anew if the node has no key or the slot changed.
+
+        With ``nearest``, pixels are not smoothed when scaled.
         """
-        version = node.versions.get("pixels", 0)
+        version = node.versions.get(slot, 0)
         entry = self._current.get(node.uid) or self._previous.pop(node.uid, None)
         if entry is not None and entry[0] == version and node.key is not None:
             self._current[node.uid] = entry
             return entry[1]
         if entry is not None:
             entry[1].release()
-        pixels = np.ascontiguousarray(image.pixel_array, dtype=np.uint8)
+        pixels = np.ascontiguousarray(pixels, dtype=np.uint8)
         if pixels.ndim != 3 or pixels.shape[2] != 4 or 0 in pixels.shape:
             return None
         height, width = pixels.shape[:2]
@@ -785,7 +920,7 @@ class _TextureCache:
             self._renderer._resources.callback(self.release)
             self._registered = True
         texture = self._renderer.context.texture((width, height), 4, pixels.tobytes())
-        if image.resampling_algorithm == Resampling.NEAREST:
+        if nearest:
             texture.filter = (moderngl.NEAREST, moderngl.NEAREST)
         else:
             texture.build_mipmaps()

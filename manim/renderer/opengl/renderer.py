@@ -491,7 +491,10 @@ class OpenGLRenderer(_RendererExecutionView):
             "anti_alias_width": self.anti_alias_width / (pixel_height / frame_height),
             "camera_center": tuple(view.center),
             "camera_rotation": tuple(view.rotation.T.flatten()),
-            "light_source_position": tuple(view.rotation @ view.light_source),
+            "light_source_position": tuple(
+                view.rotation
+                @ (view.light_source if view.light_source is not None else _NO_LIGHT)
+            ),
             "focal_distance": view.focal_distance,
         }
 
@@ -1216,6 +1219,17 @@ class OpenGLRenderer(_RendererExecutionView):
 
 #: Focal distance standing in for "no perspective" (a camera without rotation).
 _ORTHOGRAPHIC_FOCAL_DISTANCE = 1e6
+#: Where the shaders of the OpenGL mobject classes put the light of flat cameras.
+_NO_LIGHT = np.array([-10.0, 10.0, 10.0])
+
+
+def _eye(center: Point3D, rotation: np.ndarray, focal_distance: float) -> np.ndarray:
+    """The camera position in scene coordinates: at the focal distance from the
+    frame center, on the view axis.
+    """
+    return np.asarray(center, dtype=float) + np.asarray(rotation).T @ np.array(
+        [0.0, 0.0, focal_distance]
+    )
 
 
 class _CameraView(typing.NamedTuple):
@@ -1227,7 +1241,10 @@ class _CameraView(typing.NamedTuple):
     #: Frame width and height, divided by the zoom factor.
     frame_shape: tuple[float, float]
     focal_distance: float
-    light_source: Point3D
+    #: The camera's light, in scene coordinates; ``None`` without one.
+    light_source: Point3D | None
+    #: Where the scene is seen from, in scene coordinates.
+    eye: Point3D
 
     @classmethod
     def of(cls, camera: Camera) -> _CameraView:
@@ -1239,13 +1256,19 @@ class _CameraView(typing.NamedTuple):
                 frame_shape=(camera.frame_width / zoom, camera.frame_height / zoom),
                 focal_distance=float(camera.get_focal_distance()),
                 light_source=np.asarray(camera.light_source.get_center(), dtype=float),
+                eye=_eye(
+                    camera.frame_center,
+                    camera.get_rotation_matrix(),
+                    camera.get_focal_distance(),
+                ),
             )
         return cls(
             center=np.asarray(camera.frame_center, dtype=float),
             rotation=np.identity(3),
             frame_shape=(camera.frame_width, camera.frame_height),
             focal_distance=_ORTHOGRAPHIC_FOCAL_DISTANCE,
-            light_source=np.array([-10.0, 10.0, 10.0]),
+            light_source=None,
+            eye=_eye(camera.frame_center, np.identity(3), _ORTHOGRAPHIC_FOCAL_DISTANCE),
         )
 
     def view_matrix(self) -> np.ndarray:

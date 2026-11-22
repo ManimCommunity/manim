@@ -16,9 +16,11 @@ from manim.constants import CapStyleType, LineJointType
 from manim.mobject.mobject import Mobject
 from manim.renderer._paint import paint_colors
 from manim.renderer.extract import extract
+from manim.renderer.protocol import CapabilityError
 from manim.renderer.snapshot import (
     RCameraView,
     RImage,
+    RMesh,
     RNode,
     RPaint,
     RPath,
@@ -107,6 +109,12 @@ class _CairoDrawingContext:
                     self._display_paths(list(group))
                 elif payload_type is RPoints:
                     self._display_point_clouds(group)
+                elif payload_type is RMesh:
+                    raise CapabilityError(
+                        "The Cairo renderer cannot draw MeshMobject or "
+                        "ParametricSurface yet; render with --renderer=opengl, or use "
+                        "Surface."
+                    )
                 else:
                     self._display_images(group)
 
