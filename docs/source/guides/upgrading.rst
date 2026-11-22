@@ -114,8 +114,8 @@ Removed classes
    * - ``OpenGLImageMobject``
      - :class:`.ImageMobject`
    * - ``OpenGLSurface``
-     - :class:`.ParametricSurface`, a smooth lit surface (OpenGL only for now),
-       or :class:`.Surface`, a group of polygon faces drawn by both renderers
+     - :class:`.ParametricSurface`, a smooth lit surface, or :class:`.Surface`,
+       its checkerboard-coloured version
    * - ``OpenGLTexturedSurface``
      - :class:`.ParametricSurface` with ``texture=``. One texture: the separate
        night-side texture is gone.
@@ -191,3 +191,36 @@ Things that look different
 - Under :class:`.ThreeDScene`, lines and other paths are drawn in the order they
   are added, as with Cairo; only :class:`.MeshMobject` takes part in the depth
   test.
+
+Surfaces are meshes
+-------------------
+
+:class:`.Surface` and the mobjects built on it (:class:`.Sphere`, :class:`.Dot3D`,
+:class:`.Torus`, :class:`.Cone`, :class:`.Cylinder`, :class:`.Line3D`,
+:class:`.Arrow3D`, :meth:`.ThreeDAxes.plot_surface`) used to be a :class:`.VGroup` of
+one :class:`.VMobject` per face. They are now :class:`.ParametricSurface` meshes,
+drawn as meshes on OpenGL and as sorted faces on Cairo:
+
+- The faces are not submobjects anymore: ``surface[i]``, iterating over a surface
+  and ``list_of_faces`` are gone. Colour faces with
+  :meth:`~.Surface.set_fill_by_checkerboard`, :meth:`~.Surface.set_fill_by_value`
+  or :meth:`.MeshMobject.set_vertex_colors`.
+- ``set_fill``, ``set_stroke``, ``set_style``, ``set_color`` and ``set_opacity`` set
+  the colours of the faces and of their outlines; meshes can still be put into a
+  :class:`.VGroup`.
+- The arguments ``should_make_jagged``, ``surface_piece_config`` and
+  ``pre_function_handle_to_anchor_scale_factor`` are gone.
+- They are lit by their ``material`` (:class:`.Pbr` by default) under a
+  :class:`.ThreeDCamera`'s light: faces turned away from the light are darker than
+  before, and the surface has highlights. ``material=Unlit()`` shows its colors as
+  they are. Under other cameras, surfaces are not lit.
+- A surface without ``checkerboard_colors`` is lit smoothly; with them, each face
+  is lit flat.
+- The end caps of :class:`.Cylinder` (``base_top``, ``base_bottom``) and the base of
+  :class:`.Cone` (``base_circle``) are discs of the same kind, lit as the side is,
+  not :class:`.Circle` paths.
+- The sides of the faces are straight lines between the sampled points (they were
+  slightly curved).
+- A surface can only be transformed into a mesh with the same triangles: a surface
+  of the same resolution and the same kind (smooth, or with a checkerboard). A
+  surface and a path cannot be transformed into each other.

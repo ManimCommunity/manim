@@ -3,11 +3,25 @@ import pytest
 
 from manim import (
     BLUE,
+    ORIGIN,
     RED,
+    RIGHT,
+    UP,
     WHITE,
+    Arrow3D,
+    Cone,
+    Cylinder,
+    Dot3D,
+    MeshMobject,
+    Mobject,
     ParametricSurface,
+    Sphere,
     Square,
+    Surface,
+    ThreeDAxes,
     Transform,
+    VGroup,
+    VMobject,
 )
 from manim.appearance.material import PbrMaterial, UnlitMaterial
 from manim.utils.versioned_fields import field_version
@@ -230,3 +244,127 @@ def test_parametric_surface_ranges_and_resolution_are_pairs(name):
     )
     assert surface.u_range == (0, 2)
     assert surface.resolution == (3, 4)
+
+def test_surface_colours_faces_by_value_at_their_outlines_middle():
+    from manim.mobject.three_d.three_dimensions import _halfway_around
+
+    axes = ThreeDAxes(x_range=[0, 4], y_range=[0, 4], z_range=[0, 4])
+    surface = Surface(
+        lambda u, v: axes.c2p(u, v, u * v / 4),
+        u_range=[0, 4],
+        v_range=[0, 4],
+        resolution=4,
+    )
+    # Halfway around a face's outline, as get_midpoint of the face as a path.
+    for corners, point in zip(
+        surface.points[surface.get_faces()], _halfway_around(surface), strict=True
+    ):
+        face = VMobject().set_points_as_corners([*corners, corners[0]])
+        np.testing.assert_allclose(point, face.get_midpoint(), atol=1e-9)
+
+    surface.set_fill_by_value(axes, [(RED, 0), (WHITE, 4)], axis=2)
+
+    values = axes.point_to_coords(_halfway_around(surface))[:, 2] / 4
+    expected = (1 - values[:, None]) * RED.to_rgb() + values[:, None] * WHITE.to_rgb()
+    np.testing.assert_allclose(surface.rgbas[::4, :3], expected, atol=1e-9)
+    # The outlines take the faces' colours, as the faces' strokes did.
+    np.testing.assert_allclose(surface.stroke_rgbas[:, :3], expected, atol=1e-9)
+
+
+def test_colouring_a_smooth_surface_by_value_keeps_where_it_was_moved():
+    axes = ThreeDAxes(x_range=[0, 4], y_range=[0, 4], z_range=[0, 4])
+    surface = Surface(
+        lambda u, v: axes.c2p(u, v, u * v / 4),
+        u_range=[0, 4],
+        v_range=[0, 4],
+        resolution=4,
+        checkerboard_colors=False,
+    ).shift(2 * UP)
+    center = surface.get_center()
+
+    surface.set_fill_by_value(axes, [(RED, 0), (WHITE, 4)], axis=2)
+
+    np.testing.assert_allclose(surface.get_center(), center)
+
+
+def test_meshes_can_be_in_vector_groups():
+    group = VGroup(Square(), Sphere(), Dot3D())
+
+    group.set_color(RED)
+
+    assert group[1].fill_color == RED
+    with pytest.raises(TypeError, match="Group instead"):
+        VGroup(Square(), Mobject())
+
+
+def test_surfaces_without_a_checkerboard_are_smooth():
+    smooth = Surface(lambda u, v: [u, v, 0], resolution=4, checkerboard_colors=False)
+    checkered = Surface(lambda u, v: [u, v, 0], resolution=4)
+
+    assert not smooth.flat
+    assert len(smooth.points) == 5 * 5
+    assert checkered.flat
+    assert len(checkered.points) == 4 * 4 * 4
+
+
+def test_partial_surfaces_show_whole_faces_with_their_outlines():
+    surface = Surface(lambda u, v: [u, v, 0], resolution=4)
+    surface.set_fill_by_value(
+        ThreeDAxes(x_range=[0, 1], y_range=[0, 1], z_range=[0, 1]), [RED, WHITE], axis=0
+    )
+    partial = surface.copy().pointwise_become_partial(surface, 0, 0.5)
+
+    assert len(partial.get_faces()) == 8
+    np.testing.assert_array_equal(partial.stroke_rgbas, surface.stroke_rgbas[:8])
+
+
+def test_groups_with_meshes_can_be_rotated_and_their_sheen_set():
+    group = VGroup(Square(), Sphere())
+
+    group.rotate(1.0).set_sheen_direction(UP)
+
+    np.testing.assert_allclose(group[0].sheen_direction, UP)
+
+
+SOLIDS_WITH_PARTS = {
+    "cone with base": lambda: Cone(show_base=True),
+    "cylinder": lambda: Cylinder(),
+    "arrow": lambda: Arrow3D(ORIGIN, RIGHT),
+}
+
+
+def _meshes(mob):
+    return [m for m in mob.get_family() if isinstance(m, MeshMobject)]
+
+
+@pytest.mark.parametrize("build", SOLIDS_WITH_PARTS.values(), ids=SOLIDS_WITH_PARTS)
+def test_colour_and_opacity_reach_every_part_of_a_solid(build):
+    solid = build()
+    assert len(_meshes(solid)) > 1
+    solid.set_color(RED)
+    assert {m.fill_color.to_hex() for m in _meshes(solid)} == {RED.to_hex()}
+    solid.set_opacity(0.3)
+    assert {round(m.fill_opacity, 6) for m in _meshes(solid)} == {0.3}
+    solid.set_fill(BLUE, opacity=0.5)
+    assert {
+        (m.fill_color.to_hex(), round(m.fill_opacity, 6)) for m in _meshes(solid)
+    } == {(BLUE.to_hex(), 0.5)}
+    solid.set_stroke(WHITE, width=2)
+    assert {m.stroke_width for m in _meshes(solid)} == {2}
+    solid.fade(0.5)
+    assert {round(m.fill_opacity, 6) for m in _meshes(solid)} == {0.25}
+
+
+def test_family_false_changes_only_the_mesh_itself():
+    cone = Cone(show_base=True, fill_color=BLUE)
+    base = cone.base_circle
+    cone.set_color(RED, family=False)
+    cone.set_opacity(0.2, family=False)
+    cone.set_stroke(WHITE, width=3, family=False)
+    assert cone.fill_color.to_hex() == RED.to_hex()
+    assert base.fill_color.to_hex() == BLUE.to_hex()
+    assert base.fill_opacity == 1
+    assert base.stroke_width == 0
+    cone.set_fill(WHITE, opacity=0.7, family=False)
+    assert base.fill_color.to_hex() == BLUE.to_hex()
+    assert base.fill_opacity == 1

@@ -8,6 +8,7 @@ import pytest
 from manim import (
     BLUE,
     DEGREES,
+    OUT,
     PI,
     PURE_BLUE,
     PURE_RED,
@@ -17,6 +18,7 @@ from manim import (
     MeshMobject,
     ParametricSurface,
     Scene,
+    Square,
     ThreeDScene,
     config,
     tempconfig,
@@ -367,3 +369,15 @@ def test_face_outlines_look_alike_on_both_renderers(using_opengl_renderer):
     outlined_cairo, outlined_opengl = cairo[inside] > 0.25, opengl[inside] > 0.25
     assert outlined_cairo.sum() > 0
     assert (outlined_cairo != outlined_opengl).mean() < 0.005
+
+
+@RENDERERS
+def test_meshes_are_sorted_with_3d_paths(renderer):
+    # Added before the plane, but in front of it: drawn after it.
+    square = Square(2, fill_opacity=1, color=PURE_RED).shift(OUT)
+    square.set_shade_in_3d(True)
+    plane = _plane(0, PURE_BLUE)
+
+    pixels, _ = _image(renderer, lambda: [square, plane], ThreeDScene)
+
+    assert _pixel(pixels, 0, 0)[0] > 0.9

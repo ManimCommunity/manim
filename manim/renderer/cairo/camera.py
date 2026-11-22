@@ -21,7 +21,7 @@ from manim.mobject.types.point_cloud_mobject import Point
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.mobject.value_tracker import ValueTracker
 from manim.renderer.extract import placement_of
-from manim.renderer.snapshot import FacingCamera, FixedInFrame, LegacyShaded
+from manim.renderer.snapshot import FacingCamera, FixedInFrame, LegacyShaded, RMesh
 from manim.utils._path_points import (
     end_corner,
     end_corner_index,
@@ -596,7 +596,12 @@ class ThreeDCamera(Camera):
         rot_matrix = self.get_rotation_matrix()
 
         def z_key(node: RNode) -> float:
-            reference_point = getattr(node.payload, "depth_reference", None)
+            payload = node.payload
+            reference_point = getattr(payload, "depth_reference", None)
+            if isinstance(payload, RMesh) and len(payload.points):
+                # A whole mesh (on OpenGL; Cairo sorts its faces) goes by its middle.
+                points = np.asarray(payload.points)
+                reference_point = (points.min(axis=0) + points.max(axis=0)) / 2
             if reference_point is None:
                 return np.inf  # type: ignore[no-any-return]
             return self._depth(reference_point, rot_matrix)

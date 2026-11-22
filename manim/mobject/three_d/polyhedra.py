@@ -441,16 +441,30 @@ class ConvexHull3D(Polyhedron):
         c = 0
         d = {}
         facets = set(hull.facets) - hull.removed
-        for facet in facets:
-            tmp = set()
-            for subfacet in facet.subfacets:
-                for point in subfacet.points:
-                    if point not in d:
-                        vertices.append(point.coordinates)
-                        d[point] = c
-                        c += 1
-                    tmp.add(point)
-            faces.append([d[point] for point in tmp])
+        center = array.mean(axis=0)
+
+        def corners(facet: Any) -> list[Any]:
+            # Sorted by coordinates: the sets of points iterate in an order that
+            # depends on how they hash, which changes between runs.
+            points = {
+                point for subfacet in facet.subfacets for point in subfacet.points
+            }
+            return sorted(points, key=lambda point: tuple(point.coordinates))
+
+        for facet in sorted(
+            facets, key=lambda f: [tuple(p.coordinates) for p in corners(f)]
+        ):
+            face = corners(facet)
+            a, b, e = (np.asarray(p.coordinates) for p in face[:3])
+            # Corners in order around the outward normal.
+            if np.dot(np.cross(b - a, e - a), (a + b + e) / 3 - center) < 0:
+                face = face[::-1]
+            for point in face:
+                if point not in d:
+                    vertices.append(point.coordinates)
+                    d[point] = c
+                    c += 1
+            faces.append([d[point] for point in face])
 
         # Call Polyhedron
         super().__init__(

@@ -1,7 +1,9 @@
-"""Mobjects made of triangles: smooth surfaces with lighting and textures.
+"""Mobjects made of triangles: surfaces with lighting and textures.
 
-These are drawn by the OpenGL renderer as meshes, with depth testing and lighting. The
-Cairo renderer cannot draw them yet; use :class:`.Surface` there.
+The OpenGL renderer draws them as meshes, with depth testing and lighting per pixel;
+the Cairo renderer as one polygon per face, sorted far to near and lit per face.
+:class:`.Surface` and the 3D primitives (:class:`.Sphere`, :class:`.Torus`, ...) are
+parametric surfaces of this kind.
 
 A mesh has a :mod:`material <manim.appearance.material>`: :class:`.PbrMaterial`
 (the default) lights it under a :class:`.ThreeDCamera`'s light,
@@ -79,6 +81,10 @@ class MeshMobject(Mobject):
     """
 
     #: Vertex indices, three per triangle (int32, as renderers upload them).
+
+    # Meshes have the styling methods of VMobjects that groups call, so they can be
+    # in a VGroup (spheres as the vertices of a graph, for example).
+    _vmobject_like = True
     triangles: ArrayField[np.ndarray] = ArrayField(np.int32)
     #: Polygons, as vertex indices in order around each, that the mesh is made of
     #: (quads for parametric surfaces). Empty means the triangles.
@@ -130,15 +136,93 @@ class MeshMobject(Mobject):
         alpha: float | None = None,
         family: bool = True,
     ) -> Self:
+        """Give the mesh one colour (and, with ``family``, its submobjects, such
+        as the caps of a :class:`.Cylinder`); ``alpha`` sets its opacity too.
+        """
         opacity = self.rgbas[:, 3].max() if alpha is None else alpha
         self.rgbas = [color_to_rgba(color, opacity)]
         self.color = ManimColor(color)
+        if family:
+            for submob in self.submobjects:
+                if isinstance(submob, MeshMobject):
+                    submob.set_color(color, alpha)
+                else:
+                    submob.set_color(color, family=True)
         return self
+
+    def set_fill(
+        self,
+        color: ParsableManimColor | None = None,
+        opacity: float | None = None,
+        family: bool = True,
+    ) -> Self:
+        """Set one colour, or one opacity, for the whole mesh (and, with
+        ``family``, its submobjects).
+        """
+        if color is not None:
+            self.set_color(color, opacity, family=family)
+        elif opacity is not None:
+            self.set_opacity(opacity, family=family)
+        return self
+
+    def set_style(
+        self,
+        fill_color: ParsableManimColor | None = None,
+        fill_opacity: float | None = None,
+        stroke_color: ParsableManimColor | None = None,
+        stroke_width: float | None = None,
+        stroke_opacity: float | None = None,
+        family: bool = True,
+        **vmobject_style: Any,
+    ) -> Self:
+        """Set the colour of the faces and of their outlines.
+
+        The other arguments of :meth:`.VMobject.set_style` (background strokes,
+        sheen, background images) have no effect on meshes.
+        """
+        self.set_fill(fill_color, fill_opacity, family=family)
+        return self.set_stroke(
+            stroke_color, stroke_width, stroke_opacity, family=family
+        )
+
+    @property
+    def fill_color(self) -> ManimColor:
+        """The colour of the first vertex."""
+        return ManimColor(self.rgbas[0, :3])
+
+    @property
+    def fill_opacity(self) -> float:
+        """The highest opacity of the vertices."""
+        return float(self.rgbas[:, 3].max())
+
+    def get_fill_color(self) -> ManimColor:
+        return self.fill_color
+
+    def get_fill_opacity(self) -> float:
+        return self.fill_opacity
+
+    @property
+    def stroke_color(self) -> ManimColor:
+        """The colour of the first face's outline."""
+        return ManimColor(self.stroke_rgbas[0, :3])
+
+    @property
+    def stroke_opacity(self) -> float:
+        return float(self.stroke_rgbas[:, 3].max())
+
+    def get_stroke_color(self) -> ManimColor:
+        return self.stroke_color
+
+    def get_stroke_width(self) -> float:
+        return self.stroke_width
 
     def set_opacity(self, opacity: float, family: bool = True) -> Self:
         rgbas = np.array(self.rgbas)
         rgbas[:, 3] = opacity
         self.rgbas = rgbas
+        if family:
+            for submob in self.submobjects:
+                submob.set_opacity(opacity, family=True)
         return self
 
     def fade(self, darkness: float = 0.5, family: bool = True) -> Self:
@@ -152,18 +236,42 @@ class MeshMobject(Mobject):
         color: ParsableManimColor | None = None,
         width: float | None = None,
         opacity: float | None = None,
+        background: bool = False,
         family: bool = True,
     ) -> Self:
-        """Set the outlines of the faces."""
-        rgba = self.stroke_rgbas[0]
-        self.stroke_rgbas = [
-            color_to_rgba(
-                ManimColor(rgba[:3]) if color is None else color,
-                rgba[3] if opacity is None else opacity,
-            )
-        ]
+        """Set the outlines of the faces (and, with ``family``, those of its
+        submobjects). Meshes have no background strokes.
+        """
+        if family:
+            for submob in self.submobjects:
+                if hasattr(submob, "set_stroke"):
+                    submob.set_stroke(
+                        color, width, opacity, background=background, family=True
+                    )
+        if background:
+            return self
+        if color is not None or opacity is not None:
+            rgbas = np.array(self.stroke_rgbas)
+            if color is not None:
+                rgbas = np.repeat([color_to_rgba(color)], len(rgbas), axis=0)
+                rgbas[:, 3] = self.stroke_rgbas[:, 3]
+            if opacity is not None:
+                rgbas[:, 3] = opacity
+            self.stroke_rgbas = rgbas
         if width is not None:
             self.stroke_width = width
+        return self
+
+    # What VMobject methods ask of the members of a group.
+
+    def set_sheen(self, *args: Any, **kwargs: Any) -> Self:
+        """Meshes have no sheen; for groups of vectorized mobjects and meshes."""
+        return self
+
+    def color_using_background_image(self, *args: Any, **kwargs: Any) -> Self:
+        """Meshes have no background image; for groups of vectorized mobjects and
+        meshes.
+        """
         return self
 
     def get_faces(self) -> np.ndarray:
@@ -248,7 +356,10 @@ class MeshMobject(Mobject):
         if len(faces):
             # Faces made of triangles in order, the same number each.
             per_face = count // len(faces)
-            self.faces = faces[low // per_face : -(-high // per_face)]
+            shown = slice(low // per_face, -(-high // per_face))
+            self.faces = faces[shown]
+            if len(mobject.stroke_rgbas) == len(faces) > 1:
+                self.stroke_rgbas = mobject.stroke_rgbas[shown]
         return self
 
     # Shape
