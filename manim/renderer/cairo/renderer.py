@@ -15,8 +15,9 @@ from ...mobject.types.image_mobject import ImageMobjectFromCamera
 from ...scene.scene_file_writer import SceneFileWriter
 from ...utils.iterables import list_update
 from .._execution import _RendererExecutionView
+from .._reuse import PrefixMemo, node_key, view_key
 from ..protocol import RenderConfig, RendererCapabilities, RendererState
-from .rendering import _CairoDrawingContext
+from .rendering import _CairoDrawingContext, reusable_boundary
 from .target import _CairoRasterSettings, _CairoRenderTarget, _ImageFiles
 
 if TYPE_CHECKING:
@@ -68,8 +69,10 @@ class CairoRenderer(_RendererExecutionView):
         self._final_scene: Scene | None = None
         self._sub_targets: dict[int, _CairoRenderTarget] = {}
         self._camera_view_pixels: dict[int, RGBAPixelArray] = {}
-        self.static_image: RGBAPixelArray | None = None
-        self._render_all_mobjects = False
+        # The drawing of the leading nodes of a frame of the whole scene that did
+        # not change, and their keys.
+        self._memo = PrefixMemo()
+        self._saved_pixels: RGBAPixelArray | None = None
         self._state = RendererState.UNOPENED
 
     @property
@@ -118,9 +121,6 @@ class CairoRenderer(_RendererExecutionView):
 
     def _start_animation(self) -> None:
         self._ensure_open()
-
-    def _prepare_animation(self, scene: Scene) -> None:
-        self.save_static_frame_data(scene, scene.static_mobjects)
 
     def _present_frame(self, scene: Scene, frame_offset: float) -> None:
         pass
@@ -178,6 +178,8 @@ class CairoRenderer(_RendererExecutionView):
         mobjects: Iterable[Mobject],
         include_submobjects: bool = True,
         excluded_mobjects: list[Mobject] | None = None,
+        reuse: bool = False,
+        background: Any = None,
     ) -> None:
         """Draw what ``camera`` sees, camera views first; views show no views."""
         target = self._get_target()
@@ -222,16 +224,58 @@ class CairoRenderer(_RendererExecutionView):
                 pixels = camera_view_pixels.get(view.camera_id)
             return pixels
 
-        _CairoDrawingContext(
+        context = _CairoDrawingContext(
             camera=camera._state(),
             target=target,
             image_resolver=resolve_image,
             use_z_index=camera.use_z_index,
-        ).draw(
+        )
+        context.start_frame()
+        nodes = context.nodes(
             mobject_list,
             include_submobjects=include_submobjects,
             excluded_mobjects=excluded_mobjects,
         )
+        if not reuse:
+            context.draw_nodes(nodes)
+            return
+        self._draw_reusing(context, nodes, background)
+
+    def _draw_reusing(
+        self,
+        context: _CairoDrawingContext,
+        nodes: list[RNode],
+        background: Any,
+    ) -> None:
+        """Draw ``nodes`` over the target's background, copying the drawing of the
+        leading nodes that did not change since they were saved.
+
+        After a frame, the drawing of the nodes that did not change since the
+        frame before is saved, to be copied in the next frames while they stay
+        the same.
+        """
+        target = context.target
+        settings = target.settings
+        keys = [node_key(node) for node in nodes]
+        view = view_key(
+            context.camera, (settings.pixel_width, settings.pixel_height), background
+        )
+        memo = self._memo
+        start = memo.reusable(keys, view)
+        if start:
+            target.set_pixels(self._saved_pixels)
+        else:
+            save = reusable_boundary(nodes, memo.worth_saving(keys, view))
+            if save:
+                context.draw_nodes(nodes[:save])
+                self._saved_pixels = target.read_pixels()
+                memo.saved(keys[:save], view)
+                start = save
+            else:
+                memo.forget_saved()
+                self._saved_pixels = None
+        context.draw_nodes(nodes[start:])
+        memo.drew(keys, view)
 
     def update_frame(
         self,
@@ -250,19 +294,21 @@ class CairoRenderer(_RendererExecutionView):
         if self.skip_animations and not ignore_skipping:
             return
         self._final_scene = None
+        mobjects_given = mobjects or None
         if not mobjects:
             mobjects = list_update(scene.mobjects, scene.foreground_mobjects)
         target = self._get_target()
-        if self.static_image is not None:
-            target.set_pixels(self.static_image)
-        else:
-            target.reset(_render_config(self.camera, target))
-
+        config = _render_config(self.camera, target)
+        target.reset(config)
         self._draw_frame(
             camera=self.camera,
             mobjects=mobjects,
             include_submobjects=include_submobjects,
             excluded_mobjects=excluded_mobjects,
+            # Reuse only between frames of the whole scene: a frame of some
+            # mobjects only has other nodes.
+            reuse=mobjects_given is None,
+            background=_background_key(config),
         )
 
     def render_mobjects(
@@ -283,12 +329,9 @@ class CairoRenderer(_RendererExecutionView):
         self,
         scene: Scene,
         time: float,
-        moving_mobjects: Iterable[Mobject] | None = None,
     ) -> None:
-        if self._render_all_mobjects:
-            moving_mobjects = None
         # Manager advances animation time and sends the pixels to the writer.
-        self.update_frame(scene, moving_mobjects)
+        self.update_frame(scene)
 
     def get_frame(self) -> RGBAPixelArray:
         """Copy the current image to an RGBA array, with row zero at the top."""
@@ -336,27 +379,6 @@ class CairoRenderer(_RendererExecutionView):
         self.update_frame(scene, ignore_skipping=True)
         self.get_image().show()
 
-    def save_static_frame_data(
-        self,
-        scene: Scene,
-        static_mobjects: Iterable[Mobject],
-    ) -> RGBAPixelArray | None:
-        self._ensure_open()
-        self.static_image = None
-        # A nested view can contain any dynamic scene mobject regardless of the
-        # view's position in the primary draw order. Keep all primary inputs
-        # dynamic until the Manager cutover supplies explicit dynamic roots.
-        self._render_all_mobjects = (
-            isinstance(self.camera, MultiCamera)
-            and bool(self.camera.image_mobjects_from_cameras)
-            and bool(scene.moving_mobjects)
-        )
-        if self._render_all_mobjects or not static_mobjects:
-            return None
-        self.update_frame(scene, mobjects=static_mobjects)
-        self.static_image = self.get_frame()
-        return self.static_image
-
     def update_skipping_status(self) -> None:
         self._scene._get_manager()._update_skipping_status()
 
@@ -367,7 +389,6 @@ class CairoRenderer(_RendererExecutionView):
             self.file_writer.finish()
         # Skipped and cached plays do not draw, so the buffer may not show the
         # final state. Draw it when the pixels are read, not for every scene.
-        self.static_image = None
         self._final_scene = scene
 
         if output.is_still or (not self.num_plays and output.fallback_to_still):
@@ -417,8 +438,8 @@ class CairoRenderer(_RendererExecutionView):
                 del self._sub_targets[key]
         self._camera_view_pixels.clear()
         self._image_files.clear()
-        self.static_image = None
-        self._render_all_mobjects = False
+        self._memo.clear()
+        self._saved_pixels = None
         self._final_scene = None
         if failures:
             self._state = RendererState.CLOSE_FAILED
@@ -437,4 +458,11 @@ def _render_config(camera: Camera, target: _CairoRenderTarget) -> RenderConfig:
         background_opacity=camera.background_opacity,
         camera=camera._state(),
         background_image=camera.background_image,
+    )
+
+
+def _background_key(config: RenderConfig) -> tuple[Any, ...]:
+    return (
+        config.background_image,
+        tuple(config.background_color.to_rgba_with_alpha(config.background_opacity)),
     )

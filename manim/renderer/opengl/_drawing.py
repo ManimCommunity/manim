@@ -26,6 +26,7 @@ from manim.renderer import _view
 from manim.renderer._lighting import AMBIENT, DEFAULT_LIGHT_INTENSITY
 from manim.renderer._mesh import MESH_STROKE_WIDTH_UNIT, faces_of
 from manim.renderer._paint import paint_colors, shows
+from manim.renderer._reuse import PrefixMemo, node_key, view_key
 from manim.renderer.projection import project_points
 from manim.renderer.snapshot import (
     FacingCamera,
@@ -362,27 +363,75 @@ class SnapshotDrawing:
         self._fill = WindingFill(renderer)
         self._textures = _TextureCache(renderer)
         self._normals = _NormalCache()
+        self._layer: _Layer | None = None
+        self._memo = PrefixMemo()
 
     def release(self) -> None:
         self._fill.release()
         self._textures.release()
+        if self._layer is not None:
+            self._layer.release()
+            self._layer = None
+        self._memo.clear()
 
     def draw(
         self,
         nodes: Iterable[RNode],
         target: DrawTarget,
         views: dict[int, moderngl.Texture] | None = None,
+        background: Any = None,
     ) -> None:
-        """Draw ``nodes`` in order into ``target``; consecutive paths are batched.
+        """Draw ``nodes`` in order into ``target``, which holds only its background.
 
-        ``views`` holds the pixels of camera views (``RCameraView`` nodes) by uid.
+        Consecutive paths are batched. ``views`` holds the pixels of camera views
+        (``RCameraView`` nodes) by uid; ``background`` identifies what the target
+        was cleared to.
+
+        The drawing of the leading nodes that did not change since the previous
+        frame is kept in a layer and copied instead of drawn again while they and
+        the view stay the same (see :mod:`manim.renderer._reuse`).
         """
-        self._base_target = target
-        self._placed_targets: dict[str, DrawTarget] = {"normal": target}
         self._geometry.next_frame()
         self._textures.next_frame()
         self._normals.next_frame()
         nodes = list(nodes)
+        keys = [node_key(node) for node in nodes]
+        view = view_key(target.camera, target.size, background)
+        memo = self._memo
+        context = self._renderer.context
+        start = memo.reusable(keys, view)
+        if start:
+            assert self._layer is not None
+            context.copy_framebuffer(target.framebuffer, self._layer.framebuffer)
+        else:
+            start = memo.worth_saving(keys, view)
+            if start:
+                layer = self._layer
+                if layer is None or layer.size != target.size:
+                    if layer is not None:
+                        layer.release()
+                    layer = self._layer = _Layer(self._renderer, target)
+                context.copy_framebuffer(layer.framebuffer, target.framebuffer)
+                self._draw_nodes(
+                    nodes[:start], target._replace(framebuffer=layer.framebuffer), views
+                )
+                memo.saved(keys[:start], view)
+                context.copy_framebuffer(target.framebuffer, layer.framebuffer)
+            else:
+                memo.forget_saved()
+        self._draw_nodes(nodes[start:], target, views)
+        memo.drew(keys, view)
+
+    def _draw_nodes(
+        self,
+        nodes: list[RNode],
+        target: DrawTarget,
+        views: dict[int, moderngl.Texture] | None,
+    ) -> None:
+        if not nodes:
+            return
+        self._base_target = target
+        self._placed_targets: dict[str, DrawTarget] = {"normal": target}
         paths = [node for node in nodes if isinstance(node.payload, RPath)]
         self._target = target
         geometry = iter(self._geometry.get(paths, self._tolerance()) if paths else ())
@@ -926,6 +975,30 @@ _CORNERS = np.array(np.meshgrid([0, 3], [1, 4], [2, 5], indexing="ij")).reshape(
 
 def _background_width(path: RPath) -> float:
     return 0.0 if path.background_stroke is None else path.background_stroke.width
+
+
+class _Layer:
+    """An offscreen copy of a target with the drawing of some nodes."""
+
+    def __init__(self, renderer: OpenGLRenderer, target: DrawTarget) -> None:
+        context = renderer.context
+        self.size = target.size
+        self.texture = context.texture(self.size, components=4)
+        self.depth = (
+            context.depth_renderbuffer(self.size)
+            if target.framebuffer.depth_attachment is not None
+            else None
+        )
+        self.framebuffer = context.framebuffer([self.texture], self.depth)
+        renderer._resources.callback(self.release)
+
+    def release(self) -> None:
+        """Release the GPU objects; safe to call more than once."""
+        for resource in (self.framebuffer, self.texture, self.depth):
+            if resource is not None and not isinstance(
+                resource.mglo, moderngl.InvalidObject
+            ):
+                resource.release()
 
 
 class _NormalCache:

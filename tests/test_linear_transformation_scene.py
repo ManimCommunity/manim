@@ -23,3 +23,17 @@ def test_ghost_vectors_len_and_types():
     assert isinstance(ghosts, VGroup)
     assert isinstance(ghosts[0], VGroup)
     assert all(isinstance(x, Vector) for x in ghosts[0])
+
+
+def test_moving_mobjects_survive_plays(dry_run):
+    # Scene used to replace moving_mobjects at the start of every play.
+    class Moving(LinearTransformationScene):
+        def construct(self):
+            vector = Vector([1, 0])
+            self.add_moving_mobject(vector, target_mobject=Vector([0, 1]))
+            self.wait(0.1)
+            self.moving = list(self.moving_mobjects)
+
+    scene = Moving()
+    scene.render()
+    assert [type(mobject) for mobject in scene.moving] == [Vector]

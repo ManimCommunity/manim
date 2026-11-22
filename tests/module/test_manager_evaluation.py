@@ -76,7 +76,6 @@ def test_real_evaluation_matches_uncached_render(settings, monkeypatch):
     manager = Manager(evaluated)
     reject = Mock(side_effect=AssertionError("raster/output policy executed"))
     monkeypatch.setattr(evaluated.renderer, "_start_animation", reject)
-    monkeypatch.setattr(evaluated.renderer, "_prepare_animation", reject)
     monkeypatch.setattr(evaluated.renderer, "scene_finished", reject)
     monkeypatch.setattr("manim.manager.SceneFileWriter", reject)
     monkeypatch.setattr(evaluated.renderer, "render", reject)

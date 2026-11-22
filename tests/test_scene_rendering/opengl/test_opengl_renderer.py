@@ -123,7 +123,7 @@ def test_render_without_frame_output_skips_gpu_readback(
     renderer = scene.renderer
     renderer.get_frame = Mock(wraps=renderer.get_frame)
 
-    renderer.render(scene, 0, [])
+    renderer.render(scene, 0)
 
     renderer.get_frame.assert_not_called()
 

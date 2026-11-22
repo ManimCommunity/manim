@@ -11,7 +11,7 @@ from manim import (
     tempconfig,
 )
 
-RASTER_CALLS = ("render", "get_frame", "_prepare_animation", "_present_frozen_frame")
+RASTER_CALLS = ("render", "get_frame", "_start_animation", "_present_frozen_frame")
 
 
 @pytest.fixture(params=["cairo", "opengl"])
@@ -95,13 +95,13 @@ def test_rendered_plays_in_a_partly_skipped_scene_still_draw(settings, monkeypat
     with tempconfig({"from_animation_number": 1}):
         scene.render()
 
-    assert counters["_prepare_animation"].call_count == 2
+    assert counters["_start_animation"].call_count == 2
     assert counters["_present_frozen_frame"].call_count == 1
     assert counters["render"].call_count > 0
 
 
 def test_static_layer_is_not_stale_after_an_excluded_play(settings):
-    """Skipping _prepare_animation must not leak a stale Cairo static image."""
+    """A play left out of the output must not leave a stale reused drawing."""
 
     class Static(Scene):
         def construct(self):

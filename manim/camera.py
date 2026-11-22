@@ -176,14 +176,6 @@ class Camera:
             ],
         )
 
-    def get_mobjects_indicating_movement(self) -> list[Mobject]:
-        """Return mobjects whose animation requires the scene to be redrawn.
-
-        The scene uses these controls to decide whether it can reuse an image of
-        its stationary mobjects during an animation.
-        """
-        return [self.frame]
-
     @overload
     def auto_zoom(
         self,
@@ -319,23 +311,6 @@ class MultiCamera(Camera):
             raise TypeError("Nested Cairo views require a Cairo Camera.")
         self.image_mobjects_from_cameras.append(image_mobject_from_camera)
 
-    def get_mobjects_indicating_movement(self) -> list[Mobject]:
-        """Return the controls of this camera and of the cameras of its views.
-
-        Camera views do not show camera views, so the views of those cameras do
-        not count.
-        """
-        indicators = super().get_mobjects_indicating_movement()
-        for image_mobject in self.image_mobjects_from_cameras:
-            camera = image_mobject.camera
-            controls = (
-                Camera.get_mobjects_indicating_movement(camera)
-                if isinstance(camera, MultiCamera)
-                else camera.get_mobjects_indicating_movement()
-            )
-            indicators.extend(controls)
-        return indicators
-
 
 class ThreeDCamera(Camera):
     def __init__(
@@ -398,9 +373,6 @@ class ThreeDCamera(Camera):
     def zoom(self) -> float:
         """The zoom factor."""
         return self.get_zoom()
-
-    def get_mobjects_indicating_movement(self) -> list[Mobject]:
-        return [self.frame, self.light_source, *self.get_value_trackers()]
 
     def get_value_trackers(self) -> list[ValueTracker]:
         """A list of :class:`ValueTrackers <.ValueTracker>` of phi, theta, focal_distance,

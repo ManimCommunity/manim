@@ -64,7 +64,7 @@ def test_raw_backend_drawing_does_not_advance_clock_or_write(scene, monkeypatch)
     manager.time = 2
     write = Mock(side_effect=AssertionError("drawing delivered output"))
     monkeypatch.setattr(manager.file_writer, "write_frame", write)
-    scene.renderer.render(scene, 0, scene.mobjects)
+    scene.renderer.render(scene, 0)
     assert manager.time == 2
     write.assert_not_called()
 

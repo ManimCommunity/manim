@@ -888,7 +888,7 @@ class Manager(Generic[SceneT]):
         """
         self._validate_execution()
         scene = self.scene
-        self.renderer.render(scene, frame_offset, scene.moving_mobjects)
+        self.renderer.render(scene, frame_offset)
         if self.skip_animations:
             return
         if self._wants_frame_pixels:

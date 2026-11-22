@@ -172,22 +172,15 @@ class _TargetDrawer(_Drawer):
         renderer = self._manager.renderer
         scene = self._manager.scene
         if not self._prepared:
-            # Drawing resources and Cairo's background of still mobjects, once
-            # per play and only for plays that draw.
+            # Drawing resources, once per play and only for plays that draw.
             renderer._start_animation()
-            renderer._prepare_animation(scene)
             self._prepared = True
-        renderer.render(scene, frame.offset, scene.moving_mobjects)
+        renderer.render(scene, frame.offset)
 
     def pixels(self, frame: _Frame) -> RGBAPixelArray:
         return self._manager.renderer.get_frame()
 
     def end_play(self, play: _Play) -> None:
-        if self._prepared and not play.frozen:
-            # After a frozen wait, the background of still mobjects stays, so that
-            # a frame drawn between plays (see Manager._render_preview_frame) shows
-            # the still mobjects too. The next play draws a new background.
-            self._manager.renderer.static_image = None  # type: ignore[union-attr]
         self._prepared = False
 
 

@@ -29,7 +29,7 @@ from .shader import shader_program_cache
 from .window_settings import _WindowSettings
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterable, Iterator
+    from collections.abc import Callable, Iterator
 
     from manim._config.render_session import RenderSessionSpec
     from manim.animation.animation import Animation
@@ -469,7 +469,10 @@ class OpenGLRenderer(_RendererExecutionView):
             self.perspective_uniforms,
         )
         self._snapshot_drawing.draw(
-            _views.sort_for_display(self._camera_state, nodes), target, views
+            _views.sort_for_display(self._camera_state, nodes),
+            target,
+            views,
+            background=_background_rgba(self.camera),
         )
 
     def _draw_camera_views(self, mobjects: list[Mobject]) -> dict[int, Any]:
@@ -565,9 +568,6 @@ class OpenGLRenderer(_RendererExecutionView):
         self.open()
         self.animation_start_time = time.time()
 
-    def _prepare_animation(self, scene: Scene) -> None:
-        pass
-
     def _present_frozen_frame(self, scene: Scene, duration: float) -> None:
         if self.window is not None:
             self.window.swap_buffers()
@@ -587,9 +587,7 @@ class OpenGLRenderer(_RendererExecutionView):
             return
         self.window.swap_buffers()
 
-    def render(
-        self, scene: Scene, frame_offset: float, moving_mobjects: list[Mobject]
-    ) -> None:
+    def render(self, scene: Scene, frame_offset: float) -> None:
         """Draw a single frame of the scene's current state using OpenGL.
 
         Parameters
@@ -599,9 +597,6 @@ class OpenGLRenderer(_RendererExecutionView):
         frame_offset
             Animation-relative time in seconds. Accepted for the common renderer
             interface; drawing itself does not use this value.
-        moving_mobjects
-            Accepted for the common renderer interface. OpenGL draws the full
-            scene rather than using Cairo's moving/static split.
 
         Notes
         -----
@@ -644,7 +639,6 @@ class OpenGLRenderer(_RendererExecutionView):
         self.frame_buffer_object.clear(*_background_rgba(self.camera))
 
         self.refresh_perspective_uniforms(self.camera)
-
         self._draw_snapshots(scene)
 
     @contextlib.contextmanager
@@ -802,11 +796,6 @@ class OpenGLRenderer(_RendererExecutionView):
             -1,  # orientation (-1 = bottom to top, 1 = top to bottom)
         )
         return image
-
-    def save_static_frame_data(
-        self, scene: Scene, static_mobjects: Iterable[Mobject]
-    ) -> None:
-        self._ensure_not_closed()
 
     def get_frame_buffer_object(
         self,

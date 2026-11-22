@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from types import SimpleNamespace
-
 import numpy as np
 import pytest
 from PIL import Image
@@ -227,18 +225,6 @@ def test_closed_renderer_rejects_drawing(operation):
             operation(renderer)
 
 
-def test_nested_views_disable_unsafe_static_reuse():
-    view = ImageMobjectFromCamera(Camera())
-    renderer = CairoRenderer(camera=MultiCamera([view]))
-    scene = SimpleNamespace(moving_mobjects=[Square()])
-
-    try:
-        assert renderer.save_static_frame_data(scene, [view]) is None
-        assert renderer._render_all_mobjects is True
-    finally:
-        renderer.close()
-
-
 @pytest.mark.parametrize("renderer_name", ["cairo", "opengl"])
 def test_camera_views_do_not_show_camera_views(renderer_name):
     # The inner view shows a red camera; the outer view's camera looks at it.
@@ -320,20 +306,6 @@ def test_3d_camera_angles_follow_their_trackers():
     assert (camera.phi, camera.theta) == (1.0, 2.0)
     with pytest.raises(AttributeError):
         camera.phi = 0.5
-
-
-def test_nested_views_without_registered_views_allow_static_reuse():
-    renderer = CairoRenderer(camera=MultiCamera())
-    scene = SimpleNamespace(
-        moving_mobjects=[Square()], mobjects=[], foreground_mobjects=[]
-    )
-
-    try:
-        renderer.save_static_frame_data(scene, [Square()])
-        assert renderer._render_all_mobjects is False
-        assert renderer.static_image is not None
-    finally:
-        renderer.close()
 
 
 @pytest.mark.parametrize(

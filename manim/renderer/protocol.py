@@ -20,7 +20,6 @@ from typing import TYPE_CHECKING, Any, ClassVar, Protocol, runtime_checkable
 if TYPE_CHECKING:
     import numpy as np
 
-    from manim.mobject.mobject import Mobject
     from manim.scene.scene import Scene
     from manim.typing import Point3D, RGBAPixelArray
     from manim.utils.color import ManimColor
@@ -150,11 +149,7 @@ class _AnimationRenderer(Protocol):
 
     def _start_animation(self) -> None: ...
 
-    def _prepare_animation(self, scene: Scene) -> None: ...
-
-    def render(
-        self, scene: Scene, frame_offset: float, moving_mobjects: list[Mobject], /
-    ) -> None: ...
+    def render(self, scene: Scene, frame_offset: float, /) -> None: ...
 
     def get_frame(self) -> RGBAPixelArray: ...
 

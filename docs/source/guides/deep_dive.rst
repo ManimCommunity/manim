@@ -689,10 +689,8 @@ added twice, as mentioned above: if they were present in the scene
 ``Scene.mobjects`` list before (even if they were contained as a
 child of some other mobject), they are first removed from the list.
 The way :meth:`.Scene.restructure_mobjects` works is rather aggressive:
-It always operates on a given list of mobjects; in the ``add`` method
-two different lists occur: the default one, ``Scene.mobjects`` (no extra
-keyword argument is passed), and ``Scene.moving_mobjects`` (which we will
-discuss later in more detail). It iterates through all of the members of
+It operates on a given list of mobjects (by default ``Scene.mobjects``).
+It iterates through all of the members of
 the list, and checks whether any of the mobjects passed in ``to_remove``
 are contained as children (in any nesting level). If so, **their parent
 mobject is deconstructed** and their siblings are inserted directly
@@ -719,14 +717,11 @@ After the mobject list is "restructured", the mobject to be added
 are simply appended to ``Scene.mobjects``. In our toy example,
 the ``Scene.mobjects`` list is actually empty, so the
 ``restructure_mobjects`` method does not actually do anything. The
-``orange_square`` is simply added to ``Scene.mobjects``, and as
-the aforementioned ``Scene.moving_mobjects`` list is, at this point,
-also still empty, nothing happens and :meth:`.Scene.add` returns.
+``orange_square`` is simply added to ``Scene.mobjects``, and
+:meth:`.Scene.add` returns.
 
-We will hear more about the ``moving_mobject`` list when we discuss
-the render loop. Before we do that, let us look at the next line
-of code in our toy example, which includes the initialization of
-an animation class,
+Let us look at the next line of code in our toy example, which includes
+the initialization of an animation class,
 ::
 
   ReplacementTransform(orange_square, blue_circle, run_time=3)
@@ -910,23 +905,6 @@ animation suspends updater functions being called on its mobject, and
 it sets its mobject to the state that corresponds to the first frame
 of the animation.
 
-After starting the animations, :meth:`.Scene.begin_animations` also prepares
-Cairo's lists of moving and static mobjects. It calls
-:meth:`.Scene.get_moving_and_static_mobjects` and stores the result in
-``moving_mobjects`` and ``static_mobjects``. The renderer uses these lists to
-reuse the background image while redrawing the moving mobjects.
-
-.. NOTE::
-
-  The mechanism that determines static and moving mobjects is
-  specific for the Cairo renderer, the OpenGL renderer works differently.
-  Basically, moving mobjects are determined by checking whether they,
-  any of their children, or any of the mobjects "below" them (in the
-  sense of the order in which mobjects are processed in the scene)
-  either have an update function attached, or whether they appear
-  in one of the current animations. See the implementation of
-  :meth:`.Scene.get_moving_mobjects` for more details.
-
 Up to this very point, we did not actually render any (partial)
 image or movie files from the scene yet. This is, however, about to change.
 Before we enter the render loop, let us briefly revisit our toy
@@ -948,35 +926,13 @@ all of its relevant animation attributes (i.e., compatible copies
 of the starting and the target mobject so that it can safely interpolate
 between the two).
 
-The mechanism determining static and moving mobjects considers
-all of the scenes mobjects (at this point only the
-``orange_square``), and determines that the ``orange_square`` is
-bound to an animation that is currently played. As a result,
-the square is classified as a "moving mobject".
-
 Time to render some frames.
 
 
 The render loop (for real this time)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-As mentioned above, due to the mechanism that determines static and moving
-mobjects in the scene, the renderer knows which mobjects it can paint
-statically to the background of the scene. Practically, this means that
-it partially renders a scene (to produce a background image), and then
-when iterating through the time progression of the animation only the
-"moving mobjects" are re-painted on top of the static background.
-
-When the first frame of a play is drawn,
-:meth:`.CairoRenderer.save_static_frame_data` is called, which
-first checks whether there are currently any static mobjects, and if there
-are, it updates the frame (only with the static mobjects; more about how
-exactly this works in a moment) and then saves a NumPy array representing
-the rendered frame in the ``static_image`` attribute. In our toy example,
-there are no static mobjects, and so the ``static_image`` attribute is
-simply set to ``None``.
-
-Next, the manager checks whether this is a frozen wait. If so, the run loop
+The manager first checks whether this is a frozen wait. If so, the run loop
 reports a single frame that is shown ``int(duration * frame_rate)`` times. The
 encoder draws it once and passes it to the writer with that repeat count, and the
 clock advances by that many frames without updating the mobjects again. OpenGL
@@ -1018,7 +974,7 @@ the animation and requests a frame at each time stamp. Here is how it does that:
     is computed (``alpha = t / animation.run_time``), which is then used to
     update the state of the animation with a call to :meth:`.Animation.interpolate`.
   - After all of the passed animations have been processed, the updater functions
-    of all mobjects in the scene, all meshes, and finally those attached to
+    of all mobjects in the scene, and finally those attached to
     the scene itself are run.
 
 At this point, the internal (Python) state of all mobjects has been updated
@@ -1026,15 +982,22 @@ to match the currently processed timestamp. If the play is part of the output,
 it is now time to *take a picture*!
 
 To render an image, the encoder calls the corresponding method of the renderer,
-:meth:`.CairoRenderer.render` and passes just the list of *moving mobjects* (remember,
-the *static mobjects* are assumed to have already been painted statically to
-the background of the scene). All of the hard work then happens when the renderer
+:meth:`.CairoRenderer.render`. All of the hard work then happens when the renderer
 updates its current frame via a call to :meth:`.CairoRenderer.update_frame`:
 
-First, the renderer prepares its Cairo image buffer. If a reusable ``static_image``
-is available, the renderer copies it into that buffer; otherwise it resets the buffer
-using the camera's background color or image. Background images are resized to match
-the buffer's dimensions.
+First, the renderer resets its Cairo image buffer using the camera's background
+color or image. Background images are resized to match the buffer's dimensions.
+
+The renderer then takes render snapshots of the scene's mobjects (see
+:mod:`manim.renderer.snapshot`), in drawing order. Each snapshot has a key made
+from the versions of the mobject's fields, so the renderer can tell what changed
+since the previous frame without being told: the snapshots at the start of the
+list with the same keys, from the same view, as in the previous frame give the
+same pixels. After a frame in which some leading snapshots did not change,
+the renderer saves their drawing and copies it in the following frames as long as
+they stay the same; only the rest is drawn. In our toy example, the square is the
+only mobject and changes in every frame, so every frame draws it. Both renderers
+work this way (see :mod:`manim.renderer._reuse`).
 
 Things get a bit technical here, and at some point it is more efficient to delve into
 the implementation -- but the drawing process can be summarized as follows:

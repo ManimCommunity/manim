@@ -56,7 +56,6 @@ from .._config.output_plan import (
 from .._config.render_session import resolve_render_session
 from .._run.frames import frame_count
 from ..animation.animation import Animation, Wait, prepare_animation
-from ..animation.composition import AnimationGroup
 from ..camera import Camera, ThreeDCamera
 from ..constants import *
 from ..manager import Manager
@@ -67,7 +66,7 @@ from ..scene.scene_file_writer import _SceneFileWriterSettings
 from ..utils.deprecation import deprecated
 from ..utils.exceptions import RerunSceneException
 from ..utils.family import extract_mobject_family_members
-from ..utils.iterables import list_difference_update, list_update
+from ..utils.iterables import list_update
 from ..utils.module_ops import scene_classes_from_file
 
 if TYPE_CHECKING:
@@ -199,8 +198,6 @@ class Scene:
 
         self.animations: list[Animation] | None = None
         self.stop_condition: Callable[[], bool] | None = None
-        self.moving_mobjects: list[Mobject] = []
-        self.static_mobjects: list[Mobject] = []
         self.time_progression: tqdm[float] | None = None
         self.duration: float = 0.0
         self.last_t = 0.0
@@ -579,12 +576,6 @@ class Scene:
         ]
         self.restructure_mobjects(to_remove=new_and_foreground_mobjects)
         self.mobjects += new_and_foreground_mobjects
-        if self.moving_mobjects:
-            self.restructure_mobjects(
-                to_remove=new_and_foreground_mobjects,
-                mobject_list_name="moving_mobjects",
-            )
-            self.moving_mobjects += new_and_foreground_mobjects
         return self
 
     def add_mobjects_from_animations(self, animations: list[Animation]) -> None:
@@ -928,88 +919,6 @@ class Scene:
         self.foreground_mobjects = []
         return self
 
-    def get_moving_mobjects(self, *animations: Animation) -> list[Mobject]:
-        """
-        Gets all moving mobjects in the passed animation(s).
-
-        Parameters
-        ----------
-        *animations
-            The animations to check for moving mobjects.
-
-        Returns
-        ------
-        list
-            The list of mobjects that could be moving in
-            the Animation(s)
-        """
-        # Go through mobjects from start to end, and
-        # as soon as there's one that needs updating of
-        # some kind per frame, return the list from that
-        # mobject's earliest ancestor.
-
-        def _collect_animation_mobjects(
-            nested_animations: Iterable[Animation],
-        ) -> list[Mobject]:
-            animation_mobjects: list[Mobject] = []
-            for anim in nested_animations:
-                # Keep composition wrappers as conservative boundaries for the
-                # static frame cache, in addition to their nested animations.
-                animation_mobjects.extend(anim.mobject.get_family())
-                if isinstance(anim, AnimationGroup):
-                    animation_mobjects.extend(
-                        _collect_animation_mobjects(anim.animations),
-                    )
-            return animation_mobjects
-
-        animation_mobjects = set(_collect_animation_mobjects(animations))
-
-        mobjects = self.get_mobject_family_members()
-
-        def consider_moving(mob: Mobject) -> bool:
-            return (
-                mob in animation_mobjects
-                or len(mob.updaters) > 0
-                or mob in self.foreground_mobjects
-                or any(consider_moving(m) for m in mob.submobjects)
-            )
-
-        if self.always_update_mobjects or self.updaters:
-            return list(self.mobjects)
-
-        i = next((i for i, mob in enumerate(mobjects) if consider_moving(mob)), None)
-        moving_mobjects = [] if i is None else mobjects[i:]
-        movement_indicators: list[Mobject] = getattr(
-            self.camera,
-            "get_mobjects_indicating_movement",
-            lambda: [],
-        )()
-        moving_family = extract_mobject_family_members(moving_mobjects)
-        if any(indicator in moving_family for indicator in movement_indicators):
-            # A camera control changes the projection of all scene mobjects.
-            return list_update(self.mobjects, moving_mobjects)
-        return moving_mobjects
-
-    def get_moving_and_static_mobjects(
-        self, animations: Iterable[Animation]
-    ) -> tuple[list[Mobject], list[Mobject]]:
-        all_mobjects = list_update(self.mobjects, self.foreground_mobjects)
-        all_mobject_families = extract_mobject_family_members(
-            all_mobjects,
-            use_z_index=self.renderer.camera.use_z_index,
-            only_those_with_points=True,
-        )
-        moving_mobjects = self.get_moving_mobjects(*animations)
-        all_moving_mobject_families = extract_mobject_family_members(
-            moving_mobjects,
-            use_z_index=self.renderer.camera.use_z_index,
-        )
-        static_mobjects = list_difference_update(
-            all_mobject_families,
-            all_moving_mobject_families,
-        )
-        return all_moving_mobject_families, static_mobjects
-
     def compile_animations(
         self,
         *args: Animation | Mobject | _AnimationBuilder,
@@ -1316,8 +1225,6 @@ class Scene:
 
         self.last_t = 0
         self.stop_condition = None
-        self.moving_mobjects = []
-        self.static_mobjects = []
 
         self.duration = self.get_run_time(self.animations)
         if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
@@ -1337,13 +1244,6 @@ class Scene:
         for animation in self.animations:
             animation._setup_scene(self)
             animation.begin()
-
-        if config.renderer == RendererType.CAIRO:
-            # Identify mobjects whose pixels can be reused between frames.
-            (
-                self.moving_mobjects,
-                self.static_mobjects,
-            ) = self.get_moving_and_static_mobjects(self.animations)
 
     def is_current_animation_frozen_frame(self) -> bool:
         """Returns whether the current animation produces a static frame (generally a Wait)."""
