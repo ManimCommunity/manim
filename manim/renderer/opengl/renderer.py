@@ -429,33 +429,8 @@ class OpenGLRenderer:
         *,
         size: tuple[int, int],
     ) -> Framebuffer:
-        """
-        Creates and returns a framebuffer object configured with color
-        and depth attachments.
-
-        Parameters
-        ----------
-        context : moderngl.Context
-            The ModernGL context used to create the framebuffer and
-            its attachments.
-        samples : int, optional
-            The number of samples for multisample anti-aliasing (MSAA) [1]_.
-            Default is 0 (no MSAA).
-
-        Returns
-        -------
-        Framebuffer
-            A framebuffer object with a color texture attachment and
-            a depth renderbuffer attachment, both of ``size`` pixels.
-
-        Notes
-        -----
-        Framebuffer's color attachment is supposed RGBA.
-
-        References
-        ----------
-        .. [1] Wikipedia, "Multisample anti-aliasing",
-               https://en.wikipedia.org/wiki/Multisample_anti-aliasing
+        """A framebuffer of ``size`` pixels with an RGBA texture and a depth
+        renderbuffer, multisampled with ``samples`` samples (0: not).
         """
         pixel_width, pixel_height = size
         num_channels = 4

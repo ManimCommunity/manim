@@ -998,9 +998,10 @@ same pixels. After a frame in which some leading snapshots did not change,
 the renderer saves their drawing and copies it in the following frames as long as
 they stay the same; only the rest is drawn. In our toy example, the square is the
 only mobject and changes in every frame, so every frame draws it. Both renderers
-work this way (see :mod:`manim.renderer._reuse`).
+work this way.
 
-A snapshot is a function of the mobject's own fields: an :class:`.Extractor` keeps
+A snapshot is a function of the mobject's own fields: an
+:class:`~manim.renderer.extract.Extractor` keeps
 the snapshot of each mobject and reuses it while the mobject's field versions stay
 the same, so unchanged mobjects cost almost nothing to look at. Classes that draw
 from other state set ``_drawn_from_fields = False`` and are looked at anew in every

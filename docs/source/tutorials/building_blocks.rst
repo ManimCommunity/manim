@@ -172,17 +172,17 @@ The following scene changes the default aesthetics of the mobjects.
             self.wait(1)
 
 This scene uses two of the main functions that change the visual style of a
-mobject: :meth:`.set_stroke` and :meth:`.set_fill`.  The former changes the
-visual style of the mobject's border while the latter changes the style of the
+mobject: :meth:`~.VMobject.set_stroke` and :meth:`~.VMobject.set_fill`.  The former
+changes the visual style of the mobject's border while the latter changes the style of the
 interior.  By default, most mobjects have a fully transparent interior so you
 must specify the ``opacity`` parameter to display the color.  An
 opacity of ``1.0`` means fully opaque, while ``0.0`` means fully transparent.
 
-Only instances of :class:`.VMobject` implement :meth:`.set_stroke` and
-:meth:`.set_fill`.  Instances of :class:`.Mobject` implement
+Only instances of :class:`.VMobject` implement :meth:`~.VMobject.set_stroke` and
+:meth:`~.VMobject.set_fill`.  Instances of :class:`.Mobject` implement
 :meth:`.~Mobject.set_color` instead.  The vast majority of pre-defined classes
 are derived from :class:`.VMobject` so it is usually safe to assume that you
-have access to :meth:`.set_stroke` and :meth:`.set_fill`.
+have access to :meth:`~.VMobject.set_stroke` and :meth:`~.VMobject.set_fill`.
 
 
 Mobject on-screen order
