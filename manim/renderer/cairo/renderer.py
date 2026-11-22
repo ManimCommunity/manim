@@ -5,7 +5,6 @@ from collections.abc import Iterator, Sequence
 from typing import TYPE_CHECKING, Any, Self
 
 from ..._config import logger
-from .._execution import _RendererExecutionView
 from .._reuse import PrefixMemo, node_key, view_key
 from .._view import sort_for_display
 from ..protocol import PixelFrame, RenderConfig, RendererCapabilities, RendererState
@@ -23,7 +22,7 @@ if TYPE_CHECKING:
 __all__ = ["CairoRenderer"]
 
 
-class CairoRenderer(_RendererExecutionView):
+class CairoRenderer:
     """A renderer using Cairo.
 
     The renderer draws frames, including the pictures of camera views, into image
@@ -34,8 +33,7 @@ class CairoRenderer(_RendererExecutionView):
 
     capabilities = RendererCapabilities(live_preview=False)
 
-    def __init__(self, skip_animations: bool = False) -> None:
-        self._initialize_execution(skip_animations)
+    def __init__(self) -> None:
         # Image files read for this renderer, shared by all its targets.
         self._image_files = _ImageFiles()
         self._target: _CairoRenderTarget | None = None
@@ -58,8 +56,8 @@ class CairoRenderer(_RendererExecutionView):
         if not self._state.accepts_work:
             raise RuntimeError(f"The Cairo renderer is {self._state.value}.")
 
-    def _animation_cache_identity(self, scene: Scene) -> tuple[str, Any]:
-        return "cairo", ()
+    #: What tells this renderer's frames from another's, for the play cache.
+    cache_identity: tuple[str, Any] = ("cairo", ())
 
     def _start_animation(self) -> None:
         self._ensure_open()

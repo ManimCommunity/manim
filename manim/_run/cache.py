@@ -62,7 +62,7 @@ class _SegmentCache:
             logger.info("Caching disabled.")
             return f"uncached_{play.index:05}"
         scene = manager.scene
-        backend, drawing_state = manager.renderer._animation_cache_identity(scene)
+        backend, drawing_state = manager.renderer.cache_identity
         return get_hash_from_play_call(
             scene,
             manager.camera,

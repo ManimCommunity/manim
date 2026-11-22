@@ -191,5 +191,5 @@ Capture errors
 --------------
 
 Timeline capture fails if scene time is not finite or goes backwards, for
-example after assigning ``renderer.time``. After an error, fix the cause and run
+example after assigning ``manager.time``. After an error, fix the cause and run
 a new scene instance.

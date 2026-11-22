@@ -6,7 +6,6 @@ from unittest.mock import Mock, call
 import manim._run.cache as cache_module
 from manim import Manager, tempconfig
 from manim._run.loop import _RunLoop
-from manim.renderer._execution import _RendererExecutionView
 from manim.utils import caching
 from manim.utils.caching import (
     clear_segment_cache,
@@ -122,6 +121,7 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
         def __init__(self):
             self.mobjects = [object()]
             self.camera = object()
+            self.skip_animations = False
             self.session_spec = Mock(
                 video_encoder=encoder, output=Mock(is_still=False), frame_rate=60.0
             )
@@ -141,25 +141,17 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
         def add_mobjects_from_animations(self, animations):
             pass
 
-    class FakeRenderer(_RendererExecutionView):
-        def __init__(self):
-            self._initialize_execution(False)
-
+    class FakeRenderer:
         anti_alias_width = 1.5
+        cache_identity = ("opengl", {"anti_alias_width": 1.5})
         file_writer = Mock(
             sections=[Mock(skip_animations=False)], output_spec=Mock(is_still=False)
         )
         _closed = False
         _start_animation = Mock()
 
-        def _animation_cache_identity(self, scene):
-            return "opengl", {
-                "anti_alias_width": self.anti_alias_width,
-            }
-
     scene = FakeScene()
     renderer = FakeRenderer()
-    renderer.animations_hashes = []
     renderer.file_writer.is_already_cached.side_effect = [False, True]
     scene.renderer = renderer
     manager = Manager(scene)
@@ -190,7 +182,7 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
             },
         },
     }
-    assert renderer.animations_hashes == [
+    assert manager.animations_hashes == [
         "cache-key",
         "uncached_00001",
         "cache-key",

@@ -182,7 +182,7 @@ def test_disable_caching_is_evaluated_per_play(config, tmp_path):
         scene.render()
 
     initial_hash, uncached_hash, restored_hash, cached_hash = (
-        scene.renderer.animations_hashes
+        scene._get_manager().animations_hashes
     )
     assert initial_hash is not None
     assert uncached_hash == "uncached_00001"

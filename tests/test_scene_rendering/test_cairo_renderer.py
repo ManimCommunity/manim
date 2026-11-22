@@ -56,7 +56,7 @@ def test_skipping_status_with_from_to_and_up_to(using_temp_config, disabling_cac
             for i in range(10):
                 self.play(Animation(Square()))
 
-                assert ((i >= 2) and (i <= 6)) or self.renderer.skip_animations
+                assert ((i >= 2) and (i <= 6)) or self._get_manager().skip_animations
 
     SceneWithMultipleCalls().render()
 
@@ -75,7 +75,7 @@ def test_when_animation_is_cached(using_temp_config):
     scene.update_to_time = Mock()
     scene.render()
     assert scene._get_manager().file_writer.is_already_cached(
-        scene.renderer.animations_hashes[0],
+        scene._get_manager().animations_hashes[0],
     )
     # Check that the same partial movie files has been used (with he same hash).
     # As there might have been several hashes, a list is used.
@@ -140,8 +140,8 @@ def test_scene_continues_after_a_handled_play_failure(
     scene.render()
 
     writer = scene._get_manager().file_writer
-    assert scene.renderer.num_plays == 2
-    assert scene.renderer.time == pytest.approx(0.4)
+    assert scene._get_manager().num_plays == 2
+    assert scene._get_manager().time == pytest.approx(0.4)
     assert len(writer.partial_movie_files) == 2
     assert_file_exists(writer.final_file_path)
 

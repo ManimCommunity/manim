@@ -515,10 +515,11 @@ def test_auto_zoom_checks_the_side_it_fits():
 
 
 def test_a_cairo_renderer_closes_at_the_end_of_a_with_block():
-    with _Drawn() as renderer:
-        renderer.render_mobjects([Square()])
+    frame = FrameBuilder(16, 8).build(Camera(), [Square()])
+    with CairoRenderer() as renderer:
+        renderer.render(*frame)
     with pytest.raises(RuntimeError, match="closed"):
-        renderer.render_mobjects([Square()])
+        renderer.render(*frame)
 
 
 def test_mobjects_fixed_in_frame_stay_put_when_the_camera_moves():

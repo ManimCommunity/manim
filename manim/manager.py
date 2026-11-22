@@ -25,6 +25,7 @@ from ._run.loop import (
 )
 from ._run.mode import _EvaluationRun, _RunMode
 from ._run.selection import _OutputSelection
+from ._run.state import _ExecutionState
 from .renderer.cairo.renderer import CairoRenderer
 from .renderer.frame import FrameBuilder
 from .scene.scene_file_writer import SceneFileWriter
@@ -46,7 +47,6 @@ if TYPE_CHECKING:
     from .animation.animation import Animation
     from .camera import Camera
     from .mobject.mobject import Mobject, _AnimationBuilder
-    from .renderer._execution import _ExecutionState
     from .renderer.cairo import CairoRenderer
     from .renderer.opengl.renderer import OpenGLRenderer
     from .renderer.protocol import RenderConfig
@@ -162,8 +162,9 @@ class Manager(Generic[SceneT]):
         if scene.manager is not None:
             raise ValueError("A manager is already attached to this scene.")
         self.scene = scene
-        self._execution: _ExecutionState = scene.renderer._claim_execution(
-            self, frame_rate=scene.session_spec.frame_rate
+        self._execution = _ExecutionState(
+            frame_rate=scene.session_spec.frame_rate,
+            skip_animations=scene.skip_animations,
         )
         self._file_writer: SceneFileWriter | None = None
         self._creating_file_writer = False
@@ -384,6 +385,13 @@ class Manager(Generic[SceneT]):
         self._execution.num_plays = value
 
     @property
+    def animations_hashes(self) -> list[str | None]:
+        """The cache key of each play so far; ``None`` for plays left out of the
+        output.
+        """
+        return self._execution.animations_hashes
+
+    @property
     def skip_animations(self) -> bool:
         """Whether the current play draws no frames.
 
@@ -401,7 +409,7 @@ class Manager(Generic[SceneT]):
         """Whether every play is left out of the output, as for
         ``Scene(skip_animations=True)``.
         """
-        return self.renderer._skips_all_plays
+        return self.scene.skip_animations
 
     def _validate_execution(self) -> None:
         self._ensure_usable()

@@ -217,13 +217,13 @@ def test_manager_render_retires_rerun_without_finishing_scene(dry_run, monkeypat
 
     scene = RerunScene()
     manager = Manager(scene)
-    scene.renderer.num_plays = 3
+    scene._get_manager().num_plays = 3
     finish = Mock()
     monkeypatch.setattr(manager, "post_construct", finish)
 
     assert manager.render() is True
 
-    assert scene.renderer.num_plays == 3
+    assert scene._get_manager().num_plays == 3
     assert scene.renderer.state is RendererState.CLOSED
     finish.assert_not_called()
     assert lifecycle == []
@@ -257,9 +257,9 @@ def test_manager_render_finalizes_after_early_scene_end(dry_run):
 def test_scene_play_adds_subcaption_with_explicit_duration(dry_run, monkeypatch):
     scene = Scene()
     file_writer = scene._get_manager().file_writer
-    scene.renderer.time = 2.5
+    scene._get_manager().time = 2.5
     renderer_play = Mock(
-        side_effect=lambda *args, **kwargs: setattr(scene.renderer, "time", 4.5)
+        side_effect=lambda *args, **kwargs: setattr(scene._get_manager(), "time", 4.5)
     )
     monkeypatch.setattr(scene._get_manager(), "_play", renderer_play)
     animation = Wait()
@@ -292,9 +292,9 @@ def test_scene_play_preserves_scene_add_subcaption_override(dry_run, monkeypatch
             subcaptions.append((content, duration, offset))
 
     scene = CustomSubcaptionScene()
-    scene.renderer.time = 2.5
+    scene._get_manager().time = 2.5
     renderer_play = Mock(
-        side_effect=lambda *args, **kwargs: setattr(scene.renderer, "time", 4.5)
+        side_effect=lambda *args, **kwargs: setattr(scene._get_manager(), "time", 4.5)
     )
     monkeypatch.setattr(scene._get_manager(), "_play", renderer_play)
 
@@ -313,10 +313,10 @@ def test_scene_play_uses_animation_duration_for_default_subcaption_after_skip(
 ):
     scene = Scene()
     file_writer = scene._get_manager().file_writer
-    scene.renderer.time = 1.0
-    scene.renderer.skip_animations = True
+    scene._get_manager().time = 1.0
+    scene._get_manager().skip_animations = True
     renderer_play = Mock(
-        side_effect=lambda *args, **kwargs: setattr(scene.renderer, "time", 3.5)
+        side_effect=lambda *args, **kwargs: setattr(scene._get_manager(), "time", 3.5)
     )
     monkeypatch.setattr(scene._get_manager(), "_play", renderer_play)
 
@@ -379,7 +379,7 @@ def test_scene_next_section_records_metadata(dry_run):
 def test_scene_add_subcaption_records_placement(dry_run):
     scene = Scene()
     file_writer = scene._get_manager().file_writer
-    scene.renderer.time = 2.5
+    scene._get_manager().time = 2.5
 
     scene.add_subcaption("Hello", duration=1.5, offset=0.25)
 
@@ -399,7 +399,7 @@ def test_scene_add_sound_passes_placement_to_the_writer(dry_run, monkeypatch, tm
     scene = Scene()
     file_writer = scene._get_manager().file_writer
     monkeypatch.setattr(file_writer, "add_sound", Mock())
-    scene.renderer.time = 2.5
+    scene._get_manager().time = 2.5
 
     scene.add_sound(str(bell), time_offset=0.25, gain=-3, gain_to_background=-6)
 

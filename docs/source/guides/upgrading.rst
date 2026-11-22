@@ -327,3 +327,10 @@ Renderers only draw (see :class:`.Renderer`). These methods are gone:
 
 A renderer draws the frames of one scene: passing a renderer that another scene
 uses to :class:`.Scene` raises ``RuntimeError``.
+
+The animation clock and counters belong to the :class:`.Manager`:
+``renderer.time``, ``renderer.num_plays``, ``renderer.skip_animations`` and
+``renderer.animations_hashes`` are gone; use ``scene.time`` or the attributes of
+the same names on ``scene.manager``. ``Scene(skip_animations=True)`` now leaves
+plays out with any renderer, and the renderers' ``skip_animations`` argument is
+gone.

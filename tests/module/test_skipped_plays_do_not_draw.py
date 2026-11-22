@@ -84,7 +84,9 @@ def test_cached_plays_do_no_raster_work(settings, monkeypatch):
         counters = spy_on_raster(monkeypatch, warm.renderer)
         warm.render()
 
-    assert warm.renderer.animations_hashes == cold.renderer.animations_hashes
+    assert (
+        warm._get_manager().animations_hashes == cold._get_manager().animations_hashes
+    )
     assert warm.time == cold.time
     assert total_calls(counters) == 0
 

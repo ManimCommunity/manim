@@ -17,7 +17,6 @@ from manim.typing import Point3D
 
 from ...constants import *
 from .. import _view as _views
-from .._execution import _RendererExecutionView
 from ..protocol import RenderConfig, RendererCapabilities, RendererState
 from ._drawing import DrawTarget, SnapshotDrawing
 from .shader import shader_program_cache
@@ -50,7 +49,7 @@ class _SceneSettings:
     window: _WindowSettings | None
 
 
-class OpenGLRenderer(_RendererExecutionView):
+class OpenGLRenderer:
     """A renderer drawing with OpenGL, which can show frames in a preview window.
 
     Frames are drawn offscreen at the size their :class:`.RenderConfig` asks for; a
@@ -62,8 +61,6 @@ class OpenGLRenderer(_RendererExecutionView):
         Draw the edges of triangles only, for debugging.
     anti_alias_width
         The width of the antialiased edge of shapes, in pixels.
-    skip_animations
-        Whether animations are skipped.
 
     Attributes
     ----------
@@ -71,18 +68,10 @@ class OpenGLRenderer(_RendererExecutionView):
         The elapsed time of the current animation.
     animation_start_time : float
         The start time of the current animation.
-    animations_hashes : list[str | None]
-        List of animation hashes for caching.
     anti_alias_width : float
         The width used for anti-aliasing in pixel units.
-    num_plays : float
-        The number of animation plays executed.
     pressed_keys : set[int]
         Set of currently pressed key codes.
-    skip_animations : bool
-        Whether animations are currently being skipped.
-    time : float
-        The total elapsed time for the renderer.
     window : Window | None
         The window used for previewing, if any.
     """
@@ -94,13 +83,11 @@ class OpenGLRenderer(_RendererExecutionView):
         *,
         wireframe: bool = False,
         anti_alias_width: float = 1.5,
-        skip_animations: bool = False,
     ) -> None:
         self.wireframe = wireframe
         # Measured in pixel widths, used for vector graphics
         self.anti_alias_width = anti_alias_width
 
-        self._initialize_execution(skip_animations)
         self.animation_start_time = 0.0
         self.animation_elapsed_time = 0.0
 
@@ -500,7 +487,11 @@ class OpenGLRenderer(_RendererExecutionView):
             self._camera_view_targets.pop(uid).release()
         return textures
 
-    def _animation_cache_identity(self, scene: Scene) -> tuple[str, Any]:
+    @property
+    def cache_identity(self) -> tuple[str, Any]:
+        """What tells this renderer's frames from another's, for the play cache:
+        its name and options.
+        """
         return "opengl", {
             "wireframe": self.wireframe,
             "anti_alias_width": self.anti_alias_width,

@@ -218,15 +218,10 @@ class Scene:
             self.mouse_point = Point()
             self.mouse_drag_point = Point()
             if renderer is None:
-                renderer = OpenGLRenderer(
-                    wireframe=config.enable_wireframe,
-                    skip_animations=self.skip_animations,
-                )
+                renderer = OpenGLRenderer(wireframe=config.enable_wireframe)
 
         if renderer is None:
-            self._renderer: CairoRenderer | OpenGLRenderer = CairoRenderer(
-                skip_animations=self.skip_animations,
-            )
+            self._renderer: CairoRenderer | OpenGLRenderer = CairoRenderer()
         else:
             self._renderer = renderer
         self.session_spec = resolve_render_session(
@@ -311,8 +306,7 @@ class Scene:
     @property
     def time(self) -> float:
         """Elapsed animation time in seconds, as reported by the scene's manager."""
-        # The renderer reads the clock of the scene's manager once there is one.
-        return self.renderer.time
+        return self._get_manager().time
 
     def __deepcopy__(self, clone_from_id: dict[int, Any]) -> Scene:
         cls = self.__class__
@@ -1005,7 +999,7 @@ class Scene:
         time_progression
             The CommandLine Progress Bar.
         """
-        if self.renderer.skip_animations and not override_skip_animations:
+        if self._get_manager().skip_animations and not override_skip_animations:
             times: Iterable[float] = [run_time]
         else:
             rate = config.frame_rate

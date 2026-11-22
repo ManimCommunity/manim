@@ -4,7 +4,7 @@ from unittest.mock import Mock
 
 import pytest
 
-from manim import Animation, Manager, Scene, Square, Wait, tempconfig
+from manim import Animation, Scene, Square, Wait, tempconfig
 
 
 @pytest.fixture
@@ -29,24 +29,19 @@ def scene():
             scene._get_manager().close()
 
 
-def test_renderer_compatibility_preserves_bootstrap_and_manager_updates(scene):
-    renderer = scene.renderer
-    assert scene.manager is None
-    renderer.time = 2
-    manager = Manager(scene)
-    assert manager.time == 2
-    manager.time = 3
-    assert renderer.time == 3
-    renderer.time = 4
-    assert manager.time == 4
-    renderer.num_plays = 4
-    assert manager.num_plays == 4
-    manager.num_plays = 5
-    assert renderer.num_plays == 5
-    renderer.skip_animations = True
-    assert manager.skip_animations
-    manager.skip_animations = False
-    assert not renderer.skip_animations
+def test_the_clock_belongs_to_the_manager(scene):
+    manager = scene._get_manager()
+    manager.time = 2
+    assert scene.time == 2
+    assert not hasattr(scene.renderer, "time")
+    assert not hasattr(scene.renderer, "num_plays")
+
+
+def test_scenes_created_with_skip_animations_leave_plays_out(tmp_path):
+    with tempconfig({"format": "none", "media_dir": str(tmp_path)}):
+        scene = Scene(skip_animations=True)
+        scene.play(Wait(0.5, frozen_frame=False))
+        assert scene._get_manager().animations_hashes == [None]
 
 
 def test_shared_play_compiles_once(scene, monkeypatch):
@@ -120,7 +115,7 @@ def test_skipped_stop_wait_is_stepped_like_a_rendered_one(scene):
     """A skipped stop condition must observe per-frame times, not jump to the end."""
     manager = scene._get_manager()
     manager.time = 2
-    scene.renderer._skips_all_plays = True
+    scene.skip_animations = True
     stops = []
 
     def stop():
@@ -135,8 +130,8 @@ def test_skipped_stop_wait_is_stepped_like_a_rendered_one(scene):
 def test_the_clock_runs_at_the_frame_rate_from_the_start(scene):
     # The state used to have no frame rate until a Manager took it over, so
     # time ignored frames before then; it now starts with the configured rate.
-    renderer = scene.renderer
-    state = renderer._execution_state
+    manager = scene._get_manager()
+    state = manager._execution
     assert state.frame_rate == 4
     state.frame = 2
-    assert renderer.time == 0.5
+    assert manager.time == scene.time == 0.5
