@@ -10,14 +10,18 @@ from manim import (
     WHITE,
     Arrow3D,
     Cone,
+    Cube,
     Cylinder,
     Dot3D,
     MeshMobject,
     Mobject,
     ParametricSurface,
+    PolygonFace,
+    Prism,
     Sphere,
     Square,
     Surface,
+    Tetrahedron,
     ThreeDAxes,
     Transform,
     VGroup,
@@ -368,3 +372,40 @@ def test_family_false_changes_only_the_mesh_itself():
     cone.set_fill(WHITE, opacity=0.7, family=False)
     assert base.fill_color.to_hex() == BLUE.to_hex()
     assert base.fill_opacity == 1
+
+
+def test_cube_faces_are_lit_meshes_in_a_group():
+    cube = Cube(side_length=2, fill_color=RED)
+
+    assert len(cube) == 6
+    assert all(isinstance(face, PolygonFace) for face in cube)
+    assert all(face.material == Pbr() for face in cube)
+    np.testing.assert_allclose(cube.get_center(), 0, atol=1e-12)
+    assert cube.width == pytest.approx(2)
+    cube.set_color(BLUE)
+    assert cube[3].fill_color == BLUE
+
+
+def test_prisms_are_stretched_cubes():
+    prism = Prism(dimensions=[1, 2, 3])
+
+    assert (prism.width, prism.height, prism.depth) == pytest.approx((1, 2, 3))
+
+
+def test_polyhedron_faces_follow_their_vertices_and_keep_their_style():
+    tetrahedron = Tetrahedron(faces_config={"fill_color": RED, "fill_opacity": 0.3})
+    face = tetrahedron.faces[0]
+
+    assert isinstance(face, PolygonFace)
+    assert face.fill_color == RED
+    assert face.fill_opacity == pytest.approx(0.3)
+    # Outlined in the face's color, as the Polygon faces were.
+    assert face.stroke_color == RED
+    assert face.stroke_width == 4
+
+    tetrahedron.graph[0].shift(UP)
+    tetrahedron.update()
+    first_corner = tetrahedron.faces_list[0].index(0)
+    np.testing.assert_allclose(
+        face.points[first_corner], tetrahedron.graph[0].get_center()
+    )

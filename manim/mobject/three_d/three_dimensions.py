@@ -23,9 +23,9 @@ import numpy as np
 
 from manim._config import logger
 from manim.constants import *
-from manim.mobject.geometry.polygram import Square
+from manim.material import Material, Pbr
 from manim.mobject.mobject import *
-from manim.mobject.three_d.mesh import ParametricSurface
+from manim.mobject.three_d.mesh import ParametricSurface, PolygonFace
 from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
 from manim.utils.color import (
     BLUE,
@@ -509,9 +509,11 @@ class Cube(VGroup):
         fill_opacity: float = 0.75,
         fill_color: ParsableManimColor = BLUE,
         stroke_width: float = 0,
+        material: Material | None = None,
         **kwargs: Any,
     ) -> None:
         self.side_length = side_length
+        self._face_material = Pbr() if material is None else material
         super().__init__(
             fill_color=fill_color,
             fill_opacity=fill_opacity,
@@ -520,18 +522,15 @@ class Cube(VGroup):
         )
 
     def generate_points(self) -> Self:
-        """Creates the sides of the :class:`Cube`."""
+        """Creates the sides of the :class:`Cube`: square faces, lit by the
+        ``material`` (:class:`.Pbr` by default).
+        """
+        half = self.side_length / 2
+        square = np.array([[-half, -half], [half, -half], [half, half], [-half, half]])
         for vect in IN, OUT, LEFT, RIGHT, UP, DOWN:
-            face = Square(
-                side_length=self.side_length,
-                shade_in_3d=True,
-                joint_type=LineJointType.BEVEL,
-            )
-            face.flip()
-            face.shift(self.side_length * OUT / 2.0)
-            face.apply_matrix(z_to_vector(vect))
-
-            self.add(face)
+            corners = np.column_stack([square, np.full(4, half)])
+            corners = corners @ np.asarray(z_to_vector(vect)).T
+            self.add(PolygonFace(*corners, material=self._face_material))
         return self
 
 

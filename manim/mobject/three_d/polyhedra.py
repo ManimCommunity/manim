@@ -7,10 +7,11 @@ from typing import TYPE_CHECKING, Any, Self
 
 import numpy as np
 
-from manim.mobject.geometry.polygram import Polygon
 from manim.mobject.graph import Graph
+from manim.mobject.three_d.mesh import PolygonFace
 from manim.mobject.three_d.three_dimensions import Dot3D
 from manim.mobject.types.vectorized_mobject import VGroup
+from manim.utils.color import BLUE
 from manim.utils.qhull import QuickHull
 
 if TYPE_CHECKING:
@@ -103,9 +104,7 @@ class Polyhedron(VGroup):
         graph_config: dict[str, Any] = {},
     ):
         super().__init__()
-        self.faces_config = dict(
-            {"fill_opacity": 0.5, "shade_in_3d": True}, **faces_config
-        )
+        self.faces_config = dict({"fill_opacity": 0.5}, **faces_config)
         self.graph_config = dict(
             {
                 "vertex_type": Dot3D,
@@ -139,16 +138,17 @@ class Polyhedron(VGroup):
         self,
         face_coords: Point3DLike_Array,
     ) -> VGroup:
-        """Creates VGroup of faces from a list of face coordinates."""
+        """Creates a VGroup of faces (:class:`.PolygonFace` meshes, lit by their
+        ``material``) from a list of face coordinates.
+        """
         face_group = VGroup()
         for face in face_coords:
-            face_group.add(Polygon(*face, **self.faces_config))
+            face_group.add(_face(face, self.faces_config))
         return face_group
 
     def update_faces(self, m: Mobject) -> Self:
-        face_coords = self.extract_face_coords()
-        new_faces = self.create_faces(face_coords)
-        self.faces.match_points(new_faces)
+        for face, corners in zip(self.faces, self.extract_face_coords(), strict=True):
+            face.set_corners(*corners)
         return self
 
     def extract_face_coords(self) -> Point3DLike_Array:
@@ -472,3 +472,22 @@ class ConvexHull3D(Polyhedron):
             faces_list=faces,
             **kwargs,
         )
+
+
+def _face(corners: Point3DLike_Array, config: dict[str, Any]) -> PolygonFace:
+    """A face of a polyhedron, styled by ``faces_config``: the arguments of
+    :class:`.Polygon` that a face had (``fill_color``, ``fill_opacity``,
+    ``stroke_color``, ``stroke_width``, ``stroke_opacity``, ``color``), and those of
+    :class:`.PolygonFace` (``material``, ...). ``shade_in_3d`` has no effect.
+    """
+    config = dict(config)
+    config.pop("shade_in_3d", None)
+    color = config.pop("color", None)
+    fill_color = config.pop("fill_color", None) or color or BLUE
+    opacity = config.pop("fill_opacity", None)
+    # As the Polygon faces were: outlined, 4 wide, in the face's color.
+    config.setdefault("stroke_color", color or fill_color)
+    config.setdefault("stroke_width", 4)
+    face = PolygonFace(*corners, **config)
+    face.set_fill(fill_color, opacity)
+    return face

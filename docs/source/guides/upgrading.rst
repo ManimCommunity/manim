@@ -224,3 +224,23 @@ drawn as meshes on OpenGL and as sorted faces on Cairo:
 - A surface can only be transformed into a mesh with the same triangles: a surface
   of the same resolution and the same kind (smooth, or with a checkerboard). A
   surface and a path cannot be transformed into each other.
+
+The faces of solids are meshes
+------------------------------
+
+The faces of :class:`.Cube`, :class:`.Prism` and the polyhedra
+(:class:`.Polyhedron` and its subclasses, :class:`.ConvexHull3D`) used to be
+:class:`.Square` and :class:`.Polygon` paths shaded with ``shade_in_3d``. They are
+now :class:`.PolygonFace` meshes, lit by a ``material`` (:class:`.Pbr` by default;
+``Cube(material=...)`` and ``faces_config={"material": ...}`` set another):
+
+- ``cube[i]`` and ``polyhedron.faces[i]`` are still the faces, in a
+  :class:`.VGroup`, and ``set_fill``, ``set_stroke``, ``set_color`` and
+  ``set_opacity`` work on them as before. Methods of paths
+  (``get_vertices``, ``point_from_proportion``, ...) do not; a face's corners are
+  its ``points``.
+- ``faces_config`` takes the styling arguments it took
+  (``fill_color``, ``fill_opacity``, ``stroke_color``, ``stroke_width``,
+  ``stroke_opacity``); ``shade_in_3d`` has no effect.
+- A face is transformed only into a face with as many corners; ``Create`` shows a
+  face at once instead of drawing its outline.
