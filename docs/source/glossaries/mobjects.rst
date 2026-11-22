@@ -4,15 +4,15 @@ Mobjects
 
 .. tab:: List
 
-    .. tab:: With title
+    .. tab:: With Source
 
-        .. tab:: With Source
+        .. tab:: Full Code
 
-            .. tab:: With Reference
+            .. tab:: With title
 
                 .. tab:: Default header
 
-                    .. tab:: Full code
+                    .. tab:: With Reference
 
                         .. rubric:: Circle
                             :class: sd-text-center
@@ -71,14 +71,12 @@ Mobjects
                                         )
                                     )
 
-                    .. tab:: Body only
+                    .. tab:: Without Reference
 
                         .. rubric:: Circle
                             :class: sd-text-center
                         .. manim:: CircleScene
                             :save_last_frame:
-                            :body_only:
-                            :ref_classes: Circle
 
                             class CircleScene(Scene):
                                 def construct(self) -> None:
@@ -92,8 +90,6 @@ Mobjects
                             :class: sd-text-center
                         .. manim:: SquareScene
                             :save_last_frame:
-                            :body_only:
-                            :ref_classes: Square
 
                             class SquareScene(Scene):
                                 def construct(self) -> None:
@@ -107,8 +103,6 @@ Mobjects
                             :class: sd-text-center
                         .. manim:: StarScene
                             :save_last_frame:
-                            :body_only:
-                            :ref_classes: Star
 
                             class StarScene(Scene):
                                 def construct(self) -> None:
@@ -122,8 +116,6 @@ Mobjects
                             :class: sd-text-center
                         .. manim:: LineScene
                             :save_last_frame:
-                            :body_only:
-                            :ref_classes: Line
 
                             class LineScene(Scene):
                                 def construct(self) -> None:
@@ -136,7 +128,7 @@ Mobjects
 
                 .. tab:: No header
 
-                    .. tab:: Full code
+                    .. tab:: With Reference
 
                         .. rubric:: Circle
                             :class: sd-text-center
@@ -199,15 +191,13 @@ Mobjects
                                         )
                                     )
 
-                    .. tab:: Body only
+                    .. tab:: Without Reference
 
                         .. rubric:: Circle
                             :class: sd-text-center
                         .. manim:: CircleScene
                             :save_last_frame:
-                            :body_only:
                             :header: None
-                            :ref_classes: Circle
 
                             class CircleScene(Scene):
                                 def construct(self) -> None:
@@ -221,9 +211,7 @@ Mobjects
                             :class: sd-text-center
                         .. manim:: SquareScene
                             :save_last_frame:
-                            :body_only:
                             :header: None
-                            :ref_classes: Square
 
                             class SquareScene(Scene):
                                 def construct(self) -> None:
@@ -237,9 +225,7 @@ Mobjects
                             :class: sd-text-center
                         .. manim:: StarScene
                             :save_last_frame:
-                            :body_only:
                             :header: None
-                            :ref_classes: Star
 
                             class StarScene(Scene):
                                 def construct(self) -> None:
@@ -253,9 +239,7 @@ Mobjects
                             :class: sd-text-center
                         .. manim:: LineScene
                             :save_last_frame:
-                            :body_only:
                             :header: None
-                            :ref_classes: Line
 
                             class LineScene(Scene):
                                 def construct(self) -> None:
@@ -266,9 +250,9 @@ Mobjects
                                         )
                                     )
 
-                .. tab:: Override
+                .. tab:: Override header
 
-                    .. tab:: Full code
+                    .. tab:: With Reference
 
                         .. rubric:: Circle
                             :class: sd-text-center
@@ -331,15 +315,13 @@ Mobjects
                                         )
                                     )
 
-                    .. tab:: Body only
+                    .. tab:: Without Reference
 
                         .. rubric:: Circle
                             :class: sd-text-center
                         .. manim:: CircleScene
                             :save_last_frame:
-                            :body_only:
                             :header: Circle
-                            :ref_classes: Circle
 
                             class CircleScene(Scene):
                                 def construct(self) -> None:
@@ -353,9 +335,7 @@ Mobjects
                             :class: sd-text-center
                         .. manim:: SquareScene
                             :save_last_frame:
-                            :body_only:
                             :header: Square
-                            :ref_classes: Square
 
                             class SquareScene(Scene):
                                 def construct(self) -> None:
@@ -369,9 +349,7 @@ Mobjects
                             :class: sd-text-center
                         .. manim:: StarScene
                             :save_last_frame:
-                            :body_only:
                             :header: Star
-                            :ref_classes: Star
 
                             class StarScene(Scene):
                                 def construct(self) -> None:
@@ -385,9 +363,7 @@ Mobjects
                             :class: sd-text-center
                         .. manim:: LineScene
                             :save_last_frame:
-                            :body_only:
                             :header: Line
-                            :ref_classes: Line
 
                             class LineScene(Scene):
                                 def construct(self) -> None:
@@ -398,16 +374,338 @@ Mobjects
                                         )
                                     )
 
-            .. tab:: Without Reference
+            .. tab:: Without title
 
                 .. tab:: Default header
 
-                    .. tab:: Full code
+                    .. tab:: With Reference
+
+                        .. manim:: CircleScene
+                            :save_last_frame:
+                            :ref_classes: Circle
+
+                            class CircleScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Circle(
+                                            radius=3.0,
+                                        )
+                                    )
+
+                        .. manim:: SquareScene
+                            :save_last_frame:
+                            :ref_classes: Square
+
+                            class SquareScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Square(
+                                            side_length=3.0,
+                                        )
+                                    )
+
+                        .. manim:: StarScene
+                            :save_last_frame:
+                            :ref_classes: Star
+
+                            class StarScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Star(
+                                            outer_radius=3.0,
+                                        )
+                                    )
+
+                        .. manim:: LineScene
+                            :save_last_frame:
+                            :ref_classes: Line
+
+                            class LineScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Line(
+                                            (-3, 0, 0),
+                                            (3, 0, 0),
+                                        )
+                                    )
+
+                    .. tab:: Without Reference
+
+                        .. manim:: CircleScene
+                            :save_last_frame:
+
+                            class CircleScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Circle(
+                                            radius=3.0,
+                                        )
+                                    )
+
+                        .. manim:: SquareScene
+                            :save_last_frame:
+
+                            class SquareScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Square(
+                                            side_length=3.0,
+                                        )
+                                    )
+
+                        .. manim:: StarScene
+                            :save_last_frame:
+
+                            class StarScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Star(
+                                            outer_radius=3.0,
+                                        )
+                                    )
+
+                        .. manim:: LineScene
+                            :save_last_frame:
+
+                            class LineScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Line(
+                                            (-3, 0, 0),
+                                            (3, 0, 0),
+                                        )
+                                    )
+
+                .. tab:: No header
+
+                    .. tab:: With Reference
+
+                        .. manim:: CircleScene
+                            :save_last_frame:
+                            :header: None
+                            :ref_classes: Circle
+
+                            class CircleScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Circle(
+                                            radius=3.0,
+                                        )
+                                    )
+
+                        .. manim:: SquareScene
+                            :save_last_frame:
+                            :header: None
+                            :ref_classes: Square
+
+                            class SquareScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Square(
+                                            side_length=3.0,
+                                        )
+                                    )
+
+                        .. manim:: StarScene
+                            :save_last_frame:
+                            :header: None
+                            :ref_classes: Star
+
+                            class StarScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Star(
+                                            outer_radius=3.0,
+                                        )
+                                    )
+
+                        .. manim:: LineScene
+                            :save_last_frame:
+                            :header: None
+                            :ref_classes: Line
+
+                            class LineScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Line(
+                                            (-3, 0, 0),
+                                            (3, 0, 0),
+                                        )
+                                    )
+
+                    .. tab:: Without Reference
+
+                        .. manim:: CircleScene
+                            :save_last_frame:
+                            :header: None
+
+                            class CircleScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Circle(
+                                            radius=3.0,
+                                        )
+                                    )
+
+                        .. manim:: SquareScene
+                            :save_last_frame:
+                            :header: None
+
+                            class SquareScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Square(
+                                            side_length=3.0,
+                                        )
+                                    )
+
+                        .. manim:: StarScene
+                            :save_last_frame:
+                            :header: None
+
+                            class StarScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Star(
+                                            outer_radius=3.0,
+                                        )
+                                    )
+
+                        .. manim:: LineScene
+                            :save_last_frame:
+                            :header: None
+
+                            class LineScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Line(
+                                            (-3, 0, 0),
+                                            (3, 0, 0),
+                                        )
+                                    )
+
+                .. tab:: Override header
+
+                    .. tab:: With Reference
+
+                        .. manim:: CircleScene
+                            :save_last_frame:
+                            :header: Circle
+                            :ref_classes: Circle
+
+                            class CircleScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Circle(
+                                            radius=3.0,
+                                        )
+                                    )
+
+                        .. manim:: SquareScene
+                            :save_last_frame:
+                            :header: Square
+                            :ref_classes: Square
+
+                            class SquareScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Square(
+                                            side_length=3.0,
+                                        )
+                                    )
+
+                        .. manim:: StarScene
+                            :save_last_frame:
+                            :header: Star
+                            :ref_classes: Star
+
+                            class StarScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Star(
+                                            outer_radius=3.0,
+                                        )
+                                    )
+
+                        .. manim:: LineScene
+                            :save_last_frame:
+                            :header: Line
+                            :ref_classes: Line
+
+                            class LineScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Line(
+                                            (-3, 0, 0),
+                                            (3, 0, 0),
+                                        )
+                                    )
+
+                    .. tab:: Without Reference
+
+                        .. manim:: CircleScene
+                            :save_last_frame:
+                            :header: Circle
+
+                            class CircleScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Circle(
+                                            radius=3.0,
+                                        )
+                                    )
+
+                        .. manim:: SquareScene
+                            :save_last_frame:
+                            :header: Square
+
+                            class SquareScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Square(
+                                            side_length=3.0,
+                                        )
+                                    )
+
+                        .. manim:: StarScene
+                            :save_last_frame:
+                            :header: Star
+
+                            class StarScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Star(
+                                            outer_radius=3.0,
+                                        )
+                                    )
+
+                        .. manim:: LineScene
+                            :save_last_frame:
+                            :header: Line
+
+                            class LineScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Line(
+                                            (-3, 0, 0),
+                                            (3, 0, 0),
+                                        )
+                                    )
+
+        .. tab:: Body Only
+
+            .. tab:: With title
+
+                .. tab:: Default header
+
+                    .. tab:: With Reference
 
                         .. rubric:: Circle
                             :class: sd-text-center
                         .. manim:: CircleScene
                             :save_last_frame:
+                            :body_only:
+                            :ref_classes: Circle
 
                             class CircleScene(Scene):
                                 def construct(self) -> None:
@@ -421,6 +719,8 @@ Mobjects
                             :class: sd-text-center
                         .. manim:: SquareScene
                             :save_last_frame:
+                            :body_only:
+                            :ref_classes: Square
 
                             class SquareScene(Scene):
                                 def construct(self) -> None:
@@ -434,6 +734,8 @@ Mobjects
                             :class: sd-text-center
                         .. manim:: StarScene
                             :save_last_frame:
+                            :body_only:
+                            :ref_classes: Star
 
                             class StarScene(Scene):
                                 def construct(self) -> None:
@@ -447,6 +749,8 @@ Mobjects
                             :class: sd-text-center
                         .. manim:: LineScene
                             :save_last_frame:
+                            :body_only:
+                            :ref_classes: Line
 
                             class LineScene(Scene):
                                 def construct(self) -> None:
@@ -457,7 +761,7 @@ Mobjects
                                         )
                                     )
 
-                    .. tab:: Body only
+                    .. tab:: Without Reference
 
                         .. rubric:: Circle
                             :class: sd-text-center
@@ -518,66 +822,7 @@ Mobjects
 
                 .. tab:: No header
 
-                    .. tab:: Full code
-
-                        .. rubric:: Circle
-                            :class: sd-text-center
-                        .. manim:: CircleScene
-                            :save_last_frame:
-                            :header: None
-
-                            class CircleScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Circle(
-                                            radius=3.0,
-                                        )
-                                    )
-
-                        .. rubric:: Square
-                            :class: sd-text-center
-                        .. manim:: SquareScene
-                            :save_last_frame:
-                            :header: None
-
-                            class SquareScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Square(
-                                            side_length=3.0,
-                                        )
-                                    )
-
-                        .. rubric:: Star
-                            :class: sd-text-center
-                        .. manim:: StarScene
-                            :save_last_frame:
-                            :header: None
-
-                            class StarScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Star(
-                                            outer_radius=3.0,
-                                        )
-                                    )
-
-                        .. rubric:: Line
-                            :class: sd-text-center
-                        .. manim:: LineScene
-                            :save_last_frame:
-                            :header: None
-
-                            class LineScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Line(
-                                            (-3, 0, 0),
-                                            (3, 0, 0),
-                                        )
-                                    )
-
-                    .. tab:: Body only
+                    .. tab:: With Reference
 
                         .. rubric:: Circle
                             :class: sd-text-center
@@ -585,6 +830,7 @@ Mobjects
                             :save_last_frame:
                             :body_only:
                             :header: None
+                            :ref_classes: Circle
 
                             class CircleScene(Scene):
                                 def construct(self) -> None:
@@ -600,6 +846,7 @@ Mobjects
                             :save_last_frame:
                             :body_only:
                             :header: None
+                            :ref_classes: Square
 
                             class SquareScene(Scene):
                                 def construct(self) -> None:
@@ -615,6 +862,7 @@ Mobjects
                             :save_last_frame:
                             :body_only:
                             :header: None
+                            :ref_classes: Star
 
                             class StarScene(Scene):
                                 def construct(self) -> None:
@@ -630,6 +878,7 @@ Mobjects
                             :save_last_frame:
                             :body_only:
                             :header: None
+                            :ref_classes: Line
 
                             class LineScene(Scene):
                                 def construct(self) -> None:
@@ -640,15 +889,14 @@ Mobjects
                                         )
                                     )
 
-                .. tab:: Override
-
-                    .. tab:: Full code
+                    .. tab:: Without Reference
 
                         .. rubric:: Circle
                             :class: sd-text-center
                         .. manim:: CircleScene
                             :save_last_frame:
-                            :header: Circle
+                            :body_only:
+                            :header: None
 
                             class CircleScene(Scene):
                                 def construct(self) -> None:
@@ -662,7 +910,8 @@ Mobjects
                             :class: sd-text-center
                         .. manim:: SquareScene
                             :save_last_frame:
-                            :header: Square
+                            :body_only:
+                            :header: None
 
                             class SquareScene(Scene):
                                 def construct(self) -> None:
@@ -676,7 +925,8 @@ Mobjects
                             :class: sd-text-center
                         .. manim:: StarScene
                             :save_last_frame:
-                            :header: Star
+                            :body_only:
+                            :header: None
 
                             class StarScene(Scene):
                                 def construct(self) -> None:
@@ -690,7 +940,8 @@ Mobjects
                             :class: sd-text-center
                         .. manim:: LineScene
                             :save_last_frame:
-                            :header: Line
+                            :body_only:
+                            :header: None
 
                             class LineScene(Scene):
                                 def construct(self) -> None:
@@ -701,7 +952,9 @@ Mobjects
                                         )
                                     )
 
-                    .. tab:: Body only
+                .. tab:: Override header
+
+                    .. tab:: With Reference
 
                         .. rubric:: Circle
                             :class: sd-text-center
@@ -709,6 +962,7 @@ Mobjects
                             :save_last_frame:
                             :body_only:
                             :header: Circle
+                            :ref_classes: Circle
 
                             class CircleScene(Scene):
                                 def construct(self) -> None:
@@ -724,6 +978,72 @@ Mobjects
                             :save_last_frame:
                             :body_only:
                             :header: Square
+                            :ref_classes: Square
+
+                            class SquareScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Square(
+                                            side_length=3.0,
+                                        )
+                                    )
+
+                        .. rubric:: Star
+                            :class: sd-text-center
+                        .. manim:: StarScene
+                            :save_last_frame:
+                            :body_only:
+                            :header: Star
+                            :ref_classes: Star
+
+                            class StarScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Star(
+                                            outer_radius=3.0,
+                                        )
+                                    )
+
+                        .. rubric:: Line
+                            :class: sd-text-center
+                        .. manim:: LineScene
+                            :save_last_frame:
+                            :body_only:
+                            :header: Line
+                            :ref_classes: Line
+
+                            class LineScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Line(
+                                            (-3, 0, 0),
+                                            (3, 0, 0),
+                                        )
+                                    )
+
+                    .. tab:: Without Reference
+
+                        .. rubric:: Circle
+                            :class: sd-text-center
+                        .. manim:: CircleScene
+                            :save_last_frame:
+                            :body_only:
+                            :header: Circle
+
+                            class CircleScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Circle(
+                                            radius=3.0,
+                                        )
+                                    )
+
+                        .. rubric:: Square
+                            :class: sd-text-center
+                        .. manim:: SquareScene
+                            :save_last_frame:
+                            :body_only:
+                            :header: Square
 
                             class SquareScene(Scene):
                                 def construct(self) -> None:
@@ -764,127 +1084,11 @@ Mobjects
                                         )
                                     )
 
-        .. tab:: Without Source
-
-            .. tab:: Without Reference
-
-                .. rubric:: Circle
-                    :class: sd-text-center
-                .. manim:: CircleScene
-                    :save_last_frame:
-                    :hide_source:
-
-                    class CircleScene(Scene):
-                        def construct(self) -> None:
-                            self.add(
-                                Circle(
-                                    radius=3.0,
-                                )
-                            )
-
-                .. rubric:: Square
-                    :class: sd-text-center
-                .. manim:: SquareScene
-                    :save_last_frame:
-                    :hide_source:
-
-                    class SquareScene(Scene):
-                        def construct(self) -> None:
-                            self.add(
-                                Square(
-                                    side_length=3.0,
-                                )
-                            )
-
-                .. rubric:: Star
-                    :class: sd-text-center
-                .. manim:: StarScene
-                    :save_last_frame:
-                    :hide_source:
-
-                    class StarScene(Scene):
-                        def construct(self) -> None:
-                            self.add(
-                                Star(
-                                    outer_radius=3.0,
-                                )
-                            )
-
-                .. rubric:: Line
-                    :class: sd-text-center
-                .. manim:: LineScene
-                    :save_last_frame:
-                    :hide_source:
-
-                    class LineScene(Scene):
-                        def construct(self) -> None:
-                            self.add(
-                                Line(
-                                    (-3, 0, 0),
-                                    (3, 0, 0),
-                                )
-                            )
-
-    .. tab:: Without title
-
-        .. tab:: With Source
-
-            .. tab:: With Reference
+            .. tab:: Without title
 
                 .. tab:: Default header
 
-                    .. tab:: Full code
-
-                        .. manim:: CircleScene
-                            :save_last_frame:
-                            :ref_classes: Circle
-
-                            class CircleScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Circle(
-                                            radius=3.0,
-                                        )
-                                    )
-
-                        .. manim:: SquareScene
-                            :save_last_frame:
-                            :ref_classes: Square
-
-                            class SquareScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Square(
-                                            side_length=3.0,
-                                        )
-                                    )
-
-                        .. manim:: StarScene
-                            :save_last_frame:
-                            :ref_classes: Star
-
-                            class StarScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Star(
-                                            outer_radius=3.0,
-                                        )
-                                    )
-
-                        .. manim:: LineScene
-                            :save_last_frame:
-                            :ref_classes: Line
-
-                            class LineScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Line(
-                                            (-3, 0, 0),
-                                            (3, 0, 0),
-                                        )
-                                    )
-
-                    .. tab:: Body only
+                    .. tab:: With Reference
 
                         .. manim:: CircleScene
                             :save_last_frame:
@@ -939,290 +1143,7 @@ Mobjects
                                         )
                                     )
 
-                .. tab:: No header
-
-                    .. tab:: Full code
-
-                        .. manim:: CircleScene
-                            :save_last_frame:
-                            :header: None
-                            :ref_classes: Circle
-
-                            class CircleScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Circle(
-                                            radius=3.0,
-                                        )
-                                    )
-
-                        .. manim:: SquareScene
-                            :save_last_frame:
-                            :header: None
-                            :ref_classes: Square
-
-                            class SquareScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Square(
-                                            side_length=3.0,
-                                        )
-                                    )
-
-                        .. manim:: StarScene
-                            :save_last_frame:
-                            :header: None
-                            :ref_classes: Star
-
-                            class StarScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Star(
-                                            outer_radius=3.0,
-                                        )
-                                    )
-
-                        .. manim:: LineScene
-                            :save_last_frame:
-                            :header: None
-                            :ref_classes: Line
-
-                            class LineScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Line(
-                                            (-3, 0, 0),
-                                            (3, 0, 0),
-                                        )
-                                    )
-
-                    .. tab:: Body only
-
-                        .. manim:: CircleScene
-                            :save_last_frame:
-                            :body_only:
-                            :header: None
-                            :ref_classes: Circle
-
-                            class CircleScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Circle(
-                                            radius=3.0,
-                                        )
-                                    )
-
-                        .. manim:: SquareScene
-                            :save_last_frame:
-                            :body_only:
-                            :header: None
-                            :ref_classes: Square
-
-                            class SquareScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Square(
-                                            side_length=3.0,
-                                        )
-                                    )
-
-                        .. manim:: StarScene
-                            :save_last_frame:
-                            :body_only:
-                            :header: None
-                            :ref_classes: Star
-
-                            class StarScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Star(
-                                            outer_radius=3.0,
-                                        )
-                                    )
-
-                        .. manim:: LineScene
-                            :save_last_frame:
-                            :body_only:
-                            :header: None
-                            :ref_classes: Line
-
-                            class LineScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Line(
-                                            (-3, 0, 0),
-                                            (3, 0, 0),
-                                        )
-                                    )
-
-                .. tab:: Override
-
-                    .. tab:: Full code
-
-                        .. manim:: CircleScene
-                            :save_last_frame:
-                            :header: Circle
-                            :ref_classes: Circle
-
-                            class CircleScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Circle(
-                                            radius=3.0,
-                                        )
-                                    )
-
-                        .. manim:: SquareScene
-                            :save_last_frame:
-                            :header: Square
-                            :ref_classes: Square
-
-                            class SquareScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Square(
-                                            side_length=3.0,
-                                        )
-                                    )
-
-                        .. manim:: StarScene
-                            :save_last_frame:
-                            :header: Star
-                            :ref_classes: Star
-
-                            class StarScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Star(
-                                            outer_radius=3.0,
-                                        )
-                                    )
-
-                        .. manim:: LineScene
-                            :save_last_frame:
-                            :header: Line
-                            :ref_classes: Line
-
-                            class LineScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Line(
-                                            (-3, 0, 0),
-                                            (3, 0, 0),
-                                        )
-                                    )
-
-                    .. tab:: Body only
-
-                        .. manim:: CircleScene
-                            :save_last_frame:
-                            :body_only:
-                            :header: Circle
-                            :ref_classes: Circle
-
-                            class CircleScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Circle(
-                                            radius=3.0,
-                                        )
-                                    )
-
-                        .. manim:: SquareScene
-                            :save_last_frame:
-                            :body_only:
-                            :header: Square
-                            :ref_classes: Square
-
-                            class SquareScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Square(
-                                            side_length=3.0,
-                                        )
-                                    )
-
-                        .. manim:: StarScene
-                            :save_last_frame:
-                            :body_only:
-                            :header: Star
-                            :ref_classes: Star
-
-                            class StarScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Star(
-                                            outer_radius=3.0,
-                                        )
-                                    )
-
-                        .. manim:: LineScene
-                            :save_last_frame:
-                            :body_only:
-                            :header: Line
-                            :ref_classes: Line
-
-                            class LineScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Line(
-                                            (-3, 0, 0),
-                                            (3, 0, 0),
-                                        )
-                                    )
-
-            .. tab:: Without Reference
-
-                .. tab:: Default header
-
-                    .. tab:: Full code
-
-                        .. manim:: CircleScene
-                            :save_last_frame:
-
-                            class CircleScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Circle(
-                                            radius=3.0,
-                                        )
-                                    )
-
-                        .. manim:: SquareScene
-                            :save_last_frame:
-
-                            class SquareScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Square(
-                                            side_length=3.0,
-                                        )
-                                    )
-
-                        .. manim:: StarScene
-                            :save_last_frame:
-
-                            class StarScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Star(
-                                            outer_radius=3.0,
-                                        )
-                                    )
-
-                        .. manim:: LineScene
-                            :save_last_frame:
-
-                            class LineScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Line(
-                                            (-3, 0, 0),
-                                            (3, 0, 0),
-                                        )
-                                    )
-
-                    .. tab:: Body only
+                    .. tab:: Without Reference
 
                         .. manim:: CircleScene
                             :save_last_frame:
@@ -1275,63 +1196,13 @@ Mobjects
 
                 .. tab:: No header
 
-                    .. tab:: Full code
-
-                        .. manim:: CircleScene
-                            :save_last_frame:
-                            :header: None
-
-                            class CircleScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Circle(
-                                            radius=3.0,
-                                        )
-                                    )
-
-                        .. manim:: SquareScene
-                            :save_last_frame:
-                            :header: None
-
-                            class SquareScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Square(
-                                            side_length=3.0,
-                                        )
-                                    )
-
-                        .. manim:: StarScene
-                            :save_last_frame:
-                            :header: None
-
-                            class StarScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Star(
-                                            outer_radius=3.0,
-                                        )
-                                    )
-
-                        .. manim:: LineScene
-                            :save_last_frame:
-                            :header: None
-
-                            class LineScene(Scene):
-                                def construct(self) -> None:
-                                    self.add(
-                                        Line(
-                                            (-3, 0, 0),
-                                            (3, 0, 0),
-                                        )
-                                    )
-
-                    .. tab:: Body only
+                    .. tab:: With Reference
 
                         .. manim:: CircleScene
                             :save_last_frame:
                             :body_only:
                             :header: None
+                            :ref_classes: Circle
 
                             class CircleScene(Scene):
                                 def construct(self) -> None:
@@ -1345,6 +1216,7 @@ Mobjects
                             :save_last_frame:
                             :body_only:
                             :header: None
+                            :ref_classes: Square
 
                             class SquareScene(Scene):
                                 def construct(self) -> None:
@@ -1358,6 +1230,7 @@ Mobjects
                             :save_last_frame:
                             :body_only:
                             :header: None
+                            :ref_classes: Star
 
                             class StarScene(Scene):
                                 def construct(self) -> None:
@@ -1371,6 +1244,7 @@ Mobjects
                             :save_last_frame:
                             :body_only:
                             :header: None
+                            :ref_classes: Line
 
                             class LineScene(Scene):
                                 def construct(self) -> None:
@@ -1381,13 +1255,12 @@ Mobjects
                                         )
                                     )
 
-                .. tab:: Override
-
-                    .. tab:: Full code
+                    .. tab:: Without Reference
 
                         .. manim:: CircleScene
                             :save_last_frame:
-                            :header: Circle
+                            :body_only:
+                            :header: None
 
                             class CircleScene(Scene):
                                 def construct(self) -> None:
@@ -1399,7 +1272,8 @@ Mobjects
 
                         .. manim:: SquareScene
                             :save_last_frame:
-                            :header: Square
+                            :body_only:
+                            :header: None
 
                             class SquareScene(Scene):
                                 def construct(self) -> None:
@@ -1411,7 +1285,8 @@ Mobjects
 
                         .. manim:: StarScene
                             :save_last_frame:
-                            :header: Star
+                            :body_only:
+                            :header: None
 
                             class StarScene(Scene):
                                 def construct(self) -> None:
@@ -1423,7 +1298,8 @@ Mobjects
 
                         .. manim:: LineScene
                             :save_last_frame:
-                            :header: Line
+                            :body_only:
+                            :header: None
 
                             class LineScene(Scene):
                                 def construct(self) -> None:
@@ -1434,12 +1310,15 @@ Mobjects
                                         )
                                     )
 
-                    .. tab:: Body only
+                .. tab:: Override header
+
+                    .. tab:: With Reference
 
                         .. manim:: CircleScene
                             :save_last_frame:
                             :body_only:
                             :header: Circle
+                            :ref_classes: Circle
 
                             class CircleScene(Scene):
                                 def construct(self) -> None:
@@ -1453,6 +1332,64 @@ Mobjects
                             :save_last_frame:
                             :body_only:
                             :header: Square
+                            :ref_classes: Square
+
+                            class SquareScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Square(
+                                            side_length=3.0,
+                                        )
+                                    )
+
+                        .. manim:: StarScene
+                            :save_last_frame:
+                            :body_only:
+                            :header: Star
+                            :ref_classes: Star
+
+                            class StarScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Star(
+                                            outer_radius=3.0,
+                                        )
+                                    )
+
+                        .. manim:: LineScene
+                            :save_last_frame:
+                            :body_only:
+                            :header: Line
+                            :ref_classes: Line
+
+                            class LineScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Line(
+                                            (-3, 0, 0),
+                                            (3, 0, 0),
+                                        )
+                                    )
+
+                    .. tab:: Without Reference
+
+                        .. manim:: CircleScene
+                            :save_last_frame:
+                            :body_only:
+                            :header: Circle
+
+                            class CircleScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Circle(
+                                            radius=3.0,
+                                        )
+                                    )
+
+                        .. manim:: SquareScene
+                            :save_last_frame:
+                            :body_only:
+                            :header: Square
 
                             class SquareScene(Scene):
                                 def construct(self) -> None:
@@ -1489,72 +1426,131 @@ Mobjects
                                         )
                                     )
 
-        .. tab:: Without Source
+    .. tab:: Without Source
 
-            .. tab:: Without Reference
+        .. tab:: With title
 
-                .. manim:: CircleScene
-                    :save_last_frame:
-                    :hide_source:
+            .. rubric:: Circle
+                :class: sd-text-center
+            .. manim:: CircleScene
+                :save_last_frame:
+                :hide_source:
 
-                    class CircleScene(Scene):
-                        def construct(self) -> None:
-                            self.add(
-                                Circle(
-                                    radius=3.0,
-                                )
+                class CircleScene(Scene):
+                    def construct(self) -> None:
+                        self.add(
+                            Circle(
+                                radius=3.0,
                             )
+                        )
 
-                .. manim:: SquareScene
-                    :save_last_frame:
-                    :hide_source:
+            .. rubric:: Square
+                :class: sd-text-center
+            .. manim:: SquareScene
+                :save_last_frame:
+                :hide_source:
 
-                    class SquareScene(Scene):
-                        def construct(self) -> None:
-                            self.add(
-                                Square(
-                                    side_length=3.0,
-                                )
+                class SquareScene(Scene):
+                    def construct(self) -> None:
+                        self.add(
+                            Square(
+                                side_length=3.0,
                             )
+                        )
 
-                .. manim:: StarScene
-                    :save_last_frame:
-                    :hide_source:
+            .. rubric:: Star
+                :class: sd-text-center
+            .. manim:: StarScene
+                :save_last_frame:
+                :hide_source:
 
-                    class StarScene(Scene):
-                        def construct(self) -> None:
-                            self.add(
-                                Star(
-                                    outer_radius=3.0,
-                                )
+                class StarScene(Scene):
+                    def construct(self) -> None:
+                        self.add(
+                            Star(
+                                outer_radius=3.0,
                             )
+                        )
 
-                .. manim:: LineScene
-                    :save_last_frame:
-                    :hide_source:
+            .. rubric:: Line
+                :class: sd-text-center
+            .. manim:: LineScene
+                :save_last_frame:
+                :hide_source:
 
-                    class LineScene(Scene):
-                        def construct(self) -> None:
-                            self.add(
-                                Line(
-                                    (-3, 0, 0),
-                                    (3, 0, 0),
-                                )
+                class LineScene(Scene):
+                    def construct(self) -> None:
+                        self.add(
+                            Line(
+                                (-3, 0, 0),
+                                (3, 0, 0),
                             )
+                        )
+
+        .. tab:: Without title
+
+            .. manim:: CircleScene
+                :save_last_frame:
+                :hide_source:
+
+                class CircleScene(Scene):
+                    def construct(self) -> None:
+                        self.add(
+                            Circle(
+                                radius=3.0,
+                            )
+                        )
+
+            .. manim:: SquareScene
+                :save_last_frame:
+                :hide_source:
+
+                class SquareScene(Scene):
+                    def construct(self) -> None:
+                        self.add(
+                            Square(
+                                side_length=3.0,
+                            )
+                        )
+
+            .. manim:: StarScene
+                :save_last_frame:
+                :hide_source:
+
+                class StarScene(Scene):
+                    def construct(self) -> None:
+                        self.add(
+                            Star(
+                                outer_radius=3.0,
+                            )
+                        )
+
+            .. manim:: LineScene
+                :save_last_frame:
+                :hide_source:
+
+                class LineScene(Scene):
+                    def construct(self) -> None:
+                        self.add(
+                            Line(
+                                (-3, 0, 0),
+                                (3, 0, 0),
+                            )
+                        )
 
 .. tab:: Grid
 
     .. tab:: Items
 
-        .. tab:: With title
+        .. tab:: With Source
 
-            .. tab:: With Source
+            .. tab:: Full Code
 
-                .. tab:: With Reference
+                .. tab:: With title
 
                     .. tab:: Default header
 
-                        .. tab:: Full code
+                        .. tab:: With Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -1624,7 +1620,7 @@ Mobjects
                                                     )
                                                 )
 
-                        .. tab:: Body only
+                        .. tab:: Without Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -1635,8 +1631,6 @@ Mobjects
                                         :class: sd-text-center
                                     .. manim:: CircleScene
                                         :save_last_frame:
-                                        :body_only:
-                                        :ref_classes: Circle
 
                                         class CircleScene(Scene):
                                             def construct(self) -> None:
@@ -1652,8 +1646,6 @@ Mobjects
                                         :class: sd-text-center
                                     .. manim:: SquareScene
                                         :save_last_frame:
-                                        :body_only:
-                                        :ref_classes: Square
 
                                         class SquareScene(Scene):
                                             def construct(self) -> None:
@@ -1669,8 +1661,6 @@ Mobjects
                                         :class: sd-text-center
                                     .. manim:: StarScene
                                         :save_last_frame:
-                                        :body_only:
-                                        :ref_classes: Star
 
                                         class StarScene(Scene):
                                             def construct(self) -> None:
@@ -1686,8 +1676,6 @@ Mobjects
                                         :class: sd-text-center
                                     .. manim:: LineScene
                                         :save_last_frame:
-                                        :body_only:
-                                        :ref_classes: Line
 
                                         class LineScene(Scene):
                                             def construct(self) -> None:
@@ -1700,7 +1688,7 @@ Mobjects
 
                     .. tab:: No header
 
-                        .. tab:: Full code
+                        .. tab:: With Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -1774,7 +1762,7 @@ Mobjects
                                                     )
                                                 )
 
-                        .. tab:: Body only
+                        .. tab:: Without Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -1785,9 +1773,7 @@ Mobjects
                                         :class: sd-text-center
                                     .. manim:: CircleScene
                                         :save_last_frame:
-                                        :body_only:
                                         :header: None
-                                        :ref_classes: Circle
 
                                         class CircleScene(Scene):
                                             def construct(self) -> None:
@@ -1803,9 +1789,7 @@ Mobjects
                                         :class: sd-text-center
                                     .. manim:: SquareScene
                                         :save_last_frame:
-                                        :body_only:
                                         :header: None
-                                        :ref_classes: Square
 
                                         class SquareScene(Scene):
                                             def construct(self) -> None:
@@ -1821,9 +1805,7 @@ Mobjects
                                         :class: sd-text-center
                                     .. manim:: StarScene
                                         :save_last_frame:
-                                        :body_only:
                                         :header: None
-                                        :ref_classes: Star
 
                                         class StarScene(Scene):
                                             def construct(self) -> None:
@@ -1839,9 +1821,7 @@ Mobjects
                                         :class: sd-text-center
                                     .. manim:: LineScene
                                         :save_last_frame:
-                                        :body_only:
                                         :header: None
-                                        :ref_classes: Line
 
                                         class LineScene(Scene):
                                             def construct(self) -> None:
@@ -1852,9 +1832,9 @@ Mobjects
                                                     )
                                                 )
 
-                    .. tab:: Override
+                    .. tab:: Override header
 
-                        .. tab:: Full code
+                        .. tab:: With Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -1928,7 +1908,7 @@ Mobjects
                                                     )
                                                 )
 
-                        .. tab:: Body only
+                        .. tab:: Without Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -1939,9 +1919,7 @@ Mobjects
                                         :class: sd-text-center
                                     .. manim:: CircleScene
                                         :save_last_frame:
-                                        :body_only:
                                         :header: Circle
-                                        :ref_classes: Circle
 
                                         class CircleScene(Scene):
                                             def construct(self) -> None:
@@ -1957,9 +1935,7 @@ Mobjects
                                         :class: sd-text-center
                                     .. manim:: SquareScene
                                         :save_last_frame:
-                                        :body_only:
                                         :header: Square
-                                        :ref_classes: Square
 
                                         class SquareScene(Scene):
                                             def construct(self) -> None:
@@ -1975,9 +1951,7 @@ Mobjects
                                         :class: sd-text-center
                                     .. manim:: StarScene
                                         :save_last_frame:
-                                        :body_only:
                                         :header: Star
-                                        :ref_classes: Star
 
                                         class StarScene(Scene):
                                             def construct(self) -> None:
@@ -1993,9 +1967,7 @@ Mobjects
                                         :class: sd-text-center
                                     .. manim:: LineScene
                                         :save_last_frame:
-                                        :body_only:
                                         :header: Line
-                                        :ref_classes: Line
 
                                         class LineScene(Scene):
                                             def construct(self) -> None:
@@ -2006,11 +1978,397 @@ Mobjects
                                                     )
                                                 )
 
-                .. tab:: Without Reference
+                .. tab:: Without title
 
                     .. tab:: Default header
 
-                        .. tab:: Full code
+                        .. tab:: With Reference
+
+                            .. grid:: 1 2 2 2
+                                :gutter: 1
+
+                                .. grid-item::
+
+                                    .. manim:: CircleScene
+                                        :save_last_frame:
+                                        :ref_classes: Circle
+
+                                        class CircleScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Circle(
+                                                        radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. manim:: SquareScene
+                                        :save_last_frame:
+                                        :ref_classes: Square
+
+                                        class SquareScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Square(
+                                                        side_length=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. manim:: StarScene
+                                        :save_last_frame:
+                                        :ref_classes: Star
+
+                                        class StarScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Star(
+                                                        outer_radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. manim:: LineScene
+                                        :save_last_frame:
+                                        :ref_classes: Line
+
+                                        class LineScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Line(
+                                                        (-3, 0, 0),
+                                                        (3, 0, 0),
+                                                    )
+                                                )
+
+                        .. tab:: Without Reference
+
+                            .. grid:: 1 2 2 2
+                                :gutter: 1
+
+                                .. grid-item::
+
+                                    .. manim:: CircleScene
+                                        :save_last_frame:
+
+                                        class CircleScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Circle(
+                                                        radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. manim:: SquareScene
+                                        :save_last_frame:
+
+                                        class SquareScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Square(
+                                                        side_length=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. manim:: StarScene
+                                        :save_last_frame:
+
+                                        class StarScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Star(
+                                                        outer_radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. manim:: LineScene
+                                        :save_last_frame:
+
+                                        class LineScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Line(
+                                                        (-3, 0, 0),
+                                                        (3, 0, 0),
+                                                    )
+                                                )
+
+                    .. tab:: No header
+
+                        .. tab:: With Reference
+
+                            .. grid:: 1 2 2 2
+                                :gutter: 1
+
+                                .. grid-item::
+
+                                    .. manim:: CircleScene
+                                        :save_last_frame:
+                                        :header: None
+                                        :ref_classes: Circle
+
+                                        class CircleScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Circle(
+                                                        radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. manim:: SquareScene
+                                        :save_last_frame:
+                                        :header: None
+                                        :ref_classes: Square
+
+                                        class SquareScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Square(
+                                                        side_length=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. manim:: StarScene
+                                        :save_last_frame:
+                                        :header: None
+                                        :ref_classes: Star
+
+                                        class StarScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Star(
+                                                        outer_radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. manim:: LineScene
+                                        :save_last_frame:
+                                        :header: None
+                                        :ref_classes: Line
+
+                                        class LineScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Line(
+                                                        (-3, 0, 0),
+                                                        (3, 0, 0),
+                                                    )
+                                                )
+
+                        .. tab:: Without Reference
+
+                            .. grid:: 1 2 2 2
+                                :gutter: 1
+
+                                .. grid-item::
+
+                                    .. manim:: CircleScene
+                                        :save_last_frame:
+                                        :header: None
+
+                                        class CircleScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Circle(
+                                                        radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. manim:: SquareScene
+                                        :save_last_frame:
+                                        :header: None
+
+                                        class SquareScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Square(
+                                                        side_length=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. manim:: StarScene
+                                        :save_last_frame:
+                                        :header: None
+
+                                        class StarScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Star(
+                                                        outer_radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. manim:: LineScene
+                                        :save_last_frame:
+                                        :header: None
+
+                                        class LineScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Line(
+                                                        (-3, 0, 0),
+                                                        (3, 0, 0),
+                                                    )
+                                                )
+
+                    .. tab:: Override header
+
+                        .. tab:: With Reference
+
+                            .. grid:: 1 2 2 2
+                                :gutter: 1
+
+                                .. grid-item::
+
+                                    .. manim:: CircleScene
+                                        :save_last_frame:
+                                        :header: Circle
+                                        :ref_classes: Circle
+
+                                        class CircleScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Circle(
+                                                        radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. manim:: SquareScene
+                                        :save_last_frame:
+                                        :header: Square
+                                        :ref_classes: Square
+
+                                        class SquareScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Square(
+                                                        side_length=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. manim:: StarScene
+                                        :save_last_frame:
+                                        :header: Star
+                                        :ref_classes: Star
+
+                                        class StarScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Star(
+                                                        outer_radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. manim:: LineScene
+                                        :save_last_frame:
+                                        :header: Line
+                                        :ref_classes: Line
+
+                                        class LineScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Line(
+                                                        (-3, 0, 0),
+                                                        (3, 0, 0),
+                                                    )
+                                                )
+
+                        .. tab:: Without Reference
+
+                            .. grid:: 1 2 2 2
+                                :gutter: 1
+
+                                .. grid-item::
+
+                                    .. manim:: CircleScene
+                                        :save_last_frame:
+                                        :header: Circle
+
+                                        class CircleScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Circle(
+                                                        radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. manim:: SquareScene
+                                        :save_last_frame:
+                                        :header: Square
+
+                                        class SquareScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Square(
+                                                        side_length=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. manim:: StarScene
+                                        :save_last_frame:
+                                        :header: Star
+
+                                        class StarScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Star(
+                                                        outer_radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. manim:: LineScene
+                                        :save_last_frame:
+                                        :header: Line
+
+                                        class LineScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Line(
+                                                        (-3, 0, 0),
+                                                        (3, 0, 0),
+                                                    )
+                                                )
+
+            .. tab:: Body Only
+
+                .. tab:: With title
+
+                    .. tab:: Default header
+
+                        .. tab:: With Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -2021,6 +2379,8 @@ Mobjects
                                         :class: sd-text-center
                                     .. manim:: CircleScene
                                         :save_last_frame:
+                                        :body_only:
+                                        :ref_classes: Circle
 
                                         class CircleScene(Scene):
                                             def construct(self) -> None:
@@ -2036,6 +2396,8 @@ Mobjects
                                         :class: sd-text-center
                                     .. manim:: SquareScene
                                         :save_last_frame:
+                                        :body_only:
+                                        :ref_classes: Square
 
                                         class SquareScene(Scene):
                                             def construct(self) -> None:
@@ -2051,6 +2413,8 @@ Mobjects
                                         :class: sd-text-center
                                     .. manim:: StarScene
                                         :save_last_frame:
+                                        :body_only:
+                                        :ref_classes: Star
 
                                         class StarScene(Scene):
                                             def construct(self) -> None:
@@ -2066,6 +2430,8 @@ Mobjects
                                         :class: sd-text-center
                                     .. manim:: LineScene
                                         :save_last_frame:
+                                        :body_only:
+                                        :ref_classes: Line
 
                                         class LineScene(Scene):
                                             def construct(self) -> None:
@@ -2076,7 +2442,7 @@ Mobjects
                                                     )
                                                 )
 
-                        .. tab:: Body only
+                        .. tab:: Without Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -2148,77 +2514,7 @@ Mobjects
 
                     .. tab:: No header
 
-                        .. tab:: Full code
-
-                            .. grid:: 1 2 2 2
-                                :gutter: 1
-
-                                .. grid-item::
-
-                                    .. rubric:: Circle
-                                        :class: sd-text-center
-                                    .. manim:: CircleScene
-                                        :save_last_frame:
-                                        :header: None
-
-                                        class CircleScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Circle(
-                                                        radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. rubric:: Square
-                                        :class: sd-text-center
-                                    .. manim:: SquareScene
-                                        :save_last_frame:
-                                        :header: None
-
-                                        class SquareScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Square(
-                                                        side_length=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. rubric:: Star
-                                        :class: sd-text-center
-                                    .. manim:: StarScene
-                                        :save_last_frame:
-                                        :header: None
-
-                                        class StarScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Star(
-                                                        outer_radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. rubric:: Line
-                                        :class: sd-text-center
-                                    .. manim:: LineScene
-                                        :save_last_frame:
-                                        :header: None
-
-                                        class LineScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Line(
-                                                        (-3, 0, 0),
-                                                        (3, 0, 0),
-                                                    )
-                                                )
-
-                        .. tab:: Body only
+                        .. tab:: With Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -2231,6 +2527,7 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: None
+                                        :ref_classes: Circle
 
                                         class CircleScene(Scene):
                                             def construct(self) -> None:
@@ -2248,6 +2545,7 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: None
+                                        :ref_classes: Square
 
                                         class SquareScene(Scene):
                                             def construct(self) -> None:
@@ -2265,6 +2563,7 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: None
+                                        :ref_classes: Star
 
                                         class StarScene(Scene):
                                             def construct(self) -> None:
@@ -2282,6 +2581,7 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: None
+                                        :ref_classes: Line
 
                                         class LineScene(Scene):
                                             def construct(self) -> None:
@@ -2292,9 +2592,7 @@ Mobjects
                                                     )
                                                 )
 
-                    .. tab:: Override
-
-                        .. tab:: Full code
+                        .. tab:: Without Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -2305,7 +2603,8 @@ Mobjects
                                         :class: sd-text-center
                                     .. manim:: CircleScene
                                         :save_last_frame:
-                                        :header: Circle
+                                        :body_only:
+                                        :header: None
 
                                         class CircleScene(Scene):
                                             def construct(self) -> None:
@@ -2321,7 +2620,8 @@ Mobjects
                                         :class: sd-text-center
                                     .. manim:: SquareScene
                                         :save_last_frame:
-                                        :header: Square
+                                        :body_only:
+                                        :header: None
 
                                         class SquareScene(Scene):
                                             def construct(self) -> None:
@@ -2337,7 +2637,8 @@ Mobjects
                                         :class: sd-text-center
                                     .. manim:: StarScene
                                         :save_last_frame:
-                                        :header: Star
+                                        :body_only:
+                                        :header: None
 
                                         class StarScene(Scene):
                                             def construct(self) -> None:
@@ -2353,7 +2654,8 @@ Mobjects
                                         :class: sd-text-center
                                     .. manim:: LineScene
                                         :save_last_frame:
-                                        :header: Line
+                                        :body_only:
+                                        :header: None
 
                                         class LineScene(Scene):
                                             def construct(self) -> None:
@@ -2364,7 +2666,9 @@ Mobjects
                                                     )
                                                 )
 
-                        .. tab:: Body only
+                    .. tab:: Override header
+
+                        .. tab:: With Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -2377,6 +2681,7 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: Circle
+                                        :ref_classes: Circle
 
                                         class CircleScene(Scene):
                                             def construct(self) -> None:
@@ -2394,6 +2699,83 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: Square
+                                        :ref_classes: Square
+
+                                        class SquareScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Square(
+                                                        side_length=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. rubric:: Star
+                                        :class: sd-text-center
+                                    .. manim:: StarScene
+                                        :save_last_frame:
+                                        :body_only:
+                                        :header: Star
+                                        :ref_classes: Star
+
+                                        class StarScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Star(
+                                                        outer_radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. rubric:: Line
+                                        :class: sd-text-center
+                                    .. manim:: LineScene
+                                        :save_last_frame:
+                                        :body_only:
+                                        :header: Line
+                                        :ref_classes: Line
+
+                                        class LineScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Line(
+                                                        (-3, 0, 0),
+                                                        (3, 0, 0),
+                                                    )
+                                                )
+
+                        .. tab:: Without Reference
+
+                            .. grid:: 1 2 2 2
+                                :gutter: 1
+
+                                .. grid-item::
+
+                                    .. rubric:: Circle
+                                        :class: sd-text-center
+                                    .. manim:: CircleScene
+                                        :save_last_frame:
+                                        :body_only:
+                                        :header: Circle
+
+                                        class CircleScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Circle(
+                                                        radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. rubric:: Square
+                                        :class: sd-text-center
+                                    .. manim:: SquareScene
+                                        :save_last_frame:
+                                        :body_only:
+                                        :header: Square
 
                                         class SquareScene(Scene):
                                             def construct(self) -> None:
@@ -2438,149 +2820,11 @@ Mobjects
                                                     )
                                                 )
 
-            .. tab:: Without Source
-
-                .. tab:: Without Reference
-
-                    .. grid:: 1 2 2 2
-                        :gutter: 1
-
-                        .. grid-item::
-
-                            .. rubric:: Circle
-                                :class: sd-text-center
-                            .. manim:: CircleScene
-                                :save_last_frame:
-                                :hide_source:
-
-                                class CircleScene(Scene):
-                                    def construct(self) -> None:
-                                        self.add(
-                                            Circle(
-                                                radius=3.0,
-                                            )
-                                        )
-
-                        .. grid-item::
-
-                            .. rubric:: Square
-                                :class: sd-text-center
-                            .. manim:: SquareScene
-                                :save_last_frame:
-                                :hide_source:
-
-                                class SquareScene(Scene):
-                                    def construct(self) -> None:
-                                        self.add(
-                                            Square(
-                                                side_length=3.0,
-                                            )
-                                        )
-
-                        .. grid-item::
-
-                            .. rubric:: Star
-                                :class: sd-text-center
-                            .. manim:: StarScene
-                                :save_last_frame:
-                                :hide_source:
-
-                                class StarScene(Scene):
-                                    def construct(self) -> None:
-                                        self.add(
-                                            Star(
-                                                outer_radius=3.0,
-                                            )
-                                        )
-
-                        .. grid-item::
-
-                            .. rubric:: Line
-                                :class: sd-text-center
-                            .. manim:: LineScene
-                                :save_last_frame:
-                                :hide_source:
-
-                                class LineScene(Scene):
-                                    def construct(self) -> None:
-                                        self.add(
-                                            Line(
-                                                (-3, 0, 0),
-                                                (3, 0, 0),
-                                            )
-                                        )
-
-        .. tab:: Without title
-
-            .. tab:: With Source
-
-                .. tab:: With Reference
+                .. tab:: Without title
 
                     .. tab:: Default header
 
-                        .. tab:: Full code
-
-                            .. grid:: 1 2 2 2
-                                :gutter: 1
-
-                                .. grid-item::
-
-                                    .. manim:: CircleScene
-                                        :save_last_frame:
-                                        :ref_classes: Circle
-
-                                        class CircleScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Circle(
-                                                        radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. manim:: SquareScene
-                                        :save_last_frame:
-                                        :ref_classes: Square
-
-                                        class SquareScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Square(
-                                                        side_length=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. manim:: StarScene
-                                        :save_last_frame:
-                                        :ref_classes: Star
-
-                                        class StarScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Star(
-                                                        outer_radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. manim:: LineScene
-                                        :save_last_frame:
-                                        :ref_classes: Line
-
-                                        class LineScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Line(
-                                                        (-3, 0, 0),
-                                                        (3, 0, 0),
-                                                    )
-                                                )
-
-                        .. tab:: Body only
+                        .. tab:: With Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -2646,345 +2890,7 @@ Mobjects
                                                     )
                                                 )
 
-                    .. tab:: No header
-
-                        .. tab:: Full code
-
-                            .. grid:: 1 2 2 2
-                                :gutter: 1
-
-                                .. grid-item::
-
-                                    .. manim:: CircleScene
-                                        :save_last_frame:
-                                        :header: None
-                                        :ref_classes: Circle
-
-                                        class CircleScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Circle(
-                                                        radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. manim:: SquareScene
-                                        :save_last_frame:
-                                        :header: None
-                                        :ref_classes: Square
-
-                                        class SquareScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Square(
-                                                        side_length=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. manim:: StarScene
-                                        :save_last_frame:
-                                        :header: None
-                                        :ref_classes: Star
-
-                                        class StarScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Star(
-                                                        outer_radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. manim:: LineScene
-                                        :save_last_frame:
-                                        :header: None
-                                        :ref_classes: Line
-
-                                        class LineScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Line(
-                                                        (-3, 0, 0),
-                                                        (3, 0, 0),
-                                                    )
-                                                )
-
-                        .. tab:: Body only
-
-                            .. grid:: 1 2 2 2
-                                :gutter: 1
-
-                                .. grid-item::
-
-                                    .. manim:: CircleScene
-                                        :save_last_frame:
-                                        :body_only:
-                                        :header: None
-                                        :ref_classes: Circle
-
-                                        class CircleScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Circle(
-                                                        radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. manim:: SquareScene
-                                        :save_last_frame:
-                                        :body_only:
-                                        :header: None
-                                        :ref_classes: Square
-
-                                        class SquareScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Square(
-                                                        side_length=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. manim:: StarScene
-                                        :save_last_frame:
-                                        :body_only:
-                                        :header: None
-                                        :ref_classes: Star
-
-                                        class StarScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Star(
-                                                        outer_radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. manim:: LineScene
-                                        :save_last_frame:
-                                        :body_only:
-                                        :header: None
-                                        :ref_classes: Line
-
-                                        class LineScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Line(
-                                                        (-3, 0, 0),
-                                                        (3, 0, 0),
-                                                    )
-                                                )
-
-                    .. tab:: Override
-
-                        .. tab:: Full code
-
-                            .. grid:: 1 2 2 2
-                                :gutter: 1
-
-                                .. grid-item::
-
-                                    .. manim:: CircleScene
-                                        :save_last_frame:
-                                        :header: Circle
-                                        :ref_classes: Circle
-
-                                        class CircleScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Circle(
-                                                        radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. manim:: SquareScene
-                                        :save_last_frame:
-                                        :header: Square
-                                        :ref_classes: Square
-
-                                        class SquareScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Square(
-                                                        side_length=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. manim:: StarScene
-                                        :save_last_frame:
-                                        :header: Star
-                                        :ref_classes: Star
-
-                                        class StarScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Star(
-                                                        outer_radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. manim:: LineScene
-                                        :save_last_frame:
-                                        :header: Line
-                                        :ref_classes: Line
-
-                                        class LineScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Line(
-                                                        (-3, 0, 0),
-                                                        (3, 0, 0),
-                                                    )
-                                                )
-
-                        .. tab:: Body only
-
-                            .. grid:: 1 2 2 2
-                                :gutter: 1
-
-                                .. grid-item::
-
-                                    .. manim:: CircleScene
-                                        :save_last_frame:
-                                        :body_only:
-                                        :header: Circle
-                                        :ref_classes: Circle
-
-                                        class CircleScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Circle(
-                                                        radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. manim:: SquareScene
-                                        :save_last_frame:
-                                        :body_only:
-                                        :header: Square
-                                        :ref_classes: Square
-
-                                        class SquareScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Square(
-                                                        side_length=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. manim:: StarScene
-                                        :save_last_frame:
-                                        :body_only:
-                                        :header: Star
-                                        :ref_classes: Star
-
-                                        class StarScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Star(
-                                                        outer_radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. manim:: LineScene
-                                        :save_last_frame:
-                                        :body_only:
-                                        :header: Line
-                                        :ref_classes: Line
-
-                                        class LineScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Line(
-                                                        (-3, 0, 0),
-                                                        (3, 0, 0),
-                                                    )
-                                                )
-
-                .. tab:: Without Reference
-
-                    .. tab:: Default header
-
-                        .. tab:: Full code
-
-                            .. grid:: 1 2 2 2
-                                :gutter: 1
-
-                                .. grid-item::
-
-                                    .. manim:: CircleScene
-                                        :save_last_frame:
-
-                                        class CircleScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Circle(
-                                                        radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. manim:: SquareScene
-                                        :save_last_frame:
-
-                                        class SquareScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Square(
-                                                        side_length=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. manim:: StarScene
-                                        :save_last_frame:
-
-                                        class StarScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Star(
-                                                        outer_radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. manim:: LineScene
-                                        :save_last_frame:
-
-                                        class LineScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Line(
-                                                        (-3, 0, 0),
-                                                        (3, 0, 0),
-                                                    )
-                                                )
-
-                        .. tab:: Body only
+                        .. tab:: Without Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -3048,69 +2954,7 @@ Mobjects
 
                     .. tab:: No header
 
-                        .. tab:: Full code
-
-                            .. grid:: 1 2 2 2
-                                :gutter: 1
-
-                                .. grid-item::
-
-                                    .. manim:: CircleScene
-                                        :save_last_frame:
-                                        :header: None
-
-                                        class CircleScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Circle(
-                                                        radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. manim:: SquareScene
-                                        :save_last_frame:
-                                        :header: None
-
-                                        class SquareScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Square(
-                                                        side_length=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. manim:: StarScene
-                                        :save_last_frame:
-                                        :header: None
-
-                                        class StarScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Star(
-                                                        outer_radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item::
-
-                                    .. manim:: LineScene
-                                        :save_last_frame:
-                                        :header: None
-
-                                        class LineScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Line(
-                                                        (-3, 0, 0),
-                                                        (3, 0, 0),
-                                                    )
-                                                )
-
-                        .. tab:: Body only
+                        .. tab:: With Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -3121,6 +2965,7 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: None
+                                        :ref_classes: Circle
 
                                         class CircleScene(Scene):
                                             def construct(self) -> None:
@@ -3136,6 +2981,7 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: None
+                                        :ref_classes: Square
 
                                         class SquareScene(Scene):
                                             def construct(self) -> None:
@@ -3151,6 +2997,7 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: None
+                                        :ref_classes: Star
 
                                         class StarScene(Scene):
                                             def construct(self) -> None:
@@ -3166,6 +3013,7 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: None
+                                        :ref_classes: Line
 
                                         class LineScene(Scene):
                                             def construct(self) -> None:
@@ -3176,9 +3024,7 @@ Mobjects
                                                     )
                                                 )
 
-                    .. tab:: Override
-
-                        .. tab:: Full code
+                        .. tab:: Without Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -3187,7 +3033,8 @@ Mobjects
 
                                     .. manim:: CircleScene
                                         :save_last_frame:
-                                        :header: Circle
+                                        :body_only:
+                                        :header: None
 
                                         class CircleScene(Scene):
                                             def construct(self) -> None:
@@ -3201,7 +3048,8 @@ Mobjects
 
                                     .. manim:: SquareScene
                                         :save_last_frame:
-                                        :header: Square
+                                        :body_only:
+                                        :header: None
 
                                         class SquareScene(Scene):
                                             def construct(self) -> None:
@@ -3215,7 +3063,8 @@ Mobjects
 
                                     .. manim:: StarScene
                                         :save_last_frame:
-                                        :header: Star
+                                        :body_only:
+                                        :header: None
 
                                         class StarScene(Scene):
                                             def construct(self) -> None:
@@ -3229,7 +3078,8 @@ Mobjects
 
                                     .. manim:: LineScene
                                         :save_last_frame:
-                                        :header: Line
+                                        :body_only:
+                                        :header: None
 
                                         class LineScene(Scene):
                                             def construct(self) -> None:
@@ -3240,7 +3090,9 @@ Mobjects
                                                     )
                                                 )
 
-                        .. tab:: Body only
+                    .. tab:: Override header
+
+                        .. tab:: With Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -3251,6 +3103,7 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: Circle
+                                        :ref_classes: Circle
 
                                         class CircleScene(Scene):
                                             def construct(self) -> None:
@@ -3266,6 +3119,75 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: Square
+                                        :ref_classes: Square
+
+                                        class SquareScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Square(
+                                                        side_length=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. manim:: StarScene
+                                        :save_last_frame:
+                                        :body_only:
+                                        :header: Star
+                                        :ref_classes: Star
+
+                                        class StarScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Star(
+                                                        outer_radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. manim:: LineScene
+                                        :save_last_frame:
+                                        :body_only:
+                                        :header: Line
+                                        :ref_classes: Line
+
+                                        class LineScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Line(
+                                                        (-3, 0, 0),
+                                                        (3, 0, 0),
+                                                    )
+                                                )
+
+                        .. tab:: Without Reference
+
+                            .. grid:: 1 2 2 2
+                                :gutter: 1
+
+                                .. grid-item::
+
+                                    .. manim:: CircleScene
+                                        :save_last_frame:
+                                        :body_only:
+                                        :header: Circle
+
+                                        class CircleScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Circle(
+                                                        radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item::
+
+                                    .. manim:: SquareScene
+                                        :save_last_frame:
+                                        :body_only:
+                                        :header: Square
 
                                         class SquareScene(Scene):
                                             def construct(self) -> None:
@@ -3306,81 +3228,151 @@ Mobjects
                                                     )
                                                 )
 
-            .. tab:: Without Source
+        .. tab:: Without Source
 
-                .. tab:: Without Reference
+            .. tab:: With title
 
-                    .. grid:: 1 2 2 2
-                        :gutter: 1
+                .. grid:: 1 2 2 2
+                    :gutter: 1
 
-                        .. grid-item::
+                    .. grid-item::
 
-                            .. manim:: CircleScene
-                                :save_last_frame:
-                                :hide_source:
+                        .. rubric:: Circle
+                            :class: sd-text-center
+                        .. manim:: CircleScene
+                            :save_last_frame:
+                            :hide_source:
 
-                                class CircleScene(Scene):
-                                    def construct(self) -> None:
-                                        self.add(
-                                            Circle(
-                                                radius=3.0,
-                                            )
+                            class CircleScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Circle(
+                                            radius=3.0,
                                         )
+                                    )
 
-                        .. grid-item::
+                    .. grid-item::
 
-                            .. manim:: SquareScene
-                                :save_last_frame:
-                                :hide_source:
+                        .. rubric:: Square
+                            :class: sd-text-center
+                        .. manim:: SquareScene
+                            :save_last_frame:
+                            :hide_source:
 
-                                class SquareScene(Scene):
-                                    def construct(self) -> None:
-                                        self.add(
-                                            Square(
-                                                side_length=3.0,
-                                            )
+                            class SquareScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Square(
+                                            side_length=3.0,
                                         )
+                                    )
 
-                        .. grid-item::
+                    .. grid-item::
 
-                            .. manim:: StarScene
-                                :save_last_frame:
-                                :hide_source:
+                        .. rubric:: Star
+                            :class: sd-text-center
+                        .. manim:: StarScene
+                            :save_last_frame:
+                            :hide_source:
 
-                                class StarScene(Scene):
-                                    def construct(self) -> None:
-                                        self.add(
-                                            Star(
-                                                outer_radius=3.0,
-                                            )
+                            class StarScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Star(
+                                            outer_radius=3.0,
                                         )
+                                    )
 
-                        .. grid-item::
+                    .. grid-item::
 
-                            .. manim:: LineScene
-                                :save_last_frame:
-                                :hide_source:
+                        .. rubric:: Line
+                            :class: sd-text-center
+                        .. manim:: LineScene
+                            :save_last_frame:
+                            :hide_source:
 
-                                class LineScene(Scene):
-                                    def construct(self) -> None:
-                                        self.add(
-                                            Line(
-                                                (-3, 0, 0),
-                                                (3, 0, 0),
-                                            )
+                            class LineScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Line(
+                                            (-3, 0, 0),
+                                            (3, 0, 0),
                                         )
+                                    )
+
+            .. tab:: Without title
+
+                .. grid:: 1 2 2 2
+                    :gutter: 1
+
+                    .. grid-item::
+
+                        .. manim:: CircleScene
+                            :save_last_frame:
+                            :hide_source:
+
+                            class CircleScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Circle(
+                                            radius=3.0,
+                                        )
+                                    )
+
+                    .. grid-item::
+
+                        .. manim:: SquareScene
+                            :save_last_frame:
+                            :hide_source:
+
+                            class SquareScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Square(
+                                            side_length=3.0,
+                                        )
+                                    )
+
+                    .. grid-item::
+
+                        .. manim:: StarScene
+                            :save_last_frame:
+                            :hide_source:
+
+                            class StarScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Star(
+                                            outer_radius=3.0,
+                                        )
+                                    )
+
+                    .. grid-item::
+
+                        .. manim:: LineScene
+                            :save_last_frame:
+                            :hide_source:
+
+                            class LineScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Line(
+                                            (-3, 0, 0),
+                                            (3, 0, 0),
+                                        )
+                                    )
 
     .. tab:: Cards
 
-        .. tab:: With title
+        .. tab:: With Source
 
-            .. tab:: With Source
+            .. tab:: Full Code
 
-                .. tab:: With Reference
+                .. tab:: With title
 
                     .. tab:: Default header
 
-                        .. tab:: Full code
+                        .. tab:: With Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -3454,7 +3446,7 @@ Mobjects
                                                     )
                                                 )
 
-                        .. tab:: Body only
+                        .. tab:: Without Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -3466,8 +3458,6 @@ Mobjects
                                     ^^^
                                     .. manim:: CircleScene
                                         :save_last_frame:
-                                        :body_only:
-                                        :ref_classes: Circle
 
                                         class CircleScene(Scene):
                                             def construct(self) -> None:
@@ -3484,8 +3474,6 @@ Mobjects
                                     ^^^
                                     .. manim:: SquareScene
                                         :save_last_frame:
-                                        :body_only:
-                                        :ref_classes: Square
 
                                         class SquareScene(Scene):
                                             def construct(self) -> None:
@@ -3502,8 +3490,6 @@ Mobjects
                                     ^^^
                                     .. manim:: StarScene
                                         :save_last_frame:
-                                        :body_only:
-                                        :ref_classes: Star
 
                                         class StarScene(Scene):
                                             def construct(self) -> None:
@@ -3520,8 +3506,6 @@ Mobjects
                                     ^^^
                                     .. manim:: LineScene
                                         :save_last_frame:
-                                        :body_only:
-                                        :ref_classes: Line
 
                                         class LineScene(Scene):
                                             def construct(self) -> None:
@@ -3534,7 +3518,7 @@ Mobjects
 
                     .. tab:: No header
 
-                        .. tab:: Full code
+                        .. tab:: With Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -3612,7 +3596,7 @@ Mobjects
                                                     )
                                                 )
 
-                        .. tab:: Body only
+                        .. tab:: Without Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -3624,9 +3608,7 @@ Mobjects
                                     ^^^
                                     .. manim:: CircleScene
                                         :save_last_frame:
-                                        :body_only:
                                         :header: None
-                                        :ref_classes: Circle
 
                                         class CircleScene(Scene):
                                             def construct(self) -> None:
@@ -3643,9 +3625,7 @@ Mobjects
                                     ^^^
                                     .. manim:: SquareScene
                                         :save_last_frame:
-                                        :body_only:
                                         :header: None
-                                        :ref_classes: Square
 
                                         class SquareScene(Scene):
                                             def construct(self) -> None:
@@ -3662,9 +3642,7 @@ Mobjects
                                     ^^^
                                     .. manim:: StarScene
                                         :save_last_frame:
-                                        :body_only:
                                         :header: None
-                                        :ref_classes: Star
 
                                         class StarScene(Scene):
                                             def construct(self) -> None:
@@ -3681,9 +3659,7 @@ Mobjects
                                     ^^^
                                     .. manim:: LineScene
                                         :save_last_frame:
-                                        :body_only:
                                         :header: None
-                                        :ref_classes: Line
 
                                         class LineScene(Scene):
                                             def construct(self) -> None:
@@ -3694,9 +3670,9 @@ Mobjects
                                                     )
                                                 )
 
-                    .. tab:: Override
+                    .. tab:: Override header
 
-                        .. tab:: Full code
+                        .. tab:: With Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -3774,7 +3750,7 @@ Mobjects
                                                     )
                                                 )
 
-                        .. tab:: Body only
+                        .. tab:: Without Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -3786,9 +3762,7 @@ Mobjects
                                     ^^^
                                     .. manim:: CircleScene
                                         :save_last_frame:
-                                        :body_only:
                                         :header: Circle
-                                        :ref_classes: Circle
 
                                         class CircleScene(Scene):
                                             def construct(self) -> None:
@@ -3805,9 +3779,7 @@ Mobjects
                                     ^^^
                                     .. manim:: SquareScene
                                         :save_last_frame:
-                                        :body_only:
                                         :header: Square
-                                        :ref_classes: Square
 
                                         class SquareScene(Scene):
                                             def construct(self) -> None:
@@ -3824,9 +3796,7 @@ Mobjects
                                     ^^^
                                     .. manim:: StarScene
                                         :save_last_frame:
-                                        :body_only:
                                         :header: Star
-                                        :ref_classes: Star
 
                                         class StarScene(Scene):
                                             def construct(self) -> None:
@@ -3843,9 +3813,7 @@ Mobjects
                                     ^^^
                                     .. manim:: LineScene
                                         :save_last_frame:
-                                        :body_only:
                                         :header: Line
-                                        :ref_classes: Line
 
                                         class LineScene(Scene):
                                             def construct(self) -> None:
@@ -3856,11 +3824,397 @@ Mobjects
                                                     )
                                                 )
 
-                .. tab:: Without Reference
+                .. tab:: Without title
 
                     .. tab:: Default header
 
-                        .. tab:: Full code
+                        .. tab:: With Reference
+
+                            .. grid:: 1 2 2 2
+                                :gutter: 1
+
+                                .. grid-item-card::
+
+                                    .. manim:: CircleScene
+                                        :save_last_frame:
+                                        :ref_classes: Circle
+
+                                        class CircleScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Circle(
+                                                        radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+
+                                    .. manim:: SquareScene
+                                        :save_last_frame:
+                                        :ref_classes: Square
+
+                                        class SquareScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Square(
+                                                        side_length=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+
+                                    .. manim:: StarScene
+                                        :save_last_frame:
+                                        :ref_classes: Star
+
+                                        class StarScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Star(
+                                                        outer_radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+
+                                    .. manim:: LineScene
+                                        :save_last_frame:
+                                        :ref_classes: Line
+
+                                        class LineScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Line(
+                                                        (-3, 0, 0),
+                                                        (3, 0, 0),
+                                                    )
+                                                )
+
+                        .. tab:: Without Reference
+
+                            .. grid:: 1 2 2 2
+                                :gutter: 1
+
+                                .. grid-item-card::
+
+                                    .. manim:: CircleScene
+                                        :save_last_frame:
+
+                                        class CircleScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Circle(
+                                                        radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+
+                                    .. manim:: SquareScene
+                                        :save_last_frame:
+
+                                        class SquareScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Square(
+                                                        side_length=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+
+                                    .. manim:: StarScene
+                                        :save_last_frame:
+
+                                        class StarScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Star(
+                                                        outer_radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+
+                                    .. manim:: LineScene
+                                        :save_last_frame:
+
+                                        class LineScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Line(
+                                                        (-3, 0, 0),
+                                                        (3, 0, 0),
+                                                    )
+                                                )
+
+                    .. tab:: No header
+
+                        .. tab:: With Reference
+
+                            .. grid:: 1 2 2 2
+                                :gutter: 1
+
+                                .. grid-item-card::
+
+                                    .. manim:: CircleScene
+                                        :save_last_frame:
+                                        :header: None
+                                        :ref_classes: Circle
+
+                                        class CircleScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Circle(
+                                                        radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+
+                                    .. manim:: SquareScene
+                                        :save_last_frame:
+                                        :header: None
+                                        :ref_classes: Square
+
+                                        class SquareScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Square(
+                                                        side_length=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+
+                                    .. manim:: StarScene
+                                        :save_last_frame:
+                                        :header: None
+                                        :ref_classes: Star
+
+                                        class StarScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Star(
+                                                        outer_radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+
+                                    .. manim:: LineScene
+                                        :save_last_frame:
+                                        :header: None
+                                        :ref_classes: Line
+
+                                        class LineScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Line(
+                                                        (-3, 0, 0),
+                                                        (3, 0, 0),
+                                                    )
+                                                )
+
+                        .. tab:: Without Reference
+
+                            .. grid:: 1 2 2 2
+                                :gutter: 1
+
+                                .. grid-item-card::
+
+                                    .. manim:: CircleScene
+                                        :save_last_frame:
+                                        :header: None
+
+                                        class CircleScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Circle(
+                                                        radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+
+                                    .. manim:: SquareScene
+                                        :save_last_frame:
+                                        :header: None
+
+                                        class SquareScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Square(
+                                                        side_length=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+
+                                    .. manim:: StarScene
+                                        :save_last_frame:
+                                        :header: None
+
+                                        class StarScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Star(
+                                                        outer_radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+
+                                    .. manim:: LineScene
+                                        :save_last_frame:
+                                        :header: None
+
+                                        class LineScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Line(
+                                                        (-3, 0, 0),
+                                                        (3, 0, 0),
+                                                    )
+                                                )
+
+                    .. tab:: Override header
+
+                        .. tab:: With Reference
+
+                            .. grid:: 1 2 2 2
+                                :gutter: 1
+
+                                .. grid-item-card::
+
+                                    .. manim:: CircleScene
+                                        :save_last_frame:
+                                        :header: Circle
+                                        :ref_classes: Circle
+
+                                        class CircleScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Circle(
+                                                        radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+
+                                    .. manim:: SquareScene
+                                        :save_last_frame:
+                                        :header: Square
+                                        :ref_classes: Square
+
+                                        class SquareScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Square(
+                                                        side_length=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+
+                                    .. manim:: StarScene
+                                        :save_last_frame:
+                                        :header: Star
+                                        :ref_classes: Star
+
+                                        class StarScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Star(
+                                                        outer_radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+
+                                    .. manim:: LineScene
+                                        :save_last_frame:
+                                        :header: Line
+                                        :ref_classes: Line
+
+                                        class LineScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Line(
+                                                        (-3, 0, 0),
+                                                        (3, 0, 0),
+                                                    )
+                                                )
+
+                        .. tab:: Without Reference
+
+                            .. grid:: 1 2 2 2
+                                :gutter: 1
+
+                                .. grid-item-card::
+
+                                    .. manim:: CircleScene
+                                        :save_last_frame:
+                                        :header: Circle
+
+                                        class CircleScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Circle(
+                                                        radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+
+                                    .. manim:: SquareScene
+                                        :save_last_frame:
+                                        :header: Square
+
+                                        class SquareScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Square(
+                                                        side_length=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+
+                                    .. manim:: StarScene
+                                        :save_last_frame:
+                                        :header: Star
+
+                                        class StarScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Star(
+                                                        outer_radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+
+                                    .. manim:: LineScene
+                                        :save_last_frame:
+                                        :header: Line
+
+                                        class LineScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Line(
+                                                        (-3, 0, 0),
+                                                        (3, 0, 0),
+                                                    )
+                                                )
+
+            .. tab:: Body Only
+
+                .. tab:: With title
+
+                    .. tab:: Default header
+
+                        .. tab:: With Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -3872,6 +4226,8 @@ Mobjects
                                     ^^^
                                     .. manim:: CircleScene
                                         :save_last_frame:
+                                        :body_only:
+                                        :ref_classes: Circle
 
                                         class CircleScene(Scene):
                                             def construct(self) -> None:
@@ -3888,6 +4244,8 @@ Mobjects
                                     ^^^
                                     .. manim:: SquareScene
                                         :save_last_frame:
+                                        :body_only:
+                                        :ref_classes: Square
 
                                         class SquareScene(Scene):
                                             def construct(self) -> None:
@@ -3904,6 +4262,8 @@ Mobjects
                                     ^^^
                                     .. manim:: StarScene
                                         :save_last_frame:
+                                        :body_only:
+                                        :ref_classes: Star
 
                                         class StarScene(Scene):
                                             def construct(self) -> None:
@@ -3920,6 +4280,8 @@ Mobjects
                                     ^^^
                                     .. manim:: LineScene
                                         :save_last_frame:
+                                        :body_only:
+                                        :ref_classes: Line
 
                                         class LineScene(Scene):
                                             def construct(self) -> None:
@@ -3930,7 +4292,7 @@ Mobjects
                                                     )
                                                 )
 
-                        .. tab:: Body only
+                        .. tab:: Without Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -4006,81 +4368,7 @@ Mobjects
 
                     .. tab:: No header
 
-                        .. tab:: Full code
-
-                            .. grid:: 1 2 2 2
-                                :gutter: 1
-
-                                .. grid-item-card::
-                                    :class-header: sd-text-center
-
-                                    Circle
-                                    ^^^
-                                    .. manim:: CircleScene
-                                        :save_last_frame:
-                                        :header: None
-
-                                        class CircleScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Circle(
-                                                        radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-                                    :class-header: sd-text-center
-
-                                    Square
-                                    ^^^
-                                    .. manim:: SquareScene
-                                        :save_last_frame:
-                                        :header: None
-
-                                        class SquareScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Square(
-                                                        side_length=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-                                    :class-header: sd-text-center
-
-                                    Star
-                                    ^^^
-                                    .. manim:: StarScene
-                                        :save_last_frame:
-                                        :header: None
-
-                                        class StarScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Star(
-                                                        outer_radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-                                    :class-header: sd-text-center
-
-                                    Line
-                                    ^^^
-                                    .. manim:: LineScene
-                                        :save_last_frame:
-                                        :header: None
-
-                                        class LineScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Line(
-                                                        (-3, 0, 0),
-                                                        (3, 0, 0),
-                                                    )
-                                                )
-
-                        .. tab:: Body only
+                        .. tab:: With Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -4094,6 +4382,7 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: None
+                                        :ref_classes: Circle
 
                                         class CircleScene(Scene):
                                             def construct(self) -> None:
@@ -4112,6 +4401,7 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: None
+                                        :ref_classes: Square
 
                                         class SquareScene(Scene):
                                             def construct(self) -> None:
@@ -4130,6 +4420,7 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: None
+                                        :ref_classes: Star
 
                                         class StarScene(Scene):
                                             def construct(self) -> None:
@@ -4148,6 +4439,7 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: None
+                                        :ref_classes: Line
 
                                         class LineScene(Scene):
                                             def construct(self) -> None:
@@ -4158,9 +4450,7 @@ Mobjects
                                                     )
                                                 )
 
-                    .. tab:: Override
-
-                        .. tab:: Full code
+                        .. tab:: Without Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -4172,7 +4462,8 @@ Mobjects
                                     ^^^
                                     .. manim:: CircleScene
                                         :save_last_frame:
-                                        :header: Circle
+                                        :body_only:
+                                        :header: None
 
                                         class CircleScene(Scene):
                                             def construct(self) -> None:
@@ -4189,7 +4480,8 @@ Mobjects
                                     ^^^
                                     .. manim:: SquareScene
                                         :save_last_frame:
-                                        :header: Square
+                                        :body_only:
+                                        :header: None
 
                                         class SquareScene(Scene):
                                             def construct(self) -> None:
@@ -4206,7 +4498,8 @@ Mobjects
                                     ^^^
                                     .. manim:: StarScene
                                         :save_last_frame:
-                                        :header: Star
+                                        :body_only:
+                                        :header: None
 
                                         class StarScene(Scene):
                                             def construct(self) -> None:
@@ -4223,7 +4516,8 @@ Mobjects
                                     ^^^
                                     .. manim:: LineScene
                                         :save_last_frame:
-                                        :header: Line
+                                        :body_only:
+                                        :header: None
 
                                         class LineScene(Scene):
                                             def construct(self) -> None:
@@ -4234,7 +4528,9 @@ Mobjects
                                                     )
                                                 )
 
-                        .. tab:: Body only
+                    .. tab:: Override header
+
+                        .. tab:: With Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -4248,6 +4544,7 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: Circle
+                                        :ref_classes: Circle
 
                                         class CircleScene(Scene):
                                             def construct(self) -> None:
@@ -4266,6 +4563,87 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: Square
+                                        :ref_classes: Square
+
+                                        class SquareScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Square(
+                                                        side_length=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+                                    :class-header: sd-text-center
+
+                                    Star
+                                    ^^^
+                                    .. manim:: StarScene
+                                        :save_last_frame:
+                                        :body_only:
+                                        :header: Star
+                                        :ref_classes: Star
+
+                                        class StarScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Star(
+                                                        outer_radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+                                    :class-header: sd-text-center
+
+                                    Line
+                                    ^^^
+                                    .. manim:: LineScene
+                                        :save_last_frame:
+                                        :body_only:
+                                        :header: Line
+                                        :ref_classes: Line
+
+                                        class LineScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Line(
+                                                        (-3, 0, 0),
+                                                        (3, 0, 0),
+                                                    )
+                                                )
+
+                        .. tab:: Without Reference
+
+                            .. grid:: 1 2 2 2
+                                :gutter: 1
+
+                                .. grid-item-card::
+                                    :class-header: sd-text-center
+
+                                    Circle
+                                    ^^^
+                                    .. manim:: CircleScene
+                                        :save_last_frame:
+                                        :body_only:
+                                        :header: Circle
+
+                                        class CircleScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Circle(
+                                                        radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+                                    :class-header: sd-text-center
+
+                                    Square
+                                    ^^^
+                                    .. manim:: SquareScene
+                                        :save_last_frame:
+                                        :body_only:
+                                        :header: Square
 
                                         class SquareScene(Scene):
                                             def construct(self) -> None:
@@ -4312,153 +4690,11 @@ Mobjects
                                                     )
                                                 )
 
-            .. tab:: Without Source
-
-                .. tab:: Without Reference
-
-                    .. grid:: 1 2 2 2
-                        :gutter: 1
-
-                        .. grid-item-card::
-                            :class-header: sd-text-center
-
-                            Circle
-                            ^^^
-                            .. manim:: CircleScene
-                                :save_last_frame:
-                                :hide_source:
-
-                                class CircleScene(Scene):
-                                    def construct(self) -> None:
-                                        self.add(
-                                            Circle(
-                                                radius=3.0,
-                                            )
-                                        )
-
-                        .. grid-item-card::
-                            :class-header: sd-text-center
-
-                            Square
-                            ^^^
-                            .. manim:: SquareScene
-                                :save_last_frame:
-                                :hide_source:
-
-                                class SquareScene(Scene):
-                                    def construct(self) -> None:
-                                        self.add(
-                                            Square(
-                                                side_length=3.0,
-                                            )
-                                        )
-
-                        .. grid-item-card::
-                            :class-header: sd-text-center
-
-                            Star
-                            ^^^
-                            .. manim:: StarScene
-                                :save_last_frame:
-                                :hide_source:
-
-                                class StarScene(Scene):
-                                    def construct(self) -> None:
-                                        self.add(
-                                            Star(
-                                                outer_radius=3.0,
-                                            )
-                                        )
-
-                        .. grid-item-card::
-                            :class-header: sd-text-center
-
-                            Line
-                            ^^^
-                            .. manim:: LineScene
-                                :save_last_frame:
-                                :hide_source:
-
-                                class LineScene(Scene):
-                                    def construct(self) -> None:
-                                        self.add(
-                                            Line(
-                                                (-3, 0, 0),
-                                                (3, 0, 0),
-                                            )
-                                        )
-
-        .. tab:: Without title
-
-            .. tab:: With Source
-
-                .. tab:: With Reference
+                .. tab:: Without title
 
                     .. tab:: Default header
 
-                        .. tab:: Full code
-
-                            .. grid:: 1 2 2 2
-                                :gutter: 1
-
-                                .. grid-item-card::
-
-                                    .. manim:: CircleScene
-                                        :save_last_frame:
-                                        :ref_classes: Circle
-
-                                        class CircleScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Circle(
-                                                        radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-
-                                    .. manim:: SquareScene
-                                        :save_last_frame:
-                                        :ref_classes: Square
-
-                                        class SquareScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Square(
-                                                        side_length=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-
-                                    .. manim:: StarScene
-                                        :save_last_frame:
-                                        :ref_classes: Star
-
-                                        class StarScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Star(
-                                                        outer_radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-
-                                    .. manim:: LineScene
-                                        :save_last_frame:
-                                        :ref_classes: Line
-
-                                        class LineScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Line(
-                                                        (-3, 0, 0),
-                                                        (3, 0, 0),
-                                                    )
-                                                )
-
-                        .. tab:: Body only
+                        .. tab:: With Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -4524,345 +4760,7 @@ Mobjects
                                                     )
                                                 )
 
-                    .. tab:: No header
-
-                        .. tab:: Full code
-
-                            .. grid:: 1 2 2 2
-                                :gutter: 1
-
-                                .. grid-item-card::
-
-                                    .. manim:: CircleScene
-                                        :save_last_frame:
-                                        :header: None
-                                        :ref_classes: Circle
-
-                                        class CircleScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Circle(
-                                                        radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-
-                                    .. manim:: SquareScene
-                                        :save_last_frame:
-                                        :header: None
-                                        :ref_classes: Square
-
-                                        class SquareScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Square(
-                                                        side_length=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-
-                                    .. manim:: StarScene
-                                        :save_last_frame:
-                                        :header: None
-                                        :ref_classes: Star
-
-                                        class StarScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Star(
-                                                        outer_radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-
-                                    .. manim:: LineScene
-                                        :save_last_frame:
-                                        :header: None
-                                        :ref_classes: Line
-
-                                        class LineScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Line(
-                                                        (-3, 0, 0),
-                                                        (3, 0, 0),
-                                                    )
-                                                )
-
-                        .. tab:: Body only
-
-                            .. grid:: 1 2 2 2
-                                :gutter: 1
-
-                                .. grid-item-card::
-
-                                    .. manim:: CircleScene
-                                        :save_last_frame:
-                                        :body_only:
-                                        :header: None
-                                        :ref_classes: Circle
-
-                                        class CircleScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Circle(
-                                                        radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-
-                                    .. manim:: SquareScene
-                                        :save_last_frame:
-                                        :body_only:
-                                        :header: None
-                                        :ref_classes: Square
-
-                                        class SquareScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Square(
-                                                        side_length=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-
-                                    .. manim:: StarScene
-                                        :save_last_frame:
-                                        :body_only:
-                                        :header: None
-                                        :ref_classes: Star
-
-                                        class StarScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Star(
-                                                        outer_radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-
-                                    .. manim:: LineScene
-                                        :save_last_frame:
-                                        :body_only:
-                                        :header: None
-                                        :ref_classes: Line
-
-                                        class LineScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Line(
-                                                        (-3, 0, 0),
-                                                        (3, 0, 0),
-                                                    )
-                                                )
-
-                    .. tab:: Override
-
-                        .. tab:: Full code
-
-                            .. grid:: 1 2 2 2
-                                :gutter: 1
-
-                                .. grid-item-card::
-
-                                    .. manim:: CircleScene
-                                        :save_last_frame:
-                                        :header: Circle
-                                        :ref_classes: Circle
-
-                                        class CircleScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Circle(
-                                                        radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-
-                                    .. manim:: SquareScene
-                                        :save_last_frame:
-                                        :header: Square
-                                        :ref_classes: Square
-
-                                        class SquareScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Square(
-                                                        side_length=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-
-                                    .. manim:: StarScene
-                                        :save_last_frame:
-                                        :header: Star
-                                        :ref_classes: Star
-
-                                        class StarScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Star(
-                                                        outer_radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-
-                                    .. manim:: LineScene
-                                        :save_last_frame:
-                                        :header: Line
-                                        :ref_classes: Line
-
-                                        class LineScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Line(
-                                                        (-3, 0, 0),
-                                                        (3, 0, 0),
-                                                    )
-                                                )
-
-                        .. tab:: Body only
-
-                            .. grid:: 1 2 2 2
-                                :gutter: 1
-
-                                .. grid-item-card::
-
-                                    .. manim:: CircleScene
-                                        :save_last_frame:
-                                        :body_only:
-                                        :header: Circle
-                                        :ref_classes: Circle
-
-                                        class CircleScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Circle(
-                                                        radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-
-                                    .. manim:: SquareScene
-                                        :save_last_frame:
-                                        :body_only:
-                                        :header: Square
-                                        :ref_classes: Square
-
-                                        class SquareScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Square(
-                                                        side_length=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-
-                                    .. manim:: StarScene
-                                        :save_last_frame:
-                                        :body_only:
-                                        :header: Star
-                                        :ref_classes: Star
-
-                                        class StarScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Star(
-                                                        outer_radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-
-                                    .. manim:: LineScene
-                                        :save_last_frame:
-                                        :body_only:
-                                        :header: Line
-                                        :ref_classes: Line
-
-                                        class LineScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Line(
-                                                        (-3, 0, 0),
-                                                        (3, 0, 0),
-                                                    )
-                                                )
-
-                .. tab:: Without Reference
-
-                    .. tab:: Default header
-
-                        .. tab:: Full code
-
-                            .. grid:: 1 2 2 2
-                                :gutter: 1
-
-                                .. grid-item-card::
-
-                                    .. manim:: CircleScene
-                                        :save_last_frame:
-
-                                        class CircleScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Circle(
-                                                        radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-
-                                    .. manim:: SquareScene
-                                        :save_last_frame:
-
-                                        class SquareScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Square(
-                                                        side_length=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-
-                                    .. manim:: StarScene
-                                        :save_last_frame:
-
-                                        class StarScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Star(
-                                                        outer_radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-
-                                    .. manim:: LineScene
-                                        :save_last_frame:
-
-                                        class LineScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Line(
-                                                        (-3, 0, 0),
-                                                        (3, 0, 0),
-                                                    )
-                                                )
-
-                        .. tab:: Body only
+                        .. tab:: Without Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -4926,69 +4824,7 @@ Mobjects
 
                     .. tab:: No header
 
-                        .. tab:: Full code
-
-                            .. grid:: 1 2 2 2
-                                :gutter: 1
-
-                                .. grid-item-card::
-
-                                    .. manim:: CircleScene
-                                        :save_last_frame:
-                                        :header: None
-
-                                        class CircleScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Circle(
-                                                        radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-
-                                    .. manim:: SquareScene
-                                        :save_last_frame:
-                                        :header: None
-
-                                        class SquareScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Square(
-                                                        side_length=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-
-                                    .. manim:: StarScene
-                                        :save_last_frame:
-                                        :header: None
-
-                                        class StarScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Star(
-                                                        outer_radius=3.0,
-                                                    )
-                                                )
-
-                                .. grid-item-card::
-
-                                    .. manim:: LineScene
-                                        :save_last_frame:
-                                        :header: None
-
-                                        class LineScene(Scene):
-                                            def construct(self) -> None:
-                                                self.add(
-                                                    Line(
-                                                        (-3, 0, 0),
-                                                        (3, 0, 0),
-                                                    )
-                                                )
-
-                        .. tab:: Body only
+                        .. tab:: With Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -4999,6 +4835,7 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: None
+                                        :ref_classes: Circle
 
                                         class CircleScene(Scene):
                                             def construct(self) -> None:
@@ -5014,6 +4851,7 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: None
+                                        :ref_classes: Square
 
                                         class SquareScene(Scene):
                                             def construct(self) -> None:
@@ -5029,6 +4867,7 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: None
+                                        :ref_classes: Star
 
                                         class StarScene(Scene):
                                             def construct(self) -> None:
@@ -5044,6 +4883,7 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: None
+                                        :ref_classes: Line
 
                                         class LineScene(Scene):
                                             def construct(self) -> None:
@@ -5054,9 +4894,7 @@ Mobjects
                                                     )
                                                 )
 
-                    .. tab:: Override
-
-                        .. tab:: Full code
+                        .. tab:: Without Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -5065,7 +4903,8 @@ Mobjects
 
                                     .. manim:: CircleScene
                                         :save_last_frame:
-                                        :header: Circle
+                                        :body_only:
+                                        :header: None
 
                                         class CircleScene(Scene):
                                             def construct(self) -> None:
@@ -5079,7 +4918,8 @@ Mobjects
 
                                     .. manim:: SquareScene
                                         :save_last_frame:
-                                        :header: Square
+                                        :body_only:
+                                        :header: None
 
                                         class SquareScene(Scene):
                                             def construct(self) -> None:
@@ -5093,7 +4933,8 @@ Mobjects
 
                                     .. manim:: StarScene
                                         :save_last_frame:
-                                        :header: Star
+                                        :body_only:
+                                        :header: None
 
                                         class StarScene(Scene):
                                             def construct(self) -> None:
@@ -5107,7 +4948,8 @@ Mobjects
 
                                     .. manim:: LineScene
                                         :save_last_frame:
-                                        :header: Line
+                                        :body_only:
+                                        :header: None
 
                                         class LineScene(Scene):
                                             def construct(self) -> None:
@@ -5118,7 +4960,9 @@ Mobjects
                                                     )
                                                 )
 
-                        .. tab:: Body only
+                    .. tab:: Override header
+
+                        .. tab:: With Reference
 
                             .. grid:: 1 2 2 2
                                 :gutter: 1
@@ -5129,6 +4973,7 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: Circle
+                                        :ref_classes: Circle
 
                                         class CircleScene(Scene):
                                             def construct(self) -> None:
@@ -5144,6 +4989,75 @@ Mobjects
                                         :save_last_frame:
                                         :body_only:
                                         :header: Square
+                                        :ref_classes: Square
+
+                                        class SquareScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Square(
+                                                        side_length=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+
+                                    .. manim:: StarScene
+                                        :save_last_frame:
+                                        :body_only:
+                                        :header: Star
+                                        :ref_classes: Star
+
+                                        class StarScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Star(
+                                                        outer_radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+
+                                    .. manim:: LineScene
+                                        :save_last_frame:
+                                        :body_only:
+                                        :header: Line
+                                        :ref_classes: Line
+
+                                        class LineScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Line(
+                                                        (-3, 0, 0),
+                                                        (3, 0, 0),
+                                                    )
+                                                )
+
+                        .. tab:: Without Reference
+
+                            .. grid:: 1 2 2 2
+                                :gutter: 1
+
+                                .. grid-item-card::
+
+                                    .. manim:: CircleScene
+                                        :save_last_frame:
+                                        :body_only:
+                                        :header: Circle
+
+                                        class CircleScene(Scene):
+                                            def construct(self) -> None:
+                                                self.add(
+                                                    Circle(
+                                                        radius=3.0,
+                                                    )
+                                                )
+
+                                .. grid-item-card::
+
+                                    .. manim:: SquareScene
+                                        :save_last_frame:
+                                        :body_only:
+                                        :header: Square
 
                                         class SquareScene(Scene):
                                             def construct(self) -> None:
@@ -5184,66 +5098,140 @@ Mobjects
                                                     )
                                                 )
 
-            .. tab:: Without Source
+        .. tab:: Without Source
 
-                .. tab:: Without Reference
+            .. tab:: With title
 
-                    .. grid:: 1 2 2 2
-                        :gutter: 1
+                .. grid:: 1 2 2 2
+                    :gutter: 1
 
-                        .. grid-item-card::
+                    .. grid-item-card::
+                        :class-header: sd-text-center
 
-                            .. manim:: CircleScene
-                                :save_last_frame:
-                                :hide_source:
+                        Circle
+                        ^^^
+                        .. manim:: CircleScene
+                            :save_last_frame:
+                            :hide_source:
 
-                                class CircleScene(Scene):
-                                    def construct(self) -> None:
-                                        self.add(
-                                            Circle(
-                                                radius=3.0,
-                                            )
+                            class CircleScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Circle(
+                                            radius=3.0,
                                         )
+                                    )
 
-                        .. grid-item-card::
+                    .. grid-item-card::
+                        :class-header: sd-text-center
 
-                            .. manim:: SquareScene
-                                :save_last_frame:
-                                :hide_source:
+                        Square
+                        ^^^
+                        .. manim:: SquareScene
+                            :save_last_frame:
+                            :hide_source:
 
-                                class SquareScene(Scene):
-                                    def construct(self) -> None:
-                                        self.add(
-                                            Square(
-                                                side_length=3.0,
-                                            )
+                            class SquareScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Square(
+                                            side_length=3.0,
                                         )
+                                    )
 
-                        .. grid-item-card::
+                    .. grid-item-card::
+                        :class-header: sd-text-center
 
-                            .. manim:: StarScene
-                                :save_last_frame:
-                                :hide_source:
+                        Star
+                        ^^^
+                        .. manim:: StarScene
+                            :save_last_frame:
+                            :hide_source:
 
-                                class StarScene(Scene):
-                                    def construct(self) -> None:
-                                        self.add(
-                                            Star(
-                                                outer_radius=3.0,
-                                            )
+                            class StarScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Star(
+                                            outer_radius=3.0,
                                         )
+                                    )
 
-                        .. grid-item-card::
+                    .. grid-item-card::
+                        :class-header: sd-text-center
 
-                            .. manim:: LineScene
-                                :save_last_frame:
-                                :hide_source:
+                        Line
+                        ^^^
+                        .. manim:: LineScene
+                            :save_last_frame:
+                            :hide_source:
 
-                                class LineScene(Scene):
-                                    def construct(self) -> None:
-                                        self.add(
-                                            Line(
-                                                (-3, 0, 0),
-                                                (3, 0, 0),
-                                            )
+                            class LineScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Line(
+                                            (-3, 0, 0),
+                                            (3, 0, 0),
                                         )
+                                    )
+
+            .. tab:: Without title
+
+                .. grid:: 1 2 2 2
+                    :gutter: 1
+
+                    .. grid-item-card::
+
+                        .. manim:: CircleScene
+                            :save_last_frame:
+                            :hide_source:
+
+                            class CircleScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Circle(
+                                            radius=3.0,
+                                        )
+                                    )
+
+                    .. grid-item-card::
+
+                        .. manim:: SquareScene
+                            :save_last_frame:
+                            :hide_source:
+
+                            class SquareScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Square(
+                                            side_length=3.0,
+                                        )
+                                    )
+
+                    .. grid-item-card::
+
+                        .. manim:: StarScene
+                            :save_last_frame:
+                            :hide_source:
+
+                            class StarScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Star(
+                                            outer_radius=3.0,
+                                        )
+                                    )
+
+                    .. grid-item-card::
+
+                        .. manim:: LineScene
+                            :save_last_frame:
+                            :hide_source:
+
+                            class LineScene(Scene):
+                                def construct(self) -> None:
+                                    self.add(
+                                        Line(
+                                            (-3, 0, 0),
+                                            (3, 0, 0),
+                                        )
+                                    )
