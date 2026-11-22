@@ -17,6 +17,8 @@ Options
 
 ``hide_source``
     Show only the rendered output, not the code.
+``hide_levels``
+    Hide indentation levels of the code.
 ``title``
     Set the title or hide the title by passing ``None``.
     When omitted ``Example: {scene_name}`` is used.
@@ -78,7 +80,7 @@ from typing import Any
 
 import jinja2
 from docutils import nodes
-from docutils.parsers.rst.directives import choice, flag, unchanged
+from docutils.parsers.rst.directives import choice, flag, positive_int, unchanged
 from sphinx.application import Sphinx
 from sphinx.environment import BuildEnvironment
 from sphinx.util import logging
@@ -127,6 +129,7 @@ class ManimDirective(SphinxDirective):
     option_spec = {
         "title": unchanged,
         "hide_source": flag,
+        "hide_levels": positive_int,
         "no_autoplay": flag,
         "quality": lambda arg: choice(
             arg or "",
@@ -144,6 +147,7 @@ class ManimDirective(SphinxDirective):
         clsname: str = self.arguments[0].strip()
         title: str = self.options.get("title", f"Example: {clsname}").strip()
         hide_title: bool = title == "None"
+        hide_levels: int = self.options.get("hide_levels", 0)
         save_as_gif = "save_as_gif" in self.options
         save_last_frame = "save_last_frame" in self.options
         if save_as_gif and save_last_frame:
@@ -155,6 +159,12 @@ class ManimDirective(SphinxDirective):
             for reference in self.options.get(option, [])
         ]
 
+        source_code = "\n".join(
+            line
+            for line in ("from manim import *\n", *self.content)
+            if not line.strip()
+            or line.startswith((4 * hide_levels * " ", hide_levels * "\t"))
+        )
         if self.content and self.content[0].startswith(">>> "):
             code = "\n".join(
                 line[4:] for line in self.content if line.startswith((">>> ", "... "))
@@ -190,7 +200,7 @@ class ManimDirective(SphinxDirective):
             uri=uri,
             format=format_,
             autoplay="no_autoplay" not in self.options,
-            source_code="\n".join(self.content),
+            source_code=source_code,
             code=code,
             references=references,
             hide_source="hide_source" in self.options and uri is not None,
@@ -356,8 +366,6 @@ _TEMPLATE = jinja2.Template(
 {% endif %}
 {% if not hide_source %}
 .. code-block:: python
-
-    from manim import *
 
 {{ source_code | indent(4, first=True) | safe }}
 
