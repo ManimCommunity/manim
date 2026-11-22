@@ -15,12 +15,15 @@ from moderngl import Framebuffer
 from PIL import Image
 
 from manim._config import config, logger
+from manim.mobject.opengl.opengl_compatibility import uses_opengl_mobjects
 from manim.mobject.opengl.opengl_mobject import (
     OpenGLMobject,
 )
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.renderer.extract import extract
 from manim.typing import Point3D
 from manim.utils.color import color_to_rgba
+from manim.utils.iterables import list_update
 from manim.utils.opengl import matrix_to_shader_input
 
 from ...constants import *
@@ -28,6 +31,7 @@ from ...scene.scene_file_writer import SceneFileWriter
 from .._execution import _RendererExecutionView
 from ..cairo.camera import Camera, ThreeDCamera
 from ..protocol import RendererCapabilities, RendererState
+from .drawing import SnapshotDrawing
 from .shader import Mesh, Shader, shader_program_cache
 from .vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_fill,
@@ -138,6 +142,7 @@ class OpenGLRenderer(_RendererExecutionView):
         self.view_matrix: tuple[float, ...] = matrix_to_shader_input(np.identity(4))
         self.projection_matrix: tuple[float, ...] = self.view_matrix
         self.camera_view: _CameraView = _CameraView.of(self.camera)
+        self._snapshot_drawing = SnapshotDrawing(self)
         self.pressed_keys: set[int] = set()
         self.window: Window | None = None
         self.path_to_texture_id: dict[str, int] = {}
@@ -762,6 +767,18 @@ class OpenGLRenderer(_RendererExecutionView):
         self.frame_buffer_object.clear(*self.background_color)
 
         self.refresh_perspective_uniforms(self.camera)
+
+        if not uses_opengl_mobjects():
+            nodes = extract(
+                list_update(scene.mobjects, scene.foreground_mobjects),
+                use_z_index=self.camera.use_z_index,
+            )
+            self._snapshot_drawing.draw(self.camera._sort_for_display(nodes))
+            for obj in scene.meshes:
+                for mesh in obj.get_meshes():
+                    mesh.set_uniforms(self)
+                    mesh.render()
+            return
 
         for mobject in scene.mobjects:
             # Mobjects of the common classes are not drawn by this renderer yet.

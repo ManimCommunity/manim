@@ -118,6 +118,17 @@ def reset_cfg_file():
 
 
 @pytest.fixture
+def opengl_common_mobjects(config, monkeypatch):
+    """The OpenGL renderer drawing the common mobject classes (no ConvertToOpenGL)."""
+    from manim.mobject.opengl import opengl_compatibility
+
+    monkeypatch.setattr(opengl_compatibility, "COMMON_MOBJECTS", True)
+    config.renderer = "opengl"
+    yield
+    config.renderer = "cairo"
+
+
+@pytest.fixture
 def using_opengl_renderer(config):
     """Standard fixture for running with opengl that makes tests use a standard_config.cfg with a temp dir."""
     config.renderer = "opengl"
