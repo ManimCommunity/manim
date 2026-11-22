@@ -5,6 +5,7 @@ import pytest
 
 from manim import (
     BLUE,
+    DEGREES,
     DR,
     GREEN,
     LEFT,
@@ -15,7 +16,9 @@ from manim import (
     RED,
     RESAMPLING_ALGORITHMS,
     RIGHT,
+    UL,
     UP,
+    UR,
     YELLOW,
     Annulus,
     Arc,
@@ -27,6 +30,7 @@ from manim import (
     Scene,
     Square,
     Text,
+    ThreeDScene,
     Triangle,
     VMobject,
     ZoomedScene,
@@ -154,13 +158,42 @@ def _zoomed(scene):
     return [Triangle(fill_opacity=1, stroke_width=0).scale(0.5).move_to(2 * LEFT)]
 
 
+def _moving_camera_scene():
+    # Any scene moves its camera frame; build() takes the scene, so this is not Scene.
+    return Scene()
+
+
 def _zoomed_scene():
     return ZoomedScene(zoomed_display_height=4, zoomed_display_width=6)
 
 
-def test_camera_views_match_cairo(opengl_common_mobjects):
-    cairo = _image("cairo", _zoomed, _zoomed_scene)
-    opengl = _image("opengl", _zoomed, _zoomed_scene)
+def _fixed_in_3d(scene):
+    scene.set_camera_orientation(phi=65 * DEGREES, theta=-40 * DEGREES, zoom=0.8)
+    scene.add_fixed_in_frame_mobjects(Text("title", font_size=48).to_corner(UL))
+    scene.add_fixed_orientation_mobjects(Text("label").move_to([2, 2, 1]))
+    return [Square(3, fill_opacity=0.5, color=BLUE)]
+
+
+def _fixed_in_moved_frame(scene):
+    scene.camera.frame.scale(0.5).shift(LEFT)
+    return [
+        Circle(2, color=RED, fill_opacity=0.4),
+        Square(2, fill_opacity=1, stroke_width=0).to_corner(UR).fix_in_frame(),
+    ]
+
+
+@pytest.mark.parametrize(
+    ("scene_class", "build"),
+    [
+        (_zoomed_scene, _zoomed),
+        (ThreeDScene, _fixed_in_3d),
+        (_moving_camera_scene, _fixed_in_moved_frame),
+    ],
+    ids=["camera_view", "fixed_in_3d", "fixed_in_moved_frame"],
+)
+def test_scenes_match_cairo(opengl_common_mobjects, scene_class, build):
+    cairo = _image("cairo", build, scene_class)
+    opengl = _image("opengl", build, scene_class)
 
     assert opengl.sum() == pytest.approx(cairo.sum(), rel=0.05)
     assert np.abs(opengl - cairo).mean() < 0.01

@@ -22,6 +22,7 @@ from PIL.Image import Resampling
 
 from manim._config import config
 from manim.renderer._paint import paint_colors, shows
+from manim.renderer.cairo.camera import ThreeDCamera
 from manim.renderer.snapshot import (
     LegacyShaded,
     RCameraView,
@@ -41,6 +42,9 @@ if TYPE_CHECKING:
     from .renderer import OpenGLRenderer, _CameraView
 
 __all__ = ["DrawTarget", "SnapshotDrawing", "cubics_to_quadratics"]
+
+#: Focal distance of a view without perspective.
+_FLAT_FOCAL_DISTANCE = 1e6
 
 #: Largest distance, in pixels, between a cubic curve and its quadratic pieces.
 TOLERANCE_PIXELS = 0.1
@@ -354,39 +358,95 @@ class SnapshotDrawing:
 
         ``views`` holds the pixels of camera views (``RCameraView`` nodes) by uid.
         """
-        self._target = target
+        self._base_target = target
+        self._placed_targets: dict[str, DrawTarget] = {"normal": target}
         self._geometry.next_frame()
         self._textures.next_frame()
         nodes = list(nodes)
         paths = [node for node in nodes if isinstance(node.payload, RPath)]
+        self._target = target
         geometry = iter(self._geometry.get(paths, self._tolerance()) if paths else ())
-        screen = _Screen.of(target)
         run: list[RNode] = []
         run_geometry: list[_Geometry] = []
+        run_kind = "normal"
         for node in nodes:
+            kind, shift = self._placement(node)
             if isinstance(node.payload, RPath):
+                geo = next(geometry)
+                if shift is not None:
+                    geo = geo._replace(
+                        quads=geo.quads + shift, box=geo.box + np.r_[shift, shift]
+                    )
+                if kind != run_kind:
+                    self._draw_paths(run, run_geometry, run_kind)
+                    run, run_geometry, run_kind = [], [], kind
                 run.append(node)
-                run_geometry.append(next(geometry))
+                run_geometry.append(geo)
                 continue
-            self._draw_paths(run, run_geometry, screen)
+            self._draw_paths(run, run_geometry, run_kind)
             run, run_geometry = [], []
-            if isinstance(node.payload, RPoints):
-                self._draw_points(node.payload)
-            elif isinstance(node.payload, RImage):
-                self._draw_image(node)
-            elif isinstance(node.payload, RCameraView) and views:
+            self._target = self._placed_target(kind)
+            payload = node.payload
+            if shift is not None:
+                payload = payload._replace(points=payload.points + shift)
+            if isinstance(payload, RPoints):
+                self._draw_points(payload)
+            elif isinstance(payload, RImage):
+                self._draw_image(node, payload)
+            elif isinstance(payload, RCameraView) and views:
                 texture = views.get(node.uid)
                 if texture is not None:
                     # Rendered textures start at the bottom row.
-                    self._draw_quad(node.payload.points, texture, bottom_up=True)
-        self._draw_paths(run, run_geometry, screen)
+                    self._draw_quad(payload.points, texture, bottom_up=True)
+        self._draw_paths(run, run_geometry, run_kind)
+
+    def _placement(self, node: RNode) -> tuple[str, np.ndarray | None]:
+        """How a node is placed on screen, and the shift of its points if any.
+
+        Fixed-in-frame nodes are drawn as from a camera at its default frame. Under a
+        :class:`.ThreeDCamera`, nodes with a fixed orientation move with their
+        projected center but are not rotated, as on the Cairo renderer.
+        """
+        if node.fixed_in_frame:
+            return "frame", None
+        camera = self._base_target.camera
+        center = node.fixed_orientation_center
+        if center is not None and isinstance(camera, ThreeDCamera):
+            return "frame", camera.project_point(center) - center
+        return "normal", None
+
+    def _placed_target(self, kind: str) -> DrawTarget:
+        target = self._placed_targets.get(kind)
+        if target is None:
+            base = self._base_target
+            camera = base.camera
+            if isinstance(camera, ThreeDCamera):
+                # Its view transform is centered at the origin with its frame size.
+                shape = (camera.frame_width, camera.frame_height)
+            else:
+                width = float(config["frame_width"])
+                shape = (width, width * base.size[1] / base.size[0])
+            view = base.view._replace(
+                center=np.zeros(3),
+                rotation=np.identity(3),
+                frame_shape=shape,
+                focal_distance=_FLAT_FOCAL_DISTANCE,
+            )
+            target = base._replace(
+                view=view, uniforms=self._renderer.camera_uniforms(view, base.size[1])
+            )
+            self._placed_targets[kind] = target
+        return target
 
     def _draw_paths(
-        self, nodes: list[RNode], geometry: list[_Geometry], screen: _Screen
+        self, nodes: list[RNode], geometry: list[_Geometry], kind: str
     ) -> None:
-        if nodes:
-            for group in _groups(nodes, geometry, screen):
-                self._draw_group(group, screen)
+        if not nodes:
+            return
+        self._target = self._placed_target(kind)
+        screen = _Screen.of(self._target)
+        for group in _groups(nodes, geometry, screen):
+            self._draw_group(group, screen)
 
     def _draw_points(self, cloud: RPoints) -> None:
         if len(cloud.points) == 0:
@@ -413,8 +473,7 @@ class SnapshotDrawing:
         base = int(config["pixel_width"]) + int(config["pixel_height"])
         return 1 + (stroke_width - 1) * base / sum(self._target.size)
 
-    def _draw_image(self, node: RNode) -> None:
-        image: RImage = node.payload  # type: ignore[assignment]
+    def _draw_image(self, node: RNode, image: RImage) -> None:
         texture = self._textures.get(node, image)
         if texture is None:
             return
