@@ -15,7 +15,7 @@ from ...mobject.types.image_mobject import ImageMobjectFromCamera
 from ...scene.scene_file_writer import SceneFileWriter
 from ...utils.iterables import list_update
 from .._execution import _RendererExecutionView
-from ..protocol import RendererCapabilities, RendererState
+from ..protocol import RenderConfig, RendererCapabilities, RendererState
 from .rendering import _CairoDrawingContext
 from .target import _CairoRasterSettings, _CairoRenderTarget, _ImageFiles
 
@@ -195,7 +195,7 @@ class CairoRenderer(_RendererExecutionView):
                     parent_camera=camera,
                     parent_target=target,
                 )
-                sub_target.reset(image_mobject.camera)
+                sub_target.reset(_render_config(image_mobject.camera, sub_target))
                 sub_excluded_mobjects = list_update(
                     list(excluded_mobjects or []),
                     [image_mobject],
@@ -221,9 +221,10 @@ class CairoRenderer(_RendererExecutionView):
             return pixels
 
         _CairoDrawingContext(
-            camera=camera,
+            camera=camera._state(),
             target=target,
             image_resolver=resolve_image,
+            use_z_index=camera.use_z_index,
         ).draw(
             mobject_list,
             include_submobjects=include_submobjects,
@@ -278,7 +279,7 @@ class CairoRenderer(_RendererExecutionView):
         if self.static_image is not None:
             target.set_pixels(self.static_image)
         else:
-            target.reset(self.camera)
+            target.reset(_render_config(self.camera, target))
 
         self._draw_frame(
             camera=self.camera,
@@ -297,7 +298,8 @@ class CairoRenderer(_RendererExecutionView):
         self._ensure_open()
         render_camera = self.camera if camera is None else camera
         self._final_scene = None
-        self._get_target().reset(render_camera)
+        target = self._get_target()
+        target.reset(_render_config(render_camera, target))
         self._draw_frame(camera=render_camera, mobjects=mobjects)
 
     def render(
@@ -447,3 +449,15 @@ class CairoRenderer(_RendererExecutionView):
                 logger.error("Additional Cairo cleanup failure", exc_info=secondary)
             raise failures[0]
         self._state = RendererState.CLOSED
+
+
+def _render_config(camera: Camera, target: _CairoRenderTarget) -> RenderConfig:
+    settings = target.settings
+    return RenderConfig(
+        pixel_width=settings.pixel_width,
+        pixel_height=settings.pixel_height,
+        background_color=camera.background_color,
+        background_opacity=camera.background_opacity,
+        camera=camera._state(),
+        background_image=camera.background_image,
+    )

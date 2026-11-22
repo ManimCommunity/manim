@@ -319,7 +319,7 @@ def test_face_keys_follow_every_change_of_the_mesh():
     sphere = _sphere(color=BLUE, resolution=(4, 2))
 
     def keys():
-        return [face.key for face in mesh_faces(snapshot(sphere), camera)]
+        return [face.key for face in mesh_faces(snapshot(sphere), camera._state())]
 
     before = keys()
     assert keys() == before
@@ -340,7 +340,7 @@ def test_faces_are_sorted_by_their_own_middle():
     )
     references = [
         face.payload.depth_reference
-        for face in mesh_faces(snapshot(mesh), ThreeDScene().camera)
+        for face in mesh_faces(snapshot(mesh), ThreeDScene().camera._state())
     ]
     assert len({tuple(np.round(r, 6)) for r in references}) == 4
 

@@ -19,11 +19,12 @@ from manim.typing import Point3D
 from manim.utils.color import color_to_rgba
 from manim.utils.iterables import list_update
 
-from ...camera import Camera, MultiCamera, ThreeDCamera
+from ...camera import Camera, MultiCamera
 from ...constants import *
 from ...scene.scene_file_writer import SceneFileWriter
+from .. import _view as _views
 from .._execution import _RendererExecutionView
-from ..protocol import RendererCapabilities, RendererState
+from ..protocol import CameraState, RendererCapabilities, RendererState
 from ._drawing import DrawTarget, SnapshotDrawing
 from .shader import shader_program_cache
 from .window_settings import _WindowSettings
@@ -117,7 +118,8 @@ class OpenGLRenderer(_RendererExecutionView):
 
         self.camera: Camera = camera or (camera_class or Camera)()
         self.perspective_uniforms: dict[str, Any] = {}
-        self.camera_view: _CameraView = _CameraView.of(self.camera)
+        self._camera_state: CameraState = self.camera._state()
+        self.camera_view: _CameraView = _CameraView.of(self._camera_state)
         self._snapshot_drawing = SnapshotDrawing(self)
         self._camera_view_targets: dict[int, _ViewTarget] = {}
         self.pressed_keys: set[int] = set()
@@ -442,7 +444,8 @@ class OpenGLRenderer(_RendererExecutionView):
             msg = "Pixel shape is None, cannot refresh perspective uniforms."
             raise ValueError(msg)
         _, pixel_height = pixel_shape
-        view = self.camera_view = _CameraView.of(camera)
+        self._camera_state = camera._state()
+        view = self.camera_view = _CameraView.of(self._camera_state)
         self.perspective_uniforms = self.camera_uniforms(view, pixel_height)
 
     def camera_uniforms(self, view: _CameraView, pixel_height: int) -> dict[str, Any]:
@@ -467,11 +470,13 @@ class OpenGLRenderer(_RendererExecutionView):
         target = DrawTarget(
             self.frame_buffer_object,
             pixel_shape,
-            self.camera,
+            self._camera_state,
             self.camera_view,
             self.perspective_uniforms,
         )
-        self._snapshot_drawing.draw(self.camera._sort_for_display(nodes), target, views)
+        self._snapshot_drawing.draw(
+            _views.sort_for_display(self._camera_state, nodes), target, views
+        )
 
     def _draw_camera_views(self, mobjects: list[Mobject]) -> dict[int, Any]:
         """Draw what each camera view of a :class:`.MultiCamera` sees into a texture.
@@ -503,11 +508,12 @@ class OpenGLRenderer(_RendererExecutionView):
                 view_target = _ViewTarget(self, size)
                 self._camera_view_targets[image_mobject.uid] = view_target
             camera = image_mobject.camera
-            view = _CameraView.of(camera)
+            state = camera._state()
+            view = _CameraView.of(state)
             target = DrawTarget(
                 view_target.framebuffer,
                 size,
-                camera,
+                state,
                 view,
                 self.camera_uniforms(view, size[1]),
             )
@@ -520,7 +526,7 @@ class OpenGLRenderer(_RendererExecutionView):
                 use_z_index=camera.use_z_index,
                 excluded_mobjects=[image_mobject],
             )
-            view_target.drawing.draw(camera._sort_for_display(nodes), target)
+            view_target.drawing.draw(_views.sort_for_display(state, nodes), target)
             textures[image_mobject.uid] = view_target.texture
         for uid in self._camera_view_targets.keys() - textures.keys():
             self._camera_view_targets.pop(uid).release()
@@ -969,7 +975,7 @@ class OpenGLRenderer(_RendererExecutionView):
         if pixel_shape is None:
             return typing.cast(Point3D, np.array([0.0, 0.0, 0.0]))
         pixel_width, pixel_height = pixel_shape
-        view = _CameraView.of(self.camera)
+        view = _CameraView.of(self.camera._state())
         frame_height = view.frame_shape[1]
         frame_center = view.center
         if relative:
@@ -1026,28 +1032,18 @@ class _CameraView(typing.NamedTuple):
     eye: Point3D
 
     @classmethod
-    def of(cls, camera: Camera) -> _CameraView:
-        if isinstance(camera, ThreeDCamera):
-            zoom = camera.get_zoom()
-            return cls(
-                center=np.asarray(camera.frame_center, dtype=float),
-                rotation=np.asarray(camera.get_rotation_matrix(), dtype=float),
-                frame_shape=(camera.frame_width / zoom, camera.frame_height / zoom),
-                focal_distance=float(camera.get_focal_distance()),
-                light_source=np.asarray(camera.light_source.get_center(), dtype=float),
-                eye=_eye(
-                    camera.frame_center,
-                    camera.get_rotation_matrix(),
-                    camera.get_focal_distance(),
-                ),
-            )
+    def of(cls, state: CameraState) -> _CameraView:
+        zoom = state.zoom
+        focal_distance = state.focal_distance
+        if focal_distance is None:
+            focal_distance = _ORTHOGRAPHIC_FOCAL_DISTANCE
         return cls(
-            center=np.asarray(camera.frame_center, dtype=float),
-            rotation=np.identity(3),
-            frame_shape=(camera.frame_width, camera.frame_height),
-            focal_distance=_ORTHOGRAPHIC_FOCAL_DISTANCE,
-            light_source=None,
-            eye=_eye(camera.frame_center, np.identity(3), _ORTHOGRAPHIC_FOCAL_DISTANCE),
+            center=np.asarray(state.center, dtype=float),
+            rotation=state.rotation,
+            frame_shape=(state.frame_width / zoom, state.frame_height / zoom),
+            focal_distance=focal_distance,
+            light_source=state.light,
+            eye=_eye(state.center, state.rotation, focal_distance),
         )
 
 

@@ -12,10 +12,16 @@ import cairo
 import numpy as np
 from PIL import Image
 
-from manim.camera import Camera
 from manim.constants import CapStyleType, LineJointType
 from manim.mobject.mobject import Mobject
 from manim.renderer._paint import paint_colors
+from manim.renderer._view import (
+    display_points,
+    is_3d,
+    shaded_rgbas,
+    sort_for_display,
+    view_transform_center,
+)
 from manim.renderer.extract import extract
 from manim.renderer.snapshot import (
     RCameraView,
@@ -37,6 +43,7 @@ from ._mesh_faces import mesh_faces
 from .target import _CairoRenderTarget, _PathCache
 
 if TYPE_CHECKING:
+    from manim.renderer.protocol import CameraState
     from manim.typing import (
         FloatRGBA_Array,
         Point3D_Array,
@@ -68,11 +75,13 @@ class _CairoDrawingContext:
     def __init__(
         self,
         *,
-        camera: Camera,
+        camera: CameraState,
         target: _CairoRenderTarget,
         image_resolver: _ImageResolver,
+        use_z_index: bool = True,
     ) -> None:
         self.camera = camera
+        self.use_z_index = use_z_index
         self.target = target
         self.image_resolver = image_resolver
         self._path_cache: _PathCache | None = None
@@ -85,37 +94,31 @@ class _CairoDrawingContext:
         excluded_mobjects: list[Mobject] | None = None,
     ) -> None:
         self.target._ensure_open()
-        # Paths can be cached only if the camera draws points where they are.
-        self._path_cache = (
-            self.target.path_cache
-            if type(self.camera)._place is Camera._place
-            else None
-        )
+        # Paths can be cached only where points are drawn where they are: a flat
+        # view (a perspective view projects them anew in each frame).
+        self._path_cache = None if is_3d(self.camera) else self.target.path_cache
         if self._path_cache is not None:
             self._path_cache.next_generation()
-        with self.camera._drawing():
-            nodes: list[RNode] = []
-            for node in extract(
-                mobjects,
-                include_submobjects=include_submobjects,
-                use_z_index=self.camera.use_z_index,
-                excluded_mobjects=excluded_mobjects or (),
-            ):
-                if isinstance(node.payload, RMesh):
-                    # A mesh is drawn as its faces, each a path.
-                    nodes.extend(mesh_faces(node, self.camera))
-                else:
-                    nodes.append(node)
-            nodes = self.camera._sort_for_display(nodes)
-            for payload_type, group in it.groupby(
-                nodes, lambda node: type(node.payload)
-            ):
-                if payload_type is RPath:
-                    self._display_paths(list(group))
-                elif payload_type is RPoints:
-                    self._display_point_clouds(group)
-                else:
-                    self._display_images(group)
+        nodes: list[RNode] = []
+        for node in extract(
+            mobjects,
+            include_submobjects=include_submobjects,
+            use_z_index=self.use_z_index,
+            excluded_mobjects=excluded_mobjects or (),
+        ):
+            if isinstance(node.payload, RMesh):
+                # A mesh is drawn as its faces, each a path.
+                nodes.extend(mesh_faces(node, self.camera))
+            else:
+                nodes.append(node)
+        nodes = sort_for_display(self.camera, nodes)
+        for payload_type, group in it.groupby(nodes, lambda node: type(node.payload)):
+            if payload_type is RPath:
+                self._display_paths(list(group))
+            elif payload_type is RPoints:
+                self._display_point_clouds(group)
+            else:
+                self._display_images(group)
 
     def _display_paths(self, nodes: list[RNode]) -> None:
         for mask, batch in it.groupby(nodes, _mask):
@@ -162,7 +165,7 @@ class _CairoDrawingContext:
         self, context: cairo.Context, node: RNode, path: RPath
     ) -> bool:
         """Set the context's path to the node's path; return whether it did."""
-        points = self.camera._display_points(node, path.points)
+        points = display_points(self.camera, node, path.points)
         if len(points) == 0:
             return False
 
@@ -215,11 +218,13 @@ class _CairoDrawingContext:
         node: RNode,
         path: RPath,
     ) -> None:
-        rgbas, ends = paint_colors(paint, path, self.camera._shaded_rgbas)
+        rgbas, ends = paint_colors(
+            paint, path, lambda path, rgbas: shaded_rgbas(self.camera, path, rgbas)
+        )
         if ends is None:
             context.set_source_rgba(*rgbas[0][2::-1], rgbas[0][3])
             return
-        points = self.camera._display_points(node, ends)
+        points = display_points(self.camera, node, ends)
         pattern = cairo.LinearGradient(
             *it.chain(*(point[:2] for point in points)),
         )
@@ -262,6 +267,7 @@ class _CairoDrawingContext:
             camera=self.camera,
             target=scratch,
             image_resolver=self.image_resolver,
+            use_z_index=self.use_z_index,
         )
         scratch_context._display_unmasked_paths(nodes)
         background = self.target.get_background_image(image)
@@ -435,11 +441,11 @@ class _CairoDrawingContext:
         node: RNode,
         points: Point3D_Array,
     ) -> np.ndarray:
-        points = self.camera._display_points(node, points)
+        points = display_points(self.camera, node, points)
         # Use the same view center as the Cairo context transform, so that
         # pixel-placed images and point clouds line up with vectorized mobjects
         # (ThreeDCamera.project_points() has already removed frame_center).
-        shifted_points = points - self.camera.get_view_transform_center()
+        shifted_points = points - view_transform_center(self.camera)
         settings = self.target.settings
         result = np.zeros((len(points), 2))
         result[:, 0] = (
