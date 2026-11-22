@@ -42,12 +42,19 @@ class _Unequal:
         return id(self)
 
 
-def view_key(state: CameraState, size: tuple[int, int], background: Any) -> Any:
+def view_key(
+    state: CameraState,
+    size: tuple[int, int],
+    reference_size: tuple[int, int],
+    background: Any,
+) -> Any:
     """What a frame's drawing depends on besides its nodes: every field of the
-    camera state, the pixel size and the background the target starts from.
+    camera state, the pixel size, the reference pixel size (which scales widths
+    given in pixels) and the background the target starts from.
     """
     return (
         tuple(size),
+        tuple(reference_size),
         tuple(_value(getattr(state, field.name)) for field in _STATE_FIELDS),
         background,
     )

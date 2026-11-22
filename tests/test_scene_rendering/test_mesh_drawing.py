@@ -44,7 +44,7 @@ def _image(renderer, mobjects, scene_class=Scene, **orientation):
                 scene.set_camera_orientation(**orientation)
             scene.add(*mobjects())
             pixels = np.asarray(scene.get_image().convert("RGB"), dtype=float) / 255
-            camera = scene.renderer.camera
+            camera = scene.camera
         finally:
             scene.renderer.close()
     return pixels, camera
@@ -293,22 +293,19 @@ def test_faces_are_lit_as_the_lighting_function(renderer):
 
 def test_a_material_change_redraws_on_cairo():
     from manim.renderer.cairo import CairoRenderer
+    from manim.renderer.frame import FrameBuilder
 
     with tempconfig({"pixel_width": 64, "pixel_height": 36}):
         scene = ThreeDScene()
         sphere = _sphere(color=BLUE)
-        renderer = CairoRenderer(camera=scene.camera)
-        fresh = CairoRenderer(camera=scene.camera)
-        try:
-            renderer.render_mobjects([sphere])
-            renderer.render_mobjects([sphere])
+        frames = FrameBuilder(64, 36)
+        with CairoRenderer() as renderer, CairoRenderer() as fresh:
+            renderer.render(*frames.build(scene.camera, [sphere]))
+            renderer.render(*frames.build(scene.camera, [sphere]))
             sphere.material = PbrMaterial(roughness=1, metallic=1)
-            renderer.render_mobjects([sphere])
-            fresh.render_mobjects([sphere])
-            np.testing.assert_array_equal(renderer.get_frame(), fresh.get_frame())
-        finally:
-            renderer.close()
-            fresh.close()
+            reused = renderer.render(*frames.build(scene.camera, [sphere])).pixels()
+            drawn = fresh.render(*frames.build(scene.camera, [sphere])).pixels()
+            np.testing.assert_array_equal(reused, drawn)
 
 
 def test_face_keys_follow_every_change_of_the_mesh():
@@ -319,7 +316,8 @@ def test_face_keys_follow_every_change_of_the_mesh():
     sphere = _sphere(color=BLUE, resolution=(4, 2))
 
     def keys():
-        return [face.key for face in mesh_faces(snapshot(sphere), camera._state())]
+        faces = mesh_faces(snapshot(sphere), camera._state(), (WIDTH, HEIGHT))
+        return [face.key for face in faces]
 
     before = keys()
     assert keys() == before
@@ -340,7 +338,9 @@ def test_faces_are_sorted_by_their_own_middle():
     )
     references = [
         face.payload.depth_reference
-        for face in mesh_faces(snapshot(mesh), ThreeDScene().camera._state())
+        for face in mesh_faces(
+            snapshot(mesh), ThreeDScene().camera._state(), (WIDTH, HEIGHT)
+        )
     ]
     assert len({tuple(np.round(r, 6)) for r in references}) == 4
 
@@ -381,3 +381,42 @@ def test_meshes_are_sorted_with_3d_paths(renderer):
     pixels, _ = _image(renderer, lambda: [square, plane], ThreeDScene)
 
     assert _pixel(pixels, 0, 0)[0] > 0.9
+
+
+def _two_triangles(order, color_near, color_far):
+    """A mesh of two triangles over the frame's middle, one nearer the viewer; in
+    ``order``, the near one's index first or last.
+    """
+    near = [[-2, -2, 1], [2, -2, 1], [0, 2, 1]]
+    far = [[-2, -2, -1], [2, -2, -1], [0, 2, -1]]
+    points = np.array(near + far if order == "near first" else far + near, float)
+    near_colors = [color_near] * 3
+    far_colors = [color_far] * 3
+    mesh = MeshMobject(
+        points=points, triangles=np.array([[0, 1, 2], [3, 4, 5]]), material=UnlitMaterial()
+    )
+    mesh.rgbas = np.array(
+        near_colors + far_colors if order == "near first" else far_colors + near_colors
+    )
+    return mesh
+
+
+@RENDERERS
+@pytest.mark.parametrize("order", ["near first", "near last"])
+def test_a_fixed_mesh_hides_its_own_triangles(renderer, order):
+    mesh = _two_triangles(order, [1, 0, 0, 1], [0, 0, 1, 1]).fix_in_frame()
+    pixels, _ = _image(renderer, lambda: [mesh], ThreeDScene, phi=60 * DEGREES)
+    np.testing.assert_allclose(_pixel(pixels, 0, 0), [1, 0, 0])
+
+
+@RENDERERS
+def test_a_fixed_mesh_is_not_hidden_by_the_depth_of_the_scene(renderer):
+    # A sphere drawn before it fills the depth buffer in front of where the fixed
+    # mesh's triangles lie.
+    def mobjects():
+        mesh = _two_triangles("near first", [1, 0, 0, 1], [1, 0, 0, 1]).fix_in_frame()
+        sphere = _sphere(radius=3, color=PURE_BLUE, material=UnlitMaterial()).shift(4 * OUT)
+        return [sphere, mesh]
+
+    pixels, _ = _image(renderer, mobjects, ThreeDScene)
+    np.testing.assert_allclose(_pixel(pixels, 0, 0), [1, 0, 0])

@@ -20,11 +20,14 @@ def test_preview_presents_without_advancing_time(scene, monkeypatch):
     manager.time = 2
     draw = Mock()
     monkeypatch.setattr(scene.renderer, "render", draw)
-    window = Mock()
-    monkeypatch.setattr(scene.renderer, "window", window)
+    monkeypatch.setattr(scene.renderer, "window", Mock())
+    show = Mock()
+    monkeypatch.setattr(scene.renderer, "_show", show)
     manager._render_preview_frame(-1)
-    draw.assert_called_once_with(scene, -1)
-    window.swap_buffers.assert_called_once_with()
+    draw.assert_called_once()
+    # The frame drawn is shown, without reading its pixels.
+    show.assert_called_once_with()
+    draw.return_value.pixels.assert_not_called()
     assert scene.time == 2
 
 

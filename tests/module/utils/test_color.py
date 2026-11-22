@@ -14,28 +14,24 @@ def test_import_color():
 def test_background_color():
     S = Scene()
     S.camera.background_color = "#ff0000"
-    S.renderer.update_frame(S)
     np.testing.assert_array_equal(
-        S.renderer.get_frame()[0, 0], np.array([255, 0, 0, 255])
+        np.asarray(S.get_image())[0, 0], np.array([255, 0, 0, 255])
     )
 
     S.camera.background_color = "#436f80"
-    S.renderer.update_frame(S)
     np.testing.assert_array_equal(
-        S.renderer.get_frame()[0, 0], np.array([67, 111, 128, 255])
+        np.asarray(S.get_image())[0, 0], np.array([67, 111, 128, 255])
     )
 
     S.camera.background_color = "#ffffff"
-    S.renderer.update_frame(S)
     np.testing.assert_array_equal(
-        S.renderer.get_frame()[0, 0], np.array([255, 255, 255, 255])
+        np.asarray(S.get_image())[0, 0], np.array([255, 255, 255, 255])
     )
 
     S.camera.background_color = "#bbffbb"
     S.camera.background_opacity = 0.5
-    S.renderer.update_frame(S)
     np.testing.assert_array_equal(
-        S.renderer.get_frame()[0, 0], np.array([187, 255, 187, 127])
+        np.asarray(S.get_image())[0, 0], np.array([187, 255, 187, 127])
     )
 
 

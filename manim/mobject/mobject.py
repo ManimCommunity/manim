@@ -1113,12 +1113,18 @@ class Mobject:
         :class:`.Camera`. To use a scene's current view, pass ``camera=scene.camera``.
         """
         # local import to avoid import cycle
+        from PIL import Image
+
         from manim.camera import Camera
         from manim.renderer.cairo import CairoRenderer
+        from manim.renderer.frame import FrameBuilder
 
-        with CairoRenderer(camera=Camera() if camera is None else camera) as renderer:
-            renderer.render_mobjects([self])
-            return renderer.get_image()
+        camera = Camera() if camera is None else camera
+        frame = FrameBuilder(config.pixel_width, config.pixel_height).build(
+            camera, [self]
+        )
+        with CairoRenderer() as renderer:
+            return Image.fromarray(renderer.render(*frame).pixels())
 
     def show(self, camera: Camera | None = None) -> None:
         """Draw this mobject as :meth:`get_image` does and open the image in PIL's

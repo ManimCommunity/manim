@@ -103,7 +103,7 @@ class _Preview(_RunListener):
         scene = manager.scene
         if not frame.play.drawn or scene.skip_animation_preview:
             return
-        frame.draw()
+        frame.drawn()  # the renderer shows the frame drawn last, without reading it
         if frame.play.frozen:
             manager.renderer._present_frozen_frame(scene, frame.play.run_time)
         else:

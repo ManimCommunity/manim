@@ -20,7 +20,6 @@ import moderngl
 import numpy as np
 from PIL.Image import Resampling
 
-from manim._config import config
 from manim.appearance.material import PbrMaterial
 from manim.renderer import _view
 from manim.renderer._lighting import AMBIENT, DEFAULT_LIGHT_INTENSITY
@@ -29,6 +28,7 @@ from manim.renderer._paint import paint_colors, shows
 from manim.renderer._reuse import PrefixMemo, node_key, view_key
 from manim.renderer.projection import project_points
 from manim.renderer.snapshot import (
+    STROKE_WIDTH_UNIT,
     FacingCamera,
     LegacyShaded,
     RCameraView,
@@ -298,6 +298,8 @@ class DrawTarget(NamedTuple):
     view: _CameraView
     #: Camera uniforms of the shaders (see ``OpenGLRenderer.camera_uniforms``).
     uniforms: dict[str, Any]
+    #: See :attr:`.RenderConfig.reference_pixel_size`.
+    reference_size: tuple[int, int]
 
 
 class _Group(NamedTuple):
@@ -378,7 +380,7 @@ class SnapshotDrawing:
         self,
         nodes: Iterable[RNode],
         target: DrawTarget,
-        views: dict[int, moderngl.Texture] | None = None,
+        views: dict[Any, moderngl.Texture] | None = None,
         background: Any = None,
     ) -> None:
         """Draw ``nodes`` in order into ``target``, which holds only its background.
@@ -396,7 +398,7 @@ class SnapshotDrawing:
         self._normals.next_frame()
         nodes = list(nodes)
         keys = [node_key(node) for node in nodes]
-        view = view_key(target.camera, target.size, background)
+        view = view_key(target.camera, target.size, target.reference_size, background)
         memo = self._memo
         context = self._renderer.context
         start = memo.reusable(keys, view)
@@ -426,7 +428,7 @@ class SnapshotDrawing:
         self,
         nodes: list[RNode],
         target: DrawTarget,
-        views: dict[int, moderngl.Texture] | None,
+        views: dict[Any, moderngl.Texture] | None,
     ) -> None:
         if not nodes:
             return
@@ -465,7 +467,8 @@ class SnapshotDrawing:
             elif isinstance(payload, RImage):
                 self._draw_image(node, payload)
             elif isinstance(payload, RCameraView) and views:
-                texture = views.get(node.uid)
+                # Copies of a view show the picture of the same camera.
+                texture = views.get(node.uid, views.get(("camera", payload.camera_id)))
                 if texture is not None:
                     # Rendered textures start at the bottom row.
                     self._draw_quad(payload.points, texture, bottom_up=True)
@@ -542,14 +545,21 @@ class SnapshotDrawing:
         )
 
     def _point_thickness(self, stroke_width: float) -> float:
-        """Point size in pixels, scaled with the resolution as on the Cairo renderer."""
-        base = int(config["pixel_width"]) + int(config["pixel_height"])
+        """Point size in pixels: ``stroke_width`` is meant at the reference size,
+        as on the Cairo renderer.
+        """
+        base = sum(self._target.reference_size)
         return 1 + (stroke_width - 1) * base / sum(self._target.size)
 
     def _draw_mesh(self, node: RNode, mesh: RMesh) -> None:
         count = len(mesh.points)
         if count == 0 or len(mesh.triangles) == 0:
             return
+        if node.fixed_in_frame and mesh.depth_test:
+            # A fixed mesh hides its own triangles only: it neither tests against
+            # nor leaves the depth of the scene or of other fixed meshes. Fixed
+            # nodes are drawn last, so nothing needs the depth cleared here.
+            self._clear_depth()
         texture = None
         if len(mesh.uvs) == count:
             texture = self._textures.get(node, "texture", mesh.texture)
@@ -591,9 +601,8 @@ class SnapshotDrawing:
             depth_test=mesh.depth_test,
             has_texture=float(texture is not None),
             image=0,
-            # The shader measures from the edge to each side: half the width.
             edge_width=0.5
-            * MESH_STROKE_WIDTH_UNIT
+            * STROKE_WIDTH_UNIT
             * float(mesh.stroke_width)
             * pixels_per_unit,
             **self._lighting(node, mesh.material),
@@ -695,6 +704,16 @@ class SnapshotDrawing:
             vertices["uv"][:, 1] = 1 - _QUAD_UV[:, 1]
         texture.use(0)
         self._pass("image_quad", vertices, "3f 2f", moderngl.TRIANGLES, image=0)
+
+    def _clear_depth(self) -> None:
+        framebuffer = self._target.framebuffer
+        if framebuffer.depth_attachment is None:
+            return
+        framebuffer.color_mask = False, False, False, False
+        try:
+            framebuffer.clear(depth=1.0)
+        finally:
+            framebuffer.color_mask = True, True, True, True
 
     def _pass(
         self,

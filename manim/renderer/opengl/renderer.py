@@ -11,34 +11,32 @@ from typing import TYPE_CHECKING, Any
 import moderngl
 import numpy as np
 from moderngl import Framebuffer
-from PIL import Image
 
 from manim._config import config, logger
-from manim.renderer.extract import Extractor
 from manim.typing import Point3D
-from manim.utils.iterables import list_update
 
-from ...camera import Camera, MultiCamera
 from ...constants import *
-from ...scene.scene_file_writer import SceneFileWriter
 from .. import _view as _views
 from .._execution import _RendererExecutionView
-from ..protocol import CameraState, RendererCapabilities, RendererState
+from ..protocol import RenderConfig, RendererCapabilities, RendererState
 from ._drawing import DrawTarget, SnapshotDrawing
 from .shader import shader_program_cache
 from .window_settings import _WindowSettings
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterator
+    from collections.abc import Callable, Iterator, Sequence
 
     from manim._config.render_session import RenderSessionSpec
     from manim.animation.animation import Animation
     from manim.mobject.mobject import Mobject, _AnimationBuilder
     from manim.scene.scene import Scene
+    from manim.scene.scene_file_writer import SceneFileWriter
     from manim.typing import (
         RGBAPixelArray,
     )
 
+    from ..protocol import CameraState
+    from ..snapshot import RNode
     from .window import Window
 
 __all__ = ["OpenGLRenderer"]
@@ -49,17 +47,26 @@ _active_context = threading.local()
 
 @dataclasses.dataclass(frozen=True)
 class _SceneSettings:
-    """What an OpenGL renderer draws a scene with, saved when it is bound to it."""
+    """What an OpenGL renderer shows a scene with, saved when it is bound to it."""
 
-    pixel_size: tuple[int, int]
-    wireframe: bool
     #: The preview window to open, if any.
     window: _WindowSettings | None
 
 
 class OpenGLRenderer(_RendererExecutionView):
-    """
-    An OpenGL-based renderer.
+    """A renderer drawing with OpenGL, which can show frames in a preview window.
+
+    Frames are drawn offscreen at the size their :class:`.RenderConfig` asks for; a
+    preview window shows the last one, scaled to the window.
+
+    Parameters
+    ----------
+    wireframe
+        Draw the edges of triangles only, for debugging.
+    anti_alias_width
+        The width of the antialiased edge of shapes, in pixels.
+    skip_animations
+        Whether animations are skipped.
 
     Attributes
     ----------
@@ -71,8 +78,6 @@ class OpenGLRenderer(_RendererExecutionView):
         List of animation hashes for caching.
     anti_alias_width : float
         The width used for anti-aliasing in pixel units.
-    camera : Camera
-        The camera used for rendering.
     num_plays : float
         The number of animation plays executed.
     pressed_keys : set[int]
@@ -89,36 +94,24 @@ class OpenGLRenderer(_RendererExecutionView):
 
     def __init__(
         self,
+        *,
+        wireframe: bool = False,
+        anti_alias_width: float = 1.5,
         skip_animations: bool = False,
-        camera_class: type[Camera] | None = None,
-        camera: Camera | None = None,
     ) -> None:
-        """Initializes the OpenGLRenderer.
-
-        Parameters
-        ----------
-        skip_animations : bool, optional
-            Whether to skip animations during rendering, by default False.
-        camera_class
-            The camera class to instantiate, by default :class:`.Camera`.
-        camera
-            A camera to use instead of instantiating ``camera_class``.
-        """
-        if camera is not None and camera_class is not None:
-            raise ValueError("Pass either camera or camera_class, not both.")
+        self.wireframe = wireframe
         # Measured in pixel widths, used for vector graphics
-        self.anti_alias_width = 1.5
+        self.anti_alias_width = anti_alias_width
 
         self._initialize_execution(skip_animations)
         self.animation_start_time = 0.0
         self.animation_elapsed_time = 0.0
 
-        self.camera: Camera = camera or (camera_class or Camera)()
         self.perspective_uniforms: dict[str, Any] = {}
-        self._camera_state: CameraState = self.camera._state()
-        self.camera_view: _CameraView = _CameraView.of(self._camera_state)
+        # Set for each frame by _set_view.
+        self.camera_view: _CameraView
+        self._camera_state: CameraState
         self._snapshot_drawing = SnapshotDrawing(self)
-        self._extractor = Extractor()
         self._camera_view_targets: dict[int, _ViewTarget] = {}
         self.pressed_keys: set[int] = set()
         self.window: Window | None = None
@@ -126,8 +119,8 @@ class OpenGLRenderer(_RendererExecutionView):
         self._frame_buffer_object: Framebuffer | None = None
         self._context_thread: int | None = None
         self._capturing_image = False
-        # A finished scene whose final state is drawn on the first pixel read.
-        self._final_scene: Scene | None = None
+        #: The number of frames drawn; a frame can be read until the next one.
+        self._frames_drawn = 0
         self._keep_image_renderer = False
         self._kept_image_renderer: OpenGLRenderer | None = None
         self._state = RendererState.UNOPENED
@@ -158,8 +151,6 @@ class OpenGLRenderer(_RendererExecutionView):
         self._bind(
             scene,
             _SceneSettings(
-                pixel_size=(int(config.pixel_width), int(config.pixel_height)),
-                wireframe=config.enable_wireframe,
                 window=(
                     _WindowSettings.from_config(config)
                     if self.should_create_window(session_spec)
@@ -176,10 +167,9 @@ class OpenGLRenderer(_RendererExecutionView):
     @classmethod
     def _image_renderer(cls, of: OpenGLRenderer) -> OpenGLRenderer:
         """An offscreen renderer drawing images of ``of``'s scene as ``of`` would:
-        same camera (and so background) and settings, but no window.
+        the same options and settings, but no window.
         """
-        renderer = cls()
-        renderer.camera = of.camera
+        renderer = cls(wireframe=of.wireframe, anti_alias_width=of.anti_alias_width)
         renderer._bind(of.scene, dataclasses.replace(of._settings, window=None))
         return renderer
 
@@ -223,26 +213,16 @@ class OpenGLRenderer(_RendererExecutionView):
 
                 window = Window(self, _settings=self._settings.window)
                 resources.callback(window.close)
-                # Closing the window also releases its context and default framebuffer.
+                # Closing the window also releases its context.
                 context = window.ctx
-                frame = context.detect_framebuffer()
             else:
                 try:
                     context = moderngl.create_context(standalone=True)
                 except Exception:
                     context = moderngl.create_context(standalone=True, backend="egl")
                 resources.callback(context.release)
-                frame = self.get_frame_buffer_object(
-                    context, 0, size=self._settings.pixel_size
-                )
-                for color in frame.color_attachments:
-                    resources.callback(color.release)
-                if frame.depth_attachment is not None:
-                    resources.callback(frame.depth_attachment.release)
-                resources.callback(frame.release)
-                frame.use()
             context.enable(moderngl.BLEND)
-            context.wireframe = self._settings.wireframe
+            context.wireframe = self.wireframe
             context.blend_func = (
                 moderngl.SRC_ALPHA,
                 moderngl.ONE_MINUS_SRC_ALPHA,
@@ -262,7 +242,6 @@ class OpenGLRenderer(_RendererExecutionView):
         # Store the resources after initialization succeeds.
         self.window = window
         self._context = context
-        self._frame_buffer_object = frame
         self._context_thread = threading.get_ident()
         self._capturing_image = False
         self._resources = resources.pop_all()
@@ -286,14 +265,24 @@ class OpenGLRenderer(_RendererExecutionView):
 
     @property
     def frame_buffer_object(self) -> Framebuffer:
+        """The offscreen framebuffer of the last frame drawn, which a preview
+        window shows. It is created by the first :meth:`render`.
+        """
         self.open()
-        assert self._frame_buffer_object is not None
+        if self._frame_buffer_object is None:
+            raise RuntimeError("The OpenGL renderer has not drawn a frame yet.")
         return self._frame_buffer_object
 
-    @frame_buffer_object.setter
-    def frame_buffer_object(self, frame: Framebuffer) -> None:
-        self._ensure_not_closed()
-        self._frame_buffer_object = frame
+    def _size_frame(self, size: tuple[int, int]) -> None:
+        """Make the offscreen framebuffer ``size`` pixels, as the frame to draw is."""
+        frame = self._frame_buffer_object
+        if frame is not None and frame.size == size:
+            return
+        replacement = self.get_frame_buffer_object(self.context, 0, size=size)
+        self._resources.callback(_release_framebuffer, replacement)
+        if frame is not None:
+            _release_framebuffer(frame)
+        self._frame_buffer_object = replacement
 
     def close(self) -> None:
         """Release GPU resources and close the preview window.
@@ -412,36 +401,20 @@ class OpenGLRenderer(_RendererExecutionView):
         frame_buffer = self._frame_buffer_object
         if frame_buffer is None:
             return None
-        _, _, pixel_width, pixel_height = frame_buffer.viewport
+        pixel_width, pixel_height = frame_buffer.size
         return pixel_width, pixel_height
 
-    def refresh_perspective_uniforms(self, camera: Camera) -> None:
-        """Update the camera uniforms from ``camera``.
+    def _set_view(self, config: RenderConfig) -> None:
+        """Set the camera uniforms for the frame of ``config``.
 
         The shaders rotate points about the frame center, divide by the frame
         shape and apply a perspective factor ``focal_distance / (focal_distance - z)``,
         which is what :meth:`.ThreeDCamera.project_points` does on the CPU. A
         camera without rotation draws orthographically.
-
-        Parameters
-        ----------
-        camera
-            The camera whose view to draw.
-
-        Raises
-        ------
-        ValueError
-            If the renderer's pixel shape is not available.
         """
-        self.open()
-        pixel_shape = self.get_pixel_shape()
-        if pixel_shape is None:
-            msg = "Pixel shape is None, cannot refresh perspective uniforms."
-            raise ValueError(msg)
-        _, pixel_height = pixel_shape
-        self._camera_state = camera._state()
-        view = self.camera_view = _CameraView.of(self._camera_state)
-        self.perspective_uniforms = self.camera_uniforms(view, pixel_height)
+        self._camera_state = config.camera
+        view = self.camera_view = _CameraView.of(config.camera)
+        self.perspective_uniforms = self.camera_uniforms(view, config.pixel_height)
 
     def camera_uniforms(self, view: _CameraView, pixel_height: int) -> dict[str, Any]:
         """The shaders' camera uniforms for a view drawn ``pixel_height`` pixels high."""
@@ -455,76 +428,83 @@ class OpenGLRenderer(_RendererExecutionView):
             "focal_distance": view.focal_distance,
         }
 
-    def _draw_snapshots(self, scene: Scene) -> None:
-        """Draw the scene's mobjects from render snapshots, camera views first."""
-        mobjects = list_update(scene.mobjects, scene.foreground_mobjects)
-        views = self._draw_camera_views(mobjects)
-        nodes = self._extractor.extract(mobjects, use_z_index=self.camera.use_z_index)
-        pixel_shape = self.get_pixel_shape()
-        assert pixel_shape is not None
-        target = DrawTarget(
+    def _frame_target(self, config: RenderConfig) -> DrawTarget:
+        return DrawTarget(
             self.frame_buffer_object,
-            pixel_shape,
+            (config.pixel_width, config.pixel_height),
             self._camera_state,
             self.camera_view,
             self.perspective_uniforms,
-        )
-        self._snapshot_drawing.draw(
-            _views.sort_for_display(self._camera_state, nodes),
-            target,
-            views,
-            background=_background_rgba(self.camera),
+            config.reference_pixel_size,
         )
 
-    def _draw_camera_views(self, mobjects: list[Mobject]) -> dict[int, Any]:
-        """Draw what each camera view of a :class:`.MultiCamera` sees into a texture.
+    def render(self, nodes: Sequence[RNode], config: RenderConfig, /) -> _GLFrame:
+        """Draw ``nodes`` as ``config`` sets them up; return the frame.
 
-        Returns the textures by the uid of their :class:`.ImageMobjectFromCamera`.
+        The picture stays in the renderer's framebuffer, which a preview window
+        shows; it is read back only when its pixels are asked for.
         """
-        if not isinstance(self.camera, MultiCamera):
-            return {}
-        pixel_shape = self.get_pixel_shape()
-        assert pixel_shape is not None
-        textures = {}
-        for image_mobject in self.camera.image_mobjects_from_cameras:
-            size = (
-                max(
-                    1,
-                    int(pixel_shape[0] * image_mobject.width / self.camera.frame_width),
-                ),
-                max(
-                    1,
-                    int(
-                        pixel_shape[1] * image_mobject.height / self.camera.frame_height
-                    ),
-                ),
-            )
-            view_target = self._camera_view_targets.get(image_mobject.uid)
+        self._draw(nodes, config)
+        self._frames_drawn += 1
+        self.animation_elapsed_time = time.time() - self.animation_start_time
+        return _GLFrame(
+            self, self._frames_drawn, (config.pixel_width, config.pixel_height)
+        )
+
+    def _draw(self, nodes: Sequence[RNode], config: RenderConfig) -> None:
+        """Draw a frame into the framebuffer, camera views first."""
+        self.open()
+        self._size_frame((config.pixel_width, config.pixel_height))
+        self._set_view(config)
+        views = self._draw_camera_views(config)
+        self.frame_buffer_object.use()
+        background = _background_rgba(config)
+        self.frame_buffer_object.clear(*background)
+        self._snapshot_drawing.draw(
+            _views.sort_for_display(config.camera, list(nodes)),
+            self._frame_target(config),
+            views,
+            background=background,
+        )
+
+    def _draw_camera_views(self, config: RenderConfig) -> dict[Any, Any]:
+        """Draw each camera view into a texture; return them by the uid of the
+        view's node, and by ``("camera", camera_id)`` for copies of a view.
+        """
+        textures: dict[Any, Any] = {}
+        drawn = set()
+        for view in config.camera_views:
+            view_config = view.config
+            size = (view_config.pixel_width, view_config.pixel_height)
+            view_target = self._camera_view_targets.get(view.uid)
             if view_target is None or view_target.size != size:
                 if view_target is not None:
                     view_target.release()
                 view_target = _ViewTarget(self, size)
-                self._camera_view_targets[image_mobject.uid] = view_target
-            camera = image_mobject.camera
-            state = camera._state()
-            view = _CameraView.of(state)
+                self._camera_view_targets[view.uid] = view_target
+            state = view_config.camera
+            camera_view = _CameraView.of(state)
             target = DrawTarget(
                 view_target.framebuffer,
                 size,
                 state,
-                view,
-                self.camera_uniforms(view, size[1]),
+                camera_view,
+                self.camera_uniforms(camera_view, size[1]),
+                view_config.reference_pixel_size,
             )
             view_target.framebuffer.use()
-            view_target.framebuffer.clear(*_background_rgba(camera))
-            nodes = self._extractor.extract(
-                mobjects,
-                use_z_index=camera.use_z_index,
-                excluded_mobjects=[image_mobject],
+            background = _background_rgba(view_config)
+            view_target.framebuffer.clear(*background)
+            view_target.drawing.draw(
+                _views.sort_for_display(state, list(view.nodes)),
+                target,
+                background=background,
             )
-            view_target.drawing.draw(_views.sort_for_display(state, nodes), target)
-            textures[image_mobject.uid] = view_target.texture
-        for uid in self._camera_view_targets.keys() - textures.keys():
+            textures[view.uid] = textures[("camera", view.camera_id)] = (
+                view_target.texture
+            )
+            drawn.add(view.uid)
+        for uid in self._camera_view_targets.keys() - drawn:
             self._camera_view_targets.pop(uid).release()
         return textures
 
@@ -562,6 +542,7 @@ class OpenGLRenderer(_RendererExecutionView):
 
     def _animation_cache_identity(self, scene: Scene) -> tuple[str, Any]:
         return "opengl", {
+            "wireframe": self.wireframe,
             "anti_alias_width": self.anti_alias_width,
         }
 
@@ -569,82 +550,32 @@ class OpenGLRenderer(_RendererExecutionView):
         self.open()
         self.animation_start_time = time.time()
 
+    def _show(self) -> None:
+        """Show the last frame drawn in the preview window, if there is one."""
+        if self.window is not None and self._frame_buffer_object is not None:
+            self.window.show(self._frame_buffer_object)
+            self._activate_context()
+
     def _present_frozen_frame(self, scene: Scene, duration: float) -> None:
         if self.window is not None:
-            self.window.swap_buffers()
+            self._show()
             while time.time() - self.animation_start_time < duration:
                 pass
         self.animation_elapsed_time = duration
 
-    def clear_screen(self) -> None:
-        """
-        Clears the current frame buffer and updates the display window
-        accordingly.
-
-        The screen is cleared using the camera's background color.
-        """
-        self.frame_buffer_object.clear(*_background_rgba(self.camera))
-        if self.window is None:
-            return
-        self.window.swap_buffers()
-
-    def render(self, scene: Scene, frame_offset: float) -> None:
-        """Draw a single frame of the scene's current state using OpenGL.
-
-        Parameters
-        ----------
-        scene
-            The scene to draw.
-        frame_offset
-            Animation-relative time in seconds. Accepted for the common renderer
-            interface; drawing itself does not use this value.
-
-        Notes
-        -----
-        This method draws into the framebuffer. The manager reads any pixels
-        needed for output and displays the preview window separately. Drawing
-        alone neither writes frames nor advances ``Scene.time``.
-        """
-        self.update_frame(scene)
-
     def _present_frame(self, scene: Scene, frame_offset: float) -> None:
-        """Refresh the preview window until wall-clock time reaches the frame offset."""
+        """Show the last frame in the preview window until wall-clock time reaches
+        the frame offset.
+        """
         if self.window is not None:
-            self.window.swap_buffers()
+            self._show()
             while self.animation_elapsed_time < frame_offset:
-                self.update_frame(scene)
-                self.window.swap_buffers()
-
-    def update_frame(self, scene: Scene) -> None:
-        """
-        Update and render the current frame for the given scene.
-
-        Performs the following steps:
-        1. Clear the frame buffer with the background color.
-        2. Refresh camera perspective uniforms for rendering.
-        3. Draw render snapshots of the scene's mobjects.
-        4. Iterate through all mesh objects in the scene, setting their uniforms and rendering them.
-        5. Update the wall-clock time used to pace the preview window.
-
-        Parameters
-        ----------
-        scene : Scene
-            The scene to render the frame for.
-        """
-        self._final_scene = None
-        self._draw_scene(scene)
-        self.animation_elapsed_time = time.time() - self.animation_start_time
-
-    def _draw_scene(self, scene: Scene) -> None:
-        """Draw the current objects without updating animation timing."""
-        self.frame_buffer_object.clear(*_background_rgba(self.camera))
-
-        self.refresh_perspective_uniforms(self.camera)
-        self._draw_snapshots(scene)
+                self._show()
+                self.animation_elapsed_time = time.time() - self.animation_start_time
 
     @contextlib.contextmanager
     def _scene_images(self) -> Iterator[None]:
-        """Keep the temporary renderer of :meth:`_get_scene_image` for many images.
+        """Keep the temporary renderer of :meth:`_image` for many images.
 
         Creating an OpenGL context for each image costs far more than drawing it,
         so evaluation, which draws every requested frame this way, keeps one.
@@ -658,10 +589,10 @@ class OpenGLRenderer(_RendererExecutionView):
             if kept is not None:
                 kept.close()
 
-    def _get_scene_image(self, scene: Scene) -> Image.Image:
-        """Draw a snapshot separately from the live-preview framebuffer.
+    def _image(self, nodes: Sequence[RNode], config: RenderConfig) -> RGBAPixelArray:
+        """Draw a frame for inspection, apart from the live-preview framebuffer.
 
-        An existing context is used on its rendering thread. Otherwise, the scene
+        An existing context is used on its rendering thread. Otherwise, the frame
         is drawn with a temporary context and renderer.
         """
         if (
@@ -681,8 +612,7 @@ class OpenGLRenderer(_RendererExecutionView):
             self._capturing_image = True
             try:
                 try:
-                    temporary._draw_scene(scene)
-                    image = temporary.get_image()
+                    pixels = temporary.render(nodes, config).pixels()
                 except BaseException:
                     self._kept_image_renderer = None
                     try:
@@ -696,36 +626,49 @@ class OpenGLRenderer(_RendererExecutionView):
                     self._kept_image_renderer = temporary
                 else:
                     temporary.close()
-                return image
+                return pixels
             finally:
                 self._capturing_image = False
-        target = self.frame_buffer_object
+        target = self._frame_buffer_object
         bound = self.context.fbo
         viewport = self.context.viewport
-        size = target.size
+        size = (config.pixel_width, config.pixel_height)
         self._capturing_image = True
         try:
             with contextlib.ExitStack() as resources:
-                color = self.context.texture(size, components=4)
-                resources.callback(color.release)
-                depth = self.context.depth_renderbuffer(size)
-                resources.callback(depth.release)
-                frame = self.context.framebuffer(color, depth)
-                resources.callback(frame.release)
+                frame = self.get_frame_buffer_object(self.context, 0, size=size)
+                resources.callback(_release_framebuffer, frame)
+                drawing = self._snapshot_drawing
+                # A separate drawing state: the reuse kept for the live frames stays.
+                self._snapshot_drawing = SnapshotDrawing(self)
                 try:
-                    self.frame_buffer_object = frame
+                    self._frame_buffer_object = frame
+                    # Drawn into its own framebuffer (_size_frame keeps it), and
+                    # not a frame of the run: the last frame can still be read.
                     frame.use()
-                    self._draw_scene(scene)
-                    return Image.fromarray(self.get_frame())
+                    self._draw(nodes, config)
+                    return self.get_frame()
                 finally:
-                    self.frame_buffer_object = target
-                    (target if bound is None else bound).use()
+                    self._snapshot_drawing.release()
+                    self._snapshot_drawing = drawing
+                    self._frame_buffer_object = target
+                    # Bind again what was bound, unless it is gone: before the
+                    # first frame, that can be the framebuffer of an earlier image.
+                    for restore in (bound, target):
+                        if restore is not None and not isinstance(
+                            restore.mglo, moderngl.InvalidObject
+                        ):
+                            restore.use()
+                            break
                     self.context.viewport = viewport
         finally:
             self._capturing_image = False
 
     def scene_finished(self, scene: Scene) -> None:
         """Finalize configured output for the scene.
+
+        Skipped and cached plays do not draw, so the final state is drawn for a
+        preview window and for last-frame output.
 
         Parameters
         ----------
@@ -735,16 +678,13 @@ class OpenGLRenderer(_RendererExecutionView):
         output = self.file_writer.output_spec
         if self.num_plays > 0 and (output.is_video or output.is_image_sequence):
             self.file_writer.finish()
-        # Skipped and cached plays do not draw, so the framebuffer may not show
-        # the final state. A preview window shows it; offscreen, it is drawn
-        # when the pixels are read, not for every scene.
-        if self.window is not None:
-            self.update_frame(scene)
-        else:
-            self._final_scene = scene
-
-        if self.should_save_last_frame():
-            self.file_writer.save_image(self.get_frame())
+        save = self.should_save_last_frame()
+        if self.window is None and not save:
+            return
+        frame = self.render(*scene._get_manager()._frame())
+        self._show()
+        if save:
+            self.file_writer.save_image(frame.pixels())
 
     def should_save_last_frame(self) -> bool:
         """
@@ -761,49 +701,12 @@ class OpenGLRenderer(_RendererExecutionView):
             return False
         return self.num_plays == 0 and output.fallback_to_still
 
-    def get_image(self) -> Image.Image:
-        """
-        Get the current OpenGL frame buffer as a PIL Image.
-
-        Returns
-        -------
-        Image.Image
-            The image representation of the current frame buffer.
-
-        Raises
-        ------
-        ValueError
-            If the pixel shape cannot be determined.
-
-        Notes
-        -----
-        The image is constructed from raw RGBA buffer data, with the
-        origin at the bottom-left.
-        """
-        raw_buffer_data = self.get_raw_frame_buffer_object_data()
-        pixel_shape = self.get_pixel_shape()
-        if pixel_shape is None:
-            msg = "Pixel shape is None, cannot get image."
-            raise ValueError(msg)
-
-        image = Image.frombytes(
-            "RGBA",  # mode (rgb, a for alpha (transparency)))
-            pixel_shape,  # size
-            raw_buffer_data,  # data
-            "raw",  # decoder_name
-            # *args for the decoder
-            "RGBA",  # raw mode
-            0,  # stride (O = no extra padding)
-            -1,  # orientation (-1 = bottom to top, 1 = top to bottom)
-        )
-        return image
-
     def get_frame_buffer_object(
         self,
         context: moderngl.Context,
         samples: int = 0,
         *,
-        size: tuple[int, int] | None = None,
+        size: tuple[int, int],
     ) -> Framebuffer:
         """
         Creates and returns a framebuffer object configured with color
@@ -822,22 +725,18 @@ class OpenGLRenderer(_RendererExecutionView):
         -------
         Framebuffer
             A framebuffer object with a color texture attachment and
-            a depth renderbuffer attachment, both sized according to
-            the current configuration's pixel width and height.
+            a depth renderbuffer attachment, both of ``size`` pixels.
 
         Notes
         -----
         Framebuffer's color attachment is supposed RGBA.
-        Pixel dimensions are taken from the global config of Manim.
 
         References
         ----------
         .. [1] Wikipedia, "Multisample anti-aliasing",
                https://en.wikipedia.org/wiki/Multisample_anti-aliasing
         """
-        pixel_width, pixel_height = (
-            (config["pixel_width"], config["pixel_height"]) if size is None else size
-        )
+        pixel_width, pixel_height = size
         num_channels = 4
         resources = contextlib.ExitStack()
         try:
@@ -880,9 +779,6 @@ class OpenGLRenderer(_RendererExecutionView):
         # gl.glBlitFramebuffer(
         #     0, 0, pw, ph, 0, 0, pw, ph, gl.GL_COLOR_BUFFER_BIT, gl.GL_LINEAR
         # )
-        if self._final_scene is not None:
-            scene, self._final_scene = self._final_scene, None
-            self.update_frame(scene)
         num_channels = 4
         ret: bytes = self.frame_buffer_object.read(
             viewport=self.frame_buffer_object.viewport,
@@ -951,11 +847,16 @@ class OpenGLRenderer(_RendererExecutionView):
         -----
         If the pixel shape is not available, returns the origin [0, 0, 0].
         """
-        pixel_shape = self.get_pixel_shape()
+        # Window positions are measured in the window, which shows the frame scaled.
+        pixel_shape = (
+            tuple(self.window.size)
+            if self.window is not None
+            else self.get_pixel_shape()
+        )
         if pixel_shape is None:
             return typing.cast(Point3D, np.array([0.0, 0.0, 0.0]))
         pixel_width, pixel_height = pixel_shape
-        view = _CameraView.of(self.camera._state())
+        view = _CameraView.of(self.scene.camera._state())
         frame_height = view.frame_shape[1]
         frame_center = view.center
         if relative:
@@ -1038,7 +939,47 @@ class _ViewTarget:
                 resource.release()
 
 
-def _background_rgba(camera: Camera) -> tuple[float, float, float, float]:
-    """The camera's background, as a framebuffer is cleared to it."""
-    r, g, b = camera.background_color.to_rgb()
-    return float(r), float(g), float(b), float(camera.background_opacity)
+class _GLFrame:
+    """A frame of an OpenGL renderer: read back from its framebuffer the first
+    time its pixels are asked for, until the renderer draws the next frame.
+    """
+
+    __slots__ = ("_index", "_pixels", "_renderer", "size")
+
+    def __init__(
+        self, renderer: OpenGLRenderer, index: int, size: tuple[int, int]
+    ) -> None:
+        self._renderer = renderer
+        self._index = index
+        self._pixels: RGBAPixelArray | None = None
+        self.size = size
+
+    def pixels(self) -> RGBAPixelArray:
+        if self._pixels is None:
+            renderer = self._renderer
+            if renderer._frames_drawn != self._index or not renderer.state.accepts_work:
+                raise RuntimeError(
+                    "The OpenGL renderer drew another frame since this one, or "
+                    "closed: read the pixels of a frame before drawing the next."
+                )
+            self._pixels = renderer.get_frame()
+        return self._pixels
+
+
+def _release_framebuffer(frame: Framebuffer) -> None:
+    """Release ``frame`` and its attachments; safe to call more than once."""
+    if isinstance(frame.mglo, moderngl.InvalidObject):
+        return
+    # A released framebuffer forgets its attachments: release them first.
+    for attachment in (*frame.color_attachments, frame.depth_attachment):
+        if attachment is not None and not isinstance(
+            attachment.mglo, moderngl.InvalidObject
+        ):
+            attachment.release()
+    frame.release()
+
+
+def _background_rgba(config: RenderConfig) -> tuple[float, float, float, float]:
+    """The background of a frame, as a framebuffer is cleared to it."""
+    r, g, b = config.background_color.to_rgb()
+    return float(r), float(g), float(b), float(config.background_opacity)

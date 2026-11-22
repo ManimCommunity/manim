@@ -98,7 +98,8 @@ def display_points(
 
 def sort_for_display(state: CameraState, nodes: list[RNode]) -> list[RNode]:
     """Order snapshots far to near for a perspective view, stably by their depth
-    reference; nodes without one keep their order and come last. Flat views keep
+    reference; nodes without one keep their order and come last, and so do nodes
+    fixed in the frame, which have no place in the scene's depth. Flat views keep
     the order.
     """
     if not is_3d(state):
@@ -106,6 +107,8 @@ def sort_for_display(state: CameraState, nodes: list[RNode]) -> list[RNode]:
     depth_axis = state.rotation[2]
 
     def z_key(node: RNode) -> float:
+        if node.fixed_in_frame:
+            return np.inf  # type: ignore[no-any-return]
         payload = node.payload
         reference_point = getattr(payload, "depth_reference", None)
         if isinstance(payload, RMesh) and len(payload.points):

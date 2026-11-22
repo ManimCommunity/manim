@@ -22,34 +22,14 @@ if TYPE_CHECKING:
 
 @dataclass(frozen=True, slots=True)
 class _CairoRasterSettings:
-    """Immutable dimensions and scaling used by one Cairo raster target."""
+    """The size of one Cairo raster target."""
 
     pixel_width: int
     pixel_height: int
-    base_pixel_width: int
-    base_pixel_height: int
-    cairo_line_width_multiple: float = STROKE_WIDTH_UNIT
 
     def __post_init__(self) -> None:
-        if (
-            min(
-                self.pixel_width,
-                self.pixel_height,
-                self.base_pixel_width,
-                self.base_pixel_height,
-            )
-            <= 0
-        ):
+        if min(self.pixel_width, self.pixel_height) <= 0:
             raise ValueError("Cairo raster dimensions must be positive.")
-
-    def resized(self, *, pixel_width: int, pixel_height: int) -> _CairoRasterSettings:
-        return _CairoRasterSettings(
-            pixel_width=pixel_width,
-            pixel_height=pixel_height,
-            base_pixel_width=self.base_pixel_width,
-            base_pixel_height=self.base_pixel_height,
-            cairo_line_width_multiple=self.cairo_line_width_multiple,
-        )
 
 
 def _rgba_image(

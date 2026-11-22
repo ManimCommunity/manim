@@ -13,20 +13,17 @@ import numpy as np
 from PIL import Image
 
 from manim.constants import CapStyleType, LineJointType
-from manim.mobject.mobject import Mobject
 from manim.renderer._paint import paint_colors
 from manim.renderer._view import (
     display_points,
     is_3d,
     shaded_rgbas,
-    sort_for_display,
     view_transform_center,
 )
-from manim.renderer.extract import Extractor, extract
 from manim.renderer.snapshot import (
+    STROKE_WIDTH_UNIT,
     RCameraView,
     RImage,
-    RMesh,
     RNode,
     RPaint,
     RPath,
@@ -39,7 +36,6 @@ from manim.utils._path_points import (
 )
 from manim.utils.space_ops import cross2d
 
-from ._mesh_faces import mesh_faces
 from .target import _CairoRenderTarget, _PathCache
 
 if TYPE_CHECKING:
@@ -70,7 +66,7 @@ _ImageResolver = Callable[[RNode], np.ndarray | None]
 
 
 class _CairoDrawingContext:
-    """Draw mobjects into one renderer-owned target using one semantic camera."""
+    """Draw render snapshots into one renderer-owned target from one camera state."""
 
     def __init__(
         self,
@@ -78,56 +74,14 @@ class _CairoDrawingContext:
         camera: CameraState,
         target: _CairoRenderTarget,
         image_resolver: _ImageResolver,
-        use_z_index: bool = True,
-        extractor: Extractor | None = None,
+        reference_pixel_size: tuple[int, int],
     ) -> None:
         self.camera = camera
-        self.use_z_index = use_z_index
-        self.extractor = extractor
+        #: See :attr:`.RenderConfig.reference_pixel_size`.
+        self.reference_pixel_size = reference_pixel_size
         self.target = target
         self.image_resolver = image_resolver
         self._path_cache: _PathCache | None = None
-
-    def nodes(
-        self,
-        mobjects: Iterable[Mobject],
-        *,
-        include_submobjects: bool = True,
-        excluded_mobjects: list[Mobject] | None = None,
-    ) -> list[RNode]:
-        """The snapshots to draw for ``mobjects``, in drawing order: meshes as
-        their faces, sorted by depth for a perspective view.
-        """
-        nodes = []
-        take = extract if self.extractor is None else self.extractor.extract
-        for node in take(
-            mobjects,
-            include_submobjects=include_submobjects,
-            use_z_index=self.use_z_index,
-            excluded_mobjects=excluded_mobjects or (),
-        ):
-            if isinstance(node.payload, RMesh):
-                # A mesh is drawn as its faces, each a path.
-                nodes.extend(mesh_faces(node, self.camera))
-            else:
-                nodes.append(node)
-        return sort_for_display(self.camera, nodes)
-
-    def draw(
-        self,
-        mobjects: Iterable[Mobject],
-        *,
-        include_submobjects: bool = True,
-        excluded_mobjects: list[Mobject] | None = None,
-    ) -> None:
-        self.start_frame()
-        self.draw_nodes(
-            self.nodes(
-                mobjects,
-                include_submobjects=include_submobjects,
-                excluded_mobjects=excluded_mobjects,
-            )
-        )
 
     def start_frame(self) -> None:
         """Begin a frame of the target: paths cached in the frame before last and
@@ -284,7 +238,7 @@ class _CairoDrawingContext:
             return
         self._set_cairo_context_color(context, stroke.paint, node, path)
         context.set_line_width(
-            stroke.width * self.target.settings.cairo_line_width_multiple,
+            stroke.width * STROKE_WIDTH_UNIT,
         )
         context.set_line_join(_LINE_JOIN_MAP[stroke.joint])
         context.set_line_cap(_CAP_STYLE_MAP[stroke.cap])
@@ -300,7 +254,7 @@ class _CairoDrawingContext:
             camera=self.camera,
             target=scratch,
             image_resolver=self.image_resolver,
-            use_z_index=self.use_z_index,
+            reference_pixel_size=self.reference_pixel_size,
         )
         scratch_context._display_unmasked_paths(nodes)
         background = self.target.get_background_image(image)
@@ -511,8 +465,9 @@ class _CairoDrawingContext:
         )
 
     def _adjusted_thickness(self, thickness: float) -> float:
+        """A point thickness given at the reference size, at the target's size."""
         settings = self.target.settings
-        base_sum = settings.base_pixel_height + settings.base_pixel_width
+        base_sum = sum(self.reference_pixel_size)
         target_sum = settings.pixel_height + settings.pixel_width
         return 1 + (thickness - 1) * base_sum / target_sum
 

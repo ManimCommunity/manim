@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any
 
 import cairo
+import numpy as np
 import pytest
 from _pytest.fixtures import FixtureRequest
 
@@ -214,7 +215,7 @@ def _make_test_comparing_frames(
             with scene_tested._get_manager():
                 scene_tested.render()
                 if last_frame:
-                    frames_tester.check_frame(-1, scene_tested.renderer.get_frame())
+                    frames_tester.check_frame(-1, np.asarray(scene_tested.get_image()))
 
     return real_test
 

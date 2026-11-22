@@ -42,8 +42,8 @@ def _settings(renderer):
 
 
 def _frame(scene):
-    scene.renderer.update_frame(scene)
-    return scene.renderer.get_frame().copy()
+    """Draw a frame of the scene as a render does, and return its pixels."""
+    return scene.renderer.render(*scene._get_manager()._frame()).pixels()
 
 
 def _build():
@@ -199,11 +199,11 @@ def _count_drawn_paths(monkeypatch, scene):
 
         monkeypatch.setattr(SnapshotDrawing, "_draw_nodes", draw_nodes)
 
-    update_frame = scene.renderer.update_frame
+    render = scene.renderer.render
 
-    def counting_update_frame(scene_):
+    def counting_render(nodes, config):
         drawn.append(0)
-        update_frame(scene_)
+        return render(nodes, config)
 
-    monkeypatch.setattr(scene.renderer, "update_frame", counting_update_frame)
+    monkeypatch.setattr(scene.renderer, "render", counting_render)
     return drawn

@@ -35,6 +35,8 @@ class RenderSessionSpec:
     dry_run: bool
     frame_rate: float
     video_encoder: VideoEncoderSpec | None
+    pixel_size: tuple[int, int]
+    """The width and height in pixels of the scene's frames."""
 
 
 class _SessionConfigSource(Protocol):
@@ -125,4 +127,5 @@ def resolve_render_session(
         dry_run=dry_run,
         frame_rate=float(config.frame_rate),
         video_encoder=video_encoder,
+        pixel_size=(int(config.pixel_width), int(config.pixel_height)),
     )

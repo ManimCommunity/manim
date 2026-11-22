@@ -35,7 +35,8 @@ def test_native_standalone_resources_are_released(
         with pytest.raises(KeyboardInterrupt) as caught:
             Scene().renderer.open()
         assert caught.value is failure
-        assert len(acquired) == 4
+        # Opening makes only the context; the framebuffer comes with the first frame.
+        assert len(acquired) == 1
         # These are real driver-backed objects, not just release-call spies.
         assert all(
             isinstance(resource.mglo, moderngl.InvalidObject) for resource in acquired

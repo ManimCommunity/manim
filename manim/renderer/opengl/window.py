@@ -127,6 +127,38 @@ class Window(PygletWindow):
     def _activate_context(self) -> None:
         _activate_pyglet_context(self._window.context)
 
+    def show(self, framebuffer: Any) -> None:
+        """Copy the picture of ``framebuffer`` into the window, scaled to fill it,
+        and show it.
+        """
+        size = self.fbo.size
+        if size == framebuffer.size:
+            self.ctx.copy_framebuffer(self.fbo, framebuffer)
+        else:
+            self._blit(framebuffer, size)
+        # Swap with the window's own framebuffer bound: copy_framebuffer leaves
+        # the source bound, and macOS then shows nothing.
+        self.fbo.use()
+        self.swap_buffers()
+
+    def _blit(self, framebuffer: Any, size: tuple[int, int]) -> None:
+        source_width, source_height = framebuffer.size
+        gl.glBindFramebuffer(gl.GL_READ_FRAMEBUFFER, framebuffer.glo)
+        gl.glBindFramebuffer(gl.GL_DRAW_FRAMEBUFFER, self.fbo.glo)
+        gl.glBlitFramebuffer(
+            0,
+            0,
+            source_width,
+            source_height,
+            0,
+            0,
+            size[0],
+            size[1],
+            gl.GL_COLOR_BUFFER_BIT,
+            gl.GL_LINEAR,
+        )
+        gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, 0)
+
     # Delegate event handling to scene.
     def on_mouse_motion(self, x: int, y: int, dx: int, dy: int) -> None:
         super().on_mouse_motion(x, y, dx, dy)

@@ -24,7 +24,7 @@ def test_background_color(config, using_opengl_renderer, dry_run):
     scene = _SquareScene()
     with scene._get_manager():
         scene.render()
-        frame = scene.renderer.get_frame()
+        frame = np.asarray(scene.get_image())
     np.testing.assert_allclose(frame[0, 0], [255, 255, 255, 255])
 
 

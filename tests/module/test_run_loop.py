@@ -85,7 +85,7 @@ def test_the_final_state_is_drawn_after_a_skipped_render(tmp_path):
         drawn = Moves(skip_animations=True)
         with drawn._get_manager():
             drawn.render()
-            image = drawn.renderer.get_frame().copy()
+            image = np.asarray(drawn.get_image())
         expected = Moves()
         with expected._get_manager():
             expected.render()

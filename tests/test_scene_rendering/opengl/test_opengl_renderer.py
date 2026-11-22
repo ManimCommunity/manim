@@ -18,7 +18,6 @@ def test_file_output_disables_window(
     """File output should disable the window by default."""
     scene = SquareToCircle()
     renderer = scene.renderer
-    renderer.update_frame = Mock(wraps=renderer.update_frame)
     scene.render()
     assert renderer.window is None
     assert_file_exists(renderer.file_writer.final_file_path)
@@ -34,7 +33,6 @@ def test_live_preview_opengl_render_with_movies(
     """Live preview can be displayed while movie output is enabled."""
     scene = SquareToCircle()
     renderer = scene.renderer
-    renderer.update_frame = Mock(wraps=renderer.update_frame)
     with scene._get_manager():
         scene.render()
         assert renderer.window is not None
@@ -53,7 +51,6 @@ def test_live_preview_opengl_render_with_image_sequence(
     """Live preview can be displayed while an image sequence is written."""
     scene = SquareToCircle()
     renderer = scene.renderer
-    renderer.update_frame = Mock(wraps=renderer.update_frame)
     with scene._get_manager():
         scene.render()
         assert renderer.window is not None
@@ -69,8 +66,7 @@ def test_get_frame_with_live_preview_disabled(config, using_opengl_renderer):
     assert not config.live_preview
 
     renderer = scene.renderer
-    renderer.update_frame(scene)
-    frame = renderer.get_frame()
+    frame = renderer.render(*scene._get_manager()._frame()).pixels()
 
     # height and width are flipped
     assert renderer.get_pixel_shape()[0] == frame.shape[1]
@@ -93,8 +89,7 @@ def test_get_frame_with_live_preview_enabled(config, using_opengl_renderer):
     renderer.open()
     assert renderer.window is not None
     assert not renderer.file_writer.output_spec.enabled
-    renderer.update_frame(scene)
-    frame = renderer.get_frame()
+    frame = renderer.render(*scene._get_manager()._frame()).pixels()
 
     # height and width are flipped
     assert renderer.get_pixel_shape()[0] == frame.shape[1]
@@ -107,6 +102,7 @@ def test_get_frame_with_live_preview_enabled(config, using_opengl_renderer):
         image = scene.get_image()
         assert image.size == renderer.get_pixel_shape()
         assert not np.array_equal(image, frame)
+        # The image is drawn apart: the framebuffer still holds the frame.
         np.testing.assert_array_equal(renderer.get_frame(), frame)
         assert renderer.animation_elapsed_time == elapsed
     finally:
@@ -123,7 +119,7 @@ def test_render_without_frame_output_skips_gpu_readback(
     renderer = scene.renderer
     renderer.get_frame = Mock(wraps=renderer.get_frame)
 
-    renderer.render(scene, 0)
+    renderer.render(*scene._get_manager()._frame())
 
     renderer.get_frame.assert_not_called()
 
@@ -135,12 +131,12 @@ def test_pixel_coords_to_space_coords(config, using_opengl_renderer):
     assert isinstance(scene.renderer, OpenGLRenderer)
 
     renderer = scene.renderer
-    renderer.update_frame(scene)
+    renderer.render(*scene._get_manager()._frame())
 
     px, py = 3, 2
     pw, ph = renderer.get_pixel_shape()
-    fh = renderer.camera.frame_height
-    fc = renderer.camera.frame_center
+    fh = scene.camera.frame_height
+    fc = scene.camera.frame_center
 
     ex = fc[0] + (fh / ph) * (px - pw / 2)
     ey = fc[1] + (fh / ph) * (py - ph / 2)

@@ -6,7 +6,10 @@ from __future__ import annotations
 
 __all__ = [
     "CameraState",
+    "CameraView",
     "CapabilityError",
+    "Frame",
+    "PixelFrame",
     "RenderConfig",
     "Renderer",
     "RendererCapabilities",
@@ -15,12 +18,14 @@ __all__ = [
 
 import enum
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, ClassVar, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, ClassVar, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     import numpy as np
 
-    from manim.scene.scene import Scene
+    from manim.renderer.snapshot import RNode
     from manim.typing import Point3D, RGBAPixelArray
     from manim.utils.color import ManimColor
 
@@ -66,6 +71,21 @@ class CameraState:
 
 
 @dataclass(frozen=True, slots=True, eq=False)
+class CameraView:
+    """What one camera view (an :class:`.ImageMobjectFromCamera`) shows in a frame.
+
+    The renderer draws :attr:`nodes` as :attr:`config` sets them up, and shows the
+    picture on the frame's node with :attr:`uid` (an :class:`.RCameraView`), and on
+    the copies of that node, which have the same :attr:`camera_id`.
+    """
+
+    uid: int
+    camera_id: int
+    config: RenderConfig
+    nodes: Sequence[RNode]
+
+
+@dataclass(frozen=True, slots=True, eq=False)
 class RenderConfig:
     """What a renderer is given next to the render snapshots of one frame."""
 
@@ -74,8 +94,54 @@ class RenderConfig:
     background_color: ManimColor
     background_opacity: float
     camera: CameraState
+    reference_pixel_size: tuple[int, int]
+    """The pixel size of the scene's frames. Widths given in pixels, such as the
+    thickness of point clouds, are meant at this size: a camera view, which has
+    fewer pixels, draws them thinner, as they appear in the frame."""
     background_image: str | None = None
     """An image file shown behind everything, scaled to the frame (Cairo only)."""
+    camera_views: tuple[CameraView, ...] = ()
+    """The camera views of the frame, drawn before it. They have no views."""
+
+
+@runtime_checkable
+class Frame(Protocol):
+    """A frame a renderer drew, where the renderer keeps it (for example on the
+    GPU) until someone asks for its pixels.
+
+    A preview shows a frame without reading it back; the pixels are read the first
+    time :meth:`pixels` is called. :meth:`pixels` can be called until the renderer
+    draws its next frame or closes; the array it returns belongs to the caller and
+    stays valid and unchanged for as long as the caller keeps it.
+    """
+
+    @property
+    def size(self) -> tuple[int, int]:
+        """The width and height of the frame in pixels."""
+        ...
+
+    def pixels(self) -> RGBAPixelArray:
+        """The frame as RGBA pixels, row zero at the top; the same array on every
+        call.
+        """
+        ...
+
+
+class PixelFrame:
+    """A :class:`Frame` whose pixels are already in memory, owned by the frame."""
+
+    __slots__ = ("_pixels",)
+
+    def __init__(self, pixels: RGBAPixelArray) -> None:
+        self._pixels = pixels
+
+    @property
+    def size(self) -> tuple[int, int]:
+        height, width = self._pixels.shape[:2]
+        return width, height
+
+    def pixels(self) -> RGBAPixelArray:
+        return self._pixels
 
 
 class RendererState(enum.Enum):
@@ -114,11 +180,15 @@ class RendererCapabilities:
 
 @runtime_checkable
 class Renderer(Protocol):
-    """What the Manager requires of every renderer, beyond drawing.
+    """Draws frames: render snapshots and a :class:`RenderConfig` in, a
+    :class:`Frame` out.
 
-    A renderer declares its optional features and reports where it is in its
-    life; the Manager opens it before a run and closes it afterwards, and reads
-    nothing else of it.
+    A renderer never reads a scene, a mobject or a camera: the Manager's
+    :class:`.FrameBuilder` makes what it is given. It may keep what it built
+    between frames, keyed by :attr:`.RNode.key`.
+
+    Besides drawing, a renderer declares its optional features and reports where
+    it is in its life; the Manager opens it before a run and closes it afterwards.
     """
 
     capabilities: ClassVar[RendererCapabilities]
@@ -132,27 +202,10 @@ class Renderer(Protocol):
         """Acquire the drawing resources, if not done yet."""
         ...
 
+    def render(self, nodes: Sequence[RNode], config: RenderConfig, /) -> Frame:
+        """Draw ``nodes`` in order, as ``config`` sets them up; return the frame."""
+        ...
+
     def close(self) -> None:
         """Release the drawing resources; the renderer does not draw afterwards."""
         ...
-
-
-class _AnimationRenderer(Protocol):
-    """Draw frames and display them in a preview window at Manager's request.
-
-    Manager prepares animations, checks the cache, advances animation time, and
-    sends frames to the writer. The renderer prepares its drawing resources and
-    uses wall-clock time to pace its live preview.
-    """
-
-    def _animation_cache_identity(self, scene: Scene) -> tuple[str, Any]: ...
-
-    def _start_animation(self) -> None: ...
-
-    def render(self, scene: Scene, frame_offset: float, /) -> None: ...
-
-    def get_frame(self) -> RGBAPixelArray: ...
-
-    def _present_frame(self, scene: Scene, frame_offset: float) -> None: ...
-
-    def _present_frozen_frame(self, scene: Scene, duration: float) -> None: ...

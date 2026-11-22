@@ -11,28 +11,34 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from manim._config import config
-from manim.appearance.material import UnlitMaterial
 from manim.constants import CapStyleType, LineJointType
 from manim.renderer._lighting import AMBIENT, Light, shade
 from manim.renderer._mesh import face_colors, face_normals, face_outlines, faces_of
 from manim.renderer._view import eye
-from manim.renderer.snapshot import RMesh, RNode, RPath, RSolidColor, RStroke
+from manim.renderer.snapshot import (
+    STROKE_WIDTH_UNIT,
+    RMesh,
+    RNode,
+    RPath,
+    RSolidColor,
+    RStroke,
+)
 
 if TYPE_CHECKING:
     from manim.renderer.protocol import CameraState
 
 __all__ = ["mesh_faces"]
 
-#: Scene units per unit of stroke width.
-#: Points of a face's outline closer than this are taken as the same point, as
-#: for vectorized mobjects (``tolerance_for_point_equality``).
-_FACE_TOLERANCE = 1e-6
 _UNLIT = UnlitMaterial()
 
 
-def mesh_faces(node: RNode, camera: CameraState) -> list[RNode]:
+def mesh_faces(
+    node: RNode, camera: CameraState, reference_pixel_size: tuple[int, int]
+) -> list[RNode]:
     """Path snapshots for the faces of a mesh node, from far to near.
+
+    Seams between faces are closed with outlines a pixel wide at
+    ``reference_pixel_size`` (see :attr:`.RenderConfig.reference_pixel_size`).
 
     Each face node is keyed by the mesh node's key and the face's index, or has no key
     if the mesh has none.
@@ -67,7 +73,7 @@ def mesh_faces(node: RNode, camera: CameraState) -> list[RNode]:
     # Without outlines, neighboring faces leave a seam where their antialiased edges
     # meet; opaque faces are outlined in their own color, a pixel wide, to close it.
     seam = (
-        config.frame_width / config.pixel_width / MESH_STROKE_WIDTH_UNIT
+        camera.default_frame_width / reference_pixel_size[0] / STROKE_WIDTH_UNIT
         if mesh.stroke_width == 0
         else None
     )

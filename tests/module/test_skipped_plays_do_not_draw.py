@@ -11,7 +11,7 @@ from manim import (
     tempconfig,
 )
 
-RASTER_CALLS = ("render", "get_frame", "_start_animation", "_present_frozen_frame")
+RASTER_CALLS = ("render", "_image", "_start_animation", "_present_frozen_frame")
 
 
 @pytest.fixture(params=["cairo", "opengl"])

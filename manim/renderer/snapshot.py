@@ -78,8 +78,13 @@ __all__ = [
     "RPath",
     "RPoints",
     "RSolidColor",
+    "STROKE_WIDTH_UNIT",
     "RStroke",
 ]
+
+#: Scene units per unit of a snapshot's ``stroke_width``, on every renderer (the
+#: OpenGL stroke shader has the same value as ``STROKE_WIDTH_CONVERSION``).
+STROKE_WIDTH_UNIT = 0.01
 
 
 # Paints: how an area or a line is colored.
