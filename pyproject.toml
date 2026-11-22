@@ -98,6 +98,7 @@ docs = [
     "sphinx>=7.4.7",
     "sphinx-copybutton>=0.5.2",
     "sphinx-design>=0.6.1",
+    "sphinx-inline-tabs>=2025.12.21.14",
     "sphinx-reredirects>=0.1.5",
     "sphinxcontrib-programoutput>=0.18",
     "sphinxext-opengraph>=0.9.1",
