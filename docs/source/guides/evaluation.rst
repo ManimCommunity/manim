@@ -98,9 +98,8 @@ Limits
 
 * During evaluation, ``scene.renderer.file_writer``, a nested render of the same
   scene, and interactive preview raise an error.
-* Ordinary Cairo and OpenGL mobjects whose state is computed in Python can be
-  evaluated. Raw GPU-backed meshes are unsupported, and shader-only visual effects
-  cannot be inspected through Python mobject state.
+* Every mobject can be evaluated: its state is computed in Python on both
+  renderers.
 * **This is not a sandbox.** The scene's Python code runs as usual and can read
   or write files, start processes, or render other scenes. Use OS-level
   sandboxing to run untrusted code.

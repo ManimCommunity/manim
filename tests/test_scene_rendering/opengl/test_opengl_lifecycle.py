@@ -5,9 +5,8 @@ from unittest.mock import Mock
 import moderngl
 import numpy as np
 import pytest
-from PIL import Image
 
-from manim import BLUE, RED, Scene, Square, tempconfig
+from manim import BLUE, RED, ImageMobject, Scene, Square, tempconfig
 from manim.renderer.opengl.shader import shader_program_cache
 from manim.renderer.protocol import RendererState
 
@@ -52,11 +51,12 @@ def test_scene_construction_and_cold_close_open_nothing(scene_factory, monkeypat
 
 
 def test_render_opens_before_setup_and_close_retires_real_objects(
-    scene_factory, monkeypatch, tmp_path
+    scene_factory, monkeypatch
 ):
     scene = scene_factory()
     renderer = scene.renderer
-    scene.add(Square(fill_opacity=1))
+    # The image's texture is a resource of the renderer.
+    scene.add(Square(fill_opacity=1), ImageMobject(np.full((4, 4, 4), 255, np.uint8)))
 
     def setup():
         assert renderer._context is not None
@@ -65,11 +65,11 @@ def test_render_opens_before_setup_and_close_retires_real_objects(
     monkeypatch.setattr(scene, "setup", setup)
     with scene._get_manager():
         scene.render()
-        image_path = tmp_path / "texture.png"
-        Image.new("RGBA", (4, 4), "red").save(image_path)
-        renderer.get_texture_id(str(image_path))
+        # The final state is drawn when it is read.
+        renderer.get_frame()
         context = renderer.context
         frame = renderer.frame_buffer_object
+        textures = renderer._snapshot_drawing._textures
         program = context.program(
             vertex_shader="#version 330\nvoid main(){gl_Position=vec4(0);}",
             fragment_shader="#version 330\nout vec4 color;void main(){color=vec4(1);}",
@@ -83,16 +83,16 @@ def test_render_opens_before_setup_and_close_retires_real_objects(
             *frame.color_attachments,
             frame.depth_attachment,
             program,
-            *renderer._textures,
+            *(texture for _, texture in textures._current.values()),
         ]
+        assert textures._current
     assert all(
         isinstance(resource.mglo, moderngl.InvalidObject) for resource in resources
     )
     assert "lifecycle-owned" not in shader_program_cache
     unrelated.release.assert_not_called()
     assert renderer._context is None
-    assert renderer._textures == []
-    assert renderer.path_to_texture_id == {}
+    assert not textures._current
     with pytest.raises(RuntimeError, match="closed"):
         renderer.open()
 

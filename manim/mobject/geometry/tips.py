@@ -20,7 +20,6 @@ import numpy as np
 from manim.constants import *
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square, Triangle
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.utils.space_ops import angle_of_vector
 
@@ -28,7 +27,7 @@ if TYPE_CHECKING:
     from manim.typing import Point3D, Vector3D
 
 
-class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
+class ArrowTip(VMobject):
     r"""Base class for arrow tips.
 
     .. seealso::

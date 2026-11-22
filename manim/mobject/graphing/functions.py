@@ -13,7 +13,6 @@ from isosurfaces import plot_isoline
 
 from manim._config import config
 from manim.mobject.graphing.scale import LinearBase, _ScaleBase
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
 
 if TYPE_CHECKING:
@@ -25,7 +24,7 @@ if TYPE_CHECKING:
 from manim.utils.color import PURE_YELLOW
 
 
-class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
+class ParametricFunction(VMobject):
     """A parametric curve.
 
     Parameters
@@ -180,10 +179,6 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
             self.make_smooth()
         return self
 
-    def init_points(self) -> Self:
-        self.generate_points()
-        return self
-
 
 class FunctionGraph(ParametricFunction):
     """A :class:`ParametricFunction` that spans the length of the scene by default.
@@ -238,7 +233,7 @@ class FunctionGraph(ParametricFunction):
         return self.parametric_function(x)
 
 
-class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
+class ImplicitFunction(VMobject):
     def __init__(
         self,
         func: Callable[[float, float], float],
@@ -326,8 +321,4 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
             self.add_points_as_corners(curve[1:])
         if self.use_smoothing:
             self.make_smooth()
-        return self
-
-    def init_points(self) -> Self:
-        self.generate_points()
         return self

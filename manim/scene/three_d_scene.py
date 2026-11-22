@@ -12,7 +12,6 @@ import numpy as np
 
 from manim.mobject.geometry.line import Line
 from manim.mobject.graphing.coordinate_systems import ThreeDAxes
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.three_d.three_dimensions import Sphere
 from manim.mobject.value_tracker import ValueTracker
 
@@ -24,22 +23,6 @@ from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..renderer.cairo.camera import ThreeDCamera
 from ..scene.scene import Scene
 from ..utils.config_ops import merge_dicts_recursively
-
-
-def _set_opengl_frame_flags(mobjects: Iterable[Mobject], method: str) -> list[Mobject]:
-    """Set the flag the OpenGL mobject classes still draw with; return the others.
-
-    The camera's fixed-in-frame and fixed-orientation sets hold mobjects of the
-    common classes; the OpenGL mobject classes keep their own uniforms until fixing
-    in frame becomes a field of every mobject.
-    """
-    common = []
-    for mob in mobjects:
-        if isinstance(mob, OpenGLMobject):
-            getattr(mob, method)()
-        else:
-            common.append(mob)
-    return common
 
 
 class ThreeDScene(Scene):
@@ -307,8 +290,7 @@ class ThreeDScene(Scene):
         """
         if isinstance(self.camera, ThreeDCamera):
             self.add(*mobjects)
-            common = _set_opengl_frame_flags(mobjects, "fix_orientation")
-            self.camera.add_fixed_orientation_mobjects(*common, **kwargs)
+            self.camera.add_fixed_orientation_mobjects(*mobjects, **kwargs)
 
     def add_fixed_in_frame_mobjects(self, *mobjects: Mobject):
         """
@@ -324,8 +306,7 @@ class ThreeDScene(Scene):
         """
         if isinstance(self.camera, ThreeDCamera):
             self.add(*mobjects)
-            common = _set_opengl_frame_flags(mobjects, "fix_in_frame")
-            self.camera.add_fixed_in_frame_mobjects(*common)
+            self.camera.add_fixed_in_frame_mobjects(*mobjects)
 
     def remove_fixed_orientation_mobjects(self, *mobjects: Mobject):
         """
@@ -340,8 +321,7 @@ class ThreeDScene(Scene):
             The Mobjects whose orientation must be unfixed.
         """
         if isinstance(self.camera, ThreeDCamera):
-            common = _set_opengl_frame_flags(mobjects, "unfix_orientation")
-            self.camera.remove_fixed_orientation_mobjects(*common)
+            self.camera.remove_fixed_orientation_mobjects(*mobjects)
 
     def remove_fixed_in_frame_mobjects(self, *mobjects: Mobject):
         """
@@ -355,8 +335,7 @@ class ThreeDScene(Scene):
             The Mobjects whose position and orientation must be unfixed.
         """
         if isinstance(self.camera, ThreeDCamera):
-            common = _set_opengl_frame_flags(mobjects, "unfix_from_frame")
-            self.camera.remove_fixed_in_frame_mobjects(*common)
+            self.camera.remove_fixed_in_frame_mobjects(*mobjects)
 
     ##
     def set_to_default_angled_camera_orientation(self, **kwargs):

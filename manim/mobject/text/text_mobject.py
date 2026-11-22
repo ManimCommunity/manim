@@ -70,7 +70,6 @@ from manimpango import MarkupUtils, PangoUtils, TextSetting
 from manim._config import config, logger
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
-from manim.mobject.opengl.opengl_compatibility import uses_opengl_mobjects
 from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.typing import Point3D
@@ -572,30 +571,16 @@ class Text(SVGMobject):
             # new numpy arrays every time a point or fixing line
             # is added (which is O(n^2) for numpy arrays).
             closed_curve_points: list[Point3D] = []
-            # OpenGL has points be part of quadratic Bezier curves;
-            # Cairo uses cubic Bezier curves.
-            if nppc == 3:  # RendererType.OPENGL
 
-                def add_line_to(end: Point3D) -> None:
-                    nonlocal closed_curve_points
-                    start = closed_curve_points[-1]
-                    closed_curve_points += [
-                        start,
-                        (start + end) / 2,
-                        end,
-                    ]
-
-            else:  # RendererType.CAIRO
-
-                def add_line_to(end: Point3D) -> None:
-                    nonlocal closed_curve_points
-                    start = closed_curve_points[-1]
-                    closed_curve_points += [
-                        start,
-                        (start + start + end) / 3,
-                        (start + end + end) / 3,
-                        end,
-                    ]
+            def add_line_to(end: Point3D) -> None:
+                nonlocal closed_curve_points
+                start = closed_curve_points[-1]
+                closed_curve_points += [
+                    start,
+                    (start + start + end) / 3,
+                    (start + end + end) / 3,
+                    end,
+                ]
 
             for index, point in enumerate(points):
                 closed_curve_points.append(point)
@@ -868,10 +853,7 @@ class Text(SVGMobject):
         return svg_file
 
     def init_colors(self, propagate_colors: bool = True) -> Self:
-        if uses_opengl_mobjects():
-            super().init_colors()
-        elif not uses_opengl_mobjects():
-            super().init_colors(propagate_colors=propagate_colors)
+        super().init_colors(propagate_colors=propagate_colors)
         return self
 
 
@@ -1282,30 +1264,16 @@ class MarkupText(SVGMobject):
             # new numpy arrays every time a point or fixing line
             # is added (which is O(n^2) for numpy arrays).
             closed_curve_points: list[Point3D] = []
-            # OpenGL has points be part of quadratic Bezier curves;
-            # Cairo uses cubic Bezier curves.
-            if nppc == 3:  # RendererType.OPENGL
 
-                def add_line_to(end: Point3D) -> None:
-                    nonlocal closed_curve_points
-                    start = closed_curve_points[-1]
-                    closed_curve_points += [
-                        start,
-                        (start + end) / 2,
-                        end,
-                    ]
-
-            else:  # RendererType.CAIRO
-
-                def add_line_to(end: Point3D) -> None:
-                    nonlocal closed_curve_points
-                    start = closed_curve_points[-1]
-                    closed_curve_points += [
-                        start,
-                        (start + start + end) / 3,
-                        (start + end + end) / 3,
-                        end,
-                    ]
+            def add_line_to(end: Point3D) -> None:
+                nonlocal closed_curve_points
+                start = closed_curve_points[-1]
+                closed_curve_points += [
+                    start,
+                    (start + start + end) / 3,
+                    (start + end + end) / 3,
+                    end,
+                ]
 
             for index, point in enumerate(points):
                 closed_curve_points.append(point)

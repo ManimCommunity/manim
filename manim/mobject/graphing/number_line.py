@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 
 __all__ = ["NumberLine", "UnitInterval"]
 
@@ -668,7 +667,7 @@ class NumberLine(Line):
         :class:`~.VMobject`
             The label.
         """
-        if isinstance(label_tex, (VMobject, OpenGLVMobject)):
+        if isinstance(label_tex, VMobject):
             return label_tex
         if label_constructor is None:
             label_constructor = self.label_constructor

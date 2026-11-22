@@ -9,9 +9,6 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.opengl.opengl_point_cloud_mobject import OpenGLPMobject
-
 from ...constants import *
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
@@ -26,7 +23,7 @@ from ...utils.color import (
     rgba_to_color,
 )
 from ...utils.iterables import stretch_array_to_length
-from ...utils.versioned_fields import Field
+from ...utils.versioned_fields import ArrayField, Field
 
 __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
 
@@ -45,7 +42,7 @@ if TYPE_CHECKING:
     )
 
 
-class PMobject(Mobject, metaclass=ConvertToOpenGL):
+class PMobject(Mobject):
     """A disc made of a cloud of Dots
 
     Examples
@@ -74,6 +71,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
 
     """
 
+    rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
     stroke_width: Field[float] = Field()
 
     def __init__(self, stroke_width: int = DEFAULT_STROKE_WIDTH, **kwargs: Any) -> None:
@@ -254,7 +252,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
 
 
 # TODO, Make the two implementations below non-redundant
-class Mobject1D(PMobject, metaclass=ConvertToOpenGL):
+class Mobject1D(PMobject):
     def __init__(self, density: int = DEFAULT_POINT_DENSITY_1D, **kwargs: Any) -> None:
         self.density = density
         self.epsilon = 1.0 / self.density
@@ -280,7 +278,7 @@ class Mobject1D(PMobject, metaclass=ConvertToOpenGL):
         return self
 
 
-class Mobject2D(PMobject, metaclass=ConvertToOpenGL):
+class Mobject2D(PMobject):
     def __init__(self, density: int = DEFAULT_POINT_DENSITY_2D, **kwargs: Any) -> None:
         self.density = density
         self.epsilon = 1.0 / self.density
@@ -311,10 +309,9 @@ class PGroup(PMobject):
     """
 
     def __init__(self, *pmobs: Any, **kwargs: Any) -> None:
-        if not all(isinstance(m, (PMobject, OpenGLPMobject)) for m in pmobs):
+        if not all(isinstance(m, PMobject) for m in pmobs):
             raise ValueError(
-                "All submobjects must be of type PMobject or OpenGLPMObject"
-                " if using the opengl renderer",
+                "All submobjects must be of type PMobject",
             )
         super().__init__(**kwargs)
         self.add(*pmobs)
@@ -376,11 +373,6 @@ class PointCloudDot(Mobject1D):
         )
         self.shift(center)
 
-    def init_points(self) -> Self:
-        self.reset_points()
-        self.generate_points()
-        return self
-
     def generate_points(self) -> Self:
         self.add_points(
             np.array(
@@ -425,12 +417,6 @@ class Point(PMobject):
     ) -> None:
         self.location = location
         super().__init__(color=color, **kwargs)
-
-    def init_points(self) -> Self:
-        self.reset_points()
-        self.generate_points()
-        self.set_points([self.location])
-        return self
 
     def generate_points(self) -> Self:
         self.add_points(np.array([self.location]))

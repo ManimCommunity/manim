@@ -27,11 +27,6 @@ from manim.mobject.graphing.functions import ImplicitFunction, ParametricFunctio
 from manim.mobject.graphing.number_line import NumberLine
 from manim.mobject.graphing.scale import LinearBase
 from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_compatibility import (
-    ConvertToOpenGL,
-    uses_opengl_mobjects,
-)
-from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.three_d.three_dimensions import Surface
 from manim.mobject.types.vectorized_mobject import (
@@ -790,11 +785,8 @@ class CoordinateSystem:
                             )
                             color_list.append(mob_color)
                             break
-            if uses_opengl_mobjects():
-                graph.set_color(color_list)
-            else:
-                graph.set_stroke(color_list)
-                graph.set_sheen_direction(RIGHT)
+            graph.set_stroke(color_list)
+            graph.set_sheen_direction(RIGHT)
 
         return graph
 
@@ -947,7 +939,7 @@ class CoordinateSystem:
         ) = None,
         colorscale_axis: int = 2,
         **kwargs: Any,
-    ) -> Surface | OpenGLSurface:
+    ) -> Surface:
         """Generates a surface based on a function.
 
         Parameters
@@ -997,30 +989,18 @@ class CoordinateSystem:
                         )
                     self.add(axes, trig_plane)
         """
-        if not uses_opengl_mobjects():
-            surface = Surface(
-                lambda u, v: self.c2p(u, v, function(u, v)),
-                u_range=u_range,
-                v_range=v_range,
-                **kwargs,
-            )
-            if colorscale:
-                surface.set_fill_by_value(
-                    axes=self.copy(),
-                    colorscale=colorscale,
-                    axis=colorscale_axis,
-                )
-        elif uses_opengl_mobjects():
-            surface = OpenGLSurface(
-                lambda u, v: self.c2p(u, v, function(u, v)),
-                u_range=u_range,
-                v_range=v_range,
+        surface = Surface(
+            lambda u, v: self.c2p(u, v, function(u, v)),
+            u_range=u_range,
+            v_range=v_range,
+            **kwargs,
+        )
+        if colorscale:
+            surface.set_fill_by_value(
                 axes=self.copy(),
                 colorscale=colorscale,
-                colorscale_axis=colorscale_axis,
-                **kwargs,
+                axis=colorscale_axis,
             )
-
         return surface
 
     def input_to_graph_point(
@@ -1876,7 +1856,7 @@ class CoordinateSystem:
     def _origin_shift(axis_range: Sequence[float]) -> float: ...
 
 
-class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
+class Axes(VGroup, CoordinateSystem):
     """Creates a set of axes.
 
     Parameters
@@ -2454,7 +2434,7 @@ class ThreeDAxes(Axes):
         z_axis_config: dict[str, Any] | None = None,
         z_normal: Vector3DLike = DOWN,
         num_axis_pieces: int = 20,
-        # opengl stuff (?)
+        # Unused.
         depth: Any = None,
         **kwargs: dict[str, Any],
     ):
@@ -2507,8 +2487,7 @@ class ThreeDAxes(Axes):
         self.add(z_axis)
         self.z_axis = z_axis
 
-        if not uses_opengl_mobjects():
-            self._add_3d_pieces()
+        self._add_3d_pieces()
 
     def _add_3d_pieces(self) -> None:
         for axis in self.axes:

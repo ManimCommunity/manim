@@ -2,13 +2,9 @@
 
 from __future__ import annotations
 
-from manim.mobject.opengl.opengl_compatibility import uses_opengl_mobjects
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-
 from .._config import logger
 from ..mobject import mobject
 from ..mobject.mobject import Group, Mobject
-from ..mobject.opengl import opengl_mobject
 from ..utils.rate_functions import linear, smooth
 
 __all__ = ["Animation", "Wait", "Add", "override_animation"]
@@ -127,7 +123,7 @@ class Animation:
 
     def __init__(
         self,
-        mobject: Mobject | OpenGLMobject | None,
+        mobject: Mobject | None,
         lag_ratio: float = DEFAULT_ANIMATION_LAG_RATIO,
         run_time: float = DEFAULT_ANIMATION_RUN_TIME,
         rate_func: Callable[[float], float] = smooth,
@@ -150,19 +146,8 @@ class Animation:
         self.suspend_mobject_updating: bool = suspend_mobject_updating
         self.lag_ratio: float = lag_ratio
         self._on_finish: Callable[[Scene], None] = _on_finish
-        # The OpenGL mobject classes need OpenGL placeholders (until they go).
-        if (
-            isinstance(mobject, OpenGLMobject)
-            if mobject is not None
-            else uses_opengl_mobjects()
-        ):
-            self.starting_mobject: OpenGLMobject = OpenGLMobject()
-            self.mobject: OpenGLMobject = (
-                mobject if mobject is not None else OpenGLMobject()
-            )
-        else:
-            self.starting_mobject: Mobject = Mobject()
-            self.mobject: Mobject = mobject if mobject is not None else Mobject()
+        self.starting_mobject: Mobject = Mobject()
+        self.mobject: Mobject = mobject if mobject is not None else Mobject()
 
         if hasattr(self, "CONFIG"):
             logger.error(
@@ -188,7 +173,7 @@ class Animation:
     def _typecheck_input(self, mobject: Mobject | None) -> None:
         if mobject is None:
             logger.debug("Animation with empty mobject")
-        elif not isinstance(mobject, (Mobject, OpenGLMobject)):
+        elif not isinstance(mobject, Mobject):
             raise TypeError("Animation only works on Mobjects")
 
     def __str__(self) -> str:
@@ -265,11 +250,11 @@ class Animation:
         ):
             scene.add(self.mobject)
 
-    def create_starting_mobject(self) -> Mobject | OpenGLMobject:
+    def create_starting_mobject(self) -> Mobject:
         # Keep track of where the mobject starts
         return self.mobject.copy()
 
-    def get_all_mobjects(self) -> Sequence[Mobject | OpenGLMobject]:
+    def get_all_mobjects(self) -> Sequence[Mobject]:
         """Get all mobjects involved in the animation.
 
         Ordering must match the ordering of arguments to interpolate_submobject
@@ -282,10 +267,6 @@ class Animation:
         return self.mobject, self.starting_mobject
 
     def get_all_families_zipped(self) -> Iterable[tuple]:
-        if isinstance(self.mobject, OpenGLMobject):
-            return zip(
-                *(mob.get_family() for mob in self.get_all_mobjects()), strict=False
-            )
         return zip(
             *(mob.family_members_with_points() for mob in self.get_all_mobjects()),
             strict=False,
@@ -546,7 +527,7 @@ class Animation:
 
 
 def prepare_animation(
-    anim: Animation | mobject._AnimationBuilder | opengl_mobject._AnimationBuilder,
+    anim: Animation | mobject._AnimationBuilder,
 ) -> Animation:
     r"""Returns either an unchanged animation, or the animation built
     from a passed animation factory.
@@ -575,9 +556,6 @@ def prepare_animation(
 
     """
     if isinstance(anim, mobject._AnimationBuilder):
-        return anim.build()
-
-    if isinstance(anim, opengl_mobject._AnimationBuilder):
         return anim.build()
 
     if isinstance(anim, Animation):
@@ -624,8 +602,6 @@ class Wait(Animation):
         self.stop_condition = stop_condition
         self.is_static_wait: bool = frozen_frame
         super().__init__(None, run_time=run_time, rate_func=rate_func, **kwargs)
-        # quick fix to work in opengl setting:
-        self.mobject.shader_wrapper_list = []
 
     def begin(self) -> None:
         pass

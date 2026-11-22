@@ -130,7 +130,7 @@ def test_declarations_do_not_open_media_logs_or_decode_audio(
         reject.assert_not_called()
 
 
-@pytest.mark.parametrize("demand", ["writer", "render", "interactive", "mesh"])
+@pytest.mark.parametrize("demand", ["writer", "render", "interactive"])
 def test_unsupported_requests_raise(settings, demand):
     class Unsupported(Scene):
         def construct(self):
@@ -138,8 +138,6 @@ def test_unsupported_requests_raise(settings, demand):
                 self.renderer.file_writer
             elif demand == "interactive":
                 self.interactive_embed()
-            elif demand == "mesh":
-                self.meshes.append(Mock())
             else:
                 self.render()
 

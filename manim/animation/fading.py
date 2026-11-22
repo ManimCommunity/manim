@@ -23,8 +23,6 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-
 from ..animation.transform import Transform
 from ..constants import ORIGIN
 from ..mobject.mobject import Group, Mobject
@@ -66,7 +64,7 @@ class _Fade(Transform):
         self.point_target = False
         if shift is None:
             if target_position is not None:
-                if isinstance(target_position, (Mobject, OpenGLMobject)):
+                if isinstance(target_position, Mobject):
                     target_position = target_position.get_center()
                 shift = target_position - mobject.get_center()
                 self.point_target = True
@@ -89,7 +87,7 @@ class _Fade(Transform):
         Mobject
             The faded, shifted and scaled copy of the mobject.
         """
-        faded_mobject: Mobject = self.mobject.copy()  # type: ignore[assignment]
+        faded_mobject: Mobject = self.mobject.copy()
         faded_mobject.fade(1)
         direction_modifier = -1 if fadeIn and not self.point_target else 1
         faded_mobject.shift(self.shift_vector * direction_modifier)
@@ -139,7 +137,7 @@ class FadeIn(_Fade):
         super().__init__(*mobjects, introducer=True, **kwargs)
 
     def create_target(self) -> Mobject:
-        return self.mobject  # type: ignore[return-value]
+        return self.mobject
 
     def create_starting_mobject(self) -> Mobject:
         return self._create_faded_mobject(fadeIn=True)

@@ -22,7 +22,6 @@ import numpy as np
 
 from manim.constants import DEGREES, RIGHT
 from manim.mobject.mobject import Mobject
-from manim.opengl import OpenGLMobject
 from manim.utils.space_ops import normalize
 
 if TYPE_CHECKING:
@@ -35,7 +34,7 @@ M = TypeVar("M", bound=Mobject)
 def assert_is_mobject_method(method: Callable) -> None:
     assert inspect.ismethod(method)
     mobject = method.__self__
-    assert isinstance(mobject, (Mobject, OpenGLMobject))
+    assert isinstance(mobject, Mobject)
 
 
 def always(method: Callable, *args, **kwargs) -> Mobject:

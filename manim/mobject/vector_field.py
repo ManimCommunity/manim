@@ -21,7 +21,6 @@ from PIL import Image
 from manim.animation.updaters.update import UpdateFromAlphaFunc
 from manim.mobject.geometry.line import Vector
 from manim.mobject.graphing.coordinate_systems import CoordinateSystem
-from manim.mobject.opengl.opengl_compatibility import uses_opengl_mobjects
 
 from .._config import config
 from ..animation.composition import AnimationGroup, Succession
@@ -875,12 +874,6 @@ class StreamLines(VectorField):
         max_steps = ceil(virtual_time / dt) + 1
         if not self.single_color:
             self.background_img = self.get_colored_background_image()
-            if uses_opengl_mobjects():
-                self.values_to_rgbas = self.get_vectorized_rgba_gradient_function(
-                    min_color_scheme_value,
-                    max_color_scheme_value,
-                    colors,
-                )
         for point in start_points:
             points = [point]
             for _ in range(max_steps):
@@ -901,24 +894,13 @@ class StreamLines(VectorField):
                     color=self.color, width=self.stroke_width, opacity=opacity
                 )
             else:
-                if uses_opengl_mobjects():
-                    # scaled for compatibility with cairo
-                    line.set_stroke(width=self.stroke_width / 4.0)
-                    norms = np.array(
-                        [np.linalg.norm(self.func(point)) for point in line.points],
-                    )
-                    line.set_rgba_array_direct(
-                        self.values_to_rgbas(norms, opacity),
-                        name="stroke_rgba",
+                if np.any(self.z_range != np.array([0, 0.5, 0.5])):
+                    line.set_stroke(
+                        [self.pos_to_color(p) for p in line.get_anchors()],
                     )
                 else:
-                    if np.any(self.z_range != np.array([0, 0.5, 0.5])):
-                        line.set_stroke(
-                            [self.pos_to_color(p) for p in line.get_anchors()],
-                        )
-                    else:
-                        line.color_using_background_image(self.background_img)
-                    line.set_stroke(width=self.stroke_width, opacity=opacity)
+                    line.color_using_background_image(self.background_img)
+                line.set_stroke(width=self.stroke_width, opacity=opacity)
             self.add(line)
         self.stream_lines = [
             line for line in self.submobjects if isinstance(line, StreamLine)
@@ -1037,7 +1019,6 @@ class StreamLines(VectorField):
             line.time = random.random() * self.virtual_time
             if warm_up:
                 line.time *= -1
-            # error: Argument 1 to "add" of "VGroup" has incompatible type "OpenGLMobject"; expected "VMobject | Iterable[VMobject]"  [arg-type]
             self.add(anim.mobject)  # type: ignore[arg-type]
 
         def updater(mob: Mobject, dt: float) -> object:
@@ -1103,8 +1084,7 @@ class StreamLines(VectorField):
             line.time += dt * self.flow_speed
             line.anim.interpolate(min(line.time / line.anim.run_time, 1))
             if alpha == 1:
-                # error: Argument 1 to "remove" of "Mobject" has incompatible type "OpenGLMobject"; expected "Mobject"  [arg-type]
-                self.remove(line.anim.mobject)  # type: ignore[arg-type]
+                self.remove(line.anim.mobject)
                 line.anim.finish()
 
         max_run_time = self.virtual_time / self.flow_speed
@@ -1139,8 +1119,7 @@ class StreamLines(VectorField):
                         create,
                     ),
                 )
-                # error: Argument 1 to "remove" of "Mobject" has incompatible type "OpenGLMobject"; expected "Mobject"  [arg-type]
-                self.remove(line.anim.mobject)  # type: ignore[arg-type]
+                self.remove(line.anim.mobject)
                 line.anim.finish()
             else:
                 remaining_time = max_run_time - line.time / self.flow_speed

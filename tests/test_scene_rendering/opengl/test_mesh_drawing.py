@@ -73,7 +73,7 @@ def _sphere(radius=2, **kwargs):
     )
 
 
-def test_texture_is_drawn_like_an_image(opengl_common_mobjects):
+def test_texture_is_drawn_like_an_image(using_opengl_renderer):
     # u runs left to right across the image, v from its bottom to its top.
     texture = np.zeros((40, 60, 4), dtype=np.uint8)
     texture[..., 0] = np.linspace(0, 255, 60)[None, :]
@@ -91,7 +91,7 @@ def test_texture_is_drawn_like_an_image(opengl_common_mobjects):
     assert np.abs(surface - image).mean() < 0.01
 
 
-def test_opaque_meshes_hide_what_is_behind_them(opengl_common_mobjects):
+def test_opaque_meshes_hide_what_is_behind_them(using_opengl_renderer):
     front = _plane(1, PURE_RED)
     back = _plane(-1, PURE_BLUE)
 
@@ -100,7 +100,7 @@ def test_opaque_meshes_hide_what_is_behind_them(opengl_common_mobjects):
     np.testing.assert_allclose(_pixel(pixels, 0, 0), [1, 0, 0])
 
 
-def test_translucent_meshes_show_only_their_front_layer(opengl_common_mobjects):
+def test_translucent_meshes_show_only_their_front_layer(using_opengl_renderer):
     sphere = _sphere(opacity=0.5, material=Unlit())
     top = sphere.points[:, 2] > 0
     rgbas = np.zeros((len(top), 4))
@@ -112,7 +112,7 @@ def test_translucent_meshes_show_only_their_front_layer(opengl_common_mobjects):
     np.testing.assert_allclose(_pixel(pixels, 0.5, 0.5), [0.5, 0, 0], atol=0.01)
 
 
-def test_meshes_are_lit_from_the_light_source(opengl_common_mobjects):
+def test_meshes_are_lit_from_the_light_source(using_opengl_renderer):
     pixels, camera = _image(
         "opengl",
         lambda: [_sphere(material=Pbr(roughness=1))],
@@ -129,7 +129,7 @@ def test_meshes_are_lit_from_the_light_source(opengl_common_mobjects):
     assert lit.sum() > 1.3 * unlit.sum()
 
 
-def test_meshes_fixed_in_frame_ignore_the_camera(opengl_common_mobjects):
+def test_meshes_fixed_in_frame_ignore_the_camera(using_opengl_renderer):
     plane = _plane(0, PURE_RED).fix_in_frame()
 
     pixels, _ = _image("opengl", lambda: [plane], ThreeDScene, phi=80 * DEGREES)
@@ -137,13 +137,13 @@ def test_meshes_fixed_in_frame_ignore_the_camera(opengl_common_mobjects):
     np.testing.assert_allclose(_pixel(pixels, 2.5, 1.5), [1, 0, 0])
 
 
-def test_meshes_are_not_lit_under_a_flat_camera(opengl_common_mobjects):
+def test_meshes_are_not_lit_under_a_flat_camera(using_opengl_renderer):
     pixels, _ = _image("opengl", lambda: [_sphere(color=PURE_RED)])
 
     np.testing.assert_allclose(_pixel(pixels, 0, 0), [1, 0, 0], atol=0.01)
 
 
-def test_the_mesh_shader_shades_as_the_lighting_function(opengl_common_mobjects):
+def test_the_mesh_shader_shades_as_the_lighting_function(using_opengl_renderer):
     from manim.renderer._lighting import AMBIENT, Light, shade
 
     material = Pbr(roughness=0.4, metallic=0.3)
@@ -176,7 +176,7 @@ def test_the_mesh_shader_shades_as_the_lighting_function(opengl_common_mobjects)
 
 
 def test_the_mesh_shader_draws_the_highlight_of_the_lighting_function(
-    opengl_common_mobjects,
+    using_opengl_renderer,
 ):
     from manim.renderer._lighting import AMBIENT, Light, shade
 
@@ -209,7 +209,7 @@ def test_the_mesh_shader_draws_the_highlight_of_the_lighting_function(
     np.testing.assert_allclose(drawn, expected, atol=0.03)
 
 
-def test_rough_meshes_have_no_holes_on_their_dark_side(opengl_common_mobjects):
+def test_rough_meshes_have_no_holes_on_their_dark_side(using_opengl_renderer):
     # At roughness 1 the highlight's exponent is 0; pow(0, 0) is undefined in GLSL
     # and was black on some drivers where the surface turns away from the light.
     pixels, camera = _image(

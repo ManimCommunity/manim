@@ -34,7 +34,6 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 
 from manim.data_structures import MethodWithArgs
-from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
 
 from ..animation.animation import Animation
 from ..constants import (
@@ -203,13 +202,10 @@ class Transform(Animation):
         self.target_copy = self.target_mobject.copy()
         # Note, this potentially changes the structure
         # of both mobject and target_mobject
-        if isinstance(self.mobject, OpenGLMobject):
-            self.mobject.align_data_and_family(self.target_copy)
-        else:
-            self.mobject.align_data(self.target_copy)
+        self.mobject.align_data(self.target_copy)
         super().begin()
 
-    def create_target(self) -> Mobject | OpenGLMobject:
+    def create_target(self) -> Mobject:
         # Has no meaningful effect here, but may be useful
         # in subclasses
         return self.target_mobject
@@ -233,8 +229,6 @@ class Transform(Animation):
             self.starting_mobject,
             self.target_copy,
         ]
-        if isinstance(self.mobject, OpenGLMobject):
-            return zip(*(mob.get_family() for mob in mobs), strict=True)
         return zip(*(mob.family_members_with_points() for mob in mobs), strict=True)
 
     def interpolate_submobject(
@@ -482,7 +476,7 @@ class ApplyMethod(Transform):
                 "Whoops, looks like you accidentally invoked "
                 "the method you want to animate",
             )
-        assert isinstance(method.__self__, (Mobject, OpenGLMobject))
+        assert isinstance(method.__self__, Mobject)
 
     def create_target(self) -> Mobject:
         method = self.method
@@ -626,7 +620,7 @@ class ApplyFunction(Transform):
 
     def create_target(self) -> Any:
         target = self.function(self.mobject.copy())
-        if not isinstance(target, (Mobject, OpenGLMobject)):
+        if not isinstance(target, Mobject):
             raise TypeError(
                 "Functions passed to ApplyFunction must return object of type Mobject",
             )
@@ -863,10 +857,7 @@ class FadeTransform(Transform):
         self.stretch = stretch
         self.dim_to_match = dim_to_match
         mobject.save_state()
-        if isinstance(mobject, OpenGLMobject):
-            group = OpenGLGroup(mobject, target_mobject.copy())
-        else:
-            group = Group(mobject, target_mobject.copy())
+        group = Group(mobject, target_mobject.copy())
         super().__init__(group, **kwargs)
 
     def begin(self):

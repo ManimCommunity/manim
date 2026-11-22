@@ -97,15 +97,6 @@ _derived_attribute_cache: weakref.WeakKeyDictionary[type, frozenset[str]] = (
 )
 
 
-def invalidate_derived_attribute_names() -> None:
-    """Forget the collected names, so that they are collected again.
-
-    :meth:`ManimConfig.renderer` calls this after it changes the base classes of
-    mobject classes, because the names of their subclasses can change too.
-    """
-    _derived_attribute_cache.clear()
-
-
 def _derived_attribute_names(klass: type) -> frozenset[str]:
     """Return the attribute names of a class that the cache key leaves out.
 
@@ -118,9 +109,7 @@ def _derived_attribute_names(klass: type) -> frozenset[str]:
     - every :class:`functools.cached_property`;
     - every name listed in ``_hash_excluded_attributes``.
 
-    The result is kept per class until :func:`invalidate_derived_attribute_names`
-    clears it. Changing ``config.renderer`` does this, because it changes the base
-    classes of existing mobject classes.
+    The result is memoized per class.
     """
     cached = _derived_attribute_cache.get(klass)
     if cached is not None:

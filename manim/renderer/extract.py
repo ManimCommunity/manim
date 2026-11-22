@@ -161,8 +161,7 @@ def _key(
     """
     if (
         not mobject._drawn_from_fields
-        # Point clouds: their colors are not a field yet.
-        or isinstance(payload, (RCameraView, RPoints))
+        or isinstance(payload, RCameraView)
         # An image object can change without being assigned again.
         or (
             isinstance(payload, RPath)

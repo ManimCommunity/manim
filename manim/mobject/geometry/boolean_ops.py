@@ -8,10 +8,6 @@ import numpy as np
 from pathops import Path as SkiaPath
 from pathops import PathVerb, difference, intersection, union, xor
 
-from manim.mobject.opengl.opengl_compatibility import (
-    ConvertToOpenGL,
-    uses_opengl_mobjects,
-)
 from manim.mobject.types.vectorized_mobject import VMobject
 
 if TYPE_CHECKING:
@@ -21,7 +17,7 @@ if TYPE_CHECKING:
 __all__ = ["Union", "Intersection", "Difference", "Exclusion"]
 
 
-class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
+class _BooleanOps(VMobject):
     """This class contains some helper functions which
     helps to convert to and from skia objects and manim
     objects (:class:`~.VMobject`).
@@ -85,28 +81,14 @@ class _BooleanOps(VMobject, metaclass=ConvertToOpenGL):
         if len(points) == 0:  # what? No points so return empty path
             return path
 
-        # In OpenGL it's quadratic beizer curves while on Cairo it's cubic...
-        if uses_opengl_mobjects():
-            subpaths = vmobject.get_subpaths_from_points(points)
-            for subpath in subpaths:
-                quads = vmobject.get_bezier_tuples_from_points(subpath)
-                start = subpath[0]
-                path.moveTo(*start[:2])
-                for _p0, p1, p2 in quads:
-                    path.quadTo(*p1[:2], *p2[:2])
-                if vmobject.consider_points_equals(subpath[0], subpath[-1]):
-                    path.close()
-        elif not uses_opengl_mobjects():
-            subpaths = vmobject.gen_subpaths_from_points_2d(points)  # type: ignore[assignment]
-            for subpath in subpaths:
-                quads = vmobject.gen_cubic_bezier_tuples_from_points(subpath)
-                start = subpath[0]
-                path.moveTo(*start[:2])
-                for _p0, p1, p2, p3 in quads:
-                    path.cubicTo(*p1[:2], *p2[:2], *p3[:2])
-
-                if vmobject.consider_points_equals_2d(subpath[0], subpath[-1]):
-                    path.close()
+        for subpath in vmobject.gen_subpaths_from_points_2d(points):
+            path.moveTo(*subpath[0][:2])
+            for _p0, p1, p2, p3 in vmobject.gen_cubic_bezier_tuples_from_points(
+                subpath
+            ):
+                path.cubicTo(*p1[:2], *p2[:2], *p3[:2])
+            if vmobject.consider_points_equals_2d(subpath[0], subpath[-1]):
+                path.close()
 
         return path
 

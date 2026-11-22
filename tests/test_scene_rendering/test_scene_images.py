@@ -90,35 +90,6 @@ def test_cairo_snapshot_camera_and_nested_view_parity(scene_class):
 
 
 @pytest.mark.parametrize("image_scene", ["opengl"], indirect=True)
-def test_opengl_snapshot_includes_meshes(image_scene):
-    from manim.renderer.opengl.shader import Mesh, Shader
-
-    shader = Shader(
-        image_scene.renderer.context,
-        source={
-            "vertex_shader": """
-            #version 330
-            in vec3 point;
-            void main() { gl_Position = vec4(point, 1.0); }
-        """,
-            "fragment_shader": """
-            #version 330
-            out vec4 color;
-            void main() { color = vec4(1.0, 0.0, 0.0, 1.0); }
-        """,
-        },
-    )
-    attributes = np.zeros(3, dtype=[("point", np.float32, (3,))])
-    attributes["point"] = [(-0.5, -0.5, 0), (0.5, -0.5, 0), (0, 0.5, 0)]
-    mesh = Mesh(shader=shader, attributes=attributes)
-    image_scene.add(mesh)
-    pixels = np.asarray(image_scene.get_image())
-    np.testing.assert_array_equal(pixels[64, 64, :3], [255, 0, 0])
-    image_scene.renderer.update_frame(image_scene)
-    np.testing.assert_array_equal(pixels, image_scene.renderer.get_frame())
-
-
-@pytest.mark.parametrize("image_scene", ["opengl"], indirect=True)
 def test_opengl_snapshot_requires_owner_thread(image_scene):
     image_scene.renderer.open()
     with ThreadPoolExecutor(1) as pool:

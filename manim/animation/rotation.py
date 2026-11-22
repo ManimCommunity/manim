@@ -14,7 +14,6 @@ from ..utils.rate_functions import linear
 
 if TYPE_CHECKING:
     from ..mobject.mobject import Mobject
-    from ..mobject.opengl.opengl_mobject import OpenGLMobject
     from ..typing import Point3DLike, Vector3DLike
 
 
@@ -173,7 +172,7 @@ class Rotate(Transform):
             self.about_point = mobject.get_center()
         super().__init__(mobject, path_arc_centers=self.about_point, **kwargs)
 
-    def create_target(self) -> Mobject | OpenGLMobject:
+    def create_target(self) -> Mobject:
         target = self.mobject.copy()
         target.rotate(
             self.angle,
