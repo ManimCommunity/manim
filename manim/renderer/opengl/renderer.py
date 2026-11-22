@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import contextlib
-import dataclasses
 import threading
-import time
 import typing
 import weakref
 from typing import TYPE_CHECKING, Any
@@ -12,12 +10,17 @@ import moderngl
 import numpy as np
 from moderngl import Framebuffer
 
-from manim._config import config, logger
+from manim._config import logger
 from manim.typing import Point3D
 
 from ...constants import *
 from .. import _view as _views
-from ..protocol import RenderConfig, RendererCapabilities, RendererState
+from ..protocol import (
+    PreviewRequest,
+    RenderConfig,
+    RendererCapabilities,
+    RendererState,
+)
 from ._drawing import DrawTarget, SnapshotDrawing
 from .shader import shader_program_cache
 from .window_settings import _WindowSettings
@@ -25,13 +28,11 @@ from .window_settings import _WindowSettings
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator, Sequence
 
-    from manim._config.render_session import RenderSessionSpec
-    from manim.scene.scene import Scene
     from manim.typing import (
         RGBAPixelArray,
     )
 
-    from ..protocol import CameraState
+    from ..protocol import CameraState, Frame
     from ..snapshot import RNode
     from .window import Window
 
@@ -41,19 +42,12 @@ __all__ = ["OpenGLRenderer"]
 _active_context = threading.local()
 
 
-@dataclasses.dataclass(frozen=True)
-class _SceneSettings:
-    """What an OpenGL renderer shows a scene with, saved when it is bound to it."""
-
-    #: The preview window to open, if any.
-    window: _WindowSettings | None
-
-
 class OpenGLRenderer:
     """A renderer drawing with OpenGL, which can show frames in a preview window.
 
-    Frames are drawn offscreen at the size their :class:`.RenderConfig` asks for; a
-    preview window shows the last one, scaled to the window.
+    Frames are drawn offscreen at the size their :class:`.RenderConfig` asks for. A
+    renderer given a preview request has a :attr:`preview` handle, whose window
+    shows frames scaled to it.
 
     Parameters
     ----------
@@ -64,16 +58,10 @@ class OpenGLRenderer:
 
     Attributes
     ----------
-    animation_elapsed_time : float
-        The elapsed time of the current animation.
-    animation_start_time : float
-        The start time of the current animation.
     anti_alias_width : float
         The width used for anti-aliasing in pixel units.
-    pressed_keys : set[int]
-        Set of currently pressed key codes.
     window : Window | None
-        The window used for previewing, if any.
+        The native preview window while it is open.
     """
 
     capabilities = RendererCapabilities(live_preview=True)
@@ -88,16 +76,14 @@ class OpenGLRenderer:
         # Measured in pixel widths, used for vector graphics
         self.anti_alias_width = anti_alias_width
 
-        self.animation_start_time = 0.0
-        self.animation_elapsed_time = 0.0
-
         self.perspective_uniforms: dict[str, Any] = {}
         # Set for each frame by _set_view.
         self.camera_view: _CameraView
         self._camera_state: CameraState
         self._snapshot_drawing = SnapshotDrawing(self)
         self._camera_view_targets: dict[int, _ViewTarget] = {}
-        self.pressed_keys: set[int] = set()
+        #: The preview handle; ``None`` if no preview was requested.
+        self.preview: _WindowPreview | None = None
         self.window: Window | None = None
         self._context: moderngl.Context | None = None
         self._frame_buffer_object: Framebuffer | None = None
@@ -113,49 +99,26 @@ class OpenGLRenderer:
         self._resources = contextlib.ExitStack()
         self._previous_renderer: weakref.ReferenceType[OpenGLRenderer] | None = None
 
-    def init_scene(
-        self,
-        scene: Scene,
-        session_spec: RenderSessionSpec,
+    def _request_preview(
+        self, request: PreviewRequest | None, settings: _WindowSettings | None
     ) -> None:
-        """
-        Attach a scene and save its pixel dimensions and preview-window settings.
+        """Give the renderer a preview window to open, with its settings.
 
-        :meth:`open` uses these settings to create the OpenGL context and
-        framebuffer. The manager calls it before the scene's ``setup()`` method;
-        an explicit request for GPU resources, such as :attr:`context`, opens
-        them sooner.
-
-        Parameters
-        ----------
-        scene : Scene
-            The scene to be rendered
+        Provisional: the Scene calls it once after creating the renderer, until
+        renderers are created by factories that pass the request.
         """
         self._ensure_not_closed()
-        self._bind(
-            scene,
-            _SceneSettings(
-                window=(
-                    _WindowSettings.from_config(config)
-                    if self.should_create_window(session_spec)
-                    else None
-                ),
-            ),
-        )
-
-    def _bind(self, scene: Scene, settings: _SceneSettings) -> None:
-        self.partial_movie_files: list[str | None] = []
-        self.scene = scene
-        self._settings = settings
+        if request is None or settings is None:
+            self.preview = None
+        else:
+            self.preview = _WindowPreview(self, request, settings)
 
     @classmethod
     def _image_renderer(cls, of: OpenGLRenderer) -> OpenGLRenderer:
-        """An offscreen renderer drawing images of ``of``'s scene as ``of`` would:
-        the same options and settings, but no window.
+        """An offscreen renderer drawing images as ``of`` would: the same options,
+        but no window.
         """
-        renderer = cls(wireframe=of.wireframe, anti_alias_width=of.anti_alias_width)
-        renderer._bind(of.scene, dataclasses.replace(of._settings, window=None))
-        return renderer
+        return cls(wireframe=of.wireframe, anti_alias_width=of.anti_alias_width)
 
     @property
     def state(self) -> RendererState:
@@ -185,17 +148,20 @@ class OpenGLRenderer:
                 )
             self._activate_context()
             return
-        if not hasattr(self, "scene"):
-            raise RuntimeError("Bind an OpenGL scene before opening its resources.")
         previous = getattr(_active_context, "renderer", None)
         resources = contextlib.ExitStack()
         try:
             window = None
-            if self._settings.window is not None:
+            if self.preview is not None:
                 # local import: pyglet/screeninfo only needed for preview window
                 from .window import Window
 
-                window = Window(self, _settings=self._settings.window)
+                preview = self.preview
+                window = Window(
+                    preview.request.input,
+                    to_scene=preview._scene_point,
+                    _settings=preview.settings,
+                )
                 resources.callback(window.close)
                 # Closing the window also releases its context.
                 context = window.ctx
@@ -323,7 +289,8 @@ class OpenGLRenderer:
             self._resources.pop_all()
             if self.window is not None and self.window._window.context is not None:
                 release(self.window.close)
-        self.pressed_keys.clear()
+        if self.preview is not None:
+            self.preview._pressed_keys.clear()
         self._resources = contextlib.ExitStack()
         host_still_alive = (
             not isinstance(self._context.mglo, moderngl.InvalidObject)
@@ -363,10 +330,6 @@ class OpenGLRenderer:
             and (prior.window is None or prior.window._window.context is not None)
         ):
             prior.open()
-
-    def should_create_window(self, session_spec: RenderSessionSpec) -> bool:
-        """Return whether the scene's saved settings request a live-preview window."""
-        return session_spec.presentation.live_preview
 
     def get_pixel_shape(self) -> tuple[int, int] | None:
         """
@@ -425,7 +388,6 @@ class OpenGLRenderer:
         """
         self._draw(nodes, config)
         self._frames_drawn += 1
-        self.animation_elapsed_time = time.time() - self.animation_start_time
         return _GLFrame(
             self, self._frames_drawn, (config.pixel_width, config.pixel_height)
         )
@@ -499,30 +461,6 @@ class OpenGLRenderer:
 
     def _start_animation(self) -> None:
         self.open()
-        self.animation_start_time = time.time()
-
-    def _show(self) -> None:
-        """Show the last frame drawn in the preview window, if there is one."""
-        if self.window is not None and self._frame_buffer_object is not None:
-            self.window.show(self._frame_buffer_object)
-            self._activate_context()
-
-    def _present_frozen_frame(self, scene: Scene, duration: float) -> None:
-        if self.window is not None:
-            self._show()
-            while time.time() - self.animation_start_time < duration:
-                pass
-        self.animation_elapsed_time = duration
-
-    def _present_frame(self, scene: Scene, frame_offset: float) -> None:
-        """Show the last frame in the preview window until wall-clock time reaches
-        the frame offset.
-        """
-        if self.window is not None:
-            self._show()
-            while self.animation_elapsed_time < frame_offset:
-                self._show()
-                self.animation_elapsed_time = time.time() - self.animation_start_time
 
     @contextlib.contextmanager
     def _scene_images(self) -> Iterator[None]:
@@ -727,68 +665,6 @@ class OpenGLRenderer:
         np_buf = np.frombuffer(raw, dtype="uint8").reshape(result_dimensions)
         return np.flipud(np_buf).copy()
 
-    # Returns offset from the bottom left corner in pixels.
-    # top_left flag should be set to True when using a GUI framework
-    # where the (0,0) is at the top left: e.g. PySide6
-    def pixel_coords_to_space_coords(
-        self, px: float, py: float, relative: bool = False, top_left: bool = False
-    ) -> Point3D:
-        """
-        Converts pixel coordinates to space (scene) coordinates.
-
-        top_left flag should be set to True when using a GUI framework
-        where the (0,0) is at the top left: e.g. PySide6.
-
-        Parameters
-        ----------
-        px : float
-            The x-coordinate in pixel space.
-        py : float
-            The y-coordinate in pixel space.
-        relative : bool, optional
-            If True, returns coordinates relative to the frame (normalized to [-1, 1]).
-            If False, returns absolute space coordinates. Default is False.
-        top_left : bool, optional
-            If True, treats the origin (0, 0) as the top-left corner of the pixel space.
-            If False, treats the origin as the bottom-left. Default is False.
-
-        Returns
-        -------
-        Point3D
-            The corresponding coordinates in space as a NumPy array of shape (3,).
-
-        Notes
-        -----
-        If the pixel shape is not available, returns the origin [0, 0, 0].
-        """
-        # Window positions are measured in the window, which shows the frame scaled.
-        pixel_shape = (
-            tuple(self.window.size)
-            if self.window is not None
-            else self.get_pixel_shape()
-        )
-        if pixel_shape is None:
-            return typing.cast(Point3D, np.array([0.0, 0.0, 0.0]))
-        pixel_width, pixel_height = pixel_shape
-        view = _CameraView.of(self.scene.camera._state())
-        frame_height = view.frame_shape[1]
-        frame_center = view.center
-        if relative:
-            # relative -> just normalize to [-1, 1]
-            return 2 * np.array([px / pixel_width, py / pixel_height, 0])
-
-        scale = frame_height / pixel_height
-        y_direction = -1 if top_left else 1
-
-        return typing.cast(
-            Point3D,
-            frame_center
-            + scale
-            * np.array(
-                [(px - pixel_width / 2), y_direction * (py - pixel_height / 2), 0.0]
-            ),
-        )
-
 
 #: Focal distance standing in for "no perspective" (a camera without rotation).
 _ORTHOGRAPHIC_FOCAL_DISTANCE = 1e6
@@ -851,6 +727,68 @@ class _ViewTarget:
         for resource in (self.framebuffer, self.texture):
             if not isinstance(resource.mglo, moderngl.InvalidObject):
                 resource.release()
+
+
+class _WindowPreview:
+    """The preview handle of an OpenGL renderer: the window opens with the
+    renderer's context (on :meth:`show`, or with the first frame) and closes with
+    the renderer.
+    """
+
+    def __init__(
+        self,
+        renderer: OpenGLRenderer,
+        request: PreviewRequest,
+        settings: _WindowSettings,
+    ) -> None:
+        self._renderer = renderer
+        self.request = request
+        self.settings = settings
+        self._pressed_keys: set[int] = set()
+
+    @property
+    def is_closing(self) -> bool:
+        window = self._renderer.window
+        return window is not None and bool(window.is_closing)
+
+    @property
+    def pressed_keys(self) -> set[int]:
+        window = self._renderer.window
+        return window.pressed_keys if window is not None else self._pressed_keys
+
+    def show(self) -> None:
+        self._renderer.open()
+
+    def present(self, frame: Frame) -> None:
+        """Show ``frame``, the last frame the renderer drew, in the window.
+
+        The window's context is made current first: another renderer's drawing,
+        such as an image's, may have left its own context current.
+        """
+        renderer = self._renderer
+        if not isinstance(frame, _GLFrame) or frame._renderer is not renderer:
+            raise ValueError("A preview shows frames of its own renderer.")
+        if frame._index != renderer._frames_drawn:
+            raise RuntimeError("The renderer drew another frame since this one.")
+        renderer.open()
+        window = renderer.window
+        assert window is not None
+        assert renderer._frame_buffer_object is not None
+        window.show(renderer._frame_buffer_object)
+
+    def _scene_point(self, x: float, y: float, relative: bool) -> Point3D:
+        """The scene point at a window position given as fractions of its width and
+        height from the bottom left; with ``relative``, the scene offset of a move
+        by those fractions.
+        """
+        view = _CameraView.of(self.request.view())
+        width, height = view.frame_shape
+        offset = np.array([x * width, y * height, 0.0])
+        if relative:
+            return typing.cast(Point3D, offset)
+        return typing.cast(
+            Point3D, view.center + offset - np.array([width / 2, height / 2, 0.0])
+        )
 
 
 class _GLFrame:

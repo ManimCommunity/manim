@@ -62,6 +62,8 @@ from ..manager import Manager
 from ..mobject.types.point_cloud_mobject import Point
 from ..renderer.cairo import CairoRenderer
 from ..renderer.opengl.renderer import OpenGLRenderer
+from ..renderer.opengl.window_settings import _WindowSettings
+from ..renderer.protocol import PreviewRequest
 from ..scene.scene_file_writer import _SceneFileWriterSettings
 from ..utils.deprecation import deprecated
 from ..utils.exceptions import RerunSceneException
@@ -74,6 +76,7 @@ if TYPE_CHECKING:
 
     from PIL.Image import Image
 
+    from manim.renderer.protocol import Preview
     from manim.typing import Point3D
 
     SceneInteractAction: TypeAlias = (
@@ -279,8 +282,13 @@ class Scene:
             raise RuntimeError("This renderer is already bound to a Scene.")
         self._renderer._scene_bound = True
         if isinstance(self._renderer, OpenGLRenderer):
-            # The preview window shows this scene and sends it input.
-            self._renderer.init_scene(self, self.session_spec)
+            # The preview window shows this scene as its camera sees it and sends
+            # it input.
+            live = self.session_spec.presentation.live_preview
+            self._renderer._request_preview(
+                PreviewRequest(self, lambda: self.camera._state()) if live else None,
+                _WindowSettings.from_config(config) if live else None,
+            )
 
         self.mobjects: list[Mobject] = []
         # TODO, remove need for foreground mobjects
@@ -1254,8 +1262,13 @@ class Scene:
             and self.animations[0].is_static_wait
         )
 
+    def _preview(self) -> Preview | None:
+        """The preview handle of the scene's manager (``None`` without a live
+        preview).
+        """
+        return self._get_manager().preview
+
     def check_interactive_embed_is_valid(self) -> bool:
-        assert isinstance(self.renderer, OpenGLRenderer)
         if self.skip_animation_preview:
             logger.warning(
                 "Disabling interactive embed as 'skip_animation_preview' is enabled",
@@ -1266,7 +1279,7 @@ class Scene:
                 "Disabling interactive embed while media output is enabled",
             )
             return False
-        elif not self.renderer.window:
+        elif self._preview() is None:
             logger.warning("Disabling interactive embed as no window was created")
             return False
         elif config.dry_run:
@@ -1278,7 +1291,6 @@ class Scene:
         """Like embed(), but allows for screen interaction."""
         if self.manager is not None:
             self.manager._mode.check("Interactive preview")
-        assert isinstance(self.renderer, OpenGLRenderer)
         if not self.check_interactive_embed_is_valid():
             return
         self.interactive_mode = True
@@ -1361,7 +1373,6 @@ class Scene:
     def interact(self, shell: Any, keyboard_thread: threading.Thread) -> None:
         if self.manager is not None:
             self.manager._mode.check("Interactive preview")
-        assert isinstance(self.renderer, OpenGLRenderer)
         event_handler = RerunSceneHandler(self.queue)
         file_observer = Observer()
         file_observer.schedule(event_handler, config.input_file, recursive=True)
@@ -1372,9 +1383,9 @@ class Scene:
         assert self.queue.qsize() == 0
 
         last_time = time.time()
+        preview = self._preview()
         while not (
-            (self.renderer.window is not None and self.renderer.window.is_closing)
-            or self.quit_interaction
+            (preview is not None and preview.is_closing) or self.quit_interaction
         ):
             if not self.queue.empty():
                 action = self.queue.get_nowait()
@@ -1414,7 +1425,6 @@ class Scene:
                 else:
                     action.method(*action.args, **action.kwargs)
             else:
-                self.renderer.animation_start_time = 0
                 dt = time.time() - last_time
                 last_time = time.time()
                 self._get_manager()._render_preview_frame(dt)
@@ -1435,13 +1445,13 @@ class Scene:
         if self.dearpygui_imported and config.enable_gui:
             dpg.stop_dearpygui()
 
-        if self.renderer.window is not None and self.renderer.window.is_closing:
-            self.renderer.window.destroy()
+        if preview is not None and preview.is_closing:
+            # The user closed the window: release it and the renderer now.
+            self.renderer.close()
 
     def embed(self) -> None:
         if self.manager is not None:
             self.manager._mode.check("Interactive preview")
-        assert isinstance(self.renderer, OpenGLRenderer)
         if not self.session_spec.presentation.live_preview:
             logger.warning("Called embed() while no live preview window is available.")
             return
@@ -1449,7 +1459,6 @@ class Scene:
             logger.warning("embed() is skipped while writing to a file.")
             return
 
-        self.renderer.animation_start_time = 0
         self._get_manager()._render_preview_frame(-1)
 
         # Configure IPython shell.
@@ -1667,9 +1676,9 @@ class Scene:
         self._get_manager().add_sound(sound_file, time_offset, gain, gain_to_background)
 
     def on_mouse_motion(self, point: Point3D, d_point: Point3D) -> None:
-        assert isinstance(self.renderer, OpenGLRenderer)
         self.mouse_point.move_to(point)
-        if SHIFT_VALUE in self.renderer.pressed_keys:
+        preview = self._preview()
+        if preview is not None and SHIFT_VALUE in preview.pressed_keys:
             self._pan_camera(d_point)
 
     def on_mouse_scroll(self, point: Point3D, offset: Point3D) -> None:

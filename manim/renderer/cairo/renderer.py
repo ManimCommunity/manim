@@ -14,8 +14,6 @@ from .rendering import _CairoDrawingContext, reusable_boundary
 from .target import _CairoRasterSettings, _CairoRenderTarget, _ImageFiles
 
 if TYPE_CHECKING:
-    from manim.scene.scene import Scene
-
     from ...typing import RGBAPixelArray
     from ..snapshot import RCameraView, RNode
 
@@ -44,6 +42,8 @@ class CairoRenderer:
         self._saved_pixels: RGBAPixelArray | None = None
         #: Whether a scene draws with this renderer (one scene per renderer).
         self._scene_bound = False
+        #: Cairo has no preview window.
+        self.preview: None = None
         self._state = RendererState.UNOPENED
 
     @property
@@ -61,12 +61,6 @@ class CairoRenderer:
 
     def _start_animation(self) -> None:
         self._ensure_open()
-
-    def _present_frame(self, scene: Scene, frame_offset: float) -> None:
-        pass
-
-    def _present_frozen_frame(self, scene: Scene, duration: float) -> None:
-        pass
 
     def render(self, nodes: Sequence[RNode], config: RenderConfig, /) -> PixelFrame:
         """Draw ``nodes`` as ``config`` sets them up; return the frame, with a copy

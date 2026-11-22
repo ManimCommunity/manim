@@ -94,7 +94,7 @@ def test_the_final_state_is_drawn_after_a_skipped_render(tmp_path):
 
 
 def test_each_frame_is_drawn_once_for_all_listeners(tmp_path):
-    with tempconfig({**SETTINGS, "media_dir": str(tmp_path)}):
+    with tempconfig({**SETTINGS, "format": "png_sequence", "media_dir": str(tmp_path)}):
         scene = Stateful()
         scene.skip_intro = False
         with patch.object(
@@ -103,6 +103,17 @@ def test_each_frame_is_drawn_once_for_all_listeners(tmp_path):
             Manager(scene).render()
     # 1 s + 0.5 s + 1 s at 4 fps; the encoder and the preview share each drawing.
     assert render.call_count == 4 + 2 + 4
+
+
+def test_frames_are_not_drawn_when_nothing_takes_them(tmp_path):
+    with tempconfig({**SETTINGS, "media_dir": str(tmp_path)}):
+        scene = Stateful()
+        scene.skip_intro = False
+        with patch.object(
+            CairoRenderer, "render", autospec=True, side_effect=CairoRenderer.render
+        ) as render:
+            Manager(scene).render()
+    render.assert_not_called()
 
 
 def test_a_failed_play_closes_its_progress_bar(tmp_path):

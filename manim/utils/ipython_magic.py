@@ -138,7 +138,7 @@ else:
                 if config.renderer == RendererType.OPENGL:
                     from manim.renderer.opengl import OpenGLRenderer
 
-                    renderer = OpenGLRenderer()
+                    renderer = OpenGLRenderer(wireframe=config.enable_wireframe)
 
                 try:
                     SceneClass = local_ns[config["scene_names"][0]]
@@ -148,10 +148,10 @@ else:
                     # Shader cache becomes invalid as the context is destroyed
                     shader_program_cache.clear()
 
-                    # Close OpenGL window here instead of waiting for the main thread to
-                    # finish causing the window to stay open and freeze
-                    if renderer is not None and renderer.window is not None:
-                        renderer.window.close()
+                    # Close the OpenGL window here instead of waiting for the main
+                    # thread to finish, which leaves the window open and frozen.
+                    if renderer is not None:
+                        renderer.close()
 
                 output_file = getattr(
                     scene._get_manager().file_writer,

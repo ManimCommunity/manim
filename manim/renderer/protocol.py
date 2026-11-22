@@ -10,6 +10,10 @@ __all__ = [
     "CapabilityError",
     "Frame",
     "PixelFrame",
+    "Preview",
+    "PreviewInput",
+    "PreviewRenderer",
+    "PreviewRequest",
     "RenderConfig",
     "Renderer",
     "RendererCapabilities",
@@ -21,7 +25,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, ClassVar, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Callable, Collection, Sequence
 
     import numpy as np
 
@@ -208,4 +212,71 @@ class Renderer(Protocol):
 
     def close(self) -> None:
         """Release the drawing resources; the renderer does not draw afterwards."""
+        ...
+
+
+class PreviewInput(Protocol):
+    """What a preview window sends its input to (a :class:`.Scene` is one): mouse
+    positions and offsets as scene points, keys as pyglet key codes.
+    """
+
+    def on_mouse_motion(self, point: Point3D, d_point: Point3D) -> None: ...
+
+    def on_mouse_scroll(self, point: Point3D, offset: Point3D) -> None: ...
+
+    def on_key_press(self, symbol: int, modifiers: int) -> None: ...
+
+    def on_key_release(self, symbol: int, modifiers: int) -> None: ...
+
+    def on_mouse_drag(
+        self, point: Point3D, d_point: Point3D, buttons: int, modifiers: int
+    ) -> None: ...
+
+    def on_mouse_press(self, point: Point3D, button: str, modifiers: int) -> None: ...
+
+
+@dataclass(frozen=True, slots=True)
+class PreviewRequest:
+    """A request for a preview window, given to a renderer when it is created."""
+
+    input: PreviewInput
+    """Where the window sends its input."""
+    view: Callable[[], CameraState]
+    """The camera state window positions are mapped to scene points with."""
+
+
+@runtime_checkable
+class Preview(Protocol):
+    """The handle of a requested preview window.
+
+    The window opens on :meth:`show` or with the renderer's first frame,
+    whichever comes first; the renderer's ``close()`` closes it.
+    """
+
+    @property
+    def is_closing(self) -> bool:
+        """Whether the user asked the window to close."""
+        ...
+
+    @property
+    def pressed_keys(self) -> Collection[int]:
+        """The keys held down in the window now."""
+        ...
+
+    def show(self) -> None:
+        """Open the window if it is not open yet."""
+        ...
+
+    def present(self, frame: Frame) -> None:
+        """Show ``frame``, a frame of the renderer, in the window."""
+        ...
+
+
+@runtime_checkable
+class PreviewRenderer(Renderer, Protocol):
+    """A renderer that can show its frames in a preview window."""
+
+    @property
+    def preview(self) -> Preview | None:
+        """The preview handle; ``None`` if no preview was requested."""
         ...

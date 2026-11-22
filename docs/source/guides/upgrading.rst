@@ -334,3 +334,19 @@ The animation clock and counters belong to the :class:`.Manager`:
 the same names on ``scene.manager``. ``Scene(skip_animations=True)`` now leaves
 plays out with any renderer, and the renderers' ``skip_animations`` argument is
 gone.
+
+Preview window
+~~~~~~~~~~~~~~
+
+- The OpenGL renderer draws every frame offscreen at the scene's size; the
+  preview window shows it, scaled to the window. Movies written while
+  previewing in a window of another size have the scene's size.
+- The preview is reached through a handle: ``scene.manager.preview`` (a
+  :class:`.Preview`, or ``None`` without a live preview) has ``show()``,
+  ``present(frame)``, ``is_closing`` and ``pressed_keys``. The window opens
+  before :meth:`.Scene.setup` when a scene renders with a live preview.
+- ``renderer.pressed_keys``, ``renderer.pixel_coords_to_space_coords()``,
+  ``renderer.animation_start_time`` and ``renderer.animation_elapsed_time``,
+  ``renderer.clear_screen()`` and ``renderer.init_scene()`` are gone; the
+  window maps its positions to scene points itself. ``Scene.get_image()`` and
+  evaluation never open a window.

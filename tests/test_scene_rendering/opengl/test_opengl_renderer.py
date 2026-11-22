@@ -76,37 +76,29 @@ def test_get_frame_with_live_preview_disabled(config, using_opengl_renderer):
 
 
 @pytest.mark.slow
-def test_get_frame_with_live_preview_enabled(config, using_opengl_renderer):
-    """Get frame has the correct dimensions with a live preview."""
+def test_frames_have_the_scene_size_with_a_live_preview(config, using_opengl_renderer):
+    # The window can have any size; frames are drawn offscreen at the scene's.
     config.live_preview = True
+    config.window_size = (100, 300)
 
     scene = SquareToCircle()
-    assert isinstance(scene.renderer, OpenGLRenderer)
-    assert config.live_preview is True
-
     renderer = scene.renderer
-    assert renderer.window is None
-    renderer.open()
-    assert renderer.window is not None
-    assert not scene._get_manager().file_writer.output_spec.enabled
-    frame = renderer.render(*scene._get_manager()._frame()).pixels()
-
-    # height and width are flipped
-    assert renderer.get_pixel_shape()[0] == frame.shape[1]
-    assert renderer.get_pixel_shape()[1] == frame.shape[0]
-    assert frame.dtype == np.uint8
-    assert frame.flags.c_contiguous
+    preview = scene._get_manager().preview
+    preview.show()
     try:
-        elapsed = renderer.animation_elapsed_time
+        assert renderer.window is not None
+        frame = renderer.render(*scene._get_manager()._frame())
+        pixels = frame.pixels()
+        assert pixels.shape == (config.pixel_height, config.pixel_width, 4)
+        preview.present(frame)
         scene.add(Square(fill_opacity=1))
         image = scene.get_image()
-        assert image.size == renderer.get_pixel_shape()
-        assert not np.array_equal(image, frame)
+        assert image.size == (config.pixel_width, config.pixel_height)
+        assert not np.array_equal(image, pixels)
         # The image is drawn apart: the framebuffer still holds the frame.
-        np.testing.assert_array_equal(renderer.get_frame(), frame)
-        assert renderer.animation_elapsed_time == elapsed
+        np.testing.assert_array_equal(renderer.get_frame(), pixels)
     finally:
-        renderer.window.close()
+        renderer.close()
 
 
 def test_render_without_frame_output_skips_gpu_readback(
@@ -124,31 +116,20 @@ def test_render_without_frame_output_skips_gpu_readback(
     renderer.get_frame.assert_not_called()
 
 
-def test_pixel_coords_to_space_coords(config, using_opengl_renderer):
-    config.live_preview = False
-
+def test_window_positions_map_to_scene_points(config, using_opengl_renderer):
+    config.live_preview = True
     scene = SquareToCircle()
-    assert isinstance(scene.renderer, OpenGLRenderer)
+    scene.camera.frame.shift(RIGHT)
+    preview = scene._get_manager().preview
+    width, height = scene.camera.frame_width, scene.camera.frame_height
+    center = scene.camera.frame_center
 
-    renderer = scene.renderer
-    renderer.render(*scene._get_manager()._frame())
-
-    px, py = 3, 2
-    pw, ph = renderer.get_pixel_shape()
-    fh = scene.camera.frame_height
-    fc = scene.camera.frame_center
-
-    ex = fc[0] + (fh / ph) * (px - pw / 2)
-    ey = fc[1] + (fh / ph) * (py - ph / 2)
-    ez = fc[2]
-
-    assert (
-        renderer.pixel_coords_to_space_coords(px, py) == np.array([ex, ey, ez])
-    ).all()
-    assert (
-        renderer.pixel_coords_to_space_coords(px, py, top_left=True)
-        == np.array([ex, -ey, ez])
-    ).all()
+    np.testing.assert_allclose(preview._scene_point(0.5, 0.5, False), center)
+    np.testing.assert_allclose(
+        preview._scene_point(0, 1, False), center + [-width / 2, height / 2, 0]
+    )
+    np.testing.assert_allclose(preview._scene_point(0.25, 0, True), [width / 4, 0, 0])
+    scene.renderer.close()
 
 
 def test_scene_images_are_drawn_with_the_scene_settings(config, using_opengl_renderer):

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import datetime
 import platform
+import time
 from bisect import bisect_right
 from typing import TYPE_CHECKING
 
@@ -90,24 +91,35 @@ class _Encoder(_RunListener):
 
 
 class _Preview(_RunListener):
-    """Draw each frame of the output into the renderer's target and show it.
+    """Show each frame of the output in the preview window, paced by wall-clock
+    time: a frame is shown until its time in the play has passed.
 
-    Only OpenGL shows frames, in its preview window, paced by wall-clock time.
+    Only scenes rendered with a live preview show frames.
     """
 
     def __init__(self, manager: Manager) -> None:
         self._manager = manager
+        self._start = 0.0
+
+    def play_started(self, play: _Play) -> None:
+        self._start = time.monotonic()
 
     def frame(self, frame: _Frame) -> None:
         manager = self._manager
-        scene = manager.scene
-        if not frame.play.drawn or scene.skip_animation_preview:
+        preview = manager.preview
+        if (
+            preview is None
+            or not frame.play.drawn
+            or manager.scene.skip_animation_preview
+        ):
             return
-        frame.drawn()  # the renderer shows the frame drawn last, without reading it
-        if frame.play.frozen:
-            manager.renderer._present_frozen_frame(scene, frame.play.run_time)
-        else:
-            manager.renderer._present_frame(scene, frame.offset)
+        # Shown where the renderer drew it, without reading its pixels back.
+        drawn = frame.drawn()
+        # A frozen frame stays for the whole play; others until the next frame.
+        until = frame.play.run_time if frame.play.frozen else frame.offset
+        preview.present(drawn)
+        while time.monotonic() - self._start < until:
+            preview.present(drawn)
 
 
 class _FrameRequests(_RunListener):

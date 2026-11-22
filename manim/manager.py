@@ -49,7 +49,7 @@ if TYPE_CHECKING:
     from .mobject.mobject import Mobject, _AnimationBuilder
     from .renderer.cairo import CairoRenderer
     from .renderer.opengl.renderer import OpenGLRenderer
-    from .renderer.protocol import RenderConfig
+    from .renderer.protocol import Preview, RenderConfig
     from .renderer.snapshot import RNode
     from .scene.scene import Scene
     from .timeline import Timeline
@@ -311,6 +311,25 @@ class Manager(Generic[SceneT]):
         return self.scene.renderer
 
     @property
+    def preview(self) -> Preview | None:
+        """The handle of the scene's preview window, or ``None`` if the scene has
+        no live preview.
+
+        Raises
+        ------
+        RuntimeError
+            If the session asks for a live preview and the renderer has none.
+        """
+        if not self.session_spec.presentation.live_preview:
+            return None
+        preview: Preview | None = getattr(self.renderer, "preview", None)
+        if preview is None:
+            raise RuntimeError(
+                f"{type(self.renderer).__name__} promised a live preview but has none."
+            )
+        return preview
+
+    @property
     def camera(self) -> Camera:
         """The scene's camera."""
         return self.scene.camera
@@ -469,6 +488,11 @@ class Manager(Generic[SceneT]):
             self._timeline = None
             self._open_log_handler()
             self.renderer.open()
+            # The window is open before setup(), so that an interactive_embed()
+            # without a play finds it.
+            window = self.preview
+            if window is not None:
+                window.show()
             # User setup() code can use the writer.
             self._ensure_file_writer()
             rerun = False
@@ -721,9 +745,9 @@ class Manager(Generic[SceneT]):
 
         Skipped and cached plays do not draw, so the window may not show it yet.
         """
-        if self.session_spec.presentation.live_preview:
-            self.renderer.render(*self._frame())
-            self.renderer._present_frame(self.scene, 0)
+        preview = self.preview
+        if preview is not None:
+            preview.present(self.renderer.render(*self._frame()))
 
     def tear_down(self) -> None:
         """Run the managed scene's :meth:`~manim.scene.scene.Scene.tear_down` hook."""
@@ -902,18 +926,11 @@ class Manager(Generic[SceneT]):
 
     @cached_property
     def _wants_frame_pixels(self) -> bool:
-        """Whether the file writer is given the pixels of drawn frames.
-
-        Reading pixels back is cheap for Cairo, and test writers record them
-        even without file output. OpenGL reads them back only for video and
-        image-sequence output.
+        """Whether the output takes the frames of plays: video and image
+        sequences do; still images and no output do not.
         """
         output = self.output_spec
-        return (
-            isinstance(self.renderer, CairoRenderer)
-            or output.is_video
-            or output.is_image_sequence
-        )
+        return output.is_video or output.is_image_sequence
 
     def _render_preview_frame(self, frame_offset: float) -> None:
         """Draw and show the current state without advancing animation time.
@@ -922,13 +939,14 @@ class Manager(Generic[SceneT]):
         play is skipped, the frame is also passed to the file writer.
         """
         self._validate_execution()
-        scene = self.scene
         frame = self.renderer.render(*self._frame())
         if self.skip_animations:
             return
         if self._wants_frame_pixels:
             self.file_writer.write_frame(frame.pixels())
-        self.renderer._present_frame(scene, frame_offset)
+        preview = self.preview
+        if preview is not None:
+            preview.present(frame)
 
     def next_section(
         self,
