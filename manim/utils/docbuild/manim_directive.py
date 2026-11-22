@@ -17,6 +17,10 @@ Options
 
 ``hide_source``
     Show only the rendered output, not the code.
+``header``
+    The title of the example, ``Example: MyScene`` when omitted. ``None`` or
+    ``False`` leave it out, e.g. when the page already shows a title of its
+    own.
 ``no_autoplay``
     Do not start the video automatically.
 ``quality``
@@ -123,6 +127,7 @@ class ManimDirective(SphinxDirective):
     final_argument_whitespace = True
     option_spec = {
         "hide_source": flag,
+        "header": lambda arg: None if arg == "None" else arg,
         "no_autoplay": flag,
         "quality": lambda arg: choice(
             arg or "",
@@ -186,6 +191,7 @@ class ManimDirective(SphinxDirective):
             code=code,
             references=references,
             hide_source="hide_source" in self.options and uri is not None,
+            header=self.options.get("header", f"Example: {clsname}"),
         )
         self.state_machine.insert_input(
             rst.splitlines(),
@@ -326,7 +332,9 @@ _TEMPLATE = jinja2.Template(
 .. raw:: html
 
     <div id="{{ id }}" class="admonition admonition-manim-example">
-    <p class="admonition-title">Example: {{ clsname }}<a class="headerlink" href="#{{ id }}">¶</a></p>
+{% if header is not none %}
+    <p class="admonition-title">{{ header }}<a class="headerlink" href="#{{ id }}">¶</a></p>
+{% endif %}
 
 {% endif %}
 {% if uri is none %}
