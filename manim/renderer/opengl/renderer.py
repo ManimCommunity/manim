@@ -29,9 +29,9 @@ from manim.utils.opengl import matrix_to_shader_input
 from ...constants import *
 from ...scene.scene_file_writer import SceneFileWriter
 from .._execution import _RendererExecutionView
-from ..cairo.camera import Camera, ThreeDCamera
+from ..cairo.camera import Camera, MultiCamera, ThreeDCamera
 from ..protocol import RendererCapabilities, RendererState
-from .drawing import SnapshotDrawing
+from .drawing import DrawTarget, SnapshotDrawing
 from .shader import Mesh, Shader, shader_program_cache
 from .vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_fill,
@@ -143,6 +143,7 @@ class OpenGLRenderer(_RendererExecutionView):
         self.projection_matrix: tuple[float, ...] = self.view_matrix
         self.camera_view: _CameraView = _CameraView.of(self.camera)
         self._snapshot_drawing = SnapshotDrawing(self)
+        self._camera_view_targets: dict[int, _ViewTarget] = {}
         self.pressed_keys: set[int] = set()
         self.window: Window | None = None
         self.path_to_texture_id: dict[str, int] = {}
@@ -477,20 +478,91 @@ class OpenGLRenderer(_RendererExecutionView):
             raise ValueError(msg)
         _, pixel_height = pixel_shape
         view = self.camera_view = _CameraView.of(camera)
-        frame_width, frame_height = view.frame_shape
-        # TODO, this should probably be a mobject uniform, with
-        # the camera taking care of the conversion factor
-        anti_alias_width = self.anti_alias_width / (pixel_height / frame_height)
-        self.perspective_uniforms = {
+        self.perspective_uniforms = self.camera_uniforms(view, pixel_height)
+        self.view_matrix = matrix_to_shader_input(view.view_matrix())
+        self.projection_matrix = matrix_to_shader_input(view.projection_matrix())
+
+    def camera_uniforms(self, view: _CameraView, pixel_height: int) -> dict[str, Any]:
+        """The shaders' camera uniforms for a view drawn ``pixel_height`` pixels high."""
+        _, frame_height = view.frame_shape
+        return {
             "frame_shape": view.frame_shape,
-            "anti_alias_width": anti_alias_width,
+            # Antialiasing width, measured in pixels, converted to scene units.
+            "anti_alias_width": self.anti_alias_width / (pixel_height / frame_height),
             "camera_center": tuple(view.center),
             "camera_rotation": tuple(view.rotation.T.flatten()),
             "light_source_position": tuple(view.rotation @ view.light_source),
             "focal_distance": view.focal_distance,
         }
-        self.view_matrix = matrix_to_shader_input(view.view_matrix())
-        self.projection_matrix = matrix_to_shader_input(view.projection_matrix())
+
+    def _draw_snapshots(self, scene: Scene) -> None:
+        """Draw the scene's mobjects from render snapshots, camera views first."""
+        mobjects = list_update(scene.mobjects, scene.foreground_mobjects)
+        views = self._draw_camera_views(mobjects)
+        nodes = extract(mobjects, use_z_index=self.camera.use_z_index)
+        pixel_shape = self.get_pixel_shape()
+        assert pixel_shape is not None
+        target = DrawTarget(
+            self.frame_buffer_object,
+            pixel_shape,
+            self.camera,
+            self.camera_view,
+            self.perspective_uniforms,
+        )
+        self._snapshot_drawing.draw(self.camera._sort_for_display(nodes), target, views)
+
+    def _draw_camera_views(self, mobjects: list[Mobject]) -> dict[int, Any]:
+        """Draw what each camera view of a :class:`.MultiCamera` sees into a texture.
+
+        Returns the textures by the uid of their :class:`.ImageMobjectFromCamera`.
+        """
+        if not isinstance(self.camera, MultiCamera):
+            return {}
+        pixel_shape = self.get_pixel_shape()
+        assert pixel_shape is not None
+        textures = {}
+        for image_mobject in self.camera.image_mobjects_from_cameras:
+            size = (
+                max(
+                    1,
+                    int(pixel_shape[0] * image_mobject.width / self.camera.frame_width),
+                ),
+                max(
+                    1,
+                    int(
+                        pixel_shape[1] * image_mobject.height / self.camera.frame_height
+                    ),
+                ),
+            )
+            view_target = self._camera_view_targets.get(image_mobject.uid)
+            if view_target is None or view_target.size != size:
+                if view_target is not None:
+                    view_target.release()
+                view_target = _ViewTarget(self, size)
+                self._camera_view_targets[image_mobject.uid] = view_target
+            camera = image_mobject.camera
+            view = _CameraView.of(camera)
+            target = DrawTarget(
+                view_target.framebuffer,
+                size,
+                camera,
+                view,
+                self.camera_uniforms(view, size[1]),
+            )
+            view_target.framebuffer.use()
+            view_target.framebuffer.clear(
+                *camera.background_color.to_rgb(), camera.background_opacity
+            )
+            nodes = extract(
+                mobjects,
+                use_z_index=camera.use_z_index,
+                excluded_mobjects=[image_mobject],
+            )
+            view_target.drawing.draw(camera._sort_for_display(nodes), target)
+            textures[image_mobject.uid] = view_target.texture
+        for uid in self._camera_view_targets.keys() - textures.keys():
+            self._camera_view_targets.pop(uid).release()
+        return textures
 
     def render_mobject(self, mobject: OpenGLMobject | OpenGLVMobject) -> None:
         """
@@ -769,11 +841,7 @@ class OpenGLRenderer(_RendererExecutionView):
         self.refresh_perspective_uniforms(self.camera)
 
         if not uses_opengl_mobjects():
-            nodes = extract(
-                list_update(scene.mobjects, scene.foreground_mobjects),
-                use_z_index=self.camera.use_z_index,
-            )
-            self._snapshot_drawing.draw(self.camera._sort_for_display(nodes))
+            self._draw_snapshots(scene)
             for obj in scene.meshes:
                 for mesh in obj.get_meshes():
                     mesh.set_uniforms(self)
@@ -1203,3 +1271,23 @@ class _CameraView(typing.NamedTuple):
                 [0, 0, -1 / f, 1],
             ]
         )
+
+
+class _ViewTarget:
+    """An offscreen target for one camera view, with its own drawing state."""
+
+    def __init__(self, renderer: OpenGLRenderer, size: tuple[int, int]) -> None:
+        context = renderer.context
+        self.size = size
+        self.texture = context.texture(size, components=4)
+        self.texture.filter = (moderngl.LINEAR, moderngl.LINEAR)
+        self.framebuffer = context.framebuffer(color_attachments=[self.texture])
+        self.drawing = SnapshotDrawing(renderer)
+        renderer._resources.callback(self.release)
+
+    def release(self) -> None:
+        """Release the GPU objects; safe to call more than once."""
+        self.drawing.release()
+        for resource in (self.framebuffer, self.texture):
+            if not isinstance(resource.mglo, moderngl.InvalidObject):
+                resource.release()

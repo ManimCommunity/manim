@@ -5,6 +5,7 @@ import pytest
 
 from manim import (
     BLUE,
+    DR,
     GREEN,
     LEFT,
     ORANGE,
@@ -12,17 +13,23 @@ from manim import (
     PURE_BLUE,
     PURE_RED,
     RED,
+    RESAMPLING_ALGORITHMS,
     RIGHT,
     UP,
+    YELLOW,
     Annulus,
     Arc,
     Circle,
+    ImageMobject,
     Line,
     MathTex,
+    PMobject,
     Scene,
     Square,
     Text,
+    Triangle,
     VMobject,
+    ZoomedScene,
     tempconfig,
 )
 
@@ -69,6 +76,28 @@ def _thin_lines():
     ]
 
 
+def _point_cloud():
+    cloud = PMobject(stroke_width=6)
+    xs = np.linspace(-5, 5, 60)
+    cloud.add_points(np.c_[xs, np.sin(xs), np.zeros_like(xs)], color=YELLOW)
+    return [cloud]
+
+
+def _images():
+    pixels = np.zeros((8, 12, 4), dtype=np.uint8)
+    pixels[..., 0] = np.linspace(0, 255, 12)[None, :]
+    pixels[..., 2] = np.linspace(255, 0, 8)[:, None]
+    pixels[..., 3] = 255
+    sharp = ImageMobject(pixels).set_resampling_algorithm(
+        RESAMPLING_ALGORITHMS["nearest"]
+    )
+    smooth = ImageMobject(pixels)
+    return [
+        sharp.scale_to_fit_width(5).shift(3 * LEFT),
+        smooth.scale_to_fit_width(5).shift(3 * RIGHT),
+    ]
+
+
 def _overlapping():
     # Drawn one after the other: the blue square must cover the red one.
     return [
@@ -77,13 +106,13 @@ def _overlapping():
     ]
 
 
-def _image(renderer, build):
+def _image(renderer, build, scene_class=Scene):
     with tempconfig(
         {"renderer": renderer, "dry_run": True, "pixel_width": 384, "pixel_height": 216}
     ):
-        scene = Scene()
+        scene = scene_class()
         try:
-            scene.add(*build())
+            scene.add(*build(scene) if scene_class is not Scene else build())
             pixels = np.asarray(scene.get_image().convert("RGB"), dtype=float) / 255
         finally:
             scene.renderer.close()
@@ -101,6 +130,8 @@ def _image(renderer, build):
         _strokes,
         _thin_lines,
         _overlapping,
+        _point_cloud,
+        _images,
     ],
     ids=lambda build: build.__name__.strip("_"),
 )
@@ -112,6 +143,60 @@ def test_drawing_matches_cairo(opengl_common_mobjects, build):
     # Within 5%: sub-pixel lines come out about 4% lighter than Cairo's.
     assert opengl.sum() == pytest.approx(cairo.sum(), rel=0.05)
     assert np.abs(opengl - cairo).mean() < 0.01
+
+
+def _zoomed(scene):
+    scene.setup()
+    scene.zoomed_camera.frame.move_to(2 * LEFT)
+    scene.zoomed_display.to_corner(DR)
+    scene.activate_zooming()
+    # Upright and filled, so that a view drawn upside down cannot match.
+    return [Triangle(fill_opacity=1, stroke_width=0).scale(0.5).move_to(2 * LEFT)]
+
+
+def _zoomed_scene():
+    return ZoomedScene(zoomed_display_height=4, zoomed_display_width=6)
+
+
+def test_camera_views_match_cairo(opengl_common_mobjects):
+    cairo = _image("cairo", _zoomed, _zoomed_scene)
+    opengl = _image("opengl", _zoomed, _zoomed_scene)
+
+    assert opengl.sum() == pytest.approx(cairo.sum(), rel=0.05)
+    assert np.abs(opengl - cairo).mean() < 0.01
+
+
+def test_images_that_compute_their_pixels_are_redrawn(opengl_common_mobjects):
+    from manim.mobject.types.image_mobject import AbstractImageMobject
+
+    class Flashing(AbstractImageMobject):
+        def __init__(self):
+            self.value = 0
+            super().__init__(scale_to_resolution=0)
+
+        def get_pixel_array(self):
+            pixels = np.zeros((4, 4, 4), dtype=np.uint8)
+            pixels[..., self.value] = pixels[..., 3] = 255
+            return pixels
+
+    with tempconfig(
+        {"renderer": "opengl", "dry_run": True, "pixel_width": 64, "pixel_height": 36}
+    ):
+        scene = Scene()
+        image = Flashing().scale(2)
+        scene.add(image)
+        try:
+            # One renderer draws both images, with its texture cache.
+            with scene.renderer._scene_images():
+                red = np.asarray(scene.get_image())[18, 32, :3]
+                image.value = 2
+                blue = np.asarray(scene.get_image())[18, 32, :3]
+        finally:
+            scene.renderer.close()
+    assert red[0] > 200
+    assert red[2] < 50
+    assert blue[2] > 200
+    assert blue[0] < 50
 
 
 @pytest.mark.parametrize("gap", [1.1, 2.2, 2.3, 3.0])

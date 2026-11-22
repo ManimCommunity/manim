@@ -14,21 +14,33 @@ from __future__ import annotations
 
 import math
 from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, NamedTuple, cast
+from typing import TYPE_CHECKING, Any, NamedTuple, cast
 
 import moderngl
 import numpy as np
+from PIL.Image import Resampling
 
+from manim._config import config
 from manim.renderer._paint import paint_colors, shows
-from manim.renderer.snapshot import LegacyShaded, RNode, RPath, RSolid
+from manim.renderer.snapshot import (
+    LegacyShaded,
+    RCameraView,
+    RImage,
+    RNode,
+    RPath,
+    RPoints,
+    RSolid,
+)
 
 from .shader import Shader
 from .winding_fill import WindingFill
 
 if TYPE_CHECKING:
-    from .renderer import OpenGLRenderer
+    from manim.renderer.cairo.camera import Camera
 
-__all__ = ["SnapshotDrawing", "cubics_to_quadratics"]
+    from .renderer import OpenGLRenderer, _CameraView
+
+__all__ = ["DrawTarget", "SnapshotDrawing", "cubics_to_quadratics"]
 
 #: Largest distance, in pixels, between a cubic curve and its quadratic pieces.
 TOLERANCE_PIXELS = 0.1
@@ -44,6 +56,12 @@ _STROKE_DTYPE = [
     ("color", np.float32, (4,)),
 ]
 _STROKE_FORMAT = "3f 3f 3f 3f 1f 4f"
+_POINT_DTYPE = [("point", np.float32, (3,)), ("color", np.float32, (4,))]
+_IMAGE_DTYPE = [("point", np.float32, (3,)), ("uv", np.float32, (2,))]
+# Two triangles over an image's corners, stored as upper left, upper right, lower
+# left, lower right; texture rows start at the top.
+_QUAD_CORNERS = [0, 1, 2, 1, 3, 2]
+_QUAD_UV = np.array([[0, 0], [1, 0], [0, 1], [1, 0], [1, 1], [0, 1]], dtype=np.float32)
 
 
 def cubics_to_quadratics(points: np.ndarray, tolerance: float) -> np.ndarray:
@@ -247,6 +265,18 @@ def vertex_colors(
     return rgbas[low] * (1 - frac) + rgbas[low + 1] * frac
 
 
+class DrawTarget(NamedTuple):
+    """Where and from which camera to draw."""
+
+    framebuffer: moderngl.Framebuffer
+    #: Width and height in pixels.
+    size: tuple[int, int]
+    camera: Camera
+    view: _CameraView
+    #: Camera uniforms of the shaders (see ``OpenGLRenderer.camera_uniforms``).
+    uniforms: dict[str, Any]
+
+
 class _Group(NamedTuple):
     nodes: list[RNode]
     geometry: list[_Geometry]
@@ -267,11 +297,9 @@ class _Screen(NamedTuple):
     size: np.ndarray
 
     @classmethod
-    def of(cls, renderer: OpenGLRenderer) -> _Screen:
-        view = renderer.camera_view
-        pixel_shape = renderer.get_pixel_shape()
-        assert pixel_shape is not None
-        size = np.array(pixel_shape, dtype=float)
+    def of(cls, target: DrawTarget) -> _Screen:
+        view = target.view
+        size = np.array(target.size, dtype=float)
         return cls(
             center=view.center,
             rotation=view.rotation,
@@ -310,42 +338,158 @@ class SnapshotDrawing:
         self._renderer = renderer
         self._geometry = _GeometryCache()
         self._fill = WindingFill(renderer)
+        self._textures = _TextureCache(renderer)
 
     def release(self) -> None:
         self._fill.release()
+        self._textures.release()
 
-    def draw(self, nodes: Iterable[RNode]) -> None:
+    def draw(
+        self,
+        nodes: Iterable[RNode],
+        target: DrawTarget,
+        views: dict[int, moderngl.Texture] | None = None,
+    ) -> None:
+        """Draw ``nodes`` in order into ``target``; consecutive paths are batched.
+
+        ``views`` holds the pixels of camera views (``RCameraView`` nodes) by uid.
+        """
+        self._target = target
         self._geometry.next_frame()
+        self._textures.next_frame()
+        nodes = list(nodes)
         paths = [node for node in nodes if isinstance(node.payload, RPath)]
-        if not paths:
+        geometry = iter(self._geometry.get(paths, self._tolerance()) if paths else ())
+        screen = _Screen.of(target)
+        run: list[RNode] = []
+        run_geometry: list[_Geometry] = []
+        for node in nodes:
+            if isinstance(node.payload, RPath):
+                run.append(node)
+                run_geometry.append(next(geometry))
+                continue
+            self._draw_paths(run, run_geometry, screen)
+            run, run_geometry = [], []
+            if isinstance(node.payload, RPoints):
+                self._draw_points(node.payload)
+            elif isinstance(node.payload, RImage):
+                self._draw_image(node)
+            elif isinstance(node.payload, RCameraView) and views:
+                texture = views.get(node.uid)
+                if texture is not None:
+                    # Rendered textures start at the bottom row.
+                    self._draw_quad(node.payload.points, texture, bottom_up=True)
+        self._draw_paths(run, run_geometry, screen)
+
+    def _draw_paths(
+        self, nodes: list[RNode], geometry: list[_Geometry], screen: _Screen
+    ) -> None:
+        if nodes:
+            for group in _groups(nodes, geometry, screen):
+                self._draw_group(group, screen)
+
+    def _draw_points(self, cloud: RPoints) -> None:
+        if len(cloud.points) == 0:
             return
-        tolerance = self._tolerance()
-        geometry = self._geometry.get(paths, tolerance)
-        screen = _Screen.of(self._renderer)
-        for group in _groups(paths, geometry, screen):
-            self._draw_group(group, screen)
+        vertices = np.empty(len(cloud.points), dtype=_POINT_DTYPE)
+        vertices["point"] = cloud.points
+        rgbas = np.asarray(cloud.rgbas)
+        vertices["color"] = (
+            rgbas
+            if len(rgbas) == len(cloud.points)
+            else np.resize(rgbas, (len(cloud.points), 4))
+        )
+        self._renderer.context.enable(moderngl.PROGRAM_POINT_SIZE)
+        self._pass(
+            "point_cloud",
+            vertices,
+            "3f 4f",
+            moderngl.POINTS,
+            point_size=float(max(1, int(self._point_thickness(cloud.stroke_width)))),
+        )
+
+    def _point_thickness(self, stroke_width: float) -> float:
+        """Point size in pixels, scaled with the resolution as on the Cairo renderer."""
+        base = int(config["pixel_width"]) + int(config["pixel_height"])
+        return 1 + (stroke_width - 1) * base / sum(self._target.size)
+
+    def _draw_image(self, node: RNode) -> None:
+        image: RImage = node.payload  # type: ignore[assignment]
+        texture = self._textures.get(node, image)
+        if texture is None:
+            return
+        self._draw_quad(image.points, texture)
+
+    def _draw_quad(
+        self, points: np.ndarray, texture: moderngl.Texture, bottom_up: bool = False
+    ) -> None:
+        """Draw a texture onto four corners (upper left, upper right, lower left,
+        lower right). Its rows start at the top unless ``bottom_up``.
+        """
+        vertices = np.empty(6, dtype=_IMAGE_DTYPE)
+        vertices["point"] = np.asarray(points, dtype=float)[_QUAD_CORNERS]
+        vertices["uv"] = _QUAD_UV
+        if bottom_up:
+            vertices["uv"][:, 1] = 1 - _QUAD_UV[:, 1]
+        texture.use(0)
+        self._pass("image_quad", vertices, "3f 2f", moderngl.TRIANGLES, image=0)
+
+    def _pass(
+        self,
+        shader_name: str,
+        vertices: np.ndarray,
+        layout: str,
+        primitive: int,
+        **uniforms: float,
+    ) -> None:
+        """Draw ``vertices`` with a shader, blending into the frame."""
+        renderer = self._renderer
+        context = renderer.context
+        shader = Shader(context, name=shader_name)
+        for name, value in self._target.uniforms.items():
+            shader.set_uniform(name, value)
+        for name in ("is_fixed_in_frame", "is_fixed_orientation"):
+            shader.set_uniform(name, 0.0)
+        for name, value in uniforms.items():
+            shader.set_uniform(name, value)
+        buffer = context.buffer(vertices.tobytes())
+        try:
+            array = context.vertex_array(
+                shader.shader_program,
+                [(buffer, layout, *vertices.dtype.names)],
+            )
+            try:
+                context.disable(moderngl.DEPTH_TEST)
+                context.enable(moderngl.BLEND)
+                context.blend_func = (moderngl.SRC_ALPHA, moderngl.ONE_MINUS_SRC_ALPHA)
+                self._target.framebuffer.use()
+                array.render(primitive)
+            finally:
+                array.release()
+        finally:
+            buffer.release()
 
     def _tolerance(self) -> float:
         """The conversion tolerance in scene units, rounded down to a power of two.
 
         Rounding keeps cached geometry valid while the camera zooms a little.
         """
-        pixel_shape = self._renderer.get_pixel_shape()
-        assert pixel_shape is not None
-        frame_width = self._renderer.camera_view.frame_shape[0]
-        tolerance = TOLERANCE_PIXELS * frame_width / pixel_shape[0]
+        frame_width = self._target.view.frame_shape[0]
+        tolerance = TOLERANCE_PIXELS * frame_width / self._target.size[0]
         return 2.0 ** math.floor(math.log2(tolerance))
 
     def _draw_group(self, group: _Group, screen: _Screen) -> None:
         if any(_background_width(n.payload) > 0 for n in group.nodes):  # type: ignore[arg-type]
             self._draw_strokes(group, background=True)
         if group.filled:
-            self._fill.draw(group.nodes, group.geometry, screen.scissor(group.box))
+            self._fill.draw(
+                group.nodes, group.geometry, self._target, screen.scissor(group.box)
+            )
         if any(n.payload.stroke.width > 0 for n in group.nodes):  # type: ignore[union-attr]
             self._draw_strokes(group, background=False)
 
     def _draw_strokes(self, group: _Group, background: bool) -> None:
-        camera = self._renderer.camera
+        camera = self._target.camera
         geometry, widths, colours = [], [], []
         for node, geo in zip(group.nodes, group.geometry, strict=True):
             path: RPath = node.payload  # type: ignore[assignment]
@@ -358,32 +502,17 @@ class SnapshotDrawing:
         if not geometry:
             return
         vertices = _stroke_vertices(geometry, widths, colours)
-        renderer = self._renderer
-        context = renderer.context
-        shader = Shader(context, name="quadratic_bezier_stroke")
-        for name, value in renderer.perspective_uniforms.items():
-            shader.set_uniform(name, value)
         first: RPath = group.nodes[0].payload  # type: ignore[assignment]
-        shader.set_uniform("joint_type", float(first.stroke.joint.value))
-        shader.set_uniform("flat_stroke", 0.0)
-        for name in ("gloss", "shadow", "is_fixed_in_frame", "is_fixed_orientation"):
-            shader.set_uniform(name, 0.0)
-        buffer = context.buffer(vertices.tobytes())
-        try:
-            array = context.vertex_array(
-                shader.shader_program,
-                [(buffer, _STROKE_FORMAT, *(field[0] for field in _STROKE_DTYPE))],
-            )
-            try:
-                context.disable(moderngl.DEPTH_TEST)
-                context.enable(moderngl.BLEND)
-                context.blend_func = (moderngl.SRC_ALPHA, moderngl.ONE_MINUS_SRC_ALPHA)
-                renderer.frame_buffer_object.use()
-                array.render(moderngl.TRIANGLES)
-            finally:
-                array.release()
-        finally:
-            buffer.release()
+        self._pass(
+            "quadratic_bezier_stroke",
+            vertices,
+            _STROKE_FORMAT,
+            moderngl.TRIANGLES,
+            joint_type=float(first.stroke.joint.value),
+            flat_stroke=0.0,
+            gloss=0.0,
+            shadow=0.0,
+        )
 
 
 def _stroke_vertices(
@@ -561,3 +690,55 @@ _CORNERS = np.array(np.meshgrid([0, 3], [1, 4], [2, 5], indexing="ij")).reshape(
 
 def _background_width(path: RPath) -> float:
     return 0.0 if path.background_stroke is None else path.background_stroke.width
+
+
+class _TextureCache:
+    """Image textures by uid, kept while the image is drawn in consecutive frames."""
+
+    def __init__(self, renderer: OpenGLRenderer) -> None:
+        self._renderer = renderer
+        self._current: dict[int, tuple[int, moderngl.Texture]] = {}
+        self._previous: dict[int, tuple[int, moderngl.Texture]] = {}
+        self._registered = False
+
+    def next_frame(self) -> None:
+        for _, texture in self._previous.values():
+            texture.release()
+        self._previous, self._current = self._current, {}
+
+    def get(self, node: RNode, image: RImage) -> moderngl.Texture | None:
+        """The texture of the image; made anew if the node has no key or its
+        ``"pixels"`` slot changed.
+        """
+        version = node.versions.get("pixels", 0)
+        entry = self._current.get(node.uid) or self._previous.pop(node.uid, None)
+        if entry is not None and entry[0] == version and node.key is not None:
+            self._current[node.uid] = entry
+            return entry[1]
+        if entry is not None:
+            entry[1].release()
+        pixels = np.ascontiguousarray(image.pixel_array, dtype=np.uint8)
+        if pixels.ndim != 3 or pixels.shape[2] != 4 or 0 in pixels.shape:
+            return None
+        height, width = pixels.shape[:2]
+        if not self._registered:
+            # Textures belong to the renderer's context and go with it.
+            self._renderer._resources.callback(self.release)
+            self._registered = True
+        texture = self._renderer.context.texture((width, height), 4, pixels.tobytes())
+        if image.resampling_algorithm == Resampling.NEAREST:
+            texture.filter = (moderngl.NEAREST, moderngl.NEAREST)
+        else:
+            texture.build_mipmaps()
+            texture.filter = (moderngl.LINEAR_MIPMAP_LINEAR, moderngl.LINEAR)
+        texture.repeat_x = texture.repeat_y = False
+        self._current[node.uid] = (version, texture)
+        return texture
+
+    def release(self) -> None:
+        for _, texture in (*self._current.values(), *self._previous.values()):
+            if not isinstance(texture.mglo, moderngl.InvalidObject):
+                texture.release()
+        self._current.clear()
+        self._previous.clear()
+        self._registered = False
