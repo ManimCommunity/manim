@@ -794,7 +794,7 @@ class Vector(Arrow):
 
                     self.add(plane, vec_1, vec_2, label_1, label_2)
         """
-        # Import here: manim.mobject.matrix imports this module.
+        # local import to avoid import cycle
         from ..matrix import Matrix
 
         vect = np.array(self.get_end())

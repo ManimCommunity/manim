@@ -3,7 +3,9 @@
 A cycle makes the import order matter: whichever module of the cycle is
 imported first sees the others only partly initialised. Imports for type
 checking and imports inside functions are not part of the graph; they run
-after all modules are loaded.
+after all modules are loaded. An import that would close a cycle at module
+level stays inside its function, marked ``# local import to avoid import
+cycle``.
 """
 
 from __future__ import annotations

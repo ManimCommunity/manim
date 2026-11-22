@@ -2732,7 +2732,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         self._assert_valid_submobjects([value])
         mob = value
         if self.show_keys:
-            # Import here: manim.mobject.text.tex_mobject imports this module.
+            # local import to avoid import cycle
             from manim.mobject.text.tex_mobject import Tex
 
             key_text = Tex(str(key)).next_to(value, LEFT)

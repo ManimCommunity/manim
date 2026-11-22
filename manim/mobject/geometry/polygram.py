@@ -290,7 +290,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
             # To ensure that we loop through starting with last
             arcs = [arcs[-1], *arcs[:-1]]
-            # Import here: manim.mobject.geometry.line imports this module.
+            # local import to avoid import cycle
             from manim.mobject.geometry.line import Line
 
             for arc1, arc2 in adjacent_pairs(arcs):
@@ -650,7 +650,7 @@ class Rectangle(Polygon):
         self.grid_lines = VGroup()
 
         if grid_xstep or grid_ystep:
-            # Import here: manim.mobject.geometry.line imports this module.
+            # local import to avoid import cycle
             from manim.mobject.geometry.line import Line
 
             v = self.get_vertices()

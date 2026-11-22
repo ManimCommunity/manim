@@ -230,7 +230,7 @@ class OpenGLRenderer(_RendererExecutionView):
         try:
             window = None
             if self._settings.window is not None:
-                # Import here: only preview windows need pyglet and screeninfo.
+                # local import: pyglet/screeninfo only needed for preview window
                 from .window import Window
 
                 window = Window(self, _settings=self._settings.window)
