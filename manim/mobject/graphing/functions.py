@@ -64,6 +64,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
                 self.add(func.scale(3))
 
     .. manim:: ThreeDParametricSpring
+        :hide_levels: 1
         :save_last_frame:
 
         class ThreeDParametricSpring(ThreeDScene):
@@ -85,6 +86,7 @@ class ParametricFunction(VMobject, metaclass=ConvertToOpenGL):
         of the discontinuities manually. See the following example for guidance.
 
     .. manim:: DiscontinuousExample
+        :hide_levels: 1
         :save_last_frame:
 
         class DiscontinuousExample(Scene):
@@ -191,6 +193,7 @@ class FunctionGraph(ParametricFunction):
     Examples
     --------
     .. manim:: ExampleFunctionGraph
+        :hide_levels: 1
         :save_last_frame:
 
         class ExampleFunctionGraph(Scene):
@@ -281,6 +284,7 @@ class ImplicitFunction(VMobject, metaclass=ConvertToOpenGL):
         Examples
         --------
         .. manim:: ImplicitFunctionExample
+            :hide_levels: 1
             :save_last_frame:
 
             class ImplicitFunctionExample(Scene):

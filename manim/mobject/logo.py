@@ -119,6 +119,7 @@ class ManimBanner(VGroup):
     Examples
     --------
     .. manim:: DarkThemeBanner
+        :hide_levels: 1
 
         class DarkThemeBanner(Scene):
             def construct(self):
@@ -129,6 +130,7 @@ class ManimBanner(VGroup):
                 self.play(Unwrite(banner))
 
     .. manim:: LightThemeBanner
+        :hide_levels: 1
 
         class LightThemeBanner(Scene):
             def construct(self):
@@ -263,6 +265,7 @@ class ManimBanner(VGroup):
         Examples
         --------
         .. manim:: ExpandDirections
+            :hide_levels: 1
 
             class ExpandDirections(Scene):
                 def construct(self):

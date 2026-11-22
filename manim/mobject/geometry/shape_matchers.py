@@ -29,6 +29,7 @@ class SurroundingRectangle(RoundedRectangle):
     Examples
     --------
     .. manim:: SurroundingRectExample
+        :hide_levels: 1
         :save_last_frame:
 
         class SurroundingRectExample(Scene):
@@ -87,6 +88,7 @@ class BackgroundRectangle(SurroundingRectangle):
     Examples
     --------
     .. manim:: ExampleBackgroundRectangle
+        :hide_levels: 1
         :save_last_frame:
 
         class ExampleBackgroundRectangle(Scene):
@@ -167,6 +169,7 @@ class Cross(VGroup):
     Examples
     --------
     .. manim:: ExampleCross
+        :hide_levels: 1
         :save_last_frame:
 
         class ExampleCross(Scene):
@@ -198,6 +201,7 @@ class Underline(Line):
     Examples
     --------
     .. manim:: UnderLine
+        :hide_levels: 1
         :save_last_frame:
 
         class UnderLine(Scene):

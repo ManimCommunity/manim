@@ -61,6 +61,7 @@ screen, simply call the :meth:`~.Scene.remove` method from the containing
 :class:`.Scene`.
 
 .. manim:: CreatingMobjects
+    :hide_levels: 1
 
     class CreatingMobjects(Scene):
         def construct(self):
@@ -79,6 +80,7 @@ some mobjects to it.  This script generates a static picture that displays a
 circle, a square, and a triangle:
 
 .. manim:: Shapes
+    :hide_levels: 1
 
     class Shapes(Scene):
         def construct(self):
@@ -110,6 +112,7 @@ There are many other possible ways to place mobjects on the screen, for example
 ``MobjectPlacement`` uses all three.
 
 .. manim:: MobjectPlacement
+    :hide_levels: 1
 
     class MobjectPlacement(Scene):
         def construct(self):
@@ -157,6 +160,7 @@ Styling mobjects
 The following scene changes the default aesthetics of the mobjects.
 
 .. manim:: MobjectStyling
+    :hide_levels: 1
 
     class MobjectStyling(Scene):
         def construct(self):
@@ -192,6 +196,7 @@ The next scene is exactly the same as the ``MobjectStyling`` scene from the
 previous section, except for exactly one line.
 
 .. manim:: MobjectZOrder
+    :hide_levels: 1
 
     class MobjectZOrder(Scene):
         def construct(self):
@@ -224,6 +229,7 @@ At the heart of manim is animation.  Generally, you can add an animation to
 your scene by calling the :meth:`~.Scene.play` method.
 
 .. manim:: SomeAnimations
+    :hide_levels: 1
 
     class SomeAnimations(Scene):
         def construct(self):
@@ -258,6 +264,7 @@ method that changes a mobject's property can be used as an animation, through
 the use of :meth:`.animate`.
 
 .. manim:: AnimateExample
+    :hide_levels: 1
     :ref_classes: Animation
 
     class AnimateExample(Scene):
@@ -284,6 +291,7 @@ By default, any animation passed to :meth:`play` lasts for exactly one second.
 Use the :code:`run_time` argument to control the duration.
 
 .. manim:: RunTime
+    :hide_levels: 1
 
     class RunTime(Scene):
         def construct(self):
@@ -379,6 +387,7 @@ e.g. by methods like :meth:`~.Mobject.get_center` , :meth:`~.Mobject.get_top`
 and :meth:`~.Mobject.get_start`. Here is an example of some important coordinates:
 
 .. manim:: MobjectExample
+    :hide_levels: 1
     :save_last_frame:
 
     class MobjectExample(Scene):
@@ -409,6 +418,7 @@ Transforming mobjects into other mobjects
 It is also possible to transform a mobject into another mobject like this:
 
 .. manim:: ExampleTransform
+    :hide_levels: 1
 
     class ExampleTransform(Scene):
         def construct(self):
@@ -426,6 +436,7 @@ Here it might help to use the `flip` function and reposition the points via the
 function of numpy:
 
 .. manim:: ExampleRotation
+    :hide_levels: 1
 
     class ExampleRotation(Scene):
         def construct(self):

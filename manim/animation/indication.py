@@ -4,6 +4,7 @@ Examples
 --------
 
 .. manim:: Indications
+    :hide_levels: 1
 
     class Indications(Scene):
         def construct(self):
@@ -86,6 +87,7 @@ class FocusOn(Transform):
     Examples
     --------
     .. manim:: UsingFocusOn
+        :hide_levels: 1
 
         class UsingFocusOn(Scene):
             def construct(self):
@@ -141,6 +143,7 @@ class Indicate(Transform):
     Examples
     --------
     .. manim:: UsingIndicate
+        :hide_levels: 1
 
         class UsingIndicate(Scene):
             def construct(self):
@@ -195,6 +198,7 @@ class Flash(AnimationGroup):
     Examples
     --------
     .. manim:: UsingFlash
+        :hide_levels: 1
 
         class UsingFlash(Scene):
             def construct(self):
@@ -204,6 +208,7 @@ class Flash(AnimationGroup):
                 self.wait()
 
     .. manim:: FlashOnCircle
+        :hide_levels: 1
 
         class FlashOnCircle(Scene):
             def construct(self):
@@ -284,6 +289,7 @@ class ShowPassingFlash(ShowPartial):
     Examples
     --------
     .. manim:: TimeWidthValues
+        :hide_levels: 1
 
         class TimeWidthValues(Scene):
             def construct(self):
@@ -379,6 +385,7 @@ class ApplyWave(Homotopy):
     --------
 
     .. manim:: ApplyingWaves
+        :hide_levels: 1
 
         class ApplyingWaves(Scene):
             def construct(self):
@@ -509,6 +516,7 @@ class Wiggle(Animation):
     --------
 
     .. manim:: ApplyingWaves
+        :hide_levels: 1
 
         class ApplyingWaves(Scene):
             def construct(self):
@@ -597,6 +605,7 @@ class Circumscribe(Succession):
     --------
 
     .. manim:: UsingCircumscribe
+        :hide_levels: 1
 
         class UsingCircumscribe(Scene):
             def construct(self):
@@ -687,6 +696,7 @@ class Blink(Succession):
     --------
 
     .. manim:: BlinkingExample
+        :hide_levels: 1
 
         class BlinkingExample(Scene):
             def construct(self):

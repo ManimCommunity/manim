@@ -51,6 +51,7 @@ class LayoutFunction(Protocol):
     Here is an example that arranges nodes in an n x m grid in sorted order.
 
     .. manim:: CustomLayoutExample
+        :hide_levels: 1
         :save_last_frame:
 
         class CustomLayoutExample(Scene):
@@ -95,6 +96,7 @@ class LayoutFunction(Protocol):
     - Circular Layout: places the vertices on a circle
 
     .. manim:: CircularLayout
+        :hide_levels: 1
         :save_last_frame:
 
         class CircularLayout(Scene):
@@ -110,6 +112,7 @@ class LayoutFunction(Protocol):
     - Kamada Kawai Layout: tries to place the vertices such that the given distances between them are respected
 
     .. manim:: KamadaKawaiLayout
+        :hide_levels: 1
         :save_last_frame:
 
         class KamadaKawaiLayout(Scene):
@@ -138,6 +141,7 @@ class LayoutFunction(Protocol):
     - Partite Layout: places vertices into distinct partitions
 
     .. manim:: PartiteLayout
+        :hide_levels: 1
         :save_last_frame:
 
         class PartiteLayout(Scene):
@@ -154,6 +158,7 @@ class LayoutFunction(Protocol):
     - Planar Layout: places vertices such that edges do not cross
 
     .. manim:: PlanarLayout
+        :hide_levels: 1
         :save_last_frame:
 
         class PlanarLayout(Scene):
@@ -170,6 +175,7 @@ class LayoutFunction(Protocol):
     - Random Layout: randomly places vertices
 
     .. manim:: RandomLayout
+        :hide_levels: 1
         :save_last_frame:
 
         class RandomLayout(Scene):
@@ -185,6 +191,7 @@ class LayoutFunction(Protocol):
     - Shell Layout: places vertices in concentric circles
 
     .. manim:: ShellLayout
+        :hide_levels: 1
         :save_last_frame:
 
         class ShellLayout(Scene):
@@ -202,6 +209,7 @@ class LayoutFunction(Protocol):
     - Spectral Layout: places vertices using the eigenvectors of the graph Laplacian (clusters nodes which are an approximation of the ratio cut)
 
     .. manim:: SpectralLayout
+        :hide_levels: 1
         :save_last_frame:
 
         class SpectralLayout(Scene):
@@ -217,6 +225,7 @@ class LayoutFunction(Protocol):
     - Sprial Layout: places vertices in a spiraling pattern
 
     .. manim:: SpiralLayout
+        :hide_levels: 1
         :save_last_frame:
 
         class SpiralLayout(Scene):
@@ -232,6 +241,7 @@ class LayoutFunction(Protocol):
     - Spring Layout: places nodes according to the Fruchterman-Reingold force-directed algorithm (attempts to minimize edge length while maximizing node separation)
 
     .. manim:: SpringLayout
+        :hide_levels: 1
         :save_last_frame:
 
         class SpringLayout(Scene):
@@ -247,6 +257,7 @@ class LayoutFunction(Protocol):
     - Tree Layout: places vertices into a tree with a root node and branches (can only be used with legal trees)
 
     .. manim:: TreeLayout
+        :hide_levels: 1
         :save_last_frame:
 
         class TreeLayout(Scene):
@@ -1255,6 +1266,7 @@ class GenericGraph(VMobject, metaclass=ConvertToOpenGL):
         --------
 
         .. manim:: ChangeGraphLayout
+            :hide_levels: 1
 
             class ChangeGraphLayout(Scene):
                 def construct(self):
@@ -1365,6 +1377,7 @@ class Graph(GenericGraph):
     together with the vertices.
 
     .. manim:: MovingVertices
+        :hide_levels: 1
 
         class MovingVertices(Scene):
             def construct(self):
@@ -1387,6 +1400,7 @@ class Graph(GenericGraph):
     There are several automatic positioning algorithms to choose from:
 
     .. manim:: GraphAutoPosition
+        :hide_levels: 1
         :save_last_frame:
 
         class GraphAutoPosition(Scene):
@@ -1408,6 +1422,7 @@ class Graph(GenericGraph):
     Vertices can also be positioned manually:
 
     .. manim:: GraphManualPosition
+        :hide_levels: 1
         :save_last_frame:
 
         class GraphManualPosition(Scene):
@@ -1429,6 +1444,7 @@ class Graph(GenericGraph):
         as ``(v, u)`` can be used as keys in the dictionary.
 
     .. manim:: LabeledModifiedGraph
+        :hide_levels: 1
         :save_last_frame:
 
         class LabeledModifiedGraph(Scene):
@@ -1469,6 +1485,7 @@ class Graph(GenericGraph):
     by the use of the partite layout and defining partitions for each layer.
 
     .. manim:: LinearNN
+        :hide_levels: 1
         :save_last_frame:
 
         class LinearNN(Scene):
@@ -1684,6 +1701,7 @@ class DiGraph(GenericGraph):
     --------
 
     .. manim:: MovingDiGraph
+        :hide_levels: 1
 
         class MovingDiGraph(Scene):
             def construct(self):
@@ -1704,6 +1722,7 @@ class DiGraph(GenericGraph):
     You can customize the edges and arrow tips globally or locally.
 
     .. manim:: CustomDiGraph
+        :hide_levels: 1
 
         class CustomDiGraph(Scene):
             def construct(self):
@@ -1742,6 +1761,7 @@ class DiGraph(GenericGraph):
     it for an undirected moving graph with labels.
 
     .. manim:: UndirectedMovingDiGraph
+        :hide_levels: 1
 
         class UndirectedMovingDiGraph(Scene):
             def construct(self):

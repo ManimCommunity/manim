@@ -39,6 +39,7 @@ class ChangeSpeed(Animation):
     --------
 
     .. manim:: SpeedModifierExample
+        :hide_levels: 1
 
         class SpeedModifierExample(Scene):
             def construct(self):
@@ -57,6 +58,7 @@ class ChangeSpeed(Animation):
                 )
 
     .. manim:: SpeedModifierUpdaterExample
+        :hide_levels: 1
 
         class SpeedModifierUpdaterExample(Scene):
             def construct(self):
@@ -73,6 +75,7 @@ class ChangeSpeed(Animation):
                 )
 
     .. manim:: SpeedModifierUpdaterExample2
+        :hide_levels: 1
 
         class SpeedModifierUpdaterExample2(Scene):
             def construct(self):

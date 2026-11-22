@@ -50,6 +50,7 @@ class Polyhedron(VGroup):
     To understand how to create a custom polyhedra, let's use the example of a rather simple one - a square pyramid.
 
     .. manim:: SquarePyramidScene
+        :hide_levels: 1
         :save_last_frame:
 
         class SquarePyramidScene(ThreeDScene):
@@ -84,6 +85,7 @@ class Polyhedron(VGroup):
     They are stored in the `graph` and `faces` attributes respectively.
 
     .. manim:: PolyhedronSubMobjects
+        :hide_levels: 1
         :save_last_frame:
 
         class PolyhedronSubMobjects(ThreeDScene):
@@ -172,6 +174,7 @@ class Tetrahedron(Polyhedron):
     --------
 
     .. manim:: TetrahedronScene
+        :hide_levels: 1
         :save_last_frame:
 
         class TetrahedronScene(ThreeDScene):
@@ -207,6 +210,7 @@ class Octahedron(Polyhedron):
     --------
 
     .. manim:: OctahedronScene
+        :hide_levels: 1
         :save_last_frame:
 
         class OctahedronScene(ThreeDScene):
@@ -253,6 +257,7 @@ class Icosahedron(Polyhedron):
     --------
 
     .. manim:: IcosahedronScene
+        :hide_levels: 1
         :save_last_frame:
 
         class IcosahedronScene(ThreeDScene):
@@ -318,6 +323,7 @@ class Dodecahedron(Polyhedron):
     --------
 
     .. manim:: DodecahedronScene
+        :hide_levels: 1
         :save_last_frame:
 
         class DodecahedronScene(ThreeDScene):
@@ -387,6 +393,7 @@ class ConvexHull3D(Polyhedron):
     Examples
     --------
     .. manim:: ConvexHull3DExample
+        :hide_levels: 1
         :save_last_frame:
         :quality: high
 

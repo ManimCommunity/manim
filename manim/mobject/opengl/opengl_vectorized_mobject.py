@@ -241,6 +241,7 @@ class OpenGLVMobject(OpenGLMobject):
         Examples
         --------
         .. manim:: SetFill
+            :hide_levels: 1
             :save_last_frame:
 
             class SetFill(Scene):
@@ -748,6 +749,7 @@ class OpenGLVMobject(OpenGLMobject):
         Examples
         --------
         .. manim:: ChangeOfDirection
+            :hide_levels: 1
 
             class ChangeOfDirection(Scene):
                 def construct(self):
@@ -1687,6 +1689,7 @@ class OpenGLVGroup(OpenGLVMobject):
         >>> config.renderer = original_renderer
 
     .. manim:: ArcShapeIris
+        :hide_levels: 1
         :save_last_frame:
 
         class ArcShapeIris(Scene):
@@ -1740,6 +1743,7 @@ class OpenGLVGroup(OpenGLVMobject):
         Examples
         --------
         .. manim:: AddToOpenGLVGroup
+            :hide_levels: 1
 
             class AddToOpenGLVGroup(Scene):
                 def construct(self):
@@ -1843,6 +1847,7 @@ class OpenGLCurvesAsSubmobjects(OpenGLVGroup):
     Examples
     --------
     .. manim:: LineGradientExample
+        :hide_levels: 1
         :save_last_frame:
 
         class LineGradientExample(Scene):
@@ -1869,6 +1874,7 @@ class OpenGLDashedVMobject(OpenGLVMobject):
     Examples
     --------
     .. manim:: DashedVMobjectExample
+        :hide_levels: 1
         :save_last_frame:
 
         class DashedVMobjectExample(Scene):

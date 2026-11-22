@@ -35,6 +35,7 @@ class ChangingDecimal(Animation):
     --------
 
     .. manim:: ChangingDecimalExample
+        :hide_levels: 1
 
         class ChangingDecimalExample(Scene):
             def construct(self):
@@ -85,6 +86,7 @@ class ChangeDecimalToValue(ChangingDecimal):
     --------
 
     .. manim:: ChangeDecimalToValueExample
+        :hide_levels: 1
 
         class ChangeDecimalToValueExample(Scene):
             def construct(self):

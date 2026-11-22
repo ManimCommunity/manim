@@ -514,6 +514,7 @@ The handles are drawn as red dots with a line to their closest anchor.
 
 .. manim:: VMobjectDemo
     :save_last_frame:
+    :hide_levels: 1
 
     class VMobjectDemo(Scene):
         def construct(self):

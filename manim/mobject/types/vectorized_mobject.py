@@ -304,6 +304,7 @@ class VMobject(Mobject):
         Examples
         --------
         .. manim:: SetFill
+            :hide_levels: 1
             :save_last_frame:
 
             class SetFill(Scene):
@@ -377,6 +378,7 @@ class VMobject(Mobject):
         Examples
         --------
         .. manim:: CapStyleExample
+            :hide_levels: 1
             :save_last_frame:
 
             class CapStyleExample(Scene):
@@ -517,6 +519,7 @@ class VMobject(Mobject):
         --------
 
         .. manim:: MobjectScaleExample
+            :hide_levels: 1
             :save_last_frame:
 
             class MobjectScaleExample(Scene):
@@ -731,6 +734,7 @@ class VMobject(Mobject):
         Examples
         --------
         .. manim:: SetSheen
+            :hide_levels: 1
             :save_last_frame:
 
             class SetSheen(Scene):
@@ -1132,6 +1136,7 @@ class VMobject(Mobject):
         Examples
         --------
         .. manim:: PointsAsCornersExample
+            :hide_levels: 1
             :save_last_frame:
 
             class PointsAsCornersExample(Scene):
@@ -1643,6 +1648,7 @@ class VMobject(Mobject):
         Example
         -------
         .. manim:: PointFromProportion
+            :hide_levels: 1
             :save_last_frame:
 
             class PointFromProportion(Scene):
@@ -2144,6 +2150,7 @@ class VMobject(Mobject):
         Examples
         --------
         .. manim:: ChangeOfDirection
+            :hide_levels: 1
 
             class ChangeOfDirection(Scene):
                 def construct(self):
@@ -2219,6 +2226,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         VGroup()
 
     .. manim:: ArcShapeIris
+        :hide_levels: 1
         :save_last_frame:
 
         class ArcShapeIris(Scene):
@@ -2276,6 +2284,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         constructor and its `.add()` method.
 
         .. manim:: AddToVGroup
+            :hide_levels: 1
 
             class AddToVGroup(Scene):
                 def construct(self):
@@ -2308,6 +2317,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         iterable must be an instance of `VMobject`. This is demonstrated below:
 
         .. manim:: AddIterableToVGroupExample
+            :hide_levels: 1
             :save_last_frame:
 
             class AddIterableToVGroupExample(Scene):
@@ -2438,6 +2448,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
     --------
 
     .. manim:: ShapesWithVDict
+        :hide_levels: 1
 
         class ShapesWithVDict(Scene):
             def construct(self):
@@ -2788,6 +2799,7 @@ class CurvesAsSubmobjects(VGroup):
     Examples
     --------
     .. manim:: LineGradientExample
+        :hide_levels: 1
         :save_last_frame:
 
         class LineGradientExample(Scene):
@@ -2880,6 +2892,7 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
     Examples
     --------
     .. manim:: DashedVMobjectExample
+        :hide_levels: 1
         :save_last_frame:
 
         class DashedVMobjectExample(Scene):

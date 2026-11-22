@@ -75,6 +75,7 @@ class CoordinateSystem:
     Examples
     --------
     .. manim:: CoordSysExample
+        :hide_levels: 1
         :save_last_frame:
 
         class CoordSysExample(Scene):
@@ -182,6 +183,7 @@ class CoordinateSystem:
         Examples
         --------
         .. manim:: PolarToPointExample
+            :hide_levels: 1
             :ref_classes: PolarPlane Vector
             :save_last_frame:
 
@@ -289,6 +291,7 @@ class CoordinateSystem:
         Examples
         --------
         .. manim:: GetXAxisLabelExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetXAxisLabelExample(Scene):
@@ -332,6 +335,7 @@ class CoordinateSystem:
         Examples
         --------
         .. manim:: GetYAxisLabelExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetYAxisLabelExample(Scene):
@@ -548,6 +552,7 @@ class CoordinateSystem:
         Examples
         --------
         .. manim:: GetVerticalLineExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetVerticalLineExample(Scene):
@@ -582,6 +587,7 @@ class CoordinateSystem:
         Examples
         --------
         .. manim:: GetHorizontalLineExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetHorizontalLineExample(Scene):
@@ -619,6 +625,7 @@ class CoordinateSystem:
         Examples
         --------
         .. manim:: GetLinesToPointExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetLinesToPointExample(Scene):
@@ -682,6 +689,7 @@ class CoordinateSystem:
         Examples
         --------
         .. manim:: PlotExample
+            :hide_levels: 1
             :save_last_frame:
 
             class PlotExample(Scene):
@@ -818,6 +826,7 @@ class CoordinateSystem:
         Examples
         --------
         .. manim:: ImplicitExample
+            :hide_levels: 1
             :save_last_frame:
 
             class ImplicitExample(Scene):
@@ -866,6 +875,7 @@ class CoordinateSystem:
         Example
         -------
         .. manim:: ParametricCurveExample
+            :hide_levels: 1
             :save_last_frame:
 
             class ParametricCurveExample(Scene):
@@ -913,6 +923,7 @@ class CoordinateSystem:
         Examples
         --------
         .. manim:: PolarGraphExample
+            :hide_levels: 1
             :ref_classes: PolarPlane
             :save_last_frame:
 
@@ -973,6 +984,7 @@ class CoordinateSystem:
         Examples
         --------
         .. manim:: PlotSurfaceExample
+            :hide_levels: 1
             :save_last_frame:
 
             class PlotSurfaceExample(ThreeDScene):
@@ -1047,6 +1059,7 @@ class CoordinateSystem:
         Examples
         --------
         .. manim:: InputToGraphPointExample
+            :hide_levels: 1
             :save_last_frame:
 
             class InputToGraphPointExample(Scene):
@@ -1144,6 +1157,7 @@ class CoordinateSystem:
         Examples
         --------
         .. manim:: GetGraphLabelExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetGraphLabelExample(Scene):
@@ -1240,6 +1254,7 @@ class CoordinateSystem:
         Examples
         --------
         .. manim:: GetRiemannRectanglesExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetRiemannRectanglesExample(Scene):
@@ -1388,6 +1403,7 @@ class CoordinateSystem:
         Examples
         --------
         .. manim:: GetAreaExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetAreaExample(Scene):
@@ -1527,6 +1543,7 @@ class CoordinateSystem:
         Examples
         --------
         .. manim:: DerivativeGraphExample
+            :hide_levels: 1
             :save_last_frame:
 
             class DerivativeGraphExample(Scene):
@@ -1588,6 +1605,7 @@ class CoordinateSystem:
         Examples
         --------
         .. manim:: AntiderivativeExample
+            :hide_levels: 1
             :save_last_frame:
 
             class AntiderivativeExample(Scene):
@@ -1658,6 +1676,7 @@ class CoordinateSystem:
         Examples
         --------
          .. manim:: GetSecantSlopeGroupExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetSecantSlopeGroupExample(Scene):
@@ -1760,6 +1779,7 @@ class CoordinateSystem:
         Examples
         --------
         .. manim:: GetVerticalLinesToGraph
+            :hide_levels: 1
             :save_last_frame:
 
             class GetVerticalLinesToGraph(Scene):
@@ -1828,6 +1848,7 @@ class CoordinateSystem:
         Examples
         --------
         .. manim:: TLabelExample
+            :hide_levels: 1
             :save_last_frame:
 
             class TLabelExample(Scene):
@@ -1900,6 +1921,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
     Examples
     --------
     .. manim:: LogScalingExample
+        :hide_levels: 1
         :save_last_frame:
 
         class LogScalingExample(Scene):
@@ -1920,6 +1942,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
     mobjects that represent the axes:
 
     .. manim:: AxesWithDifferentTips
+        :hide_levels: 1
         :save_last_frame:
 
         class AxesWithDifferentTips(Scene):
@@ -2128,6 +2151,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
             array([0.86, 0.  , 0.  ])
 
         .. manim:: CoordsToPointExample
+            :hide_levels: 1
             :save_last_frame:
 
             class CoordsToPointExample(Scene):
@@ -2222,6 +2246,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
 
 
         .. manim:: PointToCoordsExample
+            :hide_levels: 1
             :save_last_frame:
 
             class PointToCoordsExample(Scene):
@@ -2285,6 +2310,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         Examples
         --------
         .. manim:: GetAxisLabelsExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetAxisLabelsExample(Scene):
@@ -2346,6 +2372,7 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
         Examples
         --------
         .. manim:: LineGraphExample
+            :hide_levels: 1
             :save_last_frame:
 
             class LineGraphExample(Scene):
@@ -2572,6 +2599,7 @@ class ThreeDAxes(Axes):
         Examples
         --------
         .. manim:: GetYAxisLabelExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetYAxisLabelExample(ThreeDScene):
@@ -2622,6 +2650,7 @@ class ThreeDAxes(Axes):
         Examples
         --------
         .. manim:: GetZAxisLabelExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetZAxisLabelExample(ThreeDScene):
@@ -2673,6 +2702,7 @@ class ThreeDAxes(Axes):
         Examples
         --------
         .. manim:: GetAxisLabelsExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetAxisLabelsExample(ThreeDScene):
@@ -2724,6 +2754,7 @@ class NumberPlane(Axes):
     Examples
     --------
     .. manim:: NumberPlaneExample
+        :hide_levels: 1
         :save_last_frame:
 
         class NumberPlaneExample(Scene):
@@ -2738,6 +2769,7 @@ class NumberPlane(Axes):
                 self.add(number_plane)
 
     .. manim:: NumberPlaneScaled
+        :hide_levels: 1
         :save_last_frame:
 
         class NumberPlaneScaled(Scene):
@@ -3016,6 +3048,7 @@ class PolarPlane(Axes):
     Examples
     --------
     .. manim:: PolarPlaneExample
+        :hide_levels: 1
         :ref_classes: PolarPlane
         :save_last_frame:
 
@@ -3383,6 +3416,7 @@ class ComplexPlane(NumberPlane):
     Examples
     --------
     .. manim:: ComplexPlaneExample
+        :hide_levels: 1
         :save_last_frame:
         :ref_classes: Dot MathTex
 

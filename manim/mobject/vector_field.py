@@ -172,6 +172,7 @@ class VectorField(VGroup):
         Examples
         --------
         .. manim:: ScaleVectorFieldFunction
+            :hide_levels: 1
 
             class ScaleVectorFieldFunction(Scene):
                 def construct(self):
@@ -244,6 +245,7 @@ class VectorField(VGroup):
         --------
 
         .. manim:: Nudging
+            :hide_levels: 1
 
             class Nudging(Scene):
                 def construct(self):
@@ -519,6 +521,7 @@ class ArrowVectorField(VectorField):
     --------
 
     .. manim:: BasicUsage
+        :hide_levels: 1
         :save_last_frame:
 
         class BasicUsage(Scene):
@@ -527,6 +530,7 @@ class ArrowVectorField(VectorField):
                 self.add(ArrowVectorField(func))
 
     .. manim:: SizingAndSpacing
+        :hide_levels: 1
 
         class SizingAndSpacing(Scene):
             def construct(self):
@@ -541,6 +545,7 @@ class ArrowVectorField(VectorField):
                 self.wait()
 
     .. manim:: Coloring
+        :hide_levels: 1
         :save_last_frame:
 
         class Coloring(Scene):
@@ -729,6 +734,7 @@ class StreamLines(VectorField):
     --------
 
     .. manim:: BasicUsage
+        :hide_levels: 1
         :save_last_frame:
 
         class BasicUsage(Scene):
@@ -737,6 +743,7 @@ class StreamLines(VectorField):
                 self.add(StreamLines(func))
 
     .. manim:: SpawningAndFlowingArea
+        :hide_levels: 1
         :save_last_frame:
 
         class SpawningAndFlowingArea(Scene):
@@ -938,6 +945,7 @@ class StreamLines(VectorField):
         --------
 
         .. manim:: StreamLineCreation
+            :hide_levels: 1
 
             class StreamLineCreation(Scene):
                 def construct(self):
@@ -999,6 +1007,7 @@ class StreamLines(VectorField):
         --------
 
         .. manim:: ContinuousMotion
+            :hide_levels: 1
 
             class ContinuousMotion(Scene):
                 def construct(self):
@@ -1061,6 +1070,7 @@ class StreamLines(VectorField):
         --------
 
         .. manim:: EndAnimation
+            :hide_levels: 1
 
             class EndAnimation(Scene):
                 def construct(self):

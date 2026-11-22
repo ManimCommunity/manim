@@ -27,6 +27,7 @@ class AnimatedBoundary(VGroup):
     Examples
     --------
     .. manim:: AnimatedBoundaryExample
+        :hide_levels: 1
 
         class AnimatedBoundaryExample(Scene):
             def construct(self):
@@ -120,6 +121,7 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
     Examples
     --------
     .. manim:: TracedPathExample
+        :hide_levels: 1
 
         class TracedPathExample(Scene):
             def construct(self):
@@ -132,6 +134,7 @@ class TracedPath(VMobject, metaclass=ConvertToOpenGL):
                 self.play(rolling_circle.animate.shift(8*RIGHT), run_time=4, rate_func=linear)
 
     .. manim:: DissipatingPathExample
+        :hide_levels: 1
 
         class DissipatingPathExample(Scene):
             def construct(self):

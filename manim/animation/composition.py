@@ -215,6 +215,7 @@ class Succession(AnimationGroup):
     Examples
     --------
     .. manim:: SuccessionExample
+        :hide_levels: 1
 
         class SuccessionExample(Scene):
             def construct(self):
@@ -314,6 +315,7 @@ class LaggedStart(AnimationGroup):
     Examples
     --------
     .. manim:: LaggedStartExample
+        :hide_levels: 1
 
         class LaggedStartExample(Scene):
             def construct(self):
@@ -377,6 +379,7 @@ class LaggedStartMap(LaggedStart):
     Examples
     --------
     .. manim:: LaggedStartMapExample
+        :hide_levels: 1
 
         class LaggedStartMapExample(Scene):
             def construct(self):

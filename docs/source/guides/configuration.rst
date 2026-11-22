@@ -133,6 +133,7 @@ rendered in our documentation with a reference frame.
 
 .. manim:: ShowScreenResolution
     :save_last_frame:
+    :hide_levels: 1
 
     class ShowScreenResolution(Scene):
         def construct(self):

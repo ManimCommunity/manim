@@ -50,6 +50,7 @@ class Brace(VMobjectFromSVGPath):
     Examples
     --------
     .. manim:: BraceExample
+        :hide_levels: 1
         :save_last_frame:
 
         class BraceExample(Scene):
@@ -309,6 +310,7 @@ class BraceText(BraceLabel):
     Examples
     --------
         .. manim:: BraceTextExample
+            :hide_levels: 1
             :save_last_frame:
 
             class BraceTextExample(Scene):
@@ -358,6 +360,7 @@ class BraceBetweenPoints(Brace):
     Examples
     --------
         .. manim:: BraceBPExample
+            :hide_levels: 1
 
             class BraceBPExample(Scene):
                 def construct(self):
@@ -411,6 +414,7 @@ class ArcBrace(Brace):
     Example
     -------
         .. manim:: ArcBraceExample
+            :hide_levels: 1
             :save_last_frame:
             :ref_classes: Arc
 

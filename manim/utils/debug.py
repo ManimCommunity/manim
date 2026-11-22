@@ -51,6 +51,7 @@ def index_labels(
     Examples
     --------
     .. manim:: IndexLabelsExample
+        :hide_levels: 1
         :save_last_frame:
 
         class IndexLabelsExample(Scene):

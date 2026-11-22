@@ -81,6 +81,7 @@ class Line(TipableVMobject):
     Examples
     --------
     .. manim:: LineExample
+        :hide_levels: 1
         :save_last_frame:
 
         class LineExample(Scene):
@@ -213,6 +214,7 @@ class Line(TipableVMobject):
         Examples
         --------
         .. manim:: LineExample
+            :hide_levels: 1
 
             class LineExample(Scene):
                 def construct(self):
@@ -300,6 +302,7 @@ class DashedLine(Line):
     Examples
     --------
     .. manim:: DashedLineExample
+        :hide_levels: 1
         :save_last_frame:
 
         class DashedLineExample(Scene):
@@ -433,6 +436,7 @@ class TangentLine(Line):
     Examples
     --------
     .. manim:: TangentLineExample
+        :hide_levels: 1
         :save_last_frame:
 
         class TangentLineExample(Scene):
@@ -480,6 +484,7 @@ class Elbow(VMobject, metaclass=ConvertToOpenGL):
     Examples
     --------
     .. manim:: ElbowExample
+        :hide_levels: 1
         :save_last_frame:
 
         class ElbowExample(Scene):
@@ -550,6 +555,7 @@ class Arrow(Line):
 
 
     .. manim:: ArrowExample
+        :hide_levels: 1
         :save_last_frame:
 
         class ArrowExample(Scene):
@@ -731,6 +737,7 @@ class Vector(Arrow):
     Examples
     --------
     .. manim:: VectorExample
+        :hide_levels: 1
         :save_last_frame:
 
         class VectorExample(Scene):
@@ -781,6 +788,7 @@ class Vector(Arrow):
         Examples
         --------
         .. manim:: VectorCoordinateLabel
+            :hide_levels: 1
             :save_last_frame:
 
             class VectorCoordinateLabel(Scene):
@@ -847,6 +855,7 @@ class DoubleArrow(Arrow):
 
 
     .. manim:: DoubleArrowExample2
+        :hide_levels: 1
         :save_last_frame:
 
         class DoubleArrowExample2(Scene):
@@ -911,6 +920,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
     all 8 possible angles defined by two lines.
 
     .. manim:: RightArcAngleExample
+        :hide_levels: 1
         :save_last_frame:
 
         class RightArcAngleExample(Scene):
@@ -931,6 +941,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
                 self.add(plots)
 
     .. manim:: AngleExample
+        :hide_levels: 1
         :save_last_frame:
 
         class AngleExample(Scene):
@@ -955,6 +966,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
                 self.add(plots)
 
     .. manim:: FilledAngle
+        :hide_levels: 1
         :save_last_frame:
 
         class FilledAngle(Scene):
@@ -1129,6 +1141,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         --------
 
         .. manim:: GetValueExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetValueExample(Scene):
@@ -1175,6 +1188,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         Examples
         --------
         .. manim:: AngleFromThreePointsExample
+            :hide_levels: 1
             :save_last_frame:
 
             class AngleFromThreePointsExample(Scene):
@@ -1203,6 +1217,7 @@ class RightAngle(Angle):
     Examples
     --------
     .. manim:: RightAngleExample
+        :hide_levels: 1
         :save_last_frame:
 
         class RightAngleExample(Scene):

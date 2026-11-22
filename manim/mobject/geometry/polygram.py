@@ -211,6 +211,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
         Examples
         --------
         .. manim:: PolygramRoundCorners
+            :hide_levels: 1
             :save_last_frame:
 
             class PolygramRoundCorners(Scene):
@@ -321,6 +322,7 @@ class Polygon(Polygram):
     Examples
     --------
     .. manim:: PolygonExample
+        :hide_levels: 1
         :save_last_frame:
 
         class PolygonExample(Scene):
@@ -366,6 +368,7 @@ class RegularPolygram(Polygram):
     Examples
     --------
     .. manim:: RegularPolygramExample
+        :hide_levels: 1
         :save_last_frame:
 
         class RegularPolygramExample(Scene):
@@ -446,6 +449,7 @@ class RegularPolygon(RegularPolygram):
     Examples
     --------
     .. manim:: RegularPolygonExample
+        :hide_levels: 1
         :save_last_frame:
 
         class RegularPolygonExample(Scene):
@@ -498,6 +502,7 @@ class Star(Polygon):
     Examples
     --------
     .. manim:: StarExample
+        :hide_levels: 1
 
         class StarExample(Scene):
             def construct(self):
@@ -509,6 +514,7 @@ class Star(Polygon):
                 self.play(FadeOut(star), run_time=2)
 
     .. manim:: DifferentDensitiesExample
+        :hide_levels: 1
         :save_last_frame:
 
         class DifferentDensitiesExample(Scene):
@@ -578,6 +584,7 @@ class Triangle(RegularPolygon):
     Examples
     --------
     .. manim:: TriangleExample
+        :hide_levels: 1
         :save_last_frame:
 
         class TriangleExample(Scene):
@@ -617,6 +624,7 @@ class Rectangle(Polygon):
     Examples
     ----------
     .. manim:: RectangleExample
+        :hide_levels: 1
         :save_last_frame:
 
         class RectangleExample(Scene):
@@ -700,6 +708,7 @@ class Square(Rectangle):
     Examples
     --------
     .. manim:: SquareExample
+        :hide_levels: 1
         :save_last_frame:
 
         class SquareExample(Scene):
@@ -735,6 +744,7 @@ class RoundedRectangle(Rectangle):
     Examples
     --------
     .. manim:: RoundedRectangleExample
+        :hide_levels: 1
         :save_last_frame:
 
         class RoundedRectangleExample(Scene):
@@ -774,6 +784,7 @@ class Cutout(VMobject, metaclass=ConvertToOpenGL):
     Examples
     --------
     .. manim:: CutoutExample
+        :hide_levels: 1
 
         class CutoutExample(Scene):
             def construct(self):
@@ -814,6 +825,7 @@ class ConvexHull(Polygram):
     Examples
     --------
     .. manim:: ConvexHullExample
+        :hide_levels: 1
         :save_last_frame:
         :quality: high
 

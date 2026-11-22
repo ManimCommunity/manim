@@ -42,6 +42,7 @@ class Broadcast(LaggedStart):
     ---------
 
     .. manim:: BroadcastExample
+        :hide_levels: 1
 
         class BroadcastExample(Scene):
             def construct(self):

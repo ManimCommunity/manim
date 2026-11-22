@@ -230,6 +230,7 @@ class MathTex(SingleStringMathTex):
     Examples
     --------
     .. manim:: Formula
+        :hide_levels: 1
         :save_last_frame:
 
         class Formula(Scene):
@@ -663,6 +664,7 @@ class BulletedList(Tex):
     --------
 
     .. manim:: BulletedListExample
+        :hide_levels: 1
         :save_last_frame:
 
         class BulletedListExample(Scene):

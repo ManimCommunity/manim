@@ -20,6 +20,7 @@ Basic text and math
 ^^^^^^^^^^^^^^^^^^^
 
 .. manim:: TypstTextReferenceExample
+    :hide_levels: 1
     :save_last_frame:
     :ref_classes: Typst
 
@@ -33,6 +34,7 @@ Basic text and math
             self.add(text)
 
 .. manim:: MathTypstReferenceExample
+    :hide_levels: 1
     :save_last_frame:
     :ref_classes: MathTypst
 
@@ -60,6 +62,7 @@ There are two common ways to create selectable groups:
    Typst source, for example with ``#box[body] <label>``.
 
 .. manim:: TypstLabelSelectionExample
+    :hide_levels: 1
     :save_last_frame:
     :ref_classes: Typst
     :ref_methods: Typst.select
@@ -82,6 +85,7 @@ There are two common ways to create selectable groups:
             self.add(text)
 
 .. manim:: MathTypstSelectionExample
+    :hide_levels: 1
     :save_last_frame:
     :ref_classes: MathTypst
     :ref_methods: Typst.select
@@ -316,6 +320,7 @@ class Typst(SVGMobject):
     Examples
     --------
     .. manim:: TypstExample
+        :hide_levels: 1
         :ref_classes: Typst
 
         class TypstExample(Scene):
@@ -324,6 +329,7 @@ class Typst(SVGMobject):
                 self.play(Write(formula))
 
     .. manim:: TypstTextExample
+        :hide_levels: 1
         :save_last_frame:
         :ref_classes: Typst
 
@@ -708,6 +714,7 @@ class Typst(SVGMobject):
         Examples
         --------
         .. manim:: TypstSelectExample
+            :hide_levels: 1
             :save_last_frame:
             :ref_classes: MathTypst
             :ref_methods: Typst.select
@@ -792,6 +799,7 @@ class MathTypst(Typst):
     Examples
     --------
     .. manim:: DisplayMath
+        :hide_levels: 1
         :save_last_frame:
         :ref_classes: MathTypst
 
@@ -801,6 +809,7 @@ class MathTypst(Typst):
                 self.add(eq)
 
     .. manim:: GroupedMath
+        :hide_levels: 1
         :save_last_frame:
         :ref_classes: MathTypst
         :ref_methods: Typst.select

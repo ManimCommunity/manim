@@ -80,6 +80,7 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
     arrow tips.
 
     .. manim:: ArrowTipsShowcase
+        :hide_levels: 1
         :save_last_frame:
 
         class ArrowTipsShowcase(Scene):

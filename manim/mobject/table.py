@@ -4,6 +4,7 @@ Examples
 --------
 
 .. manim:: TableExamples
+    :hide_levels: 1
     :save_last_frame:
 
     class TableExamples(Scene):
@@ -132,6 +133,7 @@ class Table(VGroup):
     --------
 
     .. manim:: TableExamples
+        :hide_levels: 1
         :save_last_frame:
 
         class TableExamples(Scene):
@@ -169,6 +171,7 @@ class Table(VGroup):
                 self.add(g)
 
     .. manim:: BackgroundRectanglesExample
+        :hide_levels: 1
         :save_last_frame:
 
         class BackgroundRectanglesExample(Scene):
@@ -432,6 +435,7 @@ class Table(VGroup):
         --------
 
         .. manim:: GetHorizontalLinesExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetHorizontalLinesExample(Scene):
@@ -458,6 +462,7 @@ class Table(VGroup):
         --------
 
         .. manim:: GetVerticalLinesExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetVerticalLinesExample(Scene):
@@ -484,6 +489,7 @@ class Table(VGroup):
         --------
 
         .. manim:: GetColumnsExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetColumnsExample(Scene):
@@ -515,6 +521,7 @@ class Table(VGroup):
         --------
 
         .. manim:: GetRowsExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetRowsExample(Scene):
@@ -541,6 +548,7 @@ class Table(VGroup):
         --------
 
         .. manim:: SetColumnColorsExample
+            :hide_levels: 1
             :save_last_frame:
 
             class SetColumnColorsExample(Scene):
@@ -570,6 +578,7 @@ class Table(VGroup):
         --------
 
         .. manim:: SetRowColorsExample
+            :hide_levels: 1
             :save_last_frame:
 
             class SetRowColorsExample(Scene):
@@ -610,6 +619,7 @@ class Table(VGroup):
         --------
 
         .. manim:: GetEntriesExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetEntriesExample(Scene):
@@ -662,6 +672,7 @@ class Table(VGroup):
         --------
 
         .. manim:: GetEntriesWithoutLabelsExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetEntriesWithoutLabelsExample(Scene):
@@ -696,6 +707,7 @@ class Table(VGroup):
         --------
 
         .. manim:: GetRowLabelsExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetRowLabelsExample(Scene):
@@ -726,6 +738,7 @@ class Table(VGroup):
         --------
 
         .. manim:: GetColLabelsExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetColLabelsExample(Scene):
@@ -756,6 +769,7 @@ class Table(VGroup):
         --------
 
         .. manim:: GetLabelsExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetLabelsExample(Scene):
@@ -805,6 +819,7 @@ class Table(VGroup):
         --------
 
         .. manim:: GetCellExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetCellExample(Scene):
@@ -864,6 +879,7 @@ class Table(VGroup):
         --------
 
         .. manim:: GetHighlightedCellExample
+            :hide_levels: 1
             :save_last_frame:
 
             class GetHighlightedCellExample(Scene):
@@ -903,6 +919,7 @@ class Table(VGroup):
         --------
 
         .. manim:: AddHighlightedCellExample
+            :hide_levels: 1
             :save_last_frame:
 
             class AddHighlightedCellExample(Scene):
@@ -956,6 +973,7 @@ class Table(VGroup):
         --------
 
         .. manim:: CreateTableExample
+            :hide_levels: 1
 
             class CreateTableExample(Scene):
                 def construct(self):
@@ -1013,6 +1031,7 @@ class MathTable(Table):
     --------
 
     .. manim:: MathTableExample
+        :hide_levels: 1
         :save_last_frame:
 
         class MathTableExample(Scene):
@@ -1061,6 +1080,7 @@ class MobjectTable(Table):
     --------
 
     .. manim:: MobjectTableExample
+        :hide_levels: 1
         :save_last_frame:
 
         class MobjectTableExample(Scene):
@@ -1113,6 +1133,7 @@ class IntegerTable(Table):
     --------
 
     .. manim:: IntegerTableExample
+        :hide_levels: 1
         :save_last_frame:
 
         class IntegerTableExample(Scene):
@@ -1163,6 +1184,7 @@ class DecimalTable(Table):
     --------
 
     .. manim:: DecimalTableExample
+        :hide_levels: 1
         :save_last_frame:
 
         class DecimalTableExample(Scene):

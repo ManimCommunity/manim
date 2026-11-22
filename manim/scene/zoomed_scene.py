@@ -5,6 +5,7 @@ Examples
 --------
 
 .. manim:: UseZoomedScene
+    :hide_levels: 1
 
     class UseZoomedScene(ZoomedScene):
         def construct(self):
