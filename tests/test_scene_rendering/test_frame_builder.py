@@ -54,11 +54,6 @@ def test_renderers_draw_frames_without_scenes(renderer_class):
         {"dry_run": True, "pixel_width": 160, "pixel_height": 90, "format": "none"}
     ):
         renderer = renderer_class()
-        if renderer_class is OpenGLRenderer:
-            from manim import Scene
-
-            # OpenGL takes its pixel size and window settings from a scene.
-            Scene(renderer=renderer)
         camera, mobjects = _scene_contents()
         try:
             pixels = renderer.render(
@@ -116,13 +111,11 @@ def test_frames_are_drawn_at_the_size_saved_with_the_scene(renderer):
 def test_point_thickness_follows_the_reference_resolution(renderer_class):
     # The renderer reads the scale of point clouds from the frame, not from the
     # global configuration.
-    from manim import PMobject, Scene
+    from manim import PMobject
 
     def drawn(reference_width):
         with tempconfig({"dry_run": True, "pixel_width": 160, "pixel_height": 90}):
             renderer = renderer_class()
-            if renderer_class is OpenGLRenderer:
-                Scene(renderer=renderer)
             cloud = PMobject(stroke_width=8)
             cloud.add_points(np.array([[0.0, 0.0, 0.0]]))
             builder = FrameBuilder(160, 90)

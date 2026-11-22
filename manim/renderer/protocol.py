@@ -17,15 +17,16 @@ __all__ = [
     "RenderConfig",
     "Renderer",
     "RendererCapabilities",
+    "RendererFactory",
     "RendererState",
 ]
 
 import enum
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, ClassVar, Protocol, runtime_checkable
+from typing import TYPE_CHECKING, Any, Protocol, runtime_checkable
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Collection, Sequence
+    from collections.abc import Callable, Collection, Mapping, Sequence
 
     import numpy as np
 
@@ -189,21 +190,14 @@ class Renderer(Protocol):
 
     A renderer never reads a scene, a mobject or a camera: the Manager's
     :class:`.FrameBuilder` makes what it is given. It may keep what it built
-    between frames, keyed by :attr:`.RNode.key`.
-
-    Besides drawing, a renderer declares its optional features and reports where
-    it is in its life; the Manager opens it before a run and closes it afterwards.
+    between frames, keyed by :attr:`.RNode.key`. It acquires its resources when it
+    first needs them, and reports where it is in its life; the Manager closes it.
+    Renderers are made by a :class:`RendererFactory`, one per scene.
     """
-
-    capabilities: ClassVar[RendererCapabilities]
 
     @property
     def state(self) -> RendererState:
         """Where the renderer is in its life."""
-        ...
-
-    def open(self) -> None:
-        """Acquire the drawing resources, if not done yet."""
         ...
 
     def render(self, nodes: Sequence[RNode], config: RenderConfig, /) -> Frame:
@@ -279,4 +273,33 @@ class PreviewRenderer(Renderer, Protocol):
     @property
     def preview(self) -> Preview | None:
         """The preview handle; ``None`` if no preview was requested."""
+        ...
+
+
+@runtime_checkable
+class RendererFactory(Protocol):
+    """A renderer selection with its options; immutable.
+
+    A scene is given a factory (``Scene(renderer=factory)``) and creates its
+    renderer with it; :class:`.Manager` creates a second one for images apart from
+    the frames of a run.
+    """
+
+    @property
+    def name(self) -> str:
+        """The renderer's name, also the backend part of play-cache keys."""
+        ...
+
+    @property
+    def capabilities(self) -> RendererCapabilities:
+        """What the factory's renderers can do, known without creating one."""
+        ...
+
+    @property
+    def cache_identity(self) -> Mapping[str, Any]:
+        """The options that change the pixels, for play-cache keys."""
+        ...
+
+    def create(self, preview: PreviewRequest | None = None) -> Renderer:
+        """A new renderer; with ``preview``, one with a preview handle."""
         ...

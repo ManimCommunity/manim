@@ -59,7 +59,8 @@ def test_render_opens_before_setup_and_close_retires_real_objects(
     scene.add(Square(fill_opacity=1), ImageMobject(np.full((4, 4, 4), 255, np.uint8)))
 
     def setup():
-        assert renderer._context is not None
+        # The window is shown before setup(); offscreen, the context comes with
+        # the first frame.
         assert scene.manager._file_writer is not None
 
     monkeypatch.setattr(scene, "setup", setup)

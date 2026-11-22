@@ -6,6 +6,7 @@ from unittest.mock import Mock, call
 import manim._run.cache as cache_module
 from manim import Manager, tempconfig
 from manim._run.loop import _RunLoop
+from manim.renderer.backends import OpenGL
 from manim.utils import caching
 from manim.utils.caching import (
     clear_segment_cache,
@@ -121,6 +122,7 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
         def __init__(self):
             self.mobjects = [object()]
             self.camera = object()
+            self.backend = OpenGL(anti_alias_width=1.5)
             self.skip_animations = False
             self.session_spec = Mock(
                 video_encoder=encoder, output=Mock(is_still=False), frame_rate=60.0
@@ -143,12 +145,10 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
 
     class FakeRenderer:
         anti_alias_width = 1.5
-        cache_identity = ("opengl", {"anti_alias_width": 1.5})
         file_writer = Mock(
             sections=[Mock(skip_animations=False)], output_spec=Mock(is_still=False)
         )
         _closed = False
-        _start_animation = Mock()
 
     scene = FakeScene()
     renderer = FakeRenderer()
@@ -172,6 +172,7 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
         "encoder_fingerprint": "encoder-token",
         "renderer_state": {
             "drawing": {
+                "wireframe": False,
                 "anti_alias_width": renderer.anti_alias_width,
             },
             "execution": {

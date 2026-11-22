@@ -30,15 +30,18 @@ SETTINGS = {"pixel_width": 16, "pixel_height": 8, "format": "none"}
 @pytest.mark.parametrize("renderer", ["cairo", "opengl"])
 def test_a_renderer_goes_from_unopened_to_open_to_closed(renderer):
     with tempconfig({**SETTINGS, "renderer": renderer}):
-        renderer = Scene().renderer
+        scene = Scene()
+        renderer = scene.renderer
         assert renderer.state is RendererState.UNOPENED
-        renderer.open()
+        frame = scene._get_manager()._frame()
+        # A renderer acquires its resources when it first draws.
+        renderer.render(*frame)
         assert renderer.state is RendererState.OPEN
         renderer.close()
         assert renderer.state is RendererState.CLOSED
         assert not renderer.state.accepts_work
         with pytest.raises(RuntimeError, match="closed"):
-            renderer.open()
+            renderer.render(*frame)
 
 
 def test_a_failed_opengl_close_can_be_retried():
@@ -71,7 +74,7 @@ def test_a_failed_cairo_close_can_be_retried():
             renderer.close()
         assert renderer.state is RendererState.CLOSE_FAILED
         with pytest.raises(RuntimeError, match="close failed"):
-            renderer.open()
+            renderer.render(*FrameBuilder(16, 8).build(Camera(), [Square()]))
         assert not target._closed
         target.close = target_close
         renderer.close()

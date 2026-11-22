@@ -75,7 +75,6 @@ def test_real_evaluation_matches_uncached_render(settings, monkeypatch):
     evaluated = TraceScene()
     manager = Manager(evaluated)
     reject = Mock(side_effect=AssertionError("raster/output policy executed"))
-    monkeypatch.setattr(evaluated.renderer, "_start_animation", reject)
     monkeypatch.setattr("manim.manager.SceneFileWriter", reject)
     monkeypatch.setattr(evaluated.renderer, "render", reject)
     monkeypatch.setattr("manim._run.cache.get_hash_from_play_call", reject)
@@ -118,10 +117,9 @@ def test_declarations_do_not_open_media_logs_or_decode_audio(
         reject = Mock(side_effect=AssertionError("resource acquired"))
         monkeypatch.setattr("manim.manager.SceneFileWriter", reject)
         monkeypatch.setattr("manim.manager.set_file_logger", reject)
-        if hasattr(scene.renderer, "open"):
-            monkeypatch.setattr(scene.renderer, "open", reject)
-        else:
-            monkeypatch.setattr(scene.renderer, "_get_target", reject)
+        # Declarations draw nothing, with no renderer at all.
+        monkeypatch.setattr(scene.renderer, "render", reject)
+        monkeypatch.setattr(type(scene.backend), "create", reject)
         manager.evaluate()
         assert scene.time == 0.5
         assert not list(settings.rglob("*"))

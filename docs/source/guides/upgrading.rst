@@ -350,3 +350,25 @@ Preview window
   ``renderer.clear_screen()`` and ``renderer.init_scene()`` are gone; the
   window maps its positions to scene points itself. ``Scene.get_image()`` and
   evaluation never open a window.
+
+Selecting a renderer
+~~~~~~~~~~~~~~~~~~~~
+
+- A scene takes a renderer *factory* or the name of a built-in renderer, not a
+  renderer: ``Scene(renderer="opengl")`` or
+  ``Scene(renderer=OpenGL(anti_alias_width=2))`` with the factories of
+  :mod:`manim.renderer.backends` (``Cairo()``, ``OpenGL(wireframe=...,
+  anti_alias_width=...)``). Without it, ``config.renderer`` decides, as before.
+  Passing a renderer instance raises ``TypeError``. The scene keeps its factory as
+  ``scene.backend`` and creates its own renderer from it; two scenes never share
+  one.
+- ``config.renderer`` and ``--renderer`` stay the list of built-in names; other
+  renderers are selected in code with their factory (see
+  :class:`.RendererFactory`).
+- A renderer creates its resources when it first draws: the protocol has no
+  ``open()``, and ``renderer.capabilities`` and ``renderer.cache_identity`` moved
+  to the factory. ``Scene.get_image()`` and evaluation draw with a second renderer
+  of the scene's factory, kept for a ``with manager:`` block, a render or an
+  evaluation and closed with it.
+- The graphical test harness takes ``renderer="opengl"`` instead of
+  ``renderer_class=OpenGLRenderer``.

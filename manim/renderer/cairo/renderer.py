@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-import contextlib
-from collections.abc import Iterator, Sequence
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any, Self
 
 from ..._config import logger
 from .._reuse import PrefixMemo, node_key, view_key
 from .._view import sort_for_display
-from ..protocol import PixelFrame, RenderConfig, RendererCapabilities, RendererState
+from ..protocol import PixelFrame, RenderConfig, RendererState
 from ..snapshot import RMesh
 from .mesh_faces import mesh_faces
 from .rendering import _CairoDrawingContext, reusable_boundary
@@ -29,8 +28,6 @@ class CairoRenderer:
     frames.
     """
 
-    capabilities = RendererCapabilities(live_preview=False)
-
     def __init__(self) -> None:
         # Image files read for this renderer, shared by all its targets.
         self._image_files = _ImageFiles()
@@ -40,8 +37,6 @@ class CairoRenderer:
         # their keys.
         self._memo = PrefixMemo()
         self._saved_pixels: RGBAPixelArray | None = None
-        #: Whether a scene draws with this renderer (one scene per renderer).
-        self._scene_bound = False
         #: Cairo has no preview window.
         self.preview: None = None
         self._state = RendererState.UNOPENED
@@ -55,12 +50,6 @@ class CairoRenderer:
         """Check that the renderer is not closed."""
         if not self._state.accepts_work:
             raise RuntimeError(f"The Cairo renderer is {self._state.value}.")
-
-    #: What tells this renderer's frames from another's, for the play cache.
-    cache_identity: tuple[str, Any] = ("cairo", ())
-
-    def _start_animation(self) -> None:
-        self._ensure_open()
 
     def render(self, nodes: Sequence[RNode], config: RenderConfig, /) -> PixelFrame:
         """Draw ``nodes`` as ``config`` sets them up; return the frame, with a copy
@@ -193,36 +182,11 @@ class CairoRenderer:
         context.draw_nodes(nodes[start:])
         memo.drew(keys, view)
 
-    @contextlib.contextmanager
-    def _scene_images(self) -> Iterator[None]:
-        """See OpenGLRenderer._scene_images; Cairo images are cheap to set up."""
-        yield
-
-    def _image(self, nodes: Sequence[RNode], config: RenderConfig) -> RGBAPixelArray:
-        """Draw a frame for inspection, apart from the frames of a render.
-
-        A temporary renderer draws it, so that it works before the scene renders
-        and after the renderer closed, and leaves the drawing kept for the next
-        frame alone.
-        """
-        with CairoRenderer() as renderer:
-            return renderer.render(nodes, config).pixels()
-
     def __enter__(self) -> Self:
         return self
 
     def __exit__(self, *exc_info: object) -> None:
         self.close()
-
-    def open(self) -> None:
-        """Check that the renderer can draw.
-
-        Cairo creates its image buffers when it first draws, so there is nothing
-        to allocate here. The method exists so that callers can open any
-        renderer before :meth:`.Scene.setup` runs.
-        """
-        self._ensure_open()
-        self._state = RendererState.OPEN
 
     def close(self) -> None:
         """Close the renderer and release its image buffers and drawing contexts.

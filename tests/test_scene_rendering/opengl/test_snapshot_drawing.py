@@ -220,8 +220,8 @@ def test_images_that_compute_their_pixels_are_redrawn(using_opengl_renderer):
         image = Flashing().scale(2)
         scene.add(image)
         try:
-            # One renderer draws both images, with its texture cache.
-            with scene.renderer._scene_images():
+            # One image renderer draws both images, with its texture cache.
+            with scene._get_manager():
                 red = np.asarray(scene.get_image())[18, 32, :3]
                 image.value = 2
                 blue = np.asarray(scene.get_image())[18, 32, :3]

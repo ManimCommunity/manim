@@ -62,18 +62,18 @@ class _SegmentCache:
             logger.info("Caching disabled.")
             return f"uncached_{play.index:05}"
         scene = manager.scene
-        backend, drawing_state = manager.renderer.cache_identity
+        factory = scene.backend
         return get_hash_from_play_call(
             scene,
             manager.camera,
             list(play.animations),
             scene.mobjects,
-            backend=backend,
+            backend=factory.name,
             encoder_fingerprint=video_encoder_fingerprint(
                 manager.session_spec.video_encoder
             ),
             renderer_state={
-                "drawing": drawing_state,
+                "drawing": dict(factory.cache_identity),
                 "execution": {
                     "clock": _CLOCK_VERSION,
                     "drawing": _DRAWING_VERSION,

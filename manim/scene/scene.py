@@ -60,9 +60,7 @@ from ..camera import Camera, ThreeDCamera
 from ..constants import *
 from ..manager import Manager
 from ..mobject.types.point_cloud_mobject import Point
-from ..renderer.cairo import CairoRenderer
-from ..renderer.opengl.renderer import OpenGLRenderer
-from ..renderer.opengl.window_settings import _WindowSettings
+from ..renderer.backends import backend
 from ..renderer.protocol import PreviewRequest
 from ..scene.scene_file_writer import _SceneFileWriterSettings
 from ..utils.deprecation import deprecated
@@ -76,7 +74,7 @@ if TYPE_CHECKING:
 
     from PIL.Image import Image
 
-    from manim.renderer.protocol import Preview
+    from manim.renderer.protocol import Preview, Renderer, RendererFactory
     from manim.typing import Point3D
 
     SceneInteractAction: TypeAlias = (
@@ -188,7 +186,7 @@ class Scene:
 
     def __init__(
         self,
-        renderer: CairoRenderer | OpenGLRenderer | None = None,
+        renderer: str | RendererFactory | None = None,
         camera_class: type[Camera] = Camera,
         always_update_mobjects: bool = False,
         random_seed: int | None = None,
@@ -216,21 +214,15 @@ class Scene:
 
         #: The scene's camera; renderers draw what it sees.
         self._camera: Camera = camera_class()
-        if config.renderer == RendererType.OPENGL:
-            # Items associated with interaction
-            self.mouse_point = Point()
-            self.mouse_drag_point = Point()
-            if renderer is None:
-                renderer = OpenGLRenderer(wireframe=config.enable_wireframe)
-
-        if renderer is None:
-            self._renderer: CairoRenderer | OpenGLRenderer = CairoRenderer()
-        else:
-            self._renderer = renderer
+        #: The renderer selection: a factory, from ``renderer`` or the configuration.
+        self.backend: RendererFactory = backend(renderer, config)
+        # Where the mouse is in the preview window, for interaction.
+        self.mouse_point = Point()
+        self.mouse_drag_point = Point()
         self.session_spec = resolve_render_session(
             config,
-            self.renderer.capabilities,
-            renderer_name=type(self.renderer).__name__,
+            self.backend.capabilities,
+            renderer_name=self.backend.name,
         )
         scene_name = type(self).__name__
         module_name = resolve_module_name(config)
@@ -277,18 +269,13 @@ class Scene:
             logger.addHandler(self._log_buffer)
             # Detach it if the scene is never managed and goes away.
             weakref.finalize(self, _detach_log_handler, self._log_buffer)
-        # A renderer keeps state for the frames of one scene.
-        if getattr(self._renderer, "_scene_bound", False) is True:
-            raise RuntimeError("This renderer is already bound to a Scene.")
-        self._renderer._scene_bound = True
-        if isinstance(self._renderer, OpenGLRenderer):
-            # The preview window shows this scene as its camera sees it and sends
-            # it input.
-            live = self.session_spec.presentation.live_preview
-            self._renderer._request_preview(
-                PreviewRequest(self, lambda: self.camera._state()) if live else None,
-                _WindowSettings.from_config(config) if live else None,
-            )
+        # The preview window shows this scene as its camera sees it and sends it
+        # input.
+        self._renderer: Renderer = self.backend.create(
+            PreviewRequest(self, lambda: self.camera._state())
+            if self.session_spec.presentation.live_preview
+            else None
+        )
 
         self.mobjects: list[Mobject] = []
         # TODO, remove need for foreground mobjects
@@ -298,7 +285,7 @@ class Scene:
         np.random.seed(self.random_seed)  # noqa: NPY002 (only way to set seed globally)
 
     @property
-    def renderer(self) -> CairoRenderer | OpenGLRenderer:
+    def renderer(self) -> Renderer:
         """The renderer selected at construction, shared by this scene's plays.
 
         This property is read-only. Choose a different renderer when creating
@@ -1109,7 +1096,7 @@ class Scene:
         # If we are in interactive embedded mode, make sure this is running on the main thread (required for OpenGL)
         if (
             self.interactive_mode
-            and config.renderer == RendererType.OPENGL
+            and self.backend.name == "opengl"
             and threading.current_thread().name != "MainThread"
         ):
             # TODO: are these actually being used?

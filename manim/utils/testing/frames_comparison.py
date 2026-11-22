@@ -13,8 +13,6 @@ from _pytest.fixtures import FixtureRequest
 
 from manim._config import tempconfig
 from manim._config.utils import ManimConfig
-from manim.renderer.cairo import CairoRenderer
-from manim.renderer.opengl import OpenGLRenderer
 from manim.scene.scene import Scene
 from manim.typing import StrPath
 
@@ -31,7 +29,7 @@ def frames_comparison(
     func: Callable | None = None,
     *,
     last_frame: bool = True,
-    renderer_class: type[CairoRenderer | OpenGLRenderer] = CairoRenderer,
+    renderer: str = "cairo",
     base_scene: type[Scene] = Scene,
     **custom_config: Any,
 ) -> Callable:
@@ -47,8 +45,9 @@ def frames_comparison(
     ----------
     last_frame
         whether the test should test the last frame, by default True.
-    renderer_class
-        The base renderer to use (OpenGLRenderer/CairoRenderer), by default CairoRenderer
+    renderer
+        The name of the renderer to draw with (``"cairo"`` or ``"opengl"``), by
+        default ``"cairo"``.
     base_scene
         The base class for the scene (ThreeDScene, etc.), by default Scene
 
@@ -85,10 +84,7 @@ def frames_comparison(
             *args: Any, request: FixtureRequest, tmp_path: StrPath, **kwargs: Any
         ) -> None:
             # check for cairo version
-            if (
-                renderer_class is CairoRenderer
-                and cairo.cairo_version() < MIN_CAIRO_VERSION
-            ):
+            if renderer == "cairo" and cairo.cairo_version() < MIN_CAIRO_VERSION:
                 pytest.skip("Cairo version is too old. Skipping cairo graphical tests.")
             # Wraps the test_function to a construct method, to "freeze" the eventual additional arguments (parametrizations fixtures).
             construct = functools.partial(tested_scene_construct, *args, **kwargs)
@@ -111,10 +107,8 @@ def frames_comparison(
             config_tests["dry_run"] = True
             if last_frame:
                 config_tests["frame_rate"] = 1
-            # The scene creates the renderer of the configuration, with its camera.
-            config_tests["renderer"] = (
-                "opengl" if renderer_class is OpenGLRenderer else "cairo"
-            )
+            # The scene creates the renderer of the configuration.
+            config_tests["renderer"] = renderer
 
             setting_test = request.config.getoption("--set_test")
             try:
@@ -130,7 +124,6 @@ def frames_comparison(
                 ),
                 base_scene=base_scene,
                 construct=construct,
-                renderer_class=renderer_class,
                 is_set_test_data_test=setting_test,
                 last_frame=last_frame,
                 show_diff=request.config.getoption("--show_diff"),
@@ -171,7 +164,6 @@ def _make_test_comparing_frames(
     file_path: Path,
     base_scene: type[Scene],
     construct: Callable[[Scene], None],
-    renderer_class: type,  # Renderer type, there is no superclass renderer yet .....
     is_set_test_data_test: bool,
     last_frame: bool,
     show_diff: bool,
@@ -187,8 +179,6 @@ def _make_test_comparing_frames(
         The base scene class.
     construct
         The construct method (= the test function)
-    renderer_class
-        The renderer base class.
     show_diff
         whether to visually show_diff (see --show_diff)
 

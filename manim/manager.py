@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import enum
 import math
+import threading
 from dataclasses import dataclass
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
@@ -26,7 +27,6 @@ from ._run.loop import (
 from ._run.mode import _EvaluationRun, _RunMode
 from ._run.selection import _OutputSelection
 from ._run.state import _ExecutionState
-from .renderer.cairo.renderer import CairoRenderer
 from .renderer.frame import FrameBuilder
 from .scene.scene_file_writer import SceneFileWriter
 from .scene.section import DefaultSectionType
@@ -47,12 +47,11 @@ if TYPE_CHECKING:
     from .animation.animation import Animation
     from .camera import Camera
     from .mobject.mobject import Mobject, _AnimationBuilder
-    from .renderer.cairo import CairoRenderer
-    from .renderer.opengl.renderer import OpenGLRenderer
-    from .renderer.protocol import Preview, RenderConfig
+    from .renderer.protocol import Preview, RenderConfig, Renderer
     from .renderer.snapshot import RNode
     from .scene.scene import Scene
     from .timeline import Timeline
+    from .typing import RGBAPixelArray
 
 __all__ = ["Manager", "RenderedFrame"]
 
@@ -190,6 +189,10 @@ class Manager(Generic[SceneT]):
         ``capture_timeline`` on; the command line's ``--timeline-output`` does.
         """
         self._frame_builder: FrameBuilder | None = None
+        # The renderer of images apart from the frames of a run (get_image,
+        # evaluation), kept while a scope is open: see _image.
+        self._image_renderer: Renderer | None = None
+        self._image_thread: int | None = None
         scene.manager = self
 
     def _ensure_usable(self) -> None:
@@ -291,6 +294,7 @@ class Manager(Generic[SceneT]):
         if self._file_writer is not None:
             cleanup(self._file_writer.abort_encode_jobs)
         cleanup(self.renderer.close)
+        cleanup(self._close_image_renderer)
         # Report these while the log file is still open; a failure to close it
         # can only go to the remaining handlers.
         report(0)
@@ -306,7 +310,7 @@ class Manager(Generic[SceneT]):
         self._close("Failed to clean up resources after a render failure")
 
     @property
-    def renderer(self) -> CairoRenderer | OpenGLRenderer:
+    def renderer(self) -> Renderer:
         """The renderer selected when the scene was created."""
         return self.scene.renderer
 
@@ -487,7 +491,6 @@ class Manager(Generic[SceneT]):
         try:
             self._timeline = None
             self._open_log_handler()
-            self.renderer.open()
             # The window is open before setup(), so that an interactive_embed()
             # without a play finds it.
             window = self.preview
@@ -609,8 +612,12 @@ class Manager(Generic[SceneT]):
             mode=_EvaluationRun(),
         )
         try:
-            with self.renderer._scene_images():
+            # One image renderer draws every requested frame.
+            self._scope_depth += 1
+            try:
                 self._run(loop, capture_timeline)
+            finally:
+                self._scope_depth -= 1
         except BaseException:
             self._cleanup_after_failure()
             raise
@@ -673,7 +680,49 @@ class Manager(Generic[SceneT]):
 
     def get_image(self) -> Image:
         """Draw a fresh scene image; see :meth:`.Scene.get_image` for snapshot behavior."""
-        return PILImage.fromarray(self.renderer._image(*self._frame()))
+        return PILImage.fromarray(self._image())
+
+    def _image(self) -> RGBAPixelArray:
+        """The pixels of the scene's current state, drawn apart from the frames of
+        a run: by a second renderer of the scene's factory, which never opens a
+        window and leaves the scene renderer's drawing alone.
+
+        Inside a managed scope (a render, an evaluation, a ``with manager:``
+        block) one image renderer is kept and closed when the scope ends;
+        otherwise a temporary one is closed before this returns. Images are drawn
+        on the thread that draws the scene's frames.
+        """
+        thread = threading.get_ident()
+        owner = getattr(self.renderer, "_context_thread", None)
+        if owner is not None and owner != thread:
+            raise RuntimeError("Scene images must be requested on the render thread.")
+        if self._image_thread is not None and self._image_thread != thread:
+            raise RuntimeError("Scene images must be requested on the render thread.")
+        renderer = self._image_renderer
+        if renderer is None:
+            renderer = self.scene.backend.create()
+            if self._scope_depth > 0 and self._state.usable:
+                self._image_renderer = renderer
+                self._image_thread = thread
+        try:
+            pixels = renderer.render(*self._frame()).pixels()
+        except BaseException:
+            if renderer is self._image_renderer:
+                self._image_renderer = None
+            try:
+                renderer.close()
+            except BaseException:
+                logger.exception("Failed to close the image renderer")
+            raise
+        if renderer is not self._image_renderer:
+            renderer.close()
+        return pixels
+
+    def _close_image_renderer(self) -> None:
+        renderer, self._image_renderer = self._image_renderer, None
+        self._image_thread = None
+        if renderer is not None:
+            renderer.close()
 
     def _frame(self) -> tuple[list[RNode], RenderConfig]:
         """The snapshots and configuration of a frame of the scene's current state."""

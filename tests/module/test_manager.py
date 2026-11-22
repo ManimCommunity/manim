@@ -13,7 +13,6 @@ from PIL import Image
 from manim import RIGHT, Manager, Scene, Square, tempconfig
 from manim._config.output import OutputFormat
 from manim.animation.animation import Wait
-from manim.constants import RendererType
 from manim.renderer.protocol import RendererState
 from manim.scene.scene import SceneInteractRerun
 from manim.utils.exceptions import EndSceneEarlyException, RerunSceneException
@@ -335,14 +334,14 @@ def test_scene_play_uses_animation_duration_for_default_subcaption_after_skip(
 def test_scene_play_queues_interactive_calls_without_attaching_manager(
     dry_run, monkeypatch
 ):
-    scene = Scene()
+    scene = Scene(renderer="opengl")
     scene.interactive_mode = True
     renderer_play = Mock()
     monkeypatch.setattr(Manager, "play", renderer_play)
     worker_thread = threading.Thread(name="Worker")
     monkeypatch.setattr(threading, "current_thread", lambda: worker_thread)
 
-    with tempconfig({"renderer": RendererType.OPENGL}):
+    with tempconfig({}):
         scene.play(
             Wait(),
             run_time=2,

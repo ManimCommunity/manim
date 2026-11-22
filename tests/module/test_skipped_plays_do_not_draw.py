@@ -11,7 +11,7 @@ from manim import (
     tempconfig,
 )
 
-RASTER_CALLS = ("render", "_image", "_start_animation")
+RASTER_CALLS = ("render",)
 
 
 @pytest.fixture(params=["cairo", "opengl"])
@@ -97,7 +97,6 @@ def test_rendered_plays_in_a_partly_skipped_scene_still_draw(settings, monkeypat
     with tempconfig({"from_animation_number": 1}):
         scene.render()
 
-    assert counters["_start_animation"].call_count == 2
     assert counters["render"].call_count > 0
 
 

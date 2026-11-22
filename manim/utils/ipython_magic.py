@@ -9,9 +9,6 @@ from pathlib import Path
 from typing import Any
 
 from manim._config import config, logger, tempconfig
-from manim.renderer.opengl.shader import shader_program_cache
-
-from ..constants import RendererType
 
 __all__ = ["ManimMagic"]
 
@@ -134,24 +131,15 @@ else:
             with tempconfig(local_ns.get("config", {})):
                 config.digest_args(args)
 
-                renderer = None
-                if config.renderer == RendererType.OPENGL:
-                    from manim.renderer.opengl import OpenGLRenderer
-
-                    renderer = OpenGLRenderer(wireframe=config.enable_wireframe)
-
+                SceneClass = local_ns[config["scene_names"][0]]
+                scene = SceneClass()
                 try:
-                    SceneClass = local_ns[config["scene_names"][0]]
-                    scene = SceneClass(renderer=renderer)
                     scene.render()
                 finally:
-                    # Shader cache becomes invalid as the context is destroyed
-                    shader_program_cache.clear()
-
-                    # Close the OpenGL window here instead of waiting for the main
-                    # thread to finish, which leaves the window open and frozen.
-                    if renderer is not None:
-                        renderer.close()
+                    # Close the renderer (and an OpenGL window, with its shaders)
+                    # here instead of waiting for the main thread to finish, which
+                    # leaves the window open and frozen.
+                    scene.renderer.close()
 
                 output_file = getattr(
                     scene._get_manager().file_writer,

@@ -7,7 +7,6 @@ import pytest
 
 from manim import (
     RIGHT,
-    CairoRenderer,
     Circle,
     Dot,
     FadeIn,
@@ -18,6 +17,7 @@ from manim import (
     ThreeDCamera,
 )
 from manim.animation.animation import Wait
+from manim.renderer.backends import Cairo
 
 
 def test_scene_add_remove(dry_run):
@@ -161,7 +161,7 @@ def test_random_color_reproducibility_with_seed(dry_run):
 
 
 def test_the_scene_owns_its_camera(dry_run):
-    scene = Scene(renderer=CairoRenderer(), camera_class=ThreeDCamera)
+    scene = Scene(renderer=Cairo(), camera_class=ThreeDCamera)
     assert isinstance(scene.camera, ThreeDCamera)
     assert scene._get_manager().camera is scene.camera
     scene.add(Square(fill_opacity=1))

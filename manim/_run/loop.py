@@ -158,25 +158,16 @@ class _TargetDrawer(_Drawer):
 
     def __init__(self, manager: Manager) -> None:
         self._manager = manager
-        self._prepared = False
 
     def draw(self, frame: _Frame) -> Frame:
-        renderer = self._manager.renderer
-        if not self._prepared:
-            # Drawing resources, once per play and only for plays that draw.
-            renderer._start_animation()
-            self._prepared = True
-        return renderer.render(*self._manager._frame())
-
-    def end_play(self, play: _Play) -> None:
-        self._prepared = False
+        return self._manager.renderer.render(*self._manager._frame())
 
 
 class _SceneImageDrawer(_Drawer):
-    """Draw frames with a temporary renderer, as :meth:`.Scene.get_image` does.
+    """Draw frames with the image renderer, as :meth:`.Scene.get_image` does.
 
-    Used during evaluation, which opens no drawing resources of its own, so
-    there is no target to draw into: only pixels are drawn.
+    Used during evaluation, which uses no drawing resources of the scene's
+    renderer: only the pixels of requested frames are drawn.
     """
 
     def __init__(self, manager: Manager) -> None:
@@ -184,7 +175,7 @@ class _SceneImageDrawer(_Drawer):
 
     def draw(self, frame: _Frame) -> Frame:
         manager = self._manager
-        return PixelFrame(manager.renderer._image(*manager._frame()))
+        return PixelFrame(manager._image())
 
 
 class _RunLoop:

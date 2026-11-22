@@ -18,7 +18,6 @@ from .. import _view as _views
 from ..protocol import (
     PreviewRequest,
     RenderConfig,
-    RendererCapabilities,
     RendererState,
 )
 from ._drawing import DrawTarget, SnapshotDrawing
@@ -26,7 +25,7 @@ from .shader import shader_program_cache
 from .window_settings import _WindowSettings
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterator, Sequence
+    from collections.abc import Callable, Sequence
 
     from manim.typing import (
         RGBAPixelArray,
@@ -64,8 +63,6 @@ class OpenGLRenderer:
         The native preview window while it is open.
     """
 
-    capabilities = RendererCapabilities(live_preview=True)
-
     def __init__(
         self,
         *,
@@ -88,13 +85,8 @@ class OpenGLRenderer:
         self._context: moderngl.Context | None = None
         self._frame_buffer_object: Framebuffer | None = None
         self._context_thread: int | None = None
-        self._capturing_image = False
         #: The number of frames drawn; a frame can be read until the next one.
         self._frames_drawn = 0
-        self._keep_image_renderer = False
-        self._kept_image_renderer: OpenGLRenderer | None = None
-        #: Whether a scene draws with this renderer (one scene per renderer).
-        self._scene_bound = False
         self._state = RendererState.UNOPENED
         self._resources = contextlib.ExitStack()
         self._previous_renderer: weakref.ReferenceType[OpenGLRenderer] | None = None
@@ -102,23 +94,14 @@ class OpenGLRenderer:
     def _request_preview(
         self, request: PreviewRequest | None, settings: _WindowSettings | None
     ) -> None:
-        """Give the renderer a preview window to open, with its settings.
-
-        Provisional: the Scene calls it once after creating the renderer, until
-        renderers are created by factories that pass the request.
+        """Give the renderer a preview window to open, with its settings (for
+        :meth:`.OpenGL.create`).
         """
         self._ensure_not_closed()
         if request is None or settings is None:
             self.preview = None
         else:
             self.preview = _WindowPreview(self, request, settings)
-
-    @classmethod
-    def _image_renderer(cls, of: OpenGLRenderer) -> OpenGLRenderer:
-        """An offscreen renderer drawing images as ``of`` would: the same options,
-        but no window.
-        """
-        return cls(wireframe=of.wireframe, anti_alias_width=of.anti_alias_width)
 
     @property
     def state(self) -> RendererState:
@@ -193,7 +176,6 @@ class OpenGLRenderer:
         self.window = window
         self._context = context
         self._context_thread = threading.get_ident()
-        self._capturing_image = False
         self._resources = resources.pop_all()
         self._previous_renderer = previous
         _active_context.renderer = weakref.ref(self)
@@ -244,8 +226,6 @@ class OpenGLRenderer:
         """
         if self._state is RendererState.CLOSED:
             return
-        if self._capturing_image:
-            raise RuntimeError("Cannot close OpenGL resources during image capture.")
         if self._context is not None and self._context_thread != threading.get_ident():
             raise RuntimeError(
                 "OpenGL resources must be closed on their owning thread."
@@ -448,110 +428,6 @@ class OpenGLRenderer:
         for uid in self._camera_view_targets.keys() - drawn:
             self._camera_view_targets.pop(uid).release()
         return textures
-
-    @property
-    def cache_identity(self) -> tuple[str, Any]:
-        """What tells this renderer's frames from another's, for the play cache:
-        its name and options.
-        """
-        return "opengl", {
-            "wireframe": self.wireframe,
-            "anti_alias_width": self.anti_alias_width,
-        }
-
-    def _start_animation(self) -> None:
-        self.open()
-
-    @contextlib.contextmanager
-    def _scene_images(self) -> Iterator[None]:
-        """Keep the temporary renderer of :meth:`_image` for many images.
-
-        Creating an OpenGL context for each image costs far more than drawing it,
-        so evaluation, which draws every requested frame this way, keeps one.
-        """
-        self._keep_image_renderer = True
-        try:
-            yield
-        finally:
-            self._keep_image_renderer = False
-            kept, self._kept_image_renderer = self._kept_image_renderer, None
-            if kept is not None:
-                kept.close()
-
-    def _image(self, nodes: Sequence[RNode], config: RenderConfig) -> RGBAPixelArray:
-        """Draw a frame for inspection, apart from the live-preview framebuffer.
-
-        An existing context is used on its rendering thread. Otherwise, the frame
-        is drawn with a temporary context and renderer.
-        """
-        if (
-            self._context_thread is not None
-            and threading.get_ident() != self._context_thread
-        ):
-            raise RuntimeError(
-                "OpenGL scene images must be requested on the render thread."
-            )
-        if self._capturing_image:
-            raise RuntimeError("Recursive OpenGL scene image capture is not supported.")
-        if self._context is None:
-            kept = self._kept_image_renderer
-            temporary = (
-                kept if kept is not None else OpenGLRenderer._image_renderer(self)
-            )
-            self._capturing_image = True
-            try:
-                try:
-                    pixels = temporary.render(nodes, config).pixels()
-                except BaseException:
-                    self._kept_image_renderer = None
-                    try:
-                        temporary.close()
-                    except BaseException:
-                        logger.exception(
-                            "Failed to close the temporary OpenGL image scope"
-                        )
-                    raise
-                if self._keep_image_renderer:
-                    self._kept_image_renderer = temporary
-                else:
-                    temporary.close()
-                return pixels
-            finally:
-                self._capturing_image = False
-        target = self._frame_buffer_object
-        bound = self.context.fbo
-        viewport = self.context.viewport
-        size = (config.pixel_width, config.pixel_height)
-        self._capturing_image = True
-        try:
-            with contextlib.ExitStack() as resources:
-                frame = self.get_frame_buffer_object(self.context, 0, size=size)
-                resources.callback(_release_framebuffer, frame)
-                drawing = self._snapshot_drawing
-                # A separate drawing state: the reuse kept for the live frames stays.
-                self._snapshot_drawing = SnapshotDrawing(self)
-                try:
-                    self._frame_buffer_object = frame
-                    # Drawn into its own framebuffer (_size_frame keeps it), and
-                    # not a frame of the run: the last frame can still be read.
-                    frame.use()
-                    self._draw(nodes, config)
-                    return self.get_frame()
-                finally:
-                    self._snapshot_drawing.release()
-                    self._snapshot_drawing = drawing
-                    self._frame_buffer_object = target
-                    # Bind again what was bound, unless it is gone: before the
-                    # first frame, that can be the framebuffer of an earlier image.
-                    for restore in (bound, target):
-                        if restore is not None and not isinstance(
-                            restore.mglo, moderngl.InvalidObject
-                        ):
-                            restore.use()
-                            break
-                    self.context.viewport = viewport
-        finally:
-            self._capturing_image = False
 
     def get_frame_buffer_object(
         self,

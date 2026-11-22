@@ -79,6 +79,16 @@ RULES: list[tuple[str, str, str]] = [
             "manim.renderer.extract",
         )
     ),
+    *(
+        (
+            importer,
+            f"manim.renderer.{package}",
+            "scenes, the Manager and the run loop reach renderers through their"
+            " factories (manim.renderer.backends), never a renderer package",
+        )
+        for importer in ("manim.scene", "manim.manager", "manim._run")
+        for package in ("cairo", "opengl")
+    ),
 ]
 
 
@@ -219,6 +229,16 @@ def test_exceptions_are_still_needed():
             "manim.renderer.opengl.renderer",
             "manim._run.frames",
             _rule("manim.renderer.opengl", "manim._run"),
+        ),
+        (
+            "manim.scene.scene",
+            "manim.renderer.opengl.renderer",
+            _rule("manim.scene", "manim.renderer.opengl"),
+        ),
+        (
+            "manim.manager",
+            "manim.renderer.cairo.renderer",
+            _rule("manim.manager", "manim.renderer.cairo"),
         ),
     ],
 )

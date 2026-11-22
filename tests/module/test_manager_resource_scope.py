@@ -111,7 +111,7 @@ def test_scene_renderer_binding_cannot_be_replaced(managed_scene):
     renderer = scene.renderer
     with scene._get_manager() as manager:
         renderer.render(*manager._frame())
-        with pytest.raises(RuntimeError, match="already bound"):
+        with pytest.raises(TypeError, match="renderer factory"):
             Scene(renderer=renderer)
         with pytest.raises(AttributeError):
             scene.renderer = Mock()
