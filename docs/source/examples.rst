@@ -31,6 +31,7 @@ Basic Concepts
 .. manim:: ManimCELogo
     :save_last_frame:
     :ref_classes: MathTex Circle Square Triangle
+    :title: None
 
     class ManimCELogo(Scene):
         def construct(self):

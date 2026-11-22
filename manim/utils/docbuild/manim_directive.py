@@ -17,6 +17,9 @@ Options
 
 ``hide_source``
     Show only the rendered output, not the code.
+``title``
+    Set the title or hide the title by passing ``None``.
+    When omitted ``Example: {scene_name}`` is used.
 ``no_autoplay``
     Do not start the video automatically.
 ``quality``
@@ -75,7 +78,7 @@ from typing import Any
 
 import jinja2
 from docutils import nodes
-from docutils.parsers.rst.directives import choice, flag
+from docutils.parsers.rst.directives import choice, flag, unchanged
 from sphinx.application import Sphinx
 from sphinx.environment import BuildEnvironment
 from sphinx.util import logging
@@ -122,6 +125,7 @@ class ManimDirective(SphinxDirective):
     optional_arguments = 0
     final_argument_whitespace = True
     option_spec = {
+        "title": unchanged,
         "hide_source": flag,
         "no_autoplay": flag,
         "quality": lambda arg: choice(
@@ -138,6 +142,8 @@ class ManimDirective(SphinxDirective):
 
     def run(self) -> list[nodes.Element]:
         clsname: str = self.arguments[0].strip()
+        title: str = self.options.get("title", f"Example: {clsname}").strip()
+        hide_title: bool = title == "None"
         save_as_gif = "save_as_gif" in self.options
         save_last_frame = "save_last_frame" in self.options
         if save_as_gif and save_last_frame:
@@ -179,6 +185,8 @@ class ManimDirective(SphinxDirective):
         rst = _TEMPLATE.render(
             id=clsname.lower(),
             clsname=clsname,
+            title=title,
+            hide_title=hide_title,
             uri=uri,
             format=format_,
             autoplay="no_autoplay" not in self.options,
@@ -326,8 +334,9 @@ _TEMPLATE = jinja2.Template(
 .. raw:: html
 
     <div id="{{ id }}" class="admonition admonition-manim-example">
-    <p class="admonition-title">Example: {{ clsname }}<a class="headerlink" href="#{{ id }}">¶</a></p>
-
+{% endif %}
+{% if not hide_source and not hide_title %}
+    <p class="admonition-title">{{ title }}<a class="headerlink" href="#{{ id }}">¶</a></p>
 {% endif %}
 {% if uri is none %}
 .. raw:: html
