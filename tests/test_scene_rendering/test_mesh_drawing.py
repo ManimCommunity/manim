@@ -341,3 +341,29 @@ def test_faces_are_sorted_by_their_own_middle():
         for face in mesh_faces(snapshot(mesh), ThreeDScene().camera)
     ]
     assert len({tuple(np.round(r, 6)) for r in references}) == 4
+
+
+def test_face_outlines_look_alike_on_both_renderers(using_opengl_renderer):
+    def surface():
+        plane = _plane(0, PURE_BLUE, resolution=(6, 4))
+        return [plane.set_stroke(PURE_RED, width=4)]
+
+    cairo, _ = _image("cairo", surface)
+    opengl, _ = _image("opengl", surface)
+
+    # Inside the surface the outlines land on the same pixels. (At its border,
+    # OpenGL draws only the half of the outline that lies on the surface. Cairo
+    # strokes each face's outline, so a side shared by two faces is drawn twice and
+    # comes out darker; OpenGL draws it once, half in each face.)
+    inside = np.s_[
+        int((0.5 - 1.9 / config.frame_height) * HEIGHT) : int(
+            (0.5 + 1.9 / config.frame_height) * HEIGHT
+        ),
+        int((0.5 - 2.9 / config.frame_width) * WIDTH) : int(
+            (0.5 + 2.9 / config.frame_width) * WIDTH
+        ),
+        0,
+    ]
+    outlined_cairo, outlined_opengl = cairo[inside] > 0.25, opengl[inside] > 0.25
+    assert outlined_cairo.sum() > 0
+    assert (outlined_cairo != outlined_opengl).mean() < 0.005

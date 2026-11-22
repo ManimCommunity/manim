@@ -23,6 +23,7 @@ from PIL.Image import Resampling
 from manim._config import config
 from manim.appearance.material import PbrMaterial
 from manim.renderer._lighting import AMBIENT, DEFAULT_LIGHT_INTENSITY
+from manim.renderer._mesh import faces_of
 from manim.renderer._paint import paint_colors, shows
 from manim.renderer.cairo.camera import ThreeDCamera
 from manim.renderer.snapshot import (
@@ -67,8 +68,16 @@ _STROKE_DTYPE = [
 _STROKE_FORMAT = "3f 3f 3f 3f 1f 4f"
 _POINT_DTYPE = [("point", np.float32, (3,)), ("color", np.float32, (4,))]
 _MESH_DTYPE = np.dtype(
-    [("point", "f4", 3), ("normal", "f4", 3), ("color", "f4", 4), ("uv", "f4", 2)]
+    [
+        ("point", "f4", 3),
+        ("normal", "f4", 3),
+        ("color", "f4", 4),
+        ("uv", "f4", 2),
+        ("edge", "f4", 4),
+        ("stroke", "f4", 4),
+    ]
 )
+_MESH_FORMAT = "3f 3f 4f 2f 4f 4f"
 _IMAGE_DTYPE = [("point", np.float32, (3,)), ("uv", np.float32, (2,))]
 # Two triangles over an image's corners, stored as upper left, upper right, lower
 # left, lower right; texture rows start at the top.
@@ -490,42 +499,96 @@ class SnapshotDrawing:
         count = len(mesh.points)
         if count == 0 or len(mesh.triangles) == 0:
             return
-        vertices = np.zeros(count, dtype=_MESH_DTYPE)
-        vertices["point"] = mesh.points
-        vertices["normal"] = self._normals.get(node, mesh)
-        rgbas = np.asarray(mesh.rgbas)
-        vertices["color"] = (
-            rgbas if len(rgbas) == count else np.resize(rgbas, (count, 4))
-        )
         texture = None
         if len(mesh.uvs) == count:
             texture = self._textures.get(node, "texture", mesh.texture)
         if texture is not None:
-            vertices["uv"] = mesh.uvs
             texture.use(0)
-        indices = np.ascontiguousarray(mesh.triangles, dtype="i4")
-        if mesh.depth_test and (rgbas[:, 3] < 1).any():
+        if mesh.stroke_width > 0:
+            vertices, indices = self._faceted(node, mesh, texture is not None)
+        else:
+            vertices = np.zeros(count, dtype=_MESH_DTYPE)
+            vertices["point"] = mesh.points
+            vertices["normal"] = self._normals.get(node, mesh)
+            rgbas = np.asarray(mesh.rgbas)
+            vertices["color"] = (
+                rgbas if len(rgbas) == count else np.resize(rgbas, (count, 4))
+            )
+            if texture is not None:
+                vertices["uv"] = mesh.uvs
+            vertices["edge"] = 1
+            indices = np.ascontiguousarray(mesh.triangles, dtype="i4")
+        if mesh.depth_test and (vertices["color"][:, 3] < 1).any():
             # Translucent: show only the front-most layer of the mesh, so that how
             # its triangles are ordered does not show.
             framebuffer = self._target.framebuffer
             framebuffer.color_mask = False, False, False, False
             try:
                 self._pass(
-                    "mesh", vertices, "3f 3f 4f 2f", moderngl.TRIANGLES, indices, True
+                    "mesh", vertices, _MESH_FORMAT, moderngl.TRIANGLES, indices, True
                 )
             finally:
                 framebuffer.color_mask = True, True, True, True
+        # Outlines are as wide as a stroke on the Cairo renderer, half in each face.
+        pixels_per_unit = self._target.size[1] / self._target.view.frame_shape[1]
         self._pass(
             "mesh",
             vertices,
-            "3f 3f 4f 2f",
+            _MESH_FORMAT,
             moderngl.TRIANGLES,
             indices=indices,
             depth_test=mesh.depth_test,
             has_texture=float(texture is not None),
             image=0,
+            edge_width=0.5 * 0.01 * float(mesh.stroke_width) * pixels_per_unit,
             **self._lighting(node, mesh.material),
         )
+
+    def _faceted(
+        self, node: RNode, mesh: RMesh, textured: bool
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """Vertices of each triangle of its own, so that the shader can outline the
+        faces (polygons as fans of triangles), and the indices of the triangles.
+
+        Each corner carries its barycentric coordinates in its triangle (``edge``,
+        0 on the side opposite the corner); a side of the triangle that is not a
+        side of the face (inside a fan) gets 1 at every corner, so it is never
+        outlined.
+        """
+        faces = faces_of(mesh)
+        count, k = faces.shape
+        fan = np.array([[0, i, i + 1] for i in range(1, k - 1)])
+        # Corner indices into the mesh, three per triangle, triangles of a face
+        # in order.
+        corners = faces[:, fan].reshape(-1)
+        vertices = np.zeros(len(corners), dtype=_MESH_DTYPE)
+        vertices["point"] = np.asarray(mesh.points)[corners]
+        vertices["normal"] = self._normals.get(node, mesh)[corners]
+        rgbas = np.asarray(mesh.rgbas)
+        vertices["color"] = (
+            rgbas[corners] if len(rgbas) == len(mesh.points) else rgbas[0]
+        )
+        strokes = np.asarray(mesh.stroke_rgbas)
+        per_face = 3 * (k - 2)
+        vertices["stroke"] = (
+            np.repeat(strokes, per_face, axis=0)
+            if len(strokes) == count
+            else strokes[0]
+        )
+        if textured:
+            vertices["uv"] = np.asarray(mesh.uvs)[corners]
+        edges = np.ones((k - 2, 3, 4), dtype=np.float32)
+        for t, i in enumerate(range(1, k - 1)):
+            # The triangle (0, i, i + 1): the side opposite corner 0 is a side of
+            # the face; (0, i + 1) only for the last, (0, i) only for the first.
+            sides = (True, i + 1 == k - 1, i == 1)
+            for corner in range(3):
+                for opposite, is_side in enumerate(sides):
+                    if is_side:
+                        edges[t, corner, opposite] = float(corner == opposite)
+        vertices["edge"] = np.tile(edges.reshape(-1, 4), (count, 1))
+        indices = np.arange(len(corners), dtype="i4")
+        return vertices, indices
 
     def _lighting(self, node: RNode, material: Material) -> dict[str, Any]:
         """The lighting uniforms of the mesh shader (see ``include/lighting.glsl``).
