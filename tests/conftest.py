@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import os
 import sys
 from pathlib import Path
 
@@ -52,6 +53,12 @@ def pytest_addoption(parser):
 
 def pytest_configure(config):
     config.addinivalue_line("markers", "skip_end_to_end: mark test as end_to_end test")
+    # Compare every reused render snapshot with a fresh one (see
+    # manim.renderer.extract.Extractor), here and in manim subprocesses.
+    os.environ["MANIM_CHECK_SNAPSHOTS"] = "1"
+    import manim.renderer.extract
+
+    manim.renderer.extract.CHECK_SNAPSHOTS = True
 
 
 def pytest_collection_modifyitems(config, items):

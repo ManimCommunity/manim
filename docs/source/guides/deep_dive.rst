@@ -999,6 +999,13 @@ they stay the same; only the rest is drawn. In our toy example, the square is th
 only mobject and changes in every frame, so every frame draws it. Both renderers
 work this way (see :mod:`manim.renderer._reuse`).
 
+A snapshot is a function of the mobject's own fields: an :class:`.Extractor` keeps
+the snapshot of each mobject and reuses it while the mobject's field versions stay
+the same, so unchanged mobjects cost almost nothing to look at. Classes that draw
+from other state set ``_drawn_from_fields = False`` and are looked at anew in every
+frame. With ``MANIM_CHECK_SNAPSHOTS=1``, as in Manim's tests, every reused snapshot
+is checked against a fresh one.
+
 Things get a bit technical here, and at some point it is more efficient to delve into
 the implementation -- but the drawing process can be summarized as follows:
 

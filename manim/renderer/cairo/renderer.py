@@ -16,6 +16,7 @@ from ...scene.scene_file_writer import SceneFileWriter
 from ...utils.iterables import list_update
 from .._execution import _RendererExecutionView
 from .._reuse import PrefixMemo, node_key, view_key
+from ..extract import Extractor
 from ..protocol import RenderConfig, RendererCapabilities, RendererState
 from .rendering import _CairoDrawingContext, reusable_boundary
 from .target import _CairoRasterSettings, _CairoRenderTarget, _ImageFiles
@@ -72,6 +73,7 @@ class CairoRenderer(_RendererExecutionView):
         # The drawing of the leading nodes of a frame of the whole scene that did
         # not change, and their keys.
         self._memo = PrefixMemo()
+        self._extractor = Extractor()
         self._saved_pixels: RGBAPixelArray | None = None
         self._state = RendererState.UNOPENED
 
@@ -199,6 +201,7 @@ class CairoRenderer(_RendererExecutionView):
                         target=sub_target,
                         image_resolver=lambda node: None,
                         use_z_index=view_camera.use_z_index,
+                        extractor=self._extractor,
                     ).draw(
                         mobject_list,
                         include_submobjects=include_submobjects,
@@ -229,6 +232,7 @@ class CairoRenderer(_RendererExecutionView):
             target=target,
             image_resolver=resolve_image,
             use_z_index=camera.use_z_index,
+            extractor=self._extractor,
         )
         context.start_frame()
         nodes = context.nodes(

@@ -8,7 +8,9 @@ reference come from the bounding box of the mobject's own anchors.
 
 from __future__ import annotations
 
-from collections.abc import Iterable
+import os
+import weakref
+from collections.abc import Iterable, Mapping
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -47,7 +49,7 @@ from manim.utils.iterables import list_difference_update
 if TYPE_CHECKING:
     from manim.typing import FloatRGBA_Array, Point3D
 
-__all__ = ["extract", "placement_of", "snapshot"]
+__all__ = ["Extractor", "extract", "placement_of", "snapshot"]
 
 _UNLIT = UnlitMaterial()
 _LEGACY_SHADED = LegacyShaded()
@@ -70,31 +72,136 @@ def extract(
     left out. With ``include_submobjects=False``, ``mobjects`` are taken as given.
     Plain :class:`~.Mobject` instances are always left out; they have nothing to draw.
 
+    Every snapshot is taken anew; an :class:`Extractor` reuses those of unchanged
+    mobjects.
+
     Raises
     ------
     TypeError
         If a mobject is of a type no renderer can draw.
     """
-    if not include_submobjects:
-        members = list(mobjects)
-    else:
-        members = extract_mobject_family_members(
-            mobjects,
-            use_z_index=use_z_index,
-            only_those_with_points=True,
-        )
-        excluded = list(excluded_mobjects)
-        if excluded:
-            members = list_difference_update(
-                members,
-                extract_mobject_family_members(excluded, use_z_index=use_z_index),
-            )
     nodes: list[RNode] = []
-    for mobject in members:
+    for mobject in _members(
+        mobjects, include_submobjects, use_z_index, excluded_mobjects
+    ):
         node = snapshot(mobject)
         if node is not None:
             nodes.append(node)
     return nodes
+
+
+#: Compare every reused snapshot with a fresh one (set in Manim's tests).
+CHECK_SNAPSHOTS = os.environ.get("MANIM_CHECK_SNAPSHOTS", "") not in ("", "0")
+
+
+class Extractor:
+    """Takes render snapshots like :func:`extract`, reusing the snapshot of a mobject
+    while its fields keep their versions.
+
+    This relies on one rule: a snapshot is a function of the mobject's own fields.
+    Mobjects whose snapshot has no key (see :attr:`.RNode.key`: classes with
+    ``_drawn_from_fields = False``, camera views, paths masked by an image object)
+    and mobjects with a fixed orientation, whose center comes from a function, are
+    taken anew every time. With :data:`CHECK_SNAPSHOTS` (``MANIM_CHECK_SNAPSHOTS=1``,
+    as in Manim's tests), every reused snapshot is compared with a fresh one, so a
+    class that breaks the rule fails instead of showing stale pixels.
+
+    Whoever draws frames owns an extractor; it holds the mobjects it saw weakly.
+    """
+
+    def __init__(self) -> None:
+        self._snapshots: weakref.WeakKeyDictionary[Mobject, tuple[int, RNode]] = (
+            weakref.WeakKeyDictionary()
+        )
+
+    def extract(
+        self,
+        mobjects: Iterable[Mobject],
+        *,
+        include_submobjects: bool = True,
+        use_z_index: bool = True,
+        excluded_mobjects: Iterable[Mobject] = (),
+    ) -> list[RNode]:
+        """Snapshots as :func:`extract` returns them."""
+        nodes: list[RNode] = []
+        snapshots = self._snapshots
+        for mobject in _members(
+            mobjects, include_submobjects, use_z_index, excluded_mobjects
+        ):
+            revision = _revision(mobject.__dict__.get("_field_versions", {}))
+            cached = snapshots.get(mobject)
+            node: RNode | None
+            if cached is not None and cached[0] == revision:
+                node = cached[1]
+                if CHECK_SNAPSHOTS:
+                    _check_unchanged(mobject, node)
+            else:
+                node = snapshot(mobject)
+                # The orientation center comes from a function, called every time.
+                if (
+                    node is not None
+                    and node.key is not None
+                    and mobject.fixed_orientation is None
+                ):
+                    snapshots[mobject] = (revision, node)
+                else:
+                    snapshots.pop(mobject, None)
+            if node is not None:
+                nodes.append(node)
+        return nodes
+
+
+def _members(
+    mobjects: Iterable[Mobject],
+    include_submobjects: bool,
+    use_z_index: bool,
+    excluded_mobjects: Iterable[Mobject],
+) -> list[Mobject]:
+    if not include_submobjects:
+        return list(mobjects)
+    members = extract_mobject_family_members(
+        mobjects,
+        use_z_index=use_z_index,
+        only_those_with_points=True,
+    )
+    excluded = list(excluded_mobjects)
+    if excluded:
+        members = list_difference_update(
+            members,
+            extract_mobject_family_members(excluded, use_z_index=use_z_index),
+        )
+    return members
+
+
+def _revision(versions: Mapping[str, int]) -> int:
+    """Changes whenever a field of the mobject is assigned: the largest version.
+
+    Versions come from one counter that only goes up (see
+    :mod:`manim.utils.versioned_fields`), so every assignment, also the first one of
+    a field, gives the mobject a larger largest version.
+    """
+    return max(versions.values(), default=0)
+
+
+def _check_unchanged(mobject: Mobject, node: RNode) -> None:
+    if not _same(node, snapshot(mobject)):
+        raise AssertionError(
+            f"The render snapshot of {mobject!r} changed although none of its fields "
+            "did. Draw it from its own fields, or set "
+            f"{type(mobject).__name__}._drawn_from_fields = False."
+        )
+
+
+def _same(a: Any, b: Any) -> bool:
+    if a is b:
+        return True
+    if isinstance(a, np.ndarray) or isinstance(b, np.ndarray):
+        return bool(np.array_equal(a, b))
+    if isinstance(a, tuple) and isinstance(b, tuple):
+        return len(a) == len(b) and all(_same(x, y) for x, y in zip(a, b, strict=True))
+    if isinstance(a, Mapping) and isinstance(b, Mapping):
+        return a.keys() == b.keys() and all(_same(a[k], b[k]) for k in a)
+    return bool(a == b)
 
 
 def snapshot(mobject: Mobject) -> RNode | None:
@@ -153,11 +260,8 @@ def _key(
     placement: Placement,
 ) -> Any:
     """The node's key (see :attr:`.RNode.key`): its uid, the largest version of its
-    fields, and the point a fixed orientation follows (not a field value); ``None``
-    for mobjects that can change without a field changing.
-
-    Versions come from one counter (see :mod:`manim.utils.versioned_fields`), so the
-    largest one changes whenever any field of the mobject is assigned.
+    fields (see :func:`_revision`), and the point a fixed orientation follows (not a
+    field value); ``None`` for mobjects that can change without a field changing.
     """
     if (
         not mobject._drawn_from_fields
@@ -174,7 +278,7 @@ def _key(
         if isinstance(placement, FacingCamera)
         else None
     )
-    return (mobject.uid, max(versions.values(), default=0), center)
+    return (mobject.uid, _revision(versions), center)
 
 
 def _payload(mobject: Mobject) -> tuple[Payload | None, dict[str, tuple[str, ...]]]:

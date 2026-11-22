@@ -14,7 +14,7 @@ from moderngl import Framebuffer
 from PIL import Image
 
 from manim._config import config, logger
-from manim.renderer.extract import extract
+from manim.renderer.extract import Extractor
 from manim.typing import Point3D
 from manim.utils.iterables import list_update
 
@@ -118,6 +118,7 @@ class OpenGLRenderer(_RendererExecutionView):
         self._camera_state: CameraState = self.camera._state()
         self.camera_view: _CameraView = _CameraView.of(self._camera_state)
         self._snapshot_drawing = SnapshotDrawing(self)
+        self._extractor = Extractor()
         self._camera_view_targets: dict[int, _ViewTarget] = {}
         self.pressed_keys: set[int] = set()
         self.window: Window | None = None
@@ -458,7 +459,7 @@ class OpenGLRenderer(_RendererExecutionView):
         """Draw the scene's mobjects from render snapshots, camera views first."""
         mobjects = list_update(scene.mobjects, scene.foreground_mobjects)
         views = self._draw_camera_views(mobjects)
-        nodes = extract(mobjects, use_z_index=self.camera.use_z_index)
+        nodes = self._extractor.extract(mobjects, use_z_index=self.camera.use_z_index)
         pixel_shape = self.get_pixel_shape()
         assert pixel_shape is not None
         target = DrawTarget(
@@ -516,7 +517,7 @@ class OpenGLRenderer(_RendererExecutionView):
             )
             view_target.framebuffer.use()
             view_target.framebuffer.clear(*_background_rgba(camera))
-            nodes = extract(
+            nodes = self._extractor.extract(
                 mobjects,
                 use_z_index=camera.use_z_index,
                 excluded_mobjects=[image_mobject],

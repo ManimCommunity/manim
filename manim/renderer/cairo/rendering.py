@@ -22,7 +22,7 @@ from manim.renderer._view import (
     sort_for_display,
     view_transform_center,
 )
-from manim.renderer.extract import extract
+from manim.renderer.extract import Extractor, extract
 from manim.renderer.snapshot import (
     RCameraView,
     RImage,
@@ -79,9 +79,11 @@ class _CairoDrawingContext:
         target: _CairoRenderTarget,
         image_resolver: _ImageResolver,
         use_z_index: bool = True,
+        extractor: Extractor | None = None,
     ) -> None:
         self.camera = camera
         self.use_z_index = use_z_index
+        self.extractor = extractor
         self.target = target
         self.image_resolver = image_resolver
         self._path_cache: _PathCache | None = None
@@ -97,7 +99,8 @@ class _CairoDrawingContext:
         their faces, sorted by depth for a perspective view.
         """
         nodes = []
-        for node in extract(
+        take = extract if self.extractor is None else self.extractor.extract
+        for node in take(
             mobjects,
             include_submobjects=include_submobjects,
             use_z_index=self.use_z_index,
