@@ -531,6 +531,11 @@ def convert_to_github(body: str, docs_version: str = "stable") -> str:
         rf"https://github.com/{REPO}/issues/\1",
         body,
     )
+    body = re.sub(
+        r"\{stack\}`(\d+)`",
+        rf"[Stack #\1](https://github.com/{REPO}/stack/\1)",
+        body,
+    )
     body = re.sub(r"\{user\}`([a-zA-Z0-9_-]+)`", r"@\1", body)
     body = re.sub(r"\{class\}`\.?(.*?)`", r"`\1`", body)
     body = re.sub(

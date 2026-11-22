@@ -28,7 +28,7 @@ and changes to bring the cairo and the OpenGL renderers closer together.
 
 ### Highlights
 
-A stack of six PRs ({pr}`4989`, {pr}`5002`, {pr}`5004`, {pr}`5005`,
+The {stack}`5104` of six PRs ({pr}`4989`, {pr}`5002`, {pr}`5004`, {pr}`5005`,
 {pr}`5006`, {pr}`5059`) restructures the rendering pipeline:
 
 - **Cameras describe views, renderers draw.** Cairo cameras no longer hold
