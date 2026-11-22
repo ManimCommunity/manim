@@ -21,7 +21,7 @@ def test_failure_discards_actual_unsealed_segment(tmp_path, monkeypatch):
     ):
         scene = Scene()
         manager = Manager(scene)
-        writer = scene.renderer.file_writer
+        writer = scene._get_manager().file_writer
         failure = KeyboardInterrupt("construct interrupted")
         target = tmp_path / "partial.mp4"
         jobs = []
@@ -55,7 +55,7 @@ def test_cleanup_failure_does_not_replace_primary_exception(dry_run, monkeypatch
     monkeypatch.setattr(manager, "construct", Mock(side_effect=failure))
     abort = Mock(side_effect=RuntimeError("cleanup failed"))
     report = Mock()
-    monkeypatch.setattr(scene.renderer.file_writer, "abort_encode_jobs", abort)
+    monkeypatch.setattr(scene._get_manager().file_writer, "abort_encode_jobs", abort)
     monkeypatch.setattr("manim.manager.logger.error", report)
     try:
         with pytest.raises(KeyboardInterrupt) as caught:

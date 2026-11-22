@@ -76,7 +76,6 @@ def test_real_evaluation_matches_uncached_render(settings, monkeypatch):
     manager = Manager(evaluated)
     reject = Mock(side_effect=AssertionError("raster/output policy executed"))
     monkeypatch.setattr(evaluated.renderer, "_start_animation", reject)
-    monkeypatch.setattr(evaluated.renderer, "scene_finished", reject)
     monkeypatch.setattr("manim.manager.SceneFileWriter", reject)
     monkeypatch.setattr(evaluated.renderer, "render", reject)
     monkeypatch.setattr("manim._run.cache.get_hash_from_play_call", reject)
@@ -134,7 +133,7 @@ def test_unsupported_requests_raise(settings, demand):
     class Unsupported(Scene):
         def construct(self):
             if demand == "writer":
-                self.renderer.file_writer
+                self._get_manager().file_writer
             elif demand == "interactive":
                 self.interactive_embed()
             else:

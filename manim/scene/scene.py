@@ -279,10 +279,13 @@ class Scene:
             logger.addHandler(self._log_buffer)
             # Detach it if the scene is never managed and goes away.
             weakref.finalize(self, _detach_log_handler, self._log_buffer)
-        self.renderer.init_scene(
-            self,
-            self.session_spec,
-        )
+        # A renderer keeps state for the frames of one scene.
+        if getattr(self._renderer, "_scene_bound", False) is True:
+            raise RuntimeError("This renderer is already bound to a Scene.")
+        self._renderer._scene_bound = True
+        if isinstance(self._renderer, OpenGLRenderer):
+            # The preview window shows this scene and sends it input.
+            self._renderer.init_scene(self, self.session_spec)
 
         self.mobjects: list[Mobject] = []
         # TODO, remove need for foreground mobjects
@@ -1264,7 +1267,7 @@ class Scene:
                 "Disabling interactive embed as 'skip_animation_preview' is enabled",
             )
             return False
-        elif self.renderer.file_writer.output_spec.enabled:
+        elif self.session_spec.output.enabled:
             logger.warning(
                 "Disabling interactive embed while media output is enabled",
             )
@@ -1448,7 +1451,7 @@ class Scene:
         if not self.session_spec.presentation.live_preview:
             logger.warning("Called embed() while no live preview window is available.")
             return
-        if self.renderer.file_writer.output_spec.enabled:
+        if self.session_spec.output.enabled:
             logger.warning("embed() is skipped while writing to a file.")
             return
 

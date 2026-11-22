@@ -129,7 +129,7 @@ def _render_chapters(scene_class, tmp_path, **options):
     ):
         scene = scene_class()
         scene.render()
-        with av.open(scene.renderer.file_writer.movie_file_path) as video:
+        with av.open(scene._get_manager().file_writer.movie_file_path) as video:
             return [
                 (
                     chapter["metadata"]["title"],
@@ -174,7 +174,7 @@ def test_mp4_section_chapters(config, tmp_path, with_sound, save_sections):
         for _ in range(2):
             scene = ChapterScene()
             scene.render()
-            with av.open(scene.renderer.file_writer.movie_file_path) as video:
+            with av.open(scene._get_manager().file_writer.movie_file_path) as video:
                 chapters = video.chapters()
                 assert bool(video.streams.audio) == with_sound
                 assert len(list(video.decode(video=0))) == 6
@@ -197,7 +197,7 @@ def test_mp4_section_chapters(config, tmp_path, with_sound, save_sections):
             if save_sections:
                 # Writing the chapters leaves the sections to the section videos,
                 # which skip the empty trailing section like the chapters do.
-                writer = scene.renderer.file_writer
+                writer = scene._get_manager().file_writer
                 index = json.loads(writer.output_plan.section_index.read_text())
                 assert [entry["name"] for entry in index] == [
                     "开场：Introduction",

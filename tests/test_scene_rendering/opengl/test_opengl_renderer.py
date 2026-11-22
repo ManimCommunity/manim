@@ -20,7 +20,7 @@ def test_file_output_disables_window(
     renderer = scene.renderer
     scene.render()
     assert renderer.window is None
-    assert_file_exists(renderer.file_writer.final_file_path)
+    assert_file_exists(scene._get_manager().file_writer.final_file_path)
 
 
 @pytest.mark.skip(reason="Temporarily skip due to failing in Windows CI")
@@ -36,7 +36,7 @@ def test_live_preview_opengl_render_with_movies(
     with scene._get_manager():
         scene.render()
         assert renderer.window is not None
-        assert_file_exists(renderer.file_writer.final_file_path)
+        assert_file_exists(scene._get_manager().file_writer.final_file_path)
     assert renderer.window is None
 
 
@@ -88,7 +88,7 @@ def test_get_frame_with_live_preview_enabled(config, using_opengl_renderer):
     assert renderer.window is None
     renderer.open()
     assert renderer.window is not None
-    assert not renderer.file_writer.output_spec.enabled
+    assert not scene._get_manager().file_writer.output_spec.enabled
     frame = renderer.render(*scene._get_manager()._frame()).pixels()
 
     # height and width are flipped

@@ -300,3 +300,30 @@ Drawing frames
   creates one. Both options are part of the play cache's key.
 - Frames are drawn at the size the scene was created with
   (``scene.session_spec.pixel_size``); renderers have no pixel size of their own.
+
+Removed renderer methods
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Renderers only draw (see :class:`.Renderer`). These methods are gone:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Removed
+     - Use instead
+   * - ``renderer.file_writer``
+     - ``scene.manager.file_writer`` (or ``scene._get_manager().file_writer``)
+   * - ``renderer.play(scene, ...)``
+     - :meth:`.Scene.play`
+   * - ``renderer.scene_finished(scene)``
+     - Nothing: :meth:`.Manager.render` finishes the movie and saves the last
+       frame.
+   * - ``renderer.freeze_current_frame(duration)``, ``renderer.add_frame(...)``
+     - :meth:`.Scene.pause` (a frozen :meth:`.Scene.wait`)
+   * - ``renderer.update_skipping_status()``
+     - Nothing: each play checks whether it is part of the output.
+   * - ``renderer.show_frame(scene)``
+     - ``scene.get_image().show()``
+
+A renderer draws the frames of one scene: passing a renderer that another scene
+uses to :class:`.Scene` raises ``RuntimeError``.

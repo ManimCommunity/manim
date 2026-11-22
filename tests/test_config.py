@@ -641,11 +641,13 @@ def test_from_to_animations_only_first_animation(config):
             s = Square()
             self.add(s)
             self.play(s.animate.scale(2))
-            self.renderer.update_skipping_status()
             self.after_first_animation = True
             self.play(s.animate.scale(2))
+            self.after_second_animation = True
 
     scene = SceneWithTwoAnimations()
     scene.render()
 
-    assert scene.after_first_animation is False
+    # The scene ends when the second animation starts.
+    assert scene.after_first_animation is True
+    assert not hasattr(scene, "after_second_animation")

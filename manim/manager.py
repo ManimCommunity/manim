@@ -53,7 +53,6 @@ if TYPE_CHECKING:
     from .renderer.snapshot import RNode
     from .scene.scene import Scene
     from .timeline import Timeline
-    from .typing import RGBAPixelArray
 
 __all__ = ["Manager", "RenderedFrame"]
 
@@ -320,11 +319,10 @@ class Manager(Generic[SceneT]):
         """The scene's file writer, created on first access.
 
         The writer uses ``scene.file_writer_settings``. :meth:`render` creates it
-        before calling :meth:`setup`; ``renderer.file_writer`` returns the same
-        writer. Getting it starts the output: section, caption, and sound calls
-        made before go to it, and the scene can no longer be evaluated. Both
-        properties are read-only. Accessing this property during :meth:`evaluate`
-        raises ``RuntimeError``.
+        before calling :meth:`setup`. Getting it starts the output: section,
+        caption, and sound calls made before go to it, and the scene can no
+        longer be evaluated. It is read-only. Accessing this property during
+        :meth:`evaluate` raises ``RuntimeError``.
         """
         return self._ensure_file_writer()
 
@@ -665,9 +663,10 @@ class Manager(Generic[SceneT]):
     def post_construct(self) -> None:
         """Finalize output after scene construction and tear-down.
 
-        This validates empty video output, asks the renderer to finish the scene,
-        and logs the number of played animations. :meth:`tear_down` runs first,
-        so its changes to the scene are included in last-frame image output.
+        This validates empty video output, finishes the movie, saves the last
+        frame if the output asks for it, and logs the number of played
+        animations. :meth:`tear_down` runs first, so its changes to the scene are
+        included in last-frame image output.
         """
         output = self.output_spec
         empty_video_output = self.num_plays == 0 and output.is_video
@@ -678,7 +677,20 @@ class Manager(Generic[SceneT]):
                 "Use --format=png to save its last frame.",
             )
 
-        self.renderer.scene_finished(self.scene)
+        writer = self.file_writer
+        if self.num_plays and (output.is_video or output.is_image_sequence):
+            writer.finish()
+        # Interactive scenes end in their window, without the automatic fallback.
+        fallback = (
+            not self.num_plays
+            and output.fallback_to_still
+            and not self.scene.interactive_mode
+        )
+        if output.is_still or fallback:
+            # Skipped and cached plays do not draw: draw the final state.
+            frame = self.renderer.render(*self._frame())
+            writer.save_image(frame.pixels())
+        self._show_final_state()
 
         if (
             empty_video_output
@@ -695,6 +707,15 @@ class Manager(Generic[SceneT]):
             logger.info(
                 f"Rendered {str(self.scene)}\nPlayed {self.num_plays} animations",
             )
+
+    def _show_final_state(self) -> None:
+        """Show the scene's final state in the preview window, if there is one.
+
+        Skipped and cached plays do not draw, so the window may not show it yet.
+        """
+        if self.session_spec.presentation.live_preview:
+            self.renderer.render(*self._frame())
+            self.renderer._present_frame(self.scene, 0)
 
     def tear_down(self) -> None:
         """Run the managed scene's :meth:`~manim.scene.scene.Scene.tear_down` hook."""
@@ -865,16 +886,6 @@ class Manager(Generic[SceneT]):
         loop = self._loop
         loop.listeners = (*loop.listeners, listener)
 
-    def _update_skipping_status(self) -> None:
-        """Set :attr:`skip_animations` for the next play, for old renderer callers.
-
-        Raises
-        ------
-        EndSceneEarlyException
-            If the next play lies after ``config.upto_animation_number``.
-        """
-        self.skip_animations = not self._loop.selection.start_play(self.num_plays)
-
     def _play(
         self, *args: Animation | Mobject | _AnimationBuilder, **kwargs: Any
     ) -> None:
@@ -910,22 +921,6 @@ class Manager(Generic[SceneT]):
         if self._wants_frame_pixels:
             self.file_writer.write_frame(frame.pixels())
         self.renderer._present_frame(scene, frame_offset)
-
-    def _legacy_add_frame(
-        self, frame: RGBAPixelArray | None, num_frames: int = 1
-    ) -> None:
-        """Write frames and advance time for callers of CairoRenderer.add_frame.
-
-        Like a play, the frames advance the clock whether or not they are part
-        of the output, so that scene time does not depend on the cache. Only
-        plays mark scene time as shown in the movie: frames added during a play
-        lie in its span, and frames added between plays are not written to a
-        movie, which has no open segment then. During evaluation, which writes
-        no media, the frames go to the evaluation's listeners; ``frame`` can then
-        be None for the scene's current state.
-        """
-        self._validate_execution()
-        self._mode.add_frames(self, frame, num_frames)
 
     def next_section(
         self,

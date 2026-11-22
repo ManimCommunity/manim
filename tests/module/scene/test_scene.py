@@ -74,7 +74,7 @@ def test_subcaption(dry_run):
         subcaption_duration=1.5,
         subcaption_offset=0.5,
     )
-    subcaptions = scene.renderer.file_writer.subcaptions
+    subcaptions = scene._get_manager().file_writer.subcaptions
     assert len(subcaptions) == 2
     assert subcaptions[0].start == datetime.timedelta(seconds=0)
     assert subcaptions[0].end == datetime.timedelta(seconds=1)

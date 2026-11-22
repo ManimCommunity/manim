@@ -97,7 +97,7 @@ def test_frozen_frame(using_temp_config, disabling_caching):
 def test_t_values_with_cached_data(config, using_temp_config, monkeypatch):
     """Test the proper generation and use of the t values when an animation is cached."""
     scene = SceneWithMultipleCalls()
-    writer = scene.renderer.file_writer
+    writer = scene._get_manager().file_writer
     # Simulate cache hits without assembling nonexistent cached segments.
     monkeypatch.setattr(writer, "is_already_cached", Mock(return_value=True))
     monkeypatch.setattr(writer, "finish", Mock())
@@ -129,9 +129,9 @@ def test_png_sequence_evaluates_every_frame(config, using_temp_config):
     scene.render()
 
     assert scene.update_to_time.call_count == config.frame_rate
-    assert scene.renderer.file_writer.frame_count == config.frame_rate
-    assert scene.renderer.file_writer.final_file_path.is_dir()
-    assert (scene.renderer.file_writer.final_file_path / "0000.png").is_file()
+    assert scene._get_manager().file_writer.frame_count == config.frame_rate
+    assert scene._get_manager().file_writer.final_file_path.is_dir()
+    assert (scene._get_manager().file_writer.final_file_path / "0000.png").is_file()
 
 
 def test_animate_with_changed_custom_attribute(using_temp_config):

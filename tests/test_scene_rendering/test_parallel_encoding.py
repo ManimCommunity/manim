@@ -826,7 +826,9 @@ def test_end_scene_early_keeps_completed_partials(config, tmp_path):
     ):
         scene = EarlyEndScene()
         scene.render()
-        partial_directory = Path(scene.renderer.file_writer.partial_movie_directory)
+        partial_directory = Path(
+            scene._get_manager().file_writer.partial_movie_directory
+        )
 
     partial_movies = sorted(path.name for path in partial_directory.glob("*.mp4"))
     assert partial_movies == ["uncached_00000.mp4", "uncached_00001.mp4"]

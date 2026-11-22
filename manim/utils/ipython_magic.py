@@ -154,7 +154,7 @@ else:
                         renderer.window.close()
 
                 output_file = getattr(
-                    scene.renderer.file_writer,
+                    scene._get_manager().file_writer,
                     "final_file_path",
                     None,
                 )

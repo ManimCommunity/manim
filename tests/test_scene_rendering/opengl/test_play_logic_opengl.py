@@ -81,7 +81,7 @@ def test_frozen_frame(using_temp_opengl_config, disabling_caching):
 def test_t_values_with_cached_data(using_temp_opengl_config, monkeypatch):
     """Test the proper generation and use of the t values when an animation is cached."""
     scene = SceneWithMultipleCalls()
-    writer = scene.renderer.file_writer
+    writer = scene._get_manager().file_writer
     # Simulate cache hits without assembling nonexistent cached segments.
     monkeypatch.setattr(writer, "is_already_cached", Mock(return_value=True))
     monkeypatch.setattr(writer, "finish", Mock())

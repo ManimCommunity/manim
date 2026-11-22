@@ -63,14 +63,18 @@ RULES: list[tuple[str, str, str]] = [
         (
             f"manim.renderer.{package}",
             forbidden,
-            "renderers draw the snapshots and configuration they are given: they read"
-            " no mobject or camera, not even through the frame builder or extraction",
+            "renderer packages import only layers 1-2: they draw the snapshots and"
+            " configuration they are given, and know no mobject, camera, scene, run"
+            " or output, not even through the frame builder or extraction",
         )
-        for package in ("cairo", "opengl")
+        for package in ("cairo", "opengl", "_view", "_reuse", "projection")
         for forbidden in (
             "manim.mobject",
             "manim.animation",
             "manim.camera",
+            "manim.scene",
+            "manim.manager",
+            "manim._run",
             "manim.renderer.frame",
             "manim.renderer.extract",
         )
@@ -205,6 +209,16 @@ def test_exceptions_are_still_needed():
             "manim.renderer.cairo.renderer",
             "manim.renderer.frame",
             _rule("manim.renderer.cairo", "manim.renderer.frame"),
+        ),
+        (
+            "manim.renderer.cairo.renderer",
+            "manim.scene.scene_file_writer",
+            _rule("manim.renderer.cairo", "manim.scene"),
+        ),
+        (
+            "manim.renderer.opengl.renderer",
+            "manim._run.frames",
+            _rule("manim.renderer.opengl", "manim._run"),
         ),
     ],
 )

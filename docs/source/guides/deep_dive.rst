@@ -288,10 +288,6 @@ continues as follows:
         max_files_cached=config.max_files_cached,
         assets_dir=...,
     )
-    self.renderer.init_scene(
-        self,
-        self.session_spec,
-    )
 
 The session specification separates *primary artifact* intent (an ``OutputSpec``
 which defines the type of file we wish Manim to create based on our scene) from
@@ -324,9 +320,8 @@ a name rather than overriding that format.
 The scene stores the output plan, video encoding settings, cache limits, and
 sound-asset directory in ``_SceneFileWriterSettings``. The :class:`.Manager` uses
 these settings to create a :class:`.SceneFileWriter` when rendering starts, before
-``setup()``. Accessing ``manager.file_writer`` or ``renderer.file_writer`` also
-creates this writer if needed. Both properties return the same writer for the
-rest of the scene.
+``setup()``. Accessing ``manager.file_writer`` also creates this writer if
+needed; it is the same writer for the rest of the scene.
 
 The writer uses the saved settings to encode and assemble media through ``libav``.
 It creates directories as it writes files. A snapshot from ``scene.get_image()``
@@ -390,9 +385,8 @@ The first three call the corresponding customizable scene hooks:
 After these hooks have run, :meth:`.Manager.post_construct` checks whether the
 resolved output can be finalized. An explicit video format for a scene without
 play calls raises an error instead of silently changing the requested artifact.
-Otherwise, the manager asks the renderer to finish the scene. For Cairo this
-calls :meth:`.CairoRenderer.scene_finished`, which tells the
-:class:`.SceneFileWriter` to finish any time-based output. For video output, the
+Otherwise, the manager tells the :class:`.SceneFileWriter` to finish any
+time-based output. For video output, the
 file writer waits for partial movie files that are still being encoded and
 combines them into the final movie. For last-frame PNG output, the animations
 run without drawing (see below), and a single image is drawn at the end.

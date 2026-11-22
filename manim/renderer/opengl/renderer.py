@@ -27,10 +27,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable, Iterator, Sequence
 
     from manim._config.render_session import RenderSessionSpec
-    from manim.animation.animation import Animation
-    from manim.mobject.mobject import Mobject, _AnimationBuilder
     from manim.scene.scene import Scene
-    from manim.scene.scene_file_writer import SceneFileWriter
     from manim.typing import (
         RGBAPixelArray,
     )
@@ -123,6 +120,8 @@ class OpenGLRenderer(_RendererExecutionView):
         self._frames_drawn = 0
         self._keep_image_renderer = False
         self._kept_image_renderer: OpenGLRenderer | None = None
+        #: Whether a scene draws with this renderer (one scene per renderer).
+        self._scene_bound = False
         self._state = RendererState.UNOPENED
         self._resources = contextlib.ExitStack()
         self._previous_renderer: weakref.ReferenceType[OpenGLRenderer] | None = None
@@ -146,8 +145,6 @@ class OpenGLRenderer(_RendererExecutionView):
             The scene to be rendered
         """
         self._ensure_not_closed()
-        if hasattr(self, "scene"):
-            raise RuntimeError("This renderer is already bound to a Scene.")
         self._bind(
             scene,
             _SceneSettings(
@@ -380,11 +377,6 @@ class OpenGLRenderer(_RendererExecutionView):
         ):
             prior.open()
 
-    @property
-    def file_writer(self) -> SceneFileWriter:
-        """Return the scene manager's file writer, creating it if needed."""
-        return self.scene._get_manager().file_writer
-
     def should_create_window(self, session_spec: RenderSessionSpec) -> bool:
         """Return whether the scene's saved settings request a live-preview window."""
         return session_spec.presentation.live_preview
@@ -507,38 +499,6 @@ class OpenGLRenderer(_RendererExecutionView):
         for uid in self._camera_view_targets.keys() - drawn:
             self._camera_view_targets.pop(uid).release()
         return textures
-
-    def update_skipping_status(self) -> None:
-        """Ask the scene's manager whether this play should be fast-forwarded.
-
-        Raises
-        ------
-        EndSceneEarlyException
-            If the number of played animations exceeds the configured upper bound.
-        """
-        self.scene._get_manager()._update_skipping_status()
-
-    def play(
-        self,
-        scene: Scene,
-        *animations: Animation | Mobject | _AnimationBuilder,
-        **kwargs: Any,
-    ) -> None:
-        """Delegate animation playback to the scene's manager.
-
-        Prefer :meth:`.Scene.play` for new code; it also handles subcaptions and
-        calls made from another thread during OpenGL interaction.
-
-        Parameters
-        ----------
-        scene
-            The scene in which to play the animations.
-        animations
-            The animations, mobjects, or animation builders to play.
-        kwargs
-            Animation options such as ``run_time`` and ``rate_func``.
-        """
-        scene._get_manager().play(*animations, **kwargs)
 
     def _animation_cache_identity(self, scene: Scene) -> tuple[str, Any]:
         return "opengl", {
@@ -663,43 +623,6 @@ class OpenGLRenderer(_RendererExecutionView):
                     self.context.viewport = viewport
         finally:
             self._capturing_image = False
-
-    def scene_finished(self, scene: Scene) -> None:
-        """Finalize configured output for the scene.
-
-        Skipped and cached plays do not draw, so the final state is drawn for a
-        preview window and for last-frame output.
-
-        Parameters
-        ----------
-        scene
-            The scene that has finished rendering.
-        """
-        output = self.file_writer.output_spec
-        if self.num_plays > 0 and (output.is_video or output.is_image_sequence):
-            self.file_writer.finish()
-        save = self.should_save_last_frame()
-        if self.window is None and not save:
-            return
-        frame = self.render(*scene._get_manager()._frame())
-        self._show()
-        if save:
-            self.file_writer.save_image(frame.pixels())
-
-    def should_save_last_frame(self) -> bool:
-        """
-        Determine whether the last frame of the scene should be saved.
-
-        This is true for explicit last-frame PNG output and for automatic video
-        output when the scene has no play calls. Interactive scenes do not use
-        the automatic fallback.
-        """
-        output = self.file_writer.output_spec
-        if output.is_still:
-            return True
-        if self.scene.interactive_mode:
-            return False
-        return self.num_plays == 0 and output.fallback_to_still
 
     def get_frame_buffer_object(
         self,

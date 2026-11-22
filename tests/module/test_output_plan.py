@@ -422,7 +422,7 @@ def test_scene_and_writer_share_immutable_output_plan(config, tmp_path):
     config.media_dir = tmp_path / "changed"
     config.output_file = "changed-name"
 
-    assert scene.renderer.file_writer.output_plan is plan
+    assert scene._get_manager().file_writer.output_plan is plan
     assert plan.primary_artifact == (
         initial_media_dir / "videos" / "example" / "1080p60" / "Scene.mp4"
     )
