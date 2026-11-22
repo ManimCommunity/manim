@@ -6,13 +6,14 @@ description: Changelog of the preview prereleases
 # Preview
 
 This page holds a detailed overview of the changes included
-in Manim's latest prerelease line which can be installed via
-`pip install --pre manim`. The corresponding source version
+in Manim's latest prereleases, which can be installed via
+`pip install --pre manim`. Each prerelease has its own section,
+newest first. The corresponding source version
 can be found [in our repository](https://github.com/ManimCommunity/manim)
 on a `preview/...` branch.
 
-The current preview line is for
-[the v0.30.0 release](https://github.com/ManimCommunity/manim/tree/preview/v0.30.0)
+The current previews lead up to
+[the v0.30.0 release](https://github.com/ManimCommunity/manim/tree/preview/v0.30.0),
 which fundamentally reworks how scenes are rendered. Please try it with your
 scenes and [report problems on GitHub](https://github.com/ManimCommunity/manim/issues)
 / share your thoughts [in our Discord](https://manim.community/discord).
@@ -31,7 +32,7 @@ A stack of six PRs ({pr}`4989`, {pr}`5002`, {pr}`5004`, {pr}`5005`,
 {pr}`5006`, {pr}`5059`) restructures the rendering pipeline:
 
 - **Cameras describe views, renderers draw.** Cairo cameras no longer hold
-  pixel buffers or draw; `CairoRenderer` does. Every camera has an animatable
+  pixel buffers or draw; the renderer does. Every camera has an animatable
   `camera.frame` and `auto_zoom()`, so moving the camera no longer needs
   `MovingCameraScene`.
 - **The `Manager` runs scenes.** It creates the file writer, plays every
@@ -51,7 +52,8 @@ A stack of six PRs ({pr}`4989`, {pr}`5002`, {pr}`5004`, {pr}`5005`,
 ### Breaking changes
 
 **Module paths.** Top-level imports (`from manim import ...`) are unchanged.
-Implementation modules moved, without compatibility aliases:
+Implementation modules and the OpenGL shaders moved, without compatibility
+aliases:
 
 | Removed | Use instead |
 |---|---|
@@ -60,9 +62,7 @@ Implementation modules moved, without compatibility aliases:
 | `manim.renderer.opengl_renderer` | `manim.renderer.opengl` |
 | `manim.renderer.opengl_renderer_window` | `manim.renderer.opengl.window` |
 | `manim.renderer.shader`, `.shader_wrapper`, `.vectorized_mobject_rendering` | the same modules in `manim.renderer.opengl` |
-
-OpenGL shaders moved from `manim/renderer/shaders` to
-`manim/renderer/opengl/shaders`.
+| `manim/renderer/shaders` | `manim/renderer/opengl/shaders` |
 
 **Cameras** ({pr}`4989`)
 
