@@ -21,6 +21,9 @@ Options
     The title of the example, ``Example: MyScene`` when omitted. ``None`` or
     ``False`` leave it out, e.g. when the page already shows a title of its
     own.
+``body_only``
+    Show only the code nested two levels deep, e.g. the body of
+    ``construct``, without the class and method lines around it.
 ``no_autoplay``
     Do not start the video automatically.
 ``quality``
@@ -72,6 +75,7 @@ import csv
 import hashlib
 import json
 import shutil
+import textwrap
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -108,6 +112,23 @@ class _Render:
     seconds: float | None
 
 
+def _body(code: str, levels: int = 2) -> str:
+    lines = code.splitlines()
+    nested = [line for line in lines if line.strip()]
+    if not nested:
+        return ""
+    # The indentation of one level, as used by the code itself.
+    widths = sorted({len(line) - len(line.lstrip()) for line in nested} - {0})
+    depth = widths[levels - 1] if len(widths) >= levels else None
+    kept = [
+        line
+        for line in lines
+        if not line.strip()
+        or (depth is not None and len(line) - len(line.lstrip()) >= depth)
+    ]
+    return textwrap.dedent("\n".join(kept)).strip("\n")
+
+
 def _references(role: str, names: str | None) -> list[str]:
     return [f":{role}:`~.{name}`" for name in (names or "").split()]
 
@@ -128,6 +149,7 @@ class ManimDirective(SphinxDirective):
     option_spec = {
         "hide_source": flag,
         "header": lambda arg: None if arg == "None" else arg,
+        "body_only": flag,
         "no_autoplay": flag,
         "quality": lambda arg: choice(
             arg or "",
@@ -154,12 +176,18 @@ class ManimDirective(SphinxDirective):
             for reference in self.options.get(option, [])
         ]
 
-        if self.content and self.content[0].startswith(">>> "):
+        doctest = bool(self.content) and self.content[0].startswith(">>> ")
+        if doctest:
             code = "\n".join(
                 line[4:] for line in self.content if line.startswith((">>> ", "... "))
             )
         else:
             code = "\n".join(self.content)
+
+        body_only = "body_only" in self.options
+        if body_only and doctest:
+            raise self.error("body_only cannot be used with a doctest")
+        source_code = _body(code) if body_only else "\n".join(self.content)
 
         example_config = {
             **self.config.manim_config,
@@ -187,7 +215,8 @@ class ManimDirective(SphinxDirective):
             uri=uri,
             format=format_,
             autoplay="no_autoplay" not in self.options,
-            source_code="\n".join(self.content),
+            source_code=source_code,
+            body_only=body_only,
             code=code,
             references=references,
             hide_source="hide_source" in self.options and uri is not None,
@@ -356,8 +385,10 @@ _TEMPLATE = jinja2.Template(
 {% if not hide_source %}
 .. code-block:: python
 
+{% if not body_only %}
     from manim import *
 
+{% endif %}
 {{ source_code | indent(4, first=True) | safe }}
 
 .. raw:: html
