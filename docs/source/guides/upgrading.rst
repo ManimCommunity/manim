@@ -265,3 +265,10 @@ Removed scene classes and camera options
   are gone. Only ``SpecialThreeDScene`` used them, and the OpenGL renderer
   ignored them. Points are projected with the factor
   ``focal_distance / (focal_distance - z)``.
+
+Changed drawing
+~~~~~~~~~~~~~~~
+
+- The OpenGL renderer clears frames to the camera's ``background_color`` and
+  ``background_opacity``, as the Cairo renderer does; it used to clear to the
+  configured background color whatever the camera said.

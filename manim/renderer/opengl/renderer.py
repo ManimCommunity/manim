@@ -16,7 +16,6 @@ from PIL import Image
 from manim._config import config, logger
 from manim.renderer.extract import extract
 from manim.typing import Point3D
-from manim.utils.color import color_to_rgba
 from manim.utils.iterables import list_update
 
 from ...camera import Camera, MultiCamera
@@ -37,10 +36,8 @@ if TYPE_CHECKING:
     from manim.mobject.mobject import Mobject, _AnimationBuilder
     from manim.scene.scene import Scene
     from manim.typing import (
-        FloatRGBA,
         RGBAPixelArray,
     )
-    from manim.utils.color.core import ParsableManimColor
 
     from .window import Window
 
@@ -124,7 +121,6 @@ class OpenGLRenderer(_RendererExecutionView):
         self._camera_view_targets: dict[int, _ViewTarget] = {}
         self.pressed_keys: set[int] = set()
         self.window: Window | None = None
-        self.background_color = config["background_color"]
         self._context: moderngl.Context | None = None
         self._frame_buffer_object: Framebuffer | None = None
         self._context_thread: int | None = None
@@ -158,7 +154,6 @@ class OpenGLRenderer(_RendererExecutionView):
         self._ensure_not_closed()
         if hasattr(self, "scene"):
             raise RuntimeError("This renderer is already bound to a Scene.")
-        self.background_color = config["background_color"]
         self._bind(
             scene,
             _SceneSettings(
@@ -180,11 +175,10 @@ class OpenGLRenderer(_RendererExecutionView):
     @classmethod
     def _image_renderer(cls, of: OpenGLRenderer) -> OpenGLRenderer:
         """An offscreen renderer drawing images of ``of``'s scene as ``of`` would:
-        same camera, background and settings, but no window.
+        same camera (and so background) and settings, but no window.
         """
         renderer = cls()
         renderer.camera = of.camera
-        renderer.background_color = of.background_color
         renderer._bind(of.scene, dataclasses.replace(of._settings, window=None))
         return renderer
 
@@ -518,9 +512,7 @@ class OpenGLRenderer(_RendererExecutionView):
                 self.camera_uniforms(view, size[1]),
             )
             view_target.framebuffer.use()
-            view_target.framebuffer.clear(
-                *camera.background_color.to_rgb(), camera.background_opacity
-            )
+            view_target.framebuffer.clear(*_background_rgba(camera))
             nodes = extract(
                 mobjects,
                 use_z_index=camera.use_z_index,
@@ -566,7 +558,6 @@ class OpenGLRenderer(_RendererExecutionView):
 
     def _animation_cache_identity(self, scene: Scene) -> tuple[str, Any]:
         return "opengl", {
-            "background_color": self.background_color,
             "anti_alias_width": self.anti_alias_width,
         }
 
@@ -589,10 +580,9 @@ class OpenGLRenderer(_RendererExecutionView):
         Clears the current frame buffer and updates the display window
         accordingly.
 
-        The screen is cleared using the background color specified
-        in the renderer.
+        The screen is cleared using the camera's background color.
         """
-        self.frame_buffer_object.clear(*self.background_color)
+        self.frame_buffer_object.clear(*_background_rgba(self.camera))
         if self.window is None:
             return
         self.window.swap_buffers()
@@ -651,7 +641,7 @@ class OpenGLRenderer(_RendererExecutionView):
 
     def _draw_scene(self, scene: Scene) -> None:
         """Draw the current objects without updating animation timing."""
-        self.frame_buffer_object.clear(*self.background_color)
+        self.frame_buffer_object.clear(*_background_rgba(self.camera))
 
         self.refresh_perspective_uniforms(self.camera)
 
@@ -994,15 +984,6 @@ class OpenGLRenderer(_RendererExecutionView):
             ),
         )
 
-    @property
-    def background_color(self) -> FloatRGBA:
-        """The background color of the renderer (RGBA format)."""
-        return self._background_color
-
-    @background_color.setter
-    def background_color(self, value: ParsableManimColor) -> None:
-        self._background_color = color_to_rgba(value, 1.0)
-
 
 #: Focal distance standing in for "no perspective" (a camera without rotation).
 _ORTHOGRAPHIC_FOCAL_DISTANCE = 1e6
@@ -1065,3 +1046,9 @@ class _ViewTarget:
         for resource in (self.framebuffer, self.texture):
             if not isinstance(resource.mglo, moderngl.InvalidObject):
                 resource.release()
+
+
+def _background_rgba(camera: Camera) -> tuple[float, float, float, float]:
+    """The camera's background, as a framebuffer is cleared to it."""
+    r, g, b = camera.background_color.to_rgb()
+    return float(r), float(g), float(b), float(camera.background_opacity)

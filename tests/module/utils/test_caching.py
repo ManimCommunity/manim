@@ -3,8 +3,6 @@ from __future__ import annotations
 import os
 from unittest.mock import Mock, call
 
-import numpy as np
-
 import manim._run.cache as cache_module
 from manim import Manager, tempconfig
 from manim._run.loop import _RunLoop
@@ -147,7 +145,6 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
             self._initialize_execution(False)
 
         camera = object()
-        background_color = np.array([0.1, 0.2, 0.3, 1.0])
         anti_alias_width = 1.5
         file_writer = Mock(
             sections=[Mock(skip_animations=False)], output_spec=Mock(is_still=False)
@@ -158,7 +155,6 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
 
         def _animation_cache_identity(self, scene):
             return "opengl", {
-                "background_color": self.background_color,
                 "anti_alias_width": self.anti_alias_width,
             }
 
@@ -185,7 +181,6 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
         "encoder_fingerprint": "encoder-token",
         "renderer_state": {
             "drawing": {
-                "background_color": renderer.background_color,
                 "anti_alias_width": renderer.anti_alias_width,
             },
             "execution": {

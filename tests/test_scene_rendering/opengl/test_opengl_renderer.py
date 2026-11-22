@@ -157,11 +157,11 @@ def test_pixel_coords_to_space_coords(config, using_opengl_renderer):
 
 def test_scene_images_are_drawn_with_the_scene_settings(config, using_opengl_renderer):
     # Without an open context, images are drawn by an offscreen renderer that
-    # takes the scene renderer's size, camera and background, and no window.
+    # takes the scene renderer's size and the camera's background, and no window.
     config.live_preview = False
     config.pixel_width, config.pixel_height = 64, 36
     scene = SquareToCircle()
-    scene.renderer.background_color = "#FF0000"
+    scene.camera.background_color = "#FF0000"
     image = scene.get_image()
     assert image.size == (64, 36)
     assert image.getpixel((0, 0))[:3] == (255, 0, 0)
