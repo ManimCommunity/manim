@@ -57,8 +57,9 @@ def test_live_preview_opengl_render_with_image_sequence(
     assert renderer.window is None
 
 
-def test_get_frame_with_live_preview_disabled(config, using_opengl_renderer):
-    """Get frame has the correct dimensions without a live preview."""
+def test_frames_have_the_scene_size_without_a_live_preview(
+    config, using_opengl_renderer
+):
     config.live_preview = False
 
     scene = SquareToCircle()
@@ -68,9 +69,7 @@ def test_get_frame_with_live_preview_disabled(config, using_opengl_renderer):
     renderer = scene.renderer
     frame = renderer.render(*scene._get_manager()._frame()).pixels()
 
-    # height and width are flipped
-    assert renderer.get_pixel_shape()[0] == frame.shape[1]
-    assert renderer.get_pixel_shape()[1] == frame.shape[0]
+    assert frame.shape == (config.pixel_height, config.pixel_width, 4)
     assert frame.dtype == np.uint8
     assert frame.flags.c_contiguous
 
@@ -96,7 +95,7 @@ def test_frames_have_the_scene_size_with_a_live_preview(config, using_opengl_ren
         assert image.size == (config.pixel_width, config.pixel_height)
         assert not np.array_equal(image, pixels)
         # The image is drawn apart: the framebuffer still holds the frame.
-        np.testing.assert_array_equal(renderer.get_frame(), pixels)
+        np.testing.assert_array_equal(renderer._read_pixels(), pixels)
     finally:
         renderer.close()
 
@@ -109,11 +108,11 @@ def test_render_without_frame_output_skips_gpu_readback(
     config.live_preview = False
     scene = SquareToCircle()
     renderer = scene.renderer
-    renderer.get_frame = Mock(wraps=renderer.get_frame)
+    renderer._read_pixels = Mock(wraps=renderer._read_pixels)
 
     renderer.render(*scene._get_manager()._frame())
 
-    renderer.get_frame.assert_not_called()
+    renderer._read_pixels.assert_not_called()
 
 
 def test_window_positions_map_to_scene_points(config, using_opengl_renderer):
@@ -156,3 +155,22 @@ def test_moving_camera_frame_animates(config, using_opengl_renderer):
     scene = PanAndZoom()
     scene.render()
     np.testing.assert_allclose(scene.camera.frame_center, RIGHT, atol=1e-12)
+
+
+def test_a_background_image_raises_instead_of_being_left_out(
+    config, using_opengl_renderer, tmp_path
+):
+    from PIL import Image
+
+    from manim.renderer.protocol import CapabilityError
+
+    path = tmp_path / "background.png"
+    Image.new("RGBA", (4, 4), (255, 0, 0, 255)).save(path)
+    config.live_preview = False
+    scene = SquareToCircle()
+    scene.camera.background_image = str(path)
+    try:
+        with pytest.raises(CapabilityError, match="background image"):
+            scene.renderer.render(*scene._get_manager()._frame())
+    finally:
+        scene.renderer.close()

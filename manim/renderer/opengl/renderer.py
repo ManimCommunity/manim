@@ -16,6 +16,7 @@ from manim.typing import Point3D
 from ...constants import *
 from .. import _view as _views
 from ..protocol import (
+    CapabilityError,
     PreviewRequest,
     RenderConfig,
     RendererState,
@@ -210,7 +211,7 @@ class OpenGLRenderer:
         frame = self._frame_buffer_object
         if frame is not None and frame.size == size:
             return
-        replacement = self.get_frame_buffer_object(self.context, 0, size=size)
+        replacement = self._make_framebuffer(self.context, 0, size=size)
         self._resources.callback(_release_framebuffer, replacement)
         if frame is not None:
             _release_framebuffer(frame)
@@ -311,21 +312,6 @@ class OpenGLRenderer:
         ):
             prior.open()
 
-    def get_pixel_shape(self) -> tuple[int, int] | None:
-        """
-        Return the pixel dimensions of the current framebuffer.
-
-        Returns
-        -------
-        tuple[int, int] | None
-            ``(width, height)`` in pixels, or ``None`` when no framebuffer is open.
-        """
-        frame_buffer = self._frame_buffer_object
-        if frame_buffer is None:
-            return None
-        pixel_width, pixel_height = frame_buffer.size
-        return pixel_width, pixel_height
-
     def _set_view(self, config: RenderConfig) -> None:
         """Set the camera uniforms for the frame of ``config``.
 
@@ -374,6 +360,13 @@ class OpenGLRenderer:
 
     def _draw(self, nodes: Sequence[RNode], config: RenderConfig) -> None:
         """Draw a frame into the framebuffer, camera views first."""
+        for frame in (config, *(view.config for view in config.camera_views)):
+            if frame.background_image is not None:
+                raise CapabilityError(
+                    "The OpenGL renderer cannot draw a background image "
+                    f"({frame.background_image!r}); use the Cairo renderer, or a "
+                    "background color."
+                )
         self.open()
         self._size_frame((config.pixel_width, config.pixel_height))
         self._set_view(config)
@@ -429,8 +422,8 @@ class OpenGLRenderer:
             self._camera_view_targets.pop(uid).release()
         return textures
 
-    def get_frame_buffer_object(
-        self,
+    @staticmethod
+    def _make_framebuffer(
         context: moderngl.Context,
         samples: int = 0,
         *,
@@ -486,60 +479,13 @@ class OpenGLRenderer:
         resources.pop_all()
         return frame
 
-    def get_raw_frame_buffer_object_data(self, dtype: str = "f1") -> bytes:
-        """
-        Get the raw data from the current frame buffer object as bytes.
-
-        This method reads the pixel data from the frame buffer object using the specified data type.
-        The data is read with 4 color channels (typically RGBA).
-
-        Args:
-            dtype (str, optional): The data type to use when reading the buffer.
-            Defaults to "f1" (i.e., float with 1 byte).
-
-        Returns:
-            bytes: The raw pixel data from the frame buffer object.
-        """
-        # Copy blocks from the fbo_msaa to the drawn fbo using Blit
-        # pw, ph = self.get_pixel_shape()
-        # gl.glBindFramebuffer(gl.GL_READ_FRAMEBUFFER, self.fbo_msaa.glo)
-        # gl.glBindFramebuffer(gl.GL_DRAW_FRAMEBUFFER, self.fbo.glo)
-        # gl.glBlitFramebuffer(
-        #     0, 0, pw, ph, 0, 0, pw, ph, gl.GL_COLOR_BUFFER_BIT, gl.GL_LINEAR
-        # )
-        num_channels = 4
-        ret: bytes = self.frame_buffer_object.read(
-            viewport=self.frame_buffer_object.viewport,
-            components=num_channels,
-            dtype=dtype,
-        )
-        return ret
-
-    def get_frame(self) -> RGBAPixelArray:
-        """
-        Get the current frame buffer as a Numpy array of RGBA pixel values.
-
-        Returns
-        -------
-        RGBAPixelArray
-            A Numpy array of shape (height, width, 4) containing the
-            RGBA pixel data of the current frame, with dtype uint8.
-
-        Raises
-        ------
-        ValueError
-            If the pixel shape cannot be determined.
-        """
-        # get current pixel values as numpy data in order to test output
-        raw = self.get_raw_frame_buffer_object_data(dtype="f1")
-        pixel_shape = self.get_pixel_shape()
-        if pixel_shape is None:
-            msg = "Pixel shape is None, cannot get frame."
-            raise ValueError(msg)
-
-        result_dimensions = (pixel_shape[1], pixel_shape[0], 4)
-        np_buf = np.frombuffer(raw, dtype="uint8").reshape(result_dimensions)
-        return np.flipud(np_buf).copy()
+    def _read_pixels(self) -> RGBAPixelArray:
+        """The framebuffer's pixels as RGBA, row zero at the top; a new array."""
+        frame = self.frame_buffer_object
+        width, height = frame.size
+        raw = frame.read(viewport=(0, 0, width, height), components=4, dtype="f1")
+        pixels = np.frombuffer(raw, dtype=np.uint8).reshape((height, width, 4))
+        return np.flipud(pixels).copy()
 
 
 #: Focal distance standing in for "no perspective" (a camera without rotation).
@@ -690,7 +636,7 @@ class _GLFrame:
                     "The OpenGL renderer drew another frame since this one, or "
                     "closed: read the pixels of a frame before drawing the next."
                 )
-            self._pixels = renderer.get_frame()
+            self._pixels = renderer._read_pixels()
         return self._pixels
 
 

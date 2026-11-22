@@ -372,3 +372,9 @@ Selecting a renderer
   evaluation and closed with it.
 - The graphical test harness takes ``renderer="opengl"`` instead of
   ``renderer_class=OpenGLRenderer``.
+- The OpenGL renderer raises :class:`.CapabilityError` for a camera's
+  ``background_image``; it used to leave the image out. Use the Cairo renderer
+  for background images.
+- Removed from :class:`.OpenGLRenderer`: ``get_frame()``,
+  ``get_raw_frame_buffer_object_data()``, ``get_pixel_shape()`` and
+  ``get_frame_buffer_object()``; read a frame's pixels with ``frame.pixels()``.

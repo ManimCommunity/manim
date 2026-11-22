@@ -47,11 +47,13 @@ class _Drawn:
         self._pixels = None
 
     def render_mobjects(self, mobjects):
+        """Draw a frame of ``mobjects``; :meth:`pixels` returns its pixels."""
         self._pixels = self.renderer.render(
             *self._frames.build(self.camera, mobjects)
         ).pixels()
 
-    def get_frame(self):
+    def pixels(self):
+        """The pixels of the last frame, as ``render(...).pixels()`` returned them."""
         return self._pixels.copy()
 
     @property
@@ -98,7 +100,7 @@ def test_default_camera_preserves_square_geometry(camera_class, pixel_shape):
             renderer.render_mobjects(
                 [Square(fill_color="#ffffff", fill_opacity=1, stroke_width=0)],
             )
-            pixels = renderer.get_frame()
+            pixels = renderer.pixels()
             rows, columns = np.where(pixels[:, :, 0] > 128)
             assert len(rows) > 0
             assert np.ptp(columns) == pytest.approx(np.ptp(rows), abs=1)
@@ -148,12 +150,12 @@ def test_renderer_owns_background_readback():
         renderer = _Drawn(Camera(background_color=RED, background_opacity=0.5))
         try:
             renderer.render_mobjects([Mobject()])
-            pixels = renderer.get_frame()
+            pixels = renderer.pixels()
             expected = color_to_int_rgba(RED, 0.5)
             assert np.all(pixels == expected)
 
             pixels[:] = 0
-            assert np.all(renderer.get_frame() == expected)
+            assert np.all(renderer.pixels() == expected)
         finally:
             renderer.close()
 
@@ -174,7 +176,7 @@ def test_background_image_is_loaded_by_renderer(tmp_path):
         renderer = _Drawn(camera)
         try:
             renderer.render_mobjects([Mobject()])
-            np.testing.assert_array_equal(renderer.get_frame(), source)
+            np.testing.assert_array_equal(renderer.pixels(), source)
         finally:
             renderer.close()
 
@@ -194,7 +196,7 @@ def test_background_image_is_resized_to_target(tmp_path):
                 Image.fromarray(source, mode="RGBA").resize((2, 2)),
                 dtype=np.uint8,
             )
-            np.testing.assert_array_equal(renderer.get_frame(), expected)
+            np.testing.assert_array_equal(renderer.pixels(), expected)
         finally:
             renderer.close()
 
@@ -209,7 +211,7 @@ def test_background_image_objects_are_read_each_time_they_are_drawn():
             renderer.render_mobjects([square])
             image.paste((0, 0, 255, 255), (0, 0, 2, 2))  # edited in place
             renderer.render_mobjects([square])
-            assert renderer.get_frame()[0, 0].tolist() == [0, 0, 255, 255]
+            assert renderer.pixels()[0, 0].tolist() == [0, 0, 255, 255]
         finally:
             renderer.close()
 
@@ -241,7 +243,7 @@ def test_camera_view_with_a_side_in_line_with_its_longest_side_is_drawn():
         renderer = _Drawn(MultiCamera([view]))
         try:
             renderer.render_mobjects([view])
-            assert renderer.get_frame()[..., 0].any()
+            assert renderer.pixels()[..., 0].any()
         finally:
             renderer.close()
 
@@ -304,7 +306,7 @@ def _render_pixels(mobjects):
     renderer = _Drawn(Camera())
     try:
         renderer.render_mobjects(mobjects)
-        return renderer.get_frame().copy()
+        return renderer.pixels().copy()
     finally:
         renderer.close()
 
@@ -367,7 +369,7 @@ def test_3d_images_line_up_with_vmobjects_when_frame_center_moves():
             renderer = _Drawn(camera)
             try:
                 renderer.render_mobjects([mobject])
-                return np.where(renderer.get_frame()[..., 0].max(axis=0) > 128)[0]
+                return np.where(renderer.pixels()[..., 0].max(axis=0) > 128)[0]
             finally:
                 renderer.close()
 
@@ -528,10 +530,10 @@ def test_mobjects_fixed_in_frame_stay_put_when_the_camera_moves():
         hud = Square(1, fill_opacity=1, stroke_width=0).to_corner(UR).fix_in_frame()
         try:
             renderer.render_mobjects([hud])
-            before = renderer.get_frame().copy()
+            before = renderer.pixels().copy()
             renderer.camera.frame.scale(0.5).shift(LEFT)
             renderer.render_mobjects([hud])
-            np.testing.assert_array_equal(renderer.get_frame(), before)
+            np.testing.assert_array_equal(renderer.pixels(), before)
         finally:
             renderer.close()
 
@@ -543,7 +545,7 @@ def test_a_masked_stroke_keeps_its_opacity():
         renderer = _Drawn(Camera())
         try:
             renderer.render_mobjects([line])
-            return renderer.get_frame().copy()
+            return renderer.pixels().copy()
         finally:
             renderer.close()
 
@@ -556,7 +558,7 @@ def test_a_masked_stroke_keeps_its_opacity():
 
 def _frame_of(mobjects, renderer):
     renderer.render_mobjects(mobjects)
-    return renderer.get_frame().copy()
+    return renderer.pixels().copy()
 
 
 @pytest.mark.parametrize(
