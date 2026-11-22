@@ -6,13 +6,10 @@ from manim import (
     RED,
     WHITE,
     ParametricSurface,
-    Scene,
     Square,
     Transform,
-    tempconfig,
 )
 from manim.appearance.material import PbrMaterial, UnlitMaterial
-from manim.renderer.protocol import CapabilityError
 from manim.utils.versioned_fields import field_version
 
 
@@ -158,12 +155,19 @@ def test_interpolating_equal_colors_keeps_their_version():
     assert field_version(mesh, "rgbas") == version
 
 
-def test_cairo_cannot_draw_meshes_yet():
-    with tempconfig({"dry_run": True}):
-        scene = Scene()
-        scene.add(Square(), _saddle())
-        with pytest.raises(CapabilityError, match="opengl"):
-            scene.renderer.update_frame(scene)
+def test_interpolating_equal_outlines_keeps_their_versions():
+    start = _saddle(stroke_width=3.7)
+    end = start.copy().shift([1, 0, 0])
+    mesh = start.copy()
+    mesh.interpolate(start, end, 0.2)
+    versions = [field_version(mesh, name) for name in ("stroke_rgbas", "stroke_width")]
+
+    mesh.interpolate(start, end, 0.6)
+
+    assert mesh.stroke_width == 3.7
+    assert versions == [
+        field_version(mesh, name) for name in ("stroke_rgbas", "stroke_width")
+    ]
 
 
 def _saddles(start_material, end_material):

@@ -190,6 +190,9 @@ def _payload(mobject: Mobject) -> tuple[Payload | None, dict[str, tuple[str, ...
             mobject.texture,
             mobject.material,
             mobject.depth_test,
+            mobject.faces,
+            mobject.stroke_rgbas,
+            mobject.stroke_width,
         ), _MESH_SLOTS
     if isinstance(mobject, PMobject):
         return RPoints(mobject.points, mobject.rgbas, mobject.stroke_width), {
@@ -215,11 +218,12 @@ def _payload(mobject: Mobject) -> tuple[Payload | None, dict[str, tuple[str, ...
 
 
 _MESH_SLOTS: dict[str, tuple[str, ...]] = {
-    "geometry": ("points", "triangles"),
+    "geometry": ("points", "triangles", "faces"),
     "rgbas": ("rgbas",),
     "uvs": ("uvs",),
     "texture": ("texture",),
     "material": ("material",),
+    "stroke": ("stroke_rgbas", "stroke_width"),
 }
 
 # The fields each slot of a path is made from. A gradient's ends come from the points.

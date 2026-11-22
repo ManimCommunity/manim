@@ -210,8 +210,9 @@ class RCameraView(NamedTuple):
 class RMesh(NamedTuple):
     """A triangle mesh (:class:`~.MeshMobject`).
 
-    Slots: ``"geometry"`` (``points``, ``triangles``), ``"rgbas"``, ``"uvs"``,
-    ``"texture"``, ``"material"``.
+    Slots: ``"geometry"`` (``points``, ``triangles``, ``faces``), ``"rgbas"``,
+    ``"uvs"``, ``"texture"``, ``"material"``, ``"stroke"`` (``stroke_rgbas``,
+    ``stroke_width``).
     """
 
     points: Point3D_Array
@@ -226,6 +227,13 @@ class RMesh(NamedTuple):
     material: Material
     #: Whether the mesh's fragments hide each other and what is behind them.
     depth_test: bool
+    #: Polygons as vertex indices, in order around each (see
+    #: :attr:`.MeshMobject.faces`); empty: the triangles.
+    faces: np.ndarray
+    #: Outline colors of the faces: one, or one per face.
+    stroke_rgbas: FloatRGBA_Array
+    #: Outline width, in the units of :attr:`.VMobject.stroke_width`; 0 for none.
+    stroke_width: float
 
 
 Payload = RPath | RPoints | RImage | RCameraView | RMesh

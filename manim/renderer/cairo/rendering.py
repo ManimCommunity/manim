@@ -16,7 +16,6 @@ from manim.constants import CapStyleType, LineJointType
 from manim.mobject.mobject import Mobject
 from manim.renderer._paint import paint_colors
 from manim.renderer.extract import extract
-from manim.renderer.protocol import CapabilityError
 from manim.renderer.snapshot import (
     RCameraView,
     RImage,
@@ -34,6 +33,7 @@ from manim.utils._path_points import (
 from manim.utils.space_ops import cross2d
 
 from .camera import Camera
+from .mesh_faces import mesh_faces
 from .target import _CairoRenderTarget, _PathCache
 
 if TYPE_CHECKING:
@@ -94,14 +94,19 @@ class _CairoDrawingContext:
         if self._path_cache is not None:
             self._path_cache.next_generation()
         with self.camera._drawing():
-            nodes = self.camera._sort_for_display(
-                extract(
-                    mobjects,
-                    include_submobjects=include_submobjects,
-                    use_z_index=self.camera.use_z_index,
-                    excluded_mobjects=excluded_mobjects or (),
-                )
-            )
+            nodes: list[RNode] = []
+            for node in extract(
+                mobjects,
+                include_submobjects=include_submobjects,
+                use_z_index=self.camera.use_z_index,
+                excluded_mobjects=excluded_mobjects or (),
+            ):
+                if isinstance(node.payload, RMesh):
+                    # A mesh is drawn as its faces, each a path.
+                    nodes.extend(mesh_faces(node, self.camera))
+                else:
+                    nodes.append(node)
+            nodes = self.camera._sort_for_display(nodes)
             for payload_type, group in it.groupby(
                 nodes, lambda node: type(node.payload)
             ):
@@ -109,12 +114,6 @@ class _CairoDrawingContext:
                     self._display_paths(list(group))
                 elif payload_type is RPoints:
                     self._display_point_clouds(group)
-                elif payload_type is RMesh:
-                    raise CapabilityError(
-                        "The Cairo renderer cannot draw MeshMobject or "
-                        "ParametricSurface yet; render with --renderer=opengl, or use "
-                        "Surface."
-                    )
                 else:
                     self._display_images(group)
 

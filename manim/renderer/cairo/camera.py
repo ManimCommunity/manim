@@ -323,6 +323,18 @@ class Camera:
         """Reorder render snapshots for this camera (after family and z-index order)."""
         return nodes
 
+    def _view_rotation(self) -> np.ndarray:
+        """The rotation from scene to view coordinates (looking along -z)."""
+        return np.identity(3)
+
+    def _light(self) -> np.ndarray | None:
+        """Where meshes are lit from, in scene coordinates; ``None``: not lit."""
+        return None
+
+    def _eye(self) -> np.ndarray:
+        """Where the scene is seen from, in scene coordinates."""
+        return np.asarray(self.frame_center, dtype=float) + [0.0, 0.0, 1e6]
+
     def _shaded_rgbas(self, path: RPath, rgbas: FloatRGBA_Array) -> FloatRGBA_Array:
         """Return the stop colors of a snapshot path's paint after the shading of
         its material.
@@ -566,6 +578,19 @@ class ThreeDCamera(Camera):
             return self._depth(mob.get_z_index_reference_point(), rot_matrix)
 
         return sorted(mobjects, key=z_key)
+
+    def _view_rotation(self) -> np.ndarray:
+        return np.asarray(self.get_rotation_matrix(), dtype=float)
+
+    def _light(self) -> np.ndarray | None:
+        return np.asarray(self.light_source.get_center(), dtype=float)
+
+    def _eye(self) -> np.ndarray:
+        return np.asarray(self.frame_center, dtype=float) + self._view_rotation().T @ [
+            0.0,
+            0.0,
+            self.get_focal_distance(),
+        ]
 
     def _sort_for_display(self, nodes: list[RNode]) -> list[RNode]:
         rot_matrix = self.get_rotation_matrix()

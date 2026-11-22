@@ -1,14 +1,20 @@
-"""The OpenGL renderer draws meshes with textures, depth testing and lighting."""
+"""Both renderers draw meshes: OpenGL with depth testing and lighting per pixel,
+Cairo as faces sorted far to near, lit per face by the same function.
+"""
 
 import numpy as np
+import pytest
 
 from manim import (
     BLUE,
     DEGREES,
+    PI,
     PURE_BLUE,
     PURE_RED,
+    RIGHT,
     TAU,
     ImageMobject,
+    MeshMobject,
     ParametricSurface,
     Scene,
     ThreeDScene,
@@ -18,6 +24,7 @@ from manim import (
 from manim.appearance.material import PbrMaterial, UnlitMaterial
 
 WIDTH, HEIGHT = 384, 216
+RENDERERS = pytest.mark.parametrize("renderer", ["cairo", "opengl"])
 
 
 def _image(renderer, mobjects, scene_class=Scene, **orientation):
@@ -48,19 +55,19 @@ def _pixel(pixels, x, y):
     return pixels[row, column]
 
 
-def _plane(z, color, **kwargs):
+def _plane(z, color, resolution=4, **kwargs):
     return ParametricSurface(
         lambda u, v: [u, v, z],
         u_range=[-3, 3],
         v_range=[-2, 2],
-        resolution=4,
+        resolution=resolution,
         color=color,
         material=UnlitMaterial(),
         **kwargs,
     )
 
 
-def _sphere(radius=2, **kwargs):
+def _sphere(radius=2, resolution=(48, 24), **kwargs):
     return ParametricSurface(
         lambda u, v: (
             radius
@@ -68,19 +75,23 @@ def _sphere(radius=2, **kwargs):
         ),
         u_range=[0, TAU],
         v_range=[0, np.pi],
-        resolution=(48, 24),
+        resolution=resolution,
         **kwargs,
     )
 
 
-def test_texture_is_drawn_like_an_image(using_opengl_renderer):
+@RENDERERS
+def test_texture_is_drawn_like_an_image(renderer):
     # u runs left to right across the image, v from its bottom to its top.
     texture = np.zeros((40, 60, 4), dtype=np.uint8)
     texture[..., 0] = np.linspace(0, 255, 60)[None, :]
     texture[..., 2] = np.linspace(255, 0, 40)[:, None]
     texture[..., 3] = 255
 
-    surface, _ = _image("opengl", lambda: [_plane(0, BLUE, texture=texture)])
+    # Cairo colors each face by the texture at its middle.
+    surface, _ = _image(
+        renderer, lambda: [_plane(0, BLUE, resolution=(60, 40), texture=texture)]
+    )
     image, _ = _image(
         "cairo",
         lambda: [
@@ -91,13 +102,31 @@ def test_texture_is_drawn_like_an_image(using_opengl_renderer):
     assert np.abs(surface - image).mean() < 0.01
 
 
-def test_opaque_meshes_hide_what_is_behind_them(using_opengl_renderer):
+@RENDERERS
+def test_opaque_meshes_hide_what_is_behind_them(renderer):
     front = _plane(1, PURE_RED)
     back = _plane(-1, PURE_BLUE)
 
-    pixels, _ = _image("opengl", lambda: [front, back], ThreeDScene)
+    pixels, _ = _image(renderer, lambda: [front, back], ThreeDScene)
 
     np.testing.assert_allclose(_pixel(pixels, 0, 0), [1, 0, 0])
+
+
+@RENDERERS
+@pytest.mark.parametrize("scene_class", [Scene, ThreeDScene])
+def test_faces_of_a_mesh_hide_those_behind_them(renderer, scene_class):
+    # The sphere's near half is red, its far half blue. Turned over, its faces come
+    # near to far.
+    sphere = _sphere(1, material=UnlitMaterial()).rotate(PI, RIGHT)
+    near = sphere.points[:, 2] > 0
+    rgbas = np.zeros((len(near), 4))
+    rgbas[:, 0], rgbas[:, 2], rgbas[:, 3] = near, ~near, 1
+    sphere.set_vertex_colors(rgbas)
+
+    pixels, _ = _image(renderer, lambda: [sphere], scene_class)
+
+    # Off the pole, where on Cairo many faces meet.
+    np.testing.assert_allclose(_pixel(pixels, 0.4, 0.3), [1, 0, 0], atol=0.05)
 
 
 def test_translucent_meshes_show_only_their_front_layer(using_opengl_renderer):
@@ -112,9 +141,10 @@ def test_translucent_meshes_show_only_their_front_layer(using_opengl_renderer):
     np.testing.assert_allclose(_pixel(pixels, 0.5, 0.5), [0.5, 0, 0], atol=0.01)
 
 
-def test_meshes_are_lit_from_the_light_source(using_opengl_renderer):
+@RENDERERS
+def test_meshes_are_lit_from_the_light_source(renderer):
     pixels, camera = _image(
-        "opengl",
+        renderer,
         lambda: [_sphere(material=PbrMaterial(roughness=1))],
         ThreeDScene,
         phi=60 * DEGREES,
@@ -129,16 +159,18 @@ def test_meshes_are_lit_from_the_light_source(using_opengl_renderer):
     assert lit.sum() > 1.3 * unlit.sum()
 
 
-def test_meshes_fixed_in_frame_ignore_the_camera(using_opengl_renderer):
+@RENDERERS
+def test_meshes_fixed_in_frame_ignore_the_camera(renderer):
     plane = _plane(0, PURE_RED).fix_in_frame()
 
-    pixels, _ = _image("opengl", lambda: [plane], ThreeDScene, phi=80 * DEGREES)
+    pixels, _ = _image(renderer, lambda: [plane], ThreeDScene, phi=80 * DEGREES)
 
     np.testing.assert_allclose(_pixel(pixels, 2.5, 1.5), [1, 0, 0])
 
 
-def test_meshes_are_not_lit_under_a_flat_camera(using_opengl_renderer):
-    pixels, _ = _image("opengl", lambda: [_sphere(color=PURE_RED)])
+@RENDERERS
+def test_meshes_are_not_lit_under_a_flat_camera(renderer):
+    pixels, _ = _image(renderer, lambda: [_sphere(color=PURE_RED)])
 
     np.testing.assert_allclose(_pixel(pixels, 0, 0), [1, 0, 0], atol=0.01)
 
@@ -223,3 +255,89 @@ def test_rough_meshes_have_no_holes_on_their_dark_side(using_opengl_renderer):
     away = -light / np.linalg.norm(light)
     for radius in (0.5, 1.0, 1.5, 1.8):
         assert _pixel(pixels, *(radius * away)).sum() > 0.3
+
+
+@RENDERERS
+def test_faces_are_lit_as_the_lighting_function(renderer):
+    from manim.renderer._lighting import AMBIENT, Light, shade
+
+    material = PbrMaterial(roughness=0.4, metallic=0.3)
+    plane = ParametricSurface(
+        lambda u, v: [u, v, 0],
+        u_range=[-3, 3],
+        v_range=[-2, 2],
+        resolution=8,
+        color=BLUE,
+        material=material,
+    )
+    pixels, camera = _image(
+        renderer, lambda: [plane], ThreeDScene, phi=40 * DEGREES, theta=-60 * DEGREES
+    )
+
+    rotation = camera.get_rotation_matrix()
+    eye = camera.frame_center + rotation.T @ [0, 0, camera.get_focal_distance()]
+    expected = shade(
+        np.array([plane.rgbas[0, :3]]),
+        np.array([[0.0, 0.0, 1.0]]),
+        np.zeros((1, 3)),
+        eye,
+        [Light(camera.light_source.get_center())],
+        AMBIENT,
+        material,
+    )
+    # Cairo lights each face at its middle, so allow for the face's size.
+    np.testing.assert_allclose(pixels[HEIGHT // 2, WIDTH // 2], expected[0], atol=0.05)
+
+
+def test_a_material_change_redraws_on_cairo():
+    from manim.renderer.cairo import CairoRenderer
+
+    with tempconfig({"pixel_width": 64, "pixel_height": 36}):
+        scene = ThreeDScene()
+        sphere = _sphere(color=BLUE)
+        renderer = CairoRenderer(camera=scene.camera)
+        fresh = CairoRenderer(camera=scene.camera)
+        try:
+            renderer.render_mobjects([sphere])
+            renderer.render_mobjects([sphere])
+            sphere.material = PbrMaterial(roughness=1, metallic=1)
+            renderer.render_mobjects([sphere])
+            fresh.render_mobjects([sphere])
+            np.testing.assert_array_equal(renderer.get_frame(), fresh.get_frame())
+        finally:
+            renderer.close()
+            fresh.close()
+
+
+def test_face_keys_follow_every_change_of_the_mesh():
+    from manim.renderer.cairo.mesh_faces import mesh_faces
+    from manim.renderer.extract import snapshot
+
+    camera = ThreeDScene().camera
+    sphere = _sphere(color=BLUE, resolution=(4, 2))
+
+    def keys():
+        return [face.key for face in mesh_faces(snapshot(sphere), camera)]
+
+    before = keys()
+    assert keys() == before
+    sphere.material = PbrMaterial(roughness=1, metallic=1)
+    after = keys()
+    assert not set(after) & set(before)
+
+
+def test_faces_are_sorted_by_their_own_middle():
+    from manim.renderer.cairo.mesh_faces import mesh_faces
+    from manim.renderer.extract import snapshot
+
+    # A tetrahedron around the origin: the middle of every face's bounding box is
+    # the origin, the mean of its corners is not.
+    corners = np.array([[1, 1, 1], [1, -1, -1], [-1, 1, -1], [-1, -1, 1]], dtype=float)
+    mesh = MeshMobject(
+        points=corners, triangles=np.array([[0, 1, 2], [3, 0, 2], [0, 1, 3], [3, 1, 2]])
+    )
+    references = [
+        face.payload.depth_reference
+        for face in mesh_faces(snapshot(mesh), ThreeDScene().camera)
+    ]
+    assert len({tuple(np.round(r, 6)) for r in references}) == 4
