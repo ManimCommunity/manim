@@ -81,8 +81,6 @@ class OpenGLRenderer(_RendererExecutionView):
         List of animation hashes for caching.
     anti_alias_width : float
         The width used for anti-aliasing in pixel units.
-    background_color : FloatRGBA
-        The background color of the renderer.
     camera : OpenGLCamera
         The camera used for rendering.
     num_plays : float
@@ -952,7 +950,7 @@ class OpenGLRenderer(_RendererExecutionView):
             The ModernGL context used to create the framebuffer and
             its attachments.
         samples : int, optional
-            The number of samples for multisample anti-aliasing (MSAA)[1]_.
+            The number of samples for multisample anti-aliasing (MSAA) [1]_.
             Default is 0 (no MSAA).
 
         Returns
