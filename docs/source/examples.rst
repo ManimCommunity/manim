@@ -29,6 +29,7 @@ Basic Concepts
 ==============
 
 .. manim:: ManimCELogo
+    :hide_levels: 1
     :save_last_frame:
     :ref_classes: MathTex Circle Square Triangle
 
@@ -51,6 +52,7 @@ Basic Concepts
 
 
 .. manim:: BraceAnnotation
+    :hide_levels: 1
     :save_last_frame:
     :ref_classes: Brace
     :ref_methods: Brace.get_text Brace.get_tex
@@ -67,6 +69,7 @@ Basic Concepts
             self.add(line, dot, dot2, b1, b2, b1text, b2text)
 
 .. manim:: VectorArrow
+    :hide_levels: 1
     :save_last_frame:
     :ref_classes: Dot Arrow NumberPlane Text
 
@@ -80,6 +83,7 @@ Basic Concepts
             self.add(numberplane, dot, arrow, origin_text, tip_text)
 
 .. manim:: GradientImageFromArray
+    :hide_levels: 1
     :save_last_frame:
     :ref_classes: ImageMobject
 
@@ -94,6 +98,7 @@ Basic Concepts
             self.add(image, image.background_rectangle)
 
 .. manim:: BooleanOperations
+    :hide_levels: 1
     :ref_classes: Union Intersection Exclusion Difference
 
     class BooleanOperations(Scene):
@@ -134,6 +139,7 @@ Animations
 ==========
 
 .. manim:: PointMovingOnShapes
+    :hide_levels: 1
     :ref_classes: Circle Dot Line GrowFromCenter Transform MoveAlongPath Rotating
 
     class PointMovingOnShapes(Scene):
@@ -153,6 +159,7 @@ Animations
             self.wait()
 
 .. manim:: MovingAround
+    :hide_levels: 1
     :ref_methods: Mobject.shift VMobject.set_fill Mobject.scale Mobject.rotate
 
     class MovingAround(Scene):
@@ -165,6 +172,7 @@ Animations
             self.play(square.animate.rotate(0.4))
 
 .. manim:: MovingAngle
+    :hide_levels: 1
     :ref_classes: Angle
     :ref_methods: Mobject.rotate
 
@@ -216,6 +224,7 @@ Animations
    You can use multiple ValueTrackers simultaneously.
 
 .. manim:: MovingDots
+    :hide_levels: 1
 
     class MovingDots(Scene):
         def construct(self):
@@ -233,6 +242,7 @@ Animations
             self.wait()
 
 .. manim:: MovingGroupToDestination
+    :hide_levels: 1
 
     class MovingGroupToDestination(Scene):
         def construct(self):
@@ -243,6 +253,7 @@ Animations
             self.wait(0.5)
 
 .. manim:: MovingFrameBox
+    :hide_levels: 1
     :ref_modules: manim.mobject.svg.tex_mobject
     :ref_classes: MathTex SurroundingRectangle
 
@@ -265,6 +276,7 @@ Animations
             self.wait()
 
 .. manim:: RotationUpdater
+    :hide_levels: 1
     :ref_methods: Mobject.add_updater Mobject.remove_updater
 
     class RotationUpdater(Scene):
@@ -285,6 +297,7 @@ Animations
             self.wait(0.5)
 
 .. manim:: PointWithTrace
+    :hide_levels: 1
     :ref_classes: Rotating
     :ref_methods: VMobject.set_points_as_corners Mobject.add_updater
 
@@ -310,6 +323,7 @@ Plotting with Manim
 ===================
 
 .. manim:: SinAndCosFunctionPlot
+    :hide_levels: 1
     :save_last_frame:
     :ref_modules: manim.mobject.coordinate_systems
     :ref_classes: MathTex
@@ -351,6 +365,8 @@ Plotting with Manim
 
 
 .. manim:: ArgMinExample
+   :title: Example: ArgMin
+   :hide_levels: 1
 
    class ArgMinExample(Scene):
        def construct(self):
@@ -377,6 +393,7 @@ Plotting with Manim
            self.wait()
 
 .. manim:: GraphAreaPlot
+    :hide_levels: 1
     :save_last_frame:
     :ref_modules: manim.mobject.coordinate_systems
     :ref_methods: Axes.plot Axes.get_vertical_line_to_graph Axes.get_area Axes.get_axis_labels
@@ -408,6 +425,7 @@ Plotting with Manim
             self.add(ax, labels, curve_1, curve_2, line_1, line_2, riemann_area, area)
 
 .. manim:: PolygonOnAxes
+    :hide_levels: 1
     :ref_classes: Axes Polygon
 
     class PolygonOnAxes(Scene):
@@ -466,6 +484,7 @@ Plotting with Manim
 
 
 .. manim:: HeatDiagramPlot
+    :hide_levels: 1
     :save_last_frame:
     :ref_modules: manim.mobject.coordinate_systems
     :ref_methods: Axes.plot_line_graph Axes.get_axis_labels
@@ -496,6 +515,7 @@ Special Camera Settings
 =======================
 
 .. manim:: FollowingGraphCamera
+    :hide_levels: 1
     :ref_modules: manim.scene.moving_camera_scene
     :ref_classes: MoveAlongPath Restore
     :ref_methods: Axes.plot Mobject.add_updater
@@ -527,6 +547,7 @@ Special Camera Settings
             self.play(Restore(self.camera.frame))
 
 .. manim:: MovingZoomedSceneAround
+    :hide_levels: 1
     :ref_modules: manim.scene.zoomed_scene
     :ref_classes: ZoomedScene BackgroundRectangle UpdateFromFunc
     :ref_methods: Mobject.add_updater ZoomedScene.get_zoomed_display_pop_out_animation
@@ -596,6 +617,7 @@ Special Camera Settings
             self.wait()
 
 .. manim:: FixedInFrameMObjectTest
+    :hide_levels: 1
     :save_last_frame:
     :ref_classes: ThreeDScene
     :ref_methods: ThreeDScene.set_camera_orientation ThreeDScene.add_fixed_in_frame_mobjects
@@ -611,6 +633,7 @@ Special Camera Settings
             self.wait()
 
 .. manim:: ThreeDLightSourcePosition
+    :hide_levels: 1
     :save_last_frame:
     :ref_classes: ThreeDScene ThreeDAxes Surface
     :ref_methods: ThreeDScene.set_camera_orientation
@@ -632,6 +655,7 @@ Special Camera Settings
 
 
 .. manim:: ThreeDCameraRotation
+    :hide_levels: 1
     :ref_classes: ThreeDScene ThreeDAxes
     :ref_methods: ThreeDScene.begin_ambient_camera_rotation ThreeDScene.stop_ambient_camera_rotation
 
@@ -648,6 +672,7 @@ Special Camera Settings
             self.wait()
 
 .. manim:: ThreeDCameraIllusionRotation
+    :hide_levels: 1
     :ref_classes: ThreeDScene ThreeDAxes
     :ref_methods: ThreeDScene.begin_3dillusion_camera_rotation ThreeDScene.stop_3dillusion_camera_rotation
 
@@ -662,6 +687,7 @@ Special Camera Settings
             self.stop_3dillusion_camera_rotation()
 
 .. manim:: ThreeDSurfacePlot
+   :hide_levels: 1
    :save_last_frame:
    :ref_classes: ThreeDScene Surface
 
@@ -698,6 +724,7 @@ Advanced Projects
 =================
 
 .. manim:: OpeningManim
+    :hide_levels: 1
     :ref_classes: Tex MathTex Write FadeIn LaggedStart NumberPlane Create
     :ref_methods: NumberPlane.prepare_for_nonlinear_transform
 
@@ -755,6 +782,7 @@ Advanced Projects
             self.wait()
 
 .. manim:: SineCurveUnitCircle
+    :hide_levels: 1
     :ref_classes: MathTex Circle Dot Line VGroup
     :ref_methods: Mobject.add_updater Mobject.remove_updater
     :ref_functions: always_redraw

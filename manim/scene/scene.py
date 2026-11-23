@@ -1805,6 +1805,8 @@ class Scene:
         Examples
         --------
         .. manim:: SoundExample
+            :title: Example: Sound
+            :hide_levels: 1
             :no_autoplay:
 
             class SoundExample(Scene):

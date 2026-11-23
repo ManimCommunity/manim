@@ -623,6 +623,7 @@ class LinearTransformationScene(VectorScene):
     -------
 
     .. manim:: LinearTransformationSceneExample
+        :title: Example: LinearTransformationScene
 
         class LinearTransformationSceneExample(LinearTransformationScene):
             def __init__(self, **kwargs):

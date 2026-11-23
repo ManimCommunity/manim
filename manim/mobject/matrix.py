@@ -4,6 +4,7 @@ Examples
 --------
 
 .. manim:: MatrixExamples
+    :hide_levels: 1
     :save_last_frame:
 
     class MatrixExamples(Scene):
@@ -115,6 +116,7 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
     `include_background_rectangle`.
 
     .. manim:: MatrixExamples
+        :hide_levels: 1
         :save_last_frame:
 
         class MatrixExamples(Scene):
@@ -145,6 +147,8 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
                 self.add(g)
 
     .. manim:: BackgroundRectanglesExample
+        :title: Example: BackgroundRectangles
+        :hide_levels: 1
         :save_last_frame:
 
         class BackgroundRectanglesExample(Scene):
@@ -293,6 +297,8 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         --------
 
         .. manim:: GetColumnsExample
+            :title: Example: GetColumns
+            :hide_levels: 1
             :save_last_frame:
 
             class GetColumnsExample(Scene):
@@ -325,6 +331,8 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         --------
 
         .. manim:: SetColumnColorsExample
+            :title: Example: SetColumnColors
+            :hide_levels: 1
             :save_last_frame:
 
             class SetColumnColorsExample(Scene):
@@ -350,6 +358,8 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         --------
 
         .. manim:: GetRowsExample
+            :title: Example: GetRows
+            :hide_levels: 1
             :save_last_frame:
 
             class GetRowsExample(Scene):
@@ -377,6 +387,8 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         --------
 
         .. manim:: SetRowColorsExample
+            :title: Example: SetRowColors
+            :hide_levels: 1
             :save_last_frame:
 
             class SetRowColorsExample(Scene):
@@ -425,6 +437,8 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         --------
 
         .. manim:: GetEntriesExample
+            :title: Example: GetEntries
+            :hide_levels: 1
             :save_last_frame:
 
             class GetEntriesExample(Scene):
@@ -450,6 +464,8 @@ class Matrix(VMobject, metaclass=ConvertToOpenGL):
         --------
 
         .. manim:: GetBracketsExample
+            :title: Example: GetBrackets
+            :hide_levels: 1
             :save_last_frame:
 
             class GetBracketsExample(Scene):
@@ -471,6 +487,8 @@ class DecimalMatrix(Matrix):
     --------
 
     .. manim:: DecimalMatrixExample
+        :title: Example: DecimalMatrix
+        :hide_levels: 1
         :save_last_frame:
 
         class DecimalMatrixExample(Scene):
@@ -517,6 +535,8 @@ class IntegerMatrix(Matrix):
     --------
 
     .. manim:: IntegerMatrixExample
+        :title: Example: IntegerMatrix
+        :hide_levels: 1
         :save_last_frame:
 
         class IntegerMatrixExample(Scene):
@@ -554,6 +574,8 @@ class MobjectMatrix(Matrix):
     --------
 
     .. manim:: MobjectMatrixExample
+        :title: Example: MobjectMatrix
+        :hide_levels: 1
         :save_last_frame:
 
         class MobjectMatrixExample(Scene):
@@ -606,6 +628,7 @@ def get_det_text(
     --------
 
     .. manim:: DeterminantOfAMatrix
+        :hide_levels: 1
         :save_last_frame:
 
         class DeterminantOfAMatrix(Scene):

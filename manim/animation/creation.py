@@ -153,6 +153,8 @@ class Create(ShowPartial):
     Examples
     --------
     .. manim:: CreateScene
+        :title: Example: Create
+        :hide_levels: 1
 
         class CreateScene(Scene):
             def construct(self):
@@ -183,6 +185,7 @@ class Uncreate(Create):
     Examples
     --------
     .. manim:: ShowUncreate
+        :hide_levels: 1
 
         class ShowUncreate(Scene):
             def construct(self):
@@ -216,6 +219,7 @@ class DrawBorderThenFill(Animation):
     Examples
     --------
     .. manim:: ShowDrawBorderThenFill
+        :hide_levels: 1
 
         class ShowDrawBorderThenFill(Scene):
             def construct(self):
@@ -294,12 +298,14 @@ class Write(DrawBorderThenFill):
     Examples
     --------
     .. manim:: ShowWrite
+        :hide_levels: 1
 
         class ShowWrite(Scene):
             def construct(self):
                 self.play(Write(Text("Hello", font_size=144)))
 
     .. manim:: ShowWriteReversed
+        :hide_levels: 1
 
         class ShowWriteReversed(Scene):
             def construct(self):
@@ -388,6 +394,7 @@ class Unwrite(Write):
                 self.play(Unwrite(text))
 
     .. manim:: UnwriteReverseFalse
+        :hide_levels: 1
 
         class UnwriteReverseFalse(Scene):
             def construct(self):
@@ -496,6 +503,8 @@ class ShowIncreasingSubsets(Animation):
     --------
 
     .. manim:: ShowIncreasingSubsetsScene
+        :title: Example: ShowIncreasingSubsets
+        :hide_levels: 1
 
         class ShowIncreasingSubsetsScene(Scene):
             def construct(self):
@@ -699,6 +708,8 @@ class TypeWithCursor(AddTextLetterByLetter):
     --------
 
     .. manim:: InsertingTextExample
+        :title: Example: InsertingText
+        :hide_levels: 1
         :ref_classes: Blink
 
         class InsertingTextExample(Scene):
@@ -809,6 +820,8 @@ class UntypeWithCursor(TypeWithCursor):
     --------
 
     .. manim:: DeletingTextExample
+        :title: Example: DeletingText
+        :hide_levels: 1
         :ref_classes: Blink
 
         class DeletingTextExample(Scene):

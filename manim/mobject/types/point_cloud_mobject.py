@@ -51,6 +51,8 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
     --------
 
     .. manim:: PMobjectExample
+        :title: Example: PMobject
+        :hide_levels: 1
         :save_last_frame:
 
         class PMobjectExample(Scene):
@@ -291,6 +293,8 @@ class PGroup(PMobject):
     --------
 
     .. manim:: PgroupExample
+        :title: Example: Pgroup
+        :hide_levels: 1
         :save_last_frame:
 
         class PgroupExample(Scene):
@@ -331,6 +335,8 @@ class PointCloudDot(Mobject1D):
     Examples
     --------
     .. manim:: PointCloudDotExample
+        :title: Example: PointCloudDot
+        :hide_levels: 1
         :save_last_frame:
 
         class PointCloudDotExample(Scene):
@@ -343,6 +349,7 @@ class PointCloudDot(Mobject1D):
                 self.add(group)
 
     .. manim:: PointCloudDotExample2
+        :hide_levels: 1
 
         class PointCloudDotExample2(Scene):
             def construct(self):
@@ -403,6 +410,7 @@ class Point(PMobject):
     --------
 
     .. manim:: ExamplePoint
+        :hide_levels: 1
         :save_last_frame:
 
         class ExamplePoint(Scene):

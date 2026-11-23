@@ -470,6 +470,8 @@ class OpenGLMobject:
         --------
 
         .. manim:: AnimateExample
+            :title: Example: Animate
+            :hide_levels: 1
 
             class AnimateExample(Scene):
                 def construct(self):
@@ -482,6 +484,8 @@ class OpenGLMobject:
 
 
         .. manim:: AnimateChainExample
+            :title: Example: AnimateChain
+            :hide_levels: 1
 
             class AnimateChainExample(Scene):
                 def construct(self):
@@ -491,6 +495,8 @@ class OpenGLMobject:
                     self.play(Uncreate(s))
 
         .. manim:: AnimateWithArgsExample
+            :title: Example: AnimateWithArgs
+            :hide_levels: 1
 
             class AnimateWithArgsExample(Scene):
                 def construct(self):
@@ -529,6 +535,8 @@ class OpenGLMobject:
         Examples
         --------
         .. manim:: WidthExample
+            :title: Example: Width
+            :hide_levels: 1
 
             class WidthExample(Scene):
                 def construct(self):
@@ -566,6 +574,8 @@ class OpenGLMobject:
         Examples
         --------
         .. manim:: HeightExample
+            :title: Example: Height
+            :hide_levels: 1
 
             class HeightExample(Scene):
                 def construct(self):
@@ -659,6 +669,7 @@ class OpenGLMobject:
         --------
 
         .. manim:: AngleMidPoint
+            :hide_levels: 1
             :save_last_frame:
 
             class AngleMidPoint(Scene):
@@ -715,6 +726,8 @@ class OpenGLMobject:
         Examples
         --------
         .. manim:: MatchPointsScene
+            :title: Example: MatchPoints
+            :hide_levels: 1
 
             class MatchPointsScene(Scene):
                 def construct(self):
@@ -1136,6 +1149,7 @@ class OpenGLMobject:
         --------
 
         .. manim:: Example
+            :hide_levels: 1
             :save_last_frame:
 
             class Example(Scene):
@@ -1223,6 +1237,7 @@ class OpenGLMobject:
         Examples
         --------
         .. manim:: ExampleBoxes
+            :hide_levels: 1
             :save_last_frame:
 
             class ExampleBoxes(Scene):
@@ -1233,6 +1248,7 @@ class OpenGLMobject:
 
 
         .. manim:: ArrangeInGrid
+            :hide_levels: 1
             :save_last_frame:
 
             class ArrangeInGrid(Scene):
@@ -1468,6 +1484,8 @@ class OpenGLMobject:
         --------
 
         .. manim:: ShuffleSubmobjectsExample
+            :title: Example: ShuffleSubmobjects
+            :hide_levels: 1
 
             class ShuffleSubmobjectsExample(Scene):
                 def construct(self):
@@ -1496,6 +1514,8 @@ class OpenGLMobject:
         --------
 
         .. manim:: InvertSumobjectsExample
+            :title: Example: InvertSumobjects
+            :hide_levels: 1
 
             class InvertSumobjectsExample(Scene):
                 def construct(self):
@@ -1754,6 +1774,8 @@ class OpenGLMobject:
         --------
 
         .. manim:: MobjectScaleExample
+            :title: Example: MobjectScale
+            :hide_levels: 1
             :save_last_frame:
 
             class MobjectScaleExample(Scene):
@@ -1813,6 +1835,8 @@ class OpenGLMobject:
         --------
 
         .. manim:: FlipExample
+            :title: Example: Flip
+            :hide_levels: 1
             :save_last_frame:
 
             class FlipExample(Scene):
@@ -1868,6 +1892,8 @@ class OpenGLMobject:
         -------
 
         .. manim:: ApplyFuncExample
+            :title: Example: ApplyFunc
+            :hide_levels: 1
 
             class ApplyFuncExample(Scene):
                 def construct(self):
@@ -1982,6 +2008,7 @@ class OpenGLMobject:
         --------
 
         .. manim:: GeometricShapes
+            :hide_levels: 1
             :save_last_frame:
 
             class GeometricShapes(Scene):
@@ -2765,6 +2792,7 @@ class OpenGLMobject:
         --------
 
         .. manim:: DotInterpolation
+            :hide_levels: 1
             :save_last_frame:
 
             class DotInterpolation(Scene):
@@ -2853,6 +2881,8 @@ class OpenGLMobject:
         Examples
         --------
         .. manim:: BecomeScene
+            :title: Example: Become
+            :hide_levels: 1
 
             class BecomeScene(Scene):
                 def construct(self):
@@ -3255,6 +3285,7 @@ def override_animate(method: types.FunctionType) -> _OverrideAnimateDecorator:
     --------
 
     .. manim:: AnimationOverrideExample
+        :title: Example: AnimationOverride
 
         class CircleWithContent(VGroup):
             def __init__(self, content):

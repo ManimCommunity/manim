@@ -263,6 +263,8 @@ class Surface(VGroup, metaclass=ConvertToOpenGL):
         Examples
         --------
         .. manim:: FillByValueExample
+            :title: Example: FillByValue
+            :hide_levels: 1
             :save_last_frame:
 
             class FillByValueExample(ThreeDScene):
@@ -374,6 +376,7 @@ class Sphere(Surface):
     --------
 
     .. manim:: ExampleSphere
+        :hide_levels: 1
         :save_last_frame:
 
         class ExampleSphere(ThreeDScene):
@@ -392,6 +395,7 @@ class Sphere(Surface):
     This example shows that overlapping spheres can intersect with rough transitions.
 
     .. manim:: ExampleSphereOverlap
+        :hide_levels: 1
         :save_last_frame:
 
         class ExampleSphereOverlap(ThreeDScene):
@@ -412,6 +416,7 @@ class Sphere(Surface):
     sphere:
 
     .. manim:: ExamplePartialSpheres
+        :hide_levels: 1
         :save_last_frame:
 
         class ExamplePartialSpheres(ThreeDScene):
@@ -503,6 +508,8 @@ class Dot3D(Sphere):
     --------
 
     .. manim:: Dot3DExample
+        :title: Example: Dot3D
+        :hide_levels: 1
         :save_last_frame:
 
         class Dot3DExample(ThreeDScene):
@@ -547,6 +554,8 @@ class Cube(VGroup):
     --------
 
     .. manim:: CubeExample
+        :title: Example: Cube
+        :hide_levels: 1
         :save_last_frame:
 
         class CubeExample(ThreeDScene):
@@ -607,6 +616,7 @@ class Prism(Cube):
     --------
 
     .. manim:: ExamplePrism
+        :hide_levels: 1
         :save_last_frame:
 
         class ExamplePrism(ThreeDScene):
@@ -661,6 +671,7 @@ class Cone(Surface):
     Examples
     --------
     .. manim:: ExampleCone
+        :hide_levels: 1
         :save_last_frame:
 
         class ExampleCone(ThreeDScene):
@@ -824,6 +835,7 @@ class Cylinder(Surface):
     Examples
     --------
     .. manim:: ExampleCylinder
+        :hide_levels: 1
         :save_last_frame:
 
         class ExampleCylinder(ThreeDScene):
@@ -987,6 +999,7 @@ class Line3D(Cylinder):
     Examples
     --------
     .. manim:: ExampleLine3D
+        :hide_levels: 1
         :save_last_frame:
 
         class ExampleLine3D(ThreeDScene):
@@ -1130,6 +1143,8 @@ class Line3D(Cylinder):
         Examples
         --------
         .. manim:: ParallelLineExample
+            :title: Example: ParallelLine
+            :hide_levels: 1
             :save_last_frame:
 
             class ParallelLineExample(ThreeDScene):
@@ -1178,6 +1193,8 @@ class Line3D(Cylinder):
         Examples
         --------
         .. manim:: PerpLineExample
+            :title: Example: PerpLine
+            :hide_levels: 1
             :save_last_frame:
 
             class PerpLineExample(ThreeDScene):
@@ -1226,6 +1243,7 @@ class Arrow3D(Line3D):
     Examples
     --------
     .. manim:: ExampleArrow3D
+        :hide_levels: 1
         :save_last_frame:
 
         class ExampleArrow3D(ThreeDScene):
