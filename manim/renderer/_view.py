@@ -19,7 +19,9 @@ from manim.utils._path_points import (
 from manim.utils.color import get_shaded_rgb
 
 if TYPE_CHECKING:
-    from manim.renderer.protocol import CameraState
+    from collections.abc import Sequence
+
+    from manim.renderer.protocol import CameraState, LightState
     from manim.renderer.snapshot import Placement, RNode, RPath
     from manim.typing import FloatRGBA_Array, Point3D, Point3D_Array
 
@@ -122,22 +124,18 @@ def sort_for_display(state: CameraState, nodes: list[RNode]) -> list[RNode]:
 
 
 def shaded_rgbas(
-    state: CameraState, path: RPath, rgbas: FloatRGBA_Array
+    lights: Sequence[LightState], path: RPath, rgbas: FloatRGBA_Array
 ) -> FloatRGBA_Array:
     """The stop colors of a path's paint after the shading of its material.
 
-    :class:`.LegacyShaded` paths are shaded towards the light at their first and
-    last corner, if the state shades and has a light; other paths keep ``rgbas``.
+    :class:`.LegacyShaded` paths are shaded towards the first of the frame's
+    ``lights`` at their first and last corner; without lights, and for other
+    materials, ``rgbas`` stay.
     """
     points = path.points
-    light = state.light
-    if not (
-        state.shade_3d
-        and light is not None
-        and isinstance(path.material, LegacyShaded)
-        and len(points) > 0
-    ):
+    if not (lights and isinstance(path.material, LegacyShaded) and len(points) > 0):
         return rgbas
+    light = np.asarray(lights[0].position, dtype=float)
     shaded = rgbas.repeat(2, axis=0) if len(rgbas) < 2 else np.array(rgbas[:2])
     shaded[0, :3] = get_shaded_rgb(
         shaded[0, :3], start_corner(points), unit_normal(points, 0), light

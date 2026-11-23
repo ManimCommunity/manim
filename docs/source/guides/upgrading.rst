@@ -492,3 +492,36 @@ and for mobjects fixed in the frame.
        (in scene coordinates, not fixed to the frame)
    * - ``StreamLines.get_colored_background_image``, ``background_img``
      - the lines' ``stroke`` paint
+
+Lights belong to the scene
+--------------------------
+
+Lit materials (:class:`.Pbr`, the default of meshes and surfaces) are shaded by
+:class:`.PointLight` mobjects (see :mod:`manim.light`). A :class:`.ThreeDScene` has
+one, ``scene.light``, at the position of the camera's former light; it is not in
+``scene.mobjects``, so :meth:`.Scene.clear` and fading out every mobject leave it.
+Move or animate it like any mobject, or add more lights with :meth:`.Scene.add`.
+``scene.ambient_light`` (0.25) is the white light that reaches every surface.
+A frame without lights is not shaded: lit materials show their base colour (a
+plain :class:`.Scene` has no light).
+
+.. code-block:: python
+
+    class Lit(ThreeDScene):
+        def construct(self):
+            self.add(Sphere())
+            self.play(self.light.animate.move_to(3 * IN))
+            self.add(PointLight(2 * UP, color=YELLOW))
+
+.. list-table::
+   :header-rows: 1
+
+   * - Removed
+     - Use instead
+   * - ``ThreeDCamera.light_source``,
+       ``ThreeDCamera(light_source_start_point=...)``
+     - ``scene.light`` (a :class:`.PointLight`), ``scene.light.move_to(...)``
+   * - ``ThreeDCamera(should_apply_shading=False)``
+     - ``scene.light = None`` (no shading)
+   * - ``ThreeDCamera(shading_factor=...)``
+     - none: lit materials follow :class:`.Pbr`'s parameters

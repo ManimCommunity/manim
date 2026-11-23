@@ -11,9 +11,14 @@ from __future__ import annotations
 from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING
 
+import numpy as np
+
 from manim.camera import MultiCamera
+from manim.light import PointLight
+from manim.renderer._lighting import srgb_to_linear
 from manim.renderer.extract import Extractor
-from manim.renderer.protocol import CameraView, RenderConfig
+from manim.renderer.protocol import CameraView, LightState, RenderConfig
+from manim.utils.family import extract_mobject_family_members
 
 if TYPE_CHECKING:
     from manim.camera import Camera
@@ -40,14 +45,27 @@ class FrameBuilder:
         self.pixel_width = int(pixel_width)
         self.pixel_height = int(pixel_height)
         self._extractor = Extractor()
+        self._lights: tuple[LightState, ...] = ()
+        self._ambient = (0.0, 0.0, 0.0)
 
     def build(
-        self, camera: Camera, mobjects: Iterable[Mobject]
+        self,
+        camera: Camera,
+        mobjects: Iterable[Mobject],
+        lights: Iterable[PointLight] = (),
+        ambient_light: float = 0.0,
     ) -> tuple[list[RNode], RenderConfig]:
         """The snapshots of ``mobjects`` (with their families) in drawing order, and
         the configuration of a frame that ``camera`` shows.
+
+        The frame's lights are ``lights`` and the :class:`.PointLight` instances in
+        the families of ``mobjects``, in family order; ``ambient_light`` is the
+        intensity of the white light that reaches every surface. Camera views get
+        the same lights.
         """
         mobjects = list(mobjects)
+        self._lights = self._light_states(lights, mobjects)
+        self._ambient = (float(ambient_light),) * 3
         views: tuple[CameraView, ...] = ()
         if isinstance(camera, MultiCamera):
             views = tuple(
@@ -56,6 +74,23 @@ class FrameBuilder:
             )
         return self.nodes(camera, mobjects), self.config(
             camera, (self.pixel_width, self.pixel_height), camera_views=views
+        )
+
+    @staticmethod
+    def _light_states(
+        lights: Iterable[PointLight], mobjects: Sequence[Mobject]
+    ) -> tuple[LightState, ...]:
+        found: list[PointLight] = []
+        for light in [*lights, *extract_mobject_family_members(mobjects)]:
+            if isinstance(light, PointLight) and light not in found:
+                found.append(light)
+        return tuple(
+            LightState(
+                position=np.array(light.position, dtype=float),
+                rgb=tuple(float(c) for c in srgb_to_linear(light.light_color.to_rgb())),  # type: ignore[arg-type]
+                intensity=float(light.intensity),
+            )
+            for light in found
         )
 
     def nodes(
@@ -97,6 +132,8 @@ class FrameBuilder:
             reference_pixel_size=(self.pixel_width, self.pixel_height),
             background_image=camera.background_image,
             camera_views=camera_views,
+            lights=self._lights,
+            ambient=self._ambient,
         )
 
     def _view(

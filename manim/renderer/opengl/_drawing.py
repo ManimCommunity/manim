@@ -22,7 +22,6 @@ from PIL.Image import Resampling
 
 from manim.appearance.material import PbrMaterial
 from manim.renderer import _view
-from manim.renderer._lighting import AMBIENT, DEFAULT_LIGHT_INTENSITY
 from manim.renderer._mesh import faces_of
 from manim.renderer._paint import paint_colors, shows
 from manim.renderer._reuse import PrefixMemo, node_key, view_key
@@ -46,7 +45,7 @@ from ._winding_fill import WindingFill
 from .shader import Shader
 
 if TYPE_CHECKING:
-    from manim.renderer.protocol import CameraState
+    from manim.renderer.protocol import CameraState, LightState
     from manim.renderer.snapshot import Material
 
     from .renderer import OpenGLRenderer, _CameraView
@@ -70,6 +69,8 @@ _STROKE_DTYPE = [
     ("color", np.float32, (4,)),
 ]
 _STROKE_FORMAT = "3f 3f 3f 3f 1f 4f"
+#: The most lights the mesh shader takes (``MAX_LIGHTS`` in ``mesh/frag.glsl``).
+MAX_LIGHTS = 8
 #: The texture unit colour fields are bound to (images and meshes use unit 0).
 _FIELD_TEXTURE_UNIT = 3
 _POINT_DTYPE = [("point", np.float32, (3,)), ("color", np.float32, (4,))]
@@ -304,6 +305,9 @@ class DrawTarget(NamedTuple):
     uniforms: dict[str, Any]
     #: See :attr:`.RenderConfig.reference_pixel_size`.
     reference_size: tuple[int, int]
+    #: See :attr:`.RenderConfig.lights` and :attr:`.RenderConfig.ambient`.
+    lights: tuple[LightState, ...] = ()
+    ambient: tuple[float, float, float] = (0.0, 0.0, 0.0)
 
 
 class _Group(NamedTuple):
@@ -408,7 +412,14 @@ class SnapshotDrawing:
         self._normals.next_frame()
         nodes = list(nodes)
         keys = [node_key(node) for node in nodes]
-        view = view_key(target.camera, target.size, target.reference_size, background)
+        view = view_key(
+            target.camera,
+            target.size,
+            target.reference_size,
+            background,
+            target.lights,
+            target.ambient,
+        )
         memo = self._memo
         context = self._renderer.context
         start = memo.count_reusable(keys, view)
@@ -670,27 +681,37 @@ class SnapshotDrawing:
     def _lighting(self, node: RNode, material: Material) -> dict[str, Any]:
         """The lighting uniforms of the mesh shader (see ``include/lighting.glsl``).
 
-        Meshes are lit by the light of a :class:`.ThreeDCamera`; under other cameras,
-        and when fixed in frame, they show their base colors.
+        Meshes are lit by the frame's lights; without lights, and when fixed in
+        frame, they show their base colors.
         """
-        view = self._base_target.view
-        light = view.light_source
-        if (
-            not isinstance(material, PbrMaterial)
-            or light is None
-            or node.is_fixed_in_frame
-        ):
+        target = self._base_target
+        lights = target.lights
+        if not isinstance(material, PbrMaterial) or not lights or node.fixed_in_frame:
             return {"lit": 0.0}
+        if len(lights) > MAX_LIGHTS:
+            raise CapabilityError(
+                f"The OpenGL renderer draws at most {MAX_LIGHTS} lights; the frame "
+                f"has {len(lights)}."
+            )
+        padding = MAX_LIGHTS - len(lights)
         return {
             "lit": 1.0,
             "roughness": material.roughness,
             "metallic": material.metallic,
             "emissive": material.emissive,
-            "ambient": AMBIENT,
-            "light_position": tuple(light),
-            "light_rgb": (1.0, 1.0, 1.0),
-            "light_intensity": DEFAULT_LIGHT_INTENSITY,
-            "eye_position": tuple(view.eye),
+            "ambient": tuple(target.ambient),
+            "light_count": len(lights),
+            "light_positions": tuple(
+                [tuple(map(float, light.position)) for light in lights]
+                + [(0.0, 0.0, 0.0)] * padding
+            ),
+            "light_rgbs": tuple(
+                [tuple(light.rgb) for light in lights] + [(0.0, 0.0, 0.0)] * padding
+            ),
+            "light_intensities": tuple(
+                [float(light.intensity) for light in lights] + [0.0] * padding
+            ),
+            "eye_position": tuple(target.view.eye),
         }
 
     def _draw_image(self, node: RNode, image: RImage) -> None:
@@ -867,8 +888,7 @@ class SnapshotDrawing:
             self._draw_strokes(group, background=False)
 
     def _draw_strokes(self, group: _Group, background: bool) -> None:
-        camera = self._target.camera
-        geometry, widths, colors = [], [], []
+        geometry, widths, colours = [], [], []
         for node, geo in zip(group.nodes, group.geometry, strict=True):
             path: RPath = node.payload  # type: ignore[assignment]
             stroke = path.background_stroke if background else path.stroke
@@ -880,7 +900,9 @@ class SnapshotDrawing:
                 paint_colors(
                     stroke.paint,
                     path,
-                    lambda path, rgbas: _view.shaded_rgbas(camera, path, rgbas),
+                    lambda path, rgbas: _view.shaded_rgbas(
+                        self._target.lights, path, rgbas
+                    ),
                 )
             )
         if not geometry:

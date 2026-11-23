@@ -13,7 +13,8 @@ import numpy as np
 
 from manim.appearance.material import UnlitMaterial
 from manim.constants import CapStyleType, LineJointType
-from manim.renderer._lighting import AMBIENT, Light, shade
+from manim.appearance.material import UnlitMaterial
+from manim.renderer._lighting import Light, shade
 from manim.renderer._mesh import face_colors, face_normals, face_outlines, faces_of
 from manim.renderer._view import eye
 from manim.renderer.snapshot import (
@@ -26,7 +27,9 @@ from manim.renderer.snapshot import (
 )
 
 if TYPE_CHECKING:
-    from manim.renderer.protocol import CameraState
+    from collections.abc import Sequence
+
+    from manim.renderer.protocol import CameraState, LightState
 
 __all__ = ["mesh_faces"]
 
@@ -37,7 +40,11 @@ _FACE_TOLERANCE = 1e-6
 
 
 def mesh_faces(
-    node: RNode, camera: CameraState, reference_pixel_size: tuple[int, int]
+    node: RNode,
+    camera: CameraState,
+    reference_pixel_size: tuple[int, int],
+    lights: Sequence[LightState] = (),
+    ambient: tuple[float, float, float] = (0.0, 0.0, 0.0),
 ) -> list[RNode]:
     """Path snapshots for the faces of a mesh node, from far to near.
 
@@ -57,15 +64,14 @@ def mesh_faces(
     # tetrahedron around the origin, it is the origin for all four.)
     centers = corners.mean(axis=1)
     colors = face_colors(mesh, faces)
-    light = camera.light
-    if light is not None and not node.is_fixed_in_frame:
+    if lights and not node.fixed_in_frame:
         colors[:, :3] = shade(
             colors[:, :3],
             face_normals(corners),
             centers,
             eye(camera),
-            [Light(light)],
-            AMBIENT,
+            [Light(light.position, light.rgb, light.intensity) for light in lights],
+            ambient,
             mesh.material,
         )
     outlines = face_outlines(corners)

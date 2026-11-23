@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from .._config import config, logger
 from .._config.video_encoder import video_encoder_fingerprint
@@ -11,6 +11,7 @@ from ..utils.hashing import get_hash_from_play_call
 
 if TYPE_CHECKING:
     from ..manager import Manager
+    from ..scene.scene import Scene
     from .loop import _Play
 
 __all__: list[str] = []
@@ -74,6 +75,9 @@ class _SegmentCache:
             ),
             renderer_state={
                 "drawing": dict(factory.cache_identity),
+                # Scene settings that change the pixels: the hash leaves the
+                # scene object itself out.
+                "scene": _scene_drawing_state(scene),
                 "execution": {
                     "clock": _CLOCK_VERSION,
                     "drawing": _DRAWING_VERSION,
@@ -84,3 +88,20 @@ class _SegmentCache:
                 },
             },
         )
+
+
+def _scene_drawing_state(scene: Scene) -> dict[str, Any]:
+    """What of the scene itself (not its mobjects) changes the drawing: the ambient
+    light and the scene's light, which is not one of its mobjects.
+    """
+    light = scene.light
+    return {
+        "ambient_light": scene.ambient_light,
+        "light": None
+        if light is None or light in scene.mobjects
+        else {
+            "position": light.position.tolist(),
+            "color": light.light_color.to_hex(),
+            "intensity": light.intensity,
+        },
+    }

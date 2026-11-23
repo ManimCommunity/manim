@@ -64,8 +64,8 @@ class ThreeDVMobject(VMobject):
 class Surface(ParametricSurface):
     """A parametric surface, by default of faces in a checkerboard pattern.
 
-    The surface is a :class:`.ParametricSurface`: lit by a :class:`.ThreeDCamera`'s
-    light through its ``material`` (``PbrMaterial()`` by default). With
+    The surface is a :class:`.ParametricSurface`: lit by the scene's lights
+    (:mod:`manim.light`) through its ``material`` (``PbrMaterial()`` by default). With
     ``checkerboard_colors``, every face has its own corners, so faces keep their own
     color and are lit flat; without, neighboring faces share corners and the
     surface is lit smoothly.

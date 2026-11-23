@@ -41,7 +41,9 @@ from manim.utils.space_ops import cross2d
 from .target import _CairoRenderTarget, _PathCache
 
 if TYPE_CHECKING:
-    from manim.renderer.protocol import CameraState
+    from collections.abc import Sequence
+
+    from manim.renderer.protocol import CameraState, LightState
     from manim.typing import (
         FloatRGBA_Array,
         Point3D_Array,
@@ -77,8 +79,11 @@ class _CairoDrawingContext:
         target: _CairoRenderTarget,
         image_resolver: _ImageResolver,
         reference_pixel_size: tuple[int, int],
+        lights: Sequence[LightState] = (),
     ) -> None:
         self.camera = camera
+        #: The frame's lights (see :attr:`.RenderConfig.lights`).
+        self.lights = tuple(lights)
         #: See :attr:`.RenderConfig.reference_pixel_size`.
         self.reference_pixel_size = reference_pixel_size
         self.target = target
@@ -204,7 +209,7 @@ class _CairoDrawingContext:
             self._set_field_source(context, paint, node)
             return
         rgbas, ends = paint_colors(
-            paint, path, lambda path, rgbas: shaded_rgbas(self.camera, path, rgbas)
+            paint, path, lambda path, rgbas: shaded_rgbas(self.lights, path, rgbas)
         )
         if ends is None:
             context.set_source_rgba(*rgbas[0][2::-1], rgbas[0][3])

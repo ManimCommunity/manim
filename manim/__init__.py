@@ -36,6 +36,7 @@ from .animation.updaters.update import *
 from .appearance import *
 from .camera import *
 from .constants import *
+from .light import *
 from .manager import *
 from .mobject.frame import *
 from .mobject.geometry.arc import *

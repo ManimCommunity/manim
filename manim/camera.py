@@ -14,11 +14,10 @@ from typing import TYPE_CHECKING, Any, Literal, overload
 import numpy as np
 
 from manim._config import config
-from manim.constants import DEGREES, DOWN, LEFT, OUT
+from manim.constants import DEGREES
 from manim.mobject.frame import ScreenRectangle
 from manim.mobject.mobject import Mobject, _AnimationBuilder
 from manim.mobject.types.image_mobject import ImageMobjectFromCamera
-from manim.mobject.types.point_cloud_mobject import Point
 from manim.mobject.value_tracker import ValueTracker
 from manim.renderer.projection import project_points
 from manim.renderer.protocol import CameraState
@@ -268,8 +267,6 @@ class Camera:
             rotation=np.identity(3),
             focal_distance=None,
             zoom=1.0,
-            light=None,
-            shade_3d=False,
             default_frame_width=float(config.frame_width),
         )
 
@@ -310,10 +307,7 @@ class ThreeDCamera(Camera):
     def __init__(
         self,
         focal_distance: float = 20.0,
-        shading_factor: float = 0.2,
         default_distance: float = 5.0,
-        light_source_start_point: Point3DLike = 9 * DOWN + 7 * LEFT + 10 * OUT,
-        should_apply_shading: bool = True,
         phi: float = 0,
         theta: float = -90 * DEGREES,
         gamma: float = 0,
@@ -328,11 +322,7 @@ class ThreeDCamera(Camera):
             Any keyword argument of Camera.
         """
         super().__init__(**kwargs)
-        self.shading_factor = shading_factor
         self.default_distance = default_distance
-        self.light_source_start_point = light_source_start_point
-        self.light_source = Point(self.light_source_start_point)
-        self.should_apply_shading = should_apply_shading
         self.phi_tracker = ValueTracker(phi)
         self.theta_tracker = ValueTracker(theta)
         self.focal_distance_tracker = ValueTracker(focal_distance)
@@ -391,8 +381,6 @@ class ThreeDCamera(Camera):
             rotation=np.asarray(self.get_rotation_matrix(), dtype=float),
             focal_distance=float(self.get_focal_distance()),
             zoom=float(self.get_zoom()),
-            light=np.asarray(self.light_source.get_center(), dtype=float),
-            shade_3d=self.should_apply_shading,
             default_frame_width=float(config.frame_width),
         )
 

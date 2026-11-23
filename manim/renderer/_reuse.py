@@ -3,7 +3,8 @@
 A frame draws a list of render snapshots in order. The nodes at the start of the
 list that have the same keys (:attr:`.RNode.key`) as in the previous frame, from the
 same view, give the same pixels: a renderer keeps their drawing and draws only the
-rest. That holds whatever changed them, so animations, updaters and direct changes
+rest (the view includes the lights, which shade lit materials). That holds whatever
+changed them, so animations, updaters and direct changes
 between frames need no announcement. A node without a key (``None``) never equals
 another: it ends the reusable prefix.
 """
@@ -17,6 +18,7 @@ from typing import TYPE_CHECKING, Any, TypeAlias
 from manim.renderer.protocol import CameraState
 
 if TYPE_CHECKING:
+    from manim.renderer.protocol import LightState
     from manim.renderer.snapshot import RNode
 
 #: What a node is compared by between frames (see :func:`node_key`).
@@ -51,17 +53,25 @@ def view_key(
     state: CameraState,
     size: tuple[int, int],
     reference_size: tuple[int, int],
-    background: Hashable,
-) -> ViewKey:
+    background: Any,
+    lights: Sequence[LightState],
+    ambient: Sequence[float],
+) -> Any:
     """What a frame's drawing depends on besides its nodes: every field of the
     camera state, the pixel size, the reference pixel size (which scales widths
-    given in pixels) and the background the target starts from.
+    given in pixels), the background the target starts from, and the lights and
+    ambient light that lit materials are shaded by.
     """
     return (
         size,
         reference_size,
         tuple(_value(getattr(state, field.name)) for field in _STATE_FIELDS),
         background,
+        tuple(
+            (_value(light.position), _value(light.rgb), float(light.intensity))
+            for light in lights
+        ),
+        _value(ambient),
     )
 
 

@@ -70,7 +70,7 @@ def shade(
     points: np.ndarray,
     eye: np.ndarray,
     lights: Sequence[Light],
-    ambient: float,
+    ambient: float | Sequence[float],
     material: Material,
 ) -> np.ndarray:
     """The colors of surface elements, lit.
@@ -90,10 +90,12 @@ def shade(
     lights
         The point lights.
     ambient
-        Intensity of the uniform white light.
+        The light that reaches every surface: one intensity of white light, or
+        linear RGB.
     material
-        Only :class:`.PbrMaterial` materials are lit; any other material (also the
-        provisional :class:`.LegacyShaded` of snapshots) is left as it is.
+        Only :class:`.PbrMaterial` materials are lit; any other material is left as it
+        is. Without lights nothing is shaded (the ambient light alone does not
+        shade either).
 
     Returns
     -------
@@ -111,7 +113,8 @@ def shade(
     exponent = 2 / alpha**2 - 2
     diffuse = base * (1 - metallic)
     f0 = 0.04 * (1 - metallic) + base * metallic
-    out = np.asarray(material.emissive, dtype=float) + ambient * (diffuse + f0)
+    ambient_rgb = np.broadcast_to(np.asarray(ambient, dtype=float), (3,))
+    out = np.asarray(material.emissive, dtype=float) + ambient_rgb * (diffuse + f0)
 
     # A face without area has a zero normal, so no light reaches it.
     n = _unit(normals)
