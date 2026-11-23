@@ -103,6 +103,19 @@ the same view, so a renderer can keep what it made for a node (a path, a texture
 and reuse it while the key stays. A key of ``None`` never equals another; such a
 node is drawn anew every time.
 
+Colours and light
+~~~~~~~~~~~~~~~~~
+
+A path's ``fill``, its stroke's ``paint`` and its background stroke's ``paint`` are
+:class:`.RSolid` (one RGBA colour), :class:`.RLinearGradient` (colour stops evenly
+spaced from ``start`` to ``end``, scene points) or :class:`.RColorField` (a grid of
+colours in the scene, sampled where the path is drawn; see :class:`.ColorField`
+for the exact sampling). A path's and a mesh's ``material`` is :class:`.Unlit` or
+:class:`.Pbr`. ``config.lights`` (:class:`.LightState`) and ``config.ambient``
+light the :class:`.Pbr` ones; without lights, nothing is shaded. Nodes fixed in the
+frame are never lit. See :doc:`colors_materials_lights` for what the built-in
+renderers approximate.
+
 ``config.camera_views`` lists the pictures of camera views
 (:class:`.ImageMobjectFromCamera`): draw each :class:`.CameraView` from its own
 ``nodes`` and ``config``, then show it on the frame's node with its ``uid`` and on

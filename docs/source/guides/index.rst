@@ -8,6 +8,7 @@ Thematic Guides
 
    configuration
    cameras
+   colors_materials_lights
    writing_a_renderer
    evaluation
    timeline

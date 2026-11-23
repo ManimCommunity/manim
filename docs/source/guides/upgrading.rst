@@ -555,3 +555,19 @@ darken or brighten along their length.
        need
    * - ``manim.utils.color.get_shaded_rgb``, ``manim.mobject.three_d.three_d_utils``
      - none
+
+Other removed names
+-------------------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Removed
+     - Use instead
+   * - ``z_index_group`` (set by ``set_shade_in_3d(z_index_as_group=True)``)
+     - ``set_sort_by_depth(True)`` orders each path by its own center
+   * - ``ThreeDAxes(light_source=...)``
+     - none: the axes are not shaded
+
+See :doc:`colors_materials_lights` for how paints, materials and lights work
+together.

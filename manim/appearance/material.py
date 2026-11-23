@@ -2,11 +2,12 @@
 
 A mobject's material says whether and how it is lit. Its color comes from the mobject
 (its fill or stroke); the material adds how light falls on it. Materials are immutable
-values: compare them with ``==``, and assign a new one to change a mobject's material.
+values: compare them with ``==``, and assign a new one to change a mobject's material
+(:meth:`.VMobject.set_material`, :meth:`.MeshMobject.set_material`).
 
-.. note::
-
-    Mobjects cannot be given a material yet; renderers only use materials internally.
+Meshes, surfaces and :class:`.ThreeDVMobject` are :class:`Pbr` by default; every other
+mobject is :class:`Unlit`. Mobjects fixed in the frame are never lit, and without
+lights nothing is shaded. See :doc:`/guides/colors_materials_lights`.
 """
 
 from __future__ import annotations
