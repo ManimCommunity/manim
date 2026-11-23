@@ -47,6 +47,7 @@ class Rotating(Animation):
     Examples
     --------
     .. manim:: RotatingDemo
+        :hide_levels: 1
 
         class RotatingDemo(Scene):
             def construct(self):
@@ -64,6 +65,7 @@ class Rotating(Animation):
                 self.play(vg.animate.move_to(ORIGIN))
 
     .. manim:: RotatingDifferentAxis
+        :hide_levels: 1
 
         class RotatingDifferentAxis(ThreeDScene):
             def construct(self):
@@ -133,6 +135,7 @@ class Rotate(Transform):
     Examples
     --------
     .. manim:: UsingRotate
+        :hide_levels: 1
 
         class UsingRotate(Scene):
             def construct(self):

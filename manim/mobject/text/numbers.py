@@ -55,6 +55,7 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
     --------
 
     .. manim:: MovingSquareWithUpdaters
+        :hide_levels: 1
 
         class MovingSquareWithUpdaters(Scene):
             def construct(self):
@@ -323,6 +324,8 @@ class Integer(DecimalNumber):
     --------
 
     .. manim:: IntegerExample
+        :title: Example: Integer
+        :hide_levels: 1
         :save_last_frame:
 
         class IntegerExample(Scene):
@@ -383,6 +386,7 @@ class Variable(VMobject, metaclass=ConvertToOpenGL):
         on_screen_int_var = Variable(int_var, "{a}_{i}", var_type=Integer)
 
     .. manim:: VariablesWithValueTracker
+        :hide_levels: 1
 
         class VariablesWithValueTracker(Scene):
             def construct(self):
@@ -428,6 +432,8 @@ class Variable(VMobject, metaclass=ConvertToOpenGL):
                 self.wait()
 
     .. manim:: VariableExample
+        :title: Example: Variable
+        :hide_levels: 1
 
         class VariableExample(Scene):
             def construct(self):

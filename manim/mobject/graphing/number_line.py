@@ -97,6 +97,8 @@ class NumberLine(Line):
     Examples
     --------
     .. manim:: NumberLineExample
+        :title: Example: NumberLine
+        :hide_levels: 1
         :save_last_frame:
 
         class NumberLineExample(Scene):

@@ -285,6 +285,7 @@ class LineJointType(Enum):
     --------
 
     .. manim:: LineJointVariants
+        :hide_levels: 1
         :save_last_frame:
 
         class LineJointVariants(Scene):
@@ -321,6 +322,7 @@ class CapStyleType(Enum):
     --------
 
     .. manim:: CapStyleVariants
+        :hide_levels: 1
         :save_last_frame:
 
         class CapStyleVariants(Scene):

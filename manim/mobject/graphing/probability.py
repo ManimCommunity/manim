@@ -41,6 +41,7 @@ class SampleSpace(Rectangle):
     Examples
     --------
     .. manim:: ExampleSampleSpace
+        :hide_levels: 1
         :save_last_frame:
 
         class ExampleSampleSpace(Scene):
@@ -253,6 +254,8 @@ class BarChart(Axes):
     Examples
     --------
     .. manim:: BarChartExample
+        :title: Example: BarChart
+        :hide_levels: 1
         :save_last_frame:
 
         class BarChartExample(Scene):
@@ -456,6 +459,8 @@ class BarChart(Axes):
         Examples
         --------
         .. manim:: GetBarLabelsExample
+            :title: Example: GetBarLabels
+            :hide_levels: 1
             :save_last_frame:
 
             class GetBarLabelsExample(Scene):
@@ -501,6 +506,8 @@ class BarChart(Axes):
         Examples
         --------
         .. manim:: ChangeBarValuesExample
+            :title: Example: ChangeBarValues
+            :hide_levels: 1
             :save_last_frame:
 
             class ChangeBarValuesExample(Scene):

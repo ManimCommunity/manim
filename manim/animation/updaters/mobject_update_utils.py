@@ -81,6 +81,7 @@ def always_redraw(func: Callable[[], M]) -> M:
     --------
 
     .. manim:: TangentAnimation
+        :hide_levels: 1
 
         class TangentAnimation(Scene):
             def construct(self):
@@ -130,6 +131,7 @@ def always_shift(
     --------
 
     .. manim:: ShiftingSquare
+        :hide_levels: 1
 
         class ShiftingSquare(Scene):
             def construct(self):
@@ -165,6 +167,7 @@ def always_rotate(mobject: M, rate: float = 20 * DEGREES, **kwargs) -> M:
     --------
 
     .. manim:: SpinningTriangle
+        :hide_levels: 1
 
         class SpinningTriangle(Scene):
             def construct(self):
@@ -197,6 +200,7 @@ def turn_animation_into_updater(
     --------
 
     .. manim:: WelcomeToManim
+        :hide_levels: 1
 
         class WelcomeToManim(Scene):
             def construct(self):

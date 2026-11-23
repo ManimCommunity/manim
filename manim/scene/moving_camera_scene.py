@@ -6,6 +6,7 @@ Examples
 --------
 
 .. manim:: ChangingCameraWidthAndRestore
+    :hide_levels: 1
 
     class ChangingCameraWidthAndRestore(Scene):
         def construct(self) -> None:
@@ -18,6 +19,7 @@ Examples
 
 
 .. manim:: MovingCameraCenter
+    :hide_levels: 1
 
     class MovingCameraCenter(Scene):
         def construct(self) -> None:
@@ -31,6 +33,7 @@ Examples
 
 
 .. manim:: MovingAndZoomingCamera
+    :hide_levels: 1
 
     class MovingAndZoomingCamera(Scene):
         def construct(self) -> None:
@@ -44,6 +47,7 @@ Examples
             self.play(self.camera.frame.animate.move_to(ORIGIN).set(width=14))
 
 .. manim:: MovingCameraOnGraph
+    :hide_levels: 1
 
     class MovingCameraOnGraph(Scene):
         def construct(self) -> None:
@@ -62,6 +66,7 @@ Examples
             self.wait()
 
 .. manim:: SlidingMultipleFrames
+    :hide_levels: 1
 
     class SlidingMultipleFrames(Scene):
         def construct(self) -> None:
