@@ -867,7 +867,7 @@ class Scene:
             The Mobjects to add to the foreground.
 
         Returns
-        ------
+        -------
         Scene
             The Scene, with the foreground mobjects added.
         """
@@ -886,7 +886,7 @@ class Scene:
             The Mobject to add to the foreground.
 
         Returns
-        ------
+        -------
         Scene
             The Scene, with the foreground mobject added.
         """
@@ -903,7 +903,7 @@ class Scene:
             The mobject(s) to remove from the foreground.
 
         Returns
-        ------
+        -------
         Scene
             The Scene, with the foreground mobjects removed.
         """
@@ -921,7 +921,7 @@ class Scene:
             The mobject to remove from the foreground.
 
         Returns
-        ------
+        -------
         Scene
             The Scene, with the foreground mobject removed.
         """
@@ -938,7 +938,7 @@ class Scene:
             The mobject(s) to bring to the front of the scene.
 
         Returns
-        ------
+        -------
         Scene
             The Scene, with the mobjects brought to the front
             of the scene.
@@ -957,7 +957,7 @@ class Scene:
             The mobject(s) to push to the back of the scene.
 
         Returns
-        ------
+        -------
         Scene
             The Scene, with the mobjects pushed to the back
             of the scene.
@@ -972,7 +972,7 @@ class Scene:
         and self.foreground_mobjects from the scene.
 
         Returns
-        ------
+        -------
         Scene
             The Scene, with all of its mobjects in
             self.mobjects and self.foreground_mobjects
@@ -992,7 +992,7 @@ class Scene:
             The animations to check for moving mobjects.
 
         Returns
-        ------
+        -------
         list
             The list of mobjects that could be moving in
             the Animation(s)
