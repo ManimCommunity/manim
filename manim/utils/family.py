@@ -22,6 +22,8 @@ def extract_mobject_family_members(
     ----------
     mobjects
         The Mobjects currently in the Scene
+    use_z_index
+        Whether to sort the extracted family members by their z-index.
     only_those_with_points
         Whether or not to only do this for
         those mobjects that have points. By default False
