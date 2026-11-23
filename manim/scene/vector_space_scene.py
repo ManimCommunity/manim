@@ -316,6 +316,8 @@ class VectorScene(Scene):
         ----------
         vector
             Vector Object for which to get the label.
+        label
+            The label text or an existing label mobject.
 
         at_tip
             Whether or not to place the label at the tip of the vector.
@@ -903,6 +905,8 @@ class LinearTransformationScene(VectorScene):
             The string of the hex color of the vector.
             This is only taken into consideration if
             'vector' is not an Arrow. Defaults to YELLOW.
+        animate
+            Whether to animate the vector being added to the scene.
 
         **kwargs
             Any valid keyword argument of VectorScene.add_vector.
