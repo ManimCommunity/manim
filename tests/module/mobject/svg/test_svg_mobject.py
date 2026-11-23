@@ -18,6 +18,21 @@ def test_set_stroke_color():
     assert svg.stroke_color.to_hex() == expected_color
 
 
+def test_copy_shares_parsed_path_but_not_points():
+    svg = SVGMobject(get_svg_resource("heart.svg"))
+    copied = svg.copy()
+    assert len(copied.submobjects) == len(svg.submobjects) > 0
+    for path, copied_path in zip(svg.submobjects, copied.submobjects, strict=True):
+        assert copied_path is not path
+        assert copied_path.path_obj is path.path_obj
+        assert copied_path.points is not path.points
+        np.testing.assert_array_equal(copied_path.points, path.points)
+
+    original_points = svg.submobjects[0].points.copy()
+    copied.shift(RIGHT)
+    np.testing.assert_array_equal(svg.submobjects[0].points, original_points)
+
+
 def test_set_color_sets_fill_and_stroke():
     expected_color = "#EEE777"
     svg = SVGMobject(get_svg_resource("heart.svg"), color=expected_color)
