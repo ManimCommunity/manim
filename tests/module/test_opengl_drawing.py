@@ -53,3 +53,83 @@ def test_cached_geometry_follows_the_point_tolerance():
 
     path.tolerance_for_point_equality = 0.01
     assert subpath_starts(cache) == subpath_starts(_GeometryCache()) == [0]
+
+
+def _angles(a, b):
+    return np.degrees(np.arccos(np.clip((a * b).sum(-1), -1, 1)))
+
+
+def test_vertices_at_one_point_of_a_smooth_surface_share_their_normal():
+    from manim import Sphere, Torus
+    from manim.renderer.opengl.drawing import vertex_normals
+
+    torus = Torus(checkerboard_colors=False, resolution=(24, 24))
+    nu, nv = torus.resolution
+    normals = vertex_normals(torus.points, torus.triangles).reshape(nu + 1, nv + 1, 3)
+    # Where the parameter grid closes, the first and last rows and columns meet.
+    assert _angles(normals[0], normals[-1]).max() < 1e-3
+    assert _angles(normals[:, 0], normals[:, -1]).max() < 1e-3
+    # The exact normal of a torus at its outermost circle points outward.
+    outer = torus.points[:, :2]
+    distance = np.linalg.norm(outer, axis=1)
+    rim = np.isclose(distance, distance.max())
+    radial = np.zeros_like(torus.points)
+    radial[:, :2] = outer / distance[:, None]
+    assert _angles(normals.reshape(-1, 3)[rim], radial[rim]).max() < 1
+
+    sphere = Sphere(checkerboard_colors=False)
+    normals = vertex_normals(sphere.points, sphere.triangles)
+    pole = np.isclose(sphere.points, [0, 0, 1]).all(axis=1)
+    assert pole.sum() > 1
+    np.testing.assert_allclose(normals[pole], [[0, 0, 1]] * pole.sum(), atol=1e-9)
+
+
+def test_meshes_with_faces_of_their_own_keep_flat_normals():
+    from manim import Cube, Torus
+    from manim.renderer.opengl.drawing import vertex_normals
+
+    # A checkerboard: every quad has its own corners.
+    torus = Torus(resolution=(8, 8), checkerboard_colors=["#FF0000", "#0000FF"])
+    normals = vertex_normals(torus.points, torus.triangles).reshape(-1, 4, 3)
+    assert _angles(normals, normals[:, :1]).max() < 1e-3
+    for face in Cube():
+        normals = vertex_normals(face.points, face.triangles)
+        assert _angles(normals, normals[:1]).max() < 1e-3
+
+
+def test_welded_vertices_are_found_once_while_a_mesh_only_moves(monkeypatch):
+    from manim import UP, Torus
+    from manim.renderer import extract
+    from manim.renderer.opengl import drawing
+
+    calls = []
+    original = drawing._welded
+
+    def original_normals(points, triangles):
+        return drawing.vertex_normals(points, triangles, original(points, triangles))
+
+    monkeypatch.setattr(
+        drawing, "_welded", lambda *args: calls.append(1) or original(*args)
+    )
+    cache = drawing._NormalCache()
+    torus = Torus(resolution=(8, 8))
+    torus.set_fill(opacity=1)
+    for _ in range(3):
+        node = extract.snapshot(torus)
+        normals = cache.get(node, node.payload)
+        cache.next_frame()
+        torus.rotate(0.3, UP)
+    assert len(calls) == 1
+    # The rotated normals are those computed from scratch.
+    node = extract.snapshot(torus)
+    cached = cache.get(node, node.payload)
+    assert len(calls) == 1
+    np.testing.assert_allclose(
+        cached, original_normals(node.payload.points, node.payload.triangles)
+    )
+    assert normals.shape == node.payload.points.shape
+    # New triangles (as a partial surface shows): found again.
+    torus.triangles = torus.triangles[: len(torus.triangles) // 2]
+    node = extract.snapshot(torus)
+    cache.get(node, node.payload)
+    assert len(calls) == 2
