@@ -10,6 +10,7 @@ __all__ = [
 
 import itertools as it
 import random
+import warnings
 from collections.abc import Callable, Iterable, Sequence
 from math import ceil, floor
 from typing import TYPE_CHECKING, Any, Self
@@ -643,7 +644,8 @@ class ArrowVectorField(VectorField):
         this vector field.
 
         If the function has no finite value at the given point, for example
-        because of a division by zero, a zero vector is created there.
+        because of a division by zero, a warning is issued and a zero vector
+        is created there.
 
         Parameters
         ----------
@@ -655,6 +657,11 @@ class ArrowVectorField(VectorField):
         norm = np.linalg.norm(output)
         is_defined = np.isfinite(norm)
         if not is_defined:
+            warnings.warn(
+                "The vector field function returned a non-finite value; "
+                "using a zero vector at that point.",
+                stacklevel=2,
+            )
             output = np.zeros(3)
         elif norm != 0:
             output *= self.length_func(norm) / norm

@@ -17,7 +17,8 @@ def _inf_at_origin(pos):
 @pytest.mark.parametrize("func", [_nan_at_origin, _inf_at_origin])
 @pytest.mark.parametrize("kwargs", [{}, {"color": BLUE}])
 def test_arrow_vector_field_with_undefined_value(func, kwargs):
-    field = ArrowVectorField(func, x_range=[-1, 1, 1], y_range=[-1, 1, 1], **kwargs)
+    with pytest.warns(UserWarning, match="non-finite value"):
+        field = ArrowVectorField(func, x_range=[-1, 1, 1], y_range=[-1, 1, 1], **kwargs)
 
     assert len(field) == 9
     assert np.isfinite(field.get_all_points()).all()
