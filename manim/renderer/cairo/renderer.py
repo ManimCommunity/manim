@@ -76,6 +76,7 @@ class CairoRenderer:
             image_resolver=resolve_image,
             reference_pixel_size=config.reference_pixel_size,
             lights=config.lights,
+            ambient=config.ambient,
         )
         context.start_frame()
         self._draw_reusing(context, self._faces(nodes, config), config)
@@ -118,6 +119,7 @@ class CairoRenderer:
                     image_resolver=lambda node: None,
                     reference_pixel_size=view_config.reference_pixel_size,
                     lights=view_config.lights,
+                    ambient=view_config.ambient,
                 )
                 context.start_frame()
                 context.draw_nodes(self._faces(view.nodes, view_config))

@@ -57,8 +57,17 @@ class ThreeDVMobject(VMobject):
     v1: float
     v2: float
 
-    def __init__(self, shade_in_3d: bool = True, **kwargs: Any):
-        super().__init__(shade_in_3d=shade_in_3d, **kwargs)
+    def __init__(
+        self,
+        material: Material | None = None,
+        sort_by_depth: bool = True,
+        **kwargs: Any,
+    ):
+        super().__init__(
+            material=Pbr() if material is None else material,
+            sort_by_depth=sort_by_depth,
+            **kwargs,
+        )
 
 
 class Surface(ParametricSurface):

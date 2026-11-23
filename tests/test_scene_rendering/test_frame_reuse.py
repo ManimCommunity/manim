@@ -118,7 +118,7 @@ def test_reuse_follows_the_depth_order_of_3d_scenes(renderer):
         near = Square(fill_opacity=1, color=RED).shift(OUT)
         far = Square(fill_opacity=1, color=GREEN).shift(0.5 * RIGHT)
         for square in (near, far):
-            square.set_shade_in_3d(True)
+            square.set_sort_by_depth(True)
         scene.set_camera_orientation(phi=1.0, theta=-1.2)
         scene.add(near, far)
         return near, far

@@ -24,7 +24,7 @@ import moderngl
 import numpy as np
 
 from manim.renderer import _view
-from manim.renderer._paint import paint_colors, shows
+from manim.renderer._paint import lit_color, paint_colors, shows
 
 from .shader import Shader
 
@@ -193,13 +193,10 @@ class WindingFill:
             if len(geo.quads) == 0 or not shows(path.fill):
                 continue
             filled.append(geo)
-            colors.append(
-                paint_colors(
-                    path.fill,
-                    path,
-                    lambda path, rgbas: _view.shaded_rgbas(target.lights, path, rgbas),
-                )
+            lit = lit_color(
+                node, _view.eye(target.camera), target.lights, target.ambient
             )
+            colours.append(paint_colors(path.fill, lit))
         if not filled:
             return
         vertices = pack(filled, colors)

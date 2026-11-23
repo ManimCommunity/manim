@@ -22,7 +22,7 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 from PIL import Image
 
-from manim.appearance.material import Material, PbrMaterial
+from manim.appearance.material import Material, PbrMaterial, interpolate_material
 from manim.mobject.mobject import Mobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import (
@@ -326,7 +326,7 @@ class MeshMobject(Mobject):
             if start_width == end_width
             else float((1 - alpha) * start_width + alpha * end_width)
         )
-        self.material = _interpolate_material(
+        self.material = interpolate_material(
             mobject1.material, mobject2.material, alpha
         )
         return self
@@ -605,30 +605,6 @@ class PolygonFace(MeshMobject):
         """Move the corners of the polygon, keeping their number."""
         self.points = np.asarray(corners, dtype=float)
         return self
-
-
-def _interpolate_material(start: Material, end: Material, alpha: float) -> Material:
-    """The material at progress ``alpha`` from ``start`` to ``end``.
-
-    Two :class:`.PbrMaterial` materials interpolate their parameters; at ``alpha`` 1 the
-    result is ``end`` itself. Between other materials, the material switches to
-    ``end`` when ``alpha`` reaches 1.
-    """
-    if alpha >= 1 or start == end:
-        return end
-    if isinstance(start, PbrMaterial) and isinstance(end, PbrMaterial):
-        if alpha <= 0:
-            return start
-        return PbrMaterial(
-            roughness=(1 - alpha) * start.roughness + alpha * end.roughness,
-            metallic=(1 - alpha) * start.metallic + alpha * end.metallic,
-            emissive=(
-                (1 - alpha) * start.emissive[0] + alpha * end.emissive[0],
-                (1 - alpha) * start.emissive[1] + alpha * end.emissive[1],
-                (1 - alpha) * start.emissive[2] + alpha * end.emissive[2],
-            ),
-        )
-    return start
 
 
 def _pair(values: Sequence[Any], name: str) -> tuple[Any, Any]:

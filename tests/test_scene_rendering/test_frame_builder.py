@@ -218,7 +218,7 @@ def test_a_fixed_label_is_not_ordered_by_the_depth_of_the_scene(renderer):
     ):
         scene = ThreeDScene()
         label = Square(2, fill_color=PURE_RED, fill_opacity=1, stroke_width=0)
-        label.set_shade_in_3d(True).fix_in_frame()
+        label.set_sort_by_depth(True).fix_in_frame()
         cover = Square(4, fill_color=PURE_GREEN, fill_opacity=1, stroke_width=0)
         scene.add(label, cover)
         try:

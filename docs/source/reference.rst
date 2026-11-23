@@ -65,7 +65,6 @@ Mobjects
    manim.mobject.table
    manim.mobject.three_d.mesh
    manim.mobject.three_d.polyhedra
-   manim.mobject.three_d.three_d_utils
    manim.mobject.three_d.three_dimensions
    manim.mobject.svg.brace
    manim.mobject.svg.svg_mobject

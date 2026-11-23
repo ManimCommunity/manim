@@ -19,6 +19,7 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 import numpy as np
 
 from manim.constants import *
+from manim.material import Material, Unlit, interpolate_material
 from manim.mobject.mobject import Mobject
 from manim.appearance.paint import (
     ColorField,
@@ -121,7 +122,12 @@ class VMobject(Mobject):
     background_stroke_width: Field[float] = Field()
     joint_type: Field[LineJointType] = Field()
     cap_style: Field[CapStyleType] = Field()
-    shade_in_3d: Field[bool] = Field()
+    #: How the area is lit (:mod:`manim.material`): :class:`.Unlit` by default;
+    #: :class:`.Pbr` shades a flat path by the scene's lights.
+    material: Field[Material] = Field()
+    #: Whether a perspective camera orders this path by depth (by the center of its
+    #: own points) instead of scene order. Not a depth test.
+    sort_by_depth: Field[bool] = Field()
     tolerance_for_point_equality: Field[float] = Field()
     target: VMobject
 
@@ -139,7 +145,8 @@ class VMobject(Mobject):
         close_new_points: bool = False,
         pre_function_handle_to_anchor_scale_factor: float = 0.01,
         make_smooth_after_applying_functions: bool = False,
-        shade_in_3d: bool = False,
+        material: Material | None = None,
+        sort_by_depth: bool = False,
         # TODO, do we care about accounting for varying zoom levels?
         tolerance_for_point_equality: float = 1e-6,
         n_points_per_cubic_curve: int = 4,
@@ -166,7 +173,8 @@ class VMobject(Mobject):
         self.make_smooth_after_applying_functions: bool = (
             make_smooth_after_applying_functions
         )
-        self.shade_in_3d: bool = shade_in_3d
+        self.material = Unlit() if material is None else material
+        self.sort_by_depth: bool = sort_by_depth
         self.tolerance_for_point_equality: float = tolerance_for_point_equality
         self.n_points_per_cubic_curve: int = n_points_per_cubic_curve
         self._bezier_t_values: npt.NDArray[np.float64] = np.linspace(
@@ -656,9 +664,29 @@ class VMobject(Mobject):
         result: list[VMobject] = [self] if len(self.points) > 0 else []
         return result + self.submobjects
 
-    def set_shade_in_3d(self, value: bool = True) -> Self:
-        for submob in self.get_family():
-            submob.shade_in_3d = value
+    def set_material(self, material: Material, family: bool = True) -> Self:
+        """Set how the mobject (and, with ``family``, its submobjects) is lit.
+
+        :class:`.Pbr` lights a path by the scene's lights with one colour (it must be
+        flat and have a solid fill); :class:`.Unlit` shows its colours as they are.
+        Mobjects fixed in the frame are never lit.
+        """
+        # Meshes in a group have a material too (they are VMobject-like);
+        # point clouds and images do not.
+        for mob in self.get_family() if family else [self]:
+            if _is_vmobject_like(mob):
+                mob.material = material
+        return self
+
+    def set_sort_by_depth(self, value: bool = True, family: bool = True) -> Self:
+        """Let a perspective camera order the mobject (and, with ``family``, its
+        submobjects) by depth: far to near, by the center of each one's own points,
+        after scene order. Two intersecting shapes are not resolved: one is drawn
+        over the other.
+        """
+        for mob in self.get_family() if family else [self]:
+            if isinstance(mob, VMobject):
+                mob.sort_by_depth = value
         return self
 
     def set_points(self, points: Point3DLike_Array) -> Self:
@@ -1841,6 +1869,11 @@ class VMobject(Mobject):
                 attr,
                 interpolate(getattr(mobject1, attr), getattr(mobject2, attr), alpha),
             )
+        # Fields that do not interpolate switch to the target at the end.
+        self.material = interpolate_material(
+            mobject1.material, mobject2.material, alpha
+        )
+        self.sort_by_depth = (mobject2 if alpha >= 1 else mobject1).sort_by_depth
         return self
 
     def pointwise_become_partial(

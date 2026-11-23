@@ -28,8 +28,6 @@ from manim.renderer.extract import Extractor, extract, snapshot
 from manim.renderer.snapshot import (
     FacingCamera,
     FixedInFrame,
-    InScene,
-    LegacyShaded,
     RImage,
     RLinearGradient,
     RPath,
@@ -151,10 +149,12 @@ def test_paints_and_materials():
     assert path.stroke.width == 3
     assert path.background_stroke is None
 
-    square.set_shade_in_3d(True)
-    shaded = snapshot(square).payload
-    assert isinstance(shaded.material, LegacyShaded)
-    np.testing.assert_allclose(shaded.depth_reference, square.get_center())
+    assert path.material == Unlit()
+    assert path.depth_reference is None
+    square.set_material(Pbr(roughness=0.2)).set_sort_by_depth(True)
+    lit = snapshot(square).payload
+    assert lit.material == Pbr(roughness=0.2)
+    np.testing.assert_allclose(lit.depth_reference, square.get_center())
 
 
 def test_materials_are_value_types():
@@ -170,7 +170,7 @@ def test_materials_are_value_types():
 
 
 def _parent_with_child():
-    parent = Square().set_fill([RED, BLUE], opacity=1).set_shade_in_3d(True)
+    parent = Square().set_fill([RED, BLUE], opacity=1).set_sort_by_depth(True)
     child = Circle().shift(3 * RIGHT)
     parent.add(child)
     return parent, child

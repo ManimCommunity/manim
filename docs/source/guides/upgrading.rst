@@ -245,7 +245,7 @@ default; ``Cube(material=...)`` and ``faces_config={"material": ...}`` set anoth
   its ``points``.
 - ``faces_config`` takes the styling arguments it took
   (``fill_color``, ``fill_opacity``, ``stroke_color``, ``stroke_width``,
-  ``stroke_opacity``); ``shade_in_3d`` has no effect.
+  ``stroke_opacity``).
 - A face is transformed only into a face with as many corners; ``Create`` shows a
   face at once instead of drawing its outline.
 
@@ -525,3 +525,33 @@ plain :class:`.Scene` has no light).
      - ``scene.light = None`` (no shading)
    * - ``ThreeDCamera(shading_factor=...)``
      - none: lit materials follow :class:`.Pbr`'s parameters
+
+Vector mobjects have a material and a depth ordering
+----------------------------------------------------
+
+``shade_in_3d`` meant two things: "shade towards the light" and "sort by depth under
+a 3D camera". They are now two settings of :class:`.VMobject`:
+
+- ``material`` (:mod:`manim.material`, ``set_material``): :class:`.Unlit` by default;
+  :class:`.Pbr` lights the path by the scene's lights in one colour, from the normal
+  of its plane. A lit path must be flat and have a solid fill, otherwise drawing it
+  raises :class:`.CapabilityError`. Its stroke is not lit, and mobjects fixed in the
+  frame are never lit.
+- ``sort_by_depth`` (``set_sort_by_depth``): under a perspective camera, the path is
+  ordered far to near by the center of its own points. This is not a depth test:
+  of two intersecting shapes, one is drawn over the other.
+
+:class:`.ThreeDVMobject` has both (``Pbr()`` and ``True``). The axes of
+:class:`.ThreeDAxes` are ordered by depth and no longer shaded, so they no longer
+darken or brighten along their length.
+
+.. list-table::
+   :header-rows: 1
+
+   * - Removed
+     - Use instead
+   * - ``VMobject(shade_in_3d=True)``, ``set_shade_in_3d(True)``
+     - ``set_material(Pbr())`` and ``set_sort_by_depth(True)``, or only the one you
+       need
+   * - ``manim.utils.color.get_shaded_rgb``, ``manim.mobject.three_d.three_d_utils``
+     - none

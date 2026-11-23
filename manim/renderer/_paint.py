@@ -1,28 +1,31 @@
 """How the paint of a path snapshot becomes colors, for every renderer.
 
 Renderers draw a paint as stop colors, evenly spaced along a line between two points.
-:func:`paint_colors` gives both, with the shading of a :class:`.LegacyShaded` material
-applied by the camera.
+:func:`paint_colors` gives both; :func:`lit_color` gives the one colour of a lit
+(:class:`~.Pbr`) path's fill.
 """
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Sequence
 from typing import TYPE_CHECKING
 
 import numpy as np
 
-from manim.renderer.snapshot import LegacyShaded, RColorField, RSolidColor
-from manim.utils._path_points import end_corner, start_corner
+from manim.material import Pbr
+from manim.renderer._lighting import Light, shade
+from manim.renderer.protocol import CapabilityError
+from manim.renderer.snapshot import RColorField, RSolidColor
 
 if TYPE_CHECKING:
-    from manim.renderer.snapshot import RPaint, RPath
-    from manim.typing import FloatRGBA_Array, Point3D_Array
+    from manim.renderer.protocol import LightState
+    from manim.renderer.snapshot import RNode, RPaint, RPath
+    from manim.typing import FloatRGBA_Array, Point3D, Point3D_Array
 
-__all__ = ["paint_colors", "shows"]
+__all__ = ["lit_color", "paint_colors", "shows"]
 
-#: Shades the stop colors of a path's paint (``Camera._shaded_rgbas``).
-Shade = Callable[["RPath", "FloatRGBA_Array"], "FloatRGBA_Array"]
+#: Relative tolerance below which a path's points count as one plane.
+_FLAT_TOLERANCE = 1e-9
 
 
 def shows(paint: RPaint) -> bool:
@@ -35,23 +38,80 @@ def shows(paint: RPaint) -> bool:
 
 
 def paint_colors(
-    paint: RPaint, path: RPath, shade: Shade
+    paint: RPaint, lit: FloatRGBA_Array | None = None
 ) -> tuple[FloatRGBA_Array, Point3D_Array | None]:
-    """The stop colors of ``paint`` on ``path`` and the start and end point of the
-    line they are spaced along; ``None`` for one color.
+    """The stop colors of ``paint`` and the start and end point of the line they are
+    spaced along; ``None`` for one color.
+
+    ``lit`` is the colour of a lit path's fill (see :func:`lit_color`), which
+    replaces the paint.
     """
+    if lit is not None:
+        return np.asarray(lit, dtype=float).reshape(1, 4), None
     if isinstance(paint, RColorField):
         # Renderers sample the field where they draw; this colour is not used.
         return np.ones((1, 4)), None
     if isinstance(paint, RSolidColor):
-        rgbas = np.asarray(paint.rgba).reshape(1, 4)
-        if type(path.material) is not LegacyShaded:
-            return rgbas, None
-        rgbas = shade(path, rgbas)
-        if len(rgbas) == 1:
-            return rgbas, None
-        # Only shading turns a solid paint into a gradient: between the path's
-        # first and last corner, as the shading itself.
-        return rgbas, np.array([start_corner(path.points), end_corner(path.points)])
-    rgbas = shade(path, paint.rgbas)
-    return rgbas, np.array([paint.start, paint.end])
+        return np.asarray(paint.rgba).reshape(1, 4), None
+    return paint.rgbas, np.array([paint.start, paint.end])
+
+
+def lit_color(
+    node: RNode,
+    eye: Point3D,
+    lights: Sequence[LightState],
+    ambient: Sequence[float],
+) -> FloatRGBA_Array | None:
+    """The one colour of a lit path's fill: :func:`.shade` at the center of its
+    anchors, with the normal of their plane, two-sided. ``None`` for a path that is
+    not lit (:class:`.Unlit`, fixed in the frame, or no lights).
+
+    Raises
+    ------
+    CapabilityError
+        For a lit path that is not flat or whose fill is not one colour.
+    """
+    path: RPath = node.payload  # type: ignore[assignment]
+    if not isinstance(path.material, Pbr) or not lights or node.fixed_in_frame:
+        return None
+    points = np.asarray(path.points, dtype=float)
+    if len(points) == 0 or not shows(path.fill):
+        return None
+    if not isinstance(path.fill, RSolidColor):
+        raise CapabilityError(
+            "A lit (Pbr) path is drawn in one colour: its fill must be a solid "
+            "colour, not a gradient or a colour field."
+        )
+    anchors = np.concatenate([points[::4], points[3::4]])
+    center = anchors.mean(axis=0)
+    normal = _plane_normal(anchors - center)
+    rgba = np.array(path.fill.rgba, dtype=float)
+    rgba[:3] = shade(
+        rgba[None, :3],
+        normal[None],
+        center[None],
+        np.asarray(eye, dtype=float),
+        [Light(light.position, light.rgb, light.intensity) for light in lights],
+        ambient,
+        path.material,
+    )[0]
+    return rgba
+
+
+def _plane_normal(offsets: np.ndarray) -> np.ndarray:
+    """The normal of the plane of points (given relative to their center).
+
+    Raises
+    ------
+    CapabilityError
+        If the points do not lie in one plane.
+    """
+    scale = max(float(np.abs(offsets).max()), 1.0)
+    if np.ptp(offsets[:, 2]) <= _FLAT_TOLERANCE * scale:
+        return np.array([0.0, 0.0, 1.0])
+    _, singular, vt = np.linalg.svd(offsets, full_matrices=False)
+    if singular[-1] > _FLAT_TOLERANCE * scale * max(len(offsets), 1) ** 0.5:
+        raise CapabilityError(
+            "A lit (Pbr) path is drawn in one colour and must be flat; this one is not."
+        )
+    return vt[-1]

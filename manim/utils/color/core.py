@@ -94,11 +94,7 @@ from manim.typing import (
     ManimColorDType,
     ManimColorInternal,
     ManimFloat,
-    Point3D,
-    Vector3D,
 )
-
-from ...utils.space_ops import normalize
 
 # import manim._config as _config
 
@@ -1606,41 +1602,6 @@ class RandomColorGenerator:
         return cls._singleton.next()
 
 
-def get_shaded_rgb(
-    rgb: FloatRGB,
-    point: Point3D,
-    unit_normal_vect: Vector3D,
-    light_source: Point3D,
-) -> FloatRGB:
-    """Add light or shadow to the ``rgb`` color of some surface which is located at a
-    given ``point`` in space and facing in the direction of ``unit_normal_vect``,
-    depending on whether the surface is facing a ``light_source`` or away from it.
-
-    Parameters
-    ----------
-    rgb
-        An RGB array of floats.
-    point
-        The location of the colored surface.
-    unit_normal_vect
-        The direction in which the colored surface is facing.
-    light_source
-        The location of a light source which might illuminate the surface.
-
-    Returns
-    -------
-    RGB_Array_Float
-        The color with added light or shadow, depending on the direction of the colored
-        surface.
-    """
-    to_sun = normalize(light_source - point)
-    light = 0.5 * np.dot(unit_normal_vect, to_sun) ** 3
-    if light < 0:
-        light *= 0.5
-    shaded_rgb: FloatRGB = rgb + light
-    return shaded_rgb
-
-
 __all__ = [
     "ManimColor",
     "ManimColorDType",
@@ -1660,7 +1621,6 @@ __all__ = [
     "random_bright_color",
     "random_color",
     "RandomColorGenerator",
-    "get_shaded_rgb",
     "HSV",
     "RGBA",
 ]

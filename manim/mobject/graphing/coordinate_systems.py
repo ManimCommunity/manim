@@ -2497,7 +2497,8 @@ class ThreeDAxes(Axes):
             axis.pieces = VGroup(*axis.get_pieces(self.num_axis_pieces))
             axis.add(axis.pieces)
             axis.set_stroke(width=0, family=False)
-            axis.set_shade_in_3d(True)
+            # Ordered by depth, unlit.
+            axis.set_sort_by_depth(True)
 
     def get_y_axis_label(
         self,

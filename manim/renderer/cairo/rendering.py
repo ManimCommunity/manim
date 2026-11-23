@@ -13,11 +13,11 @@ import numpy as np
 from PIL import Image
 
 from manim.constants import CapStyleType, LineJointType
-from manim.renderer._paint import paint_colors
+from manim.renderer._paint import lit_color, paint_colors
 from manim.renderer._view import (
     display_points,
+    eye,
     is_3d,
-    shaded_rgbas,
     view_transform_center,
 )
 from manim.renderer.protocol import CapabilityError
@@ -80,10 +80,12 @@ class _CairoDrawingContext:
         image_resolver: _ImageResolver,
         reference_pixel_size: tuple[int, int],
         lights: Sequence[LightState] = (),
+        ambient: Sequence[float] = (0.0, 0.0, 0.0),
     ) -> None:
         self.camera = camera
-        #: The frame's lights (see :attr:`.RenderConfig.lights`).
+        #: The frame's lights and ambient light (see :attr:`.RenderConfig.lights`).
         self.lights = tuple(lights)
+        self.ambient = tuple(ambient)
         #: See :attr:`.RenderConfig.reference_pixel_size`.
         self.reference_pixel_size = reference_pixel_size
         self.target = target
@@ -208,9 +210,12 @@ class _CairoDrawingContext:
         if isinstance(paint, RColorField):
             self._set_field_source(context, paint, node)
             return
-        rgbas, ends = paint_colors(
-            paint, path, lambda path, rgbas: shaded_rgbas(self.lights, path, rgbas)
+        lit = (
+            lit_color(node, eye(self.camera), self.lights, self.ambient)
+            if paint is path.fill
+            else None
         )
+        rgbas, ends = paint_colors(paint, lit)
         if ends is None:
             context.set_source_rgba(*rgbas[0][2::-1], rgbas[0][3])
             return

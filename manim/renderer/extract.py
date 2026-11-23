@@ -28,8 +28,6 @@ from manim.appearance.paint import ColorField, Paint
 from manim.renderer.snapshot import (
     FacingCamera,
     FixedInFrame,
-    InScene,
-    LegacyShaded,
     Payload,
     Placement,
     RCameraView,
@@ -44,7 +42,6 @@ from manim.renderer.snapshot import (
     RSolidColor,
     RStroke,
 )
-from manim.utils._path_points import end_corner, start_corner
 from manim.utils.family import extract_mobject_family_members
 from manim.utils.iterables import list_difference_update
 
@@ -54,7 +51,6 @@ if TYPE_CHECKING:
 __all__ = ["Extractor", "extract", "placement_of", "snapshot"]
 
 _UNLIT = UnlitMaterial()
-_LEGACY_SHADED = LegacyShaded()
 _FIXED_IN_FRAME = FixedInFrame()
 _IN_SCENE = InScene()
 
@@ -328,14 +324,13 @@ _MESH_SLOTS: dict[str, tuple[str, ...]] = {
 # The fields each slot of a path is made from. A gradient's ends come from the points.
 _PATH_SLOTS: dict[str, tuple[str, ...]] = {
     "geometry": ("points", "tolerance_for_point_equality"),
-    "fill": ("fill", "points", "shade_in_3d"),
+    "fill": ("fill", "points"),
     "stroke": (
         "stroke",
         "stroke_width",
         "joint_type",
         "cap_style",
         "points",
-        "shade_in_3d",
     ),
     "background_stroke": (
         "background_stroke",
@@ -343,17 +338,15 @@ _PATH_SLOTS: dict[str, tuple[str, ...]] = {
         "joint_type",
         "cap_style",
         "points",
-        "shade_in_3d",
     ),
-    "material": ("shade_in_3d",),
-    "depth_reference": ("shade_in_3d", "points"),
+    "material": ("material",),
+    "depth_reference": ("sort_by_depth", "points"),
 }
 
 
 def _path(vmobject: VMobject) -> RPath:
     attributes: dict[str, Any] = vmobject.__dict__
     points = vmobject.points
-    shade_in_3d = vmobject.shade_in_3d
     ends_by_direction: dict[bytes, tuple[Point3D, Point3D]] = {}
 
     def paint(value: Paint | None) -> RPaint:
@@ -368,9 +361,7 @@ def _path(vmobject: VMobject) -> RPath:
         key = direction.tobytes()
         ends = ends_by_direction.get(key)
         if ends is None:
-            ends = ends_by_direction[key] = _gradient_ends(
-                direction, points, shade_in_3d
-            )
+            ends = ends_by_direction[key] = _gradient_ends(direction, points)
         return RLinearGradient(ends[0], ends[1], rgbas)
 
     background_width = vmobject.background_stroke_width
@@ -393,8 +384,8 @@ def _path(vmobject: VMobject) -> RPath:
             if background_width > 0
             else None
         ),
-        material=_LEGACY_SHADED if shade_in_3d else _UNLIT,
-        depth_reference=_own_center(points) if shade_in_3d else None,
+        material=vmobject.material,
+        depth_reference=_own_center(points) if vmobject.sort_by_depth else None,
         tolerance=vmobject.tolerance_for_point_equality,
     )
 
@@ -416,12 +407,11 @@ def _own_center(points: np.ndarray) -> Point3D:
 
 
 def _gradient_ends(
-    direction: np.ndarray, points: np.ndarray, shade_in_3d: bool
+    direction: np.ndarray, points: np.ndarray
 ) -> tuple[Point3D, Point3D]:
-    """Where a path's gradient starts and ends, from the path's own points."""
-    if shade_in_3d:
-        # As the 3D shading always did: between the path's first and last corner.
-        return start_corner(points), end_corner(points)
+    """Where a path's gradient starts and ends, from the path's own points: the
+    edges of their bounding box along ``direction``.
+    """
     box = _anchor_box(points)
     if box is None:
         return np.zeros(3), np.zeros(3)

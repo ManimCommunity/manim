@@ -379,7 +379,7 @@ def test_face_outlines_look_alike_on_both_renderers(using_opengl_renderer):
 def test_meshes_are_sorted_with_3d_paths(renderer):
     # Added before the plane, but in front of it: drawn after it.
     square = Square(2, fill_opacity=1, color=PURE_RED).shift(OUT)
-    square.set_shade_in_3d(True)
+    square.set_sort_by_depth(True)
     plane = _plane(0, PURE_BLUE)
 
     pixels, _ = _image(renderer, lambda: [square, plane], ThreeDScene)
