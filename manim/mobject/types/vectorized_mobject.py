@@ -727,6 +727,8 @@ class VMobject(Mobject):
             changes to the current color.
         direction
             Direction from where the gradient is applied.
+        family
+            Whether to apply the sheen to submobjects as well. Defaults to True.
 
         Examples
         --------
