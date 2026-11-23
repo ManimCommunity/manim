@@ -22,7 +22,7 @@ from PIL.Image import Resampling
 
 from manim.appearance.material import PbrMaterial
 from manim.renderer import _view
-from manim.renderer._mesh import faces_of
+from manim.renderer._mesh import NormalAccumulator, faces_of
 from manim.renderer._paint import paint_colors, shows
 from manim.renderer._reuse import PrefixMemo, node_key, view_key
 from manim.renderer.projection import project_points
@@ -1154,99 +1154,41 @@ class _NormalCache:
     """Vertex normals of meshes by uid, kept while their ``"geometry"`` slot (points
     and triangles) keeps its version.
 
-    Which vertices share a point (:func:`_welded`) does not change when a mesh only
-    moves, rotates or scales, so it is kept per triangles array and computed again
-    only for new triangles or a new number of points.
+    A moving mesh gets new points every frame, so its normals are computed again;
+    the :class:`.NormalAccumulator` of its triangles (which vertices share a point,
+    which triangles each vertex is a corner of) is kept, so that costs one matrix
+    product.
     """
 
     def __init__(self) -> None:
         self._current: dict[int, tuple[int, np.ndarray]] = {}
         self._previous: dict[int, tuple[int, np.ndarray]] = {}
-        self._welds: dict[int, tuple[np.ndarray, int, np.ndarray | None]] = {}
+        self._accumulators: dict[int, NormalAccumulator] = {}
 
     def next_frame(self) -> None:
         self._previous, self._current = self._current, {}
         live = self._previous.keys()
-        self._welds = {uid: weld for uid, weld in self._welds.items() if uid in live}
+        self._accumulators = {
+            uid: accumulator
+            for uid, accumulator in self._accumulators.items()
+            if uid in live
+        }
 
     def get(self, node: RNode, mesh: RMesh) -> np.ndarray:
         key = node.versions.get("geometry", 0)
         entry = self._current.get(node.uid) or self._previous.get(node.uid)
         if entry is None or entry[0] != key:
-            welded = self._weld(node.uid, mesh)
-            entry = (key, vertex_normals(mesh.points, mesh.triangles, welded))
+            entry = (key, self._accumulator(node.uid, mesh).normals(mesh.points))
         self._current[node.uid] = entry
         return entry[1]
 
-    def _weld(self, uid: int, mesh: RMesh) -> np.ndarray | None:
-        triangles, count = mesh.triangles, len(mesh.points)
-        kept = self._welds.get(uid)
-        if kept is not None and kept[0] is triangles and kept[1] == count:
-            return kept[2]
-        welded = _welded(mesh.points, triangles)
-        self._welds[uid] = (triangles, count, welded)
-        return welded
-
-
-def vertex_normals(
-    points: np.ndarray, triangles: np.ndarray, welded: Any = ...
-) -> np.ndarray:
-    """Unit normals at the vertices: the sum of the normals of their triangles,
-    weighted by area. Vertices without a direction get ``(0, 0, 1)``.
-
-    Vertices at the same point (up to :data:`_WELD_TOLERANCE` relative to the
-    mesh's size) share their normal, so a surface whose parameter grid closes on
-    itself (the seam of a torus or a sphere, the poles of a sphere) is lit
-    without a visible seam. Meshes whose faces have corners of their own keep
-    flat normals: their corners at one point belong to faces of their own.
-
-    ``welded`` is what :func:`_welded` gives for these points and triangles, if
-    already known.
-    """
-    corners = points[triangles]
-    faces = np.cross(corners[:, 1] - corners[:, 0], corners[:, 2] - corners[:, 0])
-    normals = np.zeros_like(points, dtype=float)
-    for i in range(3):
-        np.add.at(normals, triangles[:, i], faces)
-    if welded is ...:
-        welded = _welded(points, triangles)
-    if welded is not None:
-        sums = np.zeros_like(normals)
-        np.add.at(sums, welded, normals)
-        normals = sums[welded]
-    lengths = np.linalg.norm(normals, axis=1)
-    flat = lengths < 1e-12
-    normals[flat] = (0, 0, 1)
-    lengths[flat] = 1
-    return normals / lengths[:, None]
-
-
-#: Distance, relative to the size of a mesh, below which vertices are one point.
-_WELD_TOLERANCE = 1e-6
-
-
-def _welded(points: np.ndarray, triangles: np.ndarray) -> np.ndarray | None:
-    """For each vertex, the index of one vertex at the same point, for vertices
-    that share a point and are corners of the same smooth surface; ``None`` if no
-    vertices share a point.
-
-    A mesh whose triangles have corners of their own (every vertex in one
-    triangle, or every quad's four corners its own) is left alone: it is meant
-    to be lit flat.
-    """
-    if len(points) == 0:
-        return None
-    size = float(np.ptp(points, axis=0).max()) or 1.0
-    keys = np.round(points / (size * _WELD_TOLERANCE)).astype(np.int64)
-    _, first, inverse = np.unique(keys, axis=0, return_index=True, return_inverse=True)
-    inverse = inverse.reshape(-1)
-    if len(first) == len(points):
-        return None
-    # Flat meshes: no vertex is shared by triangles that are not one face's.
-    uses = np.bincount(triangles.reshape(-1), minlength=len(points))
-    if uses.max() <= 2:
-        return None
-    return first[inverse]
+    def _accumulator(self, uid: int, mesh: RMesh) -> NormalAccumulator:
+        kept = self._accumulators.get(uid)
+        if kept is not None and kept.fits(mesh.points, mesh.triangles):
+            return kept
+        accumulator = NormalAccumulator(mesh.points, mesh.triangles)
+        self._accumulators[uid] = accumulator
+        return accumulator
 
 
 class _TextureCache:
