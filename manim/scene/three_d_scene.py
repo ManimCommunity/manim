@@ -11,22 +11,21 @@ from typing import Any
 
 import numpy as np
 
+from manim._config import config
+from manim.animation.animation import Animation
+from manim.animation.transform import Transform
+from manim.constants import DEGREES
 from manim.mobject.geometry.line import Line
 from manim.mobject.graphing.coordinate_systems import ThreeDAxes
+from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.three_d.three_dimensions import Sphere
+from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from manim.mobject.value_tracker import ValueTracker
-
-from .._config import config
-from ..animation.animation import Animation
-from ..animation.transform import Transform
-from ..constants import DEGREES
-from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
-from ..renderer.cairo.camera import ThreeDCamera
-from ..renderer.opengl.camera import OpenGLCamera
-from ..scene.scene import Scene
-from ..utils.config_ops import merge_dicts_recursively
+from manim.renderer.cairo.camera import ThreeDCamera
+from manim.renderer.opengl.camera import OpenGLCamera
+from manim.scene.scene import Scene
+from manim.utils.config_ops import merge_dicts_recursively
 
 
 class ThreeDScene(Scene):

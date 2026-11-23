@@ -3,8 +3,8 @@ from __future__ import annotations
 import itertools as it
 from collections.abc import Iterable
 
-from ..mobject.mobject import Mobject
-from ..utils.iterables import remove_list_redundancies
+from manim.mobject.mobject import Mobject
+from manim.utils.iterables import remove_list_redundancies
 
 __all__ = ["extract_mobject_family_members"]
 

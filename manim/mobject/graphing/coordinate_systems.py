@@ -19,7 +19,24 @@ from typing import TYPE_CHECKING, Any, Self, TypeVar, overload
 import numpy as np
 
 from manim._config import config
-from manim.constants import *
+from manim.constants import (
+    DEFAULT_DOT_RADIUS,
+    DEGREES,
+    DL,
+    DOWN,
+    DR,
+    LEFT,
+    MED_SMALL_BUFF,
+    ORIGIN,
+    OUT,
+    PI,
+    RIGHT,
+    SMALL_BUFF,
+    TAU,
+    UP,
+    UR,
+    RendererType,
+)
 from manim.mobject.geometry.arc import Circle, Dot
 from manim.mobject.geometry.line import Arrow, DashedLine, Line
 from manim.mobject.geometry.polygram import Polygon, Rectangle, RegularPolygon

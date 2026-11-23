@@ -22,14 +22,11 @@ from shutil import copyfile
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from manim.scene.scene_file_writer import SceneFileWriter
     from manim.typing import StrPath
 
-    from ..scene.scene_file_writer import SceneFileWriter
-
-from manim._config import config, logger
+from manim._config import config, console, logger
 from manim._version import __version__
-
-from .._config import console
 
 
 def ensure_executable(path_to_exe: Path) -> bool:

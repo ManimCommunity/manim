@@ -8,11 +8,17 @@ from dataclasses import dataclass
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
-from ._config import config, logger
-from ._config.logger_utils import set_file_logger
-from ._run.cache import _SegmentCache
-from ._run.listeners import _Encoder, _FrameRequests, _MeshGuard, _Preview, _Progress
-from ._run.loop import (
+from manim._config import config, logger
+from manim._config.logger_utils import set_file_logger
+from manim._run.cache import _SegmentCache
+from manim._run.listeners import (
+    _Encoder,
+    _FrameRequests,
+    _MeshGuard,
+    _Preview,
+    _Progress,
+)
+from manim._run.loop import (
     _Caption,
     _RunListener,
     _RunLoop,
@@ -21,12 +27,12 @@ from ._run.loop import (
     _Sound,
     _TargetDrawer,
 )
-from ._run.mode import _EvaluationRun, _RunMode
-from ._run.selection import _OutputSelection
-from .renderer.cairo.renderer import CairoRenderer
-from .scene.section import DefaultSectionType
-from .utils.exceptions import EndSceneEarlyException, RerunSceneException
-from .utils.file_ops import open_media_file
+from manim._run.mode import _EvaluationRun, _RunMode
+from manim._run.selection import _OutputSelection
+from manim.renderer.cairo.renderer import CairoRenderer
+from manim.scene.section import DefaultSectionType
+from manim.utils.exceptions import EndSceneEarlyException, RerunSceneException
+from manim.utils.file_ops import open_media_file
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable
@@ -36,19 +42,19 @@ if TYPE_CHECKING:
 
     from PIL.Image import Image
 
-    from ._config.output import OutputSpec
-    from ._config.render_session import RenderSessionSpec
-    from .animation.animation import Animation
-    from .mobject.mobject import Mobject, _AnimationBuilder
-    from .renderer._execution import _ExecutionState
-    from .renderer.cairo import CairoRenderer
-    from .renderer.cairo.camera import Camera
-    from .renderer.opengl.camera import OpenGLCamera
-    from .renderer.opengl.renderer import OpenGLRenderer
-    from .scene.scene import Scene
-    from .scene.scene_file_writer import SceneFileWriter
-    from .timeline import Timeline
-    from .typing import RGBAPixelArray
+    from manim._config.output import OutputSpec
+    from manim._config.render_session import RenderSessionSpec
+    from manim.animation.animation import Animation
+    from manim.mobject.mobject import Mobject, _AnimationBuilder
+    from manim.renderer._execution import _ExecutionState
+    from manim.renderer.cairo import CairoRenderer
+    from manim.renderer.cairo.camera import Camera
+    from manim.renderer.opengl.camera import OpenGLCamera
+    from manim.renderer.opengl.renderer import OpenGLRenderer
+    from manim.scene.scene import Scene
+    from manim.scene.scene_file_writer import SceneFileWriter
+    from manim.timeline import Timeline
+    from manim.typing import RGBAPixelArray
 
 __all__ = ["Manager", "RenderedFrame"]
 

@@ -5,11 +5,10 @@ __all__ = ["Broadcast"]
 from collections.abc import Sequence
 from typing import Any
 
+from manim.animation.composition import LaggedStart
 from manim.animation.transform import Restore
+from manim.constants import ORIGIN
 from manim.mobject.mobject import Mobject
-
-from ..constants import *
-from .composition import LaggedStart
 
 
 class Broadcast(LaggedStart):

@@ -4,10 +4,9 @@ from __future__ import annotations
 
 import numpy as np
 
-import manim.constants as constants
-
-from .._config import config
-from ..typing import Vector3D
+from manim._config import config
+from manim.constants import PI, X_AXIS, Y_AXIS, Z_AXIS
+from manim.typing import Vector3D
 
 __all__ = ["Pixels", "Degrees", "Munits", "Percent"]
 
@@ -52,11 +51,11 @@ class Percent:
     """
 
     def __init__(self, axis: Vector3D) -> None:
-        if np.array_equal(axis, constants.X_AXIS):
+        if np.array_equal(axis, X_AXIS):
             self.length = config.frame_width
-        elif np.array_equal(axis, constants.Y_AXIS):
+        elif np.array_equal(axis, Y_AXIS):
             self.length = config.frame_height
-        elif np.array_equal(axis, constants.Z_AXIS):
+        elif np.array_equal(axis, Z_AXIS):
             raise NotImplementedError("length of Z axis is undefined")
         else:
             raise ValueError(
@@ -72,5 +71,5 @@ class Percent:
 
 
 Pixels = _PixelUnits()
-Degrees = constants.PI / 180
+Degrees = PI / 180
 Munits = 1

@@ -17,7 +17,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
-from manim.constants import *
+from manim.constants import DEFAULT_ARROW_TIP_LENGTH, PI
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square, Triangle
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL

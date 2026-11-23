@@ -68,7 +68,7 @@ import numpy as np
 from manimpango import MarkupUtils, PangoUtils, TextSetting
 
 from manim._config import config, logger
-from manim.constants import *
+from manim.constants import DEFAULT_FONT_SIZE, NORMAL, START_X, START_Y, RendererType
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject

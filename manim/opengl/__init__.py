@@ -13,6 +13,5 @@ from manim.mobject.opengl.opengl_point_cloud_mobject import *
 from manim.mobject.opengl.opengl_surface import *
 from manim.mobject.opengl.opengl_three_dimensions import *
 from manim.mobject.opengl.opengl_vectorized_mobject import *
-
-from ..renderer.opengl.shader import *
-from ..utils.opengl import *
+from manim.renderer.opengl.shader import *
+from manim.utils.opengl import *

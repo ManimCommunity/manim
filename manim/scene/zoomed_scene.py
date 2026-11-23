@@ -51,12 +51,12 @@ __all__ = ["ZoomedScene"]
 
 from typing import TYPE_CHECKING, Any
 
-from ..animation.transform import ApplyMethod
-from ..constants import *
-from ..mobject.types.image_mobject import ImageMobjectFromCamera
-from ..renderer.cairo.camera import Camera, MultiCamera
-from ..renderer.opengl.camera import OpenGLCamera
-from ..scene.scene import Scene
+from manim.animation.transform import ApplyMethod
+from manim.constants import DEFAULT_MOBJECT_TO_EDGE_BUFFER, ORIGIN, RIGHT, UP
+from manim.mobject.types.image_mobject import ImageMobjectFromCamera
+from manim.renderer.cairo.camera import Camera, MultiCamera
+from manim.renderer.opengl.camera import OpenGLCamera
+from manim.scene.scene import Scene
 
 if TYPE_CHECKING:
     from manim.typing import Point3DLike, Vector3D

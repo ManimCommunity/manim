@@ -26,7 +26,7 @@ are non official approximate values intended to simulate AS 2700 colors:
 
 from __future__ import annotations
 
-from .core import ManimColor
+from manim.utils.color.core import ManimColor
 
 B11_RICH_BLUE = ManimColor("#2B3770")
 B12_ROYAL_BLUE = ManimColor("#2C3563")

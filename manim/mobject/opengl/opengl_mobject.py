@@ -27,12 +27,22 @@ from typing import (
 import moderngl
 import numpy as np
 import numpy.typing as npt
-from typing_extensions import (
-    override,
-)
+from typing_extensions import override
 
 from manim._config import config, logger
-from manim.constants import *
+from manim.constants import (
+    DEFAULT_MOBJECT_TO_EDGE_BUFFER,
+    DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
+    DOWN,
+    IN,
+    LEFT,
+    MED_SMALL_BUFF,
+    ORIGIN,
+    OUT,
+    RIGHT,
+    TAU,
+    UP,
+)
 from manim.data_structures import MethodWithArgs
 from manim.renderer.opengl.shader_wrapper import get_colormap_code
 from manim.typing import (

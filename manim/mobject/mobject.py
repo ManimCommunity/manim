@@ -21,12 +21,24 @@ from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 
+from manim._config import config, logger
+from manim.constants import (
+    DEFAULT_MOBJECT_TO_EDGE_BUFFER,
+    DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
+    DL,
+    DOWN,
+    IN,
+    LEFT,
+    MED_SMALL_BUFF,
+    ORIGIN,
+    OUT,
+    RIGHT,
+    TAU,
+    UP,
+)
 from manim.data_structures import MethodWithArgs
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-
-from .._config import config, logger
-from ..constants import *
-from ..utils.color import (
+from manim.utils.color import (
     BLACK,
     PURE_YELLOW,
     WHITE,
@@ -35,21 +47,23 @@ from ..utils.color import (
     color_gradient,
     interpolate_color,
 )
-from ..utils.exceptions import MultiAnimationOverrideException
-from ..utils.iterables import (
+from manim.utils.exceptions import MultiAnimationOverrideException
+from manim.utils.iterables import (
     list_difference_update,
     remove_list_redundancies,
 )
-from ..utils.paths import straight_path
-from ..utils.simple_functions import clip
-from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
+from manim.utils.paths import straight_path
+from manim.utils.simple_functions import clip
+from manim.utils.space_ops import angle_between_vectors, normalize, rotation_matrix
 
 if TYPE_CHECKING:
     from typing import Self, TypeAlias
 
     from PIL import Image
 
+    from manim.animation.animation import Animation
     from manim.mobject.types.point_cloud_mobject import Point
+    from manim.renderer.cairo.camera import Camera
     from manim.typing import (
         FunctionOverride,
         MappingFunction,
@@ -63,9 +77,6 @@ if TYPE_CHECKING:
         Vector3D,
         Vector3DLike,
     )
-
-    from ..animation.animation import Animation
-    from ..renderer.cairo.camera import Camera
 
 
 _TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
@@ -3623,7 +3634,7 @@ class _AnimationBuilder:
 
     def build(self) -> Animation:
         # local import to avoid import cycle
-        from ..animation.transform import _MethodAnimation
+        from manim.animation.transform import _MethodAnimation
 
         anim = self.overridden_animation or _MethodAnimation(self.mobject, self.methods)
 

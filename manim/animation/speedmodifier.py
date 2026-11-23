@@ -9,13 +9,13 @@ from typing import TYPE_CHECKING
 
 from numpy import piecewise
 
-from ..animation.animation import Animation, Wait, prepare_animation
-from ..animation.composition import AnimationGroup
-from ..mobject.mobject import Mobject, _AnimationBuilder
+from manim.animation.animation import Animation, Wait, prepare_animation
+from manim.animation.composition import AnimationGroup
+from manim.mobject.mobject import Mobject, _AnimationBuilder
 
 if TYPE_CHECKING:
-    from ..mobject.mobject import Updater
-    from ..scene.scene import Scene
+    from manim.mobject.mobject import Updater
+    from manim.scene.scene import Scene
 
 __all__ = ["ChangeSpeed"]
 

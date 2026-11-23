@@ -10,7 +10,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from .._config import config
+from manim._config import config
 
 if TYPE_CHECKING:
     from manim.manager import Manager

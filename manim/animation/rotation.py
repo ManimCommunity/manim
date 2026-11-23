@@ -7,15 +7,15 @@ __all__ = ["Rotating", "Rotate"]
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
-from ..animation.animation import Animation
-from ..animation.transform import Transform
-from ..constants import OUT, PI, TAU
-from ..utils.rate_functions import linear
+from manim.animation.animation import Animation
+from manim.animation.transform import Transform
+from manim.constants import OUT, PI, TAU
+from manim.utils.rate_functions import linear
 
 if TYPE_CHECKING:
-    from ..mobject.mobject import Mobject
-    from ..mobject.opengl.opengl_mobject import OpenGLMobject
-    from ..typing import Point3DLike, Vector3DLike
+    from manim.mobject.mobject import Mobject
+    from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+    from manim.typing import Point3DLike, Vector3DLike
 
 
 class Rotating(Animation):

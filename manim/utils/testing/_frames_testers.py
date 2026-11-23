@@ -9,8 +9,7 @@ from pathlib import Path
 import numpy as np
 
 from manim.typing import PixelArray
-
-from ._show_diff import show_diff_helper
+from manim.utils.testing._show_diff import show_diff_helper
 
 FRAME_ABSOLUTE_TOLERANCE = 1.01
 FRAME_MISMATCH_RATIO_TOLERANCE = 1e-5

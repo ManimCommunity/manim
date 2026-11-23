@@ -20,19 +20,17 @@ from manim.mobject.types.image_mobject import (
 )
 from manim.mobject.types.point_cloud_mobject import PMobject
 from manim.mobject.types.vectorized_mobject import VMobject
+from manim.renderer.cairo.target import _CairoRenderTarget
 from manim.utils.space_ops import cross2d
 
-from .target import _CairoRenderTarget
-
 if TYPE_CHECKING:
+    from manim.renderer.cairo.camera import Camera
     from manim.typing import (
         FloatRGBA_Array,
         FloatRGBALike_Array,
         Point3D_Array,
         RGBAPixelArray,
     )
-
-    from .camera import Camera
 
 _LINE_JOIN_MAP = {
     LineJointType.AUTO: cairo.LineJoin.MITER,  # cairo default; TODO: this could be improved

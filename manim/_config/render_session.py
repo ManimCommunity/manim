@@ -11,10 +11,9 @@ __all__ = [
 from dataclasses import dataclass
 from typing import Protocol
 
+from manim._config.output import OutputFormat, OutputSpec
+from manim._config.video_encoder import VideoEncoderSpec, resolve_video_encoder
 from manim.renderer.protocol import RendererCapabilities
-
-from .output import OutputFormat, OutputSpec
-from .video_encoder import VideoEncoderSpec, resolve_video_encoder
 
 
 @dataclass(frozen=True, slots=True)

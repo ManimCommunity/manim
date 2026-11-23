@@ -11,17 +11,16 @@ import numpy as np
 import svgelements as se
 
 from manim._config import config, logger
+from manim.constants import RIGHT, RendererType
+from manim.mobject.geometry.arc import Circle
+from manim.mobject.geometry.line import Line
+from manim.mobject.geometry.polygram import Polygon, Rectangle, RoundedRectangle
+from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.utils.bezier import get_quadratic_approximation_of_cubic
 from manim.utils.color import ManimColor, ParsableManimColor
-
-from ...constants import RIGHT, RendererType
-from ...utils.bezier import get_quadratic_approximation_of_cubic
-from ...utils.images import get_full_vector_image_path
-from ...utils.iterables import hash_obj
-from ..geometry.arc import Circle
-from ..geometry.line import Line
-from ..geometry.polygram import Polygon, Rectangle, RoundedRectangle
-from ..opengl.opengl_compatibility import ConvertToOpenGL
-from ..types.vectorized_mobject import VGroup, VMobject
+from manim.utils.images import get_full_vector_image_path
+from manim.utils.iterables import hash_obj
 
 __all__ = ["SVGMobject", "VMobjectFromSVGPath"]
 

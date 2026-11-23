@@ -8,10 +8,9 @@ __all__ = ["ChangingDecimal", "ChangeDecimalToValue"]
 from collections.abc import Callable
 from typing import Any
 
+from manim.animation.animation import Animation
 from manim.mobject.text.numbers import DecimalNumber
-
-from ..animation.animation import Animation
-from ..utils.bezier import interpolate
+from manim.utils.bezier import interpolate
 
 
 class ChangingDecimal(Animation):

@@ -4,12 +4,11 @@ from abc import ABCMeta
 from typing import Any
 
 from manim._config import config
+from manim.constants import RendererType
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.opengl.opengl_point_cloud_mobject import OpenGLPMobject
 from manim.mobject.opengl.opengl_three_dimensions import OpenGLSurface
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
-
-from ...constants import RendererType
 
 __all__ = ["ConvertToOpenGL"]
 

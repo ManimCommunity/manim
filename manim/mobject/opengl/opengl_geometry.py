@@ -4,7 +4,22 @@ from typing import Any, Self, cast
 
 import numpy as np
 
-from manim.constants import *
+from manim.constants import (
+    DEGREES,
+    DL,
+    DOWN,
+    DR,
+    LEFT,
+    MED_SMALL_BUFF,
+    ORIGIN,
+    OUT,
+    PI,
+    RIGHT,
+    TAU,
+    UL,
+    UP,
+    UR,
+)
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_vectorized_mobject import (
     OpenGLDashedVMobject,
@@ -21,7 +36,7 @@ from manim.typing import (
     Vector3D,
     Vector3DLike,
 )
-from manim.utils.color import *
+from manim.utils.color import GREY_A, RED, WHITE, ParsableManimColor
 from manim.utils.iterables import adjacent_n_tuples, adjacent_pairs
 from manim.utils.simple_functions import clip
 from manim.utils.space_ops import (

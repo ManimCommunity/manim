@@ -45,13 +45,12 @@ from typing import Any, Self
 
 import numpy as np
 
+from manim.constants import DOWN, DR, LEFT, MED_SMALL_BUFF, RIGHT
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.numbers import DecimalNumber, Integer
 from manim.mobject.text.tex_mobject import MathTex, Tex
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.typing import Vector2DLike, Vector3DLike
-
-from ..constants import *
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
 
 # TO DO : The following two functions are not used in this file.
 #         Not sure if we should keep it or not.

@@ -25,7 +25,7 @@ List of Color Constants
 
 from __future__ import annotations
 
-from .core import ManimColor
+from manim.utils.color.core import ManimColor
 
 ALICEBLUE = ManimColor("#F0F8FF")
 ANTIQUEWHITE = ManimColor("#FAEBD7")

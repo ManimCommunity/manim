@@ -7,23 +7,23 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
-from ..scene.audio_mixer import _Sound
-from .frames import frame_count
+from manim._run.frames import frame_count
+from manim.scene.audio_mixer import _Sound
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from PIL.Image import Image
 
-    from ..animation.animation import Animation
-    from ..manager import Manager
-    from ..mobject.mobject import Mobject, _AnimationBuilder
-    from ..mobject.opengl.opengl_mobject import OpenGLMobject
-    from ..scene.scene import Scene
-    from ..typing import RGBAPixelArray
-    from .cache import _SegmentCache
-    from .mode import _RunMode
-    from .selection import _OutputSelection
+    from manim._run.cache import _SegmentCache
+    from manim._run.mode import _RunMode
+    from manim._run.selection import _OutputSelection
+    from manim.animation.animation import Animation
+    from manim.manager import Manager
+    from manim.mobject.mobject import Mobject, _AnimationBuilder
+    from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+    from manim.scene.scene import Scene
+    from manim.typing import RGBAPixelArray
 
 __all__: list[str] = []
 
@@ -225,7 +225,7 @@ class _RunLoop:
         mode: _RunMode,
         cache: _SegmentCache | None = None,
     ) -> None:
-        from .record import _RunRecord
+        from manim._run.record import _RunRecord
 
         self.manager = manager
         self.record = _RunRecord(manager, mode.timeline_mode)

@@ -14,9 +14,9 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from ..constants import OUT
-from ..utils.bezier import interpolate
-from ..utils.space_ops import normalize, rotation_matrix
+from manim.constants import OUT
+from manim.utils.bezier import interpolate
+from manim.utils.space_ops import normalize, rotation_matrix
 
 if TYPE_CHECKING:
     from manim.typing import (

@@ -33,26 +33,25 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
-from manim.data_structures import MethodWithArgs
-from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
-
-from .._config import config
-from ..animation.animation import Animation
-from ..constants import (
+from manim._config import config
+from manim.animation.animation import Animation
+from manim.constants import (
     DEFAULT_POINTWISE_FUNCTION_RUN_TIME,
     DEGREES,
     ORIGIN,
     OUT,
     RendererType,
 )
-from ..mobject.mobject import Group, Mobject
-from ..mobject.types.vectorized_mobject import VGroup
-from ..utils.paths import path_along_arc, path_along_circles
-from ..utils.rate_functions import smooth, squish_rate_func
+from manim.data_structures import MethodWithArgs
+from manim.mobject.mobject import Group, Mobject
+from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
+from manim.mobject.types.vectorized_mobject import VGroup
+from manim.utils.paths import path_along_arc, path_along_circles
+from manim.utils.rate_functions import smooth, squish_rate_func
 
 if TYPE_CHECKING:
-    from ..scene.scene import Scene
-    from ..typing import Point3DLike, Point3DLike_Array
+    from manim.scene.scene import Scene
+    from manim.typing import Point3DLike, Point3DLike_Array
 
 
 class Transform(Animation):

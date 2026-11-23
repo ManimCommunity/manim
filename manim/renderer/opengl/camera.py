@@ -11,7 +11,7 @@ import numpy as np
 from typing_extensions import override
 
 from manim._config import config
-from manim.constants import *
+from manim.constants import DOWN, LEFT, ORIGIN, OUT, PI, RIGHT, UP
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 from manim.typing import MatrixMN, Point3D
 from manim.utils import opengl

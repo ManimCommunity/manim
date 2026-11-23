@@ -8,14 +8,14 @@ __all__ = [
     "get_vectorized_mobject_class",
 ]
 
-from .._config import config
-from ..constants import RendererType
-from .mobject import Mobject
-from .opengl.opengl_mobject import OpenGLMobject
-from .opengl.opengl_point_cloud_mobject import OpenGLPMobject
-from .opengl.opengl_vectorized_mobject import OpenGLVMobject
-from .types.point_cloud_mobject import PMobject
-from .types.vectorized_mobject import VMobject
+from manim._config import config
+from manim.constants import RendererType
+from manim.mobject.mobject import Mobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject
+from manim.mobject.opengl.opengl_point_cloud_mobject import OpenGLPMobject
+from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.types.point_cloud_mobject import PMobject
+from manim.mobject.types.vectorized_mobject import VMobject
 
 
 def get_mobject_class() -> type:

@@ -49,7 +49,18 @@ from typing import TYPE_CHECKING, Any, Self, cast
 
 import numpy as np
 
-from manim.constants import *
+from manim.constants import (
+    DEFAULT_ARROW_TIP_LENGTH,
+    DEFAULT_DOT_RADIUS,
+    LEFT,
+    ORIGIN,
+    OUT,
+    PI,
+    RIGHT,
+    SMALL_BUFF,
+    TAU,
+    UP,
+)
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import BLACK, BLUE, RED, WHITE, ParsableManimColor
@@ -66,8 +77,8 @@ from manim.utils.space_ops import (
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    import manim.mobject.geometry.tips as tips
     from manim.mobject.geometry.line import Line
+    from manim.mobject.geometry.tips import ArrowTip, ArrowTriangleFilledTip
     from manim.mobject.mobject import Mobject
     from manim.mobject.text.tex_mobject import SingleStringMathTex, Tex
     from manim.mobject.text.text_mobject import Text
@@ -113,8 +124,8 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
 
     def add_tip(
         self,
-        tip: tips.ArrowTip | None = None,
-        tip_shape: type[tips.ArrowTip] | None = None,
+        tip: ArrowTip | None = None,
+        tip_shape: type[ArrowTip] | None = None,
         tip_length: float | None = None,
         tip_width: float | None = None,
         at_start: bool = False,
@@ -134,11 +145,11 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
 
     def create_tip(
         self,
-        tip_shape: type[tips.ArrowTip] | None = None,
+        tip_shape: type[ArrowTip] | None = None,
         tip_length: float | None = None,
         tip_width: float | None = None,
         at_start: bool = False,
-    ) -> tips.ArrowTip:
+    ) -> ArrowTip:
         """Stylises the tip, positions it spatially, and returns
         the newly instantiated tip to the caller.
         """
@@ -148,10 +159,10 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
 
     def get_unpositioned_tip(
         self,
-        tip_shape: type[tips.ArrowTip] | None = None,
+        tip_shape: type[ArrowTip] | None = None,
         tip_length: float | None = None,
         tip_width: float | None = None,
-    ) -> tips.ArrowTip | tips.ArrowTriangleFilledTip:
+    ) -> ArrowTip | ArrowTriangleFilledTip:
         """Returns a tip that has been stylistically configured,
         but has not yet been given a position in space.
         """
@@ -176,7 +187,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         tip = tip_shape(length=tip_length, **style)
         return tip
 
-    def position_tip(self, tip: tips.ArrowTip, at_start: bool = False) -> tips.ArrowTip:
+    def position_tip(self, tip: ArrowTip, at_start: bool = False) -> ArrowTip:
         # Last two control points, defining both
         # the end, and the tangency direction
         if at_start:
@@ -206,7 +217,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         tip.shift(anchor - tip.tip_point)
         return tip
 
-    def reset_endpoints_based_on_tip(self, tip: tips.ArrowTip, at_start: bool) -> Self:
+    def reset_endpoints_based_on_tip(self, tip: ArrowTip, at_start: bool) -> Self:
         if self.get_length() == 0:
             # Zero length, put_start_and_end_on wouldn't work
             return self
@@ -217,7 +228,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
             self.put_start_and_end_on(self.get_start(), tip.base)
         return self
 
-    def assign_tip_attr(self, tip: tips.ArrowTip, at_start: bool) -> Self:
+    def assign_tip_attr(self, tip: ArrowTip, at_start: bool) -> Self:
         if at_start:
             self.start_tip = tip
         else:
@@ -1391,7 +1402,7 @@ class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
         # because ArcPolygonFromArcs[0] returns itself, not the first Arc.
         self.arcs = [*arcs]
         # local import to avoid import cycle
-        from .line import Line
+        from manim.mobject.geometry.line import Line
 
         for arc1, arc2 in adjacent_pairs(arcs):
             self.append_points(arc1.points)

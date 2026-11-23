@@ -19,7 +19,18 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 import numpy as np
 
 from manim._config import config
-from manim.constants import *
+from manim.constants import (
+    DEFAULT_DASH_LENGTH,
+    DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
+    DEGREES,
+    LARGE_BUFF,
+    LEFT,
+    MED_SMALL_BUFF,
+    ORIGIN,
+    RIGHT,
+    UP,
+    RendererType,
+)
 from manim.mobject.geometry.arc import Arc, ArcBetweenPoints, Dot, TipableVMobject
 from manim.mobject.geometry.tips import ArrowTip, ArrowTriangleFilledTip
 from manim.mobject.mobject import Mobject
@@ -32,10 +43,9 @@ from manim.utils.space_ops import angle_of_vector, line_intersection, normalize
 if TYPE_CHECKING:
     from typing import Self, TypeAlias
 
+    from manim.mobject.matrix import Matrix  # Avoid circular import
     from manim.typing import Point3D, Point3DLike, Vector2DLike, Vector3D, Vector3DLike
     from manim.utils.color import ParsableManimColor
-
-    from ..matrix import Matrix  # Avoid circular import
 
     AngleQuadrant: TypeAlias = tuple[Literal[-1, 1], Literal[-1, 1]]
     r"""A tuple of 2 integers which can be either +1 or -1, allowing to select
@@ -795,7 +805,7 @@ class Vector(Arrow):
                     self.add(plane, vec_1, vec_2, label_1, label_2)
         """
         # local import to avoid import cycle
-        from ..matrix import Matrix
+        from manim.mobject.matrix import Matrix
 
         vect = np.array(self.get_end())
         if integer_labels:

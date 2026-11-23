@@ -22,7 +22,7 @@ from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 
-from manim.constants import *
+from manim.constants import DL, DOWN, DR, RIGHT, TAU, UL, UR
 from manim.mobject.geometry.arc import ArcBetweenPoints
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject

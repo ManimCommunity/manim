@@ -22,10 +22,25 @@ from typing import TYPE_CHECKING, Any, Literal, Self
 import numpy as np
 
 from manim._config import config, logger
-from manim.constants import *
+from manim.constants import (
+    DEFAULT_DOT_RADIUS,
+    DOWN,
+    IN,
+    LEFT,
+    ORIGIN,
+    OUT,
+    PI,
+    RIGHT,
+    TAU,
+    UP,
+    Y_AXIS,
+    Z_AXIS,
+    LineJointType,
+    RendererType,
+)
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square
-from manim.mobject.mobject import *
+from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
