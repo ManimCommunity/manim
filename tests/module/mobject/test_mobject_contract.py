@@ -147,12 +147,10 @@ def test_interpolate_is_linear_in_points_colors_and_width():
     middle.interpolate(start, end, 0.5)
 
     np.testing.assert_allclose(middle.points, (start.points + end.points) / 2)
-    # Alignment spreads the single color to the length of the gradient.
-    np.testing.assert_allclose(start.fill_rgbas, [color_to_rgba(RED)] * 2)
-    np.testing.assert_allclose(
-        middle.fill_rgbas, (start.fill_rgbas + end.fill_rgbas) / 2
-    )
-    assert len(middle.stroke_rgbas) == 2
+    # The single colour is spread to the length of the gradient.
+    expected = (np.array([color_to_rgba(RED)] * 2) + end.fill.rgbas) / 2
+    np.testing.assert_allclose(middle.fill.rgbas, expected)
+    assert len(middle.stroke.rgbas) == 2
     assert middle.stroke_width == 4
     assert middle.get_fill_opacity() == 0.5
 
@@ -162,13 +160,13 @@ def test_interpolate_is_linear_in_points_colors_and_width():
 
 def test_copy_has_independent_points_and_colors():
     original = Square().set_color(RED)
-    points, rgbas = original.points.copy(), original.stroke_rgbas.copy()
+    points, stroke = original.points.copy(), original.stroke
 
     copy = original.copy()
     copy.shift(UP).set_color(BLUE)
 
     np.testing.assert_array_equal(original.points, points)
-    np.testing.assert_array_equal(original.stroke_rgbas, rgbas)
+    assert original.stroke is stroke
 
 
 def test_copy_keeps_references_within_the_copied_family():

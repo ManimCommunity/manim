@@ -180,7 +180,7 @@ class MeshMobject(Mobject):
         """Set the color of the faces and of their outlines.
 
         The other arguments of :meth:`.VMobject.set_style` (background strokes,
-        sheen, background images) have no effect on meshes.
+        background images) have no effect on meshes.
         """
         self.set_fill(fill_color, fill_opacity, family=family)
         return self.set_stroke(
@@ -268,10 +268,6 @@ class MeshMobject(Mobject):
         return self
 
     # What VMobject methods ask of the members of a group.
-
-    def set_sheen(self, *args: Any, **kwargs: Any) -> Self:
-        """Meshes have no sheen; for groups of vectorized mobjects and meshes."""
-        return self
 
     def color_using_background_image(self, *args: Any, **kwargs: Any) -> Self:
         """Meshes have no background image; for groups of vectorized mobjects and

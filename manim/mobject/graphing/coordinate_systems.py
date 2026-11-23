@@ -35,6 +35,7 @@ from manim.mobject.types.vectorized_mobject import (
     VGroup,
     VMobject,
 )
+from manim.paint import LinearGradient
 from manim.utils.color import (
     BLACK,
     BLUE,
@@ -786,7 +787,9 @@ class CoordinateSystem:
                             color_list.append(mob_color)
                             break
             graph.set_stroke(color_list)
-            graph.set_sheen_direction(RIGHT)
+            # Coloured along x.
+            if isinstance(graph.stroke, LinearGradient):
+                graph.stroke = graph.stroke.with_direction(RIGHT)
 
         return graph
 

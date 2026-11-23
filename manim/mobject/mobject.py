@@ -26,6 +26,8 @@ from manim.data_structures import MethodWithArgs
 
 from .._config import config, logger
 from ..constants import *
+from ..paint import Paint
+from ..utils.bezier import interpolate
 from ..utils.color import (
     BLACK,
     PURE_YELLOW,
@@ -117,6 +119,7 @@ _IMMUTABLE_TYPES = (
     type(None),
     enum.Enum,
     np.generic,
+    Paint,
 )
 
 

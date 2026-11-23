@@ -3,9 +3,12 @@ import pytest
 
 from manim import (
     BLUE,
+    GREEN,
     ORIGIN,
+    PI,
     RED,
     RIGHT,
+    UL,
     UP,
     WHITE,
     Arrow3D,
@@ -28,6 +31,7 @@ from manim import (
     VMobject,
 )
 from manim.appearance.material import PbrMaterial, UnlitMaterial
+from manim.utils.space_ops import rotate_vector
 from manim.utils.versioned_fields import field_version
 
 
@@ -323,12 +327,12 @@ def test_partial_surfaces_show_whole_faces_with_their_outlines():
     np.testing.assert_array_equal(partial.stroke_rgbas, surface.stroke_rgbas[:8])
 
 
-def test_groups_with_meshes_can_be_rotated_and_their_sheen_set():
-    group = VGroup(Square(), Sphere())
+def test_groups_with_meshes_can_be_rotated_and_recoloured():
+    group = VGroup(Square().set_fill([RED, BLUE], opacity=1), Sphere())
 
-    group.rotate(1.0).set_sheen_direction(UP)
+    group.rotate(PI / 2).set_color(GREEN)
 
-    np.testing.assert_allclose(group[0].sheen_direction, UP)
+    np.testing.assert_allclose(group[0].fill.direction, rotate_vector(UL, PI / 2))
 
 
 SOLIDS_WITH_PARTS = {

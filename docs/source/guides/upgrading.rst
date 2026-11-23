@@ -10,6 +10,10 @@ The arrays that mobjects are drawn from can be replaced, but not changed in plac
 ``points``, the color arrays of vectorized mobjects (``fill_rgbas``,
 ``stroke_rgbas``, ``background_stroke_rgbas``) and their ``sheen_direction``, and
 the ``pixel_array`` of an :class:`.ImageMobject`. Renderers keep track of which
+
+The arrays that mobjects are drawn from are read-only: ``points``, the colour
+stops of paints (``mob.fill.rgbas``, see below), and the ``pixel_array`` of an
+:class:`.ImageMobject`. Renderers keep track of which
 mobjects changed by the assignments to these arrays, so changing one in place
 raises numpy's error ``ValueError: assignment destination is read-only``:
 
@@ -167,7 +171,7 @@ most common ones:
    * - ``mob.set_color(..., recurse=False)``
      - ``mob.set_color(..., family=False)``
    * - ``mob.data[...]``, ``mob.uniforms[...]``
-     - The attributes themselves (``mob.points``, ``mob.fill_rgbas``, ...).
+     - The attributes themselves (``mob.points``, ``mob.fill``, ...).
    * - ``mob.set_color_by_code(glsl)``
      - :meth:`.MeshMobject.set_color_by_xyz_func`, which takes a Python function
        of the points.
@@ -404,3 +408,49 @@ Selecting a renderer
 - Removed from :class:`.OpenGLRenderer`: ``get_frame()``,
   ``get_raw_frame_buffer_object_data()``, ``get_pixel_shape()`` and
   ``get_frame_buffer_object()``; read a frame's pixels with ``frame.pixels()``.
+
+Colours of vectorized mobjects are paints
+-----------------------------------------
+
+A :class:`.VMobject` stores its colours as three *paints*: ``mob.fill``,
+``mob.stroke`` and ``mob.background_stroke`` (see :mod:`manim.paint`). A paint is
+an immutable value: :class:`.Solid` (one colour) or :class:`.LinearGradient`
+(evenly spaced colours along a direction, ``UL`` by default, between the edges
+of the mobject's own bounding box).
+
+.. code-block:: python
+
+    square.set_fill([RED, BLUE], opacity=1)  # as before: a gradient along UL
+    square.fill = LinearGradient([RED, BLUE], direction=RIGHT)
+    square.set_stroke(Solid(GREEN, opacity=0.5))
+
+:meth:`~.VMobject.set_fill`, :meth:`~.VMobject.set_stroke`,
+:meth:`~.VMobject.set_color`, :meth:`~.VMobject.set_opacity` and the getters
+(``get_fill_color``, ``get_fill_colors``, ``get_fill_opacities``, ...) work as
+before; ``set_fill`` and ``set_stroke`` also take a paint. ``fill_opacity``,
+``stroke_opacity``, ``background_stroke_color`` and
+``background_stroke_opacity`` are properties over the paints.
+:meth:`~.VMobject.rotate` turns the direction of gradients.
+
+.. list-table::
+   :header-rows: 1
+
+   * - Removed
+     - Use instead
+   * - ``fill_rgbas``, ``stroke_rgbas``, ``background_stroke_rgbas``,
+       ``get_fill_rgbas()``, ``get_stroke_rgbas()``
+     - ``mob.fill.rgbas`` (read-only), ``mob.stroke``,
+       ``mob.background_stroke``; ``get_fill_colors()``,
+       ``get_fill_opacities()``
+   * - ``generate_rgbas_array``, ``update_rgbas_array``, ``align_rgbas``
+     - :meth:`~.VMobject.set_fill` / :meth:`~.VMobject.set_stroke`;
+       :func:`.interpolate_paint` aligns paints of different lengths
+   * - ``set_sheen(factor, direction)``, ``sheen_factor=``
+     - a two-stop gradient: ``set_fill([color, lighter_color])``; there is no
+       automatic lightened colour
+   * - ``set_sheen_direction(d)``, ``rotate_sheen_direction``,
+       ``sheen_direction=``, ``get_sheen_direction``
+     - ``mob.fill = mob.fill.with_direction(d)`` (for a gradient), or
+       ``LinearGradient(colors, direction=d)``
+   * - ``get_gradient_start_and_end_points``
+     - none (renderers compute it)

@@ -63,7 +63,7 @@ def test_snapshot_shares_field_values():
     node = snapshot(square)
     assert node.payload.points is square.points
     assert isinstance(node.payload.fill, RSolidColor)
-    np.testing.assert_array_equal(node.payload.fill.rgba, square.fill_rgbas[0])
+    np.testing.assert_array_equal(node.payload.fill.rgba, square.fill.rgbas[0])
     assert node.payload.material == UnlitMaterial()
     assert node.payload.depth_reference is None
 
@@ -147,7 +147,7 @@ def test_paints_and_materials():
     path = snapshot(square).payload
 
     assert isinstance(path.fill, RLinearGradient)
-    np.testing.assert_allclose(path.fill.rgbas, square.fill_rgbas)
+    np.testing.assert_allclose(path.fill.rgbas, square.fill.rgbas)
     assert isinstance(path.stroke.paint, RSolidColor)
     assert path.stroke.width == 3
     assert path.background_stroke is None

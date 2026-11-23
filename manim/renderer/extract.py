@@ -24,6 +24,7 @@ from manim.mobject.types.image_mobject import (
 )
 from manim.mobject.types.point_cloud_mobject import PMobject
 from manim.mobject.types.vectorized_mobject import VMobject
+from manim.appearance.paint import Paint
 from manim.renderer.snapshot import (
     FacingCamera,
     FixedInFrame,
@@ -47,7 +48,7 @@ from manim.utils.family import extract_mobject_family_members
 from manim.utils.iterables import list_difference_update
 
 if TYPE_CHECKING:
-    from manim.typing import FloatRGBA_Array, Point3D
+    from manim.typing import Point3D
 
 __all__ = ["Extractor", "extract", "placement_of", "snapshot"]
 
@@ -334,22 +335,20 @@ _MESH_SLOTS: dict[str, tuple[str, ...]] = {
 # The fields each slot of a path is made from. A gradient's ends come from the points.
 _PATH_SLOTS: dict[str, tuple[str, ...]] = {
     "geometry": ("points", "tolerance_for_point_equality"),
-    "fill": ("fill_rgbas", "sheen_direction", "points", "shade_in_3d"),
+    "fill": ("fill", "points", "shade_in_3d"),
     "stroke": (
-        "stroke_rgbas",
+        "stroke",
         "stroke_width",
         "joint_type",
         "cap_style",
-        "sheen_direction",
         "points",
         "shade_in_3d",
     ),
     "background_stroke": (
-        "background_stroke_rgbas",
+        "background_stroke",
         "background_stroke_width",
         "joint_type",
         "cap_style",
-        "sheen_direction",
         "points",
         "shade_in_3d",
     ),
@@ -363,31 +362,36 @@ def _path(vmobject: VMobject) -> RPath:
     attributes: dict[str, Any] = vmobject.__dict__
     points = vmobject.points
     shade_in_3d = vmobject.shade_in_3d
-    fill = attributes.get("fill_rgbas", _NO_COLOR)
-    stroke = attributes.get("stroke_rgbas", _NO_COLOR)
-    background = attributes.get("background_stroke_rgbas", _NO_COLOR)
-    ends = None
-    if max(len(fill), len(stroke), len(background)) > 1:
-        ends = _gradient_ends(vmobject, points, shade_in_3d)
+    ends_by_direction: dict[bytes, tuple[Point3D, Point3D]] = {}
 
-    def paint(rgbas: FloatRGBA_Array) -> RPaint:
-        if ends is None or len(rgbas) == 1:
+    def paint(value: Paint | None) -> RPaint:
+        if value is None:
+            return _NO_PAINT
+        rgbas = value.rgbas
+        if len(rgbas) == 1:
             return RSolidColor(rgbas[0])
+        direction = value.direction  # type: ignore[attr-defined]
+        key = direction.tobytes()
+        ends = ends_by_direction.get(key)
+        if ends is None:
+            ends = ends_by_direction[key] = _gradient_ends(
+                direction, points, shade_in_3d
+            )
         return RLinearGradient(ends[0], ends[1], rgbas)
 
     background_width = vmobject.background_stroke_width
     return RPath(
         points=points,
-        fill=paint(fill),
+        fill=paint(attributes.get("fill")),
         stroke=RStroke(
-            paint(stroke),
-            vmobject.stroke_width,
+            paint(attributes.get("stroke")),
+            vmobject.get_stroke_width(),
             vmobject.joint_type,
             vmobject.cap_style,
         ),
         background_stroke=(
             RStroke(
-                paint(background),
+                paint(attributes.get("background_stroke")),
                 background_width,
                 vmobject.joint_type,
                 vmobject.cap_style,
@@ -419,7 +423,7 @@ def _own_center(points: np.ndarray) -> Point3D:
 
 
 def _gradient_ends(
-    vmobject: VMobject, points: np.ndarray, shade_in_3d: bool
+    direction: np.ndarray, points: np.ndarray, shade_in_3d: bool
 ) -> tuple[Point3D, Point3D]:
     """Where a path's gradient starts and ends, from the path's own points."""
     if shade_in_3d:
@@ -430,11 +434,9 @@ def _gradient_ends(
         return np.zeros(3), np.zeros(3)
     low, high = box
     center = (low + high) / 2
-    # Along the sheen direction, to the edges of the box (as
-    # get_gradient_start_and_end_points does with the family's box).
-    offset = (high - low) / 2 * np.asarray(vmobject.sheen_direction, dtype=float)
+    # Along the gradient's direction, to the edges of the box.
+    offset = (high - low) / 2 * np.asarray(direction, dtype=float)
     return center - offset, center + offset
 
 
-_NO_COLOR = np.zeros((1, 4))
-_NO_COLOR.flags.writeable = False
+_NO_PAINT = RSolidColor(np.zeros(4))

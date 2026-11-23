@@ -19,6 +19,7 @@ from typing import TYPE_CHECKING, Any, overload
 import numpy as np
 
 from manim._config import config, logger
+from manim.paint import LinearGradient, Paint
 
 if TYPE_CHECKING:
     from manim.animation.animation import Animation
@@ -324,6 +325,17 @@ class _CustomEncoder(json.JSONEncoder):
                 # See https://github.com/ManimCommunity/manim/pull/402.
                 code = ""
             return self._cleaned_iterable({"code": code, "nonlocals": cvardict})
+        elif isinstance(obj, Paint):
+            # Immutable values without a __dict__: hash what they are.
+            return {
+                "paint": type(obj).__name__,
+                "rgbas": _hash_ndarray(obj.rgbas),
+                "direction": (
+                    _hash_ndarray(obj.direction)
+                    if isinstance(obj, LinearGradient)
+                    else None
+                ),
+            }
         elif isinstance(obj, np.ndarray):
             if obj.__class__ is not np.ndarray or obj.dtype.hasobject:
                 if obj.size > 1000:
