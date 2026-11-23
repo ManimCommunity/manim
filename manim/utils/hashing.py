@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING, Any, overload
 import numpy as np
 
 from manim._config import config, logger
-from manim.paint import LinearGradient, Paint
+from manim.paint import ColorField, LinearGradient, Paint
 
 if TYPE_CHECKING:
     from manim.animation.animation import Animation
@@ -325,6 +325,14 @@ class _CustomEncoder(json.JSONEncoder):
                 # See https://github.com/ManimCommunity/manim/pull/402.
                 code = ""
             return self._cleaned_iterable({"code": code, "nonlocals": cvardict})
+        elif isinstance(obj, ColorField):
+            # The content, never the process-local grid id.
+            return {
+                "paint": "ColorField",
+                "grid": _hash_ndarray(obj.grid),
+                "corners": _hash_ndarray(obj.corners),
+                "opacity": obj.opacity,
+            }
         elif isinstance(obj, Paint):
             # Immutable values without a __dict__: hash what they are.
             return {

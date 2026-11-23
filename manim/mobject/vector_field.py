@@ -16,7 +16,6 @@ from math import ceil, floor
 from typing import TYPE_CHECKING, Any, Self
 
 import numpy as np
-from PIL import Image
 
 from manim.animation.updaters.update import UpdateFromAlphaFunc
 from manim.mobject.geometry.line import Vector
@@ -29,6 +28,7 @@ from ..animation.indication import ShowPassingFlash
 from ..constants import OUT, RIGHT, UP
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
+from ..paint import ColorField
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import (
     BLUE_E,
@@ -54,6 +54,10 @@ if TYPE_CHECKING:
     )
 
 DEFAULT_SCALAR_FIELD_COLORS: list[ManimColor] = [BLUE_E, GREEN, YELLOW, RED]
+
+
+#: Pixels of the frame per texel of a StreamLines colour field.
+_FIELD_PIXELS_PER_TEXEL = 5
 
 
 class VectorField(VGroup):
@@ -389,46 +393,6 @@ class VectorField(VGroup):
             self.remove_updater(self.submob_movement_updater)
         self.submob_movement_updater = None
         return self
-
-    def get_colored_background_image(self, sampling_rate: int = 5) -> Image.Image:
-        """Generate an image that displays the vector field.
-
-        The color at each position is calculated by passing the positing through a
-        series of steps:
-        Calculate the vector field function at that position, map that vector to a
-        single value using `self.color_scheme` and finally generate a color from
-        that value using the color gradient.
-
-        Parameters
-        ----------
-        sampling_rate
-            The stepsize at which pixels get included in the image. Lower values give
-            more accurate results, but may take a long time to compute.
-
-        Returns
-        -------
-        Image.Imgae
-            The vector field image.
-        """
-        if self.single_color:
-            raise ValueError(
-                "There is no point in generating an image if the vector field uses a single color.",
-            )
-        ph = int(config.pixel_height / sampling_rate)
-        pw = int(config.pixel_width / sampling_rate)
-        fw = config.frame_width
-        fh = config.frame_height
-        points_array = np.zeros((ph, pw, 3))
-        x_array = np.linspace(-fw / 2, fw / 2, pw)
-        y_array = np.linspace(fh / 2, -fh / 2, ph)
-        x_array = x_array.reshape((1, len(x_array)))
-        y_array = y_array.reshape((len(y_array), 1))
-        x_array = x_array.repeat(ph, axis=0)
-        y_array.repeat(pw, axis=1)  # TODO why not y_array = y_array.repeat(...)?
-        points_array[:, :, 0] = x_array
-        points_array[:, :, 1] = y_array
-        rgbs = np.apply_along_axis(self.pos_to_rgb, 2, points_array)
-        return Image.fromarray((rgbs * 255).astype("uint8"))
 
     def get_vectorized_rgba_gradient_function(
         self,
@@ -872,8 +836,9 @@ class StreamLines(VectorField):
             return outside
 
         max_steps = ceil(virtual_time / dt) + 1
-        if not self.single_color:
-            self.background_img = self.get_colored_background_image()
+        field = None
+        if not self.single_color and not self._is_3d():
+            field = self._color_field()
         for point in start_points:
             points = [point]
             for _ in range(max_steps):
@@ -894,17 +859,37 @@ class StreamLines(VectorField):
                     color=self.color, width=self.stroke_width, opacity=opacity
                 )
             else:
-                if np.any(self.z_range != np.array([0, 0.5, 0.5])):
+                if field is None:
+                    # In 3D, a gradient over the line's anchors: an approximation
+                    # (a field in a plane cannot hold colours that change with z).
                     line.set_stroke(
                         [self.pos_to_color(p) for p in line.get_anchors()],
                     )
                 else:
-                    line.color_using_background_image(self.background_img)
+                    line.set_stroke(field)
                 line.set_stroke(width=self.stroke_width, opacity=opacity)
             self.add(line)
         self.stream_lines = [
             line for line in self.submobjects if isinstance(line, StreamLine)
         ]
+
+    def _is_3d(self) -> bool:
+        return bool(np.any(np.asarray(self.z_range) != np.array([0, 0.5, 0.5])))
+
+    def _color_field(self) -> ColorField:
+        """The colours of the vector field where the lines can reach: the seed
+        ranges widened by ``padding``, at a fifth of the pixel density.
+        """
+        x0 = self.x_range[0] - self.padding
+        x1 = self.x_range[1] + self.padding - self.x_range[2]
+        y0 = self.y_range[0] - self.padding
+        y1 = self.y_range[1] + self.padding - self.y_range[2]
+        per_unit = config.pixel_width / config.frame_width / _FIELD_PIXELS_PER_TEXEL
+        resolution = (
+            max(1, round((x1 - x0) * per_unit)),
+            max(1, round((y1 - y0) * per_unit)),
+        )
+        return ColorField.from_function(self.pos_to_rgb, (x0, x1), (y0, y1), resolution)
 
     def create(
         self,

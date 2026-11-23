@@ -16,6 +16,7 @@ from manim import (
     RED,
     RIGHT,
     UL,
+    ColorField,
     LinearGradient,
     Solid,
     Square,
@@ -146,3 +147,82 @@ def test_paints_hash_by_content_in_any_process():
         for _ in range(2)
     }
     assert len(runs) == 1
+
+
+def _field(opacity=1.0, corners=None):
+    return ColorField(
+        [[[1, 0, 0, 1], [0, 0, 1, 1]]],
+        corners or [[-2, 1, 0], [2, 1, 0], [-2, -1, 0]],
+        opacity,
+    )
+
+
+def test_fields_on_one_grid_fade_and_other_pairs_switch_at_the_end():
+    field = _field()
+    faded = field.with_opacity(0)
+    middle = interpolate_paint(field, faded, 0.25)
+    assert middle.same_grid(field)
+    assert middle.opacity == pytest.approx(0.75)
+    assert interpolate_paint(field, faded, 1) is faded
+    other = _field(corners=[[-2, 2, 0], [2, 2, 0], [-2, -2, 0]])
+    assert interpolate_paint(field, other, 0.99) is field
+    assert interpolate_paint(field, other, 1) is other
+    solid = Solid(GREEN)
+    assert interpolate_paint(solid, field, 0.5) is solid
+    assert interpolate_paint(field, solid, 1) is solid
+
+
+def test_a_field_comes_back_with_there_and_back():
+    from manim import there_and_back
+
+    square = Square().set_stroke(_field())
+    target = square.copy().set_stroke(Solid(GREEN))
+    animation = Transform(square, target, rate_func=there_and_back)
+    animation.begin()
+    animation.interpolate(1)
+    assert isinstance(square.stroke, ColorField)
+
+
+def test_opacity_changes_keep_the_grid():
+    field = _field()
+    square = Square().set_stroke(field)
+    square.set_stroke(opacity=0.5)
+    assert square.stroke.same_grid(field)
+    assert square.stroke.opacity == 0.5
+    square.fade(0.5)
+    assert square.stroke.opacity == pytest.approx(0.25)
+    assert square.stroke.same_grid(field)
+
+
+def test_match_style_carries_a_field():
+    source = Square().set_stroke(_field())
+    assert Square().match_style(source).stroke is source.stroke
+
+
+def test_field_hashes_depend_on_the_content():
+    from manim.utils.hashing import _get_json, _Memoizer
+
+    def json(paint):
+        return _get_json(paint, _Memoizer())
+
+    assert json(_field()) == json(_field())
+    assert json(_field()) != json(_field(0.5))
+    assert json(_field()) != json(_field(corners=[[-2, 2, 0], [2, 2, 0], [-2, -2, 0]]))
+
+
+def test_from_function_samples_texel_centres():
+    field = ColorField.from_function(
+        lambda point: (point[0] > 0, 0, 1), (-2, 2), (-1, 1), (4, 2)
+    )
+    assert field.grid.shape == (2, 4, 4)
+    np.testing.assert_array_equal(field.grid[0, :, 0], [0, 0, 1, 1])
+    vectorized = ColorField.from_function(
+        lambda points: np.column_stack(
+            [points[:, 0] > 0, np.zeros(len(points)), np.ones(len(points))]
+        ),
+        (-2, 2),
+        (-1, 1),
+        (4, 2),
+        vectorized=True,
+    )
+    np.testing.assert_array_equal(vectorized.grid, field.grid)

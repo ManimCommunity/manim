@@ -18,7 +18,7 @@ are opaque and of one color, where sharing gives the same pixels.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import moderngl
 import numpy as np
@@ -177,6 +177,7 @@ class WindingFill:
         geometry: Sequence[_Geometry],
         target: DrawTarget,
         scissor: tuple[int, int, int, int] | None = None,
+        extra_uniforms: dict[str, Any] | None = None,
     ) -> None:
         """Accumulate one group's coverage and color it into the frame.
 
@@ -215,7 +216,7 @@ class WindingFill:
         frame = target.framebuffer
 
         shader = Shader(context, name="winding_fill")
-        for name, value in target.uniforms.items():
+        for name, value in {**target.uniforms, **(extra_uniforms or {})}.items():
             shader.set_uniform(name, value)
 
         buffer = context.buffer(vertices.tobytes())

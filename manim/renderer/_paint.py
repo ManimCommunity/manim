@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from manim.renderer.snapshot import LegacyShaded, RSolidColor
+from manim.renderer.snapshot import LegacyShaded, RColorField, RSolidColor
 from manim.utils._path_points import end_corner, start_corner
 
 if TYPE_CHECKING:
@@ -29,6 +29,8 @@ def shows(paint: RPaint) -> bool:
     """Whether ``paint`` is visible anywhere (not fully transparent)."""
     if isinstance(paint, RSolidColor):
         return bool(paint.rgba[3] > 0)
+    if isinstance(paint, RColorField):
+        return paint.opacity > 0 and bool(np.asarray(paint.grid)[..., 3].max() > 0)
     return bool(paint.rgbas[:, 3].max() > 0)
 
 
@@ -38,6 +40,9 @@ def paint_colors(
     """The stop colors of ``paint`` on ``path`` and the start and end point of the
     line they are spaced along; ``None`` for one color.
     """
+    if isinstance(paint, RColorField):
+        # Renderers sample the field where they draw; this colour is not used.
+        return np.ones((1, 4)), None
     if isinstance(paint, RSolidColor):
         rgbas = np.asarray(paint.rgba).reshape(1, 4)
         if type(path.material) is not LegacyShaded:

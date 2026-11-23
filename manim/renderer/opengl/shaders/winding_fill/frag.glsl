@@ -16,6 +16,8 @@ in vec2 uv_coords;
 in float v_fill_all;
 in vec4 v_color;
 
+#include ../include/color_field.glsl
+
 layout(location = 0) out vec4 coverage;
 layout(location = 1) out float weighted_opacity;
 
@@ -34,6 +36,7 @@ void main(){
         if (value <= 0.0) discard;
     }
     float signed_coverage = (gl_FrontFacing ? 1.0 : -1.0) * value;
-    coverage = vec4(signed_coverage * v_color.rgb, signed_coverage);
-    weighted_opacity = signed_coverage * v_color.a;
+    vec4 colour = field_on > 0.5 ? field_colour() : v_color;
+    coverage = vec4(signed_coverage * colour.rgb, signed_coverage);
+    weighted_opacity = signed_coverage * colour.a;
 }

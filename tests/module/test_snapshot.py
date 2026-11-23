@@ -15,7 +15,6 @@ from manim import (
     Circle,
     Dot,
     ImageMobject,
-    Line,
     Mobject,
     PMobject,
     Square,
@@ -225,15 +224,6 @@ def test_image_subclasses_that_compute_pixels_have_no_key():
 
     assert snapshot(Noise()).key is None
     assert snapshot(ImageMobject(np.zeros((2, 2, 4), dtype=np.uint8))).key is not None
-
-
-def test_masked_paths_keep_their_paint():
-    stroke = Line(LEFT, RIGHT).set_stroke(RED, width=4, opacity=0.2)
-    stroke.color_using_background_image("some_image.png")
-    node = snapshot(stroke)
-    assert node.payload.mask == "some_image.png"
-    # The mask multiplies the path's own paint, so the paint stays.
-    assert isinstance(node.payload.stroke.paint, RSolidColor)
 
 
 def test_point_cloud_keys_follow_their_colors():

@@ -49,7 +49,7 @@ from manim.constants import STROKE_WIDTH_UNIT
 
 if TYPE_CHECKING:
     import numpy as np
-    from PIL.Image import Image, Resampling
+    from PIL.Image import Resampling
 
     from manim.constants import CapStyleType, LineJointType
     from manim.typing import (
@@ -71,6 +71,7 @@ __all__ = [
     "Payload",
     "Placement",
     "RCameraView",
+    "RColorField",
     "RImage",
     "RLinearGradient",
     "RMesh",
@@ -112,7 +113,24 @@ class RLinearGradient(NamedTuple):
     rgbas: FloatRGBA_Array
 
 
-RPaint = RSolidColor | RLinearGradient
+class RColorField(NamedTuple):
+    """Colours in scene coordinates (a :class:`~.ColorField`), sampled where the
+    path is drawn.
+
+    ``grid``: ``(rows, columns, 4)`` straight-alpha sRGB floats, row 0 at the top;
+    ``corners``: the upper left, upper right and lower left scene point of the
+    grid's outer edges; ``opacity`` multiplies the alpha. The colour at a point
+    is :meth:`.ColorField.sample`'s. ``grid_id`` identifies the grid's storage
+    only (equal ids, equal colours): one texture can serve many paints.
+    """
+
+    grid: np.ndarray
+    corners: Point3D_Array
+    opacity: float
+    grid_id: int
+
+
+RPaint = RSolidColor | RLinearGradient | RColorField
 
 
 class LegacyShaded(NamedTuple):
@@ -152,7 +170,6 @@ class RPath(NamedTuple):
       (paint as for the fill, width, joint and cap)
     - ``"material"``: ``material``
     - ``"depth_reference"``: ``depth_reference``
-    - ``"mask"``: ``mask``
     """
 
     points: Point3D_Array
@@ -166,9 +183,6 @@ class RPath(NamedTuple):
     depth_reference: Point3D | None
     #: Distance below which two points count as equal (closing subpaths).
     tolerance: float
-    #: The image the path's colors are multiplied with, fixed to the frame (see
-    #: :meth:`.VMobject.color_using_background_image`); provisional.
-    mask: Image | str | None
 
 
 class RPoints(NamedTuple):

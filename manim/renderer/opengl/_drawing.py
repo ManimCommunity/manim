@@ -27,11 +27,13 @@ from manim.renderer._mesh import faces_of
 from manim.renderer._paint import paint_colors, shows
 from manim.renderer._reuse import PrefixMemo, node_key, view_key
 from manim.renderer.projection import project_points
+from manim.renderer.protocol import CapabilityError
 from manim.renderer.snapshot import (
     STROKE_WIDTH_UNIT,
     FacingCamera,
     LegacyShaded,
     RCameraView,
+    RColorField,
     RImage,
     RMesh,
     RNode,
@@ -68,6 +70,8 @@ _STROKE_DTYPE = [
     ("color", np.float32, (4,)),
 ]
 _STROKE_FORMAT = "3f 3f 3f 3f 1f 4f"
+#: The texture unit colour fields are bound to (images and meshes use unit 0).
+_FIELD_TEXTURE_UNIT = 3
 _POINT_DTYPE = [("point", np.float32, (3,)), ("color", np.float32, (4,))]
 _MESH_DTYPE = np.dtype(
     [
@@ -365,12 +369,18 @@ class SnapshotDrawing:
         self._fill = WindingFill(renderer)
         self._textures = _TextureCache(renderer)
         self._normals = _NormalCache()
+        #: Textures of colour fields by grid id (premultiplied RGBA).
+        self._fields: dict[int, moderngl.Texture] = {}
         self._layer: _Layer | None = None
         self._memo = PrefixMemo()
 
     def release(self) -> None:
         self._fill.release()
         self._textures.release()
+        for texture in self._fields.values():
+            if not isinstance(texture.mglo, moderngl.InvalidObject):
+                texture.release()
+        self._fields.clear()
         if self._layer is not None:
             self._layer.release()
             self._layer = None
@@ -520,6 +530,8 @@ class SnapshotDrawing:
         if not nodes:
             return
         self._target = self._placed_target(kind)
+        #: How the paths being drawn are placed (colour fields need "normal").
+        self._kind = kind
         screen = _Screen.of(self._target)
         for group in _groups(nodes, geometry, screen):
             self._draw_group(group, screen)
@@ -773,12 +785,83 @@ class SnapshotDrawing:
         tolerance = TOLERANCE_PIXELS * frame_width / self._target.size[0]
         return 2.0 ** math.floor(math.log2(tolerance))
 
+    def _field_uniforms(self, paint: Any, kind: str) -> dict[str, Any]:
+        """The uniforms that bind ``paint`` in the shaders: off unless it is a
+        colour field, which is sampled at each fragment's scene position.
+
+        ``kind`` is how the path is placed (see :meth:`_placement`).
+
+        Raises
+        ------
+        CapabilityError
+            For a field under a perspective camera, not in a plane parallel to the
+            frame, or on a mobject fixed in the frame or in its orientation.
+        """
+        if not isinstance(paint, RColorField):
+            return {"field_on": 0.0}
+        target = self._target
+        corners = np.asarray(paint.corners, dtype=float)
+        if (
+            _view.is_3d(target.camera)
+            or kind != "normal"
+            or not np.allclose(corners[:, 2], corners[0, 2])
+        ):
+            raise CapabilityError(
+                "The OpenGL renderer draws colour fields only in a plane parallel to "
+                "the frame, under a flat camera, on mobjects that are not fixed in "
+                "the frame."
+            )
+        texture = self._fields.get(paint.grid_id)
+        if texture is None:
+            grid = np.asarray(paint.grid, dtype=float)
+            rows, columns = grid.shape[:2]
+            premultiplied = np.concatenate(
+                [grid[..., :3] * grid[..., 3:4], grid[..., 3:4]], axis=-1
+            )
+            data = np.ascontiguousarray(np.round(premultiplied * 255), dtype=np.uint8)
+            texture = self._renderer.context.texture((columns, rows), 4, data.tobytes())
+            texture.filter = (moderngl.LINEAR, moderngl.LINEAR)
+            texture.repeat_x = texture.repeat_y = False
+            self._fields[paint.grid_id] = texture
+            self._renderer._resources.callback(_release_texture, texture)
+        texture.use(_FIELD_TEXTURE_UNIT)
+        view = target.view
+        width, height = target.size
+        frame_width, frame_height = view.frame_shape
+        # Fragment position (pixels from the bottom left) -> scene point -> texel.
+        to_scene = np.array(
+            [
+                [frame_width / width, 0, view.center[0] - frame_width / 2],
+                [0, frame_height / height, view.center[1] - frame_height / 2],
+                [0, 0, 1],
+            ]
+        )
+        upper_left, upper_right, lower_left = corners
+        eu, ev = (upper_right - upper_left)[:2], (lower_left - upper_left)[:2]
+        u, v = eu / (eu @ eu), ev / (ev @ ev)
+        to_texel = np.array(
+            [[*u, -u @ upper_left[:2]], [*v, -v @ upper_left[:2]], [0, 0, 1]]
+        )
+        matrix = to_texel @ to_scene
+        return {
+            "field_on": 1.0,
+            "field_texture": _FIELD_TEXTURE_UNIT,
+            # GLSL matrices are column-major.
+            "field_uv": tuple(matrix.T.flatten()),
+            "field_opacity": paint.opacity,
+        }
+
     def _draw_group(self, group: _Group, screen: _Screen) -> None:
         if any(_background_width(n.payload) > 0 for n in group.nodes):  # type: ignore[arg-type]
             self._draw_strokes(group, background=True)
         if group.filled:
+            first: RPath = group.nodes[0].payload  # type: ignore[assignment]
             self._fill.draw(
-                group.nodes, group.geometry, self._target, screen.scissor(group.box)
+                group.nodes,
+                group.geometry,
+                self._target,
+                screen.scissor(group.box),
+                self._field_uniforms(first.fill, self._kind),
             )
         if any(n.payload.stroke.width > 0 for n in group.nodes):  # type: ignore[union-attr]
             self._draw_strokes(group, background=False)
@@ -804,6 +887,7 @@ class SnapshotDrawing:
             return
         vertices = _stroke_vertices(geometry, widths, colors)
         first: RPath = group.nodes[0].payload  # type: ignore[assignment]
+        first_stroke = first.background_stroke if background else first.stroke
         self._pass(
             "quadratic_bezier_stroke",
             vertices,
@@ -811,6 +895,9 @@ class SnapshotDrawing:
             moderngl.TRIANGLES,
             joint_type=float(first.stroke.joint.value),
             flat_stroke=0.0,
+            **self._field_uniforms(
+                None if first_stroke is None else first_stroke.paint, self._kind
+            ),
         )
 
 
@@ -892,6 +979,7 @@ def _groups(
     regions = _Boxes()
     color: tuple[float, ...] | None = None
     joint = None
+    binding: Any = None
     box_list = boxes.tolist()
     filled_list = filled.tolist()
     for index, (node, geo, path) in enumerate(zip(nodes, geometry, paths, strict=True)):
@@ -904,7 +992,10 @@ def _groups(
             and path.stroke.width == 0
             else None
         )
-        joins = bool(groups) and path.stroke.joint == joint
+        # Paths of one group bind the same colour fields (or none).
+        joins = (
+            bool(groups) and path.stroke.joint == joint and _binding(path) == binding
+        )
         if joins and is_filled:
             same_color = single is not None and single == color
             gx0, gy0, gx1, gy1, _ = groups[-1][2]
@@ -935,11 +1026,33 @@ def _groups(
             regions = _Boxes()
             color = single
             joint = path.stroke.joint
+            binding = _binding(path)
         regions.add(region)
     return [
         _Group(members, members_geometry, state[4], np.array(state[:4]))
         for members, members_geometry, state in groups
     ]
+
+
+def _binding(path: RPath) -> Any:
+    """The colour fields a path's paints bind; a group's paths share them."""
+
+    def of(paint: Any) -> Any:
+        if isinstance(paint, RColorField):
+            return (paint.grid_id, np.asarray(paint.corners).tobytes(), paint.opacity)
+        return None
+
+    background = path.background_stroke
+    return (
+        of(path.fill),
+        of(path.stroke.paint),
+        of(background.paint) if background is not None else None,
+    )
+
+
+def _release_texture(texture: moderngl.Texture) -> None:
+    if not isinstance(texture.mglo, moderngl.InvalidObject):
+        texture.release()
 
 
 def _piece_boxes(

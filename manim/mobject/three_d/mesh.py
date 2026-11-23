@@ -267,14 +267,6 @@ class MeshMobject(Mobject):
             self.stroke_width = width
         return self
 
-    # What VMobject methods ask of the members of a group.
-
-    def color_using_background_image(self, *args: Any, **kwargs: Any) -> Self:
-        """Meshes have no background image; for groups of vectorized mobjects and
-        meshes.
-        """
-        return self
-
     def get_faces(self) -> np.ndarray:
         """The polygons of the mesh: :attr:`faces`, or else the triangles."""
         return self.faces if len(self.faces) else self.triangles

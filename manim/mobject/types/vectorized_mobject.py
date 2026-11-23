@@ -17,11 +17,17 @@ from collections.abc import Callable, Hashable, Iterable, Iterator, Mapping, Seq
 from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
-from PIL.Image import Image
 
 from manim.constants import *
 from manim.mobject.mobject import Mobject
-from manim.appearance.paint import LinearGradient, Paint, Solid, _stretched, interpolate_paint
+from manim.appearance.paint import (
+    ColorField,
+    LinearGradient,
+    Paint,
+    Solid,
+    _stretched,
+    interpolate_paint,
+)
 from manim.utils._path_points import points_equal_2d, subpath_split_indices
 from manim.utils.bezier import (
     bezier,
@@ -116,7 +122,6 @@ class VMobject(Mobject):
     joint_type: Field[LineJointType] = Field()
     cap_style: Field[CapStyleType] = Field()
     shade_in_3d: Field[bool] = Field()
-    background_image: Field[Image | str | None] = Field()
     tolerance_for_point_equality: Field[float] = Field()
     target: VMobject
 
@@ -134,7 +139,6 @@ class VMobject(Mobject):
         close_new_points: bool = False,
         pre_function_handle_to_anchor_scale_factor: float = 0.01,
         make_smooth_after_applying_functions: bool = False,
-        background_image: Image | str | None = None,
         shade_in_3d: bool = False,
         # TODO, do we care about accounting for varying zoom levels?
         tolerance_for_point_equality: float = 1e-6,
@@ -162,7 +166,6 @@ class VMobject(Mobject):
         self.make_smooth_after_applying_functions: bool = (
             make_smooth_after_applying_functions
         )
-        self.background_image: Image | str | None = background_image
         self.shade_in_3d: bool = shade_in_3d
         self.tolerance_for_point_equality: float = tolerance_for_point_equality
         self.n_points_per_cubic_curve: int = n_points_per_cubic_curve
@@ -266,6 +269,11 @@ class VMobject(Mobject):
             current = _TRANSPARENT_BLACK
         if color is None and opacity is None:
             return current
+        if isinstance(current, ColorField):
+            # A field keeps its grid when only the opacity changes.
+            if color is None:
+                return current.with_opacity(opacity)  # type: ignore[arg-type]
+            current = Paint._from_rgbas(current.rgbas)
         rgbas = np.array(current.rgbas)
         if color is not None:
             colors = [ManimColor(c) if c is not None else BLACK for c in tuplify(color)]
@@ -396,7 +404,6 @@ class VMobject(Mobject):
         background_stroke_color: ParsableManimColor | None = None,
         background_stroke_width: float | None = None,
         background_stroke_opacity: float | None = None,
-        background_image: Image | str | None = None,
         family: bool = True,
     ) -> Self:
         self.set_fill(color=fill_color, opacity=fill_opacity, family=family)
@@ -412,28 +419,23 @@ class VMobject(Mobject):
             opacity=background_stroke_opacity,
             family=family,
         )
-        if background_image:
-            self.color_using_background_image(background_image)
         return self
 
     def get_style(self, simple: bool = False) -> dict:
-        ret = {
-            "stroke_opacity": self.get_stroke_opacity(),
-            "stroke_width": self.get_stroke_width(),
-        }
+        ret = {"stroke_width": self.get_stroke_width()}
 
-        # TODO: FIX COLORS HERE
         if simple:
             ret["fill_color"] = self.get_fill_color()
             ret["fill_opacity"] = self.get_fill_opacity()
             ret["stroke_color"] = self.get_stroke_color()
+            ret["stroke_opacity"] = self.get_stroke_opacity()
         else:
-            # Paints as values: they keep their stops and direction.
+            # Paints as values, opacities included: they keep their stops,
+            # direction and (colour fields) their grid.
             ret["fill_color"] = self.fill
             ret["stroke_color"] = self.stroke
             ret["background_stroke_color"] = self.background_stroke
             ret["background_stroke_width"] = self.get_stroke_width(background=True)
-            ret["background_image"] = self.get_background_image()
 
         return ret
 
@@ -653,20 +655,6 @@ class VMobject(Mobject):
     def split(self) -> list[VMobject]:
         result: list[VMobject] = [self] if len(self.points) > 0 else []
         return result + self.submobjects
-
-    def color_using_background_image(self, background_image: Image | str) -> Self:
-        self.background_image: Image | str = background_image
-        self.set_color(WHITE)
-        for submob in self.submobjects:
-            submob.color_using_background_image(background_image)
-        return self
-
-    def get_background_image(self) -> Image | str:
-        return self.background_image
-
-    def match_background_image(self, vmobject: VMobject) -> Self:
-        self.color_using_background_image(vmobject.get_background_image())
-        return self
 
     def set_shade_in_3d(self, value: bool = True) -> Self:
         for submob in self.get_family():

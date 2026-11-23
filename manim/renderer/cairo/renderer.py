@@ -9,13 +9,8 @@ from .._view import sort_for_display
 from ..protocol import PixelFrame, RenderConfig, RendererState
 from ..snapshot import RMesh
 from ._mesh_faces import mesh_faces
-from .rendering import _CairoDrawingContext, reusable_boundary
-from .target import (
-    _CairoRasterSettings,
-    _CairoRenderTarget,
-    _ImageFiles,
-    background_key,
-)
+from .rendering import _CairoDrawingContext
+from .target import _CairoRasterSettings, _CairoRenderTarget, _ImageFiles
 
 if TYPE_CHECKING:
     from ...typing import RGBAPixelArray
@@ -175,7 +170,7 @@ class CairoRenderer:
             assert self._saved_pixels is not None
             target.set_pixels(self._saved_pixels)
         else:
-            save = reusable_boundary(nodes, memo.count_worth_saving(keys, view))
+            save = memo.worth_saving(keys, view)
             if save:
                 context.draw_nodes(nodes[:save])
                 self._saved_pixels = target.read_pixels()

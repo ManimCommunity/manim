@@ -18,7 +18,8 @@ with it.
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+import itertools
+from collections.abc import Callable, Sequence
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -31,7 +32,7 @@ if TYPE_CHECKING:
 
     from manim.typing import FloatRGBA_Array, Vector3D, Vector3DLike
 
-__all__ = ["LinearGradient", "Paint", "Solid", "interpolate_paint"]
+__all__ = ["ColorField", "LinearGradient", "Paint", "Solid", "interpolate_paint"]
 
 
 def _frozen(array: Any, shape: tuple[int, ...] | None = None) -> np.ndarray:
@@ -213,11 +214,20 @@ def interpolate_paint(start: Paint, end: Paint, alpha: float) -> Paint:
     The paints themselves at 0 and 1, and whenever ``start is end``. Otherwise the
     shorter list of stops is stretched to the longer one's length and the colours
     are interpolated linearly; directions interpolate too, a :class:`Solid` taking
-    the other paint's direction.
+    the other paint's direction. Two :class:`ColorField` paints with the same grid
+    and corners interpolate their opacity; any other pair with a field keeps
+    ``start`` until ``alpha`` reaches 1, where it is ``end``.
     """
-    if start is end or alpha == 1:
+    if start is end or alpha >= 1:
         return end
-    if alpha == 0:
+    if alpha <= 0:
+        return start
+    if isinstance(start, ColorField) or isinstance(end, ColorField):
+        # Fields on one grid fade; any other pair switches at the end.
+        if isinstance(start, ColorField) and start.same_grid(end):
+            return start.with_opacity(
+                (1 - alpha) * start.opacity + alpha * end.opacity  # type: ignore[attr-defined]
+            )
         return start
     a, b = start._rgbas, end._rgbas
     length = max(len(a), len(b))
@@ -233,3 +243,184 @@ def interpolate_paint(start: Paint, end: Paint, alpha: float) -> Paint:
     else:
         direction = (1 - alpha) * d0 + alpha * d1
     return Paint._from_rgbas(rgbas, direction)
+
+
+_grid_ids = itertools.count(1)
+
+
+class ColorField(Paint):
+    """Colours that lie in the scene, not on the mobject: a grid of RGBA colours
+    and where it is. A mobject painted with a field shows the field's colour
+    wherever it is drawn, so moving, trimming or transforming it shows other
+    colours (as stream lines flowing through a coloured vector field).
+
+    Parameters
+    ----------
+    grid
+        RGBA colours, shape ``(rows, columns, 4)``, floats in ``[0, 1]``,
+        straight (not premultiplied) alpha, sRGB; row 0 is the top.
+    corners
+        Three scene points: the upper left, upper right and lower left corner of
+        the grid's outer edges. Texel ``(i, j)`` is centred at
+        ``((j + 0.5) / columns, (i + 0.5) / rows)`` between them.
+    opacity
+        Multiplies the grid's alpha.
+
+    Notes
+    -----
+    The colour at a scene point: its position in the plane of the corners
+    (projected orthogonally onto it), clamped to the outermost texel centres,
+    bilinear interpolation of premultiplied colours, then unpremultiplied and the
+    alpha times ``opacity`` (:meth:`sample`). Renderers sample where they draw.
+    The Cairo and OpenGL renderers draw fields in the frame's plane under a flat
+    camera, and raise :class:`~.CapabilityError` otherwise, and for mobjects fixed
+    in the frame or with a fixed orientation.
+    """
+
+    __slots__ = ("_corners", "_grid", "_grid_id", "_opacity")
+    _grid: np.ndarray
+    _corners: np.ndarray
+    _opacity: float
+    _grid_id: int
+
+    def __init__(self, grid: Any, corners: Any, opacity: float = 1.0) -> None:
+        grid = _frozen(grid)
+        if grid.ndim != 3 or grid.shape[2] != 4 or min(grid.shape[:2]) < 1:
+            raise ValueError("A ColorField's grid has shape (rows, columns, 4).")
+        corners = _frozen(corners, (3, 3))
+        object.__setattr__(self, "_grid", grid)
+        object.__setattr__(self, "_corners", corners)
+        object.__setattr__(self, "_opacity", float(opacity))
+        object.__setattr__(self, "_grid_id", next(_grid_ids))
+        # One stop: the grid's mean colour, for getters that ask for colours.
+        mean = grid.reshape(-1, 4).mean(axis=0)
+        object.__setattr__(
+            self, "_rgbas", _frozen(np.r_[mean[:3], mean[3] * opacity], (1, 4))
+        )
+
+    @classmethod
+    def from_function(
+        cls,
+        func: Callable[[Any], Any],
+        x_range: Sequence[float],
+        y_range: Sequence[float],
+        resolution: tuple[int, int],
+        *,
+        vectorized: bool = False,
+        z: float = 0.0,
+        opacity: float = 1.0,
+    ) -> ColorField:
+        """A field in the plane ``z`` over ``x_range`` x ``y_range``, sampled at
+        the centres of ``resolution`` = (columns, rows) texels.
+
+        ``func`` takes one point and returns one RGB or RGBA colour (floats in
+        ``[0, 1]``, or anything :class:`.ManimColor` takes); with ``vectorized``,
+        it takes an ``(n, 3)`` array and returns ``(n, 3)`` or ``(n, 4)`` floats.
+        """
+        columns, rows = (int(n) for n in resolution)
+        if columns < 1 or rows < 1:
+            raise ValueError("A ColorField has at least one texel.")
+        x0, x1 = float(x_range[0]), float(x_range[1])
+        y0, y1 = float(y_range[0]), float(y_range[1])
+        xs = x0 + (np.arange(columns) + 0.5) * (x1 - x0) / columns
+        ys = y1 - (np.arange(rows) + 0.5) * (y1 - y0) / rows
+        gx, gy = np.meshgrid(xs, ys)
+        points = np.stack([gx, gy, np.full_like(gx, z)], axis=-1).reshape(-1, 3)
+        if vectorized:
+            colors = np.asarray(func(points), dtype=float)
+        else:
+            colors = np.array([_rgba_of(func(point)) for point in points])
+        if colors.shape[1] == 3:
+            colors = np.column_stack([colors, np.ones(len(colors))])
+        return cls(
+            colors.reshape(rows, columns, 4),
+            [[x0, y1, z], [x1, y1, z], [x0, y0, z]],
+            opacity,
+        )
+
+    @property
+    def grid(self) -> np.ndarray:
+        """The colours (read-only), shape ``(rows, columns, 4)``."""
+        return self._grid
+
+    @property
+    def corners(self) -> np.ndarray:
+        """Upper left, upper right and lower left corner (read-only)."""
+        return self._corners
+
+    @property
+    def opacity(self) -> float:
+        return self._opacity
+
+    @property
+    def grid_id(self) -> int:
+        """Identifies the grid's storage: equal ids, the same colours."""
+        return self._grid_id
+
+    def with_opacity(self, opacity: float | Sequence[float]) -> ColorField:
+        """The same grid and placement with another ``opacity``."""
+        value = float(np.asarray(opacity, dtype=float).reshape(-1)[0])
+        field = object.__new__(ColorField)
+        for name in ("_grid", "_corners", "_grid_id"):
+            object.__setattr__(field, name, getattr(self, name))
+        object.__setattr__(field, "_opacity", value)
+        mean = self._rgbas[0]
+        alpha = self._grid[..., 3].mean() * value
+        object.__setattr__(field, "_rgbas", _frozen(np.r_[mean[:3], alpha], (1, 4)))
+        return field
+
+    def with_colors(self, colors: Sequence[ParsableManimColor]) -> Paint:
+        """Colours replace the field: a solid or a gradient with its opacity."""
+        rgbs = np.array([ManimColor(c).to_rgb() for c in colors], dtype=float)
+        rgbas = np.column_stack([rgbs, np.full(len(rgbs), self._rgbas[0, 3])])
+        return Paint._from_rgbas(rgbas)
+
+    def same_grid(self, other: object) -> bool:
+        """Whether ``other`` is a field with this grid and placement."""
+        return (
+            isinstance(other, ColorField)
+            and other._grid_id == self._grid_id
+            and np.array_equal(other._corners, self._corners)
+        )
+
+    def sample(self, points: Any) -> np.ndarray:
+        """RGBA (straight alpha) at scene points: the reference every renderer
+        follows.
+        """
+        points = np.asarray(points, dtype=float).reshape(-1, 3)
+        rows, columns = self._grid.shape[:2]
+        upper_left, upper_right, lower_left = self._corners
+        eu, ev = upper_right - upper_left, lower_left - upper_left
+        offset = points - upper_left
+        u = offset @ eu / (eu @ eu)
+        v = offset @ ev / (ev @ ev)
+        x = np.clip(u * columns - 0.5, 0, columns - 1)
+        y = np.clip(v * rows - 0.5, 0, rows - 1)
+        x0, y0 = np.floor(x).astype(int), np.floor(y).astype(int)
+        x1, y1 = np.minimum(x0 + 1, columns - 1), np.minimum(y0 + 1, rows - 1)
+        fx, fy = (x - x0)[:, None], (y - y0)[:, None]
+        premultiplied = np.array(self._grid)
+        premultiplied[..., :3] *= premultiplied[..., 3:4]
+        top = premultiplied[y0, x0] * (1 - fx) + premultiplied[y0, x1] * fx
+        bottom = premultiplied[y1, x0] * (1 - fx) + premultiplied[y1, x1] * fx
+        out = top * (1 - fy) + bottom * fy
+        alpha = out[:, 3:4]
+        rgb = np.where(alpha > 0, out[:, :3] / np.where(alpha > 0, alpha, 1), 0.0)
+        return np.concatenate([rgb, alpha * self._opacity], axis=1)
+
+    def __reduce__(self) -> tuple[Any, ...]:
+        return (
+            ColorField,
+            (np.array(self._grid), np.array(self._corners), self._opacity),
+        )
+
+    def __repr__(self) -> str:
+        rows, columns = self._grid.shape[:2]
+        return f"ColorField({rows}x{columns}, opacity={self._opacity:g})"
+
+
+def _rgba_of(color: Any) -> np.ndarray:
+    if isinstance(color, (str, ManimColor)):
+        return np.asarray(ManimColor(color).to_rgba(), dtype=float)
+    array = np.asarray(color, dtype=float).reshape(-1)
+    return array if len(array) == 4 else np.r_[array[:3], 1.0]

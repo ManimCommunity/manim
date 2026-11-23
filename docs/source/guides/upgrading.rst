@@ -454,3 +454,41 @@ before; ``set_fill`` and ``set_stroke`` also take a paint. ``fill_opacity``,
        ``LinearGradient(colors, direction=d)``
    * - ``get_gradient_start_and_end_points``
      - none (renderers compute it)
+
+Colours that lie in the scene: colour fields
+--------------------------------------------
+
+``color_using_background_image`` coloured a mobject with an image fixed to the
+frame. It is replaced by a third kind of paint, :class:`.ColorField`: a grid of
+colours that lies in the scene. A mobject painted with a field shows the field's
+colour wherever it is drawn, so moving, trimming or transforming it shows other
+colours, and a moving camera keeps them where they are in the scene.
+
+.. code-block:: python
+
+    field = ColorField.from_function(
+        lambda point: (abs(point[0]) / 7, 0.5, 1 - abs(point[1]) / 4),
+        x_range=(-7, 7),
+        y_range=(-4, 4),
+        resolution=(140, 80),
+    )
+    line.set_stroke(field)
+
+:class:`.StreamLines` colour their lines with a field over the region the lines
+can reach (the seed ranges widened by ``padding``); in 3D they keep a colour list
+per line along its bounding box, an approximation. The Cairo and OpenGL renderers
+draw fields in a plane parallel to the frame under a flat camera, and raise
+``CapabilityError`` (:mod:`manim.renderer.protocol`) for other cameras or planes,
+and for mobjects fixed in the frame.
+
+.. list-table::
+   :header-rows: 1
+
+   * - Removed
+     - Use instead
+   * - ``color_using_background_image(image)``, ``match_background_image``,
+       ``get_background_image``, ``background_image=`` of vectorized mobjects
+     - ``set_stroke(field)`` / ``set_fill(field)`` with a :class:`.ColorField`
+       (in scene coordinates, not fixed to the frame)
+   * - ``StreamLines.get_colored_background_image``, ``background_img``
+     - the lines' ``stroke`` paint
