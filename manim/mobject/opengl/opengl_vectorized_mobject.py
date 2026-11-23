@@ -1279,6 +1279,8 @@ class OpenGLVMobject(OpenGLMobject):
         ----------
         n
             Number of curves to insert.
+        recurse
+            Whether to insert curves into submobjects as well.
 
         Returns
         -------
