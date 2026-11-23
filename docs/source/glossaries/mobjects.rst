@@ -882,7 +882,7 @@ Mobjects
                                 [1.5, 2.25],
                                 [3.0, -4.75],
                             ],
-                        )
+                        ).scale(2)
                     )
 
     .. grid-item-card:: DecimalNumber
@@ -923,7 +923,7 @@ Mobjects
                                 [1.5, 2.5],
                                 [3.0, -4.5],
                             ],
-                        )
+                        ).scale(2)
                     )
 
     .. grid-item-card:: Difference
@@ -1287,7 +1287,7 @@ Mobjects
                                 [1, 2],
                                 [3, 4],
                             ],
-                        )
+                        ).scale(2)
                     )
 
     .. grid-item-card:: IntegerTable
@@ -1308,7 +1308,7 @@ Mobjects
                                 [1, 2],
                                 [3, 4],
                             ],
-                        )
+                        ).scale(2)
                     )
 
     .. grid-item-card:: Intersection
