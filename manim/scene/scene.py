@@ -995,14 +995,17 @@ class Scene:
         ------
         list
             The list of mobjects that could be moving in
-            the Animation(s)
+            the Animation(s), followed by all mobjects drawn
+            after them.
         """
         # Go through mobjects from start to end, and
         # as soon as there's one that needs updating of
-        # some kind per frame, return the list from that
-        # mobject's earliest ancestor.
+        # some kind per frame, or that has to cover a mobject
+        # added later in the animations, return the list from
+        # that mobject on.
         # Imported inside the method to avoid cyclic import.
         from ..animation.composition import AnimationGroup
+        from ..animation.speedmodifier import ChangeSpeed
 
         def _collect_animation_mobjects(
             nested_animations: Iterable[Animation],
@@ -1015,6 +1018,10 @@ class Scene:
                 if isinstance(anim, AnimationGroup):
                     animation_mobjects.extend(
                         _collect_animation_mobjects(anim.animations),
+                    )
+                elif isinstance(anim, ChangeSpeed):
+                    animation_mobjects.extend(
+                        _collect_animation_mobjects([anim.anim]),  # type: ignore[list-item]
                     )
             return animation_mobjects
 
@@ -1033,8 +1040,37 @@ class Scene:
         if self.always_update_mobjects or self.updaters:
             return list(self.mobjects)
 
-        i = next((i for i, mob in enumerate(mobjects) if consider_moving(mob)), None)
-        moving_mobjects = [] if i is None else mobjects[i:]
+        position = {mob: index for index, mob in enumerate(mobjects)}
+        # Compositions can add mobjects after the static frame is saved. These are
+        # drawn over that frame, so it must not contain anything with a higher
+        # z_index than theirs.
+        lowest_pending_z = np.inf
+        if self.renderer.camera.use_z_index:
+            lowest_pending_z = min(
+                (
+                    mob.z_index
+                    for mob in animation_mobjects
+                    if isinstance(mob, Mobject) and mob not in position
+                ),
+                default=np.inf,
+            )
+
+        start = next(
+            (
+                index
+                for index, mob in enumerate(mobjects)
+                if mob.z_index > lowest_pending_z or consider_moving(mob)
+            ),
+            len(mobjects),
+        )
+        # Drawing a mobject also draws its submobjects. If one of those is earlier
+        # in the drawing order, everything from there on has to be redrawn as well.
+        index = len(mobjects) - 1
+        while index >= start:
+            for submobject in mobjects[index].submobjects:
+                start = min(start, position[submobject])
+            index -= 1
+        moving_mobjects = mobjects[start:]
         movement_indicators: list[Mobject] = getattr(
             self.camera,
             "get_mobjects_indicating_movement",
@@ -1056,10 +1092,14 @@ class Scene:
             only_those_with_points=True,
         )
         moving_mobjects = self.get_moving_mobjects(*animations)
-        all_moving_mobject_families = extract_mobject_family_members(
-            moving_mobjects,
-            use_z_index=self.renderer.camera.use_z_index,
-        )
+        moving_family = set(extract_mobject_family_members(moving_mobjects))
+        # The camera expands families again before sorting them by z_index, so
+        # keep the scene's order here to break ties in the same way.
+        all_moving_mobject_families = [
+            mob
+            for mob in extract_mobject_family_members(all_mobjects)
+            if mob in moving_family
+        ]
         static_mobjects = list_difference_update(
             all_mobject_families,
             all_moving_mobject_families,

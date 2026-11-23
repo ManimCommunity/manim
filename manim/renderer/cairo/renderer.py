@@ -375,7 +375,9 @@ class CairoRenderer(_RendererExecutionView):
         )
         if self._render_all_mobjects or not static_mobjects:
             return None
-        self.update_frame(scene, mobjects=static_mobjects)
+        # The static mobjects are already flattened and in drawing order. Expanding
+        # them again would reorder them and pull in moving submobjects.
+        self.update_frame(scene, mobjects=static_mobjects, include_submobjects=False)
         self.static_image = self.get_frame()
         return self.static_image
 

@@ -195,6 +195,56 @@ def test_nested_animation_groups_with_negative_z_index(scene):
     scene.play(AnimationGroup(AnimationGroup(AnimationGroup(FadeIn(line)))))
 
 
+@frames_comparison(last_frame=False)
+def test_z_index_Succession_introducer(scene):
+    # https://github.com/ManimCommunity/manim/issues/4834
+    left = Square(fill_opacity=1).shift(2 * LEFT)
+    right = Square(fill_opacity=1).shift(2 * RIGHT)
+    line = Line(4 * LEFT, 4 * RIGHT, color=RED).set_z_index(-1)
+    scene.add(left, right)
+    scene.play(Succession(right.animate.set_fill(GREEN), FadeIn(line)))
+
+
+@frames_comparison(last_frame=False)
+def test_z_index_ChangeSpeed_introducer(scene):
+    left = Square(fill_opacity=1).shift(2 * LEFT)
+    right = Square(fill_opacity=1).shift(2 * RIGHT)
+    line = Line(4 * LEFT, 4 * RIGHT, color=RED).set_z_index(-1)
+    scene.add(left, right)
+    succession = Succession(right.animate.set_fill(GREEN), FadeIn(line))
+    scene.play(ChangeSpeed(succession, speedinfo={0.5: 1}))
+
+
+@frames_comparison(last_frame=False)
+def test_z_index_submobject_below_static(scene):
+    square = Square(color=RED, fill_opacity=1).set_z_index(-1)
+    circle = Circle(color=BLUE, fill_opacity=1).set_z_index(-2)
+    dot = Dot(3 * RIGHT)
+    scene.add(square, dot, VGroup(circle))
+    scene.play(dot.animate.shift(UP))
+
+
+@frames_comparison(last_frame=False)
+def test_z_index_tie_inside_higher_group(scene):
+    circle = Circle(color=BLUE, fill_opacity=1)
+    square = Square(color=RED, fill_opacity=1)
+    dot = Dot(3 * RIGHT).set_z_index(-1)
+    scene.add(VGroup(circle).set_z_index(1, family=False), square, dot)
+    scene.play(dot.animate.shift(UP))
+
+
+@frames_comparison(last_frame=False)
+def test_z_index_static_submobject_of_higher_parent(scene):
+    parent = Square(color=GREEN, fill_opacity=1).shift(3 * LEFT).set_z_index(-1)
+    circle = Circle(color=BLUE, fill_opacity=1).set_z_index(-2)
+    parent.add(circle)
+    square = Square(color=RED, fill_opacity=1).set_z_index(-2)
+    dot = Dot(3 * RIGHT)
+    scene.add(parent, square, dot)
+    scene.play(dot.animate.shift(UP))
+    scene.wait()
+
+
 @frames_comparison
 def test_Angle(scene):
     l1 = Line(ORIGIN, RIGHT)
