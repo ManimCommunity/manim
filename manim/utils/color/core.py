@@ -445,6 +445,7 @@ class ManimColor:
         ValueError
             If the color name is not present in Manim.
         """
+        # local import to avoid import cycle
         from . import _all_color_dict
 
         if tmp := _all_color_dict.get(name.upper()):
@@ -671,6 +672,7 @@ class ManimColor:
         --------
         :meth:`lighter`
         """
+        # local import to avoid import cycle
         from manim.utils.color.manim_colors import BLACK
 
         alpha = self._internal_space[3]
@@ -697,6 +699,7 @@ class ManimColor:
         --------
         :meth:`darker`
         """
+        # local import to avoid import cycle
         from manim.utils.color.manim_colors import WHITE
 
         alpha = self._internal_space[3]
@@ -732,6 +735,7 @@ class ManimColor:
         ManimColor
             The contrasting :class:`ManimColor`.
         """
+        # local import to avoid import cycle
         from manim.utils.color.manim_colors import BLACK, WHITE
 
         luminance, _, _ = colorsys.rgb_to_yiq(*self.to_rgb())
@@ -1559,6 +1563,7 @@ class RandomColorGenerator:
         seed: int | None = None,
         sample_colors: list[ManimColor] | None = None,
     ) -> None:
+        # local import to avoid import cycle
         from manim.utils.color.manim_colors import _all_manim_colors
 
         self.choice = random.choice if seed is None else random.Random(seed).choice

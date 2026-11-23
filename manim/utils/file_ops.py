@@ -26,9 +26,10 @@ if TYPE_CHECKING:
 
     from ..scene.scene_file_writer import SceneFileWriter
 
-from manim import __version__, config, logger
+from manim._config import config, logger
+from manim._version import __version__
 
-from .. import console
+from .._config import console
 
 
 def ensure_executable(path_to_exe: Path) -> bool:

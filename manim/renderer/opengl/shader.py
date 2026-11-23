@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 from manim.typing import MatrixMN, Point3D
 
-from ... import config
+from ..._config import config
 from ...utils import opengl
 
 SHADER_FOLDER = Path(__file__).parent / "shaders"

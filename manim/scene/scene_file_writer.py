@@ -24,9 +24,9 @@ import numpy as np
 import srt
 from PIL import Image
 
-from manim import __version__
+from manim._version import __version__
 
-from .. import logger
+from .._config import logger
 from .._config.output_plan import OutputPlan
 from .._config.video_encoder import VideoEncoderSpec
 from ..utils.caching import prune_segment_cache

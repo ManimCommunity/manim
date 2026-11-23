@@ -8,7 +8,7 @@ from typing import Any, Self
 
 import numpy as np
 
-from manim import config
+from manim._config import config
 from manim.constants import *
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex, Tex

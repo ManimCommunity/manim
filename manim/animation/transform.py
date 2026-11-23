@@ -36,7 +36,7 @@ import numpy as np
 from manim.data_structures import MethodWithArgs
 from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
 
-from .. import config
+from .._config import config
 from ..animation.animation import Animation
 from ..constants import (
     DEFAULT_POINTWISE_FUNCTION_RUN_TIME,

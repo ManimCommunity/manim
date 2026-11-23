@@ -14,7 +14,7 @@ import numpy as np
 from moderngl import Framebuffer
 from PIL import Image
 
-from manim import config, logger
+from manim._config import config, logger
 from manim.mobject.opengl.opengl_mobject import (
     OpenGLMobject,
 )
@@ -228,6 +228,7 @@ class OpenGLRenderer(_RendererExecutionView):
         try:
             window = None
             if self._settings.window is not None:
+                # local import: pyglet/screeninfo only needed for preview window
                 from .window import Window
 
                 window = Window(self, _settings=self._settings.window)

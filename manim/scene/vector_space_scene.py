@@ -19,7 +19,7 @@ from manim.mobject.text.tex_mobject import MathTex, Tex
 from manim.renderer.cairo.camera import Camera
 from manim.utils.config_ops import update_dict_recursively
 
-from .. import config
+from .._config import config
 from ..animation.animation import Animation
 from ..animation.creation import Create, Write
 from ..animation.fading import FadeOut

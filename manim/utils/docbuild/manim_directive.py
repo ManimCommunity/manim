@@ -83,8 +83,8 @@ from sphinx.util.docutils import SphinxDirective
 from sphinx.util.osutil import relative_uri
 from sphinx.util.typing import ExtensionMetadata
 
-from manim import __version__ as manim_version
 from manim._config import tempconfig
+from manim._version import __version__ as manim_version
 from manim.constants import QUALITIES
 from manim.scene.scene import Scene
 

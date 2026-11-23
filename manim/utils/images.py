@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from PIL import Image
 
-from .. import config
+from .._config import config
 from ..utils.file_ops import seek_full_path_from_defaults
 
 if TYPE_CHECKING:

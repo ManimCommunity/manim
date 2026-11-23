@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 import srt
 from tqdm import tqdm
 
-from .. import config, logger
+from .._config import config, logger
 from ..animation.animation import Wait
 from .frames import frame_count
 from .loop import _Caption, _RunListener, _Section, _Sound
@@ -148,6 +148,7 @@ class _FrameRequests(_RunListener):
         self._on_frame = on_frame
 
     def frame(self, frame: _Frame) -> None:
+        # local import to avoid import cycle
         from ..manager import RenderedFrame
 
         offset = self._manager._execution.time_offset

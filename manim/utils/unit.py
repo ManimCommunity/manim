@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import numpy as np
 
-from .. import config, constants
+import manim.constants as constants
+
+from .._config import config
 from ..typing import Vector3D
 
 __all__ = ["Pixels", "Degrees", "Munits", "Percent"]

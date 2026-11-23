@@ -131,7 +131,7 @@ from xml.etree import ElementTree as ET
 import numpy as np
 import svgelements as se
 
-from manim import config
+from manim._config import config
 from manim.constants import DEFAULT_FONT_SIZE, SCALE_FACTOR_PER_FONT_POINT, RendererType
 from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
