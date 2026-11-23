@@ -915,6 +915,9 @@ class OpenGLMobject:
         ----------
         mobjects
             The mobjects to add.
+        update_parent
+            Whether to set the added mobject's ``parent`` to ``self``.
+            If True, exactly one mobject must be supplied. Defaults to False.
 
         Returns
         -------
@@ -1012,6 +1015,9 @@ class OpenGLMobject:
         ----------
         mobjects
             The mobjects to remove.
+        update_parent
+            Whether to clear the removed mobject's ``parent``. If True,
+            exactly one mobject must be supplied. Defaults to False.
 
         Returns
         -------
