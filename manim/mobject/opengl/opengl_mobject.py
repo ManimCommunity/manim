@@ -2839,6 +2839,8 @@ class OpenGLMobject:
 
         Parameters
         ----------
+        mobject
+            The mobject whose data and submobjects are copied.
         match_height
             If ``True``, then the transformed :class:`~.OpenGLMobject` will match the height of the original
         match_width
