@@ -214,12 +214,20 @@ drawn as meshes on OpenGL and as sorted faces on Cairo:
   :class:`.VGroup`.
 - The arguments ``should_make_jagged``, ``surface_piece_config`` and
   ``pre_function_handle_to_anchor_scale_factor`` are gone.
-- They are lit by their ``material`` (:class:`.PbrMaterial` by default) under a
-  :class:`.ThreeDCamera`'s light: faces turned away from the light are darker than
-  before, and the surface has highlights. ``material=UnlitMaterial()`` shows its
-  colors as they are. Under other cameras, surfaces are not lit.
-- A surface without ``checkerboard_colors`` is lit smoothly; with them, each face
-  is lit flat.
+- They are lit by their ``material`` (:class:`.PbrMaterial` by default) under the scene's
+  lights (:mod:`manim.light`; a :class:`.ThreeDScene` has one): faces turned away
+  from the light are darker than before, and the surface has highlights.
+  ``material=UnlitMaterial()`` shows its colors as they are. Without lights, surfaces are
+  not shaded.
+- Surfaces are smooth, in one colour and without outlines by default: they used to
+  have a ``[BLUE_D, BLUE_E]`` checkerboard and light grey outlines of width 0.5.
+  ``checkerboard_colors=[BLUE_D, BLUE_E]`` and ``stroke_width=0.5`` give that look
+  back; with a checkerboard, each face is lit flat.
+- :meth:`~.Surface.set_fill_by_value` colours the points of a smooth surface, so the
+  colours blend across faces on OpenGL (Cairo draws each face in the mean colour of
+  its corners); on a surface with a checkerboard it colours each face.
+- :class:`.Line3D` is white by default, as :class:`.Line` and :class:`.Arrow3D`
+  are; it was the blue of the surface.
 - The end caps of :class:`.Cylinder` (``base_top``, ``base_bottom``) and the base of
   :class:`.Cone` (``base_circle``) are discs of the same kind, lit as the side is,
   not :class:`.Circle` paths.
@@ -496,7 +504,7 @@ and for mobjects fixed in the frame.
 Lights belong to the scene
 --------------------------
 
-Lit materials (:class:`.Pbr`, the default of meshes and surfaces) are shaded by
+Lit materials (:class:`.PbrMaterial`, the default of meshes and surfaces) are shaded by
 :class:`.PointLight` mobjects (see :mod:`manim.light`). A :class:`.ThreeDScene` has
 one, ``scene.light``, at the position of the camera's former light; it is not in
 ``scene.mobjects``, so :meth:`.Scene.clear` and fading out every mobject leave it.
@@ -524,7 +532,7 @@ plain :class:`.Scene` has no light).
    * - ``ThreeDCamera(should_apply_shading=False)``
      - ``scene.light = None`` (no shading)
    * - ``ThreeDCamera(shading_factor=...)``
-     - none: lit materials follow :class:`.Pbr`'s parameters
+     - none: lit materials follow :class:`.PbrMaterial`'s parameters
 
 Vector mobjects have a material and a depth ordering
 ----------------------------------------------------
@@ -532,8 +540,8 @@ Vector mobjects have a material and a depth ordering
 ``shade_in_3d`` meant two things: "shade towards the light" and "sort by depth under
 a 3D camera". They are now two settings of :class:`.VMobject`:
 
-- ``material`` (:mod:`manim.material`, ``set_material``): :class:`.Unlit` by default;
-  :class:`.Pbr` lights the path by the scene's lights in one colour, from the normal
+- ``material`` (:mod:`manim.material`, ``set_material``): :class:`.UnlitMaterial` by default;
+  :class:`.PbrMaterial` lights the path by the scene's lights in one colour, from the normal
   of its plane. A lit path must be flat and have a solid fill, otherwise drawing it
   raises :class:`.CapabilityError`. Its stroke is not lit, and mobjects fixed in the
   frame are never lit.
@@ -541,7 +549,7 @@ a 3D camera". They are now two settings of :class:`.VMobject`:
   ordered far to near by the center of its own points. This is not a depth test:
   of two intersecting shapes, one is drawn over the other.
 
-:class:`.ThreeDVMobject` has both (``Pbr()`` and ``True``). The axes of
+:class:`.ThreeDVMobject` has both (``PbrMaterial()`` and ``True``). The axes of
 :class:`.ThreeDAxes` are ordered by depth and no longer shaded, so they no longer
 darken or brighten along their length.
 
@@ -551,7 +559,7 @@ darken or brighten along their length.
    * - Removed
      - Use instead
    * - ``VMobject(shade_in_3d=True)``, ``set_shade_in_3d(True)``
-     - ``set_material(Pbr())`` and ``set_sort_by_depth(True)``, or only the one you
+     - ``set_material(PbrMaterial())`` and ``set_sort_by_depth(True)``, or only the one you
        need
    * - ``manim.utils.color.get_shaded_rgb``, ``manim.mobject.three_d.three_d_utils``
      - none

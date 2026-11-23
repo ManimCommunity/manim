@@ -30,7 +30,6 @@ from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMob
 from manim.utils.color import (
     BLUE,
     BLUE_D,
-    BLUE_E,
     LIGHT_GREY,
     WHITE,
     ManimColor,
@@ -64,20 +63,21 @@ class ThreeDVMobject(VMobject):
         **kwargs: Any,
     ):
         super().__init__(
-            material=Pbr() if material is None else material,
+            material=PbrMaterial() if material is None else material,
             sort_by_depth=sort_by_depth,
             **kwargs,
         )
 
 
 class Surface(ParametricSurface):
-    """A parametric surface, by default of faces in a checkerboard pattern.
+    """A parametric surface: smooth, in one colour, without outlines by default.
 
     The surface is a :class:`.ParametricSurface`: lit by the scene's lights
-    (:mod:`manim.light`) through its ``material`` (``PbrMaterial()`` by default). With
-    ``checkerboard_colors``, every face has its own corners, so faces keep their own
-    color and are lit flat; without, neighboring faces share corners and the
-    surface is lit smoothly.
+    (:mod:`manim.light`) through its ``material`` (``PbrMaterial()`` by default).
+    Neighbouring faces share corners, so the surface is lit smoothly and colours
+    given per point (:meth:`set_fill_by_value`) blend across faces. With
+    ``checkerboard_colors``, every face has its own corners, so faces keep their
+    own colour and are lit flat; ``stroke_width`` outlines the faces.
 
     Parameters
     ----------
@@ -97,11 +97,13 @@ class Surface(ParametricSurface):
         The opacity of the :class:`Surface`, from 0 being fully transparent
         to 1 being fully opaque. Defaults to 1.
     checkerboard_colors
-        The colors of alternating faces, or ``False`` for ``fill_color`` throughout.
+        The colors of alternating faces, for example ``[BLUE_D, BLUE_E]``, or
+        ``False`` (the default) for ``fill_color`` throughout.
     stroke_color
         Color of the outline of each face of :class:`Surface`.
     stroke_width
-        Width of the outline of each face of :class:`Surface`. Defaults to 0.5.
+        Width of the outline of each face of :class:`Surface`; 0 (the default)
+        for no outlines.
     stroke_opacity
         Opacity of the outline of each face of :class:`Surface`.
     kwargs
@@ -136,12 +138,9 @@ class Surface(ParametricSurface):
         resolution: int | Sequence[int] = 32,
         fill_color: ParsableManimColor = BLUE_D,
         fill_opacity: float = 1.0,
-        checkerboard_colors: Iterable[ParsableManimColor] | Literal[False] = [
-            BLUE_D,
-            BLUE_E,
-        ],
+        checkerboard_colors: Iterable[ParsableManimColor] | Literal[False] = False,
         stroke_color: ParsableManimColor = LIGHT_GREY,
-        stroke_width: float = 0.5,
+        stroke_width: float = 0,
         stroke_opacity: float = 1.0,
         **kwargs: Any,
     ) -> None:
@@ -204,8 +203,11 @@ class Surface(ParametricSurface):
         axis: int = 2,
         **kwargs: Any,
     ) -> Self:
-        """Color each face by its value along an axis: the value of the point
-        halfway around the face's outline.
+        """Colour the surface by the value of its points along an axis, so the
+        colours blend smoothly across faces.
+
+        A surface with a checkerboard is coloured face by face instead: each face
+        by the value of the point halfway around its outline.
 
         Parameters
         ----------
@@ -274,24 +276,29 @@ class Surface(ParametricSurface):
             assert axis_range is not None
             pivot_min, pivot_max = axis_range[:2]
             pivots = np.linspace(pivot_min, pivot_max, len(new_colors))
-        values = np.asarray(axes.point_to_coords(_halfway_around(self)))[:, axis]
         rgbs = np.array([color.to_rgb() for color in new_colors])
-        colors = np.stack(
-            [np.interp(values, pivots, rgbs[:, channel]) for channel in range(3)],
-            axis=1,
-        )
         opacity = self.fill_opacity
-        fills = np.concatenate((colors, np.full((len(colors), 1), opacity)), axis=1)
-        if not self.flat:
-            # One color per face needs corners of its own, through the surface's
-            # current points.
-            grid = self._grid()
-            self.flat = True
-            self._build(grid)
-        self.set_vertex_colors(np.repeat(fills, 4, axis=0))
+
+        def colours_at(points: np.ndarray) -> np.ndarray:
+            values = np.asarray(axes.point_to_coords(points))[:, axis]
+            rgb = np.stack(
+                [np.interp(values, pivots, rgbs[:, channel]) for channel in range(3)],
+                axis=1,
+            )
+            return np.concatenate((rgb, np.full((len(rgb), 1), opacity)), axis=1)
+
+        if self.checkerboard_colors:
+            # One colour per face, on corners of its own (the surface is flat).
+            fills = colours_at(_halfway_around(self))
+            self.set_vertex_colors(np.repeat(fills, 4, axis=0))
+        else:
+            fills = colours_at(self.points)
+            # Each face's outline takes the colour halfway around it.
+            fills_of_faces = colours_at(_halfway_around(self))
+            self.set_vertex_colors(fills)
+            fills = fills_of_faces
         strokes = fills.copy()
         strokes[:, 3] = self.stroke_opacity
-        # As each face's outline took its color, too.
         self.stroke_rgbas = strokes
         return self
 
@@ -899,13 +906,11 @@ class Line3D(Cylinder):
     thickness
         The thickness of the line.
     color
-        The color of the line.
+        The color of the line; white, as for :class:`.Line`.
     resolution
         The resolution of the line.
         By default this value is the number of points the line will sampled at.
-        If you want the line to also come out checkered, use a tuple.
-        For example, for a line made of 24 points with 4 checker points on each
-        cylinder, pass the tuple (4, 24).
+        A tuple ``(u, v)`` sets the steps along the line and around it.
 
     Examples
     --------
@@ -925,7 +930,7 @@ class Line3D(Cylinder):
         start: Point3DLike = LEFT,
         end: Point3DLike = RIGHT,
         thickness: float = 0.02,
-        color: ParsableManimColor | None = None,
+        color: ParsableManimColor = WHITE,
         resolution: int | tuple[int, int] = 24,
         **kwargs: Any,
     ):
@@ -938,8 +943,7 @@ class Line3D(Cylinder):
         end = np.array(end, dtype=np.float64)
 
         self.set_start_and_end_attrs(start, end, **kwargs)
-        if color is not None:
-            self.set_color(color)
+        self.set_color(color)
 
     def set_start_and_end_attrs(
         self, start: Point3DLike, end: Point3DLike, **kwargs: Any

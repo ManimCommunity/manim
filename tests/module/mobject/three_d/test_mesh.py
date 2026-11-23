@@ -3,6 +3,7 @@ import pytest
 
 from manim import (
     BLUE,
+    BLUE_D,
     GREEN,
     ORIGIN,
     PI,
@@ -16,6 +17,8 @@ from manim import (
     Cube,
     Cylinder,
     Dot3D,
+    Line3D,
+    ManimColor,
     MeshMobject,
     Mobject,
     ParametricSurface,
@@ -26,6 +29,7 @@ from manim import (
     Surface,
     Tetrahedron,
     ThreeDAxes,
+    Torus,
     Transform,
     VGroup,
     VMobject,
@@ -254,7 +258,7 @@ def test_parametric_surface_ranges_and_resolution_are_pairs(name):
     assert surface.resolution == (3, 4)
 
 
-def test_surface_colors_faces_by_value_at_their_outlines_middle():
+def test_checkered_surface_colours_faces_by_value_at_their_outlines_middle():
     from manim.mobject.three_d.three_dimensions import _halfway_around
 
     axes = ThreeDAxes(x_range=[0, 4], y_range=[0, 4], z_range=[0, 4])
@@ -263,6 +267,7 @@ def test_surface_colors_faces_by_value_at_their_outlines_middle():
         u_range=[0, 4],
         v_range=[0, 4],
         resolution=4,
+        checkerboard_colors=[RED, BLUE],
     )
     # Halfway around a face's outline, as get_midpoint of the face as a path.
     for corners, point in zip(
@@ -306,18 +311,56 @@ def test_meshes_can_be_in_vector_groups():
         VGroup(Square(), Mobject())
 
 
-def test_surfaces_without_a_checkerboard_are_smooth():
-    smooth = Surface(lambda u, v: [u, v, 0], resolution=4, checkerboard_colors=False)
-    checkered = Surface(lambda u, v: [u, v, 0], resolution=4)
+def test_surfaces_are_smooth_and_without_outlines_unless_asked():
+    smooth = Surface(lambda u, v: [u, v, 0], resolution=4)
+    checkered = Surface(
+        lambda u, v: [u, v, 0], resolution=4, checkerboard_colors=[RED, BLUE]
+    )
 
     assert not smooth.flat
     assert len(smooth.points) == 5 * 5
+    assert smooth.stroke_width == 0
+    assert smooth.fill_color == ManimColor(BLUE_D)
     assert checkered.flat
     assert len(checkered.points) == 4 * 4 * 4
+    for solid in (Sphere(), Torus(), Cylinder(), Cone(), Dot3D()):
+        for part in _meshes(solid):
+            assert not part.flat
+            assert part.stroke_width == 0
+
+
+def test_smooth_surface_colours_its_points_by_value():
+    from manim.mobject.three_d.three_dimensions import _halfway_around
+
+    axes = ThreeDAxes(x_range=[0, 4], y_range=[0, 4], z_range=[0, 4])
+    surface = Surface(
+        lambda u, v: axes.c2p(u, v, u * v / 4),
+        u_range=[0, 4],
+        v_range=[0, 4],
+        resolution=4,
+    )
+    surface.set_fill_by_value(axes, [(RED, 0), (WHITE, 4)], axis=2)
+
+    # Still smooth: one colour per point, blended across the faces.
+    assert not surface.flat
+    values = axes.point_to_coords(surface.points)[:, 2] / 4
+    expected = (1 - values[:, None]) * RED.to_rgb() + values[:, None] * WHITE.to_rgb()
+    np.testing.assert_allclose(surface.rgbas[:, :3], expected, atol=1e-9)
+    # Each face's outline takes the colour halfway around it.
+    values = axes.point_to_coords(_halfway_around(surface))[:, 2] / 4
+    expected = (1 - values[:, None]) * RED.to_rgb() + values[:, None] * WHITE.to_rgb()
+    np.testing.assert_allclose(surface.stroke_rgbas[:, :3], expected, atol=1e-9)
+
+
+def test_lines_in_space_are_white_as_lines_are():
+    assert {part.fill_color for part in _meshes(Line3D())} == {ManimColor(WHITE)}
+    assert {part.fill_color for part in _meshes(Line3D(color=RED))} == {ManimColor(RED)}
 
 
 def test_partial_surfaces_show_whole_faces_with_their_outlines():
-    surface = Surface(lambda u, v: [u, v, 0], resolution=4)
+    surface = Surface(
+        lambda u, v: [u, v, 0], resolution=4, checkerboard_colors=[RED, BLUE]
+    )
     surface.set_fill_by_value(
         ThreeDAxes(x_range=[0, 1], y_range=[0, 1], z_range=[0, 1]), [RED, WHITE], axis=0
     )
