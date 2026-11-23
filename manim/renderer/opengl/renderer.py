@@ -951,18 +951,21 @@ class OpenGLRenderer(_RendererExecutionView):
         samples : int, optional
             The number of samples for multisample anti-aliasing (MSAA) [1]_.
             Default is 0 (no MSAA).
+        size : tuple[int, int] | None, optional
+            The framebuffer width and height in pixels. If omitted, use the
+            configured pixel dimensions.
 
         Returns
         -------
         Framebuffer
             A framebuffer object with a color texture attachment and
             a depth renderbuffer attachment, both sized according to
-            the current configuration's pixel width and height.
+            ``size`` or the configured pixel dimensions.
 
         Notes
         -----
         Framebuffer's color attachment is supposed RGBA.
-        Pixel dimensions are taken from the global config of Manim.
+        When ``size`` is omitted, pixel dimensions come from the global config.
 
         References
         ----------
