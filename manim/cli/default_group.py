@@ -36,7 +36,7 @@ class DefaultGroup(cloup.Group):
         Positional arguments to forward to :class:`cloup.Group`.
     **kwargs
         Keyword arguments to forward to :class:`cloup.Group`. The keyword
-        ``ignore_unknown_options`` must be set to ``False``.
+        ``ignore_unknown_options`` must be set to ``True``.
 
     Attributes
     ----------
@@ -137,8 +137,8 @@ class DefaultGroup(cloup.Group):
         ----------
         ctx
             The Click context.
-        cmd_name
-            The name of the command to get.
+        args
+            The command-line arguments to resolve.
 
         Returns
         -------
