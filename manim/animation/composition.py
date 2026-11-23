@@ -12,7 +12,6 @@ from manim.animation.animation import Animation, prepare_animation
 from manim.constants import RendererType
 from manim.mobject.mobject import Group, Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
-from manim.scene.scene import Scene
 from manim.utils.iterables import remove_list_redundancies
 from manim.utils.parameter_parsing import flatten_iterable_parameters
 from manim.utils.rate_functions import linear
@@ -20,6 +19,7 @@ from manim.utils.rate_functions import linear
 if TYPE_CHECKING:
     from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup
     from manim.mobject.types.vectorized_mobject import VGroup
+    from manim.scene.scene import Scene
 
 __all__ = ["AnimationGroup", "Succession", "LaggedStart", "LaggedStartMap"]
 

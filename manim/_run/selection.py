@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from .. import config
+from .._config import config
 from ..utils.exceptions import EndSceneEarlyException
 
 if TYPE_CHECKING:

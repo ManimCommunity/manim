@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from .. import logger
+from .._config import logger
 
 __all__ = [
     "clear_segment_cache",

@@ -8,7 +8,7 @@ import numpy as np
 from pathops import Path as SkiaPath
 from pathops import PathVerb, difference, intersection, union, xor
 
-from manim import config
+from manim._config import config
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
 

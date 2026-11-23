@@ -118,7 +118,6 @@ Index
    examples
    installation
    tutorials_guides
-   glossaries
    reference
    plugins
    changelog

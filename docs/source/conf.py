@@ -61,7 +61,6 @@ extensions = [
     "myst_parser",
     "sphinx_design",
     "sphinx_reredirects",
-    "sphinx_inline_tabs",
 ]
 
 # Automatically generate stub pages when using the .. autosummary directive

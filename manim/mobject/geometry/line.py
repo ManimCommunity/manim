@@ -18,7 +18,7 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
 
-from manim import config
+from manim._config import config
 from manim.constants import *
 from manim.mobject.geometry.arc import Arc, ArcBetweenPoints, Dot, TipableVMobject
 from manim.mobject.geometry.tips import ArrowTip, ArrowTriangleFilledTip
@@ -794,7 +794,7 @@ class Vector(Arrow):
 
                     self.add(plane, vec_1, vec_2, label_1, label_2)
         """
-        # avoiding circular imports
+        # local import to avoid import cycle
         from ..matrix import Matrix
 
         vect = np.array(self.get_end())

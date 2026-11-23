@@ -19,7 +19,7 @@ from typing import Any
 
 from manim.utils.tex import TexTemplate
 
-from .. import config, logger
+from .._config import config, logger
 
 __all__ = ["tex_to_svg_file"]
 

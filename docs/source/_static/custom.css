@@ -200,13 +200,3 @@ h6 {
         min-width: 0;
     }
 }
-
-/* Examples in cards without body padding (``:class-body: sd-p-0``) fill the card. */
-.sd-card-body.sd-p-0 > .admonition-manim-example,
-.sd-card-body.sd-p-0 > img {
-    margin: 0;
-}
-
-.sd-card-body.sd-p-0 > img {
-    display: block;
-}

@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 
+from ..animation.animation import Wait
 from ..timeline import Timeline
 from .loop import _Caption, _RunListener, _Section
 
@@ -158,8 +159,6 @@ class _RunRecord(_RunListener):
         return time
 
     def play_started(self, play: _Play) -> None:
-        from ..animation.animation import Wait
-
         animations = play.animations
         kind = (
             "wait"

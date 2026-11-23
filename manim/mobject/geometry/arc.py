@@ -155,6 +155,7 @@ class TipableVMobject(VMobject, metaclass=ConvertToOpenGL):
         """Returns a tip that has been stylistically configured,
         but has not yet been given a position in space.
         """
+        # local import to avoid import cycle
         from manim.mobject.geometry.tips import ArrowTriangleFilledTip
 
         style: dict[str, Any] = {}
@@ -611,6 +612,7 @@ class CurvedArrow(ArcBetweenPoints):
     def __init__(
         self, start_point: Point3DLike, end_point: Point3DLike, **kwargs: Any
     ) -> None:
+        # local import to avoid import cycle
         from manim.mobject.geometry.tips import ArrowTriangleFilledTip
 
         tip_shape = kwargs.pop("tip_shape", ArrowTriangleFilledTip)
@@ -624,6 +626,7 @@ class CurvedDoubleArrow(CurvedArrow):
     ) -> None:
         if "tip_shape_end" in kwargs:
             kwargs["tip_shape"] = kwargs.pop("tip_shape_end")
+        # local import to avoid import cycle
         from manim.mobject.geometry.tips import ArrowTriangleFilledTip
 
         tip_shape_start = kwargs.pop("tip_shape_start", ArrowTriangleFilledTip)
@@ -899,7 +902,8 @@ class LabeledDot(Dot):
         **kwargs: Any,
     ) -> None:
         if isinstance(label, str):
-            from manim import MathTex
+            # local import to avoid import cycle
+            from manim.mobject.text.tex_mobject import MathTex
 
             rendered_label: VMobject = MathTex(label, color=BLACK)
         else:
@@ -1386,6 +1390,7 @@ class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
         # This enables the use of ArcPolygonFromArcs.arcs as a convenience
         # because ArcPolygonFromArcs[0] returns itself, not the first Arc.
         self.arcs = [*arcs]
+        # local import to avoid import cycle
         from .line import Line
 
         for arc1, arc2 in adjacent_pairs(arcs):

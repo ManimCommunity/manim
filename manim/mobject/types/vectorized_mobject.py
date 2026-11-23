@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 import numpy as np
 from PIL.Image import Image
 
-from manim import config
+from manim._config import config
 from manim.constants import *
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
@@ -2732,7 +2732,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         self._assert_valid_submobjects([value])
         mob = value
         if self.show_keys:
-            # This import is here and not at the top to avoid circular import
+            # local import to avoid import cycle
             from manim.mobject.text.tex_mobject import Tex
 
             key_text = Tex(str(key)).next_to(value, LEFT)

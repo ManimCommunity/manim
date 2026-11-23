@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
-from .. import config, logger
+from .._config import config, logger
 from ..constants import RendererType
 from ..mobject import mobject
 from ..mobject.mobject import Group, Mobject

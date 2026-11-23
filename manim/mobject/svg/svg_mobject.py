@@ -10,7 +10,7 @@ from xml.etree import ElementTree as ET
 import numpy as np
 import svgelements as se
 
-from manim import config, logger
+from manim._config import config, logger
 from manim.utils.color import ManimColor, ParsableManimColor
 
 from ...constants import RIGHT, RendererType

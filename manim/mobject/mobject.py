@@ -24,7 +24,7 @@ import numpy as np
 from manim.data_structures import MethodWithArgs
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
-from .. import config, logger
+from .._config import config, logger
 from ..constants import *
 from ..utils.color import (
     BLACK,
@@ -1012,7 +1012,7 @@ class Mobject:
         Pass a ``camera`` to select the view, or omit it to create a default
         :class:`.Camera`. To use a scene's current view, pass ``camera=scene.camera``.
         """
-        # Import here: the camera and renderer modules import this module.
+        # local import to avoid import cycle
         from manim.renderer.cairo import CairoRenderer
         from manim.renderer.cairo.camera import Camera
 
@@ -2875,6 +2875,7 @@ class Mobject:
 
 
         """
+        # local import to avoid import cycle
         from manim.mobject.geometry.line import Line
 
         mobs = self.submobjects.copy()
@@ -3621,6 +3622,7 @@ class _AnimationBuilder:
         return update_target
 
     def build(self) -> Animation:
+        # local import to avoid import cycle
         from ..animation.transform import _MethodAnimation
 
         anim = self.overridden_animation or _MethodAnimation(self.mobject, self.methods)

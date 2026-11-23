@@ -9,7 +9,8 @@ from moderngl_window.timers.clock import Timer
 from pyglet import gl
 from screeninfo import Monitor, get_monitors
 
-from ... import __version__, config, logger
+from ..._config import config, logger
+from ..._version import __version__
 from .window_settings import _WindowSettings
 
 if TYPE_CHECKING:

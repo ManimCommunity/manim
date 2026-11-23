@@ -41,12 +41,12 @@ from tqdm import tqdm
 from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
-from manim import __version__
+from manim._version import __version__
 from manim.data_structures import MethodWithArgs
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 
-from .. import config, logger
+from .._config import config, logger
 from .._config.output_plan import (
     resolve_file_log_path,
     resolve_media_layout,
@@ -57,6 +57,7 @@ from .._config.output_plan import (
 from .._config.render_session import resolve_render_session
 from .._run.frames import frame_count
 from ..animation.animation import Animation, Wait, prepare_animation
+from ..animation.composition import AnimationGroup
 from ..constants import *
 from ..manager import Manager
 from ..renderer.cairo import CairoRenderer
@@ -1001,8 +1002,6 @@ class Scene:
         # as soon as there's one that needs updating of
         # some kind per frame, return the list from that
         # mobject's earliest ancestor.
-        # Imported inside the method to avoid cyclic import.
-        from ..animation.composition import AnimationGroup
 
         def _collect_animation_mobjects(
             nested_animations: Iterable[Animation],

@@ -10,6 +10,7 @@ __all__ = [
 
 import itertools as it
 import random
+import warnings
 from collections.abc import Callable, Iterable, Sequence
 from math import ceil, floor
 from typing import TYPE_CHECKING, Any, Self
@@ -21,7 +22,7 @@ from manim.animation.updaters.update import UpdateFromAlphaFunc
 from manim.mobject.geometry.line import Vector
 from manim.mobject.graphing.coordinate_systems import CoordinateSystem
 
-from .. import config
+from .._config import config
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
@@ -642,6 +643,10 @@ class ArrowVectorField(VectorField):
         rooted in the given point. Color and length fit the specifications of
         this vector field.
 
+        If the function has no finite value at the given point, for example
+        because of a division by zero, a warning is issued and a zero vector
+        is created there.
+
         Parameters
         ----------
         point
@@ -650,13 +655,21 @@ class ArrowVectorField(VectorField):
         """
         output = np.array(self.func(point))
         norm = np.linalg.norm(output)
-        if norm != 0:
+        is_defined = np.isfinite(norm)
+        if not is_defined:
+            warnings.warn(
+                "The vector field function returned a non-finite value; "
+                "using a zero vector at that point.",
+                stacklevel=2,
+            )
+            output = np.zeros(3)
+        elif norm != 0:
             output *= self.length_func(norm) / norm
         vect = Vector(output, **self.vector_config)
         vect.shift(point)
         if self.single_color:
             vect.set_color(self.color)
-        else:
+        elif is_defined:
             vect.set_color(self.pos_to_color(point))
         return vect
 

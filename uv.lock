@@ -1411,7 +1411,6 @@ dev = [
     { name = "sphinx" },
     { name = "sphinx-copybutton" },
     { name = "sphinx-design" },
-    { name = "sphinx-inline-tabs" },
     { name = "sphinx-reredirects" },
     { name = "sphinxcontrib-programoutput" },
     { name = "sphinxext-opengraph" },
@@ -1427,7 +1426,6 @@ docs = [
     { name = "sphinx" },
     { name = "sphinx-copybutton" },
     { name = "sphinx-design" },
-    { name = "sphinx-inline-tabs" },
     { name = "sphinx-reredirects" },
     { name = "sphinxcontrib-programoutput" },
     { name = "sphinxext-opengraph" },
@@ -1484,7 +1482,6 @@ dev = [
     { name = "sphinx", specifier = ">=7.4.7" },
     { name = "sphinx-copybutton", specifier = ">=0.5.2" },
     { name = "sphinx-design", specifier = ">=0.6.1" },
-    { name = "sphinx-inline-tabs", specifier = ">=2025.12.21.14" },
     { name = "sphinx-reredirects", specifier = ">=0.1.5" },
     { name = "sphinxcontrib-programoutput", specifier = ">=0.18" },
     { name = "sphinxext-opengraph", specifier = ">=0.9.1" },
@@ -1500,7 +1497,6 @@ docs = [
     { name = "sphinx", specifier = ">=7.4.7" },
     { name = "sphinx-copybutton", specifier = ">=0.5.2" },
     { name = "sphinx-design", specifier = ">=0.6.1" },
-    { name = "sphinx-inline-tabs", specifier = ">=2025.12.21.14" },
     { name = "sphinx-reredirects", specifier = ">=0.1.5" },
     { name = "sphinxcontrib-programoutput", specifier = ">=0.18" },
     { name = "sphinxext-opengraph", specifier = ">=0.9.1" },
@@ -3084,18 +3080,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/2b/69/b34e0cb5336f09c6866d53b4a19d76c227cdec1bbc7ac4de63ca7d58c9c7/sphinx_design-0.6.1.tar.gz", hash = "sha256:b44eea3719386d04d765c1a8257caca2b3e6f8421d7b3a5e742c0fd45f84e632", size = 2193689, upload-time = "2024-08-02T13:48:44.277Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c6/43/65c0acbd8cc6f50195a3a1fc195c404988b15c67090e73c7a41a9f57d6bd/sphinx_design-0.6.1-py3-none-any.whl", hash = "sha256:b11f37db1a802a183d61b159d9a202314d4d2fe29c163437001324fe2f19549c", size = 2215338, upload-time = "2024-08-02T13:48:42.106Z" },
-]
-
-[[package]]
-name = "sphinx-inline-tabs"
-version = "2025.12.21.14"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "sphinx" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/76/6a/f39bde46a79b80a9983233d99b773bd24b468bdd9c1e87acb46ff69af441/sphinx_inline_tabs-2025.12.21.14.tar.gz", hash = "sha256:c71a75800326e613fb4e410eed92a0934214741326aca9897c18018b9f968cb6", size = 45572, upload-time = "2025-12-21T13:30:51.071Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/02/2b/e64e7de34663cff1df029ba4f05a86124315bd9eba3d3b78e64904bea7e0/sphinx_inline_tabs-2025.12.21.14-py3-none-any.whl", hash = "sha256:e685c782b58d4e01490bcc4e2367cf7135ec28e7283a05e89095394e4ca6e81a", size = 7082, upload-time = "2025-12-21T13:30:50.142Z" },
 ]
 
 [[package]]

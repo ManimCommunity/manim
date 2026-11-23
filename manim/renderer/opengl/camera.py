@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any, Self
 import numpy as np
 from typing_extensions import override
 
-from manim import config
+from manim._config import config
 from manim.constants import *
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 from manim.typing import MatrixMN, Point3D

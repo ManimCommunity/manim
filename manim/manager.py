@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
-from . import config, logger
+from ._config import config, logger
 from ._config.logger_utils import set_file_logger
 from ._run.cache import _SegmentCache
 from ._run.listeners import _Encoder, _FrameRequests, _MeshGuard, _Preview, _Progress
@@ -23,6 +23,7 @@ from ._run.loop import (
 )
 from ._run.mode import _EvaluationRun, _RunMode
 from ._run.selection import _OutputSelection
+from .renderer.cairo.renderer import CairoRenderer
 from .scene.section import DefaultSectionType
 from .utils.exceptions import EndSceneEarlyException, RerunSceneException
 from .utils.file_ops import open_media_file
@@ -39,6 +40,7 @@ if TYPE_CHECKING:
     from ._config.render_session import RenderSessionSpec
     from .animation.animation import Animation
     from .mobject.mobject import Mobject, _AnimationBuilder
+    from .renderer._execution import _ExecutionState
     from .renderer.cairo import CairoRenderer
     from .renderer.cairo.camera import Camera
     from .renderer.opengl.camera import OpenGLCamera
@@ -156,7 +158,7 @@ class Manager(Generic[SceneT]):
         if scene.manager is not None:
             raise ValueError("A manager is already attached to this scene.")
         self.scene = scene
-        self._execution = scene.renderer._claim_execution(
+        self._execution: _ExecutionState = scene.renderer._claim_execution(
             self, frame_rate=scene.session_spec.frame_rate
         )
         self._file_writer: SceneFileWriter | None = None
@@ -868,8 +870,6 @@ class Manager(Generic[SceneT]):
         even without file output. OpenGL reads them back only for video and
         image-sequence output.
         """
-        from .renderer.cairo.renderer import CairoRenderer
-
         output = self.output_spec
         return (
             isinstance(self.renderer, CairoRenderer)
