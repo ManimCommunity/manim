@@ -132,6 +132,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
         --------
         ::
 
+            >>> from manim import LEFT, ORIGIN, RIGHT, UP
             >>> poly = Polygram([ORIGIN, RIGHT, UP, LEFT + UP], [LEFT, LEFT + UP, 2 * LEFT])
             >>> groups = poly.get_vertex_groups()
             >>> len(groups)

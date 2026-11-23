@@ -1115,6 +1115,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
         --------
         ::
 
+            >>> from manim import ORIGIN, RIGHT, UR
             >>> line_1, line_2 = Line(ORIGIN, RIGHT), Line(ORIGIN, UR)
             >>> angle = Angle(line_1, line_2)
             >>> angle.get_lines()
