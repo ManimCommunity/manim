@@ -189,7 +189,7 @@ def _count_drawn_paths(monkeypatch, scene):
 
         monkeypatch.setattr(_CairoDrawingContext, "draw_nodes", draw_nodes)
     else:
-        from manim.renderer.opengl.drawing import SnapshotDrawing
+        from manim.renderer.opengl._drawing import SnapshotDrawing
 
         original = SnapshotDrawing._draw_nodes
 

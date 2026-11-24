@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from manim.renderer.projection import project_points
-from manim.renderer.snapshot import LegacyShaded, RMesh
+from manim.renderer.snapshot import FacingCamera, FixedInFrame, LegacyShaded, RMesh
 from manim.utils._path_points import (
     end_corner,
     end_corner_index,
@@ -20,7 +20,7 @@ from manim.utils.color import get_shaded_rgb
 
 if TYPE_CHECKING:
     from manim.renderer.protocol import CameraState
-    from manim.renderer.snapshot import RNode, RPath
+    from manim.renderer.snapshot import Placement, RNode, RPath
     from manim.typing import FloatRGBA_Array, Point3D, Point3D_Array
 
 __all__ = [
@@ -67,25 +67,24 @@ def view_transform_center(state: CameraState) -> Point3D:
 def place(
     state: CameraState,
     points: Point3D_Array,
-    fixed_in_frame: bool,
-    orientation_center: Point3D | None,
+    placement: Placement | None,
 ) -> Point3D_Array:
     """Where points are drawn, in the coordinates of :func:`view_transform_center`."""
     if not np.all(np.isfinite(points)):
         return np.zeros((1, 3))
     if not is_3d(state):
-        if fixed_in_frame:
+        if isinstance(placement, FixedInFrame):
             # Drawn as if the frame were at its default position and size.
             scale = state.frame_width / state.default_frame_width
             return state.center + scale * points
         return points
     # The view transform is centered at the origin, so points fixed in frame are
     # drawn where they are.
-    if fixed_in_frame:
+    if isinstance(placement, FixedInFrame):
         return points
-    if orientation_center is not None:
-        center = np.asarray(orientation_center).reshape((1, 3))
-        return points + (project_points(state, center)[0] - orientation_center)
+    if isinstance(placement, FacingCamera):
+        center = placement.center
+        return points + (project_points(state, center.reshape((1, 3)))[0] - center)
     return project_points(state, points)
 
 
@@ -93,7 +92,7 @@ def display_points(
     state: CameraState, node: RNode, points: Point3D_Array
 ) -> Point3D_Array:
     """:func:`place` for the points of a render snapshot."""
-    return place(state, points, node.fixed_in_frame, node.fixed_orientation_center)
+    return place(state, points, node.placement)
 
 
 def sort_for_display(state: CameraState, nodes: list[RNode]) -> list[RNode]:

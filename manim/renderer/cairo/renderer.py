@@ -8,7 +8,7 @@ from .._reuse import PrefixMemo, node_key, view_key
 from .._view import sort_for_display
 from ..protocol import PixelFrame, RenderConfig, RendererState
 from ..snapshot import RMesh
-from .mesh_faces import mesh_faces
+from ._mesh_faces import mesh_faces
 from .rendering import _CairoDrawingContext, reusable_boundary
 from .target import _CairoRasterSettings, _CairoRenderTarget, _ImageFiles
 

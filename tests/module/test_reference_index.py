@@ -34,7 +34,6 @@ UNLISTED = {
     "manim.renderer.opengl.shader",
     "manim.renderer.opengl.window",
     "manim.renderer.opengl.window_settings",
-    "manim.renderer.protocol",
     "manim.scene",
     "manim.scene.audio_mixer",
     "manim.scene.video_segment_encoder",
