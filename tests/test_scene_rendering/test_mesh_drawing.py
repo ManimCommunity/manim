@@ -312,7 +312,7 @@ def test_a_material_change_redraws_on_cairo():
 
 
 def test_face_keys_follow_every_change_of_the_mesh():
-    from manim.renderer.cairo.mesh_faces import mesh_faces
+    from manim.renderer.cairo._mesh_faces import mesh_faces
     from manim.renderer.extract import snapshot
 
     camera = ThreeDScene().camera
@@ -329,7 +329,7 @@ def test_face_keys_follow_every_change_of_the_mesh():
 
 
 def test_faces_are_sorted_by_their_own_middle():
-    from manim.renderer.cairo.mesh_faces import mesh_faces
+    from manim.renderer.cairo._mesh_faces import mesh_faces
     from manim.renderer.extract import snapshot
 
     # A tetrahedron around the origin: the middle of every face's bounding box is

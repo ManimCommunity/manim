@@ -104,10 +104,8 @@ def mesh_faces(node: RNode, camera: Camera) -> list[RNode]:
                 uid=-((node.uid << 32) | int(index)) - 1,
                 key=None if node.key is None else (node.key, int(index)),
                 versions=face_versions,
-                z_index=node.z_index,
                 payload=path,
-                fixed_in_frame=node.fixed_in_frame,
-                fixed_orientation_center=node.fixed_orientation_center,
+                placement=node.placement,
             )
         )
     return nodes

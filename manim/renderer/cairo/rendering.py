@@ -32,8 +32,8 @@ from manim.utils._path_points import (
 )
 from manim.utils.space_ops import cross2d
 
+from ._mesh_faces import mesh_faces
 from .camera import Camera
-from .mesh_faces import mesh_faces
 from .target import _CairoRenderTarget, _PathCache
 
 if TYPE_CHECKING:
