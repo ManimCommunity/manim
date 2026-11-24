@@ -20,7 +20,6 @@ import numpy as np
 from PIL import Image
 
 from manim.material import Material, Pbr
-from manim.mobject.fields import ArrayField, Field
 from manim.mobject.mobject import Mobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import (
@@ -34,6 +33,7 @@ from manim.utils.color import (
 )
 from manim.utils.images import get_full_raster_image_path
 from manim.utils.iterables import stretch_array_to_length
+from manim.utils.versioned_fields import ArrayField, Field
 
 if TYPE_CHECKING:
     from typing import Self

@@ -24,7 +24,7 @@ from ...scene.scene_file_writer import SceneFileWriter
 from .._execution import _RendererExecutionView
 from ..cairo.camera import Camera, MultiCamera, ThreeDCamera
 from ..protocol import RendererCapabilities, RendererState
-from .drawing import DrawTarget, SnapshotDrawing
+from ._drawing import DrawTarget, SnapshotDrawing
 from .shader import shader_program_cache
 from .window_settings import _WindowSettings
 

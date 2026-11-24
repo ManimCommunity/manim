@@ -26,6 +26,7 @@ from manim.renderer._lighting import AMBIENT, DEFAULT_LIGHT_INTENSITY
 from manim.renderer._paint import paint_colors, shows
 from manim.renderer.cairo.camera import ThreeDCamera
 from manim.renderer.snapshot import (
+    FacingCamera,
     LegacyShaded,
     RCameraView,
     RImage,
@@ -36,8 +37,8 @@ from manim.renderer.snapshot import (
     RSolid,
 )
 
+from ._winding_fill import WindingFill
 from .shader import Shader
-from .winding_fill import WindingFill
 
 if TYPE_CHECKING:
     from manim.renderer.cairo.camera import Camera
@@ -421,8 +422,9 @@ class SnapshotDrawing:
         if node.fixed_in_frame:
             return "frame", None
         camera = self._base_target.camera
-        center = node.fixed_orientation_center
-        if center is not None and isinstance(camera, ThreeDCamera):
+        placement = node.placement
+        if isinstance(placement, FacingCamera) and isinstance(camera, ThreeDCamera):
+            center = placement.center
             return "frame", camera.project_point(center) - center
         return "normal", None
 

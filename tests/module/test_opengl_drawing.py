@@ -4,7 +4,7 @@ import numpy as np
 from scipy.spatial import cKDTree
 
 from manim import Ellipse
-from manim.renderer.opengl.drawing import cubics_to_quadratics
+from manim.renderer.opengl._drawing import cubics_to_quadratics
 
 
 def _samples(controls: np.ndarray, count: int) -> np.ndarray:
@@ -34,7 +34,7 @@ def test_quadratic_pieces_stay_within_tolerance():
 def test_cached_geometry_follows_the_point_tolerance():
     from manim import VMobject
     from manim.renderer.extract import snapshot
-    from manim.renderer.opengl.drawing import _GeometryCache
+    from manim.renderer.opengl._drawing import _GeometryCache
 
     # Two curves whose ends are 1e-3 apart: one subpath or two, by the tolerance.
     path = VMobject()

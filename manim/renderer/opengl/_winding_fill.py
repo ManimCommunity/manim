@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
     from manim.renderer.snapshot import RNode, RPath
 
-    from .drawing import DrawTarget, _Geometry
+    from ._drawing import DrawTarget, _Geometry
     from .renderer import OpenGLRenderer
 
 __all__ = ["WindingFill"]
@@ -75,7 +75,7 @@ def pack(
     colours: list[tuple[np.ndarray, np.ndarray | None]],
 ) -> np.ndarray:
     """The two triangles per quadratic piece of several paths, built in one pass."""
-    from .drawing import _colours, _concatenate
+    from ._drawing import _colours, _concatenate
 
     quads, counts, offsets = _concatenate(geometry)
     subpath_start = np.concatenate(

@@ -12,8 +12,8 @@ from manim import (
     tempconfig,
 )
 from manim.material import Pbr, Unlit
-from manim.mobject.fields import field_version
 from manim.renderer.protocol import CapabilityError
+from manim.utils.versioned_fields import field_version
 
 
 def _saddle(resolution=(4, 3), **kwargs):
