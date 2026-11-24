@@ -2239,7 +2239,27 @@ class Axes(VGroup, CoordinateSystem, metaclass=ConvertToOpenGL):
                     self.add(ax, circ, label, Dot(circ.get_right()))
         """
         point = np.asarray(point)
-        result = np.asarray([axis.point_to_number(point) for axis in self.get_axes()])
+        axes = self.get_axes()
+        axis_vectors = np.asarray([axis.get_end() - axis.get_start() for axis in axes])
+        basis = axis_vectors.T
+        if len(axes) == 2:
+            # Complete a plane's basis so perpendicular displacement is ignored.
+            basis = np.column_stack((basis, np.cross(axis_vectors[0], axis_vectors[1])))
+
+        # Axis minima are valid reference coordinates even for nonzero ranges
+        # and existing NumberLine scaling.
+        origin = self.coords_to_point(*(axis.x_min for axis in axes))
+        coefficients = np.linalg.solve(basis, (point - origin).T)
+        result = np.asarray(
+            [
+                axis.point_to_number(
+                    axis.get_start() + coefficient[..., np.newaxis] * vector
+                )
+                for axis, vector, coefficient in zip(
+                    axes, axis_vectors, coefficients, strict=False
+                )
+            ]
+        )
         if point.ndim == 2:
             return result.T
         return result
