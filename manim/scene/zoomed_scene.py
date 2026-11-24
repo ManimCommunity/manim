@@ -83,7 +83,7 @@ class ZoomedScene(Scene):
             "default_frame_stroke_width": 2,
             "background_opacity": 1,
         },
-        zoomed_camera_image_mobject_config: dict[str, Any] = {},
+        zoomed_camera_image_mobject_config: dict[str, Any] = None,
         zoomed_camera_frame_starting_position: Point3DLike = ORIGIN,
         zoom_factor: float = 0.15,
         image_frame_stroke_width: float = 3,
@@ -113,7 +113,7 @@ class ZoomedScene(Scene):
         # Initialize camera and display
         zoomed_camera = Camera(**self.zoomed_camera_config)
         zoomed_display = ImageMobjectFromCamera(
-            zoomed_camera, **self.zoomed_camera_image_mobject_config
+            zoomed_camera, self.zoomed_camera_image_mobject_config
         )
         zoomed_display.add_display_frame()
         for mob in zoomed_camera.frame, zoomed_display:
