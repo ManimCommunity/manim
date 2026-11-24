@@ -6,11 +6,13 @@ import numpy as np
 import pytest
 
 from manim import (
+    BLACK,
     DEGREES,
     DOWN,
     GREEN,
     LEFT,
     ORIGIN,
+    RED,
     RIGHT,
     UP,
     Angle,
@@ -182,6 +184,33 @@ def test_BackgroundRectangle(manim_caplog):
         "Argument {'hello': 'world'} is ignored in BackgroundRectangle.set_style."
         in manim_caplog.text
     )
+
+
+def test_BackgroundRectangle_matches_the_opacity_of_a_style():
+    """Regression test for https://github.com/ManimCommunity/manim/issues/5180:
+    ``match_style`` passes paints, without a ``fill_opacity``.
+    """
+    bg = BackgroundRectangle(Square())
+    bg.match_style(Square().set_fill(RED, opacity=0.3), family=False)
+    assert bg.get_fill_opacity() == pytest.approx(0.3)
+    assert bg.get_fill_color() == BLACK
+
+
+def test_DrawBorderThenFill_fades_in_the_background_of_a_label():
+    from manim import DrawBorderThenFill, Label
+
+    label = Label(label="0.5")
+    background = next(
+        m for m in label.submobjects if isinstance(m, BackgroundRectangle)
+    )
+    animation = DrawBorderThenFill(label)
+    animation.begin()
+    opacities = []
+    for alpha in (0.25, 0.75, 1.0):
+        animation.interpolate(alpha)
+        opacities.append(background.get_fill_opacity())
+    # As on Manim 0.22.
+    assert opacities == pytest.approx([0.0, 0.5, 1.0])
 
 
 def test_BackgroundRectangle_color_access():

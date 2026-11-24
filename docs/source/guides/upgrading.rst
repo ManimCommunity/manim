@@ -440,6 +440,12 @@ before; ``set_fill`` and ``set_stroke`` also take a paint. ``fill_opacity``,
 ``background_stroke_opacity`` are properties over the paints.
 :meth:`~.VMobject.rotate` turns the direction of gradients.
 
+:meth:`~.VMobject.get_style` returns the paints themselves, with their opacities,
+under ``fill_color``, ``stroke_color`` and ``background_stroke_color``; it no longer
+has ``fill_opacity``, ``stroke_opacity`` or ``background_stroke_opacity``. A
+subclass that overrides :meth:`~.VMobject.set_style` (as :meth:`~.VMobject.match_style`
+calls it with such a style) must not require them.
+
 .. list-table::
    :header-rows: 1
 
