@@ -399,7 +399,6 @@ class Unwrite(Write):
     def __init__(
         self,
         vmobject: VMobject,
-        rate_func: Callable[[float], float] = linear,
         reverse: bool = True,
         **kwargs,
     ) -> None:
