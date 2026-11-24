@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from manim import AddTextLetterByLetter, Text
+from manim import RIGHT, AddTextLetterByLetter, Create, Dot, Text
 
 
 def test_non_empty_text_creation():
@@ -32,3 +32,21 @@ def test_run_time_for_non_empty_text(config):
     expected_run_time = np.max((1 / config.frame_rate, run_time_per_char)) * len(s.text)
     anim = AddTextLetterByLetter(s, time_per_char=run_time_per_char)
     assert anim.run_time == expected_run_time
+
+
+def test_create_suspends_mobject_updaters():
+    """Ensure Create honors suspend_mobject_updating for time-based updaters."""
+    control = Dot()
+    control_animation = Create(control, suspend_mobject_updating=True)
+    control_animation.begin()
+    control_animation.interpolate(0.5)
+
+    dot = Dot()
+    dot.add_updater(lambda mobject, dt: mobject.shift(RIGHT * dt))
+
+    animation = Create(dot, suspend_mobject_updating=True)
+    animation.begin()
+    animation.update_mobjects(1)
+    animation.interpolate(0.5)
+
+    assert np.allclose(dot.get_center(), control.get_center())
