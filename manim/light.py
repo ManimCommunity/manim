@@ -21,10 +21,10 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 
 from manim.constants import ORIGIN
-from manim.mobject.fields import Field
 from manim.mobject.mobject import Mobject
 from manim.utils.bezier import interpolate
 from manim.utils.color import WHITE, ManimColor, ParsableManimColor
+from manim.utils.versioned_fields import Field
 
 if TYPE_CHECKING:
     from typing import Self

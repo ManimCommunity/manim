@@ -238,11 +238,7 @@ class _CairoDrawingContext:
         coordinates (the context's user space), so Cairo samples it where it
         draws.
         """
-        if (
-            is_3d(self.camera)
-            or node.fixed_in_frame
-            or node.fixed_orientation_center is not None
-        ):
+        if is_3d(self.camera) or node.placement is not None:
             raise CapabilityError(
                 "The Cairo renderer draws colour fields only under a flat camera, "
                 "on mobjects that are not fixed in the frame."

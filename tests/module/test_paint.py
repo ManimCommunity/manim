@@ -23,9 +23,9 @@ from manim import (
     Transform,
     interpolate_paint,
 )
-from manim.mobject.fields import field_version
 from manim.paint import Paint
 from manim.utils.space_ops import rotate_vector
+from manim.utils.versioned_fields import field_version
 
 
 def test_paints_cannot_be_changed():

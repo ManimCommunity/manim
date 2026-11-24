@@ -146,7 +146,7 @@ def test_normals_of_a_deformed_mesh_are_not_those_of_its_old_welds():
     from manim import Sphere
     from manim.renderer import extract
     from manim.renderer._mesh import vertex_normals
-    from manim.renderer.opengl import drawing
+    from manim.renderer.opengl import _drawing as drawing
 
     cache = drawing._NormalCache()
     sphere = Sphere(resolution=(8, 6))
@@ -170,7 +170,7 @@ def test_normals_of_a_deformed_mesh_are_not_those_of_its_old_welds():
 def test_normals_of_a_moving_mesh_reuse_its_accumulator(monkeypatch):
     from manim import UP, Torus
     from manim.renderer import _mesh, extract
-    from manim.renderer.opengl import drawing
+    from manim.renderer.opengl import _drawing as drawing
 
     made = []
     original = _mesh.NormalAccumulator
