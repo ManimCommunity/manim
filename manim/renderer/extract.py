@@ -22,8 +22,11 @@ from manim.mobject.types.image_mobject import (
 from manim.mobject.types.point_cloud_mobject import PMobject
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.renderer.snapshot import (
+    FacingCamera,
+    FixedInFrame,
     LegacyShaded,
     Payload,
+    Placement,
     RCameraView,
     RImage,
     RLinearGradient,
@@ -41,10 +44,11 @@ from manim.utils.iterables import list_difference_update
 if TYPE_CHECKING:
     from manim.typing import FloatRGBA_Array, Point3D
 
-__all__ = ["extract", "snapshot"]
+__all__ = ["extract", "placement_of", "snapshot"]
 
 _UNLIT = Unlit()
 _LEGACY_SHADED = LegacyShaded()
+_FIXED_IN_FRAME = FixedInFrame()
 
 
 def extract(
@@ -56,8 +60,9 @@ def extract(
 ) -> list[RNode]:
     """Return render snapshots for the families of ``mobjects`` in drawing order.
 
-    The order is family order, without duplicates, stably sorted by ``z_index`` if
-    ``use_z_index``. Families of ``excluded_mobjects`` and mobjects without points are
+    The order is family order, stably sorted by ``z_index`` if ``use_z_index``. A
+    mobject that occurs more than once (in several families) is drawn once, at its
+    last place. Families of ``excluded_mobjects`` and mobjects without points are
     left out. With ``include_submobjects=False``, ``mobjects`` are taken as given.
     Plain :class:`~.Mobject` instances are always left out; they have nothing to draw.
 
@@ -70,7 +75,9 @@ def extract(
         members = list(mobjects)
     else:
         members = extract_mobject_family_members(
-            mobjects, use_z_index=use_z_index, only_those_with_points=True
+            mobjects,
+            use_z_index=use_z_index,
+            only_those_with_points=True,
         )
         excluded = list(excluded_mobjects)
         if excluded:
@@ -78,7 +85,7 @@ def extract(
                 members,
                 extract_mobject_family_members(excluded, use_z_index=use_z_index),
             )
-    nodes = []
+    nodes: list[RNode] = []
     for mobject in members:
         node = snapshot(mobject)
         if node is not None:
@@ -99,17 +106,24 @@ def snapshot(mobject: Mobject) -> RNode | None:
     if payload is None:
         return None
     versions: dict[str, int] = mobject.__dict__.get("_field_versions", {})
-    center_func = mobject.fixed_orientation
-    orientation_center = None if center_func is None else center_func()
+    placement = placement_of(mobject)
     return RNode(
         uid=mobject.uid,
-        key=_key(mobject, payload, versions, orientation_center),
+        key=_key(mobject, payload, versions, placement),
         versions=_slot_versions(versions, slots),
-        z_index=mobject.z_index,
         payload=payload,
-        fixed_in_frame=mobject.fixed_in_frame,
-        fixed_orientation_center=orientation_center,
+        placement=placement,
     )
+
+
+def placement_of(mobject: Mobject) -> Placement | None:
+    """How ``mobject`` is placed in the view (see :attr:`.RNode.placement`)."""
+    if mobject.fixed_in_frame:
+        return _FIXED_IN_FRAME
+    center_func = mobject.fixed_orientation
+    if center_func is not None:
+        return FacingCamera(np.asarray(center_func(), dtype=np.float64))
+    return None
 
 
 def _slot_versions(
@@ -117,7 +131,7 @@ def _slot_versions(
 ) -> dict[str, int]:
     """The version of each slot: the largest version of the fields it is made of."""
     get = versions.get
-    result = {}
+    result: dict[str, int] = {}
     for slot, names in slots.items():
         latest = 0
         for name in names:
@@ -132,11 +146,14 @@ def _key(
     mobject: Mobject,
     payload: Payload,
     versions: dict[str, int],
-    orientation_center: Point3D | None,
+    placement: Placement | None,
 ) -> Any:
-    """The node's key (see :attr:`.RNode.key`): its uid, a revision of all of its
-    fields, and the placement that is not a field value; ``None`` for mobjects that
-    can change without a field changing.
+    """The node's key (see :attr:`.RNode.key`): its uid, the largest version of its
+    fields, and the point a fixed orientation follows (not a field value); ``None``
+    for mobjects that can change without a field changing.
+
+    Versions come from one counter (see :mod:`manim.utils.versioned_fields`), so the
+    largest one changes whenever any field of the mobject is assigned.
     """
     if (
         not mobject._drawn_from_fields
@@ -149,13 +166,12 @@ def _key(
         )
     ):
         return None
-    values = versions.values()
-    return (
-        mobject.uid,
-        (max(values, default=0), len(versions)),
-        mobject.fixed_in_frame,
-        None if orientation_center is None else tuple(orientation_center.tolist()),
+    center = (
+        tuple(placement.center.tolist())
+        if isinstance(placement, FacingCamera)
+        else None
     )
+    return (mobject.uid, max(versions.values(), default=0), center)
 
 
 def _payload(mobject: Mobject) -> tuple[Payload | None, dict[str, tuple[str, ...]]]:

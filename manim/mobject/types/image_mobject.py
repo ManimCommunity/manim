@@ -112,7 +112,9 @@ class AbstractImageMobject(Mobject):
             * 'lanczos' or 'antialias'
         """
         _validate_resampling_algorithm(resampling_algorithm)
-        self.resampling_algorithm = resampling_algorithm
+        # Stored as the enum, which renderers expect (``0`` and
+        # ``Resampling.NEAREST`` are equal).
+        self.resampling_algorithm = Resampling(resampling_algorithm)
         return self
 
     def reset_points(self) -> Self:
@@ -375,7 +377,9 @@ class ImageMobjectFromCamera(Mobject):
     def set_resampling_algorithm(self, resampling_algorithm: int) -> Self:
         """Set the Pillow sampling algorithm used when compositing the view."""
         _validate_resampling_algorithm(resampling_algorithm)
-        self.resampling_algorithm = resampling_algorithm
+        # Stored as the enum, which renderers expect (``0`` and
+        # ``Resampling.NEAREST`` are equal).
+        self.resampling_algorithm = Resampling(resampling_algorithm)
         return self
 
     def add_display_frame(self, **kwargs: Any) -> Self:

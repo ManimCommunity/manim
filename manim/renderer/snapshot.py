@@ -2,8 +2,25 @@
 
 A renderer draws a list of :class:`RNode` snapshots instead of reading mobjects. Each
 node holds one payload with the values to draw (a path, a point cloud, an image, the
-view of another camera), its place in the drawing order, and what a renderer needs to
-reuse work from earlier frames:
+view of another camera), how it is placed in the view, and what a renderer needs to
+reuse work from earlier frames. The list is in drawing order (family order, sorted by
+``z_index``; see :func:`~.extract`).
+
+The ``R`` in the names stands for *render snapshot*: each ``R`` type holds the values
+of one mobject or style type, resolved for drawing (``RPath`` for a
+:class:`~.VMobject`, ``RSolid`` for a solid color, and so on; each class says which).
+Values are resolved where a renderer would otherwise need the mobject: a gradient's
+ends are points in the scene, not a direction relative to the mobject.
+
+Each node also says how it is placed (:attr:`RNode.placement`):
+
+- ``None``: in the scene, drawn through the camera.
+- :class:`FixedInFrame`: drawn as if the camera were at its default position (see
+  :meth:`.Mobject.fix_in_frame`).
+- :class:`FacingCamera`: moves with a point of the scene, but is not rotated with it
+  (see :meth:`.Mobject.fix_orientation`).
+
+For reuse:
 
 - :attr:`RNode.key`: equal keys mean the same drawing from the same view. A renderer
   may reuse whatever it made for a node with an equal key. ``None`` means that the
@@ -41,9 +58,12 @@ if TYPE_CHECKING:
     )
 
 __all__ = [
+    "FacingCamera",
+    "FixedInFrame",
     "LegacyShaded",
     "Material",
     "Payload",
+    "Placement",
     "RCameraView",
     "RImage",
     "RLinearGradient",
@@ -60,13 +80,14 @@ __all__ = [
 
 
 class RSolid(NamedTuple):
-    """One color."""
+    """One color: the snapshot of a mobject's single fill or stroke color."""
 
     rgba: FloatRGBA
 
 
 class RLinearGradient(NamedTuple):
-    """Colors evenly spaced along the line from ``start`` to ``end``.
+    """Colors evenly spaced along the line from ``start`` to ``end``: the snapshot of
+    a mobject's list of fill or stroke colors, its gradient.
 
     The points are in scene coordinates. Beyond its ends, the gradient keeps the
     color of the nearer end.
@@ -107,7 +128,7 @@ class Stroke(NamedTuple):
 
 
 class RPath(NamedTuple):
-    """A vectorized path (:class:`~.VMobject`).
+    """A vectorized path: the snapshot of a :class:`~.VMobject`.
 
     Slots of :attr:`RNode.versions`:
 
@@ -137,7 +158,7 @@ class RPath(NamedTuple):
 
 
 class RPoints(NamedTuple):
-    """A point cloud (:class:`~.PMobject`).
+    """A point cloud: the snapshot of a :class:`~.PMobject`.
 
     Slots: ``"geometry"`` (``points``), ``"colors"`` (``rgbas``, ``stroke_width``).
     """
@@ -148,7 +169,8 @@ class RPoints(NamedTuple):
 
 
 class RImage(NamedTuple):
-    """A raster image (:class:`~.AbstractImageMobject`), placed by its corner points.
+    """A raster image, placed by its corner points: the snapshot of an
+    :class:`~.AbstractImageMobject`.
 
     Slots: ``"geometry"`` (``points``), ``"pixels"`` (``pixel_array``,
     ``resampling_algorithm``).
@@ -160,7 +182,8 @@ class RImage(NamedTuple):
 
 
 class RCameraView(NamedTuple):
-    """Where to show the view of another camera (:class:`~.ImageMobjectFromCamera`).
+    """Where to show the view of another camera: the snapshot of an
+    :class:`~.ImageMobjectFromCamera`.
 
     The renderer supplies the pixels, looked up by the node's ``uid``. Nodes of camera
     views have no key: the view can change without the mobject changing.
@@ -175,8 +198,28 @@ class RCameraView(NamedTuple):
 Payload = RPath | RPoints | RImage | RCameraView
 
 
+# Placements: how a node is placed in the view (``None``: in the scene).
+
+
+class FixedInFrame(NamedTuple):
+    """Drawn as if the camera were at its default position and orientation (see
+    :meth:`.Mobject.fix_in_frame`). Takes precedence over a fixed orientation.
+    """
+
+
+class FacingCamera(NamedTuple):
+    """Moved with the projection of ``center``, but not rotated with the scene (see
+    :meth:`.Mobject.fix_orientation`).
+    """
+
+    center: Point3D
+
+
+Placement = FixedInFrame | FacingCamera
+
+
 class RNode(NamedTuple):
-    """What a renderer draws for one mobject."""
+    """What a renderer draws for one mobject: the snapshot of a :class:`~.Mobject`."""
 
     #: Identifies the mobject within the process (see :attr:`.Mobject.uid`).
     uid: int
@@ -185,11 +228,12 @@ class RNode(NamedTuple):
     key: Hashable | None
     #: A version per slot of the payload; see the module documentation.
     versions: Mapping[str, int]
-    z_index: float
     payload: Payload
-    #: Drawn as if the camera were at its default position (see
-    #: :meth:`.Mobject.fix_in_frame`).
-    fixed_in_frame: bool
-    #: The point the mobject keeps facing the camera from, or ``None`` (see
-    #: :meth:`.Mobject.fix_orientation`).
-    fixed_orientation_center: Point3D | None
+    #: How the node is placed in the view; ``None``: in the scene. See the module
+    #: documentation.
+    placement: Placement | None
+
+    @property
+    def fixed_in_frame(self) -> bool:
+        """Whether the node is drawn as if the camera were at its default position."""
+        return type(self.placement) is FixedInFrame

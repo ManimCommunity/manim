@@ -20,7 +20,8 @@ from manim.mobject.types.image_mobject import ImageMobjectFromCamera
 from manim.mobject.types.point_cloud_mobject import Point
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.mobject.value_tracker import ValueTracker
-from manim.renderer.snapshot import LegacyShaded
+from manim.renderer.extract import placement_of
+from manim.renderer.snapshot import FacingCamera, FixedInFrame, LegacyShaded
 from manim.utils._path_points import (
     end_corner,
     end_corner_index,
@@ -34,7 +35,7 @@ from manim.utils.iterables import list_difference_update
 from manim.utils.space_ops import rotation_matrix_zxz
 
 if TYPE_CHECKING:
-    from manim.renderer.snapshot import RNode, RPath
+    from manim.renderer.snapshot import Placement, RNode, RPath
     from manim.typing import (
         FloatRGBA_Array,
         MatrixMN,
@@ -330,7 +331,7 @@ class Camera:
 
     def _display_points(self, node: RNode, points: Point3D_Array) -> Point3D_Array:
         """Project the points of a render snapshot for display."""
-        return self._place(points, node.fixed_in_frame, node.fixed_orientation_center)
+        return self._place(points, node.placement)
 
     def transform_points_pre_display(
         self,
@@ -338,18 +339,15 @@ class Camera:
         points: Point3D_Array,
     ) -> Point3D_Array:
         """Project the mobject's points for display."""
-        return self._place(points, mobject.fixed_in_frame, _orientation_center(mobject))
+        return self._place(points, placement_of(mobject))
 
     def _place(
-        self,
-        points: Point3D_Array,
-        fixed_in_frame: bool,
-        orientation_center: Point3D | None,
+        self, points: Point3D_Array, placement: Placement | None
     ) -> Point3D_Array:
         """Project points for display, as fixed in frame or facing the camera."""
         if not np.all(np.isfinite(points)):
             return np.zeros((1, 3))
-        if fixed_in_frame:
+        if isinstance(placement, FixedInFrame):
             # Drawn as if the frame were at its default position and size.
             scale = self.frame_width / config.frame_width
             return self.frame_center + scale * points
@@ -789,21 +787,17 @@ class ThreeDCamera(Camera):
         return self.project_points(point.reshape((1, 3)))[0, :]
 
     def _place(
-        self,
-        points: Point3D_Array,
-        fixed_in_frame: bool,
-        orientation_center: Point3D | None,
+        self, points: Point3D_Array, placement: Placement | None
     ) -> Point3D_Array:
         if not np.all(np.isfinite(points)):
             return np.zeros((1, 3))
         # The view transform of this camera is centered at the origin, so points
         # fixed in frame are drawn where they are.
-        if fixed_in_frame:
+        if isinstance(placement, FixedInFrame):
             return points
-        if orientation_center is not None:
-            return points + (
-                self.project_point(orientation_center) - orientation_center
-            )
+        if isinstance(placement, FacingCamera):
+            center = placement.center
+            return points + (self.project_point(center) - center)
         return self.project_points(points)
 
     def add_fixed_orientation_mobjects(
@@ -896,8 +890,3 @@ class ThreeDCamera(Camera):
         for mobject in extract_mobject_family_members(mobjects):
             if mobject in self.fixed_in_frame_mobjects:
                 self.fixed_in_frame_mobjects.remove(mobject)
-
-
-def _orientation_center(mobject: Mobject) -> Point3D | None:
-    center_func = mobject.fixed_orientation
-    return None if center_func is None else center_func()

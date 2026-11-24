@@ -25,6 +25,8 @@ from manim.material import Pbr, Unlit
 from manim.mobject.types.image_mobject import AbstractImageMobject
 from manim.renderer.extract import extract, snapshot
 from manim.renderer.snapshot import (
+    FacingCamera,
+    FixedInFrame,
     LegacyShaded,
     RImage,
     RLinearGradient,
@@ -74,6 +76,36 @@ def test_key_changes_with_any_field_and_only_then():
 
     square.z_index = 3
     assert snapshot(square).key != key
+
+
+def test_the_key_is_the_newest_assignment_to_any_field():
+    square, other = Square(), Square()
+    key = snapshot(square).key
+
+    other.set_fill(RED)  # another mobject
+    assert snapshot(square).key == key
+
+    square.stroke_width = square.stroke_width + 1
+    assert snapshot(square).key != key
+
+
+@pytest.mark.parametrize("fixed_orientation", [False, True])
+def test_fixed_in_frame_takes_precedence_over_a_fixed_orientation(fixed_orientation):
+    square = Square()
+    if fixed_orientation:
+        square.fix_orientation()
+    square.fix_in_frame()
+    assert snapshot(square).placement == FixedInFrame()
+    assert snapshot(square).fixed_in_frame
+
+    square.unfix_from_frame()
+    placement = snapshot(square).placement
+    if fixed_orientation:
+        assert isinstance(placement, FacingCamera)
+        np.testing.assert_array_equal(placement.center, square.get_center())
+    else:
+        assert placement is None
+    assert not snapshot(square).fixed_in_frame
 
 
 def test_copies_have_other_keys():
@@ -218,3 +250,19 @@ def test_the_key_follows_a_fixed_orientation_center():
     anchor[0] = np.array([1.0, 2.0, 3.0])
 
     assert snapshot(label).key != key
+
+
+@pytest.mark.parametrize("camera_view", [False, True])
+def test_resampling_algorithms_given_as_numbers_are_stored_as_the_enum(camera_view):
+    from PIL.Image import Resampling
+
+    from manim import Camera
+    from manim.mobject.types.image_mobject import ImageMobjectFromCamera
+
+    if camera_view:
+        image = ImageMobjectFromCamera(Camera())
+    else:
+        image = ImageMobject(np.zeros((2, 2, 4), dtype=np.uint8))
+    image.set_resampling_algorithm(0)
+    assert type(image.resampling_algorithm) is Resampling
+    assert snapshot(image).payload.resampling_algorithm is Resampling.NEAREST
