@@ -163,7 +163,11 @@ def test_exceptions_are_still_needed():
     ("importer", "imported", "rule"),
     [
         ("manim.camera", "manim.renderer._lighting", RULES[0]),
-        ("manim.renderer.opengl.drawing", "manim.renderer.cairo.mesh_faces", RULES[4]),
+        (
+            "manim.renderer.opengl._drawing",
+            "manim.renderer.cairo._mesh_faces",
+            RULES[4],
+        ),
         ("manim.renderer.snapshot", "manim.mobject.mobject", RULES[5]),
     ],
 )
