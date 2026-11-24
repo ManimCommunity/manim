@@ -21,7 +21,6 @@ from PIL.Image import Image
 
 from manim._config import config
 from manim.constants import *
-from manim.mobject.fields import ArrayField, Field
 from manim.mobject.mobject import Mobject, _interpolated
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -47,6 +46,7 @@ from manim.utils.iterables import (
     tuplify,
 )
 from manim.utils.space_ops import rotate_vector, shoelace_direction
+from manim.utils.versioned_fields import ArrayField, Field
 
 if TYPE_CHECKING:
     from typing import Self

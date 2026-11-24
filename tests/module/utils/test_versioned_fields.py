@@ -6,8 +6,8 @@ import numpy as np
 import pytest
 
 from manim import RED, RIGHT, Circle, ImageMobject, Mobject, Square, VMobject
-from manim.mobject.fields import ArrayField, Field, field_version
 from manim.utils.hashing import get_json
+from manim.utils.versioned_fields import ArrayField, Field, field_version
 
 
 def test_version_changes_on_assignment_only():
@@ -111,6 +111,40 @@ def test_plain_field_has_version_zero_until_assigned():
     holder.width = 2.0
     assert holder.width == 2.0
     assert field_version(holder, "width") != 0
+
+
+def test_the_newest_assignment_has_the_largest_version():
+    class Holder:
+        width = Field()
+        height = Field()
+
+    holder, other = Holder(), Holder()
+    holder.width = 1.0
+    holder.height = 1.0
+    other.width = 1.0
+    holder.width = 2.0
+
+    versions = [field_version(holder, name) for name in ("width", "height")]
+    assert max(versions) == field_version(holder, "width")
+    assert field_version(holder, "width") > field_version(other, "width")
+
+
+def test_an_assignment_takes_one_version(monkeypatch):
+    import manim.utils.versioned_fields as versioned_fields
+
+    taken = []
+    next_version = versioned_fields._next_version
+    monkeypatch.setattr(
+        versioned_fields, "_next_version", lambda: taken.append(1) or next_version()
+    )
+
+    class Holder:
+        width = Field()
+
+    holder = Holder()
+    holder.width = 1.0
+    holder.width = 2.0
+    assert len(taken) == 2
 
 
 def test_a_shallow_copy_has_its_own_versions():

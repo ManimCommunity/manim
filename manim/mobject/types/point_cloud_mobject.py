@@ -13,7 +13,6 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_point_cloud_mobject import OpenGLPMobject
 
 from ...constants import *
-from ...mobject.fields import Field
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
 from ...utils.color import (
@@ -27,6 +26,7 @@ from ...utils.color import (
     rgba_to_color,
 )
 from ...utils.iterables import stretch_array_to_length
+from ...utils.versioned_fields import Field
 
 __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
 

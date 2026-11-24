@@ -17,7 +17,7 @@ reuse work from earlier frames:
 A renderer may also ignore both and draw everything every frame.
 
 Payload arrays are the mobjects' field values: read-only, and shared, not copied
-(see :mod:`manim.mobject.fields`). The module imports no mobject module; snapshots
+(see :mod:`manim.utils.versioned_fields`). The module imports no mobject module; snapshots
 are made by :mod:`manim.renderer.extract`.
 """
 

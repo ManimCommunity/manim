@@ -44,7 +44,13 @@ from ..utils.iterables import (
 from ..utils.paths import straight_path
 from ..utils.simple_functions import clip
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
-from .fields import ArrayField, Field, _check_no_replaced_fields, _is_frozen
+from ..utils.versioned_fields import (
+    ArrayField,
+    Field,
+    check_fields,
+    copy_versions,
+    is_frozen,
+)
 
 if TYPE_CHECKING:
     from typing import Self, TypeAlias
@@ -155,7 +161,7 @@ class Mobject:
     @classmethod
     def __init_subclass__(cls, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
-        _check_no_replaced_fields(cls)
+        check_fields(cls)
 
         cls.animation_overrides = {}
         cls._add_intrinsic_animation_overrides()
@@ -522,12 +528,11 @@ class Mobject:
         # frozen field arrays and the attributes a class lists in _shared_on_copy.
         # Writing to __dict__ directly keeps field versions.
         for k, v in self.__dict__.items():
-            if isinstance(v, _IMMUTABLE_TYPES) or k in shared or _is_frozen(v):
+            if isinstance(v, _IMMUTABLE_TYPES) or k in shared or is_frozen(v):
                 attributes[k] = v
-            elif k == "_field_versions":
-                attributes[k] = v.copy()
-            else:
+            elif k != "_field_versions":
                 attributes[k] = copy.deepcopy(v, clone_from_id)
+        copy_versions(self, result)
         result.original_id = str(id(self))
         result.uid = next(_uids)
         return result
@@ -536,10 +541,7 @@ class Mobject:
         cls = self.__class__
         result = cls.__new__(cls)
         result.__dict__.update(self.__dict__)
-        # The versions belong to the copy: assigning a field of one must not change
-        # the version of the other's.
-        if "_field_versions" in self.__dict__:
-            result.__dict__["_field_versions"] = self.__dict__["_field_versions"].copy()
+        copy_versions(self, result)
         result.uid = next(_uids)
         return result
 

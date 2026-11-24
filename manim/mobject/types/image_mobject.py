@@ -15,7 +15,6 @@ from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 
 from ..._config import config
 from ...constants import *
-from ...mobject.fields import ArrayField, Field
 from ...mobject.mobject import Mobject
 from ...utils.bezier import interpolate
 from ...utils.color import (
@@ -26,6 +25,7 @@ from ...utils.color import (
     color_to_int_rgb,
 )
 from ...utils.images import change_to_rgba_array, get_full_raster_image_path
+from ...utils.versioned_fields import ArrayField, Field
 
 __all__ = ["ImageMobject", "ImageMobjectFromCamera"]
 
