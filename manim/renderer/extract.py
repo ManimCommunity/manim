@@ -34,8 +34,8 @@ from manim.renderer.snapshot import (
     RPaint,
     RPath,
     RPoints,
-    RSolid,
-    Stroke,
+    RSolidColor,
+    RStroke,
 )
 from manim.utils._path_points import end_corner, start_corner
 from manim.utils.family import extract_mobject_family_members
@@ -242,21 +242,21 @@ def _path(vmobject: VMobject) -> RPath:
 
     def paint(rgbas: FloatRGBA_Array) -> RPaint:
         if ends is None or len(rgbas) == 1:
-            return RSolid(rgbas[0])
+            return RSolidColor(rgbas[0])
         return RLinearGradient(ends[0], ends[1], rgbas)
 
     background_width = vmobject.get_stroke_width(background=True)
     return RPath(
         points=points,
         fill=paint(fill),
-        stroke=Stroke(
+        stroke=RStroke(
             paint(stroke),
             vmobject.get_stroke_width(),
             vmobject.joint_type,
             vmobject.cap_style,
         ),
         background_stroke=(
-            Stroke(
+            RStroke(
                 paint(background),
                 background_width,
                 vmobject.joint_type,

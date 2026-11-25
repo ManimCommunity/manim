@@ -8,7 +8,8 @@ reuse work from earlier frames. The list is in drawing order (family order, sort
 
 The ``R`` in the names stands for *render snapshot*: each ``R`` type holds the values
 of one mobject or style type, resolved for drawing (``RPath`` for a
-:class:`~.VMobject`, ``RSolid`` for a solid color, and so on; each class says which).
+:class:`~.VMobject`, ``RSolidColor`` for a single solid color, and so on; each class
+says which).
 Values are resolved where a renderer would otherwise need the mobject: a gradient's
 ends are points in the scene, not a direction relative to the mobject.
 
@@ -71,15 +72,15 @@ __all__ = [
     "RPaint",
     "RPath",
     "RPoints",
-    "RSolid",
-    "Stroke",
+    "RSolidColor",
+    "RStroke",
 ]
 
 
 # Paints: how an area or a line is colored.
 
 
-class RSolid(NamedTuple):
+class RSolidColor(NamedTuple):
     """One color: the snapshot of a mobject's single fill or stroke color."""
 
     rgba: FloatRGBA
@@ -98,7 +99,7 @@ class RLinearGradient(NamedTuple):
     rgbas: FloatRGBA_Array
 
 
-RPaint = RSolid | RLinearGradient
+RPaint = RSolidColor | RLinearGradient
 
 
 class LegacyShaded(NamedTuple):
@@ -114,7 +115,7 @@ class LegacyShaded(NamedTuple):
 Material = UnlitMaterial | PbrMaterial | LegacyShaded
 
 
-class Stroke(NamedTuple):
+class RStroke(NamedTuple):
     """How a path's outline is drawn."""
 
     paint: RPaint
@@ -143,9 +144,9 @@ class RPath(NamedTuple):
 
     points: Point3D_Array
     fill: RPaint
-    stroke: Stroke
+    stroke: RStroke
     #: Drawn below the fill; ``None`` if it has no width.
-    background_stroke: Stroke | None
+    background_stroke: RStroke | None
     material: Material
     #: The point by which a camera with perspective orders paths by depth, or
     #: ``None`` if the path is drawn in scene order.

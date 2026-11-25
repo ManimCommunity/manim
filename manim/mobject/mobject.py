@@ -82,7 +82,7 @@ _NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
 _Updater: TypeAlias = _NonTimeBasedUpdater | _TimeBasedUpdater
 
 
-_uids = it.count(1)
+_UIDS = it.count(1)
 
 
 def _interpolated(
@@ -202,7 +202,7 @@ class Mobject:
         target: Mobject | None = None,
         z_index: float = 0,
     ):
-        self.uid = next(_uids)
+        self.uid = next(_UIDS)
         self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
         self.target = target
@@ -563,7 +563,7 @@ class Mobject:
                 attributes[k] = copy.deepcopy(v, clone_from_id)
         copy_versions(self, result)
         result.original_id = str(id(self))
-        result.uid = next(_uids)
+        result.uid = next(_UIDS)
         return result
 
     def __copy__(self) -> Self:
@@ -571,7 +571,7 @@ class Mobject:
         result = cls.__new__(cls)
         result.__dict__.update(self.__dict__)
         copy_versions(self, result)
-        result.uid = next(_uids)
+        result.uid = next(_UIDS)
         return result
 
     def __repr__(self) -> str:

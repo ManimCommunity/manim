@@ -133,9 +133,9 @@ def test_an_assignment_takes_one_version(monkeypatch):
     import manim.utils.versioned_fields as versioned_fields
 
     taken = []
-    next_version = versioned_fields._next_version
+    next_version = versioned_fields._NEXT_VERSION
     monkeypatch.setattr(
-        versioned_fields, "_next_version", lambda: taken.append(1) or next_version()
+        versioned_fields, "_NEXT_VERSION", lambda: taken.append(1) or next_version()
     )
 
     class Holder:

@@ -48,7 +48,7 @@ __all__ = [
 
 T = TypeVar("T")
 
-_next_version = itertools.count(1).__next__
+_NEXT_VERSION = itertools.count(1).__next__
 
 _UNSET: Any = object()
 # Types whose equal values are interchangeable and cheap to compare.
@@ -161,7 +161,7 @@ def _store(obj: object, name: str, value: object) -> None:
     ):
         return
     attributes[name] = value
-    version = _next_version()
+    version = _NEXT_VERSION()
     try:
         attributes["_field_versions"][name] = version
     except KeyError:

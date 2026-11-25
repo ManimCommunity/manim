@@ -32,7 +32,7 @@ from manim.renderer.snapshot import (
     RLinearGradient,
     RPath,
     RPoints,
-    RSolid,
+    RSolidColor,
 )
 
 
@@ -59,7 +59,7 @@ def test_snapshot_shares_field_values():
     square = Square()
     node = snapshot(square)
     assert node.payload.points is square.points
-    assert isinstance(node.payload.fill, RSolid)
+    assert isinstance(node.payload.fill, RSolidColor)
     np.testing.assert_array_equal(node.payload.fill.rgba, square.fill_rgbas[0])
     assert node.payload.material == UnlitMaterial()
     assert node.payload.depth_reference is None
@@ -145,7 +145,7 @@ def test_paints_and_materials():
 
     assert isinstance(path.fill, RLinearGradient)
     np.testing.assert_allclose(path.fill.rgbas, square.fill_rgbas)
-    assert isinstance(path.stroke.paint, RSolid)
+    assert isinstance(path.stroke.paint, RSolidColor)
     assert path.stroke.width == 3
     assert path.background_stroke is None
 
@@ -230,7 +230,7 @@ def test_masked_paths_keep_their_paint():
     node = snapshot(stroke)
     assert node.payload.mask == "some_image.png"
     # The mask multiplies the path's own paint, so the paint stays.
-    assert isinstance(node.payload.stroke.paint, RSolid)
+    assert isinstance(node.payload.stroke.paint, RSolidColor)
 
 
 def test_point_clouds_have_no_key_yet():

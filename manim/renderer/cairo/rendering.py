@@ -23,8 +23,8 @@ from manim.renderer.snapshot import (
     RPaint,
     RPath,
     RPoints,
-    RSolid,
-    Stroke,
+    RSolidColor,
+    RStroke,
 )
 from manim.utils._path_points import (
     end_corner,
@@ -211,7 +211,7 @@ class _CairoDrawingContext:
         node: RNode,
         path: RPath,
     ) -> None:
-        if isinstance(paint, RSolid) and type(path.material) is not LegacyShaded:
+        if isinstance(paint, RSolidColor) and type(path.material) is not LegacyShaded:
             rgba = paint.rgba
             context.set_source_rgba(*rgba[2::-1], rgba[3])
             return
@@ -240,7 +240,7 @@ class _CairoDrawingContext:
         context: cairo.Context,
         node: RNode,
         path: RPath,
-        stroke: Stroke,
+        stroke: RStroke,
     ) -> None:
         if stroke.width == 0:
             return
@@ -498,14 +498,14 @@ def _mask(node: RNode) -> Any:
 
 def _stops(paint: RPaint) -> FloatRGBA_Array:
     """The stop colors of a paint, for the shading of its material."""
-    if isinstance(paint, RSolid):
+    if isinstance(paint, RSolidColor):
         return np.asarray(paint.rgba).reshape(1, 4)
     return paint.rgbas
 
 
 def _ends(paint: RPaint, path: RPath) -> Point3D_Array:
     """Where a gradient of the paint's stops starts and ends."""
-    if isinstance(paint, RSolid):
+    if isinstance(paint, RSolidColor):
         # Only shading turns a solid paint into a gradient: between the path's
         # first and last corner, as the shading itself.
         return np.array([start_corner(path.points), end_corner(path.points)])
