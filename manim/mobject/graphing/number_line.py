@@ -177,8 +177,8 @@ class NumberLine(Line):
 
         if x_range is None:
             x_range = [
-                round(-config["frame_x_radius"]),
-                round(config["frame_x_radius"]),
+                round(-config.frame_x_radius),
+                round(config.frame_x_radius),
                 1,
             ]
         elif len(x_range) == 2:
