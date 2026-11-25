@@ -509,3 +509,27 @@ def test_sibling_closures_are_not_collapsed_to_placeholder():
         assert entry["nonlocals"] == {"k": k}, (
             f"closure {k} collapsed: {entry['nonlocals']!r}"
         )
+
+
+def test_materials_that_differ_have_different_keys():
+    # Materials are slotted dataclasses without a __dict__ (review: a mesh's
+    # material must reach the play cache key).
+    from manim import Sphere
+    from manim.material import PbrMaterial, UnlitMaterial
+
+    keys = {
+        hashing.get_json(material)
+        for material in (
+            PbrMaterial(roughness=0.3),
+            PbrMaterial(roughness=0.9),
+            PbrMaterial(roughness=0.3, metallic=1),
+            UnlitMaterial(),
+        )
+    }
+    assert len(keys) == 4
+    assert hashing.get_json(PbrMaterial(roughness=0.3)) == hashing.get_json(
+        PbrMaterial(roughness=0.3)
+    )
+    assert hashing.get_json(
+        Sphere(material=PbrMaterial(roughness=0.3))
+    ) != hashing.get_json(Sphere(material=PbrMaterial(roughness=0.9)))

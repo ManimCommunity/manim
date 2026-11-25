@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import contextlib
 import copy
+import dataclasses
 import functools
 import hashlib
 import inspect
@@ -330,6 +331,18 @@ class _CustomEncoder(json.JSONEncoder):
                     return f"TRUNCATED ARRAY: {repr(obj)}"
                 return repr(obj)
             return _hash_ndarray(obj)
+        elif dataclasses.is_dataclass(obj) and not hasattr(obj, "__dict__"):
+            # Slotted dataclasses (materials) have no __dict__: hash their fields,
+            # with the type, so that two values that differ are two keys.
+            return self._cleaned_iterable(
+                {
+                    "type": type(obj).__qualname__,
+                    **{
+                        field.name: getattr(obj, field.name)
+                        for field in dataclasses.fields(obj)
+                    },
+                }
+            )
         elif hasattr(obj, "__dict__"):
             temp = obj.__dict__
             derived = _derived_attribute_names(type(obj))
