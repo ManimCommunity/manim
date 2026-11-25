@@ -118,10 +118,9 @@ def _copied_center_func(
     stays the method of the mobject itself otherwise (a member copied alone keeps
     following the group's center). Other functions are copied as any value.
     """
-    owner = getattr(func, "__self__", None)
-    if isinstance(owner, Mobject):
-        target = clone_from_id.get(id(owner))
-        return func if target is None else getattr(target, func.__name__)
+    if isinstance(func, types.MethodType) and isinstance(func.__self__, Mobject):
+        target = clone_from_id.get(id(func.__self__))
+        return func if target is None else types.MethodType(func.__func__, target)
     return copy.deepcopy(func, clone_from_id)
 
 
