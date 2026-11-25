@@ -393,7 +393,9 @@ def _two_triangles(order, color_near, color_far):
     near_colors = [color_near] * 3
     far_colors = [color_far] * 3
     mesh = MeshMobject(
-        points=points, triangles=np.array([[0, 1, 2], [3, 4, 5]]), material=UnlitMaterial()
+        points=points,
+        triangles=np.array([[0, 1, 2], [3, 4, 5]]),
+        material=UnlitMaterial(),
     )
     mesh.rgbas = np.array(
         near_colors + far_colors if order == "near first" else far_colors + near_colors
@@ -415,7 +417,9 @@ def test_a_fixed_mesh_is_not_hidden_by_the_depth_of_the_scene(renderer):
     # mesh's triangles lie.
     def mobjects():
         mesh = _two_triangles("near first", [1, 0, 0, 1], [1, 0, 0, 1]).fix_in_frame()
-        sphere = _sphere(radius=3, color=PURE_BLUE, material=UnlitMaterial()).shift(4 * OUT)
+        sphere = _sphere(radius=3, color=PURE_BLUE, material=UnlitMaterial()).shift(
+            4 * OUT
+        )
         return [sphere, mesh]
 
     pixels, _ = _image(renderer, mobjects, ThreeDScene)
