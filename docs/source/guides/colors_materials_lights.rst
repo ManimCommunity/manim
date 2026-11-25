@@ -94,9 +94,10 @@ share one.
 
 The rule for the default is: **what has a surface in space is lit, what is drawn
 is not.** Meshes and surfaces (:class:`.Sphere`, :class:`.Surface`, the faces of
-:class:`.Cube` and the polyhedra) and :class:`.ThreeDVMobject` are :class:`.PbrMaterial`.
-Everything else (text, lines, axes, plots, flat shapes, point clouds and images)
-is :class:`.UnlitMaterial`. Mobjects fixed in the frame are never lit.
+:class:`.Cube` and the polyhedra) and :class:`.ThreeDVMobject` have a
+:class:`.PbrMaterial`. Everything else (text, lines, axes, plots, flat shapes, point
+clouds and images) has an :class:`.UnlitMaterial`. Mobjects fixed in the frame are
+never lit.
 
 Use :meth:`~.VMobject.set_material` to change it, for example to light a flat shape
 in a 3D scene or to show a surface's colours unshaded. A lit vectorized mobject
@@ -122,7 +123,8 @@ resolve intersecting shapes: one is drawn over the other.
             shiny = ball().set_material(PbrMaterial(roughness=0.3))
             unlit = ball().set_material(UnlitMaterial())
             card = Square(2, fill_color=ORANGE, fill_opacity=1, stroke_width=0)
-            card.rotate(PI / 4, RIGHT).rotate(PI / 6, OUT).set_material(PbrMaterial()).set_sort_by_depth(True)
+            card.rotate(PI / 4, RIGHT).rotate(PI / 6, OUT)
+            card.set_material(PbrMaterial()).set_sort_by_depth(True)
             for x, mob in zip([-4.5, -1.5, 1.5, 4.5], [rough, shiny, unlit, card]):
                 mob.shift(x * RIGHT)
             self.add(rough, shiny, unlit, card)

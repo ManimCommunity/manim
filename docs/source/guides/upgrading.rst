@@ -214,11 +214,11 @@ drawn as meshes on OpenGL and as sorted faces on Cairo:
   :class:`.VGroup`.
 - The arguments ``should_make_jagged``, ``surface_piece_config`` and
   ``pre_function_handle_to_anchor_scale_factor`` are gone.
-- They are lit by their ``material`` (:class:`.PbrMaterial` by default) under the scene's
-  lights (:mod:`manim.light`; a :class:`.ThreeDScene` has one): faces turned away
-  from the light are darker than before, and the surface has highlights.
-  ``material=UnlitMaterial()`` shows its colors as they are. Without lights, surfaces are
-  not shaded.
+- They are lit by their ``material`` (:class:`.PbrMaterial` by default) under the
+  scene's lights (:mod:`manim.light`; a :class:`.ThreeDScene` has one): faces turned
+  away from the light are darker than before, and the surface has highlights.
+  ``material=UnlitMaterial()`` shows its colors as they are. Without lights,
+  surfaces are not shaded.
 - Surfaces are smooth, in one colour and without outlines by default: they used to
   have a ``[BLUE_D, BLUE_E]`` checkerboard and light grey outlines of width 0.5.
   ``checkerboard_colors=[BLUE_D, BLUE_E]`` and ``stroke_width=0.5`` give that look
@@ -546,11 +546,11 @@ Vector mobjects have a material and a depth ordering
 ``shade_in_3d`` meant two things: "shade towards the light" and "sort by depth under
 a 3D camera". They are now two settings of :class:`.VMobject`:
 
-- ``material`` (:mod:`manim.material`, ``set_material``): :class:`.UnlitMaterial` by default;
-  :class:`.PbrMaterial` lights the path by the scene's lights in one colour, from the normal
-  of its plane. A lit path must be flat and have a solid fill, otherwise drawing it
-  raises :class:`.CapabilityError`. Its stroke is not lit, and mobjects fixed in the
-  frame are never lit.
+- ``material`` (:mod:`manim.material`, ``set_material``): :class:`.UnlitMaterial` by
+  default; :class:`.PbrMaterial` lights the path by the scene's lights in one colour,
+  from the normal of its plane. A lit path must be flat and have a solid fill,
+  otherwise drawing it raises :class:`.CapabilityError`. Its stroke is not lit, and
+  mobjects fixed in the frame are never lit.
 - ``sort_by_depth`` (``set_sort_by_depth``): under a perspective camera, the path is
   ordered far to near by the center of its own points. This is not a depth test:
   of two intersecting shapes, one is drawn over the other.
@@ -565,8 +565,8 @@ darken or brighten along their length.
    * - Removed
      - Use instead
    * - ``VMobject(shade_in_3d=True)``, ``set_shade_in_3d(True)``
-     - ``set_material(PbrMaterial())`` and ``set_sort_by_depth(True)``, or only the one you
-       need
+     - ``set_material(PbrMaterial())`` and ``set_sort_by_depth(True)``, or only the
+       one you need
    * - ``manim.utils.color.get_shaded_rgb``, ``manim.mobject.three_d.three_d_utils``
      - none
 

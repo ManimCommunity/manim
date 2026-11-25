@@ -667,8 +667,9 @@ class VMobject(Mobject):
     def set_material(self, material: Material, family: bool = True) -> Self:
         """Set how the mobject (and, with ``family``, its submobjects) is lit.
 
-        :class:`.PbrMaterial` lights a path by the scene's lights with one colour (it must be
-        flat and have a solid fill); :class:`.UnlitMaterial` shows its colours as they are.
+        :class:`.PbrMaterial` lights a path by the scene's lights with one colour
+        (it must be flat and have a solid fill); :class:`.UnlitMaterial` shows its
+        colours as they are.
         Mobjects fixed in the frame are never lit.
         """
         # Meshes in a group have a material too (they are VMobject-like);

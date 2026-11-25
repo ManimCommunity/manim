@@ -112,6 +112,7 @@ def _plane_normal(offsets: np.ndarray) -> np.ndarray:
     _, singular, vt = np.linalg.svd(offsets, full_matrices=False)
     if singular[-1] > _FLAT_TOLERANCE * scale * max(len(offsets), 1) ** 0.5:
         raise CapabilityError(
-            "A lit (PbrMaterial) path is drawn in one colour and must be flat; this one is not."
+            "A lit (PbrMaterial) path is drawn in one colour and must be flat; "
+            "this one is not."
         )
     return vt[-1]
