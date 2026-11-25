@@ -155,3 +155,44 @@ def test_polylabel(rings, expected_centers):
 
     match_found = any(np.allclose(result.c, ec, atol=0.1) for ec in expected_centers)
     assert match_found, f"Expected one of {expected_centers}, but got {result.c}"
+
+
+def test_polygon_zero_area_has_centroid():
+    # Self-intersecting bowtie polygon has net signed area 0.0
+    bowtie = [[[0, 0], [2, 2], [2, 0], [0, 2], [0, 0]]]
+    polygon = Polygon(bowtie)
+
+    assert polygon.area == 0.0
+    assert hasattr(polygon, "centroid")
+    assert np.allclose(polygon.centroid, [1.0, 1.0])
+
+
+def test_polylabel_zero_area_bowtie():
+    bowtie = [[[0, 0], [2, 2], [2, 0], [0, 2], [0, 0]]]
+    rings_3d = [np.column_stack([ring, np.zeros(len(ring))]) for ring in bowtie]
+
+    result = polylabel(rings_3d, precision=0.01)
+
+    assert isinstance(result, Cell)
+    assert result.h <= 0.01
+
+
+def test_polylabel_explores_most_promising_cells_first(monkeypatch):
+    # L-shaped polygon where max-potential ordering avoids exploring outside cells
+    l_shape = [[[0, 0], [10, 0], [10, 2], [2, 2], [2, 10], [0, 10], [0, 0]]]
+    rings_3d = [np.column_stack([ring, np.zeros(len(ring))]) for ring in l_shape]
+
+    eval_count = 0
+    orig_compute_distance = Polygon.compute_distance
+
+    def counted_compute_distance(self, point):
+        nonlocal eval_count
+        eval_count += 1
+        return orig_compute_distance(self, point)
+
+    monkeypatch.setattr(Polygon, "compute_distance", counted_compute_distance)
+    result = polylabel(rings_3d, precision=0.01)
+
+    assert result.d >= 0.9
+    assert np.allclose(result.c, [1.0, 1.0], atol=0.2)
+    assert eval_count < 500, f"Too many cell evaluations: {eval_count}"

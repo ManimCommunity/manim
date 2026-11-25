@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from __future__ import annotations
 
+import itertools
 from queue import PriorityQueue
 from typing import TYPE_CHECKING
 
@@ -54,6 +55,10 @@ class Polygon:
             cx = np.sum((x + xr) * factor) / (6.0 * self.area)
             cy = np.sum((y + yr) * factor) / (6.0 * self.area)
             self.centroid = np.array([cx, cy])
+        else:
+            mins = np.min(self.array, axis=0)
+            maxs = np.max(self.array, axis=0)
+            self.centroid = (mins + maxs) / 2.0
 
     def compute_distance(self, point: Point2DLike) -> float:
         """Compute the minimum distance from a point to the polygon."""
@@ -207,10 +212,12 @@ def polylabel(rings: Sequence[Point3DLike_Array], precision: float = 0.01) -> Ce
     h = s / 2.0
 
     # Initial Grid
-    queue: PriorityQueue[Cell] = PriorityQueue()
+    queue: PriorityQueue[tuple[float, int, Cell]] = PriorityQueue()
+    counter = itertools.count()
     xv, yv = np.meshgrid(np.arange(mins[0], maxs[0], s), np.arange(mins[1], maxs[1], s))
     for corner in np.vstack([xv.ravel(), yv.ravel()]).T:
-        queue.put(Cell(corner + h, h, polygon))
+        cell = Cell(corner + h, h, polygon)
+        queue.put((-cell.p, next(counter), cell))
 
     # Initial Guess
     best = Cell(polygon.centroid, 0, polygon)
@@ -220,16 +227,16 @@ def polylabel(rings: Sequence[Point3DLike_Array], precision: float = 0.01) -> Ce
 
     # While there are cells to consider...
     directions = np.array([[-1, -1], [1, -1], [-1, 1], [1, 1]])
+    # Max-heap on potential p: pop the most promising cell first
     while not queue.empty():
-        cell = queue.get()
+        _, _, cell = queue.get()
         if cell > best:
             best = cell
         # If a cell is promising, subdivide!
         if cell.p - best.d > precision:
             h = cell.h / 2.0
             offsets = cell.c + directions * h
-            queue.put(Cell(offsets[0], h, polygon))
-            queue.put(Cell(offsets[1], h, polygon))
-            queue.put(Cell(offsets[2], h, polygon))
-            queue.put(Cell(offsets[3], h, polygon))
+            for offset in offsets:
+                child = Cell(offset, h, polygon)
+                queue.put((-child.p, next(counter), child))
     return best
