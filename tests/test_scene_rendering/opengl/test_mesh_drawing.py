@@ -15,7 +15,7 @@ from manim import (
     config,
     tempconfig,
 )
-from manim.material import Pbr, Unlit
+from manim.material import PbrMaterial, UnlitMaterial
 
 WIDTH, HEIGHT = 384, 216
 
@@ -55,7 +55,7 @@ def _plane(z, color, **kwargs):
         v_range=[-2, 2],
         resolution=4,
         color=color,
-        material=Unlit(),
+        material=UnlitMaterial(),
         **kwargs,
     )
 
@@ -101,7 +101,7 @@ def test_opaque_meshes_hide_what_is_behind_them(using_opengl_renderer):
 
 
 def test_translucent_meshes_show_only_their_front_layer(using_opengl_renderer):
-    sphere = _sphere(opacity=0.5, material=Unlit())
+    sphere = _sphere(opacity=0.5, material=UnlitMaterial())
     top = sphere.points[:, 2] > 0
     rgbas = np.zeros((len(top), 4))
     rgbas[:, 0], rgbas[:, 2], rgbas[:, 3] = top, ~top, 0.5
@@ -115,7 +115,7 @@ def test_translucent_meshes_show_only_their_front_layer(using_opengl_renderer):
 def test_meshes_are_lit_from_the_light_source(using_opengl_renderer):
     pixels, camera = _image(
         "opengl",
-        lambda: [_sphere(material=Pbr(roughness=1))],
+        lambda: [_sphere(material=PbrMaterial(roughness=1))],
         ThreeDScene,
         phi=60 * DEGREES,
         theta=30 * DEGREES,
@@ -146,7 +146,7 @@ def test_meshes_are_not_lit_under_a_flat_camera(using_opengl_renderer):
 def test_the_mesh_shader_shades_as_the_lighting_function(using_opengl_renderer):
     from manim.renderer._lighting import AMBIENT, Light, shade
 
-    material = Pbr(roughness=0.4, metallic=0.3)
+    material = PbrMaterial(roughness=0.4, metallic=0.3)
     plane = ParametricSurface(
         lambda u, v: [u, v, 0],
         u_range=[-3, 3],
@@ -180,7 +180,7 @@ def test_the_mesh_shader_draws_the_highlight_of_the_lighting_function(
 ):
     from manim.renderer._lighting import AMBIENT, Light, shade
 
-    material = Pbr(roughness=0.3, metallic=0.0)
+    material = PbrMaterial(roughness=0.3, metallic=0.0)
     plane = ParametricSurface(
         lambda u, v: [u, v, 0],
         u_range=[-6, 6],
@@ -214,7 +214,7 @@ def test_rough_meshes_have_no_holes_on_their_dark_side(using_opengl_renderer):
     # and was black on some drivers where the surface turns away from the light.
     pixels, camera = _image(
         "opengl",
-        lambda: [_sphere(material=Pbr(roughness=1))],
+        lambda: [_sphere(material=PbrMaterial(roughness=1))],
         ThreeDScene,
         phi=60 * DEGREES,
         theta=30 * DEGREES,

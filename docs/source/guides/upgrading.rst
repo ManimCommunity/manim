@@ -178,8 +178,8 @@ most common ones:
        of the points.
    * - ``set_gloss``, ``set_shadow``
      - The ``material`` of :class:`.MeshMobject` (:meth:`.MeshMobject.set_material`):
-       :class:`.Pbr` with ``roughness`` and ``metallic`` for lit surfaces,
-       :class:`.Unlit` for flat colors.
+       :class:`.PbrMaterial` with ``roughness`` and ``metallic`` for lit surfaces,
+       :class:`.UnlitMaterial` for flat colors.
    * - ``apply_depth_test``
      - The ``depth_test`` argument and attribute of :class:`.MeshMobject`.
    * - Stroke widths per point

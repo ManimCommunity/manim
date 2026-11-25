@@ -1,7 +1,7 @@
 """How lit surfaces are colored: one shading function for every renderer.
 
-:func:`shade` colors surfaces with a :class:`.Pbr` material under point lights, in
-linear RGB, with the parameters and light units of glTF 2.0 and its
+:func:`shade` colors surfaces with a :class:`.PbrMaterial` under point lights, in linear
+RGB, with the parameters and light units of glTF 2.0 and its
 ``KHR_lights_punctual`` extension. It approximates the native renderer's shading with a
 Lambert diffuse and a normalized Blinn-Phong highlight in place of its GGX term, and no
 tone mapping. The OpenGL mesh shader computes the same in GLSL
@@ -17,7 +17,7 @@ from typing import TYPE_CHECKING, NamedTuple
 
 import numpy as np
 
-from manim.material import Pbr
+from manim.material import PbrMaterial
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -92,14 +92,14 @@ def shade(
     ambient
         Intensity of the uniform white light.
     material
-        Only :class:`.Pbr` materials are lit.
+        Only :class:`.PbrMaterial` materials are lit.
 
     Returns
     -------
     sRGB colors, shape ``(n, 3)``, clamped to ``[0, 1]``.
     """
     base_rgb = np.asarray(base_rgb, dtype=float)
-    if not isinstance(material, Pbr) or not lights:
+    if not isinstance(material, PbrMaterial) or not lights:
         return base_rgb
     base = srgb_to_linear(base_rgb)
     points = np.asarray(points, dtype=float)

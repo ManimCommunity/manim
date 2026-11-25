@@ -3,8 +3,9 @@
 These are drawn by the OpenGL renderer as meshes, with depth testing and lighting. The
 Cairo renderer cannot draw them yet; use :class:`.Surface` there.
 
-A mesh has a :mod:`material <manim.material>`: :class:`.Pbr` (the default) lights it
-under a :class:`.ThreeDCamera`'s light, :class:`.Unlit` shows its colors as they are.
+A mesh has a :mod:`material <manim.material>`: :class:`.PbrMaterial` (the default)
+lights it under a :class:`.ThreeDCamera`'s light, :class:`.UnlitMaterial` shows its
+colors as they are.
 """
 
 from __future__ import annotations
@@ -19,7 +20,7 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 from PIL import Image
 
-from manim.material import Material, Pbr
+from manim.material import Material, PbrMaterial
 from manim.mobject.mobject import Mobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import (
@@ -54,7 +55,8 @@ class MeshMobject(Mobject):
     color, opacity
         One colour for the whole mesh. :meth:`set_vertex_colors` sets one per vertex.
     material
-        How the mesh is lit: :class:`.Pbr` (by default ``Pbr()``) or :class:`.Unlit`.
+        How the mesh is lit: :class:`.PbrMaterial` (by default ``PbrMaterial()``) or
+        :class:`.UnlitMaterial`.
     depth_test
         Whether the mesh hides what is behind it, independently of drawing order.
     texture
@@ -88,7 +90,7 @@ class MeshMobject(Mobject):
         self.rgbas = [color_to_rgba(color, opacity)]
         self.uvs = np.zeros((0, 2)) if uvs is None else uvs
         self.texture = _load_texture(texture)
-        self.material = Pbr() if material is None else material
+        self.material = PbrMaterial() if material is None else material
         self.depth_test = depth_test
         super().__init__(color=color, **kwargs)
         if points is not None:
@@ -406,16 +408,16 @@ class ParametricSurface(MeshMobject):
 def _interpolate_material(start: Material, end: Material, alpha: float) -> Material:
     """The material at progress ``alpha`` from ``start`` to ``end``.
 
-    Two :class:`.Pbr` materials interpolate their parameters; at ``alpha`` 1 the
+    Two :class:`.PbrMaterial` materials interpolate their parameters; at ``alpha`` 1 the
     result is ``end`` itself. Between other materials, the material switches to
     ``end`` when ``alpha`` reaches 1.
     """
     if alpha >= 1 or start == end:
         return end
-    if isinstance(start, Pbr) and isinstance(end, Pbr):
+    if isinstance(start, PbrMaterial) and isinstance(end, PbrMaterial):
         if alpha <= 0:
             return start
-        return Pbr(
+        return PbrMaterial(
             roughness=(1 - alpha) * start.roughness + alpha * end.roughness,
             metallic=(1 - alpha) * start.metallic + alpha * end.metallic,
             emissive=(

@@ -2,7 +2,7 @@
 // Keep the two in step. Colors are sRGB in and out; the shading is in linear RGB.
 //
 // Assumes the following uniforms exist in the surrounding context:
-// uniform float lit;            // whether the material is lit (Pbr) and there is a light
+// uniform float lit;            // a PbrMaterial with a light to shade it: 1, else 0
 // uniform float roughness;
 // uniform float metallic;
 // uniform vec3 emissive;        // linear RGB

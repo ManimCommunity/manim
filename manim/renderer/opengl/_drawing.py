@@ -21,7 +21,7 @@ import numpy as np
 from PIL.Image import Resampling
 
 from manim._config import config
-from manim.material import Pbr
+from manim.material import PbrMaterial
 from manim.renderer._lighting import AMBIENT, DEFAULT_LIGHT_INTENSITY
 from manim.renderer._paint import paint_colors, shows
 from manim.renderer.cairo.camera import ThreeDCamera
@@ -535,7 +535,11 @@ class SnapshotDrawing:
         """
         view = self._base_target.view
         light = view.light_source
-        if not isinstance(material, Pbr) or light is None or node.fixed_in_frame:
+        if (
+            not isinstance(material, PbrMaterial)
+            or light is None
+            or node.fixed_in_frame
+        ):
             return {"lit": 0.0}
         return {
             "lit": 1.0,

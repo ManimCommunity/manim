@@ -11,7 +11,7 @@ from manim import (
     Transform,
     tempconfig,
 )
-from manim.material import Pbr, Unlit
+from manim.material import PbrMaterial, UnlitMaterial
 from manim.renderer.protocol import CapabilityError
 from manim.utils.versioned_fields import field_version
 
@@ -173,11 +173,13 @@ def _saddles(start_material, end_material):
 
 
 def test_pbr_materials_interpolate_and_end_on_the_target():
-    target = Pbr(roughness=1.0, metallic=0.5, emissive=(0.2, 0, 0))
-    start, end, moving = _saddles(Pbr(roughness=0.2), target)
+    target = PbrMaterial(roughness=1.0, metallic=0.5, emissive=(0.2, 0, 0))
+    start, end, moving = _saddles(PbrMaterial(roughness=0.2), target)
 
     moving.interpolate(start, end, 0.5)
-    assert moving.material == Pbr(roughness=0.6, metallic=0.25, emissive=(0.1, 0, 0))
+    assert moving.material == PbrMaterial(
+        roughness=0.6, metallic=0.25, emissive=(0.1, 0, 0)
+    )
 
     moving.interpolate(start, end, 1)
     assert moving.material is target
@@ -185,7 +187,7 @@ def test_pbr_materials_interpolate_and_end_on_the_target():
 
 @pytest.mark.parametrize(
     ("start_material", "end_material"),
-    [(Unlit(), Pbr()), (Pbr(), Unlit())],
+    [(UnlitMaterial(), PbrMaterial()), (PbrMaterial(), UnlitMaterial())],
     ids=["unlit to pbr", "pbr to unlit"],
 )
 def test_lit_and_unlit_switch_when_the_progress_reaches_one(
@@ -202,13 +204,13 @@ def test_lit_and_unlit_switch_when_the_progress_reaches_one(
 def test_there_and_back_ends_on_the_start_material():
     from manim import Transform, there_and_back
 
-    start, end, _ = _saddles(Unlit(), Pbr())
+    start, end, _ = _saddles(UnlitMaterial(), PbrMaterial())
     animation = Transform(start, end, rate_func=there_and_back)
     animation.begin()
     for alpha in (0.25, 0.5, 0.75, 1):
         animation.interpolate(alpha)
-    assert start.material == Unlit()
+    assert start.material == UnlitMaterial()
 
 
 def test_meshes_are_lit_by_default():
-    assert _saddle().material == Pbr()
+    assert _saddle().material == PbrMaterial()
