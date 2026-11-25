@@ -44,8 +44,7 @@ from __future__ import annotations
 from collections.abc import Hashable, Mapping
 from typing import TYPE_CHECKING, NamedTuple, TypeAlias
 
-from manim.appearance.material import PbrMaterial, UnlitMaterial
-from manim.constants import STROKE_WIDTH_UNIT
+from manim.appearance.material import Material
 
 if TYPE_CHECKING:
     import numpy as np
@@ -64,8 +63,6 @@ __all__ = [
     "CameraId",
     "FacingCamera",
     "FixedInFrame",
-    "Material",
-    "MobjectUid",
     "Payload",
     "Placement",
     "RCameraView",
@@ -129,9 +126,6 @@ class RColorField(NamedTuple):
 
 
 RPaint = RSolidColor | RLinearGradient | RColorField
-
-
-Material = UnlitMaterial | PbrMaterial
 
 
 class RStroke(NamedTuple):

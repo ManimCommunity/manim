@@ -22,7 +22,7 @@ from manim.appearance.material import PbrMaterial
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from manim.renderer.snapshot import Material
+    from manim.material import Material
 
 __all__ = [
     "AMBIENT",

@@ -44,8 +44,8 @@ from ._winding_fill import WindingFill
 from .shader import Shader
 
 if TYPE_CHECKING:
+    from manim.material import Material
     from manim.renderer.protocol import CameraState, LightState
-    from manim.renderer.snapshot import Material
 
     from .renderer import OpenGLRenderer, _CameraView
 
