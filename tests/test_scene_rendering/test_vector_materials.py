@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 import numpy as np
 import pytest
 
@@ -22,7 +24,7 @@ from manim import (
     VGroup,
     tempconfig,
 )
-from manim.material import PbrMaterial, UnlitMaterial
+from manim.material import Material, PbrMaterial, UnlitMaterial
 from manim.renderer.protocol import CapabilityError
 
 RENDERERS = pytest.mark.parametrize("renderer", ["cairo", "opengl"])
@@ -196,3 +198,41 @@ def test_depth_ordering_draws_the_nearer_path_last(renderer):
 
     assert centre(True)[0] > 200
     assert centre(False)[2] > 200
+
+
+@dataclass(frozen=True, slots=True)
+class _Toon(Material):
+    """A material of one's own, which no built-in renderer draws."""
+
+    bands: int = 3
+
+
+def test_a_material_of_ones_own_is_a_material_that_interpolates():
+    toon = _Toon(bands=4)
+    assert toon == _Toon(bands=4)
+    assert toon != _Toon()
+    square = Square().set_material(toon)
+    assert square.material is toon
+    # Without its own interpolate, it switches at the end.
+    assert toon.interpolate(PbrMaterial(), 0.5) is toon
+    assert toon.interpolate(PbrMaterial(), 1) == PbrMaterial()
+
+
+@RENDERERS
+@pytest.mark.parametrize("lights", [True, False])
+def test_renderers_raise_for_a_material_they_do_not_draw(renderer, lights):
+    # Not drawn unlit in silence: lit or not, the renderer says it cannot draw it.
+    from manim import Sphere
+
+    def build():
+        return [
+            Square(fill_opacity=1).set_material(_Toon()),
+        ]
+
+    def build_mesh():
+        return [Sphere(material=_Toon())]
+
+    scene_class = ThreeDScene if lights else Scene
+    for make in (build, build_mesh):
+        with pytest.raises(CapabilityError, match="_Toon"):
+            _image(renderer, make, scene_class)

@@ -211,7 +211,7 @@ class _CairoDrawingContext:
             self._set_field_source(context, paint, node)
             return
         lit = (
-            lit_color(node, eye(self.camera), self.lights, self.ambient)
+            lit_color(node, eye(self.camera), self.lights, self.ambient, "Cairo")
             if paint is path.fill
             else None
         )

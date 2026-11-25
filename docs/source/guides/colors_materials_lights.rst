@@ -92,6 +92,11 @@ which plays the role of the base colour (albedo) of a material in glTF and other
 animating a colour never touches the material, and mobjects of any colour can
 share one.
 
+Materials of your own subclass :class:`.Material`: a frozen dataclass whose fields
+are its parameters, with :meth:`~.Material.interpolate` overridden to animate them.
+Every renderer raises :class:`.CapabilityError` for a material it does not know
+instead of drawing it unlit, so a new material needs a renderer that draws it.
+
 The rule for the default is: **what has a surface in space is lit, what is drawn
 is not.** Meshes and surfaces (:class:`.Sphere`, :class:`.Surface`, the faces of
 :class:`.Cube` and the polyhedra) and :class:`.ThreeDVMobject` have a

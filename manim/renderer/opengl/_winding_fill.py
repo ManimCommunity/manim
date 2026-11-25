@@ -194,7 +194,11 @@ class WindingFill:
                 continue
             filled.append(geo)
             lit = lit_color(
-                node, _view.eye(target.camera), target.lights, target.ambient
+                node,
+                _view.eye(target.camera),
+                target.lights,
+                target.ambient,
+                "OpenGL",
             )
             colours.append(paint_colors(path.fill, lit))
         if not filled:

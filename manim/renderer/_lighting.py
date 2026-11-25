@@ -17,17 +17,19 @@ from typing import TYPE_CHECKING, NamedTuple
 
 import numpy as np
 
-from manim.appearance.material import PbrMaterial
+from manim.appearance.material import PbrMaterial, UnlitMaterial
+from manim.renderer.protocol import CapabilityError
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from manim.material import Material
+    from manim.appearance.material import Material
 
 __all__ = [
     "AMBIENT",
     "DEFAULT_LIGHT_INTENSITY",
     "Light",
+    "is_lit",
     "linear_to_srgb",
     "shade",
     "srgb_to_linear",
@@ -64,6 +66,26 @@ def linear_to_srgb(rgb: np.ndarray) -> np.ndarray:
     return np.where(rgb <= 0.0031308, rgb * 12.92, 1.055 * rgb ** (1 / 2.4) - 0.055)
 
 
+def is_lit(material: Material, renderer: str) -> bool:
+    """Whether ``material`` is lit: ``True`` for a :class:`.PbrMaterial`, ``False``
+    for an :class:`.UnlitMaterial`.
+
+    Raises
+    ------
+    CapabilityError
+        For any other material: ``renderer`` (its name, for the message) cannot
+        draw it. Materials of your own need a renderer that draws them.
+    """
+    if isinstance(material, PbrMaterial):
+        return True
+    if isinstance(material, UnlitMaterial):
+        return False
+    raise CapabilityError(
+        f"The {renderer} renderer cannot draw {type(material).__name__}: it draws "
+        "PbrMaterial and UnlitMaterial."
+    )
+
+
 def shade(
     base_rgb: np.ndarray,
     normals: np.ndarray,
@@ -93,16 +115,21 @@ def shade(
         The light that reaches every surface: one intensity of white light, or
         linear RGB.
     material
-        Only :class:`.PbrMaterial` materials are lit; any other material is left as it
-        is. Without lights nothing is shaded (the ambient light alone does not
-        shade either).
+        A :class:`.PbrMaterial` is lit; an :class:`.UnlitMaterial` is left as it is.
+        Without lights nothing is shaded (the ambient light alone does not shade
+        either).
+
+    Raises
+    ------
+    CapabilityError
+        For any other material (see :func:`is_lit`).
 
     Returns
     -------
     sRGB colors, shape ``(n, 3)``, clamped to ``[0, 1]``.
     """
     base_rgb = np.asarray(base_rgb, dtype=float)
-    if not isinstance(material, PbrMaterial) or not lights:
+    if not is_lit(material, "built-in") or not lights:
         return base_rgb
     base = srgb_to_linear(base_rgb)
     points = np.asarray(points, dtype=float)

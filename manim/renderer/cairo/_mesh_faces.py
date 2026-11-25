@@ -14,7 +14,7 @@ import numpy as np
 from manim.appearance.material import UnlitMaterial
 from manim.constants import CapStyleType, LineJointType
 from manim.appearance.material import UnlitMaterial
-from manim.renderer._lighting import Light, shade
+from manim.renderer._lighting import Light, is_lit, shade
 from manim.renderer._mesh import face_colors, face_normals, face_outlines, faces_of
 from manim.renderer._view import eye
 from manim.renderer.snapshot import (
@@ -64,7 +64,7 @@ def mesh_faces(
     # tetrahedron around the origin, it is the origin for all four.)
     centers = corners.mean(axis=1)
     colors = face_colors(mesh, faces)
-    if lights and not node.fixed_in_frame:
+    if is_lit(mesh.material, "Cairo") and lights and not node.fixed_in_frame:
         colors[:, :3] = shade(
             colors[:, :3],
             face_normals(corners),

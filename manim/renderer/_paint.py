@@ -12,8 +12,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from manim.material import PbrMaterial
-from manim.renderer._lighting import Light, shade
+from manim.renderer._lighting import Light, is_lit, shade
 from manim.renderer.protocol import CapabilityError
 from manim.renderer.snapshot import RColorField, RSolidColor
 
@@ -61,18 +60,22 @@ def lit_color(
     eye: Point3D,
     lights: Sequence[LightState],
     ambient: Sequence[float],
+    renderer: str,
 ) -> FloatRGBA_Array | None:
     """The one colour of a lit path's fill: :func:`.shade` at the center of its
     anchors, with the normal of their plane, two-sided. ``None`` for a path that is
     not lit (:class:`.UnlitMaterial`, fixed in the frame, or no lights).
+    ``renderer`` names the renderer in error messages.
 
     Raises
     ------
     CapabilityError
+        For a material other than :class:`.PbrMaterial` and :class:`.UnlitMaterial`.
+    CapabilityError
         For a lit path that is not flat or whose fill is not one colour.
     """
     path: RPath = node.payload  # type: ignore[assignment]
-    if not isinstance(path.material, PbrMaterial) or not lights or node.fixed_in_frame:
+    if not is_lit(path.material, renderer) or not lights or node.fixed_in_frame:
         return None
     points = np.asarray(path.points, dtype=float)
     if len(points) == 0 or not shows(path.fill):

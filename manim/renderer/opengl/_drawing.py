@@ -20,8 +20,8 @@ import moderngl
 import numpy as np
 from PIL.Image import Resampling
 
-from manim.appearance.material import PbrMaterial
 from manim.renderer import _view
+from manim.renderer._lighting import is_lit
 from manim.renderer._mesh import NormalAccumulator, faces_of
 from manim.renderer._paint import paint_colors, shows
 from manim.renderer._reuse import PrefixMemo, node_key, view_key
@@ -44,7 +44,7 @@ from ._winding_fill import WindingFill
 from .shader import Shader
 
 if TYPE_CHECKING:
-    from manim.material import Material
+    from manim.appearance.material import Material
     from manim.renderer.protocol import CameraState, LightState
 
     from .renderer import OpenGLRenderer, _CameraView
@@ -685,7 +685,7 @@ class SnapshotDrawing:
         """
         target = self._base_target
         lights = target.lights
-        if not isinstance(material, PbrMaterial) or not lights or node.fixed_in_frame:
+        if not is_lit(material, "OpenGL") or not lights or node.fixed_in_frame:
             return {"lit": 0.0}
         if len(lights) > MAX_LIGHTS:
             raise CapabilityError(
@@ -1004,7 +1004,7 @@ def _groups(
         single = (
             tuple(path.fill.rgba)
             if isinstance(path.fill, RSolidColor)
-            and not isinstance(path.material, PbrMaterial)
+            and not is_lit(path.material, "OpenGL")
             and path.stroke.width == 0
             else None
         )
