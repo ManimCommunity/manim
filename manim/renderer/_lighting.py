@@ -16,6 +16,7 @@ import math
 from typing import TYPE_CHECKING, NamedTuple
 
 import numpy as np
+from typing_extensions import TypeIs
 
 from manim.appearance.material import PbrMaterial, UnlitMaterial
 from manim.renderer.protocol import CapabilityError
@@ -66,7 +67,7 @@ def linear_to_srgb(rgb: np.ndarray) -> np.ndarray:
     return np.where(rgb <= 0.0031308, rgb * 12.92, 1.055 * rgb ** (1 / 2.4) - 0.055)
 
 
-def is_lit(material: Material, renderer: str) -> bool:
+def is_lit(material: Material, renderer: str) -> TypeIs[PbrMaterial]:
     """Whether ``material`` is lit: ``True`` for a :class:`.PbrMaterial`, ``False``
     for an :class:`.UnlitMaterial`.
 
