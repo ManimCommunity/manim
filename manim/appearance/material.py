@@ -5,8 +5,8 @@ A mobject's material says whether and how it is lit. Its color comes from the mo
 values: compare them with ``==``, and assign a new one to change a mobject's material
 (:meth:`.VMobject.set_material`, :meth:`.MeshMobject.set_material`).
 
-Meshes, surfaces and :class:`.ThreeDVMobject` are :class:`Pbr` by default; every other
-mobject is :class:`Unlit`. Mobjects fixed in the frame are never lit, and without
+Meshes, surfaces and :class:`.ThreeDVMobject` are :class:`PbrMaterial` by default; every other
+mobject is :class:`UnlitMaterial`. Mobjects fixed in the frame are never lit, and without
 lights nothing is shaded. See :doc:`/guides/colors_materials_lights`.
 """
 

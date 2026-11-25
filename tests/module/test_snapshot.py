@@ -149,11 +149,11 @@ def test_paints_and_materials():
     assert path.stroke.width == 3
     assert path.background_stroke is None
 
-    assert path.material == Unlit()
+    assert path.material == UnlitMaterial()
     assert path.depth_reference is None
-    square.set_material(Pbr(roughness=0.2)).set_sort_by_depth(True)
+    square.set_material(PbrMaterial(roughness=0.2)).set_sort_by_depth(True)
     lit = snapshot(square).payload
-    assert lit.material == Pbr(roughness=0.2)
+    assert lit.material == PbrMaterial(roughness=0.2)
     np.testing.assert_allclose(lit.depth_reference, square.get_center())
 
 

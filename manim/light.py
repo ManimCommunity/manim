@@ -1,4 +1,4 @@
-"""Lights: what lit materials (:class:`~.Pbr`) are shaded by.
+"""Lights: what lit materials (:class:`~.PbrMaterial`) are shaded by.
 
 A light is a mobject: it is added to a scene, moved, animated and given updaters
 like any other, and draws nothing. A frame without lights is not shaded at all: lit

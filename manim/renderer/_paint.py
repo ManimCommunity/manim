@@ -2,7 +2,7 @@
 
 Renderers draw a paint as stop colors, evenly spaced along a line between two points.
 :func:`paint_colors` gives both; :func:`lit_color` gives the one colour of a lit
-(:class:`~.Pbr`) path's fill.
+(:class:`~.PbrMaterial`) path's fill.
 """
 
 from __future__ import annotations
@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from manim.material import Pbr
+from manim.material import PbrMaterial
 from manim.renderer._lighting import Light, shade
 from manim.renderer.protocol import CapabilityError
 from manim.renderer.snapshot import RColorField, RSolidColor
@@ -64,7 +64,7 @@ def lit_color(
 ) -> FloatRGBA_Array | None:
     """The one colour of a lit path's fill: :func:`.shade` at the center of its
     anchors, with the normal of their plane, two-sided. ``None`` for a path that is
-    not lit (:class:`.Unlit`, fixed in the frame, or no lights).
+    not lit (:class:`.UnlitMaterial`, fixed in the frame, or no lights).
 
     Raises
     ------
@@ -72,14 +72,14 @@ def lit_color(
         For a lit path that is not flat or whose fill is not one colour.
     """
     path: RPath = node.payload  # type: ignore[assignment]
-    if not isinstance(path.material, Pbr) or not lights or node.fixed_in_frame:
+    if not isinstance(path.material, PbrMaterial) or not lights or node.fixed_in_frame:
         return None
     points = np.asarray(path.points, dtype=float)
     if len(points) == 0 or not shows(path.fill):
         return None
     if not isinstance(path.fill, RSolidColor):
         raise CapabilityError(
-            "A lit (Pbr) path is drawn in one colour: its fill must be a solid "
+            "A lit (PbrMaterial) path is drawn in one colour: its fill must be a solid "
             "colour, not a gradient or a colour field."
         )
     anchors = np.concatenate([points[::4], points[3::4]])
@@ -112,6 +112,6 @@ def _plane_normal(offsets: np.ndarray) -> np.ndarray:
     _, singular, vt = np.linalg.svd(offsets, full_matrices=False)
     if singular[-1] > _FLAT_TOLERANCE * scale * max(len(offsets), 1) ** 0.5:
         raise CapabilityError(
-            "A lit (Pbr) path is drawn in one colour and must be flat; this one is not."
+            "A lit (PbrMaterial) path is drawn in one colour and must be flat; this one is not."
         )
     return vt[-1]

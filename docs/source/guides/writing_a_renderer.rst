@@ -110,9 +110,9 @@ A path's ``fill``, its stroke's ``paint`` and its background stroke's ``paint`` 
 :class:`.RSolid` (one RGBA colour), :class:`.RLinearGradient` (colour stops evenly
 spaced from ``start`` to ``end``, scene points) or :class:`.RColorField` (a grid of
 colours in the scene, sampled where the path is drawn; see :class:`.ColorField`
-for the exact sampling). A path's and a mesh's ``material`` is :class:`.Unlit` or
-:class:`.Pbr`. ``config.lights`` (:class:`.LightState`) and ``config.ambient``
-light the :class:`.Pbr` ones; without lights, nothing is shaded. Nodes fixed in the
+for the exact sampling). A path's and a mesh's ``material`` is :class:`.UnlitMaterial` or
+:class:`.PbrMaterial`. ``config.lights`` (:class:`.LightState`) and ``config.ambient``
+light the :class:`.PbrMaterial` ones; without lights, nothing is shaded. Nodes fixed in the
 frame are never lit. See :doc:`colors_materials_lights` for what the built-in
 renderers approximate.
 

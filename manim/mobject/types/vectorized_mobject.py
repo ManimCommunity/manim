@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 import numpy as np
 
 from manim.constants import *
-from manim.material import Material, Unlit, interpolate_material
+from manim.material import Material, UnlitMaterial, interpolate_material
 from manim.mobject.mobject import Mobject
 from manim.appearance.paint import (
     ColorField,
@@ -122,8 +122,8 @@ class VMobject(Mobject):
     background_stroke_width: Field[float] = Field()
     joint_type: Field[LineJointType] = Field()
     cap_style: Field[CapStyleType] = Field()
-    #: How the area is lit (:mod:`manim.material`): :class:`.Unlit` by default;
-    #: :class:`.Pbr` shades a flat path by the scene's lights.
+    #: How the area is lit (:mod:`manim.material`): :class:`.UnlitMaterial` by default;
+    #: :class:`.PbrMaterial` shades a flat path by the scene's lights.
     material: Field[Material] = Field()
     #: Whether a perspective camera orders this path by depth (by the center of its
     #: own points) instead of scene order. Not a depth test.
@@ -173,7 +173,7 @@ class VMobject(Mobject):
         self.make_smooth_after_applying_functions: bool = (
             make_smooth_after_applying_functions
         )
-        self.material = Unlit() if material is None else material
+        self.material = UnlitMaterial() if material is None else material
         self.sort_by_depth: bool = sort_by_depth
         self.tolerance_for_point_equality: float = tolerance_for_point_equality
         self.n_points_per_cubic_curve: int = n_points_per_cubic_curve
@@ -667,8 +667,8 @@ class VMobject(Mobject):
     def set_material(self, material: Material, family: bool = True) -> Self:
         """Set how the mobject (and, with ``family``, its submobjects) is lit.
 
-        :class:`.Pbr` lights a path by the scene's lights with one colour (it must be
-        flat and have a solid fill); :class:`.Unlit` shows its colours as they are.
+        :class:`.PbrMaterial` lights a path by the scene's lights with one colour (it must be
+        flat and have a solid fill); :class:`.UnlitMaterial` shows its colours as they are.
         Mobjects fixed in the frame are never lit.
         """
         # Meshes in a group have a material too (they are VMobject-like);

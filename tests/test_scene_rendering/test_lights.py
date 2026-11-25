@@ -102,8 +102,8 @@ def test_a_moving_light_changes_a_lit_mesh_frame_by_frame(renderer):
 
 @RENDERERS
 def test_without_lights_a_lit_mesh_shows_its_base_colour(renderer):
-    # "No light, no shading": a Pbr sphere without lights looks as an Unlit one.
-    from manim.material import Unlit
+    # "No light, no shading": a lit sphere without lights looks as an unlit one.
+    from manim.material import UnlitMaterial
 
     def image(light, material=None):
         scene = ThreeDScene()
@@ -122,7 +122,7 @@ def test_without_lights_a_lit_mesh_shows_its_base_colour(renderer):
     with _settings(renderer):
         lit = image(light=True)
         dark = image(light=False)
-        unlit = image(light=True, material=Unlit())
+        unlit = image(light=True, material=UnlitMaterial())
     assert not np.array_equal(dark, lit)
     np.testing.assert_array_equal(dark, unlit)
 

@@ -1004,7 +1004,7 @@ def _groups(
         single = (
             tuple(path.fill.rgba)
             if isinstance(path.fill, RSolidColor)
-            and not isinstance(path.material, Pbr)
+            and not isinstance(path.material, PbrMaterial)
             and path.stroke.width == 0
             else None
         )

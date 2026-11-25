@@ -22,7 +22,7 @@ from manim import (
     VGroup,
     tempconfig,
 )
-from manim.material import Pbr, Unlit
+from manim.material import PbrMaterial, UnlitMaterial
 from manim.renderer.protocol import CapabilityError
 
 RENDERERS = pytest.mark.parametrize("renderer", ["cairo", "opengl"])
@@ -48,7 +48,7 @@ def _image(renderer, build, scene_class=ThreeDScene):
 
 def _lit_square(angle=0.0):
     square = Square(3, fill_color=PURE_BLUE, fill_opacity=1, stroke_width=0)
-    return square.rotate(angle, RIGHT).set_material(Pbr())
+    return square.rotate(angle, RIGHT).set_material(PbrMaterial())
 
 
 def _colours(pixels):
@@ -59,39 +59,39 @@ def _colours(pixels):
 
 def test_vector_mobjects_are_unlit_and_unsorted_unless_asked():
     square = Square()
-    assert square.material == Unlit()
+    assert square.material == UnlitMaterial()
     assert square.sort_by_depth is False
     group = VGroup(Square(), Circle())
-    group.set_material(Pbr(roughness=0.1)).set_sort_by_depth(True)
+    group.set_material(PbrMaterial(roughness=0.1)).set_sort_by_depth(True)
     for mob in group.get_family():
-        assert mob.material == Pbr(roughness=0.1)
+        assert mob.material == PbrMaterial(roughness=0.1)
         assert mob.sort_by_depth
-    group.set_material(Unlit(), family=False)
-    assert group.material == Unlit()
-    assert group[0].material == Pbr(roughness=0.1)
+    group.set_material(UnlitMaterial(), family=False)
+    assert group.material == UnlitMaterial()
+    assert group[0].material == PbrMaterial(roughness=0.1)
 
 
 def test_three_d_vmobjects_are_lit_and_sorted():
     mob = ThreeDVMobject()
-    assert isinstance(mob.material, Pbr)
+    assert isinstance(mob.material, PbrMaterial)
     assert mob.sort_by_depth
 
 
 def test_material_and_depth_ordering_switch_at_the_end_of_a_transform():
     start = Square(fill_opacity=1)
-    end = Square(fill_opacity=1).set_material(Pbr(roughness=0.1))
+    end = Square(fill_opacity=1).set_material(PbrMaterial(roughness=0.1))
     end.set_sort_by_depth(True)
     animation = Transform(start, end)
     animation.begin()
     animation.interpolate(0.5)
-    assert start.material == Unlit()
+    assert start.material == UnlitMaterial()
     assert not start.sort_by_depth
     animation.interpolate(1)
-    assert start.material == Pbr(roughness=0.1)
+    assert start.material == PbrMaterial(roughness=0.1)
     assert start.sort_by_depth
 
-    lit = Square().set_material(Pbr(roughness=0))
-    shinier = Square().set_material(Pbr(roughness=1))
+    lit = Square().set_material(PbrMaterial(roughness=0))
+    shinier = Square().set_material(PbrMaterial(roughness=1))
     lit.interpolate_color(lit, shinier, 0.5)
     assert lit.material.roughness == pytest.approx(0.5)
 
@@ -100,7 +100,7 @@ def test_material_and_depth_ordering_switch_at_the_end_of_a_transform():
 def test_a_lit_path_is_one_colour_that_follows_its_plane(renderer):
     flat = _image(renderer, lambda: [_lit_square()])
     tilted = _image(renderer, lambda: [_lit_square(PI / 3)])
-    unlit = _image(renderer, lambda: [_lit_square().set_material(Unlit())])
+    unlit = _image(renderer, lambda: [_lit_square().set_material(UnlitMaterial())])
     # One colour inside (edge pixels blend with the background).
     inside = flat[24:31, 42:54, :3].reshape(-1, 3)
     assert len({tuple(rgb) for rgb in inside}) == 1
@@ -116,11 +116,13 @@ def test_cairo_and_opengl_light_a_path_alike():
 
 @RENDERERS
 def test_lit_paths_without_lights_or_fixed_in_frame_are_unlit(renderer):
-    unlit = _image(renderer, lambda: [_lit_square().set_material(Unlit())])
+    unlit = _image(renderer, lambda: [_lit_square().set_material(UnlitMaterial())])
     # A plain Scene has no light.
     no_light = _image(renderer, lambda: [_lit_square()], Scene)
     fixed = _image(renderer, lambda: [_lit_square().fix_in_frame()])
-    flat_unlit = _image(renderer, lambda: [_lit_square().set_material(Unlit())], Scene)
+    flat_unlit = _image(
+        renderer, lambda: [_lit_square().set_material(UnlitMaterial())], Scene
+    )
     np.testing.assert_array_equal(no_light, flat_unlit)
     assert tuple(fixed[27, 48, :3]) == tuple(flat_unlit[27, 48, :3])
     assert tuple(unlit[27, 48, :3]) == (0, 0, 255)
@@ -133,7 +135,7 @@ def test_strokes_of_lit_paths_are_not_lit(renderer):
             Square(3, fill_color=PURE_BLUE, fill_opacity=1)
             .set_stroke(PURE_RED, width=60)
             .rotate(0.5, RIGHT)
-            .set_material(Pbr())
+            .set_material(PbrMaterial())
         )
 
     pixels = _image(renderer, lambda: [square()])
@@ -145,7 +147,7 @@ def test_strokes_of_lit_paths_are_not_lit(renderer):
 @RENDERERS
 def test_lit_paths_that_cannot_be_one_colour_are_drawn_without_lights(renderer):
     gradient = Square(fill_opacity=1).set_fill([PURE_RED, PURE_BLUE])
-    pixels = _image(renderer, lambda: [gradient.set_material(Pbr())], Scene)
+    pixels = _image(renderer, lambda: [gradient.set_material(PbrMaterial())], Scene)
     assert len(_colours(pixels)) > 10
 
 
@@ -168,7 +170,7 @@ def test_lit_paths_that_cannot_be_one_colour_are_drawn_without_lights(renderer):
 )
 def test_lit_paths_that_cannot_be_one_colour_raise(renderer, build, message):
     with pytest.raises(CapabilityError, match=message):
-        _image(renderer, lambda: [build().set_material(Pbr())])
+        _image(renderer, lambda: [build().set_material(PbrMaterial())])
 
 
 @RENDERERS
