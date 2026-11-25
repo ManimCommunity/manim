@@ -325,6 +325,34 @@ Renderers only draw (see :class:`.Renderer`). These methods are gone:
    * - ``renderer.show_frame(scene)``
      - ``scene.get_image().show()``
 
+Removed camera methods
+~~~~~~~~~~~~~~~~~~~~~~
+
+Cameras no longer draw: renderers draw the render snapshots of the mobjects
+(:mod:`manim.renderer.snapshot`), and a camera only says where it looks. The
+methods through which a camera took part in drawing are gone, so a camera
+subclass that overrides one of them no longer changes what is drawn:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Removed
+     - Use instead
+   * - ``transform_points_pre_display``
+     - Move or deform the mobjects themselves (for example with an updater or
+       ``apply_function``); :meth:`.ThreeDCamera.project_points` still projects
+       points as the renderers do
+   * - ``get_mobjects_to_display``
+     - Nothing: what is drawn is the scene's mobjects; leave a mobject out by
+       removing it from the scene
+   * - ``get_fill_rgbas``, ``get_stroke_rgbas``, ``modified_rgbas``
+     - Set the colors on the mobjects; lighting comes from the scene's lights
+   * - ``get_mobjects_indicating_movement``, ``get_view_transform_center``
+     - Nothing
+   * - ``Mobject.get_z_index_reference_point``
+     - Nothing: a 3D camera orders shaded paths by the center of their own
+       points
+
 A renderer draws the frames of one scene: passing a renderer that another scene
 uses to :class:`.Scene` raises ``RuntimeError``.
 

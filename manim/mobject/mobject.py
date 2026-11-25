@@ -2663,10 +2663,6 @@ class Mobject:
             )
         )
 
-    def get_z_index_reference_point(self) -> Point3D:
-        """The point by which a camera with perspective orders the mobject by depth."""
-        return self.get_center()
-
     def has_points(self) -> bool:
         """Check if :class:`~.Mobject` contains points."""
         return len(self.points) > 0
