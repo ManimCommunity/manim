@@ -1393,12 +1393,11 @@ class ManimConfig(MutableMapping):
             value = value.lower()
         renderer = RendererType(value)
         try:
+            from manim.mobject.mobject import Mobject
             from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
             from manim.mobject.opengl.opengl_mobject import OpenGLMobject
             from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
-
-            from ..mobject.mobject import Mobject
-            from ..mobject.types.vectorized_mobject import VMobject
+            from manim.mobject.types.vectorized_mobject import VMobject
 
             for cls in ConvertToOpenGL._converted_classes:
                 if renderer == RendererType.OPENGL:
@@ -1416,7 +1415,7 @@ class ManimConfig(MutableMapping):
                     conversion_dict.get(base, base) for base in cls.__bases__
                 )
 
-            from ..utils.hashing import invalidate_derived_attribute_names
+            from manim.utils.hashing import invalidate_derived_attribute_names
 
             # Rebasing changes which attributes the cache key must ignore, including
             # for classes that only inherit from a rebased one.

@@ -2,9 +2,8 @@
 
 from __future__ import annotations
 
+from manim.mobject.mobject import _AnimationBuilder
 from manim.utils.parameter_parsing import flatten_iterable_parameters
-
-from ..mobject.mobject import _AnimationBuilder
 
 __all__ = ["Scene"]
 
@@ -41,38 +40,37 @@ from tqdm import tqdm
 from watchdog.events import DirModifiedEvent, FileModifiedEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 
-from manim._version import __version__
-from manim.data_structures import MethodWithArgs
-from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
-
-from .._config import config, logger
-from .._config.output_plan import (
+from manim._config import config, logger
+from manim._config.output_plan import (
     resolve_file_log_path,
     resolve_media_layout,
     resolve_module_name,
     resolve_output_plan,
     resolve_requested_output_name,
 )
-from .._config.render_session import resolve_render_session
-from .._run.frames import frame_count
-from ..animation.animation import Animation, Wait, prepare_animation
-from ..animation.composition import AnimationGroup
-from ..constants import *
-from ..manager import Manager
-from ..renderer.cairo import CairoRenderer
-from ..renderer.cairo.camera import Camera
-from ..renderer.opengl.camera import OpenGLCamera
-from ..renderer.opengl.renderer import OpenGLRenderer
-from ..renderer.opengl.shader import Object3D
-from ..scene.scene_file_writer import _SceneFileWriterSettings
-from ..utils import opengl, space_ops
-from ..utils.deprecation import deprecated
-from ..utils.exceptions import RerunSceneException
-from ..utils.family import extract_mobject_family_members
-from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
-from ..utils.iterables import list_difference_update, list_update
-from ..utils.module_ops import scene_classes_from_file
+from manim._config.render_session import resolve_render_session
+from manim._run.frames import frame_count
+from manim._version import __version__
+from manim.animation.animation import Animation, Wait, prepare_animation
+from manim.animation.composition import AnimationGroup
+from manim.constants import DEFAULT_WAIT_TIME, ORIGIN, OUT, SHIFT_VALUE, RendererType
+from manim.data_structures import MethodWithArgs
+from manim.manager import Manager
+from manim.mobject.mobject import Mobject
+from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
+from manim.renderer.cairo import CairoRenderer
+from manim.renderer.cairo.camera import Camera
+from manim.renderer.opengl.camera import OpenGLCamera
+from manim.renderer.opengl.renderer import OpenGLRenderer
+from manim.renderer.opengl.shader import Object3D
+from manim.scene.scene_file_writer import _SceneFileWriterSettings
+from manim.utils import opengl, space_ops
+from manim.utils.deprecation import deprecated
+from manim.utils.exceptions import RerunSceneException
+from manim.utils.family import extract_mobject_family_members
+from manim.utils.family_ops import restructure_list_to_exclude_certain_family_members
+from manim.utils.iterables import list_difference_update, list_update
+from manim.utils.module_ops import scene_classes_from_file
 
 if TYPE_CHECKING:
     from typing import Self, TypeAlias

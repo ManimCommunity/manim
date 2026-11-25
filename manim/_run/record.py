@@ -11,13 +11,13 @@ from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 
-from ..animation.animation import Wait
-from ..timeline import Timeline
-from .loop import _Caption, _RunListener, _Section
+from manim._run.loop import _Caption, _RunListener, _Section
+from manim.animation.animation import Wait
+from manim.timeline import Timeline
 
 if TYPE_CHECKING:
-    from ..manager import Manager
-    from .loop import _Play, _Sound
+    from manim._run.loop import _Play, _Sound
+    from manim.manager import Manager
 
 __all__: list[str] = []
 

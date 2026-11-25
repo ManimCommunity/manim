@@ -15,7 +15,7 @@ from manim.mobject.types.vectorized_mobject import VMobject
 if TYPE_CHECKING:
     from manim.typing import Point2DLike_Array, Point3D_Array, Point3DLike_Array
 
-from ...constants import RendererType
+from manim.constants import RendererType
 
 __all__ = ["Union", "Intersection", "Difference", "Exclusion"]
 

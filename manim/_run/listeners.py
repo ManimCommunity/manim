@@ -10,16 +10,16 @@ from typing import TYPE_CHECKING
 import srt
 from tqdm import tqdm
 
-from .._config import config, logger
-from ..animation.animation import Wait
-from .frames import frame_count
-from .loop import _Caption, _RunListener, _Section, _Sound
+from manim._config import config, logger
+from manim._run.frames import frame_count
+from manim._run.loop import _Caption, _RunListener, _Section, _Sound
+from manim.animation.animation import Wait
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable
 
-    from ..manager import Manager, RenderedFrame
-    from .loop import _Frame, _Play
+    from manim._run.loop import _Frame, _Play
+    from manim.manager import Manager, RenderedFrame
 
 __all__: list[str] = []
 
@@ -149,7 +149,7 @@ class _FrameRequests(_RunListener):
 
     def frame(self, frame: _Frame) -> None:
         # local import to avoid import cycle
-        from ..manager import RenderedFrame
+        from manim.manager import RenderedFrame
 
         offset = self._manager._execution.time_offset
         rate = self._manager.session_spec.frame_rate

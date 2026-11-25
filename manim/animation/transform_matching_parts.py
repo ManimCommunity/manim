@@ -8,20 +8,19 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
+from manim._config import config
+from manim.animation.composition import AnimationGroup
+from manim.animation.fading import FadeIn, FadeOut
+from manim.animation.transform import FadeTransformPieces, Transform
+from manim.constants import RendererType
+from manim.mobject.mobject import Group, Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLGroup, OpenGLMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVGroup, OpenGLVMobject
 from manim.mobject.text.tex_mobject import MathTexPart
-
-from .._config import config
-from ..constants import RendererType
-from ..mobject.mobject import Group, Mobject
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from .composition import AnimationGroup
-from .fading import FadeIn, FadeOut
-from .transform import FadeTransformPieces, Transform
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 
 if TYPE_CHECKING:
-    from ..scene.scene import Scene
+    from manim.scene.scene import Scene
 
 
 class TransformMatchingAbstractBase(AnimationGroup):

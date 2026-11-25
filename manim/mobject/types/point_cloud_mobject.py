@@ -9,13 +9,19 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
+from manim.constants import (
+    DEFAULT_POINT_DENSITY_1D,
+    DEFAULT_POINT_DENSITY_2D,
+    DEFAULT_STROKE_WIDTH,
+    ORIGIN,
+    RIGHT,
+    UP,
+)
+from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_point_cloud_mobject import OpenGLPMobject
-
-from ...constants import *
-from ...mobject.mobject import Mobject
-from ...utils.bezier import interpolate
-from ...utils.color import (
+from manim.utils.bezier import interpolate
+from manim.utils.color import (
     BLACK,
     PURE_YELLOW,
     WHITE,
@@ -25,7 +31,7 @@ from ...utils.color import (
     color_to_rgba,
     rgba_to_color,
 )
-from ...utils.iterables import stretch_array_to_length
+from manim.utils.iterables import stretch_array_to_length
 
 __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
 

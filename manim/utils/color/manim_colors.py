@@ -124,7 +124,7 @@ These colors form Manim's default color space.
 
 from __future__ import annotations
 
-from .core import ManimColor
+from manim.utils.color.core import ManimColor
 
 WHITE = ManimColor("#FFFFFF")
 GRAY_A = ManimColor("#DDDDDD")

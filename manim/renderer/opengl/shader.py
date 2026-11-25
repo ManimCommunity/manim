@@ -19,10 +19,9 @@ if TYPE_CHECKING:
     MeshNonTimeBasedUpdater: TypeAlias = Callable[["Object3D"], None]
     MeshUpdater: TypeAlias = MeshNonTimeBasedUpdater | MeshTimeBasedUpdater
 
+from manim._config import config
 from manim.typing import MatrixMN, Point3D
-
-from ..._config import config
-from ...utils import opengl
+from manim.utils import opengl
 
 SHADER_FOLDER = Path(__file__).parent / "shaders"
 shader_program_cache: dict[str, moderngl.Program] = {}

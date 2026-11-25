@@ -6,24 +6,27 @@ from typing import TYPE_CHECKING, Any, Self
 
 from PIL import Image
 
-from ..._config import config, logger
-from ..._run.frames import frame_count
-from ...mobject.mobject import Mobject, _AnimationBuilder
-from ...mobject.types.image_mobject import ImageMobjectFromCamera
-from ...scene.scene_file_writer import SceneFileWriter
-from ...utils.iterables import list_update
-from .._execution import _RendererExecutionView
-from ..protocol import RendererCapabilities, RendererState
-from .camera import Camera, MultiCamera
-from .rendering import _CairoDrawingContext
-from .target import _CairoRasterSettings, _CairoRenderTarget, _ImageFiles
+from manim._config import config, logger
+from manim._run.frames import frame_count
+from manim.mobject.mobject import Mobject, _AnimationBuilder
+from manim.mobject.types.image_mobject import ImageMobjectFromCamera
+from manim.renderer._execution import _RendererExecutionView
+from manim.renderer.cairo.camera import Camera, MultiCamera
+from manim.renderer.cairo.rendering import _CairoDrawingContext
+from manim.renderer.cairo.target import (
+    _CairoRasterSettings,
+    _CairoRenderTarget,
+    _ImageFiles,
+)
+from manim.renderer.protocol import RendererCapabilities, RendererState
+from manim.scene.scene_file_writer import SceneFileWriter
+from manim.utils.iterables import list_update
 
 if TYPE_CHECKING:
     from manim._config.render_session import RenderSessionSpec
     from manim.animation.animation import Animation
     from manim.scene.scene import Scene
-
-    from ...typing import RGBAPixelArray
+    from manim.typing import RGBAPixelArray
 
 __all__ = ["CairoRenderer"]
 

@@ -11,7 +11,7 @@ from fractions import Fraction
 
 import av
 
-from .output import OutputSpec
+from manim._config.output import OutputSpec
 
 __all__ = [
     "VideoEncoderSpec",

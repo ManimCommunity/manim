@@ -65,8 +65,6 @@ three important methods:
 from __future__ import annotations
 
 import colorsys
-
-# logger = _config.logger
 import random
 import re
 from collections.abc import Iterable, Sequence
@@ -76,6 +74,8 @@ import numpy as np
 import numpy.typing as npt
 from typing_extensions import TypeIs, override
 
+# TODO: delete this commented import along with commented uses of logger?
+# from manim._config import logger
 from manim.typing import (
     FloatHSL,
     FloatHSLLike,
@@ -97,10 +97,7 @@ from manim.typing import (
     Point3D,
     Vector3D,
 )
-
-from ...utils.space_ops import normalize
-
-# import manim._config as _config
+from manim.utils.space_ops import normalize
 
 re_hex = re.compile("((?<=#)|(?<=0x))[A-F0-9]{3,8}", re.IGNORECASE)
 
@@ -446,7 +443,7 @@ class ManimColor:
             If the color name is not present in Manim.
         """
         # local import to avoid import cycle
-        from . import _all_color_dict
+        from manim.utils.color import _all_color_dict
 
         if tmp := _all_color_dict.get(name.upper()):
             tmp._internal_value[3] = alpha

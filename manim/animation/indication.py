@@ -44,28 +44,27 @@ from typing import TYPE_CHECKING, Any, Self
 
 import numpy as np
 
+from manim._config import config
+from manim.animation.animation import Animation
+from manim.animation.composition import AnimationGroup, Succession
+from manim.animation.creation import Create, ShowPartial, Uncreate
+from manim.animation.fading import FadeIn, FadeOut
+from manim.animation.movement import Homotopy
+from manim.animation.transform import Transform
+from manim.animation.updaters.update import UpdateFromFunc
+from manim.constants import DEFAULT_STROKE_WIDTH, RIGHT, SMALL_BUFF, TAU, UP
 from manim.mobject.geometry.arc import Circle, Dot
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
+from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-
-from .._config import config
-from ..animation.animation import Animation
-from ..animation.composition import AnimationGroup, Succession
-from ..animation.creation import Create, ShowPartial, Uncreate
-from ..animation.fading import FadeIn, FadeOut
-from ..animation.movement import Homotopy
-from ..animation.transform import Transform
-from ..animation.updaters.update import UpdateFromFunc
-from ..constants import *
-from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..typing import Point3D, Point3DLike, Vector3DLike
-from ..utils.bezier import interpolate, inverse_interpolate
-from ..utils.color import GREY, PURE_YELLOW, ParsableManimColor
-from ..utils.rate_functions import RateFunction, smooth, there_and_back, wiggle
-from ..utils.space_ops import normalize
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.typing import Point3D, Point3DLike, Vector3DLike
+from manim.utils.bezier import interpolate, inverse_interpolate
+from manim.utils.color import GREY, PURE_YELLOW, ParsableManimColor
+from manim.utils.rate_functions import RateFunction, smooth, there_and_back, wiggle
+from manim.utils.space_ops import normalize
 
 if TYPE_CHECKING:
     from manim.scene.scene import Scene

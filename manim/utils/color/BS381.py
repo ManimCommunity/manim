@@ -27,7 +27,7 @@ in the standard:
 
 from __future__ import annotations
 
-from .core import ManimColor
+from manim.utils.color.core import ManimColor
 
 BS381_101 = ManimColor("#94BFAC")
 SKY_BLUE = ManimColor("#94BFAC")

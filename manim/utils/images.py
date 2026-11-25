@@ -15,8 +15,8 @@ from typing import TYPE_CHECKING
 import numpy as np
 from PIL import Image
 
-from .._config import config
-from ..utils.file_ops import seek_full_path_from_defaults
+from manim._config import config
+from manim.utils.file_ops import seek_full_path_from_defaults
 
 if TYPE_CHECKING:
     from collections.abc import Sequence

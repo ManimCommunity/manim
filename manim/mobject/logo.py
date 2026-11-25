@@ -8,20 +8,27 @@ from typing import Self
 
 import svgelements as se
 
-import manim.constants as cst
+from manim.animation.animation import override_animation
+from manim.animation.composition import AnimationGroup, Succession
+from manim.animation.creation import Create, SpiralIn
+from manim.animation.fading import FadeIn
 from manim.animation.updaters.update import UpdateFromAlphaFunc
+from manim.constants import (
+    DEFAULT_FONT_SIZE,
+    DOWN,
+    LEFT,
+    ORIGIN,
+    RIGHT,
+    SCALE_FACTOR_PER_FONT_POINT,
+    UP,
+)
 from manim.mobject.geometry.arc import Circle
 from manim.mobject.geometry.polygram import Square, Triangle
 from manim.mobject.mobject import Mobject
+from manim.mobject.svg.svg_mobject import VMobjectFromSVGPath
+from manim.mobject.types.vectorized_mobject import VGroup
 from manim.typing import Vector3D
-
-from ..animation.animation import override_animation
-from ..animation.composition import AnimationGroup, Succession
-from ..animation.creation import Create, SpiralIn
-from ..animation.fading import FadeIn
-from ..mobject.svg.svg_mobject import VMobjectFromSVGPath
-from ..mobject.types.vectorized_mobject import VGroup
-from ..utils.rate_functions import ease_in_out_cubic, smooth
+from manim.utils.rate_functions import ease_in_out_cubic, smooth
 
 MANIM_SVG_PATHS: list[se.Path] = [
     se.Path(  # double stroke letter M
@@ -152,30 +159,28 @@ class ManimBanner(VGroup):
         self.font_color = "#ece6e2" if dark_theme else "#343434"
         self.scale_factor = 1.0
 
-        self.M = VMobjectFromSVGPath(MANIM_SVG_PATHS[0]).flip(cst.RIGHT).center()
+        self.M = VMobjectFromSVGPath(MANIM_SVG_PATHS[0]).flip(RIGHT).center()
         self.M.set(stroke_width=0).scale(
-            7 * cst.DEFAULT_FONT_SIZE * cst.SCALE_FACTOR_PER_FONT_POINT
+            7 * DEFAULT_FONT_SIZE * SCALE_FACTOR_PER_FONT_POINT
         )
-        self.M.set_fill(color=self.font_color, opacity=1).shift(
-            2.25 * cst.LEFT + 1.5 * cst.UP
-        )
+        self.M.set_fill(color=self.font_color, opacity=1).shift(2.25 * LEFT + 1.5 * UP)
 
-        self.circle = Circle(color=logo_green, fill_opacity=1).shift(cst.LEFT)
-        self.square = Square(color=logo_blue, fill_opacity=1).shift(cst.UP)
-        self.triangle = Triangle(color=logo_red, fill_opacity=1).shift(cst.RIGHT)
+        self.circle = Circle(color=logo_green, fill_opacity=1).shift(LEFT)
+        self.square = Square(color=logo_blue, fill_opacity=1).shift(UP)
+        self.triangle = Triangle(color=logo_red, fill_opacity=1).shift(RIGHT)
         self.shapes = VGroup(self.triangle, self.square, self.circle)
         self.add(self.shapes, self.M)
-        self.move_to(cst.ORIGIN)
+        self.move_to(ORIGIN)
 
         anim = VGroup()
         for ind, path in enumerate(MANIM_SVG_PATHS[1:]):
-            tex = VMobjectFromSVGPath(path).flip(cst.RIGHT).center()
+            tex = VMobjectFromSVGPath(path).flip(RIGHT).center()
             tex.set(stroke_width=0).scale(
-                cst.DEFAULT_FONT_SIZE * cst.SCALE_FACTOR_PER_FONT_POINT
+                DEFAULT_FONT_SIZE * SCALE_FACTOR_PER_FONT_POINT
             )
             if ind > 0:
                 tex.next_to(anim, buff=0.01)
-            tex.align_to(self.M, cst.DOWN)
+            tex.align_to(self.M, DOWN)
             anim.add(tex)
         anim.set_fill(color=self.font_color, opacity=1)
         anim.height = m_height_over_anim_height * self.M.height
@@ -280,7 +285,7 @@ class ManimBanner(VGroup):
         m_shape_offset = 6.25 * self.scale_factor
         shape_sliding_overshoot = self.scale_factor * 0.8
         m_anim_buff = 0.06
-        self.anim.next_to(self.M, buff=m_anim_buff).align_to(self.M, cst.DOWN)
+        self.anim.next_to(self.M, buff=m_anim_buff).align_to(self.M, DOWN)
         self.anim.set_opacity(0)
         self.shapes.save_state()
         m_clone = self.anim[-1].copy()
@@ -294,7 +299,7 @@ class ManimBanner(VGroup):
             self.shapes.restore()
 
             assert self.M.saved_state is not None
-            left_group.align_to(self.M.saved_state, cst.LEFT)
+            left_group.align_to(self.M.saved_state, LEFT)
 
             if direction == "right":
                 self.shapes.shift(vector)
@@ -307,7 +312,7 @@ class ManimBanner(VGroup):
         def slide_and_uncover(mob: Mobject, alpha: float) -> None:
             assert isinstance(mob, ManimBanner)
 
-            shift(alpha * (m_shape_offset + shape_sliding_overshoot) * cst.RIGHT)
+            shift(alpha * (m_shape_offset + shape_sliding_overshoot) * RIGHT)
 
             # Add letters when they are covered
             for letter in mob.anim:
@@ -331,7 +336,7 @@ class ManimBanner(VGroup):
                 m_clone.move_to(mob.anim[-1])
                 mob.anim.set_opacity(1)
 
-            shift(alpha * shape_sliding_overshoot * cst.LEFT)
+            shift(alpha * shape_sliding_overshoot * LEFT)
 
             if alpha == 1:
                 mob.remove(m_clone)

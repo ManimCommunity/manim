@@ -5,8 +5,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from .camera import OpenGLCamera
-    from .renderer import OpenGLRenderer
+    from manim.renderer.opengl.camera import OpenGLCamera
+    from manim.renderer.opengl.renderer import OpenGLRenderer
 
 __all__ = ["OpenGLCamera", "OpenGLRenderer"]
 
@@ -14,11 +14,11 @@ __all__ = ["OpenGLCamera", "OpenGLRenderer"]
 def __getattr__(name: str) -> Any:
     value: Any
     if name == "OpenGLCamera":
-        from .camera import OpenGLCamera
+        from manim.renderer.opengl.camera import OpenGLCamera
 
         value = OpenGLCamera
     elif name == "OpenGLRenderer":
-        from .renderer import OpenGLRenderer
+        from manim.renderer.opengl.renderer import OpenGLRenderer
 
         value = OpenGLRenderer
     else:

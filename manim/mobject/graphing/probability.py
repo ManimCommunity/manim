@@ -11,7 +11,7 @@ from typing import Any, Self, cast
 import numpy as np
 
 from manim._config import config, logger
-from manim.constants import *
+from manim.constants import DOWN, LEFT, MED_SMALL_BUFF, RIGHT, SMALL_BUFF, UP
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.graphing.coordinate_systems import Axes
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject

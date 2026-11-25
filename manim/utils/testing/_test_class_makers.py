@@ -8,8 +8,7 @@ from manim.renderer.opengl import OpenGLRenderer
 from manim.scene.scene import Scene
 from manim.scene.scene_file_writer import SceneFileWriter, _SceneFileWriterSettings
 from manim.typing import PixelArray, StrPath
-
-from ._frames_testers import _FramesTester
+from manim.utils.testing._frames_testers import _FramesTester
 
 
 def _make_test_scene_class(

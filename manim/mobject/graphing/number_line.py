@@ -20,7 +20,15 @@ if TYPE_CHECKING:
 import numpy as np
 
 from manim._config import config
-from manim.constants import *
+from manim.constants import (
+    DEFAULT_ARROW_TIP_LENGTH,
+    DOWN,
+    LEFT,
+    MED_SMALL_BUFF,
+    OUT,
+    RIGHT,
+    UP,
+)
 from manim.mobject.geometry.line import Line
 from manim.mobject.graphing.scale import LinearBase, _ScaleBase
 from manim.mobject.text.numbers import DecimalNumber

@@ -8,7 +8,7 @@ __all__ = [
 
 from typing import TYPE_CHECKING
 
-from ..utils.file_ops import seek_full_path_from_defaults
+from manim.utils.file_ops import seek_full_path_from_defaults
 
 if TYPE_CHECKING:
     from pathlib import Path

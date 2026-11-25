@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..._config.utils import ManimConfig
+    from manim._config.utils import ManimConfig
 
 
 @dataclass(frozen=True)

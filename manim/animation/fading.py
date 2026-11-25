@@ -23,14 +23,13 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
+from manim.animation.transform import Transform
+from manim.constants import ORIGIN
+from manim.mobject.mobject import Group, Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 
-from ..animation.transform import Transform
-from ..constants import ORIGIN
-from ..mobject.mobject import Group, Mobject
-
 if TYPE_CHECKING:
-    from ..scene.scene import Scene
+    from manim.scene.scene import Scene
 
 
 class _Fade(Transform):

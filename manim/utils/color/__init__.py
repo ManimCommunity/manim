@@ -52,9 +52,9 @@ The following modules contain the predefined color constants:
 
 from __future__ import annotations
 
-from . import AS2700, BS381, DVIPSNAMES, SVGNAMES, X11, XKCD
-from .core import *
-from .manim_colors import *
+from manim.utils.color import AS2700, BS381, DVIPSNAMES, SVGNAMES, X11, XKCD
+from manim.utils.color.core import *
+from manim.utils.color.manim_colors import *
 
 _all_color_dict: dict[str, ManimColor] = {
     k: v for k, v in globals().items() if isinstance(v, ManimColor)

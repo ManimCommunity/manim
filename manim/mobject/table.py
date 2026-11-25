@@ -70,20 +70,19 @@ import itertools as it
 from collections.abc import Callable, Iterable, Sequence
 from typing import Any
 
+from manim.animation.animation import Animation
+from manim.animation.composition import AnimationGroup
+from manim.animation.creation import Create, Write
+from manim.animation.fading import FadeIn
 from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Polygon
 from manim.mobject.geometry.shape_matchers import BackgroundRectangle
 from manim.mobject.text.numbers import DecimalNumber, Integer
 from manim.mobject.text.tex_mobject import MathTex
 from manim.mobject.text.text_mobject import Paragraph
-
-from ..animation.animation import Animation
-from ..animation.composition import AnimationGroup
-from ..animation.creation import Create, Write
-from ..animation.fading import FadeIn
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..utils.color import BLACK, PURE_YELLOW, ManimColor, ParsableManimColor
-from .utils import get_vectorized_mobject_class
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.mobject.utils import get_vectorized_mobject_class
+from manim.utils.color import BLACK, PURE_YELLOW, ManimColor, ParsableManimColor
 
 
 class Table(VGroup):

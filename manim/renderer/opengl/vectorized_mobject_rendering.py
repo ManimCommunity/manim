@@ -8,13 +8,12 @@ import numpy as np
 
 if TYPE_CHECKING:
     from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+    from manim.renderer.opengl.renderer import OpenGLRenderer
     from manim.typing import MatrixMN
 
-    from .renderer import OpenGLRenderer
-
-from ...utils import opengl
-from ...utils.space_ops import cross2d, earclip_triangulation
-from .shader import Shader
+from manim.renderer.opengl.shader import Shader
+from manim.utils import opengl
+from manim.utils.space_ops import cross2d, earclip_triangulation
 
 __all__ = [
     "render_opengl_vectorized_mobject_fill",

@@ -18,19 +18,18 @@ from typing import TYPE_CHECKING, Any, Self
 import numpy as np
 from PIL import Image
 
+from manim._config import config
+from manim.animation.composition import AnimationGroup, Succession
+from manim.animation.creation import Create
+from manim.animation.indication import ShowPassingFlash
 from manim.animation.updaters.update import UpdateFromAlphaFunc
+from manim.constants import OUT, RIGHT, UP, RendererType
 from manim.mobject.geometry.line import Vector
 from manim.mobject.graphing.coordinate_systems import CoordinateSystem
-
-from .._config import config
-from ..animation.composition import AnimationGroup, Succession
-from ..animation.creation import Create
-from ..animation.indication import ShowPassingFlash
-from ..constants import OUT, RIGHT, UP, RendererType
-from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..utils.bezier import interpolate, inverse_interpolate
-from ..utils.color import (
+from manim.mobject.mobject import Mobject
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
+from manim.utils.bezier import interpolate, inverse_interpolate
+from manim.utils.color import (
     BLUE_E,
     GREEN,
     RED,
@@ -40,8 +39,8 @@ from ..utils.color import (
     color_to_rgb,
     rgb_to_color,
 )
-from ..utils.rate_functions import ease_out_sine, linear
-from ..utils.simple_functions import sigmoid
+from manim.utils.rate_functions import ease_out_sine, linear
+from manim.utils.simple_functions import sigmoid
 
 if TYPE_CHECKING:
     from manim.typing import (

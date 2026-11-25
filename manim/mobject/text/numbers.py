@@ -9,7 +9,15 @@ from typing import Any, Self
 import numpy as np
 
 from manim._config import config
-from manim.constants import *
+from manim.constants import (
+    DEFAULT_FONT_SIZE,
+    DOWN,
+    LEFT,
+    ORIGIN,
+    RIGHT,
+    UP,
+    RendererType,
+)
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex, Tex
 from manim.mobject.text.text_mobject import Text

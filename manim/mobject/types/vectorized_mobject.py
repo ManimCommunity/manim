@@ -21,7 +21,19 @@ import numpy as np
 from PIL.Image import Image
 
 from manim._config import config
-from manim.constants import *
+from manim.constants import (
+    DEFAULT_STROKE_WIDTH,
+    LEFT,
+    ORIGIN,
+    OUT,
+    PI,
+    RIGHT,
+    UL,
+    UP,
+    CapStyleType,
+    LineJointType,
+    RendererType,
+)
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
@@ -53,7 +65,12 @@ if TYPE_CHECKING:
     import numpy.typing as npt
 
     from manim.typing import (
+        BezierPath,
+        BezierPathLike,
         CubicBezierPath,
+        CubicBezierPathLike,
+        CubicBezierPoints,
+        CubicBezierPoints_Array,
         CubicBezierPointsLike,
         CubicSpline,
         FloatRGBA,

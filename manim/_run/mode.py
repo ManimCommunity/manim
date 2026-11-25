@@ -11,8 +11,8 @@ from collections.abc import Callable
 from typing import TYPE_CHECKING, Literal
 
 if TYPE_CHECKING:
-    from ..manager import Manager
-    from ..typing import RGBAPixelArray
+    from manim.manager import Manager
+    from manim.typing import RGBAPixelArray
 
 __all__: list[str] = []
 

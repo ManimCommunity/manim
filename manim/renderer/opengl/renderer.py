@@ -19,19 +19,17 @@ from manim.mobject.opengl.opengl_mobject import (
     OpenGLMobject,
 )
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
-from manim.typing import Point3D
-from manim.utils.color import color_to_rgba
-
-from ...constants import *
-from ...scene.scene_file_writer import SceneFileWriter
-from .._execution import _RendererExecutionView
-from ..protocol import RendererCapabilities, RendererState
-from .shader import Mesh, Shader, shader_program_cache
-from .vectorized_mobject_rendering import (
+from manim.renderer._execution import _RendererExecutionView
+from manim.renderer.opengl.shader import Mesh, Shader, shader_program_cache
+from manim.renderer.opengl.vectorized_mobject_rendering import (
     render_opengl_vectorized_mobject_fill,
     render_opengl_vectorized_mobject_stroke,
 )
-from .window_settings import _WindowSettings
+from manim.renderer.opengl.window_settings import _WindowSettings
+from manim.renderer.protocol import RendererCapabilities, RendererState
+from manim.scene.scene_file_writer import SceneFileWriter
+from manim.typing import Point3D
+from manim.utils.color import color_to_rgba
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Iterator
@@ -40,6 +38,7 @@ if TYPE_CHECKING:
     from manim._config.render_session import RenderSessionSpec
     from manim.animation.animation import Animation
     from manim.mobject.mobject import Mobject, _AnimationBuilder
+    from manim.renderer.opengl.window import Window
     from manim.scene.scene import Scene
     from manim.typing import (
         FloatRGBA,
@@ -47,9 +46,7 @@ if TYPE_CHECKING:
     )
     from manim.utils.color.core import ParsableManimColor
 
-    from .window import Window
-
-from .camera import OpenGLCamera
+from manim.renderer.opengl.camera import OpenGLCamera
 
 __all__ = ["OpenGLRenderer"]
 
@@ -229,7 +226,7 @@ class OpenGLRenderer(_RendererExecutionView):
             window = None
             if self._settings.window is not None:
                 # local import: pyglet/screeninfo only needed for preview window
-                from .window import Window
+                from manim.renderer.opengl.window import Window
 
                 window = Window(self, _settings=self._settings.window)
                 resources.callback(window.close)

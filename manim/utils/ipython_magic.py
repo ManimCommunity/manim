@@ -9,9 +9,8 @@ from pathlib import Path
 from typing import Any
 
 from manim._config import config, logger, tempconfig
+from manim.constants import RendererType
 from manim.renderer.opengl.shader import shader_program_cache
-
-from ..constants import RendererType
 
 __all__ = ["ManimMagic"]
 

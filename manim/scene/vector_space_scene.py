@@ -9,28 +9,25 @@ from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 
-from manim.animation.creation import DrawBorderThenFill, Group
+from manim._config import config
+from manim.animation.animation import Animation
+from manim.animation.creation import Create, DrawBorderThenFill, Group, Write
+from manim.animation.fading import FadeOut
+from manim.animation.growing import GrowArrow
+from manim.animation.transform import ApplyFunction, ApplyPointwiseFunction, Transform
+from manim.constants import DL, DOWN, LARGE_BUFF, ORIGIN, RIGHT, SMALL_BUFF, UP
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.line import Arrow, Line, Vector
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.graphing.coordinate_systems import Axes, NumberPlane
+from manim.mobject.matrix import Matrix
+from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.text.tex_mobject import MathTex, Tex
+from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.renderer.cairo.camera import Camera
-from manim.utils.config_ops import update_dict_recursively
-
-from .._config import config
-from ..animation.animation import Animation
-from ..animation.creation import Create, Write
-from ..animation.fading import FadeOut
-from ..animation.growing import GrowArrow
-from ..animation.transform import ApplyFunction, ApplyPointwiseFunction, Transform
-from ..constants import *
-from ..mobject.matrix import Matrix
-from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..scene.scene import Scene
-from ..utils.color import (
+from manim.scene.scene import Scene
+from manim.utils.color import (
     BLACK,
     BLUE_D,
     GREEN_C,
@@ -41,8 +38,9 @@ from ..utils.color import (
     ManimColor,
     ParsableManimColor,
 )
-from ..utils.rate_functions import rush_from, rush_into
-from ..utils.space_ops import angle_of_vector
+from manim.utils.config_ops import update_dict_recursively
+from manim.utils.rate_functions import rush_from, rush_into
+from manim.utils.space_ops import angle_of_vector
 
 if TYPE_CHECKING:
     from typing import Self

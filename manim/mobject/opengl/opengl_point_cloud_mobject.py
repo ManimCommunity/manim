@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import moderngl
 import numpy as np
 
-from manim.constants import *
+from manim.constants import ORIGIN
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.utils.bezier import interpolate
 from manim.utils.color import (

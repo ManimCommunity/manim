@@ -88,9 +88,9 @@ __all__ = ["MovingCameraScene"]
 
 from typing import Any
 
-from ..renderer.cairo.camera import Camera
-from ..scene.scene import Scene
-from ..utils.deprecation import deprecated
+from manim.renderer.cairo.camera import Camera
+from manim.scene.scene import Scene
+from manim.utils.deprecation import deprecated
 
 
 @deprecated(

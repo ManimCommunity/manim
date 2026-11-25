@@ -22,7 +22,7 @@ from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 
-from manim.constants import *
+from manim.constants import DL, DOWN, DR, RIGHT, TAU, UL, UR
 from manim.mobject.geometry.arc import ArcBetweenPoints
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
@@ -132,6 +132,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
         --------
         ::
 
+            >>> from manim import LEFT, ORIGIN, RIGHT, UP
             >>> poly = Polygram([ORIGIN, RIGHT, UP, LEFT + UP], [LEFT, LEFT + UP, 2 * LEFT])
             >>> groups = poly.get_vertex_groups()
             >>> len(groups)

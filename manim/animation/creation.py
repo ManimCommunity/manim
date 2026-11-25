@@ -85,18 +85,17 @@ if TYPE_CHECKING:
     from manim.mobject.text.text_mobject import Text
     from manim.scene.scene import Scene
 
+from manim._config import config
+from manim.animation.animation import Animation
+from manim.animation.composition import Succession
 from manim.constants import RIGHT, TAU
+from manim.mobject.mobject import Group, Mobject
 from manim.mobject.opengl.opengl_surface import OpenGLSurface
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.mobject.types.vectorized_mobject import VMobject
+from manim.utils.bezier import integer_interpolate
 from manim.utils.color import ManimColor
-
-from .._config import config
-from ..animation.animation import Animation
-from ..animation.composition import Succession
-from ..mobject.mobject import Group, Mobject
-from ..mobject.types.vectorized_mobject import VMobject
-from ..utils.bezier import integer_interpolate
-from ..utils.rate_functions import double_smooth, linear
+from manim.utils.rate_functions import double_smooth, linear
 
 
 class ShowPartial(Animation):

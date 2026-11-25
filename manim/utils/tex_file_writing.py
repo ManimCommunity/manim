@@ -17,9 +17,8 @@ from pathlib import Path
 from re import Match
 from typing import Any
 
+from manim._config import config, logger
 from manim.utils.tex import TexTemplate
-
-from .._config import config, logger
 
 __all__ = ["tex_to_svg_file"]
 

@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from .._config import config
-from ..utils.exceptions import EndSceneEarlyException
+from manim._config import config
+from manim.utils.exceptions import EndSceneEarlyException
 
 if TYPE_CHECKING:
-    from ..manager import Manager
+    from manim.manager import Manager
 
 __all__: list[str] = []
 

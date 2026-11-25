@@ -24,22 +24,21 @@ import numpy as np
 import srt
 from PIL import Image
 
+from manim._config import logger
+from manim._config.output_plan import OutputPlan
+from manim._config.video_encoder import VideoEncoderSpec
 from manim._version import __version__
-
-from .._config import logger
-from .._config.output_plan import OutputPlan
-from .._config.video_encoder import VideoEncoderSpec
-from ..utils.caching import prune_segment_cache
-from ..utils.file_ops import modify_atime
-from .audio_mixer import (
+from manim.scene.audio_mixer import (
     LAYOUT,
     SAMPLE_RATE,
     _movie_time,
     _Sound,
     _SoundMix,
 )
-from .section import DefaultSectionType, Section
-from .video_segment_encoder import VideoSegmentEncoder
+from manim.scene.section import DefaultSectionType, Section
+from manim.scene.video_segment_encoder import VideoSegmentEncoder
+from manim.utils.caching import prune_segment_cache
+from manim.utils.file_ops import modify_atime
 
 # PyAV added the chapter API in 16.0; older versions write movies without chapters.
 _SUPPORTS_CHAPTERS = hasattr(av.container.OutputContainer, "set_chapters")

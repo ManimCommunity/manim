@@ -10,7 +10,14 @@ import moderngl
 import numpy as np
 
 from manim._config import config
-from manim.constants import *
+from manim.constants import (
+    DEFAULT_STROKE_WIDTH,
+    DEGREES,
+    ORIGIN,
+    OUT,
+    LineJointType,
+    RendererType,
+)
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 from manim.renderer.opengl.shader_wrapper import ShaderWrapper
 from manim.typing import Point3D, Point3DLike, Point3DLike_Array

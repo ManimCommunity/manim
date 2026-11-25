@@ -9,10 +9,8 @@ from typing import Any
 
 from manim.mobject.mobject import Mobject
 from manim.mobject.text.numbers import Integer
-from manim.utils.color import ManimColor
-
-from ..mobject.types.vectorized_mobject import VGroup
-from .color import BLACK
+from manim.mobject.types.vectorized_mobject import VGroup
+from manim.utils.color import BLACK, ManimColor
 
 
 def print_family(mobject: Mobject, n_tabs: int = 0) -> None:

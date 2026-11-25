@@ -18,9 +18,8 @@ from manim.renderer.opengl import OpenGLRenderer
 from manim.scene.scene import Scene
 from manim.scene.three_d_scene import ThreeDScene
 from manim.typing import StrPath
-
-from ._frames_testers import _ControlDataWriter, _FramesTester
-from ._test_class_makers import (
+from manim.utils.testing._frames_testers import _ControlDataWriter, _FramesTester
+from manim.utils.testing._test_class_makers import (
     DummySceneFileWriter,
     _make_scene_file_writer_class,
     _make_test_renderer_class,

@@ -17,7 +17,7 @@ from pygments.style import Style
 from pygments.styles import get_all_styles, get_style_by_name
 from pygments.token import Text as TextToken
 
-from manim.constants import *
+from manim.constants import LEFT, RIGHT, UP
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL

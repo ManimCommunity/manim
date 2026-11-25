@@ -7,9 +7,9 @@ from collections.abc import Generator
 from contextlib import contextmanager
 from typing import Any
 
-from .cli_colors import parse_cli_ctx
-from .logger_utils import make_logger
-from .utils import ManimConfig, ManimFrame, make_config_parser
+from manim._config.cli_colors import parse_cli_ctx
+from manim._config.logger_utils import make_logger
+from manim._config.utils import ManimConfig, ManimFrame, make_config_parser
 
 __all__ = [
     "logger",

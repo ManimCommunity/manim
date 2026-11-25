@@ -15,17 +15,16 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
-from ..animation.animation import Animation
-from ..utils.rate_functions import linear
+from manim.animation.animation import Animation
+from manim.utils.rate_functions import linear
 
 if TYPE_CHECKING:
     from typing import Self
 
+    from manim.mobject.mobject import Mobject
     from manim.mobject.types.vectorized_mobject import VMobject
     from manim.typing import MappingFunction, Point3D
     from manim.utils.rate_functions import RateFunction
-
-    from ..mobject.mobject import Mobject
 
 
 class Homotopy(Animation):

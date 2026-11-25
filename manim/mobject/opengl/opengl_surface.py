@@ -2,16 +2,16 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from pathlib import Path
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING, Any, Self
 
 import moderngl
 import numpy as np
 from PIL import Image
 
-from manim.constants import *
+from manim.constants import OUT
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.utils.bezier import integer_interpolate, interpolate
-from manim.utils.color import *
+from manim.utils.color import GREY, color_to_rgba, interpolate_color
 from manim.utils.config_ops import _Data, _Uniforms
 from manim.utils.images import change_to_rgba_array, get_full_raster_image_path
 from manim.utils.iterables import listify

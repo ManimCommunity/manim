@@ -9,12 +9,12 @@ from moderngl_window.timers.clock import Timer
 from pyglet import gl
 from screeninfo import Monitor, get_monitors
 
-from ..._config import config, logger
-from ..._version import __version__
-from .window_settings import _WindowSettings
+from manim._config import config, logger
+from manim._version import __version__
+from manim.renderer.opengl.window_settings import _WindowSettings
 
 if TYPE_CHECKING:
-    from .renderer import OpenGLRenderer
+    from manim.renderer.opengl.renderer import OpenGLRenderer
 
 __all__ = ["Window"]
 

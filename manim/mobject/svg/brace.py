@@ -9,21 +9,28 @@ from typing import TYPE_CHECKING, Any, Self
 import numpy as np
 import svgelements as se
 
+from manim.animation.animation import Animation
+from manim.animation.composition import AnimationGroup
+from manim.animation.fading import FadeIn
+from manim.animation.growing import GrowFromCenter
+from manim.constants import (
+    DEFAULT_FONT_SIZE,
+    DEFAULT_MOBJECT_TO_MOBJECT_BUFFER,
+    DOWN,
+    LEFT,
+    ORIGIN,
+    RIGHT,
+    UP,
+)
 from manim.mobject.geometry.arc import Arc
 from manim.mobject.geometry.line import Line
 from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
+from manim.mobject.svg.svg_mobject import VMobjectFromSVGPath
 from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex, Tex
 from manim.mobject.text.text_mobject import Text
-
-from ...animation.animation import Animation
-from ...animation.composition import AnimationGroup
-from ...animation.fading import FadeIn
-from ...animation.growing import GrowFromCenter
-from ...constants import *
-from ...mobject.types.vectorized_mobject import VMobject
-from ...utils.color import BLACK
-from ..svg.svg_mobject import VMobjectFromSVGPath
+from manim.mobject.types.vectorized_mobject import VMobject
+from manim.utils.color import BLACK
 
 if TYPE_CHECKING:
     from manim.typing import Point3D, Point3DLike, Vector3D, Vector3DLike

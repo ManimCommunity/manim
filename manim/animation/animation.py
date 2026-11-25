@@ -2,14 +2,13 @@
 
 from __future__ import annotations
 
+from manim._config import config, logger
+from manim.constants import RendererType
+from manim.mobject import mobject
+from manim.mobject.mobject import Group, Mobject
+from manim.mobject.opengl import opengl_mobject
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-
-from .._config import config, logger
-from ..constants import RendererType
-from ..mobject import mobject
-from ..mobject.mobject import Group, Mobject
-from ..mobject.opengl import opengl_mobject
-from ..utils.rate_functions import linear, smooth
+from manim.utils.rate_functions import linear, smooth
 
 __all__ = ["Animation", "Wait", "Add", "override_animation"]
 

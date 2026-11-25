@@ -5,13 +5,13 @@ from __future__ import annotations
 from dataclasses import replace
 from typing import TYPE_CHECKING
 
-from .._config import config, logger
-from .._config.video_encoder import video_encoder_fingerprint
-from ..utils.hashing import get_hash_from_play_call
+from manim._config import config, logger
+from manim._config.video_encoder import video_encoder_fingerprint
+from manim.utils.hashing import get_hash_from_play_call
 
 if TYPE_CHECKING:
-    from ..manager import Manager
-    from .loop import _Play
+    from manim._run.loop import _Play
+    from manim.manager import Manager
 
 __all__: list[str] = []
 

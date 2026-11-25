@@ -19,7 +19,7 @@ from pathlib import Path
 import av
 import numpy as np
 
-from ..utils.sounds import get_full_sound_file_path
+from manim.utils.sounds import get_full_sound_file_path
 
 SAMPLE_RATE = 48_000
 """Sample rate of mixed audio, in Hz."""

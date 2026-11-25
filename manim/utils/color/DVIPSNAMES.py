@@ -24,7 +24,7 @@ documentation (see https://ctan.org/pkg/xcolor):
 
 from __future__ import annotations
 
-from .core import ManimColor
+from manim.utils.color.core import ManimColor
 
 AQUAMARINE = ManimColor("#00B5BE")
 BITTERSWEET = ManimColor("#C04F17")
