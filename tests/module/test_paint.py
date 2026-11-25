@@ -226,3 +226,99 @@ def test_from_function_samples_texel_centres():
         vectorized=True,
     )
     np.testing.assert_array_equal(vectorized.grid, field.grid)
+
+
+class _Stripes(Paint):
+    """A paint of one's own: two colours, drawn as the built-in gradient of them."""
+
+    __slots__ = ("_turns",)
+
+    def __init__(self, turns: float) -> None:
+        object.__setattr__(self, "_rgbas", np.array([[1.0, 0, 0, 1], [0, 0, 1, 1]]))
+        object.__setattr__(self, "_turns", float(turns))
+
+    def resolve(self, points):
+        from manim.renderer.snapshot import RLinearGradient
+
+        return RLinearGradient(np.zeros(3), np.array([self._turns, 0, 0]), self._rgbas)
+
+    def interpolate(self, end, alpha):
+        if not isinstance(end, _Stripes):
+            return super().interpolate(end, alpha)
+        return _Stripes((1 - alpha) * self._turns + alpha * end._turns)
+
+
+class _Opaque(Paint):
+    """A paint of one's own that resolves to nothing a renderer knows."""
+
+    __slots__ = ()
+
+    def __init__(self) -> None:
+        object.__setattr__(self, "_rgbas", np.ones((1, 4)))
+
+    def resolve(self, points):
+        return ("my", "paint")
+
+
+def test_paints_resolve_themselves_into_snapshot_paints():
+    from manim.renderer.extract import snapshot
+    from manim.renderer.snapshot import RColorField, RLinearGradient, RSolidColor
+
+    square = Square()
+    for paint, kind in (
+        (SolidColor(RED), RSolidColor),
+        (LinearGradient([RED, BLUE], direction=RIGHT), RLinearGradient),
+        (ColorField(np.ones((2, 2, 4)), np.eye(3)), RColorField),
+        (_Stripes(2), RLinearGradient),
+    ):
+        square.fill = paint
+        assert isinstance(snapshot(square).payload.fill, kind)
+    # The gradient's ends: the box of the anchors along its direction.
+    square.fill = LinearGradient([RED, BLUE], direction=RIGHT)
+    fill = snapshot(square).payload.fill
+    np.testing.assert_allclose(fill.start, [-1, 0, 0])
+    np.testing.assert_allclose(fill.end, [1, 0, 0])
+
+
+def test_paints_of_ones_own_interpolate_and_hash_by_their_values():
+    from manim.utils.hashing import get_json
+
+    two, three = _Stripes(2), _Stripes(3)
+    # interpolate_paint asks the paint itself; at the ends, the paints themselves.
+    assert interpolate_paint(two, three, 0.5)._turns == 2.5
+    assert interpolate_paint(two, three, 1) is three
+    # Without an interpolate of its own, a paint switches at the end.
+    assert interpolate_paint(_Opaque(), two, 0.5)._rgbas.shape == (1, 4)
+    assert interpolate_paint(_Opaque(), two, 1) is two
+    assert get_json(two) != get_json(three)
+    assert get_json(two) == get_json(_Stripes(2))
+    with pytest.raises(NotImplementedError, match="resolve"):
+        Paint.resolve(two, np.zeros((0, 3)))
+
+
+@pytest.mark.parametrize("renderer", ["cairo", "opengl"])
+def test_renderers_raise_for_snapshot_paints_they_do_not_know(renderer):
+    from manim import Scene, tempconfig
+    from manim.renderer.protocol import CapabilityError
+
+    with tempconfig(
+        {"renderer": renderer, "dry_run": True, "pixel_width": 64, "pixel_height": 36}
+    ):
+        for painted in (
+            Square(fill_opacity=1).set_fill(_Opaque()),
+            Square().set_stroke(_Opaque(), width=4),
+        ):
+            scene = Scene()
+            scene.add(painted)
+            try:
+                with pytest.raises(CapabilityError, match="_Opaque|tuple"):
+                    scene.get_image()
+            finally:
+                scene.renderer.close()
+        # A paint of one's own that resolves to a built-in snapshot paint is drawn.
+        scene = Scene()
+        scene.add(Square(fill_opacity=1).set_fill(_Stripes(2)))
+        try:
+            assert np.asarray(scene.get_image())[..., :3].any()
+        finally:
+            scene.renderer.close()

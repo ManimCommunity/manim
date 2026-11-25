@@ -23,7 +23,7 @@ from PIL.Image import Resampling
 from manim.renderer import _view
 from manim.renderer._lighting import is_lit
 from manim.renderer._mesh import NormalAccumulator, faces_of
-from manim.renderer._paint import paint_colors, shows
+from manim.renderer._paint import check_paint, paint_colors, shows
 from manim.renderer._reuse import PrefixMemo, node_key, view_key
 from manim.renderer.projection import project_points
 from manim.renderer.protocol import CapabilityError
@@ -455,6 +455,11 @@ class SnapshotDrawing:
         self._base_target = target
         self._placed_targets: dict[str, DrawTarget] = {"normal": target}
         paths = [node for node in nodes if isinstance(node.payload, RPath)]
+        for node in paths:
+            path: RPath = node.payload  # type: ignore[assignment]
+            strokes = (path.stroke, path.background_stroke)
+            for paint in (path.fill, *(s.paint for s in strokes if s is not None)):
+                check_paint(paint, "OpenGL")
         self._target = target
         geometry = iter(self._geometry.get(paths, self._tolerance()) if paths else ())
         run: list[RNode] = []

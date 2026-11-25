@@ -14,17 +14,32 @@ import numpy as np
 
 from manim.renderer._lighting import Light, is_lit, shade
 from manim.renderer.protocol import CapabilityError
-from manim.renderer.snapshot import RColorField, RSolidColor
+from manim.renderer.snapshot import RColorField, RLinearGradient, RSolidColor
 
 if TYPE_CHECKING:
     from manim.renderer.protocol import LightState
     from manim.renderer.snapshot import RNode, RPaint, RPath
     from manim.typing import FloatRGBA_Array, Point3D, Point3D_Array
 
-__all__ = ["lit_color", "paint_colors", "shows"]
+__all__ = ["check_paint", "lit_color", "paint_colors", "shows"]
 
 #: Relative tolerance below which a path's points count as one plane.
 _FLAT_TOLERANCE = 1e-9
+
+
+def check_paint(paint: object, renderer: str) -> None:
+    """Raise :class:`.CapabilityError` unless ``paint`` is a snapshot paint the
+    built-in renderers draw (:class:`.RSolidColor`, :class:`.RLinearGradient`,
+    :class:`.RColorField`); ``renderer`` names the renderer in the message.
+
+    A :class:`~.Paint` of one's own that resolves to something else needs a
+    renderer that draws it.
+    """
+    if not isinstance(paint, (RSolidColor, RLinearGradient, RColorField)):
+        raise CapabilityError(
+            f"The {renderer} renderer cannot draw the paint {type(paint).__name__}: "
+            "it draws RSolidColor, RLinearGradient and RColorField."
+        )
 
 
 def shows(paint: RPaint) -> bool:

@@ -13,7 +13,7 @@ import numpy as np
 from PIL import Image
 
 from manim.constants import CapStyleType, LineJointType
-from manim.renderer._paint import lit_color, paint_colors
+from manim.renderer._paint import check_paint, lit_color, paint_colors
 from manim.renderer._view import (
     display_points,
     eye,
@@ -123,6 +123,10 @@ class _CairoDrawingContext:
 
     def _display_path(self, node: RNode, context: cairo.Context) -> None:
         path: RPath = node.payload  # type: ignore[assignment]
+        for paint in (path.fill, path.stroke.paint):
+            check_paint(paint, "Cairo")
+        if path.background_stroke is not None:
+            check_paint(path.background_stroke.paint, "Cairo")
         self._set_cairo_context_path(context, node, path)
         if path.background_stroke is not None:
             self._apply_stroke(context, node, path, path.background_stroke)

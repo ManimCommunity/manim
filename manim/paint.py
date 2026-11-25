@@ -9,6 +9,12 @@ edges of the mobject's own bounding box. Assign one to a mobject's ``fill``, ``s
     square.fill = LinearGradient([RED, BLUE], direction=RIGHT)
     square.set_fill([RED, BLUE], opacity=1)  # the same, with the default direction
 
+Paints of your own subclass :class:`Paint`: :meth:`Paint.resolve` gives what
+renderers draw (a render snapshot paint of :mod:`manim.renderer.snapshot`), and
+:meth:`Paint.interpolate` animates it. A paint that resolves to the built-in
+snapshot paints is drawn by every renderer; renderers raise
+:class:`~.CapabilityError` for snapshot paints they do not know.
+
 Paints are compared by identity: two equal paints made separately are two values.
 A gradient's end points are recomputed from the mobject's current points (its own
 bounding box projected on ``direction``); :meth:`.VMobject.rotate` turns the
@@ -30,7 +36,8 @@ from manim.utils.color import ManimColor, ParsableManimColor
 if TYPE_CHECKING:
     from typing import Self
 
-    from manim.typing import FloatRGBA_Array, Vector3D, Vector3DLike
+    from manim.renderer.snapshot import RPaint
+    from manim.typing import FloatRGBA_Array, Point3D_Array, Vector3D, Vector3DLike
 
 __all__ = ["ColorField", "LinearGradient", "Paint", "SolidColor", "interpolate_paint"]
 
@@ -101,6 +108,29 @@ class Paint:
         rgbas[:, 3] = _stretched(opacities, length)
         return Paint._from_rgbas(rgbas, getattr(self, "_direction", None))
 
+    def resolve(self, points: Point3D_Array) -> Any:
+        """What renderers draw for this paint on a path with ``points`` (its own,
+        in the scene): a snapshot paint (:data:`~.RPaint`). Called when the path's
+        snapshot is made.
+
+        Subclasses override it; the built-in paints resolve to
+        :class:`~.RSolidColor`, :class:`~.RLinearGradient` and
+        :class:`~.RColorField`.
+        """
+        raise NotImplementedError(
+            f"{type(self).__name__} does not say what renderers draw: override "
+            "Paint.resolve."
+        )
+
+    def interpolate(self, end: Paint, alpha: float) -> Paint:
+        """The paint at progress ``alpha`` (0 to 1) from this one to ``end``.
+
+        By default it switches to ``end`` when ``alpha`` reaches 1; subclasses
+        override it to blend. Called by :func:`interpolate_paint` for ``alpha``
+        strictly between 0 and 1 and paints that are not the same object.
+        """
+        return end if alpha >= 1 else self
+
     @staticmethod
     def _from_rgbas(rgbas: Any, direction: Any = None) -> Paint:
         """A paint from RGBA rows: one row a :class:`SolidColor`, more a
@@ -145,6 +175,14 @@ class SolidColor(Paint):
     @property
     def opacity(self) -> float:
         return float(self._rgbas[0, 3])
+
+    def resolve(self, points: Point3D_Array) -> RPaint:
+        from manim.renderer.snapshot import RSolidColor
+
+        return RSolidColor(self._rgbas[0])
+
+    def interpolate(self, end: Paint, alpha: float) -> Paint:
+        return _blend_stops(self, end, alpha)
 
     def __repr__(self) -> str:
         return f"SolidColor({self.color.to_hex()!r}, opacity={self.opacity:g})"
@@ -192,6 +230,18 @@ class LinearGradient(Paint):
         """The same stops along another direction."""
         return Paint._from_rgbas(self._rgbas, direction)  # type: ignore[return-value]
 
+    def resolve(self, points: Point3D_Array) -> RPaint:
+        """The stops spaced between the edges of the bounding box of the path's
+        anchors along :attr:`direction`.
+        """
+        from manim.renderer.snapshot import RLinearGradient
+
+        start, end = _gradient_ends(self._direction, points)
+        return RLinearGradient(start, end, self._rgbas)
+
+    def interpolate(self, end: Paint, alpha: float) -> Paint:
+        return _blend_stops(self, end, alpha)
+
     def __repr__(self) -> str:
         colors = [color.to_hex() for color in self.colors]
         return f"LinearGradient({colors}, direction={self._direction.tolist()})"
@@ -208,27 +258,47 @@ def _stretched(array: np.ndarray, length: int) -> np.ndarray:
     return np.asarray(array)[indices]
 
 
-def interpolate_paint(start: Paint, end: Paint, alpha: float) -> Paint:
-    """The paint at ``alpha`` between ``start`` and ``end``.
+def _gradient_ends(
+    direction: np.ndarray, points: np.ndarray
+) -> tuple[np.ndarray, np.ndarray]:
+    """Where a path's gradient starts and ends: the edges of the bounding box of
+    its anchors (the first and last point of every curve) along ``direction``.
+    """
+    if len(points) == 0:
+        return np.zeros(3), np.zeros(3)
+    anchors = np.concatenate([points[::4], points[3::4]]) if len(points) > 1 else points
+    low, high = anchors.min(axis=0), anchors.max(axis=0)
+    center = (low + high) / 2
+    offset = (high - low) / 2 * np.asarray(direction, dtype=float)
+    return center - offset, center + offset
 
-    The paints themselves at 0 and 1, and whenever ``start is end``. Otherwise the
-    shorter list of stops is stretched to the longer one's length and the colours
-    are interpolated linearly; directions interpolate too, a :class:`SolidColor` taking
-    the other paint's direction. Two :class:`ColorField` paints with the same grid
-    and corners interpolate their opacity; any other pair with a field keeps
-    ``start`` until ``alpha`` reaches 1, where it is ``end``.
+
+def interpolate_paint(start: Paint, end: Paint, alpha: float) -> Paint:
+    """The paint at ``alpha`` between ``start`` and ``end``: the paints themselves
+    at 0 and 1, and whenever ``start is end``; otherwise
+    ``start.interpolate(end, alpha)`` (:meth:`Paint.interpolate`).
+
+    Between two built-in colour paints (:class:`SolidColor`, :class:`LinearGradient`)
+    the shorter list of stops is stretched to the longer one's length and the
+    colours are interpolated linearly; directions interpolate too, a
+    :class:`SolidColor` taking the other paint's direction. Two :class:`ColorField`
+    paints with the same grid and corners interpolate their opacity. Any other pair
+    keeps ``start`` until ``alpha`` reaches 1, where it is ``end``.
     """
     if start is end or alpha >= 1:
         return end
     if alpha <= 0:
         return start
-    if isinstance(start, ColorField) or isinstance(end, ColorField):
-        # Fields on one grid fade; any other pair switches at the end.
-        if isinstance(start, ColorField) and start.same_grid(end):
-            return start.with_opacity(
-                (1 - alpha) * start.opacity + alpha * end.opacity  # type: ignore[attr-defined]
-            )
-        return start
+    return start.interpolate(end, alpha)
+
+
+def _blend_stops(start: Paint, end: Paint, alpha: float) -> Paint:
+    """Between two colour-stop paints (:class:`SolidColor`, :class:`LinearGradient`),
+    stops and directions blended (see :func:`interpolate_paint`); towards any other
+    paint, ``start`` until the end.
+    """
+    if not isinstance(end, (SolidColor, LinearGradient)):
+        return Paint.interpolate(start, end, alpha)
     a, b = start._rgbas, end._rgbas
     length = max(len(a), len(b))
     rgbas = (1 - alpha) * _stretched(a, length) + alpha * _stretched(b, length)
@@ -407,6 +477,19 @@ class ColorField(Paint):
         alpha = out[:, 3:4]
         rgb = np.where(alpha > 0, out[:, :3] / np.where(alpha > 0, alpha, 1), 0.0)
         return np.concatenate([rgb, alpha * self._opacity], axis=1)
+
+    def resolve(self, points: Point3D_Array) -> RPaint:
+        from manim.renderer.snapshot import RColorField
+
+        return RColorField(self._grid, self._corners, self._opacity, self._grid_id)
+
+    def interpolate(self, end: Paint, alpha: float) -> Paint:
+        """Towards a field on the same grid, the opacity fades; towards any other
+        paint, the field stays until the end.
+        """
+        if isinstance(end, ColorField) and self.same_grid(end):
+            return self.with_opacity((1 - alpha) * self._opacity + alpha * end.opacity)
+        return Paint.interpolate(self, end, alpha)
 
     def __reduce__(self) -> tuple[Any, ...]:
         return (

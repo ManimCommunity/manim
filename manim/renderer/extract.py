@@ -24,16 +24,14 @@ from manim.mobject.types.image_mobject import (
 )
 from manim.mobject.types.point_cloud_mobject import PMobject
 from manim.mobject.types.vectorized_mobject import VMobject
-from manim.appearance.paint import ColorField, Paint
+from manim.appearance.paint import Paint
 from manim.renderer.snapshot import (
     FacingCamera,
     FixedInFrame,
     Payload,
     Placement,
     RCameraView,
-    RColorField,
     RImage,
-    RLinearGradient,
     RMesh,
     RNode,
     RPaint,
@@ -347,22 +345,10 @@ _PATH_SLOTS: dict[str, tuple[str, ...]] = {
 def _path(vmobject: VMobject) -> RPath:
     attributes: dict[str, Any] = vmobject.__dict__
     points = vmobject.points
-    ends_by_direction: dict[bytes, tuple[Point3D, Point3D]] = {}
 
     def paint(value: Paint | None) -> RPaint:
-        if value is None:
-            return _NO_PAINT
-        if isinstance(value, ColorField):
-            return RColorField(value.grid, value.corners, value.opacity, value.grid_id)
-        rgbas = value.rgbas
-        if len(rgbas) == 1:
-            return RSolidColor(rgbas[0])
-        direction = value.direction  # type: ignore[attr-defined]
-        key = direction.tobytes()
-        ends = ends_by_direction.get(key)
-        if ends is None:
-            ends = ends_by_direction[key] = _gradient_ends(direction, points)
-        return RLinearGradient(ends[0], ends[1], rgbas)
+        # Each paint says what renderers draw for it (Paint.resolve).
+        return _NO_PAINT if value is None else value.resolve(points)
 
     background_width = vmobject.background_stroke_width
     return RPath(
@@ -404,22 +390,6 @@ def _own_center(points: np.ndarray) -> Point3D:
     if box is None:
         return np.zeros(3)
     return (box[0] + box[1]) / 2
-
-
-def _gradient_ends(
-    direction: np.ndarray, points: np.ndarray
-) -> tuple[Point3D, Point3D]:
-    """Where a path's gradient starts and ends, from the path's own points: the
-    edges of their bounding box along ``direction``.
-    """
-    box = _anchor_box(points)
-    if box is None:
-        return np.zeros(3), np.zeros(3)
-    low, high = box
-    center = (low + high) / 2
-    # Along the gradient's direction, to the edges of the box.
-    offset = (high - low) / 2 * np.asarray(direction, dtype=float)
-    return center - offset, center + offset
 
 
 _NO_PAINT = RSolidColor(np.zeros(4))

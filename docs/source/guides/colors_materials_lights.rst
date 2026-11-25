@@ -47,6 +47,13 @@ Animations interpolate paints: a gradient fades into another one stop by stop,
 and paints with different numbers of stops are aligned first
 (:func:`.interpolate_paint`).
 
+Paints of your own subclass :class:`.Paint` and say what renderers draw for
+them with :meth:`~.Paint.resolve`, which returns one of the snapshot paints of
+:mod:`manim.renderer.snapshot` (:class:`.RSolidColor`, :class:`.RLinearGradient`,
+:class:`.RColorField`); :meth:`~.Paint.interpolate` animates them. Every
+renderer draws a paint that resolves to these, and raises
+:class:`.CapabilityError` for anything else.
+
 Colour fields
 ~~~~~~~~~~~~~
 
