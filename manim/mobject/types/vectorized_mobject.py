@@ -25,7 +25,7 @@ from manim.appearance.paint import (
     ColorField,
     LinearGradient,
     Paint,
-    Solid,
+    SolidColor,
     _stretched,
     interpolate_paint,
 )
@@ -78,7 +78,7 @@ if TYPE_CHECKING:
 
 
 #: The paint of a mobject that has none yet (as the colour arrays defaulted to).
-_TRANSPARENT_BLACK = Solid(BLACK, 0.0)
+_TRANSPARENT_BLACK = SolidColor(BLACK, 0.0)
 #: The colour stops of a missing paint.
 _NO_RGBAS = np.zeros((1, 4))
 _NO_RGBAS.flags.writeable = False

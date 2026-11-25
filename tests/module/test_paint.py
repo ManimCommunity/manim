@@ -18,7 +18,7 @@ from manim import (
     UL,
     ColorField,
     LinearGradient,
-    Solid,
+    SolidColor,
     Square,
     Transform,
     interpolate_paint,
@@ -29,7 +29,7 @@ from manim.utils.versioned_fields import field_version
 
 
 def test_paints_cannot_be_changed():
-    solid = Solid(RED, 0.5)
+    solid = SolidColor(RED, 0.5)
     gradient = LinearGradient([RED, BLUE])
     for paint in (solid, gradient):
         with pytest.raises(AttributeError):
@@ -54,7 +54,7 @@ def test_gradients_default_to_up_left():
 
 
 def test_interpolation_keeps_the_paints_themselves():
-    start, end = Solid(RED), LinearGradient([BLUE, GREEN], direction=RIGHT)
+    start, end = SolidColor(RED), LinearGradient([BLUE, GREEN], direction=RIGHT)
     assert interpolate_paint(start, end, 0) is start
     assert interpolate_paint(start, end, 1) is end
     assert interpolate_paint(start, start, 0.3) is start
@@ -107,7 +107,7 @@ def test_setters_take_paints():
     gradient = LinearGradient([RED, BLUE], direction=DOWN)
     square = Square().set_fill(gradient)
     assert square.fill is gradient
-    assert square.set_stroke(Solid(GREEN)).stroke.color == GREEN
+    assert square.set_stroke(SolidColor(GREEN)).stroke.color == GREEN
 
 
 def test_match_style_carries_the_paint():
@@ -135,8 +135,8 @@ def test_paints_hash_by_content_in_any_process():
     def json(paint: Paint) -> str:
         return _get_json(paint, _Memoizer())
 
-    assert json(Solid(RED)) == json(Solid(RED))
-    assert json(Solid(RED)) != json(Solid(BLUE))
+    assert json(SolidColor(RED)) == json(SolidColor(RED))
+    assert json(SolidColor(RED)) != json(SolidColor(BLUE))
     assert json(LinearGradient([RED, BLUE])) != json(
         LinearGradient([RED, BLUE], direction=RIGHT)
     )
@@ -167,7 +167,7 @@ def test_fields_on_one_grid_fade_and_other_pairs_switch_at_the_end():
     other = _field(corners=[[-2, 2, 0], [2, 2, 0], [-2, -2, 0]])
     assert interpolate_paint(field, other, 0.99) is field
     assert interpolate_paint(field, other, 1) is other
-    solid = Solid(GREEN)
+    solid = SolidColor(GREEN)
     assert interpolate_paint(solid, field, 0.5) is solid
     assert interpolate_paint(field, solid, 1) is solid
 
@@ -176,7 +176,7 @@ def test_a_field_comes_back_with_there_and_back():
     from manim import there_and_back
 
     square = Square().set_stroke(_field())
-    target = square.copy().set_stroke(Solid(GREEN))
+    target = square.copy().set_stroke(SolidColor(GREEN))
     animation = Transform(square, target, rate_func=there_and_back)
     animation.begin()
     animation.interpolate(1)

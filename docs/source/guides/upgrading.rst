@@ -422,7 +422,7 @@ Colours of vectorized mobjects are paints
 
 A :class:`.VMobject` stores its colours as three *paints*: ``mob.fill``,
 ``mob.stroke`` and ``mob.background_stroke`` (see :mod:`manim.paint`). A paint is
-an immutable value: :class:`.Solid` (one colour) or :class:`.LinearGradient`
+an immutable value: :class:`.SolidColor` (one colour) or :class:`.LinearGradient`
 (evenly spaced colours along a direction, ``UL`` by default, between the edges
 of the mobject's own bounding box).
 
@@ -430,7 +430,7 @@ of the mobject's own bounding box).
 
     square.set_fill([RED, BLUE], opacity=1)  # as before: a gradient along UL
     square.fill = LinearGradient([RED, BLUE], direction=RIGHT)
-    square.set_stroke(Solid(GREEN, opacity=0.5))
+    square.set_stroke(SolidColor(GREEN, opacity=0.5))
 
 :meth:`~.VMobject.set_fill`, :meth:`~.VMobject.set_stroke`,
 :meth:`~.VMobject.set_color`, :meth:`~.VMobject.set_opacity` and the getters

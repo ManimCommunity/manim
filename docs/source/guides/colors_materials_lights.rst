@@ -12,7 +12,7 @@ A :class:`.VMobject` has three paints: ``fill`` (its area), ``stroke`` (its
 outline) and ``background_stroke`` (an outline drawn behind the fill). A paint is
 an immutable value from :mod:`manim.paint`:
 
-:class:`.Solid`
+:class:`.SolidColor`
     One colour, with an opacity.
 :class:`.LinearGradient`
     Colours evenly spaced along a direction, between the edges of the mobject's

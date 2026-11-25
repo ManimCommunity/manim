@@ -8,8 +8,8 @@ reuse work from earlier frames. The list is in drawing order (family order, sort
 
 The ``R`` in the names stands for *render snapshot*: each ``R`` type holds the values
 of one mobject or style type, resolved for drawing (``RPath`` for a
-:class:`~.VMobject`, ``RSolidColor`` for a single solid color, and so on; each class
-says which).
+:class:`~.VMobject`, ``RSolidColor`` for a :class:`~.SolidColor` paint, and so on;
+each class says which).
 Values are resolved where a renderer would otherwise need the mobject: a gradient's
 ends are points in the scene, not a direction relative to the mobject.
 
@@ -90,7 +90,7 @@ CameraId: TypeAlias = int
 
 
 class RSolidColor(NamedTuple):
-    """One color: the snapshot of a mobject's single fill or stroke color."""
+    """One color: the snapshot of a :class:`~.SolidColor` paint."""
 
     rgba: FloatRGBA
 

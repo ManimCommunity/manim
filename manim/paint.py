@@ -1,8 +1,8 @@
 """Paints: how an area or a line of a vectorized mobject is coloured.
 
-A paint is an immutable value. :class:`Solid` is one colour; :class:`LinearGradient`
-is evenly spaced colour stops along a direction, between the edges of the mobject's
-own bounding box. Assign one to a mobject's ``fill``, ``stroke`` or
+A paint is an immutable value. :class:`SolidColor` is one colour;
+:class:`LinearGradient` is evenly spaced colour stops along a direction, between the
+edges of the mobject's own bounding box. Assign one to a mobject's ``fill``, ``stroke`` or
 ``background_stroke``, or let :meth:`.VMobject.set_fill` and
 :meth:`.VMobject.set_stroke` make it::
 
@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
     from manim.typing import FloatRGBA_Array, Vector3D, Vector3DLike
 
-__all__ = ["ColorField", "LinearGradient", "Paint", "Solid", "interpolate_paint"]
+__all__ = ["ColorField", "LinearGradient", "Paint", "SolidColor", "interpolate_paint"]
 
 
 def _frozen(array: Any, shape: tuple[int, ...] | None = None) -> np.ndarray:
@@ -67,7 +67,7 @@ class Paint:
     @property
     def rgbas(self) -> FloatRGBA_Array:
         """The colour stops as a read-only float array of RGBA rows (one row for a
-        :class:`Solid`).
+        :class:`SolidColor`).
         """
         return self._rgbas
 
@@ -103,13 +103,13 @@ class Paint:
 
     @staticmethod
     def _from_rgbas(rgbas: Any, direction: Any = None) -> Paint:
-        """A paint from RGBA rows: one row a :class:`Solid`, more a
+        """A paint from RGBA rows: one row a :class:`SolidColor`, more a
         :class:`LinearGradient` along ``direction`` (default ``UL``).
         """
         rgbas = _frozen(rgbas)
         rgbas = rgbas.reshape(-1, 4)
         if len(rgbas) == 1:
-            paint: Paint = object.__new__(Solid)
+            paint: Paint = object.__new__(SolidColor)
         else:
             paint = object.__new__(LinearGradient)
             object.__setattr__(
@@ -121,7 +121,7 @@ class Paint:
         return paint
 
 
-class Solid(Paint):
+class SolidColor(Paint):
     """One colour.
 
     Parameters
@@ -147,7 +147,7 @@ class Solid(Paint):
         return float(self._rgbas[0, 3])
 
     def __repr__(self) -> str:
-        return f"Solid({self.color.to_hex()!r}, opacity={self.opacity:g})"
+        return f"SolidColor({self.color.to_hex()!r}, opacity={self.opacity:g})"
 
 
 class LinearGradient(Paint):
@@ -175,7 +175,7 @@ class LinearGradient(Paint):
     ) -> None:
         colors = list(colors)
         if len(colors) < 2:
-            raise ValueError("A LinearGradient has two or more colors; use Solid.")
+            raise ValueError("A LinearGradient has two or more colors; use SolidColor.")
         rgbs = np.array([ManimColor(c).to_rgb() for c in colors], dtype=float)
         alphas = np.broadcast_to(np.asarray(opacities, dtype=float), (len(rgbs),))
         object.__setattr__(
@@ -213,7 +213,7 @@ def interpolate_paint(start: Paint, end: Paint, alpha: float) -> Paint:
 
     The paints themselves at 0 and 1, and whenever ``start is end``. Otherwise the
     shorter list of stops is stretched to the longer one's length and the colours
-    are interpolated linearly; directions interpolate too, a :class:`Solid` taking
+    are interpolated linearly; directions interpolate too, a :class:`SolidColor` taking
     the other paint's direction. Two :class:`ColorField` paints with the same grid
     and corners interpolate their opacity; any other pair with a field keeps
     ``start`` until ``alpha`` reaches 1, where it is ``end``.

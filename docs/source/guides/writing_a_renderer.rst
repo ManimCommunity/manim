@@ -107,7 +107,7 @@ Colours and light
 ~~~~~~~~~~~~~~~~~
 
 A path's ``fill``, its stroke's ``paint`` and its background stroke's ``paint`` are
-:class:`.RSolid` (one RGBA colour), :class:`.RLinearGradient` (colour stops evenly
+:class:`.RSolidColor` (one RGBA colour), :class:`.RLinearGradient` (colour stops evenly
 spaced from ``start`` to ``end``, scene points) or :class:`.RColorField` (a grid of
 colours in the scene, sampled where the path is drawn; see :class:`.ColorField`
 for the exact sampling). A path's and a mesh's ``material`` is :class:`.UnlitMaterial` or
