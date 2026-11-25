@@ -2,8 +2,8 @@
 
 A paint is an immutable value. :class:`SolidColor` is one colour;
 :class:`LinearGradient` is evenly spaced colour stops along a direction, between the
-edges of the mobject's own bounding box. Assign one to a mobject's ``fill``, ``stroke`` or
-``background_stroke``, or let :meth:`.VMobject.set_fill` and
+edges of the mobject's own bounding box. Assign one to a mobject's ``fill``,
+``stroke`` or ``background_stroke``, or let :meth:`.VMobject.set_fill` and
 :meth:`.VMobject.set_stroke` make it::
 
     square.fill = LinearGradient([RED, BLUE], direction=RIGHT)
