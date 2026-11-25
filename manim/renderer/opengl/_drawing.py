@@ -34,7 +34,7 @@ from manim.renderer.snapshot import (
     RNode,
     RPath,
     RPoints,
-    RSolid,
+    RSolidColor,
 )
 
 from ._winding_fill import WindingFill
@@ -751,7 +751,7 @@ def _groups(
         box = boxes[index]
         single = (
             tuple(path.fill.rgba)
-            if isinstance(path.fill, RSolid)
+            if isinstance(path.fill, RSolidColor)
             and type(path.material) is not LegacyShaded
             and path.stroke.width == 0
             else None
