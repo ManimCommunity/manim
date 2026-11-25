@@ -226,7 +226,7 @@ def polylabel(rings: Sequence[Point3DLike_Array], precision: float = 0.01) -> Ce
         best = bbox
 
     # While there are cells to consider...
-    directions = np.array([[-1, -1], [1, -1], [-1, 1], [1, 1]])
+    directions = np.array([[-1, -1], [-1, 1], [1, -1], [1, 1]])
     # Max-heap on potential p: pop the most promising cell first
     while not queue.empty():
         _, _, cell = queue.get()
