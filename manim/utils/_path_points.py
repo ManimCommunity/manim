@@ -36,12 +36,17 @@ __all__ = [
 ]
 
 
+#: Relative tolerance below which two coordinates are equal (``np.isclose``'s
+#: default); the absolute one is the caller's ``tolerance``.
+_RTOL = 1.0e-5
+
+
 def points_equal_2d(p0: Point2DLike, p1: Point2DLike, tolerance: float) -> bool:
     """Whether two points are equal in ``x`` and ``y`` up to ``tolerance``.
 
     See :meth:`.VMobject.consider_points_equals_2d`.
     """
-    rtol = 1.0e-5  # default from np.isclose()
+    rtol = _RTOL
     atol = tolerance
 
     x0, y0 = p0[0], p0[1]
@@ -78,7 +83,7 @@ def subpath_split_indices(
     # close to the next curve's start anchor. This is an allocation-light
     # vectorization of np.isclose semantics: NaN is never close, while
     # infinities compare equal only when they have the same sign.
-    rtol = 1.0e-5  # default from np.isclose()
+    rtol = _RTOL
     atol = tolerance
     ends = points[boundary_indices - 1, :n_dims]  # end of previous curve
     starts = points[boundary_indices, :n_dims]  # start of next curve
