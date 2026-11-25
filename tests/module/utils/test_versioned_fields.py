@@ -237,6 +237,23 @@ def test_animation_steps_that_change_nothing_keep_versions():
     assert field_version(partial, "points") == points_version
 
 
+@pytest.mark.parametrize("alpha", [0, 1])
+def test_animation_steps_call_a_path_that_does_not_meet_its_ends(alpha):
+    # Only the straight path is taken to give its ends exactly; any other path
+    # decides what is shown at the first and last frame (review of #5173).
+    start, end = Square(), Circle()
+    start.align_data(end)
+    lifted = np.array([0.0, 0.0, 1.0])
+
+    def path(a, b, t):
+        return a + (b - a) * t + lifted
+
+    moving = start.copy()
+    moving.interpolate(start, end, alpha, path_func=path)
+
+    np.testing.assert_allclose(moving.points, path(start.points, end.points, alpha))
+
+
 def test_the_end_of_an_interpolation_cannot_be_written_through_the_start():
     start, end = Square(), Circle()
     start.align_data(end)

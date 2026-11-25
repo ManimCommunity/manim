@@ -27,6 +27,7 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
 from .._config import config, logger
 from ..constants import *
+from ..utils.bezier import interpolate
 from ..utils.color import (
     BLACK,
     PURE_YELLOW,
@@ -87,13 +88,20 @@ _uids = it.count(1)
 def _interpolated(
     start: Any, end: Any, alpha: float, func: Callable[[Any, Any, float], Any]
 ) -> Any:
-    """``func(start, end, alpha)``, but the end value itself where nothing is
-    interpolated, so assigning it keeps a field's version (and shares the value).
+    """``func(start, end, alpha)``; for the straight path, the end value itself
+    where nothing is interpolated, so assigning it keeps a field's version (and
+    shares the value).
+
+    Only the straight path is known to give exactly its ends at ``alpha`` 0 and 1
+    and to leave equal ends where they are; other paths are always called (a path
+    along an arc misses its end when the ends differ along the arc's axis, and
+    paths along circles move points that do not move).
     """
-    if alpha == 1 or start is end:
-        return end
-    if alpha == 0:
-        return start
+    if func is interpolate:
+        if alpha == 1 or start is end:
+            return end
+        if alpha == 0:
+            return start
     return func(start, end, alpha)
 
 
