@@ -21,7 +21,7 @@ from manim import (
     VGroup,
     VMobject,
 )
-from manim.material import Pbr, Unlit
+from manim.material import PbrMaterial, UnlitMaterial
 from manim.mobject.types.image_mobject import AbstractImageMobject
 from manim.renderer.extract import extract, snapshot
 from manim.renderer.snapshot import (
@@ -61,7 +61,7 @@ def test_snapshot_shares_field_values():
     assert node.payload.points is square.points
     assert isinstance(node.payload.fill, RSolid)
     np.testing.assert_array_equal(node.payload.fill.rgba, square.fill_rgbas[0])
-    assert node.payload.material == Unlit()
+    assert node.payload.material == UnlitMaterial()
     assert node.payload.depth_reference is None
 
 
@@ -156,12 +156,12 @@ def test_paints_and_materials():
 
 
 def test_materials_are_value_types():
-    assert Pbr() == Pbr(roughness=0.5, metallic=0.0, emissive=(0, 0, 0))
-    assert Pbr(emissive=[1, 0, 0]).emissive == (1.0, 0.0, 0.0)
+    assert PbrMaterial() == PbrMaterial(roughness=0.5, metallic=0.0, emissive=(0, 0, 0))
+    assert PbrMaterial(emissive=[1, 0, 0]).emissive == (1.0, 0.0, 0.0)
     with pytest.raises(ValueError, match="roughness"):
-        Pbr(roughness=2)
+        PbrMaterial(roughness=2)
     with pytest.raises(ValueError, match="emissive"):
-        Pbr(emissive=(-1, 0, 0))
+        PbrMaterial(emissive=(-1, 0, 0))
 
 
 # A mobject is drawn from its own geometry: its children do not change its snapshot.

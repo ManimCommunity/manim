@@ -43,7 +43,7 @@ from __future__ import annotations
 from collections.abc import Hashable, Mapping
 from typing import TYPE_CHECKING, NamedTuple
 
-from manim.material import Pbr, Unlit
+from manim.material import PbrMaterial, UnlitMaterial
 
 if TYPE_CHECKING:
     from PIL.Image import Image, Resampling
@@ -111,7 +111,7 @@ class LegacyShaded(NamedTuple):
     """
 
 
-Material = Unlit | Pbr | LegacyShaded
+Material = UnlitMaterial | PbrMaterial | LegacyShaded
 
 
 class Stroke(NamedTuple):

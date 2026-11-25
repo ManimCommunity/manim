@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
-from manim.material import Unlit
+from manim.material import UnlitMaterial
 from manim.mobject.mobject import Mobject
 from manim.mobject.types.image_mobject import (
     AbstractImageMobject,
@@ -46,7 +46,7 @@ if TYPE_CHECKING:
 
 __all__ = ["extract", "placement_of", "snapshot"]
 
-_UNLIT = Unlit()
+_UNLIT = UnlitMaterial()
 _LEGACY_SHADED = LegacyShaded()
 _FIXED_IN_FRAME = FixedInFrame()
 

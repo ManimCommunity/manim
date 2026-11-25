@@ -14,16 +14,16 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 
-__all__ = ["Material", "Pbr", "Unlit"]
+__all__ = ["Material", "PbrMaterial", "UnlitMaterial"]
 
 
 @dataclass(frozen=True, slots=True)
-class Unlit:
+class UnlitMaterial:
     """Not lit: drawn in its own color, whatever lights there are."""
 
 
 @dataclass(frozen=True, slots=True)
-class Pbr:
+class PbrMaterial:
     """Lit as a physically based surface (glTF 2.0 metallic-roughness).
 
     Parameters
@@ -56,4 +56,4 @@ class Pbr:
         object.__setattr__(self, "emissive", emissive)
 
 
-Material = Unlit | Pbr
+Material = UnlitMaterial | PbrMaterial
