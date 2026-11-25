@@ -86,6 +86,12 @@ A material (:mod:`manim.material`) says how a mobject responds to light:
     ``roughness`` (from smooth with sharp highlights to rough without any),
     ``metallic`` and ``emissive`` parameters are those of glTF 2.0.
 
+A material holds no colour: the colour of a lit surface comes from its paint,
+which plays the role of the base colour (albedo) of a material in glTF and other
+3D engines. A mobject has up to three paints but one material, so changing or
+animating a colour never touches the material, and mobjects of any colour can
+share one.
+
 The rule for the default is: **what has a surface in space is lit, what is drawn
 is not.** Meshes and surfaces (:class:`.Sphere`, :class:`.Surface`, the faces of
 :class:`.Cube` and the polyhedra) and :class:`.ThreeDVMobject` are :class:`.PbrMaterial`.
