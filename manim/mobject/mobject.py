@@ -105,6 +105,26 @@ def _interpolated(
     return func(start, end, alpha)
 
 
+def _copied_center_func(
+    func: Callable[[], Point3D] | None, clone_from_id: dict[int, Any]
+) -> Callable[[], Point3D] | None:
+    """The :attr:`~.Mobject.fixed_orientation` of a copy of a mobject whose own is
+    ``func``.
+
+    A method of a mobject (``group.get_center``, what :meth:`~.Mobject.fix_orientation`
+    stores in every member of ``group``) is not deep-copied: that would copy the
+    mobject and its whole family along with each member. It becomes the method of
+    the mobject's copy when the mobject is copied too (a whole group is copied), and
+    stays the method of the mobject itself otherwise (a member copied alone keeps
+    following the group's center). Other functions are copied as any value.
+    """
+    owner = getattr(func, "__self__", None)
+    if isinstance(owner, Mobject):
+        target = clone_from_id.get(id(owner))
+        return func if target is None else getattr(target, func.__name__)
+    return copy.deepcopy(func, clone_from_id)
+
+
 # Values of these types cannot be modified, so copies share them.
 _IMMUTABLE_TYPES = (
     int,
@@ -538,6 +558,8 @@ class Mobject:
         for k, v in self.__dict__.items():
             if isinstance(v, _IMMUTABLE_TYPES) or k in shared or is_frozen(v):
                 attributes[k] = v
+            elif k == "fixed_orientation":
+                attributes[k] = _copied_center_func(v, clone_from_id)
             elif k != "_field_versions":
                 attributes[k] = copy.deepcopy(v, clone_from_id)
         copy_versions(self, result)
