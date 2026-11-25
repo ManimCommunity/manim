@@ -50,3 +50,20 @@ Set the value in ``__init__`` instead:
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             self.stroke_width = 8
+
+Removed 3D shading options
+--------------------------
+
+Shading of vectorized mobjects in 3D is drawn from the mobjects' own fields now. The
+options that only served the old shading code are gone, without a deprecation
+period; passing them raises ``TypeError``:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Removed
+     - Use instead
+   * - ``ThreeDAxes(light_source=...)``, ``ThreeDAxes(gloss=...)``
+     - Nothing: the axes are drawn in their own colors, without a sheen
+   * - ``set_shade_in_3d(value, z_index_as_group=True)``, ``z_index_group``
+     - ``set_shade_in_3d(value)``; each path is ordered by its own points
