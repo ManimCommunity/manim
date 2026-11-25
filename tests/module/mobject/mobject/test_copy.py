@@ -76,3 +76,15 @@ def test_a_fixed_orientation_that_follows_another_mobject_still_does_when_copied
     label = Square().fix_orientation(anchor.get_center)
 
     assert label.copy().fixed_orientation.__self__ is anchor
+
+
+def test_changing_a_color_in_place_does_not_change_a_copy():
+    # HSV colors have setters: copies do not share colors (review of #5173).
+    from manim.utils.color import HSV
+
+    mob = Mobject()
+    mob.color = HSV((0.1, 1, 1))
+    copied = mob.copy()
+    assert copied.color is not mob.color
+    mob.color.hue = 0.6
+    assert copied.color.to_hex() == HSV((0.1, 1, 1)).to_hex()

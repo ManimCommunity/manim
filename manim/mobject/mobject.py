@@ -124,7 +124,9 @@ def _copied_center_func(
     return copy.deepcopy(func, clone_from_id)
 
 
-# Values of these types cannot be modified, so copies share them.
+# Values of these types cannot be modified, so copies share them. Not ManimColor:
+# HSV colors have setters and every color's array is writable, so a shared color
+# changed through one mobject would change its copies too.
 _IMMUTABLE_TYPES = (
     int,
     float,
@@ -134,7 +136,6 @@ _IMMUTABLE_TYPES = (
     type(None),
     enum.Enum,
     np.generic,
-    ManimColor,
 )
 
 
