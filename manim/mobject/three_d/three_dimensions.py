@@ -23,7 +23,7 @@ import numpy as np
 
 from manim._config import logger
 from manim.constants import *
-from manim.material import Material, Pbr
+from manim.material import Material, PbrMaterial
 from manim.mobject.mobject import *
 from manim.mobject.three_d.mesh import ParametricSurface, PolygonFace
 from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
@@ -65,7 +65,7 @@ class Surface(ParametricSurface):
     """A parametric surface, by default of faces in a checkerboard pattern.
 
     The surface is a :class:`.ParametricSurface`: lit by a :class:`.ThreeDCamera`'s
-    light through its ``material`` (``Pbr()`` by default). With
+    light through its ``material`` (``PbrMaterial()`` by default). With
     ``checkerboard_colors``, every face has its own corners, so faces keep their own
     color and are lit flat; without, neighboring faces share corners and the
     surface is lit smoothly.
@@ -513,7 +513,7 @@ class Cube(VGroup):
         **kwargs: Any,
     ) -> None:
         self.side_length = side_length
-        self._face_material = Pbr() if material is None else material
+        self._face_material = PbrMaterial() if material is None else material
         super().__init__(
             fill_color=fill_color,
             fill_opacity=fill_opacity,
@@ -523,7 +523,7 @@ class Cube(VGroup):
 
     def generate_points(self) -> Self:
         """Creates the sides of the :class:`Cube`: square faces, lit by the
-        ``material`` (:class:`.Pbr` by default).
+        ``material`` (:class:`.PbrMaterial` by default).
         """
         half = self.side_length / 2
         square = np.array([[-half, -half], [half, -half], [half, half], [-half, half]])

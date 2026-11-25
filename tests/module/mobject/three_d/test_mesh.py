@@ -379,7 +379,7 @@ def test_cube_faces_are_lit_meshes_in_a_group():
 
     assert len(cube) == 6
     assert all(isinstance(face, PolygonFace) for face in cube)
-    assert all(face.material == Pbr() for face in cube)
+    assert all(face.material == PbrMaterial() for face in cube)
     np.testing.assert_allclose(cube.get_center(), 0, atol=1e-12)
     assert cube.width == pytest.approx(2)
     cube.set_color(BLUE)

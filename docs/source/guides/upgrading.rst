@@ -210,10 +210,10 @@ drawn as meshes on OpenGL and as sorted faces on Cairo:
   :class:`.VGroup`.
 - The arguments ``should_make_jagged``, ``surface_piece_config`` and
   ``pre_function_handle_to_anchor_scale_factor`` are gone.
-- They are lit by their ``material`` (:class:`.Pbr` by default) under a
+- They are lit by their ``material`` (:class:`.PbrMaterial` by default) under a
   :class:`.ThreeDCamera`'s light: faces turned away from the light are darker than
-  before, and the surface has highlights. ``material=Unlit()`` shows its colors as
-  they are. Under other cameras, surfaces are not lit.
+  before, and the surface has highlights. ``material=UnlitMaterial()`` shows its
+  colors as they are. Under other cameras, surfaces are not lit.
 - A surface without ``checkerboard_colors`` is lit smoothly; with them, each face
   is lit flat.
 - The end caps of :class:`.Cylinder` (``base_top``, ``base_bottom``) and the base of
@@ -231,8 +231,8 @@ The faces of solids are meshes
 The faces of :class:`.Cube`, :class:`.Prism` and the polyhedra
 (:class:`.Polyhedron` and its subclasses, :class:`.ConvexHull3D`) used to be
 :class:`.Square` and :class:`.Polygon` paths shaded with ``shade_in_3d``. They are
-now :class:`.PolygonFace` meshes, lit by a ``material`` (:class:`.Pbr` by default;
-``Cube(material=...)`` and ``faces_config={"material": ...}`` set another):
+now :class:`.PolygonFace` meshes, lit by a ``material`` (:class:`.PbrMaterial` by
+default; ``Cube(material=...)`` and ``faces_config={"material": ...}`` set another):
 
 - ``cube[i]`` and ``polyhedron.faces[i]`` are still the faces, in a
   :class:`.VGroup`, and ``set_fill``, ``set_stroke``, ``set_color`` and
