@@ -16,7 +16,7 @@ from manim.constants import CapStyleType, LineJointType
 from manim.material import UnlitMaterial
 from manim.renderer._lighting import AMBIENT, Light, shade
 from manim.renderer._mesh import face_colors, face_normals, face_outlines, faces_of
-from manim.renderer.snapshot import RMesh, RNode, RPath, RSolid, Stroke
+from manim.renderer.snapshot import RMesh, RNode, RPath, RSolidColor, RStroke
 
 if TYPE_CHECKING:
     from .camera import Camera
@@ -89,8 +89,10 @@ def mesh_faces(node: RNode, camera: Camera) -> list[RNode]:
             stroke, width = fill, seam
         path = RPath(
             points=outlines[index],
-            fill=RSolid(fill),
-            stroke=Stroke(RSolid(stroke), width, LineJointType.AUTO, CapStyleType.AUTO),
+            fill=RSolidColor(fill),
+            stroke=RStroke(
+                RSolidColor(stroke), width, LineJointType.AUTO, CapStyleType.AUTO
+            ),
             background_stroke=None,
             material=_UNLIT,
             # Fixed faces keep the order above, after the scene's 3D paths.
