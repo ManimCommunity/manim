@@ -266,6 +266,7 @@ class ReplacementTransform(Transform):
     --------
 
     .. manim:: ReplacementTransformOrTransform
+        :hide_levels: 1
         :quality: low
 
         class ReplacementTransformOrTransform(Scene):
@@ -325,6 +326,8 @@ class ClockwiseTransform(Transform):
     --------
 
     .. manim:: ClockwiseExample
+        :title: Example: Clockwise
+        :hide_levels: 1
 
         class ClockwiseExample(Scene):
             def construct(self):
@@ -365,6 +368,7 @@ class CounterclockwiseTransform(Transform):
     --------
 
     .. manim:: CounterclockwiseTransform_vs_Transform
+        :hide_levels: 1
 
         class CounterclockwiseTransform_vs_Transform(Scene):
             def construct(self):
@@ -415,6 +419,8 @@ class MoveToTarget(Transform):
     --------
 
     .. manim:: MoveToTargetExample
+        :title: Example: MoveToTarget
+        :hide_levels: 1
 
         class MoveToTargetExample(Scene):
             def construct(self):
@@ -507,6 +513,7 @@ class ApplyPointwiseFunction(ApplyMethod):
     --------
 
     .. manim:: WarpSquare
+        :hide_levels: 1
         :quality: low
 
         class WarpSquare(Scene):
@@ -548,6 +555,8 @@ class FadeToColor(ApplyMethod):
     --------
 
     .. manim:: FadeToColorExample
+        :title: Example: FadeToColor
+        :hide_levels: 1
 
         class FadeToColorExample(Scene):
             def construct(self):
@@ -566,6 +575,8 @@ class ScaleInPlace(ApplyMethod):
     --------
 
     .. manim:: ScaleInPlaceExample
+        :title: Example: ScaleInPlace
+        :hide_levels: 1
 
         class ScaleInPlaceExample(Scene):
             def construct(self):
@@ -584,6 +595,8 @@ class ShrinkToCenter(ScaleInPlace):
     --------
 
     .. manim:: ShrinkToCenterExample
+        :title: Example: ShrinkToCenter
+        :hide_levels: 1
 
         class ShrinkToCenterExample(Scene):
             def construct(self):
@@ -604,6 +617,8 @@ class Restore(ApplyMethod):
     --------
 
     .. manim:: RestoreExample
+        :title: Example: Restore
+        :hide_levels: 1
 
         class RestoreExample(Scene):
             def construct(self):
@@ -653,6 +668,8 @@ class ApplyMatrix(ApplyPointwiseFunction):
     --------
 
     .. manim:: ApplyMatrixExample
+        :title: Example: ApplyMatrix
+        :hide_levels: 1
 
         class ApplyMatrixExample(Scene):
             def construct(self):
@@ -834,6 +851,7 @@ class FadeTransform(Transform):
     --------
 
     .. manim:: DifferentFadeTransforms
+        :hide_levels: 1
 
         class DifferentFadeTransforms(Scene):
             def construct(self):
@@ -926,6 +944,7 @@ class FadeTransformPieces(FadeTransform):
     Examples
     --------
     .. manim:: FadeTransformSubmobjects
+        :hide_levels: 1
 
         class FadeTransformSubmobjects(Scene):
             def construct(self):

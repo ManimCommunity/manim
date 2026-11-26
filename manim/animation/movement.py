@@ -56,6 +56,8 @@ class Homotopy(Animation):
     --------
 
     .. manim:: HomotopyExample
+        :title: Example: Homotopy
+        :hide_levels: 1
 
         class HomotopyExample(Scene):
             def construct(self):
@@ -174,6 +176,8 @@ class MoveAlongPath(Animation):
     """Make one mobject move along the path of another mobject.
 
     .. manim:: MoveAlongPathExample
+        :title: Example: MoveAlongPath
+        :hide_levels: 1
 
         class MoveAlongPathExample(Scene):
             def construct(self):

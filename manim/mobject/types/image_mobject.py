@@ -147,6 +147,7 @@ class ImageMobject(AbstractImageMobject):
     Example
     -------
     .. manim:: ImageFromArray
+        :hide_levels: 1
         :save_last_frame:
 
         class ImageFromArray(Scene):
@@ -160,6 +161,7 @@ class ImageMobject(AbstractImageMobject):
     Changing interpolation style:
 
     .. manim:: ImageInterpolationEx
+        :hide_levels: 1
         :save_last_frame:
 
         class ImageInterpolationEx(Scene):

@@ -80,6 +80,7 @@ class Animation:
     --------
 
     .. manim:: LagRatios
+        :hide_levels: 1
 
         class LagRatios(Scene):
             def construct(self):
@@ -519,6 +520,7 @@ class Animation:
         --------
 
         .. manim:: ChangeDefaultAnimation
+            :hide_levels: 1
 
             class ChangeDefaultAnimation(Scene):
                 def construct(self):
@@ -658,6 +660,8 @@ class Add(Animation):
     --------
 
     .. manim:: DefaultAddScene
+        :title: Example: DefaultAdd
+        :hide_levels: 1
 
         class DefaultAddScene(Scene):
             def construct(self):
@@ -681,6 +685,8 @@ class Add(Animation):
                 self.wait()
 
     .. manim:: AddWithRunTimeScene
+        :title: Example: AddWithRunTime
+        :hide_levels: 1
 
         class AddWithRunTimeScene(Scene):
             def construct(self):
@@ -749,6 +755,7 @@ def override_animation(
     --------
 
     .. manim:: OverrideAnimationExample
+        :title: Example: OverrideAnimation
 
         class MySquare(Square):
             @override_animation(FadeIn)

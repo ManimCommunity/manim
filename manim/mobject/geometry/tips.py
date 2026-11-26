@@ -53,6 +53,7 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
     a custom one like this:
 
     .. manim:: CustomTipExample
+        :title: Example: CustomTip
 
         >>> from manim import RegularPolygon, Arrow
         >>> class MyCustomArrowTip(ArrowTip, RegularPolygon):
@@ -80,6 +81,7 @@ class ArrowTip(VMobject, metaclass=ConvertToOpenGL):
     arrow tips.
 
     .. manim:: ArrowTipsShowcase
+        :hide_levels: 1
         :save_last_frame:
 
         class ArrowTipsShowcase(Scene):

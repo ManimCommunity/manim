@@ -1,6 +1,7 @@
 """Animations that introduce mobjects to scene by growing them from points.
 
 .. manim:: Growing
+    :hide_levels: 1
 
     class Growing(Scene):
         def construct(self):

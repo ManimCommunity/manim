@@ -3,6 +3,7 @@ r"""Mobjects that are curved.
 Examples
 --------
 .. manim:: UsefulAnnotations
+    :hide_levels: 1
     :save_last_frame:
 
     class UsefulAnnotations(Scene):
@@ -311,6 +312,8 @@ class Arc(TipableVMobject):
     A simple arc of angle Pi.
 
     .. manim:: ArcExample
+        :title: Example: Arc
+        :hide_levels: 1
         :save_last_frame:
 
         class ArcExample(Scene):
@@ -450,6 +453,8 @@ class ArcBetweenPoints(Arc):
     Example
     -------
     .. manim:: ArcBetweenPointsExample
+      :title: Example: ArcBetweenPoints
+      :hide_levels: 1
 
       class ArcBetweenPointsExample(Scene):
           def construct(self):
@@ -525,6 +530,8 @@ class TangentialArc(ArcBetweenPoints):
     Examples
     --------
     .. manim:: TangentialArcExample
+        :title: Example: TangentialArc
+        :hide_levels: 1
         :save_last_frame:
 
         class TangentialArcExample(Scene):
@@ -540,6 +547,7 @@ class TangentialArc(ArcBetweenPoints):
     The following example shows all four possible corner configurations:
 
     .. manim:: TangentialArcCorners
+        :hide_levels: 1
         :save_last_frame:
 
         class TangentialArcCorners(Scene):
@@ -647,6 +655,8 @@ class Circle(Arc):
     Examples
     --------
     .. manim:: CircleExample
+        :title: Example: Circle
+        :hide_levels: 1
         :save_last_frame:
 
         class CircleExample(Scene):
@@ -695,6 +705,7 @@ class Circle(Arc):
         Examples
         --------
         .. manim:: CircleSurround
+            :hide_levels: 1
             :save_last_frame:
 
             class CircleSurround(Scene):
@@ -741,6 +752,8 @@ class Circle(Arc):
         Examples
         --------
         .. manim:: PointAtAngleExample
+            :title: Example: PointAtAngle
+            :hide_levels: 1
             :save_last_frame:
 
             class PointAtAngleExample(Scene):
@@ -768,6 +781,8 @@ class Circle(Arc):
         Example
         -------
         .. manim:: CircleFromPointsExample
+            :title: Example: CircleFromPoints
+            :hide_levels: 1
             :save_last_frame:
 
             class CircleFromPointsExample(Scene):
@@ -810,6 +825,8 @@ class Dot(Circle):
     Examples
     --------
     .. manim:: DotExample
+        :title: Example: Dot
+        :hide_levels: 1
         :save_last_frame:
 
         class DotExample(Scene):
@@ -877,6 +894,7 @@ class LabeledDot(Dot):
     Examples
     --------
     .. manim:: SeveralLabeledDots
+        :hide_levels: 1
         :save_last_frame:
 
         class SeveralLabeledDots(Scene):
@@ -933,6 +951,8 @@ class Ellipse(Circle):
     Examples
     --------
     .. manim:: EllipseExample
+        :title: Example: Ellipse
+        :hide_levels: 1
         :save_last_frame:
 
         class EllipseExample(Scene):
@@ -973,6 +993,8 @@ class AnnularSector(Arc):
     Examples
     --------
     .. manim:: AnnularSectorExample
+        :title: Example: AnnularSector
+        :hide_levels: 1
         :save_last_frame:
 
         class AnnularSectorExample(Scene):
@@ -1045,6 +1067,7 @@ class Sector(AnnularSector):
     Examples
     --------
     .. manim:: ExampleSector
+        :hide_levels: 1
         :save_last_frame:
 
         class ExampleSector(Scene):
@@ -1075,6 +1098,8 @@ class Annulus(Circle):
     Examples
     --------
     .. manim:: AnnulusExample
+        :title: Example: Annulus
+        :hide_levels: 1
         :save_last_frame:
 
         class AnnulusExample(Scene):
@@ -1122,6 +1147,8 @@ class CubicBezier(VMobject, metaclass=ConvertToOpenGL):
     Example
     -------
     .. manim:: BezierSplineExample
+        :title: Example: BezierSpline
+        :hide_levels: 1
         :save_last_frame:
 
         class BezierSplineExample(Scene):
@@ -1210,6 +1237,7 @@ class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
     Examples
     --------
     .. manim:: SeveralArcPolygons
+        :hide_levels: 1
 
         class SeveralArcPolygons(Scene):
             def construct(self):
@@ -1340,6 +1368,8 @@ class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
     need to be drawn, in which case they can be passed as invisible.
 
     .. manim:: ArcPolygonExample
+        :title: Example: ArcPolygon
+        :hide_levels: 1
 
         class ArcPolygonExample(Scene):
             def construct(self):
@@ -1360,6 +1390,7 @@ class ArcPolygonFromArcs(VMobject, metaclass=ConvertToOpenGL):
     arcs are drawn. This can be used to easily debug arcs or to highlight them.
 
     .. manim:: ArcPolygonExample2
+        :hide_levels: 1
 
         class ArcPolygonExample2(Scene):
             def construct(self):

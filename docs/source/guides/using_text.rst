@@ -34,6 +34,7 @@ render non-English alphabets like 你好 or  こんにちは or 안녕하세요 
 Here is a simple *Hello World* animation.
 
 .. manim:: HelloWorld
+    :hide_levels: 1
     :save_last_frame:
     :ref_classes: Text
 
@@ -47,6 +48,7 @@ You can also use :class:`~.MarkupText` which allows the use of PangoMarkup
 For example:
 
 .. manim:: SingleLineColor
+    :hide_levels: 1
     :save_last_frame:
     :ref_classes: MarkupText
 
@@ -81,6 +83,8 @@ You can set a different font using :attr:`~.Text.font`.
 
 
 .. manim:: FontsExample
+    :title: Example: Fonts
+    :hide_levels: 1
     :save_last_frame:
 
     class FontsExample(Scene):
@@ -99,6 +103,8 @@ Weight specifies the boldness of a font. You can see a list of weights in
 :class:`manimpango.Weight`.
 
 .. manim:: SlantsExample
+    :title: Example: Slants
+    :hide_levels: 1
     :save_last_frame:
 
     class SlantsExample(Scene):
@@ -107,6 +113,7 @@ Weight specifies the boldness of a font. You can see a list of weights in
             self.add(a)
 
 .. manim:: DifferentWeight
+    :hide_levels: 1
     :save_last_frame:
 
     class DifferentWeight(Scene):
@@ -135,6 +142,7 @@ Using Colors
 You can set the color of the text using :attr:`~.Text.color`:
 
 .. manim:: SimpleColor
+    :hide_levels: 1
     :save_last_frame:
 
     class SimpleColor(Scene):
@@ -157,6 +165,8 @@ as explained in :ref:`iterating-text`.
   and the values should be the color from :class:`~.Color`:
 
 .. manim:: Textt2cExample
+    :title: Example: Textt2c
+    :hide_levels: 1
     :save_last_frame:
 
     class Textt2cExample(Scene):
@@ -176,6 +186,8 @@ You can add a gradient using :attr:`~.Text.gradient`. The value must
 be an iterable of any length:
 
 .. manim:: GradientExample
+    :title: Example: Gradient
+    :hide_levels: 1
     :save_last_frame:
 
     class GradientExample(Scene):
@@ -188,6 +200,8 @@ characters of the text. It shares a similar syntax to :ref:`the
 interface for colors <using-colors>`:
 
 .. manim:: t2gExample
+    :title: Example: t2g
+    :hide_levels: 1
     :save_last_frame:
 
     class t2gExample(Scene):
@@ -212,6 +226,7 @@ Setting Line Spacing
 You can set the line spacing using :attr:`~.Text.line_spacing`:
 
 .. manim:: LineSpacing
+    :hide_levels: 1
     :save_last_frame:
 
     class LineSpacing(Scene):
@@ -239,6 +254,7 @@ You can disable ligatures by passing ``disable_ligatures`` to
 :class:`Text`. For example:
 
 .. manim:: DisableLigature
+    :hide_levels: 1
     :save_last_frame:
 
     class DisableLigature(Scene):
@@ -258,6 +274,7 @@ the text.
 For example, you can set each letter to different color by iterating it.
 
 .. manim:: IterateColor
+    :hide_levels: 1
     :save_last_frame:
 
     class IterateColor(Scene):
@@ -287,6 +304,7 @@ Consult the documentation of :class:`~.MarkupText` for more details
 and further references about PangoMarkup.
 
 .. manim:: MarkupTest
+    :hide_levels: 1
     :save_last_frame:
 
     class MarkupTest(Scene):
@@ -318,6 +336,7 @@ vector graphics. This works both for general markup and for mathematical
 expressions.
 
 .. manim:: HelloTypst
+    :hide_levels: 1
     :save_last_frame:
     :ref_classes: Typst
 
@@ -329,6 +348,7 @@ expressions.
 For mathematical expressions, use :class:`~.MathTypst`:
 
 .. manim:: HelloMathTypst
+    :hide_levels: 1
     :save_last_frame:
     :ref_classes: MathTypst
 
@@ -359,6 +379,7 @@ use :class:`~.Tex` to insert LaTeX.
 For example,
 
 .. manim:: HelloLaTeX
+    :hide_levels: 1
     :save_last_frame:
 
     class HelloLaTeX(Scene):
@@ -382,6 +403,7 @@ similar effect with :class:`~.Tex` by enclosing your formula with ``$`` symbols:
 ``$\xrightarrow{x^6y^8}$``:
 
 .. manim:: MathTeXDemo
+    :hide_levels: 1
     :save_last_frame:
 
     class MathTeXDemo(Scene):
@@ -399,6 +421,7 @@ We can use any standard LaTeX commands in the AMS maths packages. Such
 as the ``mathtt`` math-text type or the ``looparrowright`` arrow.
 
 .. manim:: AMSLaTeX
+    :hide_levels: 1
     :save_last_frame:
 
     class AMSLaTeX(Scene):
@@ -412,6 +435,7 @@ change the appearance of the output. This is very similar to the
 color of the TeX mobject.
 
 .. manim:: LaTeXAttributes
+    :hide_levels: 1
     :save_last_frame:
 
     class LaTeXAttributes(Scene):
@@ -428,6 +452,7 @@ package. Since this package isn't loaded into Manim's tex template by default,
 we have to add it manually.
 
 .. manim:: AddPackageLatex
+    :hide_levels: 1
     :save_last_frame:
 
     class AddPackageLatex(Scene):
@@ -451,6 +476,7 @@ the strings passed to the constructor. In this example, we color the
 ``\bigstar`` part:
 
 .. manim:: LaTeXSubstrings
+    :hide_levels: 1
     :save_last_frame:
 
     class LaTeXSubstrings(Scene):
@@ -465,6 +491,7 @@ every ``x`` in a formula, use ``substrings_to_isolate`` to split the string at
 each occurrence first:
 
 .. manim:: CorrectLaTeXSubstringColoring
+    :hide_levels: 1
     :save_last_frame:
 
     class CorrectLaTeXSubstringColoring(Scene):
@@ -508,6 +535,7 @@ The method shows the index of a mobject's submobjects, allowing you
 to easily find the components of the mobject you would like to change.
 
 .. manim:: IndexLabelsMathTex
+    :hide_levels: 1
     :save_last_frame:
 
     class IndexLabelsMathTex(Scene):
@@ -531,6 +559,7 @@ to compile the TeX. Manim comes with a collection of :class:`~.TexFontTemplates`
 ready for you to use. These templates will all work in math mode:
 
 .. manim:: LaTeXMathFonts
+    :hide_levels: 1
     :save_last_frame:
 
     class LaTeXMathFonts(Scene):
@@ -550,6 +579,7 @@ typesetting Text, you probably do not need :class:`~.Tex` at all, and
 should use :class:`~.Text` instead.
 
 .. manim:: LaTeXTemplateLibrary
+    :hide_levels: 1
     :save_last_frame:
 
     class LaTeXTemplateLibrary(Scene):
@@ -566,6 +596,7 @@ environment. This means you can use the ``&`` alignment character
 when typesetting multiline formulae:
 
 .. manim:: LaTeXAlignEnvironment
+    :hide_levels: 1
     :save_last_frame:
 
     class LaTeXAlignEnvironment(Scene):

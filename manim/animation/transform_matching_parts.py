@@ -189,6 +189,7 @@ class TransformMatchingShapes(TransformMatchingAbstractBase):
     --------
 
     .. manim:: Anagram
+        :hide_levels: 1
 
         class Anagram(Scene):
             def construct(self):
@@ -247,6 +248,7 @@ class TransformMatchingTex(TransformMatchingAbstractBase):
     --------
 
     .. manim:: MatchingEquationParts
+        :hide_levels: 1
 
         class MatchingEquationParts(Scene):
             def construct(self):

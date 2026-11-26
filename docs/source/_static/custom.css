@@ -200,3 +200,8 @@ h6 {
         min-width: 0;
     }
 }
+
+.sd-card-body .admonition {
+    margin-top: 0;
+    margin-bottom: 0;
+}

@@ -1,6 +1,7 @@
 """Fading in and out of view.
 
 .. manim:: Fading
+    :hide_levels: 1
 
     class Fading(Scene):
         def construct(self):

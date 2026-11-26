@@ -16,6 +16,7 @@ Examples
 --------
 
 .. manim:: HelloWorld
+    :hide_levels: 1
     :save_last_frame:
 
     class HelloWorld(Scene):
@@ -24,6 +25,7 @@ Examples
             self.add(text)
 
 .. manim:: TextAlignment
+    :hide_levels: 1
     :save_last_frame:
 
     class TextAlignment(Scene):
@@ -349,6 +351,7 @@ class Text(SVGMobject):
     ---------
 
     .. manim:: Example1Text
+        :hide_levels: 1
         :save_last_frame:
 
         class Example1Text(Scene):
@@ -357,6 +360,8 @@ class Text(SVGMobject):
                 self.add(text)
 
     .. manim:: TextColorExample
+        :title: Example: TextColor
+        :hide_levels: 1
         :save_last_frame:
 
         class TextColorExample(Scene):
@@ -366,6 +371,8 @@ class Text(SVGMobject):
                 self.add(text1, text2)
 
     .. manim:: TextItalicAndBoldExample
+        :title: Example: TextItalicAndBold
+        :hide_levels: 1
         :save_last_frame:
 
         class TextItalicAndBoldExample(Scene):
@@ -385,6 +392,7 @@ class Text(SVGMobject):
                 Group(*self.mobjects).arrange(DOWN, buff=.8).set(height=config.frame_height-LARGE_BUFF)
 
     .. manim:: TextMoreCustomization
+            :hide_levels: 1
             :save_last_frame:
 
             class TextMoreCustomization(Scene):
@@ -400,6 +408,7 @@ class Text(SVGMobject):
     characters is easily possible:
 
     .. manim:: MultipleFonts
+        :hide_levels: 1
         :save_last_frame:
 
         class MultipleFonts(Scene):
@@ -421,6 +430,7 @@ class Text(SVGMobject):
 
 
     .. manim:: PangoRender
+        :hide_levels: 1
         :quality: low
 
         class PangoRender(Scene):
@@ -893,6 +903,8 @@ class MarkupText(SVGMobject):
     and it can be used with :class:`~.MarkupText` as
 
     .. manim:: MarkupExample
+        :title: Example: Markup
+        :hide_levels: 1
         :save_last_frame:
 
         class MarkupExample(Scene):
@@ -903,6 +915,8 @@ class MarkupText(SVGMobject):
     A more elaborate example would be:
 
     .. manim:: MarkupElaborateExample
+        :title: Example: MarkupElaborate
+        :hide_levels: 1
         :save_last_frame:
 
         class MarkupElaborateExample(Scene):
@@ -1017,6 +1031,8 @@ class MarkupText(SVGMobject):
     ---------
 
     .. manim:: BasicMarkupExample
+        :title: Example: BasicMarkup
+        :hide_levels: 1
         :save_last_frame:
 
         class BasicMarkupExample(Scene):
@@ -1032,6 +1048,8 @@ class MarkupText(SVGMobject):
                 self.add(group)
 
     .. manim:: ColorExample
+        :title: Example: Color
+        :hide_levels: 1
         :save_last_frame:
 
         class ColorExample(Scene):
@@ -1060,6 +1078,8 @@ class MarkupText(SVGMobject):
                 self.add(group)
 
     .. manim:: UnderlineExample
+        :title: Example: Underline
+        :hide_levels: 1
         :save_last_frame:
 
         class UnderlineExample(Scene):
@@ -1083,6 +1103,8 @@ class MarkupText(SVGMobject):
                 self.add(group)
 
     .. manim:: FontExample
+        :title: Example: Font
+        :hide_levels: 1
         :save_last_frame:
 
         class FontExample(Scene):
@@ -1099,6 +1121,8 @@ class MarkupText(SVGMobject):
                 self.add(group)
 
     .. manim:: NewlineExample
+        :title: Example: Newline
+        :hide_levels: 1
         :save_last_frame:
 
         class NewlineExample(Scene):
@@ -1107,6 +1131,8 @@ class MarkupText(SVGMobject):
                 self.add(text)
 
     .. manim:: NoLigaturesExample
+        :title: Example: NoLigatures
+        :hide_levels: 1
         :save_last_frame:
 
         class NoLigaturesExample(Scene):
@@ -1121,6 +1147,7 @@ class MarkupText(SVGMobject):
     characters is easily possible:
 
     .. manim:: MultiLanguage
+        :hide_levels: 1
         :save_last_frame:
 
         class MultiLanguage(Scene):
@@ -1139,6 +1166,7 @@ class MarkupText(SVGMobject):
     You can justify the text by passing :attr:`justify` parameter.
 
     .. manim:: JustifyText
+        :hide_levels: 1
 
         class JustifyText(Scene):
             def construct(self):
