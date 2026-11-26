@@ -56,10 +56,10 @@ __all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
 
 import copy
 import hashlib
+import itertools as it
 import re
 from collections.abc import Iterable, Iterator, Sequence
 from contextlib import contextmanager
-from itertools import chain
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -733,7 +733,7 @@ class Text(SVGMobject):
         default_args: dict[str, Iterable[str]],
     ) -> list[TextSetting]:
         settings = []
-        t2xwords = set(chain(*([*t2x.keys()] for t2x, _ in t2xs)))
+        t2xwords = set(it.chain(*([*t2x.keys()] for t2x, _ in t2xs)))
         for word in t2xwords:
             setting_args = {
                 arg: str(t2x[word]) if word in t2x else default_args[arg]
