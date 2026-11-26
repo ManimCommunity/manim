@@ -74,8 +74,8 @@ class FrameBuilder:
             use_z_index=camera.use_z_index,
             excluded_mobjects=excluded_mobjects,
         )
-        return [node for node in nodes if not node.fixed_in_frame] + [
-            node for node in nodes if node.fixed_in_frame
+        return [node for node in nodes if not node.is_fixed_in_frame] + [
+            node for node in nodes if node.is_fixed_in_frame
         ]
 
     def config(

@@ -106,7 +106,7 @@ def sort_for_display(state: CameraState, nodes: list[RNode]) -> list[RNode]:
     depth_axis = state.rotation[2]
 
     def z_key(node: RNode) -> float:
-        if node.fixed_in_frame:
+        if node.is_fixed_in_frame:
             return np.inf  # type: ignore[no-any-return]
         payload = node.payload
         reference_point = getattr(payload, "depth_reference", None)

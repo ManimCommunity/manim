@@ -142,7 +142,7 @@ class Extractor:
                 if (
                     node is not None
                     and node.key is not None
-                    and mobject.fixed_orientation is None
+                    and not mobject.is_fixed_orientation
                 ):
                     snapshots[mobject] = (revision, node)
                 else:

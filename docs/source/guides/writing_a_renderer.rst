@@ -90,7 +90,7 @@ camera view (:class:`.RCameraView`). Nodes come in **drawing order**:
 3. *Depth test*: meshes with ``depth_test`` hide each other per pixel on renderers
    with a depth buffer.
 
-Nodes **fixed in the frame** (``node.fixed_in_frame``) come after all others, in
+Nodes **fixed in the frame** (``node.is_fixed_in_frame``) come after all others, in
 scene order among themselves, and are never ordered or hidden by the depth of the
 scene. They are drawn as if the camera had its default frame, centered at the
 origin. A fixed mesh hides its own triangles but neither tests against nor

@@ -555,7 +555,7 @@ class SnapshotDrawing:
         count = len(mesh.points)
         if count == 0 or len(mesh.triangles) == 0:
             return
-        if node.fixed_in_frame and mesh.depth_test:
+        if node.is_fixed_in_frame and mesh.depth_test:
             # A fixed mesh hides its own triangles only: it neither tests against
             # nor leaves the depth of the scene or of other fixed meshes. Fixed
             # nodes are drawn last, so nothing needs the depth cleared here.

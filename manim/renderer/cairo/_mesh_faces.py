@@ -55,7 +55,7 @@ def mesh_faces(
     centers = corners.mean(axis=1)
     colors = face_colors(mesh, faces)
     light = camera.light
-    if light is not None and not node.fixed_in_frame:
+    if light is not None and not node.is_fixed_in_frame:
         colors[:, :3] = shade(
             colors[:, :3],
             face_normals(corners),
@@ -66,7 +66,7 @@ def mesh_faces(
             mesh.material,
         )
     outlines = face_outlines(corners)
-    rotation = np.identity(3) if node.fixed_in_frame else camera.rotation
+    rotation = np.identity(3) if node.is_fixed_in_frame else camera.rotation
     depth = centers @ rotation[2]
     strokes = np.asarray(mesh.stroke_rgbas, dtype=float)
     if len(strokes) != len(faces):
