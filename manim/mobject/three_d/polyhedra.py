@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Hashable
-from typing import TYPE_CHECKING, Any, Self
+from typing import TYPE_CHECKING, Any, ClassVar, Self
 
 import numpy as np
 
@@ -96,6 +96,10 @@ class Polyhedron(VGroup):
                 self.add(octahedron)
     """
 
+    #: Styling of the faces that ``faces_config`` adds to or overrides; a subclass
+    #: can change it for all its instances.
+    default_faces_config: ClassVar[dict[str, Any]] = {"fill_opacity": 0.5}
+
     def __init__(
         self,
         vertex_coords: Point3DLike_Array,
@@ -104,7 +108,7 @@ class Polyhedron(VGroup):
         graph_config: dict[str, Any] = {},
     ):
         super().__init__()
-        self.faces_config = dict({"fill_opacity": 0.5}, **faces_config)
+        self.faces_config = {**self.default_faces_config, **faces_config}
         self.graph_config = dict(
             {
                 "vertex_type": Dot3D,
@@ -141,10 +145,13 @@ class Polyhedron(VGroup):
         """Creates a VGroup of faces (:class:`.PolygonFace` meshes, lit by their
         ``material``) from a list of face coordinates.
         """
-        face_group = VGroup()
-        for face in face_coords:
-            face_group.add(_face(face, self.faces_config))
-        return face_group
+        style, mesh_config = _face_style(self.faces_config)
+        return VGroup(
+            *(
+                PolygonFace(*corners, **mesh_config).set_style(**style)
+                for corners in face_coords
+            )
+        )
 
     def update_faces(self, m: Mobject) -> Self:
         for face, corners in zip(self.faces, self.extract_face_coords(), strict=True):
@@ -474,20 +481,24 @@ class ConvexHull3D(Polyhedron):
         )
 
 
-def _face(corners: Point3DLike_Array, config: dict[str, Any]) -> PolygonFace:
-    """A face of a polyhedron, styled by ``faces_config``: the arguments of
-    :class:`.Polygon` that a face had (``fill_color``, ``fill_opacity``,
-    ``stroke_color``, ``stroke_width``, ``stroke_opacity``, ``color``), and those of
+def _face_style(config: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    """``faces_config`` split into the styling of :meth:`.MeshMobject.set_style`
+    (``fill_color``, ``fill_opacity``, ``stroke_color``, ``stroke_width``,
+    ``stroke_opacity``; ``color`` sets fill and outline) and the other arguments of
     :class:`.PolygonFace` (``material``, ...). ``shade_in_3d`` has no effect.
+
+    As the faces were :class:`.Polygon` objects, they are outlined 4 wide in their
+    fill colour unless the config says otherwise.
     """
     config = dict(config)
     config.pop("shade_in_3d", None)
     color = config.pop("color", None)
     fill_color = config.pop("fill_color", None) or color or BLUE
-    opacity = config.pop("fill_opacity", None)
-    # As the Polygon faces were: outlined, 4 wide, in the face's color.
-    config.setdefault("stroke_color", color or fill_color)
-    config.setdefault("stroke_width", 4)
-    face = PolygonFace(*corners, **config)
-    face.set_fill(fill_color, opacity)
-    return face
+    style = {
+        "fill_color": fill_color,
+        "fill_opacity": config.pop("fill_opacity", None),
+        "stroke_color": config.pop("stroke_color", color or fill_color),
+        "stroke_width": config.pop("stroke_width", 4),
+        "stroke_opacity": config.pop("stroke_opacity", None),
+    }
+    return style, config

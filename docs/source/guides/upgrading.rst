@@ -197,7 +197,7 @@ Surfaces are meshes
 
 :class:`.Surface` and the mobjects built on it (:class:`.Sphere`, :class:`.Dot3D`,
 :class:`.Torus`, :class:`.Cone`, :class:`.Cylinder`, :class:`.Line3D`,
-:class:`.Arrow3D`, :meth:`.ThreeDAxes.plot_surface`) used to be a :class:`.VGroup` of
+:class:`.Arrow3D`) used to be a :class:`.VGroup` of
 one :class:`.VMobject` per face. They are now :class:`.ParametricSurface` meshes,
 drawn as meshes on OpenGL and as sorted faces on Cairo:
 

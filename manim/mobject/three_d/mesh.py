@@ -45,11 +45,13 @@ if TYPE_CHECKING:
 
     from manim.mobject.graphing.coordinate_systems import CoordinateSystem
     from manim.typing import (
+        Face_Array,
         FloatRGBA_Array,
         FloatRGBALike_Array,
         PixelArray,
         Point3D,
         Point3D_Array,
+        Triangle_Array,
         UV_Array,
         UVLike_Array,
     )
@@ -82,12 +84,12 @@ class MeshMobject(Mobject):
 
     # Meshes have the styling methods of VMobjects that groups call, so they can be
     # in a VGroup (spheres as the vertices of a graph, for example).
-    _vmobject_like = True
+    _can_be_in_vgroup = True
     #: Vertex indices, three per triangle (int32, as renderers upload them).
-    triangles: ArrayField[np.ndarray] = ArrayField(np.int32)
+    triangles: ArrayField[Triangle_Array] = ArrayField(np.int32)
     #: Polygons, as vertex indices in order around each, that the mesh is made of
     #: (quads for parametric surfaces). Empty means the triangles.
-    faces: ArrayField[np.ndarray] = ArrayField(np.int32)
+    faces: ArrayField[Face_Array] = ArrayField(np.int32)
     #: Colours: one row for the whole mesh, or one per vertex.
     rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
     uvs: ArrayField[UV_Array] = ArrayField(np.float64)
@@ -96,13 +98,13 @@ class MeshMobject(Mobject):
     material: Field[Material] = Field()
     depth_test: Field[bool] = Field()
     #: Outline colors of the faces: one for all, or one per face.
-    stroke_rgbas: ArrayField[np.ndarray] = ArrayField(np.float64)
+    stroke_rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
     stroke_width: Field[float] = Field()
 
     def __init__(
         self,
         points: Point3D_Array | None = None,
-        triangles: np.ndarray | None = None,
+        triangles: Triangle_Array | None = None,
         color: ParsableManimColor = BLUE_D,
         opacity: float = 1.0,
         material: Material | None = None,
@@ -119,7 +121,7 @@ class MeshMobject(Mobject):
         self.stroke_rgbas = [color_to_rgba(stroke_color, stroke_opacity)]
         self.stroke_width = stroke_width
         self.rgbas = [color_to_rgba(color, opacity)]
-        self.uvs = np.zeros((0, 2)) if uvs is None else uvs
+        self.uvs = np.zeros((0, 2)) if uvs is None else np.asarray(uvs)
         self.texture = _load_texture(texture)
         self.material = PbrMaterial() if material is None else material
         self.depth_test = depth_test
@@ -143,10 +145,11 @@ class MeshMobject(Mobject):
         self.color = ManimColor(color)
         if family:
             for submob in self.submobjects:
-                if isinstance(submob, MeshMobject):
-                    submob.set_color(color, alpha)
-                else:
-                    submob.set_color(color, family=True)
+                # set_fill takes an opacity on meshes and paths alike; set_color of
+                # a VMobject has none.
+                submob.set_color(color, family=True)
+                if alpha is not None:
+                    submob.set_fill(opacity=alpha, family=True)
         return self
 
     def set_fill(
@@ -191,7 +194,10 @@ class MeshMobject(Mobject):
 
     @property
     def fill_opacity(self) -> float:
-        """The highest opacity of the vertices."""
+        """The highest opacity of the vertices: what :meth:`set_color` keeps when it
+        is given no ``alpha``, so that recolouring a mesh whose vertices fade out
+        keeps it as opaque as its most opaque vertex.
+        """
         return float(self.rgbas[:, 3].max())
 
     def get_fill_color(self) -> ManimColor:

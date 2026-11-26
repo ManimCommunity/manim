@@ -169,6 +169,23 @@ class Surface(ParametricSurface):
         super().set_color(color, alpha, family)
         return self.set_stroke(color)
 
+    def make_cap(self, radius: float) -> ParametricSurface:
+        """A disc of ``radius`` around the origin in the xy-plane, as a cap of this
+        surface (the base of a :class:`Cone`, the ends of a :class:`Cylinder`): its
+        colour, opacity and material, as many sectors as the surface has steps in
+        ``v``, and no outlines. Subclasses can override it for other caps.
+        """
+        return ParametricSurface(
+            lambda r, angle: np.array([r * np.cos(angle), r * np.sin(angle), 0.0]),
+            u_range=(0, radius),
+            v_range=(0, TAU),
+            resolution=(1, self.resolution[1]),
+            color=self.fill_color,
+            opacity=self.fill_opacity,
+            material=self.material,
+            stroke_width=0,
+        )
+
     def set_fill_by_value(  # type: ignore[override]
         self,
         axes: ThreeDAxes,
@@ -268,23 +285,6 @@ class Surface(ParametricSurface):
         # As each face's outline took its colour, too.
         self.stroke_rgbas = strokes
         return self
-
-
-def _disc(surface: ParametricSurface, radius: float) -> ParametricSurface:
-    """A disc of ``radius`` around the origin in the xy-plane, as the cap of
-    ``surface``: its color, opacity and material, as many sectors as the surface
-    has steps in ``v``, and no outlines.
-    """
-    return ParametricSurface(
-        lambda r, angle: np.array([r * np.cos(angle), r * np.sin(angle), 0.0]),
-        u_range=(0, radius),
-        v_range=(0, TAU),
-        resolution=(1, surface.resolution[1]),
-        color=surface.fill_color,
-        opacity=surface.fill_opacity,
-        material=surface.material,
-        stroke_width=0,
-    )
 
 
 def _halfway_around(surface: ParametricSurface) -> np.ndarray:
@@ -636,7 +636,7 @@ class Cone(Surface):
         self.new_height = height
         self._current_theta = 0
         self._current_phi = 0
-        self.base_circle = _disc(self, base_radius)
+        self.base_circle = self.make_cap(base_radius)
         self.base_circle.shift(height * IN)
         self._set_start_and_end_attributes(direction)
         if show_base:
@@ -816,9 +816,9 @@ class Cylinder(Surface):
 
     def add_bases(self) -> Self:
         """Adds the end caps of the cylinder: discs lit as the side is."""
-        self.base_top = _disc(self, self.radius)
+        self.base_top = self.make_cap(self.radius)
         self.base_top.shift(self.u_range[1] * IN)
-        self.base_bottom = _disc(self, self.radius)
+        self.base_bottom = self.make_cap(self.radius)
         self.base_bottom.shift(self.u_range[0] * IN)
         self.add(self.base_top, self.base_bottom)
         return self

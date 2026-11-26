@@ -410,3 +410,29 @@ def test_polyhedron_faces_follow_their_vertices_and_keep_their_style():
     np.testing.assert_allclose(
         face.points[first_corner], tetrahedron.graph[0].get_center()
     )
+
+
+def test_set_color_with_an_alpha_reaches_the_caps_of_a_cylinder():
+    cylinder = Cylinder().set_color(RED, 0.3)
+    for cap in (cylinder.base_top, cylinder.base_bottom):
+        assert cap.fill_color == RED
+        assert cap.fill_opacity == pytest.approx(0.3)
+
+
+def test_polyhedron_subclasses_can_change_the_default_faces_config():
+    class OpaqueTetrahedron(Tetrahedron):
+        default_faces_config = {"fill_opacity": 1.0, "stroke_width": 0}
+
+    face = OpaqueTetrahedron().faces[0]
+    assert face.fill_opacity == 1.0
+    assert face.stroke_width == 0
+    assert Tetrahedron().faces[0].fill_opacity == 0.5
+
+
+def test_surface_subclasses_can_make_their_own_caps():
+    class SquareCapped(Cylinder):
+        def make_cap(self, radius):
+            return Square(2 * radius)
+
+    capped = SquareCapped()
+    assert isinstance(capped.base_top, Square)

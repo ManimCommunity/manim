@@ -80,11 +80,11 @@ def _non_negative_float(value: float) -> float:
     return max(0.0, float(value))
 
 
-def _is_vmobject_like(mobject: object) -> bool:
-    """Whether ``mobject`` may be a submobject of a :class:`VMobject`: vectorized
-    mobjects, and meshes, which have the styling methods that groups call.
+def _in_vgroup_allowed(mobject: object) -> bool:
+    """Whether ``mobject`` may be a submobject of a :class:`VMobject` (see
+    :attr:`.Mobject._can_be_in_vgroup`).
     """
-    return isinstance(mobject, Mobject) and type(mobject)._vmobject_like
+    return isinstance(mobject, Mobject) and type(mobject)._can_be_in_vgroup
 
 
 class VMobject(Mobject):
@@ -112,7 +112,7 @@ class VMobject(Mobject):
         for options.
     """
 
-    _vmobject_like = True
+    _can_be_in_vgroup = True
     fill_rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
     stroke_rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
     background_stroke_rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
@@ -197,7 +197,7 @@ class VMobject(Mobject):
 
     @classmethod
     def _accepts_submobject(cls, submobject: object) -> bool:
-        return _is_vmobject_like(submobject)
+        return _in_vgroup_allowed(submobject)
 
     def __iter__(self) -> Iterator[VMobject]:
         return cast(Iterator[VMobject], super().__iter__())
@@ -2344,11 +2344,11 @@ class VGroup(VMobject):
         valid_vmobjects = []
 
         for i, vmobject in enumerate(vmobjects):
-            if _is_vmobject_like(vmobject):
+            if _in_vgroup_allowed(vmobject):
                 valid_vmobjects.append(vmobject)
             elif isinstance(vmobject, Iterable) and not isinstance(vmobject, Mobject):
                 for j, subvmobject in enumerate(vmobject):
-                    if not _is_vmobject_like(subvmobject):
+                    if not _in_vgroup_allowed(subvmobject):
                         raise TypeError(get_type_error_message(subvmobject, (i, j)))
                     valid_vmobjects.append(subvmobject)
             elif isinstance(vmobject, Iterable) and isinstance(vmobject, Mobject):

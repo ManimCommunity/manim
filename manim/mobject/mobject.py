@@ -143,9 +143,11 @@ class Mobject:
     """
 
     points: ArrayField[Point3D_Array] = ArrayField(np.float64)
-    #: Whether the mobject may be a submobject of a VMobject (see
-    #: ``vectorized_mobject._is_vmobject_like``).
-    _vmobject_like: ClassVar[bool] = False
+    #: Whether instances may be submobjects of a :class:`.VGroup` (and any VMobject):
+    #: true for classes with the styling methods that groups call on their members
+    #: (``set_fill``, ``set_stroke``, ``set_style``, ...), which are VMobjects and
+    #: meshes. A class flag, as ``_accepts_submobject`` asks it for every member.
+    _can_be_in_vgroup: ClassVar[bool] = False
     z_index: Field[float] = Field()
     #: Whether the mobject is drawn as if the camera were at its default position
     #: (see :meth:`fix_in_frame`).
