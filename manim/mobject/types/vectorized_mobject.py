@@ -615,8 +615,7 @@ class VMobject(Mobject):
         name = "background_stroke_rgbas" if background else "stroke_rgbas"
         if name not in self.__dict__:
             return np.zeros((1, 4))
-        rgbas: FloatRGBA_Array = getattr(self, name)
-        return rgbas
+        return getattr(self, name)
 
     def get_stroke_color(self, background: bool = False) -> ManimColor | None:
         return self.get_stroke_colors(background)[0]

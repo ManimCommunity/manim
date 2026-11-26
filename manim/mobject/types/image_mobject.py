@@ -90,7 +90,7 @@ class AbstractImageMobject(Mobject):
         # Likely to be implemented in subclasses, but no obligation
         raise NotImplementedError()
 
-    def set_resampling_algorithm(self, resampling_algorithm: int) -> Self:
+    def set_resampling_algorithm(self, resampling_algorithm: Resampling | int) -> Self:
         """
         Sets the interpolation method for upscaling the image. By default the image is
         interpolated using bicubic algorithm. This method lets you change it.
@@ -374,7 +374,7 @@ class ImageMobjectFromCamera(Mobject):
         )
         return self
 
-    def set_resampling_algorithm(self, resampling_algorithm: int) -> Self:
+    def set_resampling_algorithm(self, resampling_algorithm: Resampling | int) -> Self:
         """Set the Pillow sampling algorithm used when compositing the view."""
         _validate_resampling_algorithm(resampling_algorithm)
         # Stored as the enum, which renderers expect (``0`` and

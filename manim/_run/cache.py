@@ -20,8 +20,8 @@ _CLOCK_VERSION = "sample-v3"
 from the same scene state, so that older cached movies are not reused."""
 
 _DRAWING_VERSION = 1
-"""Part of every cache key. Raise it when an unchanged scene is drawn differently,
-so that movies cached before are not reused."""
+"""Part of every cache key. Increase it when unchanged scenes are drawn differently,
+so that the cache from before does not get reused."""
 
 
 class _SegmentCache:
