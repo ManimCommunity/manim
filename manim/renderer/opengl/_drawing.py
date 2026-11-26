@@ -23,7 +23,7 @@ from PIL.Image import Resampling
 from manim._config import config
 from manim.appearance.material import PbrMaterial
 from manim.renderer._lighting import AMBIENT, DEFAULT_LIGHT_INTENSITY
-from manim.renderer._mesh import faces_of
+from manim.renderer._mesh import MESH_STROKE_WIDTH_UNIT, faces_of
 from manim.renderer._paint import paint_colors, shows
 from manim.renderer.cairo.camera import ThreeDCamera
 from manim.renderer.snapshot import (
@@ -540,7 +540,11 @@ class SnapshotDrawing:
             depth_test=mesh.depth_test,
             has_texture=float(texture is not None),
             image=0,
-            edge_width=0.5 * 0.01 * float(mesh.stroke_width) * pixels_per_unit,
+            # The shader measures from the edge to each side: half the width.
+            edge_width=0.5
+            * MESH_STROKE_WIDTH_UNIT
+            * float(mesh.stroke_width)
+            * pixels_per_unit,
             **self._lighting(node, mesh.material),
         )
 

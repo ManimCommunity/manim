@@ -15,7 +15,13 @@ from manim._config import config
 from manim.appearance.material import UnlitMaterial
 from manim.constants import CapStyleType, LineJointType
 from manim.renderer._lighting import AMBIENT, Light, shade
-from manim.renderer._mesh import face_colors, face_normals, face_outlines, faces_of
+from manim.renderer._mesh import (
+    MESH_STROKE_WIDTH_UNIT,
+    face_colors,
+    face_normals,
+    face_outlines,
+    faces_of,
+)
 from manim.renderer.snapshot import RMesh, RNode, RPath, RSolidColor, RStroke
 
 if TYPE_CHECKING:
@@ -24,7 +30,9 @@ if TYPE_CHECKING:
 __all__ = ["mesh_faces"]
 
 #: Scene units per unit of stroke width.
-_STROKE_WIDTH_UNIT = 0.01
+#: Points of a face's outline closer than this are taken as the same point, as
+#: for vectorized mobjects (``tolerance_for_point_equality``).
+_FACE_TOLERANCE = 1e-6
 _UNLIT = UnlitMaterial()
 
 
@@ -64,7 +72,7 @@ def mesh_faces(node: RNode, camera: Camera) -> list[RNode]:
     # Without outlines, neighboring faces leave a seam where their antialiased edges
     # meet; opaque faces are outlined in their own color, a pixel wide, to close it.
     seam = (
-        config.frame_width / config.pixel_width / _STROKE_WIDTH_UNIT
+        config.frame_width / config.pixel_width / MESH_STROKE_WIDTH_UNIT
         if mesh.stroke_width == 0
         else None
     )
@@ -81,7 +89,7 @@ def mesh_faces(node: RNode, camera: Camera) -> list[RNode]:
         "depth_reference": geometry,
         "mask": 0,
     }
-    nodes = []
+    nodes: list[RNode] = []
     for index in np.argsort(depth, kind="stable"):
         fill = colors[index]
         stroke, width = strokes[index], mesh.stroke_width
@@ -97,7 +105,7 @@ def mesh_faces(node: RNode, camera: Camera) -> list[RNode]:
             material=_UNLIT,
             # Fixed faces keep the order above, after the scene's 3D paths.
             depth_reference=None if node.is_fixed_in_frame else centers[index],
-            tolerance=1e-6,
+            tolerance=_FACE_TOLERANCE,
             mask=None,
         )
         nodes.append(

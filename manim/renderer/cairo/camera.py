@@ -45,6 +45,11 @@ if TYPE_CHECKING:
     )
 
 
+#: How far above the frame a flat camera's eye is for shading: far enough that the
+#: view direction is the same everywhere on screen.
+_FAR_AWAY = 1e6
+
+
 class Camera:
     """Configure the camera view and background for Cairo rendering.
 
@@ -333,7 +338,7 @@ class Camera:
 
     def _eye(self) -> np.ndarray:
         """Where the scene is seen from, in scene coordinates."""
-        return np.asarray(self.frame_center, dtype=float) + [0.0, 0.0, 1e6]
+        return np.asarray(self.frame_center, dtype=float) + [0.0, 0.0, _FAR_AWAY]
 
     def _shaded_rgbas(self, path: RPath, rgbas: FloatRGBA_Array) -> FloatRGBA_Array:
         """Return the stop colors of a snapshot path's paint after the shading of
