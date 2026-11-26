@@ -106,7 +106,8 @@ class Extractor:
     as in Manim's tests), every reused snapshot is compared with a fresh one, so a
     class that breaks the rule fails instead of showing stale pixels.
 
-    Whoever draws frames owns an extractor; it holds the mobjects it saw weakly.
+    A :class:`.FrameBuilder` keeps one for all frames of a scene; it holds the
+    mobjects it saw weakly.
     """
 
     def __init__(self) -> None:

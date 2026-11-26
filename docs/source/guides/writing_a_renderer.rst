@@ -105,8 +105,7 @@ node is drawn anew every time.
 (:class:`.ImageMobjectFromCamera`): draw each :class:`.CameraView` from its own
 ``nodes`` and ``config``, then show it on the frame's node with its ``uid`` and on
 copies of it, which have the same ``camera_id``. A renderer that cannot draw
-something it is given raises ``CapabilityError`` (:mod:`manim.renderer.protocol`) instead of drawing
-something else.
+something it is given raises ``CapabilityError`` (:mod:`manim.renderer.protocol`).
 
 The frame
 ~~~~~~~~~
