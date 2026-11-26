@@ -282,7 +282,7 @@ def test_an_interpolated_value_cannot_be_written_through():
     ("change", "changed"),
     [
         (lambda m: m.shift(RIGHT), {"points"}),
-        (lambda m: m.set_color(BLUE), {"fill_rgbas", "stroke_rgbas"}),
+        (lambda m: m.set_color(BLUE), {"fill", "stroke"}),
     ],
     ids=["moved", "recolored"],
 )

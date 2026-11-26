@@ -1873,6 +1873,7 @@ class VMobject(Mobject):
                     getattr(mobject1, attr), getattr(mobject2, attr), alpha
                 ),
             )
+        # Stroke widths are stored as floats, which keep their version when equal.
         for attr in ("stroke_width", "background_stroke_width"):
             setattr(
                 self,
