@@ -85,24 +85,6 @@ _Updater: TypeAlias = _NonTimeBasedUpdater | _TimeBasedUpdater
 _UIDS = it.count(1)
 
 
-def _interpolated(
-    start: Any, end: Any, alpha: float, func: Callable[[Any, Any, float], Any]
-) -> Any:
-    """``func(start, end, alpha)``, or ``end`` itself when both ends are the same
-    object and ``func`` is the straight path: assigning it then keeps the field's
-    version, so a field that an animation does not change stays unchanged.
-
-    The straight path leaves equal ends where they are; other paths are always
-    called (paths along circles move points whose ends are equal).
-
-    An interim measure: animations are to decide once, when they begin, which
-    fields differ between their ends, and leave the others alone.
-    """
-    if start is end and func is interpolate:
-        return end
-    return func(start, end, alpha)
-
-
 def _copied_center_func(
     func: Callable[[], Point3D] | None, clone_from_id: dict[int, Any]
 ) -> Callable[[], Point3D] | None:
@@ -3426,7 +3408,15 @@ class Mobject:
         :class:`~.Transform`, :meth:`~.VMobject.align_points`, :meth:`~.VMobject.interpolate_color`
 
         """
-        self.points = _interpolated(mobject1.points, mobject2.points, alpha, path_func)
+        start, end = mobject1.points, mobject2.points
+        # Points that are the same array at both ends stay that array on the straight
+        # path, so their field keeps its version and renderers reuse what they made
+        # for them (other paths can move such points). An interim measure: animations
+        # are to decide once, when they begin, which fields differ between their ends.
+        if start is end and path_func is interpolate:
+            self.points = end
+        else:
+            self.points = path_func(start, end, alpha)
         self.interpolate_color(mobject1, mobject2, alpha)
         return self
 

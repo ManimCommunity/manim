@@ -5,7 +5,17 @@ import copy
 import numpy as np
 import pytest
 
-from manim import RED, RIGHT, Circle, ImageMobject, Mobject, Square, VMobject
+from manim import (
+    BLUE,
+    RED,
+    RIGHT,
+    Circle,
+    ImageMobject,
+    Mobject,
+    Square,
+    Transform,
+    VMobject,
+)
 from manim.utils.hashing import get_json
 from manim.utils.versioned_fields import ArrayField, Field, field_version
 
@@ -266,3 +276,23 @@ def test_an_interpolated_value_cannot_be_written_through():
 
     with pytest.raises(ValueError, match="read-only"):
         moving.points[0] = [9, 9, 9]
+
+
+@pytest.mark.parametrize(
+    ("change", "changed"),
+    [
+        (lambda m: m.shift(RIGHT), {"points"}),
+        (lambda m: m.set_color(BLUE), {"fill_rgbas", "stroke_rgbas"}),
+    ],
+    ids=["moved", "recoloured"],
+)
+def test_a_transform_gives_new_versions_only_to_the_fields_it_changes(change, changed):
+    start = Square().set_fill(RED, 0.5)
+    end = change(start.copy())
+    animation = Transform(start, end)
+    animation.begin()
+    animation.interpolate(0.1)
+    before = dict(start._field_versions)
+    animation.interpolate(0.5)
+    after = dict(start._field_versions)
+    assert {name for name in after if after[name] != before.get(name)} == changed

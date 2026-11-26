@@ -22,7 +22,7 @@ from PIL.Image import Image
 
 from manim._config import config
 from manim.constants import *
-from manim.mobject.mobject import Mobject, _interpolated
+from manim.mobject.mobject import Mobject
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
@@ -1935,21 +1935,24 @@ class VMobject(Mobject):
     def interpolate_color(
         self, mobject1: VMobject, mobject2: VMobject, alpha: float
     ) -> Self:
-        attrs = [
+        for attr in (
             "fill_rgbas",
             "stroke_rgbas",
             "background_stroke_rgbas",
-            "stroke_width",
-            "background_stroke_width",
             "sheen_direction",
-            "sheen_factor",
-        ]
-        for attr in attrs:
+        ):
+            start, end = getattr(mobject1, attr), getattr(mobject2, attr)
+            # An array that is the same at both ends stays that array, so its field
+            # keeps its version (a new array would get a new one in every frame).
+            setattr(self, attr, end if start is end else interpolate(start, end, alpha))
+        # Numbers keep their field's version when the value stays equal (as plain
+        # floats: rate functions can make the result a numpy float).
+        for attr in ("stroke_width", "background_stroke_width", "sheen_factor"):
             setattr(
                 self,
                 attr,
-                _interpolated(
-                    getattr(mobject1, attr), getattr(mobject2, attr), alpha, interpolate
+                float(
+                    interpolate(getattr(mobject1, attr), getattr(mobject2, attr), alpha)
                 ),
             )
         return self
