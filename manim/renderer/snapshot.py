@@ -15,7 +15,7 @@ ends are points in the scene, not a direction relative to the mobject.
 
 Each node also says how it is placed (:attr:`RNode.placement`):
 
-- ``None``: in the scene, drawn through the camera.
+- :class:`InScene`: in the scene, drawn through the camera.
 - :class:`FixedInFrame`: drawn as if the camera were at its default position (see
   :meth:`.Mobject.fix_in_frame`).
 - :class:`FacingCamera`: moves with a point of the scene, but is not rotated with it
@@ -61,6 +61,7 @@ if TYPE_CHECKING:
 __all__ = [
     "FacingCamera",
     "FixedInFrame",
+    "InScene",
     "LegacyShaded",
     "Material",
     "Payload",
@@ -199,7 +200,11 @@ class RCameraView(NamedTuple):
 Payload = RPath | RPoints | RImage | RCameraView
 
 
-# Placements: how a node is placed in the view (``None``: in the scene).
+# Placements: how a node is placed in the view.
+
+
+class InScene(NamedTuple):
+    """In the scene, drawn through the camera: how most nodes are placed."""
 
 
 class FixedInFrame(NamedTuple):
@@ -216,7 +221,7 @@ class FacingCamera(NamedTuple):
     center: Point3D
 
 
-Placement = FixedInFrame | FacingCamera
+Placement = InScene | FixedInFrame | FacingCamera
 
 
 class RNode(NamedTuple):
@@ -230,9 +235,8 @@ class RNode(NamedTuple):
     #: A version per slot of the payload; see the module documentation.
     versions: Mapping[str, int]
     payload: Payload
-    #: How the node is placed in the view; ``None``: in the scene. See the module
-    #: documentation.
-    placement: Placement | None
+    #: How the node is placed in the view. See the module documentation.
+    placement: Placement
 
     @property
     def fixed_in_frame(self) -> bool:

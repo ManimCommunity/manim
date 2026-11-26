@@ -341,9 +341,7 @@ class Camera:
         """Project the mobject's points for display."""
         return self._place(points, placement_of(mobject))
 
-    def _place(
-        self, points: Point3D_Array, placement: Placement | None
-    ) -> Point3D_Array:
+    def _place(self, points: Point3D_Array, placement: Placement) -> Point3D_Array:
         """Project points for display, as fixed in frame or facing the camera."""
         if not np.all(np.isfinite(points)):
             return np.zeros((1, 3))
@@ -784,9 +782,7 @@ class ThreeDCamera(Camera):
         """
         return self.project_points(point.reshape((1, 3)))[0, :]
 
-    def _place(
-        self, points: Point3D_Array, placement: Placement | None
-    ) -> Point3D_Array:
+    def _place(self, points: Point3D_Array, placement: Placement) -> Point3D_Array:
         if not np.all(np.isfinite(points)):
             return np.zeros((1, 3))
         # The view transform of this camera is centered at the origin, so points

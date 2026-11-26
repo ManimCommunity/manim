@@ -24,6 +24,7 @@ from manim.mobject.types.vectorized_mobject import VMobject
 from manim.renderer.snapshot import (
     FacingCamera,
     FixedInFrame,
+    InScene,
     LegacyShaded,
     Payload,
     Placement,
@@ -49,6 +50,7 @@ __all__ = ["extract", "placement_of", "snapshot"]
 _UNLIT = UnlitMaterial()
 _LEGACY_SHADED = LegacyShaded()
 _FIXED_IN_FRAME = FixedInFrame()
+_IN_SCENE = InScene()
 
 
 def extract(
@@ -116,14 +118,14 @@ def snapshot(mobject: Mobject) -> RNode | None:
     )
 
 
-def placement_of(mobject: Mobject) -> Placement | None:
+def placement_of(mobject: Mobject) -> Placement:
     """How ``mobject`` is placed in the view (see :attr:`.RNode.placement`)."""
     if mobject.fixed_in_frame:
         return _FIXED_IN_FRAME
     center_func = mobject.fixed_orientation
     if center_func is not None:
         return FacingCamera(np.asarray(center_func(), dtype=np.float64))
-    return None
+    return _IN_SCENE
 
 
 def _slot_versions(
@@ -146,7 +148,7 @@ def _key(
     mobject: Mobject,
     payload: Payload,
     versions: dict[str, int],
-    placement: Placement | None,
+    placement: Placement,
 ) -> Any:
     """The node's key (see :attr:`.RNode.key`): its uid, the largest version of its
     fields, and the point a fixed orientation follows (not a field value); ``None``

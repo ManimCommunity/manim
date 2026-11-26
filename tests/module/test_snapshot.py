@@ -27,6 +27,7 @@ from manim.renderer.extract import extract, snapshot
 from manim.renderer.snapshot import (
     FacingCamera,
     FixedInFrame,
+    InScene,
     LegacyShaded,
     RImage,
     RLinearGradient,
@@ -104,7 +105,7 @@ def test_fixed_in_frame_takes_precedence_over_a_fixed_orientation(fixed_orientat
         assert isinstance(placement, FacingCamera)
         np.testing.assert_array_equal(placement.center, square.get_center())
     else:
-        assert placement is None
+        assert placement == InScene()
     assert not snapshot(square).fixed_in_frame
 
 
