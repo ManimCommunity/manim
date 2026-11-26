@@ -249,6 +249,7 @@ def test_parametric_surface_ranges_and_resolution_are_pairs(name):
     assert surface.u_range == (0, 2)
     assert surface.resolution == (3, 4)
 
+
 def test_surface_colours_faces_by_value_at_their_outlines_middle():
     from manim.mobject.three_d.three_dimensions import _halfway_around
 

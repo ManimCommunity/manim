@@ -80,11 +80,10 @@ class MeshMobject(Mobject):
         The outlines of the faces (see :attr:`faces`); no outlines by default.
     """
 
-    #: Vertex indices, three per triangle (int32, as renderers upload them).
-
     # Meshes have the styling methods of VMobjects that groups call, so they can be
     # in a VGroup (spheres as the vertices of a graph, for example).
     _vmobject_like = True
+    #: Vertex indices, three per triangle (int32, as renderers upload them).
     triangles: ArrayField[np.ndarray] = ArrayField(np.int32)
     #: Polygons, as vertex indices in order around each, that the mesh is made of
     #: (quads for parametric surfaces). Empty means the triangles.
