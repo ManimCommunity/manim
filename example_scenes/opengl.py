@@ -1,3 +1,4 @@
+import string
 from pathlib import Path
 
 from manim import *
@@ -7,9 +8,7 @@ from manim import *
 
 
 class TextTest(Scene):
-    def construct(self):
-        import string
-
+    def construct(self) -> None:
         text = Text(string.ascii_lowercase, stroke_width=4, stroke_color=BLUE).scale(2)
         text2 = (
             Text(string.ascii_uppercase, stroke_width=4, stroke_color=BLUE)
@@ -23,7 +22,7 @@ class TextTest(Scene):
 
 
 class InteractiveDevelopment(Scene):
-    def construct(self):
+    def construct(self) -> None:
         circle = Circle()
         circle.set_fill(BLUE, opacity=0.5)
         circle.set_stroke(BLUE_E, width=4)
@@ -71,18 +70,20 @@ class InteractiveDevelopment(Scene):
 
 
 class SurfaceExample(ThreeDScene):
-    def construct(self):
+    def construct(self) -> None:
         surface_text = Text("For 3d scenes, try using surfaces")
         surface_text.to_edge(UP)
         self.add_fixed_in_frame_mobjects(surface_text)
         self.wait(0.1)
 
-        def sphere(u, v, radius=3):
+        def sphere(u: float, v: float, radius: float = 3) -> np.ndarray:
             return radius * np.array(
                 [np.cos(u) * np.sin(v), np.sin(u) * np.sin(v), -np.cos(v)]
             )
 
-        def torus(u, v, major_radius, minor_radius):
+        def torus(
+            u: float, v: float, major_radius: float, minor_radius: float
+        ) -> np.ndarray:
             return np.array(
                 [
                     (major_radius + minor_radius * np.cos(v)) * np.cos(u),
@@ -143,7 +144,8 @@ class SurfaceExample(ThreeDScene):
         # Play around with where the light is.
         light_text = Text("You can move around the light source")
         light_text.move_to(surface_text)
-        self.add_fixed_in_frame_mobjects(light_text)
+        # Fixed in the frame, but not added: FadeTransform fades it in.
+        light_text.fix_in_frame()
         self.play(FadeTransform(surface_text, light_text))
         light = self.camera.light_source
         self.play(light.animate.move_to(3 * IN), run_time=5)
