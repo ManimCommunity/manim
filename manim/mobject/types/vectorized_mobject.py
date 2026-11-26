@@ -18,9 +18,6 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
 
-from manim.constants import *
-from manim.material import Material, UnlitMaterial, interpolate_material
-from manim.mobject.mobject import Mobject
 from manim.appearance.paint import (
     ColorField,
     LinearGradient,
@@ -29,6 +26,9 @@ from manim.appearance.paint import (
     _stretched,
     interpolate_paint,
 )
+from manim.constants import *
+from manim.material import Material, UnlitMaterial, interpolate_material
+from manim.mobject.mobject import Mobject
 from manim.utils._path_points import points_equal_2d, subpath_split_indices
 from manim.utils.bezier import (
     bezier,
@@ -84,9 +84,18 @@ _NO_RGBAS = np.zeros((1, 4))
 _NO_RGBAS.flags.writeable = False
 
 
-def _in_vgroup_allowed(mobject: object) -> bool:
-    """Whether ``mobject`` may be a submobject of a :class:`VMobject` (see
-    :attr:`.Mobject._can_be_in_vgroup`).
+class _StrokeWidth(Field[float]):
+    """A stroke width: stored as a float, with negative widths stored as 0."""
+
+    def __set__(self, obj: object, value: float) -> None:
+        if not isinstance(value, Real) or isinstance(value, bool):
+            raise TypeError(f"{self.name} must be a number, not {type(value).__name__}")
+        super().__set__(obj, max(0.0, float(value)))
+
+
+def _is_vmobject_like(mobject: object) -> bool:
+    """Whether ``mobject`` may be a submobject of a :class:`VMobject`: vectorized
+    mobjects, and meshes, which have the styling methods that groups call.
     """
     return isinstance(mobject, Mobject) and type(mobject)._can_be_in_vgroup
 
@@ -118,8 +127,8 @@ class VMobject(Mobject):
     stroke: Field[Paint] = Field()
     #: How the outline drawn behind the fill is coloured.
     background_stroke: Field[Paint] = Field()
-    stroke_width: Field[float] = Field()
-    background_stroke_width: Field[float] = Field()
+    stroke_width: _StrokeWidth = _StrokeWidth()
+    background_stroke_width: _StrokeWidth = _StrokeWidth()
     joint_type: Field[LineJointType] = Field()
     cap_style: Field[CapStyleType] = Field()
     #: How the area is lit (:mod:`manim.material`): :class:`.UnlitMaterial` by default;

@@ -13,7 +13,6 @@ import numpy as np
 
 from manim.appearance.material import UnlitMaterial
 from manim.constants import CapStyleType, LineJointType
-from manim.appearance.material import UnlitMaterial
 from manim.renderer._lighting import Light, is_lit, shade
 from manim.renderer._mesh import face_colors, face_normals, face_outlines, faces_of
 from manim.renderer._view import eye

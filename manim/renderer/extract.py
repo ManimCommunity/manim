@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 
 from manim.appearance.material import UnlitMaterial
+from manim.appearance.paint import Paint
 from manim.mobject.mobject import Mobject
 from manim.mobject.three_d.mesh import MeshMobject
 from manim.mobject.types.image_mobject import (
@@ -24,7 +25,6 @@ from manim.mobject.types.image_mobject import (
 )
 from manim.mobject.types.point_cloud_mobject import PMobject
 from manim.mobject.types.vectorized_mobject import VMobject
-from manim.appearance.paint import Paint
 from manim.renderer.snapshot import (
     FacingCamera,
     FixedInFrame,
@@ -356,7 +356,7 @@ def _path(vmobject: VMobject) -> RPath:
         fill=paint(attributes.get("fill")),
         stroke=RStroke(
             paint(attributes.get("stroke")),
-            vmobject.get_stroke_width(),
+            vmobject.stroke_width,
             vmobject.joint_type,
             vmobject.cap_style,
         ),
