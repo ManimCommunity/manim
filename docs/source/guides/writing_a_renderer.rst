@@ -1,76 +1,78 @@
 Writing a renderer
 ==================
 
-A renderer draws frames. It is given what to draw and never reads a scene, a
-mobject or a camera: for each frame the :class:`.Manager` makes a list of render
-snapshots (:mod:`manim.renderer.snapshot`) and a :class:`.RenderConfig`, and
-calls ``renderer.render(nodes, config)``. Everything else (the animation clock,
-the play cache, sections, sound, output files) is the Manager's.
+A renderer draws frames: it is given only what to draw and never reads the scene,
+mobjects or the camera. For each frame the :class:`.Manager` makes a list of
+render :mod:`snapshots <manim.renderer.snapshot>` and a :class:`.RenderConfig`,
+and calls :meth:`renderer.render(nodes, config) <.Renderer.render>`. Everything
+else (the animation clock, the play cache, sections, sound, output files) is
+handled by the manager and never passed to the renderer.
 
-This page builds a small renderer that draws the bounding box of every mobject,
-the one Manim's own tests use to check that the interface is enough
-(``tests/helpers/plain_renderer.py``).
+This page builds a small renderer that draws the bounding box of every mobject.
 
 The renderer
 ------------
 
-A renderer has three members (the :class:`.Renderer` protocol):
+A :class:`.Renderer` has three members:
 
 ``state``
-    Where the renderer is in its life, a :class:`.RendererState`: created
-    ``UNOPENED``, ``OPEN`` once it drew, ``CLOSED`` after ``close()``.
+    Where the renderer is in its life, a :class:`.RendererState`: ``UNOPENED``
+    :math:`\Rightarrow` ``OPEN`` :math:`\Rightarrow` ``CLOSING``
+    :math:`\Rightarrow` ``CLOSED`` or ``CLOSE_FAILED``.
 ``render(nodes, config)``
-    Draws the snapshots in order, as ``config`` sets them up, and returns a
-    :class:`.Frame`. Resources (buffers, contexts) are acquired when they are
-    first needed.
+    Draws the snapshots in order and returns a :class:`.Frame`.
 ``close()``
-    Releases the resources; the renderer draws nothing afterwards.
+    Releases all resources.
+
+The renderer keeps its state up to date, since only it knows when its resources
+are open or released. The manager reads it: it gives work only to a renderer whose
+state :attr:`~.RendererState.accepts_work`, and a renderer also refuses work in
+other states, as a call can come from elsewhere (:meth:`.Scene.get_image`).
 
 .. code-block:: python
 
+    from collections.abc import Sequence
+
     import numpy as np
 
-    from manim.renderer.protocol import PixelFrame, RendererState
+    from manim.renderer.protocol import PixelFrame, RenderConfig, Renderer, RendererState
+    from manim.renderer.snapshot import RNode
 
 
-    class PlainRenderer:
-        """Draws the bounding box of each node, ``shade`` bright."""
-
-        def __init__(self, shade):
+    class PlainRenderer(Renderer):
+        def __init__(self, shade: int) -> None:
             self.shade = shade
             self._state = RendererState.UNOPENED
 
         @property
-        def state(self):
+        def state(self) -> RendererState:
             return self._state
 
-        def render(self, nodes, config):
+        def render(self, nodes: Sequence[RNode], config: RenderConfig, /) -> PixelFrame:
             if not self._state.accepts_work:
-                raise RuntimeError(f"The plain renderer is {self._state.value}.")
+                raise RuntimeError("The renderer does not accept work.")
+
             self._state = RendererState.OPEN
             width, height = config.pixel_width, config.pixel_height
-            pixels = np.empty((height, width, 4), dtype=np.uint8)
-            red, green, blue = config.background_color.to_rgb()
-            pixels[:] = np.round(
-                np.array([red, green, blue, config.background_opacity]) * 255
-            )
             camera = config.camera
-            scale = np.array(
-                [width / camera.frame_width, height / camera.frame_height]
-            )
+            scale = np.array([width / camera.frame_width, height / camera.frame_height])
+
+            pixels = np.zeros((height, width, 4), dtype=np.uint8)
             for node in nodes:
-                points = np.asarray(getattr(node.payload, "points", ()), float)
+                points = node.payload.points
                 if points.ndim != 2 or len(points) == 0:
                     continue
-                xy = (points[:, :2] - camera.center[:2]) * scale
+                # the bounding box of the node's points, in pixels
+                xy = (points[:, :2] - np.asarray(camera.center)[:2]) * scale
                 low = np.floor(xy.min(axis=0) + [width / 2, height / 2]).astype(int)
                 high = np.ceil(xy.max(axis=0) + [width / 2, height / 2]).astype(int)
+                # clipped to the frame; row zero is the top
                 x0, x1 = np.clip([low[0], high[0]], 0, width)
                 y0, y1 = np.clip([height - high[1], height - low[1]], 0, height)
                 pixels[y0:y1, x0:x1] = [self.shade, self.shade, self.shade, 255]
             return PixelFrame(pixels)
 
-        def close(self):
+        def close(self) -> None:
             self._state = RendererState.CLOSED
 
 What a renderer is given
@@ -128,30 +130,37 @@ evaluation).
 
 .. code-block:: python
 
+    from collections.abc import Mapping
     from dataclasses import dataclass
+    from typing import Any
 
-    from manim.renderer.protocol import RendererCapabilities
+    from manim.renderer.protocol import (
+        PreviewRequest,
+        Renderer,
+        RendererCapabilities,
+        RendererFactory,
+    )
 
 
     @dataclass(frozen=True)
-    class Plain:
+    class Plain(RendererFactory):
         shade: int = 255
 
         @property
-        def name(self):
+        def name(self) -> str:
             return "plain"
 
         @property
-        def capabilities(self):
+        def capabilities(self) -> RendererCapabilities:
             return RendererCapabilities(live_preview=False)
 
         @property
-        def cache_identity(self):
+        def cache_identity(self) -> Mapping[str, Any]:
             # The options that change the pixels: a cached movie made with
             # another shade is not reused.
             return {"shade": self.shade}
 
-        def create(self, preview=None):
+        def create(self, preview: PreviewRequest | None = None) -> Renderer:
             if preview is not None:
                 raise ValueError("The plain renderer has no preview window.")
             return PlainRenderer(self.shade)
@@ -161,7 +170,7 @@ Select it in code:
 .. code-block:: python
 
     class MyScene(Scene):
-        def construct(self):
+        def construct(self) -> None:
             self.play(Create(Square()))
 
 
@@ -190,3 +199,10 @@ the Manager uses to show frames. Check for it this way:
 
 A factory that promises a live preview but whose renderer has none is reported
 as an error by the Manager.
+
+.. note::
+
+    Manim's tests run a fuller version of this renderer through scenes, the play
+    cache, images and evaluation, to check that the interface is enough to write
+    one (``tests/helpers/plain_renderer.py``). It also fills the background with
+    ``config.background_color``.
