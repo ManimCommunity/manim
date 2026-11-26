@@ -44,7 +44,7 @@ from __future__ import annotations
 from collections.abc import Hashable, Mapping
 from typing import TYPE_CHECKING, NamedTuple
 
-from manim.material import PbrMaterial, UnlitMaterial
+from manim.appearance.material import PbrMaterial, UnlitMaterial
 
 if TYPE_CHECKING:
     from PIL.Image import Image, Resampling

@@ -21,7 +21,7 @@ from manim import (
     VGroup,
     VMobject,
 )
-from manim.material import PbrMaterial, UnlitMaterial
+from manim.appearance.material import PbrMaterial, UnlitMaterial
 from manim.mobject.types.image_mobject import AbstractImageMobject
 from manim.renderer.extract import extract, snapshot
 from manim.renderer.snapshot import (
