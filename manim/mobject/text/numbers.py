@@ -15,7 +15,7 @@ from manim.mobject.text.tex_mobject import MathTex, SingleStringMathTex, Tex
 from manim.mobject.text.text_mobject import Text
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.mobject.value_tracker import ValueTracker
-from manim.typing import Vector3DLike
+from manim.typing import MatrixMN, Point3D, Point3D_Array, Vector3DLike
 
 string_to_mob_map: dict[str, SingleStringMathTex] = {}
 
@@ -201,6 +201,11 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         if self.include_background_rectangle:
             self.add_background_rectangle()
 
+        # Remember the layout before any transformation, so that set_value()
+        # can find out how the number was scaled, rotated or moved since.
+        self._layout_points: Point3D_Array = self.get_all_points().copy()
+        self._layout_edge: Point3D = self.get_edge_center(self.edge_to_fix)
+
     def _get_num_string(self, number: float | complex) -> str:
         if isinstance(number, complex):
             formatter = self._get_complex_formatter()
@@ -290,10 +295,20 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
         old_font_size = self.font_size
         move_to_point = self.get_edge_center(self.edge_to_fix)
         old_submobjects = self.submobjects
+        affine_map = self._get_affine_map_from_layout()
+        old_layout_edge = self._layout_edge
 
         self._set_submobjects_from_number(number)
-        self.font_size = old_font_size
-        self.move_to(move_to_point, self.edge_to_fix)
+        if affine_map is not None:
+            # Place the new layout like the old one, then apply the same
+            # transformation. The bounding box cannot be used for this, as it
+            # does not reflect the size of a rotated number.
+            self.move_to(old_layout_edge, self.edge_to_fix)
+            self.apply_matrix(affine_map[:3].T, about_point=ORIGIN)
+            self.shift(affine_map[3])
+        else:
+            self.font_size = old_font_size
+            self.move_to(move_to_point, self.edge_to_fix)
         for sm1, sm2 in zip(self.submobjects, old_submobjects, strict=False):
             sm1.match_style(sm2)
 
@@ -307,6 +322,25 @@ class DecimalNumber(VMobject, metaclass=ConvertToOpenGL):
 
         self.init_colors()
         return self
+
+    def _get_affine_map_from_layout(self) -> MatrixMN | None:
+        """Find the affine map taking the untransformed layout of the number
+        to its current points.
+
+        The map is returned as a ``(4, 3)`` array acting on points in
+        homogeneous coordinates. ``None`` is returned if the current points
+        are not an affine image of the layout, for example after the number
+        was transformed into another mobject.
+        """
+        points = self.get_all_points()
+        layout = self._layout_points
+        if len(points) == 0 or points.shape != layout.shape:
+            return None
+        homogeneous = np.hstack([layout, np.ones((len(layout), 1))])
+        affine_map: MatrixMN = np.linalg.lstsq(homogeneous, points, rcond=None)[0]
+        if not np.allclose(homogeneous @ affine_map, points, atol=1e-6):
+            return None
+        return affine_map
 
     def get_value(self) -> float:
         return self.number
