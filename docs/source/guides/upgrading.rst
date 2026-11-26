@@ -3,13 +3,13 @@ Upgrading from Manim 0.22
 
 This page lists what code written for Manim 0.22 needs to change.
 
-Mobject arrays are read-only
-----------------------------
+Mobject arrays are replaced, not changed in place
+-------------------------------------------------
 
-The arrays that mobjects are drawn from are read-only: ``points``, the color
-arrays of vectorized mobjects (``fill_rgbas``, ``stroke_rgbas``,
-``background_stroke_rgbas``) and their ``sheen_direction``, and the
-``pixel_array`` of an :class:`.ImageMobject`. Renderers keep track of which
+The arrays that mobjects are drawn from can be replaced, but not changed in place:
+``points``, the color arrays of vectorized mobjects (``fill_rgbas``,
+``stroke_rgbas``, ``background_stroke_rgbas``) and their ``sheen_direction``, and
+the ``pixel_array`` of an :class:`.ImageMobject`. Renderers keep track of which
 mobjects changed by the assignments to these arrays, so changing one in place
 raises numpy's error ``ValueError: assignment destination is read-only``:
 
@@ -67,3 +67,11 @@ period; passing them raises ``TypeError``:
      - Nothing: the axes are drawn in their own colors, without a sheen
    * - ``set_shade_in_3d(value, z_index_as_group=True)``, ``z_index_group``
      - ``set_shade_in_3d(value)``; each path is ordered by its own points
+
+Stroke widths are numbers
+-------------------------
+
+``stroke_width`` and ``background_stroke_width`` of vectorized mobjects accept only
+numbers and are stored as floats; assigning a string, ``None`` or a bool raises
+``TypeError``. Negative widths are stored as 0, so reading the attribute gives the
+same value as :meth:`.VMobject.get_stroke_width`.

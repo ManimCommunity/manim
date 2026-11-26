@@ -245,13 +245,13 @@ def _path(vmobject: VMobject) -> RPath:
             return RSolidColor(rgbas[0])
         return RLinearGradient(ends[0], ends[1], rgbas)
 
-    background_width = vmobject.get_stroke_width(background=True)
+    background_width = vmobject.background_stroke_width
     return RPath(
         points=points,
         fill=paint(fill),
         stroke=RStroke(
             paint(stroke),
-            vmobject.get_stroke_width(),
+            vmobject.stroke_width,
             vmobject.joint_type,
             vmobject.cap_style,
         ),

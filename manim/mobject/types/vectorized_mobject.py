@@ -14,6 +14,7 @@ __all__ = [
 import itertools as it
 import sys
 from collections.abc import Callable, Hashable, Iterable, Iterator, Mapping, Sequence
+from numbers import Real
 from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
@@ -79,6 +80,15 @@ if TYPE_CHECKING:
 #   That's kind of weird.
 
 
+class _StrokeWidth(Field[float]):
+    """A stroke width: stored as a float, with negative widths stored as 0."""
+
+    def __set__(self, obj: object, value: float) -> None:
+        if not isinstance(value, Real) or isinstance(value, bool):
+            raise TypeError(f"{self.name} must be a number, not {type(value).__name__}")
+        super().__set__(obj, max(0.0, float(value)))
+
+
 class VMobject(Mobject):
     """A vectorized mobject.
 
@@ -107,8 +117,8 @@ class VMobject(Mobject):
     fill_rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
     stroke_rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
     background_stroke_rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
-    stroke_width: Field[float] = Field()
-    background_stroke_width: Field[float] = Field()
+    stroke_width: _StrokeWidth = _StrokeWidth()
+    background_stroke_width: _StrokeWidth = _StrokeWidth()
     sheen_factor: Field[float] = Field()
     sheen_direction: ArrayField[Vector3D] = ArrayField(np.float64)
     joint_type: Field[LineJointType] = Field()
@@ -623,13 +633,7 @@ class VMobject(Mobject):
     stroke_color = property(get_stroke_color, set_stroke)
 
     def get_stroke_width(self, background: bool = False) -> float:
-        if background:
-            width = self.background_stroke_width
-        else:
-            width = self.stroke_width
-            if isinstance(width, str):
-                width = int(width)
-        return max(0.0, width)
+        return self.background_stroke_width if background else self.stroke_width
 
     def get_stroke_opacity(self, background: bool = False) -> ManimFloat:
         return self.get_stroke_opacities(background)[0]
