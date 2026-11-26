@@ -45,7 +45,7 @@ def mesh_faces(node: RNode, camera: Camera) -> list[RNode]:
     centers = corners.mean(axis=1)
     colors = face_colors(mesh, faces)
     light = camera._light()
-    if light is not None and not node.fixed_in_frame:
+    if light is not None and not node.is_fixed_in_frame:
         colors[:, :3] = shade(
             colors[:, :3],
             face_normals(corners),
@@ -56,7 +56,7 @@ def mesh_faces(node: RNode, camera: Camera) -> list[RNode]:
             mesh.material,
         )
     outlines = face_outlines(corners)
-    rotation = np.identity(3) if node.fixed_in_frame else camera._view_rotation()
+    rotation = np.identity(3) if node.is_fixed_in_frame else camera._view_rotation()
     depth = centers @ rotation[2]
     strokes = np.asarray(mesh.stroke_rgbas, dtype=float)
     if len(strokes) != len(faces):
@@ -96,7 +96,7 @@ def mesh_faces(node: RNode, camera: Camera) -> list[RNode]:
             background_stroke=None,
             material=_UNLIT,
             # Fixed faces keep the order above, after the scene's 3D paths.
-            depth_reference=None if node.fixed_in_frame else centers[index],
+            depth_reference=None if node.is_fixed_in_frame else centers[index],
             tolerance=1e-6,
             mask=None,
         )
