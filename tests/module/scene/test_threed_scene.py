@@ -10,18 +10,19 @@ def test_fixed_mobjects():
     c = Circle()
     scene.add_fixed_in_frame_mobjects(s, c)
     assert set(scene.mobjects) == {s, c}
-    assert s.fixed_in_frame
-    assert c.fixed_in_frame
+    assert s.is_fixed_in_frame
+    assert c.is_fixed_in_frame
     scene.remove_fixed_in_frame_mobjects(s)
     assert set(scene.mobjects) == {s, c}
-    assert not s.fixed_in_frame
-    assert c.fixed_in_frame
+    assert not s.is_fixed_in_frame
+    assert c.is_fixed_in_frame
     s.shift(RIGHT)
     scene.add_fixed_orientation_mobjects(s, use_static_center_func=True)
     s.shift(RIGHT)
-    assert np.allclose(s.fixed_orientation(), RIGHT)
+    assert s.is_fixed_orientation
+    assert np.allclose(s._get_fixed_orientation_anchor(), RIGHT)
     scene.remove_fixed_orientation_mobjects(s)
-    assert s.fixed_orientation is None
+    assert not s.is_fixed_orientation
 
 
 def test_set_to_default_angled_camera_orientation():

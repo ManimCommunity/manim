@@ -120,9 +120,9 @@ def snapshot(mobject: Mobject) -> RNode | None:
 
 def placement_of(mobject: Mobject) -> Placement:
     """How ``mobject`` is placed in the view (see :attr:`.RNode.placement`)."""
-    if mobject.fixed_in_frame:
+    if mobject.is_fixed_in_frame:
         return _FIXED_IN_FRAME
-    center_func = mobject.fixed_orientation
+    center_func = mobject._get_fixed_orientation_anchor
     if center_func is not None:
         return FacingCamera(np.asarray(center_func(), dtype=np.float64))
     return _IN_SCENE

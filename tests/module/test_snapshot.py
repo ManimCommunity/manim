@@ -97,7 +97,7 @@ def test_fixed_in_frame_takes_precedence_over_a_fixed_orientation(fixed_orientat
         square.fix_orientation()
     square.fix_in_frame()
     assert snapshot(square).placement == FixedInFrame()
-    assert snapshot(square).fixed_in_frame
+    assert snapshot(square).is_fixed_in_frame
 
     square.unfix_from_frame()
     placement = snapshot(square).placement
@@ -106,7 +106,7 @@ def test_fixed_in_frame_takes_precedence_over_a_fixed_orientation(fixed_orientat
         np.testing.assert_array_equal(placement.center, square.get_center())
     else:
         assert placement == InScene()
-    assert not snapshot(square).fixed_in_frame
+    assert not snapshot(square).is_fixed_in_frame
 
 
 def test_copies_have_other_keys():

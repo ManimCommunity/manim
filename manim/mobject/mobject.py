@@ -87,8 +87,8 @@ _UIDS = it.count(1)
 def _copied_center_func(
     func: Callable[[], Point3D] | None, clone_from_id: dict[int, Any]
 ) -> Callable[[], Point3D] | None:
-    """The :attr:`~.Mobject.fixed_orientation` of a copy of a mobject whose own is
-    ``func``.
+    """The fixed-orientation anchor of a copy of a mobject whose own is ``func``
+    (see :meth:`~.Mobject.fix_orientation`).
 
     A method of a mobject (``group.get_center``, what :meth:`~.Mobject.fix_orientation`
     stores in every member of ``group``) is not deep-copied: that would copy the
@@ -143,10 +143,12 @@ class Mobject:
 
     points: ArrayField[Point3D_Array] = ArrayField(np.float64)
     z_index: Field[float] = Field()
-    fixed_in_frame: Field[bool] = Field()
-    #: ``None``, or the function giving the point the mobject keeps facing the camera
-    #: from (see :meth:`fix_orientation`).
-    fixed_orientation: Field[Callable[[], Point3D] | None] = Field()
+    #: Whether the mobject is drawn as if the camera were at its default position
+    #: (see :meth:`fix_in_frame`).
+    is_fixed_in_frame: Field[bool] = Field()
+    # ``None``, or the function giving the point the mobject keeps facing the camera
+    # from (see :meth:`fix_orientation`); called for every frame.
+    _get_fixed_orientation_anchor: Field[Callable[[], Point3D] | None] = Field()
     #: Whether the mobject is drawn from its fields alone. A class that draws from
     #: other state (computed pixels, another camera's view) sets this to ``False``,
     #: and renderers then draw it anew every frame.
@@ -187,8 +189,8 @@ class Mobject:
         self.dim = dim
         self.target = target
         self.z_index = z_index
-        self.fixed_in_frame = False
-        self.fixed_orientation = None
+        self.is_fixed_in_frame = False
+        self._get_fixed_orientation_anchor = None
         self.point_hash = None
         self.submobjects: list[Mobject] = []
         self.updaters: list[_Updater] = []
@@ -537,7 +539,7 @@ class Mobject:
         for k, v in self.__dict__.items():
             if isinstance(v, _IMMUTABLE_TYPES) or k in shared or is_frozen(v):
                 attributes[k] = v
-            elif k == "fixed_orientation":
+            elif k == "_get_fixed_orientation_anchor":
                 attributes[k] = _copied_center_func(v, clone_from_id)
             elif k != "_field_versions":
                 attributes[k] = copy.deepcopy(v, clone_from_id)
@@ -3639,13 +3641,13 @@ class Mobject:
         :meth:`unfix_from_frame`, :meth:`.ThreeDScene.add_fixed_in_frame_mobjects`
         """
         for mob in self.get_family():
-            mob.fixed_in_frame = True
+            mob.is_fixed_in_frame = True
         return self
 
     def unfix_from_frame(self) -> Self:
         """Undo :meth:`fix_in_frame` for the mobject and its family."""
         for mob in self.get_family():
-            mob.fixed_in_frame = False
+            mob.is_fixed_in_frame = False
         return self
 
     def fix_orientation(
@@ -3679,13 +3681,18 @@ class Mobject:
             else:
                 center_func = self.get_center
         for mob in self.get_family():
-            mob.fixed_orientation = center_func
+            mob._get_fixed_orientation_anchor = center_func
         return self
+
+    @property
+    def is_fixed_orientation(self) -> bool:
+        """Whether the mobject keeps facing the camera (see :meth:`fix_orientation`)."""
+        return self._get_fixed_orientation_anchor is not None
 
     def unfix_orientation(self) -> Self:
         """Undo :meth:`fix_orientation` for the mobject and its family."""
         for mob in self.get_family():
-            mob.fixed_orientation = None
+            mob._get_fixed_orientation_anchor = None
         return self
 
     def set_z_index_by_z_Point3D(self) -> Self:

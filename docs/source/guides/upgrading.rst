@@ -80,7 +80,7 @@ Fixed mobjects are marked on the mobjects
 -----------------------------------------
 
 Whether a mobject is fixed in the frame or keeps facing the camera is stored on
-the mobject and its family: read ``mob.fixed_in_frame`` and
-``mob.fixed_orientation``. :class:`.ThreeDCamera` no longer keeps its own records,
-so its ``fixed_in_frame_mobjects`` and ``fixed_orientation_mobjects`` attributes
-are gone.
+the mobject and its family: read ``mob.is_fixed_in_frame`` and
+``mob.is_fixed_orientation``. :class:`.ThreeDCamera` no longer keeps its own
+records, so its ``fixed_in_frame_mobjects`` and ``fixed_orientation_mobjects``
+attributes are gone.

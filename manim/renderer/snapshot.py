@@ -239,6 +239,6 @@ class RNode(NamedTuple):
     placement: Placement
 
     @property
-    def fixed_in_frame(self) -> bool:
+    def is_fixed_in_frame(self) -> bool:
         """Whether the node is drawn as if the camera were at its default position."""
         return type(self.placement) is FixedInFrame
