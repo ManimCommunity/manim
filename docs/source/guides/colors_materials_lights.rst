@@ -124,6 +124,7 @@ resolve intersecting shapes: one is drawn over the other.
 
 .. manim:: MaterialsExample
     :save_last_frame:
+    :renderer: opengl
 
     class MaterialsExample(ThreeDScene):
         def construct(self):
@@ -161,6 +162,7 @@ surface everywhere.
 plain :class:`.Scene` has no light.
 
 .. manim:: LightsExample
+    :renderer: opengl
 
     class LightsExample(ThreeDScene):
         def construct(self):

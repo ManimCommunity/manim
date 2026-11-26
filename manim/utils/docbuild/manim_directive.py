@@ -22,6 +22,11 @@ Options
 ``quality``
     One of ``low``, ``medium``, ``high``, ``fourk``, ``production`` or
     ``example`` (the default), as in :data:`~.constants.QUALITIES`.
+``renderer``
+    ``cairo`` or ``opengl`` (:class:`~.constants.RendererType`). The default is
+    the renderer of ``manim_config``, or Cairo. Examples rendered with OpenGL
+    need an OpenGL context without a window: on machines without a GPU, Mesa's
+    software renderer (llvmpipe) through EGL provides one.
 ``save_as_gif``
     Render a GIF instead of a video.
 ``save_last_frame``
@@ -85,7 +90,7 @@ from sphinx.util.typing import ExtensionMetadata
 
 from manim._config import tempconfig
 from manim._version import __version__ as manim_version
-from manim.constants import QUALITIES
+from manim.constants import QUALITIES, RendererType
 from manim.scene.scene import Scene
 
 __all__ = ["ManimDirective"]
@@ -128,6 +133,9 @@ class ManimDirective(SphinxDirective):
             arg or "",
             [q.removesuffix("_quality") for q in QUALITIES],
         ),
+        "renderer": lambda arg: choice(
+            arg or "", [renderer.value for renderer in RendererType]
+        ),
         "save_as_gif": flag,
         "save_last_frame": flag,
         "ref_modules": lambda arg: _references("mod", arg),
@@ -162,6 +170,8 @@ class ManimDirective(SphinxDirective):
             "format": format_,
             "save_last_frame": save_last_frame,
         }
+        if "renderer" in self.options:
+            example_config["renderer"] = self.options["renderer"]
         output = self._cached_output(clsname, code, example_config)
         if output.exists():
             self._record(clsname, None)

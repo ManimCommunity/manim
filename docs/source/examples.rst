@@ -664,6 +664,7 @@ Special Camera Settings
 .. manim:: ThreeDSurfacePlot
    :save_last_frame:
    :ref_classes: ThreeDScene Surface
+   :renderer: opengl
 
    class ThreeDSurfacePlot(ThreeDScene):
        def construct(self):
