@@ -270,7 +270,7 @@ method. Inspecting the corresponding code (see
 `here <https://github.com/ManimCommunity/manim/blob/main/manim/scene/scene.py>`__)
 reveals that ``Scene.__init__`` first sets several attributes of the scene objects that do not
 depend on any configuration options set in ``config``. It creates the scene's camera
-(``camera_class``, :class:`.Camera` by default), which the scene owns and exposes as
+(``camera_class``, :class:`.Camera` by default), which the scene keeps and exposes as
 ``scene.camera``. Then it selects a renderer: the ``renderer`` argument of the scene,
 or ``config.renderer``, names a *renderer factory* from
 :mod:`manim.renderer.backends` (:class:`~.backends.Cairo` or
@@ -363,16 +363,16 @@ first time a call is made which requires a manager, such as ``render()`` or
 ``get_image()``, a new manager is created and attached to the scene as
 ``scene.manager``. This manager is then reused for any subsequent calls.
 
-**Who owns what.** Each object in this setup has one job:
+**Who is responsible for what.** Each object in this setup has one job:
 
-- The **scene** owns what is shown: its mobjects, its camera, and its light
-  (:attr:`.Scene.light`, set by :class:`.ThreeDScene`), and the hooks
+- The **scene** is responsible for what is shown: its mobjects, its camera, and
+  its light (:attr:`.Scene.light`, set by :class:`.ThreeDScene`), and the hooks
   ``setup``, ``construct`` and ``tear_down``.
-- The **manager** runs the scene. It owns the animation clock (``manager.time``),
-  the play counter (``manager.num_plays``), whether plays are left out of the
-  output (``manager.skip_animations``), the :class:`.SceneFileWriter`, the preview
-  window handle (``manager.preview``), and a :class:`.FrameBuilder` that turns the
-  scene's state into what a renderer draws.
+- The **manager** runs the scene. It is responsible for the animation clock
+  (``manager.time``), the play counter (``manager.num_plays``), whether plays are
+  left out of the output (``manager.skip_animations``), the
+  :class:`.SceneFileWriter`, the preview window handle (``manager.preview``), and a
+  :class:`.FrameBuilder` that turns the scene's state into what a renderer draws.
 - The **renderer** draws. It is given render snapshots and a
   :class:`.RenderConfig` and returns a :class:`.Frame`. It keeps its drawing
   resources and what it can reuse between frames.
@@ -912,10 +912,10 @@ In the event that the animation has to be rendered, the encoder gives the
 :class:`.SceneFileWriter` the current animation index and asks it to start a
 segment job. The writer creates a ``VideoSegmentEncoder`` from the resolved
 profile and wraps it in a ``_PartialMovieEncodeJob``. The synchronous segment
-encoder owns its container, video stream, sequential presentation timestamps,
-and target cleanup. The job owns only the frame queue and worker thread. During
-the render loop, concrete top-left-origin ``uint8`` RGBA arrays are added to the
-queue and encoded by the worker. With the writing process in place, the manager
+encoder is responsible for its container, video stream, sequential presentation
+timestamps, and target cleanup; the job is responsible for the frame queue and
+worker thread. During the render loop, concrete top-left-origin ``uint8`` RGBA
+arrays are added to the queue and encoded by the worker. With the writing process in place, the manager
 then asks the scene to "begin" the animations.
 
 By default, Manim finishes encoding each partial movie file before rendering the

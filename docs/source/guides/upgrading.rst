@@ -263,9 +263,9 @@ Renderers only draw
 -------------------
 
 The Cairo and OpenGL renderers only draw: the :class:`.Manager` runs the scene,
-owns the animation clock and the output files, and hands the renderer what to draw
-in each frame. This section lists what changed for code that used the renderers,
-cameras or scene classes directly.
+is responsible for the animation clock and the output files, and hands the
+renderer what to draw in each frame. This section lists what changed for code
+that used the renderers, cameras or scene classes directly.
 
 Removed scene classes and camera options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
