@@ -77,11 +77,6 @@ the mobject and its family: read ``mob.is_fixed_in_frame`` and
 records, so its ``fixed_in_frame_mobjects`` and ``fixed_orientation_mobjects``
 attributes are gone.
 
-the mobject and its family: read ``mob.fixed_in_frame`` and
-``mob.fixed_orientation``. :class:`.ThreeDCamera` no longer keeps its own records,
-so its ``fixed_in_frame_mobjects`` and ``fixed_orientation_mobjects`` attributes
-are gone.
-
 .. _upgrading-opengl-mobjects:
 
 The OpenGL mobject classes are removed

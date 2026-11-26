@@ -419,7 +419,7 @@ class SnapshotDrawing:
         :class:`.ThreeDCamera`, nodes with a fixed orientation move with their
         projected center but are not rotated, as on the Cairo renderer.
         """
-        if node.fixed_in_frame:
+        if node.is_fixed_in_frame:
             return "frame", None
         camera = self._base_target.camera
         placement = node.placement
@@ -538,7 +538,7 @@ class SnapshotDrawing:
         if (
             not isinstance(material, PbrMaterial)
             or light is None
-            or node.fixed_in_frame
+            or node.is_fixed_in_frame
         ):
             return {"lit": 0.0}
         return {
