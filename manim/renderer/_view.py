@@ -67,7 +67,7 @@ def view_transform_center(state: CameraState) -> Point3D:
 def place(
     state: CameraState,
     points: Point3D_Array,
-    placement: Placement | None,
+    placement: Placement,
 ) -> Point3D_Array:
     """Where points are drawn, in the coordinates of :func:`view_transform_center`."""
     if not np.all(np.isfinite(points)):
