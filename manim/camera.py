@@ -24,7 +24,6 @@ from manim.renderer.projection import project_points
 from manim.renderer.protocol import CameraState
 from manim.utils.color import WHITE, ManimColor, ParsableManimColor
 from manim.utils.deprecation import deprecated
-from manim.utils.family import extract_mobject_family_members
 from manim.utils.space_ops import rotation_matrix_zxz
 
 if TYPE_CHECKING:
@@ -344,8 +343,6 @@ class ThreeDCamera(Camera):
         self.focal_distance_tracker = ValueTracker(focal_distance)
         self.gamma_tracker = ValueTracker(gamma)
         self.zoom_tracker = ValueTracker(zoom)
-        self.fixed_orientation_mobjects: dict[Mobject, Callable[[], Point3D]] = {}
-        self.fixed_in_frame_mobjects: set[Mobject] = set()
 
     # Read-only: the trackers hold the orientation. Change it with set_phi() and
     # the like, set_camera_orientation(), or by animating the trackers.

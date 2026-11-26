@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
+from manim.appearance.material import UnlitMaterial
 from manim.constants import CapStyleType, LineJointType
 from manim.renderer._lighting import AMBIENT, Light, shade
 from manim.renderer._mesh import face_colors, face_normals, face_outlines, faces_of
