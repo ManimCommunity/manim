@@ -51,7 +51,10 @@ def _frozen(array: Any, shape: tuple[int, ...] | None = None) -> np.ndarray:
 
 
 class Paint:
-    """A colouring of an area or a line; immutable. See :mod:`manim.paint`."""
+    """A colouring of an area or a line; immutable.
+
+    See :mod:`manim.appearance.paint`.
+    """
 
     __slots__ = ("_rgbas",)
     _rgbas: FloatRGBA_Array

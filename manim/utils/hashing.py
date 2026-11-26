@@ -19,7 +19,7 @@ from typing import TYPE_CHECKING, Any, overload
 import numpy as np
 
 from manim._config import config, logger
-from manim.paint import ColorField, Paint
+from manim.appearance.paint import ColorField, Paint
 
 if TYPE_CHECKING:
     from manim.animation.animation import Animation

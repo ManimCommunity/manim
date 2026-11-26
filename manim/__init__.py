@@ -36,7 +36,6 @@ from .animation.updaters.update import *
 from .appearance import *
 from .camera import *
 from .constants import *
-from .light import *
 from .manager import *
 from .mobject.frame import *
 from .mobject.geometry.arc import *
@@ -71,7 +70,6 @@ from .mobject.types.point_cloud_mobject import *
 from .mobject.types.vectorized_mobject import *
 from .mobject.value_tracker import *
 from .mobject.vector_field import *
-from .paint import *
 from .renderer.cairo import *
 from .scene.moving_camera_scene import *
 from .scene.scene import *

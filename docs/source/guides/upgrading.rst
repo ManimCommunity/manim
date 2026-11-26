@@ -215,8 +215,9 @@ drawn as meshes on OpenGL and as sorted faces on Cairo:
 - The arguments ``should_make_jagged``, ``surface_piece_config`` and
   ``pre_function_handle_to_anchor_scale_factor`` are gone.
 - They are lit by their ``material`` (:class:`.PbrMaterial` by default) under the
-  scene's lights (:mod:`manim.light`; a :class:`.ThreeDScene` has one): faces turned
-  away from the light are darker than before, and the surface has highlights.
+  scene's lights (:mod:`manim.appearance.light`; a :class:`.ThreeDScene` has one):
+  faces turned away from the light are darker than before, and the surface has
+  highlights.
   ``material=UnlitMaterial()`` shows its colors as they are. Without lights,
   surfaces are not shaded.
 - Surfaces are smooth, in one colour and without outlines by default: they used to
@@ -420,11 +421,11 @@ Selecting a renderer
 Colours of vectorized mobjects are paints
 -----------------------------------------
 
-A :class:`.VMobject` stores its colours as three *paints*: ``mob.fill``,
-``mob.stroke`` and ``mob.background_stroke`` (see :mod:`manim.paint`). A paint is
-an immutable value: :class:`.SolidColor` (one colour) or :class:`.LinearGradient`
-(evenly spaced colours along a direction, ``UL`` by default, between the edges
-of the mobject's own bounding box).
+A :class:`.VMobject` stores its colours as three *paints*: ``mob.fill``, ``mob.stroke``
+and ``mob.background_stroke`` (see :mod:`manim.appearance.paint`). A paint is an
+immutable value: :class:`.SolidColor` (one colour) or :class:`.LinearGradient` (evenly
+spaced colours along a direction, ``UL`` by default, between the edges of the mobject's
+own bounding box).
 
 .. code-block:: python
 
@@ -511,12 +512,12 @@ Lights belong to the scene
 --------------------------
 
 Lit materials (:class:`.PbrMaterial`, the default of meshes and surfaces) are shaded by
-:class:`.PointLight` mobjects (see :mod:`manim.light`). A :class:`.ThreeDScene` has
-one, ``scene.light``, at the position of the camera's former light; it is not in
-``scene.mobjects``, so :meth:`.Scene.clear` and fading out every mobject leave it.
-Move or animate it like any mobject, or add more lights with :meth:`.Scene.add`.
-``scene.ambient_light`` (0.25) is the white light that reaches every surface.
-A frame without lights is not shaded: lit materials show their base colour (a
+:class:`.PointLight` mobjects (see :mod:`manim.appearance.light`). A
+:class:`.ThreeDScene` has one, ``scene.light``, at the position of the camera's former
+light; it is not in ``scene.mobjects``, so :meth:`.Scene.clear` and fading out every
+mobject leave it. Move or animate it like any mobject, or add more lights with
+:meth:`.Scene.add`. ``scene.ambient_light`` (0.25) is the white light that reaches every
+surface. A frame without lights is not shaded: lit materials show their base colour (a
 plain :class:`.Scene` has no light).
 
 .. code-block:: python
@@ -546,11 +547,11 @@ Vector mobjects have a material and a depth ordering
 ``shade_in_3d`` meant two things: "shade towards the light" and "sort by depth under
 a 3D camera". They are now two settings of :class:`.VMobject`:
 
-- ``material`` (:mod:`manim.material`, ``set_material``): :class:`.UnlitMaterial` by
-  default; :class:`.PbrMaterial` lights the path by the scene's lights in one colour,
-  from the normal of its plane. A lit path must be flat and have a solid fill,
-  otherwise drawing it raises :class:`.CapabilityError`. Its stroke is not lit, and
-  mobjects fixed in the frame are never lit.
+- ``material`` (:mod:`manim.appearance.material`, ``set_material``):
+  :class:`.UnlitMaterial` by default; :class:`.PbrMaterial` lights the path by the
+  scene's lights in one colour, from the normal of its plane. A lit path must be flat
+  and have a solid fill, otherwise drawing it raises :class:`.CapabilityError`. Its
+  stroke is not lit, and mobjects fixed in the frame are never lit.
 - ``sort_by_depth`` (``set_sort_by_depth``): under a perspective camera, the path is
   ordered far to near by the center of its own points. This is not a depth test:
   of two intersecting shapes, one is drawn over the other.

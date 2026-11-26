@@ -10,7 +10,7 @@ Paints
 
 A :class:`.VMobject` has three paints: ``fill`` (its area), ``stroke`` (its
 outline) and ``background_stroke`` (an outline drawn behind the fill). A paint is
-an immutable value from :mod:`manim.paint`:
+an immutable value from :mod:`manim.appearance.paint`:
 
 :class:`.SolidColor`
     One colour, with an opacity.
@@ -84,7 +84,7 @@ the frame, raise :class:`~.CapabilityError`.
 Materials
 ---------
 
-A material (:mod:`manim.material`) says how a mobject responds to light:
+A material (:mod:`manim.appearance.material`) says how a mobject responds to light:
 
 :class:`.UnlitMaterial`
     The mobject shows its colours as they are.
@@ -145,7 +145,7 @@ Lights
 ------
 
 Lit materials are shaded by the scene's lights. A light (:class:`.PointLight`,
-in :mod:`manim.light`) is a mobject that draws nothing: you add it, move it,
+in :mod:`manim.appearance.light`) is a mobject that draws nothing: you add it, move it,
 animate it and give it updaters like any other mobject. Its intensity is in
 candela, and its light falls off with the square of the distance.
 

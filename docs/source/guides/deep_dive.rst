@@ -1152,7 +1152,7 @@ The payload of our transformed square is an :class:`.RPath`:
 - ``points``: the cubic Bézier points of the path, the mobject's own array (field
   values are read-only, so the snapshot shares them);
 - ``fill`` and ``stroke``: what colours the area and the outline. A mobject's
-  ``fill`` and ``stroke`` are *paints* (:mod:`manim.paint`): a
+  ``fill`` and ``stroke`` are *paints* (:mod:`manim.appearance.paint`): a
   :class:`.SolidColor`, a :class:`.LinearGradient`, or a :class:`.ColorField` that
   places colours in the scene. Each paint resolves itself into a snapshot paint
   (:meth:`.Paint.resolve`): :class:`.RSolidColor`, :class:`.RLinearGradient`,
@@ -1160,7 +1160,7 @@ The payload of our transformed square is an :class:`.RPath`:
   The stroke snapshot, :class:`.RStroke`, adds the width, joint and cap;
 - ``background_stroke``: an outline drawn below the fill, when its width is above
   zero;
-- ``material``: how the path responds to light (:mod:`manim.material`):
+- ``material``: how the path responds to light (:mod:`manim.appearance.material`):
   :class:`.UnlitMaterial` shows its colours, :class:`.PbrMaterial` shades them by
   the scene's lights;
 - ``depth_reference``: the point by which a perspective camera orders the path,

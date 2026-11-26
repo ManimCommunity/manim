@@ -6,9 +6,7 @@ Mobjects
 .. autosummary::
    :toctree: ../reference
 
-   ~light
-   ~material
-   ~paint
+   ~appearance
    ~mobject.frame
    ~mobject.geometry
    ~mobject.graph

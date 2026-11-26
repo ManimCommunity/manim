@@ -13,8 +13,8 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
+from manim.appearance.light import PointLight
 from manim.camera import MultiCamera
-from manim.light import PointLight
 from manim.renderer._lighting import srgb_to_linear
 from manim.renderer.extract import Extractor
 from manim.renderer.protocol import CameraView, LightState, RenderConfig

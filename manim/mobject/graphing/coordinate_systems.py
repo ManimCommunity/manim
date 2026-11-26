@@ -19,6 +19,7 @@ from typing import TYPE_CHECKING, Any, Self, TypeVar, overload
 import numpy as np
 
 from manim._config import config
+from manim.appearance.paint import LinearGradient
 from manim.constants import *
 from manim.mobject.geometry.arc import Circle, Dot
 from manim.mobject.geometry.line import Arrow, DashedLine, Line
@@ -35,7 +36,6 @@ from manim.mobject.types.vectorized_mobject import (
     VGroup,
     VMobject,
 )
-from manim.paint import LinearGradient
 from manim.utils.color import (
     BLACK,
     BLUE,

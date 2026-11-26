@@ -23,7 +23,7 @@ from manim import (
     Transform,
     interpolate_paint,
 )
-from manim.paint import Paint
+from manim.appearance.paint import Paint
 from manim.utils.space_ops import rotate_vector
 from manim.utils.versioned_fields import field_version
 

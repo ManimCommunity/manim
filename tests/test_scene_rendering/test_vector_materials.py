@@ -24,7 +24,7 @@ from manim import (
     VGroup,
     tempconfig,
 )
-from manim.material import Material, PbrMaterial, UnlitMaterial
+from manim.appearance.material import Material, PbrMaterial, UnlitMaterial
 from manim.renderer.protocol import CapabilityError
 
 RENDERERS = pytest.mark.parametrize("renderer", ["cairo", "opengl"])

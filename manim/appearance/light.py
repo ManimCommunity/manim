@@ -58,7 +58,7 @@ class PointLight(Mobject):
     color
         Its colour.
     intensity
-        Its intensity in candela (see :mod:`manim.light`).
+        Its intensity in candela (see :mod:`manim.appearance.light`).
 
     Examples
     --------

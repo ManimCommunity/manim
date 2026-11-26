@@ -13,9 +13,9 @@ import numpy as np
 from manim.mobject.value_tracker import ValueTracker
 
 from ..animation.animation import Animation
+from ..appearance.light import DEFAULT_LIGHT_POSITION, PointLight
 from ..camera import ThreeDCamera
 from ..constants import DEGREES
-from ..light import DEFAULT_LIGHT_POSITION, PointLight
 from ..mobject.mobject import Mobject
 from ..scene.scene import Scene
 

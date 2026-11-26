@@ -1,5 +1,5 @@
-// A colour field in scene coordinates (manim.paint.ColorField), sampled where the
-// fragment is. field_on is 0 for paths without one.
+// A colour field in scene coordinates (manim.appearance.paint.ColorField), sampled
+// where the fragment is. field_on is 0 for paths without one.
 uniform float field_on;
 uniform sampler2D field_texture;
 // Texel coordinates (u, v) = field_uv * (gl_FragCoord.xy, 1).

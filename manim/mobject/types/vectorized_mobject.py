@@ -18,6 +18,7 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
 
+from manim.appearance.material import Material, UnlitMaterial, interpolate_material
 from manim.appearance.paint import (
     ColorField,
     LinearGradient,
@@ -27,7 +28,6 @@ from manim.appearance.paint import (
     interpolate_paint,
 )
 from manim.constants import *
-from manim.material import Material, UnlitMaterial, interpolate_material
 from manim.mobject.mobject import Mobject
 from manim.utils._path_points import points_equal_2d, subpath_split_indices
 from manim.utils.bezier import (
@@ -131,8 +131,8 @@ class VMobject(Mobject):
     background_stroke_width: _StrokeWidth = _StrokeWidth()
     joint_type: Field[LineJointType] = Field()
     cap_style: Field[CapStyleType] = Field()
-    #: How the area is lit (:mod:`manim.material`): :class:`.UnlitMaterial` by default;
-    #: :class:`.PbrMaterial` shades a flat path by the scene's lights.
+    #: How the area is lit (:mod:`manim.appearance.material`): :class:`.UnlitMaterial`
+    #: by default; :class:`.PbrMaterial` shades a flat path by the scene's lights.
     material: Field[Material] = Field()
     #: Whether a perspective camera orders this path by depth (by the center of its
     #: own points) instead of scene order. Not a depth test.

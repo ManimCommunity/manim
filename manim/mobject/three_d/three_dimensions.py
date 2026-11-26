@@ -73,7 +73,8 @@ class Surface(ParametricSurface):
     """A parametric surface: smooth, in one colour, without outlines by default.
 
     The surface is a :class:`.ParametricSurface`: lit by the scene's lights
-    (:mod:`manim.light`) through its ``material`` (``PbrMaterial()`` by default).
+    (:mod:`manim.appearance.light`) through its ``material`` (``PbrMaterial()`` by
+    default).
     Neighbouring faces share corners, so the surface is lit smoothly and colours
     given per point (:meth:`set_fill_by_value`) blend across faces. With
     ``checkerboard_colors``, every face has its own corners, so faces keep their

@@ -56,9 +56,9 @@ from .._config.output_plan import (
 from .._config.render_session import resolve_render_session
 from .._run.frames import frame_count
 from ..animation.animation import Animation, Wait, prepare_animation
+from ..appearance.light import DEFAULT_AMBIENT_LIGHT, PointLight
 from ..camera import Camera, ThreeDCamera
 from ..constants import *
-from ..light import DEFAULT_AMBIENT_LIGHT, PointLight
 from ..manager import Manager
 from ..mobject.types.point_cloud_mobject import Point
 from ..renderer.backends import backend
@@ -282,7 +282,7 @@ class Scene:
         # TODO, remove need for foreground mobjects
         self.foreground_mobjects: list[Mobject] = []
         #: The intensity of the white light that reaches every surface (lit
-        #: materials only; see :mod:`manim.light`).
+        #: materials only; see :mod:`manim.appearance.light`).
         self.ambient_light: float = DEFAULT_AMBIENT_LIGHT
         #: The scene's own light, kept apart from :attr:`mobjects`: clearing or
         #: fading out every mobject leaves it. ``None`` for none (a plain

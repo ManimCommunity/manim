@@ -25,10 +25,10 @@ from .._config import config
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create
 from ..animation.indication import ShowPassingFlash
+from ..appearance.paint import ColorField
 from ..constants import OUT, RIGHT, UP
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VGroup, VMobject
-from ..paint import ColorField
 from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import (
     BLUE_E,

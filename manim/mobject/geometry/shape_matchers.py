@@ -7,6 +7,7 @@ __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 from typing import Any, Self
 
 from manim._config import config, logger
+from manim.appearance.paint import Paint
 from manim.constants import (
     DOWN,
     LEFT,
@@ -18,7 +19,6 @@ from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import RoundedRectangle
 from manim.mobject.mobject import Group, Mobject
 from manim.mobject.types.vectorized_mobject import VGroup
-from manim.paint import Paint
 from manim.utils.color import BLACK, PURE_YELLOW, RED, ParsableManimColor
 
 

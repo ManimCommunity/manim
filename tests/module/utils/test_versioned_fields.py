@@ -226,16 +226,17 @@ def test_svg_paths_share_their_parsed_path():
 
 
 def test_animation_steps_that_change_nothing_keep_versions():
-    # A transform to a moved copy: the colors are the same arrays at both ends,
-    # and keep their version over the whole animation.
+    # A transform to a moved copy: the paint is the same at both ends, and keeps
+    # its version over the whole animation.
     start = Square().set_color(RED)
     end = start.copy().shift(RIGHT)
     moving = start.copy()
 
-    moving.interpolate(start, end, 1)
-    versions = {name: field_version(moving, name) for name in ("points", "fill")}
-    moving.interpolate(start, end, 1)
-    assert {name: field_version(moving, name) for name in versions} == versions
+    moving.interpolate(start, end, 0.3)
+    version = field_version(moving, "fill")
+    for alpha in (0.5, 0.8, 1):
+        moving.interpolate(start, end, alpha)
+    assert field_version(moving, "fill") == version
 
     moving.stroke_width = 2.5
     version = field_version(moving, "stroke_width")
