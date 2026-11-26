@@ -31,6 +31,9 @@ if TYPE_CHECKING:
 __all__ = ["mesh_faces"]
 
 _UNLIT = UnlitMaterial()
+#: Points of a face's outline closer than this are taken as the same point, as
+#: for vectorized mobjects (``tolerance_for_point_equality``).
+_FACE_TOLERANCE = 1e-6
 
 
 def mesh_faces(

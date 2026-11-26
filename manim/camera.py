@@ -35,11 +35,6 @@ if TYPE_CHECKING:
     )
 
 
-#: How far above the frame a flat camera's eye is for shading: far enough that the
-#: view direction is the same everywhere on screen.
-_FAR_AWAY = 1e6
-
-
 class Camera:
     """Configure the camera view and background.
 
