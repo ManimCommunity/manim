@@ -88,20 +88,18 @@ _UIDS = it.count(1)
 def _interpolated(
     start: Any, end: Any, alpha: float, func: Callable[[Any, Any, float], Any]
 ) -> Any:
-    """``func(start, end, alpha)``; for the straight path, the end value itself
-    where nothing is interpolated, so assigning it keeps a field's version (and
-    shares the value).
+    """``func(start, end, alpha)``, or ``end`` itself when both ends are the same
+    object and ``func`` is the straight path: assigning it then keeps the field's
+    version, so a field that an animation does not change stays unchanged.
 
-    Only the straight path is known to give exactly its ends at ``alpha`` 0 and 1
-    and to leave equal ends where they are; other paths are always called (a path
-    along an arc misses its end when the ends differ along the arc's axis, and
-    paths along circles move points that do not move).
+    The straight path leaves equal ends where they are; other paths are always
+    called (paths along circles move points whose ends are equal).
+
+    An interim measure: animations are to decide once, when they begin, which
+    fields differ between their ends, and leave the others alone.
     """
-    if func is interpolate:
-        if alpha == 1 or start is end:
-            return end
-        if alpha == 0:
-            return start
+    if start is end and func is interpolate:
+        return end
     return func(start, end, alpha)
 
 

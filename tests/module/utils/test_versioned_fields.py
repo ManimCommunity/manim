@@ -216,14 +216,17 @@ def test_svg_paths_share_their_parsed_path():
 
 
 def test_animation_steps_that_change_nothing_keep_versions():
-    start, end = Square(), Circle().set_color(RED)
-    start.align_data(end)
+    # A transform to a moved copy: the colours are the same arrays at both ends,
+    # and keep their version over the whole animation.
+    start = Square().set_color(RED)
+    end = start.copy().shift(RIGHT)
     moving = start.copy()
 
-    moving.interpolate(start, end, 1)
-    versions = {name: field_version(moving, name) for name in ("points", "fill_rgbas")}
-    moving.interpolate(start, end, 1)
-    assert {name: field_version(moving, name) for name in versions} == versions
+    moving.interpolate(start, end, 0.3)
+    version = field_version(moving, "fill_rgbas")
+    for alpha in (0.5, 0.8, 1):
+        moving.interpolate(start, end, alpha)
+    assert field_version(moving, "fill_rgbas") == version
 
     moving.stroke_width = 2.5
     version = field_version(moving, "stroke_width")
@@ -254,13 +257,12 @@ def test_animation_steps_call_a_path_that_does_not_meet_its_ends(alpha):
     np.testing.assert_allclose(moving.points, path(start.points, end.points, alpha))
 
 
-def test_the_end_of_an_interpolation_cannot_be_written_through_the_start():
+def test_an_interpolated_value_cannot_be_written_through():
     start, end = Square(), Circle()
     start.align_data(end)
     moving = start.copy()
 
     moving.interpolate(start, end, 1)
 
-    assert moving.points is end.points
     with pytest.raises(ValueError, match="read-only"):
         moving.points[0] = [9, 9, 9]
