@@ -43,7 +43,7 @@ __all__ = [
     "TangentialArc",
 ]
 
-import itertools
+import itertools as it
 import warnings
 from typing import TYPE_CHECKING, Any, Self, cast
 
@@ -1243,13 +1243,13 @@ class ArcPolygon(VMobject, metaclass=ConvertToOpenGL):
 
         if not arc_config:
             if radius:
-                all_arc_configs: Iterable[dict] = itertools.repeat(
+                all_arc_configs: Iterable[dict] = it.repeat(
                     {"radius": radius}, len(point_pairs)
                 )
             else:
-                all_arc_configs = itertools.repeat({"angle": angle}, len(point_pairs))
+                all_arc_configs = it.repeat({"angle": angle}, len(point_pairs))
         elif isinstance(arc_config, dict):
-            all_arc_configs = itertools.repeat(arc_config, len(point_pairs))
+            all_arc_configs = it.repeat(arc_config, len(point_pairs))
         else:
             assert len(arc_config) == n
             all_arc_configs = arc_config

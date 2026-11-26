@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import itertools
+import itertools as it
 import json
 import os
 from functools import wraps
@@ -29,7 +29,7 @@ def _check_logs(reference_logfile_path: Path, generated_logfile_path: Path) -> N
         pytest.fail(msg_assert)
 
     for index, ref, gen in zip(
-        itertools.count(), reference_logs, generated_logs, strict=False
+        it.count(), reference_logs, generated_logs, strict=False
     ):
         # As they are string, we only need to check if they are equal. If they are not, we then compute a more precise difference, to debug.
         if ref == gen:
