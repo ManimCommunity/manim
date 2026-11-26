@@ -91,9 +91,9 @@ class _StrokeWidth(Field[float]):
         super().__set__(obj, max(0.0, float(value)))
 
 
-def _is_vmobject_like(mobject: object) -> bool:
-    """Whether ``mobject`` may be a submobject of a :class:`VMobject`: vectorized
-    mobjects, and meshes, which have the styling methods that groups call.
+def _in_vgroup_allowed(mobject: object) -> bool:
+    """Whether ``mobject`` may be a submobject of a :class:`VMobject` (see
+    :attr:`.Mobject._can_be_in_vgroup`).
     """
     return isinstance(mobject, Mobject) and type(mobject)._can_be_in_vgroup
 
@@ -118,7 +118,7 @@ class VMobject(Mobject):
         for options.
     """
 
-    _vmobject_like = True
+    _can_be_in_vgroup = True
     #: How the area is coloured (see :mod:`manim.appearance.paint`).
     fill: Field[Paint] = Field()
     #: How the outline is coloured.
@@ -682,7 +682,7 @@ class VMobject(Mobject):
         # Meshes in a group have a material too (they are VMobject-like);
         # point clouds and images do not.
         for mob in self.get_family() if family else [self]:
-            if _is_vmobject_like(mob):
+            if _in_vgroup_allowed(mob):
                 mob.material = material
         return self
 

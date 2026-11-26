@@ -114,7 +114,7 @@ def mesh_faces(
             material=_UNLIT,
             # Fixed faces keep the order above, after the scene's 3D paths.
             depth_reference=None if node.is_fixed_in_frame else centers[index],
-            tolerance=1e-6,
+            tolerance=_FACE_TOLERANCE,
         )
         nodes.append(
             RNode(

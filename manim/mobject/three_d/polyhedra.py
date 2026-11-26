@@ -481,11 +481,14 @@ class ConvexHull3D(Polyhedron):
         )
 
 
-def _face(corners: Point3DLike_Array, config: dict[str, Any]) -> PolygonFace:
-    """A face of a polyhedron, styled by ``faces_config``: the arguments of
-    :class:`.Polygon` that a face had (``fill_color``, ``fill_opacity``,
-    ``stroke_color``, ``stroke_width``, ``stroke_opacity``, ``color``), and those of
+def _face_style(config: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    """``faces_config`` split into the styling of :meth:`.MeshMobject.set_style`
+    (``fill_color``, ``fill_opacity``, ``stroke_color``, ``stroke_width``,
+    ``stroke_opacity``; ``color`` sets fill and outline) and the other arguments of
     :class:`.PolygonFace` (``material``, ...).
+
+    As the faces were :class:`.Polygon` objects, they are outlined 4 wide in their
+    fill colour unless the config says otherwise.
     """
     config = dict(config)
     color = config.pop("color", None)
