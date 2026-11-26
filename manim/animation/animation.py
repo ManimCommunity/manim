@@ -146,8 +146,8 @@ class Animation:
         self.suspend_mobject_updating: bool = suspend_mobject_updating
         self.lag_ratio: float = lag_ratio
         self._on_finish: Callable[[Scene], None] = _on_finish
-        self.starting_mobject: Mobject = Mobject()
-        self.mobject: Mobject = mobject if mobject is not None else Mobject()
+        self.starting_mobject = Mobject()
+        self.mobject = mobject if mobject is not None else Mobject()
 
         if hasattr(self, "CONFIG"):
             logger.error(

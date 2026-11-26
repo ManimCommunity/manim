@@ -231,7 +231,6 @@ class DrawBorderThenFill(Animation):
         introducer: bool = True,
         **kwargs,
     ) -> None:
-        self._typecheck_input(vmobject)
         super().__init__(
             vmobject,
             run_time=run_time,
@@ -243,8 +242,10 @@ class DrawBorderThenFill(Animation):
         self.stroke_color = stroke_color
         self.outline = self.get_outline()
 
-    def _typecheck_input(self, vmobject: VMobject) -> None:
-        if not isinstance(vmobject, VMobject):
+    def _typecheck_input(self, mobject: Mobject | None) -> None:
+        # The outline is drawn with VMobject styling (set_stroke, match_style): other
+        # mobjects would fail with an AttributeError in the middle of the animation.
+        if not isinstance(mobject, VMobject):
             raise TypeError(
                 f"{self.__class__.__name__} only works for vectorized Mobjects"
             )

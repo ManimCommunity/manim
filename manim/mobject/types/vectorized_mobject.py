@@ -1797,8 +1797,8 @@ class VMobject(Mobject):
         --------
         :meth:`~.Mobject.interpolate`, :meth:`~.Mobject.align_data`
         """
-        # A VMobject meets a mobject of another kind when one is transformed into the
-        # other (a mesh, say); Mobject.align_points takes any mobject.
+        # align_data passes the other mobject of a transform, whatever its type; only
+        # vectorized mobjects can be aligned with this one.
         if not isinstance(mobject, VMobject):
             raise ValueError(
                 f"A {type(self).__name__} cannot be transformed into a "

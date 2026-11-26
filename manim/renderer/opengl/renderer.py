@@ -119,9 +119,7 @@ class OpenGLRenderer(_RendererExecutionView):
         self.animation_start_time = 0.0
         self.animation_elapsed_time = 0.0
 
-        self.camera: Camera = (
-            camera if camera is not None else (camera_class or Camera)()
-        )
+        self.camera: Camera = camera or (camera_class or Camera)()
         self.perspective_uniforms: dict[str, Any] = {}
         self.camera_view: _CameraView = _CameraView.of(self.camera)
         self._snapshot_drawing = SnapshotDrawing(self)
