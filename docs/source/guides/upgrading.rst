@@ -74,7 +74,7 @@ Stroke widths are numbers
 ``stroke_width`` and ``background_stroke_width`` of vectorized mobjects accept only
 numbers and are stored as floats; assigning a string, ``None`` or a bool raises
 ``TypeError``. Negative widths are stored as 0, so reading the attribute gives the
-same value as :meth:`.VMobject.get_stroke_width`.
+same value as ``get_stroke_width()``.
 
 Fixed mobjects are marked on the mobjects
 -----------------------------------------

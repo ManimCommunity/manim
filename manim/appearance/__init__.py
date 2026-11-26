@@ -1,7 +1,7 @@
 """How mobjects look: their materials.
 
 The names listed here can be imported from :mod:`manim.appearance` directly (and
-from :mod:`manim`).
+from ``manim``).
 
 Modules
 =======
