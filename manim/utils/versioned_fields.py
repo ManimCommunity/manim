@@ -27,7 +27,7 @@ number (see :attr:`.RNode.key`); with a counter per field, it would need all of 
 
 from __future__ import annotations
 
-import itertools
+import itertools as it
 from typing import TYPE_CHECKING, Any, Generic, Self, TypeVar, overload
 
 import numpy as np
@@ -48,7 +48,7 @@ __all__ = [
 
 T = TypeVar("T")
 
-_NEXT_VERSION = itertools.count(1).__next__
+_NEXT_VERSION = it.count(1).__next__
 
 _UNSET: Any = object()
 # Types whose equal values are interchangeable and cheap to compare.

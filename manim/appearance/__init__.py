@@ -14,6 +14,6 @@ Modules
 
 from __future__ import annotations
 
-from .material import *
+from .material import Material, PbrMaterial, UnlitMaterial
 
 __all__ = ["Material", "PbrMaterial", "UnlitMaterial"]
