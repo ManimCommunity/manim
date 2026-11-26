@@ -11,7 +11,7 @@ from manim import (
     Transform,
     tempconfig,
 )
-from manim.material import PbrMaterial, UnlitMaterial
+from manim.appearance.material import PbrMaterial, UnlitMaterial
 from manim.renderer.protocol import CapabilityError
 from manim.utils.versioned_fields import field_version
 

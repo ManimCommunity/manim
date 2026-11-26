@@ -17,12 +17,12 @@ from typing import TYPE_CHECKING, NamedTuple
 
 import numpy as np
 
-from manim.material import PbrMaterial
+from manim.appearance.material import PbrMaterial
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from manim.material import Material
+    from manim.appearance.material import Material
 
 __all__ = [
     "AMBIENT",

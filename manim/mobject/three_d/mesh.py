@@ -3,9 +3,9 @@
 These are drawn by the OpenGL renderer as meshes, with depth testing and lighting. The
 Cairo renderer cannot draw them yet; use :class:`.Surface` there.
 
-A mesh has a :mod:`material <manim.material>`: :class:`.PbrMaterial` (the default)
-lights it under a :class:`.ThreeDCamera`'s light, :class:`.UnlitMaterial` shows its
-colors as they are.
+A mesh has a :mod:`material <manim.appearance.material>`: :class:`.PbrMaterial`
+(the default) lights it under a :class:`.ThreeDCamera`'s light,
+:class:`.UnlitMaterial` shows its colors as they are.
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 from PIL import Image
 
-from manim.material import Material, PbrMaterial
+from manim.appearance.material import Material, PbrMaterial
 from manim.mobject.mobject import Mobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import (

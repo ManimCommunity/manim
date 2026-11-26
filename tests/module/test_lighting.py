@@ -5,7 +5,7 @@ import math
 import numpy as np
 import pytest
 
-from manim.material import PbrMaterial, UnlitMaterial
+from manim.appearance.material import PbrMaterial, UnlitMaterial
 from manim.renderer._lighting import (
     AMBIENT,
     DEFAULT_LIGHT_INTENSITY,

@@ -21,7 +21,7 @@ import numpy as np
 from PIL.Image import Resampling
 
 from manim._config import config
-from manim.material import PbrMaterial
+from manim.appearance.material import PbrMaterial
 from manim.renderer._lighting import AMBIENT, DEFAULT_LIGHT_INTENSITY
 from manim.renderer._paint import paint_colors, shows
 from manim.renderer.cairo.camera import ThreeDCamera

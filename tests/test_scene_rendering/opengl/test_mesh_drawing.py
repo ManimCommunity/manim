@@ -15,7 +15,7 @@ from manim import (
     config,
     tempconfig,
 )
-from manim.material import PbrMaterial, UnlitMaterial
+from manim.appearance.material import PbrMaterial, UnlitMaterial
 
 WIDTH, HEIGHT = 384, 216
 
