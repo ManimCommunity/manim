@@ -376,7 +376,7 @@ class Camera:
     message="Every camera has an animatable frame and auto_zoom().",
 )
 class MovingCamera(Camera):
-    """A :class:`Camera`: every camera has a movable frame now."""
+    """A :class:`Camera`; every camera has a movable frame."""
 
 
 class MultiCamera(Camera):
