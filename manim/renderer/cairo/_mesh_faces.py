@@ -63,7 +63,7 @@ def mesh_faces(
     # tetrahedron around the origin, it is the origin for all four.)
     centers = corners.mean(axis=1)
     colors = face_colors(mesh, faces)
-    if is_lit(mesh.material, "Cairo") and lights and not node.fixed_in_frame:
+    if is_lit(mesh.material, "Cairo") and lights and not node.is_fixed_in_frame:
         colors[:, :3] = shade(
             colors[:, :3],
             face_normals(corners),

@@ -90,7 +90,7 @@ def lit_color(
         For a lit path that is not flat or whose fill is not one colour.
     """
     path: RPath = node.payload  # type: ignore[assignment]
-    if not is_lit(path.material, renderer) or not lights or node.fixed_in_frame:
+    if not is_lit(path.material, renderer) or not lights or node.is_fixed_in_frame:
         return None
     points = np.asarray(path.points, dtype=float)
     if len(points) == 0 or not shows(path.fill):

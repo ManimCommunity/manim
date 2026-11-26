@@ -690,7 +690,7 @@ class SnapshotDrawing:
         """
         target = self._base_target
         lights = target.lights
-        if not is_lit(material, "OpenGL") or not lights or node.fixed_in_frame:
+        if not is_lit(material, "OpenGL") or not lights or node.is_fixed_in_frame:
             return {"lit": 0.0}
         if len(lights) > MAX_LIGHTS:
             raise CapabilityError(
