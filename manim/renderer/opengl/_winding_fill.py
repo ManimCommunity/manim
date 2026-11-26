@@ -95,7 +95,7 @@ def pack(
 
 
 class WindingFill:
-    """Owns the buffers and programs used to fill by winding number.
+    """The buffers and programs used to fill by winding number.
 
     The GPU resources follow the renderer's context and are released with it.
     """

@@ -116,8 +116,8 @@ for details) is to include the following in your ``pyproject.toml``:
 A note on Renderer Compatibility
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Both renderers draw the same mobject classes, so custom mobjects created in a
-plugin by subclassing :class:`.Mobject`, :class:`.VMobject` or any other mobject
-work with either renderer. The currently active renderer can be queried by
-checking the value of ``manim.config.renderer``; all possible renderer types are
-given by :class:`.constants.RendererType`.
+Custom mobjects created in a plugin by subclassing :class:`.Mobject`,
+:class:`.VMobject` or any other mobject work with either renderer. The currently
+active renderer can be queried by checking the value of
+``manim.config.renderer``; all possible renderer types are given by
+:class:`.constants.RendererType`.

@@ -3,8 +3,8 @@
 ## Are there any resources on how the OpenGL renderer in the community maintained version can be used?
 
 Render with `--renderer=opengl`; add `-l` (or `--live-preview`) for an
-interactive preview window. Both renderers draw the same mobjects, so the rest of
-the documentation applies to both. Smooth, lit surfaces
+interactive preview window. The rest of the documentation applies to both
+renderers. Smooth, lit surfaces
 ({class}`.ParametricSurface`, {class}`.MeshMobject`) are currently drawn by the
 OpenGL renderer only.
 

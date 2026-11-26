@@ -74,7 +74,7 @@ class OpenGLRenderer(_RendererExecutionView):
     anti_alias_width : float
         The width used for anti-aliasing in pixel units.
     camera : Camera
-        The camera used for rendering: the same camera classes as the Cairo renderer.
+        The camera used for rendering.
     num_plays : float
         The number of animation plays executed.
     pressed_keys : set[int]

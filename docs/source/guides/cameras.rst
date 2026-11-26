@@ -50,9 +50,8 @@ frame with the usual mobject operations:
 To keep a mobject in place on screen while the camera moves, for example a title,
 call its :meth:`~.Mobject.fix_in_frame` method.
 
-The same camera classes are used by the Cairo and the OpenGL renderer. For
-three-dimensional views, :class:`.ThreeDScene` uses a :class:`.ThreeDCamera`; see
-its orientation methods.
+For three-dimensional views, :class:`.ThreeDScene` uses a :class:`.ThreeDCamera`;
+see its orientation methods.
 
 Choosing a camera class
 -----------------------
@@ -162,13 +161,12 @@ magnified region of the scene::
 Multiple camera views
 ---------------------
 
-The Cairo backend supports several camera views within one scene through
-:class:`.MultiCamera`. The primary camera draws the overall scene; each
-secondary camera supplies an image displayed by an
-:class:`.ImageMobjectFromCamera` mobject.
-During the execution of the scene, the renderer draws each camera's view into its
-display mobject. Both renderers support it; the OpenGL renderer does not draw
-nested views (a :class:`.MultiCamera` used as a secondary camera).
+A scene can show several camera views through :class:`.MultiCamera`. The primary
+camera draws the overall scene; each secondary camera supplies an image displayed
+by an :class:`.ImageMobjectFromCamera` mobject. During the execution of the
+scene, the renderer draws each camera's view into its display mobject. The OpenGL
+renderer does not draw nested views (a :class:`.MultiCamera` used as a secondary
+camera).
 
 There are two independent controls:
 
