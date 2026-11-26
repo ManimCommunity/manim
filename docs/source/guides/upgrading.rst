@@ -75,3 +75,12 @@ Stroke widths are numbers
 numbers and are stored as floats; assigning a string, ``None`` or a bool raises
 ``TypeError``. Negative widths are stored as 0, so reading the attribute gives the
 same value as :meth:`.VMobject.get_stroke_width`.
+
+Fixed mobjects are marked on the mobjects
+-----------------------------------------
+
+Whether a mobject is fixed in the frame or keeps facing the camera is stored on
+the mobject and its family: read ``mob.fixed_in_frame`` and
+``mob.fixed_orientation``. :class:`.ThreeDCamera` no longer keeps its own records,
+so its ``fixed_in_frame_mobjects`` and ``fixed_orientation_mobjects`` attributes
+are gone.

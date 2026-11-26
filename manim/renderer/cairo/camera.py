@@ -437,8 +437,6 @@ class ThreeDCamera(Camera):
         self.focal_distance_tracker = ValueTracker(focal_distance)
         self.gamma_tracker = ValueTracker(gamma)
         self.zoom_tracker = ValueTracker(zoom)
-        self.fixed_orientation_mobjects: dict[Mobject, Callable[[], Point3D]] = {}
-        self.fixed_in_frame_mobjects: set[Mobject] = set()
         self._view: tuple[Point3D, float, float, MatrixMN] | None = None
 
     @contextlib.contextmanager
@@ -823,23 +821,8 @@ class ThreeDCamera(Camera):
             The function which returns the centerpoint
             with respect to which the mobject will be oriented, by default None
         """
-
-        # This prevents the computation of mobject.get_center
-        # every single time a projection happens
-        def get_static_center_func(mobject: Mobject) -> Callable[[], Point3D]:
-            point = mobject.get_center()
-            return lambda: point
-
         for mobject in mobjects:
-            if center_func:
-                func = center_func
-            elif use_static_center_func:
-                func = get_static_center_func(mobject)
-            else:
-                func = mobject.get_center
-            mobject.fix_orientation(func)
-            for submob in mobject.get_family():
-                self.fixed_orientation_mobjects[submob] = func
+            mobject.fix_orientation(center_func, use_static_center_func)
 
     def add_fixed_in_frame_mobjects(self, *mobjects: Mobject) -> None:
         """This method allows the mobject to have a fixed position,
@@ -856,8 +839,6 @@ class ThreeDCamera(Camera):
         """
         for mobject in mobjects:
             mobject.fix_in_frame()
-        for mobject in extract_mobject_family_members(mobjects):
-            self.fixed_in_frame_mobjects.add(mobject)
 
     def remove_fixed_orientation_mobjects(self, *mobjects: Mobject) -> None:
         """If a mobject was fixed in its orientation by passing it through
@@ -871,9 +852,6 @@ class ThreeDCamera(Camera):
         """
         for mobject in mobjects:
             mobject.unfix_orientation()
-        for mobject in extract_mobject_family_members(mobjects):
-            if mobject in self.fixed_orientation_mobjects:
-                del self.fixed_orientation_mobjects[mobject]
 
     def remove_fixed_in_frame_mobjects(self, *mobjects: Mobject) -> None:
         """If a mobject was fixed in frame by passing it through
@@ -887,6 +865,3 @@ class ThreeDCamera(Camera):
         """
         for mobject in mobjects:
             mobject.unfix_from_frame()
-        for mobject in extract_mobject_family_members(mobjects):
-            if mobject in self.fixed_in_frame_mobjects:
-                self.fixed_in_frame_mobjects.remove(mobject)
