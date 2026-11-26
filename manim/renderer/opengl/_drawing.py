@@ -21,8 +21,8 @@ import numpy as np
 from PIL.Image import Resampling
 
 from manim._config import config
-from manim.camera import ThreeDCamera
 from manim.appearance.material import PbrMaterial
+from manim.camera import ThreeDCamera
 from manim.renderer._lighting import AMBIENT, DEFAULT_LIGHT_INTENSITY
 from manim.renderer._mesh import MESH_STROKE_WIDTH_UNIT, faces_of
 from manim.renderer._paint import paint_colors, shows
