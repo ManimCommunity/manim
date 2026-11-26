@@ -28,6 +28,7 @@ from manim.mobject.types.vectorized_mobject import VMobject
 from manim.renderer.snapshot import (
     FacingCamera,
     FixedInFrame,
+    InScene,
     Payload,
     Placement,
     RCameraView,

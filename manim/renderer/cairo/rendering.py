@@ -23,6 +23,7 @@ from manim.renderer._view import (
 from manim.renderer.protocol import CapabilityError
 from manim.renderer.snapshot import (
     STROKE_WIDTH_UNIT,
+    InScene,
     RCameraView,
     RColorField,
     RImage,
@@ -242,7 +243,7 @@ class _CairoDrawingContext:
         coordinates (the context's user space), so Cairo samples it where it
         draws.
         """
-        if is_3d(self.camera) or node.placement is not None:
+        if is_3d(self.camera) or type(node.placement) is not InScene:
             raise CapabilityError(
                 "The Cairo renderer draws colour fields only under a flat camera, "
                 "on mobjects that are not fixed in the frame."

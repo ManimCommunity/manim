@@ -28,6 +28,7 @@ from manim.renderer.extract import Extractor, extract, snapshot
 from manim.renderer.snapshot import (
     FacingCamera,
     FixedInFrame,
+    InScene,
     RImage,
     RLinearGradient,
     RPath,

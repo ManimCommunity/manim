@@ -63,6 +63,7 @@ __all__ = [
     "CameraId",
     "FacingCamera",
     "FixedInFrame",
+    "InScene",
     "Payload",
     "Placement",
     "RCameraView",
