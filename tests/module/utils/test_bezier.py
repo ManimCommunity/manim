@@ -249,3 +249,16 @@ def test_is_closed_in_negative_space() -> None:
     assert not is_closed(
         np.array([[-5.0, 0.0, 0.0], [1.0, 2.0, 3.0], [-5.0, 0.0, 1.0]])
     )
+
+
+def test_interpolate_returns_the_end_itself_when_both_ends_are_it():
+    points = np.random.default_rng(0).random((8, 3))
+    assert interpolate(points, points, 0.3) is points
+    assert interpolate(2.5, 2.5, 0.3) == 2.5
+
+
+def test_interpolate_with_a_column_of_alphas_keeps_its_shape_for_equal_ends():
+    point = np.array([1.0, 2.0, 3.0])
+    result = interpolate(point, point, np.array([[0.25], [0.75]]))
+    assert result.shape == (2, 3)
+    np.testing.assert_allclose(result, [point, point])

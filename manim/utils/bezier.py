@@ -1060,7 +1060,13 @@ def interpolate(
 
             * ``alpha`` is a :class:`float`, the return is another :class:`~.Point3D`.
             * ``alpha`` is a :class:`~.ColVector`, the return is a :class:`~.Point3D_Array`.
+
+        When ``start`` and ``end`` are the same object and ``alpha`` is a number, the
+        result is that object: an animated field whose value does not change keeps
+        its version (see :mod:`manim.utils.versioned_fields`).
     """
+    if start is end and not isinstance(alpha, np.ndarray):
+        return end
     return (1 - alpha) * start + alpha * end
 
 

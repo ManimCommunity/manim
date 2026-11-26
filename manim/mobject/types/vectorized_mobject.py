@@ -1940,20 +1940,14 @@ class VMobject(Mobject):
             "stroke_rgbas",
             "background_stroke_rgbas",
             "sheen_direction",
+            "stroke_width",
+            "background_stroke_width",
+            "sheen_factor",
         ):
-            start, end = getattr(mobject1, attr), getattr(mobject2, attr)
-            # An array that is the same at both ends stays that array, so its field
-            # keeps its version (a new array would get a new one in every frame).
-            setattr(self, attr, end if start is end else interpolate(start, end, alpha))
-        # Numbers keep their field's version when the value stays equal (as plain
-        # floats: rate functions can make the result a numpy float).
-        for attr in ("stroke_width", "background_stroke_width", "sheen_factor"):
             setattr(
                 self,
                 attr,
-                float(
-                    interpolate(getattr(mobject1, attr), getattr(mobject2, attr), alpha)
-                ),
+                interpolate(getattr(mobject1, attr), getattr(mobject2, attr), alpha),
             )
         return self
 

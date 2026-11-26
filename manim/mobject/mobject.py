@@ -27,7 +27,6 @@ from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
 from .._config import config, logger
 from ..constants import *
-from ..utils.bezier import interpolate
 from ..utils.color import (
     BLACK,
     PURE_YELLOW,
@@ -3408,15 +3407,7 @@ class Mobject:
         :class:`~.Transform`, :meth:`~.VMobject.align_points`, :meth:`~.VMobject.interpolate_color`
 
         """
-        start, end = mobject1.points, mobject2.points
-        # Points that are the same array at both ends stay that array on the straight
-        # path, so their field keeps its version and renderers reuse what they made
-        # for them (other paths can move such points). An interim measure: animations
-        # are to decide once, when they begin, which fields differ between their ends.
-        if start is end and path_func is interpolate:
-            self.points = end
-        else:
-            self.points = path_func(start, end, alpha)
+        self.points = path_func(mobject1.points, mobject2.points, alpha)
         self.interpolate_color(mobject1, mobject2, alpha)
         return self
 
