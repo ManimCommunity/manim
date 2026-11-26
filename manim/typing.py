@@ -64,6 +64,10 @@ __all__ = [
     "Point3DLike",
     "Point3D_Array",
     "Point3DLike_Array",
+    "UV",
+    "UVLike",
+    "UV_Array",
+    "UVLike_Array",
     "PointND",
     "PointNDLike",
     "PointND_Array",
@@ -409,6 +413,37 @@ NumPy array.
 
 Please refer to the documentation of the function you are using for
 further type information.
+"""
+
+UV: TypeAlias = npt.NDArray[PointDType]
+"""``shape: (2,)``
+
+A NumPy array representing a point in a texture: ``[u, v]``, from ``(0, 0)`` at
+the upper left corner of the image to ``(1, 1)`` at its lower right corner.
+"""
+
+UVLike: TypeAlias = UV | tuple[float, float]
+"""``shape: (2,)``
+
+A point in a texture: ``[u, v]``.
+
+This represents anything which can be converted to a :class:`.UV` NumPy array.
+"""
+
+UV_Array: TypeAlias = npt.NDArray[PointDType]
+"""``shape: (M, 2)``
+
+A NumPy array representing a sequence of :class:`.UV` objects:
+``[[u, v], ...]``, for example one per vertex of a mesh.
+"""
+
+UVLike_Array: TypeAlias = UV_Array | Sequence[UVLike]
+"""``shape: (M, 2)``
+
+An array of :class:`.UVLike` objects: ``[[u, v], ...]``.
+
+This represents anything which can be converted to a :class:`.UV_Array` NumPy
+array.
 """
 
 PointND: TypeAlias = npt.NDArray[PointDType]

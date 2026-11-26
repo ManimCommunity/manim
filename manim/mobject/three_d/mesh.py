@@ -39,8 +39,18 @@ from manim.utils.versioned_fields import ArrayField, Field
 if TYPE_CHECKING:
     from typing import Self
 
+    import numpy.typing as npt
+
     from manim.mobject.graphing.coordinate_systems import CoordinateSystem
-    from manim.typing import Point3D, Point3D_Array
+    from manim.typing import (
+        FloatRGBA_Array,
+        FloatRGBALike_Array,
+        PixelArray,
+        Point3D,
+        Point3D_Array,
+        UV_Array,
+        UVLike_Array,
+    )
 
 
 class MeshMobject(Mobject):
@@ -66,11 +76,13 @@ class MeshMobject(Mobject):
         upper left of the image to ``(1, 1)`` at the lower right.
     """
 
+    #: Vertex indices, three per triangle (int32, as renderers upload them).
     triangles: ArrayField[np.ndarray] = ArrayField(np.int32)
     #: Colours: one row for the whole mesh, or one per vertex.
-    rgbas: ArrayField[np.ndarray] = ArrayField(np.float64)
-    uvs: ArrayField[np.ndarray] = ArrayField(np.float64)
-    texture: ArrayField[np.ndarray] = ArrayField(np.uint8)
+    rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
+    uvs: ArrayField[UV_Array] = ArrayField(np.float64)
+    #: RGBA pixels, one byte per channel; empty without a texture.
+    texture: ArrayField[PixelArray] = ArrayField(np.uint8)
     material: Field[Material] = Field()
     depth_test: Field[bool] = Field()
 
@@ -82,8 +94,8 @@ class MeshMobject(Mobject):
         opacity: float = 1.0,
         material: Material | None = None,
         depth_test: bool = True,
-        texture: str | Path | np.ndarray | None = None,
-        uvs: np.ndarray | None = None,
+        texture: str | Path | PixelArray | None = None,
+        uvs: UVLike_Array | None = None,
         **kwargs: Any,
     ) -> None:
         self.triangles = np.zeros((0, 3)) if triangles is None else triangles
@@ -121,14 +133,14 @@ class MeshMobject(Mobject):
         self.rgbas = rgbas
         return super().fade(darkness, family)
 
-    def set_vertex_colors(self, rgbas: np.ndarray) -> Self:
+    def set_vertex_colors(self, rgbas: FloatRGBALike_Array) -> Self:
         """Give every vertex its own colour, as an ``(n, 4)`` array of RGBA values."""
         self.rgbas = rgbas
         return self
 
     def set_color_by_xyz_func(
         self,
-        func: Callable[[Point3D_Array], np.ndarray],
+        func: Callable[[Point3D_Array], npt.NDArray[np.float64]],
         colorscale: Sequence[ParsableManimColor],
         min_value: float = 0.0,
         max_value: float = 1.0,
@@ -238,12 +250,12 @@ class ParametricSurface(MeshMobject):
         **kwargs: Any,
     ) -> None:
         self.func = func
-        self.u_range = tuple(u_range)
-        self.v_range = tuple(v_range)
-        self.resolution = (
+        self.u_range: tuple[float, float] = _pair(u_range, "u_range")
+        self.v_range: tuple[float, float] = _pair(v_range, "v_range")
+        self.resolution: tuple[int, int] = (
             (resolution, resolution)
             if isinstance(resolution, int)
-            else tuple(resolution)
+            else _pair(resolution, "resolution")
         )
         self.flat = flat
         super().__init__(**kwargs)
@@ -255,7 +267,7 @@ class ParametricSurface(MeshMobject):
         grid = np.array([[self.func(u, v) for v in vs] for u in us], dtype=float)
         return self._build(grid)
 
-    def _build(self, grid: np.ndarray) -> Self:
+    def _build(self, grid: Point3D_Array) -> Self:
         """Make the mesh through ``grid``, the points at the corners of the parameter
         grid (shape ``(nu + 1, nv + 1, 3)``): smooth, or with :attr:`flat` quads.
         """
@@ -378,7 +390,7 @@ class ParametricSurface(MeshMobject):
             lines.add(VMobject().set_points_as_corners(line))
         return lines.set_stroke(color, stroke_width)
 
-    def _grid(self) -> np.ndarray:
+    def _grid(self) -> npt.NDArray[np.float64]:
         """The surface's current points at the corners of its parameter grid, shape
         ``(nu + 1, nv + 1, 3)``.
 
@@ -429,7 +441,16 @@ def _interpolate_material(start: Material, end: Material, alpha: float) -> Mater
     return start
 
 
-def _mixed_rgbas(start: np.ndarray, end: np.ndarray, alpha: float) -> np.ndarray:
+def _pair(values: Sequence[Any], name: str) -> tuple[Any, Any]:
+    """``values`` as a pair; raises if it does not have two entries."""
+    if len(values) != 2:
+        raise ValueError(f"{name} needs two values, not {len(values)}: {values!r}")
+    return values[0], values[1]
+
+
+def _mixed_rgbas(
+    start: FloatRGBA_Array, end: FloatRGBA_Array, alpha: float
+) -> FloatRGBA_Array:
     """The colours at progress ``alpha`` from ``start`` to ``end``; the value itself
     where both are the same array, so assigning it keeps a field's version.
     """
@@ -442,7 +463,7 @@ def _mixed_rgbas(start: np.ndarray, end: np.ndarray, alpha: float) -> np.ndarray
     return (1 - alpha) * start + alpha * end
 
 
-def _load_texture(texture: str | Path | np.ndarray | None) -> np.ndarray:
+def _load_texture(texture: str | Path | PixelArray | None) -> PixelArray:
     if texture is None:
         return np.zeros((0, 0, 4), dtype=np.uint8)
     if isinstance(texture, (str, Path)):
@@ -461,7 +482,7 @@ def _colorscale(
     low: float,
     high: float,
     alpha: float,
-) -> np.ndarray:
+) -> FloatRGBA_Array:
     """RGBA values for ``values``, from colours evenly spread from ``low`` to ``high``."""
     colors = [ManimColor(c) for c in colorscale]
     t = np.clip((values - low) / (high - low), 0, 1) * (len(colors) - 1)

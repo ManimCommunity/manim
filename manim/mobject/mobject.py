@@ -2759,6 +2759,7 @@ class Mobject:
         result: list[Mobject] = [self] if len(self.points) > 0 else []
         return result + self.submobjects
 
+    # TODO: remove ``recurse`` (unused; kept so that existing calls keep working).
     def get_family(self, recurse: bool = True) -> list[Mobject]:
         """Lists all mobjects in the hierarchy (family) of the given mobject,
         including the mobject itself and all its submobjects recursively.

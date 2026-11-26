@@ -229,7 +229,7 @@ class WindingFill:
                     self._clear_array.render(moderngl.TRIANGLES)
                     self._accumulation.viewport = full
                 context.enable(moderngl.BLEND)
-                context.blend_equation = moderngl.FUNC_ADD
+                context.blend_equation = (moderngl.FUNC_ADD, moderngl.FUNC_ADD)
                 context.blend_func = (moderngl.ONE, moderngl.ONE)
                 array.render(moderngl.TRIANGLES)
 

@@ -214,3 +214,15 @@ def test_there_and_back_ends_on_the_start_material():
 
 def test_meshes_are_lit_by_default():
     assert _saddle().material == PbrMaterial()
+
+
+@pytest.mark.parametrize("name", ["u_range", "v_range", "resolution"])
+def test_parametric_surface_ranges_and_resolution_are_pairs(name):
+    kwargs = {name: (0, 1, 2)}
+    with pytest.raises(ValueError, match=f"{name} needs two values"):
+        ParametricSurface(lambda u, v: np.array([u, v, 0]), **kwargs)
+    surface = ParametricSurface(
+        lambda u, v: np.array([u, v, 0]), u_range=[0, 2], resolution=[3, 4]
+    )
+    assert surface.u_range == (0, 2)
+    assert surface.resolution == (3, 4)

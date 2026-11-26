@@ -2434,7 +2434,7 @@ class ThreeDAxes(Axes):
         z_axis_config: dict[str, Any] | None = None,
         z_normal: Vector3DLike = DOWN,
         num_axis_pieces: int = 20,
-        # Unused.
+        # Unused. TODO: remove (kept so that existing calls keep working).
         depth: Any = None,
         **kwargs: dict[str, Any],
     ):

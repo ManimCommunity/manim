@@ -1776,8 +1776,8 @@ class VMobject(Mobject):
         )
 
     # Alignment
-    def align_points(self, vmobject: VMobject) -> Self:
-        """Adds points to self and vmobject so that they both have the same number of subpaths, with
+    def align_points(self, mobject: Mobject) -> Self:
+        """Adds points to self and mobject so that they both have the same number of subpaths, with
         corresponding subpaths each containing the same number of points.
 
         Points are added either by subdividing curves evenly along the subpath, or by creating new subpaths consisting
@@ -1785,7 +1785,7 @@ class VMobject(Mobject):
 
         Parameters
         ----------
-        vmobject
+        mobject
             The object to align points with.
 
         Returns
@@ -1797,17 +1797,19 @@ class VMobject(Mobject):
         --------
         :meth:`~.Mobject.interpolate`, :meth:`~.Mobject.align_data`
         """
-        if not isinstance(vmobject, VMobject):
+        # A VMobject meets a mobject of another kind when one is transformed into the
+        # other (a mesh, say); Mobject.align_points takes any mobject.
+        if not isinstance(mobject, VMobject):
             raise ValueError(
                 f"A {type(self).__name__} cannot be transformed into a "
-                f"{type(vmobject).__name__}: only into another vectorized mobject."
+                f"{type(mobject).__name__}: only into another vectorized mobject."
             )
-        self.align_rgbas(vmobject)
+        self.align_rgbas(mobject)
         # TODO: This shortcut can be a bit over eager. What if they have the same length, but different subpath lengths?
-        if self.get_num_points() == vmobject.get_num_points():
+        if self.get_num_points() == mobject.get_num_points():
             return self
 
-        for mob in self, vmobject:
+        for mob in self, mobject:
             # If there are no points, add one to
             # wherever the "center" is
             if mob.has_no_points():
@@ -1819,7 +1821,7 @@ class VMobject(Mobject):
 
         # Figure out what the subpaths are
         subpaths1 = self.get_subpaths()
-        subpaths2 = vmobject.get_subpaths()
+        subpaths2 = mobject.get_subpaths()
         n_subpaths = max(len(subpaths1), len(subpaths2))
         # Start building new ones
         new_path1 = np.zeros((0, self.dim))
@@ -1855,7 +1857,7 @@ class VMobject(Mobject):
             new_path1 = np.append(new_path1, sp1, axis=0)
             new_path2 = np.append(new_path2, sp2, axis=0)
         self.set_points(new_path1)
-        vmobject.set_points(new_path2)
+        mobject.set_points(new_path2)
         return self
 
     def insert_n_curves(self, n: int) -> Self:

@@ -44,6 +44,12 @@ if TYPE_CHECKING:
     from manim.typing import Point3D, Point3DLike, Vector3D, Vector3DLike
 
 
+#: Default steps of a :class:`Sphere` around its axis and from pole to pole.
+_SPHERE_RESOLUTION = (24, 12)
+#: Default steps of a :class:`Torus` around its axis and around its tube.
+_TORUS_RESOLUTION = (24, 24)
+
+
 class ThreeDVMobject(VMobject):
     u_index: int
     v_index: int
@@ -444,7 +450,7 @@ class Sphere(Surface):
         v_range: tuple[float, float] = (0, PI),
         **kwargs: Any,
     ) -> None:
-        resolution = resolution if resolution is not None else (24, 12)
+        resolution = resolution if resolution is not None else _SPHERE_RESOLUTION
 
         self.radius = radius
 
@@ -1298,7 +1304,7 @@ class Torus(Surface):
         resolution: int | tuple[int, int] | None = None,
         **kwargs: Any,
     ) -> None:
-        resolution = resolution if resolution is not None else (24, 24)
+        resolution = resolution if resolution is not None else _TORUS_RESOLUTION
 
         self.R = major_radius
         self.r = minor_radius
