@@ -27,7 +27,6 @@ from manim.data_structures import MethodWithArgs
 from .._config import config, logger
 from ..appearance.paint import Paint
 from ..constants import *
-from ..utils.bezier import interpolate
 from ..utils.color import (
     BLACK,
     PURE_YELLOW,
