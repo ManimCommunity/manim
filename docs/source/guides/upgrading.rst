@@ -68,14 +68,6 @@ period; passing them raises ``TypeError``:
    * - ``set_shade_in_3d(value, z_index_as_group=True)``, ``z_index_group``
      - ``set_shade_in_3d(value)``; each path is ordered by its own points
 
-Stroke widths are numbers
--------------------------
-
-``stroke_width`` and ``background_stroke_width`` of vectorized mobjects accept only
-numbers and are stored as floats; assigning a string, ``None`` or a bool raises
-``TypeError``. Negative widths are stored as 0, so reading the attribute gives the
-same value as ``get_stroke_width()``.
-
 Fixed mobjects are marked on the mobjects
 -----------------------------------------
 

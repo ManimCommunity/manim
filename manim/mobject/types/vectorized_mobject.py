@@ -14,7 +14,6 @@ __all__ = [
 import itertools as it
 import sys
 from collections.abc import Callable, Hashable, Iterable, Iterator, Mapping, Sequence
-from numbers import Real
 from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
@@ -84,8 +83,6 @@ class _StrokeWidth(Field[float]):
     """A stroke width: stored as a float, with negative widths stored as 0."""
 
     def __set__(self, obj: object, value: float) -> None:
-        if not isinstance(value, Real) or isinstance(value, bool):
-            raise TypeError(f"{self.name} must be a number, not {type(value).__name__}")
         super().__set__(obj, max(0.0, float(value)))
 
 

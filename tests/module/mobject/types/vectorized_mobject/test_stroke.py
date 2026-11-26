@@ -130,10 +130,3 @@ def test_stroke_widths_are_stored_as_non_negative_floats(name):
     assert type(getattr(square, name)) is float
     setattr(square, name, -1)
     assert getattr(square, name) == 0
-
-
-@pytest.mark.parametrize("name", ["stroke_width", "background_stroke_width"])
-@pytest.mark.parametrize("width", ["4", None, True])
-def test_stroke_widths_must_be_numbers(name, width):
-    with pytest.raises(TypeError, match="must be a number"):
-        setattr(Square(), name, width)
