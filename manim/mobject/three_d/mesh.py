@@ -51,7 +51,7 @@ if TYPE_CHECKING:
         PixelArray,
         Point3D,
         Point3D_Array,
-        Triangle_Array,
+        TriangleIndices_Array,
         UV_Array,
         UVLike_Array,
     )
@@ -86,7 +86,7 @@ class MeshMobject(Mobject):
     # in a VGroup (spheres as the vertices of a graph, for example).
     _can_be_in_vgroup = True
     #: Vertex indices, three per triangle (int32, as renderers upload them).
-    triangles: ArrayField[Triangle_Array] = ArrayField(np.int32)
+    triangles: ArrayField[TriangleIndices_Array] = ArrayField(np.int32)
     #: Polygons, as vertex indices in order around each, that the mesh is made of
     #: (quads for parametric surfaces). Empty means the triangles.
     faces: ArrayField[Face_Array] = ArrayField(np.int32)
@@ -104,7 +104,7 @@ class MeshMobject(Mobject):
     def __init__(
         self,
         points: Point3D_Array | None = None,
-        triangles: Triangle_Array | None = None,
+        triangles: TriangleIndices_Array | None = None,
         color: ParsableManimColor = BLUE_D,
         opacity: float = 1.0,
         material: Material | None = None,

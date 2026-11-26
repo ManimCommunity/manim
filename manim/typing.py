@@ -68,8 +68,8 @@ __all__ = [
     "UVLike",
     "UV_Array",
     "UVLike_Array",
-    "Triangle",
-    "Triangle_Array",
+    "TriangleIndices",
+    "TriangleIndices_Array",
     "Face_Array",
     "PointND",
     "PointNDLike",
@@ -449,17 +449,17 @@ This represents anything which can be converted to a :class:`.UV_Array` NumPy
 array.
 """
 
-Triangle: TypeAlias = npt.NDArray[np.int32]
+TriangleIndices: TypeAlias = npt.NDArray[np.int32]
 """``shape: (3,)``
 
 A NumPy array of three vertex indices: the corners of a triangle of a mesh.
 """
 
-Triangle_Array: TypeAlias = npt.NDArray[np.int32]
+TriangleIndices_Array: TypeAlias = npt.NDArray[np.int32]
 """``shape: (M, 3)``
 
-A NumPy array of :class:`.Triangle` objects: the triangles of a mesh, as vertex
-indices.
+A NumPy array of :class:`.TriangleIndices` objects: the triangles of a mesh, as
+vertex indices.
 """
 
 Face_Array: TypeAlias = npt.NDArray[np.int32]
