@@ -515,7 +515,7 @@ def test_materials_that_differ_have_different_keys():
     # Materials are slotted dataclasses without a __dict__ (review: a mesh's
     # material must reach the play cache key).
     from manim import Sphere
-    from manim.material import PbrMaterial, UnlitMaterial
+    from manim.appearance.material import PbrMaterial, UnlitMaterial
 
     keys = {
         hashing.get_json(material)

@@ -79,6 +79,7 @@ def _non_negative_float(value: float) -> float:
     """``value`` as a float, at least 0: how stroke widths are stored."""
     return max(0.0, float(value))
 
+
 def _is_vmobject_like(mobject: object) -> bool:
     """Whether ``mobject`` may be a submobject of a :class:`VMobject`: vectorized
     mobjects, and meshes, which have the styling methods that groups call.

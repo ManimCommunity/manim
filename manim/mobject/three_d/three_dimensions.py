@@ -22,8 +22,8 @@ from typing import TYPE_CHECKING, Any, Literal, Self, cast
 import numpy as np
 
 from manim._config import logger
+from manim.appearance.material import Material, PbrMaterial
 from manim.constants import *
-from manim.material import Material, PbrMaterial
 from manim.mobject.mobject import *
 from manim.mobject.three_d.mesh import ParametricSurface, PolygonFace
 from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
