@@ -1,30 +1,38 @@
 Colors, materials and lights
-=============================
+============================
 
 What a mobject looks like comes from three things: the *paints* that color its
 areas and lines, the *material* that says whether and how light falls on it, and
-the *lights* of the scene. This page explains each and how they work together.
+the *lights* of the scene.
+
+This page explains each and how they work together.
 
 Paints
 ------
 
 A :class:`.VMobject` has three paints: ``fill`` (its area), ``stroke`` (its
-outline) and ``background_stroke`` (an outline drawn behind the fill). A paint is
-an immutable value from :mod:`manim.appearance.paint`:
+outline) and ``background_stroke`` (an outline drawn behind the fill). Each can be
+one of these (:mod:`manim.appearance.paint`):
 
 :class:`.SolidColor`
-    One color, with an opacity.
+    One color with an opacity.
 :class:`.LinearGradient`
-    Colors evenly spaced along a direction, between the edges of the mobject's
-    own bounding box. The direction is ``UL`` unless you give another.
+    Colors evenly spaced along a direction.
 :class:`.ColorField`
     Colors that lie in the scene instead of on the mobject (see below).
 
 :meth:`~.VMobject.set_fill`, :meth:`~.VMobject.set_stroke` and
 :meth:`~.VMobject.set_color` make paints from colors: one color gives a solid
-paint, several give a gradient. They also take a paint directly. Because paints
-are values, you change a mobject's colors by giving it a new paint; changing a
-paint in place is not possible.
+paint, several give a gradient. They also take a paint directly.
+
+Colors change only the colors and keep the opacity the mobject has: a new
+:class:`.Circle` has no fill, so ``set_fill(RED)`` leaves it transparent until an
+``opacity`` is given. A paint brings its own opacity (1 unless it says otherwise),
+so ``set_fill(SolidColor(RED))`` fills the circle.
+
+.. note::
+
+    Paints are immutable: assign a new one to change a mobject's colors.
 
 .. manim:: PaintsExample
     :save_last_frame:
@@ -47,21 +55,13 @@ Animations interpolate paints: a gradient fades into another one stop by stop,
 and paints with different numbers of stops are aligned first
 (:func:`.interpolate_paint`).
 
-Paints of your own subclass :class:`.Paint` and say what renderers draw for
-them with :meth:`~.Paint.resolve`, which returns one of the snapshot paints of
-:mod:`manim.renderer.snapshot` (:class:`.RSolidColor`, :class:`.RLinearGradient`,
-:class:`.RColorField`); :meth:`~.Paint.interpolate` animates them. Every
-renderer draws a paint that resolves to these, and raises
-:class:`.CapabilityError` for anything else.
-
 Color fields
 ~~~~~~~~~~~~~
 
 A :class:`.ColorField` is a grid of colors placed in the scene. A mobject
 painted with a field shows the field's color wherever the mobject is drawn.
 Moving, trimming or transforming the mobject shows other colors, and a moving
-camera keeps the colors where they are in the scene. :class:`.StreamLines` use
-one to color their lines by the strength of the vector field.
+camera keeps the colors where they are in the scene.
 
 .. manim:: ColorFieldExample
 
@@ -77,32 +77,31 @@ one to color their lines by the strength of the vector field.
             self.play(Create(wave))
             self.play(wave.animate.shift(2 * UP))
 
-The Cairo and OpenGL renderers draw color fields that lie in a plane parallel to
-the frame, under a flat camera. Other cameras and planes, and mobjects fixed in
-the frame, raise :class:`~.CapabilityError`.
+.. note::
+
+    :class:`.StreamLines` color their lines with a color field, by the strength of
+    the vector field.
+
+Color fields can only be drawn under a flat camera, in a plane parallel to the
+frame, and not on mobjects fixed in the frame.
 
 Materials
 ---------
 
-A material (:mod:`manim.appearance.material`) says how a mobject responds to light:
+A material (:mod:`manim.appearance.material`) describes how a mobject responds to
+light:
 
 :class:`.UnlitMaterial`
     The mobject shows its colors as they are.
 :class:`.PbrMaterial`
     The mobject is lit as a physical surface by the lights of the scene. Its
-    ``roughness`` (from smooth with sharp highlights to rough without any),
-    ``metallic`` and ``emissive`` parameters are those of glTF 2.0.
+    ``roughness``, ``metallic`` and ``emissive`` parameters are those of glTF 2.0.
 
 A material holds no color: the color of a lit surface comes from its paint,
 which plays the role of the base color (albedo) of a material in glTF and other
 3D engines. A mobject has up to three paints but one material, so changing or
 animating a color never touches the material, and mobjects of any color can
 share one.
-
-Materials of your own subclass :class:`.Material`: a frozen dataclass whose fields
-are its parameters, with :meth:`~.Material.interpolate` overridden to animate them.
-Every renderer raises :class:`.CapabilityError` for a material it does not know,
-so a new material needs a renderer that draws it.
 
 The rule for the default is: **what has a surface in space is lit, what is drawn
 is not.** Meshes and surfaces (:class:`.Sphere`, :class:`.Surface`, the faces of
@@ -112,15 +111,16 @@ clouds and images) has an :class:`.UnlitMaterial`. Mobjects fixed in the frame a
 never lit.
 
 Use :meth:`~.VMobject.set_material` to change it, for example to light a flat shape
-in a 3D scene or to show a surface's colors unshaded. A lit vectorized mobject
-is drawn in one color per path, from the direction its plane faces, so it must be
-flat and have a solid fill; its outline is not lit.
+in a 3D scene or to show a surface's colors unshaded. A lit vectorized mobject must
+be flat and have a solid fill.
 
-Under a 3D camera, mobjects are drawn in scene order unless they are ordered by
-depth: meshes hide each other where they overlap (``depth_test``), and vectorized
-mobjects with ``sort_by_depth`` (:meth:`~.VMobject.set_sort_by_depth`) are drawn
-far to near. ``sort_by_depth`` orders whole paths by their centers and does not
-resolve intersecting shapes: one is drawn over the other.
+Under a 3D camera, mobjects are drawn in the order they are in the scene, with
+two exceptions:
+
+- Meshes hide whatever is behind them (``depth_test``).
+- Vectorized mobjects with ``sort_by_depth``
+  (:meth:`~.VMobject.set_sort_by_depth`) are drawn from far to near, each by its
+  center. Two of them that cross each other are drawn one over the other.
 
 .. manim:: MaterialsExample
     :save_last_frame:
@@ -145,10 +145,10 @@ resolve intersecting shapes: one is drawn over the other.
 Lights
 ------
 
-Lit materials are shaded by the scene's lights. A light (:class:`.PointLight`,
-in :mod:`manim.appearance.light`) is a mobject that draws nothing: you add it, move it,
-animate it and give it updaters like any other mobject. Its intensity is in
-candela, and its light falls off with the square of the distance.
+Lit materials are shaded by the scene's lights. A light (:class:`.PointLight`)
+is a mobject that draws nothing: move it, animate it, give it updaters and add
+new ones to the scene, like any other mobject. Its intensity is in candela, and
+its light falls off with the square of the distance.
 
 A :class:`.ThreeDScene` has one light, ``self.light``, above and to the left of
 the default camera. It is not one of ``self.mobjects``, so
