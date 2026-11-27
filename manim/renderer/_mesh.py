@@ -130,7 +130,8 @@ class NormalAccumulator:
             ),
             shape=(count, triangle_count),
         )
-        self._welded: tuple[np.ndarray, np.ndarray] | None = None
+        #: The vertices welded to another one, and the ones they are welded to.
+        self._welded: tuple[npt.NDArray[np.intp], npt.NDArray[np.intp]] | None = None
         if welded is not None:
             # Every vertex of a welded group gets the group's sum.
             matrix = scipy.sparse.csr_matrix(matrix[welded])
