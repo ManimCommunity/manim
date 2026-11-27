@@ -24,6 +24,7 @@ if TYPE_CHECKING:
     from manim.scene.scene import Scene
 
     from ...typing import RGBAPixelArray
+    from ..snapshot import RCameraView, RNode
 
 __all__ = ["CairoRenderer"]
 
@@ -152,7 +153,7 @@ class CairoRenderer(_RendererExecutionView):
                 / parent_camera.frame_width
             ),
         )
-        key = id(image_mobject)
+        key = image_mobject.uid
         target = self._sub_targets.get(key)
         if target is not None and (
             target.settings.pixel_width != pixel_width
@@ -208,17 +209,16 @@ class CairoRenderer(_RendererExecutionView):
                     excluded_mobjects=sub_excluded_mobjects,
                     camera_stack=next_stack,
                 )
-                self._camera_view_pixels[id(image_mobject)] = sub_target.pixels
+                self._camera_view_pixels[image_mobject.uid] = sub_target.pixels
                 camera_view_pixels[id(image_mobject.camera)] = sub_target.pixels
 
-        def resolve_image(
-            image_mobject: ImageMobjectFromCamera,
-        ) -> RGBAPixelArray | None:
+        def resolve_image(node: RNode) -> RGBAPixelArray | None:
             # Unregistered views, such as copies of a registered view, show the
             # pixels most recently drawn for their camera.
-            pixels = self._camera_view_pixels.get(id(image_mobject))
+            view: RCameraView = node.payload  # type: ignore[assignment]
+            pixels = self._camera_view_pixels.get(node.uid)
             if pixels is None:
-                pixels = camera_view_pixels.get(id(image_mobject.camera))
+                pixels = camera_view_pixels.get(view.camera_id)
             return pixels
 
         _CairoDrawingContext(

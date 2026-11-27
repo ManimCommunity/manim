@@ -193,6 +193,7 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
             },
             "execution": {
                 "clock": "sample-v3",
+                "drawing": cache_module._DRAWING_VERSION,
                 "time": 0,
                 "frame_rate": 60.0,
             },

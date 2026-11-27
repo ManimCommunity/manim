@@ -26,6 +26,7 @@ from ...utils.color import (
     rgba_to_color,
 )
 from ...utils.iterables import stretch_array_to_length
+from ...utils.versioned_fields import Field
 
 __all__ = ["PMobject", "Mobject1D", "Mobject2D", "PGroup", "PointCloudDot", "Point"]
 
@@ -73,6 +74,8 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
 
     """
 
+    stroke_width: Field[float] = Field()
+
     def __init__(self, stroke_width: int = DEFAULT_STROKE_WIDTH, **kwargs: Any) -> None:
         self.stroke_width = stroke_width
         super().__init__(**kwargs)
@@ -115,7 +118,7 @@ class PMobject(Mobject, metaclass=ConvertToOpenGL):
         rgba = color_to_rgba(color)
         mobs = self.family_members_with_points() if family else [self]
         for mob in mobs:
-            mob.rgbas[:, :] = rgba
+            mob.rgbas = np.repeat([rgba], len(mob.rgbas), axis=0)
         self.color = ManimColor.parse(color)
         return self
 

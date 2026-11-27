@@ -12,7 +12,6 @@ __all__ = [
 ]
 
 import itertools as it
-import math
 import sys
 from collections.abc import Callable, Hashable, Iterable, Iterator, Mapping, Sequence
 from typing import TYPE_CHECKING, Any, Literal, cast
@@ -29,6 +28,7 @@ from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.three_d.three_d_utils import (
     get_3d_vmob_gradient_start_and_end_points,
 )
+from manim.utils._path_points import points_equal_2d, subpath_split_indices
 from manim.utils.bezier import (
     bezier,
     bezier_remap,
@@ -46,6 +46,7 @@ from manim.utils.iterables import (
     tuplify,
 )
 from manim.utils.space_ops import rotate_vector, shoelace_direction
+from manim.utils.versioned_fields import ArrayField, ConvertedField, Field
 
 if TYPE_CHECKING:
     from typing import Self
@@ -78,6 +79,11 @@ if TYPE_CHECKING:
 #   That's kind of weird.
 
 
+def _non_negative_float(value: float) -> float:
+    """``value`` as a float, at least 0: how stroke widths are stored."""
+    return max(0.0, float(value))
+
+
 class VMobject(Mobject):
     """A vectorized mobject.
 
@@ -103,7 +109,18 @@ class VMobject(Mobject):
         for options.
     """
 
-    sheen_factor = 0.0
+    fill_rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
+    stroke_rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
+    background_stroke_rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
+    stroke_width: ConvertedField[float] = ConvertedField(_non_negative_float)
+    background_stroke_width: ConvertedField[float] = ConvertedField(_non_negative_float)
+    sheen_factor: Field[float] = Field()
+    sheen_direction: ArrayField[Vector3D] = ArrayField(np.float64)
+    joint_type: Field[LineJointType] = Field()
+    cap_style: Field[CapStyleType] = Field()
+    shade_in_3d: Field[bool] = Field()
+    background_image: Field[Image | str | None] = Field()
+    tolerance_for_point_equality: Field[float] = Field()
     target: VMobject
 
     def __init__(
@@ -260,7 +277,7 @@ class VMobject(Mobject):
         opacity: float | None = None,
     ) -> Self:
         rgbas = self.generate_rgbas_array(color, opacity)
-        if not hasattr(self, array_name):
+        if array_name not in self.__dict__:
             setattr(self, array_name, rgbas)
             return self
         # Match up current rgbas array with the newly calculated
@@ -268,15 +285,17 @@ class VMobject(Mobject):
         curr_rgbas = getattr(self, array_name)
         if len(curr_rgbas) < len(rgbas):
             curr_rgbas = stretch_array_to_length(curr_rgbas, len(rgbas))
-            setattr(self, array_name, curr_rgbas)
-        elif len(rgbas) < len(curr_rgbas):
-            rgbas = stretch_array_to_length(rgbas, len(curr_rgbas))
+        else:
+            curr_rgbas = curr_rgbas.copy()
+            if len(rgbas) < len(curr_rgbas):
+                rgbas = stretch_array_to_length(rgbas, len(curr_rgbas))
         # Only update rgb if color was not None, and only
         # update alpha channel if opacity was passed in
         if color is not None:
             curr_rgbas[:, :3] = rgbas[:, :3]
         if opacity is not None:
             curr_rgbas[:, 3] = rgbas[:, 3]
+        setattr(self, array_name, curr_rgbas)
         return self
 
     def set_fill(
@@ -566,10 +585,9 @@ class VMobject(Mobject):
         return self
 
     def get_fill_rgbas(self) -> FloatRGBA_Array:
-        try:
-            return self.fill_rgbas
-        except AttributeError:
+        if "fill_rgbas" not in self.__dict__:
             return np.zeros((1, 4))
+        return self.fill_rgbas
 
     def get_fill_color(self) -> ManimColor:
         """
@@ -599,16 +617,10 @@ class VMobject(Mobject):
         return self.get_fill_rgbas()[:, 3]
 
     def get_stroke_rgbas(self, background: bool = False) -> FloatRGBA_Array:
-        try:
-            if background:
-                self.background_stroke_rgbas: FloatRGBA_Array
-                rgbas = self.background_stroke_rgbas
-            else:
-                self.stroke_rgbas: FloatRGBA_Array
-                rgbas = self.stroke_rgbas
-            return rgbas
-        except AttributeError:
+        name = "background_stroke_rgbas" if background else "stroke_rgbas"
+        if name not in self.__dict__:
             return np.zeros((1, 4))
+        return getattr(self, name)
 
     def get_stroke_color(self, background: bool = False) -> ManimColor | None:
         return self.get_stroke_colors(background)[0]
@@ -616,13 +628,7 @@ class VMobject(Mobject):
     stroke_color = property(get_stroke_color, set_stroke)
 
     def get_stroke_width(self, background: bool = False) -> float:
-        if background:
-            width = self.background_stroke_width
-        else:
-            width = self.stroke_width
-            if isinstance(width, str):
-                width = int(width)
-        return max(0.0, width)
+        return self.background_stroke_width if background else self.stroke_width
 
     def get_stroke_opacity(self, background: bool = False) -> ManimFloat:
         return self.get_stroke_opacities(background)[0]
@@ -784,13 +790,9 @@ class VMobject(Mobject):
         self.color_using_background_image(vmobject.get_background_image())
         return self
 
-    def set_shade_in_3d(
-        self, value: bool = True, z_index_as_group: bool = False
-    ) -> Self:
+    def set_shade_in_3d(self, value: bool = True) -> Self:
         for submob in self.get_family():
             submob.shade_in_3d = value
-            if z_index_as_group:
-                submob.z_index_group = self
         return self
 
     def set_points(self, points: Point3DLike_Array) -> Self:
@@ -841,15 +843,16 @@ class VMobject(Mobject):
         assert len(anchors1) == len(handles1) == len(handles2) == len(anchors2)
         nppcc = self.n_points_per_cubic_curve  # 4
         total_len = nppcc * len(anchors1)
-        self.points = np.empty((total_len, self.dim))
+        points = np.empty((total_len, self.dim))
         # the following will, from the four sets, dispatch them in points such that
-        # self.points = [
+        # points = [
         #     anchors1[0], handles1[0], handles2[0], anchors1[0], anchors1[1],
         #     handles1[1], ...
         # ]
         arrays = [anchors1, handles1, handles2, anchors2]
         for index, array in enumerate(arrays):
-            self.points[index::nppcc] = array
+            points[index::nppcc] = array
+        self.points = points
         return self
 
     def clear_points(self) -> Self:
@@ -1294,19 +1297,7 @@ class VMobject(Mobject):
         bool
             whether two points considered close.
         """
-        rtol = 1.0e-5  # default from np.isclose()
-        atol = self.tolerance_for_point_equality
-
-        x0, y0 = p0[0], p0[1]
-        x1, y1 = p1[0], p1[1]
-        if x0 != x1:
-            x_diff = abs(x0 - x1)
-            if not (x_diff <= atol + rtol * abs(x1) and math.isfinite(x_diff)):
-                return False
-        if y0 == y1:
-            return True
-        y_diff = abs(y0 - y1)
-        return bool(y_diff <= atol + rtol * abs(y1) and math.isfinite(y_diff))
+        return points_equal_2d(p0, p1, self.tolerance_for_point_equality)
 
     # Information about line
     def get_cubic_bezier_tuples_from_points(
@@ -1419,38 +1410,12 @@ class VMobject(Mobject):
             A ``(n_subpaths, 2)`` int array whose rows are the ``[start, end]``
             point index ranges (end-exclusive) of each subpath.
         """
-        points = np.asarray(points)
-        nppcc = self.n_points_per_cubic_curve
-        n_pts = len(points)
-        if n_pts < nppcc:
-            return np.empty((0, 2), dtype=int)
-
-        # Point indices where each new cubic curve starts.
-        boundary_indices = np.arange(nppcc, n_pts, nppcc)
-        if len(boundary_indices) == 0:
-            # A single cubic curve: no internal boundaries to split on.
-            return np.array([[0, n_pts]])
-
-        # A boundary is a split where the previous curve's end anchor is not
-        # close to the next curve's start anchor. This is an allocation-light
-        # vectorization of np.isclose semantics: NaN is never close, while
-        # infinities compare equal only when they have the same sign.
-        rtol = 1.0e-5  # default from np.isclose()
-        atol = self.tolerance_for_point_equality
-        ends = points[boundary_indices - 1, :n_dims]  # end of previous curve
-        starts = points[boundary_indices, :n_dims]  # start of next curve
-        with np.errstate(invalid="ignore"):
-            diffs = np.abs(ends - starts)
-            thresholds = atol + rtol * np.abs(starts)
-            is_close = diffs <= thresholds
-            finite_diffs = np.isfinite(diffs)
-            if not finite_diffs.all():
-                is_close &= finite_diffs
-                is_close |= ends == starts
-        is_split = ~np.all(is_close, axis=1)
-
-        split_points = np.concatenate([[0], boundary_indices[is_split], [n_pts]])
-        return np.stack([split_points[:-1], split_points[1:]], axis=1)
+        return subpath_split_indices(
+            points,
+            self.tolerance_for_point_equality,
+            n_dims=n_dims,
+            nppcc=self.n_points_per_cubic_curve,
+        )
 
     def get_subpaths(self) -> list[CubicSpline]:
         """Returns subpaths formed by the curves of the VMobject.
@@ -1965,26 +1930,20 @@ class VMobject(Mobject):
     def interpolate_color(
         self, mobject1: VMobject, mobject2: VMobject, alpha: float
     ) -> Self:
-        attrs = [
+        for attr in (
             "fill_rgbas",
             "stroke_rgbas",
             "background_stroke_rgbas",
+            "sheen_direction",
             "stroke_width",
             "background_stroke_width",
-            "sheen_direction",
             "sheen_factor",
-        ]
-        for attr in attrs:
+        ):
             setattr(
                 self,
                 attr,
                 interpolate(getattr(mobject1, attr), getattr(mobject2, attr), alpha),
             )
-            if alpha == 1.0:
-                val = getattr(mobject2, attr)
-                if isinstance(val, np.ndarray):
-                    val = val.copy()
-                setattr(self, attr, val)
         return self
 
     def pointwise_become_partial(
@@ -2027,7 +1986,8 @@ class VMobject(Mobject):
         # - A start, which is some ending portion of an inner cubic.
         # - An end, which is the starting portion of a later inner cubic.
         if a <= 0 and b >= 1:
-            self.set_points(vmobject.points)
+            # The value itself, so that repeated calls keep the version.
+            self.points = vmobject.points
             return self
         num_curves = vmobject.get_num_curves()
         if num_curves == 0:
@@ -2062,26 +2022,27 @@ class VMobject(Mobject):
             )
         else:
             # Allocate space for (upper_index-lower_index+1) Bézier curves.
-            self.points = np.empty((nppc * (upper_index - lower_index + 1), self.dim))
+            points = np.empty((nppc * (upper_index - lower_index + 1), self.dim))
             # Look at the "lower_index"-th Bezier curve and select its part from
-            # t=lower_residue to t=1. This is the first curve in self.points.
-            self.points[:nppc] = partial_bezier_points(
+            # t=lower_residue to t=1. This is the first curve in points.
+            points[:nppc] = partial_bezier_points(
                 vmobject_points[nppc * lower_index : nppc * (lower_index + 1)],
                 lower_residue,
                 1,
             )
             # If there are more curves between the "lower_index"-th and the
-            # "upper_index"-th Béziers, add them all to self.points.
-            self.points[nppc:-nppc] = vmobject_points[
+            # "upper_index"-th Béziers, add them all to points.
+            points[nppc:-nppc] = vmobject_points[
                 nppc * (lower_index + 1) : nppc * upper_index
             ]
             # Look at the "upper_index"-th Bézier curve and select its part from
-            # t=0 to t=upper_residue. This is the last curve in self.points.
-            self.points[-nppc:] = partial_bezier_points(
+            # t=0 to t=upper_residue. This is the last curve in points.
+            points[-nppc:] = partial_bezier_points(
                 vmobject_points[nppc * upper_index : nppc * (upper_index + 1)],
                 0,
                 upper_residue,
             )
+            self.points = points
 
         return self
 

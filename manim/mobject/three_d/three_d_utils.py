@@ -16,10 +16,12 @@ __all__ = [
 
 from typing import TYPE_CHECKING, Literal
 
-import numpy as np
-
-from manim.constants import ORIGIN, UP
-from manim.utils.space_ops import get_unit_normal
+from manim.utils._path_points import (
+    end_corner,
+    end_corner_index,
+    start_corner,
+    unit_normal,
+)
 
 if TYPE_CHECKING:
     from manim.typing import Point3D, Vector3D
@@ -41,40 +43,24 @@ def get_3d_vmob_start_corner_index(vmob: VMobject) -> Literal[0]:
 
 
 def get_3d_vmob_end_corner_index(vmob: VMobject) -> int:
-    return ((len(vmob.points) - 1) // 6) * 3
+    return end_corner_index(vmob.points)
 
 
 def get_3d_vmob_start_corner(vmob: VMobject) -> Point3D:
-    if vmob.get_num_points() == 0:
-        return np.array(ORIGIN)
-    return vmob.points[get_3d_vmob_start_corner_index(vmob)]
+    return start_corner(vmob.points)
 
 
 def get_3d_vmob_end_corner(vmob: VMobject) -> Point3D:
-    if vmob.get_num_points() == 0:
-        return np.array(ORIGIN)
-    return vmob.points[get_3d_vmob_end_corner_index(vmob)]
+    return end_corner(vmob.points)
 
 
 def get_3d_vmob_unit_normal(vmob: VMobject, point_index: int) -> Vector3D:
-    n_points = vmob.get_num_points()
-    if len(vmob.get_anchors()) <= 2:
-        return np.array(UP)
-    i = point_index
-    im3 = i - 3 if i > 2 else (n_points - 4)
-    ip3 = i + 3 if i < (n_points - 3) else 3
-    unit_normal = get_unit_normal(
-        vmob.points[ip3] - vmob.points[i],
-        vmob.points[im3] - vmob.points[i],
-    )
-    if np.linalg.norm(unit_normal) == 0:
-        return np.array(UP)
-    return unit_normal
+    return unit_normal(vmob.points, point_index)
 
 
 def get_3d_vmob_start_corner_unit_normal(vmob: VMobject) -> Vector3D:
-    return get_3d_vmob_unit_normal(vmob, get_3d_vmob_start_corner_index(vmob))
+    return unit_normal(vmob.points, 0)
 
 
 def get_3d_vmob_end_corner_unit_normal(vmob: VMobject) -> Vector3D:
-    return get_3d_vmob_unit_normal(vmob, get_3d_vmob_end_corner_index(vmob))
+    return unit_normal(vmob.points, end_corner_index(vmob.points))

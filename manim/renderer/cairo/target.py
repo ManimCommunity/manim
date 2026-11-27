@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Hashable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -10,6 +11,7 @@ import cairo
 import numpy as np
 from PIL import Image
 
+from manim.constants import STROKE_WIDTH_UNIT
 from manim.utils.color import color_to_int_rgba
 from manim.utils.images import get_full_raster_image_path
 
@@ -27,7 +29,7 @@ class _CairoRasterSettings:
     pixel_height: int
     base_pixel_width: int
     base_pixel_height: int
-    cairo_line_width_multiple: float = 0.01
+    cairo_line_width_multiple: float = STROKE_WIDTH_UNIT
 
     def __post_init__(self) -> None:
         if (
@@ -90,6 +92,46 @@ class _ImageFiles:
         self._images.clear()
 
 
+#: The view: the context matrix's ``xx``, ``yy``, ``x0`` and ``y0``.
+View = tuple[float, float, float, float]
+
+
+class _PathCache:
+    """Cairo paths by node key, replayed while the node keeps its key.
+
+    Entries live for two generations: a path drawn in one frame is kept for the next,
+    and dropped if it was not drawn again.
+
+    Cairo stores paths in device space with 1/256 pixel resolution, so a path recorded
+    under one view and replayed under another is rounded twice. A path is therefore
+    only replayed under the same view.
+    """
+
+    def __init__(self) -> None:
+        self._current: dict[Hashable, tuple[View, cairo.Path]] = {}
+        self._previous: dict[Hashable, tuple[View, cairo.Path]] = {}
+
+    def next_generation(self) -> None:
+        self._previous, self._current = self._current, {}
+
+    def get(self, key: Hashable, view: View) -> cairo.Path | None:
+        entry = self._current.get(key)
+        if entry is None:
+            entry = self._previous.pop(key, None)
+            if entry is None:
+                return None
+            self._current[key] = entry
+        cached_view, path = entry
+        return path if cached_view == view else None
+
+    def put(self, key: Hashable, view: View, path: cairo.Path) -> None:
+        self._current[key] = (view, path)
+
+    def clear(self) -> None:
+        self._current.clear()
+        self._previous.clear()
+
+
 class _CairoRenderTarget:
     """Own one top-left-origin RGBA target and its PyCairo context."""
 
@@ -108,6 +150,7 @@ class _CairoRenderTarget:
         self._context_key: tuple[float, ...] | None = None
         self._context: cairo.Context | None = None
         self._scratch_target: _CairoRenderTarget | None = None
+        self.path_cache = _PathCache()
         self._closed = False
 
     def _ensure_open(self) -> None:
@@ -228,6 +271,7 @@ class _CairoRenderTarget:
         if self._scratch_target is not None:
             self._scratch_target.close()
             self._scratch_target = None
+        self.path_cache.clear()
         self._background_key = None
         self._pixels = np.empty((0, 0, 4), dtype=np.uint8)
         self._background = self._pixels

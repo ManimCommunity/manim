@@ -47,6 +47,9 @@ frame with the usual mobject operations:
             self.play(self.camera.frame.animate.shift(2 * RIGHT).scale(0.5))
             self.play(Restore(self.camera.frame))
 
+To keep a mobject in place on screen while the camera moves, for example a title,
+call its :meth:`~.Mobject.fix_in_frame` method.
+
 Moving the OpenGL camera
 ------------------------
 

@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import numpy as np
+import pytest
+
 import manim.utils.color as C
-from manim import ORIGIN, NumberPlane, VMobject
+from manim import ORIGIN, NumberPlane, Square, VMobject
 from manim.mobject.vector_field import StreamLines
 
 
@@ -115,3 +118,15 @@ def test_stroke_scale_preserves_relative_widths_in_compound_mobjects():
     # Post-fix: each submob's width is scaled by 0.5 of its OWN value.
     assert inner_with_stroke.get_stroke_width() == 2
     assert inner_zero_stroke.get_stroke_width() == 0
+
+
+@pytest.mark.parametrize("name", ["stroke_width", "background_stroke_width"])
+def test_stroke_widths_are_stored_as_non_negative_floats(name):
+    square = Square()
+    setattr(square, name, 3)
+    assert type(getattr(square, name)) is float
+    assert getattr(square, name) == 3
+    setattr(square, name, np.int64(2))
+    assert type(getattr(square, name)) is float
+    setattr(square, name, -1)
+    assert getattr(square, name) == 0

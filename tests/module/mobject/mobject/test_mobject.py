@@ -501,3 +501,27 @@ def test_len_mobject(has_points, n):
     """Test that len(mob) behaves the same as len(mob.split())."""
     mob, mob_list = build_mobject(n, has_points=has_points)
     assert len(mob) == len(mob_list)
+
+
+@pytest.mark.parametrize("family", [True, False])
+def test_fixed_states_have_setters_that_reach_the_family(family):
+    child = Square()
+    group = VGroup(child)
+    group.set_fixed_in_frame(True, family=family)
+    assert group.is_fixed_in_frame
+    assert child.is_fixed_in_frame is family
+    group.set_fixed_orientation(True, family=family)
+    assert group.is_fixed_orientation
+    assert child.is_fixed_orientation is family
+    group.set_fixed_orientation(False)
+    assert not group.is_fixed_orientation
+    assert not child.is_fixed_orientation
+
+
+def test_family_setters_stop_at_cycles():
+    x, y, z = VGroup(), VGroup(), VGroup(Square())
+    x.add(y)
+    y.add(z)
+    z.add(x)
+    x.set_z_index(2).set_fixed_in_frame(True).set_fixed_orientation(True)
+    assert all(m.z_index == 2 and m.is_fixed_in_frame for m in x.get_family())

@@ -126,10 +126,8 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         self.fill_opacity = fill_opacity  # type: ignore[assignment]
         self.stroke_color = stroke_color
         self.stroke_opacity = stroke_opacity  # type: ignore[assignment]
-        self.stroke_width = stroke_width  # type: ignore[assignment]
+        self.stroke_width = 0 if stroke_width is None else stroke_width
         self.id_to_vgroup_dict: dict[str, VGroup] = {}
-        if self.stroke_width is None:
-            self.stroke_width = 0
 
         if svg_default is None:
             svg_default = {
@@ -527,6 +525,9 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
         Further keyword arguments are passed to the parent
         class.
     """
+
+    # The parsed path is only read (in generate_points); copies share it.
+    _shared_on_copy = frozenset({"path_obj"})
 
     def __init__(
         self,

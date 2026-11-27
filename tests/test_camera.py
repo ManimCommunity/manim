@@ -13,11 +13,13 @@ from manim import (
     RED,
     RIGHT,
     UP,
+    UR,
     Camera,
     CapStyleType,
     Dot,
     ImageMobject,
     ImageMobjectFromCamera,
+    Line,
     LineJointType,
     Mobject,
     MovingCamera,
@@ -183,7 +185,7 @@ def test_nested_view_preserves_square_geometry():
             renderer.render_mobjects(
                 [Square(fill_color="#ffffff", fill_opacity=1, stroke_width=0), view]
             )
-            pixels = renderer._sub_targets[id(view)].read_pixels()
+            pixels = renderer._sub_targets[view.uid].read_pixels()
             rows, columns = np.where(pixels[:, :, 0] > 128)
             assert len(rows) > 0
             assert np.ptp(columns) == pytest.approx(np.ptp(rows), abs=1)
@@ -494,3 +496,83 @@ def test_a_cairo_renderer_closes_at_the_end_of_a_with_block():
         renderer.render_mobjects([Square()])
     with pytest.raises(RuntimeError, match="closed"):
         renderer.render_mobjects([Square()])
+
+
+def test_mobjects_fixed_in_frame_stay_put_when_the_camera_moves():
+    with tempconfig({"pixel_width": 64, "pixel_height": 36}):
+        renderer = CairoRenderer(camera=MovingCamera())
+        hud = Square(1, fill_opacity=1, stroke_width=0).to_corner(UR).fix_in_frame()
+        try:
+            renderer.render_mobjects([hud])
+            before = renderer.get_frame().copy()
+            renderer.camera.frame.scale(0.5).shift(LEFT)
+            renderer.render_mobjects([hud])
+            np.testing.assert_array_equal(renderer.get_frame(), before)
+        finally:
+            renderer.close()
+
+
+def test_a_masked_stroke_keeps_its_opacity():
+    def frame_of(opacity):
+        line = Line(LEFT, RIGHT).set_stroke(RED, width=40, opacity=opacity)
+        line.color_using_background_image(Image.new("RGBA", (64, 36), "white"))
+        renderer = CairoRenderer(camera=Camera())
+        try:
+            renderer.render_mobjects([line])
+            return renderer.get_frame().copy()
+        finally:
+            renderer.close()
+
+    with tempconfig({"pixel_width": 64, "pixel_height": 36}):
+        faint, opaque = frame_of(0.2), frame_of(1)
+    # Over the black background, the white image shows as bright as the stroke is
+    # opaque.
+    assert 0 < faint[18, 32, 0] < opaque[18, 32, 0] / 2
+
+
+def _frame_of(mobjects, renderer):
+    renderer.render_mobjects(mobjects)
+    return renderer.get_frame().copy()
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        lambda square: square.shift(RIGHT),
+        lambda square: setattr(square, "tolerance_for_point_equality", 0.5),
+        lambda square: square.fix_in_frame(),
+    ],
+    ids=["points", "tolerance", "fixed in frame"],
+)
+def test_redrawn_frames_follow_changes(change):
+    with tempconfig({"pixel_width": 64, "pixel_height": 36}):
+        square = Square(fill_opacity=1)
+        renderer = CairoRenderer(camera=MovingCamera())
+        renderer.camera.frame.shift(LEFT)
+        fresh = CairoRenderer(camera=MovingCamera())
+        fresh.camera.frame.shift(LEFT)
+        try:
+            before = _frame_of([square], renderer)
+            assert np.array_equal(_frame_of([square], renderer), before)
+            change(square)
+            np.testing.assert_array_equal(
+                _frame_of([square], renderer), _frame_of([square], fresh)
+            )
+        finally:
+            renderer.close()
+            fresh.close()
+
+
+def test_paths_of_mobjects_without_a_key_are_not_reused():
+    class Wobbly(VMobject):
+        _drawn_from_fields = False
+
+    with tempconfig({"pixel_width": 64, "pixel_height": 36}):
+        shape = Wobbly(fill_opacity=1)
+        shape.points = Square().points
+        renderer = CairoRenderer(camera=Camera())
+        try:
+            _frame_of([shape], renderer)
+            assert not renderer._target.path_cache._current
+        finally:
+            renderer.close()

@@ -33,6 +33,7 @@ from .animation.transform import *
 from .animation.transform_matching_parts import *
 from .animation.updaters.mobject_update_utils import *
 from .animation.updaters.update import *
+from .appearance import *
 from .constants import *
 from .manager import *
 from .mobject.frame import *

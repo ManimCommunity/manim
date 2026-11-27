@@ -6,6 +6,7 @@ __all__ = ["Mobject", "Group", "override_animate"]
 
 
 import copy
+import enum
 import inspect
 import itertools as it
 import math
@@ -17,7 +18,7 @@ from collections.abc import Callable, Iterable, Iterator, MutableSet, Sequence
 from contextlib import suppress
 from functools import partialmethod, reduce
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, ClassVar, cast
 
 import numpy as np
 
@@ -43,6 +44,13 @@ from ..utils.iterables import (
 from ..utils.paths import straight_path
 from ..utils.simple_functions import clip
 from ..utils.space_ops import angle_between_vectors, normalize, rotation_matrix
+from ..utils.versioned_fields import (
+    ArrayField,
+    Field,
+    check_fields,
+    copy_versions,
+    is_frozen,
+)
 
 if TYPE_CHECKING:
     from typing import Self, TypeAlias
@@ -73,6 +81,45 @@ _NonTimeBasedUpdater: TypeAlias = Callable[["Mobject"], object]
 _Updater: TypeAlias = _NonTimeBasedUpdater | _TimeBasedUpdater
 
 
+_UIDS = it.count(1)
+
+
+def _copied_center_func(
+    func: Callable[[], Point3D] | None, clone_from_id: dict[int, Any]
+) -> Callable[[], Point3D] | None:
+    """The fixed-orientation anchor of a copy of a mobject whose own is ``func``
+    (see :meth:`~.Mobject.fix_orientation`).
+
+    A method of a mobject (``group.get_center``, what :meth:`~.Mobject.fix_orientation`
+    stores in every member of ``group``) is not deep-copied: that would copy the
+    mobject and its whole family along with each member. It becomes the method of
+    the mobject's copy when the mobject is copied too (a whole group is copied), and
+    stays the method of the mobject itself otherwise (a member copied alone keeps
+    following the group's center). Other functions are copied as any value.
+    """
+    if isinstance(func, types.MethodType) and isinstance(func.__self__, Mobject):
+        target = clone_from_id.get(id(func.__self__))
+        return func if target is None else types.MethodType(func.__func__, target)
+    return copy.deepcopy(func, clone_from_id)
+
+
+# Values of these types cannot be modified, so copies share them. Not ManimColor:
+# HSV colors have setters and every color's array is writable, so a shared color
+# changed through one mobject would change its copies too.
+_IMMUTABLE_TYPES = (
+    int,  # bool too
+    float,
+    complex,
+    str,
+    bytes,
+    range,
+    slice,
+    type(None),
+    enum.Enum,
+    np.generic,
+)
+
+
 class Mobject:
     """Mathematical Object: base class for objects that can be displayed on screen.
 
@@ -84,14 +131,36 @@ class Mobject:
     ----------
     submobjects : List[:class:`Mobject`]
         The contained objects.
+    uid : :class:`int`
+        Identifies the mobject within the running process; copies get a new one.
     points : :class:`numpy.ndarray`
-        The points of the objects.
+        The points of the objects. The array is read-only: to change the points,
+        assign a new array.
 
         .. seealso::
 
             :class:`~.VMobject`
 
     """
+
+    points: ArrayField[Point3D_Array] = ArrayField(np.float64)
+    z_index: Field[float] = Field()
+    #: Whether the mobject is drawn as if the camera were at its default position
+    #: (see :meth:`fix_in_frame`).
+    is_fixed_in_frame: Field[bool] = Field()
+    # ``None``, or the function giving the point the mobject keeps facing the camera
+    # from (see :meth:`fix_orientation`); called for every frame.
+    _get_fixed_orientation_anchor: Field[Callable[[], Point3D] | None] = Field()
+    #: Whether the mobject is drawn from its fields alone. A class that draws from
+    #: other state (computed pixels, another camera's view) sets this to ``False``,
+    #: and renderers then draw it anew every frame.
+    _drawn_from_fields: ClassVar[bool] = True
+    # uid depends on construction order; versions on edit history.
+    _hash_excluded_attributes = frozenset({"uid", "_field_versions"})
+
+    #: Attributes whose values are never modified after construction, so copies of
+    #: the mobject share them instead of copying them.
+    _shared_on_copy: ClassVar[frozenset[str]] = frozenset()
 
     original_id: str
     _original__init__: Callable[..., None]
@@ -103,6 +172,7 @@ class Mobject:
     @classmethod
     def __init_subclass__(cls, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)
+        check_fields(cls)
 
         cls.animation_overrides = {}
         cls._add_intrinsic_animation_overrides()
@@ -116,10 +186,13 @@ class Mobject:
         target: Mobject | None = None,
         z_index: float = 0,
     ):
+        self.uid = next(_UIDS)
         self.name = self.__class__.__name__ if name is None else name
         self.dim = dim
         self.target = target
         self.z_index = z_index
+        self.is_fixed_in_frame = False
+        self._get_fixed_orientation_anchor = None
         self.point_hash = None
         self.submobjects: list[Mobject] = []
         self.updaters: list[_Updater] = []
@@ -460,9 +533,29 @@ class Mobject:
         cls = self.__class__
         result = cls.__new__(cls)
         clone_from_id[id(self)] = result
+        attributes = result.__dict__
+        shared = cls._shared_on_copy
+        # Values that cannot change are shared with the copy: immutable scalars,
+        # frozen field arrays and the attributes a class lists in _shared_on_copy.
+        # Writing to __dict__ directly keeps field versions.
         for k, v in self.__dict__.items():
-            setattr(result, k, copy.deepcopy(v, clone_from_id))
+            if isinstance(v, _IMMUTABLE_TYPES) or k in shared or is_frozen(v):
+                attributes[k] = v
+            elif k == "_get_fixed_orientation_anchor":
+                attributes[k] = _copied_center_func(v, clone_from_id)
+            elif k != "_field_versions":
+                attributes[k] = copy.deepcopy(v, clone_from_id)
+        copy_versions(self, result)
         result.original_id = str(id(self))
+        result.uid = next(_UIDS)
+        return result
+
+    def __copy__(self) -> Self:
+        cls = self.__class__
+        result = cls.__new__(cls)
+        result.__dict__.update(self.__dict__)
+        copy_versions(self, result)
+        result.uid = next(_UIDS)
         return result
 
     def __repr__(self) -> str:
@@ -1420,8 +1513,7 @@ class Mobject:
         """
         total_vector = reduce(op.add, vectors)
         for mob in self.family_members_with_points():
-            mob.points = mob.points.astype("float")
-            mob.points += total_vector
+            mob.points = mob.points + total_vector
 
         return self
 
@@ -1720,9 +1812,7 @@ class Mobject:
         # Make a copy to prevent mutation of the original array if about_point is a view
         about_point = np.array(about_point, copy=True)
         for mob in self.family_members_with_points():
-            mob.points -= about_point
-            mob.points = func(mob.points)
-            mob.points += about_point
+            mob.points = func(mob.points - about_point) + about_point
         return self
 
     def pose_at_angle(self, **kwargs: Any) -> Self:
@@ -2556,9 +2646,8 @@ class Mobject:
         )
 
     def get_z_index_reference_point(self) -> Point3D:
-        # TODO, better place to define default z_index_group?
-        z_index_group = getattr(self, "z_index_group", self)
-        return z_index_group.get_center()
+        """The point by which a camera with perspective orders the mobject by depth."""
+        return self.get_center()
 
     def has_points(self) -> bool:
         """Check if :class:`~.Mobject` contains points."""
@@ -3536,10 +3625,97 @@ class Mobject:
                     self.add(tex)
                     self.add(circle)
         """
-        if family:
-            for submob in self.submobjects:
-                submob.set_z_index(z_index_value, family=family)
-        self.z_index = z_index_value
+        for mob in self.get_family() if family else [self]:
+            mob.z_index = z_index_value
+        return self
+
+    def fix_in_frame(self) -> Self:
+        """Keep the mobject and its family in place on screen when the camera moves.
+
+        They are drawn as if the camera were at its default position: centered at
+        the origin, with the default frame size, without rotation or zoom. Useful
+        for titles and labels in scenes with a moving or rotating camera.
+
+        See Also
+        --------
+        :meth:`unfix_from_frame`, :meth:`.ThreeDScene.add_fixed_in_frame_mobjects`
+        """
+        return self.set_fixed_in_frame(True)
+
+    def unfix_from_frame(self) -> Self:
+        """Undo :meth:`fix_in_frame` for the mobject and its family."""
+        return self.set_fixed_in_frame(False)
+
+    def set_fixed_in_frame(self, value: bool, family: bool = True) -> Self:
+        """Set :attr:`is_fixed_in_frame` of the mobject (and, with ``family``, of its
+        family); :meth:`fix_in_frame` and :meth:`unfix_from_frame` call it.
+        """
+        for mob in self.get_family() if family else [self]:
+            mob.is_fixed_in_frame = value
+        return self
+
+    def fix_orientation(
+        self,
+        center_func: Callable[[], Point3D] | None = None,
+        use_static_center_func: bool = False,
+    ) -> Self:
+        """Keep the mobject and its family facing the camera when it rotates.
+
+        The mobject moves with the point returned by ``center_func`` (by default its
+        current center) but is not rotated with the scene.
+
+        Parameters
+        ----------
+        center_func
+            The function returning the point the mobject moves with.
+        use_static_center_func
+            Without ``center_func``: use the center at the time of this call instead
+            of following the mobject's center.
+
+        See Also
+        --------
+        :meth:`unfix_orientation`, :meth:`.ThreeDScene.add_fixed_orientation_mobjects`
+        """
+        return self.set_fixed_orientation(
+            True, center_func=center_func, use_static_center_func=use_static_center_func
+        )
+
+    @property
+    def is_fixed_orientation(self) -> bool:
+        """Whether the mobject keeps facing the camera (see :meth:`fix_orientation`)."""
+        return self._get_fixed_orientation_anchor is not None
+
+    def unfix_orientation(self) -> Self:
+        """Undo :meth:`fix_orientation` for the mobject and its family."""
+        return self.set_fixed_orientation(False)
+
+    def set_fixed_orientation(
+        self,
+        value: bool,
+        *,
+        center_func: Callable[[], Point3D] | None = None,
+        use_static_center_func: bool = False,
+        family: bool = True,
+    ) -> Self:
+        """Set :attr:`is_fixed_orientation` of the mobject (and, with ``family``, of
+        its family); :meth:`fix_orientation` and :meth:`unfix_orientation` call it.
+
+        ``center_func`` and ``use_static_center_func`` are as for
+        :meth:`fix_orientation`; they have no effect when ``value`` is ``False``.
+        """
+        anchor = None
+        if value:
+            anchor = center_func
+            if anchor is None and use_static_center_func:
+                center = self.get_center()
+
+                def anchor() -> Point3D:
+                    return center
+
+            elif anchor is None:
+                anchor = self.get_center
+        for mob in self.get_family() if family else [self]:
+            mob._get_fixed_orientation_anchor = anchor
         return self
 
     def set_z_index_by_z_Point3D(self) -> Self:

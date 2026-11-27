@@ -16,16 +16,18 @@ from manim._config import config
 from manim.constants import DEGREES, DOWN, LEFT, ORIGIN, OUT
 from manim.mobject.frame import ScreenRectangle
 from manim.mobject.mobject import Mobject, _AnimationBuilder
-from manim.mobject.three_d.three_d_utils import (
-    get_3d_vmob_end_corner,
-    get_3d_vmob_end_corner_unit_normal,
-    get_3d_vmob_start_corner,
-    get_3d_vmob_start_corner_unit_normal,
-)
 from manim.mobject.types.image_mobject import ImageMobjectFromCamera
 from manim.mobject.types.point_cloud_mobject import Point
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.mobject.value_tracker import ValueTracker
+from manim.renderer.extract import placement_of
+from manim.renderer.snapshot import FacingCamera, FixedInFrame, LegacyShaded
+from manim.utils._path_points import (
+    end_corner,
+    end_corner_index,
+    start_corner,
+    unit_normal,
+)
 from manim.utils.color import WHITE, ManimColor, ParsableManimColor, get_shaded_rgb
 from manim.utils.deprecation import deprecated
 from manim.utils.family import extract_mobject_family_members
@@ -33,6 +35,7 @@ from manim.utils.iterables import list_difference_update
 from manim.utils.space_ops import rotation_matrix_zxz
 
 if TYPE_CHECKING:
+    from manim.renderer.snapshot import Placement, RNode, RPath
     from manim.typing import (
         FloatRGBA_Array,
         MatrixMN,
@@ -316,14 +319,36 @@ class Camera:
         """Return fill colors after camera-specific shading."""
         return vmobject.get_fill_rgbas()
 
+    def _sort_for_display(self, nodes: list[RNode]) -> list[RNode]:
+        """Reorder render snapshots for this camera (after family and z-index order)."""
+        return nodes
+
+    def _shaded_rgbas(self, path: RPath, rgbas: FloatRGBA_Array) -> FloatRGBA_Array:
+        """Return the stop colors of a snapshot path's paint after the shading of
+        its material.
+        """
+        return rgbas
+
+    def _display_points(self, node: RNode, points: Point3D_Array) -> Point3D_Array:
+        """Project the points of a render snapshot for display."""
+        return self._place(points, node.placement)
+
     def transform_points_pre_display(
         self,
         mobject: Mobject,
         points: Point3D_Array,
     ) -> Point3D_Array:
         """Project the mobject's points for display."""
+        return self._place(points, placement_of(mobject))
+
+    def _place(self, points: Point3D_Array, placement: Placement) -> Point3D_Array:
+        """Project points for display, as fixed in frame or facing the camera."""
         if not np.all(np.isfinite(points)):
             return np.zeros((1, 3))
+        if isinstance(placement, FixedInFrame):
+            # Drawn as if the frame were at its default position and size.
+            scale = self.frame_width / config.frame_width
+            return self.frame_center + scale * points
         return points
 
 
@@ -410,8 +435,6 @@ class ThreeDCamera(Camera):
         self.focal_distance_tracker = ValueTracker(focal_distance)
         self.gamma_tracker = ValueTracker(gamma)
         self.zoom_tracker = ValueTracker(zoom)
-        self.fixed_orientation_mobjects: dict[Mobject, Callable[[], Point3D]] = {}
-        self.fixed_in_frame_mobjects: set[Mobject] = set()
         self._view: tuple[Point3D, float, float, MatrixMN] | None = None
 
     @contextlib.contextmanager
@@ -487,9 +510,17 @@ class ThreeDCamera(Camera):
     def modified_rgbas(
         self, vmobject: VMobject, rgbas: FloatRGBA_Array
     ) -> FloatRGBA_Array:
+        return self._shade(vmobject.shade_in_3d, vmobject.points, rgbas)
+
+    def _shaded_rgbas(self, path: RPath, rgbas: FloatRGBA_Array) -> FloatRGBA_Array:
+        return self._shade(isinstance(path.material, LegacyShaded), path.points, rgbas)
+
+    def _shade(
+        self, shade_in_3d: bool, points: Point3D_Array, rgbas: FloatRGBA_Array
+    ) -> FloatRGBA_Array:
         if not self.should_apply_shading:
             return rgbas
-        if vmobject.shade_in_3d and (vmobject.get_num_points() > 0):
+        if shade_in_3d and len(points) > 0:
             light_source_point = self.light_source.points[0]
             if len(rgbas) < 2:
                 shaded_rgbas = rgbas.repeat(2, axis=0)
@@ -497,14 +528,15 @@ class ThreeDCamera(Camera):
                 shaded_rgbas = np.array(rgbas[:2])
             shaded_rgbas[0, :3] = get_shaded_rgb(
                 shaded_rgbas[0, :3],
-                get_3d_vmob_start_corner(vmobject),
-                get_3d_vmob_start_corner_unit_normal(vmobject),
+                start_corner(points),
+                unit_normal(points, 0),
                 light_source_point,
             )
+            end = end_corner_index(points)
             shaded_rgbas[1, :3] = get_shaded_rgb(
                 shaded_rgbas[1, :3],
-                get_3d_vmob_end_corner(vmobject),
-                get_3d_vmob_end_corner_unit_normal(vmobject),
+                end_corner(points),
+                unit_normal(points, end),
                 light_source_point,
             )
             return shaded_rgbas
@@ -531,12 +563,28 @@ class ThreeDCamera(Camera):
         def z_key(mob: Mobject) -> float:
             if not (hasattr(mob, "shade_in_3d") and mob.shade_in_3d):
                 return np.inf  # type: ignore[no-any-return]
-            # Assign a number to a three dimensional mobjects
-            # based on how close it is to the camera
-            distance: float = np.dot(mob.get_z_index_reference_point(), rot_matrix.T)[2]
-            return distance
+            return self._depth(mob.get_z_index_reference_point(), rot_matrix)
 
         return sorted(mobjects, key=z_key)
+
+    def _sort_for_display(self, nodes: list[RNode]) -> list[RNode]:
+        rot_matrix = self.get_rotation_matrix()
+
+        def z_key(node: RNode) -> float:
+            reference_point = getattr(node.payload, "depth_reference", None)
+            if reference_point is None:
+                return np.inf  # type: ignore[no-any-return]
+            return self._depth(reference_point, rot_matrix)
+
+        return sorted(nodes, key=z_key)
+
+    @staticmethod
+    def _depth(point: Point3D, rot_matrix: MatrixMN) -> float:
+        """Assign a number to a three dimensional mobject based on how close it is
+        to the camera.
+        """
+        distance: float = np.dot(point, rot_matrix.T)[2]
+        return distance
 
     def get_phi(self) -> float:
         """Returns the Polar angle (the angle off Z_AXIS) phi.
@@ -734,24 +782,17 @@ class ThreeDCamera(Camera):
         """
         return self.project_points(point.reshape((1, 3)))[0, :]
 
-    def transform_points_pre_display(
-        self,
-        mobject: Mobject,
-        points: Point3D_Array,
-    ) -> Point3D_Array:  # TODO: Write Docstrings for this Method.
-        points = super().transform_points_pre_display(mobject, points)
-        fixed_orientation = mobject in self.fixed_orientation_mobjects
-        fixed_in_frame = mobject in self.fixed_in_frame_mobjects
-
-        if fixed_in_frame:
+    def _place(self, points: Point3D_Array, placement: Placement) -> Point3D_Array:
+        if not np.all(np.isfinite(points)):
+            return np.zeros((1, 3))
+        # The view transform of this camera is centered at the origin, so points
+        # fixed in frame are drawn where they are.
+        if isinstance(placement, FixedInFrame):
             return points
-        if fixed_orientation:
-            center_func = self.fixed_orientation_mobjects[mobject]
-            center = center_func()
-            new_center = self.project_point(center)
-            return points + (new_center - center)
-        else:
-            return self.project_points(points)
+        if isinstance(placement, FacingCamera):
+            center = placement.center
+            return points + (self.project_point(center) - center)
+        return self.project_points(points)
 
     def add_fixed_orientation_mobjects(
         self,
@@ -776,22 +817,8 @@ class ThreeDCamera(Camera):
             The function which returns the centerpoint
             with respect to which the mobject will be oriented, by default None
         """
-
-        # This prevents the computation of mobject.get_center
-        # every single time a projection happens
-        def get_static_center_func(mobject: Mobject) -> Callable[[], Point3D]:
-            point = mobject.get_center()
-            return lambda: point
-
         for mobject in mobjects:
-            if center_func:
-                func = center_func
-            elif use_static_center_func:
-                func = get_static_center_func(mobject)
-            else:
-                func = mobject.get_center
-            for submob in mobject.get_family():
-                self.fixed_orientation_mobjects[submob] = func
+            mobject.fix_orientation(center_func, use_static_center_func)
 
     def add_fixed_in_frame_mobjects(self, *mobjects: Mobject) -> None:
         """This method allows the mobject to have a fixed position,
@@ -806,8 +833,8 @@ class ThreeDCamera(Camera):
         **mobjects
             The mobject to fix in frame.
         """
-        for mobject in extract_mobject_family_members(mobjects):
-            self.fixed_in_frame_mobjects.add(mobject)
+        for mobject in mobjects:
+            mobject.fix_in_frame()
 
     def remove_fixed_orientation_mobjects(self, *mobjects: Mobject) -> None:
         """If a mobject was fixed in its orientation by passing it through
@@ -819,9 +846,8 @@ class ThreeDCamera(Camera):
         mobjects
             The mobjects whose orientation need not be fixed any longer.
         """
-        for mobject in extract_mobject_family_members(mobjects):
-            if mobject in self.fixed_orientation_mobjects:
-                del self.fixed_orientation_mobjects[mobject]
+        for mobject in mobjects:
+            mobject.unfix_orientation()
 
     def remove_fixed_in_frame_mobjects(self, *mobjects: Mobject) -> None:
         """If a mobject was fixed in frame by passing it through
@@ -833,6 +859,5 @@ class ThreeDCamera(Camera):
         mobjects
             The mobjects which need not be fixed in frame any longer.
         """
-        for mobject in extract_mobject_family_members(mobjects):
-            if mobject in self.fixed_in_frame_mobjects:
-                self.fixed_in_frame_mobjects.remove(mobject)
+        for mobject in mobjects:
+            mobject.unfix_from_frame()

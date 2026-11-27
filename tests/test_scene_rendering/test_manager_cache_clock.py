@@ -235,3 +235,45 @@ def test_plays_at_the_same_time_reuse_segments_whatever_came_before(tmp_path):
         second.render()
     # The last play starts at the same time, after one play or after two.
     assert first.renderer.animations_hashes[-1] == second.renderer.animations_hashes[-1]
+
+
+def test_plays_cached_under_another_drawing_version_are_not_reused(
+    tmp_path, monkeypatch
+):
+    """Raising the drawing version makes earlier movies stale."""
+    import manim._run.cache as cache_module
+
+    def run():
+        scene = TimeDrivenScene()
+        writer = scene._get_manager().file_writer
+        hits = []
+        lookup = writer.is_already_cached
+
+        def cached(key):
+            result = lookup(key)
+            hits.append(result)
+            return result
+
+        writer.is_already_cached = cached
+        scene.render()
+        return hits
+
+    with tempconfig(
+        {
+            "renderer": "cairo",
+            "format": "mp4",
+            "media_dir": str(tmp_path),
+            "frame_rate": 4,
+            "pixel_width": 64,
+            "pixel_height": 32,
+            "live_preview": False,
+            "disable_caching": False,
+            "progress_bar": "none",
+        }
+    ):
+        assert not any(run())
+        assert all(run())
+        monkeypatch.setattr(
+            cache_module, "_DRAWING_VERSION", cache_module._DRAWING_VERSION + 1
+        )
+        assert not any(run())
