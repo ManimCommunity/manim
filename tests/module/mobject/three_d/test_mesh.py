@@ -250,7 +250,7 @@ def test_parametric_surface_ranges_and_resolution_are_pairs(name):
     assert surface.resolution == (3, 4)
 
 
-def test_surface_colours_faces_by_value_at_their_outlines_middle():
+def test_surface_colors_faces_by_value_at_their_outlines_middle():
     from manim.mobject.three_d.three_dimensions import _halfway_around
 
     axes = ThreeDAxes(x_range=[0, 4], y_range=[0, 4], z_range=[0, 4])
@@ -276,7 +276,7 @@ def test_surface_colours_faces_by_value_at_their_outlines_middle():
     np.testing.assert_allclose(surface.stroke_rgbas[:, :3], expected, atol=1e-9)
 
 
-def test_colouring_a_smooth_surface_by_value_keeps_where_it_was_moved():
+def test_coloring_a_smooth_surface_by_value_keeps_where_it_was_moved():
     axes = ThreeDAxes(x_range=[0, 4], y_range=[0, 4], z_range=[0, 4])
     surface = Surface(
         lambda u, v: axes.c2p(u, v, u * v / 4),
@@ -343,7 +343,7 @@ def _meshes(mob):
 
 
 @pytest.mark.parametrize("build", SOLIDS_WITH_PARTS.values(), ids=SOLIDS_WITH_PARTS)
-def test_colour_and_opacity_reach_every_part_of_a_solid(build):
+def test_color_and_opacity_reach_every_part_of_a_solid(build):
     solid = build()
     assert len(_meshes(solid)) > 1
     solid.set_color(RED)

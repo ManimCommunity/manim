@@ -267,12 +267,12 @@ class Surface(ParametricSurface):
             pivots = np.linspace(pivot_min, pivot_max, len(new_colors))
         values = np.asarray(axes.point_to_coords(_halfway_around(self)))[:, axis]
         rgbs = np.array([color.to_rgb() for color in new_colors])
-        colours = np.stack(
+        colors = np.stack(
             [np.interp(values, pivots, rgbs[:, channel]) for channel in range(3)],
             axis=1,
         )
         opacity = self.fill_opacity
-        fills = np.concatenate((colours, np.full((len(colours), 1), opacity)), axis=1)
+        fills = np.concatenate((colors, np.full((len(colors), 1), opacity)), axis=1)
         if not self.flat:
             # One color per face needs corners of its own, through the surface's
             # current points.

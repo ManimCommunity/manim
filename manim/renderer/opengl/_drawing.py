@@ -829,9 +829,9 @@ def _groups(
         )
         joins = bool(groups) and path.stroke.joint == joint
         if joins and is_filled:
-            same_colour = single is not None and single == colour
+            same_color = single is not None and single == color
             gx0, gy0, gx1, gy1, _ = groups[-1][2]
-            joins = same_colour or not (
+            joins = same_color or not (
                 gx0 < x1
                 and gx1 > x0
                 and gy0 < y1
@@ -847,7 +847,7 @@ def _groups(
             members.append(node)
             members_geometry.append(geo)
             if is_filled and not state[4]:
-                colour = single
+                color = single
             state[0] = min(state[0], x0)
             state[1] = min(state[1], y0)
             state[2] = max(state[2], x1)

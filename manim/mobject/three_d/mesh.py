@@ -195,7 +195,7 @@ class MeshMobject(Mobject):
     @property
     def fill_opacity(self) -> float:
         """The highest opacity of the vertices: what :meth:`set_color` keeps when it
-        is given no ``alpha``, so that recolouring a mesh whose vertices fade out
+        is given no ``alpha``, so that recoloring a mesh whose vertices fade out
         keeps it as opaque as its most opaque vertex.
         """
         return float(self.rgbas[:, 3].max())
