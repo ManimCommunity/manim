@@ -448,6 +448,22 @@ class _MethodAnimation(MoveToTarget):
     def finish(self) -> None:
         for item in self.methods:
             item.method.__func__(self.mobject, *item.args, **item.kwargs)
+        # Some methods (e.g. DecimalNumber.set_value) rebuild the submobjects of
+        # self.mobject, so its family may no longer match the copies aligned in
+        # begin(). In that case, realign self.mobject with a fresh copy of the
+        # target and let the animation end exactly at the target.
+        mobs = (self.mobject, self.starting_mobject, self.target_copy)
+        if config.renderer == RendererType.OPENGL:
+            family_sizes = {len(mob.get_family()) for mob in mobs}
+        else:
+            family_sizes = {len(mob.family_members_with_points()) for mob in mobs}
+        if len(family_sizes) > 1:
+            self.target_copy = self.target_mobject.copy()
+            if config.renderer == RendererType.OPENGL:
+                self.mobject.align_data_and_family(self.target_copy)
+            else:
+                self.mobject.align_data(self.target_copy)
+            self.starting_mobject = self.target_copy.copy()
         super().finish()
 
 
