@@ -11,6 +11,7 @@ import cairo
 import numpy as np
 from PIL import Image
 
+from manim.constants import STROKE_WIDTH_UNIT
 from manim.utils.color import color_to_int_rgba
 from manim.utils.images import get_full_raster_image_path
 
@@ -28,7 +29,7 @@ class _CairoRasterSettings:
     pixel_height: int
     base_pixel_width: int
     base_pixel_height: int
-    cairo_line_width_multiple: float = 0.01
+    cairo_line_width_multiple: float = STROKE_WIDTH_UNIT
 
     def __post_init__(self) -> None:
         if (

@@ -296,3 +296,20 @@ def test_a_transform_gives_new_versions_only_to_the_fields_it_changes(change, ch
     animation.interpolate(0.5)
     after = dict(start._field_versions)
     assert {name for name in after if after[name] != before.get(name)} == changed
+
+
+def test_a_converted_field_stores_the_converted_value():
+    from manim.utils.versioned_fields import ConvertedField
+
+    class Holder:
+        width = ConvertedField(lambda value: max(0.0, float(value)))
+
+    holder = Holder()
+    holder.width = -3
+    assert holder.width == 0.0
+    version = field_version(holder, "width")
+    holder.width = -1  # converts to the same value: no new version
+    assert field_version(holder, "width") == version
+    holder.width = 2
+    assert holder.width == 2.0
+    assert field_version(holder, "width") != version

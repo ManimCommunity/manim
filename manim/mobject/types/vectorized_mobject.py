@@ -46,7 +46,7 @@ from manim.utils.iterables import (
     tuplify,
 )
 from manim.utils.space_ops import rotate_vector, shoelace_direction
-from manim.utils.versioned_fields import ArrayField, Field
+from manim.utils.versioned_fields import ArrayField, ConvertedField, Field
 
 if TYPE_CHECKING:
     from typing import Self
@@ -79,11 +79,9 @@ if TYPE_CHECKING:
 #   That's kind of weird.
 
 
-class _StrokeWidth(Field[float]):
-    """A stroke width: stored as a float, with negative widths stored as 0."""
-
-    def __set__(self, obj: object, value: float) -> None:
-        super().__set__(obj, max(0.0, float(value)))
+def _non_negative_float(value: float) -> float:
+    """``value`` as a float, at least 0: how stroke widths are stored."""
+    return max(0.0, float(value))
 
 
 class VMobject(Mobject):
@@ -114,8 +112,8 @@ class VMobject(Mobject):
     fill_rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
     stroke_rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
     background_stroke_rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
-    stroke_width: _StrokeWidth = _StrokeWidth()
-    background_stroke_width: _StrokeWidth = _StrokeWidth()
+    stroke_width: ConvertedField[float] = ConvertedField(_non_negative_float)
+    background_stroke_width: ConvertedField[float] = ConvertedField(_non_negative_float)
     sheen_factor: Field[float] = Field()
     sheen_direction: ArrayField[Vector3D] = ArrayField(np.float64)
     joint_type: Field[LineJointType] = Field()

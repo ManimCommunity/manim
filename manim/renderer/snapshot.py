@@ -42,7 +42,7 @@ are made by :mod:`manim.renderer.extract`.
 from __future__ import annotations
 
 from collections.abc import Hashable, Mapping
-from typing import TYPE_CHECKING, NamedTuple
+from typing import TYPE_CHECKING, NamedTuple, TypeAlias
 
 from manim.appearance.material import PbrMaterial, UnlitMaterial
 
@@ -59,11 +59,13 @@ if TYPE_CHECKING:
     )
 
 __all__ = [
+    "CameraId",
     "FacingCamera",
     "FixedInFrame",
     "InScene",
     "LegacyShaded",
     "Material",
+    "MobjectUid",
     "Payload",
     "Placement",
     "RCameraView",
@@ -79,6 +81,12 @@ __all__ = [
 
 
 # Paints: how an area or a line is colored.
+
+
+#: Identifies a mobject within the process (:attr:`.Mobject.uid`); copies get new ones.
+MobjectUid: TypeAlias = int
+#: Identifies the camera a camera view shows (its ``id()``); copies of a view share it.
+CameraId: TypeAlias = int
 
 
 class RSolidColor(NamedTuple):
@@ -194,7 +202,7 @@ class RCameraView(NamedTuple):
     points: Point3D_Array
     resampling_algorithm: Resampling
     #: ``id()`` of the camera whose view is shown; copies of a view share it.
-    camera_id: int
+    camera_id: CameraId
 
 
 Payload = RPath | RPoints | RImage | RCameraView
@@ -228,7 +236,7 @@ class RNode(NamedTuple):
     """What a renderer draws for one mobject: the snapshot of a :class:`~.Mobject`."""
 
     #: Identifies the mobject within the process (see :attr:`.Mobject.uid`).
-    uid: int
+    uid: MobjectUid
     #: Equal keys: the same drawing from the same view; ``None``: draw anew. See the
     #: module documentation.
     key: Hashable | None

@@ -34,10 +34,13 @@ import numpy as np
 from typing_extensions import TypeIs
 
 if TYPE_CHECKING:
-    from numpy.typing import ArrayLike, DTypeLike
+    from collections.abc import Callable
+
+    import numpy.typing as npt
 
 __all__ = [
     "ArrayField",
+    "ConvertedField",
     "Field",
     "check_fields",
     "copy_versions",
@@ -74,7 +77,7 @@ def is_frozen(value: object) -> TypeIs[np.ndarray]:
     return type(value) is np.ndarray and type(value.base) is _Owner  # type: ignore[attr-defined]
 
 
-def _freeze(value: ArrayLike, dtype: DTypeLike | None) -> np.ndarray:
+def _freeze(value: npt.ArrayLike, dtype: npt.DTypeLike | None) -> np.ndarray:
     """``value`` as a frozen array of ``dtype``: the value itself if it is frozen
     already, else a copy that nothing else can write to.
     """
@@ -130,6 +133,27 @@ class Field(Generic[T]):
         return f"<{type(self).__name__} {self.name!r}>"
 
 
+class ConvertedField(Field[T]):
+    """A versioned attribute whose assigned values go through ``convert`` first.
+
+    ``convert`` takes the assigned value and returns what is stored; it can also raise
+    for values the field does not take. For example, a width that is never negative::
+
+        stroke_width = ConvertedField(lambda width: max(0.0, float(width)))
+
+    Parameters
+    ----------
+    convert
+        Turns an assigned value into the stored one.
+    """
+
+    def __init__(self, convert: Callable[[Any], T]) -> None:
+        self.convert = convert
+
+    def __set__(self, obj: object, value: Any) -> None:
+        _store(obj, self.name, self.convert(value))
+
+
 class ArrayField(Field[T]):
     """A versioned array attribute.
 
@@ -144,10 +168,10 @@ class ArrayField(Field[T]):
         The dtype assigned values are converted to; ``None`` keeps the dtype.
     """
 
-    def __init__(self, dtype: DTypeLike | None = None) -> None:
+    def __init__(self, dtype: npt.DTypeLike | None = None) -> None:
         self.dtype = dtype
 
-    def __set__(self, obj: object, value: ArrayLike) -> None:
+    def __set__(self, obj: object, value: npt.ArrayLike) -> None:
         _store(obj, self.name, _freeze(value, self.dtype))
 
 

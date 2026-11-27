@@ -62,6 +62,7 @@ __all__ = [
     "DEFAULT_POINT_DENSITY_2D",
     "DEFAULT_POINT_DENSITY_1D",
     "DEFAULT_STROKE_WIDTH",
+    "STROKE_WIDTH_UNIT",
     "DEFAULT_FONT_SIZE",
     "SCALE_FACTOR_PER_FONT_POINT",
     "PI",
@@ -181,6 +182,9 @@ DEFAULT_WAIT_TIME = 1.0
 DEFAULT_POINT_DENSITY_2D = 25
 DEFAULT_POINT_DENSITY_1D = 10
 DEFAULT_STROKE_WIDTH = 4
+#: Scene units per unit of ``stroke_width``: a width of 4 is 0.04 scene units wide.
+#: Every renderer draws strokes at this scale.
+STROKE_WIDTH_UNIT = 0.01
 DEFAULT_FONT_SIZE = 48
 SCALE_FACTOR_PER_FONT_POINT = 1 / 960
 
