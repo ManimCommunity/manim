@@ -401,12 +401,12 @@ class SnapshotDrawing:
         view = view_key(target.camera, target.size, target.reference_size, background)
         memo = self._memo
         context = self._renderer.context
-        start = memo.reusable(keys, view)
+        start = memo.count_reusable(keys, view)
         if start:
             assert self._layer is not None
             context.copy_framebuffer(target.framebuffer, self._layer.framebuffer)
         else:
-            start = memo.worth_saving(keys, view)
+            start = memo.count_worth_saving(keys, view)
             if start:
                 layer = self._layer
                 if layer is None or layer.size != target.size:
@@ -417,12 +417,12 @@ class SnapshotDrawing:
                 self._draw_nodes(
                     nodes[:start], target._replace(framebuffer=layer.framebuffer), views
                 )
-                memo.saved(keys[:start], view)
+                memo.mark_saved(keys[:start], view)
                 context.copy_framebuffer(target.framebuffer, layer.framebuffer)
             else:
                 memo.forget_saved()
         self._draw_nodes(nodes[start:], target, views)
-        memo.drew(keys, view)
+        memo.record_drawn(keys, view)
 
     def _draw_nodes(
         self,

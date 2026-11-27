@@ -182,3 +182,12 @@ def test_a_promised_preview_without_a_handle_is_reported_by_name(tmp_path):
         scene = Scene(renderer=Promises())
         with pytest.raises(RuntimeError, match="PlainRenderer promised a live"):
             scene._get_manager().preview
+
+
+@pytest.mark.parametrize("renderer", [None, "cairo", Plain(shade=200)])
+def test_mobject_get_image_takes_a_renderer(renderer):
+    with tempconfig({"pixel_width": 64, "pixel_height": 36, "frame_rate": 15}):
+        image = Square().get_image(renderer=renderer)
+    assert image.size == (64, 36)
+    if isinstance(renderer, Plain):
+        assert (200, 200, 200, 255) in set(image.getdata())

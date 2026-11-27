@@ -73,6 +73,7 @@ if TYPE_CHECKING:
 
     from ..animation.animation import Animation
     from ..camera import Camera
+    from ..renderer.protocol import RendererFactory
 
 
 _TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
@@ -1106,31 +1107,50 @@ class Mobject:
         return self
 
     # Displaying
-    def get_image(self, camera: Camera | None = None) -> Image.Image:
-        """Draw this mobject and its submobjects using Cairo and return a PIL image.
+    def get_image(
+        self,
+        camera: Camera | None = None,
+        renderer: str | RendererType | RendererFactory | None = None,
+    ) -> Image.Image:
+        """Draw this mobject and its submobjects and return a PIL image.
 
-        Pass a ``camera`` to select the view, or omit it to create a default
-        :class:`.Camera`. To use a scene's current view, pass ``camera=scene.camera``.
+        Parameters
+        ----------
+        camera
+            The view to draw; by default a new :class:`.Camera`. To use a scene's
+            current view, pass ``camera=scene.camera``.
+        renderer
+            The renderer to draw with: a name (``"cairo"``, ``"opengl"``), a
+            :class:`.RendererType` or a renderer factory, as for :class:`.Scene`. By
+            default the one ``config.renderer`` names. For an image of a whole scene
+            with the renderer it renders with, use :meth:`.Scene.get_image`.
         """
         # local import to avoid import cycle
         from PIL import Image
 
         from manim.camera import Camera
-        from manim.renderer.cairo import CairoRenderer
+        from manim.renderer.backends import backend
         from manim.renderer.frame import FrameBuilder
 
         camera = Camera() if camera is None else camera
         frame = FrameBuilder(config.pixel_width, config.pixel_height).build(
             camera, [self]
         )
-        with CairoRenderer() as renderer:
-            return Image.fromarray(renderer.render(*frame).pixels())
+        drawer = backend(renderer, config).create()
+        try:
+            return Image.fromarray(drawer.render(*frame).pixels())
+        finally:
+            drawer.close()
 
-    def show(self, camera: Camera | None = None) -> None:
+    def show(
+        self,
+        camera: Camera | None = None,
+        renderer: str | RendererType | RendererFactory | None = None,
+    ) -> None:
         """Draw this mobject as :meth:`get_image` does and open the image in PIL's
         image viewer.
         """
-        self.get_image(camera=camera).show()
+        self.get_image(camera=camera, renderer=renderer).show()
 
     def save_image(self, name: str | None = None) -> None:
         """Saves an image of only this :class:`Mobject` at its position to a png

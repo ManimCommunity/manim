@@ -11,6 +11,7 @@ from manim.scene.scene import Scene
 if TYPE_CHECKING:
     from manim._run.loop import _Frame
     from manim.manager import Manager
+    from manim.typing import RGBAPixelArray
 
     from ._frames_testers import _FramesTester
 
@@ -27,7 +28,7 @@ class _FrameChecker(_RunListener):
         if frame.play.in_output and not self._manager.skip_animations:
             self.check(frame.pixels())
 
-    def check(self, pixels: np.ndarray) -> None:
+    def check(self, pixels: RGBAPixelArray) -> None:
         self._tester.check_frame(self._count, pixels)
         self._count += 1
 

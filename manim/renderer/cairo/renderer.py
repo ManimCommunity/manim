@@ -10,7 +10,12 @@ from ..protocol import PixelFrame, RenderConfig, RendererState
 from ..snapshot import RMesh
 from ._mesh_faces import mesh_faces
 from .rendering import _CairoDrawingContext, reusable_boundary
-from .target import _CairoRasterSettings, _CairoRenderTarget, _ImageFiles
+from .target import (
+    _CairoRasterSettings,
+    _CairoRenderTarget,
+    _ImageFiles,
+    background_key,
+)
 
 if TYPE_CHECKING:
     from ...typing import RGBAPixelArray
@@ -162,25 +167,25 @@ class CairoRenderer:
             config.camera,
             (config.pixel_width, config.pixel_height),
             config.reference_pixel_size,
-            _background_key(config),
+            background_key(config),
         )
         memo = self._memo
-        start = memo.reusable(keys, view)
+        start = memo.count_reusable(keys, view)
         if start:
             assert self._saved_pixels is not None
             target.set_pixels(self._saved_pixels)
         else:
-            save = reusable_boundary(nodes, memo.worth_saving(keys, view))
+            save = reusable_boundary(nodes, memo.count_worth_saving(keys, view))
             if save:
                 context.draw_nodes(nodes[:save])
                 self._saved_pixels = target.read_pixels()
-                memo.saved(keys[:save], view)
+                memo.mark_saved(keys[:save], view)
                 start = save
             else:
                 memo.forget_saved()
                 self._saved_pixels = None
         context.draw_nodes(nodes[start:])
-        memo.drew(keys, view)
+        memo.record_drawn(keys, view)
 
     def __enter__(self) -> Self:
         return self
@@ -223,10 +228,3 @@ class CairoRenderer:
                 logger.error("Additional Cairo cleanup failure", exc_info=secondary)
             raise failures[0]
         self._state = RendererState.CLOSED
-
-
-def _background_key(config: RenderConfig) -> tuple[Any, ...]:
-    return (
-        config.background_image,
-        tuple(config.background_color.to_rgba_with_alpha(config.background_opacity)),
-    )

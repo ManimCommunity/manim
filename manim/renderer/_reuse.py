@@ -11,18 +11,23 @@ another: it ends the reusable prefix.
 from __future__ import annotations
 
 import dataclasses
-from collections.abc import Sequence
-from typing import TYPE_CHECKING, Any
+from collections.abc import Hashable, Sequence
+from typing import TYPE_CHECKING, Any, TypeAlias
 
 from manim.renderer.protocol import CameraState
 
 if TYPE_CHECKING:
     from manim.renderer.snapshot import RNode
 
+#: What a node is compared by between frames (see :func:`node_key`).
+NodeKey: TypeAlias = Hashable
+#: What a frame's drawing depends on besides its nodes (see :func:`view_key`).
+ViewKey: TypeAlias = tuple[Hashable, ...]
+
 __all__: list[str] = []
 
 
-def node_key(node: RNode) -> Any:
+def node_key(node: RNode) -> NodeKey:
     """The key a node is compared by: its :attr:`.RNode.key`, or an object equal to
     nothing if it has none.
     """
@@ -46,15 +51,15 @@ def view_key(
     state: CameraState,
     size: tuple[int, int],
     reference_size: tuple[int, int],
-    background: Any,
-) -> Any:
+    background: Hashable,
+) -> ViewKey:
     """What a frame's drawing depends on besides its nodes: every field of the
     camera state, the pixel size, the reference pixel size (which scales widths
     given in pixels) and the background the target starts from.
     """
     return (
-        tuple(size),
-        tuple(reference_size),
+        size,
+        reference_size,
         tuple(_value(getattr(state, field.name)) for field in _STATE_FIELDS),
         background,
     )
@@ -63,7 +68,7 @@ def view_key(
 _STATE_FIELDS = dataclasses.fields(CameraState)
 
 
-def _value(value: Any) -> Any:
+def _value(value: Any) -> Hashable:
     """A comparable and hashable form of a camera state field."""
     if value is None or isinstance(value, (bool, int, float, str)):
         return value
@@ -86,20 +91,21 @@ def common_prefix(a: Sequence[Any], b: Sequence[Any]) -> int:
 class PrefixMemo:
     """The keys of the last frame drawn into one target, and of its view.
 
-    :meth:`reusable` tells how many leading nodes of a new frame can be copied from a
-    saved drawing, and :meth:`worth_saving` how many to save after this frame: the
+    :meth:`count_reusable` tells how many leading nodes of a new frame can be copied
+    from a saved drawing, and :meth:`count_worth_saving` how many to save after this
+    frame: the
     nodes that did not change since the previous frame, which are likely to stay
     unchanged in the next ones.
     """
 
     def __init__(self) -> None:
-        self._previous_keys: list[Any] = []
-        self._previous_view: Any = None
+        self._previous_keys: list[NodeKey] = []
+        self._previous_view: ViewKey | None = None
         #: Keys of the nodes whose drawing is saved, and their view.
-        self.saved_keys: list[Any] = []
-        self.saved_view: Any = None
+        self.saved_keys: list[NodeKey] = []
+        self.saved_view: ViewKey | None = None
 
-    def reusable(self, keys: list[Any], view: Any) -> int:
+    def count_reusable(self, keys: list[NodeKey], view: ViewKey) -> int:
         """How many leading nodes of ``keys`` the saved drawing holds (0 or all)."""
         count = len(self.saved_keys)
         if (
@@ -110,7 +116,7 @@ class PrefixMemo:
             return count
         return 0
 
-    def worth_saving(self, keys: list[Any], view: Any) -> int:
+    def count_worth_saving(self, keys: list[NodeKey], view: ViewKey) -> int:
         """How many leading nodes to save after this frame, if the saved drawing
         cannot be reused: those unchanged since the previous frame.
         """
@@ -118,14 +124,16 @@ class PrefixMemo:
             return 0
         return common_prefix(keys, self._previous_keys)
 
-    def saved(self, keys: list[Any], view: Any) -> None:
+    def mark_saved(self, keys: list[NodeKey], view: ViewKey) -> None:
+        """Remember that the drawing of the nodes with ``keys`` was saved."""
         self.saved_keys, self.saved_view = keys, view
 
     def forget_saved(self) -> None:
+        """Forget the saved drawing; nothing is reused until one is saved again."""
         self.saved_keys, self.saved_view = [], None
 
-    def drew(self, keys: list[Any], view: Any) -> None:
-        """Remember the frame just drawn, for :meth:`worth_saving`."""
+    def record_drawn(self, keys: list[NodeKey], view: ViewKey) -> None:
+        """Remember the frame just drawn, for :meth:`count_worth_saving`."""
         self._previous_keys, self._previous_view = keys, view
 
     def clear(self) -> None:

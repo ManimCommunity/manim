@@ -5,7 +5,7 @@ from __future__ import annotations
 from collections.abc import Hashable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, TypeAlias
 
 import cairo
 import numpy as np
@@ -18,6 +18,20 @@ from manim.utils.images import get_full_raster_image_path
 if TYPE_CHECKING:
     from manim.renderer.protocol import CameraState, RenderConfig
     from manim.typing import RGBAPixelArray
+
+
+#: What a target's background is made from: the image, or the colour with its opacity.
+BackgroundKey: TypeAlias = tuple[str | None, tuple[float, float, float, float]]
+
+
+def background_key(config: RenderConfig) -> BackgroundKey:
+    """What the background of a frame with ``config`` is made from; frames with equal
+    keys start from the same pixels.
+    """
+    return (
+        config.background_image,
+        tuple(config.background_color.to_rgba_with_alpha(config.background_opacity)),
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -141,14 +155,6 @@ class _CairoRenderTarget:
         self._ensure_open()
         return self._pixels
 
-    def _background_key(self, config: RenderConfig) -> tuple[object, ...]:
-        return (
-            config.background_image,
-            tuple(
-                config.background_color.to_rgba_with_alpha(config.background_opacity)
-            ),
-        )
-
     @property
     def _size(self) -> tuple[int, int]:
         return self.settings.pixel_width, self.settings.pixel_height
@@ -166,7 +172,7 @@ class _CairoRenderTarget:
     def reset(self, config: RenderConfig) -> None:
         """Fill the target with the background of ``config``."""
         self._ensure_open()
-        key = self._background_key(config)
+        key = background_key(config)
         if key != self._current_background:
             self._background = self._load_background(config)
             self._current_background = key
