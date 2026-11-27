@@ -80,6 +80,13 @@ def _non_negative_float(value: float) -> float:
     return max(0.0, float(value))
 
 
+def _in_vgroup_allowed(mobject: object) -> bool:
+    """Whether ``mobject`` may be a submobject of a :class:`VMobject` (see
+    :attr:`.Mobject._can_be_in_vgroup`).
+    """
+    return isinstance(mobject, Mobject) and type(mobject)._can_be_in_vgroup
+
+
 class VMobject(Mobject):
     """A vectorized mobject.
 
@@ -105,6 +112,7 @@ class VMobject(Mobject):
         for options.
     """
 
+    _can_be_in_vgroup = True
     fill_rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
     stroke_rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
     background_stroke_rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
@@ -186,6 +194,10 @@ class VMobject(Mobject):
 
     def _assert_valid_submobjects(self, submobjects: Iterable[VMobject]) -> Self:
         return self._assert_valid_submobjects_internal(submobjects, VMobject)
+
+    @classmethod
+    def _accepts_submobject(cls, submobject: object) -> bool:
+        return _in_vgroup_allowed(submobject)
 
     def __iter__(self) -> Iterator[VMobject]:
         return cast(Iterator[VMobject], super().__iter__())
@@ -677,7 +689,10 @@ class VMobject(Mobject):
         """
         direction_copy = np.array(direction)
         if family:
+            # Members without a sheen (meshes in a group) are left out.
             for submob in self.get_family():
+                if not isinstance(submob, VMobject):
+                    continue
                 submob.sheen_direction = direction_copy.copy()
         else:
             self.sheen_direction = direction_copy
@@ -706,7 +721,10 @@ class VMobject(Mobject):
         :meth:`~.VMobject.set_sheen_direction`
         """
         if family:
+            # Members without a sheen (meshes in a group) are left out.
             for submob in self.get_family():
+                if not isinstance(submob, VMobject):
+                    continue
                 submob.sheen_direction = rotate_vector(
                     submob.sheen_direction,
                     angle,
@@ -1174,6 +1192,8 @@ class VMobject(Mobject):
         assert mode in ["jagged", "smooth"], 'mode must be either "jagged" or "smooth"'
         nppcc = self.n_points_per_cubic_curve
         for submob in self.family_members_with_points():
+            if not isinstance(submob, VMobject):
+                continue
             subpaths = submob.get_subpaths()
             submob.clear_points()
             # A subpath can be composed of several bezier curves.
@@ -1261,6 +1281,8 @@ class VMobject(Mobject):
             ``self``
         """
         for submob in self.family_members_with_points():
+            if not isinstance(submob, VMobject):
+                continue
             if len(submob.points) < self.n_points_per_cubic_curve:
                 # The case that a bezier quad is not complete (there is no bezier curve as there is not enough control points.)
                 continue
@@ -1750,10 +1772,31 @@ class VMobject(Mobject):
         return list(it.chain.from_iterable(zip(s, e, strict=True)))
 
     def get_points_defining_boundary(self) -> Point3D_Array:
-        # Probably returns all anchors, but this is weird regarding  the name of the method.
-        return np.array(
-            tuple(it.chain(*(sm.get_anchors() for sm in self.get_family())))
-        )
+        """The anchors of the curves of the family, as :meth:`get_anchors` orders them
+        (and the points of meshes in it).
+        """
+        anchors = [
+            sm._anchor_array() if isinstance(sm, VMobject) else sm.points.copy()
+            for sm in self.get_family()
+        ]
+        anchors = [a for a in anchors if len(a)]
+        if not anchors:
+            return np.array(())
+        return np.concatenate(anchors) if len(anchors) > 1 else anchors[0]
+
+    def _anchor_array(self) -> Point3D_Array:
+        """:meth:`get_anchors` as an array: start and end anchor of each curve."""
+        points = self.points
+        if points.shape[0] == 1:
+            return points.copy()
+        nppcc = self.n_points_per_cubic_curve
+        starts, ends = points[::nppcc], points[nppcc - 1 :: nppcc]
+        if len(starts) != len(ends):
+            raise ValueError("The points do not form whole curves.")
+        anchors = np.empty((2 * len(starts), points.shape[1]))
+        anchors[0::2] = starts
+        anchors[1::2] = ends
+        return anchors
 
     def get_arc_length(self, sample_points_per_curve: int | None = None) -> float:
         """Return the approximated length of the whole curve.
@@ -2199,9 +2242,7 @@ class VGroup(VMobject):
 
     """
 
-    def __init__(
-        self, *vmobjects: VMobject | Iterable[VMobject], **kwargs: Any
-    ) -> None:
+    def __init__(self, *vmobjects: Mobject | Iterable[Mobject], **kwargs: Any) -> None:
         super().__init__(**kwargs)
         self.add(*vmobjects)
 
@@ -2216,7 +2257,7 @@ class VGroup(VMobject):
 
     def add(
         self,
-        *vmobjects: VMobject | Iterable[VMobject],
+        *vmobjects: Mobject | Iterable[Mobject],
     ) -> Self:
         """Checks if all passed elements are an instance, or iterables of VMobject and then adds them to submobjects
 
@@ -2303,11 +2344,11 @@ class VGroup(VMobject):
         valid_vmobjects = []
 
         for i, vmobject in enumerate(vmobjects):
-            if isinstance(vmobject, VMobject):
+            if _in_vgroup_allowed(vmobject):
                 valid_vmobjects.append(vmobject)
             elif isinstance(vmobject, Iterable) and not isinstance(vmobject, Mobject):
                 for j, subvmobject in enumerate(vmobject):
-                    if not isinstance(subvmobject, VMobject):
+                    if not _in_vgroup_allowed(subvmobject):
                         raise TypeError(get_type_error_message(subvmobject, (i, j)))
                     valid_vmobjects.append(subvmobject)
             elif isinstance(vmobject, Iterable) and isinstance(vmobject, Mobject):

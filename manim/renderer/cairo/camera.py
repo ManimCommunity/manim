@@ -21,7 +21,7 @@ from manim.mobject.types.point_cloud_mobject import Point
 from manim.mobject.types.vectorized_mobject import VMobject
 from manim.mobject.value_tracker import ValueTracker
 from manim.renderer.extract import placement_of
-from manim.renderer.snapshot import FacingCamera, FixedInFrame, LegacyShaded
+from manim.renderer.snapshot import FacingCamera, FixedInFrame, LegacyShaded, RMesh
 from manim.utils._path_points import (
     end_corner,
     end_corner_index,
@@ -43,6 +43,11 @@ if TYPE_CHECKING:
         Point3D_Array,
         Point3DLike,
     )
+
+
+#: How far above the frame a flat camera's eye is for shading: far enough that the
+#: view direction is the same everywhere on screen.
+_FAR_AWAY = 1e6
 
 
 class Camera:
@@ -323,6 +328,18 @@ class Camera:
         """Reorder render snapshots for this camera (after family and z-index order)."""
         return nodes
 
+    def _view_rotation(self) -> np.ndarray:
+        """The rotation from scene to view coordinates (looking along -z)."""
+        return np.identity(3)
+
+    def _light(self) -> np.ndarray | None:
+        """Where meshes are lit from, in scene coordinates; ``None``: not lit."""
+        return None
+
+    def _eye(self) -> np.ndarray:
+        """Where the scene is seen from, in scene coordinates."""
+        return np.asarray(self.frame_center, dtype=float) + [0.0, 0.0, _FAR_AWAY]
+
     def _shaded_rgbas(self, path: RPath, rgbas: FloatRGBA_Array) -> FloatRGBA_Array:
         """Return the stop colors of a snapshot path's paint after the shading of
         its material.
@@ -567,11 +584,29 @@ class ThreeDCamera(Camera):
 
         return sorted(mobjects, key=z_key)
 
+    def _view_rotation(self) -> np.ndarray:
+        return np.asarray(self.get_rotation_matrix(), dtype=float)
+
+    def _light(self) -> np.ndarray | None:
+        return np.asarray(self.light_source.get_center(), dtype=float)
+
+    def _eye(self) -> np.ndarray:
+        return np.asarray(self.frame_center, dtype=float) + self._view_rotation().T @ [
+            0.0,
+            0.0,
+            self.get_focal_distance(),
+        ]
+
     def _sort_for_display(self, nodes: list[RNode]) -> list[RNode]:
         rot_matrix = self.get_rotation_matrix()
 
         def z_key(node: RNode) -> float:
-            reference_point = getattr(node.payload, "depth_reference", None)
+            payload = node.payload
+            reference_point = getattr(payload, "depth_reference", None)
+            if isinstance(payload, RMesh) and len(payload.points):
+                # A whole mesh (on OpenGL; Cairo sorts its faces) goes by its middle.
+                points = np.asarray(payload.points)
+                reference_point = (points.min(axis=0) + points.max(axis=0)) / 2
             if reference_point is None:
                 return np.inf  # type: ignore[no-any-return]
             return self._depth(reference_point, rot_matrix)

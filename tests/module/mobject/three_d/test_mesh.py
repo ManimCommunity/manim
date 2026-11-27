@@ -3,16 +3,31 @@ import pytest
 
 from manim import (
     BLUE,
+    ORIGIN,
     RED,
+    RIGHT,
+    UP,
     WHITE,
+    Arrow3D,
+    Cone,
+    Cube,
+    Cylinder,
+    Dot3D,
+    MeshMobject,
+    Mobject,
     ParametricSurface,
-    Scene,
+    PolygonFace,
+    Prism,
+    Sphere,
     Square,
+    Surface,
+    Tetrahedron,
+    ThreeDAxes,
     Transform,
-    tempconfig,
+    VGroup,
+    VMobject,
 )
 from manim.appearance.material import PbrMaterial, UnlitMaterial
-from manim.renderer.protocol import CapabilityError
 from manim.utils.versioned_fields import field_version
 
 
@@ -158,12 +173,19 @@ def test_interpolating_equal_colors_keeps_their_version():
     assert field_version(mesh, "rgbas") == version
 
 
-def test_cairo_cannot_draw_meshes_yet():
-    with tempconfig({"dry_run": True}):
-        scene = Scene()
-        scene.add(Square(), _saddle())
-        with pytest.raises(CapabilityError, match="opengl"):
-            scene.renderer.update_frame(scene)
+def test_interpolating_equal_outlines_keeps_their_versions():
+    start = _saddle(stroke_width=3.7)
+    end = start.copy().shift([1, 0, 0])
+    mesh = start.copy()
+    mesh.interpolate(start, end, 0.2)
+    versions = [field_version(mesh, name) for name in ("stroke_rgbas", "stroke_width")]
+
+    mesh.interpolate(start, end, 0.6)
+
+    assert mesh.stroke_width == 3.7
+    assert versions == [
+        field_version(mesh, name) for name in ("stroke_rgbas", "stroke_width")
+    ]
 
 
 def _saddles(start_material, end_material):
@@ -226,3 +248,191 @@ def test_parametric_surface_ranges_and_resolution_are_pairs(name):
     )
     assert surface.u_range == (0, 2)
     assert surface.resolution == (3, 4)
+
+
+def test_surface_colors_faces_by_value_at_their_outlines_middle():
+    from manim.mobject.three_d.three_dimensions import _halfway_around
+
+    axes = ThreeDAxes(x_range=[0, 4], y_range=[0, 4], z_range=[0, 4])
+    surface = Surface(
+        lambda u, v: axes.c2p(u, v, u * v / 4),
+        u_range=[0, 4],
+        v_range=[0, 4],
+        resolution=4,
+    )
+    # Halfway around a face's outline, as get_midpoint of the face as a path.
+    for corners, point in zip(
+        surface.points[surface.get_faces()], _halfway_around(surface), strict=True
+    ):
+        face = VMobject().set_points_as_corners([*corners, corners[0]])
+        np.testing.assert_allclose(point, face.get_midpoint(), atol=1e-9)
+
+    surface.set_fill_by_value(axes, [(RED, 0), (WHITE, 4)], axis=2)
+
+    values = axes.point_to_coords(_halfway_around(surface))[:, 2] / 4
+    expected = (1 - values[:, None]) * RED.to_rgb() + values[:, None] * WHITE.to_rgb()
+    np.testing.assert_allclose(surface.rgbas[::4, :3], expected, atol=1e-9)
+    # The outlines take the faces' colors, as the faces' strokes did.
+    np.testing.assert_allclose(surface.stroke_rgbas[:, :3], expected, atol=1e-9)
+
+
+def test_coloring_a_smooth_surface_by_value_keeps_where_it_was_moved():
+    axes = ThreeDAxes(x_range=[0, 4], y_range=[0, 4], z_range=[0, 4])
+    surface = Surface(
+        lambda u, v: axes.c2p(u, v, u * v / 4),
+        u_range=[0, 4],
+        v_range=[0, 4],
+        resolution=4,
+        checkerboard_colors=False,
+    ).shift(2 * UP)
+    center = surface.get_center()
+
+    surface.set_fill_by_value(axes, [(RED, 0), (WHITE, 4)], axis=2)
+
+    np.testing.assert_allclose(surface.get_center(), center)
+
+
+def test_meshes_can_be_in_vector_groups():
+    group = VGroup(Square(), Sphere(), Dot3D())
+
+    group.set_color(RED)
+
+    assert group[1].fill_color == RED
+    with pytest.raises(TypeError, match="Group instead"):
+        VGroup(Square(), Mobject())
+
+
+def test_surfaces_without_a_checkerboard_are_smooth():
+    smooth = Surface(lambda u, v: [u, v, 0], resolution=4, checkerboard_colors=False)
+    checkered = Surface(lambda u, v: [u, v, 0], resolution=4)
+
+    assert not smooth.flat
+    assert len(smooth.points) == 5 * 5
+    assert checkered.flat
+    assert len(checkered.points) == 4 * 4 * 4
+
+
+def test_partial_surfaces_show_whole_faces_with_their_outlines():
+    surface = Surface(lambda u, v: [u, v, 0], resolution=4)
+    surface.set_fill_by_value(
+        ThreeDAxes(x_range=[0, 1], y_range=[0, 1], z_range=[0, 1]), [RED, WHITE], axis=0
+    )
+    partial = surface.copy().pointwise_become_partial(surface, 0, 0.5)
+
+    assert len(partial.get_faces()) == 8
+    np.testing.assert_array_equal(partial.stroke_rgbas, surface.stroke_rgbas[:8])
+
+
+def test_groups_with_meshes_can_be_rotated_and_their_sheen_set():
+    group = VGroup(Square(), Sphere())
+
+    group.rotate(1.0).set_sheen_direction(UP)
+
+    np.testing.assert_allclose(group[0].sheen_direction, UP)
+
+
+SOLIDS_WITH_PARTS = {
+    "cone with base": lambda: Cone(show_base=True),
+    "cylinder": lambda: Cylinder(),
+    "arrow": lambda: Arrow3D(ORIGIN, RIGHT),
+}
+
+
+def _meshes(mob):
+    return [m for m in mob.get_family() if isinstance(m, MeshMobject)]
+
+
+@pytest.mark.parametrize("build", SOLIDS_WITH_PARTS.values(), ids=SOLIDS_WITH_PARTS)
+def test_color_and_opacity_reach_every_part_of_a_solid(build):
+    solid = build()
+    assert len(_meshes(solid)) > 1
+    solid.set_color(RED)
+    assert {m.fill_color.to_hex() for m in _meshes(solid)} == {RED.to_hex()}
+    solid.set_opacity(0.3)
+    assert {round(m.fill_opacity, 6) for m in _meshes(solid)} == {0.3}
+    solid.set_fill(BLUE, opacity=0.5)
+    assert {
+        (m.fill_color.to_hex(), round(m.fill_opacity, 6)) for m in _meshes(solid)
+    } == {(BLUE.to_hex(), 0.5)}
+    solid.set_stroke(WHITE, width=2)
+    assert {m.stroke_width for m in _meshes(solid)} == {2}
+    solid.fade(0.5)
+    assert {round(m.fill_opacity, 6) for m in _meshes(solid)} == {0.25}
+
+
+def test_family_false_changes_only_the_mesh_itself():
+    cone = Cone(show_base=True, fill_color=BLUE)
+    base = cone.base_circle
+    cone.set_color(RED, family=False)
+    cone.set_opacity(0.2, family=False)
+    cone.set_stroke(WHITE, width=3, family=False)
+    assert cone.fill_color.to_hex() == RED.to_hex()
+    assert base.fill_color.to_hex() == BLUE.to_hex()
+    assert base.fill_opacity == 1
+    assert base.stroke_width == 0
+    cone.set_fill(WHITE, opacity=0.7, family=False)
+    assert base.fill_color.to_hex() == BLUE.to_hex()
+    assert base.fill_opacity == 1
+
+
+def test_cube_faces_are_lit_meshes_in_a_group():
+    cube = Cube(side_length=2, fill_color=RED)
+
+    assert len(cube) == 6
+    assert all(isinstance(face, PolygonFace) for face in cube)
+    assert all(face.material == PbrMaterial() for face in cube)
+    np.testing.assert_allclose(cube.get_center(), 0, atol=1e-12)
+    assert cube.width == pytest.approx(2)
+    cube.set_color(BLUE)
+    assert cube[3].fill_color == BLUE
+
+
+def test_prisms_are_stretched_cubes():
+    prism = Prism(dimensions=[1, 2, 3])
+
+    assert (prism.width, prism.height, prism.depth) == pytest.approx((1, 2, 3))
+
+
+def test_polyhedron_faces_follow_their_vertices_and_keep_their_style():
+    tetrahedron = Tetrahedron(faces_config={"fill_color": RED, "fill_opacity": 0.3})
+    face = tetrahedron.faces[0]
+
+    assert isinstance(face, PolygonFace)
+    assert face.fill_color == RED
+    assert face.fill_opacity == pytest.approx(0.3)
+    # Outlined in the face's color, as the Polygon faces were.
+    assert face.stroke_color == RED
+    assert face.stroke_width == 4
+
+    tetrahedron.graph[0].shift(UP)
+    tetrahedron.update()
+    first_corner = tetrahedron.faces_list[0].index(0)
+    np.testing.assert_allclose(
+        face.points[first_corner], tetrahedron.graph[0].get_center()
+    )
+
+
+def test_set_color_with_an_alpha_reaches_the_caps_of_a_cylinder():
+    cylinder = Cylinder().set_color(RED, 0.3)
+    for cap in (cylinder.base_top, cylinder.base_bottom):
+        assert cap.fill_color == RED
+        assert cap.fill_opacity == pytest.approx(0.3)
+
+
+def test_polyhedron_subclasses_can_change_the_default_faces_config():
+    class OpaqueTetrahedron(Tetrahedron):
+        default_faces_config = {"fill_opacity": 1.0, "stroke_width": 0}
+
+    face = OpaqueTetrahedron().faces[0]
+    assert face.fill_opacity == 1.0
+    assert face.stroke_width == 0
+    assert Tetrahedron().faces[0].fill_opacity == 0.5
+
+
+def test_surface_subclasses_can_make_their_own_caps():
+    class SquareCapped(Cylinder):
+        def make_cap(self, radius):
+            return Square(2 * radius)
+
+    capped = SquareCapped()
+    assert isinstance(capped.base_top, Square)

@@ -3,14 +3,15 @@
 from __future__ import annotations
 
 from collections.abc import Hashable
-from typing import TYPE_CHECKING, Any, Self
+from typing import TYPE_CHECKING, Any, ClassVar, Self
 
 import numpy as np
 
-from manim.mobject.geometry.polygram import Polygon
 from manim.mobject.graph import Graph
+from manim.mobject.three_d.mesh import PolygonFace
 from manim.mobject.three_d.three_dimensions import Dot3D
 from manim.mobject.types.vectorized_mobject import VGroup
+from manim.utils.color import BLUE
 from manim.utils.qhull import QuickHull
 
 if TYPE_CHECKING:
@@ -95,6 +96,10 @@ class Polyhedron(VGroup):
                 self.add(octahedron)
     """
 
+    #: Styling of the faces that ``faces_config`` adds to or overrides; a subclass
+    #: can change it for all its instances.
+    default_faces_config: ClassVar[dict[str, Any]] = {"fill_opacity": 0.5}
+
     def __init__(
         self,
         vertex_coords: Point3DLike_Array,
@@ -103,9 +108,7 @@ class Polyhedron(VGroup):
         graph_config: dict[str, Any] = {},
     ):
         super().__init__()
-        self.faces_config = dict(
-            {"fill_opacity": 0.5, "shade_in_3d": True}, **faces_config
-        )
+        self.faces_config = {**self.default_faces_config, **faces_config}
         self.graph_config = dict(
             {
                 "vertex_type": Dot3D,
@@ -139,16 +142,20 @@ class Polyhedron(VGroup):
         self,
         face_coords: Point3DLike_Array,
     ) -> VGroup:
-        """Creates VGroup of faces from a list of face coordinates."""
-        face_group = VGroup()
-        for face in face_coords:
-            face_group.add(Polygon(*face, **self.faces_config))
-        return face_group
+        """Creates a VGroup of faces (:class:`.PolygonFace` meshes, lit by their
+        ``material``) from a list of face coordinates.
+        """
+        style, mesh_config = _face_style(self.faces_config)
+        return VGroup(
+            *(
+                PolygonFace(*corners, **mesh_config).set_style(**style)
+                for corners in face_coords
+            )
+        )
 
     def update_faces(self, m: Mobject) -> Self:
-        face_coords = self.extract_face_coords()
-        new_faces = self.create_faces(face_coords)
-        self.faces.match_points(new_faces)
+        for face, corners in zip(self.faces, self.extract_face_coords(), strict=True):
+            face.set_corners(*corners)
         return self
 
     def extract_face_coords(self) -> Point3DLike_Array:
@@ -441,16 +448,30 @@ class ConvexHull3D(Polyhedron):
         c = 0
         d = {}
         facets = set(hull.facets) - hull.removed
-        for facet in facets:
-            tmp = set()
-            for subfacet in facet.subfacets:
-                for point in subfacet.points:
-                    if point not in d:
-                        vertices.append(point.coordinates)
-                        d[point] = c
-                        c += 1
-                    tmp.add(point)
-            faces.append([d[point] for point in tmp])
+        center = array.mean(axis=0)
+
+        def corners(facet: Any) -> list[Any]:
+            # Sorted by coordinates: the sets of points iterate in an order that
+            # depends on how they hash, which changes between runs.
+            points = {
+                point for subfacet in facet.subfacets for point in subfacet.points
+            }
+            return sorted(points, key=lambda point: tuple(point.coordinates))
+
+        for facet in sorted(
+            facets, key=lambda f: [tuple(p.coordinates) for p in corners(f)]
+        ):
+            face = corners(facet)
+            a, b, e = (np.asarray(p.coordinates) for p in face[:3])
+            # Corners in order around the outward normal.
+            if np.dot(np.cross(b - a, e - a), (a + b + e) / 3 - center) < 0:
+                face = face[::-1]
+            for point in face:
+                if point not in d:
+                    vertices.append(point.coordinates)
+                    d[point] = c
+                    c += 1
+            faces.append([d[point] for point in face])
 
         # Call Polyhedron
         super().__init__(
@@ -458,3 +479,26 @@ class ConvexHull3D(Polyhedron):
             faces_list=faces,
             **kwargs,
         )
+
+
+def _face_style(config: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+    """``faces_config`` split into the styling of :meth:`.MeshMobject.set_style`
+    (``fill_color``, ``fill_opacity``, ``stroke_color``, ``stroke_width``,
+    ``stroke_opacity``; ``color`` sets fill and outline) and the other arguments of
+    :class:`.PolygonFace` (``material``, ...). ``shade_in_3d`` has no effect.
+
+    As the faces were :class:`.Polygon` objects, they are outlined 4 wide in their
+    fill color unless the config says otherwise.
+    """
+    config = dict(config)
+    config.pop("shade_in_3d", None)
+    color = config.pop("color", None)
+    fill_color = config.pop("fill_color", None) or color or BLUE
+    style = {
+        "fill_color": fill_color,
+        "fill_opacity": config.pop("fill_opacity", None),
+        "stroke_color": config.pop("stroke_color", color or fill_color),
+        "stroke_width": config.pop("stroke_width", 4),
+        "stroke_opacity": config.pop("stroke_opacity", None),
+    }
+    return style, config

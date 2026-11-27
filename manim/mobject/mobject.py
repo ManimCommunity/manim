@@ -143,6 +143,11 @@ class Mobject:
     """
 
     points: ArrayField[Point3D_Array] = ArrayField(np.float64)
+    #: Whether instances may be submobjects of a :class:`.VGroup` (and any VMobject):
+    #: true for classes with the styling methods that groups call on their members
+    #: (``set_fill``, ``set_stroke``, ``set_style``, ...), which are VMobjects and
+    #: meshes. A class flag, as ``_accepts_submobject`` asks it for every member.
+    _can_be_in_vgroup: ClassVar[bool] = False
     z_index: Field[float] = Field()
     #: Whether the mobject is drawn as if the camera were at its default position
     #: (see :meth:`fix_in_frame`).
@@ -234,11 +239,18 @@ class Mobject:
         """
         return self._assert_valid_submobjects_internal(submobjects, Mobject)
 
+    @classmethod
+    def _accepts_submobject(cls, submobject: object) -> bool:
+        """Whether ``submobject`` may be a submobject of a mobject that holds only
+        mobjects of this class.
+        """
+        return isinstance(submobject, cls)
+
     def _assert_valid_submobjects_internal(
         self, submobjects: Iterable[Mobject], mob_class: type[Mobject]
     ) -> Self:
         for i, submob in enumerate(submobjects):
-            if not isinstance(submob, mob_class):
+            if not mob_class._accepts_submobject(submob):
                 error_message = (
                     f"Only values of type {mob_class.__name__} can be added "
                     f"as submobjects of {type(self).__name__}, but the value "
@@ -2507,6 +2519,12 @@ class Mobject:
         all_points = self.get_points_defining_boundary()
         if len(all_points) == 0:
             return result
+        if type(self).get_extremum_along_dim is Mobject.get_extremum_along_dim:
+            # All dimensions at once; the same values as the loop below.
+            points = np.asarray(all_points)[:, : self.dim]
+            low, high = points.min(axis=0), points.max(axis=0)
+            key = np.asarray(direction, dtype=float)[: self.dim]
+            return np.where(key < 0, low, np.where(key > 0, high, (low + high) / 2))
         for dim in range(self.dim):
             result[dim] = self.get_extremum_along_dim(
                 all_points,

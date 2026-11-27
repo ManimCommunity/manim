@@ -138,7 +138,7 @@ class TransformMatchingAbstractBase(AnimationGroup):
             key = self.get_mobject_key(sm)
             if key not in shape_map:
                 shape_map[key] = VGroup()
-            shape_map[key].add(sm)  # type: ignore[arg-type]
+            shape_map[key].add(sm)
         return shape_map
 
     def clean_up_from_scene(self, scene: Scene) -> None:

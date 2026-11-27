@@ -1019,7 +1019,7 @@ class StreamLines(VectorField):
             line.time = random.random() * self.virtual_time
             if warm_up:
                 line.time *= -1
-            self.add(anim.mobject)  # type: ignore[arg-type]
+            self.add(anim.mobject)
 
         def updater(mob: Mobject, dt: float) -> object:
             assert isinstance(mob, StreamLines)

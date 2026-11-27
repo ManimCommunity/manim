@@ -4,9 +4,9 @@
 
 Render with `--renderer=opengl`; add `-l` (or `--live-preview`) for an
 interactive preview window. The rest of the documentation applies to both
-renderers. Smooth, lit surfaces
-({class}`.ParametricSurface`, {class}`.MeshMobject`) are currently drawn by the
-OpenGL renderer only.
+renderers. Surfaces ({class}`.Surface`, {class}`.ParametricSurface`,
+{class}`.MeshMobject`) are drawn by both; the OpenGL renderer lights them per pixel
+and hides what is behind them with a depth test.
 
 Earlier versions had separate OpenGL mobject classes (`OpenGLMobject`,
 `OpenGLVMobject`, `OpenGLSurface`, ...); see

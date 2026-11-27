@@ -17,15 +17,15 @@ __all__ = [
 ]
 
 from collections.abc import Callable, Iterable, Sequence
-from typing import TYPE_CHECKING, Any, Literal, Self
+from typing import TYPE_CHECKING, Any, Literal, Self, cast
 
 import numpy as np
 
 from manim._config import logger
+from manim.appearance.material import Material, PbrMaterial
 from manim.constants import *
-from manim.mobject.geometry.arc import Circle
-from manim.mobject.geometry.polygram import Square
 from manim.mobject.mobject import *
+from manim.mobject.three_d.mesh import ParametricSurface, PolygonFace
 from manim.mobject.types.vectorized_mobject import VectorizedPoint, VGroup, VMobject
 from manim.utils.color import (
     BLUE,
@@ -35,7 +35,6 @@ from manim.utils.color import (
     WHITE,
     ManimColor,
     ParsableManimColor,
-    interpolate_color,
 )
 from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
 
@@ -62,8 +61,14 @@ class ThreeDVMobject(VMobject):
         super().__init__(shade_in_3d=shade_in_3d, **kwargs)
 
 
-class Surface(VGroup):
-    """Creates a Parametric Surface using a checkerboard pattern.
+class Surface(ParametricSurface):
+    """A parametric surface, by default of faces in a checkerboard pattern.
+
+    The surface is a :class:`.ParametricSurface`: lit by a :class:`.ThreeDCamera`'s
+    light through its ``material`` (``PbrMaterial()`` by default). With
+    ``checkerboard_colors``, every face has its own corners, so faces keep their own
+    color and are lit flat; without, neighboring faces share corners and the
+    surface is lit smoothly.
 
     Parameters
     ----------
@@ -83,15 +88,15 @@ class Surface(VGroup):
         The opacity of the :class:`Surface`, from 0 being fully transparent
         to 1 being fully opaque. Defaults to 1.
     checkerboard_colors
-        ng individual faces alternating colors. Overrides ``fill_color``.
+        The colors of alternating faces, or ``False`` for ``fill_color`` throughout.
     stroke_color
-        Color of the stroke surrounding each face of :class:`Surface`.
+        Color of the outline of each face of :class:`Surface`.
     stroke_width
-        Width of the stroke surrounding each face of :class:`Surface`.
-        Defaults to 0.5.
-    should_make_jagged
-        Changes the anchor mode of the Bézier curves from smooth to jagged.
-        Defaults to ``False``.
+        Width of the outline of each face of :class:`Surface`. Defaults to 0.5.
+    stroke_opacity
+        Opacity of the outline of each face of :class:`Surface`.
+    kwargs
+        Further arguments of :class:`.ParametricSurface`, for example ``material``.
 
     Examples
     --------
@@ -120,7 +125,6 @@ class Surface(VGroup):
         u_range: tuple[float, float] = (0, 1),
         v_range: tuple[float, float] = (0, 1),
         resolution: int | Sequence[int] = 32,
-        surface_piece_config: dict = {},
         fill_color: ParsableManimColor = BLUE_D,
         fill_opacity: float = 1.0,
         checkerboard_colors: Iterable[ParsableManimColor] | Literal[False] = [
@@ -129,113 +133,60 @@ class Surface(VGroup):
         ],
         stroke_color: ParsableManimColor = LIGHT_GREY,
         stroke_width: float = 0.5,
-        should_make_jagged: bool = False,
-        pre_function_handle_to_anchor_scale_factor: float = 0.00001,
+        stroke_opacity: float = 1.0,
         **kwargs: Any,
     ) -> None:
-        self.u_range = u_range
-        self.v_range = v_range
-        super().__init__(
-            fill_color=fill_color,
-            fill_opacity=fill_opacity,
-            stroke_color=stroke_color,
-            stroke_width=stroke_width,
-            **kwargs,
-        )
-        self.resolution = resolution
-        self.surface_piece_config = surface_piece_config
         self.checkerboard_colors: list[ManimColor] | Literal[False]
         if checkerboard_colors is False:
             self.checkerboard_colors = checkerboard_colors
         else:
             self.checkerboard_colors = [ManimColor(i) for i in checkerboard_colors]
-        self.should_make_jagged = should_make_jagged
-        self.pre_function_handle_to_anchor_scale_factor = (
-            pre_function_handle_to_anchor_scale_factor
+        # As for other mobjects, ``color`` is the fill color.
+        fill_color = kwargs.pop("color", None) or fill_color
+        super().__init__(
+            func,
+            u_range=u_range,
+            v_range=v_range,
+            resolution=resolution,
+            flat=bool(self.checkerboard_colors),
+            color=fill_color,
+            opacity=fill_opacity,
+            stroke_color=stroke_color,
+            stroke_width=stroke_width,
+            stroke_opacity=stroke_opacity,
+            **kwargs,
         )
-        self.list_of_faces: list[ThreeDVMobject] = []
-        self._func = func
-        self._setup_in_uv_space()
-        self.apply_function(lambda p: func(p[0], p[1]))
-        if self.should_make_jagged:
-            self.make_jagged()
-
-    def func(self, u: float, v: float) -> np.ndarray:
-        return self._func(u, v)
-
-    def _get_u_values_and_v_values(self) -> tuple[np.ndarray, np.ndarray]:
-        if isinstance(self.resolution, int):
-            u_res = v_res = self.resolution
-        else:
-            u_res, v_res = self.resolution
-
-        u_values = np.linspace(*self.u_range, u_res + 1)
-        v_values = np.linspace(*self.v_range, v_res + 1)
-
-        return u_values, v_values
-
-    def _setup_in_uv_space(self) -> None:
-        u_values, v_values = self._get_u_values_and_v_values()
-        faces = VGroup()
-        self.list_of_faces = []
-        for i in range(len(u_values) - 1):
-            for j in range(len(v_values) - 1):
-                u1, u2 = u_values[i : i + 2]
-                v1, v2 = v_values[j : j + 2]
-                face = ThreeDVMobject()
-                face.set_points_as_corners(
-                    [
-                        [u1, v1, 0],
-                        [u2, v1, 0],
-                        [u2, v2, 0],
-                        [u1, v2, 0],
-                        [u1, v1, 0],
-                    ],
-                )
-                faces.add(face)
-                face.u_index = i
-                face.v_index = j
-                face.u1 = u1
-                face.u2 = u2
-                face.v1 = v1
-                face.v2 = v2
-                self.list_of_faces.append(face)
-        faces.set_fill(color=self.fill_color, opacity=self.fill_opacity)
-        faces.set_stroke(
-            color=self.stroke_color,
-            width=self.stroke_width,
-            opacity=self.stroke_opacity,
-        )
-        self.add(*faces)
         if self.checkerboard_colors:
             self.set_fill_by_checkerboard(*self.checkerboard_colors)
 
-    def set_fill_by_checkerboard(
-        self, *colors: ParsableManimColor, opacity: float | None = None
+    def set_color(
+        self,
+        color: ParsableManimColor = BLUE_D,
+        alpha: float | None = None,
+        family: bool = True,
     ) -> Self:
-        """Sets the fill_color of each face of :class:`Surface` in
-        an alternating pattern.
+        """Color the faces and their outlines."""
+        super().set_color(color, alpha, family)
+        return self.set_stroke(color)
 
-        Parameters
-        ----------
-        colors
-            List of colors for alternating pattern.
-        opacity
-            The fill_opacity of :class:`Surface`, from 0 being fully transparent
-            to 1 being fully opaque.
-
-        Returns
-        -------
-        :class:`~.Surface`
-            The parametric surface with an alternating pattern.
+    def make_cap(self, radius: float) -> ParametricSurface:
+        """A disc of ``radius`` around the origin in the xy-plane, as a cap of this
+        surface (the base of a :class:`Cone`, the ends of a :class:`Cylinder`): its
+        color, opacity and material, as many sectors as the surface has steps in
+        ``v``, and no outlines. Subclasses can override it for other caps.
         """
-        n_colors = len(colors)
-        for face in self.list_of_faces:
-            c_index = (face.u_index + face.v_index) % n_colors
-            face.set_fill(colors[c_index], opacity=opacity)
-        return self
+        return ParametricSurface(
+            lambda r, angle: np.array([r * np.cos(angle), r * np.sin(angle), 0.0]),
+            u_range=(0, radius),
+            v_range=(0, TAU),
+            resolution=(1, self.resolution[1]),
+            color=self.fill_color,
+            opacity=self.fill_opacity,
+            material=self.material,
+            stroke_width=0,
+        )
 
-    def set_fill_by_value(
+    def set_fill_by_value(  # type: ignore[override]
         self,
         axes: ThreeDAxes,
         colorscale: Iterable[ParsableManimColor]
@@ -244,8 +195,8 @@ class Surface(VGroup):
         axis: int = 2,
         **kwargs: Any,
     ) -> Self:
-        """Sets the color of each mobject of a parametric surface to a color
-        relative to its axis-value.
+        """Color each face by its value along an axis: the value of the point
+        halfway around the face's outline.
 
         Parameters
         ----------
@@ -291,11 +242,11 @@ class Surface(VGroup):
         """
         if "colors" in kwargs and colorscale is None:
             colorscale = kwargs.pop("colors")
-            if kwargs:
-                raise ValueError(
-                    "Unsupported keyword argument(s): "
-                    f"{', '.join(str(key) for key in kwargs)}"
-                )
+        if kwargs:
+            raise ValueError(
+                "Unsupported keyword argument(s): "
+                f"{', '.join(str(key) for key in kwargs)}"
+            )
         if colorscale is None:
             logger.warning(
                 "The value passed to the colorscale keyword argument was None, "
@@ -303,51 +254,52 @@ class Surface(VGroup):
             )
             return self
         colorscale_list = list(colorscale)
-
-        ranges = [axes.x_range, axes.y_range, axes.z_range]
-        assert isinstance(colorscale_list, list)
         new_colors: list[ManimColor]
         if type(colorscale_list[0]) is tuple and len(colorscale_list[0]) == 2:
-            new_colors, pivots = [
-                [ManimColor(i) for i, j in colorscale_list],
-                [j for i, j in colorscale_list],
-            ]
+            pairs = cast("list[tuple[ParsableManimColor, float]]", colorscale_list)
+            new_colors = [ManimColor(color) for color, _ in pairs]
+            pivots = np.array([pivot for _, pivot in pairs], dtype=float)
         else:
             new_colors = [ManimColor(i) for i in colorscale_list]
-            current_range = ranges[axis]
-
-            assert current_range is not None
-            pivot_min = current_range[0]
-            pivot_max = current_range[1]
-            pivot_frequency = (pivot_max - pivot_min) / (len(new_colors) - 1)
-            pivots = np.arange(
-                start=pivot_min,
-                stop=pivot_max + pivot_frequency,
-                step=pivot_frequency,
-            )
-
-        for mob in self.family_members_with_points():
-            axis_value = axes.point_to_coords(mob.get_midpoint())[axis]
-            if axis_value <= pivots[0]:
-                mob.set_color(new_colors[0])
-            elif axis_value >= pivots[-1]:
-                mob.set_color(new_colors[-1])
-            else:
-                for i, pivot in enumerate(pivots):
-                    if pivot > axis_value:
-                        color_index = (axis_value - pivots[i - 1]) / (
-                            pivots[i] - pivots[i - 1]
-                        )
-                        color_index = min(color_index, 1)
-                        mob_color = interpolate_color(
-                            new_colors[i - 1],
-                            new_colors[i],
-                            color_index,
-                        )
-                        mob.set_color(mob_color, family=False)
-                        break
-
+            axis_range = [axes.x_range, axes.y_range, axes.z_range][axis]
+            assert axis_range is not None
+            pivot_min, pivot_max = axis_range[:2]
+            pivots = np.linspace(pivot_min, pivot_max, len(new_colors))
+        values = np.asarray(axes.point_to_coords(_halfway_around(self)))[:, axis]
+        rgbs = np.array([color.to_rgb() for color in new_colors])
+        colors = np.stack(
+            [np.interp(values, pivots, rgbs[:, channel]) for channel in range(3)],
+            axis=1,
+        )
+        opacity = self.fill_opacity
+        fills = np.concatenate((colors, np.full((len(colors), 1), opacity)), axis=1)
+        if not self.flat:
+            # One color per face needs corners of its own, through the surface's
+            # current points.
+            grid = self._grid()
+            self.flat = True
+            self._build(grid)
+        self.set_vertex_colors(np.repeat(fills, 4, axis=0))
+        strokes = fills.copy()
+        strokes[:, 3] = self.stroke_opacity
+        # As each face's outline took its color, too.
+        self.stroke_rgbas = strokes
         return self
+
+
+def _halfway_around(surface: ParametricSurface) -> np.ndarray:
+    """For each face, the point halfway around its outline."""
+    corners = surface.points[surface.get_faces()]
+    sides = np.linalg.norm(np.roll(corners, -1, axis=1) - corners, axis=2)
+    ends = np.cumsum(sides, axis=1)
+    halfway = ends[:, -1:] / 2
+    side = np.minimum((ends < halfway).sum(axis=1), corners.shape[1] - 1)
+    rows = np.arange(len(corners))
+    start = corners[rows, side]
+    end = corners[rows, (side + 1) % corners.shape[1]]
+    before = np.where(side > 0, ends[rows, side - 1], 0)
+    t = (halfway[:, 0] - before) / np.where(sides[rows, side] > 0, sides[rows, side], 1)
+    return start + (end - start) * t[:, None]
 
 
 # Specific shapes
@@ -557,9 +509,11 @@ class Cube(VGroup):
         fill_opacity: float = 0.75,
         fill_color: ParsableManimColor = BLUE,
         stroke_width: float = 0,
+        material: Material | None = None,
         **kwargs: Any,
     ) -> None:
         self.side_length = side_length
+        self._face_material = PbrMaterial() if material is None else material
         super().__init__(
             fill_color=fill_color,
             fill_opacity=fill_opacity,
@@ -568,18 +522,15 @@ class Cube(VGroup):
         )
 
     def generate_points(self) -> Self:
-        """Creates the sides of the :class:`Cube`."""
+        """Creates the sides of the :class:`Cube`: square faces, lit by the
+        ``material`` (:class:`.PbrMaterial` by default).
+        """
+        half = self.side_length / 2
+        square = np.array([[-half, -half], [half, -half], [half, half], [-half, half]])
         for vect in IN, OUT, LEFT, RIGHT, UP, DOWN:
-            face = Square(
-                side_length=self.side_length,
-                shade_in_3d=True,
-                joint_type=LineJointType.BEVEL,
-            )
-            face.flip()
-            face.shift(self.side_length * OUT / 2.0)
-            face.apply_matrix(z_to_vector(vect))
-
-            self.add(face)
+            corners = np.column_stack([square, np.full(4, half)])
+            corners = corners @ np.asarray(z_to_vector(vect)).T
+            self.add(PolygonFace(*corners, material=self._face_material))
         return self
 
 
@@ -685,12 +636,7 @@ class Cone(Surface):
         self.new_height = height
         self._current_theta = 0
         self._current_phi = 0
-        self.base_circle = Circle(
-            radius=base_radius,
-            color=self.fill_color,
-            fill_opacity=self.fill_opacity,
-            stroke_width=0,
-        )
+        self.base_circle = self.make_cap(base_radius)
         self.base_circle.shift(height * IN)
         self._set_start_and_end_attributes(direction)
         if show_base:
@@ -869,25 +815,10 @@ class Cylinder(Surface):
         return np.array([r * np.cos(phi), r * np.sin(phi), height])
 
     def add_bases(self) -> Self:
-        """Adds the end caps of the cylinder."""
-        color = self.fill_color
-        opacity = self.fill_opacity
-
-        self.base_top = Circle(
-            radius=self.radius,
-            color=color,
-            fill_opacity=opacity,
-            shade_in_3d=True,
-            stroke_width=0,
-        )
+        """Adds the end caps of the cylinder: discs lit as the side is."""
+        self.base_top = self.make_cap(self.radius)
         self.base_top.shift(self.u_range[1] * IN)
-        self.base_bottom = Circle(
-            radius=self.radius,
-            color=color,
-            fill_opacity=opacity,
-            shade_in_3d=True,
-            stroke_width=0,
-        )
+        self.base_bottom = self.make_cap(self.radius)
         self.base_bottom.shift(self.u_range[0] * IN)
         self.add(self.base_top, self.base_bottom)
         return self

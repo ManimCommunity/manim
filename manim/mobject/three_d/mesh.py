@@ -1,7 +1,9 @@
-"""Mobjects made of triangles: smooth surfaces with lighting and textures.
+"""Mobjects made of triangles: surfaces with lighting and textures.
 
-These are drawn by the OpenGL renderer as meshes, with depth testing and lighting. The
-Cairo renderer cannot draw them yet; use :class:`.Surface` there.
+The OpenGL renderer draws them as meshes, with depth testing and lighting per pixel;
+the Cairo renderer as one polygon per face, sorted far to near and lit per face.
+:class:`.Surface` and the 3D primitives (:class:`.Sphere`, :class:`.Torus`, ...) are
+parametric surfaces of this kind.
 
 A mesh has a :mod:`material <manim.appearance.material>`: :class:`.PbrMaterial`
 (the default) lights it under a :class:`.ThreeDCamera`'s light,
@@ -10,7 +12,7 @@ A mesh has a :mod:`material <manim.appearance.material>`: :class:`.PbrMaterial`
 
 from __future__ import annotations
 
-__all__ = ["MeshMobject", "ParametricSurface"]
+__all__ = ["MeshMobject", "ParametricSurface", "PolygonFace"]
 
 import itertools as it
 from collections.abc import Callable, Iterable, Sequence
@@ -43,11 +45,13 @@ if TYPE_CHECKING:
 
     from manim.mobject.graphing.coordinate_systems import CoordinateSystem
     from manim.typing import (
+        Face_Array,
         FloatRGBA_Array,
         FloatRGBALike_Array,
         PixelArray,
         Point3D,
         Point3D_Array,
+        TriangleIndices_Array,
         UV_Array,
         UVLike_Array,
     )
@@ -74,10 +78,18 @@ class MeshMobject(Mobject):
     uvs
         Texture coordinates of the vertices, shape ``(n, 2)``, from ``(0, 0)`` at the
         upper left of the image to ``(1, 1)`` at the lower right.
+    stroke_color, stroke_width, stroke_opacity
+        The outlines of the faces (see :attr:`faces`); no outlines by default.
     """
 
+    # Meshes have the styling methods of VMobjects that groups call, so they can be
+    # in a VGroup (spheres as the vertices of a graph, for example).
+    _can_be_in_vgroup = True
     #: Vertex indices, three per triangle (int32, as renderers upload them).
-    triangles: ArrayField[np.ndarray] = ArrayField(np.int32)
+    triangles: ArrayField[TriangleIndices_Array] = ArrayField(np.int32)
+    #: Polygons, as vertex indices in order around each, that the mesh is made of
+    #: (quads for parametric surfaces). Empty means the triangles.
+    faces: ArrayField[Face_Array] = ArrayField(np.int32)
     #: Colors: one row for the whole mesh, or one per vertex.
     rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
     uvs: ArrayField[UV_Array] = ArrayField(np.float64)
@@ -85,22 +97,31 @@ class MeshMobject(Mobject):
     texture: ArrayField[PixelArray] = ArrayField(np.uint8)
     material: Field[Material] = Field()
     depth_test: Field[bool] = Field()
+    #: Outline colors of the faces: one for all, or one per face.
+    stroke_rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
+    stroke_width: Field[float] = Field()
 
     def __init__(
         self,
         points: Point3D_Array | None = None,
-        triangles: np.ndarray | None = None,
+        triangles: TriangleIndices_Array | None = None,
         color: ParsableManimColor = BLUE_D,
         opacity: float = 1.0,
         material: Material | None = None,
         depth_test: bool = True,
         texture: str | Path | PixelArray | None = None,
         uvs: UVLike_Array | None = None,
+        stroke_color: ParsableManimColor = LIGHT_GREY,
+        stroke_width: float = 0,
+        stroke_opacity: float = 1.0,
         **kwargs: Any,
     ) -> None:
         self.triangles = np.zeros((0, 3)) if triangles is None else triangles
+        self.faces = np.zeros((0, 3))
+        self.stroke_rgbas = [color_to_rgba(stroke_color, stroke_opacity)]
+        self.stroke_width = stroke_width
         self.rgbas = [color_to_rgba(color, opacity)]
-        self.uvs = np.zeros((0, 2)) if uvs is None else uvs
+        self.uvs = np.zeros((0, 2)) if uvs is None else np.asarray(uvs)
         self.texture = _load_texture(texture)
         self.material = PbrMaterial() if material is None else material
         self.depth_test = depth_test
@@ -116,15 +137,97 @@ class MeshMobject(Mobject):
         alpha: float | None = None,
         family: bool = True,
     ) -> Self:
+        """Give the mesh one color (and, with ``family``, its submobjects, such
+        as the caps of a :class:`.Cylinder`); ``alpha`` sets its opacity too.
+        """
         opacity = self.rgbas[:, 3].max() if alpha is None else alpha
         self.rgbas = [color_to_rgba(color, opacity)]
         self.color = ManimColor(color)
+        if family:
+            for submob in self.submobjects:
+                # set_fill takes an opacity on meshes and paths alike; set_color of
+                # a VMobject has none.
+                submob.set_color(color, family=True)
+                if alpha is not None:
+                    submob.set_fill(opacity=alpha, family=True)
         return self
+
+    def set_fill(
+        self,
+        color: ParsableManimColor | None = None,
+        opacity: float | None = None,
+        family: bool = True,
+    ) -> Self:
+        """Set one color, or one opacity, for the whole mesh (and, with
+        ``family``, its submobjects).
+        """
+        if color is not None:
+            self.set_color(color, opacity, family=family)
+        elif opacity is not None:
+            self.set_opacity(opacity, family=family)
+        return self
+
+    def set_style(
+        self,
+        fill_color: ParsableManimColor | None = None,
+        fill_opacity: float | None = None,
+        stroke_color: ParsableManimColor | None = None,
+        stroke_width: float | None = None,
+        stroke_opacity: float | None = None,
+        family: bool = True,
+        **vmobject_style: Any,
+    ) -> Self:
+        """Set the color of the faces and of their outlines.
+
+        The other arguments of :meth:`.VMobject.set_style` (background strokes,
+        sheen, background images) have no effect on meshes.
+        """
+        self.set_fill(fill_color, fill_opacity, family=family)
+        return self.set_stroke(
+            stroke_color, stroke_width, stroke_opacity, family=family
+        )
+
+    @property
+    def fill_color(self) -> ManimColor:
+        """The color of the first vertex."""
+        return ManimColor(self.rgbas[0, :3])
+
+    @property
+    def fill_opacity(self) -> float:
+        """The highest opacity of the vertices: what :meth:`set_color` keeps when it
+        is given no ``alpha``, so that recoloring a mesh whose vertices fade out
+        keeps it as opaque as its most opaque vertex.
+        """
+        return float(self.rgbas[:, 3].max())
+
+    def get_fill_color(self) -> ManimColor:
+        return self.fill_color
+
+    def get_fill_opacity(self) -> float:
+        return self.fill_opacity
+
+    @property
+    def stroke_color(self) -> ManimColor:
+        """The color of the first face's outline."""
+        return ManimColor(self.stroke_rgbas[0, :3])
+
+    @property
+    def stroke_opacity(self) -> float:
+        return float(self.stroke_rgbas[:, 3].max())
+
+    def get_stroke_color(self) -> ManimColor:
+        return self.stroke_color
+
+    def get_stroke_width(self) -> float:
+        return self.stroke_width
 
     def set_opacity(self, opacity: float, family: bool = True) -> Self:
         rgbas = np.array(self.rgbas)
         rgbas[:, 3] = opacity
         self.rgbas = rgbas
+        if family:
+            for submob in self.submobjects:
+                submob.set_opacity(opacity, family=True)
         return self
 
     def fade(self, darkness: float = 0.5, family: bool = True) -> Self:
@@ -132,6 +235,53 @@ class MeshMobject(Mobject):
         rgbas[:, 3] *= 1 - darkness
         self.rgbas = rgbas
         return super().fade(darkness, family)
+
+    def set_stroke(
+        self,
+        color: ParsableManimColor | None = None,
+        width: float | None = None,
+        opacity: float | None = None,
+        background: bool = False,
+        family: bool = True,
+    ) -> Self:
+        """Set the outlines of the faces (and, with ``family``, those of its
+        submobjects). Meshes have no background strokes.
+        """
+        if family:
+            for submob in self.submobjects:
+                if hasattr(submob, "set_stroke"):
+                    submob.set_stroke(
+                        color, width, opacity, background=background, family=True
+                    )
+        if background:
+            return self
+        if color is not None or opacity is not None:
+            rgbas = np.array(self.stroke_rgbas)
+            if color is not None:
+                rgbas = np.repeat([color_to_rgba(color)], len(rgbas), axis=0)
+                rgbas[:, 3] = self.stroke_rgbas[:, 3]
+            if opacity is not None:
+                rgbas[:, 3] = opacity
+            self.stroke_rgbas = rgbas
+        if width is not None:
+            self.stroke_width = width
+        return self
+
+    # What VMobject methods ask of the members of a group.
+
+    def set_sheen(self, *args: Any, **kwargs: Any) -> Self:
+        """Meshes have no sheen; for groups of vectorized mobjects and meshes."""
+        return self
+
+    def color_using_background_image(self, *args: Any, **kwargs: Any) -> Self:
+        """Meshes have no background image; for groups of vectorized mobjects and
+        meshes.
+        """
+        return self
+
+    def get_faces(self) -> np.ndarray:
+        """The polygons of the mesh: :attr:`faces`, or else the triangles."""
+        return self.faces if len(self.faces) else self.triangles
 
     def set_vertex_colors(self, rgbas: FloatRGBALike_Array) -> Self:
         """Give every vertex its own color, as an ``(n, 4)`` array of RGBA values."""
@@ -178,6 +328,16 @@ class MeshMobject(Mobject):
         assert isinstance(mobject1, MeshMobject)
         assert isinstance(mobject2, MeshMobject)
         self.rgbas = _mixed_rgbas(mobject1.rgbas, mobject2.rgbas, alpha)
+        self.stroke_rgbas = _mixed_rgbas(
+            mobject1.stroke_rgbas, mobject2.stroke_rgbas, alpha
+        )
+        start_width, end_width = mobject1.stroke_width, mobject2.stroke_width
+        # Equal widths stay the value they are: mixing them can round it.
+        self.stroke_width = (
+            end_width
+            if start_width == end_width
+            else float((1 - alpha) * start_width + alpha * end_width)
+        )
         self.material = _interpolate_material(
             mobject1.material, mobject2.material, alpha
         )
@@ -194,8 +354,17 @@ class MeshMobject(Mobject):
         """Show the triangles of ``mobject`` from proportion ``a`` to ``b``, in order."""
         assert isinstance(mobject, MeshMobject)
         count = len(mobject.triangles)
+        low, high = int(a * count), int(np.ceil(b * count))
         self.points = mobject.points
-        self.triangles = mobject.triangles[int(a * count) : int(np.ceil(b * count))]
+        self.triangles = mobject.triangles[low:high]
+        faces = mobject.faces
+        if len(faces):
+            # Faces made of triangles in order, the same number each.
+            per_face = count // len(faces)
+            shown = slice(low // per_face, -(-high // per_face))
+            self.faces = faces[shown]
+            if len(mobject.stroke_rgbas) == len(faces) > 1:
+                self.stroke_rgbas = mobject.stroke_rgbas[shown]
         return self
 
     # Shape
@@ -289,17 +458,20 @@ class ParametricSurface(MeshMobject):
             triangles = np.concatenate(
                 (base + [0, 1, 2], base + [1, 3, 2]), axis=1
             ).reshape(-1, 3)
+            faces = base + [0, 1, 3, 2]
         else:
             points = grid.reshape(-1, 3)
             params = uv.reshape(-1, 2)
             index = np.arange((nu + 1) * (nv + 1)).reshape(nu + 1, nv + 1)
             a, b = index[:-1, :-1].ravel(), index[1:, :-1].ravel()
             c, d = index[:-1, 1:].ravel(), index[1:, 1:].ravel()
-            triangles = np.concatenate(
-                (np.stack((a, b, c), axis=1), np.stack((b, d, c), axis=1))
-            )
+            # Two triangles per quad, in order, so that a quad's triangles stay
+            # together when part of the surface is shown.
+            triangles = np.stack((a, b, c, b, d, c), axis=1).reshape(-1, 3)
+            faces = np.stack((a, b, d, c), axis=1)
         self.points = points
         self.triangles = triangles
+        self.faces = faces
         if len(self.texture):
             u0, u1 = self.u_range
             v0, v1 = self.v_range
@@ -376,6 +548,7 @@ class ParametricSurface(MeshMobject):
                 grid[:, index + 1 :] = edge[:, None]
         self.points = grid.reshape(-1, 3)
         self.triangles = mobject.triangles
+        self.faces = mobject.faces
         return self
 
     def get_wireframe(
@@ -415,6 +588,35 @@ class ParametricSurface(MeshMobject):
             f"{'flat' if self.flat else 'smooth'} surface of resolution "
             f"{self.resolution}."
         )
+
+
+class PolygonFace(MeshMobject):
+    """A flat polygon as a mesh: one face, its corners in order around it.
+
+    The faces of :class:`.Cube`, :class:`.Prism` and the polyhedra are of this kind.
+    Fill and outline are set as for other meshes.
+
+    Parameters
+    ----------
+    corners
+        The corners of the polygon, in order around it.
+    kwargs
+        Further arguments of :class:`MeshMobject`, for example ``color``, ``opacity``
+        or ``material``.
+    """
+
+    def __init__(self, *corners: Point3D, **kwargs: Any) -> None:
+        corners_array = np.asarray(corners, dtype=float)
+        count = len(corners_array)
+        # A fan of triangles from the first corner (the polygon is convex).
+        triangles = np.array([[0, i, i + 1] for i in range(1, count - 1)])
+        super().__init__(points=corners_array, triangles=triangles, **kwargs)
+        self.faces = np.arange(count)[None, :]
+
+    def set_corners(self, *corners: Point3D) -> Self:
+        """Move the corners of the polygon, keeping their number."""
+        self.points = np.asarray(corners, dtype=float)
+        return self
 
 
 def _interpolate_material(start: Material, end: Material, alpha: float) -> Material:
