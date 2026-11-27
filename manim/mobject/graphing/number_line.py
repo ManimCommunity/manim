@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 import numpy as np
 
-from manim import config
+from manim._config import config
 from manim.constants import *
 from manim.mobject.geometry.line import Line
 from manim.mobject.graphing.scale import LinearBase, _ScaleBase
@@ -177,8 +177,8 @@ class NumberLine(Line):
 
         if x_range is None:
             x_range = [
-                round(-config["frame_x_radius"]),
-                round(config["frame_x_radius"]),
+                round(-config.frame_x_radius),
+                round(config.frame_x_radius),
                 1,
             ]
         elif len(x_range) == 2:

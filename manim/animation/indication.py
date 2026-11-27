@@ -40,7 +40,7 @@ __all__ = [
 ]
 
 from collections.abc import Iterable
-from typing import Any, Self
+from typing import TYPE_CHECKING, Any, Self
 
 import numpy as np
 
@@ -49,9 +49,8 @@ from manim.mobject.geometry.line import Line
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.scene.scene import Scene
 
-from .. import config
+from .._config import config
 from ..animation.animation import Animation
 from ..animation.composition import AnimationGroup, Succession
 from ..animation.creation import Create, ShowPartial, Uncreate
@@ -67,6 +66,9 @@ from ..utils.bezier import interpolate, inverse_interpolate
 from ..utils.color import GREY, PURE_YELLOW, ParsableManimColor
 from ..utils.rate_functions import RateFunction, smooth, there_and_back, wiggle
 from ..utils.space_ops import normalize
+
+if TYPE_CHECKING:
+    from manim.scene.scene import Scene
 
 
 class FocusOn(Transform):
@@ -108,7 +110,7 @@ class FocusOn(Transform):
         self.opacity = opacity
         remover = True
         starting_dot = Dot(
-            radius=config["frame_x_radius"] + config["frame_y_radius"],
+            radius=config.frame_x_radius + config.frame_y_radius,
             stroke_width=0,
             fill_color=self.color,
             fill_opacity=0,

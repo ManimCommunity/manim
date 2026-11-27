@@ -1,6 +1,6 @@
 [project]
 name = "manim"
-version = "0.21.0"
+version = "0.22.1"
 description = "Animation engine for explanatory math videos."
 authors = [
   {name = "The Manim Community Developers", email = "contact@manim.community"},
@@ -22,7 +22,6 @@ classifiers = [
     ]
 requires-python = ">=3.11"
 dependencies = [
-    "audioop-lts>=0.2.1 ; python_full_version >= '3.13'",
     "av>=15.0",
     "beautifulsoup4>=4.12",
     "click>=8.0",
@@ -37,7 +36,6 @@ dependencies = [
     "numpy>=2.1",
     "pillow>=11.0",
     "pycairo>=1.14,<2.0.0",
-    "pydub>=0.22.0",
     "pygments>=2.17",
     "rich>=12.0.0",
     "scipy>=1.13.0",
@@ -80,25 +78,30 @@ typst = [
 
 [dependency-groups]
 dev = [
-    "furo>=2024.8.6",
+    {include-group = "docs"},
     "matplotlib>=3.9.4",
-    "myst-parser>=3.0.1",
     "pre-commit>=4.1.0",
     "pytest>=8.3.4",
     "pytest-cov>=6.0.0",
     "pytest-xdist>=2.2,<3.0",
     "ruff>=0.14.7",
+    "types-decorator>=5.1.8.20250121",
+    "types-pillow>=10.2.0.20240822",
+    "types-pygments>=2.19.0.20250107",
+    "psutil>=6.1.1",
+    "requests>=2.32.3",
+]
+docs = [
+    "furo>=2024.8.6",
+    "jupyterlab>=4.3.4",
+    "myst-parser>=3.0.1",
     "sphinx>=7.4.7",
     "sphinx-copybutton>=0.5.2",
     "sphinx-design>=0.6.1",
     "sphinx-reredirects>=0.1.5",
     "sphinxcontrib-programoutput>=0.18",
     "sphinxext-opengraph>=0.9.1",
-    "types-decorator>=5.1.8.20250121",
-    "types-pillow>=10.2.0.20240822",
-    "types-pygments>=2.19.0.20250107",
-    "psutil>=6.1.1",
-    "requests>=2.32.3",
+    "typst>=0.14",
 ]
 
 [build-system]

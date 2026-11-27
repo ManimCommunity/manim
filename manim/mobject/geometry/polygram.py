@@ -199,12 +199,12 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
             generated.
 
             The option to `evenly_distribute_anchors` is provided so that the
-            line segments (the part part of each line remaining after rounding
+            line segments (the part of each line remaining after rounding
             off the corners) can be subdivided to a density similar to that of
             the average density of the rounded corners.  This may be desirable
             in situations in which an even distribution of curves is desired
             for use in later transformation animations.  Be aware, though, that
-            enabling this option can result in an an object containing
+            enabling this option can result in an object containing
             significantly more points than the original, especially when the
             rounded corner curves are small.
 
@@ -290,6 +290,7 @@ class Polygram(VMobject, metaclass=ConvertToOpenGL):
 
             # To ensure that we loop through starting with last
             arcs = [arcs[-1], *arcs[:-1]]
+            # local import to avoid import cycle
             from manim.mobject.geometry.line import Line
 
             for arc1, arc2 in adjacent_pairs(arcs):
@@ -649,6 +650,7 @@ class Rectangle(Polygon):
         self.grid_lines = VGroup()
 
         if grid_xstep or grid_ystep:
+            # local import to avoid import cycle
             from manim.mobject.geometry.line import Line
 
             v = self.get_vertices()

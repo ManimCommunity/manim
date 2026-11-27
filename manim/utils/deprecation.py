@@ -27,7 +27,7 @@ def _get_callable_info(callable_: Callable[..., Any], /) -> tuple[str, str]:
     Returns
     -------
     Tuple[str, str]
-        The type and name of the callable. Type can can be one of "class", "method" (for
+        The type and name of the callable. Type can be one of "class", "method" (for
         functions defined in classes) or "function"). For methods, name is Class.method.
     """
     what = type(callable_).__name__

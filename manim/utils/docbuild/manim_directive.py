@@ -1,469 +1,374 @@
-r"""
-A directive for including Manim videos in a Sphinx document
-===========================================================
+r"""A Sphinx directive that renders Manim scenes into the documentation.
 
-When rendering the HTML documentation, the ``.. manim::`` directive
-implemented here allows to include rendered videos.
-
-Its basic usage that allows processing **inline content**
-looks as follows::
+Usage::
 
     .. manim:: MyScene
+        :save_last_frame:
 
         class MyScene(Scene):
             def construct(self):
                 ...
 
-It is required to pass the name of the class representing the
-scene to be rendered to the directive.
-
-As a second application, the directive can also be used to
-render scenes that are defined within doctests, for example::
-
-    .. manim:: DirectiveDoctestExample
-        :ref_classes: Dot
-
-        >>> from manim import Create, Dot, RED, Scene
-        >>> dot = Dot(color=RED)
-        >>> dot.color
-        ManimColor('#FC6255')
-        >>> class DirectiveDoctestExample(Scene):
-        ...     def construct(self):
-        ...         self.play(Create(dot))
-
+The argument is the name of the scene class to render. The content is either
+plain code or a doctest, whose ``>>>`` and ``...`` lines are run.
 
 Options
 -------
 
-Options can be passed as follows::
+``hide_source``
+    Show only the rendered output, not the code.
+``no_autoplay``
+    Do not start the video automatically.
+``quality``
+    One of ``low``, ``medium``, ``high``, ``fourk``, ``production`` or
+    ``example`` (the default), as in :data:`~.constants.QUALITIES`.
+``save_as_gif``
+    Render a GIF instead of a video.
+``save_last_frame``
+    Render only the last frame, as an image.
+``ref_modules``, ``ref_classes``, ``ref_functions``, ``ref_methods``
+    Space-separated names listed as references below the code.
 
-    .. manim:: <Class name>
-        :<option name>: <value>
+Configuration
+-------------
 
-The following configuration options are supported by the
-directive:
+The directive reads two values from ``conf.py``; both can be overridden on
+the command line with ``-D``:
 
-    hide_source
-        If this flag is present without argument,
-        the source code is not displayed above the rendered video.
+``manim_config``
+    Manim config applied to every example, as with :func:`.tempconfig`.
+    The options of an example are applied on top of it. Single entries can
+    be overridden, e.g. ``-D manim_config.quality=low_quality``.
+``manim_render``
+    Whether to render examples that are not cached yet (default ``True``).
+    With ``-D manim_render=0``, such examples are shown as their code only;
+    this is how doctests and translation templates are built.
 
-    no_autoplay
-        If this flag is present without argument,
-        the video will not autoplay.
+Rendered examples are cached in ``_manim`` in the build's output directory,
+named after a hash of the scene, its code and its config, so an example is
+only rendered again when one of these changes. A build can thus be split into
+two passes: one that renders, without writing any pages, and one that writes
+the pages from the cache::
 
-    quality : {'low', 'medium', 'high', 'fourk'}
-        Controls render quality of the video, in analogy to
-        the corresponding command line flags.
+    sphinx-build -b dummy source build/dummy -d build/doctrees
+    sphinx-build -b html source build/html -d build/doctrees
 
-    save_as_gif
-        If this flag is present without argument,
-        the scene is rendered as a gif.
+Both passes need the same output directory for ``_manim``, which is where the
+HTML pages look for the rendered files; pass ``-D manim_cache=<dir>`` to the
+first one if it writes elsewhere.
 
-    save_last_frame
-        If this flag is present without argument,
-        an image representing the last frame of the scene will
-        be rendered and displayed, instead of a video.
-
-    ref_classes
-        A list of classes, separated by spaces, that is
-        rendered in a reference block after the source code.
-
-    ref_functions
-        A list of functions, separated by spaces,
-        that is rendered in a reference block after the source code.
-
-    ref_methods
-        A list of methods, separated by spaces,
-        that is rendered in a reference block after the source code.
-
+At the end of every build, a summary of the slowest examples is printed, and
+the render time of every example is written to ``manim_render_times.csv`` in
+the output directory.
 """
 
 from __future__ import annotations
 
 import csv
-import itertools as it
-import re
+import hashlib
+import json
 import shutil
-import sys
-import textwrap
+import time
+from dataclasses import dataclass
 from pathlib import Path
-from timeit import timeit
-from typing import TYPE_CHECKING, Any, TypedDict
+from typing import Any
 
 import jinja2
 from docutils import nodes
-from docutils.parsers.rst import Directive, directives
-from docutils.statemachine import StringList
+from docutils.parsers.rst.directives import choice, flag
+from sphinx.application import Sphinx
+from sphinx.environment import BuildEnvironment
+from sphinx.util import logging
+from sphinx.util.docutils import SphinxDirective
+from sphinx.util.osutil import relative_uri
+from sphinx.util.typing import ExtensionMetadata
 
-from manim import QUALITIES
-from manim import __version__ as manim_version
-
-if TYPE_CHECKING:
-    from sphinx.application import Sphinx
-
+from manim._config import tempconfig
+from manim._version import __version__ as manim_version
+from manim.constants import QUALITIES
+from manim.scene.scene import Scene
 
 __all__ = ["ManimDirective"]
 
+logger = logging.getLogger(__name__)
 
-classnamedict: dict[str, int] = {}
-
-
-class SetupMetadata(TypedDict):
-    parallel_read_safe: bool
-    parallel_write_safe: bool
+_SUFFIXES = {"png": ".png", "gif": ".gif", "mp4": ".mp4"}
 
 
-class SkipManimNode(nodes.Admonition, nodes.Element):
-    """Auxiliary node class that is used when the ``skip-manim`` tag is present
-    or ``.pot`` files are being built.
+@dataclass
+class _Render:
+    """How long an example took to render; ``None`` when it was cached."""
 
-    Skips rendering the manim directive and outputs a placeholder instead.
-    """
-
-    pass
-
-
-def visit(self: SkipManimNode, node: nodes.Element, name: str = "") -> None:
-    # TODO: Parent classes don't have a visit_admonition() method.
-    self.visit_admonition(node, name)  # type: ignore[attr-defined]
-    if not isinstance(node[0], nodes.title):
-        node.insert(0, nodes.title("skip-manim", "Example Placeholder"))
+    docname: str
+    clsname: str
+    seconds: float | None
 
 
-def depart(self: SkipManimNode, node: nodes.Element) -> None:
-    # TODO: Parent classes don't have a depart_admonition() method.
-    self.depart_admonition(node)  # type: ignore[attr-defined]
+def _references(role: str, names: str | None) -> list[str]:
+    return [f":{role}:`~.{name}`" for name in (names or "").split()]
 
 
-def process_name_list(option_input: str, reference_type: str) -> list[str]:
-    r"""Reformats a string of space separated class names
-    as a list of strings containing valid Sphinx references.
-
-    Tests
-    -----
-
-    ::
-
-        >>> process_name_list("Tex TexTemplate", "class")
-        [':class:`~.Tex`', ':class:`~.TexTemplate`']
-        >>> process_name_list("Scene.play Mobject.rotate", "func")
-        [':func:`~.Scene.play`', ':func:`~.Mobject.rotate`']
-    """
-    return [f":{reference_type}:`~.{name}`" for name in option_input.split()]
+def _renders(env: BuildEnvironment) -> list[_Render]:
+    """The examples of this build, kept with the environment (see setup)."""
+    renders: list[_Render] = env.domaindata.setdefault("manim", {}).setdefault(
+        "renders", []
+    )
+    return renders
 
 
-class ManimDirective(Directive):
-    r"""The manim directive, rendering videos while building
-    the documentation.
-
-    See the module docstring for documentation.
-    """
-
+class ManimDirective(SphinxDirective):
     has_content = True
     required_arguments = 1
     optional_arguments = 0
-    option_spec = {
-        "hide_source": bool,
-        "no_autoplay": bool,
-        "quality": lambda arg: directives.choice(
-            arg,
-            ("low", "medium", "high", "fourk"),
-        ),
-        "save_as_gif": bool,
-        "save_last_frame": bool,
-        "ref_modules": lambda arg: process_name_list(arg, "mod"),
-        "ref_classes": lambda arg: process_name_list(arg, "class"),
-        "ref_functions": lambda arg: process_name_list(arg, "func"),
-        "ref_methods": lambda arg: process_name_list(arg, "meth"),
-    }
     final_argument_whitespace = True
+    option_spec = {
+        "hide_source": flag,
+        "no_autoplay": flag,
+        "quality": lambda arg: choice(
+            arg or "",
+            [q.removesuffix("_quality") for q in QUALITIES],
+        ),
+        "save_as_gif": flag,
+        "save_last_frame": flag,
+        "ref_modules": lambda arg: _references("mod", arg),
+        "ref_classes": lambda arg: _references("class", arg),
+        "ref_functions": lambda arg: _references("func", arg),
+        "ref_methods": lambda arg: _references("meth", arg),
+    }
 
     def run(self) -> list[nodes.Element]:
-        # Rendering is skipped if the tag skip-manim is present,
-        # or if we are making the pot-files
-        should_skip = (
-            "skip-manim" in self.state.document.settings.env.app.builder.tags
-            or self.state.document.settings.env.app.builder.name == "gettext"
-        )
-        if should_skip:
-            clsname = self.arguments[0]
-            node = SkipManimNode()
-            self.state.nested_parse(
-                StringList(
-                    [
-                        f"Placeholder block for ``{clsname}``.",
-                        "",
-                        ".. code-block:: python",
-                        "",
-                    ]
-                    + ["    " + line for line in self.content]
-                    + [
-                        "",
-                        ".. raw:: html",
-                        "",
-                        f'    <pre data-manim-binder data-manim-classname="{clsname}">',
-                    ]
-                    + ["    " + line for line in self.content]
-                    + ["    </pre>"],
-                ),
-                self.content_offset,
-                node,
-            )
-            return [node]
-
-        from manim import config, tempconfig
-
-        global classnamedict
-
-        clsname = self.arguments[0]
-        if clsname not in classnamedict:
-            classnamedict[clsname] = 1
-        else:
-            classnamedict[clsname] += 1
-
-        hide_source = "hide_source" in self.options
-        no_autoplay = "no_autoplay" in self.options
+        clsname: str = self.arguments[0].strip()
         save_as_gif = "save_as_gif" in self.options
         save_last_frame = "save_last_frame" in self.options
-        assert not (save_as_gif and save_last_frame)
-
-        ref_content = (
-            self.options.get("ref_modules", [])
-            + self.options.get("ref_classes", [])
-            + self.options.get("ref_functions", [])
-            + self.options.get("ref_methods", [])
-        )
-        ref_block = "References: " + " ".join(ref_content) if ref_content else ""
-
-        if "quality" in self.options:
-            quality = f"{self.options['quality']}_quality"
-        else:
-            quality = "example_quality"
-        frame_rate = QUALITIES[quality]["frame_rate"]
-        pixel_height = QUALITIES[quality]["pixel_height"]
-        pixel_width = QUALITIES[quality]["pixel_width"]
-
-        state_machine = self.state_machine
-        document = state_machine.document
-
-        source_file_name = Path(document.attributes["source"])
-        source_rel_name = source_file_name.relative_to(setup.confdir)  # type: ignore[attr-defined]
-        source_rel_dir = source_rel_name.parents[0]
-        dest_dir = Path(setup.app.builder.outdir, source_rel_dir).absolute()  # type: ignore[attr-defined]
-        if not dest_dir.exists():
-            dest_dir.mkdir(parents=True, exist_ok=True)
-
-        source_block_in = [
-            ".. code-block:: python",
-            "",
-            "    from manim import *\n",
-            *("    " + line for line in self.content),
-            "",
-            ".. raw:: html",
-            "",
-            f'    <pre data-manim-binder data-manim-classname="{clsname}">',
-            *("    " + line for line in self.content),
-            "",
-            "    </pre>",
+        if save_as_gif and save_last_frame:
+            raise self.error("save_as_gif and save_last_frame exclude each other")
+        format_ = "png" if save_last_frame else "gif" if save_as_gif else "mp4"
+        references = [
+            reference
+            for option in ("ref_modules", "ref_classes", "ref_functions", "ref_methods")
+            for reference in self.options.get(option, [])
         ]
-        source_block = "\n".join(source_block_in)
 
-        config.media_dir = (Path(setup.confdir) / "media").absolute()  # type: ignore[attr-defined]
-        config.images_dir = "{media_dir}/images"
-        config.video_dir = "{media_dir}/videos/{quality}"
-        output_file = f"{clsname}-{classnamedict[clsname]}"
-        config.assets_dir = Path("_static")
-        config.progress_bar = "none"
-        config.verbosity = "WARNING"
+        if self.content and self.content[0].startswith(">>> "):
+            code = "\n".join(
+                line[4:] for line in self.content if line.startswith((">>> ", "... "))
+            )
+        else:
+            code = "\n".join(self.content)
 
         example_config = {
-            "frame_rate": frame_rate,
-            "no_autoplay": no_autoplay,
-            "pixel_height": pixel_height,
-            "pixel_width": pixel_width,
+            **self.config.manim_config,
+            "quality": self.options.get("quality", "example") + "_quality",
+            "format": format_,
             "save_last_frame": save_last_frame,
-            "output_file": output_file,
         }
-        if save_last_frame:
-            example_config["format"] = "png"
-        if save_as_gif:
-            example_config["format"] = "gif"
+        output = self._cached_output(clsname, code, example_config)
+        if output.exists():
+            self._record(clsname, None)
+        elif self.config.manim_render:
+            self._render(clsname, code, example_config, output)
 
-        user_code = list(self.content)
-        if user_code[0].startswith(">>> "):  # check whether block comes from doctest
-            user_code = [
-                line[4:] for line in user_code if line.startswith((">>> ", "... "))
-            ]
+        uri = None
+        if output.exists():
+            # The cache is the ``_manim`` directory of the site, also when a
+            # render-only pass writes it from elsewhere (``manim_cache``). The
+            # link is relative to the page's HTML file, and does not depend on
+            # the builder, as a later HTML build may reuse this page's doctree.
+            uri = relative_uri(f"{self.env.docname}.html", f"_manim/{output.name}")
 
-        code = [
-            "from manim import *",
-            *user_code,
-            f"_manim_rendered_scene = {clsname}()",
-            "_manim_rendered_scene.render()",
-        ]
-        render_namespace = globals()
-
-        try:
-            with tempconfig(example_config):
-                run_time = timeit(
-                    lambda: exec("\n".join(code), render_namespace),
-                    number=1,
-                )
-                rendered_scene = render_namespace.pop("_manim_rendered_scene")
-                filesrc = rendered_scene.renderer.file_writer.final_file_path
-        except Exception as e:
-            render_namespace.pop("_manim_rendered_scene", None)
-            raise RuntimeError(f"Error while rendering example {clsname}") from e
-
-        _write_rendering_stats(
-            clsname,
-            run_time,
-            self.state.document.settings.env.docname,
-        )
-
-        # copy video file to output directory
-        if not (save_as_gif or save_last_frame):
-            filename = filesrc.name
-            destfile = Path(dest_dir, filename)
-            shutil.copyfile(filesrc, destfile)
-        rendered_template = jinja2.Template(TEMPLATE).render(
+        rst = _TEMPLATE.render(
+            id=clsname.lower(),
             clsname=clsname,
-            clsname_lowercase=clsname.lower(),
-            hide_source=hide_source,
-            filesrc_rel=Path(filesrc).relative_to(setup.confdir).as_posix(),  # type: ignore[attr-defined]
-            no_autoplay=no_autoplay,
-            output_file=output_file,
-            save_last_frame=save_last_frame,
-            save_as_gif=save_as_gif,
-            source_block=source_block,
-            ref_block=ref_block,
+            uri=uri,
+            format=format_,
+            autoplay="no_autoplay" not in self.options,
+            source_code="\n".join(self.content),
+            code=code,
+            references=references,
+            hide_source="hide_source" in self.options and uri is not None,
         )
-        state_machine.insert_input(
-            rendered_template.split("\n"),
-            source=document.attributes["source"],
+        self.state_machine.insert_input(
+            rst.splitlines(),
+            source=self.state_machine.get_source_and_line(self.lineno)[0] or "",
         )
-
         return []
 
-
-rendering_times_file_path = Path("../rendering_times.csv")
-
-
-def _write_rendering_stats(scene_name: str, run_time: float, file_name: str) -> None:
-    with rendering_times_file_path.open("a") as file:
-        csv.writer(file).writerow(
-            [
-                re.sub(r"^(reference\/)|(manim\.)", "", file_name),
-                scene_name,
-                f"{run_time:.3f}",
-            ],
+    def _cached_output(
+        self, clsname: str, code: str, example_config: dict[str, Any]
+    ) -> Path:
+        """Return the path of the example's output, named after what it shows."""
+        key = json.dumps(
+            [manim_version, clsname, code, example_config], sort_keys=True, default=str
         )
+        digest = hashlib.sha256(key.encode()).hexdigest()[:16]
+        suffix = _SUFFIXES[example_config["format"]]
+        return _cache_dir(self.env) / f"{clsname}-{digest}{suffix}"
+
+    def _render(
+        self, clsname: str, code: str, example_config: dict[str, Any], output: Path
+    ) -> None:
+        # Each example renders in a media directory of its own, next to the
+        # build's output directory, and its output is moved into the cache
+        # when done: parallel processes never share files (the same example
+        # can be on pages read by different processes), and an interrupted
+        # render leaves nothing in the cache.
+        media_dir = Path(
+            self.env.app.outdir, "..", "manim_media", self.env.docname, output.stem
+        ).resolve()
+        partial = media_dir / output.stem
+        config = {
+            "media_dir": media_dir,
+            "assets_dir": Path(self.env.app.srcdir) / "_static",
+            "progress_bar": "none",
+            "verbosity": "WARNING",
+            **example_config,
+            "output_file": partial,
+        }
+        start = time.perf_counter()
+        try:
+            with tempconfig(config):
+                namespace: dict[str, Any] = {}
+                exec("from manim import *", namespace)
+                exec(code, namespace)
+                scene: Scene = namespace[clsname]()
+                scene.render()
+        except Exception as error:
+            raise self.error(
+                f"Failed to render {clsname}: {type(error).__name__}: {error}"
+            ) from error
+        seconds = time.perf_counter() - start
+        output.parent.mkdir(parents=True, exist_ok=True)
+        # The cache can be on another file system (see ``manim_cache``).
+        temporary = output.with_name(f".{output.name}")
+        shutil.move(partial.with_suffix(output.suffix), temporary)
+        temporary.replace(output)
+        self._record(clsname, seconds)
+
+    def _record(self, clsname: str, seconds: float | None) -> None:
+        _renders(self.env).append(_Render(self.env.docname, clsname, seconds))
 
 
-def _log_rendering_times(*args: tuple[Any]) -> None:
-    if rendering_times_file_path.exists():
-        with rendering_times_file_path.open() as file:
-            data = list(csv.reader(file))
-        if len(data) == 0:
-            sys.exit()
-
-        print("\nRendering Summary\n-----------------\n")
-
-        # filter out empty lists caused by csv reader
-        data = [row for row in data if row]
-
-        max_file_length = max(len(row[0]) for row in data)
-        for key, group_iter in it.groupby(data, key=lambda row: row[0]):
-            key = key.ljust(max_file_length + 1, ".")
-            group = list(group_iter)
-            if len(group) == 1:
-                row = group[0]
-                print(f"{key}{row[2].rjust(7, '.')}s {row[1]}")
-                continue
-            time_sum = sum(float(row[2]) for row in group)
-            print(
-                f"{key}{f'{time_sum:.3f}'.rjust(7, '.')}s  => {len(group)} EXAMPLES",
-            )
-            for row in group:
-                print(f"{' ' * max_file_length} {row[2].rjust(7)}s {row[1]}")
-        print("")
+def _cache_dir(env: BuildEnvironment) -> Path:
+    cache = env.config.manim_cache
+    return Path(cache or Path(env.app.outdir, "_manim")).absolute()
 
 
-def _delete_rendering_times(*args: tuple[Any]) -> None:
-    if rendering_times_file_path.exists():
-        rendering_times_file_path.unlink()
-
-
-def setup(app: Sphinx) -> SetupMetadata:
-    app.add_node(
-        SkipManimNode,
-        html=(visit, depart),
-        latex=(lambda a, b: None, lambda a, b: None),
+def _merge_renders(
+    app: Sphinx, env: BuildEnvironment, docnames: set[str], other: BuildEnvironment
+) -> None:
+    """Collect the examples of the documents a parallel reader process read."""
+    _renders(env).extend(
+        render for render in _renders(other) if render.docname in docnames
     )
 
-    setup.app = app  # type: ignore[attr-defined]
-    setup.config = app.config  # type: ignore[attr-defined]
-    setup.confdir = app.confdir  # type: ignore[attr-defined]
 
+def _reset_renders(app: Sphinx, env: BuildEnvironment, docnames: list[str]) -> None:
+    _renders(env).clear()
+
+
+def _report_renders(app: Sphinx, exception: Exception | None) -> None:
+    examples = _renders(app.env)
+    rendered = sorted(
+        (example for example in examples if example.seconds is not None),
+        key=lambda example: example.seconds or 0.0,
+        reverse=True,
+    )
+    if exception is not None or not examples:
+        return
+    report = Path(app.outdir, "manim_render_times.csv")
+    with report.open("w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(["document", "scene", "seconds"])
+        for example in rendered:
+            writer.writerow(
+                [example.docname, example.clsname, f"{example.seconds:.3f}"]
+            )
+    total = sum(example.seconds or 0.0 for example in rendered)
+    lines = [
+        f"Manim examples: {len(rendered)} rendered in {total:.1f}s (summed over "
+        f"processes), {len(examples) - len(rendered)} already in the cache."
+    ]
+    if rendered:
+        lines.append("Slowest:")
+        lines += [
+            f"  {example.seconds:7.2f}s  {example.clsname} ({example.docname})"
+            for example in rendered[:10]
+        ]
+        lines.append(f"All render times: {report}")
+    logger.info("\n".join(lines))
+
+
+def setup(app: Sphinx) -> ExtensionMetadata:
+    app.add_config_value("manim_config", {}, "env", dict)
+    app.add_config_value("manim_render", True, "env", bool)
+    app.add_config_value("manim_cache", "", "", str)
     app.add_directive("manim", ManimDirective)
-
-    app.connect("builder-inited", _delete_rendering_times)
-    app.connect("build-finished", _log_rendering_times)
+    app.connect("env-before-read-docs", _reset_renders)
+    app.connect("env-merge-info", _merge_renders)
+    app.connect("build-finished", _report_renders)
 
     app.add_js_file("manim-binder.min.js")
     app.add_js_file(
         None,
-        body=textwrap.dedent(
-            f"""\
-                window.initManimBinder({{branch: "v{manim_version}"}})
-            """
-        ).strip(),
+        body=f'window.initManimBinder({{branch: "v{manim_version}"}})',
     )
-
-    metadata: SetupMetadata = {
-        "parallel_read_safe": False,
+    return {
+        "parallel_read_safe": True,
         "parallel_write_safe": True,
     }
-    return metadata
 
 
-TEMPLATE = r"""
+# Values are HTML-escaped unless marked ``safe``: the reST parts of the
+# template (code blocks, references) must be inserted as they are.
+_TEMPLATE = jinja2.Template(
+    r"""
 {% if not hide_source %}
 .. raw:: html
 
-    <div id="{{ clsname_lowercase }}" class="admonition admonition-manim-example">
-    <p class="admonition-title">Example: {{ clsname }} <a class="headerlink" href="#{{ clsname_lowercase }}">¶</a></p>
+    <div id="{{ id }}" class="admonition admonition-manim-example">
+    <p class="admonition-title">Example: {{ clsname }}<a class="headerlink" href="#{{ id }}">¶</a></p>
 
 {% endif %}
-
-{% if not (save_as_gif or save_last_frame) %}
+{% if uri is none %}
 .. raw:: html
 
-    <video
-        class="manim-video"
-        controls
-        loop
-        {{ '' if no_autoplay else 'autoplay' }}
-        src="./{{ output_file }}.mp4">
-    </video>
+    <p class="manim-example-not-rendered">This example was not rendered in this build.</p>
 
-{% elif save_as_gif %}
-.. image:: /{{ filesrc_rel }}
-    :align: center
+{% elif format == "mp4" %}
+.. raw:: html
 
-{% elif save_last_frame %}
-.. image:: /{{ filesrc_rel }}
-    :align: center
+    <video class="manim-video" controls loop {{ " autoplay " if autoplay }} src="{{ uri }}" alt="{{ clsname }}"></video>
+
+{% else %}
+.. raw:: html
+
+    <img src="{{ uri }}" alt="{{ clsname }}">
 
 {% endif %}
 {% if not hide_source %}
-{{ source_block }}
+.. code-block:: python
 
-{{ ref_block }}
+    from manim import *
 
+{{ source_code | indent(4, first=True) | safe }}
+
+.. raw:: html
+
+    <pre data-manim-binder data-manim-classname="{{ clsname }}">
+{{ code | indent(4, first=True) }}
+    </pre>
+
+{% endif %}
+{% if not hide_source and references %}
+References: {{ references | join(" ") | safe }}
+
+{% endif %}
+{% if not hide_source %}
 .. raw:: html
 
     </div>
 
 {% endif %}
-"""
+""",
+    autoescape=True,
+)

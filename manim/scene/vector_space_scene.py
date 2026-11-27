@@ -10,16 +10,16 @@ from typing import TYPE_CHECKING, Any, cast
 import numpy as np
 
 from manim.animation.creation import DrawBorderThenFill, Group
-from manim.camera.camera import Camera
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.line import Arrow, Line, Vector
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.graphing.coordinate_systems import Axes, NumberPlane
 from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.text.tex_mobject import MathTex, Tex
+from manim.renderer.cairo.camera import Camera
 from manim.utils.config_ops import update_dict_recursively
 
-from .. import config
+from .._config import config
 from ..animation.animation import Animation
 from ..animation.creation import Create, Write
 from ..animation.fading import FadeOut
@@ -571,8 +571,8 @@ class VectorScene(Scene):
                 vector = np.append(np.array(vector), 0.0)
         vector_cleaned: Vector3D = vector
 
-        x_max = int(config["frame_x_radius"] + abs(vector_cleaned[0]))
-        y_max = int(config["frame_y_radius"] + abs(vector_cleaned[1]))
+        x_max = int(config.frame_x_radius + abs(vector_cleaned[0]))
+        y_max = int(config.frame_y_radius + abs(vector_cleaned[1]))
         # TODO:
         # I think that this should be a VGroup instead of a VMobject.
         dots = VMobject(
@@ -677,8 +677,8 @@ class LinearTransformationScene(VectorScene):
         self.ghost_vectors = VGroup()
 
         self.foreground_plane_kwargs: dict[str, Any] = {
-            "x_range": np.array([-config["frame_width"], config["frame_width"], 1.0]),
-            "y_range": np.array([-config["frame_width"], config["frame_width"], 1.0]),
+            "x_range": np.array([-config.frame_width, config.frame_width, 1.0]),
+            "y_range": np.array([-config.frame_width, config.frame_width, 1.0]),
             "faded_line_ratio": 1,
         }
 

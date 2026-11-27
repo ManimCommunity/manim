@@ -11,7 +11,6 @@ import itertools as it
 import math
 import operator as op
 import random
-import sys
 import types
 import warnings
 from collections.abc import Callable, Iterable, Iterator, MutableSet, Sequence
@@ -25,7 +24,7 @@ import numpy as np
 from manim.data_structures import MethodWithArgs
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 
-from .. import config, logger
+from .._config import config, logger
 from ..constants import *
 from ..utils.color import (
     BLACK,
@@ -66,7 +65,7 @@ if TYPE_CHECKING:
     )
 
     from ..animation.animation import Animation
-    from ..camera.camera import Camera
+    from ..renderer.cairo.camera import Camera
 
 
 _TimeBasedUpdater: TypeAlias = Callable[["Mobject", float], object]
@@ -339,6 +338,17 @@ class Mobject:
                 )
 
             make use of method chaining.
+
+            Doing the same with multiple animations for a :class:`Mobject` and
+            one of its submobjects, such as with this animation::
+
+                group = VGroup(mobject1, mobject2)
+                self.play(
+                    group.animate.shift(RIGHT),
+                    mobject1.animate.set_opacity(0.5),
+                )
+
+            is also discouraged.
 
         Keyword arguments that can be passed to :meth:`.Scene.play` can be passed
         directly after accessing ``.animate``, like so::
@@ -997,12 +1007,23 @@ class Mobject:
 
     # Displaying
     def get_image(self, camera: Camera | None = None) -> Image.Image:
-        if camera is None:
-            camera = Camera()
-        camera.capture_mobject(self)
-        return camera.get_image()
+        """Draw this mobject and its submobjects using Cairo and return a PIL image.
+
+        Pass a ``camera`` to select the view, or omit it to create a default
+        :class:`.Camera`. To use a scene's current view, pass ``camera=scene.camera``.
+        """
+        # local import to avoid import cycle
+        from manim.renderer.cairo import CairoRenderer
+        from manim.renderer.cairo.camera import Camera
+
+        with CairoRenderer(camera=Camera() if camera is None else camera) as renderer:
+            renderer.render_mobjects([self])
+            return renderer.get_image()
 
     def show(self, camera: Camera | None = None) -> None:
+        """Draw this mobject as :meth:`get_image` does and open the image in PIL's
+        image viewer.
+        """
         self.get_image(camera=camera).show()
 
     def save_image(self, name: str | None = None) -> None:
@@ -2161,7 +2182,7 @@ class Mobject:
     ) -> Self:
         """Condition is function which takes in one arguments, (x, y, z).
         Here it just recurses to submobjects, but in subclasses this
-        should be further implemented based on the the inner workings
+        should be further implemented based on the inner workings
         of color
         """
         if family:
@@ -2505,12 +2526,12 @@ class Mobject:
 
     def get_start(self) -> Point3D:
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` starts."""
-        self.throw_error_if_no_points()
+        self._throw_error_if_no_points()
         return np.array(self.points[0])
 
     def get_end(self) -> Point3D:
         """Returns the point, where the stroke that surrounds the :class:`~.Mobject` ends."""
-        self.throw_error_if_no_points()
+        self._throw_error_if_no_points()
         return np.array(self.points[-1])
 
     def get_start_and_end(self) -> tuple[Point3D, Point3D]:
@@ -2854,6 +2875,7 @@ class Mobject:
 
 
         """
+        # local import to avoid import cycle
         from manim.mobject.geometry.line import Line
 
         mobs = self.submobjects.copy()
@@ -3462,20 +3484,19 @@ class Mobject:
             sm1.points = np.array(sm2.points)
         return self
 
-    # Errors
-    def throw_error_if_no_points(self) -> None:
+    def _throw_error_if_no_points(self) -> None:
         if self.has_no_points():
-            caller_name = sys._getframe(1).f_code.co_name
-            cls = type(self).__name__
-            message = f"Cannot call {cls}.{caller_name} because {self!r} has no points."
+            error_reason = (
+                f"{self!r} has no points, but a method which requires points was called"
+            )
             pointful_family_members = self.family_members_with_points()
             if pointful_family_members:
                 count = len(pointful_family_members)
-                message += (
-                    f" Its family contains {count} "
+                error_reason += (
+                    f". Its family contains {count} "
                     f"mobject{'' if count == 1 else 's'} with points."
                 )
-            raise ValueError(message)
+            raise ValueError(error_reason)
 
     # About z-index
     def set_z_index(
@@ -3601,6 +3622,7 @@ class _AnimationBuilder:
         return update_target
 
     def build(self) -> Animation:
+        # local import to avoid import cycle
         from ..animation.transform import _MethodAnimation
 
         anim = self.overridden_animation or _MethodAnimation(self.mobject, self.methods)

@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from isosurfaces import plot_isoline
 
-from manim import config
+from manim._config import config
 from manim.mobject.graphing.scale import LinearBase, _ScaleBase
 from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.types.vectorized_mobject import VMobject
@@ -222,7 +222,7 @@ class FunctionGraph(ParametricFunction):
         **kwargs: Any,
     ) -> None:
         if x_range is None:
-            x_range = (-config["frame_x_radius"], config["frame_x_radius"])
+            x_range = (-config.frame_x_radius, config.frame_x_radius)
 
         self.x_range = x_range
         self.parametric_function: Callable[[float], Point3D] = lambda t: np.array(

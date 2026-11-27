@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -119,34 +120,40 @@ def translation_matrix(x: float = 0, y: float = 0, z: float = 0) -> MatrixMN:
 
 
 def x_rotation_matrix(x: float = 0) -> MatrixMN:
+    """Build a homogeneous rotation by ``x`` radians about the X axis."""
+    c, s = math.cos(x), math.sin(x)
     return np.array(
         [
-            [1, 0, 0, 0],
-            [0, np.cos(x), -np.sin(x), 0],
-            [0, np.sin(x), np.cos(x), 0],
-            [0, 0, 0, 1],
+            [1.0, 0.0, 0.0, 0.0],
+            [0.0, c, -s, 0.0],
+            [0.0, s, c, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
         ],
     )
 
 
 def y_rotation_matrix(y: float = 0) -> MatrixMN:
+    """Build a homogeneous rotation by ``y`` radians about the Y axis."""
+    c, s = math.cos(y), math.sin(y)
     return np.array(
         [
-            [np.cos(y), 0, np.sin(y), 0],
-            [0, 1, 0, 0],
-            [-np.sin(y), 0, np.cos(y), 0],
-            [0, 0, 0, 1],
+            [c, 0.0, s, 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [-s, 0.0, c, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
         ],
     )
 
 
 def z_rotation_matrix(z: float = 0) -> MatrixMN:
+    """Build a homogeneous rotation by ``z`` radians about the Z axis."""
+    c, s = math.cos(z), math.sin(z)
     return np.array(
         [
-            [np.cos(z), -np.sin(z), 0, 0],
-            [np.sin(z), np.cos(z), 0, 0],
-            [0, 0, 1, 0],
-            [0, 0, 0, 1],
+            [c, -s, 0.0, 0.0],
+            [s, c, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
         ],
     )
 
@@ -165,9 +172,33 @@ def rotate_in_place_matrix(
 
 
 def rotation_matrix(x: float = 0, y: float = 0, z: float = 0) -> MatrixMN:
-    return np.matmul(
-        np.matmul(x_rotation_matrix(x), y_rotation_matrix(y)),
-        z_rotation_matrix(z),
+    """Build a homogeneous rotation from angles about the X, Y, and Z axes.
+
+    The matrix is ``Rx(x) @ Ry(y) @ Rz(z)``. When applied to a column
+    vector, the Z rotation acts first, then Y, then X.
+
+    Parameters
+    ----------
+    x, y, z
+        The angles in radians about the corresponding axes. Each defaults
+        to zero, so calling this function with no arguments gives the identity.
+
+    Returns
+    -------
+    numpy.ndarray
+        A 4-by-4 rotation matrix with no translation, suitable for composing
+        with other homogeneous transforms.
+    """
+    cx, sx = math.cos(x), math.sin(x)
+    cy, sy = math.cos(y), math.sin(y)
+    cz, sz = math.cos(z), math.sin(z)
+    return np.array(
+        [
+            [cy * cz, -cy * sz, sy, 0.0],
+            [cx * sz + sx * sy * cz, cx * cz - sx * sy * sz, -sx * cy, 0.0],
+            [sx * sz - cx * sy * cz, sx * cz + cx * sy * sz, cx * cy, 0.0],
+            [0.0, 0.0, 0.0, 1.0],
+        ]
     )
 
 

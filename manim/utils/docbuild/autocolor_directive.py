@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from docutils import nodes
 from docutils.parsers.rst import Directive
 
-from manim import ManimColor
+from manim.utils.color import ManimColor
 
 if TYPE_CHECKING:
     from sphinx.application import Sphinx
@@ -16,8 +16,9 @@ if TYPE_CHECKING:
 __all__ = ["ManimColorModuleDocumenter"]
 
 
-def setup(app: Sphinx) -> None:
+def setup(app: Sphinx) -> dict[str, bool]:
     app.add_directive("automanimcolormodule", ManimColorModuleDocumenter)
+    return {"parallel_read_safe": True, "parallel_write_safe": True}
 
 
 class ManimColorModuleDocumenter(Directive):

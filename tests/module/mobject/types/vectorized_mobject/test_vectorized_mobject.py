@@ -141,7 +141,7 @@ def test_vmobject_point_from_proportion():
     obj.clear_points()
     with pytest.raises(
         ValueError,
-        match=r"Cannot call VMobject\.point_from_proportion because VMobject has no points\.",
+        match=rf"{obj!r} has no points",
     ):
         obj.point_from_proportion(0)
 
@@ -155,7 +155,7 @@ def test_no_points_error_reports_pointful_family_members():
 
     message = str(error.value)
     assert message.startswith(
-        "Cannot call VGroup.point_from_proportion because VGroup(",
+        f"{group!r} has no points",
     )
     assert message.endswith("Its family contains 1 mobject with points.")
 
@@ -165,11 +165,11 @@ def test_curves_as_submobjects_point_from_proportion():
 
     with pytest.raises(ValueError, match="between 0 and 1"):
         obj.point_from_proportion(2)
-    with pytest.raises(Exception, match="with no submobjects"):
+    with pytest.raises(ValueError, match="does not have any submobjects with points"):
         obj.point_from_proportion(0)
 
     obj.add(VMobject())
-    with pytest.raises(Exception, match="have no points"):
+    with pytest.raises(ValueError, match="does not have any submobjects with points"):
         obj.point_from_proportion(0)
 
     # submobject[0] is a line of length 4

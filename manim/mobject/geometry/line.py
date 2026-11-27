@@ -18,7 +18,7 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 
 import numpy as np
 
-from manim import config
+from manim._config import config
 from manim.constants import *
 from manim.mobject.geometry.arc import Arc, ArcBetweenPoints, Dot, TipableVMobject
 from manim.mobject.geometry.tips import ArrowTip, ArrowTriangleFilledTip
@@ -139,22 +139,22 @@ class Line(TipableVMobject):
         """
         self._set_start_and_end_attrs(start, end)
         if path_arc:
-            arc = ArcBetweenPoints(self.start, self.end, angle=self.path_arc)
+            arc = ArcBetweenPoints(self.start, self.end, angle=path_arc)
             self.set_points(arc.points)
         else:
             self.set_points_as_corners(np.asarray([self.start, self.end]))
 
-        self._account_for_buff(buff)
+        self._account_for_buff(buff, path_arc)
         return self
 
     def init_points(self) -> Self:
         self.generate_points()
         return self
 
-    def _account_for_buff(self, buff: float) -> None:
+    def _account_for_buff(self, buff: float, path_arc: float) -> None:
         if buff <= 0:
             return
-        length = self.get_length() if self.path_arc == 0 else self.get_arc_length()
+        length = self.get_length() if path_arc == 0 else self.get_arc_length()
         if length < 2 * buff:
             return
         buff_proportion = buff / length
@@ -230,9 +230,9 @@ class Line(TipableVMobject):
                     self.wait()
         """
         curr_start, curr_end = self.get_start_and_end()
-        if np.all(curr_start == curr_end):
-            # TODO, any problems with resetting
-            # these attrs?
+        if np.isclose(np.linalg.norm(curr_end - curr_start), 0):
+            # Expanding a nearly collapsed line amplifies rounding errors in
+            # its control points. Rebuild it before applying the transform.
             self.start = np.asarray(start)
             self.end = np.asarray(end)
             self.generate_points()
@@ -794,7 +794,7 @@ class Vector(Arrow):
 
                     self.add(plane, vec_1, vec_2, label_1, label_2)
         """
-        # avoiding circular imports
+        # local import to avoid import cycle
         from ..matrix import Matrix
 
         vect = np.array(self.get_end())
@@ -1151,7 +1151,7 @@ class Angle(VMobject, metaclass=ConvertToOpenGL):
     ) -> Angle:
         r"""The angle between the lines AB and BC.
 
-        This constructs the angle :math:`\\angle ABC`.
+        This constructs the angle :math:`\angle ABC`.
 
         Parameters
         ----------

@@ -8,8 +8,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from manim import config, logger, tempconfig
-from manim.renderer.shader import shader_program_cache
+from manim._config import config, logger, tempconfig
+from manim.renderer.opengl.shader import shader_program_cache
 
 from ..constants import RendererType
 
@@ -136,7 +136,7 @@ else:
 
                 renderer = None
                 if config.renderer == RendererType.OPENGL:
-                    from manim.renderer.opengl_renderer import OpenGLRenderer
+                    from manim.renderer.opengl import OpenGLRenderer
 
                     renderer = OpenGLRenderer()
 

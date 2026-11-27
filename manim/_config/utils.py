@@ -26,9 +26,8 @@ from typing import TYPE_CHECKING, Any, ClassVar, NoReturn
 
 import numpy as np
 
-from manim import constants
 from manim._config.output import OutputFormat
-from manim.constants import RendererType
+from manim.constants import DOWN, LEFT, QUALITIES, RIGHT, UP, RendererType
 from manim.utils.color import ManimColor
 from manim.utils.tex import TexTemplate
 
@@ -123,20 +122,20 @@ def make_config_parser(
     # https://docs.python.org/3/library/configparser.html#configparser.ConfigParser.read
     parser = configparser.ConfigParser()
     logger.info(f"Reading config file: {library_wide}")
-    with library_wide.open() as file:
+    with library_wide.open(encoding="utf-8") as file:
         parser.read_file(file)  # necessary file
 
     other_files = [user_wide, Path(custom_file) if custom_file else folder_wide]
     for path in other_files:
         if path.exists():
             logger.info(f"Reading config file: {path}")
-    parser.read(other_files)  # optional files
+    parser.read(other_files, encoding="utf-8-sig")  # optional files
 
     return parser
 
 
 def _determine_quality(qual: str | None) -> str:
-    for quality, values in constants.QUALITIES.items():
+    for quality, values in QUALITIES.items():
         if values["flag"] is not None and values["flag"] == qual:
             return quality
 
@@ -1172,22 +1171,22 @@ class ManimConfig(MutableMapping):
     @property
     def top(self) -> Vector3D:
         """Coordinate at the center top of the frame."""
-        return self.frame_y_radius * constants.UP
+        return self.frame_y_radius * UP
 
     @property
     def bottom(self) -> Vector3D:
         """Coordinate at the center bottom of the frame."""
-        return self.frame_y_radius * constants.DOWN
+        return self.frame_y_radius * DOWN
 
     @property
     def left_side(self) -> Vector3D:
         """Coordinate at the middle left of the frame."""
-        return self.frame_x_radius * constants.LEFT
+        return self.frame_x_radius * LEFT
 
     @property
     def right_side(self) -> Vector3D:
         """Coordinate at the middle right of the frame."""
-        return self.frame_x_radius * constants.RIGHT
+        return self.frame_x_radius * RIGHT
 
     @property
     def frame_rate(self) -> float:
@@ -1323,8 +1322,8 @@ class ManimConfig(MutableMapping):
         """Video quality (-q)."""
         keys = ["pixel_width", "pixel_height", "frame_rate"]
         q = {k: self[k] for k in keys}
-        for qual in constants.QUALITIES:
-            if all(q[k] == constants.QUALITIES[qual][k] for k in keys):  # type: ignore[literal-required]
+        for qual in QUALITIES:
+            if all(q[k] == QUALITIES[qual][k] for k in keys):  # type: ignore[literal-required]
                 return qual
         return None
 
@@ -1332,9 +1331,9 @@ class ManimConfig(MutableMapping):
     def quality(self, value: str | None) -> None:
         if value is None:
             return
-        if value not in constants.QUALITIES:
-            raise KeyError(f"quality must be one of {list(constants.QUALITIES.keys())}")
-        q = constants.QUALITIES[value]
+        if value not in QUALITIES:
+            raise KeyError(f"quality must be one of {list(QUALITIES.keys())}")
+        q = QUALITIES[value]
         self.frame_size = q["pixel_width"], q["pixel_height"]
         self.frame_rate = q["frame_rate"]
 
@@ -1416,6 +1415,12 @@ class ManimConfig(MutableMapping):
                 cls.__bases__ = tuple(
                     conversion_dict.get(base, base) for base in cls.__bases__
                 )
+
+            from ..utils.hashing import invalidate_derived_attribute_names
+
+            # Rebasing changes which attributes the cache key must ignore, including
+            # for classes that only inherit from a rebased one.
+            invalidate_derived_attribute_names()
         except ImportError:
             # The renderer is set during the initial import of the
             # library for the first time. The imports above cause an

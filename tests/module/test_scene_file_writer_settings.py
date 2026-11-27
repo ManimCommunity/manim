@@ -6,6 +6,7 @@ import pytest
 
 import manim
 from manim import Scene, config, tempconfig
+from manim.scene import audio_mixer
 from manim.scene import scene_file_writer as writer_module
 
 
@@ -65,12 +66,10 @@ def test_writer_uses_captured_assets_root(tmp_path, monkeypatch):
         writer = scene.renderer.file_writer
         config.assets_dir = changed_assets
 
-        decoded = Mock()
-        from_file = Mock(return_value=decoded)
-        monkeypatch.setattr(writer_module.AudioSegment, "from_file", from_file)
-        writer.add_audio_segment = Mock()
+        probe = Mock(return_value=1.0)
+        monkeypatch.setattr(audio_mixer, "_probe_duration", probe)
 
-        writer.add_sound("tone")
+        scene.add_sound("tone")
 
-    from_file.assert_called_once_with(sound_path)
-    writer.add_audio_segment.assert_called_once_with(decoded, None)
+    probe.assert_called_once_with(sound_path)
+    assert [sound.path for sound in writer._sounds] == [sound_path]

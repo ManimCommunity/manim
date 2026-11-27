@@ -12,7 +12,7 @@ from typing import Any
 
 from manim.mobject.geometry.polygram import Rectangle
 
-from .. import config
+from .._config import config
 
 
 class ScreenRectangle(Rectangle):

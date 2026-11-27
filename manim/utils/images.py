@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from PIL import Image
 
-from .. import config
+from .._config import config
 from ..utils.file_ops import seek_full_path_from_defaults
 
 if TYPE_CHECKING:
@@ -49,7 +49,7 @@ def drag_pixels(frames: Sequence[PixelArray]) -> list[np.ndarray]:
     return new_frames
 
 
-def invert_image(image: PixelArray) -> Image:
+def invert_image(image: PixelArray) -> Image.Image:
     arr = np.array(image)
     arr = (255 * np.ones(arr.shape)).astype(arr.dtype) - arr
     return Image.fromarray(arr)

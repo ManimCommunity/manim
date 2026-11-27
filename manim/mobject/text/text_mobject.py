@@ -2,7 +2,7 @@
 
 .. note::
    Just as you can use :class:`~.Tex` and :class:`~.MathTex` (from the module :mod:`~.tex_mobject`)
-   to insert LaTeX to your videos, you can use :class:`~.Text` to to add normal text.
+   to insert LaTeX to your videos, you can use :class:`~.Text` to add normal text.
 
 .. important::
 
@@ -56,10 +56,10 @@ __all__ = ["Text", "Paragraph", "MarkupText", "register_font"]
 
 import copy
 import hashlib
+import itertools as it
 import re
 from collections.abc import Iterable, Iterator, Sequence
 from contextlib import contextmanager
-from itertools import chain
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -67,7 +67,7 @@ import manimpango
 import numpy as np
 from manimpango import MarkupUtils, PangoUtils, TextSetting
 
-from manim import config, logger
+from manim._config import config, logger
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.svg.svg_mobject import SVGMobject
@@ -733,7 +733,7 @@ class Text(SVGMobject):
         default_args: dict[str, Iterable[str]],
     ) -> list[TextSetting]:
         settings = []
-        t2xwords = set(chain(*([*t2x.keys()] for t2x, _ in t2xs)))
+        t2xwords = set(it.chain(*([*t2x.keys()] for t2x, _ in t2xs)))
         for word in t2xwords:
             setting_args = {
                 arg: str(t2x[word]) if word in t2x else default_args[arg]

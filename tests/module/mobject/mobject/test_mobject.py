@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from itertools import product
+import itertools as it
 
 import numpy as np
 import pytest
@@ -403,7 +403,7 @@ def test_getitem_slice(has_points):
     n = 10
     mob, mob_list = build_mobject(n, has_points=has_points)
     length = (n + 1) if has_points else n
-    for start, stop, step in product(range(-length, length), repeat=3):
+    for start, stop, step in it.product(range(-length, length), repeat=3):
         assert mob[start:stop].submobjects == mob_list[start:stop]
         if step == 0:
             with pytest.raises(ValueError):
@@ -432,7 +432,7 @@ def test_getitem_slice_group_type(has_points, mob_cls):
     mob, _ = build_mobject(n, has_points=has_points, mob_cls=mob_cls)
     group_cls = mob.get_group_class()
     length = (n + 1) if has_points else n
-    for start, stop, step in product(range(-length, length), repeat=3):
+    for start, stop, step in it.product(range(-length, length), repeat=3):
         if not step:
             continue
         assert type(mob[start:stop:step]) is group_cls

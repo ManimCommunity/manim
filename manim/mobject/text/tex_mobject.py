@@ -30,7 +30,7 @@ from functools import reduce
 from textwrap import dedent
 from typing import Any, Self
 
-from manim import config, logger
+from manim._config import config, logger
 from manim.constants import *
 from manim.mobject.geometry.line import Line
 from manim.mobject.svg.svg_mobject import SVGMobject

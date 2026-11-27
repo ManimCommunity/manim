@@ -6,13 +6,21 @@
 
 from __future__ import annotations
 
+import functools
 import os
 import sys
 from datetime import datetime
 from pathlib import Path
 
+import sphinx.ext.autosummary
+
 import manim
 from manim.utils.docbuild.module_parsing import parse_module_attributes
+
+if hasattr(sphinx.ext.autosummary, "FakeDirective"):
+    sphinx.ext.autosummary.FakeDirective = functools.cache(
+        sphinx.ext.autosummary.FakeDirective
+    )
 
 # -- Path setup --------------------------------------------------------------
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -59,6 +67,14 @@ extensions = [
 autosummary_generate = True
 
 myst_enable_extensions = ["colon_fence", "amsmath", "deflist"]
+
+# Manim config applied to every example rendered by the manim directive, see
+# manim.utils.docbuild.manim_directive. libx264 buffers up to ``rc-lookahead``
+# frames (40 by default) for rate control, which takes several hundred MB at
+# 1080p; 10 frames halve the encoder's memory with practically the same size.
+manim_config = {
+    "video_encoder_options": {"rc-lookahead": "10"},
+}
 
 # redirects (for moved / deleted pages)
 redirects = {
@@ -194,6 +210,6 @@ inheritance_edge_attrs = {
     "penwidth": 1,
 }
 
-html_js_files = ["responsiveSvg.js"]
+html_js_files = ["responsiveSvg.js", "collapsibleSidebars.js"]
 
 graphviz_output_format = "svg"

@@ -10,12 +10,12 @@ import cairo
 import pytest
 from _pytest.fixtures import FixtureRequest
 
-from manim import Scene
 from manim._config import tempconfig
 from manim._config.utils import ManimConfig
-from manim.camera.three_d_camera import ThreeDCamera
-from manim.renderer.cairo_renderer import CairoRenderer
-from manim.renderer.opengl_renderer import OpenGLRenderer
+from manim.renderer.cairo import CairoRenderer
+from manim.renderer.cairo.camera import ThreeDCamera
+from manim.renderer.opengl import OpenGLRenderer
+from manim.scene.scene import Scene
 from manim.scene.three_d_scene import ThreeDScene
 from manim.typing import StrPath
 
@@ -231,9 +231,10 @@ def _make_test_comparing_frames(
                 ),  # testRenderer(file_writer_class=file_writer_class),
             )
             scene_tested = sceneTested(skip_animations=True)
-            scene_tested.render()
-            if last_frame:
-                frames_tester.check_frame(-1, scene_tested.renderer.get_frame())
+            with scene_tested._get_manager():
+                scene_tested.render()
+                if last_frame:
+                    frames_tester.check_frame(-1, scene_tested.renderer.get_frame())
 
     return real_test
 

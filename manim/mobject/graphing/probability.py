@@ -10,7 +10,7 @@ from typing import Any, Self, cast
 
 import numpy as np
 
-from manim import config, logger
+from manim._config import config, logger
 from manim.constants import *
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.graphing.coordinate_systems import Axes
