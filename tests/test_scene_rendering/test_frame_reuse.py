@@ -53,7 +53,7 @@ def _build():
 
 
 CHANGES = {
-    "colour": lambda back, front, scene: back.set_fill(PURE_BLUE),
+    "color": lambda back, front, scene: back.set_fill(PURE_BLUE),
     "points": lambda back, front, scene: back.shift(DOWN + RIGHT),
     "order": lambda back, front, scene: scene.bring_to_front(back),
     "camera": lambda back, front, scene: scene.camera.frame.shift(LEFT),

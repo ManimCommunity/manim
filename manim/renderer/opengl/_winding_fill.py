@@ -193,7 +193,7 @@ class WindingFill:
             if len(geo.quads) == 0 or not shows(path.fill):
                 continue
             filled.append(geo)
-            colours.append(
+            colors.append(
                 paint_colors(
                     path.fill,
                     path,

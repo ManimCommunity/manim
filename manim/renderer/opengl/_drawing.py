@@ -793,7 +793,7 @@ class SnapshotDrawing:
                 continue
             geometry.append(geo)
             widths.append(stroke.width)
-            colours.append(
+            colors.append(
                 paint_colors(
                     stroke.paint,
                     path,
