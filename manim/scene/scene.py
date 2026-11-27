@@ -56,18 +56,17 @@ from .._config.output_plan import (
 from .._config.render_session import resolve_render_session
 from .._run.frames import frame_count
 from ..animation.animation import Animation, Wait, prepare_animation
-from ..animation.composition import AnimationGroup
 from ..camera import Camera, ThreeDCamera
 from ..constants import *
 from ..manager import Manager
 from ..mobject.types.point_cloud_mobject import Point
-from ..renderer.cairo import CairoRenderer
-from ..renderer.opengl.renderer import OpenGLRenderer
+from ..renderer.backends import backend
+from ..renderer.protocol import PreviewRequest
 from ..scene.scene_file_writer import _SceneFileWriterSettings
 from ..utils.deprecation import deprecated
 from ..utils.exceptions import RerunSceneException
 from ..utils.family import extract_mobject_family_members
-from ..utils.iterables import list_difference_update, list_update
+from ..utils.iterables import list_update
 from ..utils.module_ops import scene_classes_from_file
 
 if TYPE_CHECKING:
@@ -75,6 +74,7 @@ if TYPE_CHECKING:
 
     from PIL.Image import Image
 
+    from manim.renderer.protocol import Preview, Renderer, RendererFactory
     from manim.typing import Point3D
 
     SceneInteractAction: TypeAlias = (
@@ -186,7 +186,7 @@ class Scene:
 
     def __init__(
         self,
-        renderer: CairoRenderer | OpenGLRenderer | None = None,
+        renderer: str | RendererFactory | None = None,
         camera_class: type[Camera] = Camera,
         always_update_mobjects: bool = False,
         random_seed: int | None = None,
@@ -199,8 +199,6 @@ class Scene:
 
         self.animations: list[Animation] | None = None
         self.stop_condition: Callable[[], bool] | None = None
-        self.moving_mobjects: list[Mobject] = []
-        self.static_mobjects: list[Mobject] = []
         self.time_progression: tqdm[float] | None = None
         self.duration: float = 0.0
         self.last_t = 0.0
@@ -214,26 +212,17 @@ class Scene:
         self.interactive_mode = False
         self.manager: Manager[Self] | None = None
 
-        if config.renderer == RendererType.OPENGL:
-            # Items associated with interaction
-            self.mouse_point = Point()
-            self.mouse_drag_point = Point()
-            if renderer is None:
-                renderer = OpenGLRenderer(camera_class=self.camera_class)
-
-        if renderer is None:
-            self._renderer: CairoRenderer | OpenGLRenderer = CairoRenderer(
-                # TODO: Is it a suitable approach to make an instance of
-                # the self.camera_class here?
-                camera_class=self.camera_class,
-                skip_animations=self.skip_animations,
-            )
-        else:
-            self._renderer = renderer
+        #: The scene's camera; renderers draw what it sees.
+        self._camera: Camera = camera_class()
+        #: The renderer selection: a factory, from ``renderer`` or the configuration.
+        self.backend: RendererFactory = backend(renderer, config)
+        # Where the mouse is in the preview window, for interaction.
+        self.mouse_point = Point()
+        self.mouse_drag_point = Point()
         self.session_spec = resolve_render_session(
             config,
-            self.renderer.capabilities,
-            renderer_name=type(self.renderer).__name__,
+            self.backend.capabilities,
+            renderer_name=self.backend.name,
         )
         scene_name = type(self).__name__
         module_name = resolve_module_name(config)
@@ -280,9 +269,12 @@ class Scene:
             logger.addHandler(self._log_buffer)
             # Detach it if the scene is never managed and goes away.
             weakref.finalize(self, _detach_log_handler, self._log_buffer)
-        self.renderer.init_scene(
-            self,
-            self.session_spec,
+        # The preview window shows this scene as its camera sees it and sends it
+        # input.
+        self._renderer: Renderer = self.backend.create(
+            PreviewRequest(self, lambda: self.camera._state())
+            if self.session_spec.presentation.live_preview
+            else None
         )
 
         self.mobjects: list[Mobject] = []
@@ -293,7 +285,7 @@ class Scene:
         np.random.seed(self.random_seed)  # noqa: NPY002 (only way to set seed globally)
 
     @property
-    def renderer(self) -> CairoRenderer | OpenGLRenderer:
+    def renderer(self) -> Renderer:
         """The renderer selected at construction, shared by this scene's plays.
 
         This property is read-only. Choose a different renderer when creating
@@ -303,13 +295,13 @@ class Scene:
 
     @property
     def camera(self) -> Camera:
-        return self.renderer.camera
+        """The scene's camera, created from ``camera_class`` with the scene."""
+        return self._camera
 
     @property
     def time(self) -> float:
         """Elapsed animation time in seconds, as reported by the scene's manager."""
-        # The renderer reads the clock of the scene's manager once there is one.
-        return self.renderer.time
+        return self._get_manager().time
 
     def __deepcopy__(self, clone_from_id: dict[int, Any]) -> Scene:
         cls = self.__class__
@@ -554,7 +546,7 @@ class Scene:
         """
         return extract_mobject_family_members(
             self.mobjects,
-            use_z_index=self.renderer.camera.use_z_index,
+            use_z_index=self.camera.use_z_index,
         )
 
     def add(self, *mobjects: Mobject) -> Self:
@@ -579,12 +571,6 @@ class Scene:
         ]
         self.restructure_mobjects(to_remove=new_and_foreground_mobjects)
         self.mobjects += new_and_foreground_mobjects
-        if self.moving_mobjects:
-            self.restructure_mobjects(
-                to_remove=new_and_foreground_mobjects,
-                mobject_list_name="moving_mobjects",
-            )
-            self.moving_mobjects += new_and_foreground_mobjects
         return self
 
     def add_mobjects_from_animations(self, animations: list[Animation]) -> None:
@@ -756,7 +742,7 @@ class Scene:
         if extract_families:
             to_remove = extract_mobject_family_members(
                 to_remove,
-                use_z_index=self.renderer.camera.use_z_index,
+                use_z_index=self.camera.use_z_index,
             )
         _list = getattr(self, mobject_list_name)
         new_list = self.get_restructured_mobject_list(_list, to_remove)
@@ -928,88 +914,6 @@ class Scene:
         self.foreground_mobjects = []
         return self
 
-    def get_moving_mobjects(self, *animations: Animation) -> list[Mobject]:
-        """
-        Gets all moving mobjects in the passed animation(s).
-
-        Parameters
-        ----------
-        *animations
-            The animations to check for moving mobjects.
-
-        Returns
-        ------
-        list
-            The list of mobjects that could be moving in
-            the Animation(s)
-        """
-        # Go through mobjects from start to end, and
-        # as soon as there's one that needs updating of
-        # some kind per frame, return the list from that
-        # mobject's earliest ancestor.
-
-        def _collect_animation_mobjects(
-            nested_animations: Iterable[Animation],
-        ) -> list[Mobject]:
-            animation_mobjects: list[Mobject] = []
-            for anim in nested_animations:
-                # Keep composition wrappers as conservative boundaries for the
-                # static frame cache, in addition to their nested animations.
-                animation_mobjects.extend(anim.mobject.get_family())
-                if isinstance(anim, AnimationGroup):
-                    animation_mobjects.extend(
-                        _collect_animation_mobjects(anim.animations),
-                    )
-            return animation_mobjects
-
-        animation_mobjects = set(_collect_animation_mobjects(animations))
-
-        mobjects = self.get_mobject_family_members()
-
-        def consider_moving(mob: Mobject) -> bool:
-            return (
-                mob in animation_mobjects
-                or len(mob.updaters) > 0
-                or mob in self.foreground_mobjects
-                or any(consider_moving(m) for m in mob.submobjects)
-            )
-
-        if self.always_update_mobjects or self.updaters:
-            return list(self.mobjects)
-
-        i = next((i for i, mob in enumerate(mobjects) if consider_moving(mob)), None)
-        moving_mobjects = [] if i is None else mobjects[i:]
-        movement_indicators: list[Mobject] = getattr(
-            self.camera,
-            "get_mobjects_indicating_movement",
-            lambda: [],
-        )()
-        moving_family = extract_mobject_family_members(moving_mobjects)
-        if any(indicator in moving_family for indicator in movement_indicators):
-            # A camera control changes the projection of all scene mobjects.
-            return list_update(self.mobjects, moving_mobjects)
-        return moving_mobjects
-
-    def get_moving_and_static_mobjects(
-        self, animations: Iterable[Animation]
-    ) -> tuple[list[Mobject], list[Mobject]]:
-        all_mobjects = list_update(self.mobjects, self.foreground_mobjects)
-        all_mobject_families = extract_mobject_family_members(
-            all_mobjects,
-            use_z_index=self.renderer.camera.use_z_index,
-            only_those_with_points=True,
-        )
-        moving_mobjects = self.get_moving_mobjects(*animations)
-        all_moving_mobject_families = extract_mobject_family_members(
-            moving_mobjects,
-            use_z_index=self.renderer.camera.use_z_index,
-        )
-        static_mobjects = list_difference_update(
-            all_mobject_families,
-            all_moving_mobject_families,
-        )
-        return all_moving_mobject_families, static_mobjects
-
     def compile_animations(
         self,
         *args: Animation | Mobject | _AnimationBuilder,
@@ -1090,7 +994,7 @@ class Scene:
         time_progression
             The CommandLine Progress Bar.
         """
-        if self.renderer.skip_animations and not override_skip_animations:
+        if self._get_manager().skip_animations and not override_skip_animations:
             times: Iterable[float] = [run_time]
         else:
             rate = config.frame_rate
@@ -1192,7 +1096,7 @@ class Scene:
         # If we are in interactive embedded mode, make sure this is running on the main thread (required for OpenGL)
         if (
             self.interactive_mode
-            and config.renderer == RendererType.OPENGL
+            and self.backend.name == "opengl"
             and threading.current_thread().name != "MainThread"
         ):
             # TODO: are these actually being used?
@@ -1316,8 +1220,6 @@ class Scene:
 
         self.last_t = 0
         self.stop_condition = None
-        self.moving_mobjects = []
-        self.static_mobjects = []
 
         self.duration = self.get_run_time(self.animations)
         if len(self.animations) == 1 and isinstance(self.animations[0], Wait):
@@ -1338,13 +1240,6 @@ class Scene:
             animation._setup_scene(self)
             animation.begin()
 
-        if config.renderer == RendererType.CAIRO:
-            # Identify mobjects whose pixels can be reused between frames.
-            (
-                self.moving_mobjects,
-                self.static_mobjects,
-            ) = self.get_moving_and_static_mobjects(self.animations)
-
     def is_current_animation_frozen_frame(self) -> bool:
         """Returns whether the current animation produces a static frame (generally a Wait)."""
         assert self.animations is not None
@@ -1354,19 +1249,24 @@ class Scene:
             and self.animations[0].is_static_wait
         )
 
+    def _preview(self) -> Preview | None:
+        """The preview handle of the scene's manager (``None`` without a live
+        preview).
+        """
+        return self._get_manager().preview
+
     def check_interactive_embed_is_valid(self) -> bool:
-        assert isinstance(self.renderer, OpenGLRenderer)
         if self.skip_animation_preview:
             logger.warning(
                 "Disabling interactive embed as 'skip_animation_preview' is enabled",
             )
             return False
-        elif self.renderer.file_writer.output_spec.enabled:
+        elif self.session_spec.output.enabled:
             logger.warning(
                 "Disabling interactive embed while media output is enabled",
             )
             return False
-        elif not self.renderer.window:
+        elif self._preview() is None:
             logger.warning("Disabling interactive embed as no window was created")
             return False
         elif config.dry_run:
@@ -1378,7 +1278,6 @@ class Scene:
         """Like embed(), but allows for screen interaction."""
         if self.manager is not None:
             self.manager._mode.check("Interactive preview")
-        assert isinstance(self.renderer, OpenGLRenderer)
         if not self.check_interactive_embed_is_valid():
             return
         self.interactive_mode = True
@@ -1461,7 +1360,6 @@ class Scene:
     def interact(self, shell: Any, keyboard_thread: threading.Thread) -> None:
         if self.manager is not None:
             self.manager._mode.check("Interactive preview")
-        assert isinstance(self.renderer, OpenGLRenderer)
         event_handler = RerunSceneHandler(self.queue)
         file_observer = Observer()
         file_observer.schedule(event_handler, config.input_file, recursive=True)
@@ -1472,9 +1370,9 @@ class Scene:
         assert self.queue.qsize() == 0
 
         last_time = time.time()
+        preview = self._preview()
         while not (
-            (self.renderer.window is not None and self.renderer.window.is_closing)
-            or self.quit_interaction
+            (preview is not None and preview.is_closing) or self.quit_interaction
         ):
             if not self.queue.empty():
                 action = self.queue.get_nowait()
@@ -1514,7 +1412,6 @@ class Scene:
                 else:
                     action.method(*action.args, **action.kwargs)
             else:
-                self.renderer.animation_start_time = 0
                 dt = time.time() - last_time
                 last_time = time.time()
                 self._get_manager()._render_preview_frame(dt)
@@ -1535,21 +1432,20 @@ class Scene:
         if self.dearpygui_imported and config.enable_gui:
             dpg.stop_dearpygui()
 
-        if self.renderer.window is not None and self.renderer.window.is_closing:
-            self.renderer.window.destroy()
+        if preview is not None and preview.is_closing:
+            # The user closed the window: release it and the renderer now.
+            self.renderer.close()
 
     def embed(self) -> None:
         if self.manager is not None:
             self.manager._mode.check("Interactive preview")
-        assert isinstance(self.renderer, OpenGLRenderer)
         if not self.session_spec.presentation.live_preview:
             logger.warning("Called embed() while no live preview window is available.")
             return
-        if self.renderer.file_writer.output_spec.enabled:
+        if self.session_spec.output.enabled:
             logger.warning("embed() is skipped while writing to a file.")
             return
 
-        self.renderer.animation_start_time = 0
         self._get_manager()._render_preview_frame(-1)
 
         # Configure IPython shell.
@@ -1767,9 +1663,9 @@ class Scene:
         self._get_manager().add_sound(sound_file, time_offset, gain, gain_to_background)
 
     def on_mouse_motion(self, point: Point3D, d_point: Point3D) -> None:
-        assert isinstance(self.renderer, OpenGLRenderer)
         self.mouse_point.move_to(point)
-        if SHIFT_VALUE in self.renderer.pressed_keys:
+        preview = self._preview()
+        if preview is not None and SHIFT_VALUE in preview.pressed_keys:
             self._pan_camera(d_point)
 
     def on_mouse_scroll(self, point: Point3D, offset: Point3D) -> None:

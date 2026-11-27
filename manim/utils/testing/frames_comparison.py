@@ -7,25 +7,17 @@ from pathlib import Path
 from typing import Any
 
 import cairo
+import numpy as np
 import pytest
 from _pytest.fixtures import FixtureRequest
 
 from manim._config import tempconfig
 from manim._config.utils import ManimConfig
-from manim.camera import ThreeDCamera
-from manim.renderer.cairo import CairoRenderer
-from manim.renderer.opengl import OpenGLRenderer
 from manim.scene.scene import Scene
-from manim.scene.three_d_scene import ThreeDScene
 from manim.typing import StrPath
 
 from ._frames_testers import _ControlDataWriter, _FramesTester
-from ._test_class_makers import (
-    DummySceneFileWriter,
-    _make_scene_file_writer_class,
-    _make_test_renderer_class,
-    _make_test_scene_class,
-)
+from ._test_class_makers import _make_test_scene_class
 
 SCENE_PARAMETER_NAME = "scene"
 _tests_root_dir_path = Path(__file__).absolute().parents[2]
@@ -37,7 +29,7 @@ def frames_comparison(
     func: Callable | None = None,
     *,
     last_frame: bool = True,
-    renderer_class: type[CairoRenderer | OpenGLRenderer] = CairoRenderer,
+    renderer: str = "cairo",
     base_scene: type[Scene] = Scene,
     **custom_config: Any,
 ) -> Callable:
@@ -53,8 +45,9 @@ def frames_comparison(
     ----------
     last_frame
         whether the test should test the last frame, by default True.
-    renderer_class
-        The base renderer to use (OpenGLRenderer/CairoRenderer), by default CairoRenderer
+    renderer
+        The name of the renderer to draw with (``"cairo"`` or ``"opengl"``), by
+        default ``"cairo"``.
     base_scene
         The base class for the scene (ThreeDScene, etc.), by default Scene
 
@@ -91,10 +84,7 @@ def frames_comparison(
             *args: Any, request: FixtureRequest, tmp_path: StrPath, **kwargs: Any
         ) -> None:
             # check for cairo version
-            if (
-                renderer_class is CairoRenderer
-                and cairo.cairo_version() < MIN_CAIRO_VERSION
-            ):
+            if renderer == "cairo" and cairo.cairo_version() < MIN_CAIRO_VERSION:
                 pytest.skip("Cairo version is too old. Skipping cairo graphical tests.")
             # Wraps the test_function to a construct method, to "freeze" the eventual additional arguments (parametrizations fixtures).
             construct = functools.partial(tested_scene_construct, *args, **kwargs)
@@ -113,9 +103,12 @@ def frames_comparison(
             config_tests["text_dir"] = tmp_path
             config_tests["tex_dir"] = tmp_path
 
+            # Frames are compared in memory; no media is written.
+            config_tests["dry_run"] = True
             if last_frame:
                 config_tests["frame_rate"] = 1
-                config_tests["dry_run"] = True
+            # The scene creates the renderer of the configuration.
+            config_tests["renderer"] = renderer
 
             setting_test = request.config.getoption("--set_test")
             try:
@@ -131,7 +124,6 @@ def frames_comparison(
                 ),
                 base_scene=base_scene,
                 construct=construct,
-                renderer_class=renderer_class,
                 is_set_test_data_test=setting_test,
                 last_frame=last_frame,
                 show_diff=request.config.getoption("--show_diff"),
@@ -172,7 +164,6 @@ def _make_test_comparing_frames(
     file_path: Path,
     base_scene: type[Scene],
     construct: Callable[[Scene], None],
-    renderer_class: type,  # Renderer type, there is no superclass renderer yet .....
     is_set_test_data_test: bool,
     last_frame: bool,
     show_diff: bool,
@@ -188,8 +179,6 @@ def _make_test_comparing_frames(
         The base scene class.
     construct
         The construct method (= the test function)
-    renderer_class
-        The renderer base class.
     show_diff
         whether to visually show_diff (see --show_diff)
 
@@ -205,36 +194,18 @@ def _make_test_comparing_frames(
     else:
         frames_tester = _FramesTester(file_path, show_diff=show_diff)
 
-    file_writer_class = (
-        _make_scene_file_writer_class(frames_tester)
-        if not last_frame
-        else DummySceneFileWriter
-    )
-    testRenderer = _make_test_renderer_class(renderer_class)
-
     def real_test() -> None:
         with frames_tester.testing():
             sceneTested = _make_test_scene_class(
                 base_scene=base_scene,
                 construct_test=construct,
-                # NOTE this is really ugly but it's due to the very bad design of the two renderers.
-                # If you pass a custom renderer to the Scene, the Camera class given as an argument in the Scene
-                # is not passed to the renderer. See __init__ of Scene.
-                # This potentially prevents OpenGL testing.
-                test_renderer=(
-                    testRenderer(file_writer_class=file_writer_class)
-                    if base_scene is not ThreeDScene
-                    else testRenderer(
-                        file_writer_class=file_writer_class,
-                        camera_class=ThreeDCamera,
-                    )
-                ),  # testRenderer(file_writer_class=file_writer_class),
+                frames_tester=None if last_frame else frames_tester,
             )
-            scene_tested = sceneTested(skip_animations=True)
+            scene_tested = sceneTested()
             with scene_tested._get_manager():
                 scene_tested.render()
                 if last_frame:
-                    frames_tester.check_frame(-1, scene_tested.renderer.get_frame())
+                    frames_tester.check_frame(-1, np.asarray(scene_tested.get_image()))
 
     return real_test
 

@@ -51,7 +51,7 @@ def test_time_dependent_cache_and_fractional_downstream_epochs(tmp_path, backend
         cold.render()
         reference = decoded_frames(cold.manager.file_writer.final_file_path)
         assert cold.time == 2
-        assert len(set(cold.renderer.animations_hashes)) == 4
+        assert len(set(cold._get_manager().animations_hashes)) == 4
         assert len(reference) == 8
         assert not np.array_equal(reference[4], reference[6])
 
@@ -234,7 +234,10 @@ def test_plays_at_the_same_time_reuse_segments_whatever_came_before(tmp_path):
         second.split = True
         second.render()
     # The last play starts at the same time, after one play or after two.
-    assert first.renderer.animations_hashes[-1] == second.renderer.animations_hashes[-1]
+    assert (
+        first._get_manager().animations_hashes[-1]
+        == second._get_manager().animations_hashes[-1]
+    )
 
 
 def test_plays_cached_under_another_drawing_version_are_not_reused(

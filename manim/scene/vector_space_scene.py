@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING, Any, cast
 import numpy as np
 
 from manim.animation.creation import DrawBorderThenFill, Group
-from manim.camera import Camera
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.line import Arrow, Line, Vector
 from manim.mobject.geometry.polygram import Rectangle
@@ -118,10 +117,10 @@ class VectorScene(Scene):
 
     def lock_in_faded_grid(
         self, dimness: float = 0.7, axes_dimness: float = 0.5
-    ) -> None:
+    ) -> NumberPlane:
         """
-        This method freezes the NumberPlane and Axes that were already
-        in the background, and adds new, manipulatable ones to the foreground.
+        Replace the scene's mobjects by a faded NumberPlane and Axes, kept in the
+        background, and return the plane.
 
         Parameters
         ----------
@@ -131,18 +130,14 @@ class VectorScene(Scene):
         axes_dimness
             The required dimness of the Axes.
         """
+        self.clear()
         plane = self.add_plane()
         axes = plane.get_axes()
         plane.fade(dimness)
         axes.set_color(WHITE)
         axes.fade(axes_dimness)
         self.add(axes)
-
-        # TODO
-        # error: Missing positional argument "scene" in call to "update_frame" of "CairoRenderer"  [call-arg]
-        self.renderer.update_frame()  # type: ignore[call-arg]
-        self.renderer.camera = Camera(self.renderer.get_frame())
-        self.clear()
+        return plane
 
     def get_vector(self, numerical_vector: Vector3DLike, **kwargs: Any) -> Arrow:
         """

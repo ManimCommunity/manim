@@ -146,3 +146,88 @@ def test_failed_window_constructor_closes_native_window(
         for window in initializing:
             if window._window.context is not None:
                 close(window)
+
+
+_PRESENT_CHECK = """
+import ctypes, sys
+from pyglet import gl
+from manim import RED, Scene, Square, tempconfig
+from manim.renderer.opengl import window as window_module
+
+
+def native_context():
+    # The context the driver draws with, not Pyglet's idea of it.
+    if sys.platform == "darwin":
+        cgl = ctypes.CDLL("/System/Library/Frameworks/OpenGL.framework/OpenGL")
+        cgl.CGLGetCurrentContext.restype = ctypes.c_void_p
+        return cgl.CGLGetCurrentContext()
+    if sys.platform.startswith("linux"):
+        from pyglet.gl import glx
+
+        return ctypes.cast(glx.glXGetCurrentContext(), ctypes.c_void_p).value
+    if sys.platform == "win32":
+        wgl = ctypes.windll.opengl32
+        wgl.wglGetCurrentContext.restype = ctypes.c_void_p
+        return wgl.wglGetCurrentContext()
+    raise NotImplementedError(sys.platform)
+
+
+bound = []
+swap = window_module.Window.swap_buffers
+
+def checked(self):
+    value = ctypes.c_int()
+    gl.glGetIntegerv(gl.GL_DRAW_FRAMEBUFFER_BINDING, ctypes.byref(value))
+    bound.append((value.value, self.fbo.glo, native_context()))
+    swap(self)
+
+window_module.Window.swap_buffers = checked
+with tempconfig({"renderer": "opengl", "format": "none", "live_preview": True,
+                 "pixel_width": 64, "pixel_height": 36, "window_size": (64, 36)}):
+    scene = Scene()
+    scene.add(Square(color=RED, fill_opacity=1))
+    manager, renderer = scene._get_manager(), scene.renderer
+    preview = manager.preview
+    preview.show()
+    window_context = native_context()
+    frame_size = renderer.window.fbo.size
+    if sys.argv[1] == "other size":
+        frame_size = (frame_size[0] + 2, frame_size[1] + 2)
+    from manim.renderer.frame import FrameBuilder
+    frame = renderer.render(*FrameBuilder(*frame_size).build(scene.camera, scene.mobjects))
+    other = None
+    if sys.argv[1] == "after another renderer drew":
+        # Another renderer draws offscreen and stays open: its context is current.
+        with tempconfig({"live_preview": False}):
+            other = Scene()
+            other.add(Square())
+            other.renderer.render(*other._get_manager()._frame())
+        assert native_context() != window_context
+    bound.clear()
+    preview.present(frame)
+    if other is not None:
+        other.renderer.close()
+    manager.close()
+assert bound, bound
+assert all(drawn == window for drawn, window, _ in bound), bound
+assert all(current == window_context for _, _, current in bound), bound
+"""
+
+
+@pytest.mark.parametrize(
+    "case", ["same size", "other size", "after another renderer drew"]
+)
+def test_present_shows_frames_in_the_window_context(case):
+    # Copying an equally sized frame into the window left the frame's framebuffer
+    # bound when the window swapped (a black window on macOS), and after an
+    # offscreen draw the swap ran with another context current. The window's
+    # context and framebuffer must be current at every swap; nothing reads the
+    # frame back first.
+    result = subprocess.run(
+        [sys.executable, "-c", _PRESENT_CHECK, case],
+        capture_output=True,
+        encoding="utf-8",
+        env={**os.environ, "PYTHONIOENCODING": "utf-8"},
+        timeout=60,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr

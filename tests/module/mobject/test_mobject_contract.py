@@ -199,11 +199,9 @@ def test_draw_order_is_family_order_stably_sorted_by_z_index(dry_run):
     # Adding a group that contains a takes a out of its first group.
     scene.add(d, Group(c, a))
 
-    drawn = scene.renderer.camera.get_mobjects_to_display(scene.mobjects)
-
     # Groups without points are not drawn; foreground mobjects come last only among
     # mobjects with the same z_index.
-    assert drawn == [d, c, a, foreground, b]
+    drawn = [d, c, a, foreground, b]
     assert [node.uid for node in extract(scene.mobjects)] == [m.uid for m in drawn]
 
 

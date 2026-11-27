@@ -14,7 +14,7 @@ def test_time_going_backwards_fails_the_capture():
     class Rewinds(Scene):
         def construct(self):
             self.wait(1, frozen_frame=False)
-            self.renderer.time = 0.5
+            self._get_manager().time = 0.5
             self.wait(1, frozen_frame=False)
 
     with tempconfig({"format": "none", "frame_rate": 4, "progress_bar": "none"}):

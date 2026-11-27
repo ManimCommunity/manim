@@ -244,3 +244,163 @@ default; ``Cube(material=...)`` and ``faces_config={"material": ...}`` set anoth
   ``stroke_opacity``); ``shade_in_3d`` has no effect.
 - A face is transformed only into a face with as many corners; ``Create`` shows a
   face at once instead of drawing its outline.
+
+.. _upgrading-renderers:
+
+Renderers only draw
+-------------------
+
+The Cairo and OpenGL renderers only draw: the :class:`.Manager` runs the scene,
+owns the animation clock and the output files, and hands the renderer what to draw
+in each frame. This section lists what changed for code that used the renderers,
+cameras or scene classes directly.
+
+Removed scene classes and camera options
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- ``SpecialThreeDScene``: use :class:`.ThreeDScene` and create the axes and
+  spheres it offered directly.
+- ``ThreeDCamera.exponential_projection``: points are projected with the factor
+  ``focal_distance / (focal_distance - z)``.
+
+Changed drawing
+~~~~~~~~~~~~~~~
+
+- Both renderers fill the background of a frame with the camera's
+  ``background_color`` and ``background_opacity``. The OpenGL renderer used the
+  ``background_color`` of the configuration instead.
+- An inset (an :class:`.ImageMobjectFromCamera`) shows the scene without other
+  insets in it. Before, the Cairo renderer drew the insets inside a
+  :class:`.MultiCamera` that was itself shown in an inset. Cameras that show each
+  other in their insets are no longer an error.
+- Mobjects fixed in the frame (:meth:`.Mobject.fix_in_frame`) are drawn after all
+  other mobjects, in scene order and by ``z_index`` among themselves. Earlier, a
+  fixed mobject added before another mobject could be covered by it. A fixed mesh
+  hides its own triangles, but neither hides nor is hidden by the depth of the
+  scene.
+
+Drawing frames
+~~~~~~~~~~~~~~
+
+- Renderers draw what they are given:
+  :meth:`renderer.render(nodes, config) <.Renderer.render>` draws the render
+  snapshots of a frame as its :class:`.RenderConfig` sets them up and returns a
+  :class:`.Frame`; :meth:`.Frame.pixels` reads its RGBA pixels. The
+  manager's :class:`.FrameBuilder` makes both from the scene's mobjects and
+  camera. ``update_frame()``, ``render_mobjects()``, ``get_frame()``,
+  ``get_image()`` and ``render(scene, time)`` of the renderers are gone; use
+  :meth:`.Scene.get_image` for an image of the scene's current state.
+- Renderers keep no camera: ``renderer.camera`` and the ``camera`` and
+  ``camera_class`` arguments of :class:`.CairoRenderer` and
+  :class:`.OpenGLRenderer` are gone. The scene's camera is ``scene.camera``.
+- :class:`.OpenGLRenderer` takes its options as arguments (``wireframe``,
+  ``anti_alias_width``); the scene passes ``config.enable_wireframe`` when it
+  creates one. Both options are part of the play cache's key.
+- Frames are drawn at the size the scene was created with
+  (``scene.session_spec.pixel_size``); renderers have no pixel size of their own.
+
+Removed renderer methods
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Renderers only draw (see :class:`.Renderer`). These methods are gone:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Removed
+     - Use instead
+   * - ``renderer.file_writer``
+     - ``scene.manager.file_writer`` (or ``scene._get_manager().file_writer``)
+   * - ``renderer.play(scene, ...)``
+     - :meth:`.Scene.play`
+   * - ``renderer.scene_finished(scene)``
+     - Nothing: :meth:`.Manager.render` finishes the movie and saves the last
+       frame.
+   * - ``renderer.freeze_current_frame(duration)``, ``renderer.add_frame(...)``
+     - :meth:`.Scene.pause` (a frozen :meth:`.Scene.wait`)
+   * - ``renderer.update_skipping_status()``
+     - Nothing: each play checks whether it is part of the output.
+   * - ``renderer.show_frame(scene)``
+     - ``scene.get_image().show()``
+
+Removed camera methods
+~~~~~~~~~~~~~~~~~~~~~~
+
+Cameras no longer draw: renderers draw the render snapshots of the mobjects
+(:mod:`manim.renderer.snapshot`), and a camera only says where it looks. The
+methods through which a camera took part in drawing are gone, so a camera
+subclass that overrides one of them no longer changes what is drawn:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Removed
+     - Use instead
+   * - ``transform_points_pre_display``
+     - Move or deform the mobjects themselves (for example with an updater or
+       ``apply_function``); :meth:`.ThreeDCamera.project_points` still projects
+       points as the renderers do
+   * - ``get_mobjects_to_display``
+     - Nothing: what is drawn is the scene's mobjects; leave a mobject out by
+       removing it from the scene
+   * - ``get_fill_rgbas``, ``get_stroke_rgbas``, ``modified_rgbas``
+     - Set the colors on the mobjects; lighting comes from the scene's lights
+   * - ``get_mobjects_indicating_movement``, ``get_view_transform_center``
+     - Nothing
+   * - ``Mobject.get_z_index_reference_point``
+     - Nothing: a 3D camera orders shaded paths by the center of their own
+       points
+
+A renderer draws the frames of one scene: passing a renderer that another scene
+uses to :class:`.Scene` raises ``RuntimeError``.
+
+The animation clock and counters belong to the :class:`.Manager`:
+``renderer.time``, ``renderer.num_plays``, ``renderer.skip_animations`` and
+``renderer.animations_hashes`` are gone; use ``scene.time`` or the attributes of
+the same names on ``scene.manager``. ``Scene(skip_animations=True)`` now leaves
+plays out with any renderer, and the renderers' ``skip_animations`` argument is
+gone.
+
+Preview window
+~~~~~~~~~~~~~~
+
+- The OpenGL renderer draws every frame offscreen at the scene's size; the
+  preview window shows it, scaled to the window. Movies written while
+  previewing in a window of another size have the scene's size.
+- The preview is reached through a handle: ``scene.manager.preview`` (a
+  :class:`.Preview`, or ``None`` without a live preview) has ``show()``,
+  ``present(frame)``, ``is_closing`` and ``pressed_keys``. The window opens
+  before :meth:`.Scene.setup` when a scene renders with a live preview.
+- ``renderer.pressed_keys``, ``renderer.pixel_coords_to_space_coords()``,
+  ``renderer.animation_start_time`` and ``renderer.animation_elapsed_time``,
+  ``renderer.clear_screen()`` and ``renderer.init_scene()`` are gone; the
+  window maps its positions to scene points itself. ``Scene.get_image()`` and
+  evaluation never open a window.
+
+Selecting a renderer
+~~~~~~~~~~~~~~~~~~~~
+
+- A scene takes a renderer *factory* or the name of a built-in renderer, not a
+  renderer: ``Scene(renderer="opengl")`` or
+  ``Scene(renderer=OpenGL(anti_alias_width=2))`` with the factories of
+  :mod:`manim.renderer.backends` (``Cairo()``, ``OpenGL(wireframe=...,
+  anti_alias_width=...)``). Without it, ``config.renderer`` decides, as before.
+  Passing a renderer instance raises ``TypeError``. The scene keeps its factory as
+  ``scene.backend`` and creates its own renderer from it; two scenes never share
+  one.
+- ``config.renderer`` and ``--renderer`` stay the list of built-in names; other
+  renderers are selected in code with their factory (see
+  :class:`.RendererFactory`).
+- A renderer creates its resources when it first draws: the protocol has no
+  ``open()``, and ``renderer.capabilities`` and ``renderer.cache_identity`` moved
+  to the factory. ``Scene.get_image()`` and evaluation draw with a second renderer
+  of the scene's factory, kept for a ``with manager:`` block, a render or an
+  evaluation and closed with it.
+- The graphical test harness takes ``renderer="opengl"`` instead of
+  ``renderer_class=OpenGLRenderer``.
+- The OpenGL renderer raises :class:`~.CapabilityError` for a camera's
+  ``background_image``; it used to leave the image out. Use the Cairo renderer
+  for background images.
+- Removed from :class:`.OpenGLRenderer`: ``get_frame()``,
+  ``get_raw_frame_buffer_object_data()``, ``get_pixel_shape()`` and
+  ``get_frame_buffer_object()``; read a frame's pixels with ``frame.pixels()``.

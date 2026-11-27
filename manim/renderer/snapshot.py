@@ -45,6 +45,7 @@ from collections.abc import Hashable, Mapping
 from typing import TYPE_CHECKING, NamedTuple, TypeAlias
 
 from manim.appearance.material import PbrMaterial, UnlitMaterial
+from manim.constants import STROKE_WIDTH_UNIT
 
 if TYPE_CHECKING:
     import numpy as np
@@ -78,6 +79,7 @@ __all__ = [
     "RPath",
     "RPoints",
     "RSolidColor",
+    "STROKE_WIDTH_UNIT",
     "RStroke",
 ]
 

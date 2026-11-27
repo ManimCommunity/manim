@@ -12,15 +12,18 @@ import cairo
 import numpy as np
 from PIL import Image
 
-from manim.camera import Camera
 from manim.constants import CapStyleType, LineJointType
-from manim.mobject.mobject import Mobject
 from manim.renderer._paint import paint_colors
-from manim.renderer.extract import extract
+from manim.renderer._view import (
+    display_points,
+    is_3d,
+    shaded_rgbas,
+    view_transform_center,
+)
 from manim.renderer.snapshot import (
+    STROKE_WIDTH_UNIT,
     RCameraView,
     RImage,
-    RMesh,
     RNode,
     RPaint,
     RPath,
@@ -33,10 +36,10 @@ from manim.utils._path_points import (
 )
 from manim.utils.space_ops import cross2d
 
-from ._mesh_faces import mesh_faces
 from .target import _CairoRenderTarget, _PathCache
 
 if TYPE_CHECKING:
+    from manim.renderer.protocol import CameraState
     from manim.typing import (
         FloatRGBA_Array,
         Point3D_Array,
@@ -63,59 +66,46 @@ _ImageResolver = Callable[[RNode], np.ndarray | None]
 
 
 class _CairoDrawingContext:
-    """Draw mobjects into one renderer-owned target using one semantic camera."""
+    """Draw render snapshots into one renderer-owned target from one camera state."""
 
     def __init__(
         self,
         *,
-        camera: Camera,
+        camera: CameraState,
         target: _CairoRenderTarget,
         image_resolver: _ImageResolver,
+        reference_pixel_size: tuple[int, int],
     ) -> None:
         self.camera = camera
+        #: See :attr:`.RenderConfig.reference_pixel_size`.
+        self.reference_pixel_size = reference_pixel_size
         self.target = target
         self.image_resolver = image_resolver
         self._path_cache: _PathCache | None = None
 
-    def draw(
-        self,
-        mobjects: Iterable[Mobject],
-        *,
-        include_submobjects: bool = True,
-        excluded_mobjects: list[Mobject] | None = None,
-    ) -> None:
+    def start_frame(self) -> None:
+        """Begin a frame of the target: paths cached in the frame before last and
+        not drawn since are dropped.
+        """
         self.target._ensure_open()
-        # Paths can be cached only if the camera draws points where they are.
-        self._path_cache = (
-            self.target.path_cache
-            if type(self.camera)._place is Camera._place
-            else None
-        )
+        # Paths can be cached only where points are drawn where they are: a flat
+        # view (a perspective view projects them anew in each frame).
+        self._path_cache = None if is_3d(self.camera) else self.target.path_cache
         if self._path_cache is not None:
             self._path_cache.next_generation()
-        with self.camera._drawing():
-            nodes: list[RNode] = []
-            for node in extract(
-                mobjects,
-                include_submobjects=include_submobjects,
-                use_z_index=self.camera.use_z_index,
-                excluded_mobjects=excluded_mobjects or (),
-            ):
-                if isinstance(node.payload, RMesh):
-                    # A mesh is drawn as its faces, each a path.
-                    nodes.extend(mesh_faces(node, self.camera))
-                else:
-                    nodes.append(node)
-            nodes = self.camera._sort_for_display(nodes)
-            for payload_type, group in it.groupby(
-                nodes, lambda node: type(node.payload)
-            ):
-                if payload_type is RPath:
-                    self._display_paths(list(group))
-                elif payload_type is RPoints:
-                    self._display_point_clouds(group)
-                else:
-                    self._display_images(group)
+
+    def draw_nodes(self, nodes: list[RNode]) -> None:
+        """Draw ``nodes`` in order over what the target holds (after
+        :meth:`start_frame`).
+        """
+        self.target._ensure_open()
+        for payload_type, group in it.groupby(nodes, lambda node: type(node.payload)):
+            if payload_type is RPath:
+                self._display_paths(list(group))
+            elif payload_type is RPoints:
+                self._display_point_clouds(group)
+            else:
+                self._display_images(group)
 
     def _display_paths(self, nodes: list[RNode]) -> None:
         for mask, batch in it.groupby(nodes, _mask):
@@ -162,7 +152,7 @@ class _CairoDrawingContext:
         self, context: cairo.Context, node: RNode, path: RPath
     ) -> bool:
         """Set the context's path to the node's path; return whether it did."""
-        points = self.camera._display_points(node, path.points)
+        points = display_points(self.camera, node, path.points)
         if len(points) == 0:
             return False
 
@@ -215,11 +205,13 @@ class _CairoDrawingContext:
         node: RNode,
         path: RPath,
     ) -> None:
-        rgbas, ends = paint_colors(paint, path, self.camera._shaded_rgbas)
+        rgbas, ends = paint_colors(
+            paint, path, lambda path, rgbas: shaded_rgbas(self.camera, path, rgbas)
+        )
         if ends is None:
             context.set_source_rgba(*rgbas[0][2::-1], rgbas[0][3])
             return
-        points = self.camera._display_points(node, ends)
+        points = display_points(self.camera, node, ends)
         pattern = cairo.LinearGradient(
             *it.chain(*(point[:2] for point in points)),
         )
@@ -246,7 +238,7 @@ class _CairoDrawingContext:
             return
         self._set_cairo_context_color(context, stroke.paint, node, path)
         context.set_line_width(
-            stroke.width * self.target.settings.cairo_line_width_multiple,
+            stroke.width * STROKE_WIDTH_UNIT,
         )
         context.set_line_join(_LINE_JOIN_MAP[stroke.joint])
         context.set_line_cap(_CAP_STYLE_MAP[stroke.cap])
@@ -262,6 +254,7 @@ class _CairoDrawingContext:
             camera=self.camera,
             target=scratch,
             image_resolver=self.image_resolver,
+            reference_pixel_size=self.reference_pixel_size,
         )
         scratch_context._display_unmasked_paths(nodes)
         background = self.target.get_background_image(image)
@@ -435,11 +428,11 @@ class _CairoDrawingContext:
         node: RNode,
         points: Point3D_Array,
     ) -> np.ndarray:
-        points = self.camera._display_points(node, points)
+        points = display_points(self.camera, node, points)
         # Use the same view center as the Cairo context transform, so that
         # pixel-placed images and point clouds line up with vectorized mobjects
         # (ThreeDCamera.project_points() has already removed frame_center).
-        shifted_points = points - self.camera.get_view_transform_center()
+        shifted_points = points - view_transform_center(self.camera)
         settings = self.target.settings
         result = np.zeros((len(points), 2))
         result[:, 0] = (
@@ -472,8 +465,9 @@ class _CairoDrawingContext:
         )
 
     def _adjusted_thickness(self, thickness: float) -> float:
+        """A point thickness given at the reference size, at the target's size."""
         settings = self.target.settings
-        base_sum = settings.base_pixel_height + settings.base_pixel_width
+        base_sum = sum(self.reference_pixel_size)
         target_sum = settings.pixel_height + settings.pixel_width
         return 1 + (thickness - 1) * base_sum / target_sum
 
@@ -494,3 +488,24 @@ class _CairoDrawingContext:
 def _mask(node: RNode) -> Any:
     path: RPath = node.payload  # type: ignore[assignment]
     return path.mask
+
+
+def reusable_boundary(nodes: list[RNode], count: int) -> int:
+    """The largest ``k <= count`` such that drawing ``nodes[:k]`` and then the rest
+    gives the same pixels as drawing all at once.
+
+    Paths with one mask image are drawn together, as a mask over the image; a run
+    of them is not split.
+    """
+    image = _background_image_of
+    while 0 < count < len(nodes):
+        before, after = image(nodes[count - 1]), image(nodes[count])
+        if before is None or before is not after:
+            break
+        count -= 1
+    return count
+
+
+def _background_image_of(node: RNode) -> Any:
+    payload = node.payload
+    return payload.mask if isinstance(payload, RPath) else None

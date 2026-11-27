@@ -5,15 +5,15 @@ import datetime
 import threading
 from unittest.mock import Mock, patch
 
+import numpy as np
 import pytest
 import srt
+from PIL import Image
 
-from manim import Manager, Scene, tempconfig
+from manim import RIGHT, Manager, Scene, Square, tempconfig
 from manim._config.output import OutputFormat
 from manim.animation.animation import Wait
-from manim.constants import RendererType
-from manim.renderer._execution import _ExecutionState
-from manim.renderer.protocol import RendererCapabilities, RendererState
+from manim.renderer.protocol import RendererState
 from manim.scene.scene import SceneInteractRerun
 from manim.utils.exceptions import EndSceneEarlyException, RerunSceneException
 from tests.helpers.audio import write_wav
@@ -40,7 +40,7 @@ def test_manager_exposes_the_session_output_snapshot(config):
     config.dry_run = True
 
     assert manager.output_spec.format is OutputFormat.GIF
-    assert manager.output_spec is scene.renderer.file_writer.output_spec
+    assert manager.output_spec is scene._get_manager().file_writer.output_spec
     assert manager.session_spec.presentation.open_after_render is True
     assert manager.session_spec.dry_run is False
 
@@ -70,12 +70,9 @@ def test_manager_rejects_explicit_video_for_scene_without_play_calls(
     output_format,
 ):
     config.format = output_format
-    renderer = Mock()
-    renderer._claim_execution.return_value = _ExecutionState(frame_rate=60.0)
-    renderer.capabilities = RendererCapabilities()
-    renderer.num_plays = 0
-    scene = Scene(renderer)
+    scene = Scene()
     manager = Manager(scene)
+    manager._file_writer = Mock()
 
     with pytest.raises(
         RuntimeError,
@@ -83,23 +80,21 @@ def test_manager_rejects_explicit_video_for_scene_without_play_calls(
     ):
         manager.post_construct()
 
-    renderer.scene_finished.assert_not_called()
+    manager._file_writer.finish.assert_not_called()
+    manager._file_writer.save_image.assert_not_called()
 
 
 def test_manager_warns_when_automatic_video_falls_back_to_still(config):
     config.format = "auto"
-    renderer = Mock()
-    renderer._claim_execution.return_value = _ExecutionState(frame_rate=60.0)
-    renderer.capabilities = RendererCapabilities()
-    renderer.num_plays = 0
-    scene = Scene(renderer)
-    renderer.file_writer.final_file_path = "scene.png"
+    scene = Scene()
     manager = Manager(scene)
+    manager._file_writer = Mock(final_file_path="scene.png")
 
     with patch("manim.manager.logger.warning") as warning:
         manager.post_construct()
 
-    renderer.scene_finished.assert_called_once_with(scene)
+    # The last frame is saved as a still instead.
+    manager._file_writer.save_image.assert_called_once()
     warning.assert_called_once_with(
         f"{scene} has no play calls. Automatic video output has been saved as a "
         "PNG instead.",
@@ -221,13 +216,13 @@ def test_manager_render_retires_rerun_without_finishing_scene(dry_run, monkeypat
 
     scene = RerunScene()
     manager = Manager(scene)
-    scene.renderer.num_plays = 3
+    scene._get_manager().num_plays = 3
     finish = Mock()
-    monkeypatch.setattr(scene.renderer, "scene_finished", finish)
+    monkeypatch.setattr(manager, "post_construct", finish)
 
     assert manager.render() is True
 
-    assert scene.renderer.num_plays == 3
+    assert scene._get_manager().num_plays == 3
     assert scene.renderer.state is RendererState.CLOSED
     finish.assert_not_called()
     assert lifecycle == []
@@ -235,11 +230,6 @@ def test_manager_render_retires_rerun_without_finishing_scene(dry_run, monkeypat
 
 def test_manager_render_finalizes_after_early_scene_end(dry_run):
     lifecycle: list[str] = []
-    renderer = Mock(state=RendererState.OPEN)
-    renderer.num_plays = 0
-    renderer.scene_finished.side_effect = lambda scene: lifecycle.append(
-        "post_construct"
-    )
 
     class EarlyEndScene(Scene):
         def construct(self):
@@ -248,20 +238,27 @@ def test_manager_render_finalizes_after_early_scene_end(dry_run):
         def tear_down(self):
             lifecycle.append("tear_down")
 
-    scene = EarlyEndScene(renderer)
+    scene = EarlyEndScene()
+    manager = Manager(scene)
+    post_construct = manager.post_construct
 
-    assert Manager(scene).render() is False
+    def finish():
+        lifecycle.append("post_construct")
+        post_construct()
 
-    renderer.scene_finished.assert_called_once_with(scene)
+    manager.post_construct = finish
+
+    assert manager.render() is False
+
     assert lifecycle == ["tear_down", "post_construct"]
 
 
 def test_scene_play_adds_subcaption_with_explicit_duration(dry_run, monkeypatch):
     scene = Scene()
-    file_writer = scene.renderer.file_writer
-    scene.renderer.time = 2.5
+    file_writer = scene._get_manager().file_writer
+    scene._get_manager().time = 2.5
     renderer_play = Mock(
-        side_effect=lambda *args, **kwargs: setattr(scene.renderer, "time", 4.5)
+        side_effect=lambda *args, **kwargs: setattr(scene._get_manager(), "time", 4.5)
     )
     monkeypatch.setattr(scene._get_manager(), "_play", renderer_play)
     animation = Wait()
@@ -294,9 +291,9 @@ def test_scene_play_preserves_scene_add_subcaption_override(dry_run, monkeypatch
             subcaptions.append((content, duration, offset))
 
     scene = CustomSubcaptionScene()
-    scene.renderer.time = 2.5
+    scene._get_manager().time = 2.5
     renderer_play = Mock(
-        side_effect=lambda *args, **kwargs: setattr(scene.renderer, "time", 4.5)
+        side_effect=lambda *args, **kwargs: setattr(scene._get_manager(), "time", 4.5)
     )
     monkeypatch.setattr(scene._get_manager(), "_play", renderer_play)
 
@@ -314,11 +311,11 @@ def test_scene_play_uses_animation_duration_for_default_subcaption_after_skip(
     dry_run, monkeypatch
 ):
     scene = Scene()
-    file_writer = scene.renderer.file_writer
-    scene.renderer.time = 1.0
-    scene.renderer.skip_animations = True
+    file_writer = scene._get_manager().file_writer
+    scene._get_manager().time = 1.0
+    scene._get_manager().skip_animations = True
     renderer_play = Mock(
-        side_effect=lambda *args, **kwargs: setattr(scene.renderer, "time", 3.5)
+        side_effect=lambda *args, **kwargs: setattr(scene._get_manager(), "time", 3.5)
     )
     monkeypatch.setattr(scene._get_manager(), "_play", renderer_play)
 
@@ -337,14 +334,14 @@ def test_scene_play_uses_animation_duration_for_default_subcaption_after_skip(
 def test_scene_play_queues_interactive_calls_without_attaching_manager(
     dry_run, monkeypatch
 ):
-    scene = Scene()
+    scene = Scene(renderer="opengl")
     scene.interactive_mode = True
     renderer_play = Mock()
-    monkeypatch.setattr(scene.renderer, "play", renderer_play)
+    monkeypatch.setattr(Manager, "play", renderer_play)
     worker_thread = threading.Thread(name="Worker")
     monkeypatch.setattr(threading, "current_thread", lambda: worker_thread)
 
-    with tempconfig({"renderer": RendererType.OPENGL}):
+    with tempconfig({}):
         scene.play(
             Wait(),
             run_time=2,
@@ -380,8 +377,8 @@ def test_scene_next_section_records_metadata(dry_run):
 
 def test_scene_add_subcaption_records_placement(dry_run):
     scene = Scene()
-    file_writer = scene.renderer.file_writer
-    scene.renderer.time = 2.5
+    file_writer = scene._get_manager().file_writer
+    scene._get_manager().time = 2.5
 
     scene.add_subcaption("Hello", duration=1.5, offset=0.25)
 
@@ -399,9 +396,9 @@ def test_scene_add_subcaption_records_placement(dry_run):
 def test_scene_add_sound_passes_placement_to_the_writer(dry_run, monkeypatch, tmp_path):
     bell = write_wav(tmp_path / "bell.wav", seconds=0.1)
     scene = Scene()
-    file_writer = scene.renderer.file_writer
+    file_writer = scene._get_manager().file_writer
     monkeypatch.setattr(file_writer, "add_sound", Mock())
-    scene.renderer.time = 2.5
+    scene._get_manager().time = 2.5
 
     scene.add_sound(str(bell), time_offset=0.25, gain=-3, gain_to_background=-6)
 
@@ -428,3 +425,28 @@ def test_a_missing_sound_file_fails_at_the_call_in_every_run(dry_run):
     for run in ("render", "evaluate"):
         with pytest.raises(OSError, match="missing-file"):
             getattr(Manager(Missing()), run)()
+
+
+@pytest.mark.parametrize("renderer", ["cairo", "opengl"])
+def test_last_frame_output_shows_the_final_state(tmp_path, renderer):
+    class Moves(Scene):
+        def construct(self):
+            square = Square(fill_opacity=1)
+            self.play(square.animate.shift(3 * RIGHT), run_time=0.5)
+
+    with tempconfig(
+        {
+            "renderer": renderer,
+            "format": "png",
+            "media_dir": str(tmp_path),
+            "pixel_width": 64,
+            "pixel_height": 36,
+            "live_preview": False,
+        }
+    ):
+        scene = Moves()
+        with scene._get_manager() as manager:
+            manager.render()
+            expected = np.asarray(scene.get_image())
+            saved = np.asarray(Image.open(manager.file_writer.image_file_path))
+    np.testing.assert_array_equal(saved[..., :3], expected[..., :3])

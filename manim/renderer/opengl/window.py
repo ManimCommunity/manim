@@ -14,7 +14,14 @@ from ..._version import __version__
 from .window_settings import _WindowSettings
 
 if TYPE_CHECKING:
-    from .renderer import OpenGLRenderer
+    from collections.abc import Callable
+
+    from manim.renderer.protocol import PreviewInput
+    from manim.typing import Point3D
+
+    #: Maps a window position, as fractions of its width and height from the
+    #: bottom left, to a scene point (or, with ``relative``, a scene offset).
+    ToScene = Callable[[float, float, bool], Point3D]
 
 __all__ = ["Window"]
 
@@ -40,6 +47,15 @@ def _activate_pyglet_context(context: Any) -> None:
 
 
 class Window(PygletWindow):
+    """The preview window: shows the frames it is given and sends input to the
+    scene.
+
+    It knows nothing of renderers. ``scene_input`` receives the scene's input
+    callbacks (``on_mouse_motion``, ``on_key_press``, ...) with scene points;
+    ``to_scene`` turns window positions into scene points, as the scene's camera
+    sees them.
+    """
+
     fullscreen = False
     resizable = True
     gl_version = (3, 3)
@@ -48,12 +64,17 @@ class Window(PygletWindow):
 
     def __init__(
         self,
-        renderer: OpenGLRenderer,
+        scene_input: PreviewInput,
         window_size: str | tuple[int, ...] | None = None,
         *,
+        to_scene: ToScene | None = None,
         _settings: _WindowSettings | None = None,
         **kwargs: Any,
     ) -> None:
+        self._input = scene_input
+        self._to_scene: ToScene = to_scene or (lambda x, y, relative: _origin())
+        #: The keys held down now.
+        self.pressed_keys: set[int] = set()
         self._settings = (
             _WindowSettings.from_config(config) if _settings is None else _settings
         )
@@ -101,7 +122,6 @@ class Window(PygletWindow):
 
             self.title = f"Manim Community {__version__}"
             self.size = size
-            self.renderer = renderer
 
             mglw.activate_context(window=self)
             self.timer = Timer()
@@ -127,42 +147,80 @@ class Window(PygletWindow):
     def _activate_context(self) -> None:
         _activate_pyglet_context(self._window.context)
 
-    # Delegate event handling to scene.
+    def show(self, framebuffer: Any) -> None:
+        """Copy the picture of ``framebuffer`` into the window, scaled to fill it,
+        and show it.
+        """
+        size = self.fbo.size
+        if size == framebuffer.size:
+            self.ctx.copy_framebuffer(self.fbo, framebuffer)
+        else:
+            self._blit(framebuffer, size)
+        # Swap with the window's own framebuffer bound: copy_framebuffer leaves
+        # the source bound, and macOS then shows nothing.
+        self.fbo.use()
+        self.swap_buffers()
+
+    def _blit(self, framebuffer: Any, size: tuple[int, int]) -> None:
+        source_width, source_height = framebuffer.size
+        gl.glBindFramebuffer(gl.GL_READ_FRAMEBUFFER, framebuffer.glo)
+        gl.glBindFramebuffer(gl.GL_DRAW_FRAMEBUFFER, self.fbo.glo)
+        gl.glBlitFramebuffer(
+            0,
+            0,
+            source_width,
+            source_height,
+            0,
+            0,
+            size[0],
+            size[1],
+            gl.GL_COLOR_BUFFER_BIT,
+            gl.GL_LINEAR,
+        )
+        gl.glBindFramebuffer(gl.GL_FRAMEBUFFER, 0)
+
+    def _scene_point(self, x: float, y: float, relative: bool = False) -> Point3D:
+        """The scene point under window pixel ``(x, y)`` (origin bottom left), or
+        the scene offset of a move by ``(x, y)`` pixels if ``relative``.
+        """
+        width, height = self.size
+        return self._to_scene(x / width, y / height, relative)
+
+    # Input goes to the scene, as scene points.
     def on_mouse_motion(self, x: int, y: int, dx: int, dy: int) -> None:
         super().on_mouse_motion(x, y, dx, dy)
-        point = self.renderer.pixel_coords_to_space_coords(x, y)
-        d_point = self.renderer.pixel_coords_to_space_coords(dx, dy, relative=True)
-        self.renderer.scene.on_mouse_motion(point, d_point)
+        self._input.on_mouse_motion(
+            self._scene_point(x, y), self._scene_point(dx, dy, relative=True)
+        )
 
     def on_mouse_scroll(self, x: int, y: int, x_offset: float, y_offset: float) -> None:
         super().on_mouse_scroll(x, y, x_offset, y_offset)
-        point = self.renderer.pixel_coords_to_space_coords(x, y)
-        offset = self.renderer.pixel_coords_to_space_coords(
-            x_offset,
-            y_offset,
-            relative=True,
+        self._input.on_mouse_scroll(
+            self._scene_point(x, y),
+            self._scene_point(x_offset, y_offset, relative=True),
         )
-        self.renderer.scene.on_mouse_scroll(point, offset)
 
     def on_key_press(self, symbol: int, modifiers: int) -> bool:
-        self.renderer.pressed_keys.add(symbol)
+        self.pressed_keys.add(symbol)
         event_handled: bool = super().on_key_press(symbol, modifiers)
-        self.renderer.scene.on_key_press(symbol, modifiers)
+        self._input.on_key_press(symbol, modifiers)
         return event_handled
 
     def on_key_release(self, symbol: int, modifiers: int) -> None:
-        if symbol in self.renderer.pressed_keys:
-            self.renderer.pressed_keys.remove(symbol)
+        self.pressed_keys.discard(symbol)
         super().on_key_release(symbol, modifiers)
-        self.renderer.scene.on_key_release(symbol, modifiers)
+        self._input.on_key_release(symbol, modifiers)
 
     def on_mouse_drag(
         self, x: int, y: int, dx: int, dy: int, buttons: int, modifiers: int
     ) -> None:
         super().on_mouse_drag(x, y, dx, dy, buttons, modifiers)
-        point = self.renderer.pixel_coords_to_space_coords(x, y)
-        d_point = self.renderer.pixel_coords_to_space_coords(dx, dy, relative=True)
-        self.renderer.scene.on_mouse_drag(point, d_point, buttons, modifiers)
+        self._input.on_mouse_drag(
+            self._scene_point(x, y),
+            self._scene_point(dx, dy, relative=True),
+            buttons,
+            modifiers,
+        )
 
     def find_initial_position(
         self, size: tuple[int, int], monitor: Monitor
@@ -198,10 +256,16 @@ class Window(PygletWindow):
 
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int) -> None:
         super().on_mouse_press(x, y, button, modifiers)
-        point = self.renderer.pixel_coords_to_space_coords(x, y)
+        point = self._scene_point(x, y)
         mouse_button_map = {
             1: "LEFT",
             2: "MOUSE",
             4: "RIGHT",
         }
-        self.renderer.scene.on_mouse_press(point, mouse_button_map[button], modifiers)
+        self._input.on_mouse_press(point, mouse_button_map[button], modifiers)
+
+
+def _origin() -> Point3D:
+    import numpy as np
+
+    return np.zeros(3)

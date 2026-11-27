@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-__all__ = ["ThreeDScene", "SpecialThreeDScene"]
+__all__ = ["ThreeDScene"]
 
 
 from collections.abc import Iterable, Sequence
@@ -10,19 +10,13 @@ from typing import Any
 
 import numpy as np
 
-from manim.mobject.geometry.line import Line
-from manim.mobject.graphing.coordinate_systems import ThreeDAxes
-from manim.mobject.three_d.three_dimensions import Sphere
 from manim.mobject.value_tracker import ValueTracker
 
-from .._config import config
 from ..animation.animation import Animation
 from ..camera import ThreeDCamera
 from ..constants import DEGREES
 from ..mobject.mobject import Mobject
-from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..scene.scene import Scene
-from ..utils.config_ops import merge_dicts_recursively
 
 
 class ThreeDScene(Scene):
@@ -170,9 +164,9 @@ class ThreeDScene(Scene):
             to the current theta angle.
         """
         if origin_theta is None:
-            origin_theta = self.renderer.camera.theta_tracker.get_value()
+            origin_theta = self.camera.theta_tracker.get_value()
         if origin_phi is None:
-            origin_phi = self.renderer.camera.phi_tracker.get_value()
+            origin_phi = self.camera.phi_tracker.get_value()
 
         val_tracker_theta = ValueTracker(0)
 
@@ -181,8 +175,8 @@ class ThreeDScene(Scene):
             val_for_left_right = 0.2 * np.sin(val_tracker_theta.get_value())
             return m.set_value(origin_theta + val_for_left_right)
 
-        self.renderer.camera.theta_tracker.add_updater(update_theta)
-        self.add(self.renderer.camera.theta_tracker)
+        self.camera.theta_tracker.add_updater(update_theta)
+        self.add(self.camera.theta_tracker)
 
         val_tracker_phi = ValueTracker(0)
 
@@ -191,15 +185,15 @@ class ThreeDScene(Scene):
             val_for_up_down = 0.1 * np.cos(val_tracker_phi.get_value()) - 0.1
             return m.set_value(origin_phi + val_for_up_down)
 
-        self.renderer.camera.phi_tracker.add_updater(update_phi)
-        self.add(self.renderer.camera.phi_tracker)
+        self.camera.phi_tracker.add_updater(update_phi)
+        self.add(self.camera.phi_tracker)
 
     def stop_3dillusion_camera_rotation(self):
         """This method stops all illusion camera rotations."""
-        self.renderer.camera.theta_tracker.clear_updaters()
-        self.remove(self.renderer.camera.theta_tracker)
-        self.renderer.camera.phi_tracker.clear_updaters()
-        self.remove(self.renderer.camera.phi_tracker)
+        self.camera.theta_tracker.clear_updaters()
+        self.remove(self.camera.theta_tracker)
+        self.camera.phi_tracker.clear_updaters()
+        self.remove(self.camera.phi_tracker)
 
     def move_camera(
         self,
@@ -354,113 +348,3 @@ class ThreeDScene(Scene):
         )
         config.update(kwargs)
         self.set_camera_orientation(**config)
-
-
-class SpecialThreeDScene(ThreeDScene):
-    """An extension of :class:`ThreeDScene` with more settings.
-
-    It has some extra configuration for axes, spheres,
-    and an override for low quality rendering. Further key differences
-    are:
-
-    * The camera shades applicable 3DMobjects by default,
-      except if rendering in low quality.
-    * Some default params for Spheres and Axes have been added.
-
-    """
-
-    def __init__(
-        self,
-        cut_axes_at_radius=True,
-        camera_config={"should_apply_shading": True, "exponential_projection": True},
-        three_d_axes_config={
-            "num_axis_pieces": 1,
-            "axis_config": {
-                "unit_size": 2,
-                "tick_frequency": 1,
-                "numbers_with_elongated_ticks": [0, 1, 2],
-                "stroke_width": 2,
-            },
-        },
-        sphere_config={"radius": 2, "resolution": (24, 48)},
-        default_angled_camera_position={
-            "phi": 70 * DEGREES,
-            "theta": -110 * DEGREES,
-        },
-        # When scene is extracted with -l flag, this
-        # configuration will override the above configuration.
-        low_quality_config={
-            "camera_config": {"should_apply_shading": False},
-            "three_d_axes_config": {"num_axis_pieces": 1},
-            "sphere_config": {"resolution": (12, 24)},
-        },
-        **kwargs,
-    ):
-        self.cut_axes_at_radius = cut_axes_at_radius
-        self.camera_config = camera_config
-        self.three_d_axes_config = three_d_axes_config
-        self.sphere_config = sphere_config
-        self.default_angled_camera_position = default_angled_camera_position
-        self.low_quality_config = low_quality_config
-        if self.renderer.camera_config["pixel_width"] == config.pixel_width:
-            _config = {}
-        else:
-            _config = self.low_quality_config
-        _config = merge_dicts_recursively(_config, kwargs)
-        super().__init__(**_config)
-
-    def get_axes(self):
-        """Return a set of 3D axes.
-
-        Returns
-        -------
-        :class:`.ThreeDAxes`
-            A set of 3D axes.
-        """
-        axes = ThreeDAxes(**self.three_d_axes_config)
-        for axis in axes:
-            if self.cut_axes_at_radius:
-                p0 = axis.get_start()
-                p1 = axis.number_to_point(-1)
-                p2 = axis.number_to_point(1)
-                p3 = axis.get_end()
-                new_pieces = VGroup(Line(p0, p1), Line(p1, p2), Line(p2, p3))
-                for piece in new_pieces:
-                    piece.shade_in_3d = True
-                new_pieces.match_style(axis.pieces)
-                axis.pieces.submobjects = new_pieces.submobjects
-            for tick in axis.tick_marks:
-                tick.add(VectorizedPoint(1.5 * tick.get_center()))
-        return axes
-
-    def get_sphere(self, **kwargs):
-        """
-        Returns a sphere with the passed keyword arguments as properties.
-
-        Parameters
-        ----------
-        **kwargs
-            Any valid parameter of :class:`~.Sphere` or :class:`~.Surface`.
-
-        Returns
-        -------
-        :class:`~.Sphere`
-            The sphere object.
-        """
-        config = merge_dicts_recursively(self.sphere_config, kwargs)
-        return Sphere(**config)
-
-    def get_default_camera_position(self):
-        """
-        Returns the default_angled_camera position.
-
-        Returns
-        -------
-        dict
-            Dictionary of phi, theta, focal_distance, and gamma.
-        """
-        return self.default_angled_camera_position
-
-    def set_camera_to_default_position(self):
-        """Sets the camera to its default position."""
-        self.set_camera_orientation(**self.default_angled_camera_position)

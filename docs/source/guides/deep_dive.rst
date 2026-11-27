@@ -288,10 +288,6 @@ continues as follows:
         max_files_cached=config.max_files_cached,
         assets_dir=...,
     )
-    self.renderer.init_scene(
-        self,
-        self.session_spec,
-    )
 
 The session specification separates *primary artifact* intent (an ``OutputSpec``
 which defines the type of file we wish Manim to create based on our scene) from
@@ -324,10 +320,8 @@ a name rather than overriding that format.
 The scene stores the output plan, video encoding settings, cache limits, and
 sound-asset directory in ``_SceneFileWriterSettings``. The :class:`.Manager` uses
 these settings to create a :class:`.SceneFileWriter` when rendering starts, before
-``setup()``. Accessing ``manager.file_writer`` or ``renderer.file_writer`` also
-creates this writer if needed. Both properties return the same writer for the
-rest of the scene. To customize it, pass ``file_writer_class`` when constructing
-the renderer.
+``setup()``. Accessing ``manager.file_writer`` also creates this writer if
+needed; it is the same writer for the rest of the scene.
 
 The writer uses the saved settings to encode and assemble media through ``libav``.
 It creates directories as it writes files. A snapshot from ``scene.get_image()``
@@ -391,9 +385,8 @@ The first three call the corresponding customizable scene hooks:
 After these hooks have run, :meth:`.Manager.post_construct` checks whether the
 resolved output can be finalized. An explicit video format for a scene without
 play calls raises an error instead of silently changing the requested artifact.
-Otherwise, the manager asks the renderer to finish the scene. For Cairo this
-calls :meth:`.CairoRenderer.scene_finished`, which tells the
-:class:`.SceneFileWriter` to finish any time-based output. For video output, the
+Otherwise, the manager tells the :class:`.SceneFileWriter` to finish any
+time-based output. For video output, the
 file writer waits for partial movie files that are still being encoded and
 combines them into the final movie. For last-frame PNG output, the animations
 run without drawing (see below), and a single image is drawn at the end.
@@ -404,18 +397,19 @@ the manager logs a warning. The writer records the completed artifact as
 specification to open the artifact or reveal it in the file browser.
 
 **Closing resources and inspecting results.** By default, rendering closes the
-renderer once the output is complete. To read the last-rendered frame directly
-from the renderer, keep it open with a ``with manager:`` block::
+renderer once the output is complete. To keep it open, for instance to show more
+frames in a preview window, use a ``with manager:`` block::
 
     scene = ToyExample()
     manager = Manager(scene)
     with manager:
         manager.render()
-        last_frame = manager.renderer.get_frame()
+        last_frame = scene.get_image()
 
 The renderer stays open after successful rendering until the end of the ``with``
-block. The scene and its mobjects remain available afterward. To draw a new image,
-call ``scene.get_image()``; it creates temporary rendering resources as needed.
+block. The scene and its mobjects remain available afterward:
+``scene.get_image()`` draws the scene's current state, with temporary rendering
+resources if the renderer is closed.
 OpenGL meshes stored directly on the GPU require their original context, so these
 must be inspected inside the block.
 
@@ -690,10 +684,8 @@ added twice, as mentioned above: if they were present in the scene
 ``Scene.mobjects`` list before (even if they were contained as a
 child of some other mobject), they are first removed from the list.
 The way :meth:`.Scene.restructure_mobjects` works is rather aggressive:
-It always operates on a given list of mobjects; in the ``add`` method
-two different lists occur: the default one, ``Scene.mobjects`` (no extra
-keyword argument is passed), and ``Scene.moving_mobjects`` (which we will
-discuss later in more detail). It iterates through all of the members of
+It operates on a given list of mobjects (by default ``Scene.mobjects``).
+It iterates through all of the members of
 the list, and checks whether any of the mobjects passed in ``to_remove``
 are contained as children (in any nesting level). If so, **their parent
 mobject is deconstructed** and their siblings are inserted directly
@@ -720,14 +712,11 @@ After the mobject list is "restructured", the mobject to be added
 are simply appended to ``Scene.mobjects``. In our toy example,
 the ``Scene.mobjects`` list is actually empty, so the
 ``restructure_mobjects`` method does not actually do anything. The
-``orange_square`` is simply added to ``Scene.mobjects``, and as
-the aforementioned ``Scene.moving_mobjects`` list is, at this point,
-also still empty, nothing happens and :meth:`.Scene.add` returns.
+``orange_square`` is simply added to ``Scene.mobjects``, and
+:meth:`.Scene.add` returns.
 
-We will hear more about the ``moving_mobject`` list when we discuss
-the render loop. Before we do that, let us look at the next line
-of code in our toy example, which includes the initialization of
-an animation class,
+Let us look at the next line of code in our toy example, which includes
+the initialization of an animation class,
 ::
 
   ReplacementTransform(orange_square, blue_circle, run_time=3)
@@ -911,23 +900,6 @@ animation suspends updater functions being called on its mobject, and
 it sets its mobject to the state that corresponds to the first frame
 of the animation.
 
-After starting the animations, :meth:`.Scene.begin_animations` also prepares
-Cairo's lists of moving and static mobjects. It calls
-:meth:`.Scene.get_moving_and_static_mobjects` and stores the result in
-``moving_mobjects`` and ``static_mobjects``. The renderer uses these lists to
-reuse the background image while redrawing the moving mobjects.
-
-.. NOTE::
-
-  The mechanism that determines static and moving mobjects is
-  specific for the Cairo renderer, the OpenGL renderer works differently.
-  Basically, moving mobjects are determined by checking whether they,
-  any of their children, or any of the mobjects "below" them (in the
-  sense of the order in which mobjects are processed in the scene)
-  either have an update function attached, or whether they appear
-  in one of the current animations. See the implementation of
-  :meth:`.Scene.get_moving_mobjects` for more details.
-
 Up to this very point, we did not actually render any (partial)
 image or movie files from the scene yet. This is, however, about to change.
 Before we enter the render loop, let us briefly revisit our toy
@@ -949,35 +921,13 @@ all of its relevant animation attributes (i.e., compatible copies
 of the starting and the target mobject so that it can safely interpolate
 between the two).
 
-The mechanism determining static and moving mobjects considers
-all of the scenes mobjects (at this point only the
-``orange_square``), and determines that the ``orange_square`` is
-bound to an animation that is currently played. As a result,
-the square is classified as a "moving mobject".
-
 Time to render some frames.
 
 
 The render loop (for real this time)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-As mentioned above, due to the mechanism that determines static and moving
-mobjects in the scene, the renderer knows which mobjects it can paint
-statically to the background of the scene. Practically, this means that
-it partially renders a scene (to produce a background image), and then
-when iterating through the time progression of the animation only the
-"moving mobjects" are re-painted on top of the static background.
-
-When the first frame of a play is drawn,
-:meth:`.CairoRenderer.save_static_frame_data` is called, which
-first checks whether there are currently any static mobjects, and if there
-are, it updates the frame (only with the static mobjects; more about how
-exactly this works in a moment) and then saves a NumPy array representing
-the rendered frame in the ``static_image`` attribute. In our toy example,
-there are no static mobjects, and so the ``static_image`` attribute is
-simply set to ``None``.
-
-Next, the manager checks whether this is a frozen wait. If so, the run loop
+The manager first checks whether this is a frozen wait. If so, the run loop
 reports a single frame that is shown ``int(duration * frame_rate)`` times. The
 encoder draws it once and passes it to the writer with that repeat count, and the
 clock advances by that many frames without updating the mobjects again. OpenGL
@@ -1019,30 +969,51 @@ the animation and requests a frame at each time stamp. Here is how it does that:
     is computed (``alpha = t / animation.run_time``), which is then used to
     update the state of the animation with a call to :meth:`.Animation.interpolate`.
   - After all of the passed animations have been processed, the updater functions
-    of all mobjects in the scene, all meshes, and finally those attached to
+    of all mobjects in the scene, and finally those attached to
     the scene itself are run.
 
 At this point, the internal (Python) state of all mobjects has been updated
 to match the currently processed timestamp. If the play is part of the output,
 it is now time to *take a picture*!
 
-To render an image, the encoder calls the corresponding method of the renderer,
-:meth:`.CairoRenderer.render` and passes just the list of *moving mobjects* (remember,
-the *static mobjects* are assumed to have already been painted statically to
-the background of the scene). All of the hard work then happens when the renderer
-updates its current frame via a call to :meth:`.CairoRenderer.update_frame`:
+To take it, the manager's :class:`.FrameBuilder` turns the scene into what a
+renderer draws: render snapshots of the scene's mobjects (see
+:mod:`manim.renderer.snapshot`), in drawing order (mobjects fixed in the frame
+last), and a :class:`.RenderConfig` holding the camera's state (a
+:class:`.CameraState`: frame, orientation, background) and the views of any
+:class:`.MultiCamera` cameras. The renderer only draws:
+``renderer.render(nodes, config)`` returns the drawn :class:`.Frame`, whose pixels
+are read only when something asks for them (the file writer, an image), not for a
+live preview, which shows the frame where the renderer drew it. It knows nothing of
+scenes, mobjects or cameras, so another renderer draws the same frames from the
+same input.
 
-First, the renderer prepares its Cairo image buffer. If a reusable ``static_image``
-is available, the renderer copies it into that buffer; otherwise it resets the buffer
-using the camera's background color or image. Background images are resized to match
-the buffer's dimensions.
+The Cairo renderer first resets its image buffer to the camera's background color
+or image; background images are resized to match the buffer's dimensions. Each
+snapshot has a key made
+from the versions of the mobject's fields, so the renderer can tell what changed
+since the previous frame without being told: the snapshots at the start of the
+list with the same keys, from the same view, as in the previous frame give the
+same pixels. After a frame in which some leading snapshots did not change,
+the renderer saves their drawing and copies it in the following frames as long as
+they stay the same; only the rest is drawn. In our toy example, the square is the
+only mobject and changes in every frame, so every frame draws it. Both renderers
+work this way.
+
+A snapshot is a function of the mobject's own fields: an
+:class:`~manim.renderer.extract.Extractor` keeps
+the snapshot of each mobject and reuses it while the mobject's field versions stay
+the same, so unchanged mobjects cost almost nothing to look at. Classes that draw
+from other state set ``_drawn_from_fields = False`` and are looked at anew in every
+frame. With ``MANIM_CHECK_SNAPSHOTS=1``, as in Manim's tests, every reused snapshot
+is checked against a fresh one.
 
 Things get a bit technical here, and at some point it is more efficient to delve into
 the implementation -- but the drawing process can be summarized as follows:
 
-- The camera supplies a flat, ordered list of visible mobjects and applies
-  view/projection and shading transformations. Its animatable ``frame`` describes the
-  region being viewed.
+- The camera's state says what is viewed (its animatable ``frame``), from where
+  (its orientation), and how meshes are shaded. Mesh faces are projected, shaded
+  and sorted by depth from it in the renderer.
 - Private Cairo renderer helpers process consecutive batches of vectorized, point
   cloud, and image mobjects without changing their draw order.
 - Vectorized mobjects are converted to Cairo paths and drawn with their background
@@ -1053,9 +1024,9 @@ the implementation -- but the drawing process can be summarized as follows:
 - The renderer then draws each of these images in the corresponding
   :class:`.ImageMobjectFromCamera` in the primary view.
 
-After drawing, :meth:`.CairoRenderer.get_frame` copies the rendered image into a
-top-left-origin, row-major (C-contiguous) ``uint8`` RGBA array, which the encoder passes to
-the :class:`.SceneFileWriter`. Then the manager advances the clock by one frame.
+After drawing, the frame's ``pixels()`` are a copy of the rendered image as a
+top-left-origin, row-major (C-contiguous) ``uint8`` RGBA array, which the encoder
+passes to the :class:`.SceneFileWriter`. Then the manager advances the clock by one frame.
 If the animation has a stop condition, the manager checks it at this point,
 before starting the next iteration.
 

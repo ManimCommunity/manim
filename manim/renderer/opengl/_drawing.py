@@ -20,13 +20,15 @@ import moderngl
 import numpy as np
 from PIL.Image import Resampling
 
-from manim._config import config
 from manim.appearance.material import PbrMaterial
-from manim.camera import ThreeDCamera
+from manim.renderer import _view
 from manim.renderer._lighting import AMBIENT, DEFAULT_LIGHT_INTENSITY
-from manim.renderer._mesh import MESH_STROKE_WIDTH_UNIT, faces_of
+from manim.renderer._mesh import faces_of
 from manim.renderer._paint import paint_colors, shows
+from manim.renderer._reuse import PrefixMemo, node_key, view_key
+from manim.renderer.projection import project_points
 from manim.renderer.snapshot import (
+    STROKE_WIDTH_UNIT,
     FacingCamera,
     LegacyShaded,
     RCameraView,
@@ -42,7 +44,7 @@ from ._winding_fill import WindingFill
 from .shader import Shader
 
 if TYPE_CHECKING:
-    from manim.camera import Camera
+    from manim.renderer.protocol import CameraState
     from manim.renderer.snapshot import Material
 
     from .renderer import OpenGLRenderer, _CameraView
@@ -292,10 +294,12 @@ class DrawTarget(NamedTuple):
     framebuffer: moderngl.Framebuffer
     #: Width and height in pixels.
     size: tuple[int, int]
-    camera: Camera
+    camera: CameraState
     view: _CameraView
     #: Camera uniforms of the shaders (see ``OpenGLRenderer.camera_uniforms``).
     uniforms: dict[str, Any]
+    #: See :attr:`.RenderConfig.reference_pixel_size`.
+    reference_size: tuple[int, int]
 
 
 class _Group(NamedTuple):
@@ -361,27 +365,75 @@ class SnapshotDrawing:
         self._fill = WindingFill(renderer)
         self._textures = _TextureCache(renderer)
         self._normals = _NormalCache()
+        self._layer: _Layer | None = None
+        self._memo = PrefixMemo()
 
     def release(self) -> None:
         self._fill.release()
         self._textures.release()
+        if self._layer is not None:
+            self._layer.release()
+            self._layer = None
+        self._memo.clear()
 
     def draw(
         self,
         nodes: Iterable[RNode],
         target: DrawTarget,
-        views: dict[int, moderngl.Texture] | None = None,
+        views: dict[Any, moderngl.Texture] | None = None,
+        background: Any = None,
     ) -> None:
-        """Draw ``nodes`` in order into ``target``; consecutive paths are batched.
+        """Draw ``nodes`` in order into ``target``, which holds only its background.
 
-        ``views`` holds the pixels of camera views (``RCameraView`` nodes) by uid.
+        Consecutive paths are batched. ``views`` holds the pixels of camera views
+        (``RCameraView`` nodes) by uid; ``background`` identifies what the target
+        was cleared to.
+
+        The drawing of the leading nodes that did not change since the previous
+        frame is kept in a layer and copied instead of drawn again while they and
+        the view stay the same (see :mod:`manim.renderer._reuse`).
         """
-        self._base_target = target
-        self._placed_targets: dict[str, DrawTarget] = {"normal": target}
         self._geometry.next_frame()
         self._textures.next_frame()
         self._normals.next_frame()
         nodes = list(nodes)
+        keys = [node_key(node) for node in nodes]
+        view = view_key(target.camera, target.size, target.reference_size, background)
+        memo = self._memo
+        context = self._renderer.context
+        start = memo.count_reusable(keys, view)
+        if start:
+            assert self._layer is not None
+            context.copy_framebuffer(target.framebuffer, self._layer.framebuffer)
+        else:
+            start = memo.count_worth_saving(keys, view)
+            if start:
+                layer = self._layer
+                if layer is None or layer.size != target.size:
+                    if layer is not None:
+                        layer.release()
+                    layer = self._layer = _Layer(self._renderer, target)
+                context.copy_framebuffer(layer.framebuffer, target.framebuffer)
+                self._draw_nodes(
+                    nodes[:start], target._replace(framebuffer=layer.framebuffer), views
+                )
+                memo.mark_saved(keys[:start], view)
+                context.copy_framebuffer(target.framebuffer, layer.framebuffer)
+            else:
+                memo.forget_saved()
+        self._draw_nodes(nodes[start:], target, views)
+        memo.record_drawn(keys, view)
+
+    def _draw_nodes(
+        self,
+        nodes: list[RNode],
+        target: DrawTarget,
+        views: dict[Any, moderngl.Texture] | None,
+    ) -> None:
+        if not nodes:
+            return
+        self._base_target = target
+        self._placed_targets: dict[str, DrawTarget] = {"normal": target}
         paths = [node for node in nodes if isinstance(node.payload, RPath)]
         self._target = target
         geometry = iter(self._geometry.get(paths, self._tolerance()) if paths else ())
@@ -415,7 +467,8 @@ class SnapshotDrawing:
             elif isinstance(payload, RImage):
                 self._draw_image(node, payload)
             elif isinstance(payload, RCameraView) and views:
-                texture = views.get(node.uid)
+                # Copies of a view show the picture of the same camera.
+                texture = views.get(node.uid, views.get(("camera", payload.camera_id)))
                 if texture is not None:
                     # Rendered textures start at the bottom row.
                     self._draw_quad(payload.points, texture, bottom_up=True)
@@ -432,9 +485,10 @@ class SnapshotDrawing:
             return "frame", None
         camera = self._base_target.camera
         placement = node.placement
-        if isinstance(placement, FacingCamera) and isinstance(camera, ThreeDCamera):
+        if isinstance(placement, FacingCamera) and _view.is_3d(camera):
             center = placement.center
-            return "frame", camera.project_point(center) - center
+            projected = project_points(camera, np.asarray(center).reshape((1, 3)))[0]
+            return "frame", projected - center
         return "normal", None
 
     def _placed_target(self, kind: str) -> DrawTarget:
@@ -442,11 +496,11 @@ class SnapshotDrawing:
         if target is None:
             base = self._base_target
             camera = base.camera
-            if isinstance(camera, ThreeDCamera):
+            if _view.is_3d(camera):
                 # Its view transform is centered at the origin with its frame size.
                 shape = (camera.frame_width, camera.frame_height)
             else:
-                width = float(config["frame_width"])
+                width = camera.default_frame_width
                 shape = (width, width * base.size[1] / base.size[0])
             view = base.view._replace(
                 center=np.zeros(3),
@@ -491,14 +545,21 @@ class SnapshotDrawing:
         )
 
     def _point_thickness(self, stroke_width: float) -> float:
-        """Point size in pixels, scaled with the resolution as on the Cairo renderer."""
-        base = int(config["pixel_width"]) + int(config["pixel_height"])
+        """Point size in pixels: ``stroke_width`` is meant at the reference size,
+        as on the Cairo renderer.
+        """
+        base = sum(self._target.reference_size)
         return 1 + (stroke_width - 1) * base / sum(self._target.size)
 
     def _draw_mesh(self, node: RNode, mesh: RMesh) -> None:
         count = len(mesh.points)
         if count == 0 or len(mesh.triangles) == 0:
             return
+        if node.is_fixed_in_frame and mesh.depth_test:
+            # A fixed mesh hides its own triangles only: it neither tests against
+            # nor leaves the depth of the scene or of other fixed meshes. Fixed
+            # nodes are drawn last, so nothing needs the depth cleared here.
+            self._clear_depth()
         texture = None
         if len(mesh.uvs) == count:
             texture = self._textures.get(node, "texture", mesh.texture)
@@ -542,7 +603,7 @@ class SnapshotDrawing:
             image=0,
             # The shader measures from the edge to each side: half the width.
             edge_width=0.5
-            * MESH_STROKE_WIDTH_UNIT
+            * STROKE_WIDTH_UNIT
             * float(mesh.stroke_width)
             * pixels_per_unit,
             **self._lighting(node, mesh.material),
@@ -645,6 +706,16 @@ class SnapshotDrawing:
         texture.use(0)
         self._pass("image_quad", vertices, "3f 2f", moderngl.TRIANGLES, image=0)
 
+    def _clear_depth(self) -> None:
+        framebuffer = self._target.framebuffer
+        if framebuffer.depth_attachment is None:
+            return
+        framebuffer.color_mask = False, False, False, False
+        try:
+            framebuffer.clear(depth=1.0)
+        finally:
+            framebuffer.color_mask = True, True, True, True
+
     def _pass(
         self,
         shader_name: str,
@@ -722,7 +793,13 @@ class SnapshotDrawing:
                 continue
             geometry.append(geo)
             widths.append(stroke.width)
-            colors.append(paint_colors(stroke.paint, path, camera._shaded_rgbas))
+            colors.append(
+                paint_colors(
+                    stroke.paint,
+                    path,
+                    lambda path, rgbas: _view.shaded_rgbas(camera, path, rgbas),
+                )
+            )
         if not geometry:
             return
         vertices = _stroke_vertices(geometry, widths, colors)
@@ -918,6 +995,30 @@ _CORNERS = np.array(np.meshgrid([0, 3], [1, 4], [2, 5], indexing="ij")).reshape(
 
 def _background_width(path: RPath) -> float:
     return 0.0 if path.background_stroke is None else path.background_stroke.width
+
+
+class _Layer:
+    """An offscreen copy of a target with the drawing of some nodes."""
+
+    def __init__(self, renderer: OpenGLRenderer, target: DrawTarget) -> None:
+        context = renderer.context
+        self.size = target.size
+        self.texture = context.texture(self.size, components=4)
+        self.depth = (
+            context.depth_renderbuffer(self.size)
+            if target.framebuffer.depth_attachment is not None
+            else None
+        )
+        self.framebuffer = context.framebuffer([self.texture], self.depth)
+        renderer._resources.callback(self.release)
+
+    def release(self) -> None:
+        """Release the GPU objects; safe to call more than once."""
+        for resource in (self.framebuffer, self.texture, self.depth):
+            if resource is not None and not isinstance(
+                resource.mglo, moderngl.InvalidObject
+            ):
+                resource.release()
 
 
 class _NormalCache:

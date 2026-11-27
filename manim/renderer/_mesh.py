@@ -26,16 +26,7 @@ if TYPE_CHECKING:
     #: Outlines of faces, shape ``(m, 4 k, 3)``: one straight cubic curve per side.
     FaceOutlines: TypeAlias = npt.NDArray[np.float64]
 
-__all__ = [
-    "MESH_STROKE_WIDTH_UNIT",
-    "face_colors",
-    "face_normals",
-    "face_outlines",
-    "faces_of",
-]
-
-#: Scene units per unit of a mesh's ``stroke_width``, as for vectorized mobjects.
-MESH_STROKE_WIDTH_UNIT = 0.01
+__all__ = ["face_colors", "face_normals", "face_outlines", "faces_of"]
 
 #: Where the anchors and handles of a straight cubic curve lie.
 _THIRDS = np.array([0, 1 / 3, 2 / 3, 1])

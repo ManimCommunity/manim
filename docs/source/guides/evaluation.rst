@@ -96,7 +96,7 @@ evaluation to see the final state.
 Limits
 ------
 
-* During evaluation, ``scene.renderer.file_writer``, a nested render of the same
+* During evaluation, ``manager.file_writer``, a nested render of the same
   scene, and interactive preview raise an error.
 * Every mobject can be evaluated: its state is computed in Python on both
   renderers.

@@ -27,6 +27,7 @@ from manim.cli.render.commands import render
 from manim.renderer.protocol import RendererState
 from manim.scene.scene_file_writer import SceneFileWriter, _SceneFileWriterSettings
 from manim.utils.exceptions import RerunSceneException
+from tests.helpers.plain_renderer import Given
 
 _ENCODER_THREAD_PREFIX = "partial-movie-encoder-"
 _VIDEO_OUTPUT = OutputSpec(
@@ -182,7 +183,7 @@ def test_disable_caching_is_evaluated_per_play(config, tmp_path):
         scene.render()
 
     initial_hash, uncached_hash, restored_hash, cached_hash = (
-        scene.renderer.animations_hashes
+        scene._get_manager().animations_hashes
     )
     assert initial_hash is not None
     assert uncached_hash == "uncached_00001"
@@ -729,8 +730,8 @@ def test_abort_encode_jobs_noop_on_dry_run_writer(config):
 
 
 def test_keyboard_interrupt_aborts_encode_jobs_and_reraises(config):
-    scene = Scene(renderer=Mock(state=RendererState.OPEN))
-    writer = scene._get_manager().file_writer
+    scene = Scene(renderer=Given(Mock(state=RendererState.OPEN)))
+    writer = scene._get_manager()._file_writer = Mock()
 
     def construct():
         raise KeyboardInterrupt
@@ -749,7 +750,7 @@ def test_rerun_propagates_encoder_failure(config, tmp_path):
     failing_inflight = Mock(path=tmp_path / "inflight.mp4")
     failing_inflight.join.side_effect = expected_exception
     _add_inflight_job(writer, failing_inflight)
-    scene = Scene(renderer=Mock(state=RendererState.OPEN))
+    scene = Scene(renderer=Given(Mock(state=RendererState.OPEN)))
     scene._get_manager()._file_writer = writer
 
     def construct():
@@ -779,7 +780,7 @@ def test_rerun_propagates_failed_current_job(config, tmp_path):
             break
         time.sleep(0.01)
 
-    scene = Scene(renderer=Mock(state=RendererState.OPEN))
+    scene = Scene(renderer=Given(Mock(state=RendererState.OPEN)))
     scene._get_manager()._file_writer = writer
 
     def construct():
@@ -826,7 +827,9 @@ def test_end_scene_early_keeps_completed_partials(config, tmp_path):
     ):
         scene = EarlyEndScene()
         scene.render()
-        partial_directory = Path(scene.renderer.file_writer.partial_movie_directory)
+        partial_directory = Path(
+            scene._get_manager().file_writer.partial_movie_directory
+        )
 
     partial_movies = sorted(path.name for path in partial_directory.glob("*.mp4"))
     assert partial_movies == ["uncached_00000.mp4", "uncached_00001.mp4"]

@@ -1,12 +1,11 @@
 """The selected writer is created on first use and reused for the scene."""
 
 from pathlib import Path
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import pytest
 
-from manim import CairoRenderer, Manager, Scene, Wait, tempconfig
-from manim.renderer.opengl import OpenGLRenderer
+from manim import Manager, Scene, Wait, tempconfig
 from manim.scene.scene_file_writer import SceneFileWriter
 
 
@@ -27,10 +26,10 @@ def writer_scene(tmp_path, request):
         }
     ):
         factory = Mock(wraps=SceneFileWriter)
-        renderer_class = CairoRenderer if backend == "cairo" else OpenGLRenderer
-        scene = Scene(renderer=renderer_class(file_writer_class=factory))
+        scene = Scene()
         try:
-            yield scene, factory
+            with patch("manim.manager.SceneFileWriter", factory):
+                yield scene, factory
         finally:
             if scene.manager is not None:
                 scene.manager.close()
@@ -48,8 +47,8 @@ def test_snapshot_is_output_free_and_writer_uses_captured_settings(
     assert not (tmp_path / "media").exists()
 
     with tempconfig({"format": "mp4", "media_dir": str(tmp_path / "later")}):
-        writer = scene.renderer.file_writer
-    assert writer is scene.manager.file_writer is scene.renderer.file_writer
+        writer = scene._get_manager().file_writer
+    assert writer is scene.manager.file_writer is scene._get_manager().file_writer
     assert writer.settings == scene.file_writer_settings
     assert writer.output_spec.is_still
     factory.assert_called_once_with(scene.file_writer_settings)
@@ -62,7 +61,7 @@ def test_render_creates_writer_before_setup_once(writer_scene, monkeypatch):
 
     def setup():
         factory.assert_called_once_with(scene.file_writer_settings)
-        assert manager.file_writer is scene.renderer.file_writer
+        assert manager.file_writer is scene._get_manager().file_writer
 
     monkeypatch.setattr(scene, "setup", setup)
     manager.render()
@@ -76,10 +75,10 @@ def test_direct_plays_keep_the_same_writer(writer_scene):
     scene.play(Wait(0.1))
     writer = scene.manager.file_writer
     with pytest.raises(AttributeError):
-        scene.renderer.file_writer = Mock()
+        scene._get_manager().file_writer = Mock()
     scene.play(Wait(0.1))
     writer.join_all_encode_jobs()
     factory.assert_called_once()
-    assert writer is scene.renderer.file_writer
+    assert writer is scene._get_manager().file_writer
     assert len(writer.partial_movie_files) == 2
     assert all(Path(path).is_file() for path in writer.partial_movie_files)

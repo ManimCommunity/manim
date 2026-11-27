@@ -75,10 +75,7 @@ def test_real_evaluation_matches_uncached_render(settings, monkeypatch):
     evaluated = TraceScene()
     manager = Manager(evaluated)
     reject = Mock(side_effect=AssertionError("raster/output policy executed"))
-    monkeypatch.setattr(evaluated.renderer, "_start_animation", reject)
-    monkeypatch.setattr(evaluated.renderer, "_prepare_animation", reject)
-    monkeypatch.setattr(evaluated.renderer, "scene_finished", reject)
-    monkeypatch.setattr(evaluated.renderer, "_file_writer_class", reject)
+    monkeypatch.setattr("manim.manager.SceneFileWriter", reject)
     monkeypatch.setattr(evaluated.renderer, "render", reject)
     monkeypatch.setattr("manim._run.cache.get_hash_from_play_call", reject)
     # Evaluation still runs every animation with caching and range skipping enabled.
@@ -89,7 +86,7 @@ def test_real_evaluation_matches_uncached_render(settings, monkeypatch):
             "upto_animation_number": 0,
         }
     ):
-        evaluated.renderer._skips_all_plays = True
+        evaluated.skip_animations = True
         manager.evaluate()
     assert evaluated.trace == rendered.trace
     assert evaluated.time == rendered.time == 1.5
@@ -118,12 +115,11 @@ def test_declarations_do_not_open_media_logs_or_decode_audio(
         scene = Declarations()
         manager = Manager(scene)
         reject = Mock(side_effect=AssertionError("resource acquired"))
-        monkeypatch.setattr(scene.renderer, "_file_writer_class", reject)
+        monkeypatch.setattr("manim.manager.SceneFileWriter", reject)
         monkeypatch.setattr("manim.manager.set_file_logger", reject)
-        if hasattr(scene.renderer, "open"):
-            monkeypatch.setattr(scene.renderer, "open", reject)
-        else:
-            monkeypatch.setattr(scene.renderer, "_get_target", reject)
+        # Declarations draw nothing, with no renderer at all.
+        monkeypatch.setattr(scene.renderer, "render", reject)
+        monkeypatch.setattr(type(scene.backend), "create", reject)
         manager.evaluate()
         assert scene.time == 0.5
         assert not list(settings.rglob("*"))
@@ -135,7 +131,7 @@ def test_unsupported_requests_raise(settings, demand):
     class Unsupported(Scene):
         def construct(self):
             if demand == "writer":
-                self.renderer.file_writer
+                self._get_manager().file_writer
             elif demand == "interactive":
                 self.interactive_embed()
             else:

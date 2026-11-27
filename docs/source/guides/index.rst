@@ -8,6 +8,7 @@ Thematic Guides
 
    configuration
    cameras
+   writing_a_renderer
    evaluation
    timeline
    deep_dive

@@ -6,50 +6,33 @@ from __future__ import annotations
 
 __all__ = ["Camera", "MovingCamera", "MultiCamera", "ThreeDCamera"]
 
-import contextlib
 import operator as op
-from collections.abc import Callable, Iterable, Iterator
+from collections.abc import Callable, Iterable
 from functools import reduce
 from typing import TYPE_CHECKING, Any, Literal, overload
 
 import numpy as np
 
 from manim._config import config
-from manim.constants import DEGREES, DOWN, LEFT, ORIGIN, OUT
+from manim.constants import DEGREES, DOWN, LEFT, OUT
 from manim.mobject.frame import ScreenRectangle
 from manim.mobject.mobject import Mobject, _AnimationBuilder
 from manim.mobject.types.image_mobject import ImageMobjectFromCamera
 from manim.mobject.types.point_cloud_mobject import Point
-from manim.mobject.types.vectorized_mobject import VMobject
 from manim.mobject.value_tracker import ValueTracker
-from manim.renderer.extract import placement_of
-from manim.renderer.snapshot import FacingCamera, FixedInFrame, LegacyShaded, RMesh
-from manim.utils._path_points import (
-    end_corner,
-    end_corner_index,
-    start_corner,
-    unit_normal,
-)
-from manim.utils.color import WHITE, ManimColor, ParsableManimColor, get_shaded_rgb
+from manim.renderer.projection import project_points
+from manim.renderer.protocol import CameraState
+from manim.utils.color import WHITE, ManimColor, ParsableManimColor
 from manim.utils.deprecation import deprecated
-from manim.utils.family import extract_mobject_family_members
-from manim.utils.iterables import list_difference_update
 from manim.utils.space_ops import rotation_matrix_zxz
 
 if TYPE_CHECKING:
-    from manim.renderer.snapshot import Placement, RNode, RPath
     from manim.typing import (
-        FloatRGBA_Array,
         MatrixMN,
         Point3D,
         Point3D_Array,
         Point3DLike,
     )
-
-
-#: How far above the frame a flat camera's eye is for shading: far enough that the
-#: view direction is the same everywhere on screen.
-_FAR_AWAY = 1e6
 
 
 class Camera:
@@ -172,27 +155,6 @@ class Camera:
     def frame_center(self, frame_center: Point3DLike | Mobject) -> None:
         self.frame.move_to(frame_center)
 
-    def get_mobjects_to_display(
-        self,
-        mobjects: Iterable[Mobject],
-        include_submobjects: bool = True,
-        excluded_mobjects: list[Mobject] | None = None,
-    ) -> list[Mobject]:
-        """Return the mobjects and included submobjects in drawing order."""
-        if include_submobjects:
-            mobjects = extract_mobject_family_members(
-                mobjects,
-                use_z_index=self.use_z_index,
-                only_those_with_points=True,
-            )
-            if excluded_mobjects:
-                all_excluded = extract_mobject_family_members(
-                    excluded_mobjects,
-                    use_z_index=self.use_z_index,
-                )
-                mobjects = list_difference_update(mobjects, all_excluded)
-        return list(mobjects)
-
     def is_in_frame(self, mobject: Mobject) -> bool:
         """Whether ``mobject`` intersects the camera frame's bounds."""
         center = self.frame_center
@@ -207,14 +169,6 @@ class Camera:
                 mobject.get_top()[1] < center[1] - height / 2,
             ],
         )
-
-    def get_mobjects_indicating_movement(self) -> list[Mobject]:
-        """Return mobjects whose animation requires the scene to be redrawn.
-
-        The scene uses these controls to decide whether it can reuse an image of
-        its stationary mobjects during an animation.
-        """
-        return [self.frame]
 
     @overload
     def auto_zoom(
@@ -305,70 +259,19 @@ class Camera:
             )
         return bounds
 
-    @contextlib.contextmanager
-    def _drawing(self) -> Iterator[None]:
-        """Scope in which one frame is drawn; the camera does not change in it."""
-        yield
-
-    def get_view_transform_center(self) -> Point3D:
-        """Return the center applied by the renderer's 2D view transform."""
-        return self.frame_center
-
-    def get_stroke_rgbas(
-        self,
-        vmobject: VMobject,
-        background: bool = False,
-    ) -> FloatRGBA_Array:
-        """Return stroke colors after camera-specific shading."""
-        return vmobject.get_stroke_rgbas(background)
-
-    def get_fill_rgbas(self, vmobject: VMobject) -> FloatRGBA_Array:
-        """Return fill colors after camera-specific shading."""
-        return vmobject.get_fill_rgbas()
-
-    def _sort_for_display(self, nodes: list[RNode]) -> list[RNode]:
-        """Reorder render snapshots for this camera (after family and z-index order)."""
-        return nodes
-
-    def _view_rotation(self) -> np.ndarray:
-        """The rotation from scene to view coordinates (looking along -z)."""
-        return np.identity(3)
-
-    def _light(self) -> np.ndarray | None:
-        """Where meshes are lit from, in scene coordinates; ``None``: not lit."""
-        return None
-
-    def _eye(self) -> np.ndarray:
-        """Where the scene is seen from, in scene coordinates."""
-        return np.asarray(self.frame_center, dtype=float) + [0.0, 0.0, _FAR_AWAY]
-
-    def _shaded_rgbas(self, path: RPath, rgbas: FloatRGBA_Array) -> FloatRGBA_Array:
-        """Return the stop colors of a snapshot path's paint after the shading of
-        its material.
-        """
-        return rgbas
-
-    def _display_points(self, node: RNode, points: Point3D_Array) -> Point3D_Array:
-        """Project the points of a render snapshot for display."""
-        return self._place(points, node.placement)
-
-    def transform_points_pre_display(
-        self,
-        mobject: Mobject,
-        points: Point3D_Array,
-    ) -> Point3D_Array:
-        """Project the mobject's points for display."""
-        return self._place(points, placement_of(mobject))
-
-    def _place(self, points: Point3D_Array, placement: Placement) -> Point3D_Array:
-        """Project points for display, as fixed in frame or facing the camera."""
-        if not np.all(np.isfinite(points)):
-            return np.zeros((1, 3))
-        if isinstance(placement, FixedInFrame):
-            # Drawn as if the frame were at its default position and size.
-            scale = self.frame_width / config.frame_width
-            return self.frame_center + scale * points
-        return points
+    def _state(self) -> CameraState:
+        """The camera's current view as plain values, for the renderers."""
+        return CameraState(
+            center=np.asarray(self.frame_center, dtype=float),
+            frame_width=float(self.frame_width),
+            frame_height=float(self.frame_height),
+            rotation=np.identity(3),
+            focal_distance=None,
+            zoom=1.0,
+            light=None,
+            shade_3d=False,
+            default_frame_width=float(config.frame_width),
+        )
 
 
 @deprecated(
@@ -402,23 +305,6 @@ class MultiCamera(Camera):
             raise TypeError("Nested Cairo views require a Cairo Camera.")
         self.image_mobjects_from_cameras.append(image_mobject_from_camera)
 
-    def get_mobjects_indicating_movement(self) -> list[Mobject]:
-        """Return camera controls for the primary and nested views."""
-
-        def collect(camera: Camera, visited: set[int]) -> list[Mobject]:
-            if id(camera) in visited:
-                return []
-            visited.add(id(camera))
-            if not isinstance(camera, MultiCamera):
-                return camera.get_mobjects_indicating_movement()
-
-            indicators = Camera.get_mobjects_indicating_movement(camera)
-            for image_mobject in camera.image_mobjects_from_cameras:
-                indicators.extend(collect(image_mobject.camera, visited))
-            return indicators
-
-        return collect(self, set())
-
 
 class ThreeDCamera(Camera):
     def __init__(
@@ -428,7 +314,6 @@ class ThreeDCamera(Camera):
         default_distance: float = 5.0,
         light_source_start_point: Point3DLike = 9 * DOWN + 7 * LEFT + 10 * OUT,
         should_apply_shading: bool = True,
-        exponential_projection: bool = False,
         phi: float = 0,
         theta: float = -90 * DEGREES,
         gamma: float = 0,
@@ -448,32 +333,11 @@ class ThreeDCamera(Camera):
         self.light_source_start_point = light_source_start_point
         self.light_source = Point(self.light_source_start_point)
         self.should_apply_shading = should_apply_shading
-        self.exponential_projection = exponential_projection
         self.phi_tracker = ValueTracker(phi)
         self.theta_tracker = ValueTracker(theta)
         self.focal_distance_tracker = ValueTracker(focal_distance)
         self.gamma_tracker = ValueTracker(gamma)
         self.zoom_tracker = ValueTracker(zoom)
-        self._view: tuple[Point3D, float, float, MatrixMN] | None = None
-
-    @contextlib.contextmanager
-    def _drawing(self) -> Iterator[None]:
-        # Every mobject of a frame is projected with the same view: compute it
-        # once instead of in each projection (the frame center alone is a
-        # bounding box of the frame mobject).
-        self._view = self._current_view()
-        try:
-            yield
-        finally:
-            self._view = None
-
-    def _current_view(self) -> tuple[Point3D, float, float, MatrixMN]:
-        return (
-            self.frame_center,
-            self.get_focal_distance(),
-            self.get_zoom(),
-            self.get_rotation_matrix(),
-        )
 
     # Read-only: the trackers hold the orientation. Change it with set_phi() and
     # the like, set_camera_orientation(), or by animating the trackers.
@@ -502,13 +366,6 @@ class ThreeDCamera(Camera):
         """The zoom factor."""
         return self.get_zoom()
 
-    def get_view_transform_center(self) -> Point3D:
-        # project_points() already translates by frame_center.
-        return ORIGIN.copy()
-
-    def get_mobjects_indicating_movement(self) -> list[Mobject]:
-        return [self.frame, self.light_source, *self.get_value_trackers()]
-
     def get_value_trackers(self) -> list[ValueTracker]:
         """A list of :class:`ValueTrackers <.ValueTracker>` of phi, theta, focal_distance,
         gamma and zoom.
@@ -526,102 +383,18 @@ class ThreeDCamera(Camera):
             self.zoom_tracker,
         ]
 
-    def modified_rgbas(
-        self, vmobject: VMobject, rgbas: FloatRGBA_Array
-    ) -> FloatRGBA_Array:
-        return self._shade(vmobject.shade_in_3d, vmobject.points, rgbas)
-
-    def _shaded_rgbas(self, path: RPath, rgbas: FloatRGBA_Array) -> FloatRGBA_Array:
-        return self._shade(isinstance(path.material, LegacyShaded), path.points, rgbas)
-
-    def _shade(
-        self, shade_in_3d: bool, points: Point3D_Array, rgbas: FloatRGBA_Array
-    ) -> FloatRGBA_Array:
-        if not self.should_apply_shading:
-            return rgbas
-        if shade_in_3d and len(points) > 0:
-            light_source_point = self.light_source.points[0]
-            if len(rgbas) < 2:
-                shaded_rgbas = rgbas.repeat(2, axis=0)
-            else:
-                shaded_rgbas = np.array(rgbas[:2])
-            shaded_rgbas[0, :3] = get_shaded_rgb(
-                shaded_rgbas[0, :3],
-                start_corner(points),
-                unit_normal(points, 0),
-                light_source_point,
-            )
-            end = end_corner_index(points)
-            shaded_rgbas[1, :3] = get_shaded_rgb(
-                shaded_rgbas[1, :3],
-                end_corner(points),
-                unit_normal(points, end),
-                light_source_point,
-            )
-            return shaded_rgbas
-        return rgbas
-
-    def get_stroke_rgbas(
-        self,
-        vmobject: VMobject,
-        background: bool = False,
-    ) -> FloatRGBA_Array:  # NOTE : DocStrings From parent
-        return self.modified_rgbas(vmobject, vmobject.get_stroke_rgbas(background))
-
-    def get_fill_rgbas(
-        self, vmobject: VMobject
-    ) -> FloatRGBA_Array:  # NOTE : DocStrings From parent
-        return self.modified_rgbas(vmobject, vmobject.get_fill_rgbas())
-
-    def get_mobjects_to_display(
-        self, *args: Any, **kwargs: Any
-    ) -> list[Mobject]:  # NOTE : DocStrings From parent
-        mobjects = super().get_mobjects_to_display(*args, **kwargs)
-        rot_matrix = self.get_rotation_matrix()
-
-        def z_key(mob: Mobject) -> float:
-            if not (hasattr(mob, "shade_in_3d") and mob.shade_in_3d):
-                return np.inf  # type: ignore[no-any-return]
-            return self._depth(mob.get_z_index_reference_point(), rot_matrix)
-
-        return sorted(mobjects, key=z_key)
-
-    def _view_rotation(self) -> np.ndarray:
-        return np.asarray(self.get_rotation_matrix(), dtype=float)
-
-    def _light(self) -> np.ndarray | None:
-        return np.asarray(self.light_source.get_center(), dtype=float)
-
-    def _eye(self) -> np.ndarray:
-        return np.asarray(self.frame_center, dtype=float) + self._view_rotation().T @ [
-            0.0,
-            0.0,
-            self.get_focal_distance(),
-        ]
-
-    def _sort_for_display(self, nodes: list[RNode]) -> list[RNode]:
-        rot_matrix = self.get_rotation_matrix()
-
-        def z_key(node: RNode) -> float:
-            payload = node.payload
-            reference_point = getattr(payload, "depth_reference", None)
-            if isinstance(payload, RMesh) and len(payload.points):
-                # A whole mesh (on OpenGL; Cairo sorts its faces) goes by its middle.
-                points = np.asarray(payload.points)
-                reference_point = (points.min(axis=0) + points.max(axis=0)) / 2
-            if reference_point is None:
-                return np.inf  # type: ignore[no-any-return]
-            return self._depth(reference_point, rot_matrix)
-
-        return sorted(nodes, key=z_key)
-
-    @staticmethod
-    def _depth(point: Point3D, rot_matrix: MatrixMN) -> float:
-        """Assign a number to a three dimensional mobject based on how close it is
-        to the camera.
-        """
-        distance: float = np.dot(point, rot_matrix.T)[2]
-        return distance
+    def _state(self) -> CameraState:
+        return CameraState(
+            center=np.asarray(self.frame_center, dtype=float),
+            frame_width=float(self.frame_width),
+            frame_height=float(self.frame_height),
+            rotation=np.asarray(self.get_rotation_matrix(), dtype=float),
+            focal_distance=float(self.get_focal_distance()),
+            zoom=float(self.get_zoom()),
+            light=np.asarray(self.light_source.get_center(), dtype=float),
+            shade_3d=self.should_apply_shading,
+            default_frame_width=float(config.frame_width),
+        )
 
     def get_phi(self) -> float:
         """Returns the Polar angle (the angle off Z_AXIS) phi.
@@ -781,27 +554,7 @@ class ThreeDCamera(Camera):
         np.array
             The points after projecting.
         """
-        view = self._view
-        frame_center, focal_distance, zoom, rot_matrix = (
-            view if view is not None else self._current_view()
-        )
-
-        points = points - frame_center
-        points = np.dot(points, rot_matrix.T)
-        zs = points[:, 2]
-        if self.exponential_projection:
-            # Proper projection would involve multiplying x and y by d / (d-z).
-            # The exponential avoids artifacts for high positive z values.
-            factor = np.exp(zs / focal_distance)
-            lt0 = zs < 0
-            factor[lt0] = focal_distance / (focal_distance - zs[lt0])
-        else:
-            factor = focal_distance / (focal_distance - zs)
-            factor[(focal_distance - zs) < 0] = 10**6
-        scale = factor * zoom
-        for i in 0, 1:
-            points[:, i] *= scale
-        return points
+        return project_points(self._state(), points)
 
     def project_point(self, point: Point3D) -> Point3D:
         """Applies the current rotation_matrix as a projection
@@ -818,18 +571,6 @@ class ThreeDCamera(Camera):
             The point after projection.
         """
         return self.project_points(point.reshape((1, 3)))[0, :]
-
-    def _place(self, points: Point3D_Array, placement: Placement) -> Point3D_Array:
-        if not np.all(np.isfinite(points)):
-            return np.zeros((1, 3))
-        # The view transform of this camera is centered at the origin, so points
-        # fixed in frame are drawn where they are.
-        if isinstance(placement, FixedInFrame):
-            return points
-        if isinstance(placement, FacingCamera):
-            center = placement.center
-            return points + (self.project_point(center) - center)
-        return self.project_points(points)
 
     def add_fixed_orientation_mobjects(
         self,

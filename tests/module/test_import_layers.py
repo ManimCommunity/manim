@@ -59,7 +59,43 @@ RULES: list[tuple[str, str, str]] = [
             "manim.renderer.opengl",
         )
     ),
+    *(
+        (
+            f"manim.renderer.{package}",
+            forbidden,
+            "renderer packages import only layers 1-2: they draw the snapshots and"
+            " configuration they are given, and know no mobject, camera, scene, run"
+            " or output, not even through the frame builder or extraction",
+        )
+        for package in ("cairo", "opengl", "_view", "_reuse", "projection")
+        for forbidden in (
+            "manim.mobject",
+            "manim.animation",
+            "manim.camera",
+            "manim.scene",
+            "manim.manager",
+            "manim._run",
+            "manim.renderer.frame",
+            "manim.renderer.extract",
+        )
+    ),
+    *(
+        (
+            importer,
+            f"manim.renderer.{package}",
+            "scenes, the Manager and the run loop reach renderers through their"
+            " factories (manim.renderer.backends), never a renderer package",
+        )
+        for importer in ("manim.scene", "manim.manager", "manim._run")
+        for package in ("cairo", "opengl")
+    ),
 ]
+
+
+def _rule(importer: str, forbidden: str) -> tuple[str, str, str]:
+    """The rule that forbids ``importer`` to import ``forbidden``."""
+    return next(rule for rule in RULES if rule[:2] == (importer, forbidden))
+
 
 # (importer, imported) pairs that break a rule on purpose, with the reason.
 EXCEPTIONS: dict[tuple[str, str], str] = {}
@@ -169,6 +205,41 @@ def test_exceptions_are_still_needed():
             RULES[4],
         ),
         ("manim.renderer.snapshot", "manim.mobject.mobject", RULES[5]),
+        (
+            "manim.renderer.cairo.rendering",
+            "manim.mobject.mobject",
+            _rule("manim.renderer.cairo", "manim.mobject"),
+        ),
+        (
+            "manim.renderer.opengl.renderer",
+            "manim.camera",
+            _rule("manim.renderer.opengl", "manim.camera"),
+        ),
+        (
+            "manim.renderer.cairo.renderer",
+            "manim.renderer.frame",
+            _rule("manim.renderer.cairo", "manim.renderer.frame"),
+        ),
+        (
+            "manim.renderer.cairo.renderer",
+            "manim.scene.scene_file_writer",
+            _rule("manim.renderer.cairo", "manim.scene"),
+        ),
+        (
+            "manim.renderer.opengl.renderer",
+            "manim._run.frames",
+            _rule("manim.renderer.opengl", "manim._run"),
+        ),
+        (
+            "manim.scene.scene",
+            "manim.renderer.opengl.renderer",
+            _rule("manim.scene", "manim.renderer.opengl"),
+        ),
+        (
+            "manim.manager",
+            "manim.renderer.cairo.renderer",
+            _rule("manim.manager", "manim.renderer.cairo"),
+        ),
     ],
 )
 def test_a_rule_finds_imports_that_break_it(importer, imported, rule, monkeypatch):

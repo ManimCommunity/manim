@@ -44,7 +44,7 @@ def set_test_scene(scene_object: type[Scene], module_name: str, config):
         config["tex_dir"] = temp_path / "tex"
         scene = scene_object(skip_animations=True)
         scene.render()
-        data = scene.renderer.get_frame()
+        data = np.asarray(scene.get_image())
 
     assert not np.all(
         data == np.array([0, 0, 0, 255]),

@@ -2,21 +2,22 @@ from __future__ import annotations
 
 import datetime
 
+import numpy as np
 import pytest
 
 from manim import (
+    RIGHT,
     Circle,
     Dot,
     FadeIn,
     Group,
-    Line,
     Mobject,
     Scene,
-    ShowPassingFlash,
     Square,
-    Succession,
+    ThreeDCamera,
 )
 from manim.animation.animation import Wait
+from manim.renderer.backends import Cairo
 
 
 def test_scene_add_remove(dry_run):
@@ -57,42 +58,9 @@ def test_scene_time(dry_run):
     assert scene.time == 2
     scene.play(FadeIn(Circle()), run_time=0.5)
     assert pytest.approx(scene.time) == 2.5
-    scene.renderer._skips_all_plays = True
+    scene.skip_animations = True
     scene.play(FadeIn(Square()), run_time=5)  # this animation gets skipped.
     assert pytest.approx(scene.time) == 7.5
-
-
-def test_animation_group_moving_mobjects_preserve_z_index_order(dry_run):
-    scene = Scene()
-    left_circle = Circle().set_z_index(1)
-    right_circle = Circle().set_z_index(1)
-    line = Line().set_z_index(-1)
-    scene.add(left_circle, right_circle)
-
-    succession = Succession(
-        right_circle.animate.set_fill(opacity=1),
-        ShowPassingFlash(line),
-    )
-    scene.compile_animation_data(succession)
-    scene.begin_animations()
-
-    assert left_circle in scene.moving_mobjects
-    assert left_circle not in scene.static_mobjects
-
-
-@pytest.mark.parametrize("parent_cls", [Group, Circle])
-@pytest.mark.parametrize("z_index", [-10, 0, 10])
-def test_parent_of_moving_submobject_is_marked_moving(dry_run, parent_cls, z_index):
-    scene = Scene()
-    child = Square()
-    parent = parent_cls().set_z_index(z_index).add(child)
-    scene.add(parent)
-
-    scene.compile_animation_data(child.animate.shift((1, 0, 0)))
-    scene.begin_animations()
-
-    assert parent in scene.moving_mobjects
-    assert parent not in scene.static_mobjects
 
 
 def test_subcaption(dry_run):
@@ -106,7 +74,7 @@ def test_subcaption(dry_run):
         subcaption_duration=1.5,
         subcaption_offset=0.5,
     )
-    subcaptions = scene.renderer.file_writer.subcaptions
+    subcaptions = scene._get_manager().file_writer.subcaptions
     assert len(subcaptions) == 2
     assert subcaptions[0].start == datetime.timedelta(seconds=0)
     assert subcaptions[0].end == datetime.timedelta(seconds=1)
@@ -190,3 +158,12 @@ def test_random_color_reproducibility_with_seed(dry_run):
 
         # The interrupted colors should be different (seeded with 999)
         assert colors_interrupted != colors_first_run[:3]
+
+
+def test_the_scene_owns_its_camera(dry_run):
+    scene = Scene(renderer=Cairo(), camera_class=ThreeDCamera)
+    assert isinstance(scene.camera, ThreeDCamera)
+    assert scene._get_manager().camera is scene.camera
+    scene.add(Square(fill_opacity=1))
+    scene.camera.frame.shift(10 * RIGHT)  # the square leaves the view
+    assert not np.asarray(scene.get_image())[..., :3].any()

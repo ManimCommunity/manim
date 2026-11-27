@@ -45,7 +45,7 @@ def test_t_values_with_skip_animations(
     """Skipped plays without updaters go to their end in one step."""
     scene = SquareToCircle()
     scene.update_to_time = Mock()
-    scene.renderer._skips_all_plays = True
+    scene.skip_animations = True
     scene.render()
     assert scene.update_to_time.call_count == 1
 
@@ -81,7 +81,7 @@ def test_frozen_frame(using_temp_opengl_config, disabling_caching):
 def test_t_values_with_cached_data(using_temp_opengl_config, monkeypatch):
     """Test the proper generation and use of the t values when an animation is cached."""
     scene = SceneWithMultipleCalls()
-    writer = scene.renderer.file_writer
+    writer = scene._get_manager().file_writer
     # Simulate cache hits without assembling nonexistent cached segments.
     monkeypatch.setattr(writer, "is_already_cached", Mock(return_value=True))
     monkeypatch.setattr(writer, "finish", Mock())

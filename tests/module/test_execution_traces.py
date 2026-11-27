@@ -24,7 +24,7 @@ def test_animation_clock_trace(backend, duration, skip):
     ):
         scene = Scene(skip_animations=skip)
         # OpenGL historically ignores Scene's skip_animations constructor argument.
-        scene.renderer._skips_all_plays = skip
+        scene.skip_animations = skip
         scene.add(Square())
 
         class Probe(Animation):
@@ -47,7 +47,7 @@ def test_animation_clock_trace(backend, duration, skip):
         with scene._get_manager():
             scene.play(Probe(scene.mobjects[0], run_time=duration))
             final_time = scene.time
-            plays = scene.renderer.num_plays
+            plays = scene._get_manager().num_plays
 
     # Skipped plays step through the same frames as rendered ones.
     count = 4 if duration == 1 else 2
@@ -78,12 +78,12 @@ def test_frozen_wait_clock_trace(backend, skip):
         }
     ):
         scene = Scene(skip_animations=skip)
-        scene.renderer._skips_all_plays = skip
+        scene.skip_animations = skip
         with scene._get_manager():
             # A frozen wait takes whole frames, as many as a stepped one: 2, not 0.3 s.
             scene.wait(0.3, frozen_frame=True)
             assert scene.time == 0.5
-            assert scene.renderer.num_plays == 1
+            assert scene._get_manager().num_plays == 1
 
 
 @pytest.mark.parametrize("backend", ["cairo", "opengl"])

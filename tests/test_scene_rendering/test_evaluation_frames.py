@@ -122,11 +122,11 @@ def test_a_rejected_request_can_be_corrected(tmp_path):
     assert [frame.requested_time for frame in received] == [0.5]
 
 
-def test_frozen_frames_added_by_the_renderer_are_evaluated(tmp_path):
+def test_frozen_frames_are_evaluated(tmp_path):
     class Freezes(Scene):
         def construct(self):
             self.add(Square())
-            self.renderer.freeze_current_frame(1)
+            self.pause(1)
 
     received = []
     with tempconfig(settings("cairo", tmp_path)):

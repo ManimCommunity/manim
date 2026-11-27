@@ -61,3 +61,25 @@ def _bounds(mask):
     assert mask.sum() > 2000
     ys, xs = np.nonzero(mask)
     return np.array([[xs.min(), xs.max()], [ys.min(), ys.max()]])
+
+
+@pytest.mark.parametrize("renderer", ["cairo", "opengl"])
+def test_renderers_clear_to_the_camera_background(renderer):
+    with tempconfig(
+        {
+            "renderer": renderer,
+            "dry_run": True,
+            "pixel_width": 64,
+            "pixel_height": 36,
+            "background_color": "#000000",
+        }
+    ):
+        scene = Scene()
+        try:
+            scene.camera.background_color = "#4080c0"
+            scene.camera.background_opacity = 0.5
+            pixel = np.asarray(scene.get_image())[0, 0]
+        finally:
+            scene.renderer.close()
+
+    np.testing.assert_allclose(pixel, [0x40, 0x80, 0xC0, 127], atol=1)

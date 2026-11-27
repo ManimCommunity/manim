@@ -11,33 +11,38 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from manim._config import config
 from manim.appearance.material import UnlitMaterial
 from manim.constants import CapStyleType, LineJointType
 from manim.renderer._lighting import AMBIENT, Light, shade
-from manim.renderer._mesh import (
-    MESH_STROKE_WIDTH_UNIT,
-    face_colors,
-    face_normals,
-    face_outlines,
-    faces_of,
+from manim.renderer._mesh import face_colors, face_normals, face_outlines, faces_of
+from manim.renderer._view import eye
+from manim.renderer.snapshot import (
+    STROKE_WIDTH_UNIT,
+    RMesh,
+    RNode,
+    RPath,
+    RSolidColor,
+    RStroke,
 )
-from manim.renderer.snapshot import RMesh, RNode, RPath, RSolidColor, RStroke
 
 if TYPE_CHECKING:
-    from manim.camera import Camera
+    from manim.renderer.protocol import CameraState
 
 __all__ = ["mesh_faces"]
 
-#: Scene units per unit of stroke width.
+_UNLIT = UnlitMaterial()
 #: Points of a face's outline closer than this are taken as the same point, as
 #: for vectorized mobjects (``tolerance_for_point_equality``).
 _FACE_TOLERANCE = 1e-6
-_UNLIT = UnlitMaterial()
 
 
-def mesh_faces(node: RNode, camera: Camera) -> list[RNode]:
+def mesh_faces(
+    node: RNode, camera: CameraState, reference_pixel_size: tuple[int, int]
+) -> list[RNode]:
     """Path snapshots for the faces of a mesh node, from far to near.
+
+    Seams between faces are closed with outlines a pixel wide at
+    ``reference_pixel_size`` (see :attr:`.RenderConfig.reference_pixel_size`).
 
     Each face node is keyed by the mesh node's key and the face's index, or has no key
     if the mesh has none.
@@ -52,19 +57,19 @@ def mesh_faces(node: RNode, camera: Camera) -> list[RNode]:
     # tetrahedron around the origin, it is the origin for all four.)
     centers = corners.mean(axis=1)
     colors = face_colors(mesh, faces)
-    light = camera._light()
+    light = camera.light
     if light is not None and not node.is_fixed_in_frame:
         colors[:, :3] = shade(
             colors[:, :3],
             face_normals(corners),
             centers,
-            camera._eye(),
+            eye(camera),
             [Light(light)],
             AMBIENT,
             mesh.material,
         )
     outlines = face_outlines(corners)
-    rotation = np.identity(3) if node.is_fixed_in_frame else camera._view_rotation()
+    rotation = np.identity(3) if node.is_fixed_in_frame else camera.rotation
     depth = centers @ rotation[2]
     strokes = np.asarray(mesh.stroke_rgbas, dtype=float)
     if len(strokes) != len(faces):
@@ -72,7 +77,7 @@ def mesh_faces(node: RNode, camera: Camera) -> list[RNode]:
     # Without outlines, neighboring faces leave a seam where their antialiased edges
     # meet; opaque faces are outlined in their own color, a pixel wide, to close it.
     seam = (
-        config.frame_width / config.pixel_width / MESH_STROKE_WIDTH_UNIT
+        camera.default_frame_width / reference_pixel_size[0] / STROKE_WIDTH_UNIT
         if mesh.stroke_width == 0
         else None
     )

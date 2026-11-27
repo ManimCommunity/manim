@@ -45,7 +45,7 @@ def test_scene_construction_and_cold_close_open_nothing(scene_factory, monkeypat
     scene.renderer.close()
     scene.renderer.close()
     with pytest.raises(RuntimeError, match="closed"):
-        scene.renderer.get_frame()
+        scene.renderer.open()
     create_context.assert_not_called()
     create_window.assert_not_called()
 
@@ -59,14 +59,14 @@ def test_render_opens_before_setup_and_close_retires_real_objects(
     scene.add(Square(fill_opacity=1), ImageMobject(np.full((4, 4, 4), 255, np.uint8)))
 
     def setup():
-        assert renderer._context is not None
+        # The window is shown before setup(); offscreen, the context comes with
+        # the first frame.
         assert scene.manager._file_writer is not None
 
     monkeypatch.setattr(scene, "setup", setup)
-    with scene._get_manager():
+    with scene._get_manager() as manager:
         scene.render()
-        # The final state is drawn when it is read.
-        renderer.get_frame()
+        renderer.render(*scene.manager._frame())
         context = renderer.context
         frame = renderer.frame_buffer_object
         textures = renderer._snapshot_drawing._textures
@@ -104,7 +104,7 @@ def test_cold_snapshot_never_opens_preview_and_restores_previous_host(
 
     first = scene_factory()
     first.add(Square(fill_color=RED, fill_opacity=1))
-    first.renderer.update_frame(first)
+    first.renderer.render(*first._get_manager()._frame())
     target = first.renderer.frame_buffer_object
     before = target.read(components=4)
     with tempconfig({"live_preview": True}):

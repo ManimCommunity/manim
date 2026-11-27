@@ -13,6 +13,7 @@ from manim import (
     UP,
     Arrow,
     Circle,
+    Dot,
     ImageMobject,
     Line,
     Mobject,
@@ -23,7 +24,8 @@ from manim import (
 )
 from manim.appearance.material import PbrMaterial, UnlitMaterial
 from manim.mobject.types.image_mobject import AbstractImageMobject
-from manim.renderer.extract import extract, snapshot
+from manim.renderer import extract as extract_module
+from manim.renderer.extract import Extractor, extract, snapshot
 from manim.renderer.snapshot import (
     FacingCamera,
     FixedInFrame,
@@ -255,6 +257,76 @@ def test_the_key_follows_a_fixed_orientation_center():
     anchor[0] = np.array([1.0, 2.0, 3.0])
 
     assert snapshot(label).key != key
+
+
+def test_extractor_reuses_snapshots_until_a_field_changes():
+    extractor = Extractor()
+    square = Square()
+    first = extractor.extract([square])[0]
+    assert extractor.extract([square])[0] is first
+    square.set_fill(RED, 1)
+    filled = extractor.extract([square])[0]
+    assert filled is not first
+    assert filled.key != first.key
+    assert filled.payload.fill.rgba[3] == 1
+    square.tolerance_for_point_equality = 0.5
+    assert extractor.extract([square])[0].payload.tolerance == 0.5
+
+
+def test_extractor_takes_orientation_centers_anew():
+    extractor = Extractor()
+    dot, target = Dot(), Dot()
+    dot.fix_orientation(target.get_center)
+    before = extractor.extract([dot])[0]
+    target.shift(RIGHT)
+    after = extractor.extract([dot])[0]
+    np.testing.assert_allclose(after.placement.center, before.placement.center + RIGHT)
+    assert after.key != before.key
+
+
+def test_extractor_takes_mobjects_drawn_from_other_state_anew():
+    class Flashing(AbstractImageMobject):
+        _drawn_from_fields = False
+
+        def __init__(self):
+            self.channel = 0
+            super().__init__(scale_to_resolution=4)
+
+        def get_pixel_array(self):
+            pixels = np.zeros((2, 2, 4), dtype=np.uint8)
+            pixels[..., self.channel] = 255
+            return pixels
+
+    extractor = Extractor()
+    image = Flashing()
+    extractor.extract([image])
+    image.channel = 2
+    assert extractor.extract([image])[0].payload.pixel_array[0, 0, 2] == 255
+
+
+def test_extractor_rejects_snapshots_that_change_without_their_fields(monkeypatch):
+    monkeypatch.setattr(extract_module, "CHECK_SNAPSHOTS", True)
+
+    class Wobbly(AbstractImageMobject):
+        """Claims to be drawn from its fields but computes its pixels."""
+
+        _drawn_from_fields = True
+
+        def __init__(self):
+            self.channel = 0
+            super().__init__(scale_to_resolution=4)
+
+        def get_pixel_array(self):
+            pixels = np.zeros((2, 2, 4), dtype=np.uint8)
+            pixels[..., self.channel] = 255
+            return pixels
+
+    extractor = Extractor()
+    wobbly = Wobbly()
+    extractor.extract([wobbly])
+    wobbly.channel = 2
+    with pytest.raises(AssertionError, match="_drawn_from_fields"):
+        extractor.extract([wobbly])
 
 
 @pytest.mark.parametrize("camera_view", [False, True])

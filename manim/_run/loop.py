@@ -5,8 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
-import numpy as np
-
+from ..renderer.protocol import PixelFrame
 from ..scene.audio_mixer import _Sound
 from .frames import frame_count
 
@@ -18,6 +17,7 @@ if TYPE_CHECKING:
     from ..animation.animation import Animation
     from ..manager import Manager
     from ..mobject.mobject import Mobject, _AnimationBuilder
+    from ..renderer.protocol import Frame
     from ..scene.scene import Scene
     from ..typing import RGBAPixelArray
     from .cache import _SegmentCache
@@ -75,7 +75,7 @@ class _Frame:
     All listeners of a frame share one drawing.
     """
 
-    __slots__ = ("_drawn", "_loop", "_pixels", "index", "offset", "play", "repeat")
+    __slots__ = ("_drawn", "_loop", "index", "offset", "play", "repeat")
 
     def __init__(
         self, loop: _RunLoop, play: _Play, index: int, repeat: int, offset: float
@@ -88,25 +88,20 @@ class _Frame:
         """How many frames show this image: more than 1 only for a frozen wait."""
         self.offset = offset
         """The time of the frame in seconds, measured from the start of the play."""
-        self._drawn = False
-        self._pixels: RGBAPixelArray | None = None
+        self._drawn: Frame | None = None
 
-    def draw(self) -> None:
-        """Draw the frame into the renderer's target, unless it is drawn already."""
-        if not self._drawn:
-            self._loop.drawer.draw(self)
-            self._drawn = True
+    def drawn(self) -> Frame:
+        """The frame as the renderer drew it, drawing it the first time.
+
+        A preview shows it without reading its pixels back.
+        """
+        if self._drawn is None:
+            self._drawn = self._loop.drawer.draw(self)
+        return self._drawn
 
     def pixels(self) -> RGBAPixelArray:
-        """Return the frame as an RGBA pixel array, drawing it if needed.
-
-        A drawer that draws into a target draws the frame first; one without a
-        target, such as evaluation's, draws the pixels directly.
-        """
-        if self._pixels is None:
-            self.draw()
-            self._pixels = self._loop.drawer.pixels(self)
-        return self._pixels
+        """Return the frame as an RGBA pixel array, drawing it if needed."""
+        return self.drawn().pixels()
 
     def image(self) -> Image:
         """Return the frame as a PIL image, drawing it if needed."""
@@ -146,15 +141,12 @@ class _RunListener:
 class _Drawer:
     """Draws the frames of a run for its listeners.
 
-    Like :class:`_RunListener`, a base class: :meth:`draw` and :meth:`end_play`
-    do nothing unless overridden, for drawers without a target of their own.
+    Like :class:`_RunListener`, a base class: :meth:`end_play` does nothing
+    unless overridden.
     """
 
-    def draw(self, frame: _Frame) -> None:
-        """Draw ``frame`` into the renderer's target, for a preview to show."""
-
-    def pixels(self, frame: _Frame) -> RGBAPixelArray:
-        """The pixels of ``frame``, which :meth:`draw` drew if it was called."""
+    def draw(self, frame: _Frame) -> Frame:
+        """Draw ``frame``."""
         raise NotImplementedError
 
     def end_play(self, play: _Play) -> None:
@@ -162,48 +154,28 @@ class _Drawer:
 
 
 class _TargetDrawer(_Drawer):
-    """Draw frames into the renderer's own target, as a render does."""
+    """Draw frames with the scene's renderer, as a render does."""
 
     def __init__(self, manager: Manager) -> None:
         self._manager = manager
-        self._prepared = False
 
-    def draw(self, frame: _Frame) -> None:
-        renderer = self._manager.renderer
-        scene = self._manager.scene
-        if not self._prepared:
-            # Drawing resources and Cairo's background of still mobjects, once
-            # per play and only for plays that draw.
-            renderer._start_animation()
-            renderer._prepare_animation(scene)
-            self._prepared = True
-        renderer.render(scene, frame.offset, scene.moving_mobjects)
-
-    def pixels(self, frame: _Frame) -> RGBAPixelArray:
-        return self._manager.renderer.get_frame()
-
-    def end_play(self, play: _Play) -> None:
-        if self._prepared and not play.frozen:
-            # After a frozen wait, the background of still mobjects stays, so that
-            # a frame drawn between plays (see Manager._render_preview_frame) shows
-            # the still mobjects too. The next play draws a new background.
-            self._manager.renderer.static_image = None  # type: ignore[union-attr]
-        self._prepared = False
+    def draw(self, frame: _Frame) -> Frame:
+        return self._manager.renderer.render(*self._manager._frame())
 
 
 class _SceneImageDrawer(_Drawer):
-    """Draw frames with a temporary renderer, as :meth:`.Scene.get_image` does.
+    """Draw frames with the image renderer, as :meth:`.Scene.get_image` does.
 
-    Used during evaluation, which opens no drawing resources of its own, so
-    there is no target to draw into: only pixels are drawn.
+    Used during evaluation, which uses no drawing resources of the scene's
+    renderer: only the pixels of requested frames are drawn.
     """
 
     def __init__(self, manager: Manager) -> None:
         self._manager = manager
 
-    def pixels(self, frame: _Frame) -> RGBAPixelArray:
+    def draw(self, frame: _Frame) -> Frame:
         manager = self._manager
-        return np.asarray(manager.renderer._get_scene_image(manager.scene))
+        return PixelFrame(manager._image())
 
 
 class _RunLoop:
@@ -274,8 +246,8 @@ class _RunLoop:
         )
         if self.cache is not None:
             play = self.cache.look_up(play)
-        # For code outside the loop that asks whether the current play draws,
-        # such as the renderers' add_frame(); listeners read play.drawn.
+        # For code outside the loop that asks whether the current play draws;
+        # listeners read play.drawn.
         manager.skip_animations = not play.drawn
         started: list[_RunListener] = []
         try:
@@ -355,30 +327,6 @@ class _RunLoop:
         frame = _Frame(self, play, index, repeat, offset)
         for listener in self.listeners:
             listener.frame(frame)
-
-    def add_frames(self, pixels: RGBAPixelArray | None, repeat: int) -> None:
-        """Show ``repeat`` frames outside of a play, as CairoRenderer.add_frame() does.
-
-        ``pixels`` is the image to show, or None for the scene's current state,
-        drawn only if a listener asks for it.
-        """
-        manager = self.manager
-        state = manager._execution
-        play = _Play(
-            index=manager.num_plays,
-            first_frame=state.frame,
-            run_time=repeat / manager.session_spec.frame_rate,
-            animations=(),
-            frozen=True,
-            in_output=self.selection.includes(manager.num_plays),
-        )
-        frame = _Frame(self, play, state.frame, repeat, 0.0)
-        if pixels is not None:
-            frame._pixels = pixels
-            frame._drawn = True
-        for listener in self.listeners:
-            listener.frame(frame)
-        state.frame += repeat
 
     def finish(self, *, ended_early: bool) -> None:
         """Tell the listeners that the run has finished."""

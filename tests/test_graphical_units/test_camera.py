@@ -9,7 +9,6 @@ from manim import (
     RIGHT,
     Dot,
     ImageMobject,
-    MultiCamera,
     NumberPlane,
     Scene,
     Square,
@@ -28,14 +27,7 @@ def test_moving_camera_frame(scene: Scene):
     scene.play(scene.camera.frame.animate.set(width=6).move_to(marker))
 
 
-class _ZoomedCameraControlScene(ZoomedScene):
-    def __init__(self, renderer=None, **kwargs):
-        if renderer is not None:
-            renderer.camera = MultiCamera()
-        super().__init__(renderer=renderer, **kwargs)
-
-
-@frames_comparison(base_scene=_ZoomedCameraControlScene)
+@frames_comparison(base_scene=ZoomedScene)
 def test_zoomed_camera_view(scene: ZoomedScene):
     square = Square(color=BLUE, fill_opacity=0.35)
     dot = Dot(color=GREEN)
@@ -44,7 +36,7 @@ def test_zoomed_camera_view(scene: ZoomedScene):
     scene.play(dot.animate.shift(RIGHT))
 
 
-@frames_comparison(base_scene=_ZoomedCameraControlScene)
+@frames_comparison(base_scene=ZoomedScene)
 def test_zoomed_camera_image(scene: ZoomedScene):
     # The zoomed camera sees a small part of an image that is, in its pixel
     # coordinates, much larger than the frame.

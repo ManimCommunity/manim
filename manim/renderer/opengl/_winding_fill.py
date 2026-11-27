@@ -23,6 +23,7 @@ from typing import TYPE_CHECKING
 import moderngl
 import numpy as np
 
+from manim.renderer import _view
 from manim.renderer._paint import paint_colors, shows
 
 from .shader import Shader
@@ -192,7 +193,13 @@ class WindingFill:
             if len(geo.quads) == 0 or not shows(path.fill):
                 continue
             filled.append(geo)
-            colors.append(paint_colors(path.fill, path, camera._shaded_rgbas))
+            colors.append(
+                paint_colors(
+                    path.fill,
+                    path,
+                    lambda path, rgbas: _view.shaded_rgbas(camera, path, rgbas),
+                )
+            )
         if not filled:
             return
         vertices = pack(filled, colors)

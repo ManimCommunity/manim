@@ -3,6 +3,7 @@
 import logging
 from unittest.mock import Mock
 
+import numpy as np
 import pytest
 
 from manim import Manager, Scene, logger, tempconfig
@@ -41,7 +42,7 @@ def test_nested_inspection_scopes_retire_only_at_outer_exit(managed_scene):
         with manager:
             scene.render()
         assert scene.renderer.state is not RendererState.CLOSED
-        assert scene.renderer.get_frame().shape == (32, 64, 4)
+        assert np.asarray(scene.get_image()).shape == (32, 64, 4)
     assert scene.renderer.state is RendererState.CLOSED
     assert manager._scope_depth == 0
 
@@ -52,7 +53,7 @@ def test_a_failure_in_a_nested_scope_leaves_the_manager_open(managed_scene):
     with manager:
         with pytest.raises(ValueError), manager:
             raise ValueError("handled by the enclosing block")
-        assert scene.renderer.get_frame().shape == (32, 64, 4)
+        assert np.asarray(scene.get_image()).shape == (32, 64, 4)
     assert scene.renderer.state is RendererState.CLOSED
 
 
@@ -109,14 +110,14 @@ def test_scene_renderer_binding_cannot_be_replaced(managed_scene):
     scene = managed_scene
     renderer = scene.renderer
     with scene._get_manager() as manager:
-        renderer.update_frame(scene)
-        with pytest.raises(RuntimeError, match="already bound"):
+        renderer.render(*manager._frame())
+        with pytest.raises(TypeError, match="renderer factory"):
             Scene(renderer=renderer)
         with pytest.raises(AttributeError):
             scene.renderer = Mock()
         scene.render()
         assert manager.renderer is renderer
-        assert renderer.get_frame().shape == (32, 64, 4)
+        assert np.asarray(scene.get_image()).shape == (32, 64, 4)
     assert renderer.state is RendererState.CLOSED
 
 
