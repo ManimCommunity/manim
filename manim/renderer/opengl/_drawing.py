@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, Any, NamedTuple, cast
+from typing import TYPE_CHECKING, Any, NamedTuple, TypeAlias, cast
 
 import moderngl
 import numpy as np
@@ -45,9 +45,19 @@ from .shader import Shader
 
 if TYPE_CHECKING:
     from manim.appearance.material import Material
+    from manim.appearance.paint import GridId
     from manim.renderer.protocol import CameraState, LightState
+    from manim.renderer.snapshot import RPaint
 
     from .renderer import OpenGLRenderer, _CameraView
+
+    #: A color field as it is bound: its grid, corners and opacity.
+    _FieldBinding: TypeAlias = tuple[GridId, bytes, float]
+    #: The color fields of a path's fill, stroke and background stroke (``None``:
+    #: none).
+    _Binding: TypeAlias = tuple[
+        _FieldBinding | None, _FieldBinding | None, _FieldBinding | None
+    ]
 
 __all__ = ["DrawTarget", "SnapshotDrawing", "cubics_to_quadratics"]
 
@@ -810,7 +820,7 @@ class SnapshotDrawing:
         tolerance = TOLERANCE_PIXELS * frame_width / self._target.size[0]
         return 2.0 ** math.floor(math.log2(tolerance))
 
-    def _field_uniforms(self, paint: Any, kind: str) -> dict[str, Any]:
+    def _field_uniforms(self, paint: RPaint | None, kind: str) -> dict[str, Any]:
         """The uniforms that bind ``paint`` in the shaders: off unless it is a
         color field, which is sampled at each fragment's scene position.
 
@@ -832,7 +842,7 @@ class SnapshotDrawing:
             or not np.allclose(corners[:, 2], corners[0, 2])
         ):
             raise CapabilityError(
-                "The OpenGL renderer draws colour fields only in a plane parallel to "
+                "The OpenGL renderer draws color fields only in a plane parallel to "
                 "the frame, under a flat camera, on mobjects that are not fixed in "
                 "the frame."
             )
@@ -892,7 +902,7 @@ class SnapshotDrawing:
             self._draw_strokes(group, background=False)
 
     def _draw_strokes(self, group: _Group, background: bool) -> None:
-        geometry, widths, colours = [], [], []
+        geometry, widths, colors = [], [], []
         for node, geo in zip(group.nodes, group.geometry, strict=True):
             path: RPath = node.payload  # type: ignore[assignment]
             stroke = path.background_stroke if background else path.stroke
@@ -900,7 +910,7 @@ class SnapshotDrawing:
                 continue
             geometry.append(geo)
             widths.append(stroke.width)
-            colours.append(
+            colors.append(
                 # Strokes are not lit.
                 paint_colors(stroke.paint)
             )
@@ -1000,7 +1010,7 @@ def _groups(
     regions = _Boxes()
     color: tuple[float, ...] | None = None
     joint = None
-    binding: Any = None
+    binding: _Binding | None = None
     box_list = boxes.tolist()
     filled_list = filled.tolist()
     for index, (node, geo, path) in enumerate(zip(nodes, geometry, paths, strict=True)):
@@ -1055,10 +1065,10 @@ def _groups(
     ]
 
 
-def _binding(path: RPath) -> Any:
+def _binding(path: RPath) -> _Binding:
     """The color fields a path's paints bind; a group's paths share them."""
 
-    def of(paint: Any) -> Any:
+    def of(paint: RPaint) -> _FieldBinding | None:
         if isinstance(paint, RColorField):
             return (paint.grid_id, np.asarray(paint.corners).tobytes(), paint.opacity)
         return None

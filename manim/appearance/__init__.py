@@ -20,7 +20,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from .material import Material, PbrMaterial, UnlitMaterial, interpolate_material
-from .paint import ColorField, LinearGradient, Paint, SolidColor, interpolate_paint
+from .paint import (
+    ColorField,
+    GridId,
+    LinearGradient,
+    Paint,
+    SolidColor,
+    interpolate_paint,
+)
 
 if TYPE_CHECKING:
     from .light import (
@@ -55,6 +62,7 @@ __all__ = [
     "DEFAULT_LIGHT_INTENSITY",
     "DEFAULT_LIGHT_POSITION",
     "ColorField",
+    "GridId",
     "LinearGradient",
     "Material",
     "Paint",

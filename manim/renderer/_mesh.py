@@ -21,7 +21,13 @@ if TYPE_CHECKING:
     import numpy.typing as npt
 
     from manim.renderer.snapshot import RMesh
-    from manim.typing import Face_Array, FloatRGBA_Array, Vector3D_Array
+    from manim.typing import (
+        Face_Array,
+        FloatRGBA_Array,
+        Point3D_Array,
+        TriangleIndices_Array,
+        Vector3D_Array,
+    )
 
     #: Corners of faces, shape ``(m, k, 3)``: ``k`` points per face.
     FaceCorners: TypeAlias = npt.NDArray[np.float64]
@@ -39,6 +45,8 @@ __all__ = [
 
 #: Where the anchors and handles of a straight cubic curve lie.
 _THIRDS = np.array([0, 1 / 3, 2 / 3, 1])
+#: Distance, relative to the size of a mesh, below which vertices are one point.
+_WELD_TOLERANCE = 1e-6
 
 
 def faces_of(mesh: RMesh) -> Face_Array:
@@ -104,7 +112,7 @@ class NormalAccumulator:
 
     __slots__ = ("_corners", "_count", "_matrix", "_triangles", "_welded")
 
-    def __init__(self, points: np.ndarray, triangles: np.ndarray) -> None:
+    def __init__(self, points: Point3D_Array, triangles: TriangleIndices_Array) -> None:
         points = np.asarray(points, dtype=float)
         triangles = np.asarray(triangles)
         count, triangle_count = len(points), len(triangles)
@@ -130,7 +138,7 @@ class NormalAccumulator:
             self._welded = (moved, welded[moved])
         self._matrix = matrix
 
-    def fits(self, points: np.ndarray, triangles: np.ndarray) -> bool:
+    def fits(self, points: Point3D_Array, triangles: TriangleIndices_Array) -> bool:
         """Whether it was made for these triangles and as many points, and the
         vertices it welded are still at the same points.
         """
@@ -158,7 +166,9 @@ class NormalAccumulator:
         return _unit_or_up(np.asarray(self._matrix @ faces))
 
 
-def vertex_normals(points: np.ndarray, triangles: np.ndarray) -> np.ndarray:
+def vertex_normals(
+    points: Point3D_Array, triangles: TriangleIndices_Array
+) -> Vector3D_Array:
     """Unit normals at the vertices: the sum of the normals of their triangles,
     weighted by area. Vertices without a direction get ``(0, 0, 1)``.
 
@@ -181,7 +191,7 @@ def vertex_normals(points: np.ndarray, triangles: np.ndarray) -> np.ndarray:
     return _unit_or_up(normals)
 
 
-def _unit_or_up(normals: np.ndarray) -> np.ndarray:
+def _unit_or_up(normals: Vector3D_Array) -> Vector3D_Array:
     """``normals`` scaled to length one; ``(0, 0, 1)`` where they have no direction."""
     lengths = np.linalg.norm(normals, axis=1)
     flat = lengths < 1e-12
@@ -190,11 +200,9 @@ def _unit_or_up(normals: np.ndarray) -> np.ndarray:
     return normals / lengths[:, None]
 
 
-#: Distance, relative to the size of a mesh, below which vertices are one point.
-_WELD_TOLERANCE = 1e-6
-
-
-def _welded(points: np.ndarray, triangles: np.ndarray) -> np.ndarray | None:
+def _welded(
+    points: Point3D_Array, triangles: TriangleIndices_Array
+) -> npt.NDArray[np.intp] | None:
     """For each vertex, the index of one vertex at the same point, for vertices
     that share a point and are corners of the same smooth surface; ``None`` if no
     vertices share a point.

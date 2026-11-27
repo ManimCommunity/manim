@@ -19,7 +19,13 @@ from manim.renderer.snapshot import RColorField, RLinearGradient, RSolidColor
 if TYPE_CHECKING:
     from manim.renderer.protocol import LightState
     from manim.renderer.snapshot import RNode, RPaint, RPath
-    from manim.typing import FloatRGBA_Array, Point3D, Point3D_Array
+    from manim.typing import (
+        FloatRGBA_Array,
+        Point3D,
+        Point3D_Array,
+        Vector3D,
+        Vector3D_Array,
+    )
 
 __all__ = ["check_paint", "lit_color", "paint_colors", "shows"]
 
@@ -27,7 +33,7 @@ __all__ = ["check_paint", "lit_color", "paint_colors", "shows"]
 _FLAT_TOLERANCE = 1e-9
 
 
-def check_paint(paint: object, renderer: str) -> None:
+def check_paint(paint: RPaint, renderer: str) -> None:
     """Raise :class:`.CapabilityError` unless ``paint`` is a snapshot paint the
     built-in renderers draw (:class:`.RSolidColor`, :class:`.RLinearGradient`,
     :class:`.RColorField`); ``renderer`` names the renderer in the message.
@@ -97,8 +103,8 @@ def lit_color(
         return None
     if not isinstance(path.fill, RSolidColor):
         raise CapabilityError(
-            "A lit (PbrMaterial) path is drawn in one colour: its fill must be a solid "
-            "colour, not a gradient or a colour field."
+            "A lit (PbrMaterial) path is drawn in one color: its fill must be a solid "
+            "color, not a gradient or a color field."
         )
     anchors = np.concatenate([points[::4], points[3::4]])
     center = anchors.mean(axis=0)
@@ -116,7 +122,7 @@ def lit_color(
     return rgba
 
 
-def _plane_normal(offsets: np.ndarray) -> np.ndarray:
+def _plane_normal(offsets: Vector3D_Array) -> Vector3D:
     """The normal of the plane of points (given relative to their center).
 
     Raises
@@ -130,7 +136,7 @@ def _plane_normal(offsets: np.ndarray) -> np.ndarray:
     _, singular, vt = np.linalg.svd(offsets, full_matrices=False)
     if singular[-1] > _FLAT_TOLERANCE * scale * max(len(offsets), 1) ** 0.5:
         raise CapabilityError(
-            "A lit (PbrMaterial) path is drawn in one colour and must be flat; "
+            "A lit (PbrMaterial) path is drawn in one color and must be flat; "
             "this one is not."
         )
     return vt[-1]

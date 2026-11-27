@@ -24,9 +24,9 @@ with it.
 
 from __future__ import annotations
 
-import itertools
+import itertools as it
 from collections.abc import Callable, Sequence
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, TypeAlias
 
 import numpy as np
 
@@ -37,12 +37,35 @@ if TYPE_CHECKING:
     from typing import Self
 
     from manim.renderer.snapshot import RPaint
-    from manim.typing import FloatRGBA_Array, Point3D_Array, Vector3D, Vector3DLike
+    from manim.typing import (
+        FloatRGBA,
+        FloatRGBA_Array,
+        Point3D_Array,
+        Point3DLike_Array,
+        Vector3D,
+        Vector3DLike,
+    )
 
-__all__ = ["ColorField", "LinearGradient", "Paint", "SolidColor", "interpolate_paint"]
+__all__ = [
+    "ColorField",
+    "GridId",
+    "LinearGradient",
+    "Paint",
+    "SolidColor",
+    "interpolate_paint",
+]
+
+#: Identifies the storage of a :class:`ColorField`'s grid: equal ids, the same colors.
+GridId: TypeAlias = int
 
 
-def _frozen(array: Any, shape: tuple[int, ...] | None = None) -> np.ndarray:
+def _frozen_array(array: Any, shape: tuple[int, ...] | None = None) -> np.ndarray:
+    """``array`` as a new read-only float64 array, reshaped to ``shape`` if given.
+
+    Paints keep their arrays to themselves this way. Unlike
+    :func:`manim.utils.versioned_fields._freeze`, it always copies and converts to
+    floats: a paint's colors and points never share storage with what it was given.
+    """
     result = np.array(array, dtype=np.float64)
     if shape is not None:
         result = result.reshape(shape)
@@ -111,7 +134,7 @@ class Paint:
         rgbas[:, 3] = _stretched(opacities, length)
         return Paint._from_rgbas(rgbas, getattr(self, "_direction", None))
 
-    def resolve(self, points: Point3D_Array) -> Any:
+    def resolve(self, points: Point3D_Array) -> RPaint:
         """What renderers draw for this paint on a path with ``points`` (its own,
         in the scene): a snapshot paint (:data:`~.RPaint`). Called when the path's
         snapshot is made.
@@ -139,7 +162,7 @@ class Paint:
         """A paint from RGBA rows: one row a :class:`SolidColor`, more a
         :class:`LinearGradient` along ``direction`` (default ``UL``).
         """
-        rgbas = _frozen(rgbas)
+        rgbas = _frozen_array(rgbas)
         rgbas = rgbas.reshape(-1, 4)
         if len(rgbas) == 1:
             paint: Paint = object.__new__(SolidColor)
@@ -148,7 +171,7 @@ class Paint:
             object.__setattr__(
                 paint,
                 "_direction",
-                _frozen(UL if direction is None else direction, (3,)),
+                _frozen_array(UL if direction is None else direction, (3,)),
             )
         object.__setattr__(paint, "_rgbas", rgbas)
         return paint
@@ -169,7 +192,7 @@ class SolidColor(Paint):
 
     def __init__(self, color: ParsableManimColor, opacity: float = 1.0) -> None:
         rgba = ManimColor(color).to_rgba_with_alpha(float(opacity))
-        object.__setattr__(self, "_rgbas", _frozen(rgba, (1, 4)))
+        object.__setattr__(self, "_rgbas", _frozen_array(rgba, (1, 4)))
 
     @property
     def color(self) -> ManimColor:
@@ -220,9 +243,11 @@ class LinearGradient(Paint):
         rgbs = np.array([ManimColor(c).to_rgb() for c in colors], dtype=float)
         alphas = np.broadcast_to(np.asarray(opacities, dtype=float), (len(rgbs),))
         object.__setattr__(
-            self, "_rgbas", _frozen(np.column_stack([rgbs, alphas]), (len(rgbs), 4))
+            self,
+            "_rgbas",
+            _frozen_array(np.column_stack([rgbs, alphas]), (len(rgbs), 4)),
         )
-        object.__setattr__(self, "_direction", _frozen(direction, (3,)))
+        object.__setattr__(self, "_direction", _frozen_array(direction, (3,)))
 
     @property
     def direction(self) -> Vector3D:
@@ -318,7 +343,7 @@ def _blend_stops(start: Paint, end: Paint, alpha: float) -> Paint:
     return Paint._from_rgbas(rgbas, direction)
 
 
-_grid_ids = itertools.count(1)
+_GRID_IDS = it.count(1)
 
 
 class ColorField(Paint):
@@ -357,18 +382,18 @@ class ColorField(Paint):
     _grid_id: int
 
     def __init__(self, grid: Any, corners: Any, opacity: float = 1.0) -> None:
-        grid = _frozen(grid)
+        grid = _frozen_array(grid)
         if grid.ndim != 3 or grid.shape[2] != 4 or min(grid.shape[:2]) < 1:
             raise ValueError("A ColorField's grid has shape (rows, columns, 4).")
-        corners = _frozen(corners, (3, 3))
+        corners = _frozen_array(corners, (3, 3))
         object.__setattr__(self, "_grid", grid)
         object.__setattr__(self, "_corners", corners)
         object.__setattr__(self, "_opacity", float(opacity))
-        object.__setattr__(self, "_grid_id", next(_grid_ids))
+        object.__setattr__(self, "_grid_id", next(_GRID_IDS))
         # One stop: the grid's mean color, for getters that ask for colors.
         mean = grid.reshape(-1, 4).mean(axis=0)
         object.__setattr__(
-            self, "_rgbas", _frozen(np.r_[mean[:3], mean[3] * opacity], (1, 4))
+            self, "_rgbas", _frozen_array(np.r_[mean[:3], mean[3] * opacity], (1, 4))
         )
 
     @classmethod
@@ -426,7 +451,7 @@ class ColorField(Paint):
         return self._opacity
 
     @property
-    def grid_id(self) -> int:
+    def grid_id(self) -> GridId:
         """Identifies the grid's storage: equal ids, the same colors."""
         return self._grid_id
 
@@ -439,7 +464,9 @@ class ColorField(Paint):
         object.__setattr__(field, "_opacity", value)
         mean = self._rgbas[0]
         alpha = self._grid[..., 3].mean() * value
-        object.__setattr__(field, "_rgbas", _frozen(np.r_[mean[:3], alpha], (1, 4)))
+        object.__setattr__(
+            field, "_rgbas", _frozen_array(np.r_[mean[:3], alpha], (1, 4))
+        )
         return field
 
     def with_colors(self, colors: Sequence[ParsableManimColor]) -> Paint:
@@ -456,7 +483,7 @@ class ColorField(Paint):
             and np.array_equal(other._corners, self._corners)
         )
 
-    def sample(self, points: Any) -> np.ndarray:
+    def sample(self, points: Point3DLike_Array) -> FloatRGBA_Array:
         """RGBA (straight alpha) at scene points: the reference every renderer
         follows.
         """
@@ -505,7 +532,7 @@ class ColorField(Paint):
         return f"ColorField({rows}x{columns}, opacity={self._opacity:g})"
 
 
-def _rgba_of(color: Any) -> np.ndarray:
+def _rgba_of(color: Any) -> FloatRGBA:
     if isinstance(color, (str, ManimColor)):
         return np.asarray(ManimColor(color).to_rgba(), dtype=float)
     array = np.asarray(color, dtype=float).reshape(-1)

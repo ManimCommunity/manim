@@ -39,7 +39,14 @@ from manim.utils.space_ops import normalize, perpendicular_bisector, z_to_vector
 
 if TYPE_CHECKING:
     from manim.mobject.graphing.coordinate_systems import ThreeDAxes
-    from manim.typing import Point3D, Point3DLike, Vector3D, Vector3DLike
+    from manim.typing import (
+        FloatRGBA_Array,
+        Point3D,
+        Point3D_Array,
+        Point3DLike,
+        Vector3D,
+        Vector3DLike,
+    )
 
 
 #: Default steps of a :class:`Sphere` around its axis and from pole to pole.
@@ -280,7 +287,7 @@ class Surface(ParametricSurface):
         rgbs = np.array([color.to_rgb() for color in new_colors])
         opacity = self.fill_opacity
 
-        def colours_at(points: np.ndarray) -> np.ndarray:
+        def colors_at(points: Point3D_Array) -> FloatRGBA_Array:
             values = np.asarray(axes.point_to_coords(points))[:, axis]
             rgb = np.stack(
                 [np.interp(values, pivots, rgbs[:, channel]) for channel in range(3)],
@@ -290,12 +297,12 @@ class Surface(ParametricSurface):
 
         if self.checkerboard_colors:
             # One color per face, on corners of its own (the surface is flat).
-            fills = colours_at(_halfway_around(self))
+            fills = colors_at(_halfway_around(self))
             self.set_vertex_colors(np.repeat(fills, 4, axis=0))
         else:
-            fills = colours_at(self.points)
+            fills = colors_at(self.points)
             # Each face's outline takes the color halfway around it.
-            fills_of_faces = colours_at(_halfway_around(self))
+            fills_of_faces = colors_at(_halfway_around(self))
             self.set_vertex_colors(fills)
             fills = fills_of_faces
         strokes = fills.copy()

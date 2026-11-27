@@ -50,6 +50,8 @@ if TYPE_CHECKING:
 __all__ = ["Extractor", "extract", "placement_of", "snapshot"]
 
 _UNLIT = UnlitMaterial()
+#: What a path without a paint (or with a missing one) is drawn with: nothing.
+_NO_PAINT = RSolidColor(np.zeros(4))
 _FIXED_IN_FRAME = FixedInFrame()
 _IN_SCENE = InScene()
 
@@ -391,6 +393,3 @@ def _own_center(points: np.ndarray) -> Point3D:
     if box is None:
         return np.zeros(3)
     return (box[0] + box[1]) / 2
-
-
-_NO_PAINT = RSolidColor(np.zeros(4))

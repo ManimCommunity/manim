@@ -51,6 +51,7 @@ if TYPE_CHECKING:
     import numpy as np
     from PIL.Image import Resampling
 
+    from manim.appearance.paint import GridId
     from manim.constants import CapStyleType, LineJointType
     from manim.typing import (
         FloatRGBA,
@@ -124,7 +125,7 @@ class RColorField(NamedTuple):
     grid: np.ndarray
     corners: Point3D_Array
     opacity: float
-    grid_id: int
+    grid_id: GridId
 
 
 RPaint = RSolidColor | RLinearGradient | RColorField
