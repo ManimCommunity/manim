@@ -284,7 +284,7 @@ def test_an_interpolated_value_cannot_be_written_through():
         (lambda m: m.shift(RIGHT), {"points"}),
         (lambda m: m.set_color(BLUE), {"fill_rgbas", "stroke_rgbas"}),
     ],
-    ids=["moved", "recoloured"],
+    ids=["moved", "recolored"],
 )
 def test_a_transform_gives_new_versions_only_to_the_fields_it_changes(change, changed):
     start = Square().set_fill(RED, 0.5)
