@@ -1,19 +1,19 @@
 """Fill paths from the winding number of their own curves.
 
 Each curve's signed coverage is accumulated into a multisampled buffer and the result
-coloured once, in two steps:
+colored once, in two steps:
 
 1. Two triangles per quadratic piece are rasterized into a float buffer: a fan
    triangle back to the first point of the piece's subpath, and one hugging the curve.
    Their contributions are added with the sign of which way they face once projected,
    so every pixel ends up holding the winding number of the path around it. Holes and
    self-intersections follow from that number; nothing is triangulated.
-2. The buffer is resolved once: pixels with a nonzero winding are coloured, each
+2. The buffer is resolved once: pixels with a nonzero winding are colored, each
    path's fill opacity applied exactly once (it is accumulated separately, weighted
    by coverage, and divided back out).
 
 A group's paths share both steps; the caller only groups paths that do not overlap or
-are opaque and of one colour, where sharing gives the same pixels.
+are opaque and of one color, where sharing gives the same pixels.
 """
 
 from __future__ import annotations
@@ -177,7 +177,7 @@ class WindingFill:
         target: DrawTarget,
         scissor: tuple[int, int, int, int] | None = None,
     ) -> None:
-        """Accumulate one group's coverage and colour it into the frame.
+        """Accumulate one group's coverage and color it into the frame.
 
         ``scissor`` limits clearing and resolving to a pixel rectangle
         ``(x, y, width, height)`` that contains the group. The rectangle is the

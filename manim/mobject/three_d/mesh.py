@@ -63,7 +63,7 @@ class MeshMobject(Mobject):
     triangles
         Indices into ``points``, three per triangle, shape ``(m, 3)``.
     color, opacity
-        One colour for the whole mesh. :meth:`set_vertex_colors` sets one per vertex.
+        One color for the whole mesh. :meth:`set_vertex_colors` sets one per vertex.
     material
         How the mesh is lit: :class:`.PbrMaterial` (by default ``PbrMaterial()``) or
         :class:`.UnlitMaterial`.
@@ -78,7 +78,7 @@ class MeshMobject(Mobject):
 
     #: Vertex indices, three per triangle (int32, as renderers upload them).
     triangles: ArrayField[np.ndarray] = ArrayField(np.int32)
-    #: Colours: one row for the whole mesh, or one per vertex.
+    #: Colors: one row for the whole mesh, or one per vertex.
     rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
     uvs: ArrayField[UV_Array] = ArrayField(np.float64)
     #: RGBA pixels, one byte per channel; empty without a texture.
@@ -108,7 +108,7 @@ class MeshMobject(Mobject):
         if points is not None:
             self.points = points
 
-    # Colours
+    # Colors
 
     def set_color(
         self,
@@ -134,7 +134,7 @@ class MeshMobject(Mobject):
         return super().fade(darkness, family)
 
     def set_vertex_colors(self, rgbas: FloatRGBALike_Array) -> Self:
-        """Give every vertex its own colour, as an ``(n, 4)`` array of RGBA values."""
+        """Give every vertex its own color, as an ``(n, 4)`` array of RGBA values."""
         self.rgbas = rgbas
         return self
 
@@ -145,14 +145,14 @@ class MeshMobject(Mobject):
         min_value: float = 0.0,
         max_value: float = 1.0,
     ) -> Self:
-        """Colour the vertices by a function of their position.
+        """Color the vertices by a function of their position.
 
         Parameters
         ----------
         func
             Maps the vertices, shape ``(n, 3)``, to one value each.
         colorscale
-            Colours evenly spread from ``min_value`` to ``max_value``.
+            Colors evenly spread from ``min_value`` to ``max_value``.
         """
         values = np.asarray(func(self.points), dtype=float)
         return self.set_vertex_colors(
@@ -223,7 +223,7 @@ class ParametricSurface(MeshMobject):
     resolution
         Number of steps in ``u`` and ``v``.
     flat
-        Give every quad its own vertices, so that faces can have their own colour
+        Give every quad its own vertices, so that faces can have their own color
         (needed for checkerboards) and are shaded flat.
     texture
         An image drawn onto the surface: ``u`` runs left to right across it, ``v``
@@ -312,7 +312,7 @@ class ParametricSurface(MeshMobject):
     def set_fill_by_checkerboard(
         self, *colors: ParsableManimColor, opacity: float | None = None
     ) -> Self:
-        """Colour the quads alternately with ``colors`` (default: two blues).
+        """Color the quads alternately with ``colors`` (default: two blues).
 
         A smooth surface gets :attr:`flat` quads through its current points.
         """
@@ -337,14 +337,14 @@ class ParametricSurface(MeshMobject):
         colorscale: Sequence[ParsableManimColor],
         axis: int = 2,
     ) -> Self:
-        """Colour the surface by one coordinate of its points, measured on ``axes``.
+        """Color the surface by one coordinate of its points, measured on ``axes``.
 
         Parameters
         ----------
         axes
             The axes the surface is plotted on.
         colorscale
-            Colours evenly spread over the range of that coordinate on the axes.
+            Colors evenly spread over the range of that coordinate on the axes.
         axis
             The coordinate: 0, 1 or 2 for x, y or z.
         """
@@ -451,7 +451,7 @@ def _pair(values: Sequence[Any], name: str) -> tuple[Any, Any]:
 def _mixed_rgbas(
     start: FloatRGBA_Array, end: FloatRGBA_Array, alpha: float
 ) -> FloatRGBA_Array:
-    """The colours at progress ``alpha`` from ``start`` to ``end``; the value itself
+    """The colors at progress ``alpha`` from ``start`` to ``end``; the value itself
     where both are the same array, so assigning it keeps a field's version.
     """
     if start is end:
@@ -483,7 +483,7 @@ def _colorscale(
     high: float,
     alpha: float,
 ) -> FloatRGBA_Array:
-    """RGBA values for ``values``, from colours evenly spread from ``low`` to ``high``."""
+    """RGBA values for ``values``, from colors evenly spread from ``low`` to ``high``."""
     colors = [ManimColor(c) for c in colorscale]
     t = np.clip((values - low) / (high - low), 0, 1) * (len(colors) - 1)
     index = np.minimum(t.astype(int), len(colors) - 2)

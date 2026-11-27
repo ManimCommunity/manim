@@ -51,7 +51,7 @@ def test_surface_triangles_tile_the_parameter_domain(flat):
 def test_checkerboard_alternates_between_neighbouring_quads():
     surface = _saddle().set_fill_by_checkerboard(RED, BLUE)
 
-    # Four vertices per quad, quads in (u, v) order; all of a quad's are its colour.
+    # Four vertices per quad, quads in (u, v) order; all of a quad's are its color.
     colors = surface.rgbas[:, :3].reshape(4, 3, 4, 3)
     assert (colors == colors[:, :, :1]).all()
     is_red = np.isclose(colors[:, :, 0], RED.to_rgb()).all(axis=-1)

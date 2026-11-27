@@ -259,9 +259,9 @@ def vertex_colors(
     gradient: np.ndarray | None,
     points: np.ndarray,
 ) -> np.ndarray:
-    """Colours at ``points`` with Cairo's semantics.
+    """Colors at ``points`` with Cairo's semantics.
 
-    One colour fills everything; several are stops of a linear gradient, evenly
+    One color fills everything; several are stops of a linear gradient, evenly
     spaced from the gradient's start to its end point.
     """
     if len(rgbas) == 1 or gradient is None:
@@ -708,7 +708,7 @@ def _colours(
     points: np.ndarray,
     counts: np.ndarray,
 ) -> np.ndarray:
-    """Vertex colours of several paths; ``counts`` vertices per path."""
+    """Vertex colors of several paths; ``counts`` vertices per path."""
     first = np.array([rgbas[0] for rgbas, _ in colours])
     result = np.repeat(first, counts, axis=0)
     ends = np.cumsum(counts)
@@ -729,9 +729,9 @@ def _groups(
     or stroke overlaps a later path's background stroke or fill on screen. So a path
     with only a stroke always joins; a path with a fill or background stroke joins
     if its pixel box is disjoint from what earlier members draw (their whole box if
-    they are filled, otherwise their stroke pieces). Paths of one colour without
+    they are filled, otherwise their stroke pieces). Paths of one color without
     strokes, such as the glyphs of a text, may also overlap each other: their union
-    is coloured once. For opaque paths that gives the same pixels; for translucent
+    is colored once. For opaque paths that gives the same pixels; for translucent
     ones it differs where their shapes overlap, which glyphs rarely do.
     """
     paths: list[RPath] = [n.payload for n in nodes]  # type: ignore[misc]
