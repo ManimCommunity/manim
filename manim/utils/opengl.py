@@ -65,9 +65,9 @@ def orthographic_projection_matrix(
     format_: bool = True,
 ) -> MatrixMN | FlattenedMatrix4x4:
     if width is None:
-        width = config["frame_width"]
+        width = config.frame_width
     if height is None:
-        height = config["frame_height"]
+        height = config.frame_height
     projection_matrix = np.array(
         [
             [2 / width, 0, 0, 0],
@@ -90,9 +90,9 @@ def perspective_projection_matrix(
     format_: bool = True,
 ) -> MatrixMN | FlattenedMatrix4x4:
     if width is None:
-        width = config["frame_width"] / 6
+        width = config.frame_width / 6
     if height is None:
-        height = config["frame_height"] / 6
+        height = config.frame_height / 6
     projection_matrix = np.array(
         [
             [2 * near / width, 0, 0, 0],
