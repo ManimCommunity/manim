@@ -508,7 +508,7 @@ are five kinds of mobjects with such a snapshot:
   will not discuss them further in this guide.
 
 **Fields.** The attributes that a mobject is drawn from, such as ``points``,
-``z_index`` or the colours of a vectorized mobject, are *versioned fields*
+``z_index`` or the colors of a vectorized mobject, are *versioned fields*
 (:mod:`manim.utils.versioned_fields`). Every assignment to a field gives it a new
 version number, and the arrays a field holds are read-only: changing a mobject
 means assigning a new value. Looking at these version numbers is how Manim tells
@@ -1151,17 +1151,17 @@ The payload of our transformed square is an :class:`.RPath`:
 
 - ``points``: the cubic Bézier points of the path, the mobject's own array (field
   values are read-only, so the snapshot shares them);
-- ``fill`` and ``stroke``: what colours the area and the outline. A mobject's
+- ``fill`` and ``stroke``: what colors the area and the outline. A mobject's
   ``fill`` and ``stroke`` are *paints* (:mod:`manim.appearance.paint`): a
   :class:`.SolidColor`, a :class:`.LinearGradient`, or a :class:`.ColorField` that
-  places colours in the scene. Each paint resolves itself into a snapshot paint
+  places colors in the scene. Each paint resolves itself into a snapshot paint
   (:meth:`.Paint.resolve`): :class:`.RSolidColor`, :class:`.RLinearGradient`,
   whose stops are spaced between two points in the scene, or :class:`.RColorField`.
   The stroke snapshot, :class:`.RStroke`, adds the width, joint and cap;
 - ``background_stroke``: an outline drawn below the fill, when its width is above
   zero;
 - ``material``: how the path responds to light (:mod:`manim.appearance.material`):
-  :class:`.UnlitMaterial` shows its colours, :class:`.PbrMaterial` shades them by
+  :class:`.UnlitMaterial` shows its colors, :class:`.PbrMaterial` shades them by
   the scene's lights;
 - ``depth_reference``: the point by which a perspective camera orders the path,
   for mobjects with ``sort_by_depth``.
@@ -1202,8 +1202,8 @@ Some work is the same for every renderer and lives in shared helpers:
 - ``manim.renderer._view`` places points in the view (projection under a
   :class:`.ThreeDCamera`, mobjects fixed in the frame or facing the camera) and
   orders snapshots far to near under a perspective camera;
-- ``manim.renderer._paint`` turns snapshot paints into colour stops and computes
-  the colour of a lit path;
+- ``manim.renderer._paint`` turns snapshot paints into color stops and computes
+  the color of a lit path;
 - ``manim.renderer._lighting`` holds the shading function, the same for every
   renderer: glTF's metallic-roughness parameters under point lights;
 - ``manim.renderer._reuse`` decides how much of the previous frame can be reused.
@@ -1222,16 +1222,16 @@ The Cairo renderer
 `pycairo <https://pycairo.readthedocs.io>`__. For each frame it:
 
 1. draws each camera view of the configuration into an image buffer of its own;
-2. clears the frame's buffer to the background colour or image;
+2. clears the frame's buffer to the background color or image;
 3. replaces every mesh by one snapshot per face: each face becomes a filled
-   polygon, coloured once with the shading function at its middle;
+   polygon, colored once with the shading function at its middle;
 4. orders the snapshots far to near under a perspective camera;
 5. copies the saved drawing of the unchanged prefix, if there is one, and draws
    the rest in order:
 
    - paths become Cairo paths: the background stroke, then the fill, then the
-     stroke. A solid paint becomes a colour, a gradient a ``cairo.LinearGradient``
-     between its two scene points, and a colour field an image pattern placed in
+     stroke. A solid paint becomes a color, a gradient a ``cairo.LinearGradient``
+     between its two scene points, and a color field an image pattern placed in
      the scene (under a flat camera);
    - point clouds are drawn as squares of pixels;
    - images and camera views are transformed onto their corner points and
@@ -1249,7 +1249,7 @@ size; a preview window shows that framebuffer scaled to the window. For each
 frame it:
 
 1. draws each camera view into a texture;
-2. clears the framebuffer to the background colour;
+2. clears the framebuffer to the background color;
 3. orders the snapshots far to near under a perspective camera;
 4. copies the saved drawing of the unchanged prefix, if there is one, and draws
    the rest in order:
@@ -1261,11 +1261,11 @@ frame it:
      in three steps: one draw call for their background strokes, one *winding
      fill*, and one draw call for their strokes. The winding fill adds up the signed
      coverage of each curve's triangles in a float buffer, which leaves the winding
-     number of the path at every pixel, and then colours the pixels with a nonzero
+     number of the path at every pixel, and then colors the pixels with a nonzero
      winding number. The stroke shader draws each quadratic piece as a ribbon of the
-     stroke's width. Paints become colours per point, and a colour field a texture
+     stroke's width. Paints become colors per point, and a color field a texture
      sampled where the path is drawn;
-   - meshes: their vertices, normals and colours go to the mesh shader, which
+   - meshes: their vertices, normals and colors go to the mesh shader, which
      shades them with the same lighting as the shared shading function, written in
      GLSL. Meshes with ``depth_test`` hide what lies behind them;
    - point clouds are drawn as point sprites, and images and camera views as

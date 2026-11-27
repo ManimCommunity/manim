@@ -1,7 +1,7 @@
-Colours, materials and lights
+Colors, materials and lights
 =============================
 
-What a mobject looks like comes from three things: the *paints* that colour its
+What a mobject looks like comes from three things: the *paints* that color its
 areas and lines, the *material* that says whether and how light falls on it, and
 the *lights* of the scene. This page explains each and how they work together.
 
@@ -13,17 +13,17 @@ outline) and ``background_stroke`` (an outline drawn behind the fill). A paint i
 an immutable value from :mod:`manim.appearance.paint`:
 
 :class:`.SolidColor`
-    One colour, with an opacity.
+    One color, with an opacity.
 :class:`.LinearGradient`
-    Colours evenly spaced along a direction, between the edges of the mobject's
+    Colors evenly spaced along a direction, between the edges of the mobject's
     own bounding box. The direction is ``UL`` unless you give another.
 :class:`.ColorField`
-    Colours that lie in the scene instead of on the mobject (see below).
+    Colors that lie in the scene instead of on the mobject (see below).
 
 :meth:`~.VMobject.set_fill`, :meth:`~.VMobject.set_stroke` and
-:meth:`~.VMobject.set_color` make paints from colours: one colour gives a solid
+:meth:`~.VMobject.set_color` make paints from colors: one color gives a solid
 paint, several give a gradient. They also take a paint directly. Because paints
-are values, you change a mobject's colours by giving it a new paint; changing a
+are values, you change a mobject's colors by giving it a new paint; changing a
 paint in place is not possible.
 
 .. manim:: PaintsExample
@@ -54,14 +54,14 @@ them with :meth:`~.Paint.resolve`, which returns one of the snapshot paints of
 renderer draws a paint that resolves to these, and raises
 :class:`.CapabilityError` for anything else.
 
-Colour fields
+Color fields
 ~~~~~~~~~~~~~
 
-A :class:`.ColorField` is a grid of colours placed in the scene. A mobject
-painted with a field shows the field's colour wherever the mobject is drawn.
-Moving, trimming or transforming the mobject shows other colours, and a moving
-camera keeps the colours where they are in the scene. :class:`.StreamLines` use
-one to colour their lines by the strength of the vector field.
+A :class:`.ColorField` is a grid of colors placed in the scene. A mobject
+painted with a field shows the field's color wherever the mobject is drawn.
+Moving, trimming or transforming the mobject shows other colors, and a moving
+camera keeps the colors where they are in the scene. :class:`.StreamLines` use
+one to color their lines by the strength of the vector field.
 
 .. manim:: ColorFieldExample
 
@@ -77,7 +77,7 @@ one to colour their lines by the strength of the vector field.
             self.play(Create(wave))
             self.play(wave.animate.shift(2 * UP))
 
-The Cairo and OpenGL renderers draw colour fields that lie in a plane parallel to
+The Cairo and OpenGL renderers draw color fields that lie in a plane parallel to
 the frame, under a flat camera. Other cameras and planes, and mobjects fixed in
 the frame, raise :class:`~.CapabilityError`.
 
@@ -87,16 +87,16 @@ Materials
 A material (:mod:`manim.appearance.material`) says how a mobject responds to light:
 
 :class:`.UnlitMaterial`
-    The mobject shows its colours as they are.
+    The mobject shows its colors as they are.
 :class:`.PbrMaterial`
     The mobject is lit as a physical surface by the lights of the scene. Its
     ``roughness`` (from smooth with sharp highlights to rough without any),
     ``metallic`` and ``emissive`` parameters are those of glTF 2.0.
 
-A material holds no colour: the colour of a lit surface comes from its paint,
-which plays the role of the base colour (albedo) of a material in glTF and other
+A material holds no color: the color of a lit surface comes from its paint,
+which plays the role of the base color (albedo) of a material in glTF and other
 3D engines. A mobject has up to three paints but one material, so changing or
-animating a colour never touches the material, and mobjects of any colour can
+animating a color never touches the material, and mobjects of any color can
 share one.
 
 Materials of your own subclass :class:`.Material`: a frozen dataclass whose fields
@@ -112,8 +112,8 @@ clouds and images) has an :class:`.UnlitMaterial`. Mobjects fixed in the frame a
 never lit.
 
 Use :meth:`~.VMobject.set_material` to change it, for example to light a flat shape
-in a 3D scene or to show a surface's colours unshaded. A lit vectorized mobject
-is drawn in one colour per path, from the direction its plane faces, so it must be
+in a 3D scene or to show a surface's colors unshaded. A lit vectorized mobject
+is drawn in one color per path, from the direction its plane faces, so it must be
 flat and have a solid fill; its outline is not lit.
 
 Under a 3D camera, mobjects are drawn in scene order unless they are ordered by
@@ -158,7 +158,7 @@ are ordinary mobjects of the scene: fading one out turns it off.
 ``self.ambient_light`` (0.25 by default) is the white light that reaches every
 surface everywhere.
 
-**Without lights, nothing is shaded**: lit materials show their base colour. A
+**Without lights, nothing is shaded**: lit materials show their base color. A
 plain :class:`.Scene` has no light.
 
 .. manim:: LightsExample
@@ -182,8 +182,8 @@ RGB. The Cairo and OpenGL renderers approximate it:
 
 - They use a Lambert diffuse term and a normalized Blinn-Phong highlight instead
   of the GGX term of glTF, and no tone mapping.
-- Cairo colours each face of a mesh once, at its middle; OpenGL shades every
-  pixel of a mesh. Both colour a lit vectorized path once.
+- Cairo colors each face of a mesh once, at its middle; OpenGL shades every
+  pixel of a mesh. Both color a lit vectorized path once.
 - The OpenGL renderer takes up to eight lights; more raise
   :class:`~.CapabilityError`.
 

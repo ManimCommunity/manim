@@ -103,13 +103,13 @@ the same view, so a renderer can keep what it made for a node (a path, a texture
 and reuse it while the key stays. A key of ``None`` never equals another; such a
 node is drawn anew every time.
 
-Colours and light
+Colors and light
 ~~~~~~~~~~~~~~~~~
 
 A path's ``fill``, its stroke's ``paint`` and its background stroke's ``paint`` are
-:class:`.RSolidColor` (one RGBA colour), :class:`.RLinearGradient` (colour stops evenly
+:class:`.RSolidColor` (one RGBA color), :class:`.RLinearGradient` (color stops evenly
 spaced from ``start`` to ``end``, scene points) or :class:`.RColorField` (a grid of
-colours in the scene, sampled where the path is drawn; see :class:`.ColorField`
+colors in the scene, sampled where the path is drawn; see :class:`.ColorField`
 for the exact sampling). A path's and a mesh's ``material`` is an
 :class:`.UnlitMaterial` or a :class:`.PbrMaterial`. ``config.lights``
 (:class:`.LightState`) and ``config.ambient`` light those with a

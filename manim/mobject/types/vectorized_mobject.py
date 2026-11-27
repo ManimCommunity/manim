@@ -77,9 +77,9 @@ if TYPE_CHECKING:
 #   That's kind of weird.
 
 
-#: The paint of a mobject that has none yet (as the colour arrays defaulted to).
+#: The paint of a mobject that has none yet (as the color arrays defaulted to).
 _TRANSPARENT_BLACK = SolidColor(BLACK, 0.0)
-#: The colour stops of a missing paint.
+#: The color stops of a missing paint.
 _NO_RGBAS = np.zeros((1, 4))
 _NO_RGBAS.flags.writeable = False
 
@@ -117,11 +117,11 @@ class VMobject(Mobject):
     """
 
     _can_be_in_vgroup = True
-    #: How the area is coloured (see :mod:`manim.appearance.paint`).
+    #: How the area is colored (see :mod:`manim.appearance.paint`).
     fill: Field[Paint] = Field()
-    #: How the outline is coloured.
+    #: How the outline is colored.
     stroke: Field[Paint] = Field()
-    #: How the outline drawn behind the fill is coloured.
+    #: How the outline drawn behind the fill is colored.
     background_stroke: Field[Paint] = Field()
     stroke_width: ConvertedField[float] = ConvertedField(_non_negative_float)
     background_stroke_width: ConvertedField[float] = ConvertedField(_non_negative_float)
@@ -225,11 +225,11 @@ class VMobject(Mobject):
 
     # Colors
     def init_colors(self, propagate_colors: bool = True) -> Self:
-        """Colour the mobject with its :attr:`color`.
+        """Color the mobject with its :attr:`color`.
 
         In the constructor, the opacities are those it was given; called again
         later (as text does to recolour glyphs), the current opacities stay and
-        only the colours change.
+        only the colors change.
         """
         color = self.color
         constructing = "_initial_fill_opacity" in self.__dict__
@@ -272,8 +272,8 @@ class VMobject(Mobject):
     ) -> Paint:
         """``current`` with ``color`` and ``opacity`` changed, as the setters do.
 
-        ``color`` may be a paint (taken as it is), one colour or a list (a gradient,
-        along ``current``'s direction); ``None`` keeps the colours. ``opacity`` (one
+        ``color`` may be a paint (taken as it is), one color or a list (a gradient,
+        along ``current``'s direction); ``None`` keeps the colors. ``opacity`` (one
         or a list) changes only the opacities.
         """
         if isinstance(color, Paint):
@@ -444,7 +444,7 @@ class VMobject(Mobject):
             ret["stroke_opacity"] = self.get_stroke_opacity()
         else:
             # Paints as values, opacities included: they keep their stops,
-            # direction and (colour fields) their grid.
+            # direction and (color fields) their grid.
             ret["fill_color"] = self.fill
             ret["stroke_color"] = self.stroke
             ret["background_stroke_color"] = self.background_stroke
@@ -618,7 +618,7 @@ class VMobject(Mobject):
 
     @property
     def background_stroke_color(self) -> ManimColor | None:
-        """The colour of the background stroke (of its first stop)."""
+        """The color of the background stroke (of its first stop)."""
         return self.get_stroke_color(background=True)
 
     @background_stroke_color.setter
@@ -672,9 +672,9 @@ class VMobject(Mobject):
     def set_material(self, material: Material, family: bool = True) -> Self:
         """Set how the mobject (and, with ``family``, its submobjects) is lit.
 
-        :class:`.PbrMaterial` lights a path by the scene's lights with one colour
+        :class:`.PbrMaterial` lights a path by the scene's lights with one color
         (it must be flat and have a solid fill); :class:`.UnlitMaterial` shows its
-        colours as they are.
+        colors as they are.
         Mobjects fixed in the frame are never lit.
         """
         # Meshes in a group have a material too (they are VMobject-like);

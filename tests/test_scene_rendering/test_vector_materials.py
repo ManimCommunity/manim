@@ -54,7 +54,7 @@ def _lit_square(angle=0.0):
 
 
 def _colours(pixels):
-    """The colours of the drawn (not black) pixels."""
+    """The colors of the drawn (not black) pixels."""
     drawn = pixels[..., :3][pixels[..., :3].sum(axis=-1) > 0]
     return {tuple(rgb) for rgb in drawn}
 
@@ -103,7 +103,7 @@ def test_a_lit_path_is_one_colour_that_follows_its_plane(renderer):
     flat = _image(renderer, lambda: [_lit_square()])
     tilted = _image(renderer, lambda: [_lit_square(PI / 3)])
     unlit = _image(renderer, lambda: [_lit_square().set_material(UnlitMaterial())])
-    # One colour inside (edge pixels blend with the background).
+    # One color inside (edge pixels blend with the background).
     inside = flat[24:31, 42:54, :3].reshape(-1, 3)
     assert len({tuple(rgb) for rgb in inside}) == 1
     assert tuple(flat[27, 48, :3]) != tuple(tilted[27, 48, :3])
@@ -141,7 +141,7 @@ def test_strokes_of_lit_paths_are_not_lit(renderer):
         )
 
     pixels = _image(renderer, lambda: [square()])
-    # The fill is lit (not pure blue); the stroke keeps its colour.
+    # The fill is lit (not pure blue); the stroke keeps its color.
     assert (255, 0, 0) in _colours(pixels)
     assert tuple(pixels[27, 48, :3]) != (0, 0, 255)
 

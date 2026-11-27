@@ -70,7 +70,7 @@ _STROKE_DTYPE = [
 _STROKE_FORMAT = "3f 3f 3f 3f 1f 4f"
 #: The most lights the mesh shader takes (``MAX_LIGHTS`` in ``mesh/frag.glsl``).
 MAX_LIGHTS = 8
-#: The texture unit colour fields are bound to (images and meshes use unit 0).
+#: The texture unit color fields are bound to (images and meshes use unit 0).
 _FIELD_TEXTURE_UNIT = 3
 _POINT_DTYPE = [("point", np.float32, (3,)), ("color", np.float32, (4,))]
 _MESH_DTYPE = np.dtype(
@@ -372,7 +372,7 @@ class SnapshotDrawing:
         self._fill = WindingFill(renderer)
         self._textures = _TextureCache(renderer)
         self._normals = _NormalCache()
-        #: Textures of colour fields by grid id (premultiplied RGBA).
+        #: Textures of color fields by grid id (premultiplied RGBA).
         self._fields: dict[int, moderngl.Texture] = {}
         self._layer: _Layer | None = None
         self._memo = PrefixMemo()
@@ -545,7 +545,7 @@ class SnapshotDrawing:
         if not nodes:
             return
         self._target = self._placed_target(kind)
-        #: How the paths being drawn are placed (colour fields need "normal").
+        #: How the paths being drawn are placed (color fields need "normal").
         self._kind = kind
         screen = _Screen.of(self._target)
         for group in _groups(nodes, geometry, screen):
@@ -812,7 +812,7 @@ class SnapshotDrawing:
 
     def _field_uniforms(self, paint: Any, kind: str) -> dict[str, Any]:
         """The uniforms that bind ``paint`` in the shaders: off unless it is a
-        colour field, which is sampled at each fragment's scene position.
+        color field, which is sampled at each fragment's scene position.
 
         ``kind`` is how the path is placed (see :meth:`_placement`).
 
@@ -1013,7 +1013,7 @@ def _groups(
             and path.stroke.width == 0
             else None
         )
-        # Paths of one group bind the same colour fields (or none).
+        # Paths of one group bind the same color fields (or none).
         joins = (
             bool(groups) and path.stroke.joint == joint and _binding(path) == binding
         )
@@ -1056,7 +1056,7 @@ def _groups(
 
 
 def _binding(path: RPath) -> Any:
-    """The colour fields a path's paints bind; a group's paths share them."""
+    """The color fields a path's paints bind; a group's paths share them."""
 
     def of(paint: Any) -> Any:
         if isinstance(paint, RColorField):

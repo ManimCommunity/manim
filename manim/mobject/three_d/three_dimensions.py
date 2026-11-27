@@ -70,15 +70,15 @@ class ThreeDVMobject(VMobject):
 
 
 class Surface(ParametricSurface):
-    """A parametric surface: smooth, in one colour, without outlines by default.
+    """A parametric surface: smooth, in one color, without outlines by default.
 
     The surface is a :class:`.ParametricSurface`: lit by the scene's lights
     (:mod:`manim.appearance.light`) through its ``material`` (``PbrMaterial()`` by
     default).
-    Neighbouring faces share corners, so the surface is lit smoothly and colours
+    Neighbouring faces share corners, so the surface is lit smoothly and colors
     given per point (:meth:`set_fill_by_value`) blend across faces. With
     ``checkerboard_colors``, every face has its own corners, so faces keep their
-    own colour and are lit flat; ``stroke_width`` outlines the faces.
+    own color and are lit flat; ``stroke_width`` outlines the faces.
 
     Parameters
     ----------
@@ -204,10 +204,10 @@ class Surface(ParametricSurface):
         axis: int = 2,
         **kwargs: Any,
     ) -> Self:
-        """Colour the surface by the value of its points along an axis, so the
-        colours blend smoothly across faces.
+        """Color the surface by the value of its points along an axis, so the
+        colors blend smoothly across faces.
 
-        A surface with a checkerboard is coloured face by face instead: each face
+        A surface with a checkerboard is colored face by face instead: each face
         by the value of the point halfway around its outline.
 
         Parameters
@@ -289,12 +289,12 @@ class Surface(ParametricSurface):
             return np.concatenate((rgb, np.full((len(rgb), 1), opacity)), axis=1)
 
         if self.checkerboard_colors:
-            # One colour per face, on corners of its own (the surface is flat).
+            # One color per face, on corners of its own (the surface is flat).
             fills = colours_at(_halfway_around(self))
             self.set_vertex_colors(np.repeat(fills, 4, axis=0))
         else:
             fills = colours_at(self.points)
-            # Each face's outline takes the colour halfway around it.
+            # Each face's outline takes the color halfway around it.
             fills_of_faces = colours_at(_halfway_around(self))
             self.set_vertex_colors(fills)
             fills = fills_of_faces

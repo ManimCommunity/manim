@@ -1,7 +1,7 @@
 """How the paint of a path snapshot becomes colors, for every renderer.
 
 Renderers draw a paint as stop colors, evenly spaced along a line between two points.
-:func:`paint_colors` gives both; :func:`lit_color` gives the one colour of a lit
+:func:`paint_colors` gives both; :func:`lit_color` gives the one color of a lit
 (:class:`~.PbrMaterial`) path's fill.
 """
 
@@ -57,13 +57,13 @@ def paint_colors(
     """The stop colors of ``paint`` and the start and end point of the line they are
     spaced along; ``None`` for one color.
 
-    ``lit`` is the colour of a lit path's fill (see :func:`lit_color`), which
+    ``lit`` is the color of a lit path's fill (see :func:`lit_color`), which
     replaces the paint.
     """
     if lit is not None:
         return np.asarray(lit, dtype=float).reshape(1, 4), None
     if isinstance(paint, RColorField):
-        # Renderers sample the field where they draw; this colour is not used.
+        # Renderers sample the field where they draw; this color is not used.
         return np.ones((1, 4)), None
     if isinstance(paint, RSolidColor):
         return np.asarray(paint.rgba).reshape(1, 4), None
@@ -77,7 +77,7 @@ def lit_color(
     ambient: Sequence[float],
     renderer: str,
 ) -> FloatRGBA_Array | None:
-    """The one colour of a lit path's fill: :func:`.shade` at the center of its
+    """The one color of a lit path's fill: :func:`.shade` at the center of its
     anchors, with the normal of their plane, two-sided. ``None`` for a path that is
     not lit (:class:`.UnlitMaterial`, fixed in the frame, or no lights).
     ``renderer`` names the renderer in error messages.
@@ -87,7 +87,7 @@ def lit_color(
     CapabilityError
         For a material other than :class:`.PbrMaterial` and :class:`.UnlitMaterial`.
     CapabilityError
-        For a lit path that is not flat or whose fill is not one colour.
+        For a lit path that is not flat or whose fill is not one color.
     """
     path: RPath = node.payload  # type: ignore[assignment]
     if not is_lit(path.material, renderer) or not lights or node.is_fixed_in_frame:

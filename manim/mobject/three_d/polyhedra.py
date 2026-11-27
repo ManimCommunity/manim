@@ -488,7 +488,7 @@ def _face_style(config: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]
     :class:`.PolygonFace` (``material``, ...).
 
     As the faces were :class:`.Polygon` objects, they are outlined 4 wide in their
-    fill colour unless the config says otherwise.
+    fill color unless the config says otherwise.
     """
     config = dict(config)
     color = config.pop("color", None)

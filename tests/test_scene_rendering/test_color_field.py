@@ -1,4 +1,4 @@
-"""Colour fields are sampled where renderers draw, on Cairo and OpenGL alike."""
+"""Color fields are sampled where renderers draw, on Cairo and OpenGL alike."""
 
 from __future__ import annotations
 
@@ -72,7 +72,7 @@ def _at(pixels, camera, x, y=0.0, width=W, height=H):
 @pytest.mark.parametrize("case", ["full", "trimmed", "panned", "fill"])
 def test_a_narrow_band_shows_where_it_is(renderer, case):
     # Sampling the field at the geometry's points (not where it is drawn) loses
-    # the band, and trimming would change the colour of points that did not move.
+    # the band, and trimming would change the color of points that did not move.
     line = Line(3 * LEFT, 3 * RIGHT, stroke_width=28)
     mobject = {
         "full": line,
@@ -94,14 +94,14 @@ def test_a_narrow_band_shows_where_it_is(renderer, case):
     np.testing.assert_array_equal(_at(field, camera, 0.55)[:3], [255, 0, 0])
     if case != "trimmed":
         np.testing.assert_array_equal(_at(field, camera, -0.5)[:3], [0, 0, 255])
-    # Coverage and alpha are those of the same shape in one opaque colour.
+    # Coverage and alpha are those of the same shape in one opaque color.
     np.testing.assert_array_equal(field[..., 3], solid[..., 3])
 
 
 @RENDERERS
 def test_the_sampler_fixture(renderer):
     # Red, green / blue, transparent white over -2..2; probes at texel centres,
-    # edge midpoints, the middle and outside, against squares of the colour the
+    # edge midpoints, the middle and outside, against squares of the color the
     # reference sampler gives.
     grid = np.array([[[1, 0, 0, 1], [0, 1, 0, 1]], [[0, 0, 1, 1], [1, 1, 1, 0]]], float)
     field = ColorField(grid, [[-2, 2, 0], [2, 2, 0], [-2, -2, 0]])

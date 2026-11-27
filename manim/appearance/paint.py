@@ -1,7 +1,7 @@
-"""Paints: how an area or a line of a vectorized mobject is coloured.
+"""Paints: how an area or a line of a vectorized mobject is colored.
 
-A paint is an immutable value. :class:`SolidColor` is one colour;
-:class:`LinearGradient` is evenly spaced colour stops along a direction, between the
+A paint is an immutable value. :class:`SolidColor` is one color;
+:class:`LinearGradient` is evenly spaced color stops along a direction, between the
 edges of the mobject's own bounding box. Assign one to a mobject's ``fill``,
 ``stroke`` or ``background_stroke``, or let :meth:`.VMobject.set_fill` and
 :meth:`.VMobject.set_stroke` make it::
@@ -51,7 +51,7 @@ def _frozen(array: Any, shape: tuple[int, ...] | None = None) -> np.ndarray:
 
 
 class Paint:
-    """A colouring of an area or a line; immutable.
+    """A coloring of an area or a line; immutable.
 
     See :mod:`manim.appearance.paint`.
     """
@@ -76,14 +76,14 @@ class Paint:
 
     @property
     def rgbas(self) -> FloatRGBA_Array:
-        """The colour stops as a read-only float array of RGBA rows (one row for a
+        """The color stops as a read-only float array of RGBA rows (one row for a
         :class:`SolidColor`).
         """
         return self._rgbas
 
     @property
     def colors(self) -> list[ManimColor]:
-        """The colours of the stops."""
+        """The colors of the stops."""
         return [ManimColor(rgba[:3]) for rgba in self._rgbas]
 
     @property
@@ -92,7 +92,7 @@ class Paint:
         return self._rgbas[:, 3]
 
     def with_opacity(self, opacity: float | Sequence[float]) -> Paint:
-        """The same colours with ``opacity`` (one for all stops, or one per stop)."""
+        """The same colors with ``opacity`` (one for all stops, or one per stop)."""
         rgbas = self._rgbas.copy()
         opacities = np.asarray(opacity, dtype=float)
         if opacities.ndim and len(opacities) != len(rgbas):
@@ -102,7 +102,7 @@ class Paint:
         return Paint._from_rgbas(rgbas, getattr(self, "_direction", None))
 
     def with_colors(self, colors: Sequence[ParsableManimColor]) -> Paint:
-        """The same opacities with other colours (a list makes a gradient)."""
+        """The same opacities with other colors (a list makes a gradient)."""
         rgbs = np.array([ManimColor(c).to_rgb() for c in colors], dtype=float)
         opacities = self._rgbas[:, 3]
         length = max(len(rgbs), len(opacities))
@@ -155,12 +155,12 @@ class Paint:
 
 
 class SolidColor(Paint):
-    """One colour.
+    """One color.
 
     Parameters
     ----------
     color
-        The colour.
+        The color.
     opacity
         Its opacity, from 0 (invisible) to 1.
     """
@@ -192,17 +192,17 @@ class SolidColor(Paint):
 
 
 class LinearGradient(Paint):
-    """Evenly spaced colour stops along ``direction``, from one edge of the
+    """Evenly spaced color stops along ``direction``, from one edge of the
     mobject's own bounding box to the other.
 
     Parameters
     ----------
     colors
-        Two or more colours.
+        Two or more colors.
     opacities
         One opacity for all stops, or one per stop.
     direction
-        The direction the colours change along.
+        The direction the colors change along.
     """
 
     __slots__ = ("_direction",)
@@ -226,7 +226,7 @@ class LinearGradient(Paint):
 
     @property
     def direction(self) -> Vector3D:
-        """The direction the colours change along (read-only)."""
+        """The direction the colors change along (read-only)."""
         return self._direction
 
     def with_direction(self, direction: Vector3DLike) -> LinearGradient:
@@ -281,9 +281,9 @@ def interpolate_paint(start: Paint, end: Paint, alpha: float) -> Paint:
     at 0 and 1, and whenever ``start is end``; otherwise
     ``start.interpolate(end, alpha)`` (:meth:`Paint.interpolate`).
 
-    Between two built-in colour paints (:class:`SolidColor`, :class:`LinearGradient`)
+    Between two built-in color paints (:class:`SolidColor`, :class:`LinearGradient`)
     the shorter list of stops is stretched to the longer one's length and the
-    colours are interpolated linearly; directions interpolate too, a
+    colors are interpolated linearly; directions interpolate too, a
     :class:`SolidColor` taking the other paint's direction. Two :class:`ColorField`
     paints with the same grid and corners interpolate their opacity. Any other pair
     keeps ``start`` until ``alpha`` reaches 1, where it is ``end``.
@@ -296,7 +296,7 @@ def interpolate_paint(start: Paint, end: Paint, alpha: float) -> Paint:
 
 
 def _blend_stops(start: Paint, end: Paint, alpha: float) -> Paint:
-    """Between two colour-stop paints (:class:`SolidColor`, :class:`LinearGradient`),
+    """Between two color-stop paints (:class:`SolidColor`, :class:`LinearGradient`),
     stops and directions blended (see :func:`interpolate_paint`); towards any other
     paint, ``start`` until the end.
     """
@@ -322,15 +322,15 @@ _grid_ids = itertools.count(1)
 
 
 class ColorField(Paint):
-    """Colours that lie in the scene, not on the mobject: a grid of RGBA colours
-    and where it is. A mobject painted with a field shows the field's colour
+    """Colors that lie in the scene, not on the mobject: a grid of RGBA colors
+    and where it is. A mobject painted with a field shows the field's color
     wherever it is drawn, so moving, trimming or transforming it shows other
-    colours (as stream lines flowing through a coloured vector field).
+    colors (as stream lines flowing through a colored vector field).
 
     Parameters
     ----------
     grid
-        RGBA colours, shape ``(rows, columns, 4)``, floats in ``[0, 1]``,
+        RGBA colors, shape ``(rows, columns, 4)``, floats in ``[0, 1]``,
         straight (not premultiplied) alpha, sRGB; row 0 is the top.
     corners
         Three scene points: the upper left, upper right and lower left corner of
@@ -341,9 +341,9 @@ class ColorField(Paint):
 
     Notes
     -----
-    The colour at a scene point: its position in the plane of the corners
+    The color at a scene point: its position in the plane of the corners
     (projected orthogonally onto it), clamped to the outermost texel centres,
-    bilinear interpolation of premultiplied colours, then unpremultiplied and the
+    bilinear interpolation of premultiplied colors, then unpremultiplied and the
     alpha times ``opacity`` (:meth:`sample`). Renderers sample where they draw.
     The Cairo and OpenGL renderers draw fields in the frame's plane under a flat
     camera, and raise :class:`~.CapabilityError` otherwise, and for mobjects fixed
@@ -365,7 +365,7 @@ class ColorField(Paint):
         object.__setattr__(self, "_corners", corners)
         object.__setattr__(self, "_opacity", float(opacity))
         object.__setattr__(self, "_grid_id", next(_grid_ids))
-        # One stop: the grid's mean colour, for getters that ask for colours.
+        # One stop: the grid's mean color, for getters that ask for colors.
         mean = grid.reshape(-1, 4).mean(axis=0)
         object.__setattr__(
             self, "_rgbas", _frozen(np.r_[mean[:3], mean[3] * opacity], (1, 4))
@@ -386,7 +386,7 @@ class ColorField(Paint):
         """A field in the plane ``z`` over ``x_range`` x ``y_range``, sampled at
         the centres of ``resolution`` = (columns, rows) texels.
 
-        ``func`` takes one point and returns one RGB or RGBA colour (floats in
+        ``func`` takes one point and returns one RGB or RGBA color (floats in
         ``[0, 1]``, or anything :class:`.ManimColor` takes); with ``vectorized``,
         it takes an ``(n, 3)`` array and returns ``(n, 3)`` or ``(n, 4)`` floats.
         """
@@ -413,7 +413,7 @@ class ColorField(Paint):
 
     @property
     def grid(self) -> np.ndarray:
-        """The colours (read-only), shape ``(rows, columns, 4)``."""
+        """The colors (read-only), shape ``(rows, columns, 4)``."""
         return self._grid
 
     @property
@@ -427,7 +427,7 @@ class ColorField(Paint):
 
     @property
     def grid_id(self) -> int:
-        """Identifies the grid's storage: equal ids, the same colours."""
+        """Identifies the grid's storage: equal ids, the same colors."""
         return self._grid_id
 
     def with_opacity(self, opacity: float | Sequence[float]) -> ColorField:
@@ -443,7 +443,7 @@ class ColorField(Paint):
         return field
 
     def with_colors(self, colors: Sequence[ParsableManimColor]) -> Paint:
-        """Colours replace the field: a solid or a gradient with its opacity."""
+        """Colors replace the field: a solid or a gradient with its opacity."""
         rgbs = np.array([ManimColor(c).to_rgb() for c in colors], dtype=float)
         rgbas = np.column_stack([rgbs, np.full(len(rgbs), self._rgbas[0, 3])])
         return Paint._from_rgbas(rgbas)

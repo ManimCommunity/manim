@@ -1,4 +1,4 @@
-"""The names removed by paints, colour fields, lights and materials stay removed
+"""The names removed by paints, color fields, lights and materials stay removed
 (the table of docs/source/guides/upgrading.rst).
 """
 

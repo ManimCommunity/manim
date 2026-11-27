@@ -111,14 +111,14 @@ class RLinearGradient(NamedTuple):
 
 
 class RColorField(NamedTuple):
-    """Colours in scene coordinates (a :class:`~.ColorField`), sampled where the
+    """Colors in scene coordinates (a :class:`~.ColorField`), sampled where the
     path is drawn.
 
     ``grid``: ``(rows, columns, 4)`` straight-alpha sRGB floats, row 0 at the top;
     ``corners``: the upper left, upper right and lower left scene point of the
-    grid's outer edges; ``opacity`` multiplies the alpha. The colour at a point
+    grid's outer edges; ``opacity`` multiplies the alpha. The color at a point
     is :meth:`.ColorField.sample`'s. ``grid_id`` identifies the grid's storage
-    only (equal ids, equal colours): one texture can serve many paints.
+    only (equal ids, equal colors): one texture can serve many paints.
     """
 
     grid: np.ndarray

@@ -239,7 +239,7 @@ class _CairoDrawingContext:
     def _set_field_source(
         self, context: cairo.Context, field: RColorField, node: RNode
     ) -> None:
-        """Paint with a colour field: its grid as the source, placed in scene
+        """Paint with a color field: its grid as the source, placed in scene
         coordinates (the context's user space), so Cairo samples it where it
         draws.
         """
@@ -254,7 +254,7 @@ class _CairoDrawingContext:
     def _paint(
         context: cairo.Context, paint: RPaint, operation: Callable[[], None]
     ) -> None:
-        """Fill or stroke with ``operation``; a colour field's opacity is applied
+        """Fill or stroke with ``operation``; a color field's opacity is applied
         to the drawing as a whole, so its pattern is shared whatever the opacity.
         """
         if isinstance(paint, RColorField) and paint.opacity < 1:

@@ -147,7 +147,7 @@ def test_interpolate_is_linear_in_points_colors_and_width():
     middle.interpolate(start, end, 0.5)
 
     np.testing.assert_allclose(middle.points, (start.points + end.points) / 2)
-    # The single colour is spread to the length of the gradient.
+    # The single color is spread to the length of the gradient.
     expected = (np.array([color_to_rgba(RED)] * 2) + end.fill.rgbas) / 2
     np.testing.assert_allclose(middle.fill.rgbas, expected)
     assert len(middle.stroke.rgbas) == 2

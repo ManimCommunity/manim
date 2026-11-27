@@ -1,4 +1,4 @@
-"""Paints are immutable values that vectorized mobjects are coloured with."""
+"""Paints are immutable values that vectorized mobjects are colored with."""
 
 from __future__ import annotations
 
@@ -229,7 +229,7 @@ def test_from_function_samples_texel_centres():
 
 
 class _Stripes(Paint):
-    """A paint of one's own: two colours, drawn as the built-in gradient of them."""
+    """A paint of one's own: two colors, drawn as the built-in gradient of them."""
 
     __slots__ = ("_turns",)
 

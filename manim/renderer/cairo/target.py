@@ -144,7 +144,7 @@ class _CairoRenderTarget:
         self._background = np.zeros_like(self._pixels)
         self._context_key: tuple[float, ...] | None = None
         self._context: cairo.Context | None = None
-        #: Patterns of colour fields, by grid id and corners (with their pixels).
+        #: Patterns of color fields, by grid id and corners (with their pixels).
         self._field_patterns: dict[
             tuple[int, bytes], tuple[cairo.SurfacePattern, np.ndarray]
         ] = {}
@@ -235,7 +235,7 @@ class _CairoRenderTarget:
         return context
 
     def field_pattern(self, field: RColorField) -> cairo.SurfacePattern:
-        """The grid of a colour field as a premultiplied pattern placed in scene
+        """The grid of a color field as a premultiplied pattern placed in scene
         coordinates, made once per grid and corners.
 
         Raises

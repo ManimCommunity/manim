@@ -341,12 +341,12 @@ def test_smooth_surface_colours_its_points_by_value():
     )
     surface.set_fill_by_value(axes, [(RED, 0), (WHITE, 4)], axis=2)
 
-    # Still smooth: one colour per point, blended across the faces.
+    # Still smooth: one color per point, blended across the faces.
     assert not surface.flat
     values = axes.point_to_coords(surface.points)[:, 2] / 4
     expected = (1 - values[:, None]) * RED.to_rgb() + values[:, None] * WHITE.to_rgb()
     np.testing.assert_allclose(surface.rgbas[:, :3], expected, atol=1e-9)
-    # Each face's outline takes the colour halfway around it.
+    # Each face's outline takes the color halfway around it.
     values = axes.point_to_coords(_halfway_around(surface))[:, 2] / 4
     expected = (1 - values[:, None]) * RED.to_rgb() + values[:, None] * WHITE.to_rgb()
     np.testing.assert_allclose(surface.stroke_rgbas[:, :3], expected, atol=1e-9)

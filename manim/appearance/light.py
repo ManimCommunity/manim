@@ -2,7 +2,7 @@
 
 A light is a mobject: it is added to a scene, moved, animated and given updaters
 like any other, and draws nothing. A frame without lights is not shaded at all: lit
-materials show their base colour. :class:`.ThreeDScene` has one light,
+materials show their base color. :class:`.ThreeDScene` has one light,
 ``scene.light``, which is not in ``scene.mobjects`` (so :meth:`.Scene.clear` and
 fading out every mobject leave it); lights added with :meth:`.Scene.add` are
 ordinary mobjects of the scene.
@@ -56,7 +56,7 @@ class PointLight(Mobject):
     position
         Where the light is.
     color
-        Its colour.
+        Its color.
     intensity
         Its intensity in candela (see :mod:`manim.appearance.light`).
 
@@ -114,7 +114,7 @@ class PointLight(Mobject):
     def interpolate_color(
         self, mobject1: Mobject, mobject2: Mobject, alpha: float
     ) -> Self:
-        """Colour and intensity between two lights; the end values themselves at 1."""
+        """Color and intensity between two lights; the end values themselves at 1."""
         start, end = mobject1, mobject2
         if not (isinstance(start, PointLight) and isinstance(end, PointLight)):
             return self

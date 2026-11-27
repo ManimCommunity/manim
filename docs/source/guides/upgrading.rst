@@ -11,7 +11,7 @@ The arrays that mobjects are drawn from can be replaced, but not changed in plac
 ``stroke_rgbas``, ``background_stroke_rgbas``) and their ``sheen_direction``, and
 the ``pixel_array`` of an :class:`.ImageMobject`. Renderers keep track of which
 
-The arrays that mobjects are drawn from are read-only: ``points``, the colour
+The arrays that mobjects are drawn from are read-only: ``points``, the color
 stops of paints (``mob.fill.rgbas``, see below), and the ``pixel_array`` of an
 :class:`.ImageMobject`. Renderers keep track of which
 mobjects changed by the assignments to these arrays, so changing one in place
@@ -220,13 +220,13 @@ drawn as meshes on OpenGL and as sorted faces on Cairo:
   highlights.
   ``material=UnlitMaterial()`` shows its colors as they are. Without lights,
   surfaces are not shaded.
-- Surfaces are smooth, in one colour and without outlines by default: they used to
+- Surfaces are smooth, in one color and without outlines by default: they used to
   have a ``[BLUE_D, BLUE_E]`` checkerboard and light grey outlines of width 0.5.
   ``checkerboard_colors=[BLUE_D, BLUE_E]`` and ``stroke_width=0.5`` give that look
   back; with a checkerboard, each face is lit flat.
-- :meth:`~.Surface.set_fill_by_value` colours the points of a smooth surface, so the
-  colours blend across faces on OpenGL (Cairo draws each face in the mean colour of
-  its corners); on a surface with a checkerboard it colours each face.
+- :meth:`~.Surface.set_fill_by_value` colors the points of a smooth surface, so the
+  colors blend across faces on OpenGL (Cairo draws each face in the mean color of
+  its corners); on a surface with a checkerboard it colors each face.
 - :class:`.Line3D` is white by default, as :class:`.Line` and :class:`.Arrow3D`
   are; it was the blue of the surface.
 - The end caps of :class:`.Cylinder` (``base_top``, ``base_bottom``) and the base of
@@ -418,13 +418,13 @@ Selecting a renderer
   ``get_raw_frame_buffer_object_data()``, ``get_pixel_shape()`` and
   ``get_frame_buffer_object()``; read a frame's pixels with ``frame.pixels()``.
 
-Colours of vectorized mobjects are paints
+Colors of vectorized mobjects are paints
 -----------------------------------------
 
-A :class:`.VMobject` stores its colours as three *paints*: ``mob.fill``, ``mob.stroke``
+A :class:`.VMobject` stores its colors as three *paints*: ``mob.fill``, ``mob.stroke``
 and ``mob.background_stroke`` (see :mod:`manim.appearance.paint`). A paint is an
-immutable value: :class:`.SolidColor` (one colour) or :class:`.LinearGradient` (evenly
-spaced colours along a direction, ``UL`` by default, between the edges of the mobject's
+immutable value: :class:`.SolidColor` (one color) or :class:`.LinearGradient` (evenly
+spaced colors along a direction, ``UL`` by default, between the edges of the mobject's
 own bounding box).
 
 .. code-block:: python
@@ -462,7 +462,7 @@ calls it with such a style) must not require them.
        :func:`.interpolate_paint` aligns paints of different lengths
    * - ``set_sheen(factor, direction)``, ``sheen_factor=``
      - a two-stop gradient: ``set_fill([color, lighter_color])``; there is no
-       automatic lightened colour
+       automatic lightened color
    * - ``set_sheen_direction(d)``, ``rotate_sheen_direction``,
        ``sheen_direction=``, ``get_sheen_direction``
      - ``mob.fill = mob.fill.with_direction(d)`` (for a gradient), or
@@ -470,14 +470,14 @@ calls it with such a style) must not require them.
    * - ``get_gradient_start_and_end_points``
      - none (renderers compute it)
 
-Colours that lie in the scene: colour fields
+Colors that lie in the scene: color fields
 --------------------------------------------
 
-``color_using_background_image`` coloured a mobject with an image fixed to the
+``color_using_background_image`` colored a mobject with an image fixed to the
 frame. It is replaced by a third kind of paint, :class:`.ColorField`: a grid of
-colours that lies in the scene. A mobject painted with a field shows the field's
-colour wherever it is drawn, so moving, trimming or transforming it shows other
-colours, and a moving camera keeps them where they are in the scene.
+colors that lies in the scene. A mobject painted with a field shows the field's
+color wherever it is drawn, so moving, trimming or transforming it shows other
+colors, and a moving camera keeps them where they are in the scene.
 
 .. code-block:: python
 
@@ -489,8 +489,8 @@ colours, and a moving camera keeps them where they are in the scene.
     )
     line.set_stroke(field)
 
-:class:`.StreamLines` colour their lines with a field over the region the lines
-can reach (the seed ranges widened by ``padding``); in 3D they keep a colour list
+:class:`.StreamLines` color their lines with a field over the region the lines
+can reach (the seed ranges widened by ``padding``); in 3D they keep a color list
 per line along its bounding box, an approximation. The Cairo and OpenGL renderers
 draw fields in a plane parallel to the frame under a flat camera, and raise
 ``CapabilityError`` (:mod:`manim.renderer.protocol`) for other cameras or planes,
@@ -517,7 +517,7 @@ Lit materials (:class:`.PbrMaterial`, the default of meshes and surfaces) are sh
 light; it is not in ``scene.mobjects``, so :meth:`.Scene.clear` and fading out every
 mobject leave it. Move or animate it like any mobject, or add more lights with
 :meth:`.Scene.add`. ``scene.ambient_light`` (0.25) is the white light that reaches every
-surface. A frame without lights is not shaded: lit materials show their base colour (a
+surface. A frame without lights is not shaded: lit materials show their base color (a
 plain :class:`.Scene` has no light).
 
 .. code-block:: python
@@ -549,7 +549,7 @@ a 3D camera". They are now two settings of :class:`.VMobject`:
 
 - ``material`` (:mod:`manim.appearance.material`, ``set_material``):
   :class:`.UnlitMaterial` by default; :class:`.PbrMaterial` lights the path by the
-  scene's lights in one colour, from the normal of its plane. A lit path must be flat
+  scene's lights in one color, from the normal of its plane. A lit path must be flat
   and have a solid fill, otherwise drawing it raises :class:`.CapabilityError`. Its
   stroke is not lit, and mobjects fixed in the frame are never lit.
 - ``sort_by_depth`` (``set_sort_by_depth``): under a perspective camera, the path is

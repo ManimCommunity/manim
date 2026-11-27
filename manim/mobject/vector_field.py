@@ -56,7 +56,7 @@ if TYPE_CHECKING:
 DEFAULT_SCALAR_FIELD_COLORS: list[ManimColor] = [BLUE_E, GREEN, YELLOW, RED]
 
 
-#: Pixels of the frame per texel of a StreamLines colour field.
+#: Pixels of the frame per texel of a StreamLines color field.
 _FIELD_PIXELS_PER_TEXEL = 5
 
 
@@ -861,7 +861,7 @@ class StreamLines(VectorField):
             else:
                 if field is None:
                     # In 3D, a gradient over the line's anchors: an approximation
-                    # (a field in a plane cannot hold colours that change with z).
+                    # (a field in a plane cannot hold colors that change with z).
                     line.set_stroke(
                         [self.pos_to_color(p) for p in line.get_anchors()],
                     )
@@ -877,7 +877,7 @@ class StreamLines(VectorField):
         return bool(np.any(np.asarray(self.z_range) != np.array([0, 0.5, 0.5])))
 
     def _color_field(self) -> ColorField:
-        """The colours of the vector field where the lines can reach: the seed
+        """The colors of the vector field where the lines can reach: the seed
         ranges widened by ``padding``, at a fifth of the pixel density.
         """
         x0 = self.x_range[0] - self.padding

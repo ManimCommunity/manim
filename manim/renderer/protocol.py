@@ -77,7 +77,7 @@ class LightState:
     position: Point3D
     """Where the light is, in scene coordinates."""
     rgb: tuple[float, float, float]
-    """Its colour, linear RGB."""
+    """Its color, linear RGB."""
     intensity: float
     """Its intensity in candela (glTF ``KHR_lights_punctual``)."""
 
@@ -116,7 +116,7 @@ class RenderConfig:
     """The camera views of the frame, drawn before it. They have no views."""
     lights: tuple[LightState, ...] = ()
     """The scene's lights. Without lights, nothing is shaded: lit materials show
-    their base colour."""
+    their base color."""
     ambient: tuple[float, float, float] = (0.0, 0.0, 0.0)
     """The light that reaches every surface everywhere, linear RGB."""
 
