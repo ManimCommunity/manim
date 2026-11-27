@@ -226,7 +226,7 @@ def test_svg_paths_share_their_parsed_path():
 
 
 def test_animation_steps_that_change_nothing_keep_versions():
-    # A transform to a moved copy: the colours are the same arrays at both ends,
+    # A transform to a moved copy: the colors are the same arrays at both ends,
     # and keep their version over the whole animation.
     start = Square().set_color(RED)
     end = start.copy().shift(RIGHT)
