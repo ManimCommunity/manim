@@ -2,7 +2,7 @@
 
 It imports nothing of manim but :mod:`manim.renderer.protocol`,
 :mod:`manim.renderer.snapshot` and numpy, and draws the bounding box of every path,
-point cloud and image, in one colour per node, into a :class:`.PixelFrame`. Its one
+point cloud and image, in one color per node, into a :class:`.PixelFrame`. Its one
 option (``shade``) changes its pixels. It has no cache and no private hooks: the
 Manager, the play cache, images and evaluation must work with it as they do with
 the built-in renderers.

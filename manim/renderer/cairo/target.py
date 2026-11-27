@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from manim.typing import RGBAPixelArray
 
 
-#: What a target's background is made from: the image, or the colour with its opacity.
+#: What a target's background is made from: the image, or the color with its opacity.
 BackgroundKey: TypeAlias = tuple[str | None, tuple[float, float, float, float]]
 
 
