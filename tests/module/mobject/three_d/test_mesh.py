@@ -258,7 +258,7 @@ def test_parametric_surface_ranges_and_resolution_are_pairs(name):
     assert surface.resolution == (3, 4)
 
 
-def test_checkered_surface_colours_faces_by_value_at_their_outlines_middle():
+def test_checkered_surface_colors_faces_by_value_at_their_outlines_middle():
     from manim.mobject.three_d.three_dimensions import _halfway_around
 
     axes = ThreeDAxes(x_range=[0, 4], y_range=[0, 4], z_range=[0, 4])
@@ -329,7 +329,7 @@ def test_surfaces_are_smooth_and_without_outlines_unless_asked():
             assert part.stroke_width == 0
 
 
-def test_smooth_surface_colours_its_points_by_value():
+def test_smooth_surface_colors_its_points_by_value():
     from manim.mobject.three_d.three_dimensions import _halfway_around
 
     axes = ThreeDAxes(x_range=[0, 4], y_range=[0, 4], z_range=[0, 4])
@@ -370,7 +370,7 @@ def test_partial_surfaces_show_whole_faces_with_their_outlines():
     np.testing.assert_array_equal(partial.stroke_rgbas, surface.stroke_rgbas[:8])
 
 
-def test_groups_with_meshes_can_be_rotated_and_recoloured():
+def test_groups_with_meshes_can_be_rotated_and_recolored():
     group = VGroup(Square().set_fill([RED, BLUE], opacity=1), Sphere())
 
     group.rotate(PI / 2).set_color(GREEN)

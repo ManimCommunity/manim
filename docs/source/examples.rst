@@ -626,7 +626,7 @@ Special Camera Settings
                 ]), v_range=[0, TAU], u_range=[-PI / 2, PI / 2],
                 checkerboard_colors=[RED_D, RED_E], resolution=(15, 32)
             )
-            self.light.move_to(3*IN)  # moves the scene's light
+            self.light.move_to(3*IN)
             self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
             self.add(axes, sphere)
 

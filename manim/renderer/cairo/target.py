@@ -251,7 +251,7 @@ class _CairoRenderTarget:
         upper_left, upper_right, lower_left = corners
         if not np.allclose(corners[:, 2], upper_left[2]):
             raise CapabilityError(
-                "The Cairo renderer draws colour fields only in a plane parallel to "
+                "The Cairo renderer draws color fields only in a plane parallel to "
                 "the frame."
             )
         grid = np.asarray(field.grid, dtype=float)

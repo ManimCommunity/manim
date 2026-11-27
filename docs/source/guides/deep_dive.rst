@@ -7,7 +7,8 @@ A deep dive into Manim's internals
 
     This guide describes Manim ``v0.30.0``, whose render loop was reworked
     completely: a :class:`.Manager` runs the scene, and renderers draw frames from
-    snapshots of the mobjects. Both the Cairo and the OpenGL renderer are covered.
+    mobject snapshots. The following applies to all renderers unless stated
+    otherwise.
 
 Introduction
 ------------

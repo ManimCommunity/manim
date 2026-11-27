@@ -101,7 +101,7 @@ def test_a_moving_light_changes_a_lit_mesh_frame_by_frame(renderer):
 
 
 @RENDERERS
-def test_without_lights_a_lit_mesh_shows_its_base_colour(renderer):
+def test_without_lights_a_lit_mesh_shows_its_base_color(renderer):
     # "No light, no shading": a lit sphere without lights looks as an unlit one.
     from manim.appearance.material import UnlitMaterial
 

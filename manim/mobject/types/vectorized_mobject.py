@@ -228,7 +228,7 @@ class VMobject(Mobject):
         """Color the mobject with its :attr:`color`.
 
         In the constructor, the opacities are those it was given; called again
-        later (as text does to recolour glyphs), the current opacities stay and
+        later (as text does to recolor glyphs), the current opacities stay and
         only the colors change.
         """
         color = self.color

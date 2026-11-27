@@ -36,7 +36,7 @@ void main(){
         if (value <= 0.0) discard;
     }
     float signed_coverage = (gl_FrontFacing ? 1.0 : -1.0) * value;
-    vec4 colour = field_on > 0.5 ? field_colour() : v_color;
-    coverage = vec4(signed_coverage * colour.rgb, signed_coverage);
-    weighted_opacity = signed_coverage * colour.a;
+    vec4 color = field_on > 0.5 ? field_color() : v_color;
+    coverage = vec4(signed_coverage * color.rgb, signed_coverage);
+    weighted_opacity = signed_coverage * color.a;
 }

@@ -145,7 +145,7 @@ def test_reuse_follows_the_depth_order_of_3d_scenes(renderer):
 LIGHT_CHANGES = {
     "light position": lambda scene: scene.light.move_to(6 * RIGHT + 4 * OUT),
     "light intensity": lambda scene: scene.light.set_intensity(50),
-    "light colour": lambda scene: scene.light.set_color(RED),
+    "light color": lambda scene: scene.light.set_color(RED),
     "light added": lambda scene: scene.add(PointLight(3 * LEFT + 2 * OUT)),
     "ambient light": lambda scene: setattr(scene, "ambient_light", 0.8),
 }

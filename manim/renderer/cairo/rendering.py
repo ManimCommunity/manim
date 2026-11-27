@@ -245,7 +245,7 @@ class _CairoDrawingContext:
         """
         if is_3d(self.camera) or type(node.placement) is not InScene:
             raise CapabilityError(
-                "The Cairo renderer draws colour fields only under a flat camera, "
+                "The Cairo renderer draws color fields only under a flat camera, "
                 "on mobjects that are not fixed in the frame."
             )
         context.set_source(self.target.field_pattern(field))

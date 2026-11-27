@@ -187,7 +187,7 @@ class WindingFill:
         with it, Apple's software renderer (macOS without a GPU) loses whole
         fills for some rectangles on a multisampled float buffer.
         """
-        filled, colours = [], []
+        filled, colors = [], []
         for node, geo in zip(nodes, geometry, strict=True):
             path: RPath = node.payload  # type: ignore[assignment]
             if len(geo.quads) == 0 or not shows(path.fill):
@@ -200,7 +200,7 @@ class WindingFill:
                 target.ambient,
                 "OpenGL",
             )
-            colours.append(paint_colors(path.fill, lit))
+            colors.append(paint_colors(path.fill, lit))
         if not filled:
             return
         vertices = pack(filled, colors)

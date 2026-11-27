@@ -6,7 +6,7 @@ uniform sampler2D field_texture;
 uniform mat3 field_uv;
 uniform float field_opacity;
 
-vec4 field_colour(){
+vec4 field_color(){
     vec2 uv = (field_uv * vec3(gl_FragCoord.xy, 1.0)).xy;
     // Premultiplied in the texture: filtering does not bleed transparent color.
     vec4 premultiplied = texture(field_texture, uv);

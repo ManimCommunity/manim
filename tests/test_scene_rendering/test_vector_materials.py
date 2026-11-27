@@ -53,7 +53,7 @@ def _lit_square(angle=0.0):
     return square.rotate(angle, RIGHT).set_material(PbrMaterial())
 
 
-def _colours(pixels):
+def _colors(pixels):
     """The colors of the drawn (not black) pixels."""
     drawn = pixels[..., :3][pixels[..., :3].sum(axis=-1) > 0]
     return {tuple(rgb) for rgb in drawn}
@@ -99,7 +99,7 @@ def test_material_and_depth_ordering_switch_at_the_end_of_a_transform():
 
 
 @RENDERERS
-def test_a_lit_path_is_one_colour_that_follows_its_plane(renderer):
+def test_a_lit_path_is_one_color_that_follows_its_plane(renderer):
     flat = _image(renderer, lambda: [_lit_square()])
     tilted = _image(renderer, lambda: [_lit_square(PI / 3)])
     unlit = _image(renderer, lambda: [_lit_square().set_material(UnlitMaterial())])
@@ -142,15 +142,15 @@ def test_strokes_of_lit_paths_are_not_lit(renderer):
 
     pixels = _image(renderer, lambda: [square()])
     # The fill is lit (not pure blue); the stroke keeps its color.
-    assert (255, 0, 0) in _colours(pixels)
+    assert (255, 0, 0) in _colors(pixels)
     assert tuple(pixels[27, 48, :3]) != (0, 0, 255)
 
 
 @RENDERERS
-def test_lit_paths_that_cannot_be_one_colour_are_drawn_without_lights(renderer):
+def test_lit_paths_that_cannot_be_one_color_are_drawn_without_lights(renderer):
     gradient = Square(fill_opacity=1).set_fill([PURE_RED, PURE_BLUE])
     pixels = _image(renderer, lambda: [gradient.set_material(PbrMaterial())], Scene)
-    assert len(_colours(pixels)) > 10
+    assert len(_colors(pixels)) > 10
 
 
 @RENDERERS
@@ -159,7 +159,7 @@ def test_lit_paths_that_cannot_be_one_colour_are_drawn_without_lights(renderer):
     [
         (
             lambda: Square(fill_opacity=1).set_fill([PURE_RED, PURE_BLUE]),
-            "solid colour",
+            "solid color",
         ),
         (
             lambda: Square(fill_opacity=1).apply_function(
@@ -170,7 +170,7 @@ def test_lit_paths_that_cannot_be_one_colour_are_drawn_without_lights(renderer):
     ],
     ids=["gradient", "not flat"],
 )
-def test_lit_paths_that_cannot_be_one_colour_raise(renderer, build, message):
+def test_lit_paths_that_cannot_be_one_color_raise(renderer, build, message):
     with pytest.raises(CapabilityError, match=message):
         _image(renderer, lambda: [build().set_material(PbrMaterial())])
 
