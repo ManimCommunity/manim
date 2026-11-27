@@ -90,7 +90,7 @@ class MeshMobject(Mobject):
     #: Polygons, as vertex indices in order around each, that the mesh is made of
     #: (quads for parametric surfaces). Empty means the triangles.
     faces: ArrayField[Face_Array] = ArrayField(np.int32)
-    #: Colours: one row for the whole mesh, or one per vertex.
+    #: Colors: one row for the whole mesh, or one per vertex.
     rgbas: ArrayField[FloatRGBA_Array] = ArrayField(np.float64)
     uvs: ArrayField[UV_Array] = ArrayField(np.float64)
     #: RGBA pixels, one byte per channel; empty without a texture.
@@ -137,7 +137,7 @@ class MeshMobject(Mobject):
         alpha: float | None = None,
         family: bool = True,
     ) -> Self:
-        """Give the mesh one colour (and, with ``family``, its submobjects, such
+        """Give the mesh one color (and, with ``family``, its submobjects, such
         as the caps of a :class:`.Cylinder`); ``alpha`` sets its opacity too.
         """
         opacity = self.rgbas[:, 3].max() if alpha is None else alpha
@@ -158,7 +158,7 @@ class MeshMobject(Mobject):
         opacity: float | None = None,
         family: bool = True,
     ) -> Self:
-        """Set one colour, or one opacity, for the whole mesh (and, with
+        """Set one color, or one opacity, for the whole mesh (and, with
         ``family``, its submobjects).
         """
         if color is not None:
@@ -177,7 +177,7 @@ class MeshMobject(Mobject):
         family: bool = True,
         **vmobject_style: Any,
     ) -> Self:
-        """Set the colour of the faces and of their outlines.
+        """Set the color of the faces and of their outlines.
 
         The other arguments of :meth:`.VMobject.set_style` (background strokes,
         sheen, background images) have no effect on meshes.
@@ -189,7 +189,7 @@ class MeshMobject(Mobject):
 
     @property
     def fill_color(self) -> ManimColor:
-        """The colour of the first vertex."""
+        """The color of the first vertex."""
         return ManimColor(self.rgbas[0, :3])
 
     @property
@@ -208,7 +208,7 @@ class MeshMobject(Mobject):
 
     @property
     def stroke_color(self) -> ManimColor:
-        """The colour of the first face's outline."""
+        """The color of the first face's outline."""
         return ManimColor(self.stroke_rgbas[0, :3])
 
     @property

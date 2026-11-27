@@ -272,7 +272,7 @@ def test_surface_colours_faces_by_value_at_their_outlines_middle():
     values = axes.point_to_coords(_halfway_around(surface))[:, 2] / 4
     expected = (1 - values[:, None]) * RED.to_rgb() + values[:, None] * WHITE.to_rgb()
     np.testing.assert_allclose(surface.rgbas[::4, :3], expected, atol=1e-9)
-    # The outlines take the faces' colours, as the faces' strokes did.
+    # The outlines take the faces' colors, as the faces' strokes did.
     np.testing.assert_allclose(surface.stroke_rgbas[:, :3], expected, atol=1e-9)
 
 

@@ -141,7 +141,7 @@ class Surface(ParametricSurface):
             self.checkerboard_colors = checkerboard_colors
         else:
             self.checkerboard_colors = [ManimColor(i) for i in checkerboard_colors]
-        # As for other mobjects, ``color`` is the fill colour.
+        # As for other mobjects, ``color`` is the fill color.
         fill_color = kwargs.pop("color", None) or fill_color
         super().__init__(
             func,
@@ -165,14 +165,14 @@ class Surface(ParametricSurface):
         alpha: float | None = None,
         family: bool = True,
     ) -> Self:
-        """Colour the faces and their outlines."""
+        """Color the faces and their outlines."""
         super().set_color(color, alpha, family)
         return self.set_stroke(color)
 
     def make_cap(self, radius: float) -> ParametricSurface:
         """A disc of ``radius`` around the origin in the xy-plane, as a cap of this
         surface (the base of a :class:`Cone`, the ends of a :class:`Cylinder`): its
-        colour, opacity and material, as many sectors as the surface has steps in
+        color, opacity and material, as many sectors as the surface has steps in
         ``v``, and no outlines. Subclasses can override it for other caps.
         """
         return ParametricSurface(
@@ -195,7 +195,7 @@ class Surface(ParametricSurface):
         axis: int = 2,
         **kwargs: Any,
     ) -> Self:
-        """Colour each face by its value along an axis: the value of the point
+        """Color each face by its value along an axis: the value of the point
         halfway around the face's outline.
 
         Parameters
@@ -282,7 +282,7 @@ class Surface(ParametricSurface):
         self.set_vertex_colors(np.repeat(fills, 4, axis=0))
         strokes = fills.copy()
         strokes[:, 3] = self.stroke_opacity
-        # As each face's outline took its colour, too.
+        # As each face's outline took its color, too.
         self.stroke_rgbas = strokes
         return self
 

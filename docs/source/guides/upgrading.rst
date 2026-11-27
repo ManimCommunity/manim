@@ -115,7 +115,7 @@ Removed classes
      - :class:`.ImageMobject`
    * - ``OpenGLSurface``
      - :class:`.ParametricSurface`, a smooth lit surface, or :class:`.Surface`,
-       its checkerboard-coloured version
+       its checkerboard-colored version
    * - ``OpenGLTexturedSurface``
      - :class:`.ParametricSurface` with ``texture=``. One texture: the separate
        night-side texture is gone.
@@ -202,11 +202,11 @@ one :class:`.VMobject` per face. They are now :class:`.ParametricSurface` meshes
 drawn as meshes on OpenGL and as sorted faces on Cairo:
 
 - The faces are not submobjects anymore: ``surface[i]``, iterating over a surface
-  and ``list_of_faces`` are gone. Colour faces with
+  and ``list_of_faces`` are gone. Color faces with
   :meth:`~.Surface.set_fill_by_checkerboard`, :meth:`~.Surface.set_fill_by_value`
   or :meth:`.MeshMobject.set_vertex_colors`.
 - ``set_fill``, ``set_stroke``, ``set_style``, ``set_color`` and ``set_opacity`` set
-  the colours of the faces and of their outlines; meshes can still be put into a
+  the colors of the faces and of their outlines; meshes can still be put into a
   :class:`.VGroup`.
 - The arguments ``should_make_jagged``, ``surface_piece_config`` and
   ``pre_function_handle_to_anchor_scale_factor`` are gone.
