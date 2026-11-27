@@ -53,10 +53,10 @@ def view_key(
     state: CameraState,
     size: tuple[int, int],
     reference_size: tuple[int, int],
-    background: Any,
+    background: Hashable,
     lights: Sequence[LightState],
     ambient: Sequence[float],
-) -> Any:
+) -> ViewKey:
     """What a frame's drawing depends on besides its nodes: every field of the
     camera state, the pixel size, the reference pixel size (which scales widths
     given in pixels), the background the target starts from, and the lights and

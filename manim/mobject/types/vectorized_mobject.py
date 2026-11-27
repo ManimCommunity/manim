@@ -46,7 +46,7 @@ from manim.utils.iterables import (
     tuplify,
 )
 from manim.utils.space_ops import rotate_vector, shoelace_direction
-from manim.utils.versioned_fields import Field
+from manim.utils.versioned_fields import ConvertedField, Field
 
 if TYPE_CHECKING:
     from typing import Self
@@ -84,11 +84,9 @@ _NO_RGBAS = np.zeros((1, 4))
 _NO_RGBAS.flags.writeable = False
 
 
-class _StrokeWidth(Field[float]):
-    """A stroke width: stored as a float, with negative widths stored as 0."""
-
-    def __set__(self, obj: object, value: float) -> None:
-        super().__set__(obj, max(0.0, float(value)))
+def _non_negative_float(value: float) -> float:
+    """``value`` as a float, at least 0: how stroke widths are stored."""
+    return max(0.0, float(value))
 
 
 def _in_vgroup_allowed(mobject: object) -> bool:
@@ -125,8 +123,8 @@ class VMobject(Mobject):
     stroke: Field[Paint] = Field()
     #: How the outline drawn behind the fill is coloured.
     background_stroke: Field[Paint] = Field()
-    stroke_width: _StrokeWidth = _StrokeWidth()
-    background_stroke_width: _StrokeWidth = _StrokeWidth()
+    stroke_width: ConvertedField[float] = ConvertedField(_non_negative_float)
+    background_stroke_width: ConvertedField[float] = ConvertedField(_non_negative_float)
     joint_type: Field[LineJointType] = Field()
     cap_style: Field[CapStyleType] = Field()
     #: How the area is lit (:mod:`manim.appearance.material`): :class:`.UnlitMaterial`
