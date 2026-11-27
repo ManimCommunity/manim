@@ -107,11 +107,13 @@ def _copied_center_func(
 # HSV colors have setters and every color's array is writable, so a shared color
 # changed through one mobject would change its copies too.
 _IMMUTABLE_TYPES = (
-    int,
+    int,  # bool too
     float,
     complex,
     str,
     bytes,
+    range,
+    slice,
     type(None),
     enum.Enum,
     np.generic,
@@ -3623,10 +3625,8 @@ class Mobject:
                     self.add(tex)
                     self.add(circle)
         """
-        if family:
-            for submob in self.submobjects:
-                submob.set_z_index(z_index_value, family=family)
-        self.z_index = z_index_value
+        for mob in self.get_family() if family else [self]:
+            mob.z_index = z_index_value
         return self
 
     def fix_in_frame(self) -> Self:
@@ -3640,14 +3640,18 @@ class Mobject:
         --------
         :meth:`unfix_from_frame`, :meth:`.ThreeDScene.add_fixed_in_frame_mobjects`
         """
-        for mob in self.get_family():
-            mob.is_fixed_in_frame = True
-        return self
+        return self.set_fixed_in_frame(True)
 
     def unfix_from_frame(self) -> Self:
         """Undo :meth:`fix_in_frame` for the mobject and its family."""
-        for mob in self.get_family():
-            mob.is_fixed_in_frame = False
+        return self.set_fixed_in_frame(False)
+
+    def set_fixed_in_frame(self, value: bool, family: bool = True) -> Self:
+        """Set :attr:`is_fixed_in_frame` of the mobject (and, with ``family``, of its
+        family); :meth:`fix_in_frame` and :meth:`unfix_from_frame` call it.
+        """
+        for mob in self.get_family() if family else [self]:
+            mob.is_fixed_in_frame = value
         return self
 
     def fix_orientation(
@@ -3672,17 +3676,9 @@ class Mobject:
         --------
         :meth:`unfix_orientation`, :meth:`.ThreeDScene.add_fixed_orientation_mobjects`
         """
-        if center_func is None:
-            if use_static_center_func:
-                center = self.get_center()
-
-                def center_func() -> Point3D:
-                    return center
-            else:
-                center_func = self.get_center
-        for mob in self.get_family():
-            mob._get_fixed_orientation_anchor = center_func
-        return self
+        return self.set_fixed_orientation(
+            True, center_func=center_func, use_static_center_func=use_static_center_func
+        )
 
     @property
     def is_fixed_orientation(self) -> bool:
@@ -3691,8 +3687,35 @@ class Mobject:
 
     def unfix_orientation(self) -> Self:
         """Undo :meth:`fix_orientation` for the mobject and its family."""
-        for mob in self.get_family():
-            mob._get_fixed_orientation_anchor = None
+        return self.set_fixed_orientation(False)
+
+    def set_fixed_orientation(
+        self,
+        value: bool,
+        *,
+        center_func: Callable[[], Point3D] | None = None,
+        use_static_center_func: bool = False,
+        family: bool = True,
+    ) -> Self:
+        """Set :attr:`is_fixed_orientation` of the mobject (and, with ``family``, of
+        its family); :meth:`fix_orientation` and :meth:`unfix_orientation` call it.
+
+        ``center_func`` and ``use_static_center_func`` are as for
+        :meth:`fix_orientation`; they have no effect when ``value`` is ``False``.
+        """
+        anchor = None
+        if value:
+            anchor = center_func
+            if anchor is None and use_static_center_func:
+                center = self.get_center()
+
+                def anchor() -> Point3D:
+                    return center
+
+            elif anchor is None:
+                anchor = self.get_center
+        for mob in self.get_family() if family else [self]:
+            mob._get_fixed_orientation_anchor = anchor
         return self
 
     def set_z_index_by_z_Point3D(self) -> Self:
