@@ -647,7 +647,7 @@ class SnapshotDrawing:
 
     def _draw_strokes(self, group: _Group, background: bool) -> None:
         camera = self._target.camera
-        geometry, widths, colours = [], [], []
+        geometry, widths, colors = [], [], []
         for node, geo in zip(group.nodes, group.geometry, strict=True):
             path: RPath = node.payload  # type: ignore[assignment]
             stroke = path.background_stroke if background else path.stroke
@@ -655,10 +655,10 @@ class SnapshotDrawing:
                 continue
             geometry.append(geo)
             widths.append(stroke.width)
-            colours.append(paint_colors(stroke.paint, path, camera._shaded_rgbas))
+            colors.append(paint_colors(stroke.paint, path, camera._shaded_rgbas))
         if not geometry:
             return
-        vertices = _stroke_vertices(geometry, widths, colours)
+        vertices = _stroke_vertices(geometry, widths, colors)
         first: RPath = group.nodes[0].payload  # type: ignore[assignment]
         self._pass(
             "quadratic_bezier_stroke",
@@ -673,7 +673,7 @@ class SnapshotDrawing:
 def _stroke_vertices(
     geometry: list[_Geometry],
     widths: list[float],
-    colours: list[tuple[np.ndarray, np.ndarray | None]],
+    colors: list[tuple[np.ndarray, np.ndarray | None]],
 ) -> np.ndarray:
     """Stroke shader input for the paths of one group, built in one pass."""
     quads, counts, offsets = _concatenate(geometry)
@@ -689,7 +689,7 @@ def _stroke_vertices(
     vertices["next_point"] = quads[offset + (local + 1) % count].reshape(-1, 3)
     vertices["unit_normal"] = (0.0, 0.0, 1.0)
     vertices["stroke_width"] = np.repeat(widths, 3 * counts)[:, None]
-    vertices["color"] = _colours(colours, points, 3 * counts)
+    vertices["color"] = _colors(colors, points, 3 * counts)
     return vertices
 
 
@@ -703,16 +703,16 @@ def _concatenate(
     return quads, counts, offsets
 
 
-def _colours(
-    colours: list[tuple[np.ndarray, np.ndarray | None]],
+def _colors(
+    colors: list[tuple[np.ndarray, np.ndarray | None]],
     points: np.ndarray,
     counts: np.ndarray,
 ) -> np.ndarray:
     """Vertex colors of several paths; ``counts`` vertices per path."""
-    first = np.array([rgbas[0] for rgbas, _ in colours])
+    first = np.array([rgbas[0] for rgbas, _ in colors])
     result = np.repeat(first, counts, axis=0)
     ends = np.cumsum(counts)
-    for (rgbas, gradient), end, count in zip(colours, ends, counts, strict=True):
+    for (rgbas, gradient), end, count in zip(colors, ends, counts, strict=True):
         if len(rgbas) > 1 and gradient is not None:
             start = end - count
             result[start:end] = vertex_colors(rgbas, gradient, points[start:end])
@@ -745,7 +745,7 @@ def _groups(
 
     groups: list[_Group] = []
     regions = _Boxes()
-    colour: tuple[float, ...] | None = None
+    color: tuple[float, ...] | None = None
     joint = None
     for index, (node, geo, path) in enumerate(zip(nodes, geometry, paths, strict=True)):
         box = boxes[index]
@@ -758,8 +758,8 @@ def _groups(
         )
         joins = bool(groups) and path.stroke.joint == joint
         if joins and filled[index]:
-            same_colour = single is not None and single == colour
-            joins = same_colour or not (
+            same_color = single is not None and single == color
+            joins = same_color or not (
                 _overlap(groups[-1].box, box) and regions.overlaps(box)
             )
         if filled[index] or len(geo.quads) == 0:
@@ -771,7 +771,7 @@ def _groups(
             group.nodes.append(node)
             group.geometry.append(geo)
             if filled[index] and not group.filled:
-                colour = single
+                color = single
             groups[-1] = group._replace(
                 box=np.r_[
                     np.minimum(group.box[:2], box[:2]),
@@ -782,7 +782,7 @@ def _groups(
         else:
             groups.append(_Group([node], [geo], bool(filled[index]), box))
             regions = _Boxes()
-            colour = single
+            color = single
             joint = path.stroke.joint
         regions.add(region)
     return groups

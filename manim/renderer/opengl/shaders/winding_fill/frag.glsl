@@ -5,8 +5,8 @@ Accumulates the signed coverage of one group of filled paths. Nothing here
 decides what is inside a path: the winding number does, summed from which way
 each triangle faces once projected, so no triangulation is needed.
 
-Colour is premultiplied by that signed coverage, letting paths of one group
-differ in colour and still be resolved from a single buffer wherever they do
+Color is premultiplied by that signed coverage, letting paths of one group
+differ in color and still be resolved from a single buffer wherever they do
 not overlap each other. Opacity is accumulated separately, weighted by the same
 coverage: a pixel covered twice by one path must still get that path's opacity,
 so the resolve step divides it back out instead of adding it up.

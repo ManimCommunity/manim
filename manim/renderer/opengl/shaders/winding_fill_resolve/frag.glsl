@@ -1,11 +1,11 @@
 #version 330
 
 /*
-Colours every pixel the accumulated winding says is inside, exactly once, so
+Colors every pixel the accumulated winding says is inside, exactly once, so
 that an authored opacity is applied a single time however many triangles of the
-group covered the pixel. Colour and opacity are divided back out of their
+group covered the pixel. Color and opacity are divided back out of their
 coverage-weighted sums; their sign cancels with the winding's, so a contour wound
-either way keeps the colour it was drawn with.
+either way keeps the color it was drawn with.
 */
 
 uniform sampler2DMS accumulated;

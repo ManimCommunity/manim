@@ -72,10 +72,10 @@ void main(){
 
 def pack(
     geometry: Sequence[_Geometry],
-    colours: list[tuple[np.ndarray, np.ndarray | None]],
+    colors: list[tuple[np.ndarray, np.ndarray | None]],
 ) -> np.ndarray:
     """The two triangles per quadratic piece of several paths, built in one pass."""
-    from ._drawing import _colours, _concatenate
+    from ._drawing import _colors, _concatenate
 
     quads, counts, offsets = _concatenate(geometry)
     subpath_start = np.concatenate(
@@ -88,7 +88,7 @@ def pack(
     vertices["point"] = corners
     vertices["corner_uv"] = _CORNER_UV
     vertices["fill_all"] = _CORNER_FILL_ALL
-    vertices["color"] = _colours(colours, corners.reshape(-1, 3), 6 * counts).reshape(
+    vertices["color"] = _colors(colors, corners.reshape(-1, 3), 6 * counts).reshape(
         len(quads), 6, 4
     )
     return vertices.reshape(-1)
@@ -186,16 +186,16 @@ class WindingFill:
         fills for some rectangles on a multisampled float buffer.
         """
         camera = target.camera
-        filled, colours = [], []
+        filled, colors = [], []
         for node, geo in zip(nodes, geometry, strict=True):
             path: RPath = node.payload  # type: ignore[assignment]
             if len(geo.quads) == 0 or not shows(path.fill):
                 continue
             filled.append(geo)
-            colours.append(paint_colors(path.fill, path, camera._shaded_rgbas))
+            colors.append(paint_colors(path.fill, path, camera._shaded_rgbas))
         if not filled:
             return
-        vertices = pack(filled, colours)
+        vertices = pack(filled, colors)
         renderer = self._renderer
         context = renderer.context
         self._ensure_buffers(target.size)
