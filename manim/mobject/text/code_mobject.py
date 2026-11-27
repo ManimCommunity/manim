@@ -20,14 +20,13 @@ from pygments.token import Text as TextToken
 from manim.constants import *
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.shape_matchers import SurroundingRectangle
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.text_mobject import Paragraph
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.typing import StrPath
 from manim.utils.color import BLACK, WHITE
 
 
-class Code(VMobject, metaclass=ConvertToOpenGL):
+class Code(VMobject):
     """A highlighted source code listing.
 
     Examples

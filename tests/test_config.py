@@ -7,14 +7,12 @@ import numpy as np
 import pytest
 from click.testing import CliRunner
 
-from manim import RIGHT, WHITE, Scene, Square, Tex, Text, Vector, tempconfig
+from manim import WHITE, Scene, Square, Tex, Text, tempconfig
 from manim._config.output import OutputFormat, OutputSpec
 from manim._config.render_session import resolve_render_session
 from manim._config.utils import ManimConfig
 from manim.cli.render.commands import render
 from manim.constants import RendererType
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
-from manim.mobject.types.vectorized_mobject import VMobject
 from manim.renderer.protocol import RendererCapabilities
 from tests.assert_utils import assert_dir_filled, assert_file_exists
 
@@ -62,15 +60,11 @@ def test_max_files_cached_uses_minus_one_for_unlimited(config):
         config.max_files_cached = float("inf")
 
 
-def test_tempconfig_restores_renderer_class_bases(config):
+def test_tempconfig_restores_renderer(config):
     with tempconfig({"renderer": "opengl"}):
         assert config.renderer == RendererType.OPENGL
-        assert issubclass(Vector, OpenGLVMobject)
 
     assert config.renderer == RendererType.CAIRO
-    assert issubclass(Vector, VMobject)
-    assert not issubclass(Vector, OpenGLVMobject)
-    Vector(RIGHT)
 
 
 @pytest.mark.parametrize(

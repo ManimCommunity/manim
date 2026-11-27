@@ -8,12 +8,17 @@ from pathlib import Path
 
 import numpy as np
 
+from manim._config import config
+from manim.constants import RendererType
 from manim.typing import PixelArray
 
 from ._show_diff import show_diff_helper
 
 FRAME_ABSOLUTE_TOLERANCE = 1.01
 FRAME_MISMATCH_RATIO_TOLERANCE = 1e-5
+#: For frames drawn with the OpenGL renderer: OpenGL implementations (GPUs, Mesa's
+#: and Apple's software renderers) antialias a few edge pixels differently.
+OPENGL_FRAME_MISMATCH_RATIO_TOLERANCE = 1e-4
 
 logger = logging.getLogger("manim")
 
@@ -60,9 +65,15 @@ class _FramesTester:
                 frame, self._frames[frame_number], atol=FRAME_ABSOLUTE_TOLERANCE
             ).sum()
             number_of_mismatches = frame.size - number_of_matches
-            if number_of_mismatches / frame.size < FRAME_MISMATCH_RATIO_TOLERANCE:
-                # we tolerate a small (< 0.001%) amount of pixel value errors
-                # in the tests, this accounts for minor OS dependent inconsistencies
+            tolerance = (
+                OPENGL_FRAME_MISMATCH_RATIO_TOLERANCE
+                if config.renderer == RendererType.OPENGL
+                else FRAME_MISMATCH_RATIO_TOLERANCE
+            )
+            if number_of_mismatches / frame.size < tolerance:
+                # we tolerate a small (< 0.001%, with OpenGL < 0.01%) amount of
+                # pixel value errors in the tests, this accounts for minor OS
+                # dependent inconsistencies
                 self._frames_compared += 1
                 warnings.warn(
                     f"Mismatch of {number_of_mismatches} pixel values in frame {frame_number} "

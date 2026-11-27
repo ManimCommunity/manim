@@ -17,11 +17,13 @@ def test_Circle(scene):
 @frames_comparison(
     renderer_class=OpenGLRenderer,
     renderer="opengl",
+    base_scene=ThreeDScene,
 )
-def test_FixedMobjects3D(scene: Scene):
-    scene.renderer.camera.set_euler_angles(phi=75 * DEGREES, theta=-45 * DEGREES)
+def test_FixedMobjects3D(scene: ThreeDScene):
+    scene.set_camera_orientation(phi=75 * DEGREES, theta=-135 * DEGREES)
     circ = Circle(fill_opacity=1).to_edge(LEFT)
     square = Square(fill_opacity=1).to_edge(RIGHT)
     triangle = Triangle(fill_opacity=1).to_corner(UR)
-    [i.fix_orientation() for i in (circ, square)]
-    triangle.fix_in_frame()
+    scene.add(Square(2, fill_opacity=0.5, color=BLUE))
+    scene.add_fixed_orientation_mobjects(circ, square)
+    scene.add_fixed_in_frame_mobjects(triangle)

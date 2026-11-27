@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar
 from ._config import config, logger
 from ._config.logger_utils import set_file_logger
 from ._run.cache import _SegmentCache
-from ._run.listeners import _Encoder, _FrameRequests, _MeshGuard, _Preview, _Progress
+from ._run.listeners import _Encoder, _FrameRequests, _Preview, _Progress
 from ._run.loop import (
     _Caption,
     _RunListener,
@@ -43,7 +43,6 @@ if TYPE_CHECKING:
     from .renderer._execution import _ExecutionState
     from .renderer.cairo import CairoRenderer
     from .renderer.cairo.camera import Camera
-    from .renderer.opengl.camera import OpenGLCamera
     from .renderer.opengl.renderer import OpenGLRenderer
     from .scene.scene import Scene
     from .scene.scene_file_writer import SceneFileWriter
@@ -305,7 +304,7 @@ class Manager(Generic[SceneT]):
         return self.scene.renderer
 
     @property
-    def camera(self) -> Camera | OpenGLCamera:
+    def camera(self) -> Camera:
         """The current renderer's camera."""
         return self.renderer.camera
 
@@ -564,8 +563,7 @@ class Manager(Generic[SceneT]):
         if times and on_frame is None:
             raise ValueError("Pass on_frame to receive the frames of frame_times.")
         self._state = _State.EVALUATED
-        meshes = _MeshGuard(self)
-        listeners: list[_RunListener] = [meshes, _Progress(self)]
+        listeners: list[_RunListener] = [_Progress(self)]
         if on_frame is not None:
             listeners.append(_FrameRequests(self, times, on_frame))
         loop = _RunLoop(
@@ -577,9 +575,7 @@ class Manager(Generic[SceneT]):
         )
         try:
             with self.renderer._scene_images():
-                meshes.check()
                 self._run(loop, capture_timeline)
-                meshes.check()
         except BaseException:
             self._cleanup_after_failure()
             raise

@@ -110,25 +110,6 @@ class _Preview(_RunListener):
             manager.renderer._present_frame(scene, frame.offset)
 
 
-class _MeshGuard(_RunListener):
-    """Reject GPU-backed meshes, which evaluation cannot run without a context."""
-
-    def __init__(self, manager: Manager) -> None:
-        self._manager = manager
-
-    def check(self) -> None:
-        if self._manager.scene.meshes:
-            raise RuntimeError(
-                "GPU-backed meshes are unsupported in an evaluated scene."
-            )
-
-    def play_started(self, play: _Play) -> None:
-        self.check()
-
-    def frame(self, frame: _Frame) -> None:
-        self.check()
-
-
 class _FrameRequests(_RunListener):
     """Pass the frames shown at requested times to a function.
 

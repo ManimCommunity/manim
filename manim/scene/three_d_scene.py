@@ -5,7 +5,6 @@ from __future__ import annotations
 __all__ = ["ThreeDScene", "SpecialThreeDScene"]
 
 
-import warnings
 from collections.abc import Iterable, Sequence
 from typing import Any
 
@@ -13,18 +12,15 @@ import numpy as np
 
 from manim.mobject.geometry.line import Line
 from manim.mobject.graphing.coordinate_systems import ThreeDAxes
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
 from manim.mobject.three_d.three_dimensions import Sphere
 from manim.mobject.value_tracker import ValueTracker
 
 from .._config import config
 from ..animation.animation import Animation
-from ..animation.transform import Transform
 from ..constants import DEGREES
 from ..mobject.mobject import Mobject
 from ..mobject.types.vectorized_mobject import VectorizedPoint, VGroup
 from ..renderer.cairo.camera import ThreeDCamera
-from ..renderer.opengl.camera import OpenGLCamera
 from ..scene.scene import Scene
 from ..utils.config_ops import merge_dicts_recursively
 
@@ -53,7 +49,7 @@ class ThreeDScene(Scene):
         )
         super().__init__(camera_class=camera_class, **kwargs)
         # The camera methods of this class control a 3D orientation.
-        if not isinstance(self.camera, (ThreeDCamera, OpenGLCamera)):
+        if not isinstance(self.camera, ThreeDCamera):
             raise TypeError(
                 f"Expected a ThreeDCamera, but got {type(self.camera).__name__}"
             )
@@ -133,16 +129,6 @@ class ThreeDScene(Scene):
                 x: ValueTracker = trackers[about]
                 x.add_updater(lambda m, dt: x.increment_value(rate * dt))
                 self.add(x)
-            elif isinstance(self.camera, OpenGLCamera):
-                methods = {
-                    "theta": self.camera.increment_theta,
-                    "phi": self.camera.increment_phi,
-                    "gamma": self.camera.increment_gamma,
-                }
-                self.camera.add_updater(
-                    lambda m, dt: methods[about](rate * dt),
-                )
-                self.add(self.camera)
         except Exception as e:
             raise ValueError("Invalid ambient rotation angle.") from e
 
@@ -159,8 +145,6 @@ class ThreeDScene(Scene):
                 x: ValueTracker = trackers[about]
                 x.clear_updaters()
                 self.remove(x)
-            elif isinstance(self.camera, OpenGLCamera):
-                self.camera.clear_updaters()
         except Exception as e:
             raise ValueError("Invalid ambient rotation angle.") from e
 
@@ -271,41 +255,6 @@ class ThreeDScene(Scene):
                     anims.append(tracker.animate.set_value(value))
             if frame_center is not None:
                 anims.append(self.camera.frame.animate.move_to(frame_center))
-        elif isinstance(self.camera, OpenGLCamera):
-            cam2 = self.camera.copy()
-            methods = {
-                "theta": cam2.set_theta,
-                "phi": cam2.set_phi,
-                "gamma": cam2.set_gamma,
-                "zoom": cam2.scale,
-                "frame_center": cam2.move_to,
-            }
-            if frame_center is not None:
-                if isinstance(frame_center, OpenGLMobject):
-                    frame_center = frame_center.get_center()
-                frame_center = list(frame_center)
-
-            zoom_value = None
-            if zoom is not None:
-                zoom_value = config.frame_height / (zoom * self.camera.height)
-
-            for value, method in [
-                [theta, "theta"],
-                [phi, "phi"],
-                [gamma, "gamma"],
-                [zoom_value, "zoom"],
-                [frame_center, "frame_center"],
-            ]:
-                if value is not None:
-                    methods[method](value)
-
-            if focal_distance is not None:
-                warnings.warn(
-                    "focal distance of OpenGLCamera can not be adjusted.",
-                    stacklevel=2,
-                )
-
-            anims += [Transform(self.camera, cam2)]
 
         frame_was_shown = (
             isinstance(self.camera, ThreeDCamera) and self.camera.frame in self.mobjects
@@ -342,11 +291,6 @@ class ThreeDScene(Scene):
         if isinstance(self.camera, ThreeDCamera):
             self.add(*mobjects)
             self.camera.add_fixed_orientation_mobjects(*mobjects, **kwargs)
-        elif isinstance(self.camera, OpenGLCamera):
-            for mob in mobjects:
-                mob: OpenGLMobject
-                mob.fix_orientation()
-                self.add(mob)
 
     def add_fixed_in_frame_mobjects(self, *mobjects: Mobject):
         """
@@ -363,11 +307,6 @@ class ThreeDScene(Scene):
         if isinstance(self.camera, ThreeDCamera):
             self.add(*mobjects)
             self.camera.add_fixed_in_frame_mobjects(*mobjects)
-        elif isinstance(self.camera, OpenGLCamera):
-            for mob in mobjects:
-                mob: OpenGLMobject
-                mob.fix_in_frame()
-                self.add(mob)
 
     def remove_fixed_orientation_mobjects(self, *mobjects: Mobject):
         """
@@ -383,11 +322,6 @@ class ThreeDScene(Scene):
         """
         if isinstance(self.camera, ThreeDCamera):
             self.camera.remove_fixed_orientation_mobjects(*mobjects)
-        elif isinstance(self.camera, OpenGLCamera):
-            for mob in mobjects:
-                mob: OpenGLMobject
-                mob.unfix_orientation()
-                self.remove(mob)
 
     def remove_fixed_in_frame_mobjects(self, *mobjects: Mobject):
         """
@@ -402,11 +336,6 @@ class ThreeDScene(Scene):
         """
         if isinstance(self.camera, ThreeDCamera):
             self.camera.remove_fixed_in_frame_mobjects(*mobjects)
-        elif isinstance(self.camera, OpenGLCamera):
-            for mob in mobjects:
-                mob: OpenGLMobject
-                mob.unfix_from_frame()
-                self.remove(mob)
 
     ##
     def set_to_default_angled_camera_orientation(self, **kwargs):

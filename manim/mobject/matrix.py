@@ -45,7 +45,6 @@ from typing import Any, Self
 
 import numpy as np
 
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
 from manim.mobject.text.numbers import DecimalNumber, Integer
 from manim.mobject.text.tex_mobject import MathTex, Tex
 from manim.typing import Vector2DLike, Vector3DLike
@@ -72,7 +71,7 @@ def matrix_to_mobject(matrix: np.ndarray) -> MathTex:
     return MathTex(matrix_to_tex_string(matrix))
 
 
-class Matrix(VMobject, metaclass=ConvertToOpenGL):
+class Matrix(VMobject):
     r"""A mobject that displays a matrix on the screen.
 
     Parameters

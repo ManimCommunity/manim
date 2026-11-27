@@ -123,7 +123,6 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
     class FakeScene:
         def __init__(self):
             self.mobjects = [object()]
-            self.meshes = [object()]
             self.session_spec = Mock(
                 video_encoder=encoder, output=Mock(is_still=False), frame_rate=60.0
             )
@@ -159,7 +158,6 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
 
         def _animation_cache_identity(self, scene):
             return "opengl", {
-                "meshes": scene.meshes,
                 "background_color": self.background_color,
                 "anti_alias_width": self.anti_alias_width,
             }
@@ -187,7 +185,6 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
         "encoder_fingerprint": "encoder-token",
         "renderer_state": {
             "drawing": {
-                "meshes": scene.meshes,
                 "background_color": renderer.background_color,
                 "anti_alias_width": renderer.anti_alias_width,
             },

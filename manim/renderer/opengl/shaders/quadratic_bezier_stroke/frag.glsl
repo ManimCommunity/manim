@@ -85,9 +85,13 @@ float modify_distance_for_endpoints(vec2 p, float dist, float t){
 void main() {
     if (uv_stroke_width == 0) discard;
     float dist_to_curve = min_dist_to_curve(uv_coords, uv_b2, bezier_degree);
-    // An sdf for the region around the curve we wish to color.
-    float signed_dist = abs(dist_to_curve) - 0.5 * uv_stroke_width;
+    // Filter both edges of the stroke, not just the nearest one. Smoothing
+    // abs(distance) - half_width alone leaves a half-opaque center even as
+    // width tends to zero, making subpixel strokes artificially heavy.
+    float half_width = 0.5 * uv_stroke_width;
+    vec2 edges = (abs(dist_to_curve) + vec2(-half_width, half_width)) / uv_anti_alias_width;
+    float coverage = smoothstep(-0.5, 0.5, edges.y) - smoothstep(-0.5, 0.5, edges.x);
 
     frag_color = color;
-    frag_color.a *= smoothstep(0.5, -0.5, signed_dist / uv_anti_alias_width);
+    frag_color.a *= coverage;
 }

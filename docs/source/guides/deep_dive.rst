@@ -676,11 +676,7 @@ sounds like a simple task -- the problem is that ``Scene.mobjects``
 is not a "flat" list of mobjects, but a list of mobjects which
 might contain mobjects themselves, and so on.
 
-Stepping through the code in :meth:`.Scene.add`, we see that first
-it is checked whether we are currently using the OpenGL renderer
-(which we are not) -- adding mobjects to the scene works slightly
-different (and actually easier!) for the OpenGL renderer. Then, the
-code branch for the Cairo renderer is entered and the list of so-called
+Stepping through the code in :meth:`.Scene.add`, we see that the list of so-called
 foreground mobjects (which are rendered on top of all other mobjects)
 is added to the list of passed mobjects. This is to ensure that the
 foreground mobjects will stay above of the other mobjects, even after

@@ -3,7 +3,16 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from manim import AddTextLetterByLetter, Text
+from manim import (
+    AddTextLetterByLetter,
+    Circle,
+    DrawBorderThenFill,
+    Group,
+    Mobject,
+    Square,
+    Text,
+    VGroup,
+)
 
 
 def test_non_empty_text_creation():
@@ -32,3 +41,19 @@ def test_run_time_for_non_empty_text(config):
     expected_run_time = np.max((1 / config.frame_rate, run_time_per_char)) * len(s.text)
     anim = AddTextLetterByLetter(s, time_per_char=run_time_per_char)
     assert anim.run_time == expected_run_time
+
+
+@pytest.mark.parametrize(
+    "mobject",
+    [Group(Square(), Circle()), Mobject()],
+    ids=["Group", "Mobject"],
+)
+def test_draw_border_then_fill_refuses_non_vectorized_mobjects(mobject):
+    with pytest.raises(TypeError, match="only works for vectorized Mobjects"):
+        DrawBorderThenFill(mobject)
+
+
+def test_draw_border_then_fill_takes_vectorized_groups():
+    animation = DrawBorderThenFill(VGroup(Square(), Circle()))
+    animation.begin()
+    animation.interpolate(0.5)

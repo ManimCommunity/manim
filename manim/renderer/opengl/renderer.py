@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import contextlib
 import dataclasses
-import itertools as it
 import threading
 import time
 import typing
@@ -15,27 +14,22 @@ from moderngl import Framebuffer
 from PIL import Image
 
 from manim._config import config, logger
-from manim.mobject.opengl.opengl_mobject import (
-    OpenGLMobject,
-)
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
+from manim.renderer.extract import extract
 from manim.typing import Point3D
 from manim.utils.color import color_to_rgba
+from manim.utils.iterables import list_update
 
 from ...constants import *
 from ...scene.scene_file_writer import SceneFileWriter
 from .._execution import _RendererExecutionView
+from ..cairo.camera import Camera, MultiCamera, ThreeDCamera
 from ..protocol import RendererCapabilities, RendererState
-from .shader import Mesh, Shader, shader_program_cache
-from .vectorized_mobject_rendering import (
-    render_opengl_vectorized_mobject_fill,
-    render_opengl_vectorized_mobject_stroke,
-)
+from ._drawing import DrawTarget, SnapshotDrawing
+from .shader import shader_program_cache
 from .window_settings import _WindowSettings
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Iterator
-    from pathlib import Path
 
     from manim._config.render_session import RenderSessionSpec
     from manim.animation.animation import Animation
@@ -48,8 +42,6 @@ if TYPE_CHECKING:
     from manim.utils.color.core import ParsableManimColor
 
     from .window import Window
-
-from .camera import OpenGLCamera
 
 __all__ = ["OpenGLRenderer"]
 
@@ -81,13 +73,10 @@ class OpenGLRenderer(_RendererExecutionView):
         List of animation hashes for caching.
     anti_alias_width : float
         The width used for anti-aliasing in pixel units.
-    camera : OpenGLCamera
+    camera : Camera
         The camera used for rendering.
     num_plays : float
         The number of animation plays executed.
-    path_to_texture_id : dict[str, int]
-        Mapping from texture keys (file paths or image identifiers) to OpenGL
-        texture IDs.
     pressed_keys : set[int]
         Set of currently pressed key codes.
     skip_animations : bool
@@ -104,6 +93,8 @@ class OpenGLRenderer(_RendererExecutionView):
         self,
         file_writer_class: type[SceneFileWriter] = SceneFileWriter,
         skip_animations: bool = False,
+        camera_class: type[Camera] | None = None,
+        camera: Camera | None = None,
     ) -> None:
         """Initializes the OpenGLRenderer.
 
@@ -113,7 +104,13 @@ class OpenGLRenderer(_RendererExecutionView):
             The class to use for writing scene files, by default SceneFileWriter.
         skip_animations : bool, optional
             Whether to skip animations during rendering, by default False.
+        camera_class
+            The camera class to instantiate, by default :class:`.Camera`.
+        camera
+            A camera to use instead of instantiating ``camera_class``.
         """
+        if camera is not None and camera_class is not None:
+            raise ValueError("Pass either camera or camera_class, not both.")
         # Measured in pixel widths, used for vector graphics
         self.anti_alias_width = 1.5
         self._file_writer_class = file_writer_class
@@ -122,12 +119,13 @@ class OpenGLRenderer(_RendererExecutionView):
         self.animation_start_time = 0.0
         self.animation_elapsed_time = 0.0
 
-        self.camera = OpenGLCamera()
+        self.camera: Camera = camera or (camera_class or Camera)()
+        self.perspective_uniforms: dict[str, Any] = {}
+        self.camera_view: _CameraView = _CameraView.of(self.camera)
+        self._snapshot_drawing = SnapshotDrawing(self)
+        self._camera_view_targets: dict[int, _ViewTarget] = {}
         self.pressed_keys: set[int] = set()
         self.window: Window | None = None
-        self.path_to_texture_id: dict[str, int] = {}
-        # In-memory images that textures were created from, by texture key.
-        self._texture_images: dict[str, Image.Image] = {}
         self.background_color = config["background_color"]
         self._context: moderngl.Context | None = None
         self._frame_buffer_object: Framebuffer | None = None
@@ -139,7 +137,6 @@ class OpenGLRenderer(_RendererExecutionView):
         self._kept_image_renderer: OpenGLRenderer | None = None
         self._state = RendererState.UNOPENED
         self._resources = contextlib.ExitStack()
-        self._textures: list[moderngl.Texture] = []
         self._previous_renderer: weakref.ReferenceType[OpenGLRenderer] | None = None
 
     def init_scene(
@@ -310,9 +307,8 @@ class OpenGLRenderer(_RendererExecutionView):
 
         Use :meth:`.Manager.close` for scene cleanup: it stops encoding jobs
         before closing the renderer. To render another scene, create a new
-        renderer. :meth:`.Scene.get_image` can still draw ordinary mobjects with
-        a temporary context; GPU-backed meshes require their original context
-        to remain open.
+        renderer. :meth:`.Scene.get_image` can still draw with a temporary
+        context.
         """
         if self._state is RendererState.CLOSED:
             return
@@ -356,17 +352,11 @@ class OpenGLRenderer(_RendererExecutionView):
                 if host_alive:
                     release(program.release)
         if host_alive:
-            for texture in reversed(self._textures):
-                release(texture.release)
-        self._textures.clear()
-        if host_alive:
             release(self._resources.close)
         else:
             self._resources.pop_all()
             if self.window is not None and self.window._window.context is not None:
                 release(self.window.close)
-        self.path_to_texture_id.clear()
-        self._texture_images.clear()
         self.pressed_keys.clear()
         self._resources = contextlib.ExitStack()
         host_still_alive = (
@@ -432,15 +422,18 @@ class OpenGLRenderer(_RendererExecutionView):
         _, _, pixel_width, pixel_height = frame_buffer.viewport
         return pixel_width, pixel_height
 
-    def refresh_perspective_uniforms(self, camera: OpenGLCamera) -> None:
-        """
-        Update the perspective-related uniform variables used in the
-        OpenGL renderer based on the current camera settings.
+    def refresh_perspective_uniforms(self, camera: Camera) -> None:
+        """Update the camera uniforms from ``camera``.
+
+        The shaders rotate points about the frame center, divide by the frame
+        shape and apply a perspective factor ``focal_distance / (focal_distance - z)``,
+        which is what :meth:`.ThreeDCamera.project_points` does on the CPU. A
+        camera without rotation draws orthographically.
 
         Parameters
         ----------
-        camera : OpenGLCamera
-            The camera object from which to extract perspective and lighting information.
+        camera
+            The camera whose view to draw.
 
         Raises
         ------
@@ -452,180 +445,90 @@ class OpenGLRenderer(_RendererExecutionView):
         if pixel_shape is None:
             msg = "Pixel shape is None, cannot refresh perspective uniforms."
             raise ValueError(msg)
+        _, pixel_height = pixel_shape
+        view = self.camera_view = _CameraView.of(camera)
+        self.perspective_uniforms = self.camera_uniforms(view, pixel_height)
 
-        pixel_width, pixel_height = pixel_shape
-        frame_width, frame_height = camera.get_shape()
-        # TODO, this should probably be a mobject uniform, with
-        # the camera taking care of the conversion factor
-        anti_alias_width = self.anti_alias_width / (pixel_height / frame_height)
-        # Orient light
-        rotation = camera.inverse_rotation_matrix
-        light_pos: Point3D = camera.light_source.get_location()
-        light_pos = np.dot(rotation, light_pos)
-
-        self.perspective_uniforms = {
-            "frame_shape": camera.get_shape(),
-            "anti_alias_width": anti_alias_width,
-            "camera_center": tuple(camera.get_center()),
-            "camera_rotation": tuple(np.array(rotation).T.flatten()),
-            "light_source_position": tuple(light_pos),
-            "focal_distance": camera.get_focal_distance(),
+    def camera_uniforms(self, view: _CameraView, pixel_height: int) -> dict[str, Any]:
+        """The shaders' camera uniforms for a view drawn ``pixel_height`` pixels high."""
+        _, frame_height = view.frame_shape
+        return {
+            "frame_shape": view.frame_shape,
+            # Antialiasing width, measured in pixels, converted to scene units.
+            "anti_alias_width": self.anti_alias_width / (pixel_height / frame_height),
+            "camera_center": tuple(view.center),
+            "camera_rotation": tuple(view.rotation.T.flatten()),
+            "focal_distance": view.focal_distance,
         }
 
-    def render_mobject(self, mobject: OpenGLMobject | OpenGLVMobject) -> None:
-        """
-        Render an OpenGL mobject (either OpenGLMobject or OpenGLVMobject)
-        using the appropriate shaders and rendering pipeline.
-
-        Parameters
-        ----------
-        mobject : OpenGLMobject | OpenGLVMobject
-            The mobject to render. Must be an instance of OpenGLMobject or OpenGLVMobject.
-
-        Raises
-        ------
-        TypeError
-            If a shader texture is not a moderngl.Uniform or moderngl.UniformBlock.
-        """
-        self.open()
-        if isinstance(mobject, OpenGLVMobject):
-            if config["use_projection_fill_shaders"]:
-                render_opengl_vectorized_mobject_fill(self, mobject)
-
-            if config["use_projection_stroke_shaders"]:
-                render_opengl_vectorized_mobject_stroke(self, mobject)
-
-        shader_wrapper_list = mobject.get_shader_wrapper_list()
-        # Convert ShaderWrappers to Meshes.
-        for shader_wrapper in shader_wrapper_list:
-            folder = shader_wrapper.shader_folder
-            shader = Shader(
-                context=self.context, name=str(folder) if folder is not None else None
-            )
-
-            # Set textures.
-            for name, path in shader_wrapper.texture_paths.items():
-                tid = self.get_texture_id(path)
-                shader_texture = shader.shader_program[name]
-                if not isinstance(
-                    shader_texture, (moderngl.Uniform, moderngl.UniformBlock)
-                ):
-                    msg = (
-                        f"Shader texture must be a uniform, got {type(shader_texture)}"
-                    )
-                    raise TypeError(msg)
-                shader_texture.value = tid
-
-            # Set uniforms.
-            for name, value in it.chain(
-                shader_wrapper.uniforms.items(),
-                self.perspective_uniforms.items(),
-            ):
-                with contextlib.suppress(KeyError):
-                    shader.set_uniform(name, value)
-            try:
-                # TODO: make the type of 'camera' generic in the 'Scene' class
-                # to avoid the cast here
-                cam = typing.cast("OpenGLCamera", self.scene.camera)
-                shader.set_uniform("u_view_matrix", cam.formatted_view_matrix)
-                shader.set_uniform("u_projection_matrix", cam.projection_matrix)
-            except KeyError:
-                pass
-
-            # Set depth test.
-            if shader_wrapper.depth_test:
-                self.context.enable(moderngl.DEPTH_TEST)
-            else:
-                self.context.disable(moderngl.DEPTH_TEST)
-
-            # Render.
-            vert_indices = shader_wrapper.vert_indices
-            mesh = Mesh(
-                shader,
-                shader_wrapper.vert_data,
-                indices=np.asarray(vert_indices) if vert_indices is not None else None,
-                use_depth_test=shader_wrapper.depth_test,
-                primitive=mobject.render_primitive,
-            )
-            mesh.set_uniforms(self)
-            mesh.render()
-
-    def get_texture_id(self, path: str | Path | Image.Image) -> int:
-        """
-        Retrieves the OpenGL texture ID associated with the given texture source.
-
-        Automatically creates a new texture if it has not been loaded before.
-
-        Parameters
-        ----------
-        path
-            The file path to the texture image, or an already loaded image
-            (as used by :class:`.OpenGLTexturedSurface`).
-
-        Returns
-        -------
-        int
-            The OpenGL texture ID corresponding to the given source.
-        """
-        self._ensure_not_closed()
-        key = f"<image {id(path)}>" if isinstance(path, Image.Image) else str(path)
-
-        if key not in self.path_to_texture_id:
-            self._create_texture(path, key)
-        return self.path_to_texture_id[key]
-
-    def _create_texture(self, source: str | Path | Image.Image, key: str) -> int:
-        """
-        Create an OpenGL texture from the given image or image file path, get its
-        texture ID, and store it in `self.path_to_texture_id[key]`.
-
-        Parameters
-        ----------
-        source
-            The image, or the file path to the image, to be loaded as a texture.
-        key
-            The key under which the texture ID is stored.
-
-        Returns
-        -------
-        int
-            The texture ID assigned to the newly created texture.
-        """
-        image_context: contextlib.AbstractContextManager[Image.Image] = (
-            contextlib.nullcontext(source)
-            if isinstance(source, Image.Image)
-            else Image.open(source)
+    def _draw_snapshots(self, scene: Scene) -> None:
+        """Draw the scene's mobjects from render snapshots, camera views first."""
+        mobjects = list_update(scene.mobjects, scene.foreground_mobjects)
+        views = self._draw_camera_views(mobjects)
+        nodes = extract(mobjects, use_z_index=self.camera.use_z_index)
+        pixel_shape = self.get_pixel_shape()
+        assert pixel_shape is not None
+        target = DrawTarget(
+            self.frame_buffer_object,
+            pixel_shape,
+            self.camera,
+            self.camera_view,
+            self.perspective_uniforms,
         )
-        with image_context as img:
-            tid = len(self.path_to_texture_id)
+        self._snapshot_drawing.draw(self.camera._sort_for_display(nodes), target, views)
 
-            # grayscale image
-            if img.mode == "L":
-                components = 1
-                swizzle = "RRR1"
-            else:
-                # convert everything to RGBA for consistency
-                img = img.convert("RGBA")
-                components = 4
-                swizzle = "RGBA"
+    def _draw_camera_views(self, mobjects: list[Mobject]) -> dict[int, Any]:
+        """Draw what each camera view of a :class:`.MultiCamera` sees into a texture.
 
-            texture = self.context.texture(
-                size=img.size,
-                components=components,
-                data=img.tobytes(),
+        Returns the textures by the uid of their :class:`.ImageMobjectFromCamera`.
+        """
+        if not isinstance(self.camera, MultiCamera):
+            return {}
+        pixel_shape = self.get_pixel_shape()
+        assert pixel_shape is not None
+        textures = {}
+        for image_mobject in self.camera.image_mobjects_from_cameras:
+            size = (
+                max(
+                    1,
+                    int(pixel_shape[0] * image_mobject.width / self.camera.frame_width),
+                ),
+                max(
+                    1,
+                    int(
+                        pixel_shape[1] * image_mobject.height / self.camera.frame_height
+                    ),
+                ),
             )
-        texture.repeat_x = False
-        texture.repeat_y = False
-        texture.filter = (moderngl.NEAREST, moderngl.NEAREST)
-        texture.swizzle = swizzle
-        texture.use(location=tid)
-        self._textures.append(texture)
-        self.path_to_texture_id[key] = tid
-        if isinstance(source, Image.Image):
-            # Keep the image alive, so that its id (part of the key) cannot be
-            # reused by another image while the texture exists.
-            self._texture_images[key] = source
-        return tid
+            view_target = self._camera_view_targets.get(image_mobject.uid)
+            if view_target is None or view_target.size != size:
+                if view_target is not None:
+                    view_target.release()
+                view_target = _ViewTarget(self, size)
+                self._camera_view_targets[image_mobject.uid] = view_target
+            camera = image_mobject.camera
+            view = _CameraView.of(camera)
+            target = DrawTarget(
+                view_target.framebuffer,
+                size,
+                camera,
+                view,
+                self.camera_uniforms(view, size[1]),
+            )
+            view_target.framebuffer.use()
+            view_target.framebuffer.clear(
+                *camera.background_color.to_rgb(), camera.background_opacity
+            )
+            nodes = extract(
+                mobjects,
+                use_z_index=camera.use_z_index,
+                excluded_mobjects=[image_mobject],
+            )
+            view_target.drawing.draw(camera._sort_for_display(nodes), target)
+            textures[image_mobject.uid] = view_target.texture
+        for uid in self._camera_view_targets.keys() - textures.keys():
+            self._camera_view_targets.pop(uid).release()
+        return textures
 
     def update_skipping_status(self) -> None:
         """Ask the scene's manager whether this play should be fast-forwarded.
@@ -661,7 +564,6 @@ class OpenGLRenderer(_RendererExecutionView):
 
     def _animation_cache_identity(self, scene: Scene) -> tuple[str, Any]:
         return "opengl", {
-            "meshes": scene.meshes,
             "background_color": self.background_color,
             "anti_alias_width": self.anti_alias_width,
         }
@@ -732,7 +634,7 @@ class OpenGLRenderer(_RendererExecutionView):
         Performs the following steps:
         1. Clear the frame buffer with the background color.
         2. Refresh camera perspective uniforms for rendering.
-        3. Iterate through all mobjects in the scene, rendering those marked for display.
+        3. Draw render snapshots of the scene's mobjects.
         4. Iterate through all mesh objects in the scene, setting their uniforms and rendering them.
         5. Update the wall-clock time used to pace the preview window.
 
@@ -746,27 +648,12 @@ class OpenGLRenderer(_RendererExecutionView):
         self.animation_elapsed_time = time.time() - self.animation_start_time
 
     def _draw_scene(self, scene: Scene) -> None:
-        """Draw current objects and meshes without updating animation timing."""
+        """Draw the current objects without updating animation timing."""
         self.frame_buffer_object.clear(*self.background_color)
 
-        # TODO: make the type of 'camera' generic in the 'Scene' class
-        # to avoid the cast here
-        cam = typing.cast("OpenGLCamera", scene.camera)
-        self.refresh_perspective_uniforms(cam)
+        self.refresh_perspective_uniforms(self.camera)
 
-        for mobject in scene.mobjects:
-            if not mobject.should_render:
-                continue
-
-            # TODO: make the type of 'mobject' generic in the 'Scene' class
-            # to avoid the cast here
-            mobj = typing.cast("OpenGLMobject | OpenGLVMobject", mobject)
-            self.render_mobject(mobj)
-
-        for obj in scene.meshes:
-            for mesh in obj.get_meshes():
-                mesh.set_uniforms(self)
-                mesh.render()
+        self._draw_snapshots(scene)
 
     @contextlib.contextmanager
     def _scene_images(self) -> Iterator[None]:
@@ -787,8 +674,8 @@ class OpenGLRenderer(_RendererExecutionView):
     def _get_scene_image(self, scene: Scene) -> Image.Image:
         """Draw a snapshot separately from the live-preview framebuffer.
 
-        An existing context is used on its rendering thread. Otherwise, ordinary
-        mobjects are drawn with a temporary context and renderer.
+        An existing context is used on its rendering thread. Otherwise, the scene
+        is drawn with a temporary context and renderer.
         """
         if (
             self._context_thread is not None
@@ -800,10 +687,6 @@ class OpenGLRenderer(_RendererExecutionView):
         if self._capturing_image:
             raise RuntimeError("Recursive OpenGL scene image capture is not supported.")
         if self._context is None:
-            if scene.meshes:
-                raise RuntimeError(
-                    "GPU-backed meshes require a live OpenGL context for inspection."
-                )
             kept = self._kept_image_renderer
             temporary = (
                 kept if kept is not None else OpenGLRenderer._image_renderer(self)
@@ -1090,8 +973,9 @@ class OpenGLRenderer(_RendererExecutionView):
         if pixel_shape is None:
             return typing.cast(Point3D, np.array([0.0, 0.0, 0.0]))
         pixel_width, pixel_height = pixel_shape
-        frame_height = config["frame_height"]
-        frame_center = self.camera.get_center()
+        view = _CameraView.of(self.camera)
+        frame_height = view.frame_shape[1]
+        frame_center = view.center
         if relative:
             # relative -> just normalize to [-1, 1]
             return 2 * np.array([px / pixel_width, py / pixel_height, 0])
@@ -1116,3 +1000,76 @@ class OpenGLRenderer(_RendererExecutionView):
     @background_color.setter
     def background_color(self, value: ParsableManimColor) -> None:
         self._background_color = color_to_rgba(value, 1.0)
+
+
+#: Focal distance standing in for "no perspective" (a camera without rotation).
+_ORTHOGRAPHIC_FOCAL_DISTANCE = 1e6
+
+
+def _eye(center: Point3D, rotation: np.ndarray, focal_distance: float) -> np.ndarray:
+    """The camera position in scene coordinates: at the focal distance from the
+    frame center, on the view axis.
+    """
+    return np.asarray(center, dtype=float) + np.asarray(rotation).T @ np.array(
+        [0.0, 0.0, focal_distance]
+    )
+
+
+class _CameraView(typing.NamedTuple):
+    """What the shaders need to know about a camera."""
+
+    center: Point3D
+    #: Rotation applied to ``point - center``, as in ``ThreeDCamera.project_points``.
+    rotation: np.ndarray
+    #: Frame width and height, divided by the zoom factor.
+    frame_shape: tuple[float, float]
+    focal_distance: float
+    #: The camera's light, in scene coordinates; ``None`` without one.
+    light_source: Point3D | None
+    #: Where the scene is seen from, in scene coordinates.
+    eye: Point3D
+
+    @classmethod
+    def of(cls, camera: Camera) -> _CameraView:
+        if isinstance(camera, ThreeDCamera):
+            zoom = camera.get_zoom()
+            return cls(
+                center=np.asarray(camera.frame_center, dtype=float),
+                rotation=np.asarray(camera.get_rotation_matrix(), dtype=float),
+                frame_shape=(camera.frame_width / zoom, camera.frame_height / zoom),
+                focal_distance=float(camera.get_focal_distance()),
+                light_source=np.asarray(camera.light_source.get_center(), dtype=float),
+                eye=_eye(
+                    camera.frame_center,
+                    camera.get_rotation_matrix(),
+                    camera.get_focal_distance(),
+                ),
+            )
+        return cls(
+            center=np.asarray(camera.frame_center, dtype=float),
+            rotation=np.identity(3),
+            frame_shape=(camera.frame_width, camera.frame_height),
+            focal_distance=_ORTHOGRAPHIC_FOCAL_DISTANCE,
+            light_source=None,
+            eye=_eye(camera.frame_center, np.identity(3), _ORTHOGRAPHIC_FOCAL_DISTANCE),
+        )
+
+
+class _ViewTarget:
+    """An offscreen target for one camera view, with its own drawing state."""
+
+    def __init__(self, renderer: OpenGLRenderer, size: tuple[int, int]) -> None:
+        context = renderer.context
+        self.size = size
+        self.texture = context.texture(size, components=4)
+        self.texture.filter = (moderngl.LINEAR, moderngl.LINEAR)
+        self.framebuffer = context.framebuffer(color_attachments=[self.texture])
+        self.drawing = SnapshotDrawing(renderer)
+        renderer._resources.callback(self.release)
+
+    def release(self) -> None:
+        """Release the GPU objects; safe to call more than once."""
+        self.drawing.release()
+        for resource in (self.framebuffer, self.texture):
+            if not isinstance(resource.mglo, moderngl.InvalidObject):
+                resource.release()

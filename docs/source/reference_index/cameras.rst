@@ -7,4 +7,3 @@ Cameras
    :toctree: ../reference
 
    ~renderer.cairo.camera
-   ~renderer.opengl.camera

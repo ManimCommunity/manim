@@ -44,7 +44,6 @@ from watchdog.observers import Observer
 from manim._version import __version__
 from manim.data_structures import MethodWithArgs
 from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject, OpenGLPoint
 
 from .._config import config, logger
 from .._config.output_plan import (
@@ -60,17 +59,14 @@ from ..animation.animation import Animation, Wait, prepare_animation
 from ..animation.composition import AnimationGroup
 from ..constants import *
 from ..manager import Manager
+from ..mobject.types.point_cloud_mobject import Point
 from ..renderer.cairo import CairoRenderer
-from ..renderer.cairo.camera import Camera
-from ..renderer.opengl.camera import OpenGLCamera
+from ..renderer.cairo.camera import Camera, ThreeDCamera
 from ..renderer.opengl.renderer import OpenGLRenderer
-from ..renderer.opengl.shader import Object3D
 from ..scene.scene_file_writer import _SceneFileWriterSettings
-from ..utils import opengl, space_ops
 from ..utils.deprecation import deprecated
 from ..utils.exceptions import RerunSceneException
 from ..utils.family import extract_mobject_family_members
-from ..utils.family_ops import restructure_list_to_exclude_certain_family_members
 from ..utils.iterables import list_difference_update, list_update
 from ..utils.module_ops import scene_classes_from_file
 
@@ -210,8 +206,6 @@ class Scene:
         self.last_t = 0.0
         self.queue: Queue[SceneInteractAction] = Queue()
         self.skip_animation_preview = False
-        self.meshes: list[Object3D] = []
-        self.camera_target = ORIGIN
         self.widgets: list[dict[str, Any]] = []
         self.dearpygui_imported = dearpygui_imported
         self.updaters: list[Callable[[float], None]] = []
@@ -222,10 +216,10 @@ class Scene:
 
         if config.renderer == RendererType.OPENGL:
             # Items associated with interaction
-            self.mouse_point = OpenGLPoint()
-            self.mouse_drag_point = OpenGLPoint()
+            self.mouse_point = Point()
+            self.mouse_drag_point = Point()
             if renderer is None:
-                renderer = OpenGLRenderer()
+                renderer = OpenGLRenderer(camera_class=self.camera_class)
 
         if renderer is None:
             self._renderer: CairoRenderer | OpenGLRenderer = CairoRenderer(
@@ -308,7 +302,7 @@ class Scene:
         return self._renderer
 
     @property
-    def camera(self) -> Camera | OpenGLCamera:
+    def camera(self) -> Camera:
         return self.renderer.camera
 
     @property
@@ -479,11 +473,6 @@ class Scene:
         for mobj in self.mobjects:
             mobj.update(dt)
 
-    def update_meshes(self, dt: float) -> None:
-        for obj in self.meshes:
-            for mesh in obj.get_family():
-                mesh.update(dt)
-
     def update_self(self, dt: float) -> None:
         """Run all scene updater functions.
 
@@ -563,19 +552,12 @@ class Scene:
         list
             List of mobject family members.
         """
-        if config.renderer == RendererType.OPENGL:
-            family_members = []
-            for mob in self.mobjects:
-                family_members.extend(mob.get_family())
-            return family_members
-        else:
-            assert config.renderer == RendererType.CAIRO
-            return extract_mobject_family_members(
-                self.mobjects,
-                use_z_index=self.renderer.camera.use_z_index,
-            )
+        return extract_mobject_family_members(
+            self.mobjects,
+            use_z_index=self.renderer.camera.use_z_index,
+        )
 
-    def add(self, *mobjects: Mobject | OpenGLMobject) -> Self:
+    def add(self, *mobjects: Mobject) -> Self:
         """
         Mobjects will be displayed, from background to
         foreground in the order with which they are added.
@@ -591,32 +573,18 @@ class Scene:
             The same scene after adding the Mobjects in.
 
         """
-        if config.renderer == RendererType.OPENGL:
-            new_mobjects = []
-            new_meshes: list[Object3D] = []
-            for mobject_or_mesh in mobjects:
-                if isinstance(mobject_or_mesh, Object3D):
-                    new_meshes.append(mobject_or_mesh)
-                else:
-                    new_mobjects.append(mobject_or_mesh)
-            self.remove(*new_mobjects)  # type: ignore[arg-type]
-            self.mobjects += new_mobjects  # type: ignore[arg-type]
-            self.remove(*new_meshes)  # type: ignore[arg-type]
-            self.meshes += new_meshes
-        else:
-            assert config.renderer == RendererType.CAIRO
-            new_and_foreground_mobjects: list[Mobject] = [
-                *mobjects,  # type: ignore[list-item]
-                *self.foreground_mobjects,
-            ]
-            self.restructure_mobjects(to_remove=new_and_foreground_mobjects)
-            self.mobjects += new_and_foreground_mobjects
-            if self.moving_mobjects:
-                self.restructure_mobjects(
-                    to_remove=new_and_foreground_mobjects,
-                    mobject_list_name="moving_mobjects",
-                )
-                self.moving_mobjects += new_and_foreground_mobjects
+        new_and_foreground_mobjects: list[Mobject] = [
+            *mobjects,
+            *self.foreground_mobjects,
+        ]
+        self.restructure_mobjects(to_remove=new_and_foreground_mobjects)
+        self.mobjects += new_and_foreground_mobjects
+        if self.moving_mobjects:
+            self.restructure_mobjects(
+                to_remove=new_and_foreground_mobjects,
+                mobject_list_name="moving_mobjects",
+            )
+            self.moving_mobjects += new_and_foreground_mobjects
         return self
 
     def add_mobjects_from_animations(self, animations: list[Animation]) -> None:
@@ -629,7 +597,7 @@ class Scene:
             mob = animation.mobject
             if mob is not None and mob not in curr_mobjects:
                 self.add(mob)
-                curr_mobjects += mob.get_family()  # type: ignore[arg-type]
+                curr_mobjects += mob.get_family()
 
     def remove(self, *mobjects: Mobject) -> Self:
         """
@@ -642,32 +610,9 @@ class Scene:
         *mobjects
             The mobjects to remove.
         """
-        if config.renderer == RendererType.OPENGL:
-            mobjects_to_remove = []
-            meshes_to_remove: set[Object3D] = set()
-            mobject_or_mesh: Mobject
-            for mobject_or_mesh in mobjects:
-                if isinstance(mobject_or_mesh, Object3D):
-                    meshes_to_remove.add(mobject_or_mesh)
-                else:
-                    mobjects_to_remove.append(mobject_or_mesh)
-            self.mobjects = restructure_list_to_exclude_certain_family_members(
-                self.mobjects,
-                mobjects_to_remove,
-            )
-
-            def lambda_function(mesh: Object3D) -> bool:
-                return mesh not in set(meshes_to_remove)
-
-            self.meshes = list(
-                filter(lambda_function, self.meshes),
-            )
-            return self
-        else:
-            assert config.renderer == RendererType.CAIRO
-            for list_name in "mobjects", "foreground_mobjects":
-                self.restructure_mobjects(mobjects, list_name, False)
-            return self
+        for list_name in "mobjects", "foreground_mobjects":
+            self.restructure_mobjects(mobjects, list_name, False)
+        return self
 
     def replace(self, old_mobject: Mobject, new_mobject: Mobject) -> None:
         """Replace one mobject in the scene with another, preserving draw order.
@@ -1005,8 +950,8 @@ class Scene:
 
         def _collect_animation_mobjects(
             nested_animations: Iterable[Animation],
-        ) -> list[Mobject | OpenGLMobject]:
-            animation_mobjects: list[Mobject | OpenGLMobject] = []
+        ) -> list[Mobject]:
+            animation_mobjects: list[Mobject] = []
             for anim in nested_animations:
                 # Keep composition wrappers as conservative boundaries for the
                 # static frame cache, in addition to their nested animations.
@@ -1433,7 +1378,6 @@ class Scene:
         """Like embed(), but allows for screen interaction."""
         if self.manager is not None:
             self.manager._mode.check("Interactive preview")
-        assert isinstance(self.camera, OpenGLCamera)
         assert isinstance(self.renderer, OpenGLRenderer)
         if not self.check_interactive_embed_is_valid():
             return
@@ -1441,7 +1385,7 @@ class Scene:
         from IPython.terminal.embed import InteractiveShellEmbed
 
         def ipython(shell: InteractiveShellEmbed, namespace: dict[str, Any]) -> None:
-            import manim.opengl
+            import manim
 
             def load_module_into_namespace(
                 module: Any, namespace: dict[str, Any]
@@ -1450,7 +1394,6 @@ class Scene:
                     namespace[name] = getattr(module, name)
 
             load_module_into_namespace(manim, namespace)
-            load_module_into_namespace(manim.opengl, namespace)
 
             def embedded_rerun(*args: Any, **kwargs: Any) -> None:
                 self.queue.put(SceneInteractRerun("keyboard"))
@@ -1509,7 +1452,7 @@ class Scene:
             else:
                 self._configure_pygui(update=True)
 
-        self.camera.model_matrix = self.camera.default_model_matrix
+        self._save_camera_state()
 
         self.interact(shell, keyboard_thread)
 
@@ -1576,7 +1519,6 @@ class Scene:
                 last_time = time.time()
                 self._get_manager()._render_preview_frame(dt)
                 self.update_mobjects(dt)
-                self.update_meshes(dt)
                 self.update_self(dt)
 
         # Join the keyboard thread if necessary.
@@ -1718,7 +1660,6 @@ class Scene:
             alpha = t / animation.run_time if animation.run_time > 0 else 1.0
             animation.interpolate(alpha)
         self.update_mobjects(dt)
-        self.update_meshes(dt)
         self.update_self(dt)
 
     def add_subcaption(
@@ -1826,26 +1767,15 @@ class Scene:
         self._get_manager().add_sound(sound_file, time_offset, gain, gain_to_background)
 
     def on_mouse_motion(self, point: Point3D, d_point: Point3D) -> None:
-        assert isinstance(self.camera, OpenGLCamera)
         assert isinstance(self.renderer, OpenGLRenderer)
         self.mouse_point.move_to(point)
         if SHIFT_VALUE in self.renderer.pressed_keys:
-            shift = -d_point
-            shift[0] *= self.camera.get_width() / 2
-            shift[1] *= self.camera.get_height() / 2
-            transform = self.camera.inverse_rotation_matrix
-            shift = np.dot(np.transpose(transform), shift)
-            self.camera.shift(shift)
+            self._pan_camera(d_point)
 
     def on_mouse_scroll(self, point: Point3D, offset: Point3D) -> None:
-        assert isinstance(self.camera, OpenGLCamera)
-        if not config.use_projection_stroke_shaders:
-            factor = 1 + np.arctan(-2.1 * offset[1])
-            self.camera.scale(factor, about_point=self.camera_target)
         self.mouse_scroll_orbit_controls(point, offset)
 
     def on_key_press(self, symbol: int, modifiers: int) -> None:
-        assert isinstance(self.camera, OpenGLCamera)
         try:
             char = chr(symbol)
         except OverflowError:
@@ -1853,8 +1783,7 @@ class Scene:
             return
 
         if char == "r":
-            self.camera.to_default_state()
-            self.camera_target = np.array([0, 0, 0], dtype=np.float32)
+            self._restore_camera_state()
         elif char == "q":
             self.quit_interaction = True
         else:
@@ -1871,28 +1800,13 @@ class Scene:
         buttons: int,
         modifiers: int,
     ) -> None:
-        assert isinstance(self.camera, OpenGLCamera)
         self.mouse_drag_point.move_to(point)
-        if buttons == 1:
-            self.camera.increment_theta(-d_point[0])
-            self.camera.increment_phi(d_point[1])
-        elif buttons == 4:
-            camera_x_axis = self.camera.model_matrix[:3, 0]
-            horizontal_shift_vector = -d_point[0] * camera_x_axis
-            vertical_shift_vector = -d_point[1] * np.cross(OUT, camera_x_axis)
-            total_shift_vector = horizontal_shift_vector + vertical_shift_vector
-            self.camera.shift(1.1 * total_shift_vector)
-
         self.mouse_drag_orbit_controls(point, d_point, buttons, modifiers)
 
     def mouse_scroll_orbit_controls(self, point: Point3D, offset: Point3D) -> None:
-        assert isinstance(self.camera, OpenGLCamera)
-        camera_to_target = self.camera_target - self.camera.get_position()
-        camera_to_target *= np.sign(offset[1])
-        shift_vector = 0.01 * camera_to_target
-        self.camera.model_matrix = (
-            opengl.translation_matrix(*shift_vector) @ self.camera.model_matrix
-        )
+        """Zoom the camera frame about its center."""
+        factor = 1 + np.arctan(-2.1 * offset[1])
+        self.camera.frame.scale(factor)
 
     def mouse_drag_orbit_controls(
         self,
@@ -1901,78 +1815,44 @@ class Scene:
         buttons: int,
         modifiers: int,
     ) -> None:
-        assert isinstance(self.camera, OpenGLCamera)
-        # Left click drag.
-        if buttons == 1:
-            # Translate to target the origin and rotate around the z axis.
-            self.camera.model_matrix = (
-                opengl.rotation_matrix(z=-d_point[0])
-                @ opengl.translation_matrix(*-self.camera_target)
-                @ self.camera.model_matrix
-            )
+        """Rotate a :class:`.ThreeDCamera` with the left button; pan otherwise."""
+        if buttons == 1 and isinstance(self.camera, ThreeDCamera):
+            self.camera.set_theta(self.camera.get_theta() - d_point[0])
+            phi = self.camera.get_phi() + d_point[1]
+            self.camera.set_phi(float(np.clip(phi, -PI / 2, PI / 2)))
+        elif buttons in (1, 4):
+            self._pan_camera(d_point)
 
-            # Rotation off of the z axis.
-            camera_position = self.camera.get_position()
-            camera_y_axis = self.camera.model_matrix[:3, 1]
-            axis_of_rotation = space_ops.normalize(
-                np.cross(camera_y_axis, camera_position),
-            )
-            rotation_matrix = space_ops.rotation_matrix(
-                d_point[1],
-                axis_of_rotation,
-                homogeneous=True,
-            )
+    def _pan_camera(self, d_point: Point3D) -> None:
+        """Move the camera frame against the pointer, in the view's plane."""
+        shift = -np.array(d_point, dtype=float)
+        shift[0] *= self.camera.frame_width / 2
+        shift[1] *= self.camera.frame_height / 2
+        if isinstance(self.camera, ThreeDCamera):
+            shift = self.camera.get_rotation_matrix().T @ shift
+        self.camera.frame.shift(shift)
 
-            maximum_polar_angle = self.camera.maximum_polar_angle
-            minimum_polar_angle = self.camera.minimum_polar_angle
+    def _save_camera_state(self) -> None:
+        """Remember the camera for the ``r`` key of interactive mode."""
+        camera = self.camera
+        trackers = (
+            [tracker.get_value() for tracker in camera.get_value_trackers()]
+            if isinstance(camera, ThreeDCamera)
+            else []
+        )
+        self._camera_state = (camera.frame.copy(), trackers)
 
-            potential_camera_model_matrix = rotation_matrix @ self.camera.model_matrix
-            potential_camera_location = potential_camera_model_matrix[:3, 3]
-            potential_camera_y_axis = potential_camera_model_matrix[:3, 1]
-            sign = (
-                np.sign(potential_camera_y_axis[2])
-                if potential_camera_y_axis[2] != 0
-                else 1
-            )
-            potential_polar_angle = sign * np.arccos(
-                potential_camera_location[2]
-                / np.linalg.norm(potential_camera_location),
-            )
-            if minimum_polar_angle <= potential_polar_angle <= maximum_polar_angle:
-                self.camera.model_matrix = potential_camera_model_matrix
-            else:
-                sign = np.sign(camera_y_axis[2]) if camera_y_axis[2] != 0 else 1
-                current_polar_angle = sign * np.arccos(
-                    camera_position[2] / np.linalg.norm(camera_position),
-                )
-                if potential_polar_angle > maximum_polar_angle:
-                    polar_angle_delta = maximum_polar_angle - current_polar_angle
-                else:
-                    polar_angle_delta = minimum_polar_angle - current_polar_angle
-                rotation_matrix = space_ops.rotation_matrix(
-                    polar_angle_delta,
-                    axis_of_rotation,
-                    homogeneous=True,
-                )
-                self.camera.model_matrix = rotation_matrix @ self.camera.model_matrix
-
-            # Translate to target the original target.
-            self.camera.model_matrix = (
-                opengl.translation_matrix(*self.camera_target)
-                @ self.camera.model_matrix
-            )
-        # Right click drag.
-        elif buttons == 4:
-            camera_x_axis = self.camera.model_matrix[:3, 0]
-            horizontal_shift_vector = -d_point[0] * camera_x_axis
-            vertical_shift_vector = -d_point[1] * np.cross(OUT, camera_x_axis)
-            total_shift_vector = horizontal_shift_vector + vertical_shift_vector
-
-            self.camera.model_matrix = (
-                opengl.translation_matrix(*total_shift_vector)
-                @ self.camera.model_matrix
-            )
-            self.camera_target += total_shift_vector
+    def _restore_camera_state(self) -> None:
+        state = getattr(self, "_camera_state", None)
+        if state is None:
+            return
+        frame, values = state
+        self.camera.frame.become(frame)
+        if isinstance(self.camera, ThreeDCamera):
+            for tracker, value in zip(
+                self.camera.get_value_trackers(), values, strict=True
+            ):
+                tracker.set_value(value)
 
     def set_key_function(self, char: str, func: Callable[[], Any]) -> None:
         self.key_to_function_map[char] = func

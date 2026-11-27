@@ -14,22 +14,21 @@ from PIL import Image
 
 from manim.constants import CapStyleType, LineJointType
 from manim.mobject.mobject import Mobject
+from manim.renderer._paint import paint_colors
 from manim.renderer.extract import extract
+from manim.renderer.protocol import CapabilityError
 from manim.renderer.snapshot import (
-    LegacyShaded,
     RCameraView,
     RImage,
+    RMesh,
     RNode,
     RPaint,
     RPath,
     RPoints,
-    RSolidColor,
     RStroke,
 )
 from manim.utils._path_points import (
-    end_corner,
     points_equal_2d,
-    start_corner,
     subpath_split_indices,
 )
 from manim.utils.space_ops import cross2d
@@ -110,6 +109,12 @@ class _CairoDrawingContext:
                     self._display_paths(list(group))
                 elif payload_type is RPoints:
                     self._display_point_clouds(group)
+                elif payload_type is RMesh:
+                    raise CapabilityError(
+                        "The Cairo renderer cannot draw MeshMobject or "
+                        "ParametricSurface yet; render with --renderer=opengl, or use "
+                        "Surface."
+                    )
                 else:
                     self._display_images(group)
 
@@ -211,15 +216,11 @@ class _CairoDrawingContext:
         node: RNode,
         path: RPath,
     ) -> None:
-        if isinstance(paint, RSolidColor) and type(path.material) is not LegacyShaded:
-            rgba = paint.rgba
-            context.set_source_rgba(*rgba[2::-1], rgba[3])
-            return
-        rgbas = self.camera._shaded_rgbas(path, _stops(paint))
-        if len(rgbas) == 1:
+        rgbas, ends = paint_colors(paint, path, self.camera._shaded_rgbas)
+        if ends is None:
             context.set_source_rgba(*rgbas[0][2::-1], rgbas[0][3])
             return
-        points = self.camera._display_points(node, _ends(paint, path))
+        points = self.camera._display_points(node, ends)
         pattern = cairo.LinearGradient(
             *it.chain(*(point[:2] for point in points)),
         )
@@ -494,19 +495,3 @@ class _CairoDrawingContext:
 def _mask(node: RNode) -> Any:
     path: RPath = node.payload  # type: ignore[assignment]
     return path.mask
-
-
-def _stops(paint: RPaint) -> FloatRGBA_Array:
-    """The stop colors of a paint, for the shading of its material."""
-    if isinstance(paint, RSolidColor):
-        return np.asarray(paint.rgba).reshape(1, 4)
-    return paint.rgbas
-
-
-def _ends(paint: RPaint, path: RPath) -> Point3D_Array:
-    """Where a gradient of the paint's stops starts and ends."""
-    if isinstance(paint, RSolidColor):
-        # Only shading turns a solid paint into a gradient: between the path's
-        # first and last corner, as the shading itself.
-        return np.array([start_corner(path.points), end_corner(path.points)])
-    return np.array([paint.start, paint.end])

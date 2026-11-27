@@ -234,9 +234,13 @@ def test_masked_paths_keep_their_paint():
     assert isinstance(node.payload.stroke.paint, RSolidColor)
 
 
-def test_point_clouds_have_no_key_yet():
+def test_point_cloud_keys_follow_their_colors():
     cloud = PMobject().add_points([[0, 0, 0]])
-    assert snapshot(cloud).key is None
+    key = snapshot(cloud).key
+    assert key is not None
+
+    cloud.set_color(RED)
+    assert snapshot(cloud).key != key
 
 
 def test_empty_paths_are_drawn_without_errors():

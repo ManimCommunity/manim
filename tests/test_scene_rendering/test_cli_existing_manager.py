@@ -43,11 +43,11 @@ def test_scenes_rendered_in_one_run_do_not_share_state(tmp_path, backend):
     result = render(
         tmp_path,
         backend,
-        """from manim import RIGHT, RendererType, Scene, Square, config
+        """from manim import RIGHT, Scene, Square
 class First(Scene):
     def construct(self):
         assert self.time == 0
-        frame = self.camera.frame if config.renderer == RendererType.CAIRO else self.camera
+        frame = self.camera.frame
         assert frame.get_center()[0] == 0
         frame.shift(RIGHT)
         self.add(Square())

@@ -19,12 +19,8 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 import numpy as np
 from PIL.Image import Image
 
-from manim._config import config
 from manim.constants import *
 from manim.mobject.mobject import Mobject
-from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
 from manim.mobject.three_d.three_d_utils import (
     get_3d_vmob_gradient_start_and_end_points,
 )
@@ -194,7 +190,7 @@ class VMobject(Mobject):
     def __iter__(self) -> Iterator[VMobject]:
         return cast(Iterator[VMobject], super().__iter__())
 
-    # OpenGL compatibility
+    # Alias of n_points_per_cubic_curve.
     @property
     def n_points_per_curve(self) -> int:
         return self.n_points_per_cubic_curve
@@ -1780,8 +1776,8 @@ class VMobject(Mobject):
         )
 
     # Alignment
-    def align_points(self, vmobject: VMobject) -> Self:
-        """Adds points to self and vmobject so that they both have the same number of subpaths, with
+    def align_points(self, mobject: Mobject) -> Self:
+        """Adds points to self and mobject so that they both have the same number of subpaths, with
         corresponding subpaths each containing the same number of points.
 
         Points are added either by subdividing curves evenly along the subpath, or by creating new subpaths consisting
@@ -1789,7 +1785,7 @@ class VMobject(Mobject):
 
         Parameters
         ----------
-        vmobject
+        mobject
             The object to align points with.
 
         Returns
@@ -1801,12 +1797,19 @@ class VMobject(Mobject):
         --------
         :meth:`~.Mobject.interpolate`, :meth:`~.Mobject.align_data`
         """
-        self.align_rgbas(vmobject)
+        # align_data passes the other mobject of a transform, whatever its type; only
+        # vectorized mobjects can be aligned with this one.
+        if not isinstance(mobject, VMobject):
+            raise ValueError(
+                f"A {type(self).__name__} cannot be transformed into a "
+                f"{type(mobject).__name__}: only into another vectorized mobject."
+            )
+        self.align_rgbas(mobject)
         # TODO: This shortcut can be a bit over eager. What if they have the same length, but different subpath lengths?
-        if self.get_num_points() == vmobject.get_num_points():
+        if self.get_num_points() == mobject.get_num_points():
             return self
 
-        for mob in self, vmobject:
+        for mob in self, mobject:
             # If there are no points, add one to
             # wherever the "center" is
             if mob.has_no_points():
@@ -1818,7 +1821,7 @@ class VMobject(Mobject):
 
         # Figure out what the subpaths are
         subpaths1 = self.get_subpaths()
-        subpaths2 = vmobject.get_subpaths()
+        subpaths2 = mobject.get_subpaths()
         n_subpaths = max(len(subpaths1), len(subpaths2))
         # Start building new ones
         new_path1 = np.zeros((0, self.dim))
@@ -1854,7 +1857,7 @@ class VMobject(Mobject):
             new_path1 = np.append(new_path1, sp1, axis=0)
             new_path2 = np.append(new_path2, sp2, axis=0)
         self.set_points(new_path1)
-        vmobject.set_points(new_path2)
+        mobject.set_points(new_path2)
         return self
 
     def insert_n_curves(self, n: int) -> Self:
@@ -2137,7 +2140,7 @@ class VMobject(Mobject):
         return self
 
 
-class VGroup(VMobject, metaclass=ConvertToOpenGL):
+class VGroup(VMobject):
     """A group of vectorized mobjects.
 
     This can be used to group multiple :class:`~.VMobject` instances together
@@ -2290,31 +2293,24 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
 
         def get_type_error_message(invalid_obj, invalid_indices):
             return (
-                f"Only values of type {vmobject_render_type.__name__} can be added "
+                "Only values of type VMobject can be added "
                 "as submobjects of VGroup, but the value "
                 f"{repr(invalid_obj)} (at index {invalid_indices[1]} of "
                 f"parameter {invalid_indices[0]}) is of type "
                 f"{type(invalid_obj).__name__}."
             )
 
-        vmobject_render_type = (
-            OpenGLVMobject if config.renderer == RendererType.OPENGL else VMobject
-        )
         valid_vmobjects = []
 
         for i, vmobject in enumerate(vmobjects):
-            if isinstance(vmobject, vmobject_render_type):
+            if isinstance(vmobject, VMobject):
                 valid_vmobjects.append(vmobject)
-            elif isinstance(vmobject, Iterable) and not isinstance(
-                vmobject, (Mobject, OpenGLMobject)
-            ):
+            elif isinstance(vmobject, Iterable) and not isinstance(vmobject, Mobject):
                 for j, subvmobject in enumerate(vmobject):
-                    if not isinstance(subvmobject, vmobject_render_type):
+                    if not isinstance(subvmobject, VMobject):
                         raise TypeError(get_type_error_message(subvmobject, (i, j)))
                     valid_vmobjects.append(subvmobject)
-            elif isinstance(vmobject, Iterable) and isinstance(
-                vmobject, (Mobject, OpenGLMobject)
-            ):
+            elif isinstance(vmobject, Iterable) and isinstance(vmobject, Mobject):
                 raise TypeError(
                     f"{get_type_error_message(vmobject, (i, 0))} "
                     "You can try adding this value into a Group instead."
@@ -2366,7 +2362,7 @@ class VGroup(VMobject, metaclass=ConvertToOpenGL):
         return cast(VMobject, super().__getitem__(key))
 
 
-class VDict(VMobject, metaclass=ConvertToOpenGL):
+class VDict(VMobject):
     """A VGroup-like class, also offering submobject access by
     key, like a python dict
 
@@ -2704,7 +2700,7 @@ class VDict(VMobject, metaclass=ConvertToOpenGL):
         return self
 
 
-class VectorizedPoint(VMobject, metaclass=ConvertToOpenGL):
+class VectorizedPoint(VMobject):
     def __init__(
         self,
         location: Point3DLike = ORIGIN,
@@ -2725,13 +2721,11 @@ class VectorizedPoint(VMobject, metaclass=ConvertToOpenGL):
         )
         self.set_points(np.array([location]))
 
-    basecls = OpenGLVMobject if config.renderer == RendererType.OPENGL else VMobject
-
-    @basecls.width.getter
+    @VMobject.width.getter
     def width(self) -> float:
         return self.artificial_width
 
-    @basecls.height.getter
+    @VMobject.height.getter
     def height(self) -> float:
         return self.artificial_height
 
@@ -2819,7 +2813,7 @@ class CurvesAsSubmobjects(VGroup):
             current_length += part_length
 
 
-class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
+class DashedVMobject(VMobject):
     """A :class:`VMobject` composed of dashes instead of lines.
 
     Parameters
@@ -2985,10 +2979,7 @@ class DashedVMobject(VMobject, metaclass=ConvertToOpenGL):
                 )
         # Family is already taken care of by get_subcurve
         # implementation
-        if config.renderer == RendererType.OPENGL:
-            self.match_style(base_vmobject, recurse=False)
-        else:
-            self.match_style(base_vmobject, family=False)
+        self.match_style(base_vmobject, family=False)
 
         if tips is not None:
             self.add(*tips.submobjects)

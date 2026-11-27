@@ -10,17 +10,15 @@ from xml.etree import ElementTree as ET
 import numpy as np
 import svgelements as se
 
-from manim._config import config, logger
+from manim._config import logger
 from manim.utils.color import ManimColor, ParsableManimColor
 
-from ...constants import RIGHT, RendererType
-from ...utils.bezier import get_quadratic_approximation_of_cubic
+from ...constants import RIGHT
 from ...utils.images import get_full_vector_image_path
 from ...utils.iterables import hash_obj
 from ..geometry.arc import Circle
 from ..geometry.line import Line
 from ..geometry.polygram import Polygon, Rectangle, RoundedRectangle
-from ..opengl.opengl_compatibility import ConvertToOpenGL
 from ..types.vectorized_mobject import VGroup, VMobject
 
 __all__ = ["SVGMobject", "VMobjectFromSVGPath"]
@@ -33,7 +31,7 @@ def _convert_point_to_3d(x: float, y: float) -> np.ndarray:
     return np.array([x, y, 0.0])
 
 
-class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
+class SVGMobject(VMobject):
     """A vectorized mobject created from importing an SVG file.
 
     Parameters
@@ -189,7 +187,6 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
             self.svg_default,
             self.path_string_config,
             self.file_name,
-            config.renderer,
         )
 
     def generate_mobject(self) -> Self:
@@ -499,28 +496,13 @@ class SVGMobject(VMobject, metaclass=ConvertToOpenGL):
         return self
 
 
-class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
+class VMobjectFromSVGPath(VMobject):
     """A vectorized mobject representing an SVG path.
-
-    .. note::
-
-        The ``long_lines``, ``should_subdivide_sharp_curves``,
-        and ``should_remove_null_curves`` keyword arguments are
-        only respected with the OpenGL renderer.
 
     Parameters
     ----------
     path_obj
         A parsed SVG path object.
-    long_lines
-        Whether or not straight lines in the vectorized mobject
-        are drawn in one or two segments.
-    should_subdivide_sharp_curves
-        Whether or not to subdivide subcurves further in case
-        two segments meet at an angle that is sharper than a
-        given threshold.
-    should_remove_null_curves
-        Whether or not to remove subcurves of length 0.
     kwargs
         Further keyword arguments are passed to the parent
         class.
@@ -532,46 +514,17 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
     def __init__(
         self,
         path_obj: se.Path,
-        long_lines: bool = False,
-        should_subdivide_sharp_curves: bool = False,
-        should_remove_null_curves: bool = False,
         **kwargs: Any,
     ):
         # Get rid of arcs
         path_obj.approximate_arcs_with_quads()
         self.path_obj = path_obj
-
-        self.long_lines = long_lines
-        self.should_subdivide_sharp_curves = should_subdivide_sharp_curves
-        self.should_remove_null_curves = should_remove_null_curves
-
-        if config.renderer == RendererType.OPENGL:
-            # OpenGLVMobject.__init__ takes these as parameters and would
-            # otherwise reset the attributes above to its own defaults.
-            kwargs.update(
-                long_lines=long_lines,
-                should_subdivide_sharp_curves=should_subdivide_sharp_curves,
-                should_remove_null_curves=should_remove_null_curves,
-            )
-
         super().__init__(**kwargs)
 
     def generate_points(self) -> Self:
         # TODO: cache mobject in a re-importable way
 
         self.handle_commands()
-
-        if config.renderer == RendererType.OPENGL:
-            if self.should_subdivide_sharp_curves:
-                # For a healthy triangulation later
-                self.subdivide_sharp_curves()
-            if self.should_remove_null_curves:
-                # Get rid of any null curves
-                self.set_points(self.get_points_without_null_curves())
-        return self
-
-    def init_points(self) -> Self:
-        self.generate_points()
         return self
 
     def handle_commands(self) -> Self:
@@ -588,56 +541,21 @@ class VMobjectFromSVGPath(VMobject, metaclass=ConvertToOpenGL):
             if true_move:
                 last_true_move = last_move
 
-        if self.n_points_per_curve == 4:
+        def add_cubic(
+            start: np.ndarray, cp1: np.ndarray, cp2: np.ndarray, end: np.ndarray
+        ) -> None:
+            nonlocal all_points
+            assert len(all_points) % 4 == 0, len(all_points)
+            all_points += [start, cp1, cp2, end]
+            move_pen(end)
 
-            def add_cubic(
-                start: np.ndarray, cp1: np.ndarray, cp2: np.ndarray, end: np.ndarray
-            ) -> None:
-                nonlocal all_points
-                assert len(all_points) % 4 == 0, len(all_points)
-                all_points += [start, cp1, cp2, end]
-                move_pen(end)
+        def add_quad(start: np.ndarray, cp: np.ndarray, end: np.ndarray) -> None:
+            add_cubic(start, (start + cp + cp) / 3, (cp + cp + end) / 3, end)
+            move_pen(end)
 
-            def add_quad(start: np.ndarray, cp: np.ndarray, end: np.ndarray) -> None:
-                add_cubic(start, (start + cp + cp) / 3, (cp + cp + end) / 3, end)
-                move_pen(end)
-
-            def add_line(start: np.ndarray, end: np.ndarray) -> None:
-                add_cubic(
-                    start, (start + start + end) / 3, (start + end + end) / 3, end
-                )
-                move_pen(end)
-
-        else:
-
-            def add_cubic(
-                start: np.ndarray, cp1: np.ndarray, cp2: np.ndarray, end: np.ndarray
-            ) -> None:
-                nonlocal all_points
-                assert len(all_points) % 3 == 0, len(all_points)
-                two_quads = get_quadratic_approximation_of_cubic(
-                    start,
-                    cp1,
-                    cp2,
-                    end,
-                )
-                all_points += two_quads[:3].tolist()
-                all_points += two_quads[3:].tolist()
-                move_pen(end)
-
-            def add_quad(start: np.ndarray, cp: np.ndarray, end: np.ndarray) -> None:
-                nonlocal all_points
-                assert len(all_points) % 3 == 0, len(all_points)
-                all_points += [start, cp, end]
-                move_pen(end)
-
-            def add_line(start: np.ndarray, end: np.ndarray) -> None:
-                if self.long_lines:
-                    midpoint = (start + end) / 2
-                    add_quad(start, (start + midpoint) / 2, midpoint)
-                    start = midpoint
-                add_quad(start, (start + end) / 2, end)
-                move_pen(end)
+        def add_line(start: np.ndarray, end: np.ndarray) -> None:
+            add_cubic(start, (start + start + end) / 3, (start + end + end) / 3, end)
+            move_pen(end)
 
         for segment in self.path_obj:
             segment_class = segment.__class__

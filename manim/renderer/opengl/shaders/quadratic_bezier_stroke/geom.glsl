@@ -6,18 +6,11 @@ layout (triangle_strip, max_vertices = 5) out;
 // Needed for get_gl_Position
 uniform vec2 frame_shape;
 uniform float focal_distance;
-uniform float is_fixed_in_frame;
-uniform float is_fixed_orientation;
-uniform vec3 fixed_orientation_center;
 
 uniform float anti_alias_width;
 uniform float flat_stroke;
 
-//Needed for lighting
-uniform vec3 light_source_position;
 uniform float joint_type;
-uniform float gloss;
-uniform float shadow;
 
 in vec3 bp[3];
 in vec3 prev_bp[3];
@@ -54,7 +47,6 @@ const float PI = 3.141592653;
 #include ../include/quadratic_bezier_geometry_functions.glsl
 #include ../include/get_gl_Position.glsl
 #include ../include/get_unit_normal.glsl
-#include ../include/finalize_color.glsl
 
 
 void flatten_points(in vec3[3] points, out vec2[3] flat_points){
@@ -253,17 +245,7 @@ void main() {
     for(int i = 0; i < n_corners; i++){
         uv_coords = (xy_to_uv * vec3(corners[i], 1.0)).xy;
         uv_stroke_width = scaled_strokes[index_map[i]] / scale_factor;
-        // Apply some lighting to the color before sending out.
-        // vec3 xyz_coords = vec3(corners[i], controls[index_map[i]].z);
-        vec3 xyz_coords = vec3(corners[i], controls[index_map[i]].z);
-        color = finalize_color(
-            v_color[index_map[i]],
-            xyz_coords,
-            v_global_unit_normal[index_map[i]],
-            light_source_position,
-            gloss,
-            shadow
-        );
+        color = v_color[index_map[i]];
         gl_Position = vec4(
             get_gl_Position(vec3(corners[i], 0.0)).xy,
             get_gl_Position(controls[index_map[i]]).zw

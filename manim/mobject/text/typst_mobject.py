@@ -132,7 +132,7 @@ import numpy as np
 import svgelements as se
 
 from manim._config import config
-from manim.constants import DEFAULT_FONT_SIZE, SCALE_FACTOR_PER_FONT_POINT, RendererType
+from manim.constants import DEFAULT_FONT_SIZE, SCALE_FACTOR_PER_FONT_POINT
 from manim.mobject.svg.svg_mobject import SVGMobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import BLACK, ParsableManimColor
@@ -378,10 +378,6 @@ class Typst(SVGMobject):
             stroke_width=stroke_width,
             height=height,
             color=color,
-            path_string_config={
-                "should_subdivide_sharp_curves": True,
-                "should_remove_null_curves": True,
-            },
             **kwargs,
         )
         self._rebuild_label_aliases()
@@ -753,10 +749,7 @@ class Typst(SVGMobject):
             if submobject.color != BLACK:
                 continue
             submobject.color = self.color
-            if config.renderer == RendererType.OPENGL:
-                submobject.init_colors()
-            elif config.renderer == RendererType.CAIRO:
-                submobject.init_colors(propagate_colors=propagate_colors)
+            submobject.init_colors(propagate_colors=propagate_colors)
         return self
 
 

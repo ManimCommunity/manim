@@ -307,8 +307,6 @@ class ManimConfig(MutableMapping):
         "renderer",
         "enable_gui",
         "gui_location",
-        "use_projection_fill_shaders",
-        "use_projection_stroke_shaders",
         "verbosity",
         "video_codec",
         "video_dir",
@@ -379,8 +377,6 @@ class ManimConfig(MutableMapping):
             renderer = obj.renderer
             self._d.update(obj._d)
             if renderer is not None:
-                # Apply the renderer through its setter so that the
-                # ConvertToOpenGL class bases stay in sync with the config value.
                 self.renderer = renderer
             if obj.tex_template:
                 self.tex_template = obj.tex_template
@@ -604,8 +600,6 @@ class ManimConfig(MutableMapping):
             "disable_caching_warning",
             "enable_gui",
             "fullscreen",
-            "use_projection_fill_shaders",
-            "use_projection_stroke_shaders",
             "enable_wireframe",
             "no_latex_cleanup",
             "dry_run",
@@ -780,8 +774,6 @@ class ManimConfig(MutableMapping):
             "background_color",
             "enable_gui",
             "fullscreen",
-            "use_projection_fill_shaders",
-            "use_projection_stroke_shaders",
             "zero_pad",
             "enable_wireframe",
             "dry_run",
@@ -1384,51 +1376,10 @@ class ManimConfig(MutableMapping):
 
     @renderer.setter
     def renderer(self, value: str | RendererType) -> None:
-        """The setter of the renderer property.
-
-        Takes care of switching inheritance bases using the
-        :class:`.ConvertToOpenGL` metaclass.
-        """
+        """The setter of the renderer property."""
         if isinstance(value, str):
             value = value.lower()
         renderer = RendererType(value)
-        try:
-            from manim.mobject.opengl.opengl_compatibility import ConvertToOpenGL
-            from manim.mobject.opengl.opengl_mobject import OpenGLMobject
-            from manim.mobject.opengl.opengl_vectorized_mobject import OpenGLVMobject
-
-            from ..mobject.mobject import Mobject
-            from ..mobject.types.vectorized_mobject import VMobject
-
-            for cls in ConvertToOpenGL._converted_classes:
-                if renderer == RendererType.OPENGL:
-                    conversion_dict = {
-                        Mobject: OpenGLMobject,
-                        VMobject: OpenGLVMobject,
-                    }
-                else:
-                    conversion_dict = {
-                        OpenGLMobject: Mobject,
-                        OpenGLVMobject: VMobject,
-                    }
-
-                cls.__bases__ = tuple(
-                    conversion_dict.get(base, base) for base in cls.__bases__
-                )
-
-            from ..utils.hashing import invalidate_derived_attribute_names
-
-            # Rebasing changes which attributes the cache key must ignore, including
-            # for classes that only inherit from a rebased one.
-            invalidate_derived_attribute_names()
-        except ImportError:
-            # The renderer is set during the initial import of the
-            # library for the first time. The imports above cause an
-            # ImportError due to circular imports. However, the
-            # metaclass sets stuff up correctly in this case, so we
-            # can just do nothing.
-            pass
-
         self._set_from_enum("renderer", renderer, RendererType)
 
     @property
@@ -1484,24 +1435,6 @@ class ManimConfig(MutableMapping):
     @fullscreen.setter
     def fullscreen(self, value: bool) -> None:
         self._set_boolean("fullscreen", value)
-
-    @property
-    def use_projection_fill_shaders(self) -> bool:
-        """Use shaders for OpenGLVMobject fill which are compatible with transformation matrices."""
-        return self._d["use_projection_fill_shaders"]
-
-    @use_projection_fill_shaders.setter
-    def use_projection_fill_shaders(self, value: bool) -> None:
-        self._set_boolean("use_projection_fill_shaders", value)
-
-    @property
-    def use_projection_stroke_shaders(self) -> bool:
-        """Use shaders for OpenGLVMobject stroke which are compatible with transformation matrices."""
-        return self._d["use_projection_stroke_shaders"]
-
-    @use_projection_stroke_shaders.setter
-    def use_projection_stroke_shaders(self, value: bool) -> None:
-        self._set_boolean("use_projection_stroke_shaders", value)
 
     @property
     def zero_pad(self) -> int:

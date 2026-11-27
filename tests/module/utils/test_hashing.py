@@ -9,7 +9,7 @@ from zlib import crc32
 import numpy as np
 
 import manim.utils.hashing as hashing
-from manim import ImageMobject, Square, tempconfig
+from manim import ImageMobject, Square
 
 ALREADY_PROCESSED_PLACEHOLDER = hashing._Memoizer.ALREADY_PROCESSED_PLACEHOLDER
 _CACHE_IDENTITY = {
@@ -300,23 +300,6 @@ def test_reading_a_cached_property_does_not_change_the_key():
     assert hashing.get_json(Derived(4)) != hashing.get_json(untouched)
 
 
-def test_opengl_camera_key_ignores_its_derived_view_matrices():
-    from manim.renderer.opengl.camera import OpenGLCamera
-
-    with tempconfig({"renderer": "opengl", "pixel_width": 64, "pixel_height": 32}):
-        untouched = OpenGLCamera()
-        drawn = OpenGLCamera()
-        # Rendering reads these; they are just inv(model_matrix) and its shader layout.
-        assert drawn.formatted_view_matrix is not None
-        assert drawn.unformatted_view_matrix is not None
-
-        assert hashing.get_json(untouched) == hashing.get_json(drawn)
-
-        moved = OpenGLCamera()
-        moved.model_matrix = moved.model_matrix * 2
-        assert hashing.get_json(moved) != hashing.get_json(untouched)
-
-
 def test_play_hash_keeps_distinct_mobjects_with_equal_python_hashes():
     class CollidingObject:
         def __init__(self, name: str) -> None:
@@ -357,7 +340,6 @@ def test_play_hash_includes_backend_encoder_and_renderer_state():
         )
 
     renderer_state = {
-        "meshes": [HashableObject("mesh")],
         "background_color": np.array([0.0, 0.0, 0.0, 1.0]),
         "anti_alias_width": 1.5,
     }
@@ -365,7 +347,6 @@ def test_play_hash_includes_backend_encoder_and_renderer_state():
     changed_inputs = [
         cache_key(backend="opengl", **renderer_state),
         cache_key(encoder="other", **renderer_state),
-        cache_key(**{**renderer_state, "meshes": [HashableObject("changed")]}),
         cache_key(
             **{
                 **renderer_state,
@@ -528,22 +509,3 @@ def test_sibling_closures_are_not_collapsed_to_placeholder():
         assert entry["nonlocals"] == {"k": k}, (
             f"closure {k} collapsed: {entry['nonlocals']!r}"
         )
-
-
-def test_switching_renderers_recollects_derived_attributes():
-    """``ConvertToOpenGL`` rebases classes, changing what their keys must ignore.
-
-    ``Indirect`` is not itself rebased, since its base is not one of the swapped
-    classes, but rebasing that base still changes its MRO.
-    """
-    with tempconfig({"renderer": "cairo"}):
-
-        class Indirect(Square):
-            pass
-
-        assert "triangulation" not in hashing._derived_attribute_names(Indirect)
-
-        with tempconfig({"renderer": "opengl"}):
-            assert "triangulation" in hashing._derived_attribute_names(Indirect)
-
-        assert "triangulation" not in hashing._derived_attribute_names(Indirect)

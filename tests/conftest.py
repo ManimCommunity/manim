@@ -122,6 +122,4 @@ def using_opengl_renderer(config):
     """Standard fixture for running with opengl that makes tests use a standard_config.cfg with a temp dir."""
     config.renderer = "opengl"
     yield
-    # as a special case needed to manually revert back to cairo
-    # due to side effects of setting the renderer
     config.renderer = "cairo"

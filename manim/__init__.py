@@ -53,8 +53,6 @@ from .mobject.graphing.scale import *
 from .mobject.logo import *
 from .mobject.matrix import *
 from .mobject.mobject import *
-from .mobject.opengl.dot_cloud import *
-from .mobject.opengl.opengl_point_cloud_mobject import *
 from .mobject.svg.brace import *
 from .mobject.svg.svg_mobject import *
 from .mobject.table import *
@@ -63,6 +61,7 @@ from .mobject.text.numbers import *
 from .mobject.text.tex_mobject import *
 from .mobject.text.text_mobject import *
 from .mobject.text.typst_mobject import *
+from .mobject.three_d.mesh import *
 from .mobject.three_d.polyhedra import *
 from .mobject.three_d.three_d_utils import *
 from .mobject.three_d.three_dimensions import *
