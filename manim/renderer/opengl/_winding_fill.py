@@ -18,13 +18,13 @@ are opaque and of one color, where sharing gives the same pixels.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import moderngl
 import numpy as np
 
 from manim.renderer import _view
-from manim.renderer._paint import paint_colors, shows
+from manim.renderer._paint import lit_color, paint_colors, shows
 
 from .shader import Shader
 
@@ -177,6 +177,7 @@ class WindingFill:
         geometry: Sequence[_Geometry],
         target: DrawTarget,
         scissor: tuple[int, int, int, int] | None = None,
+        extra_uniforms: dict[str, Any] | None = None,
     ) -> None:
         """Accumulate one group's coverage and color it into the frame.
 
@@ -186,20 +187,20 @@ class WindingFill:
         with it, Apple's software renderer (macOS without a GPU) loses whole
         fills for some rectangles on a multisampled float buffer.
         """
-        camera = target.camera
         filled, colors = [], []
         for node, geo in zip(nodes, geometry, strict=True):
             path: RPath = node.payload  # type: ignore[assignment]
             if len(geo.quads) == 0 or not shows(path.fill):
                 continue
             filled.append(geo)
-            colors.append(
-                paint_colors(
-                    path.fill,
-                    path,
-                    lambda path, rgbas: _view.shaded_rgbas(camera, path, rgbas),
-                )
+            lit = lit_color(
+                node,
+                _view.eye(target.camera),
+                target.lights,
+                target.ambient,
+                "OpenGL",
             )
+            colors.append(paint_colors(path.fill, lit))
         if not filled:
             return
         vertices = pack(filled, colors)
@@ -215,7 +216,7 @@ class WindingFill:
         frame = target.framebuffer
 
         shader = Shader(context, name="winding_fill")
-        for name, value in target.uniforms.items():
+        for name, value in {**target.uniforms, **(extra_uniforms or {})}.items():
             shader.set_uniform(name, value)
 
         buffer = context.buffer(vertices.tobytes())

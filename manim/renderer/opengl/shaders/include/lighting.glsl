@@ -6,10 +6,11 @@
 // uniform float roughness;
 // uniform float metallic;
 // uniform vec3 emissive;        // linear RGB
-// uniform float ambient;
-// uniform vec3 light_position;  // in the same space as the points
-// uniform vec3 light_rgb;       // linear RGB
-// uniform float light_intensity;
+// uniform vec3 ambient;        // linear RGB
+// uniform int light_count;      // at most MAX_LIGHTS
+// uniform vec3 light_positions[MAX_LIGHTS];  // in the same space as the points
+// uniform vec3 light_rgbs[MAX_LIGHTS];       // linear RGB
+// uniform float light_intensities[MAX_LIGHTS];
 // uniform vec3 eye_position;    // in the same space as the points
 
 const float PI_LIGHTING = 3.14159265358979;
@@ -47,21 +48,23 @@ vec3 shade(vec3 base_srgb, vec3 normal, vec3 point){
     if(dot(n, to_eye) < 0.0){
         n = -n;  // two-sided
     }
-    vec3 offset = light_position - point;
-    float distance_squared = max(dot(offset, offset), MIN_DISTANCE_SQUARED);
-    vec3 to_light = length(offset) > 0.0 ? normalize(offset) : vec3(0.0);
-    vec3 radiance = light_rgb * light_intensity / distance_squared;
-    float n_dot_l = max(dot(n, to_light), 0.0);
-    vec3 half_vector = to_light + to_eye;
-    float highlight = 0.0;
-    if(length(half_vector) > 0.0){
-        float n_dot_h = dot(n, normalize(half_vector));
-        // pow(0, 0) is undefined in GLSL (NaN on some drivers); no highlight there.
-        if(n_dot_h > 0.0){
-            highlight = pow(n_dot_h, exponent);
+    for(int index = 0; index < light_count; index++){
+        vec3 offset = light_positions[index] - point;
+        float distance_squared = max(dot(offset, offset), MIN_DISTANCE_SQUARED);
+        vec3 to_light = length(offset) > 0.0 ? normalize(offset) : vec3(0.0);
+        vec3 radiance = light_rgbs[index] * light_intensities[index] / distance_squared;
+        float n_dot_l = max(dot(n, to_light), 0.0);
+        vec3 half_vector = to_light + to_eye;
+        float highlight = 0.0;
+        if(length(half_vector) > 0.0){
+            float n_dot_h = dot(n, normalize(half_vector));
+            // pow(0, 0) is undefined in GLSL (NaN on some drivers); no highlight.
+            if(n_dot_h > 0.0){
+                highlight = pow(n_dot_h, exponent);
+            }
         }
+        vec3 specular = f0 * (exponent + 2.0) / (2.0 * PI_LIGHTING) * highlight;
+        result += radiance * n_dot_l * (diffuse / PI_LIGHTING + specular);
     }
-    vec3 specular = f0 * (exponent + 2.0) / (2.0 * PI_LIGHTING) * highlight;
-    result += radiance * n_dot_l * (diffuse / PI_LIGHTING + specular);
     return linear_to_srgb(result);
 }

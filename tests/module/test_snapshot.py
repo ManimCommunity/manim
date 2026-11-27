@@ -15,7 +15,6 @@ from manim import (
     Circle,
     Dot,
     ImageMobject,
-    Line,
     Mobject,
     PMobject,
     Square,
@@ -30,7 +29,6 @@ from manim.renderer.snapshot import (
     FacingCamera,
     FixedInFrame,
     InScene,
-    LegacyShaded,
     RImage,
     RLinearGradient,
     RPath,
@@ -63,7 +61,7 @@ def test_snapshot_shares_field_values():
     node = snapshot(square)
     assert node.payload.points is square.points
     assert isinstance(node.payload.fill, RSolidColor)
-    np.testing.assert_array_equal(node.payload.fill.rgba, square.fill_rgbas[0])
+    np.testing.assert_array_equal(node.payload.fill.rgba, square.fill.rgbas[0])
     assert node.payload.material == UnlitMaterial()
     assert node.payload.depth_reference is None
 
@@ -147,15 +145,17 @@ def test_paints_and_materials():
     path = snapshot(square).payload
 
     assert isinstance(path.fill, RLinearGradient)
-    np.testing.assert_allclose(path.fill.rgbas, square.fill_rgbas)
+    np.testing.assert_allclose(path.fill.rgbas, square.fill.rgbas)
     assert isinstance(path.stroke.paint, RSolidColor)
     assert path.stroke.width == 3
     assert path.background_stroke is None
 
-    square.set_shade_in_3d(True)
-    shaded = snapshot(square).payload
-    assert isinstance(shaded.material, LegacyShaded)
-    np.testing.assert_allclose(shaded.depth_reference, square.get_center())
+    assert path.material == UnlitMaterial()
+    assert path.depth_reference is None
+    square.set_material(PbrMaterial(roughness=0.2)).set_sort_by_depth(True)
+    lit = snapshot(square).payload
+    assert lit.material == PbrMaterial(roughness=0.2)
+    np.testing.assert_allclose(lit.depth_reference, square.get_center())
 
 
 def test_materials_are_value_types():
@@ -171,7 +171,7 @@ def test_materials_are_value_types():
 
 
 def _parent_with_child():
-    parent = Square().set_fill([RED, BLUE], opacity=1).set_shade_in_3d(True)
+    parent = Square().set_fill([RED, BLUE], opacity=1).set_sort_by_depth(True)
     child = Circle().shift(3 * RIGHT)
     parent.add(child)
     return parent, child
@@ -225,15 +225,6 @@ def test_image_subclasses_that_compute_pixels_have_no_key():
 
     assert snapshot(Noise()).key is None
     assert snapshot(ImageMobject(np.zeros((2, 2, 4), dtype=np.uint8))).key is not None
-
-
-def test_masked_paths_keep_their_paint():
-    stroke = Line(LEFT, RIGHT).set_stroke(RED, width=4, opacity=0.2)
-    stroke.color_using_background_image("some_image.png")
-    node = snapshot(stroke)
-    assert node.payload.mask == "some_image.png"
-    # The mask multiplies the path's own paint, so the paint stays.
-    assert isinstance(node.payload.stroke.paint, RSolidColor)
 
 
 def test_point_cloud_keys_follow_their_colors():

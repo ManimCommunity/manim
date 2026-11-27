@@ -56,6 +56,7 @@ from .._config.output_plan import (
 from .._config.render_session import resolve_render_session
 from .._run.frames import frame_count
 from ..animation.animation import Animation, Wait, prepare_animation
+from ..appearance.light import DEFAULT_AMBIENT_LIGHT, PointLight
 from ..camera import Camera, ThreeDCamera
 from ..constants import *
 from ..manager import Manager
@@ -280,6 +281,14 @@ class Scene:
         self.mobjects: list[Mobject] = []
         # TODO, remove need for foreground mobjects
         self.foreground_mobjects: list[Mobject] = []
+        #: The intensity of the white light that reaches every surface (lit
+        #: materials only; see :mod:`manim.appearance.light`).
+        self.ambient_light: float = DEFAULT_AMBIENT_LIGHT
+        #: The scene's own light, kept apart from :attr:`mobjects`: clearing or
+        #: fading out every mobject leaves it. ``None`` for none (a plain
+        #: :class:`Scene`); :class:`.ThreeDScene` has one. Lights added with
+        #: :meth:`add` are ordinary mobjects.
+        self.light: PointLight | None = None
 
         random.seed(self.random_seed)
         np.random.seed(self.random_seed)  # noqa: NPY002 (only way to set seed globally)
@@ -455,7 +464,7 @@ class Scene:
 
     def update_mobjects(self, dt: float) -> None:
         """
-        Begins updating all mobjects in the Scene.
+        Begins updating all mobjects in the Scene, and the scene's light.
 
         Parameters
         ----------
@@ -464,6 +473,8 @@ class Scene:
         """
         for mobj in self.mobjects:
             mobj.update(dt)
+        if self.light is not None and self.light not in self.mobjects:
+            self.light.update(dt)
 
     def update_self(self, dt: float) -> None:
         """Run all scene updater functions.
@@ -581,6 +592,9 @@ class Scene:
             # Anything animated that's not already in the
             # scene gets added to the scene
             mob = animation.mobject
+            # The scene's light is animated where it is, apart from the mobjects.
+            if mob is not None and mob is self.light:
+                continue
             if mob is not None and mob not in curr_mobjects:
                 self.add(mob)
                 curr_mobjects += mob.get_family()

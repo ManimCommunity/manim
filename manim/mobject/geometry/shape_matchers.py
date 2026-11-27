@@ -7,6 +7,7 @@ __all__ = ["SurroundingRectangle", "BackgroundRectangle", "Cross", "Underline"]
 from typing import Any, Self
 
 from manim._config import config, logger
+from manim.appearance.paint import Paint
 from manim.constants import (
     DOWN,
     LEFT,
@@ -129,9 +130,18 @@ class BackgroundRectangle(SurroundingRectangle):
         self.set_fill(opacity=b * self.original_fill_opacity)
         return self
 
-    def set_style(self, fill_opacity: float, **kwargs: Any) -> Self:  # type: ignore[override]
-        # Unchangeable style, except for fill_opacity
-        # All other style arguments are ignored
+    def set_style(  # type: ignore[override]
+        self, fill_opacity: float | None = None, **kwargs: Any
+    ) -> Self:
+        """Set the opacity of the rectangle; its colors stay black.
+
+        Without ``fill_opacity``, the opacity of a ``fill_color`` paint is taken, as
+        :meth:`match_style` passes it (the style of a :class:`.VMobject` holds its
+        opacities in its paints). Other arguments are ignored.
+        """
+        fill_color = kwargs.pop("fill_color", None)
+        if fill_opacity is None and isinstance(fill_color, Paint):
+            fill_opacity = float(fill_color.opacities[0])
         super().set_style(
             stroke_color=BLACK,
             stroke_width=0,

@@ -10,6 +10,10 @@ The arrays that mobjects are drawn from can be replaced, but not changed in plac
 ``points``, the color arrays of vectorized mobjects (``fill_rgbas``,
 ``stroke_rgbas``, ``background_stroke_rgbas``) and their ``sheen_direction``, and
 the ``pixel_array`` of an :class:`.ImageMobject`. Renderers keep track of which
+
+The arrays that mobjects are drawn from are read-only: ``points``, the color
+stops of paints (``mob.fill.rgbas``, see below), and the ``pixel_array`` of an
+:class:`.ImageMobject`. Renderers keep track of which
 mobjects changed by the assignments to these arrays, so changing one in place
 raises numpy's error ``ValueError: assignment destination is read-only``:
 
@@ -167,7 +171,7 @@ most common ones:
    * - ``mob.set_color(..., recurse=False)``
      - ``mob.set_color(..., family=False)``
    * - ``mob.data[...]``, ``mob.uniforms[...]``
-     - The attributes themselves (``mob.points``, ``mob.fill_rgbas``, ...).
+     - The attributes themselves (``mob.points``, ``mob.fill``, ...).
    * - ``mob.set_color_by_code(glsl)``
      - :meth:`.MeshMobject.set_color_by_xyz_func`, which takes a Python function
        of the points.
@@ -210,12 +214,21 @@ drawn as meshes on OpenGL and as sorted faces on Cairo:
   :class:`.VGroup`.
 - The arguments ``should_make_jagged``, ``surface_piece_config`` and
   ``pre_function_handle_to_anchor_scale_factor`` are gone.
-- They are lit by their ``material`` (:class:`.PbrMaterial` by default) under a
-  :class:`.ThreeDCamera`'s light: faces turned away from the light are darker than
-  before, and the surface has highlights. ``material=UnlitMaterial()`` shows its
-  colors as they are. Under other cameras, surfaces are not lit.
-- A surface without ``checkerboard_colors`` is lit smoothly; with them, each face
-  is lit flat.
+- They are lit by their ``material`` (:class:`.PbrMaterial` by default) under the
+  scene's lights (:mod:`manim.appearance.light`; a :class:`.ThreeDScene` has one):
+  faces turned away from the light are darker than before, and the surface has
+  highlights.
+  ``material=UnlitMaterial()`` shows its colors as they are. Without lights,
+  surfaces are not shaded.
+- Surfaces are smooth, in one color and without outlines by default: they used to
+  have a ``[BLUE_D, BLUE_E]`` checkerboard and light grey outlines of width 0.5.
+  ``checkerboard_colors=[BLUE_D, BLUE_E]`` and ``stroke_width=0.5`` give that look
+  back; with a checkerboard, each face is lit flat.
+- :meth:`~.Surface.set_fill_by_value` colors the points of a smooth surface, so the
+  colors blend across faces on OpenGL (Cairo draws each face in the mean color of
+  its corners); on a surface with a checkerboard it colors each face.
+- :class:`.Line3D` is white by default, as :class:`.Line` and :class:`.Arrow3D`
+  are; it was the blue of the surface.
 - The end caps of :class:`.Cylinder` (``base_top``, ``base_bottom``) and the base of
   :class:`.Cone` (``base_circle``) are discs of the same kind, lit as the side is,
   not :class:`.Circle` paths.
@@ -241,7 +254,7 @@ default; ``Cube(material=...)`` and ``faces_config={"material": ...}`` set anoth
   its ``points``.
 - ``faces_config`` takes the styling arguments it took
   (``fill_color``, ``fill_opacity``, ``stroke_color``, ``stroke_width``,
-  ``stroke_opacity``); ``shade_in_3d`` has no effect.
+  ``stroke_opacity``).
 - A face is transformed only into a face with as many corners; ``Create`` shows a
   face at once instead of drawing its outline.
 
@@ -251,9 +264,9 @@ Renderers only draw
 -------------------
 
 The Cairo and OpenGL renderers only draw: the :class:`.Manager` runs the scene,
-owns the animation clock and the output files, and hands the renderer what to draw
-in each frame. This section lists what changed for code that used the renderers,
-cameras or scene classes directly.
+is responsible for the animation clock and the output files, and hands the
+renderer what to draw in each frame. This section lists what changed for code
+that used the renderers, cameras or scene classes directly.
 
 Removed scene classes and camera options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -404,3 +417,172 @@ Selecting a renderer
 - Removed from :class:`.OpenGLRenderer`: ``get_frame()``,
   ``get_raw_frame_buffer_object_data()``, ``get_pixel_shape()`` and
   ``get_frame_buffer_object()``; read a frame's pixels with ``frame.pixels()``.
+
+Colors of vectorized mobjects are paints
+-----------------------------------------
+
+A :class:`.VMobject` stores its colors as three *paints*: ``mob.fill``, ``mob.stroke``
+and ``mob.background_stroke`` (see :mod:`manim.appearance.paint`). A paint is an
+immutable value: :class:`.SolidColor` (one color) or :class:`.LinearGradient` (evenly
+spaced colors along a direction, ``UL`` by default, between the edges of the mobject's
+own bounding box).
+
+.. code-block:: python
+
+    square.set_fill([RED, BLUE], opacity=1)  # as before: a gradient along UL
+    square.fill = LinearGradient([RED, BLUE], direction=RIGHT)
+    square.set_stroke(SolidColor(GREEN, opacity=0.5))
+
+:meth:`~.VMobject.set_fill`, :meth:`~.VMobject.set_stroke`,
+:meth:`~.VMobject.set_color`, :meth:`~.VMobject.set_opacity` and the getters
+(``get_fill_color``, ``get_fill_colors``, ``get_fill_opacities``, ...) work as
+before; ``set_fill`` and ``set_stroke`` also take a paint. ``fill_opacity``,
+``stroke_opacity``, ``background_stroke_color`` and
+``background_stroke_opacity`` are properties over the paints.
+:meth:`~.VMobject.rotate` turns the direction of gradients.
+
+:meth:`~.VMobject.get_style` returns the paints themselves, with their opacities,
+under ``fill_color``, ``stroke_color`` and ``background_stroke_color``; it no longer
+has ``fill_opacity``, ``stroke_opacity`` or ``background_stroke_opacity``. A
+subclass that overrides :meth:`~.VMobject.set_style` (as :meth:`~.VMobject.match_style`
+calls it with such a style) must not require them.
+
+.. list-table::
+   :header-rows: 1
+
+   * - Removed
+     - Use instead
+   * - ``fill_rgbas``, ``stroke_rgbas``, ``background_stroke_rgbas``,
+       ``get_fill_rgbas()``, ``get_stroke_rgbas()``
+     - ``mob.fill.rgbas`` (read-only), ``mob.stroke``,
+       ``mob.background_stroke``; ``get_fill_colors()``,
+       ``get_fill_opacities()``
+   * - ``generate_rgbas_array``, ``update_rgbas_array``, ``align_rgbas``
+     - :meth:`~.VMobject.set_fill` / :meth:`~.VMobject.set_stroke`;
+       :func:`.interpolate_paint` aligns paints of different lengths
+   * - ``set_sheen(factor, direction)``, ``sheen_factor=``
+     - a two-stop gradient: ``set_fill([color, lighter_color])``; there is no
+       automatic lightened color
+   * - ``set_sheen_direction(d)``, ``rotate_sheen_direction``,
+       ``sheen_direction=``, ``get_sheen_direction``
+     - ``mob.fill = mob.fill.with_direction(d)`` (for a gradient), or
+       ``LinearGradient(colors, direction=d)``
+   * - ``get_gradient_start_and_end_points``
+     - none (renderers compute it)
+
+Colors that lie in the scene: color fields
+--------------------------------------------
+
+``color_using_background_image`` colored a mobject with an image fixed to the
+frame. It is replaced by a third kind of paint, :class:`.ColorField`: a grid of
+colors that lies in the scene. A mobject painted with a field shows the field's
+color wherever it is drawn, so moving, trimming or transforming it shows other
+colors, and a moving camera keeps them where they are in the scene.
+
+.. code-block:: python
+
+    field = ColorField.from_function(
+        lambda point: (abs(point[0]) / 7, 0.5, 1 - abs(point[1]) / 4),
+        x_range=(-7, 7),
+        y_range=(-4, 4),
+        resolution=(140, 80),
+    )
+    line.set_stroke(field)
+
+:class:`.StreamLines` color their lines with a field over the region the lines
+can reach (the seed ranges widened by ``padding``); in 3D they keep a color list
+per line along its bounding box, an approximation. The Cairo and OpenGL renderers
+draw fields in a plane parallel to the frame under a flat camera, and raise
+``CapabilityError`` (:mod:`manim.renderer.protocol`) for other cameras or planes,
+and for mobjects fixed in the frame.
+
+.. list-table::
+   :header-rows: 1
+
+   * - Removed
+     - Use instead
+   * - ``color_using_background_image(image)``, ``match_background_image``,
+       ``get_background_image``, ``background_image=`` of vectorized mobjects
+     - ``set_stroke(field)`` / ``set_fill(field)`` with a :class:`.ColorField`
+       (in scene coordinates, not fixed to the frame)
+   * - ``StreamLines.get_colored_background_image``, ``background_img``
+     - the lines' ``stroke`` paint
+
+Lights belong to the scene
+--------------------------
+
+Lit materials (:class:`.PbrMaterial`, the default of meshes and surfaces) are shaded by
+:class:`.PointLight` mobjects (see :mod:`manim.appearance.light`). A
+:class:`.ThreeDScene` has one, ``scene.light``, at the position of the camera's former
+light; it is not in ``scene.mobjects``, so :meth:`.Scene.clear` and fading out every
+mobject leave it. Move or animate it like any mobject, or add more lights with
+:meth:`.Scene.add`. ``scene.ambient_light`` (0.25) is the white light that reaches every
+surface. A frame without lights is not shaded: lit materials show their base color (a
+plain :class:`.Scene` has no light).
+
+.. code-block:: python
+
+    class Lit(ThreeDScene):
+        def construct(self):
+            self.add(Sphere())
+            self.play(self.light.animate.move_to(3 * IN))
+            self.add(PointLight(2 * UP, color=YELLOW))
+
+.. list-table::
+   :header-rows: 1
+
+   * - Removed
+     - Use instead
+   * - ``ThreeDCamera.light_source``,
+       ``ThreeDCamera(light_source_start_point=...)``
+     - ``scene.light`` (a :class:`.PointLight`), ``scene.light.move_to(...)``
+   * - ``ThreeDCamera(should_apply_shading=False)``
+     - ``scene.light = None`` (no shading)
+   * - ``ThreeDCamera(shading_factor=...)``
+     - none: lit materials follow :class:`.PbrMaterial`'s parameters
+
+Vector mobjects have a material and a depth ordering
+----------------------------------------------------
+
+``shade_in_3d`` meant two things: "shade towards the light" and "sort by depth under
+a 3D camera". They are now two settings of :class:`.VMobject`:
+
+- ``material`` (:mod:`manim.appearance.material`, ``set_material``):
+  :class:`.UnlitMaterial` by default; :class:`.PbrMaterial` lights the path by the
+  scene's lights in one color, from the normal of its plane. A lit path must be flat
+  and have a solid fill, otherwise drawing it raises :class:`.CapabilityError`. Its
+  stroke is not lit, and mobjects fixed in the frame are never lit.
+- ``sort_by_depth`` (``set_sort_by_depth``): under a perspective camera, the path is
+  ordered far to near by the center of its own points. This is not a depth test:
+  of two intersecting shapes, one is drawn over the other.
+
+:class:`.ThreeDVMobject` has both (``PbrMaterial()`` and ``True``). The axes of
+:class:`.ThreeDAxes` are ordered by depth and no longer shaded, so they no longer
+darken or brighten along their length.
+
+.. list-table::
+   :header-rows: 1
+
+   * - Removed
+     - Use instead
+   * - ``VMobject(shade_in_3d=True)``, ``set_shade_in_3d(True)``
+     - ``set_material(PbrMaterial())`` and ``set_sort_by_depth(True)``, or only the
+       one you need
+   * - ``manim.utils.color.get_shaded_rgb``, ``manim.mobject.three_d.three_d_utils``
+     - none
+
+Other removed names
+-------------------
+
+.. list-table::
+   :header-rows: 1
+
+   * - Removed
+     - Use instead
+   * - ``z_index_group`` (set by ``set_shade_in_3d(z_index_as_group=True)``)
+     - ``set_sort_by_depth(True)`` orders each path by its own center
+   * - ``ThreeDAxes(light_source=...)``
+     - none: the axes are not shaded
+
+See :doc:`colors_materials_lights` for how paints, materials and lights work
+together.

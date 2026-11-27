@@ -6,10 +6,13 @@ uniform float lit;
 uniform float roughness;
 uniform float metallic;
 uniform vec3 emissive;
-uniform float ambient;
-uniform vec3 light_position;
-uniform vec3 light_rgb;
-uniform float light_intensity;
+// The most lights a frame can have (OpenGLRenderer raises beyond it).
+#define MAX_LIGHTS 8
+uniform vec3 ambient;
+uniform int light_count;
+uniform vec3 light_positions[MAX_LIGHTS];
+uniform vec3 light_rgbs[MAX_LIGHTS];
+uniform float light_intensities[MAX_LIGHTS];
 uniform vec3 eye_position;
 // Half the width of the faces' outlines in pixels; 0 for none.
 uniform float edge_width;

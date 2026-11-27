@@ -12,27 +12,17 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from manim.constants import ORIGIN, UP
-from manim.utils.space_ops import get_unit_normal
-
 if TYPE_CHECKING:
     import numpy.typing as npt
 
     from manim.typing import (
         CubicBezierPathLike,
         Point2DLike,
-        Point3D,
-        Point3D_Array,
-        Vector3D,
     )
 
 __all__ = [
-    "end_corner",
-    "end_corner_index",
     "points_equal_2d",
-    "start_corner",
     "subpath_split_indices",
-    "unit_normal",
 ]
 
 
@@ -99,40 +89,3 @@ def subpath_split_indices(
 
     split_points = np.concatenate([[0], boundary_indices[is_split], [n_pts]])
     return np.stack([split_points[:-1], split_points[1:]], axis=1)
-
-
-# The corners and normals that the 3D shading of a path uses (``shade_in_3d``).
-
-
-def end_corner_index(points: Point3D_Array) -> int:
-    """The index of the corner opposite the path's first point."""
-    return ((len(points) - 1) // 6) * 3
-
-
-def start_corner(points: Point3D_Array) -> Point3D:
-    if len(points) == 0:
-        return np.array(ORIGIN)
-    return points[0]
-
-
-def end_corner(points: Point3D_Array) -> Point3D:
-    if len(points) == 0:
-        return np.array(ORIGIN)
-    return points[end_corner_index(points)]
-
-
-def unit_normal(points: Point3D_Array, point_index: int) -> Vector3D:
-    """The unit normal of the path at the point ``point_index``; ``UP`` where
-    there is no plane to take one of.
-    """
-    n_points = len(points)
-    # At most one curve: no plane to take a normal of.
-    if n_points <= 4:
-        return np.array(UP)
-    i = point_index
-    im3 = i - 3 if i > 2 else (n_points - 4)
-    ip3 = i + 3 if i < (n_points - 3) else 3
-    normal = get_unit_normal(points[ip3] - points[i], points[im3] - points[i])
-    if np.linalg.norm(normal) == 0:
-        return np.array(UP)
-    return normal

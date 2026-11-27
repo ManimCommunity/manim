@@ -22,6 +22,8 @@ from manim import (
     Circle,
     Dot,
     MovingCameraScene,
+    PointLight,
+    Sphere,
     Square,
     ThreeDScene,
     tempconfig,
@@ -116,7 +118,7 @@ def test_reuse_follows_the_depth_order_of_3d_scenes(renderer):
         near = Square(fill_opacity=1, color=RED).shift(OUT)
         far = Square(fill_opacity=1, color=GREEN).shift(0.5 * RIGHT)
         for square in (near, far):
-            square.set_shade_in_3d(True)
+            square.set_sort_by_depth(True)
         scene.set_camera_orientation(phi=1.0, theta=-1.2)
         scene.add(near, far)
         return near, far
@@ -134,6 +136,46 @@ def test_reuse_follows_the_depth_order_of_3d_scenes(renderer):
         fresh_scene = ThreeDScene()
         near, far = build(fresh_scene)
         far.shift(2 * OUT)
+        fresh = _frame(fresh_scene)
+        fresh_scene.renderer.close()
+
+    np.testing.assert_array_equal(reused, fresh)
+
+
+LIGHT_CHANGES = {
+    "light position": lambda scene: scene.light.move_to(6 * RIGHT + 4 * OUT),
+    "light intensity": lambda scene: scene.light.set_intensity(50),
+    "light color": lambda scene: scene.light.set_color(RED),
+    "light added": lambda scene: scene.add(PointLight(3 * LEFT + 2 * OUT)),
+    "ambient light": lambda scene: setattr(scene, "ambient_light", 0.8),
+}
+
+
+@RENDERERS
+@pytest.mark.parametrize("change", LIGHT_CHANGES.values(), ids=LIGHT_CHANGES.keys())
+def test_lit_mobjects_are_drawn_again_when_the_light_changes(renderer, change):
+    def build(scene):
+        scene.set_camera_orientation(phi=1.0, theta=-1.2)
+        scene.add(Sphere(resolution=(12, 6)))
+
+    with _settings(renderer):
+        scene = ThreeDScene()
+        build(scene)
+        moving = Dot().shift(2 * UP)
+        scene.add(moving)
+        # Three frames in which only the dot moves: the third copies the drawing
+        # of the sphere.
+        for _ in range(3):
+            moving.shift(0.1 * RIGHT)
+            _frame(scene)
+        change(scene)
+        reused = _frame(scene)
+        scene.renderer.close()
+
+        fresh_scene = ThreeDScene()
+        build(fresh_scene)
+        fresh_scene.add(Dot().shift(2 * UP + 0.3 * RIGHT))
+        change(fresh_scene)
         fresh = _frame(fresh_scene)
         fresh_scene.renderer.close()
 

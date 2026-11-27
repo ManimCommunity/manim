@@ -19,6 +19,7 @@ from typing import TYPE_CHECKING, Any, Self, TypeVar, overload
 import numpy as np
 
 from manim._config import config
+from manim.appearance.paint import LinearGradient
 from manim.constants import *
 from manim.mobject.geometry.arc import Circle, Dot
 from manim.mobject.geometry.line import Arrow, DashedLine, Line
@@ -786,7 +787,9 @@ class CoordinateSystem:
                             color_list.append(mob_color)
                             break
             graph.set_stroke(color_list)
-            graph.set_sheen_direction(RIGHT)
+            # Colored along x.
+            if isinstance(graph.stroke, LinearGradient):
+                graph.stroke = graph.stroke.with_direction(RIGHT)
 
         return graph
 
@@ -2494,7 +2497,8 @@ class ThreeDAxes(Axes):
             axis.pieces = VGroup(*axis.get_pieces(self.num_axis_pieces))
             axis.add(axis.pieces)
             axis.set_stroke(width=0, family=False)
-            axis.set_shade_in_3d(True)
+            # Ordered by depth, unlit.
+            axis.set_sort_by_depth(True)
 
     def get_y_axis_label(
         self,

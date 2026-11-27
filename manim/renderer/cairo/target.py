@@ -12,11 +12,13 @@ import numpy as np
 from PIL import Image
 
 from manim.renderer._view import view_transform_center
+from manim.renderer.protocol import CapabilityError
 from manim.utils.color import color_to_int_rgba
 from manim.utils.images import get_full_raster_image_path
 
 if TYPE_CHECKING:
     from manim.renderer.protocol import CameraState, RenderConfig
+    from manim.renderer.snapshot import RColorField
     from manim.typing import RGBAPixelArray
 
 
@@ -142,7 +144,10 @@ class _CairoRenderTarget:
         self._background = np.zeros_like(self._pixels)
         self._context_key: tuple[float, ...] | None = None
         self._context: cairo.Context | None = None
-        self._scratch_target: _CairoRenderTarget | None = None
+        #: Patterns of color fields, by grid id and corners (with their pixels).
+        self._field_patterns: dict[
+            tuple[int, bytes], tuple[cairo.SurfacePattern, np.ndarray]
+        ] = {}
         self.path_cache = _PathCache()
         self._closed = False
 
@@ -181,13 +186,6 @@ class _CairoRenderTarget:
     def clear(self) -> None:
         """Clear this target to transparent black without allocating an array."""
         self.pixels.fill(0)
-
-    def get_scratch_target(self) -> _CairoRenderTarget:
-        """Return a reusable same-sized target for intermediate composition."""
-        self._ensure_open()
-        if self._scratch_target is None:
-            self._scratch_target = _CairoRenderTarget(self.settings, self.image_files)
-        return self._scratch_target
 
     def set_pixels(self, pixels: RGBAPixelArray) -> None:
         self._ensure_open()
@@ -236,12 +234,50 @@ class _CairoRenderTarget:
         self._context_key = view_key
         return context
 
-    def get_background_image(self, image: Image.Image | Path | str) -> RGBAPixelArray:
-        """The pixels of a vectorized mobject's background image at this target's
-        size (read-only for files, which are cached).
+    def field_pattern(self, field: RColorField) -> cairo.SurfacePattern:
+        """The grid of a color field as a premultiplied pattern placed in scene
+        coordinates, made once per grid and corners.
+
+        Raises
+        ------
+        CapabilityError
+            If the field does not lie in a plane parallel to the frame.
         """
-        self._ensure_open()
-        return self.image_files.get(image, self._size)
+        corners = np.asarray(field.corners, dtype=float)
+        key = (field.grid_id, corners.tobytes())
+        entry = self._field_patterns.get(key)
+        if entry is not None:
+            return entry[0]
+        upper_left, upper_right, lower_left = corners
+        if not np.allclose(corners[:, 2], upper_left[2]):
+            raise CapabilityError(
+                "The Cairo renderer draws color fields only in a plane parallel to "
+                "the frame."
+            )
+        grid = np.asarray(field.grid, dtype=float)
+        rows, columns = grid.shape[:2]
+        alpha = grid[..., 3:4]
+        # The byte order of the target's pixels, which are read back as they are.
+        data = np.ascontiguousarray(
+            np.round(np.concatenate([grid[..., :3] * alpha, alpha], axis=-1) * 255),
+            dtype=np.uint8,
+        )
+        surface = cairo.ImageSurface.create_for_data(
+            data.data, cairo.FORMAT_ARGB32, columns, rows
+        )
+        pattern = cairo.SurfacePattern(surface)
+        pattern.set_filter(cairo.Filter.BILINEAR)
+        pattern.set_extend(cairo.Extend.PAD)
+        # Scene (x, y) -> texel (column, row): the inverse of the placement.
+        eu = (upper_right - upper_left)[:2] / columns
+        ev = (lower_left - upper_left)[:2] / rows
+        placement = cairo.Matrix(
+            eu[0], eu[1], ev[0], ev[1], upper_left[0], upper_left[1]
+        )
+        placement.invert()
+        pattern.set_matrix(placement)
+        self._field_patterns[key] = (pattern, data)
+        return pattern
 
     def read_pixels(self) -> RGBAPixelArray:
         return self.pixels.copy()
@@ -252,9 +288,7 @@ class _CairoRenderTarget:
         self._closed = True
         self._context = None
         self._context_key = None
-        if self._scratch_target is not None:
-            self._scratch_target.close()
-            self._scratch_target = None
+        self._field_patterns.clear()
         self.path_cache.clear()
         self._current_background = None
         self._pixels = np.empty((0, 0, 4), dtype=np.uint8)

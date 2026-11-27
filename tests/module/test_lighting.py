@@ -133,3 +133,31 @@ def test_light_and_eye_opposite_give_no_highlight():
     result = shade(base, UP_FACING, ORIGIN, eye, [light], AMBIENT, material)
     ambient_only = linear_to_srgb(AMBIENT * (srgb_to_linear(base) + 0.04))
     np.testing.assert_allclose(result, ambient_only)
+
+
+def test_a_point_light_interpolates_only_between_point_lights():
+    from manim import PointLight, Square
+
+    with pytest.raises(TypeError, match="two PointLights"):
+        PointLight().interpolate_color(PointLight(), Square(), 0.5)
+
+
+def test_interpolate_material_keeps_the_start_at_alpha_zero():
+    from manim.appearance.material import interpolate_material
+
+    start, end = PbrMaterial(roughness=0.1), PbrMaterial(roughness=0.9)
+    assert interpolate_material(start, end, 0) is start
+    calls = []
+
+    class Recording(PbrMaterial):
+        def interpolate(self, end, alpha):
+            calls.append(alpha)
+            return super().interpolate(end, alpha)
+
+    recording = Recording(roughness=0.2)
+    assert interpolate_material(recording, end, 0) is recording
+    assert calls == []  # the start itself, without asking the material
+    assert interpolate_material(start, end, 1) is end
+    # Materials that cannot be blended switch at the end.
+    assert interpolate_material(start, UnlitMaterial(), 0.5) is start
+    assert interpolate_material(start, UnlitMaterial(), 1) == UnlitMaterial()

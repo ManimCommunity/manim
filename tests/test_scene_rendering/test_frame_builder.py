@@ -168,11 +168,18 @@ def test_a_label_fixed_in_frame_is_drawn_over_a_later_path(renderer):
     assert pixel[1] < 50
 
 
-def test_view_keys_differ_in_every_camera_state_field():
+def test_view_keys_differ_in_every_camera_state_field_and_light():
     from manim.renderer._reuse import view_key
+    from manim.renderer.protocol import LightState
 
+    light = LightState(np.zeros(3), (1.0, 1.0, 1.0), 10.0)
+    ambient = (0.1, 0.1, 0.1)
     state = Camera()._state()
-    base = view_key(state, (16, 9), (16, 9), None)
+
+    def key(state=state, reference=(16, 9), lights=(light,), ambient=ambient):
+        return view_key(state, (16, 9), reference, None, lights, ambient)
+
+    base = key()
     changes = {
         "center": np.ones(3),
         "frame_width": 1.0,
@@ -180,15 +187,24 @@ def test_view_keys_differ_in_every_camera_state_field():
         "rotation": -np.identity(3),
         "focal_distance": 3.0,
         "zoom": 2.0,
-        "light": np.ones(3),
-        "shade_3d": True,
         "default_frame_width": 1.0,
     }
     assert changes.keys() == {field.name for field in dataclasses.fields(state)}
     for name, value in changes.items():
         changed = dataclasses.replace(state, **{name: value})
-        assert view_key(changed, (16, 9), (16, 9), None) != base, name
-    assert view_key(state, (16, 9), (32, 18), None) != base
+        assert key(state=changed) != base, name
+    assert key(reference=(32, 18)) != base
+    assert key(lights=()) != base
+    assert key(lights=(light, light)) != base
+    for name, value in {
+        "position": np.ones(3),
+        "rgb": (1.0, 0.0, 0.0),
+        "intensity": 20.0,
+    }.items():
+        changed = dataclasses.replace(light, **{name: value})
+        assert key(lights=(changed,)) != base, name
+    assert key(ambient=(0.2, 0.1, 0.1)) != base
+    assert key(lights=(LightState(np.zeros(3), (1.0, 1.0, 1.0), 10.0),)) == base
 
 
 @pytest.mark.parametrize("renderer", ["cairo", "opengl"])
@@ -202,7 +218,7 @@ def test_a_fixed_label_is_not_ordered_by_the_depth_of_the_scene(renderer):
     ):
         scene = ThreeDScene()
         label = Square(2, fill_color=PURE_RED, fill_opacity=1, stroke_width=0)
-        label.set_shade_in_3d(True).fix_in_frame()
+        label.set_sort_by_depth(True).fix_in_frame()
         cover = Square(4, fill_color=PURE_GREEN, fill_opacity=1, stroke_width=0)
         scene.add(label, cover)
         try:

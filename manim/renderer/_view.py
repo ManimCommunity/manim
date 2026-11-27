@@ -9,19 +9,12 @@ from typing import TYPE_CHECKING
 import numpy as np
 
 from manim.renderer.projection import project_points
-from manim.renderer.snapshot import FacingCamera, FixedInFrame, LegacyShaded, RMesh
-from manim.utils._path_points import (
-    end_corner,
-    end_corner_index,
-    start_corner,
-    unit_normal,
-)
-from manim.utils.color import get_shaded_rgb
+from manim.renderer.snapshot import FacingCamera, FixedInFrame, RMesh
 
 if TYPE_CHECKING:
     from manim.renderer.protocol import CameraState
-    from manim.renderer.snapshot import Placement, RNode, RPath
-    from manim.typing import FloatRGBA_Array, Point3D, Point3D_Array
+    from manim.renderer.snapshot import Placement, RNode
+    from manim.typing import Point3D, Point3D_Array
 
 __all__ = [
     "display_points",
@@ -29,7 +22,6 @@ __all__ = [
     "is_3d",
     "place",
     "project_points",
-    "shaded_rgbas",
     "sort_for_display",
     "view_transform_center",
 ]
@@ -119,31 +111,3 @@ def sort_for_display(state: CameraState, nodes: list[RNode]) -> list[RNode]:
         return float(np.dot(reference_point, depth_axis))
 
     return sorted(nodes, key=z_key)
-
-
-def shaded_rgbas(
-    state: CameraState, path: RPath, rgbas: FloatRGBA_Array
-) -> FloatRGBA_Array:
-    """The stop colors of a path's paint after the shading of its material.
-
-    :class:`.LegacyShaded` paths are shaded towards the light at their first and
-    last corner, if the state shades and has a light; other paths keep ``rgbas``.
-    """
-    points = path.points
-    light = state.light
-    if not (
-        state.shade_3d
-        and light is not None
-        and isinstance(path.material, LegacyShaded)
-        and len(points) > 0
-    ):
-        return rgbas
-    shaded = rgbas.repeat(2, axis=0) if len(rgbas) < 2 else np.array(rgbas[:2])
-    shaded[0, :3] = get_shaded_rgb(
-        shaded[0, :3], start_corner(points), unit_normal(points, 0), light
-    )
-    end = end_corner_index(points)
-    shaded[1, :3] = get_shaded_rgb(
-        shaded[1, :3], end_corner(points), unit_normal(points, end), light
-    )
-    return shaded

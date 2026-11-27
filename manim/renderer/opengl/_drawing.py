@@ -14,24 +14,24 @@ from __future__ import annotations
 
 import math
 from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, Any, NamedTuple, cast
+from typing import TYPE_CHECKING, Any, NamedTuple, TypeAlias, cast
 
 import moderngl
 import numpy as np
 from PIL.Image import Resampling
 
-from manim.appearance.material import PbrMaterial
 from manim.renderer import _view
-from manim.renderer._lighting import AMBIENT, DEFAULT_LIGHT_INTENSITY
-from manim.renderer._mesh import faces_of
-from manim.renderer._paint import paint_colors, shows
+from manim.renderer._lighting import is_lit
+from manim.renderer._mesh import NormalAccumulator, faces_of
+from manim.renderer._paint import check_paint, paint_colors, shows
 from manim.renderer._reuse import PrefixMemo, node_key, view_key
 from manim.renderer.projection import project_points
+from manim.renderer.protocol import CapabilityError
 from manim.renderer.snapshot import (
     STROKE_WIDTH_UNIT,
     FacingCamera,
-    LegacyShaded,
     RCameraView,
+    RColorField,
     RImage,
     RMesh,
     RNode,
@@ -44,10 +44,20 @@ from ._winding_fill import WindingFill
 from .shader import Shader
 
 if TYPE_CHECKING:
-    from manim.renderer.protocol import CameraState
-    from manim.renderer.snapshot import Material
+    from manim.appearance.material import Material
+    from manim.appearance.paint import GridId
+    from manim.renderer.protocol import CameraState, LightState
+    from manim.renderer.snapshot import RPaint
 
     from .renderer import OpenGLRenderer, _CameraView
+
+    #: A color field as it is bound: its grid, corners and opacity.
+    _FieldBinding: TypeAlias = tuple[GridId, bytes, float]
+    #: The color fields of a path's fill, stroke and background stroke (``None``:
+    #: none).
+    _Binding: TypeAlias = tuple[
+        _FieldBinding | None, _FieldBinding | None, _FieldBinding | None
+    ]
 
 __all__ = ["DrawTarget", "SnapshotDrawing", "cubics_to_quadratics"]
 
@@ -68,6 +78,10 @@ _STROKE_DTYPE = [
     ("color", np.float32, (4,)),
 ]
 _STROKE_FORMAT = "3f 3f 3f 3f 1f 4f"
+#: The most lights the mesh shader takes (``MAX_LIGHTS`` in ``mesh/frag.glsl``).
+MAX_LIGHTS = 8
+#: The texture unit color fields are bound to (images and meshes use unit 0).
+_FIELD_TEXTURE_UNIT = 3
 _POINT_DTYPE = [("point", np.float32, (3,)), ("color", np.float32, (4,))]
 _MESH_DTYPE = np.dtype(
     [
@@ -300,6 +314,9 @@ class DrawTarget(NamedTuple):
     uniforms: dict[str, Any]
     #: See :attr:`.RenderConfig.reference_pixel_size`.
     reference_size: tuple[int, int]
+    #: See :attr:`.RenderConfig.lights` and :attr:`.RenderConfig.ambient`.
+    lights: tuple[LightState, ...] = ()
+    ambient: tuple[float, float, float] = (0.0, 0.0, 0.0)
 
 
 class _Group(NamedTuple):
@@ -365,12 +382,18 @@ class SnapshotDrawing:
         self._fill = WindingFill(renderer)
         self._textures = _TextureCache(renderer)
         self._normals = _NormalCache()
+        #: Textures of color fields by grid id (premultiplied RGBA).
+        self._fields: dict[int, moderngl.Texture] = {}
         self._layer: _Layer | None = None
         self._memo = PrefixMemo()
 
     def release(self) -> None:
         self._fill.release()
         self._textures.release()
+        for texture in self._fields.values():
+            if not isinstance(texture.mglo, moderngl.InvalidObject):
+                texture.release()
+        self._fields.clear()
         if self._layer is not None:
             self._layer.release()
             self._layer = None
@@ -398,7 +421,14 @@ class SnapshotDrawing:
         self._normals.next_frame()
         nodes = list(nodes)
         keys = [node_key(node) for node in nodes]
-        view = view_key(target.camera, target.size, target.reference_size, background)
+        view = view_key(
+            target.camera,
+            target.size,
+            target.reference_size,
+            background,
+            target.lights,
+            target.ambient,
+        )
         memo = self._memo
         context = self._renderer.context
         start = memo.count_reusable(keys, view)
@@ -435,6 +465,11 @@ class SnapshotDrawing:
         self._base_target = target
         self._placed_targets: dict[str, DrawTarget] = {"normal": target}
         paths = [node for node in nodes if isinstance(node.payload, RPath)]
+        for node in paths:
+            path: RPath = node.payload  # type: ignore[assignment]
+            strokes = (path.stroke, path.background_stroke)
+            for paint in (path.fill, *(s.paint for s in strokes if s is not None)):
+                check_paint(paint, "OpenGL")
         self._target = target
         geometry = iter(self._geometry.get(paths, self._tolerance()) if paths else ())
         run: list[RNode] = []
@@ -520,6 +555,8 @@ class SnapshotDrawing:
         if not nodes:
             return
         self._target = self._placed_target(kind)
+        #: How the paths being drawn are placed (color fields need "normal").
+        self._kind = kind
         screen = _Screen.of(self._target)
         for group in _groups(nodes, geometry, screen):
             self._draw_group(group, screen)
@@ -658,27 +695,37 @@ class SnapshotDrawing:
     def _lighting(self, node: RNode, material: Material) -> dict[str, Any]:
         """The lighting uniforms of the mesh shader (see ``include/lighting.glsl``).
 
-        Meshes are lit by the light of a :class:`.ThreeDCamera`; under other cameras,
-        and when fixed in frame, they show their base colors.
+        Meshes are lit by the frame's lights; without lights, and when fixed in
+        frame, they show their base colors.
         """
-        view = self._base_target.view
-        light = view.light_source
-        if (
-            not isinstance(material, PbrMaterial)
-            or light is None
-            or node.is_fixed_in_frame
-        ):
+        target = self._base_target
+        lights = target.lights
+        if not is_lit(material, "OpenGL") or not lights or node.is_fixed_in_frame:
             return {"lit": 0.0}
+        if len(lights) > MAX_LIGHTS:
+            raise CapabilityError(
+                f"The OpenGL renderer draws at most {MAX_LIGHTS} lights; the frame "
+                f"has {len(lights)}."
+            )
+        padding = MAX_LIGHTS - len(lights)
         return {
             "lit": 1.0,
             "roughness": material.roughness,
             "metallic": material.metallic,
             "emissive": material.emissive,
-            "ambient": AMBIENT,
-            "light_position": tuple(light),
-            "light_rgb": (1.0, 1.0, 1.0),
-            "light_intensity": DEFAULT_LIGHT_INTENSITY,
-            "eye_position": tuple(view.eye),
+            "ambient": tuple(target.ambient),
+            "light_count": len(lights),
+            "light_positions": tuple(
+                [tuple(map(float, light.position)) for light in lights]
+                + [(0.0, 0.0, 0.0)] * padding
+            ),
+            "light_rgbs": tuple(
+                [tuple(light.rgb) for light in lights] + [(0.0, 0.0, 0.0)] * padding
+            ),
+            "light_intensities": tuple(
+                [float(light.intensity) for light in lights] + [0.0] * padding
+            ),
+            "eye_position": tuple(target.view.eye),
         }
 
     def _draw_image(self, node: RNode, image: RImage) -> None:
@@ -773,18 +820,88 @@ class SnapshotDrawing:
         tolerance = TOLERANCE_PIXELS * frame_width / self._target.size[0]
         return 2.0 ** math.floor(math.log2(tolerance))
 
+    def _field_uniforms(self, paint: RPaint | None, kind: str) -> dict[str, Any]:
+        """The uniforms that bind ``paint`` in the shaders: off unless it is a
+        color field, which is sampled at each fragment's scene position.
+
+        ``kind`` is how the path is placed (see :meth:`_placement`).
+
+        Raises
+        ------
+        CapabilityError
+            For a field under a perspective camera, not in a plane parallel to the
+            frame, or on a mobject fixed in the frame or in its orientation.
+        """
+        if not isinstance(paint, RColorField):
+            return {"field_on": 0.0}
+        target = self._target
+        corners = np.asarray(paint.corners, dtype=float)
+        if (
+            _view.is_3d(target.camera)
+            or kind != "normal"
+            or not np.allclose(corners[:, 2], corners[0, 2])
+        ):
+            raise CapabilityError(
+                "The OpenGL renderer draws color fields only in a plane parallel to "
+                "the frame, under a flat camera, on mobjects that are not fixed in "
+                "the frame."
+            )
+        texture = self._fields.get(paint.grid_id)
+        if texture is None:
+            grid = np.asarray(paint.grid, dtype=float)
+            rows, columns = grid.shape[:2]
+            premultiplied = np.concatenate(
+                [grid[..., :3] * grid[..., 3:4], grid[..., 3:4]], axis=-1
+            )
+            data = np.ascontiguousarray(np.round(premultiplied * 255), dtype=np.uint8)
+            texture = self._renderer.context.texture((columns, rows), 4, data.tobytes())
+            texture.filter = (moderngl.LINEAR, moderngl.LINEAR)
+            texture.repeat_x = texture.repeat_y = False
+            self._fields[paint.grid_id] = texture
+            self._renderer._resources.callback(_release_texture, texture)
+        texture.use(_FIELD_TEXTURE_UNIT)
+        view = target.view
+        width, height = target.size
+        frame_width, frame_height = view.frame_shape
+        # Fragment position (pixels from the bottom left) -> scene point -> texel.
+        to_scene = np.array(
+            [
+                [frame_width / width, 0, view.center[0] - frame_width / 2],
+                [0, frame_height / height, view.center[1] - frame_height / 2],
+                [0, 0, 1],
+            ]
+        )
+        upper_left, upper_right, lower_left = corners
+        eu, ev = (upper_right - upper_left)[:2], (lower_left - upper_left)[:2]
+        u, v = eu / (eu @ eu), ev / (ev @ ev)
+        to_texel = np.array(
+            [[*u, -u @ upper_left[:2]], [*v, -v @ upper_left[:2]], [0, 0, 1]]
+        )
+        matrix = to_texel @ to_scene
+        return {
+            "field_on": 1.0,
+            "field_texture": _FIELD_TEXTURE_UNIT,
+            # GLSL matrices are column-major.
+            "field_uv": tuple(matrix.T.flatten()),
+            "field_opacity": paint.opacity,
+        }
+
     def _draw_group(self, group: _Group, screen: _Screen) -> None:
         if any(_background_width(n.payload) > 0 for n in group.nodes):  # type: ignore[arg-type]
             self._draw_strokes(group, background=True)
         if group.filled:
+            first: RPath = group.nodes[0].payload  # type: ignore[assignment]
             self._fill.draw(
-                group.nodes, group.geometry, self._target, screen.scissor(group.box)
+                group.nodes,
+                group.geometry,
+                self._target,
+                screen.scissor(group.box),
+                self._field_uniforms(first.fill, self._kind),
             )
         if any(n.payload.stroke.width > 0 for n in group.nodes):  # type: ignore[union-attr]
             self._draw_strokes(group, background=False)
 
     def _draw_strokes(self, group: _Group, background: bool) -> None:
-        camera = self._target.camera
         geometry, widths, colors = [], [], []
         for node, geo in zip(group.nodes, group.geometry, strict=True):
             path: RPath = node.payload  # type: ignore[assignment]
@@ -794,16 +911,14 @@ class SnapshotDrawing:
             geometry.append(geo)
             widths.append(stroke.width)
             colors.append(
-                paint_colors(
-                    stroke.paint,
-                    path,
-                    lambda path, rgbas: _view.shaded_rgbas(camera, path, rgbas),
-                )
+                # Strokes are not lit.
+                paint_colors(stroke.paint)
             )
         if not geometry:
             return
         vertices = _stroke_vertices(geometry, widths, colors)
         first: RPath = group.nodes[0].payload  # type: ignore[assignment]
+        first_stroke = first.background_stroke if background else first.stroke
         self._pass(
             "quadratic_bezier_stroke",
             vertices,
@@ -811,6 +926,9 @@ class SnapshotDrawing:
             moderngl.TRIANGLES,
             joint_type=float(first.stroke.joint.value),
             flat_stroke=0.0,
+            **self._field_uniforms(
+                None if first_stroke is None else first_stroke.paint, self._kind
+            ),
         )
 
 
@@ -892,6 +1010,7 @@ def _groups(
     regions = _Boxes()
     color: tuple[float, ...] | None = None
     joint = None
+    binding: _Binding | None = None
     box_list = boxes.tolist()
     filled_list = filled.tolist()
     for index, (node, geo, path) in enumerate(zip(nodes, geometry, paths, strict=True)):
@@ -900,11 +1019,14 @@ def _groups(
         single = (
             tuple(path.fill.rgba)
             if isinstance(path.fill, RSolidColor)
-            and type(path.material) is not LegacyShaded
+            and not is_lit(path.material, "OpenGL")
             and path.stroke.width == 0
             else None
         )
-        joins = bool(groups) and path.stroke.joint == joint
+        # Paths of one group bind the same color fields (or none).
+        joins = (
+            bool(groups) and path.stroke.joint == joint and _binding(path) == binding
+        )
         if joins and is_filled:
             same_color = single is not None and single == color
             gx0, gy0, gx1, gy1, _ = groups[-1][2]
@@ -935,11 +1057,33 @@ def _groups(
             regions = _Boxes()
             color = single
             joint = path.stroke.joint
+            binding = _binding(path)
         regions.add(region)
     return [
         _Group(members, members_geometry, state[4], np.array(state[:4]))
         for members, members_geometry, state in groups
     ]
+
+
+def _binding(path: RPath) -> _Binding:
+    """The color fields a path's paints bind; a group's paths share them."""
+
+    def of(paint: RPaint) -> _FieldBinding | None:
+        if isinstance(paint, RColorField):
+            return (paint.grid_id, np.asarray(paint.corners).tobytes(), paint.opacity)
+        return None
+
+    background = path.background_stroke
+    return (
+        of(path.fill),
+        of(path.stroke.paint),
+        of(background.paint) if background is not None else None,
+    )
+
+
+def _release_texture(texture: moderngl.Texture) -> None:
+    if not isinstance(texture.mglo, moderngl.InvalidObject):
+        texture.release()
 
 
 def _piece_boxes(
@@ -1024,38 +1168,42 @@ class _Layer:
 class _NormalCache:
     """Vertex normals of meshes by uid, kept while their ``"geometry"`` slot (points
     and triangles) keeps its version.
+
+    A moving mesh gets new points every frame, so its normals are computed again;
+    the :class:`.NormalAccumulator` of its triangles (which vertices share a point,
+    which triangles each vertex is a corner of) is kept, so that costs one matrix
+    product.
     """
 
     def __init__(self) -> None:
         self._current: dict[int, tuple[int, np.ndarray]] = {}
         self._previous: dict[int, tuple[int, np.ndarray]] = {}
+        self._accumulators: dict[int, NormalAccumulator] = {}
 
     def next_frame(self) -> None:
         self._previous, self._current = self._current, {}
+        live = self._previous.keys()
+        self._accumulators = {
+            uid: accumulator
+            for uid, accumulator in self._accumulators.items()
+            if uid in live
+        }
 
     def get(self, node: RNode, mesh: RMesh) -> np.ndarray:
         key = node.versions.get("geometry", 0)
         entry = self._current.get(node.uid) or self._previous.get(node.uid)
         if entry is None or entry[0] != key:
-            entry = (key, vertex_normals(mesh.points, mesh.triangles))
+            entry = (key, self._accumulator(node.uid, mesh).normals(mesh.points))
         self._current[node.uid] = entry
         return entry[1]
 
-
-def vertex_normals(points: np.ndarray, triangles: np.ndarray) -> np.ndarray:
-    """Unit normals at the vertices: the sum of the normals of their triangles,
-    weighted by area. Vertices without a direction get ``(0, 0, 1)``.
-    """
-    corners = points[triangles]
-    faces = np.cross(corners[:, 1] - corners[:, 0], corners[:, 2] - corners[:, 0])
-    normals = np.zeros_like(points, dtype=float)
-    for i in range(3):
-        np.add.at(normals, triangles[:, i], faces)
-    lengths = np.linalg.norm(normals, axis=1)
-    flat = lengths < 1e-12
-    normals[flat] = (0, 0, 1)
-    lengths[flat] = 1
-    return normals / lengths[:, None]
+    def _accumulator(self, uid: int, mesh: RMesh) -> NormalAccumulator:
+        kept = self._accumulators.get(uid)
+        if kept is not None and kept.fits(mesh.points, mesh.triangles):
+            return kept
+        accumulator = NormalAccumulator(mesh.points, mesh.triangles)
+        self._accumulators[uid] = accumulator
+        return accumulator
 
 
 class _TextureCache:

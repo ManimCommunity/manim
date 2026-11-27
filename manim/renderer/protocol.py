@@ -9,6 +9,7 @@ __all__ = [
     "CameraView",
     "CapabilityError",
     "Frame",
+    "LightState",
     "PixelFrame",
     "Preview",
     "PreviewInput",
@@ -64,15 +65,21 @@ class CameraState:
     depth."""
     zoom: float
     """The factor that projected points are scaled by (1 for a flat view)."""
-    light: Point3D | None
-    """Where the camera's light is, in scene coordinates; ``None`` for no light
-    (nothing is lit). Provisional: lights become scene objects."""
-    shade_3d: bool
-    """Whether ``shade_in_3d`` paths are shaded towards :attr:`light`.
-    Provisional, as that shading."""
     default_frame_width: float
     """The frame width the scene was configured with: mobjects fixed in frame are
     drawn as if the frame had this width and were centered at the origin."""
+
+
+@dataclass(frozen=True, slots=True, eq=False)
+class LightState:
+    """A point light at one time (a :class:`~.PointLight`)."""
+
+    position: Point3D
+    """Where the light is, in scene coordinates."""
+    rgb: tuple[float, float, float]
+    """Its color, linear RGB."""
+    intensity: float
+    """Its intensity in candela (glTF ``KHR_lights_punctual``)."""
 
 
 @dataclass(frozen=True, slots=True, eq=False)
@@ -107,6 +114,11 @@ class RenderConfig:
     """An image file shown behind everything, scaled to the frame (Cairo only)."""
     camera_views: tuple[CameraView, ...] = ()
     """The camera views of the frame, drawn before it. They have no views."""
+    lights: tuple[LightState, ...] = ()
+    """The scene's lights. Without lights, nothing is shaded: lit materials show
+    their base color."""
+    ambient: tuple[float, float, float] = (0.0, 0.0, 0.0)
+    """The light that reaches every surface everywhere, linear RGB."""
 
 
 @runtime_checkable

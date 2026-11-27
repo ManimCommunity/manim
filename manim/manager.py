@@ -730,7 +730,10 @@ class Manager(Generic[SceneT]):
             self._frame_builder = FrameBuilder(*self.session_spec.pixel_size)
         scene = self.scene
         return self._frame_builder.build(
-            scene.camera, list_update(scene.mobjects, scene.foreground_mobjects)
+            scene.camera,
+            list_update(scene.mobjects, scene.foreground_mobjects),
+            lights=() if scene.light is None else (scene.light,),
+            ambient_light=scene.ambient_light,
         )
 
     def setup(self) -> None:

@@ -80,6 +80,7 @@ float modify_distance_for_endpoints(vec2 p, float dist, float t){
 
 
 #include ../include/quadratic_bezier_distance.glsl
+#include ../include/color_field.glsl
 
 
 void main() {
@@ -92,6 +93,6 @@ void main() {
     vec2 edges = (abs(dist_to_curve) + vec2(-half_width, half_width)) / uv_anti_alias_width;
     float coverage = smoothstep(-0.5, 0.5, edges.y) - smoothstep(-0.5, 0.5, edges.x);
 
-    frag_color = color;
+    frag_color = field_on > 0.5 ? field_color() : color;
     frag_color.a *= coverage;
 }

@@ -123,6 +123,8 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
             self.mobjects = [object()]
             self.camera = object()
             self.backend = OpenGL(anti_alias_width=1.5)
+            self.light = None
+            self.ambient_light = 0.25
             self.skip_animations = False
             self.session_spec = Mock(
                 video_encoder=encoder, output=Mock(is_still=False), frame_rate=60.0
@@ -175,6 +177,7 @@ def test_opengl_cache_inputs_and_per_play_policy(monkeypatch):
                 "wireframe": False,
                 "anti_alias_width": renderer.anti_alias_width,
             },
+            "scene": {"ambient_light": 0.25, "light": None},
             "execution": {
                 "clock": "sample-v3",
                 "drawing": cache_module._DRAWING_VERSION,

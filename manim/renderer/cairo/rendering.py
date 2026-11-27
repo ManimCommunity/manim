@@ -6,23 +6,26 @@ import itertools as it
 import operator as op
 from collections.abc import Callable, Iterable
 from functools import reduce
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import cairo
 import numpy as np
 from PIL import Image
 
 from manim.constants import CapStyleType, LineJointType
-from manim.renderer._paint import paint_colors
+from manim.renderer._paint import check_paint, lit_color, paint_colors
 from manim.renderer._view import (
     display_points,
+    eye,
     is_3d,
-    shaded_rgbas,
     view_transform_center,
 )
+from manim.renderer.protocol import CapabilityError
 from manim.renderer.snapshot import (
     STROKE_WIDTH_UNIT,
+    InScene,
     RCameraView,
+    RColorField,
     RImage,
     RNode,
     RPaint,
@@ -39,7 +42,9 @@ from manim.utils.space_ops import cross2d
 from .target import _CairoRenderTarget, _PathCache
 
 if TYPE_CHECKING:
-    from manim.renderer.protocol import CameraState
+    from collections.abc import Sequence
+
+    from manim.renderer.protocol import CameraState, LightState
     from manim.typing import (
         FloatRGBA_Array,
         Point3D_Array,
@@ -75,8 +80,13 @@ class _CairoDrawingContext:
         target: _CairoRenderTarget,
         image_resolver: _ImageResolver,
         reference_pixel_size: tuple[int, int],
+        lights: Sequence[LightState] = (),
+        ambient: Sequence[float] = (0.0, 0.0, 0.0),
     ) -> None:
         self.camera = camera
+        #: The frame's lights and ambient light (see :attr:`.RenderConfig.lights`).
+        self.lights = tuple(lights)
+        self.ambient = tuple(ambient)
         #: See :attr:`.RenderConfig.reference_pixel_size`.
         self.reference_pixel_size = reference_pixel_size
         self.target = target
@@ -107,20 +117,17 @@ class _CairoDrawingContext:
             else:
                 self._display_images(group)
 
-    def _display_paths(self, nodes: list[RNode]) -> None:
-        for mask, batch in it.groupby(nodes, _mask):
-            if mask:
-                self._display_masked_paths(mask, list(batch))
-            else:
-                self._display_unmasked_paths(batch)
-
-    def _display_unmasked_paths(self, nodes: Iterable[RNode]) -> None:
+    def _display_paths(self, nodes: Iterable[RNode]) -> None:
         context = self.target.get_context(self.camera)
         for node in nodes:
             self._display_path(node, context)
 
     def _display_path(self, node: RNode, context: cairo.Context) -> None:
         path: RPath = node.payload  # type: ignore[assignment]
+        for paint in (path.fill, path.stroke.paint):
+            check_paint(paint, "Cairo")
+        if path.background_stroke is not None:
+            check_paint(path.background_stroke.paint, "Cairo")
         self._set_cairo_context_path(context, node, path)
         if path.background_stroke is not None:
             self._apply_stroke(context, node, path, path.background_stroke)
@@ -205,9 +212,15 @@ class _CairoDrawingContext:
         node: RNode,
         path: RPath,
     ) -> None:
-        rgbas, ends = paint_colors(
-            paint, path, lambda path, rgbas: shaded_rgbas(self.camera, path, rgbas)
+        if isinstance(paint, RColorField):
+            self._set_field_source(context, paint, node)
+            return
+        lit = (
+            lit_color(node, eye(self.camera), self.lights, self.ambient, "Cairo")
+            if paint is path.fill
+            else None
         )
+        rgbas, ends = paint_colors(paint, lit)
         if ends is None:
             context.set_source_rgba(*rgbas[0][2::-1], rgbas[0][3])
             return
@@ -223,9 +236,38 @@ class _CairoDrawingContext:
             pattern.add_color_stop_rgba(offset, *rgba[2::-1], rgba[3])
         context.set_source(pattern)
 
+    def _set_field_source(
+        self, context: cairo.Context, field: RColorField, node: RNode
+    ) -> None:
+        """Paint with a color field: its grid as the source, placed in scene
+        coordinates (the context's user space), so Cairo samples it where it
+        draws.
+        """
+        if is_3d(self.camera) or type(node.placement) is not InScene:
+            raise CapabilityError(
+                "The Cairo renderer draws color fields only under a flat camera, "
+                "on mobjects that are not fixed in the frame."
+            )
+        context.set_source(self.target.field_pattern(field))
+
+    @staticmethod
+    def _paint(
+        context: cairo.Context, paint: RPaint, operation: Callable[[], None]
+    ) -> None:
+        """Fill or stroke with ``operation``; a color field's opacity is applied
+        to the drawing as a whole, so its pattern is shared whatever the opacity.
+        """
+        if isinstance(paint, RColorField) and paint.opacity < 1:
+            context.push_group()
+            operation()
+            context.pop_group_to_source()
+            context.paint_with_alpha(paint.opacity)
+            return
+        operation()
+
     def _apply_fill(self, context: cairo.Context, node: RNode, path: RPath) -> None:
         self._set_cairo_context_color(context, path.fill, node, path)
-        context.fill_preserve()
+        self._paint(context, path.fill, context.fill_preserve)
 
     def _apply_stroke(
         self,
@@ -242,27 +284,7 @@ class _CairoDrawingContext:
         )
         context.set_line_join(_LINE_JOIN_MAP[stroke.joint])
         context.set_line_cap(_CAP_STYLE_MAP[stroke.cap])
-        context.stroke_preserve()
-
-    def _display_masked_paths(
-        self, image: Image.Image | str, nodes: list[RNode]
-    ) -> None:
-        """Draw paths that share one mask image: their colors times the image."""
-        scratch = self.target.get_scratch_target()
-        scratch.clear()
-        scratch_context = _CairoDrawingContext(
-            camera=self.camera,
-            target=scratch,
-            image_resolver=self.image_resolver,
-            reference_pixel_size=self.reference_pixel_size,
-        )
-        scratch_context._display_unmasked_paths(nodes)
-        background = self.target.get_background_image(image)
-        colored = np.asarray(
-            background * scratch.pixels.astype(float) / 255,
-            dtype=np.uint8,
-        )
-        self._overlay_rgba_array(self.target.pixels, colored)
+        self._paint(context, stroke.paint, context.stroke_preserve)
 
     def _display_point_clouds(self, nodes: Iterable[RNode]) -> None:
         for node in nodes:
@@ -483,29 +505,3 @@ class _CairoDrawingContext:
         nudges = np.array(list(it.product(coordinate_range, coordinate_range)))
         thickened = np.array([pixel_coords + nudge for nudge in nudges])
         return thickened.reshape((thickened.size // 2, 2))
-
-
-def _mask(node: RNode) -> Any:
-    path: RPath = node.payload  # type: ignore[assignment]
-    return path.mask
-
-
-def reusable_boundary(nodes: list[RNode], count: int) -> int:
-    """The largest ``k <= count`` such that drawing ``nodes[:k]`` and then the rest
-    gives the same pixels as drawing all at once.
-
-    Paths with one mask image are drawn together, as a mask over the image; a run
-    of them is not split.
-    """
-    image = _background_image_of
-    while 0 < count < len(nodes):
-        before, after = image(nodes[count - 1]), image(nodes[count])
-        if before is None or before is not after:
-            break
-        count -= 1
-    return count
-
-
-def _background_image_of(node: RNode) -> Any:
-    payload = node.payload
-    return payload.mask if isinstance(payload, RPath) else None

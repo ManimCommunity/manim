@@ -175,11 +175,11 @@ def test_copies_get_a_new_uid(copy_function):
     assert Square().uid != square.uid
 
 
-def test_style_and_pixel_arrays_are_read_only():
+def test_paint_and_pixel_arrays_are_read_only():
     square = Square().set_fill(opacity=1)
     image = ImageMobject(np.zeros((2, 2, 4), dtype=np.uint8))
 
-    for array in (square.fill_rgbas, square.stroke_rgbas, image.pixel_array):
+    for array in (square.fill.rgbas, square.stroke.rgbas, image.pixel_array):
         with pytest.raises(ValueError, match="read-only"):
             array[0] = 1
 
@@ -226,17 +226,17 @@ def test_svg_paths_share_their_parsed_path():
 
 
 def test_animation_steps_that_change_nothing_keep_versions():
-    # A transform to a moved copy: the colors are the same arrays at both ends,
-    # and keep their version over the whole animation.
+    # A transform to a moved copy: the paint is the same at both ends, and keeps
+    # its version over the whole animation.
     start = Square().set_color(RED)
     end = start.copy().shift(RIGHT)
     moving = start.copy()
 
     moving.interpolate(start, end, 0.3)
-    version = field_version(moving, "fill_rgbas")
+    version = field_version(moving, "fill")
     for alpha in (0.5, 0.8, 1):
         moving.interpolate(start, end, alpha)
-    assert field_version(moving, "fill_rgbas") == version
+    assert field_version(moving, "fill") == version
 
     moving.stroke_width = 2.5
     version = field_version(moving, "stroke_width")
@@ -282,7 +282,7 @@ def test_an_interpolated_value_cannot_be_written_through():
     ("change", "changed"),
     [
         (lambda m: m.shift(RIGHT), {"points"}),
-        (lambda m: m.set_color(BLUE), {"fill_rgbas", "stroke_rgbas"}),
+        (lambda m: m.set_color(BLUE), {"fill", "stroke"}),
     ],
     ids=["moved", "recolored"],
 )

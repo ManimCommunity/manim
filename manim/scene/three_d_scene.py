@@ -13,6 +13,7 @@ import numpy as np
 from manim.mobject.value_tracker import ValueTracker
 
 from ..animation.animation import Animation
+from ..appearance.light import DEFAULT_LIGHT_POSITION, PointLight
 from ..camera import ThreeDCamera
 from ..constants import DEGREES
 from ..mobject.mobject import Mobject
@@ -47,6 +48,9 @@ class ThreeDScene(Scene):
             raise TypeError(
                 f"Expected a ThreeDCamera, but got {type(self.camera).__name__}"
             )
+        #: The scene's light (see :attr:`.Scene.light`). Remove it
+        #: (``self.light = None``) for no shading.
+        self.light = PointLight(DEFAULT_LIGHT_POSITION)
 
     def set_camera_orientation(
         self,

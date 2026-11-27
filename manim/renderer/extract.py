@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 
 from manim.appearance.material import UnlitMaterial
+from manim.appearance.paint import Paint
 from manim.mobject.mobject import Mobject
 from manim.mobject.three_d.mesh import MeshMobject
 from manim.mobject.types.image_mobject import (
@@ -28,12 +29,10 @@ from manim.renderer.snapshot import (
     FacingCamera,
     FixedInFrame,
     InScene,
-    LegacyShaded,
     Payload,
     Placement,
     RCameraView,
     RImage,
-    RLinearGradient,
     RMesh,
     RNode,
     RPaint,
@@ -42,17 +41,17 @@ from manim.renderer.snapshot import (
     RSolidColor,
     RStroke,
 )
-from manim.utils._path_points import end_corner, start_corner
 from manim.utils.family import extract_mobject_family_members
 from manim.utils.iterables import list_difference_update
 
 if TYPE_CHECKING:
-    from manim.typing import FloatRGBA_Array, Point3D
+    from manim.typing import Point3D
 
 __all__ = ["Extractor", "extract", "placement_of", "snapshot"]
 
 _UNLIT = UnlitMaterial()
-_LEGACY_SHADED = LegacyShaded()
+#: What a path without a paint (or with a missing one) is drawn with: nothing.
+_NO_PAINT = RSolidColor(np.zeros(4))
 _FIXED_IN_FRAME = FixedInFrame()
 _IN_SCENE = InScene()
 
@@ -100,7 +99,7 @@ class Extractor:
 
     This relies on one rule: a snapshot is a function of the mobject's own fields.
     Mobjects whose snapshot has no key (see :attr:`.RNode.key`: classes with
-    ``_drawn_from_fields = False``, camera views, paths masked by an image object)
+    ``_drawn_from_fields = False``, camera views)
     and mobjects with a fixed orientation, whose center comes from a function, are
     taken anew every time. With :data:`CHECK_SNAPSHOTS` (``MANIM_CHECK_SNAPSHOTS=1``,
     as in Manim's tests), every reused snapshot is compared with a fresh one, so a
@@ -264,15 +263,7 @@ def _key(
     fields (see :func:`_revision`), and the point a fixed orientation follows (not a
     field value); ``None`` for mobjects that can change without a field changing.
     """
-    if (
-        not mobject._drawn_from_fields
-        or isinstance(payload, RCameraView)
-        # An image object can change without being assigned again.
-        or (
-            isinstance(payload, RPath)
-            and not isinstance(payload.mask, (str, type(None)))
-        )
-    ):
+    if not mobject._drawn_from_fields or isinstance(payload, RCameraView):
         return None
     center = (
         tuple(placement.center.tolist())
@@ -334,60 +325,47 @@ _MESH_SLOTS: dict[str, tuple[str, ...]] = {
 # The fields each slot of a path is made from. A gradient's ends come from the points.
 _PATH_SLOTS: dict[str, tuple[str, ...]] = {
     "geometry": ("points", "tolerance_for_point_equality"),
-    "fill": ("fill_rgbas", "sheen_direction", "points", "shade_in_3d"),
+    "fill": ("fill", "points"),
     "stroke": (
-        "stroke_rgbas",
+        "stroke",
         "stroke_width",
         "joint_type",
         "cap_style",
-        "sheen_direction",
         "points",
-        "shade_in_3d",
     ),
     "background_stroke": (
-        "background_stroke_rgbas",
+        "background_stroke",
         "background_stroke_width",
         "joint_type",
         "cap_style",
-        "sheen_direction",
         "points",
-        "shade_in_3d",
     ),
-    "material": ("shade_in_3d",),
-    "depth_reference": ("shade_in_3d", "points"),
-    "mask": ("background_image",),
+    "material": ("material",),
+    "depth_reference": ("sort_by_depth", "points"),
 }
 
 
 def _path(vmobject: VMobject) -> RPath:
     attributes: dict[str, Any] = vmobject.__dict__
     points = vmobject.points
-    shade_in_3d = vmobject.shade_in_3d
-    fill = attributes.get("fill_rgbas", _NO_COLOR)
-    stroke = attributes.get("stroke_rgbas", _NO_COLOR)
-    background = attributes.get("background_stroke_rgbas", _NO_COLOR)
-    ends = None
-    if max(len(fill), len(stroke), len(background)) > 1:
-        ends = _gradient_ends(vmobject, points, shade_in_3d)
 
-    def paint(rgbas: FloatRGBA_Array) -> RPaint:
-        if ends is None or len(rgbas) == 1:
-            return RSolidColor(rgbas[0])
-        return RLinearGradient(ends[0], ends[1], rgbas)
+    def paint(value: Paint | None) -> RPaint:
+        # Each paint says what renderers draw for it (Paint.resolve).
+        return _NO_PAINT if value is None else value.resolve(points)
 
     background_width = vmobject.background_stroke_width
     return RPath(
         points=points,
-        fill=paint(fill),
+        fill=paint(attributes.get("fill")),
         stroke=RStroke(
-            paint(stroke),
+            paint(attributes.get("stroke")),
             vmobject.stroke_width,
             vmobject.joint_type,
             vmobject.cap_style,
         ),
         background_stroke=(
             RStroke(
-                paint(background),
+                paint(attributes.get("background_stroke")),
                 background_width,
                 vmobject.joint_type,
                 vmobject.cap_style,
@@ -395,10 +373,9 @@ def _path(vmobject: VMobject) -> RPath:
             if background_width > 0
             else None
         ),
-        material=_LEGACY_SHADED if shade_in_3d else _UNLIT,
-        depth_reference=_own_center(points) if shade_in_3d else None,
+        material=vmobject.material,
+        depth_reference=_own_center(points) if vmobject.sort_by_depth else None,
         tolerance=vmobject.tolerance_for_point_equality,
-        mask=vmobject.background_image,
     )
 
 
@@ -416,25 +393,3 @@ def _own_center(points: np.ndarray) -> Point3D:
     if box is None:
         return np.zeros(3)
     return (box[0] + box[1]) / 2
-
-
-def _gradient_ends(
-    vmobject: VMobject, points: np.ndarray, shade_in_3d: bool
-) -> tuple[Point3D, Point3D]:
-    """Where a path's gradient starts and ends, from the path's own points."""
-    if shade_in_3d:
-        # As the 3D shading always did: between the path's first and last corner.
-        return start_corner(points), end_corner(points)
-    box = _anchor_box(points)
-    if box is None:
-        return np.zeros(3), np.zeros(3)
-    low, high = box
-    center = (low + high) / 2
-    # Along the sheen direction, to the edges of the box (as
-    # get_gradient_start_and_end_points does with the family's box).
-    offset = (high - low) / 2 * np.asarray(vmobject.sheen_direction, dtype=float)
-    return center - offset, center + offset
-
-
-_NO_COLOR = np.zeros((1, 4))
-_NO_COLOR.flags.writeable = False

@@ -626,7 +626,7 @@ Special Camera Settings
                 ]), v_range=[0, TAU], u_range=[-PI / 2, PI / 2],
                 checkerboard_colors=[RED_D, RED_E], resolution=(15, 32)
             )
-            self.camera.light_source.move_to(3*IN) # changes the source of the light
+            self.light.move_to(3*IN)
             self.set_camera_orientation(phi=75 * DEGREES, theta=30 * DEGREES)
             self.add(axes, sphere)
 
@@ -664,6 +664,7 @@ Special Camera Settings
 .. manim:: ThreeDSurfacePlot
    :save_last_frame:
    :ref_classes: ThreeDScene Surface
+   :renderer: opengl
 
    class ThreeDSurfacePlot(ThreeDScene):
        def construct(self):

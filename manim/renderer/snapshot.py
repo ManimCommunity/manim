@@ -8,8 +8,8 @@ reuse work from earlier frames. The list is in drawing order (family order, sort
 
 The ``R`` in the names stands for *render snapshot*: each ``R`` type holds the values
 of one mobject or style type, resolved for drawing (``RPath`` for a
-:class:`~.VMobject`, ``RSolidColor`` for a single solid color, and so on; each class
-says which).
+:class:`~.VMobject`, ``RSolidColor`` for a :class:`~.SolidColor` paint, and so on;
+each class says which).
 Values are resolved where a renderer would otherwise need the mobject: a gradient's
 ends are points in the scene, not a direction relative to the mobject.
 
@@ -44,13 +44,14 @@ from __future__ import annotations
 from collections.abc import Hashable, Mapping
 from typing import TYPE_CHECKING, NamedTuple, TypeAlias
 
-from manim.appearance.material import PbrMaterial, UnlitMaterial
+from manim.appearance.material import Material
 from manim.constants import STROKE_WIDTH_UNIT
 
 if TYPE_CHECKING:
     import numpy as np
-    from PIL.Image import Image, Resampling
+    from PIL.Image import Resampling
 
+    from manim.appearance.paint import GridId
     from manim.constants import CapStyleType, LineJointType
     from manim.typing import (
         FloatRGBA,
@@ -65,12 +66,10 @@ __all__ = [
     "FacingCamera",
     "FixedInFrame",
     "InScene",
-    "LegacyShaded",
-    "Material",
-    "MobjectUid",
     "Payload",
     "Placement",
     "RCameraView",
+    "RColorField",
     "RImage",
     "RLinearGradient",
     "RMesh",
@@ -94,7 +93,7 @@ CameraId: TypeAlias = int
 
 
 class RSolidColor(NamedTuple):
-    """One color: the snapshot of a mobject's single fill or stroke color."""
+    """One color: the snapshot of a :class:`~.SolidColor` paint."""
 
     rgba: FloatRGBA
 
@@ -112,20 +111,24 @@ class RLinearGradient(NamedTuple):
     rgbas: FloatRGBA_Array
 
 
-RPaint = RSolidColor | RLinearGradient
+class RColorField(NamedTuple):
+    """Colors in scene coordinates (a :class:`~.ColorField`), sampled where the
+    path is drawn.
 
-
-class LegacyShaded(NamedTuple):
-    """The shading of mobjects with ``shade_in_3d``: the stop colors of the path's
-    paint, darkened or lightened towards the camera's light at the path's first and
-    last corner, as :func:`~.get_shaded_rgb` does.
-
-    A renderer whose camera has no light draws the paint as it is. This material is
-    provisional; it goes when vector mobjects get lit materials.
+    ``grid``: ``(rows, columns, 4)`` straight-alpha sRGB floats, row 0 at the top;
+    ``corners``: the upper left, upper right and lower left scene point of the
+    grid's outer edges; ``opacity`` multiplies the alpha. The color at a point
+    is :meth:`.ColorField.sample`'s. ``grid_id`` identifies the grid's storage
+    only (equal ids, equal colors): one texture can serve many paints.
     """
 
+    grid: np.ndarray
+    corners: Point3D_Array
+    opacity: float
+    grid_id: GridId
 
-Material = UnlitMaterial | PbrMaterial | LegacyShaded
+
+RPaint = RSolidColor | RLinearGradient | RColorField
 
 
 class RStroke(NamedTuple):
@@ -152,7 +155,6 @@ class RPath(NamedTuple):
       (paint as for the fill, width, joint and cap)
     - ``"material"``: ``material``
     - ``"depth_reference"``: ``depth_reference``
-    - ``"mask"``: ``mask``
     """
 
     points: Point3D_Array
@@ -166,9 +168,6 @@ class RPath(NamedTuple):
     depth_reference: Point3D | None
     #: Distance below which two points count as equal (closing subpaths).
     tolerance: float
-    #: The image the path's colors are multiplied with, fixed to the frame (see
-    #: :meth:`.VMobject.color_using_background_image`); provisional.
-    mask: Image | str | None
 
 
 class RPoints(NamedTuple):

@@ -19,7 +19,6 @@ from manim import (
     Dot,
     ImageMobject,
     ImageMobjectFromCamera,
-    Line,
     LineJointType,
     Mobject,
     MovingCamera,
@@ -197,21 +196,6 @@ def test_background_image_is_resized_to_target(tmp_path):
                 dtype=np.uint8,
             )
             np.testing.assert_array_equal(renderer.pixels(), expected)
-        finally:
-            renderer.close()
-
-
-def test_background_image_objects_are_read_each_time_they_are_drawn():
-    image = Image.new("RGBA", (2, 2), (255, 0, 0, 255))
-    square = Square(side_length=20, fill_opacity=1, stroke_width=0)
-    square.color_using_background_image(image)
-    with tempconfig({"pixel_width": 2, "pixel_height": 2}):
-        renderer = _Drawn()
-        try:
-            renderer.render_mobjects([square])
-            image.paste((0, 0, 255, 255), (0, 0, 2, 2))  # edited in place
-            renderer.render_mobjects([square])
-            assert renderer.pixels()[0, 0].tolist() == [0, 0, 255, 255]
         finally:
             renderer.close()
 
@@ -452,15 +436,13 @@ def test_camera_views_share_the_image_files_read_for_the_frame(tmp_path, monkeyp
         "open",
         lambda fp, *args, open=Image.open: reads.append(fp) or open(fp, *args),
     )
-    square = Square(side_length=20, fill_opacity=1, stroke_width=0)
-    square.color_using_background_image(str(path))
     with tempconfig({"pixel_width": 4, "pixel_height": 4}):
-        view = ImageMobjectFromCamera(Camera())
+        view = ImageMobjectFromCamera(Camera(background_image=str(path)))
         view.set(width=config.frame_width)
-        renderer = _Drawn(MultiCamera([view]))
+        renderer = _Drawn(MultiCamera([view], background_image=str(path)))
         try:
-            renderer.render_mobjects([square, view])
-            renderer.render_mobjects([square, view])
+            renderer.render_mobjects([view])
+            renderer.render_mobjects([view])
         finally:
             renderer.close()
     assert len(reads) == 1
@@ -536,24 +518,6 @@ def test_mobjects_fixed_in_frame_stay_put_when_the_camera_moves():
             np.testing.assert_array_equal(renderer.pixels(), before)
         finally:
             renderer.close()
-
-
-def test_a_masked_stroke_keeps_its_opacity():
-    def frame_of(opacity):
-        line = Line(LEFT, RIGHT).set_stroke(RED, width=40, opacity=opacity)
-        line.color_using_background_image(Image.new("RGBA", (64, 36), "white"))
-        renderer = _Drawn(Camera())
-        try:
-            renderer.render_mobjects([line])
-            return renderer.pixels().copy()
-        finally:
-            renderer.close()
-
-    with tempconfig({"pixel_width": 64, "pixel_height": 36}):
-        faint, opaque = frame_of(0.2), frame_of(1)
-    # Over the black background, the white image shows as bright as the stroke is
-    # opaque.
-    assert 0 < faint[18, 32, 0] < opaque[18, 32, 0] / 2
 
 
 def _frame_of(mobjects, renderer):

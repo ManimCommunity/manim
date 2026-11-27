@@ -344,6 +344,8 @@ class OpenGLRenderer:
             self.camera_view,
             self.perspective_uniforms,
             config.reference_pixel_size,
+            config.lights,
+            config.ambient,
         )
 
     def render(self, nodes: Sequence[RNode], config: RenderConfig, /) -> _GLFrame:
@@ -405,6 +407,8 @@ class OpenGLRenderer:
                 camera_view,
                 self.camera_uniforms(camera_view, size[1]),
                 view_config.reference_pixel_size,
+                view_config.lights,
+                view_config.ambient,
             )
             view_target.framebuffer.use()
             background = _background_rgba(view_config)
@@ -485,8 +489,6 @@ class _CameraView(typing.NamedTuple):
     #: Frame width and height, divided by the zoom factor.
     frame_shape: tuple[float, float]
     focal_distance: float
-    #: The camera's light, in scene coordinates; ``None`` without one.
-    light_source: Point3D | None
     #: Where the scene is seen from, in scene coordinates.
     eye: Point3D
 
@@ -501,7 +503,6 @@ class _CameraView(typing.NamedTuple):
             rotation=state.rotation,
             frame_shape=(state.frame_width / zoom, state.frame_height / zoom),
             focal_distance=focal_distance,
-            light_source=state.light,
             eye=_eye(state.center, state.rotation, focal_distance),
         )
 

@@ -3,12 +3,12 @@ A deep dive into Manim's internals
 
 **Author:** `Benjamin Hackl <https://benjamin-hackl.at>`__
 
-.. admonition:: Disclaimer
+.. admonition:: Version
 
-    This guide was originally written for version ``v0.16.0`` and primarily
-    treats the Cairo renderer. Its high-level lifecycle discussion has been
-    updated for the :class:`.Manager` coordination layer, but some lower-level
-    implementation details may still differ from the latest version of Manim.
+    This guide describes Manim ``v0.30.0``, whose render loop was reworked
+    completely: a :class:`.Manager` runs the scene, and renderers draw frames from
+    mobject snapshots. The following applies to all renderers unless stated
+    otherwise.
 
 Introduction
 ------------
@@ -82,34 +82,45 @@ discussing the contents of the following chapters on a very high level.
 
 - `Preliminaries`_: In this chapter we unravel all the steps that take place
   to prepare a scene for rendering; right until the point where the user-overridden
-  ``construct`` method is ran. This includes a brief discussion on using Manim's CLI
+  ``construct`` method is run. This includes a brief discussion on using Manim's CLI
   versus other means of rendering (e.g., via Jupyter notebooks, or in your Python
-  script by calling the :meth:`.Scene.render` method yourself).
+  script by calling the :meth:`.Scene.render` method yourself), and the role of
+  the :class:`.Manager`, which runs a scene from start to finish.
 - `Mobject Initialization`_: For the second chapter we dive into creating and handling
   Mobjects, the basic elements that should be displayed in our scene.
-  We discuss the :class:`.Mobject` base class, how there are essentially
-  three different types of Mobjects, and then discuss the most important of them,
-  vectorized Mobjects. In particular, we describe the internal point data structure
-  that governs how the mechanism responsible for drawing the vectorized Mobject
-  to the screen sets the corresponding Bézier curves. We conclude the chapter
-  with a tour into :meth:`.Scene.add`, the bookkeeping mechanism controlling which
-  mobjects should be rendered.
-- `Animations and the Render Loop`_: And finally, in the last chapter we walk
-  through the instantiation of :class:`.Animation` objects (the blueprints that
-  hold information on how Mobjects should be modified when the render loop runs),
-  followed by a investigation of the infamous :meth:`.Scene.play` call. We will
-  see that there are three relevant parts in a :meth:`.Scene.play` call;
-  a part in which the passed animations and keyword arguments are processed
-  and prepared, followed by the actual "render loop" in which the library
-  steps through a time line and renders frame by frame. The final part
-  does some post-processing and seals the encoding job for a short video segment
-  ("partial movie file") before cleaning up for the next call to
-  :meth:`.Scene.play`. The :class:`.Manager` is the coordination layer around
-  these calls, while the renderer still implements most of the per-animation
-  processing described here. Depending on the encoding configuration, the partial
-  movie file can continue encoding while the next animation is rendered. In the
-  end, after all of :meth:`.Scene.construct` has been run, the library waits for
-  any remaining encoding jobs and combines the partial movie files into one video.
+  We discuss the :class:`.Mobject` base class, the kinds of mobjects that can be
+  drawn, and then the most important of them, vectorized Mobjects. In particular,
+  we describe the point data structure from which the Bézier curves of a
+  vectorized Mobject are drawn. We conclude the chapter with a tour into
+  :meth:`.Scene.add`, the bookkeeping mechanism controlling which mobjects should
+  be rendered.
+- `Animations and the Render Loop`_: In this chapter we walk through the
+  instantiation of :class:`.Animation` objects (the blueprints that hold
+  information on how Mobjects should be modified when the render loop runs),
+  followed by an investigation of the :meth:`.Scene.play` call: how the manager
+  prepares the animations, steps through the frames of the animation, and seals
+  the encoding job for a short video segment ("partial movie file"). Depending on
+  the encoding configuration, the partial movie file can continue encoding while
+  the next animation is rendered. In the end, after all of
+  :meth:`.Scene.construct` has been run, the manager waits for any remaining
+  encoding jobs and combines the partial movie files into one video.
+- `From mobjects to pixels`_: The last chapter follows one frame from the scene's
+  mobjects to its pixels: how each mobject becomes a *render snapshot*, what a
+  renderer is given and what it returns, and what the Cairo and the OpenGL
+  renderer do with the snapshots.
+
+In short, a frame travels like this:
+
+.. code-block:: text
+
+    Scene.mobjects, Scene.camera, Scene.light
+        │  FrameBuilder: one render snapshot (RNode) per mobject, in drawing
+        │  order, and a RenderConfig with the camera's state and the lights
+        ▼
+    renderer.render(nodes, config)
+        │  Cairo or OpenGL draws the snapshots
+        ▼
+    Frame ──► encoder ──► SceneFileWriter (partial movie files, final video)
 
 And with that, let us get *in medias res*.
 
@@ -259,9 +270,18 @@ the ``Scene.__init__`` method is called, given that we did not implement our own
 method. Inspecting the corresponding code (see
 `here <https://github.com/ManimCommunity/manim/blob/main/manim/scene/scene.py>`__)
 reveals that ``Scene.__init__`` first sets several attributes of the scene objects that do not
-depend on any configuration options set in ``config``. Then the scene inspects the value of
-``config.renderer``, and based on its value, either instantiates a ``CairoRenderer`` or an
-``OpenGLRenderer`` object, exposed by its read-only ``renderer`` property.
+depend on any configuration options set in ``config``. It creates the scene's camera
+(``camera_class``, :class:`.Camera` by default), which the scene keeps and exposes as
+``scene.camera``. Then it selects a renderer: the ``renderer`` argument of the scene,
+or ``config.renderer``, names a *renderer factory* from
+:mod:`manim.renderer.backends` (:class:`~.backends.Cairo` or
+:class:`~.backends.OpenGL`).
+A factory is an immutable value that knows what its renderers can do; it is stored as
+``scene.backend``, and its :meth:`~.RendererFactory.create` method makes the scene's
+renderer, exposed by the read-only ``renderer`` property::
+
+    Scene(renderer="opengl")
+    Scene(renderer=OpenGL(anti_alias_width=2))
 
 After selecting the renderer, the scene resolves the mutable configuration into
 an immutable *render-session specification*. In abbreviated form, initialization
@@ -271,8 +291,8 @@ continues as follows:
 
     self.session_spec = resolve_render_session(
         config,
-        self.renderer.capabilities,
-        renderer_name=type(self.renderer).__name__,
+        self.backend.capabilities,
+        renderer_name=self.backend.name,
     )
     self.output_plan = resolve_output_plan(
         resolve_media_layout(...),
@@ -296,18 +316,14 @@ artifact after rendering finishes.
 When the primary artifact is a video, the session specification also contains
 information about the video codec, pixel format, dimension, frame rate, etc.
 The specification also separately records requests for *dry-run execution*.
-A dry run requests semantic scene evaluation without rasterizing
-frames or using media and cache resources. In contrast, ``format = none`` only
-suppresses the primary artifact; an OpenGL live preview with automatic output
-still rasterizes and displays frames without writing a file. Both requests have
-an effective output format of ``none``, so the session's ``dry_run`` field
-preserves the intended execution behavior.
-
-The current renderer loops do not yet enforce no-raster dry runs; the session
-field preserves that request for Manager-owned execution. Resolution also
-validates requests against the selected renderer's capabilities. For example,
-Cairo rejects live preview, while OpenGL advertises support for it. A concrete
-format records the live preview as well.
+A dry run runs the scene's animations without drawing frames or using media and
+cache resources. ``format = none`` suppresses the primary artifact only: an
+OpenGL live preview with automatic output still draws and displays frames without
+writing a file. Both requests have an effective output format of ``none``; the
+session's ``dry_run`` field tells them apart. Resolution also validates requests
+against the capabilities of the selected renderer factory. For example, Cairo
+rejects live preview, while OpenGL supports it. A concrete format records the
+live preview as well.
 
 The scene then resolves existing directory templates once into an immutable
 *output plan* containing scene-specific output paths for the artifact, sections,
@@ -324,19 +340,20 @@ these settings to create a :class:`.SceneFileWriter` when rendering starts, befo
 needed; it is the same writer for the rest of the scene.
 
 The writer uses the saved settings to encode and assemble media through ``libav``.
-It creates directories as it writes files. A snapshot from ``scene.get_image()``
-uses just the renderer, leaving the writer uninitialized if it has not been used.
+It creates directories as it writes files.
 
-**Creating graphics resources.** Renderer initialization stores the settings for
-later use. The two backends create their drawing resources at different points:
+**Creating graphics resources.** A renderer allocates its drawing resources when it
+draws its first frame, at the size that frame asks for:
 
-- Cairo allocates an image buffer and drawing context on the first draw or request
-  for pixels.
-- OpenGL creates its context and framebuffer when ``Manager.render()`` starts,
-  before ``setup()``. An explicit request for GPU resources, such as accessing
-  ``renderer.context``, creates them sooner. A live-preview request also opens a
-  window. A snapshot requested before this initialization uses a temporary context
-  without a window.
+- Cairo allocates an image buffer and drawing context.
+- OpenGL creates its context and an offscreen framebuffer. With a live-preview
+  request, the manager opens the preview window when rendering starts, before
+  ``setup()``, and the window shows the frames drawn offscreen, scaled to fit.
+  Accessing ``renderer.context`` creates the context sooner.
+
+``scene.get_image()`` draws with a second renderer from the scene's factory,
+which keeps the drawing state of the scene's renderer as it is and draws
+offscreen.
 
 The ``-p`` / ``--preview`` option opens the completed output file after rendering;
 it is separate from OpenGL's live-preview window.
@@ -347,12 +364,23 @@ first time a call is made which requires a manager, such as ``render()`` or
 ``get_image()``, a new manager is created and attached to the scene as
 ``scene.manager``. This manager is then reused for any subsequent calls.
 
-**One renderer per scene.** A scene keeps the renderer selected at construction;
-``scene.renderer`` is read-only. Successive plays reuse that renderer and its
-writer. For another scene, create a new renderer or let the scene create its
-default. The renderer stores the camera and drawing resources. The manager stores
-the animation clock, play count, and skip state; the renderer's corresponding
-properties read and update those values.
+**Who is responsible for what.** Each object in this setup has one job:
+
+- The **scene** is responsible for what is shown: its mobjects, its camera, and
+  its light (:attr:`.Scene.light`, set by :class:`.ThreeDScene`), and the hooks
+  ``setup``, ``construct`` and ``tear_down``.
+- The **manager** runs the scene. It is responsible for the animation clock
+  (``manager.time``), the play counter (``manager.num_plays``), whether plays are
+  left out of the output (``manager.skip_animations``), the
+  :class:`.SceneFileWriter`, the preview window handle (``manager.preview``), and a
+  :class:`.FrameBuilder` that turns the scene's state into what a renderer draws.
+- The **renderer** draws. It is given render snapshots and a
+  :class:`.RenderConfig` and returns a :class:`.Frame`. It keeps its drawing
+  resources and what it can reuse between frames.
+
+A scene keeps the renderer selected at construction; successive plays reuse that
+renderer and the manager's writer. Each new scene creates its own renderer from
+its factory.
 
 The CLI creates a fresh scene for each selected class and each interactive rerun,
 on both Cairo and OpenGL. It closes the previous run's resources before creating
@@ -446,10 +474,11 @@ What even is a Mobject?
 (depends on who you ask 😄). The Python class :class:`.Mobject` is
 the base class for all objects that should be displayed on screen.
 Looking at the `initialization method
-<https://github.com/ManimCommunity/manim/blob/5d72d9cfa2e3dd21c844b1da807576f5a7194fda/manim/mobject/mobject.py#L94>`__
+<https://github.com/ManimCommunity/manim/blob/main/manim/mobject/mobject.py>`__
 of :class:`.Mobject`, you will find that not too much happens in there:
 
-- some initial attribute values are assigned, like ``name`` (which makes the
+- some initial attribute values are assigned, like ``uid`` (a number that
+  identifies the mobject within the process), ``name`` (which makes the
   render logs mention the name of the mobject instead of its type),
   ``submobjects`` (initially an empty list), ``color``, and some others.
 - Then, two methods related to *points* are called: ``reset_points``
@@ -461,33 +490,38 @@ sets the ``points`` attribute of the mobject to an empty NumPy vector,
 while the other two methods, :meth:`.Mobject.generate_points` and
 :meth:`.Mobject.init_colors` are just implemented as ``pass``.
 
-This makes sense: :class:`.Mobject` is not supposed to be used as
-an *actual* object that is displayed on screen; in fact the camera
-(which we will discuss later in more detail; it is the class that is,
-for the Cairo renderer, responsible for "taking a picture" of the
-current scene) does not process "pure" :class:`Mobjects <.Mobject>`
-in any way, they *cannot* even appear in the rendered output.
+This makes sense: :class:`.Mobject` is the base class of everything a
+scene holds, and a plain :class:`.Mobject` serves as a container for other
+mobjects, its ``submobjects``, as a :class:`.Group` does. When a frame
+is drawn, each mobject in the scene is turned into a *render snapshot* that
+holds the values a renderer needs (see `From mobjects to pixels`_), and there
+are five kinds of mobjects with such a snapshot:
 
-This is where different types of mobjects come into play. Roughly
-speaking, the Cairo renderer setup knows three different types of
-mobjects that can be rendered:
-
-- :class:`.ImageMobject`, which represent images that you can display
-  in your scene,
-- :class:`.PMobject`, which are very special mobjects used to represent
-  point clouds; we will not discuss them further in this guide,
 - :class:`.VMobject`, which are *vectorized mobjects*, that is, mobjects
   that consist of points that are connected via curves. These are pretty
   much everywhere, and we will discuss them in detail in the next section.
+- :class:`.MeshMobject`, which are surfaces made of triangles, such as
+  :class:`.Sphere`, :class:`.Surface` and the faces of :class:`.Cube`.
+- :class:`.ImageMobject`, which represent images that you can display
+  in your scene.
+- :class:`.ImageMobjectFromCamera`, which shows what another camera sees.
+- :class:`.PMobject`, which are mobjects used to represent point clouds; we
+  will not discuss them further in this guide.
+
+**Fields.** The attributes that a mobject is drawn from, such as ``points``,
+``z_index`` or the colors of a vectorized mobject, are *versioned fields*
+(:mod:`manim.utils.versioned_fields`). Every assignment to a field gives it a new
+version number, and the arrays a field holds are read-only: changing a mobject
+means assigning a new value. Looking at these version numbers is how Manim tells
+what changed between two frames, which we will come back to when drawing frames.
 
 ... and what are VMobjects?
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 As just mentioned, :class:`VMobjects <.VMobject>` represent vectorized
-mobjects. To render a :class:`.VMobject`, the camera looks at the
-``points`` attribute of a :class:`.VMobject` and divides it into sets
-of four points each. Each of these sets is then used to construct a
-cubic Bézier curve with the first and last entry describing the
+mobjects. The shape of a :class:`.VMobject` is given by its ``points``
+attribute, which is divided into sets of four points each. Each of these sets
+describes a cubic Bézier curve, with the first and last entry describing the
 end points of the curve ("anchors"), and the second and third entry
 describing the control points in between ("handles").
 
@@ -628,7 +662,7 @@ The initialization of ``blue_circle`` is similar to the one of
 chain of :class:`.Circle` is different. Let us briefly follow the trace
 of the debugger:
 
-The implementation of :meth:`.Circle.__init__` immediately calls
+The implementation of ``Circle.__init__`` immediately calls
 the initialization method of :class:`.Arc`, as a circle in Manim
 is simply an arc with an angle of :math:`\tau = 2\pi`. When
 initializing the arc, some basic attributes are set (like
@@ -741,7 +775,7 @@ of animations). Moreover, except for in a particular special case,
 the run time of animations is also fixed and known beforehand.
 
 The initialization of animations actually is not very exciting,
-:meth:`.Animation.__init__` merely sets some attributes derived
+``Animation.__init__`` merely sets some attributes derived
 from the passed keyword arguments and additionally ensures that
 the ``Animation.starting_mobject`` and ``Animation.mobject``
 attributes are populated. Once the animation is played, the
@@ -788,13 +822,13 @@ The ``play`` call: preparing to enter Manim's render loop
 We are finally there, the render loop is in our reach. Let us
 walk through the code that is run when :meth:`.Scene.play` is called.
 
-Both Cairo and OpenGL use the same *run loop* in :class:`.Manager`. The scene
-prepares animations and updates mobjects. The run loop steps through every frame
-of the animation and reports each step to a few *listeners*: the *encoder* draws
-frames and sends them to the file writer, or reuses a cached partial movie file;
-the *preview* shows frames in OpenGL's window; and a progress bar shows how far
-the play has come. A frame is drawn only when a listener needs its image, and
-only once. We will follow Cairo's drawing operations below.
+The :class:`.Manager` runs every play through its *run loop*, whichever
+renderer the scene uses. The scene prepares animations and updates mobjects. The
+run loop steps through every frame of the animation and reports each step to a
+few *listeners*: the *encoder* draws frames and sends them to the file writer, or
+reuses a cached partial movie file; the *preview* shows frames in OpenGL's
+window; and a progress bar shows how far the play has come. A frame is drawn
+when a listener needs its image, and once per step.
 
 :meth:`.Scene.play` passes the request to :meth:`.Manager.play`. During OpenGL
 interaction, calls from another thread are queued for the rendering thread first.
@@ -821,8 +855,8 @@ calls, and a section with ``skip_animations=True`` leaves its plays out. A play
 that is not part of the output is not drawn, but later plays start from the same
 state as in a full render: if updaters or a stop condition run per frame, the play
 steps through every frame; otherwise nothing can tell the frames in between apart,
-and it goes to its last frame in one step. While such a play runs, ``manager.skip_animations`` is ``True``; the
-renderer's property reads the same value.
+and it goes to its last frame in one step. While such a play runs,
+``manager.skip_animations`` is ``True``.
 
 Sounds are placed at scene time, independently of the plays. All sounds of a
 scene are mixed into one track, and when the movie is assembled, only the parts
@@ -839,7 +873,7 @@ animations. This happens once per play call and includes the following steps:
   animations (or ``.animate`` syntax calls, which are also assembled to
   be actual :class:`.Animation`-objects at that point). It also propagates
   any animation-related keyword arguments (like ``run_time``,
-  or ``rate_func``) passed to :class:`.Scene.play` to each individual
+  or ``rate_func``) passed to :meth:`.Scene.play` to each individual
   animation. The processed animations are then stored in the ``animations``
   attribute of the scene for the manager to use during playback.
 - It adds all mobjects to which the animations that are played are
@@ -879,10 +913,10 @@ In the event that the animation has to be rendered, the encoder gives the
 :class:`.SceneFileWriter` the current animation index and asks it to start a
 segment job. The writer creates a ``VideoSegmentEncoder`` from the resolved
 profile and wraps it in a ``_PartialMovieEncodeJob``. The synchronous segment
-encoder owns its container, video stream, sequential presentation timestamps,
-and target cleanup. The job owns only the frame queue and worker thread. During
-the render loop, concrete top-left-origin ``uint8`` RGBA arrays are added to the
-queue and encoded by the worker. With the writing process in place, the manager
+encoder is responsible for its container, video stream, sequential presentation
+timestamps, and target cleanup; the job is responsible for the frame queue and
+worker thread. During the render loop, concrete top-left-origin ``uint8`` RGBA
+arrays are added to the queue and encoded by the worker. With the writing process in place, the manager
 then asks the scene to "begin" the animations.
 
 By default, Manim finishes encoding each partial movie file before rendering the
@@ -955,7 +989,7 @@ the animation and requests a frame at each time stamp. Here is how it does that:
   shows a ``tqdm`` `progress bar <https://tqdm.github.io>`__ that counts them,
   stored in ``scene.time_progression``.
 - Then the run loop goes through these time stamps: for each time stamp ``t``,
-  :meth:`.Scene.update_to_time` is called, which ...
+  ``Scene.update_to_time`` is called, which ...
 
   - ... first computes the time passed since the last update (which might be 0,
     especially for the initial call) and references it as ``dt``,
@@ -976,53 +1010,11 @@ At this point, the internal (Python) state of all mobjects has been updated
 to match the currently processed timestamp. If the play is part of the output,
 it is now time to *take a picture*!
 
-To take it, the manager's :class:`.FrameBuilder` turns the scene into what a
-renderer draws: render snapshots of the scene's mobjects (see
-:mod:`manim.renderer.snapshot`), in drawing order (mobjects fixed in the frame
-last), and a :class:`.RenderConfig` holding the camera's state (a
-:class:`.CameraState`: frame, orientation, background) and the views of any
-:class:`.MultiCamera` cameras. The renderer only draws:
-``renderer.render(nodes, config)`` returns the drawn :class:`.Frame`, whose pixels
-are read only when something asks for them (the file writer, an image), not for a
-live preview, which shows the frame where the renderer drew it. It knows nothing of
-scenes, mobjects or cameras, so another renderer draws the same frames from the
-same input.
-
-The Cairo renderer first resets its image buffer to the camera's background color
-or image; background images are resized to match the buffer's dimensions. Each
-snapshot has a key made
-from the versions of the mobject's fields, so the renderer can tell what changed
-since the previous frame without being told: the snapshots at the start of the
-list with the same keys, from the same view, as in the previous frame give the
-same pixels. After a frame in which some leading snapshots did not change,
-the renderer saves their drawing and copies it in the following frames as long as
-they stay the same; only the rest is drawn. In our toy example, the square is the
-only mobject and changes in every frame, so every frame draws it. Both renderers
-work this way.
-
-A snapshot is a function of the mobject's own fields: an
-:class:`~manim.renderer.extract.Extractor` keeps
-the snapshot of each mobject and reuses it while the mobject's field versions stay
-the same, so unchanged mobjects cost almost nothing to look at. Classes that draw
-from other state set ``_drawn_from_fields = False`` and are looked at anew in every
-frame. With ``MANIM_CHECK_SNAPSHOTS=1``, as in Manim's tests, every reused snapshot
-is checked against a fresh one.
-
-Things get a bit technical here, and at some point it is more efficient to delve into
-the implementation -- but the drawing process can be summarized as follows:
-
-- The camera's state says what is viewed (its animatable ``frame``), from where
-  (its orientation), and how meshes are shaded. Mesh faces are projected, shaded
-  and sorted by depth from it in the renderer.
-- Private Cairo renderer helpers process consecutive batches of vectorized, point
-  cloud, and image mobjects without changing their draw order.
-- Vectorized mobjects are converted to Cairo paths and drawn with their background
-  stroke, fill, and foreground stroke. Point clouds and image mobjects are converted
-  to target pixel coordinates and composited by renderer helpers.
-- With a :class:`.MultiCamera`, the renderer draws each secondary camera's view into
-  a separate image buffer, excluding that camera's own display mobject.
-- The renderer then draws each of these images in the corresponding
-  :class:`.ImageMobjectFromCamera` in the primary view.
+To take it, the manager calls ``renderer.render(*manager._frame())``: its
+:class:`.FrameBuilder` turns the scene's mobjects, camera and light into render
+snapshots and a :class:`.RenderConfig`, and the renderer draws them into a
+:class:`.Frame`. The last chapter, `From mobjects to pixels`_, follows this step
+in detail.
 
 After drawing, the frame's ``pixels()`` are a copy of the rendered image as a
 top-left-origin, row-major (C-contiguous) ``uint8`` RGBA array, which the encoder
@@ -1069,12 +1061,10 @@ A TL;DR for the render loop, in the context of our toy example, reads as follows
   state of the transformation animation to the desired time stamp (for example,
   at time stamp ``t = 45/30``, the animation is completed to a rate of
   ``alpha = 0.5``).
-- Then the encoder asks the renderer to draw the frame. The only mobject that
-  needs to be processed at this point is the main mobject attached to the
-  transformation. The camera supplies its view transform, while Cairo drawing
-  helpers draw the transformed square into the renderer's image buffer. The
-  encoder passes a copy of that buffer's RGBA pixels to the file writer, and the
-  manager advances the clock by one frame.
+- Then the encoder asks for the frame: the frame builder makes the snapshot of the
+  only mobject in the scene, the main mobject attached to the transformation, and
+  the renderer draws it. The encoder passes the frame's RGBA pixels to the file
+  writer, and the manager advances the clock by one frame.
 - At the end of the loop, 90 frames have been passed to the file writer.
 
 Completing the render loop
@@ -1104,7 +1094,7 @@ the job and the partial movie file has been written when the call returns. With 
 higher value, the job can remain in flight while the next animation is rendered;
 the oldest jobs are joined as the configured limit is reached.
 
-This pretty much concludes the walkthrough of a :class:`.Scene.play` call,
+This pretty much concludes the walkthrough of a :meth:`.Scene.play` call,
 and actually there is not too much more to say for our toy example either: at
 this point, the encoding job for a partial movie file representing the
 :class:`.ReplacementTransform` has been sealed (and, with the default encoding
@@ -1118,8 +1108,7 @@ a corresponding partial movie file.
 
 Once the :meth:`.Scene.construct` method has been fully processed, the manager
 calls the scene's cleanup method :meth:`.Scene.tear_down`, followed by
-:meth:`.Manager.post_construct`. The manager asks the renderer to finish the
-scene, and the renderer in turn asks its scene file writer to wrap things up by
+:meth:`.Manager.post_construct`, which asks the file writer to wrap things up by
 calling :meth:`.SceneFileWriter.finish`. The file writer first waits for all
 remaining encoding jobs, then combines the completed partial movie files into the
 final product and records its path. If rendering aborts during a play instead, the
@@ -1128,8 +1117,172 @@ partial movie file is removed so that it cannot be mistaken for a valid cached
 result on a later render. Once output is finalized, the manager carries out any
 post-render presentation request from the immutable session specification.
 
+From mobjects to pixels
+-----------------------
+
+We have glossed over one step of the render loop: *taking a picture*. This
+chapter follows a single frame of our toy example, at ``t = 45/30`` in the
+:class:`.ReplacementTransform`, from the scene's mobjects to the pixels that the
+encoder hands to the file writer.
+
+Render snapshots
+^^^^^^^^^^^^^^^^
+
+Renderers draw *render snapshots* (:mod:`manim.renderer.snapshot`): immutable
+records of the values needed to draw one mobject. A snapshot is an :class:`.RNode`
+with these parts:
+
+- ``uid``: the mobject's :attr:`~.Mobject.uid`.
+- ``payload``: the values to draw, one record type per kind of mobject:
+  :class:`.RPath` for a :class:`.VMobject`, :class:`.RMesh` for a
+  :class:`.MeshMobject`, :class:`.RPoints` for a :class:`.PMobject`,
+  :class:`.RImage` for an :class:`.ImageMobject` and :class:`.RCameraView` for an
+  :class:`.ImageMobjectFromCamera`. The ``R`` in these names stands for
+  *render snapshot*.
+- ``placement``: how the node is placed in the view: ``None`` for a mobject in the
+  scene, :class:`.FixedInFrame` for one fixed in the frame
+  (:meth:`.Mobject.fix_in_frame`), :class:`.FacingCamera` for one with a fixed
+  orientation (:meth:`.Mobject.fix_orientation`).
+- ``key`` and ``versions``: what a renderer uses to reuse work. The key changes
+  whenever any field of the mobject changes; the versions are kept per part of
+  the payload (a *slot*, such as ``"geometry"`` or ``"fill"`` of a path), for
+  renderers that keep parts of a node separately, such as uploaded geometry.
+
+The payload of our transformed square is an :class:`.RPath`:
+
+- ``points``: the cubic Bézier points of the path, the mobject's own array (field
+  values are read-only, so the snapshot shares them);
+- ``fill`` and ``stroke``: what colors the area and the outline. A mobject's
+  ``fill`` and ``stroke`` are *paints* (:mod:`manim.appearance.paint`): a
+  :class:`.SolidColor`, a :class:`.LinearGradient`, or a :class:`.ColorField` that
+  places colors in the scene. Each paint resolves itself into a snapshot paint
+  (:meth:`.Paint.resolve`): :class:`.RSolidColor`, :class:`.RLinearGradient`,
+  whose stops are spaced between two points in the scene, or :class:`.RColorField`.
+  The stroke snapshot, :class:`.RStroke`, adds the width, joint and cap;
+- ``background_stroke``: an outline drawn below the fill, when its width is above
+  zero;
+- ``material``: how the path responds to light (:mod:`manim.appearance.material`):
+  :class:`.UnlitMaterial` shows its colors, :class:`.PbrMaterial` shades them by
+  the scene's lights;
+- ``depth_reference``: the point by which a perspective camera orders the path,
+  for mobjects with ``sort_by_depth``.
+
+Snapshots are made by :func:`~manim.renderer.extract.extract`, which walks the
+families of the scene's mobjects in drawing order: family order, stably sorted by
+``z_index``. An :class:`~manim.renderer.extract.Extractor` keeps the snapshot of
+each mobject together with the versions of its fields, and returns it again while
+they stay the same: a mobject that did not change since the previous frame costs a
+look at its version numbers. With ``MANIM_CHECK_SNAPSHOTS=1``, as in Manim's
+tests, every reused snapshot is compared with a fresh one.
+
+What a renderer is given
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+The manager's :class:`.FrameBuilder` makes everything a renderer needs for one
+frame:
+
+- the snapshots of the scene's mobjects, from its extractor, with mobjects fixed in
+  the frame moved to the end;
+- a :class:`.RenderConfig`: the pixel size, the background, the scene's lights and
+  ambient light, and the camera's state as a :class:`.CameraState` (the frame's
+  center and size, its rotation, and for a :class:`.ThreeDCamera` the focal
+  distance and zoom). With a :class:`.MultiCamera`, the configuration also holds
+  one :class:`.CameraView` per camera view, with the snapshots and configuration
+  of what that camera sees.
+
+The renderer protocol (:class:`.Renderer`) is small: ``render(nodes, config)``
+draws a frame and returns a :class:`.Frame`, whose ``pixels()`` method gives a
+top-left-origin, row-major ``uint8`` RGBA array; ``close()`` releases the drawing
+resources. For anything it cannot draw, a renderer raises ``CapabilityError``
+(from :mod:`manim.renderer.protocol`). The snapshots and the configuration are all
+the input: the same nodes and configuration give the same frame. The guide
+:doc:`writing_a_renderer` describes how to write one.
+
+Some work is the same for every renderer and lives in shared helpers:
+
+- ``manim.renderer._view`` places points in the view (projection under a
+  :class:`.ThreeDCamera`, mobjects fixed in the frame or facing the camera) and
+  orders snapshots far to near under a perspective camera;
+- ``manim.renderer._paint`` turns snapshot paints into color stops and computes
+  the color of a lit path;
+- ``manim.renderer._lighting`` holds the shading function, the same for every
+  renderer: glTF's metallic-roughness parameters under point lights;
+- ``manim.renderer._reuse`` decides how much of the previous frame can be reused.
+  The snapshots at the start of the list that have the same keys as in the previous
+  frame, seen from the same view with the same lights, give the same pixels. A
+  renderer saves the drawing of such a prefix and copies it in the following frames
+  while the prefix stays the same; only the rest is drawn.
+
+In our toy example, the transforming square is the only mobject and changes in
+every frame, so every frame draws it.
+
+The Cairo renderer
+^^^^^^^^^^^^^^^^^^
+
+:class:`.CairoRenderer` draws on the CPU into an image buffer with
+`pycairo <https://pycairo.readthedocs.io>`__. For each frame it:
+
+1. draws each camera view of the configuration into an image buffer of its own;
+2. clears the frame's buffer to the background color or image;
+3. replaces every mesh by one snapshot per face: each face becomes a filled
+   polygon, colored once with the shading function at its middle;
+4. orders the snapshots far to near under a perspective camera;
+5. copies the saved drawing of the unchanged prefix, if there is one, and draws
+   the rest in order:
+
+   - paths become Cairo paths: the background stroke, then the fill, then the
+     stroke. A solid paint becomes a color, a gradient a ``cairo.LinearGradient``
+     between its two scene points, and a color field an image pattern placed in
+     the scene (under a flat camera);
+   - point clouds are drawn as squares of pixels;
+   - images and camera views are transformed onto their corner points and
+     composited.
+
+Under a flat camera, the Cairo paths of unchanged mobjects are kept from one
+frame to the next and reused.
+
+The OpenGL renderer
+^^^^^^^^^^^^^^^^^^^
+
+:class:`.OpenGLRenderer` draws on the GPU with `ModernGL
+<https://moderngl.readthedocs.io>`__, into an offscreen framebuffer of the frame's
+size; a preview window shows that framebuffer scaled to the window. For each
+frame it:
+
+1. draws each camera view into a texture;
+2. clears the framebuffer to the background color;
+3. orders the snapshots far to near under a perspective camera;
+4. copies the saved drawing of the unchanged prefix, if there is one, and draws
+   the rest in order:
+
+   - paths: OpenGL's shaders draw quadratic Bézier curves, so each cubic path is
+     split on the CPU into quadratic pieces that stay within a fraction of a pixel
+     of it. The pieces are kept per mobject by the version of its points.
+     Consecutive paths that cannot change each other's pixels are drawn together,
+     in three steps: one draw call for their background strokes, one *winding
+     fill*, and one draw call for their strokes. The winding fill adds up the signed
+     coverage of each curve's triangles in a float buffer, which leaves the winding
+     number of the path at every pixel, and then colors the pixels with a nonzero
+     winding number. The stroke shader draws each quadratic piece as a ribbon of the
+     stroke's width. Paints become colors per point, and a color field a texture
+     sampled where the path is drawn;
+   - meshes: their vertices, normals and colors go to the mesh shader, which
+     shades them with the same lighting as the shared shading function, written in
+     GLSL. Meshes with ``depth_test`` hide what lies behind them;
+   - point clouds are drawn as point sprites, and images and camera views as
+     textured quads.
+
+Both renderers draw a frame from the same input and the same shared helpers, so a
+scene looks the same on either; where one renderer cannot draw something, it
+raises ``CapabilityError``.
+
+Back in our toy example, at ``t = 45/30``: the frame builder's extractor makes a
+fresh snapshot of the transforming square, whose points changed, and the
+renderer draws its fill and stroke over the cleared background. The encoder reads
+the frame's pixels and queues them for the partial movie file.
+
 And there you go! This is a more or less detailed description of how Manim works
 under the hood. While we did not discuss every single line of code in detail
-in this walkthrough, it should still give you a fairly good idea of how the general
-structural design of the library and at least the Cairo rendering flow in particular
-looks like.
+in this walkthrough, it should still give you a fairly good idea of how the
+library is structured, from the scene and its manager through the snapshots of
+its mobjects to the pixels that the renderers draw.

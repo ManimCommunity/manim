@@ -9,7 +9,7 @@ from .._view import sort_for_display
 from ..protocol import PixelFrame, RenderConfig, RendererState
 from ..snapshot import RMesh
 from ._mesh_faces import mesh_faces
-from .rendering import _CairoDrawingContext, reusable_boundary
+from .rendering import _CairoDrawingContext
 from .target import (
     _CairoRasterSettings,
     _CairoRenderTarget,
@@ -80,6 +80,8 @@ class CairoRenderer:
             target=target,
             image_resolver=resolve_image,
             reference_pixel_size=config.reference_pixel_size,
+            lights=config.lights,
+            ambient=config.ambient,
         )
         context.start_frame()
         self._draw_reusing(context, self._faces(nodes, config), config)
@@ -121,6 +123,8 @@ class CairoRenderer:
                     target=target,
                     image_resolver=lambda node: None,
                     reference_pixel_size=view_config.reference_pixel_size,
+                    lights=view_config.lights,
+                    ambient=view_config.ambient,
                 )
                 context.start_frame()
                 context.draw_nodes(self._faces(view.nodes, view_config))
@@ -143,7 +147,15 @@ class CairoRenderer:
         drawn: list[RNode] = []
         for node in nodes:
             if isinstance(node.payload, RMesh):
-                drawn.extend(mesh_faces(node, camera, config.reference_pixel_size))
+                drawn.extend(
+                    mesh_faces(
+                        node,
+                        camera,
+                        config.reference_pixel_size,
+                        config.lights,
+                        config.ambient,
+                    )
+                )
             else:
                 drawn.append(node)
         return sort_for_display(camera, drawn)
@@ -168,6 +180,8 @@ class CairoRenderer:
             (config.pixel_width, config.pixel_height),
             config.reference_pixel_size,
             background_key(config),
+            config.lights,
+            config.ambient,
         )
         memo = self._memo
         start = memo.count_reusable(keys, view)
@@ -175,7 +189,7 @@ class CairoRenderer:
             assert self._saved_pixels is not None
             target.set_pixels(self._saved_pixels)
         else:
-            save = reusable_boundary(nodes, memo.count_worth_saving(keys, view))
+            save = memo.count_worth_saving(keys, view)
             if save:
                 context.draw_nodes(nodes[:save])
                 self._saved_pixels = target.read_pixels()

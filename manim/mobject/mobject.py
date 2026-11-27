@@ -25,6 +25,7 @@ import numpy as np
 from manim.data_structures import MethodWithArgs
 
 from .._config import config, logger
+from ..appearance.paint import Paint
 from ..constants import *
 from ..utils.color import (
     BLACK,
@@ -117,6 +118,7 @@ _IMMUTABLE_TYPES = (
     type(None),
     enum.Enum,
     np.generic,
+    Paint,
 )
 
 

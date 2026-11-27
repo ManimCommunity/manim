@@ -45,6 +45,10 @@ def _image(renderer, mobjects, scene_class=Scene, **orientation):
             scene.add(*mobjects())
             pixels = np.asarray(scene.get_image().convert("RGB"), dtype=float) / 255
             camera = scene.camera
+            # Where the scene's light is (a ThreeDScene's), for the tests.
+            camera.light_position = (
+                None if scene.light is None else scene.light.position.copy()
+            )
         finally:
             scene.renderer.close()
     return pixels, camera
@@ -154,7 +158,7 @@ def test_meshes_are_lit_from_the_light_source(renderer):
     )
 
     # Seen from the camera, the light is above the sphere in this direction.
-    light = camera.project_point(camera.light_source.get_center())[:2]
+    light = camera.project_point(camera.light_position)[:2]
     toward = 1.5 * light / np.linalg.norm(light)
     lit, unlit = _pixel(pixels, *toward), _pixel(pixels, *-toward)
 
@@ -196,7 +200,7 @@ def test_the_mesh_shader_shades_as_the_lighting_function(using_opengl_renderer):
     # The centre of the plane is drawn at the centre of the frame.
     rotation = camera.get_rotation_matrix()
     eye = camera.frame_center + rotation.T @ [0, 0, camera.get_focal_distance()]
-    light = Light(camera.light_source.get_center())
+    light = Light(camera.light_position)
     expected = shade(
         np.array([plane.rgbas[0, :3]]),
         np.array([[0.0, 0.0, 1.0]]),
@@ -226,7 +230,7 @@ def test_the_mesh_shader_draws_the_highlight_of_the_lighting_function(
     pixels, camera = _image("opengl", lambda: [plane], ThreeDScene)
     # Seen straight from above: the highlight is where the half vector is the normal.
     eye = camera.frame_center + [0, 0, camera.get_focal_distance()]
-    light = Light(camera.light_source.get_center())
+    light = Light(camera.light_position)
     xs = np.linspace(-5, 5, 11)
     points = np.array([[x, y, 0.0] for x in xs for y in np.linspace(-3, 3, 7)])
     expected = shade(
@@ -253,7 +257,7 @@ def test_rough_meshes_have_no_holes_on_their_dark_side(using_opengl_renderer):
         phi=60 * DEGREES,
         theta=30 * DEGREES,
     )
-    light = camera.project_point(camera.light_source.get_center())[:2]
+    light = camera.project_point(camera.light_position)[:2]
     away = -light / np.linalg.norm(light)
     for radius in (0.5, 1.0, 1.5, 1.8):
         assert _pixel(pixels, *(radius * away)).sum() > 0.3
@@ -283,7 +287,7 @@ def test_faces_are_lit_as_the_lighting_function(renderer):
         np.array([[0.0, 0.0, 1.0]]),
         np.zeros((1, 3)),
         eye,
-        [Light(camera.light_source.get_center())],
+        [Light(camera.light_position)],
         AMBIENT,
         material,
     )
@@ -375,7 +379,7 @@ def test_face_outlines_look_alike_on_both_renderers(using_opengl_renderer):
 def test_meshes_are_sorted_with_3d_paths(renderer):
     # Added before the plane, but in front of it: drawn after it.
     square = Square(2, fill_opacity=1, color=PURE_RED).shift(OUT)
-    square.set_shade_in_3d(True)
+    square.set_sort_by_depth(True)
     plane = _plane(0, PURE_BLUE)
 
     pixels, _ = _image(renderer, lambda: [square, plane], ThreeDScene)

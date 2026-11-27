@@ -5,9 +5,9 @@ the Cairo renderer as one polygon per face, sorted far to near and lit per face.
 :class:`.Surface` and the 3D primitives (:class:`.Sphere`, :class:`.Torus`, ...) are
 parametric surfaces of this kind.
 
-A mesh has a :mod:`material <manim.appearance.material>`: :class:`.PbrMaterial`
-(the default) lights it under a :class:`.ThreeDCamera`'s light,
-:class:`.UnlitMaterial` shows its colors as they are.
+A mesh has a :mod:`material <manim.appearance.material>`: :class:`.PbrMaterial` (the default)
+lights it by the scene's lights (:mod:`manim.appearance.light`), :class:`.UnlitMaterial` shows its
+colors as they are.
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 from PIL import Image
 
-from manim.appearance.material import Material, PbrMaterial
+from manim.appearance.material import Material, PbrMaterial, interpolate_material
 from manim.mobject.mobject import Mobject
 from manim.mobject.types.vectorized_mobject import VGroup, VMobject
 from manim.utils.color import (
@@ -180,7 +180,7 @@ class MeshMobject(Mobject):
         """Set the color of the faces and of their outlines.
 
         The other arguments of :meth:`.VMobject.set_style` (background strokes,
-        sheen, background images) have no effect on meshes.
+        background images) have no effect on meshes.
         """
         self.set_fill(fill_color, fill_opacity, family=family)
         return self.set_stroke(
@@ -267,18 +267,6 @@ class MeshMobject(Mobject):
             self.stroke_width = width
         return self
 
-    # What VMobject methods ask of the members of a group.
-
-    def set_sheen(self, *args: Any, **kwargs: Any) -> Self:
-        """Meshes have no sheen; for groups of vectorized mobjects and meshes."""
-        return self
-
-    def color_using_background_image(self, *args: Any, **kwargs: Any) -> Self:
-        """Meshes have no background image; for groups of vectorized mobjects and
-        meshes.
-        """
-        return self
-
     def get_faces(self) -> np.ndarray:
         """The polygons of the mesh: :attr:`faces`, or else the triangles."""
         return self.faces if len(self.faces) else self.triangles
@@ -338,7 +326,7 @@ class MeshMobject(Mobject):
             if start_width == end_width
             else float((1 - alpha) * start_width + alpha * end_width)
         )
-        self.material = _interpolate_material(
+        self.material = interpolate_material(
             mobject1.material, mobject2.material, alpha
         )
         return self
@@ -617,30 +605,6 @@ class PolygonFace(MeshMobject):
         """Move the corners of the polygon, keeping their number."""
         self.points = np.asarray(corners, dtype=float)
         return self
-
-
-def _interpolate_material(start: Material, end: Material, alpha: float) -> Material:
-    """The material at progress ``alpha`` from ``start`` to ``end``.
-
-    Two :class:`.PbrMaterial` materials interpolate their parameters; at ``alpha`` 1 the
-    result is ``end`` itself. Between other materials, the material switches to
-    ``end`` when ``alpha`` reaches 1.
-    """
-    if alpha >= 1 or start == end:
-        return end
-    if isinstance(start, PbrMaterial) and isinstance(end, PbrMaterial):
-        if alpha <= 0:
-            return start
-        return PbrMaterial(
-            roughness=(1 - alpha) * start.roughness + alpha * end.roughness,
-            metallic=(1 - alpha) * start.metallic + alpha * end.metallic,
-            emissive=(
-                (1 - alpha) * start.emissive[0] + alpha * end.emissive[0],
-                (1 - alpha) * start.emissive[1] + alpha * end.emissive[1],
-                (1 - alpha) * start.emissive[2] + alpha * end.emissive[2],
-            ),
-        )
-    return start
 
 
 def _pair(values: Sequence[Any], name: str) -> tuple[Any, Any]:
