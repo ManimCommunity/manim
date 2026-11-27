@@ -35,8 +35,9 @@ class Material:
     def interpolate(self, end: Material, alpha: float) -> Material:
         """The material at progress ``alpha`` (0 to 1) from this one to ``end``.
 
-        By default it switches to ``end`` when ``alpha`` reaches 1; override it to
-        animate a material's parameters.
+        By default it switches to ``end`` when ``alpha`` reaches 1, so that a
+        transform between materials that cannot be blended (a lit and an unlit one,
+        say) still works; override it to animate a material's parameters.
         """
         return end if alpha >= 1 else self
 
@@ -81,7 +82,8 @@ class PbrMaterial(Material):
 
     def interpolate(self, end: Material, alpha: float) -> Material:
         """Towards another :class:`PbrMaterial`, the parameters interpolate; towards
-        any other material, it switches at ``alpha`` 1.
+        any other material (an unlit one, say), it switches at ``alpha`` 1, as
+        :meth:`Material.interpolate` does.
         """
         if not isinstance(end, PbrMaterial) or alpha >= 1:
             # Not super(): slotted dataclasses are new classes it does not find
@@ -102,8 +104,11 @@ class PbrMaterial(Material):
 
 def interpolate_material(start: Material, end: Material, alpha: float) -> Material:
     """The material at progress ``alpha`` from ``start`` to ``end``: ``end`` itself
-    when they are equal or at ``alpha`` 1, else :meth:`Material.interpolate`.
+    when they are equal or at ``alpha`` 1, ``start`` itself at ``alpha`` 0, else
+    :meth:`Material.interpolate`.
     """
     if alpha >= 1 or start == end:
         return end
+    if alpha <= 0:
+        return start
     return start.interpolate(end, alpha)

@@ -117,7 +117,10 @@ class PointLight(Mobject):
         """Color and intensity between two lights; the end values themselves at 1."""
         start, end = mobject1, mobject2
         if not (isinstance(start, PointLight) and isinstance(end, PointLight)):
-            return self
+            raise TypeError(
+                "A PointLight can only be interpolated between two PointLights, not "
+                f"{type(start).__name__} and {type(end).__name__}."
+            )
         if alpha >= 1:
             self.light_color, self.intensity = end.light_color, end.intensity
         elif alpha <= 0:
