@@ -114,11 +114,11 @@ def test_cell(center, h, rings):
     assert np.allclose(cell.c, center)
     assert cell.h == h
 
-    other = Cell(np.add(center, [0.1, 0.1]), h, polygon)
-    assert (cell < other) == (cell.d < other.d)
-    assert (cell > other) == (cell.d > other.d)
-    assert (cell <= other) == (cell.d <= other.d)
-    assert (cell >= other) == (cell.d >= other.d)
+    other = Cell(np.add(center, [0.1, 0.1]), h + 0.5, polygon)
+    assert (cell < other) == (cell.p > other.p)
+    assert (cell > other) == (cell.p < other.p)
+    assert (cell <= other) == (cell.p >= other.p)
+    assert (cell >= other) == (cell.p <= other.p)
 
 
 @pytest.mark.parametrize(
@@ -157,13 +157,12 @@ def test_polylabel(rings, expected_centers):
     assert match_found, f"Expected one of {expected_centers}, but got {result.c}"
 
 
-def test_polygon_zero_area_has_centroid():
+def test_polygon_zero_area_centroid_fallback():
     # Self-intersecting bowtie polygon has net signed area 0.0
     bowtie = [[[0, 0], [2, 2], [2, 0], [0, 2], [0, 0]]]
     polygon = Polygon(bowtie)
 
     assert polygon.area == 0.0
-    assert hasattr(polygon, "centroid")
     assert np.allclose(polygon.centroid, [1.0, 1.0])
 
 

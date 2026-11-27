@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from __future__ import annotations
 
-import itertools
 from queue import PriorityQueue
 from typing import TYPE_CHECKING
 
@@ -169,17 +168,18 @@ class Cell:
         self.d = polygon.compute_distance(self.c)
         self.p = self.d + self.h * np.sqrt(2)
 
+    # Order by descending potential p so PriorityQueue pops the most promising cell first.
     def __lt__(self, other: Cell) -> bool:
-        return self.d < other.d
+        return self.p > other.p
 
     def __gt__(self, other: Cell) -> bool:
-        return self.d > other.d
+        return self.p < other.p
 
     def __le__(self, other: Cell) -> bool:
-        return self.d <= other.d
+        return self.p >= other.p
 
     def __ge__(self, other: Cell) -> bool:
-        return self.d >= other.d
+        return self.p <= other.p
 
 
 def polylabel(rings: Sequence[Point3DLike_Array], precision: float = 0.01) -> Cell:
@@ -212,12 +212,10 @@ def polylabel(rings: Sequence[Point3DLike_Array], precision: float = 0.01) -> Ce
     h = s / 2.0
 
     # Initial Grid
-    queue: PriorityQueue[tuple[float, int, Cell]] = PriorityQueue()
-    counter = itertools.count()
+    queue: PriorityQueue[Cell] = PriorityQueue()
     xv, yv = np.meshgrid(np.arange(mins[0], maxs[0], s), np.arange(mins[1], maxs[1], s))
     for corner in np.vstack([xv.ravel(), yv.ravel()]).T:
-        cell = Cell(corner + h, h, polygon)
-        queue.put((-cell.p, next(counter), cell))
+        queue.put(Cell(corner + h, h, polygon))
 
     # Initial Guess
     best = Cell(polygon.centroid, 0, polygon)
@@ -226,17 +224,17 @@ def polylabel(rings: Sequence[Point3DLike_Array], precision: float = 0.01) -> Ce
         best = bbox
 
     # While there are cells to consider...
-    directions = np.array([[-1, -1], [-1, 1], [1, -1], [1, 1]])
-    # Max-heap on potential p: pop the most promising cell first
+    directions = np.array([[-1, -1], [1, -1], [-1, 1], [1, 1]])
     while not queue.empty():
-        _, _, cell = queue.get()
-        if cell > best:
+        cell = queue.get()
+        if cell.d > best.d:
             best = cell
         # If a cell is promising, subdivide!
         if cell.p - best.d > precision:
             h = cell.h / 2.0
             offsets = cell.c + directions * h
-            for offset in offsets:
-                child = Cell(offset, h, polygon)
-                queue.put((-child.p, next(counter), child))
+            queue.put(Cell(offsets[0], h, polygon))
+            queue.put(Cell(offsets[1], h, polygon))
+            queue.put(Cell(offsets[2], h, polygon))
+            queue.put(Cell(offsets[3], h, polygon))
     return best
