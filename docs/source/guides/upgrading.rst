@@ -258,24 +258,21 @@ cameras or scene classes directly.
 Removed scene classes and camera options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-- ``SpecialThreeDScene`` is gone. It could not be constructed (it read a
-  renderer setting that no longer existed); use :class:`.ThreeDScene` and create
-  the axes and spheres it offered directly.
-- The ``exponential_projection`` argument and attribute of :class:`.ThreeDCamera`
-  are gone. Only ``SpecialThreeDScene`` used them, and the OpenGL renderer
-  ignored them. Points are projected with the factor
+- ``SpecialThreeDScene``: use :class:`.ThreeDScene` and create the axes and
+  spheres it offered directly.
+- ``ThreeDCamera.exponential_projection``: points are projected with the factor
   ``focal_distance / (focal_distance - z)``.
 
 Changed drawing
 ~~~~~~~~~~~~~~~
 
-- The OpenGL renderer clears frames to the camera's ``background_color`` and
-  ``background_opacity``, as the Cairo renderer does; it used to clear to the
-  configured background color whatever the camera said.
-- Camera views do not show camera views. Earlier, the Cairo renderer drew a
-  :class:`.MultiCamera` used as a secondary camera with its own insets; now each
-  view shows the scene without insets on both renderers, and registrations that
-  form a cycle are not an error anymore.
+- Both renderers fill the background of a frame with the camera's
+  ``background_color`` and ``background_opacity``. The OpenGL renderer used the
+  ``background_color`` of the configuration instead.
+- An inset (an :class:`.ImageMobjectFromCamera`) shows the scene without other
+  insets in it. Before, the Cairo renderer drew the insets inside a
+  :class:`.MultiCamera` that was itself shown in an inset. Cameras that show each
+  other in their insets are no longer an error.
 - Mobjects fixed in the frame (:meth:`.Mobject.fix_in_frame`) are drawn after all
   other mobjects, in scene order and by ``z_index`` among themselves. Earlier, a
   fixed mobject added before another mobject could be covered by it. A fixed mesh
@@ -285,9 +282,10 @@ Changed drawing
 Drawing frames
 ~~~~~~~~~~~~~~
 
-- Renderers draw what they are given: ``renderer.render(nodes, config)`` draws
-  the render snapshots of a frame as its :class:`.RenderConfig` sets them up and
-  returns a :class:`.Frame`; ``frame.pixels()`` reads its RGBA pixels. The
+- Renderers draw what they are given:
+  :meth:`renderer.render(nodes, config) <.Renderer.render>` draws the render
+  snapshots of a frame as its :class:`.RenderConfig` sets them up and returns a
+  :class:`.Frame`; :meth:`.Frame.pixels` reads its RGBA pixels. The
   manager's :class:`.FrameBuilder` makes both from the scene's mobjects and
   camera. ``update_frame()``, ``render_mobjects()``, ``get_frame()``,
   ``get_image()`` and ``render(scene, time)`` of the renderers are gone; use
@@ -400,7 +398,7 @@ Selecting a renderer
   evaluation and closed with it.
 - The graphical test harness takes ``renderer="opengl"`` instead of
   ``renderer_class=OpenGLRenderer``.
-- The OpenGL renderer raises ``CapabilityError`` (:mod:`manim.renderer.protocol`) for a camera's
+- The OpenGL renderer raises :class:`~.CapabilityError` for a camera's
   ``background_image``; it used to leave the image out. Use the Cairo renderer
   for background images.
 - Removed from :class:`.OpenGLRenderer`: ``get_frame()``,

@@ -107,17 +107,23 @@ node is drawn anew every time.
 (:class:`.ImageMobjectFromCamera`): draw each :class:`.CameraView` from its own
 ``nodes`` and ``config``, then show it on the frame's node with its ``uid`` and on
 copies of it, which have the same ``camera_id``. A renderer that cannot draw
-something it is given raises ``CapabilityError`` (:mod:`manim.renderer.protocol`).
+something it is given raises :class:`~.CapabilityError`.
 
 The frame
 ~~~~~~~~~
 
-``render`` returns a :class:`.Frame`: its ``size`` and ``pixels()``, RGBA with
-row zero at the top. :class:`.PixelFrame` holds pixels that are already in
-memory. A renderer that keeps the frame elsewhere (on the GPU) returns its own
-frame and reads the pixels the first time they are asked for. ``pixels()`` can be
-called until the renderer draws its next frame or closes; the array it returns
-belongs to the caller and must not change afterwards.
+``render`` returns a :class:`.Frame`, which has a ``size`` and a ``pixels()``
+method that returns the frame as an RGBA array, with row zero at the top.
+
+- If the pixels are already in memory, return a :class:`.PixelFrame` that holds
+  them.
+- If the frame is somewhere else, for example on the GPU, return your own
+  :class:`.Frame` class that reads the pixels when ``pixels()`` is first called.
+
+The manager calls ``pixels()`` before it asks for the next frame or closes the
+renderer, so the frame only needs to stay readable until then. The array that
+``pixels()`` returns belongs to the caller: the renderer must not change it
+afterwards.
 
 The factory
 -----------
@@ -177,17 +183,23 @@ Select it in code:
     MyScene(renderer=Plain(shade=200)).render()
 
 ``config.renderer`` and ``--renderer`` only name the built-in renderers
-(:mod:`manim.renderer.backends`: ``Cairo()`` and ``OpenGL()``).
+(:mod:`manim.renderer.backends`).
 
-A preview window
-----------------
+The preview window
+------------------
 
-A factory whose capabilities include ``live_preview`` is given a
-:class:`.PreviewRequest` when the scene renders with a live preview: where the
-window sends its input (the scene) and a function that returns the camera state
-for mapping window positions to scene points. Its renderer then has a
-``preview`` attribute (:class:`.PreviewRenderer`), a :class:`.Preview` handle that
-the Manager uses to show frames. Check for it this way:
+A renderer can show frames in a window while the scene renders (the live
+preview). Its factory says so with ``live_preview`` in its capabilities. When a
+scene renders with a live preview, the factory's ``create`` is given a
+:class:`.PreviewRequest`, which holds what the window needs:
+
+- where the window sends keyboard and mouse input (the scene), and
+- a function that returns the current camera state, to turn window positions into
+  scene points.
+
+The renderer it creates then has a ``preview`` attribute
+(:class:`.PreviewRenderer`): a :class:`.Preview` handle that the manager uses to
+show frames. Check for it this way:
 
 .. code-block:: python
 
@@ -196,9 +208,6 @@ the Manager uses to show frames. Check for it this way:
     renderer = factory.create(request)
     if isinstance(renderer, PreviewRenderer) and renderer.preview is not None:
         renderer.preview.show()
-
-A factory that promises a live preview but whose renderer has none is reported
-as an error by the Manager.
 
 .. note::
 
