@@ -12,6 +12,7 @@ import cairo
 import numpy as np
 from PIL import Image
 
+from manim.camera import Camera
 from manim.constants import CapStyleType, LineJointType
 from manim.mobject.mobject import Mobject
 from manim.renderer._paint import paint_colors
@@ -33,7 +34,6 @@ from manim.utils._path_points import (
 from manim.utils.space_ops import cross2d
 
 from ._mesh_faces import mesh_faces
-from .camera import Camera
 from .target import _CairoRenderTarget, _PathCache
 
 if TYPE_CHECKING:

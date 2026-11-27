@@ -19,10 +19,10 @@ from manim.typing import Point3D
 from manim.utils.color import color_to_rgba
 from manim.utils.iterables import list_update
 
+from ...camera import Camera, MultiCamera, ThreeDCamera
 from ...constants import *
 from ...scene.scene_file_writer import SceneFileWriter
 from .._execution import _RendererExecutionView
-from ..cairo.camera import Camera, MultiCamera, ThreeDCamera
 from ..protocol import RendererCapabilities, RendererState
 from ._drawing import DrawTarget, SnapshotDrawing
 from .shader import shader_program_cache

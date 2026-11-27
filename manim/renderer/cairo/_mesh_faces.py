@@ -25,7 +25,7 @@ from manim.renderer._mesh import (
 from manim.renderer.snapshot import RMesh, RNode, RPath, RSolidColor, RStroke
 
 if TYPE_CHECKING:
-    from .camera import Camera
+    from manim.camera import Camera
 
 __all__ = ["mesh_faces"]
 

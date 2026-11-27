@@ -6,4 +6,4 @@ Cameras
 .. autosummary::
    :toctree: ../reference
 
-   ~renderer.cairo.camera
+   ~camera

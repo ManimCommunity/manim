@@ -22,10 +22,10 @@ from PIL.Image import Resampling
 
 from manim._config import config
 from manim.appearance.material import PbrMaterial
+from manim.camera import ThreeDCamera
 from manim.renderer._lighting import AMBIENT, DEFAULT_LIGHT_INTENSITY
 from manim.renderer._mesh import MESH_STROKE_WIDTH_UNIT, faces_of
 from manim.renderer._paint import paint_colors, shows
-from manim.renderer.cairo.camera import ThreeDCamera
 from manim.renderer.snapshot import (
     FacingCamera,
     LegacyShaded,
@@ -42,7 +42,7 @@ from ._winding_fill import WindingFill
 from .shader import Shader
 
 if TYPE_CHECKING:
-    from manim.renderer.cairo.camera import Camera
+    from manim.camera import Camera
     from manim.renderer.snapshot import Material
 
     from .renderer import OpenGLRenderer, _CameraView

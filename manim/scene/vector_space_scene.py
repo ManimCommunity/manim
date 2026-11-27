@@ -10,12 +10,12 @@ from typing import TYPE_CHECKING, Any, cast
 import numpy as np
 
 from manim.animation.creation import DrawBorderThenFill, Group
+from manim.camera import Camera
 from manim.mobject.geometry.arc import Dot
 from manim.mobject.geometry.line import Arrow, Line, Vector
 from manim.mobject.geometry.polygram import Rectangle
 from manim.mobject.graphing.coordinate_systems import Axes, NumberPlane
 from manim.mobject.text.tex_mobject import MathTex, Tex
-from manim.renderer.cairo.camera import Camera
 from manim.utils.config_ops import update_dict_recursively
 
 from .._config import config

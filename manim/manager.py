@@ -39,10 +39,10 @@ if TYPE_CHECKING:
     from ._config.output import OutputSpec
     from ._config.render_session import RenderSessionSpec
     from .animation.animation import Animation
+    from .camera import Camera
     from .mobject.mobject import Mobject, _AnimationBuilder
     from .renderer._execution import _ExecutionState
     from .renderer.cairo import CairoRenderer
-    from .renderer.cairo.camera import Camera
     from .renderer.opengl.renderer import OpenGLRenderer
     from .scene.scene import Scene
     from .scene.scene_file_writer import SceneFileWriter
