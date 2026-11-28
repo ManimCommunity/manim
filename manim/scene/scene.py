@@ -856,7 +856,12 @@ class Scene:
         add_safe_mobjects_from_list(mobjects, set(to_remove))
         return new_mobjects
 
-    # TODO, remove this, and calls to this
+    @deprecated(
+        message=(
+            "Use z_index to control the drawing order of mobjects "
+            "instead: mobjects with a higher z_index are drawn on top."
+        ),
+    )
     def add_foreground_mobjects(self, *mobjects: Mobject) -> Scene:
         """
         Adds mobjects to the foreground, and internally to the list
@@ -876,6 +881,12 @@ class Scene:
         self.add(*mobjects)
         return self
 
+    @deprecated(
+        message=(
+            "Use z_index to control the drawing order of mobjects "
+            "instead: mobjects with a higher z_index are drawn on top."
+        ),
+    )
     def add_foreground_mobject(self, mobject: Mobject) -> Scene:
         """
         Adds a single mobject to the foreground, and internally to the list
@@ -891,8 +902,17 @@ class Scene:
         Scene
             The Scene, with the foreground mobject added.
         """
-        return self.add_foreground_mobjects(mobject)
+        self.foreground_mobjects = list_update(self.foreground_mobjects, (mobject,))
+        self.add(mobject)
+        return self
 
+    @deprecated(
+        message=(
+            "Use z_index to control the drawing order of mobjects "
+            "instead: reset a mobject's z_index to 0 to draw it in "
+            "the regular order again."
+        ),
+    )
     def remove_foreground_mobjects(self, *to_remove: Mobject) -> Scene:
         """
         Removes mobjects from the foreground, and internally from the list
@@ -911,6 +931,13 @@ class Scene:
         self.restructure_mobjects(to_remove, "foreground_mobjects")
         return self
 
+    @deprecated(
+        message=(
+            "Use z_index to control the drawing order of mobjects "
+            "instead: reset a mobject's z_index to 0 to draw it in "
+            "the regular order again."
+        ),
+    )
     def remove_foreground_mobject(self, mobject: Mobject) -> Scene:
         """
         Removes a single mobject from the foreground, and internally from the list
@@ -926,7 +953,8 @@ class Scene:
         Scene
             The Scene, with the foreground mobject removed.
         """
-        return self.remove_foreground_mobjects(mobject)
+        self.restructure_mobjects((mobject,), "foreground_mobjects")
+        return self
 
     def bring_to_front(self, *mobjects: Mobject) -> Scene:
         """
