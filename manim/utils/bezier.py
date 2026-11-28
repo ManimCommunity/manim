@@ -1084,8 +1084,8 @@ def integer_interpolate(
     Returns
     -------
     tuple[int, float]
-        This returns an integer between start and end (inclusive) representing
-        appropriate interpolation between them, along with a
+        For integer bounds, this returns an integer in the half-open interval
+        ``[start, end)`` representing appropriate interpolation between them, along with a
         "residue" representing a new proportion between the
         returned integer and the next one of the
         list.
