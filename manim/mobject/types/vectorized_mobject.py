@@ -504,9 +504,6 @@ class VMobject(Mobject):
             is scaled. If enabled, each submobject keeps its relative stroke width (for
             example, a submobject with a 2px outline scaled by a factor of .5 will have
             a 1px outline, while a submobject with 0px stroke remains at 0px).
-        kwargs
-            Additional keyword arguments passed to
-            :meth:`~.Mobject.scale`.
 
         Returns
         -------
