@@ -54,6 +54,10 @@ class Polygon:
             cx = np.sum((x + xr) * factor) / (6.0 * self.area)
             cy = np.sum((y + yr) * factor) / (6.0 * self.area)
             self.centroid = np.array([cx, cy])
+        else:
+            mins = np.min(self.array, axis=0)
+            maxs = np.max(self.array, axis=0)
+            self.centroid = (mins + maxs) / 2.0
 
     def compute_distance(self, point: Point2DLike) -> float:
         """Compute the minimum distance from a point to the polygon."""
@@ -162,19 +166,20 @@ class Cell:
         self.c: Point2D = np.asarray(c)
         self.h = h
         self.d = polygon.compute_distance(self.c)
-        self.p = self.d + self.h * np.sqrt(2)
+        self.p: float = float(self.d + self.h * np.sqrt(2))
 
+    # Order by descending potential p so PriorityQueue pops best cells first.
     def __lt__(self, other: Cell) -> bool:
-        return self.d < other.d
+        return self.p > other.p
 
     def __gt__(self, other: Cell) -> bool:
-        return self.d > other.d
+        return self.p < other.p
 
     def __le__(self, other: Cell) -> bool:
-        return self.d <= other.d
+        return self.p >= other.p
 
     def __ge__(self, other: Cell) -> bool:
-        return self.d >= other.d
+        return self.p <= other.p
 
 
 def polylabel(rings: Sequence[Point3DLike_Array], precision: float = 0.01) -> Cell:
@@ -222,7 +227,7 @@ def polylabel(rings: Sequence[Point3DLike_Array], precision: float = 0.01) -> Ce
     directions = np.array([[-1, -1], [1, -1], [-1, 1], [1, 1]])
     while not queue.empty():
         cell = queue.get()
-        if cell > best:
+        if cell.d > best.d:
             best = cell
         # If a cell is promising, subdivide!
         if cell.p - best.d > precision:
