@@ -166,9 +166,9 @@ class Cell:
         self.c: Point2D = np.asarray(c)
         self.h = h
         self.d = polygon.compute_distance(self.c)
-        self.p = self.d + self.h * np.sqrt(2)
+        self.p: float = float(self.d + self.h * np.sqrt(2))
 
-    # Order by descending potential p so PriorityQueue pops the most promising cell first.
+    # Order by descending potential p so PriorityQueue pops best cells first.
     def __lt__(self, other: Cell) -> bool:
         return self.p > other.p
 
