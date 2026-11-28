@@ -301,7 +301,7 @@ class ManimColor:
 
         Parameters
         ----------
-        hex
+        hex_
             Hex string to be parsed.
         alpha
             Alpha value used for the color, if the color is only 3 bytes long. Otherwise,
