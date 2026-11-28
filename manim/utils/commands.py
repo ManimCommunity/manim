@@ -22,6 +22,12 @@ def capture(
     cwd: StrOrBytesPath | None = None,
     command_input: str | None = None,
 ) -> tuple[str, str, int]:
+    # When stdout is a pipe, Python on Windows encodes it with the ANSI code
+    # page (e.g. cp1252) instead of UTF-8, so a subprocess printing a path
+    # with non-ASCII characters can fail with a UnicodeEncodeError. Force
+    # UTF-8 for the subprocess streams to behave the same on every platform.
+    # See https://github.com/ManimCommunity/manim/issues/5109.
+    env = {**os.environ, "PYTHONIOENCODING": "utf-8"}
     p = run(
         command,
         cwd=cwd,
@@ -29,6 +35,7 @@ def capture(
         capture_output=True,
         text=True,
         encoding="utf-8",
+        env=env,
     )
     out, err = p.stdout, p.stderr
     return out, err, p.returncode
