@@ -158,7 +158,7 @@ def always_rotate(mobject: M, rate: float = 20 * DEGREES, **kwargs) -> M:
     rate
         The angle which the mobject is rotated by
         over one second.
-    kwags
+    kwargs
         Further arguments to be passed to :meth:`.Mobject.rotate`.
 
     Examples
