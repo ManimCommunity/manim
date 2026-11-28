@@ -57,6 +57,7 @@ from ..mobject.types.image_mobject import ImageMobjectFromCamera
 from ..renderer.cairo.camera import Camera, MultiCamera
 from ..renderer.opengl.camera import OpenGLCamera
 from ..scene.scene import Scene
+from ..utils.iterables import list_update
 
 if TYPE_CHECKING:
     from manim.typing import Point3DLike, Vector3D
@@ -148,10 +149,11 @@ class ZoomedScene(Scene):
         if animate:
             self.play(self.get_zoom_in_animation())
             self.play(self.get_zoomed_display_pop_out_animation())
-        self.add_foreground_mobjects(
-            self.zoomed_camera.frame,
-            self.zoomed_display,
+        self.foreground_mobjects = list_update(
+            self.foreground_mobjects,
+            (self.zoomed_camera.frame, self.zoomed_display),
         )
+        self.add(self.zoomed_camera.frame, self.zoomed_display)
 
     def get_zoom_in_animation(self, run_time: float = 2, **kwargs: Any) -> ApplyMethod:
         """Returns the animation of camera zooming in.

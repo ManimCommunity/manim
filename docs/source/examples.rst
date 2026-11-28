@@ -566,7 +566,8 @@ Special Camera Settings
             zoomed_display.shift(DOWN)
 
             zd_rect = BackgroundRectangle(zoomed_display, fill_opacity=0, buff=MED_SMALL_BUFF)
-            self.add_foreground_mobject(zd_rect)
+            zd_rect.set_z_index(1)
+            self.add(zd_rect)
 
             unfold_camera = UpdateFromFunc(zd_rect, lambda rect: rect.replace(zoomed_display))
 

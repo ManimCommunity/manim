@@ -50,6 +50,70 @@ def test_scene_add_remove(dry_run):
     assert scene.add(Mobject()) is scene
 
 
+def test_add_foreground_mobjects_deprecated(dry_run, manim_caplog):
+    """Adding to the foreground is deprecated in favour of z_index."""
+    scene = Scene()
+    mobject = Mobject()
+    n_records = len(manim_caplog.record_tuples)
+
+    assert scene.add_foreground_mobjects(mobject) is scene
+    assert mobject in scene.foreground_mobjects
+    assert mobject in scene.mobjects
+
+    records = manim_caplog.record_tuples[n_records:]
+    assert len(records) == 1
+    assert "z_index" in records[0][2]
+
+
+def test_add_foreground_mobject_deprecated(dry_run, manim_caplog):
+    """The singular variant warns exactly once and keeps its behaviour."""
+    scene = Scene()
+    mobject = Mobject()
+    n_records = len(manim_caplog.record_tuples)
+
+    assert scene.add_foreground_mobject(mobject) is scene
+    assert mobject in scene.foreground_mobjects
+    assert mobject in scene.mobjects
+
+    records = manim_caplog.record_tuples[n_records:]
+    assert len(records) == 1
+    assert "z_index" in records[0][2]
+
+
+def test_remove_foreground_mobjects_deprecated(dry_run, manim_caplog):
+    """Removing from the foreground is deprecated in favour of z_index."""
+    scene = Scene()
+    mobject = Mobject()
+    scene.add(mobject)
+    scene.foreground_mobjects.append(mobject)
+    n_records = len(manim_caplog.record_tuples)
+
+    assert scene.remove_foreground_mobjects(mobject) is scene
+    assert mobject not in scene.foreground_mobjects
+    assert mobject in scene.mobjects
+
+    records = manim_caplog.record_tuples[n_records:]
+    assert len(records) == 1
+    assert "z_index" in records[0][2]
+
+
+def test_remove_foreground_mobject_deprecated(dry_run, manim_caplog):
+    """The singular variant warns exactly once and keeps its behaviour."""
+    scene = Scene()
+    mobject = Mobject()
+    scene.add(mobject)
+    scene.foreground_mobjects.append(mobject)
+    n_records = len(manim_caplog.record_tuples)
+
+    assert scene.remove_foreground_mobject(mobject) is scene
+    assert mobject not in scene.foreground_mobjects
+    assert mobject in scene.mobjects
+
+    records = manim_caplog.record_tuples[n_records:]
+    assert len(records) == 1
+    assert "z_index" in records[0][2]
+
+
 def test_scene_time(dry_run):
     scene = Scene()
     assert scene.time == 0
